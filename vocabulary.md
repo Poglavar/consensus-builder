@@ -379,6 +379,14 @@ The transverse arrangement of corridor elements, such as lanes and their widths.
 
 The application's area-feature design category, including parks, squares, lakes and stations. This category is broader than the engineering meaning of a load-bearing structure. A park, square or lake's authored area is its occupied land and supplies its site when reshaped; applying it forms modeled ground borders. An unsaved drawn outline is temporary and has no land effect until a design is applied.
 
+### Transit station
+
+A station attached to a compatible corridor. Road stations use a road with driving or bus lanes.
+Track stations use rail and are placed at ground level, elevated or underground; these are
+placement levels rather than tram or metro service types. The chosen level determines the station
+model, footprint and attachment. The current record identifiers are `bus` for road stations and
+`tram`, `elevated`, `underground` for the three track-station levels.
+
 ### Decoration design
 
 An explicitly authored arrangement of furniture, trees or similar surroundings. Authored layouts belong to the design commitment; generated decoration caches are local rendering data.
@@ -392,6 +400,11 @@ A selectable item of cadastral ground, fabric or design content in the map's int
 ### Source building
 
 An observed building object identified within a survey or provider dataset. Its geometry, identity and measurements retain that source's provenance.
+
+A source building is baseline context, not a member of a Plan. Its cadastral parcel supplies the
+ground context for inspection. An explicit design impact can link it to an affecting design;
+spatial overlap alone does not establish that relationship. Current agreements allocate land and
+money and do not create a separate transfer of a source-building record.
 
 ### Proposed building
 

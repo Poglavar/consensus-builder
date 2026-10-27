@@ -189,7 +189,7 @@ body.three-mode-active .site-panel {
     align-items: center;
     gap: var(--cb-space-2);
     box-sizing: border-box;
-    padding: 0 var(--cb-space-2) 0 var(--cb-space-3);
+    padding: var(--right-panel-padding, 0 var(--cb-space-2) 0 var(--cb-space-3));
     border-bottom: 1px solid var(--cb-line);
 }
 

@@ -191,7 +191,7 @@
         "source": "Source",
         "scope": "Coverage",
         "terms": "Source terms",
-        "unavailable": "Detailed source metadata is unavailable. See Sources & software in Settings → Information.",
+        "unavailable": "Detailed source metadata is unavailable. See Sources & software in Settings → Help & about.",
         "unknown": "Unknown",
         "link": "Read source information and terms"
     },
@@ -1245,10 +1245,10 @@
         "stations": {
             "title": "Stations",
             "placeTitle": "Place a station",
-            "bus": "Bus station",
-            "tram": "Tram station",
-            "underground": "Underground station",
-            "elevated": "Elevated train station",
+            "bus": "Road station",
+            "tram": "Ground level",
+            "underground": "Underground",
+            "elevated": "Elevated station",
             "cancel": "Cancel placement",
             "hint": "Rail stations snap to rail tracks. Bus stations snap to the selected roadside."
         },
@@ -1467,9 +1467,9 @@
                 "transport": "Transport",
                 "road": "Road",
                 "track": "Track",
-                "busStation": "Bus station",
-                "tramStation": "Tram station",
-                "undergroundStation": "Metro station",
+                "busStation": "Road station",
+                "tramStation": "Ground-level station",
+                "undergroundStation": "Underground station",
                 "elevatedStation": "Elevated station",
                 "selectParcelFirst": "Select a parcel first.",
                 "replaced": "This is the original cadastral parcel. Applied designs have replaced it in the working map. Select the current parcels to add a design.",
@@ -1477,7 +1477,9 @@
                 "selectCurrent": "Select current parcels",
                 "reload": "Reload parcels",
                 "rulesCategory": "Urban rules",
-                "structuresCategory": "Structures"
+                "structuresCategory": "Structures",
+                "roadStation": "Road station",
+                "trackStation": "Track station"
             },
             "nftStatusDefault": "NFT status: Not checked yet.",
             "mintAndClaimButton": "Mint",
@@ -1668,7 +1670,7 @@
                 "id": "ID:",
                 "author": "Author:",
                 "description": "Description:",
-                "parcels": "Parcels in design:",
+                "parcels": "Source parcels:",
                 "area": "Area:",
                 "siteArea": "Site area:",
                 "sourceArea": "Source parcel area sum:",
@@ -6265,7 +6267,12 @@
         "saved": "Station geometry saved.",
         "moveHint": "Drag the station footprint or centre marker to reposition it. Its type, size, rotation and platform height stay the same.",
         "dragCenter": "Drag to move the station",
-        "undo": "Undo"
+        "undo": "Undo",
+        "trackStation": "Track station",
+        "groundLevel": "Ground level",
+        "elevated": "Elevated station",
+        "underground": "Underground",
+        "cancel": "Cancel"
     },
     "claims": {
         "onParcels": "On parcels:",
@@ -6695,12 +6702,12 @@
             "noCadastre": "Open ground"
         },
         "facts": {
-            "bare": "Unsurveyed ground or a gap between parcels: ownership not established.",
+            "bare": "Unsurveyed ground or a gap between parcels.",
             "noCadastre": "No parcel data here. A design can only execute through an authority's verdict."
         },
         "notLoaded": "Parcels are not loaded here yet — zoom in or wait for them to load.",
         "actions": {
-            "drawSite": "Draw a site here"
+            "drawSite": "Draw a parcel"
         }
     },
     "siteTool": {
@@ -8027,6 +8034,7 @@
         "chooseSharePlan": "Which plan do you want to share?"
     },
     "clickStackRelations": {
+        "affectedBy": "Affected by design:",
         "memberPlans": "Included in plans:",
         "includedDesigns": "Designs:",
         "createdBy": "Created by design:",
@@ -8353,5 +8361,31 @@
         "empty": "No loaded items match these filters.",
         "loadMore": "Load more",
         "limited": "Showing up to 1,000 published designs."
-    }
+    },
+  "appUpdates": {
+    "title": "Application update",
+    "build": "Build {{number}}",
+    "development": "Development build",
+    "developmentHint": "Update checks are available for deployed versions.",
+    "deployed": "Deployed {{date}}",
+    "check": "Check for updates",
+    "checking": "Checking for updates…",
+    "available": "A newer version is available.",
+    "availableBuild": "Build {{number}} is available.",
+    "current": "You are up to date.",
+    "failed": "Could not check for updates. Try again.",
+    "notChecked": "Not checked yet.",
+    "lastChecked": "Last checked: {{date}}",
+    "reload": "Reload",
+    "later": "Later",
+    "finishEditing": "Finish or cancel editing and wait for saving to finish before reloading."
+  },
+  "settingsPanel": {
+    "dataAssumptions": "Data & assumptions",
+    "helpAbout": "Help & about",
+    "userGuide": "User guide",
+    "advanced": "Advanced",
+    "resetBrowserData": "Reset browser data",
+    "resetDescription": "Deletes designs, plans, agreements, cached data and settings stored in this browser."
+  }
 }

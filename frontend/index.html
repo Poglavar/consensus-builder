@@ -116,55 +116,58 @@
         (function () {
             var cssFiles = [
                 'css/tokens.css',
-                'css/primitives.css?v=20261027-authoring-icons',
+                'css/primitives.css?v=20261027-panel-buttons',
                 'css/workspace.css',
                 'css/community-voting.css',
                 'css/base.css',
                 'css/layout.css',
                 'css/map.css?v=20261027-agreement-tabs',
-                'css/panels.css?v=20261027-agreement-tabs',
-                'css/modals.css?v=20261027-agreement-focus',
+                'css/panels.css?v=20261027-panel-buttons',
+                'css/modals.css?v=20261027-panel-buttons',
                 'css/parcel-sources.css',
-                'css/proposals.css?v=20261027-stack-semantics',
-                'css/grain-score.css',
+                'css/proposals.css?v=20261027-panel-buttons',
+                'css/grain-score.css?v=20261027-panel-buttons',
                 'css/proposal-editor.css?v=20261027-experimental',
                 'css/structure-geometry-editor.css',
                 'css/on-map-building.css',
                 'css/on-map-editor.css',
                 'css/on-map-reparcellization.css',
-                'css/station-geometry-editor.css',
+                'css/station-geometry-editor.css?v=20261027-station-inspection',
                 'css/corridor-editor.css',
                 'css/corridor-render.css',
                 'css/game.css',
                 'css/actor-explorer.css',
                 'css/road-analysis.css',
-                'css/utilities.css?v=20261027-fixed-navigation',
+                'css/utilities.css?v=20261027-panel-buttons',
                 'css/photoreal-mode.css',
                 'css/ai-scene.css',
-                'css/map-shell.css?v=20261027-fixed-navigation',
+                'css/map-shell.css?v=20261027-panel-buttons',
                 'css/activity-feed.css?v=20261027-style',
                 'css/area-monitor-list.css',
                 'css/map-credits.css',
                 'css/bets-sheet.css?v=20261025-lmsr',
                 'css/site-tool.css',
                 'css/map-search.css',
-                'css/command-palette.css',
+                'css/command-palette.css?v=20261027-panel-buttons',
                 'css/world.css',
                 'css/ground-fallback.css',
-                'css/parcel-estimate.css?v=20261020-viewport',
+                'css/parcel-estimate.css?v=20261027-panel-buttons',
                 'css/urban-blocks.css',
                 'css/urban-blocks-playground.css',
                 'css/schelling-plan.css',
-                'css/proposal-details.css?v=20261027-stack-semantics',
+                'css/proposal-details.css?v=20261027-panel-buttons',
                 'css/plan-dialog.css',
                 'css/lists.css',
                 'css/proposal-approval.css?v=20261020-approval-rules',
                 'css/agreement.css?v=20261027-agreement-tabs',
-                'css/agreement-dialog.css?v=20261027-agreement-focus',
+                'css/agreement-dialog.css?v=20261027-panel-buttons',
                 'css/mobile-sheets.css?v=20261027-style',
                 'css/planning-views.css?v=20261027-stack-semantics',
                 'css/three-sun.css',
-                'css/three-click-stack.css?v=20261027-stack-semantics'
+                'css/three-click-stack.css?v=20261027-stack-semantics',
+                'css/right-screen-panel.css',
+                'css/app-updates.css',
+                'css/settings-panel.css'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
@@ -302,7 +305,7 @@
 
         <!-- Independent OSM block browser and inspector: side panel on desktop, collapsible phone sheet. -->
         <button type="button" id="urban-blocks-open-map" class="map-shell-button urban-blocks-open-map" hidden></button>
-        <section id="urban-block-panel" class="urban-block-panel right-dock-panel" aria-labelledby="urban-block-panel-title" hidden>
+        <section id="urban-block-panel" class="urban-block-panel right-dock-panel right-screen-panel" aria-labelledby="urban-block-panel-title" hidden>
             <header class="urban-block-panel-header">
                 <div class="urban-block-panel-heading">
                     <h2 id="urban-block-panel-title">Blocks in this area</h2>
@@ -349,7 +352,7 @@
              plan is, in the spot where the painting tool (an on-map editor) opens, so Propose reads as
              the same panel's next step. Folding keeps the plan drawn; closing hides it. -->
         <div class="schelling-panel-host" data-map-modes="2d">
-            <section id="schelling-panel" class="on-map-editor__panel on-map-editor__panel--layer schelling-panel" aria-labelledby="schelling-panel-title" hidden>
+            <section id="schelling-panel" class="right-screen-panel on-map-editor__panel on-map-editor__panel--layer schelling-panel" aria-labelledby="schelling-panel-title" hidden>
                 <header class="on-map-editor__header">
                     <div class="on-map-editor__heading">
                         <h2 id="schelling-panel-title" tabindex="-1" data-i18n-key="schellingPlan.title">Schelling plan</h2>
@@ -404,6 +407,14 @@
             <div id="floating-status" class="floating-status cb-toast cb-toast--status">
                 <span class="cb-toast__spinner" aria-hidden="true"></span><span id="floating-status-text"></span>
             </div>
+            <section id="app-update-notice" class="app-update-notice" aria-label="Application update" data-i18n-key="appUpdates.title" data-i18n-attr="aria-label" hidden>
+                <p role="status" data-i18n-key="appUpdates.available">A newer version is available.</p>
+                <div class="app-update-actions">
+                    <button type="button" class="btn btn-primary" data-app-update-reload data-i18n-key="appUpdates.reload">Reload</button>
+                    <button type="button" id="app-update-later" class="btn" data-i18n-key="appUpdates.later">Later</button>
+                </div>
+                <p id="app-update-blocked" role="status"></p>
+            </section>
         </div>
 
         <!-- ===== Floating map shell (js/ui/map-shell.js, css/map-shell.css) =====
@@ -481,7 +492,7 @@
                 <button type="button" id="planning-open-model" class="cb-link planning-open-model" hidden></button>
             </div>
         </section>
-        <aside id="planning-inspector" class="planning-inspector" aria-label="Planning source details" data-i18n-key="planningViews.detailsLabel" data-i18n-attr="aria-label" hidden></aside>
+        <aside id="planning-inspector" class="right-screen-panel planning-inspector" aria-label="Planning source details" data-i18n-key="planningViews.detailsLabel" data-i18n-attr="aria-label" hidden></aside>
 
         <div id="area-monitor-drawing-toolbar" class="map-editor-toolbar" hidden>
             <span data-i18n-key="mapShell.reorg.watchedAreas">Watched areas</span>
@@ -521,7 +532,7 @@
         </div>
 
         <!-- Layers sheet -->
-        <section id="layers-sheet" class="map-sheet" role="dialog" aria-labelledby="layers-sheet-title" hidden>
+        <section id="layers-sheet" class="right-screen-panel map-sheet" role="dialog" aria-labelledby="layers-sheet-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="layers-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.layers">Layers</h2>
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
@@ -584,7 +595,7 @@
                             </div>
                         </div>
 
-                        <div class="btn-group layer-source-actions">
+                        <div class="cb-actions cb-actions--grid layer-source-actions">
 <button type="button" id="parcel-source-settings-button" class="btn" data-section-independent="true" onclick="openParcelSourceSettings()">
                                 <span data-i18n-key="parcelSources.title">Choose a parcel source</span>
                             </button>
@@ -634,7 +645,7 @@
                             data-i18n-key="sidebar.parcels.inViewDefault">Parcels in map view / total: 0
                             / 0</div>
 
-<button id="cadastre-view-toggle" class="btn" data-map-modes="2d" title="Cadastre view: original parcels only" data-i18n-key="claims.cadastreViewToggle" data-i18n-attr="title"><i class="fas fa-table-cells" aria-hidden="true"></i><span data-i18n-key="mapShell.reorg.originalCadastre">Original cadastre</span></button>
+<button type="button" id="cadastre-view-toggle" class="btn" data-map-modes="2d" title="Cadastre view: original parcels only" data-i18n-key="claims.cadastreViewToggle" data-i18n-attr="title"><i class="fas fa-table-cells" aria-hidden="true"></i><span data-i18n-key="mapShell.reorg.originalCadastre">Original cadastre</span></button>
 </div>
                 </details>
 
@@ -652,8 +663,10 @@
                                 <span data-i18n-key="urbanBlocks.toggle">Detect and analyse blocks</span></label>
                         </div>
                         <p id="urban-blocks-status" class="sheet-note" role="status" aria-live="polite">Load OSM roads, then colour the enclosed blocks. Parcel data is optional.</p>
+                        <div class="cb-actions cb-actions--grid">
                         <button type="button" id="urban-blocks-refresh" class="btn" disabled>Refresh this area</button>
                         <button type="button" id="urban-blocks-browse" class="btn" data-i18n-key="urbanBlocks.browse" disabled>Browse blocks</button>
+                        </div>
                         </div>
                         <div class="control-group" data-feature="parcelBlocks">
                             <div class="control-group-title" data-i18n-key="sidebar.blocks.fromParcelsTitle">From cadastral parcels</div>
@@ -668,18 +681,18 @@
                                     <span data-i18n-key="sidebar.blocks.showNames">Block names</span>
                                 </label>
                             </div>
-                            <div class="btn-group">
-                                <button class="btn btn-primary btn-block" onclick="countBlocks()"
+                            <div class="cb-actions cb-actions--grid">
+                                <button type="button" class="btn btn-primary btn-block" onclick="countBlocks()"
                                     data-i18n-key="sidebar.blocks.reformTooltip" data-i18n-attr="title">
                                     <i class="fas fa-shapes" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.blocks.reformButton">(Re)form Blocks</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="animateFloodfillFromSelected()"
+                                <button type="button" class="btn btn-primary btn-block" onclick="animateFloodfillFromSelected()"
                                     data-i18n-key="sidebar.blocks.fromSelectedTooltip" data-i18n-attr="title">
                                     <i class="fas fa-fill-drip" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.blocks.fromSelectedButton">From Selected Parcel</span>
                                 </button>
-                                <button id="showBlockListButton" class="btn btn-block" onclick="showBlocksList()" disabled>
+                                <button type="button" id="showBlockListButton" class="btn btn-block" onclick="showBlocksList()" disabled>
                                     <i class="fas fa-list" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.blocks.showListButton">Show Block List</span>
                                 </button>
@@ -735,7 +748,7 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="btn-group layer-source-actions"><button type="button" id="building-source-settings-button" class="btn" data-section-independent="true" onclick="openBuildingSourceSettings()">
+                        <div class="cb-actions layer-source-actions"><button type="button" id="building-source-settings-button" class="btn" data-section-independent="true" onclick="openBuildingSourceSettings()">
                                 <span data-i18n-key="buildingSources.title">Choose a building source</span>
                             </button></div>
                     </div>
@@ -803,50 +816,50 @@
                         <div class="control-group">
                             <div class="control-group-title" data-i18n-key="sidebar.roads.existingTitle">Existing roads
                             </div>
-                            <div class="btn-group">
-                                <button id="detectExistingRoadsButton" class="btn"
+                            <div class="cb-actions cb-actions--grid">
+                                <button type="button" id="detectExistingRoadsButton" class="btn"
                                     data-i18n-key="sidebar.roads.detectExistingTooltip" data-i18n-attr="title"
                                     onclick="detectExistingRoads()">
                                     <i class="fas fa-road" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectExisting">Detect Existing Roads</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="detectRoadsUsingAI()" disabled hidden
+                                <button type="button" class="btn btn-primary btn-block" onclick="detectRoadsUsingAI()" disabled hidden
                                     data-i18n-key="sidebar.roads.detectAiTooltip" data-i18n-attr="title">
                                     <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectAi">Detect Roads using AI</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="algorithmicRoads()" disabled hidden
+                                <button type="button" class="btn btn-primary btn-block" onclick="algorithmicRoads()" disabled hidden
                                     data-i18n-key="sidebar.roads.drawAlgorithmicTooltip" data-i18n-attr="title">
                                     <i class="fas fa-diagram-project" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.drawAlgorithmic">Draw New Roads
                                         Algorithmically</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="drawOSMRoads()"
+                                <button type="button" class="btn btn-primary btn-block" onclick="drawOSMRoads()"
                                     data-i18n-key="sidebar.roads.drawOsmTooltip" data-i18n-attr="title">
                                     <i class="fas fa-pen" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.drawOsm">Draw Roads from OSM</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="detectRoadsFromOSM()"
+                                <button type="button" class="btn btn-primary btn-block" onclick="detectRoadsFromOSM()"
                                     data-i18n-key="sidebar.roads.detectOsmTooltip" data-i18n-attr="title">
                                     <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectOsm">Detect Roads from OSM</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="drawGUPRoads()"
+                                <button type="button" class="btn btn-primary btn-block" onclick="drawGUPRoads()"
                                     data-i18n-key="sidebar.roads.drawGupTooltip" data-i18n-attr="title">
                                     <i class="fas fa-pen" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.drawGup">Draw Roads from GUP</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="detectRoadsFromGUP()"
+                                <button type="button" class="btn btn-primary btn-block" onclick="detectRoadsFromGUP()"
                                     data-i18n-key="sidebar.roads.detectGupTooltip" data-i18n-attr="title">
                                     <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectGup">Detect Roads from GUP</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="drawWFSRoadParcels()"
+                                <button type="button" class="btn btn-primary btn-block" onclick="drawWFSRoadParcels()"
                                     data-i18n-key="sidebar.roads.drawDguTooltip" data-i18n-attr="title">
                                     <i class="fas fa-pen" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.drawDgu">Draw roads from DGU</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="detectRoadsFromWFS()"
+                                <button type="button" class="btn btn-primary btn-block" onclick="detectRoadsFromWFS()"
                                     data-i18n-key="sidebar.roads.detectDguTooltip" data-i18n-attr="title">
                                     <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectDgu">Detect roads from DGU</span>
@@ -857,8 +870,8 @@
                             <div class="control-group-title" data-i18n-key="sidebar.roads.plansTitle">Plans and
                                 designs
                             </div>
-                            <div class="btn-group">
-                                <button id="applyGovernmentRoadPlanButton" class="btn btn-primary btn-block"
+                            <div class="cb-actions">
+                                <button type="button" id="applyGovernmentRoadPlanButton" class="btn btn-primary btn-block"
                                     data-i18n-key="sidebar.roads.applyGovPlanTooltip" data-i18n-attr="title">
                                     <i class="fas fa-map-location-dot" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.applyGovPlan">Apply Government Road Plan</span>
@@ -873,8 +886,8 @@
                             <div id="progressText" class="progress-text" data-i18n-key="sidebar.roads.progressText">
                                 Processing...</div>
                         </div>
-                        <div class="btn-group road-analysis-actions">
-                            <button id="analyzeAllRoadsButton" class="btn btn-primary btn-block"
+                        <div class="cb-actions road-analysis-actions">
+                            <button type="button" id="analyzeAllRoadsButton" class="btn btn-primary btn-block"
                                 data-i18n-key="sidebar.roads.analyzeOsmTooltip" data-i18n-attr="title"
                                 onclick="analyzeAllOSMRoadSegmentsInView()">
                                 <i class="fas fa-chart-line" aria-hidden="true"></i>
@@ -1011,7 +1024,7 @@
         </section>
 
         <!-- Proposals sheet: the whole sheet is the proposals section -->
-        <section id="proposals-sheet" class="map-sheet map-sheet--dock accordion-section" data-section="proposals" role="dialog"
+        <section id="proposals-sheet" class="right-screen-panel map-sheet map-sheet--dock accordion-section" data-section="proposals" role="dialog"
             aria-labelledby="proposals-sheet-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="proposals-sheet-title" class="map-sheet-title">
@@ -1136,14 +1149,10 @@
             </div>
         </section>
 
-        <!-- Settings sheet -->
-        <section id="settings-sheet" class="map-sheet" role="dialog" aria-labelledby="settings-sheet-title" hidden>
-            <div class="map-sheet-header">
-                <h2 id="settings-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.settings">Settings</h2>
-                <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
-                    aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
-            </div>
-            <div class="map-sheet-body">
+        <!-- Settings: preferences and tools, with a fixed brand header and build footer. -->
+        <section id="settings-sheet" class="right-screen-panel map-sheet" role="dialog" aria-labelledby="settings-sheet-title" hidden>
+            <div class="map-sheet-header settings-header">
+                <h2 id="settings-sheet-title" class="map-shell-sr-only" data-i18n-key="mapShell.settings">Settings</h2>
                 <div class="settings-brand">
                     <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo" class="settings-brand-logo">
                     <span class="settings-brand-title" data-i18n-key="sidebar.header.title">Consensus Builder</span>
@@ -1155,31 +1164,15 @@
                         <span data-i18n-key="sidebar.header.aiBadge">AI-friendly</span>
                     </span>
                 </div>
-                <details class="accordion-section" data-section="navigation">
-                    <summary class="sheet-section-title">
-                        <i class="fas fa-compass" aria-hidden="true"></i>
-                        <span data-i18n-key="mapShell.settingsSections.navigation">Navigation</span>
-                    </summary>
-                    <div class="sheet-section-body">
-                        <div class="btn-group sheet-shortcuts">
-                            <button type="button" id="world-view-button" class="btn settings-palette-button">
-                                <i class="fas fa-earth-europe" aria-hidden="true"></i>
-                                <span data-i18n-key="mapShell.commands.worldView">World view</span>
-                            </button>
-                            <button type="button" id="command-palette-button" class="btn settings-palette-button">
-                                <i class="fas fa-terminal" aria-hidden="true"></i>
-                                <span data-i18n-key="commandPalette.open">Command palette</span>
-                                <kbd class="settings-palette-shortcut" data-command-palette-shortcut>Ctrl K</kbd>
-                            </button>
-                        </div>
-                    </div>
-                </details>
-                <details class="accordion-section" data-section="appearance">
-                    <summary class="sheet-section-title">
+                <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
+                    aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
+            </div>
+            <div class="map-sheet-body settings-content">
+                <section class="settings-section" data-section="appearance"><h3 class="settings-section-title">
                         <i class="fas fa-palette" aria-hidden="true"></i>
                         <span data-i18n-key="mapShell.appearance.label">Appearance</span>
-                    </summary>
-                    <div class="sheet-section-body">
+                    </h3>
+<div class="sheet-section-body">
                         <div class="settings-appearance">
                             <div class="cb-segmented cb-segmented--fill" role="group" aria-label="Appearance" data-i18n-key="mapShell.appearance.label" data-i18n-attr="aria-label">
                                 <button type="button" id="theme-choice-system" class="cb-segmented__option" data-theme-choice="system" aria-pressed="true"
@@ -1190,33 +1183,33 @@
                                     data-i18n-key="mapShell.appearance.dark">Dark</button>
                             </div>
                         </div>
+                    </div></section>
+                <section class="settings-section" data-section="assumptions">
+                    <h3 class="settings-section-title" data-i18n-key="settingsPanel.dataAssumptions">Data &amp; assumptions</h3>
+                    <div class="settings-links"><a id="source-system-link" class="btn" href="/sources.html" data-i18n-key="sourceSystem.title">Sources &amp; adapters</a><button type="button" id="economic-source-settings-button" class="btn" data-i18n-key="economicSources.title">Valuation &amp; costs</button><button type="button" id="parcel-source-notice-button" class="btn" onclick="openParcelSourceNotice()">
+                                <span data-i18n-key="parcelSourceNotice.title">Parcel source information</span>
+                            </button></div>
+                </section>
+                <section class="settings-section" data-section="help">
+                    <h3 class="settings-section-title" data-i18n-key="settingsPanel.helpAbout">Help &amp; about</h3>
+                    <div class="settings-links">
+                        <button type="button" class="btn site-intro-reopen" data-site-intro-open>
+                                <i class="fas fa-map" aria-hidden="true"></i>
+                                <span data-i18n-key="modal.siteIntro.open">How it works</span>
+                            </button>
+                        <a class="btn" href="how-to-use.html" target="_blank" rel="noopener noreferrer" data-i18n-key="settingsPanel.userGuide">User guide</a>
+                        <button type="button" id="settings-credits-button" class="btn" data-settings-reference="credits" data-i18n-key="mapCredits.title">Sources &amp; software</button>
+                        <button type="button" id="settings-contact-button" class="btn" data-settings-reference="contact" data-i18n-key="sidebar.info.contactTitle">Contact</button>
+                        <button type="button" id="settings-about-button" class="btn" data-settings-reference="about" data-i18n-key="sidebar.info.aboutTitle">About</button>
                     </div>
-                </details>
-                <details class="accordion-section" data-section="sources">
-                    <summary class="sheet-section-title">
-                        <i class="fas fa-database" aria-hidden="true"></i>
-                        <span data-i18n-key="sourceSystem.title">Sources &amp; adapters</span>
-                    </summary>
+                </section>
+                <details class="accordion-section settings-advanced" data-section="advanced">
+                    <summary class="sheet-section-title" data-i18n-key="settingsPanel.advanced">Advanced</summary>
                     <div class="sheet-section-body">
-                        <a id="source-system-link" class="btn" href="/sources.html" data-i18n-key="sourceSystem.title">Sources &amp; adapters</a>
-                    </div>
-                </details>
-                <details class="accordion-section" data-section="economics">
-                    <summary class="sheet-section-title">
-                        <i class="fas fa-coins" aria-hidden="true"></i>
-                        <span data-i18n-key="economicSources.title">Valuation &amp; costs</span>
-                    </summary>
-                    <div class="sheet-section-body">
-                        <button type="button" id="economic-source-settings-button" class="btn" data-i18n-key="economicSources.title">Valuation &amp; costs</button>
-                    </div>
-                </details>
-                <details class="accordion-section" data-section="data">
-                    <summary class="sheet-section-title">
-                        <i class="fas fa-database" aria-hidden="true"></i>
-                        <span data-i18n-key="mapShell.maintenance.localData">Local (browser) data</span>
-                    </summary>
-                    <div class="sheet-section-body">
-                        <div class="btn-group" data-section="parcels">
+                        <section class="settings-section" data-section="data">
+                            <h4 class="settings-section-title" data-i18n-key="mapShell.maintenance.localData">Local (browser) data</h4>
+                            <div class="sheet-section-body">
+                        <div class="cb-actions" data-section="parcels">
                             <button type="button" id="showParcelCoverageButton" data-map-modes="2d" class="btn"
                                 title="Visualize which grid cells are cached locally and how they compare to the current view."
                                 data-i18n-key="sidebar.parcels.coverageTooltip" data-i18n-attr="title">
@@ -1225,7 +1218,7 @@
                             </button>
                         </div>
                         <div class="control-group" data-section="parcels">
-                            <div class="btn-group">
+                            <div class="cb-actions">
                                 <button type="button" class="btn btn-danger debug-only-control"
                                     onclick="(window.Parcels?.fetch?.clearLocalParcelData || window.clearLocalParcelData || function(){})()"
                                     data-i18n-key="sidebar.parcels.clearTooltip" data-i18n-attr="title">
@@ -1235,7 +1228,7 @@
                             </div>
                         </div>
                         <div class="control-group" data-section="blocks">
-                            <div class="btn-group">
+                            <div class="cb-actions">
                                 <button type="button" class="btn btn-danger debug-only-control" onclick="clearBlocks()"
                                     data-i18n-key="sidebar.blocks.clearTooltip" data-i18n-attr="title">
                                     <i class="fas fa-trash" aria-hidden="true"></i>
@@ -1244,7 +1237,7 @@
                             </div>
                         </div>
                         <div class="control-group" data-section="roads">
-                            <div class="btn-group">
+                            <div class="cb-actions">
                                 <button type="button" class="btn btn-danger debug-only-control" onclick="clearDetectedRoads()"
                                     data-i18n-key="sidebar.roads.clearTooltip" data-i18n-attr="title">
                                     <i class="fas fa-trash" aria-hidden="true"></i>
@@ -1252,71 +1245,14 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="btn-group">
-                            <button type="button" id="wipeLocalDataButton" class="btn btn-danger" onclick="wipeLocalData()"
-                                title="Clear all locally stored data (parcels, roads, designs, settings)"
-                                data-i18n-key="sidebar.info.wipeDataTooltip" data-i18n-attr="title">
-                                <i class="fas fa-skull-crossbones" aria-hidden="true"></i>
-                                <span data-i18n-key="sidebar.info.wipeDataButton">Reset everything (this browser)</span>
-                            </button>
-                        </div>
+
                     </div>
-                </details>
-                <details class="accordion-section" data-section="info">
-                    <summary class="sheet-section-title">
-                        <i class="fas fa-info-circle" aria-hidden="true"></i>
-                        <span data-i18n-key="sidebar.info.title">Information</span>
-                    </summary>
-                    <div class="sheet-section-body">
-                        <div class="info-subsection">
-                            <h4 id="map-credits-title" tabindex="-1" data-i18n-key="mapCredits.title">Sources &amp; software</h4>
-                            <p data-i18n-key="mapCredits.description">Map and data credits for the current city, plus the software used by this app.</p>
-                            <dl id="map-credits-details" class="map-credits-details"></dl>
-                        </div>
-                        <hr>
-                        <div class="info-subsection">
-                            <h4 data-i18n-key="sidebar.info.contactTitle">Contact</h4>
-                            <p>
-                                <span data-i18n-key="sidebar.info.telegramLabel">Telegram</span>: <a class="cb-link cb-link--external"
-                                href="https://t.me/urbangametheory" target="_blank" rel="noopener noreferrer">https://t.me/urbangametheory</a><br>
-                                <span data-i18n-key="sidebar.info.xLabel">X</span>: <a class="cb-link cb-link--external"
-                                href="https://x.com/UrbanGameTheory" target="_blank" rel="me noopener noreferrer">@UrbanGameTheory</a><br>
-                            </p>
-                        </div>
-                        <hr>
-                        <div class="info-subsection">
-                            <h4 data-i18n-key="sidebar.info.aboutTitle">About</h4>
-                            <p data-i18n-key="sidebar.info.aboutParagraph" data-i18n-attr="html">
-                                <strong>Consensus Builder</strong> is Urban Game Theory's free, map-based planning tool. Hyperstition: Markets for Possible Cities is its hackathon project. Explore real parcels, compare community zoning and development designs, and build support with the people affected. Read about the <a class="cb-link" href="/urban-planning.html">open city planning workflow</a>, open the
-                                <a class="cb-link" href="/hackathon-demo.html">live hackathon demo</a>, read the
-                                <a class="cb-link" href="/deck.html">pitch deck</a>, or see <a class="cb-link" href="roadmap.html" target="_blank" rel="noopener noreferrer">the roadmap</a>.
-                            </p>
-                            <button type="button" class="btn site-intro-reopen" data-site-intro-open>
-                                <i class="fas fa-map" aria-hidden="true"></i>
-                                <span data-i18n-key="modal.siteIntro.open">How it works</span>
-                            </button>
-                            <button type="button" id="parcel-source-notice-button" class="btn" onclick="openParcelSourceNotice()">
-                                <span data-i18n-key="parcelSourceNotice.title">Parcel source information</span>
-                            </button>
-                        </div>
-                        <hr>
-                        <div class="info-subsection">
-                            <h4 data-i18n-key="sidebar.info.instructionsTitle">Start here</h4>
-                            <p data-i18n-key="sidebar.info.instructionsParagraph" data-i18n-attr="html">
-                                <strong>Build first, propose second.</strong> New designs appear on the map immediately, so
-                                you can edit, park, compare and share them before adding formal terms. Read the
-                                <a class="cb-link" href="how-to-use.html" target="_blank" rel="noopener noreferrer">step-by-step guide</a>, or see what works today
-                                and what comes next on the <a class="cb-link" href="roadmap.html" target="_blank" rel="noopener noreferrer">roadmap</a>.
-                            </p>
-                        </div>
-                    </div>
-                </details>
-                <details class="accordion-section activity-simulation" data-section="game">
-                    <summary class="sheet-section-title">
+                        </section>
+                        <section class="settings-section activity-simulation" data-section="game"><h4 class="settings-section-title">
                         <i class="fas fa-play" aria-hidden="true"></i>
                             <span data-section-title="game" data-i18n-key="mapShell.simulation.title">Simulation</span>
-                    </summary>
-                    <div class="sheet-section-body">
+                    </h4>
+<div class="sheet-section-body">
                         <label class="checkbox-group activity-simulation-switch">
                             <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
                             <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
@@ -1351,22 +1287,20 @@
                                     </div>
                                     <div class="turn-progress-time" id="turn-progress-time">--</div>
                                 </div>
-                                <div class="btn-group">
-                                    <button class="btn btn-danger" onclick="resetGameState(true)">
+                                <div class="cb-actions">
+                                    <button type="button" class="btn btn-danger" onclick="resetGameState(true)">
                                         <i class="fas fa-rotate-left" aria-hidden="true"></i>
                                         <span data-i18n-key="sidebar.game.newGame">New Game</span>
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </details>
-                <details class="accordion-section activity-diagnostics" data-section="diagnostics">
-                    <summary class="sheet-section-title">
+                    </div></section>
+                        <section class="settings-section activity-diagnostics" data-section="diagnostics"><h4 class="settings-section-title">
                         <i class="fas fa-stethoscope" aria-hidden="true"></i>
                         <span data-i18n-key="activityPanel.diagnostics">Diagnostics</span>
-                    </summary>
-                    <div class="sheet-section-body">
+                    </h4>
+<div class="sheet-section-body">
                         <div class="settings-badge-bar" hidden>
                             <span id="dev-badge" class="cb-badge cb-badge--warning" hidden
                                 data-i18n-key="sidebar.header.devBadge">Development</span>
@@ -1384,10 +1318,60 @@
                             <span id="status" data-i18n-key="hud.statusReady">App initialized, loading parcels...</span>
                             <div id="status-log-expanded" class="status-log-expanded" style="display: none;"></div>
                         </div>
+                    </div></section>
+                        <section class="settings-section settings-reset">
+                            <h4 class="settings-section-title" data-i18n-key="settingsPanel.resetBrowserData">Reset browser data</h4>
+                            <p class="settings-note" data-i18n-key="settingsPanel.resetDescription">Deletes designs, plans, agreements, cached data and settings stored in this browser.</p>
+                            <div class="cb-actions">
+                            <button type="button" id="wipeLocalDataButton" class="btn btn-danger" onclick="wipeLocalData()"
+                                title="Clear all locally stored data (parcels, roads, designs, settings)"
+                                data-i18n-key="sidebar.info.wipeDataTooltip" data-i18n-attr="title">
+                                <i class="fas fa-skull-crossbones" aria-hidden="true"></i>
+                                <span data-i18n-key="settingsPanel.resetBrowserData">Reset browser data</span>
+                            </button>
+                        </div>
+                        </section>
                     </div>
                 </details>
             </div>
+            <footer class="settings-footer"><div class="app-update-info">
+                            <strong id="app-running-build"></strong>
+                            <p id="app-deployed-at" class="app-update-meta" hidden></p>
+                            <div class="app-update-actions">
+                                <button type="button" id="app-update-check" class="btn"><i class="fas fa-arrows-rotate" aria-hidden="true"></i> <span data-i18n-key="appUpdates.check">Check for updates</span></button>
+                                <button type="button" class="btn btn-primary" data-app-update-reload data-i18n-key="appUpdates.reload" hidden>Reload</button>
+                            </div>
+                            <p id="app-update-state" role="status"></p>
+                            <p id="app-update-last-checked" class="app-update-meta"></p>
+                            <p id="app-update-reload-hint" role="status"></p>
+                        </div></footer>
         </section>
+        <div id="settings-reference-store" hidden>
+            <div id="settings-reference-credits"><div class="info-subsection">
+
+                            <p data-i18n-key="mapCredits.description">Map and data credits for the current city, plus the software used by this app.</p>
+                            <dl id="map-credits-details" class="map-credits-details"></dl>
+                        </div></div>
+            <div id="settings-reference-contact"><div class="info-subsection">
+
+                            <p>
+                                <span data-i18n-key="sidebar.info.telegramLabel">Telegram</span>: <a class="cb-link cb-link--external"
+                                href="https://t.me/urbangametheory" target="_blank" rel="noopener noreferrer">https://t.me/urbangametheory</a><br>
+                                <span data-i18n-key="sidebar.info.xLabel">X</span>: <a class="cb-link cb-link--external"
+                                href="https://x.com/UrbanGameTheory" target="_blank" rel="me noopener noreferrer">@UrbanGameTheory</a><br>
+                            </p>
+                        </div></div>
+            <div id="settings-reference-about"><div class="info-subsection">
+
+                            <p data-i18n-key="sidebar.info.aboutParagraph" data-i18n-attr="html">
+                                <strong>Consensus Builder</strong> is Urban Game Theory's free, map-based planning tool. Hyperstition: Markets for Possible Cities is its hackathon project. Explore real parcels, compare community zoning and development designs, and build support with the people affected. Read about the <a class="cb-link" href="/urban-planning.html">open city planning workflow</a>, open the
+                                <a class="cb-link" href="/hackathon-demo.html">live hackathon demo</a>, read the
+                                <a class="cb-link" href="/deck.html">pitch deck</a>, or see <a class="cb-link" href="roadmap.html" target="_blank" rel="noopener noreferrer">the roadmap</a>.
+                            </p>
+
+
+                        </div></div>
+        </div>
         <div id="station-placement-toolbar" class="map-editor-toolbar" hidden>
             <span id="station-placement-status" role="status" aria-live="polite"></span>
             <button type="button" class="btn" onclick="cancelTransitStationPlacement()" data-i18n-key="common.cancel">Cancel</button>
@@ -1395,7 +1379,7 @@
         <!-- ===== End floating map shell ===== -->
 
         <!-- Parcel Info Panel -->
-        <div id="parcel-info-panel" class="info-panel right-dock-panel">
+        <div id="parcel-info-panel" class="info-panel right-dock-panel right-screen-panel">
             <div class="panel-header">
                 <h3 id="parcel-info-title" data-i18n-key="panel.parcel.title">Parcel Info</h3>
                 <button type="button" id="parcel-info-minimize" class="close-circle-btn close-circle-btn--lg"
@@ -1523,7 +1507,7 @@
         </div>
 
         <!-- Proposal Details Panel -->
-        <div id="proposal-details-panel" class="info-panel right-dock-panel" role="region" aria-labelledby="proposal-details-title">
+        <div id="proposal-details-panel" class="info-panel right-dock-panel right-screen-panel" role="region" aria-labelledby="proposal-details-title">
             <div class="panel-header">
                 <h3 id="proposal-details-title">Design Details</h3>
                 <div class="panel-header__actions">
@@ -1547,7 +1531,7 @@
         </div>
 
         <!-- Block Info Panel -->
-        <div id="block-info-panel" class="info-panel">
+        <div id="block-info-panel" class="right-screen-panel info-panel">
             <div class="panel-header">
                 <h3 id="block-info-title">Block Info</h3>
                 <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
@@ -1585,7 +1569,7 @@
         </div>
 
         <!-- Road Info Panel -->
-        <div id="road-info-panel" class="info-panel right-dock-panel">
+        <div id="road-info-panel" class="info-panel right-dock-panel right-screen-panel">
             <div class="road-panel-header">
                 <h3 id="road-panel-title" data-i18n-key="panel.road.title">Draw road</h3>
                 <input type="file" id="corridorImportInput" accept=".osm,.json,.xodr" hidden>
@@ -1694,7 +1678,7 @@
         </div>
 
         <!-- New Road Analysis Panel -->
-        <div id="road-analysis-panel" class="info-panel">
+        <div id="road-analysis-panel" class="right-screen-panel info-panel">
             <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
                 aria-label="Close road analysis" data-i18n-key="modal.common.close" data-i18n-attr="aria-label,title"
                 onclick="hideRoadAnalysisPanel()">×</button>
@@ -1747,7 +1731,7 @@
 
         <!-- OSM Road Segment List Popup: a right-dock panel under the top-right buttons. Shown and
              hidden through style.display (js/road-analysis.js; three-mode.js hides it on entering 3D). -->
-        <div id="osm-road-segment-list-popup" class="info-panel right-dock-panel road-analysis-modal" role="region"
+        <div id="osm-road-segment-list-popup" class="info-panel right-dock-panel right-screen-panel road-analysis-modal" role="region"
             aria-labelledby="osm-road-segment-list-title" style="display: none;">
             <div class="panel-header">
                 <h3 id="osm-road-segment-list-title" data-i18n-key="panel.roadAnalysis.modalTitle">Road width analysis</h3>
@@ -1918,7 +1902,7 @@
             'js/map-core.js?v=20261009-map-credits',
             'js/user-management.js?v=20261020-modeled-totals',
             'js/site-intro.js',
-            'js/map-controls.js',
+            'js/map-controls.js?v=20261027-panel-buttons',
             // bundle:start map-ui
             'js/urban-blocks-model.js',
             'js/urban-blocks-controller.js',
@@ -1932,7 +1916,10 @@
             'js/schelling/schelling-layer.js',
             'js/schelling/schelling-propose.js',
             'js/ui/busy-control.js',
-            'js/ui/commands.js',
+            'js/release-updates.js',
+            'js/ui/app-updates.js',
+            'js/ui/settings-panel.js',
+            'js/ui/commands.js?v=20261027-station-inspection',
             'js/ui/map-shell.js',
             'js/ui/dock-clearance.js',
             'js/planning/scene.js?v=20261021-envelopes',
@@ -1941,7 +1928,7 @@
             'js/planning/source-proposal.js',
             'js/planning/feed.js',
             'js/planning/parcel-assessment.js?v=20261021-permitted-envelopes',
-            'js/planning/views.js?v=20261027-stack-semantics',
+            'js/planning/views.js?v=20261027-station-inspection',
             'js/approval-link.js',
             'js/draft-link.js',
             'js/draft-preview.js',
@@ -1960,8 +1947,8 @@
             'js/ui/simulation-indicator.js',
             'js/ui/parcel-menu-model.js?v=20261020-local-estimates',
             'js/ui/parcel-menu.js?v=20261019-plot-provenance',
-            'js/ui/ground-menu-model.js',
-            'js/ui/ground-menu.js',
+            'js/ui/ground-menu-model.js?v=20261027-station-inspection',
+            'js/ui/ground-menu.js?v=20261027-station-inspection',
             'js/ui/search-model.js?v=20261008-point-parcels',
             'js/world/globe-math.js',
             'js/world/globe-city-display.js?v=20261012-city-counts',
@@ -1988,7 +1975,7 @@
             'js/parcels/ui/owner-counts.js',
             'js/parcels/ui/proposal-counts.js',
             'js/parcels/ui/minted-layer.js',
-            'js/parcels/ui/proposal-actions.js',
+            'js/parcels/ui/proposal-actions.js?v=20261027-station-inspection',
             'js/parcels/ui/ad-parcels.js',
             'js/parcels/ui/map-refresh.js',
             'js/parcels/ownership.js',
@@ -2120,10 +2107,10 @@
             'js/proposals/execution.js?v=20261020-consent-evidence',
             'js/proposals/layer-render.js',
             'js/proposals/drill-ui.js',
-            'js/click-stack/click-stack-model.js?v=20261027-stack-properties',
-            'js/click-stack/click-stack-relations.js?v=20261027-stack-semantics',
-            'js/click-stack/click-stack-hits.js?v=20261027-agreement-tabs',
-            'js/click-stack/click-stack-panel.js?v=20261027-member-ground',
+            'js/click-stack/click-stack-model.js?v=20261027-observed-context',
+            'js/click-stack/click-stack-relations.js?v=20261027-observed-context',
+            'js/click-stack/click-stack-hits.js?v=20261027-observed-context',
+            'js/click-stack/click-stack-panel.js?v=20261027-station-inspection',
             'js/proposals/market-view.js?v=20261019-market-evidence',
             'js/proposals/parcel-set-relations.js?v=20261020-reference-relations',
             'js/proposals/approval-panel.js?v=20261027-experimental',
@@ -2136,7 +2123,7 @@
             'js/corridor-draft.js',
             'js/proposals/copy.js',
             'js/proposal-editor-adapters.js?v=20261027-surroundings',
-            'js/proposal-editor-shell.js',
+            'js/proposal-editor-shell.js?v=20261027-station-inspection',
             'js/road-editing-zoom.js',
             'js/building-layers-dialog.js',
             'js/road-node-edit.js',
@@ -2156,7 +2143,7 @@
             'js/agreement-record.js?v=20261027-proposer-allocation',
             'js/agreement-ground.js?v=20261027-agreement-tabs',
             'js/agreement-store.js',
-            'js/agreement-dialog.js?v=20261027-stack-properties',
+            'js/agreement-dialog.js?v=20261027-panel-buttons',
             'js/agreement-panel.js?v=20261027-agreement-tabs',
             'js/agreement-list.js?v=20261027-agreement-tabs',
             'js/agreement-sync.js?v=20261027-stack-properties',
@@ -2229,7 +2216,7 @@
             'js/structure-geometry-editor.js?v=20261027-boundary-editing',
             'js/vendor/transit-station-models.js',
             'js/transit-alignments.js',
-            'js/transit-stations.js'
+            'js/transit-stations.js?v=20261027-station-inspection'
         ]);
     </script>
 

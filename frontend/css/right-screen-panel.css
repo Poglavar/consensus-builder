@@ -2,6 +2,7 @@
    right-dock-panel additionally opts existing inspectors into their phone-sheet behaviour.
    Wide tables and comparisons belong in centred dialogs, not a wider right column. */
 .right-screen-panel {
+    --right-panel-padding: var(--cb-space-3);
     font-family: var(--cb-font-sans);
     font-size: var(--cb-text-base);
     line-height: var(--cb-leading);
@@ -19,7 +20,6 @@
 }
 
 .right-screen-panel > :is(.map-sheet-header, .panel-header, .urban-block-panel-header, .site-panel__head, .proposal-editor-header) {
-    padding: var(--cb-space-3);
     gap: var(--cb-space-2);
 }
 
@@ -32,9 +32,12 @@
 
 .right-screen-panel > :is(.map-sheet-body, .panel-body, .urban-block-info, .urban-block-list-view, .proposal-editor-body) {
     min-height: 0;
-    padding: var(--cb-space-3);
     overscroll-behavior: contain;
     overflow-wrap: anywhere;
+}
+
+.right-screen-panel > :is(.map-sheet-header, .urban-block-panel-header, .urban-block-list-view, .proposal-editor-body) {
+    padding: var(--cb-space-3);
 }
 
 @media (min-width: 768px) {

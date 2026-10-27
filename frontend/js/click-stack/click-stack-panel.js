@@ -142,7 +142,7 @@
         if (state.el && doc.body.contains(state.el)) return state.el;
         const el = doc.createElement('aside');
         el.id = PANEL_ID;
-        el.className = 'click-stack right-dock-panel';
+        el.className = 'click-stack right-dock-panel right-screen-panel';
         el.hidden = true;
         el.addEventListener('click', onPanelClick);
         el.addEventListener('change', onPanelChange);
@@ -390,7 +390,8 @@
             } else if (kind === 'designs') {
                 selectDesign(instance.id);
             } else if (kind === 'built') {
-                global.PlanningViews.inspectBuilding(instance.feature, instance.id);
+                host(body, 'planning-inspector');
+                global.PlanningViews.inspectBuilding(instance.feature, instance.id, { hosted: true });
             } else if (kind === 'permitted') {
                 global.PlanningViews.selectAt(instance.id, state.latlng);
             } else if (kind === 'selection') {
@@ -480,7 +481,7 @@
         if (!isOpen() || state.latlng !== latlng) return;
         const hits = { ...global.ClickStackHits.hitsAt(latlng) };
         hits.agreements = state.hits?.agreements || [];
-        if (state.memberships) {
+        if (state.memberships && state.stack.selectedKind !== 'built') {
             hits.plans = state.memberships.instances('plans', state.stack.selectedKind === 'plans');
             hits.designs = hits.designs.map(item => String(item.proposal?.proposalId) === state.memberships.proposalId
                 ? { ...item, cid: state.memberships.cid } : item);
@@ -562,7 +563,7 @@
         if (kind !== 'selection') remember(state.stack.expanded);
         render();
         activate(state.stack.expanded);
-        if (kind === 'designs') syncMemberships();
+        if (kind === 'designs' || kind === 'built') syncMemberships();
     }
 
     // The expanded section's header clicked again: everything collapses to rows.
@@ -701,7 +702,11 @@
         if (!global.loadDesignMemberships) return;
         const design = model.selectedInstance(state.stack, 'designs');
         const proposal = global.proposalStorage?.getProposal?.(design?.id) || design?.proposal;
-        if (!proposal) return;
+        if (!proposal || state.stack.selectedKind === 'built') {
+            state.memberships?.dispose(); state.memberships = null; state.membershipDesign = null;
+            state.membershipVersion++;
+            return;
+        }
         const key = `${design.id}:${global.DesignSync?.publishedCid(proposal) || ''}`;
         if (!force && state.membershipDesign === key) return;
         state.memberships?.dispose();
@@ -816,6 +821,25 @@
         show({ ...stack, topRef: null }, latlng, hits);
     }
 
+    function showBuilding(feature, key = null) {
+        if (!feature?.geometry) return false;
+        if (doc.body.classList.contains('three-mode-active')) return global.showThreeModeBuilding?.(feature, key) || false;
+        const [lng, lat] = global.turf.pointOnFeature(feature).geometry.coordinates;
+        const latlng = global.L.latLng(lat, lng);
+        const hits = { ...global.ClickStackHits.hitsAt(latlng) };
+        const id = String(key || global.buildingPoolFeatureKey?.(feature) || feature.id || 'built');
+        hits.built = [...(hits.built || [])];
+        const existing = hits.built.findIndex(item => String(item.id) === id);
+        const supplied = { ...(existing >= 0 ? hits.built[existing] : {}), id, feature,
+            label: global.ClickStackHits.buildingLabel(feature) };
+        if (existing >= 0) hits.built[existing] = supplied;
+        else hits.built.unshift(supplied);
+        const stack = model.expand(model.buildClickStack(hits, { selected: { built: id } }), 'built');
+        state.lastClick = null;
+        show({ ...stack, topRef: null }, latlng, hits);
+        return true;
+    }
+
     // Every map click on the 2D map arrives here, whichever layer received it. One physical click
     // can reach several layers' handlers; only the first counts.
     function handleClick(latlng, { allowUrbanBlocks = false } = {}) {
@@ -877,6 +901,6 @@
 
     // Selection owns the map focus, including while its details are collapsed.
     const holdsHighlight = () => isOpen() && !!state.stack?.selectedKind;
-    global.ClickStack = Object.freeze({ handleClick, showDesign, showPlan, showAgreement, showParcel, restoreFocus, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
+    global.ClickStack = Object.freeze({ handleClick, showDesign, showPlan, showAgreement, showParcel, showBuilding, restoreFocus, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
         current: () => state.stack, point: () => state.latlng });
 })(window);

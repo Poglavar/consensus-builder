@@ -191,7 +191,7 @@
         "source": "Fuente",
         "scope": "Cobertura",
         "terms": "Condiciones de la fuente",
-        "unavailable": "Los metadatos detallados de la fuente no están disponibles. Consulta Fuentes y software en Ajustes → Información.",
+        "unavailable": "Los metadatos detallados no están disponibles. Consulta Fuentes y software en Ajustes → Ayuda e información.",
         "unknown": "Desconocida",
         "link": "Consultar información y condiciones de la fuente"
     },
@@ -1173,10 +1173,10 @@
         "stations": {
             "title": "Estaciones",
             "placeTitle": "Colocar una estación",
-            "bus": "Estación de autobús",
-            "tram": "Estación de tranvía",
-            "underground": "Estación subterránea",
-            "elevated": "Estación de tren elevado",
+            "bus": "Estación de carretera",
+            "tram": "A nivel del suelo",
+            "underground": "Subterránea",
+            "elevated": "Estación elevada",
             "cancel": "Cancelar colocación",
             "hint": "Las estaciones ferroviarias se ajustan a las vías. Las de autobús se ajustan al lado de la carretera elegido."
         },
@@ -1490,9 +1490,9 @@
                 "transport": "Transporte",
                 "road": "Carretera",
                 "track": "Vía férrea",
-                "busStation": "Estación de autobús",
-                "tramStation": "Estación de tranvía",
-                "undergroundStation": "Estación de metro",
+                "busStation": "Estación de carretera",
+                "tramStation": "Estación a nivel del suelo",
+                "undergroundStation": "Estación subterránea",
                 "elevatedStation": "Estación elevada",
                 "selectParcelFirst": "Selecciona una parcela primero.",
                 "replaced": "Esta es la parcela catastral original. Los diseños aplicados la han sustituido en el mapa de trabajo. Selecciona las parcelas actuales para añadir un diseño.",
@@ -1500,7 +1500,9 @@
                 "selectCurrent": "Seleccionar parcelas actuales",
                 "reload": "Volver a cargar parcelas",
                 "rulesCategory": "Normas urbanas",
-                "structuresCategory": "Estructuras"
+                "structuresCategory": "Estructuras",
+                "roadStation": "Estación de carretera",
+                "trackStation": "Estación ferroviaria"
             },
             "nftStatusDefault": "Estado NFT: todavía no verificado.",
             "mintAndClaimButton": "Acuñar",
@@ -1691,7 +1693,7 @@
                 "id": "ID:",
                 "author": "Autor:",
                 "description": "Descripción:",
-                "parcels": "Parcelas del diseño:",
+                "parcels": "Parcelas de origen:",
                 "area": "Superficie:",
                 "siteArea": "Superficie del ámbito:",
                 "sourceArea": "Suma de superficies de parcelas de origen:",
@@ -6292,7 +6294,12 @@
         "saved": "Geometría de estación guardada.",
         "moveHint": "Arrastra la huella de la estación o el marcador central para cambiarla de lugar. El tipo, tamaño, rotación y altura del andén se mantienen.",
         "dragCenter": "Arrastra para mover la estación",
-        "undo": "Deshacer"
+        "undo": "Deshacer",
+        "trackStation": "Estación ferroviaria",
+        "groundLevel": "A nivel del suelo",
+        "elevated": "Estación elevada",
+        "underground": "Subterránea",
+        "cancel": "Cancelar"
     },
     "claims": {
         "onParcels": "En las parcelas:",
@@ -6722,12 +6729,12 @@
             "noCadastre": "Terreno abierto"
         },
         "facts": {
-            "bare": "Terreno sin catastrar o un hueco entre parcelas: propiedad no establecida.",
+            "bare": "Terreno sin catastrar o un hueco entre parcelas.",
             "noCadastre": "Aquí no hay datos de parcelas. Un diseño solo puede ejecutarse con el veredicto de una autoridad."
         },
         "notLoaded": "Las parcelas aún no se han cargado aquí: acerca el mapa o espera a que carguen.",
         "actions": {
-            "drawSite": "Dibujar un sitio aquí"
+            "drawSite": "Dibujar una parcela"
         }
     },
     "siteTool": {
@@ -8055,6 +8062,7 @@
         "chooseSharePlan": "¿Qué plan quieres compartir?"
     },
     "clickStackRelations": {
+        "affectedBy": "Afectado por el diseño:",
         "memberPlans": "Incluido en planes:",
         "includedDesigns": "Diseños:",
         "createdBy": "Creado por el diseño:",
@@ -8381,5 +8389,31 @@
         "empty": "Ningún elemento cargado coincide con estos filtros.",
         "loadMore": "Cargar más",
         "limited": "Se muestran hasta 1.000 diseños publicados."
-    }
+    },
+  "appUpdates": {
+    "title": "Actualización de la aplicación",
+    "build": "Versión {{number}}",
+    "development": "Versión de desarrollo",
+    "developmentHint": "La comprobación está disponible para versiones publicadas.",
+    "deployed": "Publicada el {{date}}",
+    "check": "Buscar actualizaciones",
+    "checking": "Buscando actualizaciones…",
+    "available": "Hay una versión más reciente.",
+    "availableBuild": "La versión {{number}} está disponible.",
+    "current": "Tienes la última versión.",
+    "failed": "No se pudieron buscar actualizaciones. Inténtalo de nuevo.",
+    "notChecked": "Sin comprobar todavía.",
+    "lastChecked": "Última comprobación: {{date}}",
+    "reload": "Recargar",
+    "later": "Más tarde",
+    "finishEditing": "Finaliza o cancela la edición y espera a que termine el guardado antes de recargar."
+  },
+  "settingsPanel": {
+    "dataAssumptions": "Datos y supuestos",
+    "helpAbout": "Ayuda e información",
+    "userGuide": "Guía de uso",
+    "advanced": "Avanzado",
+    "resetBrowserData": "Restablecer datos del navegador",
+    "resetDescription": "Elimina diseños, planes, acuerdos, datos en caché y ajustes guardados en este navegador."
+  }
 }

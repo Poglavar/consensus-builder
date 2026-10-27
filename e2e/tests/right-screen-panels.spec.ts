@@ -34,7 +34,7 @@ for (const width of [1600, 1000, 390]) {
           const css = getComputedStyle(el);
           return { background: css.backgroundColor, radius: css.borderRadius };
         })).toEqual(surface);
-        const title = await panel.locator('.map-sheet-title').boundingBox();
+        const title = await panel.locator(name === 'settings' ? '.settings-brand' : '.map-sheet-title').boundingBox();
         expect(title!.x - box.x).toBeCloseTo(13, 0);
       }
       const firstSection = panel.locator('details > summary').first();

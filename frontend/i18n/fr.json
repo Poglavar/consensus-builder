@@ -333,10 +333,10 @@
         "stations": {
             "title": "Stations",
             "placeTitle": "Placer une station",
-            "bus": "Gare routière",
-            "tram": "Station de tramway",
-            "underground": "Station souterraine",
-            "elevated": "Gare ferroviaire surélevée",
+            "bus": "Station routière",
+            "tram": "Au sol",
+            "underground": "Souterraine",
+            "elevated": "Station surélevée",
             "cancel": "Annuler le placement",
             "hint": "Les stations ferroviaires se positionnent automatiquement sur les voies ferrées. Les arrêts de bus se positionnent sur le côté de la route sélectionné."
         },
@@ -2381,7 +2381,12 @@
         "hint": "L’aperçu sur la carte s’actualise pendant les modifications.",
         "saved": "Géométrie de la station enregistrée.",
         "moveHint": "Faites glisser l’emprise au sol de la station ou son repère central pour la repositionner. Son type, sa taille, sa rotation et la hauteur de son quai restent identiques.",
-        "dragCenter": "Faites glisser pour déplacer la station"
+        "dragCenter": "Faites glisser pour déplacer la station",
+        "trackStation": "Station ferroviaire",
+        "groundLevel": "Au sol",
+        "elevated": "Station surélevée",
+        "underground": "Souterraine",
+        "cancel": "Annuler"
     },
     "optionalTools": {
         "loadFailed": "Impossible de charger cet outil. Veuillez réessayer."
@@ -2520,7 +2525,7 @@
         "source": "Source",
         "scope": "Couverture",
         "terms": "Conditions de la source",
-        "unavailable": "Les métadonnées détaillées de la source ne sont pas disponibles. Consultez Sources et logiciels dans Paramètres → Informations.",
+        "unavailable": "Les métadonnées détaillées ne sont pas disponibles. Consultez Sources et logiciels dans Paramètres → Aide et informations.",
         "unknown": "Inconnu",
         "link": "Lire les informations et les conditions de la source"
     },
@@ -2753,8 +2758,8 @@
                 "track": "Voie ferrée",
                 "park": "Parc",
                 "square": "Place",
-                "busStation": "Gare routière",
-                "tramStation": "Station de tramway",
+                "busStation": "Station routière",
+                "tramStation": "Station au sol",
                 "title": "Construire",
                 "block": "Îlot",
                 "rowNeedsTwo": "Les maisons en bande nécessitent au moins deux parcelles.",
@@ -2765,7 +2770,7 @@
                 "layOutParcels": "Dessiner le découpage parcellaire",
                 "lake": "Lac",
                 "transport": "Transports",
-                "undergroundStation": "Station de métro",
+                "undergroundStation": "Station souterraine",
                 "elevatedStation": "Station surélevée",
                 "selectParcelFirst": "Sélectionnez d’abord une parcelle.",
                 "replaced": "Il s’agit de la parcelle cadastrale d’origine. Les projets appliqués l’ont remplacée sur la carte de travail. Sélectionnez les parcelles actuelles pour ajouter un projet.",
@@ -2773,7 +2778,9 @@
                 "selectCurrent": "Sélectionner les parcelles actuelles",
                 "reload": "Recharger les parcelles",
                 "rulesCategory": "Règles d’urbanisme",
-                "structuresCategory": "Structures"
+                "structuresCategory": "Structures",
+                "roadStation": "Station routière",
+                "trackStation": "Station ferroviaire"
             },
             "claimButton": "Réclamer",
             "tabProposals": "Projets",
@@ -2997,7 +3004,7 @@
                 "areaUnit": "m²",
                 "author": "Auteur :",
                 "description": "Description :",
-                "parcels": "Parcelles du projet :",
+                "parcels": "Parcelles sources :",
                 "siteArea": "Superficie du site :",
                 "sourceArea": "Somme des superficies des parcelles sources :",
                 "availableSourceArea": "Superficie disponible des parcelles sources :",
@@ -5269,6 +5276,7 @@
         "designActions": "Actions sur le projet"
     },
     "clickStackRelations": {
+        "affectedBy": "Concerné par le projet :",
         "includedDesigns": "Projets :",
         "memberPlans": "Inclus dans les plans :",
         "createdBy": "Créé par le projet :",
@@ -8086,12 +8094,12 @@
         },
         "label": "Actions sur le terrain",
         "facts": {
-            "bare": "Terrain non cadastré ou espace entre des parcelles : propriété non établie.",
+            "bare": "Terrain non cadastré ou espace entre des parcelles.",
             "noCadastre": "Aucune donnée parcellaire ici. Un projet ne peut être exécuté que sur décision d’une autorité."
         },
         "notLoaded": "Les parcelles ne sont pas encore chargées ici — zoomez ou attendez leur chargement.",
         "actions": {
-            "drawSite": "Dessiner un site ici"
+            "drawSite": "Dessiner une parcelle"
         }
     },
     "groundStats": {
@@ -8353,5 +8361,31 @@
         "empty": "Aucun élément chargé ne correspond à ces filtres.",
         "loadMore": "Charger plus",
         "limited": "Affichage de 1 000 conceptions publiées au maximum."
-    }
+    },
+  "appUpdates": {
+    "title": "Mise à jour de l’application",
+    "build": "Version {{number}}",
+    "development": "Version de développement",
+    "developmentHint": "La recherche de mises à jour est disponible pour les versions publiées.",
+    "deployed": "Publiée le {{date}}",
+    "check": "Rechercher des mises à jour",
+    "checking": "Recherche de mises à jour…",
+    "available": "Une version plus récente est disponible.",
+    "availableBuild": "La version {{number}} est disponible.",
+    "current": "Vous utilisez la dernière version.",
+    "failed": "Impossible de vérifier les mises à jour. Réessayez.",
+    "notChecked": "Pas encore vérifié.",
+    "lastChecked": "Dernière vérification : {{date}}",
+    "reload": "Recharger",
+    "later": "Plus tard",
+    "finishEditing": "Terminez ou annulez la modification et attendez la fin de l’enregistrement avant de recharger."
+  },
+  "settingsPanel": {
+    "dataAssumptions": "Données et hypothèses",
+    "helpAbout": "Aide et informations",
+    "userGuide": "Guide d’utilisation",
+    "advanced": "Avancé",
+    "resetBrowserData": "Réinitialiser les données du navigateur",
+    "resetDescription": "Supprime les projets, plans, accords, données en cache et préférences enregistrés dans ce navigateur."
+  }
 }

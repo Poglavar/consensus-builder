@@ -3,6 +3,8 @@
     "directoryListing": false,
     "rewrites": [
         { "source": "/", "destination": "/index.html" },
+        { "source": "/sources", "destination": "/sources.html" },
+        { "source": "/feedback", "destination": "/feedback.html" },
         { "source": "/vocabulary", "destination": "/vocabulary/index.html" },
         { "source": "/vocabulary/", "destination": "/vocabulary/index.html" },
         { "source": "/vocabulary/1", "destination": "/vocabulary/1/index.html" },

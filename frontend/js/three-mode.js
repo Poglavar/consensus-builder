@@ -156,6 +156,7 @@
     const WARM_SCENE_TTL_MS = 60000;
     const WARM_SCENE_MAX_BYTES = 128 * 1024 * 1024;
     const sceneWork = window.__threeSceneWork;
+    const buildingRefreshQueue = sceneWork.createRefreshQueue(family => build3DBuildingFamilies(family));
     function currentSceneKey() {
         const center = map.getCenter();
         return JSON.stringify([window.CityConfigManager?.getCurrentCityId?.(),
@@ -164,7 +165,8 @@
     }
     function stopSceneWork() {
         sceneAbort?.abort();
-        if (buildingBuildPending || pendingModelLoads > 0) buildingWorkIncomplete = true;
+        if (buildingRefreshQueue.pending || buildingBuildPending || pendingModelLoads > 0) buildingWorkIncomplete = true;
+        buildingRefreshQueue.cancel();
         buildingsWorkGeneration++;
         buildingsRenderGeneration++;
         nearbyProposalBuildingsFetching = nearbyTreesFetching = nearbyWaterFetching = false;
@@ -1316,7 +1318,7 @@
 
     function hostInspector(body) {
         const el = document.getElementById('planning-inspector');
-        if (!el || el.hidden || !body) return;
+        if (!el || !body) return;
         if (stackInspector?.el !== el) stackInspector = { el, parent: el.parentNode, next: el.nextSibling };
         stackInspector.selectedId = window.PlanningViews?.getSelected()?.id || null;
         el.classList.add('is-hosted');
@@ -1508,8 +1510,9 @@
                 if (viewedParcelId !== instance.id) viewParcel(instance.id);
                 if (updateParcelInfoPanel(instance.id)) body.appendChild(parcelInfoPanelEl);
             } else if (kind === 'built') {
-                withStackDriving(() => window.PlanningViews.inspectBuilding(instance.feature));
                 hostInspector(body);
+                withStackDriving(() => window.PlanningViews.inspectBuilding(instance.feature, instance.id, { hosted: true }));
+                stackInspector.selectedId = window.PlanningViews.getSelected()?.id || null;
             } else if (kind === 'permitted') {
                 withStackDriving(() => window.PlanningViews.select(instance.id));
                 hostInspector(body);
@@ -1526,6 +1529,7 @@
             if (!hosted) return;
             stackInspector = null;
             hosted.el.classList.remove('is-hosted');
+            if (window.PlanningViews?.getSelected()?.role === 'existing') hosted.el.hidden = true;
             hosted.parent?.insertBefore(hosted.el, hosted.next && hosted.next.parentNode === hosted.parent ? hosted.next : null);
             if (keepSelection) hosted.el.hidden = true;
             else if (hosted.selectedId && window.PlanningViews?.getSelected()?.id === hosted.selectedId) {
@@ -1581,7 +1585,8 @@
     function builtInstance({ id, feature }) {
         let label = window.ThreeClickStack.buildingLabel(feature);
         if (!label) { try { label = CbFormat.formatArea(turf.area(feature), { maxFractionDigits: 0 }); } catch (_) { label = ''; } }
-        return { id, label, feature };
+        const outcomes = window.currentBuildingOutcomeState?.();
+        return { id, label, feature, demolition: outcomes?.demolishedById.get(String(id)) || null };
     }
 
     function clickedBuildingId(feature) {
@@ -1643,6 +1648,13 @@
     function showThreeModeParcel(parcelId) {
         if (!isActive || !parcelId) return false;
         withStackDriving(() => showClickStack(null, { parcel: { id: String(parcelId) } }));
+        return true;
+    }
+
+    function showThreeModeBuilding(feature, key = null) {
+        if (!isActive || !feature?.geometry) return false;
+        const id = String(key || clickedBuildingId(feature));
+        withStackDriving(() => showClickStack({ builtFeature: feature }, { inspectBuilding: feature, builtId: id }));
         return true;
     }
 
@@ -6599,7 +6611,7 @@
         const gen = buildingsRenderGeneration;
         const isCurrent = typeof options.isCurrent === 'function' ? options.isCurrent : () => true;
         const buildingOpacity = buildingOpacityOf(buildingMaterial);
-        const isProposedBuilding = targetGroup === proposedBuildingsGroup;
+        const isProposedBuilding = targetGroup === proposedBuildingsGroup || targetGroup.userData?.buildingFamily === 'planned';
         const stale = () => !isActive || !isCurrent() || (isProposedBuilding && gen !== buildingsRenderGeneration);
         // The scene's XY is Web-Mercator (EPSG:3857), which inflates horizontal distance by
         // ~1/cos(lat) vs real meters, while extrude heights use raw meters. The glTF model is in
@@ -6798,7 +6810,8 @@
         // A building keeps its own hue; parcel slices vary its shade rather than its planning role.
         const baseColor = new THREE.Color(stringToColor(JSON.stringify(buildingFeature.geometry.coordinates[0][0])));
         const drawUnsliced = () => {
-            const tint = targetGroup === proposedBuildingsGroup && material !== buildingMaterials.massing;
+            const tint = (targetGroup === proposedBuildingsGroup || targetGroup.userData?.buildingFamily === 'planned')
+                && material !== buildingMaterials.massing;
             const surface = tint ? cloneBuildingMaterial(material) : material;
             if (tint) surface.color.copy(baseColor);
             const meshes = prepareFacades(polygonFeatureToMeshes(buildingFeature, surface, 0, height), facadeSource, !!tint);
@@ -7554,7 +7567,9 @@
         return false;
     }
 
-    function renderScene() {
+    function renderScene(fullFrame = true) {
+        // Entry tilt, restored cameras and captures need the same lighting as the steady loop.
+        sunLayer?.beforeRender({ fullFrame });
         floorPlanRenderer.renderCutaway(renderer, scene, camera, floorPlanGroup,
             xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
@@ -7670,16 +7685,27 @@
 
     async function rebuild3DBuildingsOnly(options = {}) {
         if (!isActive || !buildingGroup) return;
-        const family = buildingBuildPending || xrayEnabled ? 'all' : (options.family || 'all');
+        return buildingRefreshQueue.request(options.family || 'all');
+    }
+
+    async function build3DBuildingFamilies(requestedFamily) {
+        if (!isActive || !buildingGroup) return;
+        const family = xrayEnabled ? 'all' : requestedFamily;
         const rebuildExisting = family !== 'planned';
         const rebuildProposed = family !== 'existing';
         const previous = buildingDisplaySnapshot;
         buildingBuildPending = true;
         buildingDisplaySnapshot = null;
         restoreParcelEmphasis();
-        if (rebuildExisting) clearGroupChildren(existingBuildingsGroup);
+        // Build replacements off-scene. Cooperative work yields between buildings; clearing
+        // the displayed groups first would expose an empty or partially rebuilt city each time.
+        const nextExisting = rebuildExisting ? new THREE.Group() : existingBuildingsGroup;
+        const nextProposed = rebuildProposed ? new THREE.Group() : proposedBuildingsGroup;
+        nextExisting.name = 'ExistingBuildings';
+        nextProposed.name = 'ProposedBuildings';
+        nextProposed.userData.buildingFamily = 'planned';
+        let committed = false;
         if (rebuildProposed) {
-            clearGroupChildren(proposedBuildingsGroup);
             clearGroupChildren(ineligibleBuildingsGroup);
             buildingsRenderGeneration++;
             pendingModelLoads = 0;
@@ -7693,22 +7719,34 @@
         const showProposed = realisticLayerActive || plannedDisplay !== 'off';
         const existingDataRevision = nearbyBuildingsRevision;
         let existingBuildFailures = rebuildExisting ? 0 : (previous?.existingBuildFailures || 0);
-        existingBuildingsGroup.visible = showExisting;
-        proposedBuildingsGroup.visible = showProposed;
+        nextExisting.visible = showExisting;
+        nextProposed.visible = showProposed;
         if (existingTransitAlignmentGroup) existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail && !realisticLayerActive;
         const existingMaterial = builtPolicy.material === 'solid' ? buildingMaterials.solid : buildingMaterials.ghost;
         const proposedMaterial = plannedDisplay === 'solid' ? buildingMaterials.solid : buildingMaterials.ghost;
         try {
             if (showExisting && rebuildExisting) {
-                const result = await buildNearbyProposalBuildings3D(existingBuildingsGroup, existingMaterial, {
+                const result = await buildNearbyProposalBuildings3D(nextExisting, existingMaterial, {
                     showSurviving: builtPolicy.showSurviving,
                     showDemolished: builtPolicy.showDemolished
                 }, isCurrent);
                 existingBuildFailures = result?.failures || 0;
                 if (!isCurrent()) return;
             }
-            if (showProposed && rebuildProposed) await buildProposedBuildings3D(proposedBuildingsGroup, proposedMaterial, isCurrent);
+            if (showProposed && rebuildProposed) await buildProposedBuildings3D(nextProposed, proposedMaterial, isCurrent);
             if (!isCurrent()) return;
+            const replace = (previousGroup, nextGroup) => {
+                if (previousGroup === nextGroup) return;
+                buildingGroup.remove(previousGroup);
+                buildingGroup.add(nextGroup);
+                clearGroupChildren(previousGroup);
+                sunLayer?.syncObjects(nextGroup);
+            };
+            replace(existingBuildingsGroup, nextExisting);
+            replace(proposedBuildingsGroup, nextProposed);
+            existingBuildingsGroup = nextExisting;
+            proposedBuildingsGroup = nextProposed;
+            committed = true;
             if (showExisting) appendSuggestedExistingFloorPlans(existingMaterial);
             if (showIneligibleParcels && rebuildProposed) buildIneligibleParcels3D(ineligibleBuildingsGroup);
             buildingDisplaySnapshot = {
@@ -7727,6 +7765,10 @@
             updateXrayControls();
             invalidateThreeView();
         } finally {
+            if (!committed) {
+                if (rebuildExisting) clearGroupChildren(nextExisting);
+                if (rebuildProposed) clearGroupChildren(nextProposed);
+            }
             if (generation === buildingsWorkGeneration) buildingBuildPending = false;
         }
     }
@@ -8336,9 +8378,8 @@
         }
         const perfT1 = perfReadout ? performance.now() : 0;
         // Frames that only advance the life layer reuse the last shadow map.
-        sunLayer?.beforeRender({ fullFrame: wasInvalidated || renderInvalidated || moving || !!controls?.autoRotate
-            || manualAutoRotateActive || frameHooks.length === 0 });
-        renderScene();
+        renderScene(wasInvalidated || renderInvalidated || moving || !!controls?.autoRotate
+            || manualAutoRotateActive || frameHooks.length === 0);
         if (perfReadout) recordPerfFrame(now, perfT0, perfT1, performance.now());
         const hooksOnly = !renderInvalidated && !moving && !controls?.autoRotate && !manualAutoRotateActive && frameHooks.length > 0;
         if (renderInvalidated || moving || controls?.autoRotate || manualAutoRotateActive || frameHooks.length) {
@@ -8705,7 +8746,10 @@
             ensureNearbyTrees();
             ensureNearbyWater();
         } else if (!await initScene()) return false;
-        syncPlanningView3D();
+        // initScene/reuse already applied the building policy. A late context refresh may still
+        // be pending here; re-syncing it would enqueue another full proposal rebuild.
+        applyModeVisibility();
+        rebuildPlanningSources3D();
         if (window.activeProposalDraftComparison?.draftId && typeof window.renderProposalDraftComparison === 'function') {
             window.renderProposalDraftComparison(
                 window.activeProposalDraftComparison.draftId,
@@ -9009,8 +9053,6 @@
         const plan = window.__threeClickPlan.planThreeClick({
             picked, groundParcelId, viewedParcelId, isolatedParcelId, isolatedProposalId, proposalKnown: !!proposal
         });
-        if (plan.selectMassing) window.PlanningViews.select(plan.selectMassing);
-        if (plan.inspectBuilding) window.PlanningViews.inspectBuilding(plan.inspectBuilding);
         if (plan.clearSelection) window.PlanningViews?.select(null);
         if (plan.proposal) {
             const parcelId = picked.parcelId || proposal?.cadastreParcelIds?.[0] || null;
@@ -9301,7 +9343,7 @@
             existingBuilt: buildingDisplaySnapshot?.existingReady === true,
             existingDataCurrent: buildingDisplaySnapshot?.existingDataRevision === nearbyBuildingsRevision,
             existingBuildFailures: buildingDisplaySnapshot?.existingBuildFailures || 0,
-            building: buildingBuildPending,
+            building: buildingBuildPending || buildingRefreshQueue.pending,
             incomplete: buildingWorkIncomplete,
             dirty: buildingViewDirty,
             pendingModels: pendingModelLoads,
@@ -9512,6 +9554,7 @@
     };
     window.showThreeModeDesign = showThreeModeDesign;
     window.showThreeModeParcel = showThreeModeParcel;
+    window.showThreeModeBuilding = showThreeModeBuilding;
     window.showThreeModePlan = showThreeModePlan;
     window.getThree3DGeoView = getGeoCameraView;
     window.setThreeXrayEnabled = setXrayEnabled;

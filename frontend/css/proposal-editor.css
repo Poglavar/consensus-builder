@@ -160,7 +160,7 @@
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 10px;
     align-items: start;
-    padding: 16px 16px 12px;
+    padding: var(--right-panel-padding, 16px 16px 12px);
     border-bottom: 1px solid var(--cb-line);
 }
 

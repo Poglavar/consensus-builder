@@ -191,7 +191,7 @@
         "source": "Izvor",
         "scope": "Pokrivenost",
         "terms": "Uvjeti izvora",
-        "unavailable": "Detaljni metapodaci izvora nisu dostupni. Pogledajte Izvori i softver u Postavkama → Informacije.",
+        "unavailable": "Detaljni metapodaci izvora nisu dostupni. Pogledajte Izvore i softver u Postavke → Pomoć i informacije.",
         "unknown": "Nepoznat",
         "link": "Pročitajte informacije i uvjete izvora"
     },
@@ -1255,10 +1255,10 @@
         "stations": {
             "title": "Postaje",
             "placeTitle": "Postavi postaju",
-            "bus": "Autobusna postaja",
-            "tram": "Tramvajska postaja",
-            "underground": "Podzemna postaja",
-            "elevated": "Postaja nadzemne željeznice",
+            "bus": "Cestovna stanica",
+            "tram": "Razina tla",
+            "underground": "Podzemno",
+            "elevated": "Izdignuta stanica",
             "cancel": "Otkaži postavljanje",
             "hint": "Željezničke postaje privlače se na pruge. Autobusne postaje privlače se na odabranu stranu ceste."
         },
@@ -1477,17 +1477,19 @@
                 "transport": "Promet",
                 "road": "Cesta",
                 "track": "Pruga",
-                "busStation": "Autobusna stanica",
-                "tramStation": "Tramvajska stanica",
-                "undergroundStation": "Metro stanica",
-                "elevatedStation": "Nadzemna stanica",
+                "busStation": "Cestovna stanica",
+                "tramStation": "Stanica u razini tla",
+                "undergroundStation": "Podzemna stanica",
+                "elevatedStation": "Izdignuta stanica",
                 "selectParcelFirst": "Prvo odaberi česticu.",
                 "replaced": "Ovo je izvorna katastarska čestica. Primijenjeni dizajni zamijenili su je na radnoj karti. Za dodavanje dizajna odaberite sadašnje čestice.",
                 "unavailable": "Podaci o trenutačnom stanju ove čestice nisu učitani. Za nastavak osvježite čestice.",
                 "selectCurrent": "Odaberi sadašnje čestice",
                 "reload": "Osvježi čestice",
                 "rulesCategory": "Urbana pravila",
-                "structuresCategory": "Građevine"
+                "structuresCategory": "Građevine",
+                "roadStation": "Cestovna stanica",
+                "trackStation": "Tračnička stanica"
             },
             "nftStatusDefault": "NFT status: Još nije provjereno.",
             "mintAndClaimButton": "Iskuj",
@@ -1681,7 +1683,7 @@
                 "id": "ID:",
                 "author": "Autor:",
                 "description": "Opis:",
-                "parcels": "Čestice u dizajnu:",
+                "parcels": "Izvorne čestice:",
                 "area": "Površina:",
                 "siteArea": "Površina obuhvata:",
                 "sourceArea": "Zbroj površina izvornih čestica:",
@@ -6299,7 +6301,12 @@
         "saved": "Geometrija postaje je spremljena.",
         "moveHint": "Povucite tlocrt postaje ili središnju oznaku da biste je premjestili. Vrsta, veličina, zakretanje i visina perona ostaju isti.",
         "dragCenter": "Povucite za premještanje postaje",
-        "undo": "Poništi"
+        "undo": "Poništi",
+        "trackStation": "Tračnička stanica",
+        "groundLevel": "Razina tla",
+        "elevated": "Izdignuta stanica",
+        "underground": "Podzemno",
+        "cancel": "Odustani"
     },
     "claims": {
         "onParcels": "Na česticama:",
@@ -6731,12 +6738,12 @@
             "noCadastre": "Otvoreno tlo"
         },
         "facts": {
-            "bare": "Neizmjereno tlo ili razmak između čestica: vlasništvo nije utvrđeno.",
+            "bare": "Neizmjereno tlo ili razmak između čestica.",
             "noCadastre": "Ovdje nema podataka o česticama. Prijedlog se može izvršiti samo odlukom nadležnog tijela."
         },
         "notLoaded": "Čestice ovdje još nisu učitane — približite kartu ili pričekajte da se učitaju.",
         "actions": {
-            "drawSite": "Nacrtaj lokaciju ovdje"
+            "drawSite": "Nacrtaj česticu"
         }
     },
     "siteTool": {
@@ -8079,6 +8086,7 @@
         "chooseSharePlan": "Koji plan želite podijeliti?"
     },
     "clickStackRelations": {
+        "affectedBy": "Zahvaćeno dizajnom:",
         "memberPlans": "Uključeno u planove:",
         "includedDesigns": "Dizajni:",
         "createdBy": "Izradio dizajn:",
@@ -8405,5 +8413,31 @@
         "empty": "Nijedna učitana stavka ne odgovara filtrima.",
         "loadMore": "Učitaj još",
         "limited": "Prikazuje se do 1.000 objavljenih dizajna."
-    }
+    },
+  "appUpdates": {
+    "title": "Ažuriranje aplikacije",
+    "build": "Verzija {{number}}",
+    "development": "Razvojna verzija",
+    "developmentHint": "Provjera ažuriranja dostupna je za objavljene verzije.",
+    "deployed": "Objavljeno {{date}}",
+    "check": "Provjeri ažuriranja",
+    "checking": "Provjera ažuriranja…",
+    "available": "Dostupna je novija verzija.",
+    "availableBuild": "Dostupna je verzija {{number}}.",
+    "current": "Koristite najnoviju verziju.",
+    "failed": "Provjera ažuriranja nije uspjela. Pokušajte ponovno.",
+    "notChecked": "Još nije provjereno.",
+    "lastChecked": "Zadnja provjera: {{date}}",
+    "reload": "Ponovno učitaj",
+    "later": "Kasnije",
+    "finishEditing": "Prije ponovnog učitavanja dovršite ili otkažite uređivanje i pričekajte završetak spremanja."
+  },
+  "settingsPanel": {
+    "dataAssumptions": "Podaci i pretpostavke",
+    "helpAbout": "Pomoć i informacije",
+    "userGuide": "Korisnički vodič",
+    "advanced": "Napredno",
+    "resetBrowserData": "Izbriši podatke preglednika",
+    "resetDescription": "Briše dizajne, planove, sporazume, predmemorirane podatke i postavke spremljene u ovom pregledniku."
+  }
 }

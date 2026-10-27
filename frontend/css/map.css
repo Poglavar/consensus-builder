@@ -1283,6 +1283,29 @@ body.three-mode-active #agent-bubbles-container {
     margin: 0;
 }
 
+.click-stack__section[data-kind="ground"] .click-stack__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.click-stack__section[data-kind="ground"] [data-command="ground.drawSite"] {
+    grid-column: 1 / -1;
+}
+
+/* Parallel actions fill their row equally throughout either inspection stack. Existing grid
+   action palettes keep their column count; flex rows divide the available width by button count. */
+.click-stack :is(.cb-actions:not(.cb-actions--stack), .btn-group) {
+    align-items: stretch;
+}
+.click-stack :is(.cb-actions:not(.cb-actions--stack), .btn-group, .approval-card__actions, .parcel-context-actions, .agreement-panel-actions) > :is(button, .btn) {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: normal;
+}
+.click-stack .click-stack__strip > button {
+    flex: 1 1 calc(50% - var(--cb-space-1)); min-width: 0; white-space: normal;
+}
+.click-stack .click-stack__strip:has(> button:nth-child(3):last-child) > button { flex-basis: 0; }
+
 /* Saved-plan contents share one inset and row rhythm in both map stacks. */
 .click-stack__body.click-stack__plan {
     gap: var(--cb-space-3);
