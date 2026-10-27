@@ -1898,3 +1898,30 @@ The remote development branch had advanced with separate diagnostics work. The
 release uses its own branch for the verified worktree, preserving the divergent
 remote branch. Production build metadata is the source of truth for the deployed
 commit and build number.
+
+### October 27: 3D background paving coverage
+
+At the reported Arlington view, zooming out reproduced triangular patches of background
+paving through cadastral parcel surfaces. Both surfaces were at z=0; the background's
+polygon offset did not consistently resolve their competing depths. Parcels now mark their
+visible pixels in a separate stencil bit, and the background draws afterwards only outside
+parcel and road coverage. This reuses the existing road stencil and five ground draw calls;
+it adds no geometry or camera-movement rebuilds. Fine paving tint also fades as slabs become
+smaller than a pixel to reduce zoom shimmer.
+
+Verification: 49 targeted headless unit cases in five files passed, plus three targeted headed
+Playwright cases. The new WebGL case checked 2,525 parcel pixels across five camera distances
+and three headings: zero background leaks with coverage masking, versus 324 leaks in its
+diagnostic offset-only control on the same GPU. The application cases exercised actual zoom,
+parcel selection/material restoration and returning to 2D. The real local Arlington scene
+was also checked with all 61 loaded parcel meshes using the coverage mask. No timing claim
+is made: the host was busy during verification.
+
+MCP parity: this changes display coverage and texture sampling only. Authored land, geometry,
+records and edit operations are unchanged; existing MCP inspection/editing needs no schema
+or discovery change. No glossary definition changes.
+
+Separate observation retained for investigation: one direct 3D reload captured an empty
+parcel snapshot before source parcels arrived, and the warm scene reused that snapshot.
+Rebuilding after source load restored the 61 parcel surfaces. This is distinct from the
+reproduced coplanar-paving leak; a general source-readiness fix is not included here.

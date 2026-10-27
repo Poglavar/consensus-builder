@@ -5897,8 +5897,8 @@
         groundLayer = window.__threeGround.create({ THREE, k: lifeMercatorK() });
         groundLayer.group.visible = false;
         // The parcel slabs are pavement level too: they get the same holes over the sunk roadbed.
-        groundLayer.cutHoles(materials.parcels);
-        groundLayer.cutHoles(materials.roads);
+        groundLayer.parcelSurface(materials.parcels);
+        groundLayer.parcelSurface(materials.roads);
         // A cadastral road parcel outside its asphalt is sidewalk: paved like the pavement plane. Its
         // meshes are in scene units (Mercator-inflated), so the slab grid is scaled back to metres.
         groundLayer.paveTexture(materials.roads, 1 / lifeMercatorK());
