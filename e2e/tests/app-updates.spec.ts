@@ -5,9 +5,8 @@ const manifest = (number: number) => ({ version: 1, component: 'urbangametheory-
 async function runningBuild(page: import('@playwright/test').Page, number = 12) {
   await page.addInitScript(value => { (window as any).__BUILD_INFO = value; }, manifest(number));
 }
-async function openInformation(page: import('@playwright/test').Page) {
+async function openUpdateSettings(page: import('@playwright/test').Page) {
   await page.locator('#settings-button').click();
-  await page.locator('#settings-sheet [data-section="info"] > summary').click();
   await page.locator('#app-running-build').scrollIntoViewIfNeeded();
 }
 
@@ -18,7 +17,7 @@ test('manual check spins, announces a new build, supports Later, and reloads onl
     if (hold) await new Promise<void>(resolve => { releaseResponse = resolve; });
     await route.fulfill({ json: manifest(latest) });
   });
-  await openCity(page); await openInformation(page);
+  await openCity(page); await openUpdateSettings(page);
   await expect(page.locator('#app-running-build')).toHaveText('Build 12');
   await expect(page.locator('#app-update-state')).toHaveText('You are up to date.');
   latest = 13; hold = true;
@@ -41,7 +40,7 @@ test('manual check spins, announces a new build, supports Later, and reloads onl
   await expect(page.locator('#app-update-notice')).toBeVisible();
   await expect(page.locator('#app-running-build')).toHaveText('Build 12');
   await runningBuild(page, 14);
-  await openInformation(page);
+  await openUpdateSettings(page);
   await Promise.all([page.waitForEvent('domcontentloaded'), page.locator('#settings-sheet [data-app-update-reload]').click()]);
   await expect(page.locator('#app-running-build')).toHaveText('Build 14');
   await expect(page.locator('#app-update-notice')).toBeHidden();
@@ -55,7 +54,7 @@ test('phone notification stays readable and a failed check preserves the known u
   const notice = page.locator('#app-update-notice'); await expect(notice).toBeVisible();
   const box = await notice.boundingBox(); expect(box!.x).toBeGreaterThanOrEqual(0); expect(box!.x + box!.width).toBeLessThanOrEqual(390);
   await page.screenshot({ path: testInfo.outputPath('phone-notice.png') });
-  await openInformation(page); fail = true; await page.locator('#app-update-check').click();
+  await openUpdateSettings(page); fail = true; await page.locator('#app-update-check').click();
   await expect(page.locator('#app-update-state')).toHaveText('Could not check for updates. Try again.');
   await expect(page.locator('#app-update-check')).not.toHaveAttribute('aria-busy', 'true');
   await expect(page.locator('#app-running-build')).toHaveText('Build 12');

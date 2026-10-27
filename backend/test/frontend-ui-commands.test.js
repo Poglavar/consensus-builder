@@ -182,6 +182,8 @@ describe('rehoused sidebar controls', () => {
                 if (id && (byControl.has(id) || NOT_COMMANDS[id])) continue;
                 if (tagName === 'button' && attr(tag, 'data-sheet-target') !== null) continue; // shell buttons
                 if (tagName === 'button' && attr(tag, 'data-sheet-close') !== null) continue;
+                // Update Reload is contextual and uses the guarded release-notice action.
+                if (tagName === 'button' && attr(tag, 'data-app-update-reload') !== null) continue;
                 if (tagName === 'button' && attr(tag, 'data-activity-view') !== null) continue; // Activity panel tabs
                 if (tagName === 'button' && commands.some(c => c.id === attr(tag, 'data-command'))) continue;
                 if (tagName === 'button' && attr(tag, 'data-site-intro-open') !== null) {
@@ -479,7 +481,7 @@ describe('the floating shell', () => {
 
     it('wires every shell button to a sheet that exists', () => {
         const sheets = new Set(openingTags(shellHtml, 'section')
-            .filter(tag => /class="map-sheet\b/.test(tag)).map(tag => attr(tag, 'id')));
+            .filter(tag => (attr(tag, 'class') || '').split(/\s+/).includes('map-sheet')).map(tag => attr(tag, 'id')));
         expect([...sheets].sort()).toEqual(['activity-sheet', 'bets-sheet', 'layers-sheet', 'measurement-sheet', 'planning-views', 'proposals-sheet', 'settings-sheet', 'sun-sheet']);
         const triggers = openingTags(shellHtml, 'button').filter(tag => attr(tag, 'data-sheet-target') !== null);
         expect(triggers.length).toBe(8);

@@ -1477,20 +1477,6 @@
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">"
     },
     {
-      "id": "control-27ffcfac7a193c-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"world-view-button\" class=\"btn settings-palette-button\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-edd3ae46f98013-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"command-palette-button\" class=\"btn settings-palette-button\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-0897e2b40cbc43-1",
       "source": "index.html",
       "markup": "<button type=\"button\" id=\"theme-choice-system\" class=\"cb-segmented__option\" data-theme-choice=\"system\" aria-pressed=\"true\" data-i18n-key=\"mapShell.appearance.system\">",
@@ -1596,9 +1582,9 @@
       "controlType": "range"
     },
     {
-      "id": "control-d278658f2bd0e8-1",
+      "id": "control-a734fe9e4c264a-1",
       "source": "index.html",
-      "markup": "<button class=\"btn btn-danger\" onclick=\"resetGameState(true)\">",
+      "markup": "<button type=\"button\" class=\"btn btn-danger\" onclick=\"resetGameState(true)\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -9297,6 +9283,34 @@
       "id": "control-ba886f3416d765-1",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"btn btn-primary\" data-app-update-reload data-i18n-key=\"appUpdates.reload\" hidden>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-c603e7c453cc0f-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"settings-credits-button\" class=\"btn\" data-settings-reference=\"credits\" data-i18n-key=\"mapCredits.title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-5a7fa8938eb4a7-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"settings-contact-button\" class=\"btn\" data-settings-reference=\"contact\" data-i18n-key=\"sidebar.info.contactTitle\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-87ab2b1bf0841a-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"settings-about-button\" class=\"btn\" data-settings-reference=\"about\" data-i18n-key=\"sidebar.info.aboutTitle\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-646e89a26bfc19-1",
+      "source": "index.html",
+      "markup": "<a class=\"btn\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\" data-i18n-key=\"settingsPanel.userGuide\">",
       "interaction": "click",
       "controlType": "button"
     }

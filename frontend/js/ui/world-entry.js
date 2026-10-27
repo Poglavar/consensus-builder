@@ -406,15 +406,6 @@
         });
     }
 
-    function wireSettingsButton() {
-        const button = doc.getElementById('world-view-button');
-        if (!button) return;
-        button.addEventListener('click', () => {
-            global.BusyControl.track(button, () => open({}))
-                .catch(reportOpenFailure);
-        });
-    }
-
     // Arm only on native map inputs. Leaflet emits zoomend for boot fitBounds, route cameras and
     // proposal previews too, so zoom direction alone cannot decide whether to open the globe.
     function wireZoomOutToGlobe() {
@@ -474,6 +465,4 @@
         ? global.whenAppBooted()
         : new Promise(resolve => global.addEventListener('appBooted', resolve, { once: true }));
     booted.then(wireZoomOutToGlobe);
-    if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', wireSettingsButton, { once: true });
-    else wireSettingsButton();
 })(window);

@@ -458,6 +458,10 @@
             labelKey: 'selectedParcels.actions.done', fallbackLabel: 'Done selecting', icon: 'fas fa-check' },
 
         // ---- Settings sheet ----
+        control('economic-source-settings-button', { id: 'settings.economics', group: 'settings', surfaces: ['settings'], labelKey: 'economicSources.title', fallbackLabel: 'Valuation & costs', icon: 'fas fa-coins' }),
+        control('settings-credits-button', { id: 'settings.credits', group: 'settings', surfaces: ['settings'], labelKey: 'mapCredits.title', fallbackLabel: 'Sources & software', icon: 'fas fa-book' }),
+        control('settings-contact-button', { id: 'settings.contact', group: 'settings', surfaces: ['settings'], labelKey: 'sidebar.info.contactTitle', fallbackLabel: 'Contact', icon: 'fas fa-envelope' }),
+        control('settings-about-button', { id: 'settings.about', group: 'settings', surfaces: ['settings'], labelKey: 'sidebar.info.aboutTitle', fallbackLabel: 'About', icon: 'fas fa-circle-info' }),
         control('app-update-check', { id: 'settings.checkUpdates', group: 'settings', surfaces: ['settings'],
             labelKey: 'appUpdates.check', fallbackLabel: 'Check for updates', icon: 'fas fa-arrows-rotate' }),
         control('parcel-source-notice-button', { id: 'settings.parcelSourceNotice', group: 'settings', surfaces: ['settings'],
@@ -472,15 +476,12 @@
         { id: 'settings.detectCity', group: 'settings', surfaces: [], run: detectNearestCity,
             labelKey: 'sidebar.city.detectTooltip', fallbackLabel: 'Use my location to pick the closest city', icon: 'fas fa-crosshairs' },
         // The globe (js/ui/world-entry.js): choose a city, or explore a place without parcels.
-        control('world-view-button', { id: 'world.open', group: 'settings', surfaces: ['settings'],
-            labelKey: 'mapShell.commands.worldView', fallbackLabel: 'World view', icon: 'fas fa-earth-europe' }),
-        // Opens the palette itself, so it is not listed in it.
-        control('command-palette-button', { id: 'settings.commandPalette', group: 'settings', surfaces: ['settings'], palette: false,
-            labelKey: 'commandPalette.open', fallbackLabel: 'Command palette', icon: 'fas fa-terminal' }),
+        { id: 'world.open', group: 'settings', surfaces: [], run: ctx => ctx.clickSelector('.map-search__chip'),
+            labelKey: 'mapShell.commands.worldView', fallbackLabel: 'World view', icon: 'fas fa-earth-europe' },
         control('tile-source-select', { id: 'settings.baseMap', group: 'settings', kind: 'input', surfaces: ['layers'], modes: ['2d'],
             labelKey: 'mapShell.commands.baseMap', fallbackLabel: 'Base map', icon: 'fas fa-map' }),
         control('wipeLocalDataButton', { id: 'settings.wipeLocalData', group: 'settings', surfaces: ['settings'],
-            labelKey: 'sidebar.info.wipeDataButton', fallbackLabel: 'Wipe ALL Local Data', icon: 'fas fa-skull-crossbones' }),
+            labelKey: 'settingsPanel.resetBrowserData', fallbackLabel: 'Reset browser data', icon: 'fas fa-skull-crossbones' }),
         control('debugModeCheckbox', { id: 'settings.debugMode', group: 'settings', kind: 'toggle', surfaces: ['settings'],
             labelKey: 'sidebar.info.debugToggle', fallbackLabel: 'Enable debug mode', icon: 'fas fa-bug' }),
         { id: 'settings.siteIntro', group: 'settings', surfaces: ['settings'],
@@ -542,7 +543,7 @@
     // unavailable too, so the palette is not a way around the lock. Layers and Measure stay.
     const EDIT_LOCKED_SURFACES = Object.freeze(['proposals', 'activity', 'settings']);
     const EDIT_LOCKED_GROUPS = Object.freeze(['proposals', 'activity', 'bets', 'game']);
-    const EDIT_LOCKED_COMMANDS = Object.freeze(['parcels.locate', 'settings.city', 'settings.detectCity']);
+    const EDIT_LOCKED_COMMANDS = Object.freeze(['parcels.locate', 'settings.city', 'settings.detectCity', 'world.open']);
     function lockedWhileEditing(entry, ctx) {
         if (!ctx || typeof ctx.isEditing !== 'function') return false;
         let editing = false;

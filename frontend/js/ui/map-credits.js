@@ -1,5 +1,5 @@
 // Compact provider attribution on the map (the basemap licences require it), with the city's data
-// and software credits under Settings → Information → "Sources & software", including the parcel
+// and software credits under Settings → Help & about → "Sources & software", including the parcel
 // source that last answered for the map in view.
 (function (root, factory) {
     const api = factory(root);

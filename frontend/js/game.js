@@ -526,7 +526,7 @@ async function dispatchAgentAction(actor, action, context = {}) {
  */
 function updateGameSectionTitle() {
     const gameCheckbox = document.getElementById('gameCheckbox');
-    const gameLabel = document.querySelector('.accordion-section[data-section="game"] [data-section-title="game"]');
+    const gameLabel = document.querySelector('.activity-simulation[data-section="game"] [data-section-title="game"]');
     if (!gameLabel) return;
 
     const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;

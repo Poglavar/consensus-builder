@@ -1,4 +1,4 @@
-// ui/command-palette.js — Ctrl/Cmd-K or Settings → Command palette opens the app's shortcuts,
+// ui/command-palette.js — Ctrl/Cmd-K or the map search opens the app's shortcuts,
 // grouped by capability,
 // filtered as you type, keyboard navigable; unavailable commands are shown greyed with the reason
 // when the registry knows it. A bottom sheet under 768px. groupPaletteItems is pure and exported
@@ -284,8 +284,6 @@
         // The translations arriving after boot, and a live language switch.
         win.addEventListener('i18n:translationsLoaded', syncTexts);
         if (win.i18n && typeof win.i18n.onChange === 'function') win.i18n.onChange(syncTexts);
-        const button = doc.getElementById('command-palette-button');
-        if (button) button.addEventListener('click', () => open(''));
     }
 
     return Object.assign({}, pure, { initialize, open, close: () => close({ restoreFocus: true }), isOpen });

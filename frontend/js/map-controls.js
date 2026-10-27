@@ -6,7 +6,7 @@
 // A section's layer checkbox (#parcelsCheckbox, #gameCheckbox; data-layer names the layer) changed.
 function toggleAccordion(checkbox, options = {}) {
     const skipParcelFetch = options.skipParcelFetch === true;
-    const section = checkbox.closest('.accordion-section');
+    const section = checkbox.closest('.activity-simulation, .accordion-section');
     const layerName = checkbox.dataset.layer;
 
     // Note: Roads section no longer has a checkbox, so it's always visible
@@ -157,6 +157,8 @@ function updateSectionControlsState(section) {
     const content = section.querySelector('.sheet-section-body');
     if (!content) return;
     const checkbox = content.querySelector('input[type="checkbox"][data-layer]');
+    // A disclosure can contain independent tools. Its descendant's switch owns only that tool.
+    if (checkbox && checkbox.closest('.activity-simulation, .accordion-section') !== section) return;
 
     // If there's no checkbox (Data, Proposals sections), always enable controls
     if (!checkbox) {
@@ -576,7 +578,7 @@ function initializeMapControls() {
 
     // Gate every section by its layer checkbox now: the sheets are always "expanded", so nothing
     // else would grey the game controls before the game is enabled.
-    document.querySelectorAll('.accordion-section').forEach(section => updateSectionControlsState(section));
+    document.querySelectorAll('.accordion-section, .activity-simulation').forEach(section => updateSectionControlsState(section));
 
     // Initialize button states
     updateBlockButtonStates();

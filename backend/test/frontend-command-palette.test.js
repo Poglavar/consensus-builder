@@ -47,7 +47,7 @@ describe('command palette', () => {
 
     it('leaves out the command that opens the palette itself', () => {
         expect(view('').flatMap(g => g.items).map(i => i.entry.id)).not.toContain('settings.commandPalette');
-        expect(UiCommands.findCommand('settings.commandPalette').surfaces).toEqual(['settings']);
+        expect(UiCommands.findCommand('settings.commandPalette')).toBeNull();
     });
 
     it('filters by the query and puts the group with the best match first', () => {

@@ -28,10 +28,7 @@ test.describe('Data sources @features', () => {
     await openCity(page);
     await page.locator('#settings-button').click();
 
-    // The parcel source notice lives in the expanded Information section.
-    const info = page.locator('#settings-sheet details.accordion-section[data-section="info"]');
-    if (!(await info.evaluate((details: HTMLDetailsElement) => details.open))) await info.locator(':scope > summary').click();
-    await expect(info).toHaveAttribute('open', '');
+    // Parcel source information is a direct Data & assumptions row.
     // Where this city's parcels come from (catalog metadata, mocked by the fixture).
     await page.locator('#parcel-source-notice-button').click();
     const notice = page.getByRole('alertdialog');

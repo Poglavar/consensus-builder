@@ -9,13 +9,12 @@ import { Page } from '@playwright/test';
 
 const shortCid = (cid: string) => `${cid.slice(0, 12)}…${cid.slice(-6)}`;
 
-// Simulation controls live in their own top-level Settings section.
+// Simulation controls live under Settings → Advanced.
 async function openSimulation(page: Page) {
   await page.locator('#settings-button').click();
-  const simulation = page.locator('#settings-sheet details.activity-simulation[data-section="game"]');
-  await expect(simulation).toBeVisible();
-  if (!(await simulation.evaluate((details: HTMLDetailsElement) => details.open))) await simulation.locator(':scope > summary').click();
-  await expect(simulation).toHaveAttribute('open', '');
+  const advanced = page.locator('#settings-sheet details[data-section="advanced"]');
+  if (!(await advanced.evaluate((details: HTMLDetailsElement) => details.open))) await advanced.locator(':scope > summary').click();
+  await expect(page.locator('#settings-sheet .activity-simulation[data-section="game"]')).toBeVisible();
 }
 
 async function openActivityPanel(page: Page, options: Record<string, unknown> = {}) {

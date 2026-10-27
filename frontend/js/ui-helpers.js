@@ -4,7 +4,7 @@ let isStatusExpanded = false;
 
 // The report form is a satellite page; this link stays available alongside the app's contacts.
 document.addEventListener('DOMContentLoaded', () => {
-    const contact = document.querySelector('[data-i18n-key="sidebar.info.contactTitle"]')?.parentElement;
+    const contact = document.querySelector('#settings-sheet [data-section="help"] .settings-links');
     if (!contact || contact.querySelector('[data-feedback-link]')) return;
     Promise.resolve(window.i18n.translationsReady).then(() => {
         const link = document.createElement('a');

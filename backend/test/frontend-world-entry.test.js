@@ -531,7 +531,7 @@ describe('wiring', () => {
         expect(order('js/world/globe-math.js')).toBeGreaterThan(order('js/world/world-coverage.js'));
         expect(html).toMatch(/<body[^>]*>\s*<!--[\s\S]*?-->\s*<script>\s*window\.writeVersionedLocalScripts\(\['js\/world\/handoff\.js'\]\)/);
         expect(html).toContain("'css/world.css'");
-        expect(html).toContain('id="world-view-button"');
+        expect(html).not.toContain('id="world-view-button"');
     });
 
     it('drops the commands of a section the city config hid, with the reason', () => {
@@ -550,11 +550,13 @@ describe('wiring', () => {
         expect(ranked).toMatchObject({ available: false, reason: 'hiddenForCity' });
     });
 
-    it('registers the world view command on the settings surface and the palette', () => {
+    it('registers the world view command through the city control and the palette', () => {
         const UiCommands = require(path.join(REPO, 'frontend/js/ui/commands.js'));
         const entry = UiCommands.findCommand('world.open');
         expect(entry).toBeTruthy();
-        expect(entry.surfaces).toEqual(expect.arrayContaining(['settings', 'palette']));
-        expect(entry.control).toBe('world-view-button');
+        expect(entry.surfaces).toEqual(['palette']);
+        const clickSelector = vi.fn();
+        entry.run({ clickSelector });
+        expect(clickSelector).toHaveBeenCalledWith('.map-search__chip');
     });
 });

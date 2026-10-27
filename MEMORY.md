@@ -989,5 +989,6 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-27: Existing buildings are baseline context rather than Plan members; their stack shows the building and cadastral parcel, with explicit design impacts linked separately.
 - 2026-10-27: Right-side map panels share the click stack's 400px desktop column and right-screen-panel styling contract; content that needs more width belongs in a centred or full-screen surface.
 - 2026-10-27: Settings shows the running deployed build and offers an update check; visible tabs poll for newer deployments and offer Reload/Later, with explicit reload blocked during editing or busy work.
+- 2026-10-27: Settings keeps the logo, app name and AI-friendly badge in one fixed top row, with direct Appearance, Data & assumptions and Help & about sections, one collapsed Advanced group and a persistent build/update footer.
 
 - 2026-10-27: User preview links keep normal motion; do not add `reduceMotion` unless explicitly requested. Test-only animation overrides must not leak into shared links because reduced motion also hides 3D people and traffic.

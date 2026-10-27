@@ -523,12 +523,6 @@
       ]
     },
     {
-      "id": "settings.commandPalette",
-      "specs": [
-        "tests/search-and-commands.spec.ts"
-      ]
-    },
-    {
       "id": "settings.baseMap",
       "specs": [
         "tests/basemap-layers.spec.ts"
@@ -622,6 +616,30 @@
       "id": "settings.checkUpdates",
       "specs": [
         "tests/app-updates.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.credits",
+      "specs": [
+        "tests/settings-sections.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.contact",
+      "specs": [
+        "tests/settings-sections.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.about",
+      "specs": [
+        "tests/settings-sections.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.economics",
+      "specs": [
+        "tests/settings-sections.spec.ts"
       ]
     }
   ],
@@ -914,6 +932,14 @@
       "feature": "Application build display, update checks, notification dismissal and explicit reload protection",
       "specs": [
         "tests/app-updates.spec.ts"
+      ]
+    },
+    {
+      "feature": "Settings brand header, flat preferences and help, Advanced tools and persistent build footer",
+      "specs": [
+        "tests/settings-sections.spec.ts",
+        "tests/app-updates.spec.ts",
+        "tests/theme-controls.spec.ts"
       ]
     }
   ],

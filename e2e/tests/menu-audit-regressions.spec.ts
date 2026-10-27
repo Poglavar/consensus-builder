@@ -33,7 +33,7 @@ test('NYC coverage reports ground area and fits its dialog at desktop and phone 
   await waitForMapReady(page);
   await page.waitForFunction(() => (window as any).CadastralParcelRepository?.snapshot().boundsKeys.length > 0);
   await page.locator('#settings-button').click();
-  const data = page.locator('#settings-sheet details.accordion-section[data-section="data"]');
+  const data = page.locator('#settings-sheet details.accordion-section[data-section="advanced"]');
   if (!(await data.evaluate((details: HTMLDetailsElement) => details.open))) await data.locator(':scope > summary').click();
   await page.locator('#showParcelCoverageButton').click();
   const coverage = page.locator('#parcel-coverage-modal');
@@ -50,10 +50,7 @@ test('NYC coverage reports ground area and fits its dialog at desktop and phone 
 test('the NYC command palette respects building-source availability', async ({ mockApi: page }) => {
   await page.goto('/?city=new_york&reduceMotion=1', { waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
-  await page.locator('#settings-button').click();
-  const navigation = page.locator('#settings-sheet details.accordion-section[data-section="navigation"]');
-  if (!(await navigation.evaluate((details: HTMLDetailsElement) => details.open))) await navigation.locator(':scope > summary').click();
-  await page.locator('#command-palette-button').click();
+  await page.keyboard.press('Control+k');
   const palette = page.locator('.command-palette-backdrop');
   await expect(palette).toBeVisible();
   await palette.locator('input').fill('Show buildings');
@@ -77,10 +74,7 @@ test('OSM block refresh and browsing remain palette commands when parcel blocks 
   await page.evaluate(() => {
     for (const id of ['urban-blocks-refresh', 'urban-blocks-browse']) (document.getElementById(id) as HTMLButtonElement).disabled = false;
   });
-  await page.locator('#settings-button').click();
-  const navigation = page.locator('#settings-sheet details.accordion-section[data-section="navigation"]');
-  if (!(await navigation.evaluate((details: HTMLDetailsElement) => details.open))) await navigation.locator(':scope > summary').click();
-  await page.locator('#command-palette-button').click();
+  await page.keyboard.press('Control+k');
   const palette = page.locator('.command-palette-backdrop');
   for (const label of ['Refresh this area', 'Browse blocks']) {
     await palette.locator('input').fill(label);
@@ -221,10 +215,7 @@ test('phone menus fit the viewport and dismiss; Designs separates publication fr
 test('an explicit World view failure explains recovery and leaves the map usable', async ({ mockApi: page }) => {
   await openCity(page);
   await page.evaluate(() => { (window as any).WorldView.open = async () => { throw new Error('Fixture: WebGL unavailable'); }; });
-  await page.locator('#settings-button').click();
-  const navigation = page.locator('#settings-sheet details.accordion-section[data-section="navigation"]');
-  if (!(await navigation.evaluate((details: HTMLDetailsElement) => details.open))) await navigation.locator(':scope > summary').click();
-  await page.locator('#world-view-button').click();
+  await page.locator('.map-search__chip').click();
   await expect(page.locator('#ephemeral-message-container')).toContainText('World view could not start.');
   await expect(page.locator('#map')).toBeVisible();
   await page.locator('#settings-button').click();

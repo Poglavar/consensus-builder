@@ -1,0 +1,31 @@
+/* Settings has a fixed identity row and release footer; only its preferences/tools scroll. */
+#settings-sheet .settings-header { flex: 0 0 auto; }
+#settings-sheet .settings-brand { flex: 1; min-width: 0; flex-wrap: nowrap; margin: 0; gap: var(--cb-space-2); }
+#settings-sheet .settings-brand-logo { flex: 0 0 24px; width: 24px; height: 24px; object-fit: contain; }
+#settings-sheet .settings-brand-title { min-width: 0; font-size: var(--cb-text-base); font-weight: var(--cb-weight-semibold); white-space: nowrap; }
+#settings-sheet .settings-brand .cb-badge { flex-shrink: 0; font-size: var(--cb-text-xs); white-space: nowrap; }
+#settings-sheet .settings-content { min-height: 0; flex: 1 1 auto; overflow-y: auto; }
+.settings-section { min-width: 0; }
+.settings-section + .settings-section, .settings-advanced { margin-top: var(--cb-space-4); padding-top: var(--cb-space-4); border-top: 1px solid var(--cb-line); }
+#settings-sheet .settings-section-title { display: flex; align-items: center; gap: var(--cb-space-2); margin: 0 0 var(--cb-space-2); font-size: var(--cb-text-base); font-weight: var(--cb-weight-semibold); line-height: var(--cb-leading); }
+.settings-links { display: grid; gap: var(--cb-space-2); }
+.settings-links > .btn { width: 100%; justify-content: flex-start; text-align: start; white-space: normal; }
+.settings-note { margin: 0 0 var(--cb-space-3); font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
+#settings-sheet .settings-advanced > summary { margin: 0; }
+.settings-advanced > .sheet-section-body { padding-top: var(--cb-space-3); }
+#settings-sheet .settings-reset { border-top-color: var(--cb-danger); }
+.settings-footer { flex: 0 0 auto; padding: var(--cb-space-3); border-top: 1px solid var(--cb-line); }
+.settings-footer .app-update-info { gap: var(--cb-space-1); }
+.settings-footer .app-update-actions { margin-block: var(--cb-space-1); }
+.settings-footer .app-update-meta { font-size: var(--cb-text-xs); }
+.settings-footer #app-update-state, .settings-footer #app-update-reload-hint { font-size: var(--cb-text-sm); }
+.settings-reference-dialog .info-subsection > :first-child { margin-top: 0; }
+.settings-reference-dialog p { line-height: var(--cb-leading); }
+@media (min-width: 768px) {
+    #settings-sheet { height: calc(100dvh - var(--right-panel-top) - var(--right-dock-bottom)); }
+}
+@media (max-width: 374px) {
+    #settings-sheet .settings-brand { gap: var(--cb-space-1); }
+    #settings-sheet .settings-brand-title { font-size: var(--cb-text-sm); }
+    #settings-sheet .settings-brand .cb-badge { padding-inline: var(--cb-space-1); }
+}

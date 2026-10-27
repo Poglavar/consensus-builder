@@ -9,8 +9,8 @@ async function openSettings(page: import('@playwright/test').Page) {
   await expect(page.locator('#settings-sheet')).toBeVisible();
 }
 
-async function openSettingsSection(page: import('@playwright/test').Page, section: string) {
-  const details = page.locator(`#settings-sheet > .map-sheet-body > details.accordion-section[data-section="${section}"]`);
+async function openAdvanced(page: import('@playwright/test').Page) {
+  const details = page.locator(`#settings-sheet > .map-sheet-body > details.accordion-section[data-section="advanced"]`);
   if (!(await details.evaluate((el: HTMLDetailsElement) => el.open))) await details.locator(':scope > summary').click();
   await expect(details).toHaveJSProperty('open', true);
 }
@@ -23,12 +23,12 @@ async function openLayers(page: import('@playwright/test').Page) {
 
 // Coverage and reset controls share the Local (browser) data section.
 async function openResets(page: import('@playwright/test').Page) {
-  await openSettingsSection(page, 'data');
+  await openAdvanced(page);
   await expect(page.locator('#wipeLocalDataButton')).toBeVisible();
 }
 
 async function openDiagnostics(page: import('@playwright/test').Page) {
-  await openSettingsSection(page, 'diagnostics');
+  await openAdvanced(page);
   await expect(page.locator('#debugModeCheckbox')).toBeVisible();
 }
 
@@ -36,7 +36,7 @@ test.describe('Settings maintenance @features', () => {
   test('coverage opens and refreshes, and a tile preference survives reload', async ({ mockApi: page }) => {
     await openCity(page);
     await openSettings(page);
-    await openSettingsSection(page, 'data');
+    await openAdvanced(page);
     await page.locator('#showParcelCoverageButton').click();
     const coverage = page.locator('#parcel-coverage-modal');
     await expect(coverage).toBeVisible();

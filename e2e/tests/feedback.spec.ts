@@ -46,8 +46,7 @@ test('the map contact section links to the feedback form', async ({ mockApi: pag
   await expect(page.locator('[data-feedback-link]')).toHaveAttribute('href', '/feedback.html', { timeout: 30_000 });
   await expect(page.locator('[data-feedback-link]')).toContainText('Feedback');
   await page.locator('#settings-button').click();
-  const info = page.locator('#settings-sheet details.accordion-section[data-section="info"]');
-  if (!(await info.evaluate((details: HTMLDetailsElement) => details.open))) await info.locator(':scope > summary').click();
+  const info = page.locator('#settings-sheet [data-section="help"]');
   await info.locator('[data-feedback-link]').click();
   await expect(page).toHaveURL(/\/feedback\.html\?/);
   await expect(page.locator('#feedback-message')).toBeVisible();

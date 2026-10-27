@@ -3,12 +3,9 @@ import { test, expect } from '../helpers/fixtures';
 import { openCity, clickMapPoint, createSpace } from '../helpers/runtime';
 import { installAreaMonitorSpaFallback } from '../helpers/mocks/area-monitor-server';
 
-test('Settings opens the command palette through its own button', async ({ mockApi: page }) => {
+test('The keyboard shortcut opens the command palette', async ({ mockApi: page }) => {
   await openCity(page);
-  await page.locator('#settings-button').click();
-  const navigation = page.locator('#settings-sheet details[data-section="navigation"]');
-  await navigation.locator('> summary').click();
-  await navigation.locator('#command-palette-button').click();
+  await page.keyboard.press('Control+k');
   await expect(page.locator('.command-palette-backdrop')).toBeVisible();
   await page.locator('.command-palette__input').fill('Measure');
   await page.locator('.command-palette__item').filter({ hasText: /Measure/ }).first().click();
