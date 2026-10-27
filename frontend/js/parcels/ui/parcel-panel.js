@@ -566,7 +566,7 @@
                 const proposalBody = `
                     <div class="proposal-item-body">
                         <div class="proposal-item-header">
-                            <span class="proposal-item-title">${proposalTitle}${roadSuffix}</span>
+                            <h3 class="proposal-item-title"><button type="button" class="cb-link" onclick="showProposalDetails(${inlineJsArg(proposal.proposalId)}, ${inlineJsArg(parcelId)})">${proposalTitle}${roadSuffix}</button></h3>
                             <div class="proposal-item-badges">
                                 ${producerPill}
                                 ${channelChip}
@@ -583,9 +583,9 @@
                     </div>
                 `;
                 return `
-                    <div class="proposal-item" data-proposal-id="${escapeHtml(String(proposal.proposalId))}" onclick="showProposalDetails(${inlineJsArg(proposal.proposalId)}, ${inlineJsArg(parcelId)})">
+                    <article class="proposal-item" data-proposal-id="${escapeHtml(String(proposal.proposalId))}">
                         ${thumbHtml ? `<div class="proposal-item-row">${thumbHtml}${proposalBody}</div>` : proposalBody}
-                    </div>
+                    </article>
                 `;
             }).join('');
 
@@ -641,7 +641,7 @@
         ` : '';
 
         // Determine ownership type for display - will be updated when owners are fetched
-        const ownershipTypeLabel = '<span class="parcel-ownership-type-label" style="display: none;"></span>';
+        const ownershipTypeLabel = '<span class="cb-badge parcel-ownership-type-label" hidden></span>';
 
         const infoContent = `
         ${sourceNoteHtml}
@@ -654,7 +654,7 @@
                 ${ownershipIsUnknown ? `<div class="parcel-owners-container parcel-owners-container--unknown" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>` : ''}
             </div>
             ${adLink ? `
-            <div class="parcel-ad-dialog" id="parcel-ad-dialog" data-ad-link="${adLink}" style="display:none;">
+            <div class="parcel-ad-dialog" id="parcel-ad-dialog" data-ad-link="${adLink}" hidden>
                 <button type="button" class="btn btn-sm"
                     onclick="window.open(${inlineJsArg(adLink)}, '_blank', 'noopener,noreferrer'); return false;">
                     <i class="fas fa-cart-shopping" aria-hidden="true"></i>
@@ -671,27 +671,27 @@
         </div>
         ${identityNoteHtml}
         <div class="parcel-metric-row">
-            <div class="metric-group">
-                <div class="metric-label" data-i18n-key="panel.parcel.metrics.owners">${ownersLabel}</div>
-                <div class="metric-value" id="parcel-owners-count">-</div>
-            </div>
-            <div class="metric-group">
-                <div class="metric-label" data-i18n-key="panel.parcel.metrics.block">${blockLabel}</div>
-                <div class="metric-value">${blockHtml}</div>
-            </div>
+            <dl class="metric-group">
+                <dt class="metric-label" data-i18n-key="panel.parcel.metrics.owners">${ownersLabel}</dt>
+                <dd class="metric-value" id="parcel-owners-count">-</dd>
+            </dl>
+            <dl class="metric-group">
+                <dt class="metric-label" data-i18n-key="panel.parcel.metrics.block">${blockLabel}</dt>
+                <dd class="metric-value">${blockHtml}</dd>
+            </dl>
         </div>
         <div class="parcel-metric-row">
-            <div class="metric-group">
-                <div class="metric-label" data-i18n-key="panel.parcel.metrics.area">${areaLabel}</div>
-                <div class="metric-value">${formattedArea}</div>
-            </div>
-            <div class="metric-group">
-                <div class="metric-label">${marketPriceLabel}</div>
-                <div class="metric-value" title="${escapeHtml(economicEvidence)}">${formattedPrice}</div>
-            </div>
+            <dl class="metric-group">
+                <dt class="metric-label" data-i18n-key="panel.parcel.metrics.area">${areaLabel}</dt>
+                <dd class="metric-value">${formattedArea}</dd>
+            </dl>
+            <dl class="metric-group">
+                <dt class="metric-label">${marketPriceLabel}</dt>
+                <dd class="metric-value" title="${escapeHtml(economicEvidence)}">${formattedPrice}</dd>
+            </dl>
         </div>
         ${(typeof ensNameLineHtml === 'function' && parcelId) ? ensNameLineHtml(parcelEnsName(parcelId)) : ''}
-        <div id="roadMeasurements" style="display: none;">
+        <div id="roadMeasurements" hidden>
         </div>
     `;
 
@@ -809,7 +809,7 @@
                 return;
             }
             if (!ownershipSupported) {
-                ownershipTypeLabelEl.style.display = 'none';
+                ownershipTypeLabelEl.hidden = true;
                 return;
             }
 
@@ -890,7 +890,7 @@
 
             if (typeLabel) {
                 ownershipTypeLabelEl.textContent = typeLabel;
-                ownershipTypeLabelEl.style.display = 'inline-block';
+                ownershipTypeLabelEl.hidden = false;
 
                 // Add color class based on ownership type
                 // Remove any existing ownership type classes
@@ -926,7 +926,7 @@
                     ownershipTypeLabelEl.classList.add(`ownership-type-${normalizedType}`);
                 }
             } else {
-                ownershipTypeLabelEl.style.display = 'none';
+                ownershipTypeLabelEl.hidden = true;
             }
         });
 
@@ -994,8 +994,8 @@
         }
 
         if (measurementsDiv) {
-            measurementsDiv.style.display = 'none';
             measurementsDiv.innerHTML = '';
+            measurementsDiv.hidden = true;
         }
     }
 
@@ -1054,7 +1054,7 @@
     function toggleAdActionsDialog(link) {
         const dialog = document.getElementById('parcel-ad-dialog');
         if (!dialog) return;
-        const isVisible = dialog.style.display === 'flex';
+        const isVisible = !dialog.hidden;
         if (!isVisible) {
             if (link) {
                 dialog.setAttribute('data-ad-link', link);
@@ -1066,9 +1066,9 @@
                     };
                 }
             }
-            dialog.style.display = 'flex';
+            dialog.hidden = false;
         } else {
-            dialog.style.display = 'none';
+            dialog.hidden = true;
         }
     }
 

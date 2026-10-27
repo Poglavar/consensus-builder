@@ -224,7 +224,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         // An applied parcel layout can replace its inputs in the map model: that is the case to compare.
         const parcelCompareHtml = ((fullProposal || proposal).parcelLayout && parcelCompare && proposalKeyForCompare
             && isProposalApplied(fullProposal || proposal) && parcelCompare.canCompare(fullProposal || proposal))
-            ? `<button type="button" class="btn btn-quiet btn-sm btn-compare-parcel" data-focus-parcel="${safeAgentText(String(parcelId))}" aria-pressed="${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}"
+            ? `<button type="button" class="btn btn-quiet btn-compare-parcel" data-focus-parcel="${safeAgentText(String(parcelId))}" aria-pressed="${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}"
                     title="${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}"
                     onclick="event.stopPropagation(); event.preventDefault(); BusyControl.track(this, () => toggleProposalBeforeAfter(${inlineJsArg(proposalKeyForCompare)}, { focusParcelId: ${inlineJsArg(String(parcelId))} }));"><i class="fas fa-left-right" aria-hidden="true"></i> ${tProposal('mapCompare.toggle', 'Before / after')}</button>`
             : '';
@@ -246,12 +246,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
         // The row and its status take their look from classes (css/proposal-details.css).
         return `
-            <div class="proposal-parcel-item proposal-parcel-row${isReplaced ? ' is-replaced' : ''}" data-parcel-id="${parcelId}" data-reference-state="${parentParcel.referenceState}" ${replacedDataAttr} ${geometryDataAttr} onclick="handleProposalParcelClick(${inlineJsArg(parcelId)}, event)" title="${parcelTooltip}">
+            <div class="proposal-parcel-item proposal-parcel-row${isReplaced ? ' is-replaced' : ''}" data-parcel-id="${parcelId}" data-reference-state="${parentParcel.referenceState}" ${replacedDataAttr} ${geometryDataAttr}>
                 <div class="parcel-info proposal-parcel-row__info">
                     <div class="proposal-parcel-row__main">
                         ${ownerAvatarHtml}
                         <div class="proposal-parcel-row__text">
-                            <span class="parcel-number parcel-id-text" title="${safeAgentText(parcelId)}">${safeAgentText(parcelLabelText)}</span>
+                            <span class="parcel-number parcel-id-text"><button type="button" class="cb-link" ${replacedDataAttr} ${geometryDataAttr} onclick="handleProposalParcelClick(${inlineJsArg(parcelId)}, event)" title="${parcelTooltip}">${safeAgentText(parcelLabelText)}</button></span>
                             ${parcelCompareHtml}
                             ${isReplaced
                 ? `<span class="parcel-status parcel-status-replaced">${replacedLabel}</span>`
@@ -274,9 +274,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const descendantData = proposalStorage.getProposal(descendantKey);
         if (descendantData) {
             const descendantId = descendantData.proposalId || descendantKey;
-            return `<div class="descendant-item" data-descendant-type="proposal" data-proposal-id="${descendantId}" tabindex="0">
+            return `<button type="button" class="btn descendant-item" data-descendant-type="proposal" data-proposal-id="${descendantId}">
                 <strong>${descendantData.title}</strong> (${descendantData.type || 'proposal'})
-            </div>`;
+            </button>`;
         }
 
         let parcelNumber = null;
@@ -301,15 +301,15 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             const plotArea = Number.isFinite(plotProps.calculatedArea) ? CbFormat.formatArea(plotProps.calculatedArea) : '';
             const plotLabel = tProposal('panel.proposal.parcels.newPlot', 'New plot {{n}}', { n: plotProps.syntheticIndex });
             const plotDetail = [plotArea, plotOwners].filter(Boolean).join(' · ');
-            return `<div class="descendant-item" data-descendant-type="parcel" data-parcel-id="${safeAgentText(descendantKey)}" tabindex="0">
+            return `<button type="button" class="btn descendant-item" data-descendant-type="parcel" data-parcel-id="${safeAgentText(descendantKey)}">
             <span class="parcel-id-text" title="${safeAgentText(descendantKey)}">${safeAgentText(plotLabel)}</span>${plotDetail ? ` · ${safeAgentText(plotDetail)}` : ''}
-        </div>`;
+        </button>`;
         }
         const label = parcelNumber ? `Parcel ${parcelNumber}` : `Parcel ${descendantKey}`;
         const roadSuffix = isRoad ? (roadName ? ` • Road: ${roadName}` : ' • Road') : '';
-        return `<div class="descendant-item" data-descendant-type="parcel" data-parcel-id="${descendantKey}" tabindex="0">
+        return `<button type="button" class="btn descendant-item" data-descendant-type="parcel" data-parcel-id="${descendantKey}">
             <span class="parcel-id-text" title="${safeAgentText(descendantKey)}">${safeAgentText(label)}</span>${safeAgentText(roadSuffix)}
-        </div>`;
+        </button>`;
     };
 
     const descendantKeys = (typeof window !== 'undefined'
@@ -357,7 +357,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             : author;
         const safeText = typeof escapeHtml === 'function' ? escapeHtml(truncated) : truncated;
         const safeTitle = typeof escapeHtml === 'function' ? escapeHtml(author) : author;
-        return `<span class="author-text" style="display: inline-block; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${safeTitle}">${safeText}</span>`;
+        return `<span class="author-text proposal-author-text" title="${safeTitle}">${safeText}</span>`;
     };
 
     const {
@@ -777,7 +777,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 const agent = agents.find(a => a.name === proposal.author);
                 if (agent && typeof getAvatarImagePath === 'function') {
                     return `
-                                        <img src="${getAvatarImagePath(agent.avatarIndex)}" class="author-avatar" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #007bff; margin-right: 8px; vertical-align: middle;">
+                                        <img src="${getAvatarImagePath(agent.avatarIndex)}" class="author-avatar proposal-author-avatar">
                                         <button type="button" data-agent-id="${agent.id}" class="cb-link agent-link-clickable">${formatAuthorForDisplay(proposal.author)}</button>
                                     `;
                 }
@@ -819,7 +819,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <div class="metric-label-count-container">
                     <span class="metric-label">${tProposal('panel.proposal.sections.cadastralParcels', 'Cadastral parcels:')}</span> <span class="metric-value">${cadastreParcelIds.length}</span>
                 </div>
-                <div class="proposal-parcels-list" id="proposal-parent-parcels-list" style="max-height: 420px; overflow-y: auto;">
+                <div class="proposal-parcels-list proposal-parcel-list-scroll" id="proposal-parent-parcels-list">
                     ${parentParcelItemsInitial}
                 </div>
             </div>
@@ -838,7 +838,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <div class="metric-label-count-container">
                     <span class="metric-label">${tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:')}</span> <span class="metric-value">${descendantKeys.length}</span>
                 </div>
-                <div class="proposal-descendants-list" id="proposal-descendants-list" style="max-height: 420px; overflow-y: auto;">
+                <div class="proposal-descendants-list proposal-parcel-list-scroll" id="proposal-descendants-list">
                     ${descendantItemsInitial}
                 </div>
             </div>`;
@@ -943,7 +943,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             return `
             <hr class="proposal-details-divider">
             <div class="metric-group">
-                <div class="metric-label" style="font-weight: 600; margin-bottom: 10px;">${tProposal('panel.proposal.sections.ownershipStats', 'Modeled ownership and acquisition')}</div>
+                <div class="metric-label proposal-ownership-stats-heading">${tProposal('panel.proposal.sections.ownershipStats', 'Modeled ownership and acquisition')}</div>
             </div>
             <p><small data-ownership-estimates>${tProposal('panel.proposal.stats.summaryScope', 'Estimates from proposal metadata; owner entries may repeat across parcels and include assumed owners.')}</small></p>
             ${statsItems.join('')}
@@ -962,7 +962,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <code class="metric-value proposal-published-cid" title="${safeAgentText(publishedCid)}">${safeAgentText(`${publishedCid.slice(0, 12)}…${publishedCid.slice(-6)}`)}</code>
             </div>` : ''}
             ${escapedProposalDisplayId ? `<div class="proposal-id-row">
-                    <button type="button" class="btn btn-quiet btn-sm proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy local ID')}</button>
+                    <button type="button" class="btn btn-quiet proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy local ID')}</button>
                 </div>` : ''}
             ${sectionEnd}
             </div>
@@ -1047,9 +1047,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         // Only show spinner for proposals with many parcels
         const loadingText = tProposal('panel.proposal.rendering', 'Rendering proposal details...');
         detailsContent.innerHTML = `
-            <div class="loader-spinner" role="status" aria-live="polite" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; min-height: 200px;">
+            <div class="loader-spinner proposal-details-loader" role="status" aria-live="polite">
                 <div class="spinner-circle" aria-hidden="true"></div>
-                <span class="loader-text" style="margin-top: 16px; color: #666;">${loadingText}</span>
+                <span class="loader-text proposal-details-loader__text">${loadingText}</span>
             </div>
         `;
 
@@ -1216,15 +1216,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                     handleDescendantItemClick(item);
                 } catch (_) { }
             });
-            item.addEventListener('keydown', event => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    try {
-                        handleDescendantItemClick(item);
-                    } catch (_) { }
-                }
-            });
+
         });
 
     } catch (_) { }

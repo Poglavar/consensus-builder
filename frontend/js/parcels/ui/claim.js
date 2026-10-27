@@ -42,6 +42,7 @@
     let currentParcelMintStatusCache = null;
     let currentParcelMintStatusParcelId = null;
     let currentParcelMintStatusPromise = null;
+    let activeMintStatusRetry = null;
 
     function getParcelMintStatusElement() {
         return global.document ? global.document.getElementById('parcelMintStatus') : null;
@@ -129,11 +130,11 @@
         const rows = container.querySelectorAll('.button-row');
         rows.forEach((row) => {
             const keep = row.classList.contains('button-row-claim') || row.classList.contains('button-row-5');
-            row.style.display = isMultiActive ? (keep ? '' : 'none') : '';
+            row.hidden = isMultiActive && !keep;
         });
         const claimButton = global.document ? global.document.getElementById('claimButton') : null;
         if (claimButton) {
-            claimButton.style.display = isMultiActive ? 'none' : '';
+            claimButton.hidden = isMultiActive;
         }
     }
 
@@ -291,16 +292,26 @@
 
         if (state === 'not-minted' || state === 'error') {
             const displayMessage = (!message || message === null) ? retryMessage : (typeof resolvedMessage === 'string' ? resolvedMessage : retryMessage);
-            setIndicatorContent(displayMessage);
-            indicator.style.cursor = 'pointer';
-            indicator.onclick = recheckParcelMintStatus;
-            indicator.title = retryTooltip;
+            const retryButton = global.document.createElement('button');
+            retryButton.type = 'button';
+            retryButton.className = 'btn btn-quiet';
+            retryButton.textContent = displayMessage;
+            retryButton.title = retryTooltip;
+            retryButton.addEventListener('click', event => {
+                activeMintStatusRetry = retryButton;
+                global.BusyControl.track(retryButton, () => recheckParcelMintStatus(event))
+                    .catch(error => console.error('Parcel NFT status retry failed:', error))
+                    .finally(() => { if (activeMintStatusRetry === retryButton) activeMintStatusRetry = null; });
+            });
+            indicator.replaceChildren(retryButton);
         } else {
-            setIndicatorContent(resolvedMessage || retryMessage);
-            indicator.style.cursor = '';
-            indicator.onclick = null;
-            indicator.title = '';
+            if (state === 'loading' && activeMintStatusRetry && indicator.contains(activeMintStatusRetry)) {
+                activeMintStatusRetry.textContent = resolvedMessage || retryMessage;
+            } else {
+                setIndicatorContent(resolvedMessage || retryMessage);
+            }
         }
+        indicator.title = '';
 
         const stateClasses = ['is-neutral', 'is-loading', 'is-minted', 'is-not-minted', 'is-error'];
         indicator.classList.remove(...stateClasses);
@@ -619,7 +630,7 @@
             event.stopPropagation();
             event.preventDefault();
         }
-        triggerParcelToolsTabActivated(true);
+        return triggerParcelToolsTabActivated(true);
     }
 
     function resolveClaimPortalBaseUrl() {

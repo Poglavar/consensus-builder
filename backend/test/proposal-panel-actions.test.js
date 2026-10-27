@@ -232,6 +232,9 @@ describe('proposal details action footer', () => {
         const sourceFeature = { type: 'Feature', properties: { parcelId: 'source-1' }, geometry };
         const available = parse(render(proposal, { sourceFeature }).content.innerHTML)('.proposal-parcel-row');
         expect(available.attr('data-reference-state')).toBe('available');
+        expect(available.attr('onclick')).toBeUndefined();
+        expect(available.find('.parcel-number button[type="button"]').text()).toBeTruthy();
+        expect(available.find('.parcel-number button').attr('onclick')).toContain('handleProposalParcelClick');
         // A design has no owner acceptance: an available reference carries no Accepted/Pending status.
         expect(available.find('.parcel-status').length).toBe(0);
         expect(available.hasClass('is-accepted')).toBe(false);
@@ -240,6 +243,8 @@ describe('proposal details action footer', () => {
         expect(replaced.hasClass('is-replaced')).toBe(true);
         expect(replaced.find('.parcel-status').text()).toBe('Replaced in map model');
         expect(JSON.parse(replaced.attr('data-parcel-geometry'))).toEqual(geometry);
+        expect(replaced.find('.parcel-number button').attr('data-parcel-replaced')).toBe('true');
+        expect(JSON.parse(replaced.find('.parcel-number button').attr('data-parcel-geometry'))).toEqual(geometry);
     });
 
     it('keeps a failed map-application reason visible in the proposal panel', () => {

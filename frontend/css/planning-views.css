@@ -30,7 +30,7 @@
 .planning-result-counts { display: grid; grid-template-columns: 1fr auto; gap: var(--cb-space-1); }
 .planning-result-counts dd { margin: 0; font-variant-numeric: tabular-nums; }
 .planning-open-model { margin-top: var(--cb-space-2); }
-.planning-source-field { display: flex; align-items: center; gap: var(--cb-space-2); margin-top: var(--cb-space-2); font-size: var(--cb-text-xs); }
+.planning-source-field { display: flex; align-items: center; gap: var(--cb-space-2); margin-top: var(--cb-space-2); font-size: var(--cb-text-sm); }
 .planning-source-field[hidden] { display: none; }
 .planning-source-label { flex: 0 0 auto; color: var(--cb-text-muted); }
 .planning-source-note, .planning-map-context { font-size: var(--cb-text-xs); color: var(--cb-text-muted); margin: var(--cb-space-1) 0 0; }
@@ -54,6 +54,7 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
     width: var(--cb-planning-inspector-width);
     max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - var(--cb-space-6));
     overflow: auto;
+    font-size: var(--cb-text-base);
     z-index: var(--cb-z-panel);
     background: var(--cb-glass-sheet);
     backdrop-filter: blur(var(--cb-panel-blur));
@@ -64,14 +65,12 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
     padding: var(--cb-space-5);
 }
 .planning-inspector__header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--cb-space-3); }
-.planning-inspector__header h2 { margin: 0; font-size: var(--cb-text-xl); color: var(--cb-text-strong); }
+.planning-inspector__header h2 { margin: 0; font-size: var(--cb-text-lg); font-weight: var(--cb-weight-semibold); color: var(--cb-text-strong); }
 .planning-inspector__badges { display: flex; flex-wrap: wrap; gap: var(--cb-space-2); margin: var(--cb-space-4) 0 var(--cb-space-3); }
 .planning-inspector__description { font-size: var(--cb-text-base); line-height: var(--cb-leading); color: var(--cb-text-muted); margin: 0; }
 .planning-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: var(--cb-space-4); padding: var(--cb-space-4) 0; margin: var(--cb-space-3) 0; border-block: 1px solid var(--cb-line); }
-.planning-metrics div:first-child { grid-column: 1 / -1; }
 .planning-metrics dt { color: var(--cb-text-muted); font-size: var(--cb-text-sm); margin-bottom: var(--cb-space-1); }
-.planning-metrics dd { margin: 0; font-size: var(--cb-text-xl); font-weight: var(--cb-weight-semibold); color: var(--cb-text-strong); }
-.planning-metrics div:first-child dd { font-size: var(--cb-text-2xl); }
+.planning-metrics dd { margin: 0; font-size: var(--cb-text-base); font-weight: var(--cb-weight-semibold); color: var(--cb-text-strong); }
 .planning-assessment { padding: var(--cb-space-3); background: var(--cb-warning-soft); border-radius: var(--cb-radius-md); color: var(--cb-warning-soft-ink); font-size: var(--cb-text-sm); line-height: var(--cb-leading); }
 .planning-assessment p { margin: var(--cb-space-1) 0 0; }
 .planning-limits { display: grid; grid-template-columns: 1fr auto; gap: var(--cb-space-2); font-size: var(--cb-text-sm); margin: var(--cb-space-4) 0; }
@@ -79,23 +78,22 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
 .planning-limits dd { margin: 0; font-weight: var(--cb-weight-semibold); }
 .planning-evidence { padding-block: var(--cb-space-3); border-top: 1px solid var(--cb-line); color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
 .planning-evidence summary { cursor: pointer; color: var(--cb-text); }
-.planning-evidence__terms { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--cb-text-xs); }
-.planning-inspector__footer { margin-top: var(--cb-space-3); font-size: var(--cb-text-base); }
+.planning-evidence__terms { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--cb-text-sm); }
+.planning-inspector__footer { margin-top: var(--cb-space-3); font-size: var(--cb-text-sm); }
 /* Configurations list in the inspector: one button per recorded housing type; the shown one is outlined. */
 .planning-configurations { margin: var(--cb-space-3) 0; font-size: var(--cb-text-sm); }
 .planning-configurations h3 { font-size: var(--cb-text-base); margin: 0 0 var(--cb-space-2); }
 .planning-configurations__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--cb-space-1); }
-.planning-configurations__pick { display: grid; grid-template-columns: 1fr auto; gap: 0 var(--cb-space-2); width: 100%; text-align: left; padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); background: var(--cb-surface); color: var(--cb-text); font: inherit; cursor: pointer; }
-.planning-configurations__pick[aria-pressed="true"] { border-color: var(--cb-planning-permitted); box-shadow: inset 0 0 0 1px var(--cb-planning-permitted); }
+.planning-configurations__pick { display: grid; grid-template-columns: 1fr auto; gap: 0 var(--cb-space-2); width: 100%; text-align: left; white-space: normal; }
 .planning-configurations__pick > span { color: var(--cb-text-muted); }
 .planning-configurations__measure { grid-column: 1 / -1; font-variant-numeric: tabular-nums; }
 .planning-limits__scope { grid-column: 1 / -1; color: var(--cb-text); font-weight: var(--cb-weight-semibold); }
 .planning-limits dd:empty { display: none; }
 .planning-views[hidden], .planning-inspector[hidden] { display: none; }
 @media (max-width: 899.98px) {
-    .planning-layer-name { gap: var(--cb-space-1); font-size: var(--cb-text-xs); }
+    .planning-layer-name { gap: var(--cb-space-1); font-size: var(--cb-text-sm); }
     .planning-layer-row { grid-template-columns: minmax(64px, 1fr) minmax(0, 1.1fr) minmax(0, 1.3fr) var(--planning-action-size); }
-    .planning-layer-select { font-size: var(--cb-text-xs); }
+    .planning-layer-select { font-size: var(--cb-text-sm); }
     .planning-inspector { top: auto; bottom: var(--map-shell-bottom-clearance); left: var(--cb-space-2); right: var(--cb-space-2); width: auto; max-height: min(50dvh, calc(100dvh - var(--map-shell-bottom-clearance) - var(--map-shell-top-clearance) - var(--cb-space-2))); padding: var(--cb-space-4); }
 }
 @media (max-width: 767.98px) {

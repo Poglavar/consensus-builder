@@ -24,8 +24,8 @@
     flex: 1;
     min-width: 0;
     margin: 0;
-    font-size: var(--cb-text-xl);
-    font-weight: 700;
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
     line-height: 1.3;
     overflow-wrap: anywhere;
 }
@@ -35,7 +35,7 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     overflow: hidden;
-    font-size: 16px;
+    font-size: var(--cb-text-lg);
 }
 
 #proposal-details-panel .panel-header__actions {
@@ -52,7 +52,7 @@
     height: var(--cb-control-height);
     min-width: var(--cb-control-height);
     min-height: var(--cb-control-height);
-    font-size: 18px;
+    font-size: var(--cb-text-lg);
 }
 
 #proposal-details-panel .panel-body {
@@ -73,7 +73,7 @@
     flex: 0 0 auto;
     min-height: var(--cb-space-6);
     padding: var(--cb-space-1) var(--cb-space-2);
-    font-size: var(--cb-text-xs);
+    font-size: var(--cb-text-sm);
     line-height: var(--cb-leading);
     white-space: nowrap;
 }
@@ -87,8 +87,8 @@
     padding: 0;
     color: var(--cb-text);
     text-align: left;
-    font-size: 15px;
-    font-weight: 400;
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-normal);
     line-height: 1.6;
 }
 
@@ -105,13 +105,13 @@
     gap: 6px;
     margin: 14px 0 18px;
     color: var(--cb-text-muted);
-    font-size: 14px;
+    font-size: var(--cb-text-base);
 }
 
 #proposal-details-panel .proposal-author-row .metric-value {
     flex: 0 1 auto;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-normal);
 }
 
 #proposal-details-panel .proposal-detail-section {
@@ -130,8 +130,8 @@
     cursor: pointer;
     list-style: none;
     color: var(--cb-text-strong);
-    font-size: 14px;
-    font-weight: 600;
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-semibold);
     line-height: 1.35;
     touch-action: manipulation;
 }
@@ -140,18 +140,18 @@
 .proposal-detail-section > summary::marker { content: ''; }
 .proposal-detail-section > summary:hover { color: var(--cb-primary-hover); }
 .proposal-detail-section > summary:focus-visible { outline: 2px solid var(--cb-focus); outline-offset: 2px; }
-.proposal-detail-section > summary > i { font-size: 11px; color: var(--cb-text-muted); flex-shrink: 0; }
+.proposal-detail-section > summary > i { font-size: var(--cb-text-sm); color: var(--cb-text-muted); flex-shrink: 0; }
 .proposal-detail-section[open] > summary > i { transform: rotate(180deg); }
 .proposal-detail-section-label { display: grid; gap: 4px; min-width: 0; }
-.proposal-detail-section-label small { color: var(--cb-text-muted); font-size: 12px; font-weight: 400; line-height: 1.45; }
+.proposal-detail-section-label small { color: var(--cb-text-muted); font-size: var(--cb-text-sm); font-weight: var(--cb-weight-normal); line-height: 1.45; }
 .proposal-detail-section-content { padding-bottom: 18px; min-width: 0; overflow-wrap: anywhere; }
 
 #proposal-details-panel .proposal-detail-section-content > :first-child { margin-top: 0; }
 #proposal-details-panel .proposal-detail-section-content > :last-child { margin-bottom: 0; }
 #proposal-details-panel .proposal-detail-section-content .metric-group { gap: 12px; margin: 8px 0; align-items: baseline; }
-#proposal-details-panel .proposal-detail-section-content .metric-value { font-size: 13px; font-weight: 500; min-width: 0; text-align: right; }
-#proposal-details-panel .proposal-detail-section-content .metric-label { font-size: 12px; color: var(--cb-text-muted); }
-#proposal-details-panel .proposal-detail-section-content h3 { font-size: 16px; line-height: 1.35; }
+#proposal-details-panel .proposal-detail-section-content .metric-value { font-size: var(--cb-text-base); font-weight: var(--cb-weight-normal); min-width: 0; text-align: right; }
+#proposal-details-panel .proposal-detail-section-content .metric-label { font-size: var(--cb-text-sm); font-weight: var(--cb-weight-semibold); color: var(--cb-text-muted); }
+#proposal-details-panel .proposal-detail-section-content h3 { font-size: var(--cb-text-lg); font-weight: var(--cb-weight-semibold); line-height: 1.35; }
 
 /* A published design's CID in its record section: shortened, the whole one in its title. */
 #proposal-details-panel .proposal-published-cid {
@@ -169,7 +169,7 @@
 
 #proposal-details-panel .panel-footer:empty { display: none; }
 #proposal-details-panel .proposal-primary-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(var(--cb-control-height), max-content); align-content: start; gap: 8px; margin: 0; }
-#proposal-details-panel .proposal-primary-actions > button { grid-column: auto; order: 0; min-width: 0; min-height: var(--cb-control-height); margin: 0; font-size: 13px; padding: 6px 8px; white-space: normal; }
+#proposal-details-panel .proposal-primary-actions > .btn { grid-column: auto; order: 0; min-width: 0; min-height: var(--cb-control-height); margin: 0; font-size: var(--cb-text-base); padding: 6px 8px; white-space: normal; }
 #proposal-details-panel .proposal-primary-actions > .proposal-publish-later { grid-column: 1 / -1; order: 1; margin: 0; }
 
 #proposal-details-panel:not(.is-minimized) .btn-proposal-details { display: none; }
@@ -216,7 +216,7 @@
         background: transparent;
     }
 
-    #proposal-details-panel.is-minimized .panel-header h3 { font-size: 16px; }
+    #proposal-details-panel.is-minimized .panel-header h3 { font-size: var(--cb-text-lg); font-weight: var(--cb-weight-semibold); }
 
     #proposal-details-panel.is-minimized .panel-header__actions button,
     #proposal-details-panel.is-minimized .panel-header .close-circle-btn {
@@ -224,9 +224,9 @@
         height: 36px;
         min-width: 36px;
         min-height: 36px;
-        font-size: 18px;
+        font-size: var(--cb-text-lg);
     }
-    #proposal-details-panel:not(.is-minimized) .panel-header h3 { font-size: 20px; }
+    #proposal-details-panel:not(.is-minimized) .panel-header h3 { font-size: var(--cb-text-lg); font-weight: var(--cb-weight-semibold); }
     #proposal-details-panel .panel-header__actions button { min-width: 44px; min-height: 44px; }
     #proposal-details-panel .proposal-primary-actions > button,
     #proposal-details-panel > .mobile-dock-sheet-handle { display: none; }
@@ -234,17 +234,14 @@
     #proposal-details-panel .panel-footer { padding: 10px max(16px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); border-radius: 0; }
 }
 
-/* Before / after on an applied proposal (js/proposals/before-after.js) is a toggle: btn with
-   aria-pressed while comparing. One parcel's own before/after (M6) is a small one (btn-sm) beside
-   the parcel number. */
+/* Before / after is a shared action toggle, with aria-pressed while comparing. A source parcel's
+   own comparison sits beside its native navigation button. */
 .btn-compare-parcel {
     margin-left: var(--cb-space-2);
 }
 
-/* The proposal's parcels (proposals/details-panel.js): one bordered row each with the owner's
-   avatar and the parcel's acceptance. The state is a class: execution.js toggles is-accepted on
-   the row and parcel-status-* on the status as owners accept; the colours and the check mark are
-   the state's, from tokens, so the dark theme follows. */
+/* Source-parcel rows retain owner avatars and reference status. Navigation and comparison are
+   separate native controls; hover can highlight the whole row's parcel on the map. */
 .proposal-parcels-list .proposal-parcel-row {
     display: flex;
     flex-direction: column;
@@ -255,7 +252,6 @@
     padding: var(--cb-space-2);
     border: 1px solid var(--cb-line-strong);
     border-radius: var(--cb-radius-sm);
-    cursor: pointer;
 }
 
 .proposal-parcels-list .proposal-parcel-row:last-child {
@@ -317,3 +313,46 @@
     margin: 10px 0;
 }
 
+
+/* Details panel content that was previously styled at each template call site. */
+#proposal-details-panel .proposal-author-text {
+    display: inline-block;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#proposal-details-panel .proposal-author-avatar {
+    width: 24px;
+    height: 24px;
+    margin-right: var(--cb-space-2);
+    border: 2px solid var(--cb-primary);
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+#proposal-details-panel .proposal-parcel-list-scroll {
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+#proposal-details-panel .proposal-ownership-stats-heading {
+    margin-bottom: var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+}
+
+#proposal-details-panel .proposal-details-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    padding: var(--cb-space-6);
+}
+
+#proposal-details-panel .proposal-details-loader__text {
+    margin-top: var(--cb-space-4);
+    color: var(--cb-text-muted);
+}

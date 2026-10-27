@@ -226,7 +226,7 @@
         const heading = element('div');
         const sourceResult = item.role === 'permitted';
         heading.append(element('p', 'planning-eyebrow', item.parcelEnvelope ? t('envelopeTitle')
-            : t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : 'builtRecord')), element('h2', '', item.title));
+            : t(item.areas?.length ? 'zoningArea' : sourceResult ? (item.volumes.length ? 'sourceProposal' : 'savedResult') : 'builtRecord')), element('h2', 'click-stack__title', item.title));
         // A parcel's massing names its parcel; the title alone is the source edition and ratio.
         const parcelLabel = parcelOf(item);
         if (parcelLabel) heading.append(element('p', 'planning-inspector__parcel', `${t('focusParcel')} ${parcelLabel}`));
@@ -310,7 +310,7 @@
         }
         inspector.append(evidence);
         for (const reference of item.sourceEvidence?.sourceReferences || []) {
-            const button = element('button', 'btn btn-sm', t('referencedSource', { source: reference.providerId, revision: reference.revision.slice(0, 8) }));
+            const button = element('button', 'btn', t('referencedSource', { source: reference.providerId, revision: reference.revision.slice(0, 8) }));
             button.type = 'button'; button.addEventListener('click', async () => {
                 button.disabled = true;
                 try {
@@ -341,7 +341,7 @@
         const list = element('ul', 'planning-configurations__list');
         for (const configuration of item.configurations) {
             const row = element('li'); row.dataset.configuration = configuration.id;
-            const button = element('button', 'planning-configurations__pick'); button.type = 'button';
+            const button = element('button', 'btn planning-configurations__pick'); button.type = 'button';
             button.setAttribute('aria-pressed', String(shown?.id === configuration.id));
             button.setAttribute('aria-label', `${t('configurationShow')}: ${scenarioLabel(configuration.id)}`);
             button.append(element('strong', '', scenarioLabel(configuration.id)), element('span', '', resultLabel(configuration.treatment)));

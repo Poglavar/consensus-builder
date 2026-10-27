@@ -138,6 +138,8 @@ body.map-edit-locked #click-stack {
     align-items: center;
     gap: 8px;
     margin: 0;
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
     line-height: 1.2;
 }
 
@@ -146,7 +148,7 @@ body.map-edit-locked #click-stack {
     min-width: 0;
     align-items: center;
     gap: 4px;
-    font-size: 11px;
+    font-size: var(--cb-text-sm);
     color: var(--cb-text-muted);
     padding: 3px 6px;
     border-radius: 5px;
@@ -462,6 +464,10 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     gap: 8px;
 }
 
+#parcel-info-panel dl.metric-group {
+    margin-top: 0;
+}
+
 /* The Info tab's facts, two to a row, each in a light box. */
 #parcel-info-panel .parcel-metric-row {
     display: flex;
@@ -490,7 +496,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     }
 
     #parcel-info-panel .parcel-tabs .cb-tab {
-        font-size: var(--cb-text-md);
+        font-size: var(--cb-text-base);
     }
 
     /* The road panel's metric boxes at the same chrome size (their two-line height is in em). */
@@ -508,6 +514,11 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 #parcel-info-panel .metric-value {
     color: var(--cb-text);
     margin-left: 0;
+}
+
+#parcel-info-panel dd.metric-value {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 /* The parcel and block panels' tabs: the shared cb-tabs strip (css/primitives.css), inset like the
@@ -553,7 +564,22 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 .parcel-set-proposals-summary {
     margin: 0 0 8px;
     color: var(--cb-text-muted);
-    font-size: 13px;
+    font-size: var(--cb-text-sm);
+}
+
+#parcel-info-panel .parcel-tab-content .btn,
+#parcel-info-panel .parcel-tab-content .cb-tile {
+    font-size: var(--cb-text-base);
+}
+
+#parcel-info-panel .parcel-build-palette .cb-kicker {
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+}
+
+#parcel-info-panel .parcel-build-disabled-reason {
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-normal);
 }
 
 .parcel-set-proposal {
@@ -843,7 +869,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 #block-info-panel .tools-hint {
-    font-size: var(--cb-text-md);
+    font-size: var(--cb-text-base);
     color: var(--cb-text-muted);
 }
 
@@ -1014,6 +1040,15 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     background-color: var(--cb-danger-soft);
 }
 
+.claim-status-indicator > .btn {
+    width: 100%;
+}
+
+.parcel-info-buttons .button-row[hidden],
+.parcel-info-buttons #claimButton[hidden] {
+    display: none;
+}
+
 .crosshairs-cursor,
 .crosshairs-cursor * {
     cursor: crosshair !important;
@@ -1034,11 +1069,13 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 /* Parcel owner display in parcel info panel */
-.parcel-owner {
+#parcel-info-panel .parcel-owner {
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 4px 0;
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-normal);
 }
 
 /* Removed hover animation for parcel owner */
@@ -1051,7 +1088,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 .parcel-identity-note {
     margin: 8px 0;
     color: var(--cb-text-muted);
-    font-size: 0.85rem;
+    font-size: var(--cb-text-sm);
     line-height: 1.4;
 }
 
@@ -1091,55 +1128,88 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 .parcel-owner-header-label {
-    font-weight: 500;
+    font-weight: var(--cb-weight-semibold);
     color: var(--cb-text);
-    font-size: inherit;
+    font-size: var(--cb-text-sm);
     margin: 0;
+}
+
+#parcel-info-panel .owner-name {
+    font-weight: var(--cb-weight-normal);
 }
 
 /* The owner kind beside "Owner" (js/parcels/ui/parcel-panel.js, ownership-ui.js): a soft tag per
    kind, from the theme's soft tones. */
 .parcel-ownership-type-label {
-    display: inline-block;
-    padding: 2px 8px;
-    margin-left: 8px;
-    font-size: var(--cb-text-xs);
-    font-weight: 500;
+    margin-left: var(--cb-space-2);
+}
+
+.parcel-ownership-type-label[hidden] {
+    display: none;
+}
+
+#roadMeasurements[hidden] {
+    display: none;
+}
+
+.parcel-road-measurements-divider {
+    border: 0;
+    height: 1px;
+    background: var(--cb-line);
+    margin: var(--cb-space-3) 0;
+}
+
+#parcel-info-panel .metric-label,
+#parcel-info-panel .parcel-proposals-list .proposal-item-label {
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-muted);
+}
+
+#parcel-info-panel .parcel-identity-note,
+#parcel-info-panel .parcel-proposals-empty p,
+#parcel-info-panel .parcel-proposals-list .proposal-item-details,
+#parcel-info-panel .parcel-block-none {
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-normal);
+    color: var(--cb-text-muted);
+}
+
+#parcel-info-panel .metric-value {
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-normal);
     color: var(--cb-text);
-    background-color: var(--cb-surface-2);
-    border: 1px solid var(--cb-line);
-    border-radius: var(--cb-radius-sm);
-    vertical-align: middle;
-    cursor: default;
+}
+
+#parcel-info-panel .parcel-owner-section .parcel-owners-container,
+#parcel-info-panel .parcel-owner {
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-normal);
+    color: var(--cb-text);
 }
 
 .parcel-ownership-type-label.ownership-type-government {
     background-color: var(--cb-info-soft);
-    border-color: var(--cb-info);
     color: var(--cb-info-soft-ink);
 }
 
 .parcel-ownership-type-label.ownership-type-institution {
     background-color: var(--cb-primary-soft);
-    border-color: var(--cb-primary);
     color: var(--cb-primary-soft-ink);
 }
 
 .parcel-ownership-type-label.ownership-type-company {
     background-color: var(--cb-warning-soft);
-    border-color: var(--cb-warning);
     color: var(--cb-warning-soft-ink);
 }
 
 .parcel-ownership-type-label.ownership-type-mixed {
     background-color: var(--cb-surface-2);
-    border-color: var(--cb-line-strong);
     color: var(--cb-text);
 }
 
 .parcel-ownership-type-label.ownership-type-individual {
     background-color: var(--cb-success-soft);
-    border-color: var(--cb-success);
     color: var(--cb-success-soft-ink);
 }
 
@@ -1154,7 +1224,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 .parcel-ad-dialog {
-    display: none;
+    display: flex;
     margin: 4px 0 8px 0;
     padding: 6px 8px;
     background: var(--cb-surface-2);
@@ -1163,7 +1233,15 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     gap: var(--cb-space-2);
     flex-wrap: wrap;
     justify-content: center;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-normal);
+    color: var(--cb-text);
 }
+
+.parcel-ad-dialog[hidden] {
+    display: none;
+}
+
 
 .parcel-owner-section .parcel-owners-container {
     width: 100%;
@@ -1183,6 +1261,9 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 .parcel-owners-container .owner-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -1203,8 +1284,14 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     color: var(--cb-text-muted);
 }
 
-.parcel-owner-share {
-    font-size: 0.9em;
+#parcel-info-panel .owner-loading {
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-normal);
+}
+
+#parcel-info-panel .parcel-owner-share {
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-normal);
 }
 
 .parcel-block-none {
@@ -1266,7 +1353,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 .parcel-proposals-list .proposal-item {
-    cursor: pointer;
+    cursor: default;
     padding: 8px;
     margin: 4px 0;
     border: 1px solid var(--cb-line);
@@ -1307,8 +1394,9 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 .parcel-proposals-list .proposal-item-title {
     min-width: 0;
     color: var(--cb-primary);
-    font-weight: bold;
-    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-semibold);
+    font-size: var(--cb-text-lg);
+    margin: 0;
     overflow-wrap: anywhere;
 }
 
@@ -1321,7 +1409,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 .parcel-proposals-list .proposal-item-details {
-    font-size: 12px;
+    font-size: var(--cb-text-sm);
     color: var(--cb-text-muted);
     margin-bottom: 2px;
     display: flex;
@@ -1684,7 +1772,7 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 /* What a formation takes from this parcel (shown only on acceptance entries). */
 .proposal-item-takes {
     color: var(--cb-danger);
-    font-size: 12px;
+    font-size: var(--cb-text-sm);
 }
 
 /* The remainder report: what the parcel cedes to the listed formations and what is

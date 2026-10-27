@@ -8,7 +8,7 @@ const MODULE = '../../frontend/js/parcels/ui/road.js';
 const GLOBALS = ['currentParcel', 'LiveParcelFabric', 'document', 'CbFormat', 'updateStatus', 'ensureOptionalTool', 'calculateRoadMetrics', 'measureAsRoad'];
 
 function element() {
-    return { innerHTML: '', disabled: false, style: {} };
+    return { innerHTML: '', disabled: false, hidden: true };
 }
 
 afterEach(() => {
@@ -40,7 +40,7 @@ describe('measure as road', () => {
         expect(calculate).toHaveBeenCalledWith(coordinates);
         expect(measurements.innerHTML).toContain('42 m');
         expect(measurements.innerHTML).not.toMatch(/N\/A|NaN|undefined/);
-        expect(measurements.style.display).toBe('block');
+        expect(measurements.hidden).toBe(false);
         expect(button.disabled).toBe(true);
     });
 });

@@ -127,6 +127,31 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
   contests by money, and filters All · Open · Settled · Mine. On desktop it is wider than the
   control sheets and centred on its dock button.
 
+## Click-stack sections
+
+The 2D and 3D click stacks use the same section cards, accordion headings, selectors and
+relationship lists. Ground, selected parcels, cadastral parcels, formed parcels, built stock,
+permitted buildings, designs, plans and plan-scoped agreements use this frame. Native headings
+contain the expand/collapse buttons; labelled regions contain expanded content. Measurements
+use definition lists or tables with row and column headers, and sliders have associated labels.
+
+The typography scale is `--cb-text-lg` for item titles, `--cb-text-base` for body text, values
+and actions, and `--cb-text-sm` for captions, source notes and measurement labels. Actions use
+`btn` and its shared variants, tabs use `cb-tabs`, and status/type pills use `cb-badge`.
+Relationships use the same action family, with layout supplied by `click-stack__chip`.
+
+`tokens.css` is the theme entrypoint. `map.css` owns the shared section frame and hosted-panel
+insets; provider stylesheets own internal layout without duplicating a panel frame. Static
+presentation belongs in these external stylesheets, including generated design and parcel
+content. Visibility uses `hidden` or semantic state classes. Map geometry and renderer pane
+ordering are separate from stack presentation; they are not UI-style escape hatches.
+The owner-approval meter's percentage width is the sole allowlisted inline style in hosted
+content; `click-stack-semantics.test.js` checks that interface and rejects other inline styling.
+
+This presentation pass changes no authoring operation or saved record. MCP parity was checked
+against the existing parcel, design, plan and agreement editing primitives; no MCP schema or
+operation change is required.
+
 ## Map highlights
 
 Map-object selection and hover use the model view's yellow (`#ffdd00`) in 2D, model and aerial

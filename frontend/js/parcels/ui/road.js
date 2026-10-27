@@ -50,8 +50,8 @@
             const consistencyLabel = tParcel('panel.parcel.actions.measureConsistencyLabel', {}, 'As Road Width Consistency:');
             const toleranceText = tParcel('panel.parcel.actions.measureToleranceText', { percent: formattedTolerance }, `${formattedTolerance}% within ±10% of average`);
 
-            measurementsDiv.innerHTML = `
-        <hr style="border: 0; height: 1px; background-color: #ddd; margin: 10px 0;">
+        measurementsDiv.innerHTML = `
+        <hr class="parcel-road-measurements-divider">
         <div class="metric-group">
             <div class="metric-label">${lengthLabel}</div>
             <div class="metric-value">${formattedLength}</div>
@@ -70,7 +70,7 @@
         </div>
     `;
 
-            measurementsDiv.style.display = 'block';
+            measurementsDiv.hidden = false;
             button.innerHTML = tParcel('panel.parcel.actions.measurementsAdded', {}, 'Measurements added');
             button.disabled = true;
 
