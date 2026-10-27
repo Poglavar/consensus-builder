@@ -2161,6 +2161,7 @@
             "emptyRights": "O conjunto de dados ainda não tem linhas de parcelas.",
             "policyTitle": "Regras do acordo",
             "policyType": "Regras",
+            "experimental": "Experimental",
             "unanimous": "Todos os proprietários têm de concordar",
             "threshold": "Regras personalizadas",
             "ownerThreshold": "Limiar do número de proprietários (fração)",

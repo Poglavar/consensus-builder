@@ -162,3 +162,16 @@ describe('the form', () => {
         expect(scheme).not.toContain('data-approval-test=');
     });
 });
+
+
+describe('agreement scheme presentation', () => {
+    it('shows one experimental pill beside the rules control and keeps scheme facts and sources without disclaimers', () => {
+        const config = Setup.withPolicyFromForm(form({ '[data-approval-regime]': 'de-umlegung-new' }), null);
+        const html = Setup.html({ config });
+        expect(html).toContain('class="cb-badge cb-badge--warning" data-approval-experimental>Experimental</span>');
+        expect(html.match(/data-approval-experimental/g)).toHaveLength(1);
+        expect(html.indexOf('data-approval-experimental')).toBeLessThan(html.indexOf('<select data-approval-rule data-approval-regime>'));
+        expect(html).toContain('Germany — Umlegung'); expect(html).toContain('gesetze-im-internet.de');
+        expect(html).not.toMatch(/Research template|Comparative research|not legal advice|approval-setup__caveat|approval-setup__research/);
+    });
+});

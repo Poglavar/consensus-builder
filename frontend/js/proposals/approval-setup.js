@@ -209,7 +209,7 @@
         const lines = words().allocationLines(template, t);
         const sources = template.sources.map(source => `<a class="cb-link cb-link--external" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.label)}</a>`).join(', ');
         return `<div class="approval-setup__regime" data-approval-regime-details="${esc(template.id)}">
-            <p><span class="cb-badge approval-setup__research">${esc(t('proposalApproval.regime.research', 'Research template'))}</span> ${esc(words().familyText(template, t))} · ${esc(words().stageText(template, t))}</p>
+            <p>${esc(words().familyText(template, t))} · ${esc(words().stageText(template, t))}</p>
             <p>${esc(t(`proposalApproval.schemes.${template.id}.note`, template.text.note))}</p>
             ${lines.length ? `<ul class="approval-setup__allocation">${lines.map(line => `<li>${esc(line)}</li>`).join('')}</ul>` : ''}
             ${need.leases || need.publicBodies ? `<p data-approval-rights-needed>${esc(t('proposalDrafts.approval.rightsNeeded', 'The rights file must list {{what}} (parcel-rights/v2); the downloaded template includes them.', {
@@ -217,7 +217,6 @@
                     need.publicBodies ? t('proposalDrafts.approval.needPublicBodies', 'which holders are public bodies') : null].filter(Boolean).join(t('proposalApproval.rules.and', ' and '))
             }))}</p>` : ''}
             <p class="approval-setup__sources">${esc(t('proposalDrafts.approval.sources', 'Sources:'))} ${sources}</p>
-            <p class="approval-setup__caveat">${esc(t('proposalDrafts.approval.researchCaveat', 'Checked {{date}}. Comparative research, not legal advice: confirm the current law and the procedure’s own steps (notices, hearings, registration).', { date: regime?.version || template.version }))}</p>
         </div>`;
     }
 
@@ -259,7 +258,7 @@
         }
         return `<div class="proposal-editor-card" data-approval-rules-card>
             <h4>${esc(t('proposalDrafts.approval.policyTitle', 'Agreement rules'))}</h4>
-            <label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.policyType', 'Rules'))}</span><select data-approval-rule data-approval-regime>
+            <label class="proposal-editor-field"><span class="approval-setup__rules-label"><span>${esc(t('proposalDrafts.approval.policyType', 'Rules'))}</span><span class="cb-badge cb-badge--warning" data-approval-experimental>${esc(t('proposalDrafts.approval.experimental', 'Experimental'))}</span></span><select data-approval-rule data-approval-regime>
                 ${option('unanimous', t('proposalDrafts.approval.unanimous', 'Every owner must agree'), choice)}${option('custom', t('proposalDrafts.approval.threshold', 'Custom rules'), choice)}${groups}
             </select></label>
             <p class="approval-setup__rule" data-approval-rule-text>${esc(policyText(policy, normalized?.regime))}</p>

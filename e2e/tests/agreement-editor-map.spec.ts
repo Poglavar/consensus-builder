@@ -70,10 +70,12 @@ test('unnamed parcel owners work and ownership/lens settings open separate dialo
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await expect(editor.locator('[data-approval-file]')).toHaveCount(0);
   await expect(editor.locator('[data-approval-lens]')).toHaveCount(0);
+  await editor.getByRole('tab', { name: 'Input parcels', exact: true }).click();
   await editor.locator('[data-agreement-action="rights"]').click();
   const rights = page.locator('.cb-dialog').filter({ hasText: 'Parcel ownership rights' });
   await expect(rights.locator('[data-approval-file]')).toBeVisible();
   await rights.getByRole('button', { name: 'Close', exact: true }).last().click();
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await editor.locator('[data-agreement-action="lens"]').click();
   await expect(page.locator('.cb-dialog [data-approval-lens]')).toBeVisible();
 });
@@ -108,4 +110,73 @@ test('phone layout shows tabs without horizontal overflow and requires a saved p
   expect(await editor.evaluate(e => e.scrollWidth <= e.clientWidth)).toBe(true);
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await expect(editor.locator('[data-agreement-compensation]')).toBeVisible();
+});
+
+
+test('input parcels and designs share inspection rows with temporary hover and persistent click highlights', async ({ mockApi: page }) => {
+  const { layoutId } = await applyLayout(page);
+  const editor = await create(page, layoutId);
+  const parcel = editor.locator('[data-agreement-inspect="parcel"]').first();
+  const design = editor.locator('[data-agreement-inspect="design"]').first();
+  await expect(editor.locator('[data-agreement-action="rights"]')).toBeVisible();
+  await expect(editor.locator('[data-agreement-tabpanel="rules"] [data-agreement-action="rights"]')).toHaveCount(0);
+  const appearance = (row: any) => row.evaluate((element: HTMLElement) => {
+    const style = getComputedStyle(element);
+    const title = getComputedStyle(element.querySelector('.agreement-object-row__title')!);
+    return { font: style.font, padding: style.padding, border: style.borderRadius, titleFont: title.font };
+  });
+  expect(await appearance(parcel)).toEqual(await appearance(design));
+  expect((await parcel.locator('.agreement-object-row__title').boundingBox())!.x)
+    .toBe((await design.locator('.agreement-object-row__title').boundingBox())!.x);
+  const hover = page.locator('.agreement-map-hover');
+  const pinned = page.locator('.agreement-map-focus');
+  await parcel.hover();
+  await expect(hover.first()).toBeVisible();
+  await parcel.click();
+  await expect(parcel).toHaveAttribute('aria-pressed', 'true');
+  await page.locator('#mode-2d-toggle').hover();
+  await expect(hover).toHaveCount(0);
+  await expect(pinned.first()).toBeVisible();
+  const drawn = await page.evaluate(() => {
+    const features: any[] = [];
+    (window as any).map.eachLayer((layer: any) => { if (layer.options?.className === 'agreement-map-focus' && layer.feature) features.push(layer.feature.geometry); });
+    return features;
+  });
+  const original = await page.evaluate(id => (window as any).CadastralParcelRepository.get(id).geometry, await parcel.getAttribute('data-agreement-object-id'));
+  expect(drawn).toContainEqual(original);
+  await design.hover();
+  await expect(hover.first()).toBeVisible();
+  await design.click();
+  await expect(design).toHaveAttribute('aria-pressed', 'true');
+  await expect(parcel).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('#agreement-editor')).toBeVisible();
+  await editor.getByRole('tab', { name: 'Persons', exact: true }).click();
+  await expect(hover).toHaveCount(0); await expect(pinned).toHaveCount(0);
+  await editor.getByRole('tab', { name: 'Input parcels', exact: true }).click();
+  await design.focus();
+  await expect(hover.first()).toBeVisible();
+  await design.press('Enter');
+  await expect(design).toHaveAttribute('aria-pressed', 'true');
+  await editor.locator('.panel-header [data-agreement-action="cancel"]').click();
+  await expect(hover).toHaveCount(0); await expect(pinned).toHaveCount(0);
+  expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id).applied, layoutId)).toBe(true);
+});
+
+
+test('agreement rules show one yellow experimental pill without research or legal disclaimers', async ({ mockApi: page }) => {
+  const { layoutId } = await applyLayout(page);
+  const editor = await create(page, layoutId);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await editor.locator('[data-approval-regime]').selectOption('de-umlegung-new');
+  const pill = editor.locator('[data-approval-experimental]');
+  await expect(pill).toHaveCount(1); await expect(pill).toHaveText('Experimental');
+  await expect(pill).toHaveClass(/cb-badge--warning/);
+  await expect(editor.locator('.approval-setup__regime .cb-link').first()).toBeVisible();
+  await expect(editor).not.toContainText('Research template'); await expect(editor).not.toContainText('not legal advice');
+  await page.evaluate(async () => { await (window as any).i18n.setLanguage('hr'); });
+  await editor.locator('[data-approval-regime]').selectOption('de-umlegung-developed');
+  await expect(pill).toHaveText('Eksperimentalno');
+  await expect(editor).not.toContainText('Istraživački predložak');
+  await expect(editor).not.toContainText('Usporedno istraživanje');
+  await expect(editor).not.toContainText('ne pravni savjet');
 });

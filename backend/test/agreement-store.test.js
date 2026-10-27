@@ -358,7 +358,7 @@ describe('the sections as HTML (the hooks the browser spec targets)', () => {
         const html = Dialog.landHtml({ land, selectedCount: 1 });
         expect(html).toContain('data-agreement-inputs');
         expect(html).toContain('data-agreement-outputs');
-        expect(html).toContain('<tr data-agreement-input="335/10">');
+        expect(html).toContain('<li data-agreement-input="335/10">');
         expect(html).toContain('<tr data-agreement-output="piece1-sha256:aa"><th scope="row">Piece 1</th><td class="agreement-table__from" data-label="From">');
         expect(html).toContain('Ana 50%, Ben 50%');
         expect(html).toContain('No recorded owner');

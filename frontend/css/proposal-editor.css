@@ -597,3 +597,8 @@ body.proposal-editor-open #proposal-details-panel.visible {
     border-color: var(--cb-warning);
     border-width: 4px;
 }
+.approval-setup__rules-label {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+}

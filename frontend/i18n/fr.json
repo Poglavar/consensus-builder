@@ -2161,6 +2161,7 @@
             "emptyRights": "Le jeu de données ne contient encore aucune ligne de parcelle.",
             "policyTitle": "Règles de l’accord",
             "policyType": "Règles",
+            "experimental": "Expérimental",
             "unanimous": "Chaque propriétaire doit donner son accord",
             "threshold": "Règles personnalisées",
             "ownerThreshold": "Seuil du nombre de propriétaires (fraction)",

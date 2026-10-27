@@ -40,3 +40,14 @@ Iteration record (all runs completed unless noted):
 | Private saved-plan application Playwright case | 1 passed |
 
 Concurrent plan-editor work changed shared entry points and locale dictionaries during this task. Its changes were preserved. Agreement tests were switched to the new Plans dialog; mixed files are left uncommitted rather than attributing another session's edits to this change.
+
+
+## Input inspection and scheme copy follow-up
+
+Input parcels and plan designs now share the same semantic button/list component and typography. Hover and keyboard focus draw temporary shared map outlines. Clicking (including Enter) keeps an inspection outline without opening another panel or changing the agreement; switching tabs, refreshing the plan or closing clears it. Parcel outlines use the immutable cadastral input even where the applied layout has replaced it. Parcel ownership rights is below the Input parcels plan selector; lens controls stay in Rules.
+
+Research-template labels and legal/research disclaimers were removed from rendered agreement scheme controls and the approval card. A translated warning-colored Experimental pill sits beside the Rules control; scheme facts and sources remain visible.
+
+MCP parity: these changes affect inspection and presentation only. Existing `ugt_inspect_agreement` still supplies input land, designs, output pieces, parties and rules; rights and lens edits use the existing agreement terms operations. No authored record, validation, schema or MCP mutation changed.
+
+Verification: targeted headless unit runs passed (agreement store/accounting: 40 tests; approval setup/regimes/review and locale coverage: 60 tests). Two targeted headless Playwright cases passed for input inspection and rights/lens dialogs; one further case passed for the Experimental pill and absent English/Croatian disclaimers. The inspection-row case was rerun after aligning both row titles and passed again. None were stopped. Headed verification used real source parcel lookup and the same local frontend/API checkout.

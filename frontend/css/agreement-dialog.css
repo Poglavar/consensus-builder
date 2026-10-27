@@ -17,6 +17,14 @@
 .agreement-persons-table .agreement-persons-cash { display: inline-block; white-space: nowrap; font-size: var(--cb-text-xs); }
 .agreement-editor input[type="range"] { width: 100%; }
 
+/* Input parcels and plan designs use the same inspection-list component. */
+.agreement-object-heading { margin: 0 0 var(--cb-space-2); font-size: var(--cb-text-md); font-weight: var(--cb-weight-semibold); }
+.agreement-object-list { display: grid; gap: var(--cb-space-2); margin: 0; padding: 0; list-style: none; }
+.agreement-object-row { display: grid; grid-template-columns: minmax(0, 1fr); justify-content: stretch; justify-items: stretch; align-items: start; gap: var(--cb-space-1); width: 100%; min-width: 0; padding: var(--cb-space-2) var(--cb-space-3); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); font-size: var(--cb-text-sm); line-height: var(--cb-leading); text-align: start; white-space: normal; }
+.agreement-object-row:hover, .agreement-object-row:focus-visible, .agreement-object-row[aria-pressed="true"] { background: var(--cb-primary-soft); border-color: var(--cb-primary); }
+.agreement-object-row__title { font-weight: var(--cb-weight-medium); color: var(--cb-text-strong); overflow-wrap: anywhere; }
+.agreement-object-row__facts { color: var(--cb-text-muted); overflow-wrap: anywhere; }
+
 #agreement-editor {
     position: absolute;
     top: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));

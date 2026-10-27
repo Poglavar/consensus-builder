@@ -595,6 +595,7 @@
             "emptyRights": "El conjunto de datos aún no contiene parcelas.",
             "policyTitle": "Reglas del acuerdo",
             "policyType": "Reglas",
+            "experimental": "Experimental",
             "unanimous": "Todos los propietarios deben estar de acuerdo",
             "threshold": "Reglas personalizadas",
             "ownerThreshold": "Umbral de cantidad de propietarios (fracción)",

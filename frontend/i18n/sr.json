@@ -595,6 +595,7 @@
             "emptyRights": "Skup podataka još nema redove parcela.",
             "policyTitle": "Pravila sporazuma",
             "policyType": "Pravila",
+            "experimental": "Eksperimentalno",
             "unanimous": "Svaki vlasnik mora da pristane",
             "threshold": "Prilagođena pravila",
             "ownerThreshold": "Prag broja vlasnika (razlomak)",

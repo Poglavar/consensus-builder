@@ -189,7 +189,7 @@ export const editorClose = (editor: Locator) => editor.locator('.panel-header [d
 
 // The land under the chosen designs, once it is read: input parcels and the pieces standing on them.
 export async function landLoaded(editor: Locator): Promise<void> {
-  await expect(editor.locator('table[data-agreement-inputs] tr[data-agreement-input]').first()).toBeVisible({ timeout: 30_000 });
+  await expect(editor.locator('[data-agreement-inputs] [data-agreement-input]').first()).toBeVisible({ timeout: 30_000 });
   await expect(editor.locator('[data-agreement-land-loading]')).toHaveCount(0);
   await expect(editor.locator('table[data-agreement-outputs] tr[data-agreement-output]').first()).toBeVisible();
 }

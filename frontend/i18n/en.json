@@ -595,6 +595,7 @@
             "emptyRights": "The dataset has no parcel rows yet.",
             "policyTitle": "Agreement rules",
             "policyType": "Rules",
+            "experimental": "Experimental",
             "unanimous": "Every owner must agree",
             "threshold": "Custom rules",
             "ownerThreshold": "Owner-count threshold (fraction)",

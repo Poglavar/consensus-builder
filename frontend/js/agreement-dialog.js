@@ -371,13 +371,19 @@
         return `<section class="agreement-section" data-agreement-section="${esc(name)}"${hidden ? ' hidden' : ''}><h3 class="agreement-section__title">${esc(title)}</h3>${content}</section>`;
     }
 
+    // Parcels and designs share one inspectable row: title and supporting facts, never membership controls.
+    function inspectionListHtml(items, kind, hook) {
+        return `<ul class="agreement-object-list" ${hook}>${items.map(item => `<li data-agreement-${kind === 'parcel' ? 'input' : 'plan-design'}="${esc(item.id)}"><button type="button" class="btn btn-quiet agreement-object-row" data-agreement-inspect="${kind}" data-agreement-object-id="${esc(item.id)}" aria-pressed="false"><span class="agreement-object-row__title">${esc(item.title)}</span><span class="agreement-object-row__facts">${esc(item.facts)}</span></button></li>`).join('')}</ul>`;
+    }
     function inputsTableHtml(parcels) {
-        const rows = parcels.map(parcel => `<tr data-agreement-input="${esc(parcel.parcelId)}"><th scope="row">${esc(parcel.parcelId)}</th>`
-            + `<td class="agreement-table__number">${esc(areaText(parcel.areaM2))}</td><td class="agreement-table__holders">${esc(holdersText(parcel.holders))}</td></tr>`).join('');
-        return `<div class="agreement-table-scroll"><table class="agreement-table" data-agreement-inputs>`
-            + `<caption>${esc(t('agreement.land.inputsHeading', 'Input parcels'))}</caption>`
-            + `<thead><tr><th scope="col">${esc(t('agreement.land.parcel', 'Parcel'))}</th><th scope="col" class="agreement-table__number">${esc(t('agreement.land.area', 'Area'))}</th>`
-            + `<th scope="col">${esc(t('agreement.land.holders', 'Holders'))}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+        return `<h4 class="agreement-object-heading">${esc(t('agreement.land.inputsHeading', 'Input parcels'))}</h4>`
+            + inspectionListHtml(parcels.map(parcel => ({ id: parcel.parcelId, title: parcel.parcelId,
+                facts: `${areaText(parcel.areaM2)} · ${holdersText(parcel.holders)}` })), 'parcel', 'data-agreement-inputs');
+    }
+    function inputDesignsHtml(designs) {
+        return `<h4 class="agreement-object-heading">${esc(t('sidebar.proposals.title', 'Designs'))}</h4>`
+            + inspectionListHtml(designs.map(design => ({ id: idOf(design.proposalId), title: designTitle(design),
+                facts: typeLabelOf(design) })), 'design', 'data-agreement-input-designs');
     }
 
     function outputsTableHtml(outputs) {
@@ -472,10 +478,10 @@
     function bodyHtml(view) {
         const values = view.values || {};
         const panels = {
-            rules: ruleHtml(values) + '<div data-agreement-settlement></div><div class="cb-actions"><button type="button" class="btn" data-agreement-action="rights">' + esc(t('agreement.workflow.rights', 'Parcel ownership rights')) + '</button><button type="button" class="btn" data-agreement-action="lens">' + esc(t('agreement.workflow.lens', 'Lens operations')) + '</button></div>'
+            rules: ruleHtml(values) + '<div data-agreement-settlement></div><div class="cb-actions"><button type="button" class="btn" data-agreement-action="lens">' + esc(t('agreement.workflow.lens', 'Lens operations')) + '</button></div>'
                 + sectionHtml('consultation', t('agreement.sections.consultation', 'Nonbinding agreement'), consultationHtml(values), values.electorate !== 'community')
                 + detailsHtml({ title: values.title, deadline: values.deadline, today: view.today }),
-            inputs: planSelectorHtml(view.plans || [], view.plan) + '<div data-agreement-land></div><div data-agreement-plan-designs></div>',
+            inputs: planSelectorHtml(view.plans || [], view.plan) + '<div class="cb-actions"><button type="button" class="btn" data-agreement-action="rights">' + esc(t('agreement.workflow.rights', 'Parcel ownership rights')) + '</button></div><div data-agreement-land></div><div data-agreement-plan-designs></div>',
             outputs: '<div data-agreement-allocations></div>',
             persons: '<div data-agreement-persons></div>'
         };
@@ -590,7 +596,7 @@
         const draft = () => recordFromForm(state, state.values);
         function finish(result) {
             if (state.closed) return;
-            state.closed = true; listeners.abort(); auxiliary?.close(); unregisterEscape?.();
+            state.closed = true; clearInspection(); listeners.abort(); auxiliary?.close(); unregisterEscape?.();
             if (session === current) session = null;
             panel.classList.remove('visible'); body.replaceChildren(); doc.body.classList.remove('agreement-editor-open');
             const reopen = result?.id || replaced;
@@ -602,6 +608,7 @@
             root.showEphemeralMessage?.(error.message || String(error), 7000, 'error');
         }
         function activate(tab, focus = false) {
+            clearInspection();
             body.querySelectorAll('[data-agreement-tab]').forEach(button => {
                 const selected = button.dataset.agreementTab === tab;
                 button.setAttribute('aria-selected', String(selected)); button.tabIndex = selected ? 0 : -1;
@@ -647,11 +654,12 @@
             part('[data-agreement-section="consultation"]').hidden = owners;
         }
         function renderLand() {
+            clearInspection();
             const target = part('[data-agreement-land]');
             if (state.loading) target.innerHTML = landHtml({ loading: true });
             else if (state.landError) target.innerHTML = `<p class="agreement-alert">${esc(state.landError)}</p><button type="button" class="btn" data-agreement-action="apply-plan">${esc(t('agreement.workflow.applyPlan', 'Apply plan designs'))}</button>`;
             else target.innerHTML = inputsTableHtml(state.land.inputs.parcels);
-            part('[data-agreement-plan-designs]').innerHTML = `<h4>${esc(t('sidebar.proposals.title', 'Designs'))}</h4><ul>${state.designs.map(design => `<li>${esc(designTitle(design))}</li>`).join('')}</ul>`;
+            part('[data-agreement-plan-designs]').innerHTML = inputDesignsHtml(state.designs);
             part('[data-agreement-allocations]').innerHTML = allocationHtml(state.land, state.values.allocations);
             if (state.values.electorate === 'community') part('[data-agreement-allocations]').querySelectorAll('select').forEach(select => { select.disabled = true; });
             renderPersons(); issues();
@@ -731,6 +739,32 @@
                 } catch (error) { render(error.message); report(error); }
             });
         }
+        // Inspect original input geometry even after a layout has replaced its live parcel. These
+        // overlays never select a design, open another panel or alter the plan's membership.
+        function inspectionFeatures(button) {
+            const id = button.dataset.agreementObjectId;
+            if (button.dataset.agreementInspect === 'parcel') {
+                const original = root.CadastralParcelRepository.get(id);
+                return original?.geometry ? [original] : [];
+            }
+            const design = state.designs.find(record => idOf(record.proposalId) === id);
+            return design ? root.MapPick.outlineOf(design) : [];
+        }
+        function clearInspection() {
+            root.clearProposalHoverLayers();
+            root.highlightFeaturesForInspection([]);
+            body.querySelectorAll('[data-agreement-inspect]').forEach(button => button.setAttribute('aria-pressed', 'false'));
+        }
+        function hoverInspection(event, entering) {
+            const button = event.target.closest('[data-agreement-inspect]');
+            if (!button || button.contains(event.relatedTarget)) return;
+            if (!entering) { root.clearProposalHoverLayers(); return; }
+            root.highlightFeatureGroupsForHover([{ features: inspectionFeatures(button), className: 'agreement-map-hover' }]);
+        }
+        body.addEventListener('pointerover', event => hoverInspection(event, true), { signal });
+        body.addEventListener('pointerout', event => hoverInspection(event, false), { signal });
+        body.addEventListener('focusin', event => hoverInspection(event, true), { signal });
+        body.addEventListener('focusout', event => hoverInspection(event, false), { signal });
         form.addEventListener('submit', event => {
             event.preventDefault(); if (state.loading) return;
             state.attempted = true;
@@ -742,6 +776,11 @@
         }, { signal });
         panel.addEventListener('click', event => {
             const button = event.target.closest('button'); if (!button) return;
+            if (button.dataset.agreementInspect) {
+                root.clearProposalHoverLayers();
+                root.highlightFeaturesForInspection(inspectionFeatures(button), { className: 'agreement-map-focus' });
+                body.querySelectorAll('[data-agreement-inspect]').forEach(row => row.setAttribute('aria-pressed', String(row === button)));
+            }
             if (button.dataset.agreementAction === 'cancel') finish(null);
             if (button.dataset.agreementTab) activate(button.dataset.agreementTab);
             if (['rights', 'lens'].includes(button.dataset.agreementAction)) openAuxiliary(button.dataset.agreementAction);
@@ -827,6 +866,6 @@
         partiesOf, allocationOptions, allocationValue, allocationTo, cashCents, cashInputText, termsOf,
         keptTerms, sponsorLine, ruleConfigAfterDerive, deadlineFromDate, dateFromDeadline, recordFromForm,
         issueText, holdersText, landHtml, allocationHtml, ruleHtml, detailsHtml,
-        consultationHtml, bodyHtml, personsHtml, planSelectorHtml
+        consultationHtml, bodyHtml, personsHtml, planSelectorHtml, inputDesignsHtml
     };
 });

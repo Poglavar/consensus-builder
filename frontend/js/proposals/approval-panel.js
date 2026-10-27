@@ -201,12 +201,11 @@
             ${coOwned ? `<ul class="approval-card__co-owned">${coOwned}</ul>` : ''}`;
     }
 
-    // The named scheme, if any: what it is, its stage, and that it is a research template.
+    // The named scheme, if any: its name, decision family and stage.
     function regimeHtml(progress) {
         const template = words().regimeOf(progress.regime);
         if (!template) return '';
         return `<p class="approval-card__regime" data-approval-regime="${esc(template.id)}"><strong>${esc(words().regimeName(progress.regime, t))}</strong>
-            <span class="cb-badge approval-card__research">${esc(t('proposalApproval.regime.research', 'Research template'))}</span>
             <small>${esc(words().familyText(template, t))} · ${esc(words().stageText(template, t))}</small></p>`;
     }
 
