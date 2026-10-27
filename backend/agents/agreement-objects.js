@@ -15,6 +15,10 @@ const planRecord = require('../../frontend/js/plan-record.js');
 export const DESIGN_SCHEMA = designRecord.SCHEMA;
 export const AGREEMENT_SCHEMA = agreementRecord.PUBLISHED_SCHEMA;
 export const OUTPUT_ROLES = agreementRecord.ROLES;
+export const abstractHolder = agreementRecord.abstractHolder;
+export const defaultAllocations = agreementRecord.defaultAllocations;
+export const settle = agreementRecord.settle;
+export const DEFAULT_SETTLEMENT = agreementRecord.DEFAULT_SETTLEMENT;
 // An agreement that moves no money still states the money of its place (London GBP, Zagreb EUR;
 // consumer-supplied money settings), so any line added later is in that currency.
 export function noMoney(currency) {
@@ -186,18 +190,18 @@ export function parcelOutputs(parcels) {
  * what the app publishes for the same agreement. Refuses (code 'invalid-agreement') what the
  * agreement dialog would refuse, and outputs produced by a design the agreement does not link.
  * @param {object} parts
- *   plan      { cid, content: plan/v1 } the exact selected plan; when omitted, a plan is built from the output geometry and design CIDs
+ *   plan      { cid, content: plan/v1 } the exact existing named plan selected for this agreement
  *   designs   [{ cid, goal, title }] local projection used to validate output producers
  *   parcels   [{ parcelId, parcelSourceId?, areaM2 (number | null), holders? }] the input parcels
  *   outputs   [{ hash, areaM2, fromParcelIds, role, producedBy (a linked design CID | null), geometry? }]
- *   rule      { electorate, binding, approvalConfig, lens } (ownersRule() for a binding owners' agreement, communityRule() for a poll)
+ *   rule      { electorate, binding, approvalConfig, lens, settlement } (ownersRule() for a binding owners' agreement, communityRule() for a poll)
  *   title, author, sponsor (base58 wallet that mints and funds it, or null), city, createdAt (ISO | null),
- *   deadline (ISO | null), openGroundM2 (default 0), allocations ([]), money (noMoney(the city's currency) when none moves)
+ *   deadline (ISO | null), openGroundM2 (default 0), allocations (defaulted when unambiguous), money (settlement-derived)
  * @returns {{ content: object, cid: string }}
  */
 export function agreementObject({
     title = null, author = null, sponsor = null, city = null, createdAt = null,
-    designs, plan, parcels, openGroundM2 = 0, outputs, allocations = [], money, rule, deadline = null, consultation = null
+    designs, plan, parcels, openGroundM2 = 0, outputs, allocations, money, rule, deadline = null, consultation = null
 } = {}) {
     if (!Array.isArray(designs) || !designs.length) throw fail('invalid-agreement', 'an agreement links at least one design');
     const designCids = new Set();
@@ -219,9 +223,7 @@ export function agreementObject({
         updatedAt: null,
         author,
         sponsor,
-        plan: agreementRecord.planReference(plan || planForDesigns(title || city || 'Agreement plan',
-            designs.map(design => ({ cid: design.cid, content: null })),
-            mapViewFromGeometry((outputs || []).map(output => output?.geometry), city, 'An agreement needs its exact plan or geometry for a saved map view.'))),
+        plan: agreementRecord.planReference(plan),
         // The local record names a design by a local id; here the CID is that id.
         designs: designs.map(design => ({ proposalId: design.cid, title: design.title ?? null, goal: design.goal ?? null, cid: design.cid })),
         inputs: {
@@ -243,7 +245,7 @@ export function agreementObject({
             holders: [],
             geometry: output.geometry ?? null
         })),
-        allocations,
+        allocations: allocations ?? (rule?.electorate === 'owners' ? agreementRecord.defaultAllocations({ parcels: (parcels || []).map(parcel => ({ ...parcel, holders: parcel.holders?.length ? parcel.holders : [agreementRecord.abstractHolder(parcel.parcelId)] })) }, outputs || []) : []),
         money,
         rule,
         consultation,
@@ -251,6 +253,8 @@ export function agreementObject({
     };
     let checked;
     try {
+        const settled = agreementRecord.settle(record);
+        Object.assign(record, settled);
         checked = agreementRecord.validate(record);
     } catch (error) {
         throw fail('invalid-agreement', error.message);

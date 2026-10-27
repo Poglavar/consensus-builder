@@ -51,7 +51,7 @@ describe('headless app formation host', () => {
             if (design.content.parcelLayout) expect(derived.outputs.filter(o => o.role === 'plot')).toHaveLength(4);
         });
     }
-    it('creates a community agreement, counts money in the city currency and previews its exact artifact', async () => {
+    it('creates a community agreement from an existing named plan and previews its exact artifact', async () => {
         const design = make('space', { spaceKind: 'park' });
         const paths = [];
         const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {}, fetchImpl: async (url) => {
@@ -61,15 +61,23 @@ describe('headless app formation host', () => {
                 : { complete: true, features: parcels }));
         } });
         const consultation = { organiser: 'did:web:community.example', participationUrl: 'https://community.example/participate' };
-        const result = await tools.draftAgreement({ currency: 'GBP', designs: [design.content], title: 'A park', consultation });
+        const named = await tools.draftPlan({ designs: [design.content], title: 'Existing plan' });
+        const result = await tools.draftAgreement({ plan: named.draftArtifact, rulePreset: 'community-vote', title: 'A park', consultation });
         expect(paths).toContain('/parcel-sources/selected-source');
         expect(result.agreement.inputs.parcels[0].parcelSourceId).toBe('selected-source');
         expect(result.cid).toBe(cidOfObject(result.agreement));
-        expect(result.agreement.money).toEqual({ currency: 'GBP', lines: [] });
+        expect(result.agreement.money.currency).toBe('EUR');
         expect(result.agreement.rule.binding).toBe(false);
         expect(result.agreement.consultation).toEqual(consultation);
         expect(result.previewUrl).toBeNull();
         expect(result.draftArtifact).toMatchObject({ agreement: result.agreement, parcelSourceId: 'selected-source' });
+        const inspected = await tools.inspectAgreement({ plan: result.draftArtifact, filter: { kind: 'piece' } });
+        expect(inspected.items[0]).toHaveProperty('recipient');
+        expect(inspected).toHaveProperty('parties');
+        expect(inspected).toHaveProperty('cashSchedule');
+        const revised = await tools.editAgreement({ plan: result.draftArtifact, expectedCid: result.cid, terms: { title: 'Revised park agreement' } });
+        expect(revised.agreement.planCid).toBe(result.agreement.planCid);
+        expect(revised.agreement.title).toBe('Revised park agreement');
         expect(paths).not.toContain('/pins');
         expect(paths).not.toContain('/agreements');
     });
@@ -80,12 +88,12 @@ describe('headless app formation host', () => {
         const consultation = { organiser: 'did:web:community.example', participationUrl: 'https://community.example/participate' };
         const design = make('space', { spaceKind: 'park' }).content;
         const draft = tools.get('ugt_draft_agreement');
-        expect(draft.parse({ designs: [design], consultation }).consultation).toEqual(consultation);
-        expect(draft.parse({ designs: [design] }).consultation).toBeUndefined();
-        expect(draft.safeParse({ designs: [design], consultation: { ...consultation, extra: true } }).success).toBe(false);
+        expect(draft.parse({ plan: cidOfObject({ schema: 'plan/v1', title: 'p', designCids: [cidOfObject(design)], view: { at: '51.5,-0.1,17', mode: '2d', city: 'london' } }), consultation }).consultation).toEqual(consultation);
+        expect(draft.parse({ plan: cidOfObject({ schema: 'plan/v1', title: 'p', designCids: [cidOfObject(design)], view: { at: '51.5,-0.1,17', mode: '2d', city: 'london' } }) }).consultation).toBeUndefined();
+        expect(draft.safeParse({ plan: {}, consultation: { ...consultation, extra: true } }).success).toBe(false);
         expect(draft.safeParse({ designs: [design], consultation: { organiser: 'x'.repeat(2049), participationUrl: null } }).success).toBe(false);
         const edit = tools.get('ugt_edit_agreement');
-        expect(edit.parse({ plan: { agreement: {} }, expectedCid: cidOfObject(design), terms: { consultation } }).terms.consultation).toEqual(consultation);
+        expect(edit.parse({ plan: {}, expectedCid: cidOfObject(design), terms: { consultation } }).terms.consultation).toEqual(consultation);
         expect(edit.safeParse({ plan: {}, expectedCid: cidOfObject(design), terms: { consultation: { organiser: null } } }).success).toBe(false);
     });
 });

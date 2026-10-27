@@ -32,8 +32,7 @@ function output(pieceId, geometry, areaM2, holders, fromParcelIds = ['k9']) {
     return { hash: record.outputHash(geometry), pieceId, areaM2, fromParcelIds, producedBy: 'layout-1', role: 'plot', holders, geometry };
 }
 
-// A layout over k9 (Ana's) and k10 (Boris's): four pieces, one to the public, one to Boris, one
-// jointly, one left with its holders; Ana is paid 1,000.50 EUR.
+// A layout over k9 (Ana's) and k10 (Boris's): four pieces with one explicit recipient each.
 function agreement(overrides = {}) {
     const outputs = [
         output('k9-p1', rect(0, 0, 1, 2), 400, [ana]),
@@ -43,7 +42,7 @@ function agreement(overrides = {}) {
     ];
     const designCids = ['bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku'];
     const planContent = PlanRecord.create('Courtyard plan', designCids, { at: '45.8,15.96,16', mode: '2d' });
-    return {
+    const raw = {
         schema: 'agreement/v1',
         id: 'ag-1',
         title: null,
@@ -54,19 +53,21 @@ function agreement(overrides = {}) {
         plan: { cid: Cid.cidOfObject(planContent), content: planContent },
         inputs: {
             parcels: [{ parcelId: 'k9', areaM2: 700, holders: [ana] }, { parcelId: 'k10', areaM2: 300, holders: [boris] }],
-            openGroundM2: 12.5
+            openGroundM2: 0
         },
         outputs,
         allocations: [
             { output: outputs[0].hash, to: { kind: 'public' } },
             { output: outputs[1].hash, to: { kind: 'party', ownerKey: 'agent-boris' } },
-            { output: outputs[2].hash, to: { kind: 'joint', shares: [{ ownerKey: 'agent-ana', share: 0.5 }, { ownerKey: 'agent-boris', share: 0.5 }] } }
+            { output: outputs[2].hash, to: { kind: 'party', ownerKey: 'agent-ana' } },
+            { output: outputs[3].hash, to: { kind: 'party', ownerKey: 'agent-ana' } }
         ],
-        money: { currency: 'EUR', lines: [{ ownerKey: 'agent-ana', amountCents: 100050 }] },
+        money: { currency: 'EUR', lines: [] },
         rule: { electorate: 'owners', binding: true, approvalConfig: null, lens: [] },
         deadline: null,
         ...overrides
     };
+    return overrides.rule === null ? raw : record.settle(raw);
 }
 
 describe('statusOf', () => {
@@ -100,7 +101,7 @@ describe('statusOf', () => {
 
 describe('landSummary', () => {
     it('counts the input parcels, adds their area and counts the resulting pieces', () => {
-        expect(panel.landSummary(agreement())).toEqual({ parcels: 2, areaM2: 1000, pieces: 4, openGroundM2: 12.5 });
+        expect(panel.landSummary(agreement())).toEqual({ parcels: 2, areaM2: 1000, pieces: 4, openGroundM2: 0 });
     });
 
     it('leaves the area unknown, never 0, when one input area is unknown', () => {
@@ -112,11 +113,11 @@ describe('landSummary', () => {
 });
 
 describe('allocationLines', () => {
-    it('words who receives each piece: the public, a party, joint shares, or the carried-over holders', () => {
+    it('words the explicit recipient of each piece', () => {
         const lines = panel.allocationLines(agreement());
         expect(lines.map(line => line.label)).toEqual(['Piece 1', 'Piece 2', 'Piece 3', 'Piece 4']);
-        expect(lines.map(line => line.kind)).toEqual(['public', 'party', 'joint', 'holders']);
-        expect(lines.map(line => line.to)).toEqual(['Public', 'Boris', 'Ana 50%, Boris 50%', 'No recorded owner']);
+        expect(lines.map(line => line.kind)).toEqual(['public', 'party', 'party', 'party']);
+        expect(lines.map(line => line.to)).toEqual(['Public', 'Boris', 'Ana', 'Ana']);
         expect(lines[0].area).toBe(format.formatArea(400));
         expect(lines[0].hash).toBe(agreement().outputs[0].hash);
     });
@@ -157,8 +158,8 @@ describe('ledgerRows', () => {
         expect(rows.map(row => row.name)).toEqual(['Ana', 'Boris', 'Public']);
         // Ana put in k9 (700 m²) and receives half of piece 3; Boris put in k10 and receives piece 2
         // and the other half of piece 3; piece 1 goes to the public.
-        expect(rows[0]).toMatchObject({ contributes: format.formatArea(700), receives: format.formatArea(100), change: `−${format.formatArea(600)}` });
-        expect(rows[1]).toMatchObject({ contributes: format.formatArea(300), receives: format.formatArea(400), change: `+${format.formatArea(100)}`, cash: '—' });
+        expect(rows[0]).toMatchObject({ contributes: format.formatArea(700), receives: format.formatArea(300), change: `−${format.formatArea(400)}` });
+        expect(rows[1]).toMatchObject({ contributes: format.formatArea(300), receives: format.formatArea(300), change: format.formatArea(0), cash: '—' });
         expect(rows[2].receives).toBe(format.formatArea(400));
     });
 });

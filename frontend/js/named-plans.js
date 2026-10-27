@@ -28,6 +28,29 @@
             if (error || row?.cid !== cid || win.Cid.cidOfObject(row.content) !== cid) throw new Error(error || 'The saved plan does not match its link.');
             return row;
         };
+        // Local named snapshots exist independently of agreements, including unpublished layouts.
+        function remember(plan, memberIds = []) {
+            verify(plan, plan.cid);
+            const stored = win.PersistentStorage.getItem?.(`plan:${plan.cid}`);
+            const previous = stored ? JSON.parse(stored) : {};
+            const row = { ...previous, ...plan, cid: plan.cid, content: plan.content,
+                memberIds: [...(memberIds.length ? memberIds : plan.memberIds || previous.memberIds || [])] };
+            win.PersistentStorage.setItem(`plan:${row.cid}`, JSON.stringify(row));
+            return row;
+        }
+        function list() {
+            const rows = new Map();
+            win.PersistentStorage.forEach((raw, key) => {
+                if (!String(key).startsWith('plan:') && !String(key).startsWith('ugt-imported-plan:')) return;
+                try { const row = JSON.parse(raw); verify(row, row.cid); rows.set(row.cid, row); }
+                catch (error) { win.console.warn('[NamedPlans] Invalid local plan', key, error.message); }
+            });
+            for (const agreement of win.AgreementStore?.list?.() || []) {
+                if (agreement.plan && !rows.has(agreement.plan.cid)) rows.set(agreement.plan.cid, { ...agreement.plan, memberIds: agreement.designs.map(row => row.proposalId) });
+            }
+            if (current) rows.set(current.cid, { ...rows.get(current.cid), ...current });
+            return [...rows.values()].sort((a, b) => a.content.title.localeCompare(b.content.title));
+        }
         async function request(method, path, body) {
             const response = await win.fetch(backend() + path, { method,
                 ...(body ? { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {}),
@@ -60,6 +83,8 @@
         return {
             link,
             fetchPlan,
+            remember,
+            list,
             get current() { return current; },
             async save(content) {
                 const error = win.PlanRecord.validate(content);
@@ -68,6 +93,7 @@
                 verify(await request('POST', '/plans', { content }), cid);
                 // Read back the durable record before presenting its link as saved.
                 current = await fetchPlan(cid);
+                remember(current);
                 return { ...current, link: link(cid) };
             },
             async open() {
@@ -78,6 +104,7 @@
                     return;
                 }
                 current = result.record;
+                remember(current);
                 win.document.title = `${current.content.title} · Consensus Builder`;
                 const loaded = await win.handleSharedDesignRoute(current.content.designCids, { frame: false, openDetails: false });
                 if (!loaded.blocked && !loaded.failed.length) {

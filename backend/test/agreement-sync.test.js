@@ -46,7 +46,7 @@ function output(pieceId, geometry, areaM2, fromParcelIds, producedBy, role, hold
 }
 // The local agreement the dialog saved over those designs.
 function agreement(extra = {}) {
-    const inputs = { parcels: [{ parcelId: 'k9', areaM2: 1000, holders: [holder('agent-ana')] }, { parcelId: 'k10', areaM2: 800, holders: [holder('agent-ben')] }], openGroundM2: 0 };
+    const inputs = { parcels: [{ parcelId: 'k9', areaM2: 500, holders: [holder('agent-ana')] }, { parcelId: 'k10', areaM2: 500, holders: [holder('agent-ben')] }], openGroundM2: 0 };
     const outputs = [
         output('k9-p1', rect(0, 0, 1, 2), 300, ['k9'], 'layout-1', 'plot', [holder('agent-ana')]),
         output('k9-p2', rect(1, 0, 3, 2), 600, ['k9'], 'layout-1', 'plot', [holder('agent-ana')]),
@@ -57,17 +57,22 @@ function agreement(extra = {}) {
         { proposalId: 'road-1', title: 'New lane', goal: 'road', cid: DesignRecord.cidOf(road()) }
     ];
     const planContent = PlanRecord.create('Block seven', designs.map(design => design.cid), { at: '45.8,15.96,16', mode: '2d' });
-    return {
+    const raw = {
         schema: 'agreement/v1', id: 'ag-1', title: 'Block seven', city: 'zagreb',
         createdAt: '2026-10-21T10:00:00.000Z', updatedAt: '2026-10-21T10:00:00.000Z',
         plan: { cid: Cid.cidOfObject(planContent), content: planContent }, designs,
         inputs, outputs,
-        allocations: [{ output: outputs[2].hash, to: { kind: 'public' } }],
-        money: { currency: 'EUR', lines: [{ ownerKey: 'agent-ana', amountCents: 5000 }] },
+        allocations: [
+            { output: outputs[0].hash, to: { kind: 'party', ownerKey: 'agent-ana' } },
+            { output: outputs[1].hash, to: { kind: 'party', ownerKey: 'agent-ben' } },
+            { output: outputs[2].hash, to: { kind: 'public' } }
+        ],
+        money: { currency: 'EUR', lines: [] },
         rule: { electorate: 'owners', binding: true, lens: ['lens-member-1'],
             approvalConfig: { schema: 'proposal-approval/v1', rights: AgreementRecord.rightsFromInputs(inputs), policy: { type: 'unanimous' } } },
         deadline: null, published: null, ...extra
     };
+    return AgreementRecord.settle(raw);
 }
 
 describe('paths', () => {
@@ -144,7 +149,8 @@ describe('recordFromPublished', () => {
         const raw = agreement();
         raw.outputs = raw.inputs.parcels.map((parcel, index) => output(parcel.parcelId, rect(index * 3, 0, index * 3 + 3, 2),
             parcel.areaM2, [parcel.parcelId], null, 'parcel', parcel.holders));
-        raw.allocations = [];
+        raw.allocations = raw.outputs.map((piece, index) => ({ output: piece.hash, to: { kind: 'party', ownerKey: index === 0 ? 'agent-ana' : 'agent-ben' } }));
+        raw.money = AgreementRecord.settle(raw).money;
         const content = AgreementRecord.published(raw);
         const cid = Cid.cidOfObject(content);
         const foreign = raw.outputs.map(piece => ({ ...piece, holders: [holder('unrelated-local-owner')] }));
@@ -152,7 +158,7 @@ describe('recordFromPublished', () => {
             const imported = AgreementSync.recordFromPublished({ cid, content, plan: raw.plan }, { id: 'ag-imported', apiBase: API, localIdOf, derived });
             const parties = AgreementRecord.ledger(imported).parties;
             expect(parties.map(party => [party.ownerKey, party.contributedM2, party.assignedM2, party.changeM2]))
-                .toEqual([['agent-ana', 1000, 1000, 0], ['agent-ben', 800, 800, 0]]);
+                .toEqual([['agent-ana', 500, 500, 0], ['agent-ben', 500, 500, 0]]);
             expect(AgreementRecord.publishedCid(imported)).toBe(cid);
         }
     });
@@ -476,8 +482,8 @@ describe('recordOnchain', () => {
         }
         expect(draft.server.calls).toEqual([]);
         expect(minted.server.calls).toEqual([]);
-        expect(draft.agreements.get('ag-1').onchain).toBeUndefined();
-        expect(minted.agreements.get('ag-1').onchain).toBeUndefined();
+        expect(draft.agreements.get('ag-1').onchain).toBeNull();
+        expect(minted.agreements.get('ag-1').onchain).toBeNull();
     });
 });
 

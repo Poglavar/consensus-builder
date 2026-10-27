@@ -471,7 +471,8 @@
             const checked = win.AgreementRecord.planReference(plan);
             const opened = await win.handleSharedDesignRoute(checked.content.designCids, { openDetails: false, enter3D: false, summary: false });
             if (opened.blocked || opened.failed.length || opened.omitted?.length) return;
-            return win.AgreementDialog.open({ plan: checked, designIds: checked.content.designCids.map(cid => opened.localIds.get(cid)) });
+            win.NamedPlans.remember(checked, checked.content.designCids.map(cid => opened.localIds.get(cid)));
+            return win.AgreementDialog.open({ plan: checked });
         }
 
         // Inspect terms without applying a plan or replacing unrelated local work.

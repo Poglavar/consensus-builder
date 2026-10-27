@@ -1,16 +1,21 @@
-/* The agreement editor (js/agreement-dialog.js): Create / Edit agreement docked on the right of the
-   map in place of the agreement panel (css/agreement.css) while it is open, at the dock's width
-   (--right-dock-width, css/panels.css); on a phone the shared bottom sheet (css/panels.css,
-   css/utilities.css) with the map above it. A header, one scrolling column of sections — designs,
-   land, allocation, money, decision rule, details — with the issues at its top, and a footer with
-   Cancel and Save that stays at the bottom. At the dock's width every row stacks: a parcel or a piece
-   is a two-line row, and each piece sits above the select that names its recipient. Layout only, on
-   the tokens; the controls are the shared ones (base form controls, cb-badge, .btn), and the approval
-   form inside keeps its own rules (css/proposal-editor.css). */
+/* Four-tab agreement editor on the shared right dock (a bottom sheet on phones). Rules own
+   compensation controls; output parcels own recipient choices; persons are a read-only tally. */
 
 /* ---- The panel: under the top-right buttons, as tall as the dock runs ---- */
 .agreement-section[hidden],
 [data-agreement-binding-control][hidden] { display: none; }
+
+.agreement-editor [role="tabpanel"][hidden] { display: none; }
+.agreement-editor [role="tabpanel"] { display: grid; gap: var(--cb-space-3); min-width: 0; }
+.agreement-editor__tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--cb-space-1); overflow: visible; position: sticky; top: 0; z-index: 1; background: var(--cb-surface); }
+.agreement-editor__tabs button { min-height: var(--cb-control-height); padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); background: var(--cb-surface); color: var(--cb-text); cursor: pointer; }
+.agreement-editor__tabs button[aria-selected="true"] { background: var(--cb-primary-soft); border-color: var(--cb-primary); color: var(--cb-text-strong); }
+.agreement-persons-table { width: 100%; border-collapse: collapse; font-size: var(--cb-text-sm); }
+.agreement-persons-table th, .agreement-persons-table td { padding: var(--cb-space-2) var(--cb-space-1); border-bottom: 1px solid var(--cb-line); overflow-wrap: anywhere; text-align: left; vertical-align: top; }
+.agreement-persons-table td { font-variant-numeric: tabular-nums; }
+.agreement-persons-table th:first-child { width: 40%; }
+.agreement-persons-table .agreement-persons-cash { display: inline-block; white-space: nowrap; font-size: var(--cb-text-xs); }
+.agreement-editor input[type="range"] { width: 100%; }
 
 #agreement-editor {
     position: absolute;
@@ -56,6 +61,7 @@
 
 .agreement-editor .panel-body {
     display: grid;
+    grid-auto-rows: max-content;
     flex: 1 1 auto;
     align-content: start;
     gap: var(--cb-space-4);

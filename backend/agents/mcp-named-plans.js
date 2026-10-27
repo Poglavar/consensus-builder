@@ -264,5 +264,5 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
                     : { tool: 'ugt_publish_plan', arguments: { plan: value, expectedCid, confirm }, action: 'Retry this same confirmed immutable named plan revision; published members retain their CIDs.' } });
         }
     }
-    return { draftPlan, getPlan, inspectPlan, editPlan, publishPlan };
+    return { draftPlan, getPlan, inspectPlan, editPlan, publishPlan, resolvePlan };
 }

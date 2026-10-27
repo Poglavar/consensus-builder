@@ -16,6 +16,7 @@ const PLURAL_FORMS = ['zero', 'one', 'two', 'few', 'many', 'other'];
 // Keys assembled at runtime (`prefix.${value}`) cannot be checked statically. Each such prefix must be
 // listed here on purpose; a new dynamic call site with an unlisted prefix fails the test.
 const DYNAMIC_KEY_PREFIXES = [
+    'planDialog.',
     'alerts.messages.',
     'designMemberships.',
     'clickStackRelations.',

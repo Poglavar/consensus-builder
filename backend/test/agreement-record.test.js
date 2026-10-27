@@ -47,7 +47,7 @@ function fixture() {
         output('k9-p2', rect(1, 0, 3, 2), 700, ['k9', 'k10'], [ana(0.6), boris(0.1), cyril(0.3)]),
         output('road-1#1', rect(0, 2, 5, 2.2), 400, ['k9', 'k10'], [], { producedBy: 'road-1', role: 'corridor' })
     ];
-    return {
+    const raw = {
         schema: 'agreement/v1', id: 'ag-test', title: 'Block seven', city: 'test-city',
         createdAt: '2026-10-21T10:00:00.000Z', updatedAt: '2026-10-21T10:00:00.000Z',
         plan: { cid: PLAN.cid, content: JSON.parse(JSON.stringify(PLAN_CONTENT)) },
@@ -58,6 +58,7 @@ function fixture() {
         inputs,
         outputs,
         allocations: [
+            { output: outputs[0].hash, to: { kind: 'party', ownerKey: 'agent-ana' } },
             { output: outputs[1].hash, to: { kind: 'party', ownerKey: 'agent-cyril' } },
             { output: outputs[2].hash, to: { kind: 'public' } }
         ],
@@ -70,11 +71,12 @@ function fixture() {
             ]
         },
         rule: {
-            electorate: 'owners', binding: true, lens: [MEMBER],
+            electorate: 'owners', binding: true, lens: [MEMBER], settlement: { method: 'area', rateCentsPerM2: 100, contributionBasisPoints: 0 },
             approvalConfig: { schema: 'proposal-approval/v1', rights: record.rightsFromInputs(inputs), policy: { type: 'unanimous' } }
         },
         deadline: null
     };
+    return record.settle(raw);
 }
 const codes = list => list.map(row => row.code);
 const thrownCode = fn => { try { fn(); } catch (error) { return error.code; } return null; };
@@ -126,7 +128,7 @@ describe('normalize', () => {
         expect(once.schema).toBe('agreement/v1');
         expect(once.designs.map(design => design.proposalId)).toEqual(['layout-1', 'road-1']);
         expect(once.plan).toEqual(PLAN);
-        expect(once.allocations).toHaveLength(2);
+        expect(once.allocations).toHaveLength(3);
         expect(record.normalize(once)).toEqual(once);
     });
 
@@ -137,7 +139,6 @@ describe('normalize', () => {
         raw.outputs[0].geometry.coordinates[0][1] = [raw.outputs[0].geometry.coordinates[0][1][0] + 4e-9, raw.outputs[0].geometry.coordinates[0][1][1]];
         raw.outputs[0].hash = record.outputHash(raw.outputs[0].geometry);
         raw.outputs[0].holders = [{ ownerKey: ' agent-ana ', share: 1 }];
-        raw.allocations.push({ output: raw.outputs[0].hash, to: { kind: 'holders' } });
         raw.money.lines.push({ ownerKey: 'agent-dora', amountCents: 0 });
         raw.money.currency = 'eur';
         const result = record.normalize(raw);
@@ -145,7 +146,7 @@ describe('normalize', () => {
         expect(result.deadline).toBe('2026-12-31T00:00:00.000Z');
         expect(result.outputs[0].geometry).toEqual(rect(0, 0, 1, 2));
         expect(result.outputs[0].holders).toEqual([{ ownerKey: 'agent-ana', displayName: 'agent-ana', share: 1 }]);
-        expect(result.allocations.map(line => line.to.kind)).toEqual(['party', 'public']);
+        expect(result.allocations.map(line => line.to.kind)).toEqual(['party', 'party', 'public']);
         expect(result.money).toEqual({ currency: 'EUR', lines: fixture().money.lines });
     });
 
@@ -194,7 +195,7 @@ describe('validate', () => {
     it('needs designs, and with designOf/isApplied every one applied', () => {
         const empty = record.validate({ ...fixture(), designs: [] });
         expect(empty.valid).toBe(false);
-        expect(empty.errors).toEqual([expect.objectContaining({ code: 'no-designs', section: 'designs' })]);
+        expect(codes(empty.errors)).toEqual(['no-designs', 'plan-membership']);
 
         const options = {
             designOf: id => id === 'road-1' ? null : { proposalId: id, applied: false },
@@ -209,46 +210,29 @@ describe('validate', () => {
     });
 
     it('needs land, and warns about open ground', () => {
-        const bare = { ...fixture(), inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'EUR', lines: [] } };
+        const bare = { ...fixture(), plan: null, inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'EUR', lines: [] } };
         const result = record.validate(bare);
-        expect(result.errors).toEqual([expect.objectContaining({ code: 'no-inputs', section: 'land' })]);
+        expect(codes(result.errors)).toEqual(['plan-required', 'no-inputs']);
         expect(result.warnings).toEqual([expect.objectContaining({ code: 'rule-not-ready', section: 'rule', reason: 'missing-parcels' })]);
 
         const open = record.validate({ ...bare, inputs: { parcels: [], openGroundM2: 250 } });
-        expect(codes(open.errors)).toEqual([]);
+        expect(codes(open.errors)).toEqual(['plan-required', 'land-unbalanced']);
         expect(codes(open.warnings)).toEqual(['open-ground', 'rule-not-ready']);
         expect(open.warnings[0].section).toBe('land');
     });
 
-    it('checks every allocation against the outputs, the land\'s parties and the joint shares', () => {
+    it('checks explicit allocations against outputs and input parties', () => {
         const raw = fixture();
-        const [first, second] = raw.outputs;
-        raw.allocations = [
-            { output: `piece1-sha256:${'0'.repeat(64)}`, to: { kind: 'public' } },
-            { output: first.hash, to: { kind: 'party', ownerKey: 'agent-zoran' } },
-            { output: second.hash, to: { kind: 'joint', shares: [{ ownerKey: 'agent-ana', share: 0.5 }, { ownerKey: 'agent-zoran', share: 0.5 }] } }
-        ];
-        const result = record.validate(raw);
+        raw.allocations = raw.allocations.map((line, index) => index === 0
+            ? { output: `piece1-sha256:${'0'.repeat(64)}`, to: { kind: 'public' } }
+            : index === 1 ? { ...line, to: { kind: 'party', ownerKey: 'agent-zoran' } } : line);
+        const result = record.validate(record.settle(raw));
         expect(result.errors.map(error => [error.code, error.section, error.ownerKey])).toEqual([
+            ['allocation-required', 'allocation', undefined],
             ['allocation-unknown-output', 'allocation', undefined],
             ['allocation-unknown-party', 'allocation', 'agent-zoran'],
-            ['allocation-unknown-party', 'allocation', 'agent-zoran']
+            ['money-party-unknown', 'money', 'agent-zoran']
         ]);
-
-        const invalidShares = [
-            [{ ownerKey: 'agent-ana', share: 0.5 }, { ownerKey: 'agent-cyril', share: 0.4 }],
-            [{ ownerKey: 'agent-ana', share: 0.5 }, { ownerKey: 'agent-ana', share: 0.5 }],
-            [{ ownerKey: 'agent-ana', share: '0.5' }, { ownerKey: 'agent-cyril', share: 0.5 }],
-            []
-        ];
-        invalidShares.forEach(shares => {
-            const joint = fixture();
-            joint.allocations[0] = { output: joint.outputs[1].hash, to: { kind: 'joint', shares } };
-            expect(codes(record.validate(joint).errors)).toEqual(['allocation-shares-invalid']);
-        });
-        const valid = fixture();
-        valid.allocations[0] = { output: valid.outputs[1].hash, to: { kind: 'joint', shares: [{ ownerKey: 'agent-ana', share: 1 / 3 }, { ownerKey: 'agent-cyril', share: 2 / 3 }] } };
-        expect(record.validate(valid).valid).toBe(true);
     });
 
     it('checks the currency, the parties and the amounts of the cash lines', () => {
@@ -263,7 +247,8 @@ describe('validate', () => {
             ['money-currency', 'money', undefined],
             ['money-party-unknown', 'money', 'agent-zoran'],
             ['money-amount-invalid', 'money', 'agent-ana'],
-            ['money-amount-invalid', 'money', 'agent-boris']
+            ['money-amount-invalid', 'money', 'agent-boris'],
+            ['money-unbalanced', 'money', undefined]
         ]);
     });
 
@@ -341,14 +326,12 @@ describe('ledger', () => {
         });
     });
 
-    it('splits a joint allocation by its shares and keeps carried-over holdings by theirs', () => {
-        const raw = fixture();
-        raw.allocations = [{ output: raw.outputs[0].hash, to: { kind: 'joint', shares: [{ ownerKey: 'agent-ana', share: 1 / 3 }, { ownerKey: 'agent-cyril', share: 2 / 3 }] } }];
-        const byKey = Object.fromEntries(record.ledger(raw).parties.map(party => [party.ownerKey, party]));
-        expect(byKey['agent-ana'].assignedM2).toBeCloseTo(700 / 3 + 700 * 0.6, 9);
-        expect(byKey['agent-boris'].assignedM2).toBeCloseTo(700 * 0.1, 9);
-        expect(byKey['agent-cyril'].assignedM2).toBeCloseTo(1400 / 3 + 700 * 0.3, 9);
-        expect(record.ledger(raw).publicM2).toBe(0);
+    it('assigns each output to its one explicit recipient', () => {
+        const byKey = Object.fromEntries(record.ledger(fixture()).parties.map(party => [party.ownerKey, party]));
+        expect(byKey['agent-ana'].assignedM2).toBe(700);
+        expect(byKey['agent-boris'].assignedM2).toBe(0);
+        expect(byKey['agent-cyril'].assignedM2).toBe(700);
+        expect(record.ledger(fixture()).publicM2).toBe(400);
     });
 
     it('flags parties whose input area is unknown instead of counting it as zero land', () => {
@@ -364,7 +347,7 @@ describe('ledger', () => {
         const raw = fixture();
         raw.outputs[0].holders = [{ ownerKey: 'agent-ana', displayName: 'Ana (plot)', share: 1 }];
         raw.outputs[1].holders[0].displayName = 'Ana (plot)';
-        raw.allocations[0] = { output: raw.outputs[1].hash, to: { kind: 'party', ownerKey: 'agent-emil' } };
+        raw.allocations[1] = { output: raw.outputs[1].hash, to: { kind: 'party', ownerKey: 'agent-emil' } };
         raw.money.lines.push({ ownerKey: 'agent-dora', amountCents: 500 });
         const parties = record.ledger(raw).parties;
         expect(parties.map(party => [party.ownerKey, party.displayName])).toEqual([
@@ -374,12 +357,12 @@ describe('ledger', () => {
         expect(parties[0]).toMatchObject({ cashCents: 500, assignedM2: 0 });
     });
 
-    it('refuses joint shares that do not parse', () => {
+    it('requires an explicit recipient for every output', () => {
         const raw = fixture();
-        raw.allocations = [{ output: raw.outputs[0].hash, to: { kind: 'joint', shares: [{ ownerKey: 'agent-ana', share: 0.5 }] } }];
-        expect(() => record.ledger(raw)).toThrow(/sum to 100/);
-        expect(thrownCode(() => record.ledger(raw))).toBe('invalid-agreement');
+        raw.allocations = raw.allocations.filter(line => line.output !== raw.outputs[0].hash);
+        expect(codes(record.validate(raw).errors)).toContain('allocation-required');
     });
+
 });
 
 describe('rightsFromInputs', () => {
@@ -661,7 +644,7 @@ describe('consultation metadata', () => {
         const base = community();
         const samples = [
             { ...base, allocations: fixture().allocations },
-            { ...base, allocations: [{ output: base.outputs[0].hash, to: { kind: 'holders' } }] },
+            { ...base, allocations: fixture().allocations },
             { ...base, money: fixture().money },
             { ...base, money: { currency: 'EUR', lines: [{ ownerKey: 'agent-ana', amountCents: 0 }] } }
         ];

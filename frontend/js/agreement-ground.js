@@ -122,7 +122,9 @@
         const parcels = parcelIds.map(parcelId => {
             const original = originals && typeof originals.get === 'function' ? originals.get(parcelId) : null;
             const measured = original ? area(original) : null;
-            return { parcelId, areaM2: finite(measured) && measured >= 0 ? committedArea(measured) : null, holders: holdersOf(ownerOf, parcelId) };
+            const holders = holdersOf(ownerOf, parcelId);
+            return { parcelId, areaM2: finite(measured) && measured >= 0 ? committedArea(measured) : null,
+                holders: holders.length ? holders : [record().abstractHolder(parcelId)] };
         });
         const featureById = new Map();
         (fabric.entriesForCadastre(parcelIds, { includeCorridors: true }) || []).forEach(feature => {

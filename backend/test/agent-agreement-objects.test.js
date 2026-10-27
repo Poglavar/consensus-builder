@@ -18,6 +18,7 @@ import { createDevnetRegistryIdentity } from '../lens/identity/devnet-registry.j
 
 const require = createRequire(import.meta.url);
 const agreementRecord = require('../../frontend/js/agreement-record.js');
+const PlanRecord = require('../../frontend/js/plan-record.js');
 
 const PARCEL = { type: 'Polygon', coordinates: [[[15.97, 45.8], [15.9704, 45.8], [15.9704, 45.8003], [15.97, 45.8003], [15.97, 45.8]]] };
 const MASSING = { type: 'Polygon', coordinates: [[[15.9701, 45.8001], [15.9703, 45.8001], [15.9703, 45.8002], [15.9701, 45.8002], [15.9701, 45.8001]]] };
@@ -40,12 +41,14 @@ const design = designObject(buildDesignRecord({
     pick: { name: 'Six storeys on the corner lot', rationale: 'Residential infill.' },
     persona: { name: 'densifier-01' }, city: 'zagreb', authoredAt: '2026-10-22T08:55:00.000Z'
 }));
+const namedPlan = PlanRecord.create('Agreement plan', [design.cid], { at: '45.8,15.97,17', mode: '2d', city: 'zagreb' });
 
 function ownersAgreement(overrides = {}) {
     const rights = registryRights([{ parcelId: 'HR-335550-1234/1', owners: [{ owner, ownerCount: 1 }] }]);
     return agreementObject({
         title: 'Six storeys on the corner lot', author: 'densifier-01', sponsor: owner, city: 'zagreb', createdAt: '2026-10-22T09:00:00.000Z',
         designs: [{ cid: design.cid, goal: design.content.goal, title: design.content.title }],
+        plan: { content: namedPlan, cid: cidOfObject(namedPlan) },
         parcels: [{ parcelId: 'HR-335550-1234/1', areaM2: 612.4, holders: holdersFromRights(rights, 'HR-335550-1234/1', { [owner]: 'densifier-01' }) }],
         outputs: parcelOutputs([{ parcelId: 'HR-335550-1234/1', geometry: PARCEL, areaM2: 612.4 }]),
         rule: ownersRule({ lens: LENS, rights }),
@@ -157,7 +160,7 @@ describe('the agreement object', () => {
         expect(validateAgreementContent(content, { now: NOW_MS })).toMatchObject({ ok: true });
         expect(cid).toBe(cidOf(canonicalBytes(content)));
         expect(content).toMatchObject({
-            sponsor: owner, deadline: '2026-10-29T09:00:00.000Z', money: noMoney('EUR'), allocations: [],
+            sponsor: owner, deadline: '2026-10-29T09:00:00.000Z', money: noMoney('EUR'), allocations: [{ output: agreementRecord.outputHash(PARCEL), to: { kind: 'party', ownerKey: owner } }],
             inputs: { parcels: [{ parcelId: 'HR-335550-1234/1', areaM2: 612.4, holders: [{ ownerKey: owner, displayName: 'densifier-01', share: 1 }] }], openGroundM2: 0 },
             rule: { electorate: 'owners', binding: true, lens: [LENS] }
         });
@@ -171,7 +174,7 @@ describe('the agreement object', () => {
 
     it('builds a poll over the same design', () => {
         const { content } = ownersAgreement({ rule: communityRule(), sponsor: null });
-        expect(content.rule).toEqual({ electorate: 'community', binding: false, approvalConfig: null, lens: [] });
+        expect(content.rule).toEqual({ electorate: 'community', binding: false, approvalConfig: null, lens: [], settlement: null });
         expect(validateAgreementContent(content, { now: NOW_MS })).toMatchObject({ ok: true });
     });
 

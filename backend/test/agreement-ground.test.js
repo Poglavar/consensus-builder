@@ -242,22 +242,27 @@ describe('derive', () => {
         const { inputs } = ground.derive({ designs: [{ proposalId: 'road-2', cadastreParcelIds: ['k12', 'k9'] }], fabric: fakeFabric([]), originals, ownerOf, area });
         expect(inputs.parcels).toEqual([
             { parcelId: 'k9', areaM2: expect.any(Number), holders: [ana] },
-            { parcelId: 'k12', areaM2: null, holders: [] }
+            { parcelId: 'k12', areaM2: null, holders: [{ ownerKey: 'parcel-owner:k12', displayName: 'Owner(s) of parcel k12', share: 1 }] }
         ]);
         expect(inputs.openGroundM2).toBe(0);
     });
 
     it('produces the land of a record that normalizes and validates', () => {
-        const derived = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, ownerOf, area });
+        const selected = designs().slice(0, 1);
+        const derived = ground.derive({ designs: selected, fabric: fakeFabric(pieces().filter(piece => !piece.properties.isCorridor)), originals, ownerOf, area });
+        const designRecords = selected.map(design => ({ proposalId: design.proposalId, goal: design.goal, cid: Cid.cidOfObject({ design: design.proposalId }) }));
+        const planContent = require('../../frontend/js/plan-record.js').create('Test plan', designRecords.map(design => design.cid), { at: '45.8,15.96,16', mode: '2d' });
+        const plan = { cid: Cid.cidOfObject(planContent), content: planContent };
         const agreement = {
             schema: record.SCHEMA, id: record.newId(),
-            designs: designs().map(design => ({ proposalId: design.proposalId, goal: design.goal, cid: Cid.cidOfObject({ design: design.proposalId }) })),
+            plan, designs: designRecords,
             ...derived,
             money: { currency: 'EUR', lines: [] },
+            allocations: derived.outputs.map(output => ({ output: output.hash, to: { kind: 'party', ownerKey: 'agent-ana' } })),
             rule: { electorate: 'owners', binding: true, lens: ['lens-member-1'],
                 approvalConfig: { schema: 'proposal-approval/v1', rights: record.rightsFromInputs(derived.inputs), policy: { type: 'unanimous' } } }
         };
-        const result = record.validate(agreement);
+        const result = record.validate(record.settle(agreement));
         expect(result.valid).toBe(true);
         expect(result.warnings.map(warning => warning.code)).toEqual([]);
         expect(record.normalize(agreement).outputs.map(output => output.hash)).toEqual(derived.outputs.map(output => output.hash));

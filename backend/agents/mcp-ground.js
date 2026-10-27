@@ -1,16 +1,16 @@
 // Derive agreement ground on a fresh, isolated fabric using the app's arrangement and hash modules.
 // Only complete cadastral ground is admitted; open or ambiguous ground must be reviewed in the app.
-import { agreementObject, cidOfObject, communityRule, holdersFromRights, noMoney, ownersRule, planForDesigns } from './agreement-objects.js';
-import { appTurf as turf } from './mcp-geometry.js';
+import { abstractHolder, agreementObject, cidOfObject, communityRule, defaultAllocations, holdersFromRights, ownersRule } from './agreement-objects.js';
 import { previewArtifact } from './mcp-preview.js';
 import { deriveWithApp } from './mcp-ground-runtime.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
-import { authorPlanRoads } from './mcp-road-network.js';
-import { describeRoadCuts, roadCutWarning } from './mcp-ground-effects.js';
+import { describeRoadCuts } from './mcp-ground-effects.js';
 const fail = (code, message) => Object.assign(new Error(message), { code, next: { action: 'Review these designs and their ground in the app before proposing an agreement.' } });
 export const deriveAgreementGround = deriveWithApp;
 
 export function createMcpAgreementTools({ read, drafts, appOrigin }) {
+    let resolvePlan;
+    const setPlanResolver = resolver => { resolvePlan = resolver; };
     async function resolveDesigns(values, parcelSourceId) {
         const designs = [];
         let city;
@@ -39,40 +39,49 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
         }
         if (!ids.size || ids.size > 200) throw fail('agreement-scope', 'An agreement draft needs 1–200 cadastral input parcels.');
         const source = await read.parcels({ city, parcelSourceId, parcelIds: [...ids] });
-        const ownerOf = id => rights?.parcels?.some(p => p.parcelId === id) ? holdersFromRights(rights, id) : [];
+        const ownerOf = id => rights?.parcels?.some(p => p.parcelId === id) ? holdersFromRights(rights, id)
+            : [{ ownerKey: `parcel-owner:${id}`, displayName: `Owner(s) of parcel ${id}`, share: 1 }];
         const land = await deriveAgreementGround({ designs: bound, parcels: source.features, ownerOf });
         return { land, source, ids };
     }
-    return {
+    const tools = {
         // Inspection replays the exact committed designs. It must not invoke an authoring step.
         async inspectGround({ designs, parcelSourceId }) {
             const result = await groundFor(await resolveDesigns(designs, parcelSourceId));
             return result.land;
         },
-        async draftAgreement({ designs: values, rulePreset = 'community-vote', rights, lens, allocations = [], money, currency, deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, parcelSourceId, includeGround = false }) {
-            const resolved = await resolveDesigns(values, parcelSourceId);
+        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lens, allocations, settlement, currency = 'EUR', deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false }) {
+            if (!resolvePlan) throw fail('plan-resolver-unavailable', 'Named plan resolution is unavailable.');
+            const selected = await resolvePlan(value);
+            const resolved = await resolveDesigns(selected.designs, selected.designs[0]?.parcelSourceId);
             createdAt ||= new Date().toISOString();
-            const { designs, changes: roadChanges } = authorPlanRoads(resolved.designs, createdAt);
+            const { designs } = resolved;
             const groundEffects = describeRoadCuts(designs);
             const { city } = resolved;
-            if (rulePreset !== 'community-vote' && !rights) throw fail('rights-required', 'Owner agreements need a complete rights snapshot.');
-            const rule = rulePreset === 'owner-deal' ? ownersRule({ lens, rights })
-                : rulePreset === 'owner-vote' ? { ...communityRule(), electorate: 'owners', approvalConfig: { schema: 'proposal-approval/v1', rights, policy: { type: 'unanimous' } } }
-                    : communityRule();
-            const { land, source, ids } = await groundFor({ ...resolved, designs }, rights);
-            const bounds = designs.map(d => turf.bbox(turf.feature(read.siteOfDesign(d.content))));
-            const west = Math.min(...bounds.map(b => b[0])), south = Math.min(...bounds.map(b => b[1]));
-            const east = Math.max(...bounds.map(b => b[2])), north = Math.max(...bounds.map(b => b[3]));
-            const plan = planForDesigns(title, designs, { at: `${(south + north) / 2},${(west + east) / 2},17`, mode: '2d', city });
+            const effectiveRights = rights ?? ruleOverride?.approvalConfig?.rights;
+            const presetRule = ruleOverride ? null : rulePreset === 'community-vote' ? communityRule()
+                : rulePreset === 'owner-vote' ? { ...communityRule(), electorate: 'owners', approvalConfig: effectiveRights ? { schema: 'proposal-approval/v1', rights: effectiveRights, policy: { type: 'unanimous' } } : null, lens: [] }
+                    : ownersRule({ lens, rights: effectiveRights });
+            const rule = ruleOverride ? structuredClone(ruleOverride) : presetRule;
+            if (rule.electorate !== 'community' && !rule.settlement) rule.settlement = { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 0 };
+            if (settlement) rule.settlement = settlement;
+            if (rule.electorate === 'community') rule.settlement = null;
+            const { land, source, ids } = await groundFor({ ...resolved, designs }, effectiveRights);
+            const plan = { cid: selected.cid, content: selected.plan };
+            const parcels = land.inputs.parcels.map(parcel => ({ ...parcel, parcelSourceId: source.parcelSourceId,
+                holders: parcel.holders?.length ? parcel.holders : effectiveRights?.parcels?.some(row => row.parcelId === parcel.parcelId)
+                    ? holdersFromRights(effectiveRights, parcel.parcelId) : [abstractHolder(parcel.parcelId)] }));
+            const finalAllocations = allocations ?? defaultAllocations({ ...land.inputs, parcels }, land.outputs);
             const published = agreementObject({ title, author, sponsor, city, createdAt, plan,
                 designs: designs.map(d => ({ cid: d.cid, goal: d.content.goal, title: d.content.title })),
-                parcels: land.inputs.parcels.map(parcel => ({ ...parcel, parcelSourceId: source.parcelSourceId })), openGroundM2: land.inputs.openGroundM2, outputs: land.outputs, allocations,
-                money: money || noMoney(currency), rule, deadline, consultation });
-            return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], roadChanges, groundEffects, ...(includeGround ? { ground: land } : {}), warnings: ['Draft ground is isolated from other local designs. Review the preview before publishing.',
-                ...(roadCutWarning(groundEffects) ? [roadCutWarning(groundEffects)] : []),
-                ...(roadChanges.length ? ['Road junctions and their land boundaries were authored together. Use the returned revised designs and CIDs when publishing this agreement.'] : [])],
+                parcels, openGroundM2: land.inputs.openGroundM2, outputs: land.outputs, allocations: finalAllocations,
+                money: { currency, lines: [] }, rule, deadline, consultation });
+            return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], groundEffects, ...(includeGround ? { ground: land } : {}), warnings: ['This agreement references the existing named plan. Review its derived ground and terms before publishing.',
+                ...(!effectiveRights && rule.electorate !== 'community' ? ['Parcel parties are abstract placeholders because no rights snapshot was supplied.'] : [])],
                 ...await previewArtifact({ origin: appOrigin, agreement: published.content, plan, designs: designs.map(d => d.content), parcelSourceId: source.parcelSourceId }),
                 plan, designs: designs.map(d => ({ cid: d.cid, content: d.content })) };
         }
     };
+    tools.setPlanResolver = setPlanResolver;
+    return tools;
 }

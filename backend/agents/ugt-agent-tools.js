@@ -358,7 +358,7 @@ export function createUrbanGameTheoryTools({
         ...drafts,
         ...agreements,
         inspectAgreement: agreementPlans.inspectPlan,
-        editAgreement: agreementPlans.editPlan,
+        editAgreement: agreementPlans.editAgreement,
         config: {
             apiBase,
             appOrigin,
@@ -728,8 +728,10 @@ export function createUrbanGameTheoryTools({
             });
         }
     };
-    Object.assign(actions, createMcpNamedPlanTools({ read: companion, drafts, appOrigin, resolveDraftReference,
-        publishDesign: args => actions.publishDesign(args) }));
+    const namedPlanTools = createMcpNamedPlanTools({ read: companion, drafts, appOrigin, resolveDraftReference,
+        publishDesign: args => actions.publishDesign(args) });
+    agreements.setPlanResolver(namedPlanTools.resolvePlan);
+    Object.assign(actions, namedPlanTools);
     Object.assign(actions, createMcpAssetTools({ read: companion, drafts, plans: actions, appOrigin, apiBase, fetchImpl, resolveDraftReference }));
     Object.assign(actions, createMcpValidationTools({ read: companion, drafts, plans: actions }));
     actions.compare = createMcpComparison({ read: companion, resolveDesign: drafts.resolveDesign, plans: actions, appOrigin, resolveDraftReference });

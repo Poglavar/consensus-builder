@@ -6,12 +6,15 @@
 // agreements-onchain.test.js).
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
+import { createRequire } from 'node:module';
 import { createMockPool } from './helpers/mock-pool.js';
 import { createContentApp } from './helpers/create-app.js';
 import {
-    agreementContent, agreementRow, bindingOf, cidOf, designContent, designRow, layoutContent, pieceHash, planForAgreement, scriptedCadastre, SPILL
+    agreementContent as rawAgreementContent, agreementRow, bindingOf, cidOf, designContent, designRow, layoutContent, pieceHash, planForAgreement, scriptedCadastre, SPILL
 } from './helpers/content-fixtures.js';
 import { validateAgreementContent, MAX_AGREEMENT_DESIGNS } from '../routes/agreements.js';
+const require = createRequire(import.meta.url);
+const AgreementRecord = require('../../frontend/js/agreement-record.js');
 
 const AGREEMENT_ONE = /FROM consensus\.agreement WHERE cid = \$1/;
 const DESIGN_ONE = /FROM consensus\.design WHERE cid = \$1/;
@@ -20,6 +23,33 @@ const INSERT_DESIGN = /INSERT INTO consensus\.design/;
 const INSERT_AGREEMENT = /INSERT INTO consensus\.agreement/;
 const INSERT_PLAN = /INSERT INTO consensus\.plan/;
 const NOW = Date.parse('2026-10-21T12:00:00.000Z');
+
+function agreementContent(designs, overrides = {}) {
+    const initial = rawAgreementContent(designs, overrides);
+    delete initial.designs;
+    const inputM2 = initial.inputs.parcels.reduce((sum, parcel) => sum + parcel.areaM2, initial.inputs.openGroundM2 || 0);
+    const partyKeys = [...new Set(initial.inputs.parcels.flatMap(parcel => parcel.holders.map(holder => holder.ownerKey)))];
+    initial.outputs = initial.outputs.map((output, index, list) => ({
+        ...output, pieceId: undefined,
+        hash: pieceHash(`explicit-output-${index}-${designs.length}`),
+        areaM2: inputM2 / list.length,
+        fromParcelIds: initial.inputs.parcels.map(parcel => parcel.parcelId),
+        holders: [], geometry: null
+    }));
+    initial.allocations = initial.rule.electorate === 'community' ? [] : initial.outputs.map((output, index) => ({
+        output: output.hash, to: partyKeys.length ? { kind: 'party', ownerKey: partyKeys[index % partyKeys.length] } : { kind: 'public' }
+    }));
+    initial.rule = { ...initial.rule, approvalConfig: null, lens: [],
+        settlement: initial.rule.electorate === 'community' ? null : { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 0 } };
+    const plan = planForAgreement(initial);
+    const local = AgreementRecord.settle({ ...initial, id: 'route-fixture', updatedAt: null,
+        plan: { cid: initial.planCid, content: plan },
+        designs: designs.map(content => ({ proposalId: cidOf(content), cid: cidOf(content), title: content.title, goal: content.goal })),
+        outputs: initial.outputs.map(output => ({ ...output, pieceId: output.hash })) });
+    const content = AgreementRecord.published(local, cid => cid);
+    Object.assign(content, overrides);
+    return content;
+}
 
 const park = designContent();
 const layout = layoutContent();
@@ -75,7 +105,7 @@ describe('POST /agreements', () => {
         const content = agreementContent([park, layout]);
         const res = await post(app, content, [{ cid: cidOf(layout), content: layout }]);
 
-        expect(res.status).toBe(201);
+        expect(res.status, JSON.stringify(res.body)).toBe(201);
         expect(res.body).toMatchObject({
             cid: cidOf(content), city: 'zagreb', title: 'Riverside deal', author: 'Studio North',
             designCids: [cidOf(park), cidOf(layout)], inputParcelIds: ['HR-335649-100', 'HR-335649-101'],
@@ -109,7 +139,7 @@ describe('POST /agreements', () => {
         const pool = indexPool({ indexed: [park, other] });
         const content = agreementContent([park, other]);
         const res = await post(appFor(pool).app, content);
-        expect(res.status).toBe(201);
+        expect(res.status, JSON.stringify(res.body)).toBe(201);
         expect(pool.getBindingCalls()).toEqual([]);
         expect(pool.getCalls().filter(call => INSERT_DESIGN.test(call.sql))).toEqual([]);
     });
@@ -150,7 +180,7 @@ describe('POST /agreements', () => {
         const pool = indexPool();
         const content = agreementContent([park, layout]);
         const res = await post(appFor(pool).app, content);
-        expect(res.status).toBe(422);
+        expect(res.status, JSON.stringify(res.body)).toBe(422);
         expect(res.body).toMatchObject({ code: 'design-not-indexed', missing: [cidOf(layout)] });
         expect(writes(pool)).toEqual([]);
     });
@@ -166,7 +196,7 @@ describe('POST /agreements', () => {
             openGroundM2: 0
         } });
         const res = await post(app, content, [{ cid: cidOf(layout), content: layout }]);
-        expect(res.status).toBe(422);
+        expect(res.status, JSON.stringify(res.body)).toBe(422);
         expect(res.body).toMatchObject({ code: 'inputs-differ-from-binding', missing: ['HR-335649-101'], extra: ['HR-335649-999'] });
         // The layout it carried was checked and bound, but nothing was written.
         expect(writes(pool)).toEqual([]);
@@ -196,7 +226,7 @@ describe('POST /agreements', () => {
     it('refuses a deadline that has passed by the server\'s clock', async () => {
         const pool = indexPool();
         const res = await post(appFor(pool).app, agreementContent([park], { deadline: '2026-10-21T11:59:59.000Z' }));
-        expect(res.status).toBe(422);
+        expect(res.status, JSON.stringify(res.body)).toBe(422);
         expect(res.body).toMatchObject({ code: 'deadline-past', section: 'details' });
         expect(writes(pool)).toEqual([]);
         const open = await post(appFor(indexPool()).app, agreementContent([park], { deadline: null }));
@@ -294,13 +324,14 @@ describe('validateAgreementContent', () => {
             ok: true, designCids: [cidOf(park), cidOf(layout)], inputParcelIds: ['HR-335649-100', 'HR-335649-101'],
             parcelSourceId: 'oss-wfs', deadline: '2099-01-01T00:00:00.000Z'
         });
-        const sourced = withInputs([{ parcelId: 'US-NY-1', parcelSourceId: 'nyc-mappluto', areaM2: 10, holders: [holder('a')] }]);
+        const sourcedContent = agreementContent([park, layout], { inputs: { parcels: [{ parcelId: 'US-NY-1', parcelSourceId: 'nyc-mappluto', areaM2: 10, holders: [holder('a')] }], openGroundM2: 0 } });
+        const sourced = validateAgreementContent(sourcedContent, { now: NOW });
         expect(sourced).toMatchObject({ ok: true, parcelSourceId: 'nyc-mappluto', inputParcelIds: ['US-NY-1'] });
-        expect(refused({ inputs: { parcels: [], openGroundM2: 120 } }).ok).toBe(true);
+        expect(validateAgreementContent(agreementContent([park, layout], { inputs: { parcels: [], openGroundM2: 120 } }), { now: NOW }).ok).toBe(true);
     });
 
     it.each(['EUR', 'GBP', 'USD', 'ZAR'])('accepts money counted in a city currency (%s)', (currency) => {
-        expect(refused({ money: { currency, lines: [{ ownerKey: 'owner-a', amountCents: 500 }] } }).ok).toBe(true);
+        expect(refused({ money: { ...valid.money, currency } }).ok).toBe(true);
     });
 
     it.each([

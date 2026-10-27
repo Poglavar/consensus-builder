@@ -33,7 +33,6 @@ const approval = require('../../frontend/js/proposals/approval.js');
 const agreementRecord = require('../../frontend/js/agreement-record.js');
 const communityDidWeb = require('../../frontend/js/community/did-web.js');
 const cityMoney = require('../../frontend/js/city-money.js');
-const allocation = require('../../frontend/js/reparcellization-allocation.js');
 
 export const AGREEMENT_TABLE = 'consensus.agreement';
 export const AGREEMENT_SCHEMA = agreementRecord.PUBLISHED_SCHEMA;
@@ -43,7 +42,7 @@ export const PLAN_TABLE = 'consensus.plan';
 // An output piece's content hash (AgreementRecord.outputHash): the prefix, then 64 hex digits.
 const isOutputHash = value => typeof value === 'string' && value.startsWith(agreementRecord.OUTPUT_HASH_PREFIX)
     && /^[0-9a-f]{64}$/.test(value.slice(agreementRecord.OUTPUT_HASH_PREFIX.length));
-const ALLOCATION_KINDS = ['holders', 'party', 'public', 'joint'];
+const ALLOCATION_KINDS = ['party', 'public'];
 const ELECTORATES = ['owners', 'community'];
 const MAX_TEXT = { title: 500, author: 255, city: 100 };
 const MAX_ID_LENGTH = 256;
@@ -176,17 +175,7 @@ export function validateAgreementContent(content, { now = Date.now(), designCids
         const to = line.to;
         if (!isPlainObject(to) || !ALLOCATION_KINDS.includes(to.kind)) return invalid('allocation', `The allocation of ${line.output} has an unknown kind.`);
         if (to.kind === 'party' && !isText(to.ownerKey, MAX_ID_LENGTH)) return invalid('allocation', `The allocation of ${line.output} names no party.`);
-        if (to.kind === 'joint') {
-            const shares = Array.isArray(to.shares) ? to.shares : null;
-            if (!shares || shares.some(row => !isPlainObject(row) || !isShare(row.share))) {
-                return invalid('allocation', `The joint allocation of ${line.output} needs shares above 0 and at most 1.`);
-            }
-            try {
-                allocation.parsePercentShares(shares.map(row => ({ ownerKey: row.ownerKey, percent: row.share * 100 })));
-            } catch (error) {
-                return invalid('allocation', `The joint allocation of ${line.output}: ${error.message}`);
-            }
-        }
+
     }
 
     const { money } = content;
@@ -229,6 +218,25 @@ export function validateAgreementContent(content, { now = Date.now(), designCids
             return invalid('rule', error.message);
         }
     }
+
+    // Browser, MCP and HTTP publication share one area/cash contract. Published outputs carry
+    // hashes rather than geometry, so only their local display fields are supplied for calculation.
+    if (rule.electorate === 'owners') {
+        if (!agreementRecord.settlementValid(rule)) return invalid('rule', 'Set valid compensation terms within the selected scheme limit.');
+        if (allocated.size !== outputs.size) return invalid('allocation', 'Choose one recipient for every output parcel.');
+        const parties = new Set(inputs.parcels.flatMap(parcel => parcel.holders.map(holder => holder.ownerKey)));
+        if (inputs.parcels.some(parcel => !parcel.holders.length || Math.abs(parcel.holders.reduce((sum, holder) => sum + holder.share, 0) - 1) > 1e-8)) return invalid('land', 'Input owners must hold 100% of each parcel; use its abstract owner when names are unavailable.');
+        if (content.allocations.some(line => line.to.kind === 'party' && !parties.has(line.to.ownerKey))) return invalid('allocation', 'A recipient must own input land.');
+        if (money.lines.some(line => !parties.has(line.ownerKey))) return invalid('money', 'A cash party must own input land.');
+        try {
+            const calculated = agreementRecord.settle({ ...content, id: 'publication-check', plan: null, designs: [],
+                outputs: content.outputs.map(output => ({ ...output, pieceId: output.hash, holders: [], geometry: null })) });
+            if (!agreementRecord.landBalance(calculated).balanced) return invalid('land', 'Input and output land areas must balance.');
+            const ordered = lines => [...lines].filter(line => line.amountCents !== 0).sort((a, b) => a.ownerKey < b.ownerKey ? -1 : a.ownerKey > b.ownerKey ? 1 : 0);
+            if (!canonicalBytes(ordered(calculated.money.lines)).equals(canonicalBytes(ordered(money.lines)))) return invalid('money', 'Cash must match the compensation calculated from the rules and allocations.');
+            if (calculated.money.lines.some(line => !Number.isSafeInteger(line.amountCents))) return invalid('money', 'Compensation exceeds the supported whole-cent range.');
+        } catch (error) { return invalid('money', error.message); }
+    } else if (!agreementRecord.landBalance({ inputs, outputs: content.outputs }).balanced) return invalid('land', 'Input and output land areas must balance.');
 
     const consultation = content.consultation;
     if (consultation != null) {

@@ -130,7 +130,7 @@ describe('named plan browser transport', () => {
         expect(new URL(explicit).searchParams.has('3d')).toBe(false);
     });
     const client = fetch => NamedPlans.browser({ location: new URL('https://app.example/?backend=https%3A%2F%2Fapi.example'),
-        PlanRecord, Cid, MapShare, fetch, resolveBackendBaseUrl: () => 'https://api.example', resolveFrontendBaseUrl: () => 'https://app.example' });
+        PlanRecord, Cid, MapShare, fetch, PersistentStorage: { setItem: vi.fn(), forEach() {} }, resolveBackendBaseUrl: () => 'https://api.example', resolveFrontendBaseUrl: () => 'https://app.example' });
     it('verifies a GET of the durable record before reporting a saved link', async () => {
         const fetch = vi.fn(async () => Response.json({ cid, content }));
         const api = client(fetch);

@@ -42,7 +42,7 @@ votes, signatures, funding or execution state. Publication remains a separate co
 | `ugt_modify_design` | Optional conveniences for floors, height, use, rotation, movement, tree count and road profiles. These are not the limits of editing. |
 | `ugt_draft_plan`, `ugt_get_plan` | Create or retrieve a named `plan/v1` snapshot: title, design membership and saved map view. |
 | `ugt_edit_plan` | Revise named-plan membership, designs, title or view; return a new private snapshot. It carries no agreement terms or derived land pieces. |
-| `ugt_edit_agreement` | Revise an agreement composition and terms; rebuild its ground, reconnect roads and validate the result. |
+| `ugt_edit_agreement` | Revise agreement terms against the same named plan. Use `ugt_edit_plan` to change membership or designs, then draft a new agreement. |
 | `ugt_draft_*` | Generate a new design, which can then be added or used as a replacement. |
 | `ugt_validate_plan` | Check authored geometry, retained constraints, building overlaps and station attachment presence; source coverage and statutory compliance remain explicit unknowns. |
 | `ugt_compare` | Compare revisions and expose absent source measurements as unknown. |
@@ -92,19 +92,12 @@ degrees. These are the same records read by the site's map and model renderer.
 
 ## Site editor parity and coupled fields
 
-`ugt_draft_road` creates an independent street. When those designs are assembled with
-`ugt_draft_agreement`, their same-level crossings are authored as shared junctions using the map
-editor's geometry engine. Every participating street stores its split stretches, neighbouring arms
-and rebuilt footprint, including corner land. Bridges, tunnels and unsnapped near-misses remain
-separate. `roadChanges` maps original to revised design CIDs; publish the **returned designs** with
-the returned agreement. The original designs are unchanged.
+`ugt_draft_agreement` requires an existing named plan and preserves its exact membership. It does
+not create a plan or revise member designs. Edit roads and other designs through `ugt_edit_plan`
+first, then draft the agreement against that named plan.
 
-`ugt_edit_agreement` performs the same step after its edits, so a moved, removed or resized road also
-updates the neighbouring junction records and land. Those additional revisions appear in `changes`.
-The composition supplies the complete authored road network; references to foreign arms are rebuilt
-from its included roads. Inspection and comparison replay the exact supplied records without
-authoring junctions or changing a published commitment. An existing unconnected road plan therefore
-needs a new draft/revision and separate publication; merely opening its old link does not repair it.
+Agreement revisions change terms only and keep the exact named plan fixed. To change the design
+composition or geometry, revise the named plan and draft a new agreement.
 
 | Human editor | Editable canonical fields | Required consistency |
 | --- | --- | --- |
@@ -116,7 +109,7 @@ needs a new draft/revision and separate publication; merely opening its old link
 | Parcel borders/layout | `/parcelLayout/plots`, pool/site and authored layout settings | Plots must be valid, nonoverlapping polygons covering their pool; edit shared vertices on both neighbouring plots atomically. |
 | Design details | Title, description, author, city, tolerance and goal/payload | Exactly one supported authored payload; valid canonical identity and current parcel binding. |
 | Named plan selection and view | `title`, `view`, membership operations | Named plans require no allocations, decision rule, ownership snapshot or complete cadastral ground. Title/view/membership edits retain the selected designs exactly. |
-| Agreement composition and terms | `ugt_edit_agreement` operations; `terms.title`, `author`, `sponsor`, `deadline`, `rule`, `rights`, `allocations`, `money` | Inputs/outputs are rederived. Changed rights or allocated output hashes require explicit reviewed replacements. |
+| Agreement terms | `ugt_edit_agreement` `terms.title`, `author`, `sponsor`, `deadline`, full `rule` (including policy/regime and lens), `rights`, `allocations`, `settlement` | Plan membership is fixed. Each owner output has one explicit recipient or public designation; joint recipients are unsupported. Balancing cash is derived from EUR/m² settlement terms. Rights changes update the input holder snapshot. |
 
 Existing holders and rights can be carried into a private revision over the same input parcels,
 but the result labels them `carried-unverified`: this does not refresh or verify ownership.

@@ -2,6 +2,16 @@
 
 # Plan, design, agreement
 
+## Current agreement authoring contract
+
+Create a named plan independently before creating an agreement. Agreement creation belongs to the plan’s actions. The Input parcels tab selects an existing exact plan revision; its designs are read-only. Neither the editor nor MCP agreement editing creates or edits a plan.
+
+The editor has Rules, Input parcels, Output parcels and Persons tabs. Each output of an owners’ agreement has exactly one explicit input party or Public recipient. Input co-ownership remains valid; joint output allocation and implicit carried holdings are retired. When input owners are unknown, an abstract “Owner(s) of parcel X” party supports allocation and accounting; ownership rights and lens settings are separate dialogs.
+
+Rules state an area compensation rate in the city’s fiat currency and, where allowed by the selected scheme, a proportional land contribution. Cash is computed in whole cents from entitlement minus allocated area. Persons shows contributed/received land and cash, including the balancing sponsor; it has no cash editing. Input and output land areas and the derived cash schedule must balance before saving or publication. A no-cash rule records no transfers. Community agreements retain no allocations or financial settlement.
+
+This intentionally breaks older experimental joint-output, implicit-holder and manually entered cash agreements. Recreate those agreements from an existing plan; no compatibility reader or migration is supplied. Historical implementation notes below do not override this current contract.
+
 ## Current contract
 
 | Record | Meaning | Relationships |

@@ -1,17 +1,7 @@
-// The agreement editor (plan-design-agreement.md, M1 (b); docked on the right of the map since the UI
-// decision of 2026-10-22, "M3 notes"): Create / Edit agreement as a panel on the right dock (a bottom
-// sheet on a phone) in place of the agreement panel, so the map stays in view. One scrolling column
-// over the designs applied to the map — which designs, the land they take and the pieces they leave,
-// who receives each piece, the cash per party with the sponsor's line, the decision rule, a title and
-// a deadline — with Cancel and Save at the bottom. The map is the main picker (js/map-pick.js): the
-// chosen designs are highlighted, and a click on an applied design adds or removes it. Save validates
-// and stores the agreement on this device (agreement-store.js) and opens its panel; Cancel discards
-// and brings back the panel the editor replaced. addDesign() is the details panel's "Add to agreement":
-// a new agreement, or one not proposed yet.
-//
-// The branching lives in the pure helpers exported below (the record built from the form, the
-// allocation options, the terms kept across a new derivation, the sponsor line, the HTML of each
-// section), tested headlessly in backend/test/agreement-store.test.js; open() is the thin browser layer.
+// Plan-first agreement editor: rules, input parcels, single-recipient output parcels and a
+// read-only persons tally. Ground comes from one exact saved plan; compensation comes from its
+// agreement rules. Ownership rights and lens settings open separate shared dialogs. Pure helpers
+// are exercised by the targeted agreement accounting/store tests; open() connects them to the dock.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -144,7 +134,7 @@
     // What one resulting piece can go to: its current holders (the default), one input party, or the public.
     function allocationOptions(inputs) {
         return [
-            { value: 'holders', label: t('agreement.allocation.holders', 'Current holders') },
+            { value: '', label: t('agreement.workflow.chooseRecipient', 'Choose recipient') },
             ...partiesOf(inputs).map(party => ({ value: `party:${party.ownerKey}`, label: party.displayName })),
             { value: 'public', label: t('agreement.allocation.public', 'Public') }
         ];
@@ -280,21 +270,11 @@
         const fingerprints = state.fingerprints instanceof Map ? state.fingerprints : new Map(Object.entries(state.fingerprints || {}));
         const records = Array.isArray(state.designs) ? state.designs.filter(Boolean) : [];
         const chosen = values.allocations || {};
-        const cash = values.cash || {};
         const owners = values.electorate !== 'community';
         const title = String(values.title ?? '').trim();
-        const designCids = records.map(record => fingerprints.get(idOf(record.proposalId)));
-        const planTitle = String(values.planTitle || state.plan?.content.title || title || designTitle(records[0])).trim();
-        let plan = state.plan || null;
+        const plan = state.plan || null;
         const recordApi = root.AgreementRecord || (typeof require === 'function' ? require('./agreement-record.js') : null);
-        if (state.view && designCids.length && designCids.every(Boolean)
-            && (!recordApi.matchesPlan(plan, designCids) || plan.content.title !== planTitle)) {
-            const plans = root.PlanRecord || (typeof require === 'function' ? require('./plan-record.js') : null);
-            const cidApi = root.Cid || (typeof require === 'function' ? require('./cid.js') : null);
-            const content = plans.create(planTitle, designCids, state.view);
-            plan = { cid: cidApi.cidOfObject(content), content };
-        }
-        return {
+        const raw = {
             schema: SCHEMA,
             id: idOf(state.id),
             title: title || null,
@@ -313,17 +293,14 @@
             inputs: { parcels: Array.isArray(inputs.parcels) ? inputs.parcels : [], openGroundM2: isNumber(inputs.openGroundM2) ? inputs.openGroundM2 : 0 },
             outputs,
             allocations: owners ? outputs.map(output => ({ output: output.hash, to: allocationTo(chosen[output.hash]) })).filter(line => line.to) : [],
-            money: {
-                currency: state.currency || null,
-                lines: (owners ? partiesOf(inputs) : []).map(party => ({ ownerKey: party.ownerKey, amountCents: cashCents(cash[party.ownerKey]) }))
-                    .filter(line => line.amountCents !== null && line.amountCents !== 0)
-            },
+            money: { currency: state.currency || null, lines: [] },
             rule: owners
-                ? { electorate: 'owners', binding: values.binding === true, approvalConfig: state.approvalConfig || null, lens: Array.isArray(state.lens) ? state.lens.slice() : [] }
+                ? { electorate: 'owners', binding: values.binding === true, approvalConfig: state.approvalConfig || null, lens: Array.isArray(state.lens) ? state.lens.slice() : [], settlement: values.settlement || { ...recordApi.DEFAULT_SETTLEMENT } }
                 : { electorate: 'community', binding: false, approvalConfig: null, lens: [] },
             consultation: owners ? null : { organiser: values.organiser || null, participationUrl: values.participationUrl || null },
             deadline: deadlineFromDate(values.deadline)
         };
+        return recordApi.settle(raw);
     }
 
     // ---- errors and warnings ---------------------------------------------------------------------
@@ -331,6 +308,13 @@
     // One literal key per code (agreement.errors.<camelCaseCode>, agreement.warnings.<camelCaseCode>),
     // so the locale coverage test sees every one of them.
     const ISSUE_TEXT = {
+        'plan-required': () => t('agreement.errors.planRequired', 'Create a plan first, then select it.'),
+        'plan-membership': () => t('agreement.errors.planMembership', 'Save a plan revision before changing its designs.'),
+        'land-unbalanced': () => t('agreement.errors.landUnbalanced', 'The input and output land areas must balance.'),
+        'input-shares': () => t('agreement.errors.inputShares', 'Input owners must hold 100% of each parcel.'),
+        'allocation-required': () => t('agreement.errors.allocationRequired', 'Choose one recipient for every output parcel.'),
+        'settlement-invalid': () => t('agreement.errors.settlementInvalid', 'Set compensation within the scheme’s limits.'),
+        'money-unbalanced': () => t('agreement.errors.moneyUnbalanced', 'Cash must match the compensation calculated from the rules.'),
         'no-designs': () => t('agreement.errors.noDesigns', 'Choose at least one design.'),
         'design-not-applied': () => t('agreement.errors.designNotApplied', 'Every design must be applied to the map.'),
         'no-inputs': () => t('agreement.errors.noInputs', 'The designs take no cadastral land.'),
@@ -387,29 +371,6 @@
         return `<section class="agreement-section" data-agreement-section="${esc(name)}"${hidden ? ' hidden' : ''}><h3 class="agreement-section__title">${esc(title)}</h3>${content}</section>`;
     }
 
-    // The checklist of applied designs. `missing` are designs the agreement names that are no longer applied.
-    function designsHtml({ designs = [], selected = [], missing = [], values = {} } = {}) {
-        const chosen = new Set(Array.from(selected || [], idOf));
-        const hint = `<label class="agreement-field">${esc(t('plan.name', 'Plan name'))}<input type="text" data-agreement-plan-title maxlength="160" value="${esc(values.planTitle || '')}"></label>`
-            + `<p class="agreement-hint">${esc(t('agreement.designs.hint', 'Choose the designs for this plan. Changing them creates a new plan revision; existing agreements keep their original plan.'))}</p>`;
-        const gone = missing && missing.length
-            ? `<p class="agreement-notice" data-agreement-designs-missing>${esc(t('agreement.errors.designNotApplied', 'Every design must be applied to the map.'))}</p>`
-            : '';
-        if (!designs.length) return `${hint}${gone}<p class="agreement-hint" data-agreement-empty>${esc(t('agreement.designs.empty', 'No applied designs. Apply a design first.'))}</p>`;
-        // The map is the main picker (js/map-pick.js); the line under the hint says what a click did.
-        const mapHint = `<p class="agreement-hint" data-agreement-map-hint>${esc(t('agreement.designs.mapHint', 'Click a design on the map to add or remove it'))}</p>`
-            + '<p class="agreement-hint agreement-pick-status" data-agreement-pick-status role="status" aria-live="polite"></p>';
-        const rows = designs.map(record => {
-            const id = idOf(record.proposalId);
-            const type = typeLabelOf(record);
-            return `<li><label class="agreement-design-row"><input type="checkbox" data-agreement-design="${esc(id)}"${chosen.has(id) ? ' checked' : ''}> `
-                + `<span class="agreement-design-row__title">${esc(designTitle(record))}</span>`
-                + (type ? ` <span class="cb-badge cb-badge--neutral agreement-design-row__type">${esc(type)}</span>` : '')
-                + '</label></li>';
-        }).join('');
-        return `${hint}${gone}<ul class="agreement-design-list">${rows}</ul>${mapHint}`;
-    }
-
     function inputsTableHtml(parcels) {
         const rows = parcels.map(parcel => `<tr data-agreement-input="${esc(parcel.parcelId)}"><th scope="row">${esc(parcel.parcelId)}</th>`
             + `<td class="agreement-table__number">${esc(areaText(parcel.areaM2))}</td><td class="agreement-table__holders">${esc(holdersText(parcel.holders))}</td></tr>`).join('');
@@ -454,21 +415,11 @@
         const options = allocationOptions(land.inputs);
         const known = new Set(options.map(option => option.value));
         const rows = outputs.map((output, index) => {
-            const value = known.has(allocations[output.hash]) ? allocations[output.hash] : 'holders';
+            const value = known.has(allocations[output.hash]) ? allocations[output.hash] : '';
             return `<li><label class="agreement-allocation-row"><span class="agreement-allocation-row__piece">${esc(`${t('agreement.land.piece', 'Piece')} ${index + 1} · ${areaText(output.areaM2)}`)}</span>`
                 + `<select data-agreement-allocation="${esc(output.hash)}">${options.map(option => `<option value="${esc(option.value)}"${option.value === value ? ' selected' : ''}>${esc(option.label)}</option>`).join('')}</select></label></li>`;
         }).join('');
         return `<ul class="agreement-allocation-list">${rows}</ul>`;
-    }
-
-    // One cash field per party, in the agreement's currency.
-    function moneyHtml(land, cash = {}, currency = '') {
-        const parties = partiesOf(land && land.inputs);
-        if (!parties.length) return '';
-        const shown = text => (Number.isNaN(cashCents(text)) ? '' : String(text ?? ''));
-        return `<div class="agreement-column-head"><span>${esc(t('agreement.money.party', 'Party'))}</span><span>${esc(t('agreement.money.amount', 'Amount ({{currency}})', { currency }))}</span></div>`
-            + parties.map(party => `<label class="agreement-money-row"><span class="agreement-money-row__name">${esc(party.displayName)}</span>`
-                + `<input type="number" step="0.01" data-agreement-cash="${esc(party.ownerKey)}" value="${esc(shown(cash[party.ownerKey]))}"></label>`).join('');
     }
 
     // Who decides, whether it binds, and the owners' rules (filled by the browser layer).
@@ -495,27 +446,42 @@
     }
 
     // The whole body. `view`: { designs, selected, missing, land, loading, landError, values, today }.
+    const TABS = ['rules', 'inputs', 'outputs', 'persons'];
+    function tabLabel(tab) {
+        const labels = { rules: ['agreement.workflow.rules', 'Rules'], inputs: ['agreement.workflow.inputs', 'Input parcels'], outputs: ['agreement.workflow.outputs', 'Output parcels'], persons: ['agreement.workflow.persons', 'Persons'] };
+        return t(...labels[tab]);
+    }
+    function planSelectorHtml(plans, selected) {
+        return `<label class="proposal-editor-field"><span>${esc(t('plan.label', 'Plan'))}</span><select data-agreement-plan><option value="">${esc(t('agreement.workflow.choosePlan', 'Choose a saved plan'))}</option>${plans.map(plan => `<option value="${esc(plan.cid)}"${plan.cid === selected?.cid ? ' selected' : ''}>${esc(plan.content.title)}</option>`).join('')}</select></label>`
+            + (!plans.length ? `<p class="agreement-notice">${esc(t('agreement.workflow.noPlans', 'Create a plan first. Open Plans and choose Create plan.'))}</p>` : '');
+    }
+    function personsHtml(record) {
+        const api = root.AgreementRecord || (typeof require === 'function' ? require('./agreement-record.js') : null);
+        const ledger = api.ledger(record);
+        const terms = record.rule.settlement;
+        const cell = (land, cash) => esc(areaText(land)) + (cash > 0 ? `<br><span class="agreement-persons-cash">${esc(moneyText(cash, ledger.currency))}</span>` : '');
+        const rows = ledger.parties.map(party => `<tr><th scope="row">${esc(party.displayName)}</th><td>${cell(party.areaUnknown ? null : party.contributedM2, Math.max(0, -party.cashCents))}</td><td>${cell(party.assignedM2, Math.max(0, party.cashCents))}</td></tr>`).join('');
+        const publicRow = ledger.publicM2 > 0 ? `<tr><th scope="row">${esc(t('agreement.allocation.public', 'Public'))}</th><td>${cell(0, 0)}</td><td>${cell(ledger.publicM2, 0)}</td></tr>` : '';
+        const sponsor = ledger.money.sponsorCents;
+        const sponsorRow = sponsor ? `<tr><th scope="row">${esc(t('agreement.workflow.sponsor', 'Sponsor'))}</th><td>${cell(0, Math.max(0, -sponsor))}</td><td>${cell(0, Math.max(0, sponsor))}</td></tr>` : '';
+        const balance = api.landBalance(record);
+        return (terms?.method === 'area' ? `<p class="agreement-hint">${esc(t('agreement.workflow.rateReadOnly', 'Compensation: {{rate}} per m². Change it in Rules.', { rate: moneyText(terms.rateCentsPerM2, ledger.currency) }))}</p>` : '')
+            + `<table class="agreement-persons-table"><thead><tr><th scope="col">${esc(t('agreement.workflow.person', 'Person'))}</th><th scope="col">${esc(t('agreement.workflow.putsIn', 'Puts in'))}</th><th scope="col">${esc(t('agreement.workflow.receives', 'Receives'))}</th></tr></thead><tbody>${rows}${publicRow}${sponsorRow}</tbody></table>`
+            + `<p class="agreement-hint" data-agreement-balance>${esc(t('agreement.workflow.landTotals', 'Land in: {{input}} · Land out: {{output}}', { input: areaText(balance.inputM2), output: areaText(balance.outputM2) }))}</p>`;
+    }
     function bodyHtml(view) {
         const values = view.values || {};
-        const owners = values.electorate !== 'community';
-        return `<p class="agreement-intro">${esc(owners
-            ? t('agreement.dialog.intro', 'An agreement refers to one plan and sets who decides, who gets which land and what money moves. Nothing leaves this device yet.')
-            : t('community.intro', 'This agreement asks for non-binding community support. It gives no owner consent and moves no land or money.'))}</p>`
-            + '<ul class="agreement-issues agreement-issues--error" data-agreement-errors aria-live="assertive"></ul>'
-            + '<ul class="agreement-issues agreement-issues--warning" data-agreement-warnings aria-live="polite"></ul>'
-            + sectionHtml('rule', t('agreement.sections.rule', 'Decision rule'), ruleHtml(values))
-            + sectionHtml('consultation', t('agreement.sections.consultation', 'Nonbinding agreement'), consultationHtml(values), owners)
-            + sectionHtml('designs', t('plan.label', 'Plan'), designsHtml(view))
-            + sectionHtml('land', t('agreement.sections.land', 'Land'),
-                `<div class="agreement-land" data-agreement-land>${landHtml({ land: view.land, loading: view.loading, error: view.landError, selectedCount: Array.from(view.selected || []).length })}</div>`)
-            + sectionHtml('allocation', t('agreement.sections.allocation', 'Allocation'),
-                `<p class="agreement-hint">${esc(t('agreement.allocation.hint', 'Who receives each resulting piece. The current holders are what the designs carried over.'))}</p>`
-                + `<div class="agreement-allocations" data-agreement-allocations>${allocationHtml(view.land, values.allocations)}</div>`, !owners)
-            + sectionHtml('money', t('agreement.sections.money', 'Money'),
-                `<p class="agreement-hint">${esc(t('agreement.money.hint', 'Cash per party, in {{currency}}: positive receives, negative pays. The sponsor covers the difference.', { currency: view.currency || '' }))}</p>`
-                + `<div class="agreement-money" data-agreement-money>${moneyHtml(view.land, values.cash, view.currency)}</div>`
-                + '<p class="agreement-sponsor" data-agreement-sponsor></p>', !owners)
-            + sectionHtml('details', t('agreement.sections.details', 'Details'), detailsHtml({ title: values.title, deadline: values.deadline, today: view.today }));
+        const panels = {
+            rules: ruleHtml(values) + '<div data-agreement-settlement></div><div class="cb-actions"><button type="button" class="btn" data-agreement-action="rights">' + esc(t('agreement.workflow.rights', 'Parcel ownership rights')) + '</button><button type="button" class="btn" data-agreement-action="lens">' + esc(t('agreement.workflow.lens', 'Lens operations')) + '</button></div>'
+                + sectionHtml('consultation', t('agreement.sections.consultation', 'Nonbinding agreement'), consultationHtml(values), values.electorate !== 'community')
+                + detailsHtml({ title: values.title, deadline: values.deadline, today: view.today }),
+            inputs: planSelectorHtml(view.plans || [], view.plan) + '<div data-agreement-land></div><div data-agreement-plan-designs></div>',
+            outputs: '<div data-agreement-allocations></div>',
+            persons: '<div data-agreement-persons></div>'
+        };
+        return '<ul class="agreement-issues agreement-issues--error" data-agreement-errors aria-live="assertive"></ul><ul class="agreement-issues agreement-issues--warning" data-agreement-warnings aria-live="polite"></ul>'
+            + `<div class="cb-tabs agreement-editor__tabs" role="tablist" aria-label="${esc(t('agreement.panel.title', 'Agreement'))}">${TABS.map(tab => `<button type="button" role="tab" id="agreement-tab-${tab}" aria-controls="agreement-tabpanel-${tab}" aria-selected="${tab === 'inputs'}" tabindex="${tab === 'inputs' ? 0 : -1}" data-agreement-tab="${tab}">${esc(tabLabel(tab))}</button>`).join('')}</div>`
+            + TABS.map(tab => `<section role="tabpanel" id="agreement-tabpanel-${tab}" aria-labelledby="agreement-tab-${tab}" data-agreement-tabpanel="${tab}"${tab === 'inputs' ? '' : ' hidden'}>${panels[tab]}</section>`).join('');
     }
 
     // ---- the editor: a panel on the right dock ---------------------------------------------------
@@ -577,539 +543,290 @@
         return panel;
     }
 
-    /**
-     * Opens the editor on the right dock over the applied designs, in place of the agreement panel
-     * while it is open: a new agreement (preselecting `designIds`), or the stored agreement
-     * `electorate` selects the decision flow for a new record; an existing agreement retains its rule.
-     * `agreementId` with `designIds` added to its designs. A proposed agreement is refused (an error
-     * with code 'agreement-published'). Resolves with the saved record, or null when cancelled.
-     */
-    async function open({ agreementId = null, designIds = null, electorate = 'owners', plan = null } = {}) {
-        const doc = root.document;
+    // A plan is selected before ground is read. Designs are a read-only projection of that exact
+    // revision; changing a plan's membership is a separate plan-authoring operation.
+    async function open({ agreementId = null, electorate = 'owners', plan = null } = {}) {
+        const doc = root.document, api = root.AgreementRecord;
         const existing = agreementId ? root.AgreementStore.get(agreementId) : null;
         if (agreementId && !existing) throw new Error(`Agreement ${agreementId} is not on this device.`);
-        if (existing && existing.published) throw publishedError();
-        if (!root.MapPick) throw new Error('MapPick (js/map-pick.js) is not loaded.');
-        // One editor at a time: an open one is cancelled first.
+        if (existing?.published) throw publishedError();
         if (session) session.cancel();
-        const order = root.__planOrder && typeof root.__planOrder.orderFormations === 'function' ? root.__planOrder.orderFormations : null;
-        const available = appliedDesigns(root.proposalStorage.getAllProposals(), { isApplied: root.isApplied, orderFormations: order });
-        const availableIds = new Set(available.map(record => idOf(record.proposalId)));
-        const wanted = Array.from(new Set((existing ? existing.designs.map(design => design.proposalId) : [])
-            .concat(Array.isArray(designIds) ? designIds : []).map(idOf).filter(Boolean)));
-        const rule = existing && existing.rule ? existing.rule : null;
-        const terms = termsOf(existing);
+        const plans = root.NamedPlans.list();
+        const requestedPlan = existing?.plan || plan || null;
+        const initialPlan = plans.find(row => row.cid === requestedPlan?.cid) || requestedPlan;
+        if (initialPlan && !plans.some(row => row.cid === initialPlan.cid)) plans.push(initialPlan);
         const state = {
-            plan: existing?.plan || plan || root.NamedPlans?.current || null,
-            view: root.MapShare.capture(root),
-            id: existing ? existing.id : root.AgreementRecord.newId(),
-            createdAt: existing ? existing.createdAt : null,
-            updatedAt: existing ? existing.updatedAt : null,
-            city: (existing && existing.city) || (typeof root.resolveCurrentCityCode === 'function' ? root.resolveCurrentCityCode() || null : null),
-            // The money of the agreement's place: what it was saved in, else the city on screen's.
-            currency: (existing && existing.money && existing.money.currency) || root.CityMoney.currentCurrency(),
-            available,
-            selected: new Set(wanted.filter(id => availableIds.has(id))),
-            missing: wanted.filter(id => !availableIds.has(id)),
-            land: emptyLand(), loading: false, landError: null, sequence: 0,
-            fingerprints: new Map(),
-            approvalConfig: (rule && rule.approvalConfig) || null,
-            lens: rule && Array.isArray(rule.lens) ? rule.lens.slice() : [],
-            ruleError: null, ruleSequence: 0,
-            values: {
-                allocations: terms.allocations,
-                cash: terms.cash,
-                electorate: (rule ? rule.electorate : electorate) === 'community' ? 'community' : 'owners',
-                organiser: existing && existing.consultation && existing.consultation.organiser || '',
-                participationUrl: existing && existing.consultation && existing.consultation.participationUrl || '',
-                // An owners' agreement binds unless it was saved as a vote.
-                binding: rule ? rule.binding === true : true,
-                title: (existing && existing.title) || '',
-                planTitle: (existing?.plan || plan || root.NamedPlans?.current)?.content.title || '',
-                deadline: dateFromDeadline(existing && existing.deadline)
-            },
-            attempted: false, saveIssue: null, closed: false
+            id: existing?.id || api.newId(), createdAt: existing?.createdAt || null,
+            updatedAt: existing?.updatedAt || null, city: existing?.city || root.resolveCurrentCityCode?.() || null,
+            plans, plan: initialPlan, designs: [], fingerprints: new Map(), land: emptyLand(),
+            currency: existing?.money.currency || root.CityMoney.currentCurrency(),
+            approvalConfig: existing?.rule.approvalConfig || null, lens: existing?.rule.lens || [],
+            values: { ...termsOf(existing), electorate: existing?.rule.electorate || electorate,
+                binding: existing?.rule.binding === true, title: existing?.title || '',
+                settlement: { ...(existing?.rule.settlement || api.DEFAULT_SETTLEMENT) },
+                deadline: dateFromDeadline(existing?.deadline), organiser: existing?.consultation?.organiser || '',
+                participationUrl: existing?.consultation?.participationUrl || '' },
+            loading: false, closed: false, sequence: 0, attempted: false, landError: null
         };
-        const selectedDesigns = () => state.available.filter(record => state.selected.has(idOf(record.proposalId)));
-        const formState = () => ({
-            id: state.id, createdAt: state.createdAt, updatedAt: state.updatedAt, city: state.city,
-            designs: selectedDesigns(), fingerprints: state.fingerprints, land: state.land,
-            plan: state.plan, view: state.view,
-            approvalConfig: state.approvalConfig, lens: state.lens, currency: state.currency
-        });
-        const draft = () => recordFromForm(formState(), state.values);
-        const inputIds = () => state.land.inputs.parcels.map(parcel => parcel.parcelId);
-        const designOf = id => root.proposalStorage.getProposal(id) || null;
-
-        // The agreement panel steps aside while an agreement is edited; Cancel brings it back.
         const panels = root.AgreementPanel;
-        const replaced = panels && typeof panels.isOpen === 'function' && panels.isOpen() ? panels.current() : null;
+        const replaced = panels?.isOpen?.() ? panels.current() : null;
         if (replaced) panels.close();
         makeWay(doc);
-
-        const panel = ensurePanel(doc);
-        const heading = panel.querySelector('#agreement-editor-title');
-        heading.textContent = existing ? t('agreement.dialog.titleEdit', 'Edit agreement') : t('agreement.dialog.titleCreate', 'Create agreement');
-        const cancelLabel = t('common.cancel', 'Cancel');
-        const closeButton = panel.querySelector('.panel-header [data-agreement-action="cancel"]');
-        closeButton.setAttribute('aria-label', cancelLabel);
-        closeButton.title = cancelLabel;
-        panel.querySelector('.agreement-editor__footer [data-agreement-action="cancel"]').textContent = cancelLabel;
-        const saveButton = panel.querySelector('[data-agreement-action="save"]');
+        const panel = ensurePanel(doc), body = panel.querySelector('[data-agreement-editor-body]');
+        const form = panel.querySelector('form'), saveButton = panel.querySelector('[data-agreement-action="save"]');
+        panel.querySelector('#agreement-editor-title').textContent = t(existing ? 'agreement.dialog.titleEdit' : 'agreement.dialog.titleCreate', existing ? 'Edit agreement' : 'Create agreement');
+        panel.querySelectorAll('[data-agreement-action="cancel"]').forEach(button => {
+            button.setAttribute('aria-label', t('common.cancel', 'Cancel'));
+            if (button.closest('.panel-footer')) button.textContent = t('common.cancel', 'Cancel');
+        });
         saveButton.textContent = t('agreement.dialog.save', 'Save agreement');
-        const form = panel.querySelector('.agreement-editor__form');
-        const body = panel.querySelector('[data-agreement-editor-body]');
-        body.innerHTML = bodyHtml({ ...state, designs: state.available, loading: state.selected.size > 0, today: dateFromDeadline(new Date().toISOString()) });
-        body.scrollTop = 0;
+        body.innerHTML = bodyHtml({ ...state, today: dateFromDeadline(new Date().toISOString()) });
         const part = selector => body.querySelector(selector);
-
-        // Every listener of this session goes with it; the next open wires its own.
-        const listeners = new AbortController();
-        const { signal } = listeners;
-        let unregisterEscape = null;
-        let resolveClosed = null;
+        const listeners = new AbortController(), { signal } = listeners;
+        let resolveClosed, auxiliary = null, unregisterEscape = null;
         const closed = new Promise(resolve => { resolveClosed = resolve; });
         const current = { cancel: () => finish(null) };
         session = current;
-
-        // Saved: the agreement's panel opens on it. Cancelled: the panel the editor replaced returns.
+        const draft = () => recordFromForm(state, state.values);
         function finish(result) {
             if (state.closed) return;
-            state.closed = true;
-            listeners.abort();
-            if (typeof unregisterEscape === 'function') unregisterEscape();
+            state.closed = true; listeners.abort(); auxiliary?.close(); unregisterEscape?.();
             if (session === current) session = null;
-            root.MapPick.end('agreement');
-            panel.classList.remove('visible');
-            body.innerHTML = '';
-            doc.body.classList.remove('agreement-editor-open');
-            log(result ? `saved ${result.id}` : `cancelled ${state.id}`);
-            const reopen = result ? result.id : replaced;
-            if (reopen && panels && typeof panels.open === 'function') {
-                Promise.resolve(panels.open(reopen)).catch(error => console.error(`[${new Date().toISOString()}] [AgreementEditor] the agreement panel of ${reopen} could not be opened`, error));
-            }
+            panel.classList.remove('visible'); body.replaceChildren(); doc.body.classList.remove('agreement-editor-open');
+            const reopen = result?.id || replaced;
+            if (reopen) Promise.resolve(panels.open(reopen)).catch(report);
             resolveClosed(result || null);
         }
-
-        function setSaveEnabled(enabled) {
-            saveButton.disabled = !enabled;
+        function report(error) {
+            console.error(`[${new Date().toISOString()}] [AgreementEditor]`, error);
+            root.showEphemeralMessage?.(error.message || String(error), 7000, 'error');
         }
-
-        function validation(record) {
-            return root.AgreementRecord.validate(record, { designOf, isApplied: root.isApplied });
+        function activate(tab, focus = false) {
+            body.querySelectorAll('[data-agreement-tab]').forEach(button => {
+                const selected = button.dataset.agreementTab === tab;
+                button.setAttribute('aria-selected', String(selected)); button.tabIndex = selected ? 0 : -1;
+                if (focus && selected) button.focus();
+            });
+            body.querySelectorAll('[data-agreement-tabpanel]').forEach(section => { section.hidden = section.dataset.agreementTabpanel !== tab; });
         }
-
-        function renderIssues(errors, warnings) {
-            part('[data-agreement-errors]').innerHTML = issuesHtml(errors);
-            part('[data-agreement-warnings]').innerHTML = issuesHtml(warnings);
+        function issues() {
+            if (state.closed || state.loading) return;
+            try {
+                const checked = api.validate(draft(), { designOf: id => root.proposalStorage.getProposal(id), isApplied: root.isApplied });
+                part('[data-agreement-errors]').innerHTML = issuesHtml(state.attempted ? checked.errors : []);
+                // Advanced ownership/lens readiness lives behind its own controls.
+                part('[data-agreement-warnings]').innerHTML = issuesHtml(checked.warnings.filter(row => row.section === 'land'));
+                saveButton.disabled = !state.plan || !!state.landError || !checked.valid;
+            } catch (error) { saveButton.disabled = true; part('[data-agreement-errors]').textContent = error.message; }
         }
-
-        // Warnings follow the form once a design is chosen; errors show once Save has been tried, and
-        // then follow the form too.
-        function refreshIssues() {
-            if (state.loading || state.closed) return;
-            const result = validation(draft());
-            const errors = (state.attempted ? result.errors || [] : []).concat(state.saveIssue ? [state.saveIssue] : []);
-            renderIssues(errors, state.selected.size ? result.warnings || [] : []);
+        function renderPersons() {
+            try { part('[data-agreement-persons]').innerHTML = personsHtml(draft()); }
+            catch (error) { part('[data-agreement-persons]').textContent = error.message; }
         }
-
-        // Blank while an amount cannot be read (a lone "-" or a trailing "." mid-typing): the
-        // schedule needs whole cents, and the validation names the amount on save.
-        function renderSponsor() {
-            const line = part('[data-agreement-sponsor]');
-            const record = draft();
-            let sponsor = null;
-            if (record.money.lines.every(entry => Number.isSafeInteger(entry.amountCents))) {
-                try { sponsor = sponsorLine(root.AgreementRecord.ledger(record).money, record.money.currency); } catch (error) {
-                    console.warn('[agreement-dialog] The money schedule could not be computed', error);
-                }
-            }
-            line.textContent = sponsor ? sponsor.text : '';
-            line.setAttribute('data-agreement-sponsor', sponsor ? sponsor.kind : '');
+        function settlementHtml() {
+            const terms = state.values.settlement, limit = api.contributionLimit({ approvalConfig: state.approvalConfig });
+            terms.contributionBasisPoints = Math.min(terms.contributionBasisPoints, limit);
+            const enabled = terms.method === 'area';
+            return `<label class="proposal-editor-field"><span>${esc(t('agreement.workflow.compensation', 'Compensation'))}</span><select data-agreement-compensation><option value="area"${enabled ? ' selected' : ''}>${esc(t('agreement.workflow.byArea', 'Balance land differences in money'))}</option><option value="none"${!enabled ? ' selected' : ''}>${esc(t('agreement.workflow.noCash', 'No cash compensation'))}</option></select></label>`
+                + `<label class="proposal-editor-field"${enabled ? '' : ' hidden'}><span>${esc(t('agreement.workflow.rate', 'Compensation per m² ({{currency}})', { currency: state.currency }))}</span><input type="range" min="0" max="${Math.max(100000, terms.rateCentsPerM2)}" step="100" value="${terms.rateCentsPerM2}" data-agreement-rate-slider><input type="number" min="0" max="100000000" step="0.01" value="${terms.rateCentsPerM2 / 100}" data-agreement-rate aria-label="${esc(t('agreement.workflow.rate', 'Compensation per m² ({{currency}})', { currency: state.currency }))}"></label>`
+                + (enabled && limit ? `<label class="proposal-editor-field"><span>${esc(t('agreement.workflow.contribution', 'Land contribution (%)'))}</span><input type="range" min="0" max="${limit}" step="1" value="${terms.contributionBasisPoints}" data-agreement-contribution><output data-agreement-contribution-value>${terms.contributionBasisPoints / 100}%</output></label><p class="agreement-hint">${esc(t('agreement.workflow.contributionHint', 'Compensation covers differences from the remaining land entitlement after this contribution.'))}</p>` : '');
         }
-
-        // ---- the decision rule: ProposalApprovalSetup's form, wired as its openDialog wires it ----
-
-        const ruleForm = () => part('[data-agreement-rule-form]');
-
-        // The lens first: a malformed fraction must not cost the author the keys they typed.
         function readRule() {
-            const container = ruleForm();
-            if (state.values.electorate !== 'owners' || !container.firstElementChild) return;
-            state.lens = setup().lensFromForm(container);
-            state.approvalConfig = setup().withPolicyFromForm(container, state.approvalConfig);
+            const container = part('[data-agreement-rule-form]');
+            if (state.values.electorate === 'owners' && container.firstElementChild) state.approvalConfig = setup().withPolicyFromForm(container, state.approvalConfig);
         }
-
-        function keepRule() {
-            try { readRule(); } catch (_) { /* the lens is kept; a bad fraction is reported on save */ }
-        }
-
         function renderRule() {
             const owners = state.values.electorate === 'owners';
-            body.querySelectorAll('[data-agreement-electorate]').forEach(input => { input.checked = input.value === state.values.electorate; });
-            const binding = part('[data-agreement-binding]');
-            binding.disabled = !owners;
+            const source = doc.createElement('div');
+            source.innerHTML = setup().html({ config: state.approvalConfig, lens: state.lens, cadastreParcelIds: state.land.inputs.parcels.map(p => p.parcelId), heading: false });
+            const container = part('[data-agreement-rule-form]'); container.replaceChildren(); container.hidden = !owners;
+            const rules = source.querySelector('[data-approval-rules-card]'); if (owners && rules) container.appendChild(rules);
+            part('[data-agreement-settlement]').innerHTML = owners ? settlementHtml() : '';
             part('[data-agreement-binding-control]').hidden = !owners;
+            part('[data-agreement-binding]').disabled = !owners;
             part('[data-agreement-section="consultation"]').hidden = owners;
-            part('[data-agreement-section="allocation"]').hidden = !owners;
-            part('[data-agreement-section="money"]').hidden = !owners;
-            binding.checked = owners && state.values.binding === true;
-            const container = ruleForm();
-            container.hidden = !owners;
-            container.innerHTML = owners
-                ? setup().html({ config: state.approvalConfig, lens: state.lens, cadastreParcelIds: inputIds(), error: state.ruleError, heading: false })
-                : '';
         }
-
-        function onRuleChange(target) {
-            const container = ruleForm();
-            if (target.closest('[data-approval-source]')) { setup().syncSourceControls(container); return; }
-            // Only the rules choice and the custom authority change which fields exist; any other edit
-            // is read on save, and the rule sentence follows it.
-            if (!target.closest('[data-approval-regime], [data-approval-custom-authority]')) {
-                if (target.closest('[data-approval-rule]')) {
-                    try {
-                        const preview = setup().withPolicyFromForm(container, state.approvalConfig);
-                        const line = container.querySelector('[data-approval-rule-text]');
-                        if (line) line.textContent = setup().policyText(preview.policy, preview.regime);
-                    } catch (_) { /* reported on save */ }
-                }
-                return;
-            }
-            try { readRule(); state.ruleError = null; } catch (error) { state.ruleError = error && error.message || String(error); }
-            renderRule();
-            refreshIssues();
+        function renderLand() {
+            const target = part('[data-agreement-land]');
+            if (state.loading) target.innerHTML = landHtml({ loading: true });
+            else if (state.landError) target.innerHTML = `<p class="agreement-alert">${esc(state.landError)}</p><button type="button" class="btn" data-agreement-action="apply-plan">${esc(t('agreement.workflow.applyPlan', 'Apply plan designs'))}</button>`;
+            else target.innerHTML = inputsTableHtml(state.land.inputs.parcels);
+            part('[data-agreement-plan-designs]').innerHTML = `<h4>${esc(t('sidebar.proposals.title', 'Designs'))}</h4><ul>${state.designs.map(design => `<li>${esc(designTitle(design))}</li>`).join('')}</ul>`;
+            part('[data-agreement-allocations]').innerHTML = allocationHtml(state.land, state.values.allocations);
+            if (state.values.electorate === 'community') part('[data-agreement-allocations]').querySelectorAll('select').forEach(select => { select.disabled = true; });
+            renderPersons(); issues();
         }
-
-        async function onRuleClick(event) {
-            const button = event.target.closest('[data-editor-action]');
-            const action = button && button.dataset.editorAction;
-            if (!action || button.disabled) return;
-            event.preventDefault();
-            keepRule();
-            const container = ruleForm();
-            if (action === 'approval-template') { setup().downloadTemplate(inputIds(), state.approvalConfig); return; }
-            if (action === 'approval-test-add' || action === 'approval-test-remove') {
-                try {
-                    const index = event.target.closest('[data-test-index]');
-                    state.approvalConfig = setup().withRuleAction(container, state.approvalConfig, action, index && index.dataset.testIndex);
-                    state.ruleError = null;
-                } catch (error) { state.ruleError = error && error.message || String(error); }
-                renderRule();
-                refreshIssues();
-                return;
-            }
-            if (action === 'approval-remove') {
-                state.ruleSequence += 1;
-                state.approvalConfig = setup().withoutRights(state.approvalConfig);
-                state.ruleError = null;
-                renderRule();
-                refreshIssues();
-                return;
-            }
-            if (action !== 'approval-import') return;
-            const sequence = ++state.ruleSequence;
-            try {
-                const imported = await setup().importRights(container, state.approvalConfig, { parcelIds: inputIds() });
-                if (sequence !== state.ruleSequence || state.closed) return;
-                state.approvalConfig = imported;
-                state.ruleError = null;
-            } catch (error) {
-                // A failed file or source leaves the previous rights in place.
-                if (sequence !== state.ruleSequence || state.closed) return;
-                state.ruleError = error && error.message || String(error);
-            }
-            renderRule();
-            refreshIssues();
-        }
-
-        // ---- the land ------------------------------------------------------------------------
-
-        // The original cadastral features of the input ids (as before-after.js reads them); the
-        // agreement still derives without them, its areas then unknown.
-        async function originalParcels(ids) {
-            const repository = root.CadastralParcelRepository;
-            if (!ids.length || !repository || typeof repository.ensureIds !== 'function') return [];
-            try {
-                const result = await repository.ensureIds(ids, { retainOnly: true });
-                return Array.isArray(result && result.features) ? result.features : [];
-            } catch (error) {
-                console.warn('[agreement-dialog] Original parcels unavailable', error);
-                return [];
-            }
-        }
-
-        async function computeLand(designs) {
-            const fabric = root.LiveParcelFabric;
-            const ground = root.AgreementGround;
-            const originals = originalsById(await originalParcels(inputParcelIds(designs, fabric)), fabric && fabric.featureId);
-            return ground.derive({
-                designs, fabric, originals,
-                ownerOf: ground.localHolders({ storage: root.PersistentStorage, agents: root.agentStorage }),
-                area: ground.areaOf
+        function applyRights() {
+            const rights = state.approvalConfig?.rights;
+            if (!rights || rights.source?.provider === LOCAL_RIGHTS_PROVIDER) return;
+            state.land.inputs.parcels = state.land.inputs.parcels.map(parcel => {
+                const row = rights.parcels.find(row => row.parcelId === parcel.parcelId);
+                if (!row?.owners?.length) return parcel;
+                return { ...parcel, holders: row.owners.map(owner => {
+                    const [n, d] = owner.share.split('/').map(Number);
+                    return { ownerKey: owner.ownerId, displayName: owner.displayName || owner.ownerId, share: n / d };
+                }) };
             });
         }
-
-        // A design's identity is its content CID (M2, js/design-record.js), the same the index knows it by.
-        function fingerprintOf(record) {
-            if (!root.DesignRecord || typeof root.DesignRecord.cidOf !== 'function') throw new Error('DesignRecord (js/design-record.js) is not loaded.');
-            return root.DesignRecord.cidOf(record);
+        function reconcileAllocations() {
+            const kept = keptTerms(state.values, state.land).allocations;
+            const defaults = Object.fromEntries(api.defaultAllocations(state.land.inputs, state.land.outputs).map(row => [row.output, allocationValue(row.to)]));
+            state.values.allocations = { ...defaults, ...kept };
         }
-
         async function deriveLand() {
             const sequence = ++state.sequence;
-            const designs = selectedDesigns();
-            state.loading = designs.length > 0;
-            state.landError = null;
-            setSaveEnabled(!state.loading);
-            part('[data-agreement-land]').innerHTML = landHtml({ loading: state.loading, selectedCount: designs.length, land: emptyLand() });
-            let land = emptyLand();
-            let fingerprints = new Map();
-            let failure = null;
-            if (designs.length) {
-                try {
-                    fingerprints = new Map(designs.map(record => [idOf(record.proposalId), fingerprintOf(record)]));
-                    land = await computeLand(designs);
-                } catch (error) {
-                    failure = error;
-                    console.error('[agreement-dialog] Could not derive the land under the designs', error);
-                }
-            }
-            if (state.closed || sequence !== state.sequence) return;
-            state.loading = false;
-            state.land = failure ? emptyLand() : land;
-            state.landError = failure ? (failure.message || String(failure)) : null;
-            state.fingerprints = fingerprints;
-            if (!failure) {
-                // Terms whose piece or party still exists are kept; so are imported rights. With no
-                // design selected there is no land to prune against, so what was typed waits for
-                // the next selection instead of vanishing on an untick.
-                const hasLand = state.land.outputs.length > 0 || state.land.inputs.parcels.length > 0;
-                if (hasLand) state.values = { ...state.values, ...keptTerms(state.values, state.land) };
-                keepRule();
-                try {
-                    state.approvalConfig = ruleConfigAfterDerive(state.approvalConfig, state.land.inputs, root.AgreementRecord.rightsFromInputs);
-                } catch (error) {
-                    state.ruleError = error && error.message || String(error);
-                }
-            }
-            part('[data-agreement-land]').innerHTML = landHtml({ land: state.land, error: state.landError, selectedCount: designs.length });
-            part('[data-agreement-allocations]').innerHTML = allocationHtml(state.land, state.values.allocations);
-            part('[data-agreement-money]').innerHTML = moneyHtml(state.land, state.values.cash, state.currency);
-            renderSponsor();
-            renderRule();
-            refreshIssues();
-            setSaveEnabled(true);
-        }
-
-        // ---- the designs: the checklist and the map pick the same selection ---------------------
-
-        // The chosen designs are the map's highlight (js/map-pick.js); a change repaints that one.
-        function repaint(id) {
-            root.MapPick.refresh(id ? [id] : null)
-                .catch(error => console.error(`[${new Date().toISOString()}] [AgreementEditor] the map highlight failed`, error));
-        }
-
-        function setChosen(id, chosen) {
-            if (chosen) state.selected.add(id); else state.selected.delete(id);
-            body.querySelectorAll('[data-agreement-design]').forEach(input => {
-                if (input.getAttribute('data-agreement-design') === id) input.checked = chosen;
-            });
-            repaint(id);
-            deriveLand();
-        }
-
-        // A click on an applied design on the map adds it, or takes it out when it is already in;
-        // the line under the list says which, since on a phone the list may be out of view.
-        function onMapPick(id, record) {
-            if (state.closed) return;
-            if (!availableIds.has(id)) {
-                log(`${id} was not among the applied designs when the editor opened; not picked`);
-                return;
-            }
-            const chosen = !state.selected.has(id);
-            setChosen(id, chosen);
-            const line = part('[data-agreement-pick-status]');
-            if (line) {
-                line.textContent = chosen
-                    ? t('agreement.designs.added', 'Added “{{title}}”.', { title: designTitle(record) })
-                    : t('agreement.designs.removed', 'Removed “{{title}}”.', { title: designTitle(record) });
-            }
-            log(`${chosen ? 'added' : 'removed'} ${id} from the map`);
-        }
-
-        // ---- save ------------------------------------------------------------------------------
-
-        function save() {
-            if (state.loading || state.closed) return;
-            state.attempted = true;
-            state.saveIssue = null;
-            const ruleIssues = [];
-            try { readRule(); state.ruleError = null; } catch (error) {
-                ruleIssues.push({ code: 'rule-invalid', reason: error && error.message || String(error), section: 'rule' });
-            }
-            const record = draft();
-            const result = validation(record);
-            const errors = ruleIssues.concat(result.errors || []);
-            if (errors.length) {
-                renderIssues(errors, result.warnings || []);
-                body.scrollTop = 0;
-                return;
-            }
-            let saved;
+            state.loading = true; state.landError = null; saveButton.disabled = true; renderLand();
             try {
-                saved = root.AgreementStore.save(record);
+                state.designs = []; state.land = emptyLand(); state.fingerprints = new Map();
+                if (state.plan) {
+                    const records = root.proposalStorage.getAllProposals();
+                    const byCid = new Map(records.map(record => [root.DesignRecord.cidOf(record), record]));
+                    const selected = state.plan.content.designCids.map(cid => byCid.get(cid));
+                    if (selected.some(record => !record || !root.isApplied(record))) throw new Error(t('agreement.workflow.planNotApplied', 'Apply every design of this saved plan before reading its land.'));
+                    state.designs = selected;
+                    state.fingerprints = new Map(selected.map(record => [idOf(record.proposalId), root.DesignRecord.cidOf(record)]));
+                    const repository = root.CadastralParcelRepository;
+                    const loaded = await repository.ensureIds(inputParcelIds(selected, root.LiveParcelFabric), { retainOnly: true });
+                    if (state.closed || sequence !== state.sequence) return;
+                    state.land = root.AgreementGround.derive({ designs: selected, fabric: root.LiveParcelFabric,
+                        originals: originalsById(loaded.features, root.LiveParcelFabric.featureId),
+                        ownerOf: root.AgreementGround.localHolders({ storage: root.PersistentStorage, agents: root.agentStorage }) });
+                    applyRights(); reconcileAllocations();
+                    state.approvalConfig = ruleConfigAfterDerive(state.approvalConfig, state.land.inputs, api.rightsFromInputs);
+                }
             } catch (error) {
-                state.saveIssue = { code: idOf(error && error.code), message: error && error.message || String(error) };
-                renderIssues([state.saveIssue], result.warnings || []);
-                body.scrollTop = 0;
-                throw error;
+                if (state.closed || sequence !== state.sequence) return;
+                state.landError = error.message; report(error);
+            } finally {
+                if (!state.closed && sequence === state.sequence) { state.loading = false; renderRule(); renderLand(); }
             }
-            finish(saved);
         }
-
-        // ---- events ----------------------------------------------------------------------------
-
+        function openAuxiliary(kind) {
+            readRule();
+            const container = doc.createElement('div');
+            if (kind === 'lens') {
+                container.innerHTML = `<label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.lensMembers', 'Lens member keys'))}</span><textarea data-approval-lens>${esc(state.lens.join('\n'))}</textarea></label>`;
+                auxiliary = root.CbDialog.open({ title: t('agreement.workflow.lens', 'Lens operations'), body: container,
+                    actions: [{ label: t('agreement.dialog.save', 'Save agreement'), onClick: () => { state.lens = setup().lensFromForm(container); issues(); } }] });
+                return;
+            }
+            const render = error => {
+                container.innerHTML = setup().html({ config: state.approvalConfig, lens: [], cadastreParcelIds: state.land.inputs.parcels.map(p => p.parcelId), heading: false, error });
+                container.querySelector('[data-approval-rules-card]')?.remove(); container.querySelector('[data-approval-lens]')?.closest('label')?.remove();
+            };
+            render();
+            auxiliary = root.CbDialog.open({ title: t('agreement.workflow.rights', 'Parcel ownership rights'), body: container, actions: [{ label: t('common.close', 'Close') }] });
+            container.addEventListener('change', event => { if (event.target.matches('[data-approval-source]')) setup().syncSourceControls(container); });
+            container.addEventListener('click', async event => {
+                const button = event.target.closest('[data-editor-action]'); if (!button || root.BusyControl.isBusy(button)) return;
+                const action = button.dataset.editorAction;
+                if (action === 'approval-template') { setup().downloadTemplate(state.land.inputs.parcels.map(p => p.parcelId), state.approvalConfig); return; }
+                try {
+                    await root.BusyControl.track(button, async () => {
+                        if (action === 'approval-import') state.approvalConfig = await setup().importRights(container, state.approvalConfig, { parcelIds: state.land.inputs.parcels.map(p => p.parcelId) });
+                        else if (action === 'approval-remove') { state.approvalConfig = setup().withoutRights(state.approvalConfig); await deriveLand(); }
+                        if (state.closed) return;
+                        applyRights(); reconcileAllocations(); render(); renderRule(); renderLand();
+                    });
+                } catch (error) { render(error.message); report(error); }
+            });
+        }
         form.addEventListener('submit', event => {
-            event.preventDefault();
-            save();
+            event.preventDefault(); if (state.loading) return;
+            state.attempted = true;
+            try {
+                readRule(); const record = draft(); const checked = api.validate(record, { designOf: id => root.proposalStorage.getProposal(id), isApplied: root.isApplied });
+                if (!checked.valid) { issues(); return; }
+                finish(root.AgreementStore.save(record));
+            } catch (error) { part('[data-agreement-errors]').textContent = error.message; report(error); }
         }, { signal });
         panel.addEventListener('click', event => {
-            if (event.target && typeof event.target.closest === 'function' && event.target.closest('[data-agreement-action="cancel"]')) finish(null);
+            const button = event.target.closest('button'); if (!button) return;
+            if (button.dataset.agreementAction === 'cancel') finish(null);
+            if (button.dataset.agreementTab) activate(button.dataset.agreementTab);
+            if (['rights', 'lens'].includes(button.dataset.agreementAction)) openAuxiliary(button.dataset.agreementAction);
+            if (button.dataset.agreementAction === 'apply-plan' && !root.BusyControl.isBusy(button)) {
+                root.BusyControl.track(button, async () => {
+                    // A private saved plan carries its exact revisions. Applying it must not try
+                    // to download unpublished members from the public design index.
+                    const draftRows = new Map();
+                    for (const member of state.plan.designs || []) {
+                        const content = member.content;
+                        const parcelSourceId = root.DesignSync.parcelSourceIdOf(content.city, content.site);
+                        const response = await root.fetch(root.resolveBackendBaseUrl().replace(/\/$/, '') + '/designs/binding', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+                                city: content.city, site: root.__siteBinding.siteOf(content, { turf: root.turf }),
+                                toleranceM: content.toleranceM, parcelSourceId })
+                        });
+                        const answer = await response.json();
+                        if (!response.ok) throw new Error(answer.error || 'The plan ground could not be read.');
+                        draftRows.set(member.cid, { cid: member.cid, content, city: content.city, parcelSourceId, binding: answer.binding });
+                    }
+                    const result = await root.handleSharedDesignRoute(state.plan.content.designCids, {
+                        ...(draftRows.size ? { draftRows } : {}), openDetails: false, enter3D: false, summary: false });
+                    if (result.blocked || result.failed.length || result.omitted?.length) throw new Error(t('agreement.workflow.planNotApplied', 'Apply every design of this saved plan before reading its land.'));
+                    if (!state.closed) await deriveLand();
+                }).catch(report);
+            }
+            const action = button.dataset.editorAction;
+            if (action && button.closest('[data-agreement-rule-form]')) {
+                try { state.approvalConfig = setup().withRuleAction(part('[data-agreement-rule-form]'), state.approvalConfig, action, button.dataset.testIndex); renderRule(); issues(); }
+                catch (error) { report(error); }
+            }
+        }, { signal });
+        body.addEventListener('keydown', event => {
+            const tab = event.target.closest('[data-agreement-tab]'); if (!tab) return;
+            const index = TABS.indexOf(tab.dataset.agreementTab);
+            const next = { ArrowRight: (index + 1) % 4, ArrowLeft: (index + 3) % 4, Home: 0, End: 3 }[event.key];
+            if (next !== undefined) { event.preventDefault(); activate(TABS[next], true); }
         }, { signal });
         body.addEventListener('change', event => {
             const target = event.target;
-            if (!target || typeof target.closest !== 'function') return;
-            if (target.closest('[data-agreement-rule-form]')) { onRuleChange(target); return; }
-            if (target.matches('[data-agreement-design]')) {
-                setChosen(target.getAttribute('data-agreement-design'), target.checked);
-                // The line under the list speaks of the last map click only.
-                const line = part('[data-agreement-pick-status]');
-                if (line) line.textContent = '';
-                return;
-            }
-            if (target.matches('[data-agreement-allocation]')) {
-                state.values = { ...state.values, allocations: { ...state.values.allocations, [target.getAttribute('data-agreement-allocation')]: target.value } };
-                refreshIssues();
-                return;
-            }
-            if (target.matches('[data-agreement-electorate]')) {
-                keepRule();
-                // Owners decide bindingly unless the author unticks it; a community vote never binds.
-                const electorate = target.value === 'community' ? 'community' : 'owners';
-                state.values = { ...state.values, electorate, binding: electorate === 'owners', ...(electorate === 'community' ? { allocations: {}, cash: {} } : {}) };
-                part('[data-agreement-allocations]').innerHTML = allocationHtml(state.land, state.values.allocations);
-                part('[data-agreement-money]').innerHTML = moneyHtml(state.land, state.values.cash, state.currency);
-                renderSponsor();
-                renderRule();
-                refreshIssues();
-                return;
-            }
-            if (target.matches('[data-agreement-binding]')) {
-                state.values = { ...state.values, binding: target.checked === true };
-                refreshIssues();
-                return;
-            }
-            if (target.matches('[data-agreement-deadline]')) {
-                state.values = { ...state.values, deadline: target.value };
-                refreshIssues();
-            }
+            try {
+                if (target.matches('[data-agreement-plan]')) {
+                    readRule(); state.plan = state.plans.find(plan => plan.cid === target.value) || null;
+                    state.values.allocations = {}; deriveLand(); return;
+                }
+                if (target.closest('[data-agreement-rule-form]')) { readRule(); renderRule(); renderPersons(); issues(); return; }
+                if (target.matches('[data-agreement-allocation]')) state.values.allocations[target.dataset.agreementAllocation] = target.value;
+                if (target.matches('[data-agreement-binding]')) state.values.binding = target.checked;
+                if (target.matches('[data-agreement-electorate]')) {
+                    readRule(); state.values.electorate = target.value; state.values.binding = false; renderRule(); renderLand();
+                }
+                if (target.matches('[data-agreement-compensation]')) {
+                    state.values.settlement.method = target.value;
+                    if (target.value === 'none') state.values.settlement.contributionBasisPoints = 0;
+                    renderRule();
+                }
+                renderPersons(); issues();
+            } catch (error) { report(error); }
         }, { signal });
         body.addEventListener('input', event => {
-            const target = event.target;
-            if (!target || typeof target.matches !== 'function') return;
-            if (target.matches('[data-agreement-organiser], [data-agreement-participation-url]')) {
-                const key = target.matches('[data-agreement-organiser]') ? 'organiser' : 'participationUrl';
-                state.values = { ...state.values, [key]: target.value };
-                refreshIssues();
-            } else if (target.matches('[data-agreement-cash]')) {
-                state.values = { ...state.values, cash: { ...state.values.cash, [target.getAttribute('data-agreement-cash')]: cashInputText(target) } };
-                renderSponsor();
-                refreshIssues();
-            } else if (target.matches('[data-agreement-title]')) {
-                state.values = { ...state.values, title: target.value };
-            } else if (target.matches('[data-agreement-plan-title]')) {
-                state.values = { ...state.values, planTitle: target.value };
-                refreshIssues();
-            } else if (target.matches('[data-agreement-deadline]')) {
-                state.values = { ...state.values, deadline: target.value };
-                refreshIssues();
-            }
+            const target = event.target, terms = state.values.settlement;
+            if (target.matches('[data-agreement-rate-slider]')) {
+                terms.rateCentsPerM2 = Number(target.value); part('[data-agreement-rate]').value = terms.rateCentsPerM2 / 100;
+            } else if (target.matches('[data-agreement-rate]')) {
+                const rate = Number(target.value); terms.rateCentsPerM2 = target.value.trim() && Number.isFinite(rate) ? Math.round(rate * 100) : NaN;
+                part('[data-agreement-rate-slider]').value = terms.rateCentsPerM2;
+            } else if (target.matches('[data-agreement-contribution]')) {
+                terms.contributionBasisPoints = Number(target.value); part('[data-agreement-contribution-value]').value = `${terms.contributionBasisPoints / 100}%`;
+            } else if (target.matches('[data-agreement-title]')) state.values.title = target.value;
+            else if (target.matches('[data-agreement-deadline]')) state.values.deadline = target.value;
+            else if (target.matches('[data-agreement-organiser]')) state.values.organiser = target.value;
+            else if (target.matches('[data-agreement-participation-url]')) state.values.participationUrl = target.value;
+            renderPersons(); issues();
         }, { signal });
-        body.addEventListener('click', event => {
-            if (event.target && typeof event.target.closest === 'function' && event.target.closest('[data-agreement-rule-form]')) onRuleClick(event);
-        }, { signal });
-        if (root.ModalEscape && typeof root.ModalEscape.register === 'function') {
-            unregisterEscape = root.ModalEscape.register(panel, event => {
-                if (typingIn(event && event.target)) return false;
-                finish(null);
-                return true;
-            });
-        }
-
-        panel.classList.add('visible');
-        doc.body.classList.add('agreement-editor-open');
-        setSaveEnabled(state.selected.size === 0);
-        renderSponsor();
-        renderRule();
-        // The map picks the designs as the checklist does; only applied designs stand on it.
-        root.MapPick.begin({
-            name: 'agreement',
-            pick: onMapPick,
-            highlight: () => Array.from(state.selected),
-            close: () => finish(null)
-        }).catch(error => console.error(`[${new Date().toISOString()}] [AgreementEditor] the map highlight failed`, error));
-        log(`${existing ? 'editing' : 'creating'} ${state.id} over ${state.selected.size} of ${available.length} applied design(s)${replaced ? `, in place of the panel of ${replaced}` : ''}`);
-        if (state.selected.size) deriveLand();
-        else refreshIssues();
-        const firstDesign = part('[data-agreement-design]');
-        try { (firstDesign || heading).focus({ preventScroll: true }); } catch (_) { /* focus is a courtesy */ }
+        unregisterEscape = root.ModalEscape?.register(panel, event => { if (typingIn(event.target)) return false; finish(null); return true; });
+        panel.classList.add('visible'); doc.body.classList.add('agreement-editor-open');
+        renderRule(); await deriveLand();
+        log(`opened ${state.id} for plan ${state.plan?.cid || '(choose plan)'}`);
         return closed;
     }
-
-    /**
-     * The details panel's "Add to agreement": a design joins a new agreement, or one this device
-     * holds that is not proposed yet (newest first), then the editor opens on it. A design already in
-     * the chosen agreement is said so, and the editor opens as it is. Resolves as open() does, or with
-     * null when the choice is dismissed.
-     */
-    async function addDesign(proposalId) {
-        const id = idOf(proposalId);
-        if (!id) throw new TypeError('addDesign needs a design id.');
-        const drafts = root.AgreementStore.list().filter(agreement => agreement && !agreement.published);
-        if (!drafts.length) return open({ designIds: [id] });
-        const design = root.proposalStorage.getProposal(id);
-        const panels = root.AgreementPanel;
-        const titleOf = agreement => (panels && typeof panels.titleOf === 'function' ? panels.titleOf(agreement) : (agreement.title || t('agreement.panel.title', 'Agreement')));
-        const NEW = '__new__';
-        const choice = await root.CbDialog.choice(
-            t('agreement.addTo.message', 'Add “{{title}}” to a new agreement, or to one not proposed yet.', { title: designTitle(design) }),
-            [{ value: NEW, label: t('agreement.addTo.new', 'New agreement'), primary: true }].concat(drafts.map(agreement => {
-                const count = Array.isArray(agreement.designs) ? agreement.designs.length : 0;
-                const designs = t('agreement.list.designs', count === 1 ? '{{count}} design' : '{{count}} designs', { count });
-                return { value: agreement.id, label: `${titleOf(agreement)} · ${designs}` };
-            })),
-            { title: t('agreement.addTo.title', 'Add to agreement'), className: 'agreement-add-to' }
-        );
-        if (!choice) return null;
-        if (choice === NEW) return open({ designIds: [id] });
-        const agreement = drafts.find(entry => entry.id === choice);
-        if (!agreement) throw new Error(`Agreement ${choice} is not on this device.`);
-        if ((agreement.designs || []).some(entry => idOf(entry.proposalId) === id)) {
-            if (typeof root.showEphemeralMessage === 'function') {
-                root.showEphemeralMessage(t('agreement.addTo.alreadyIn', '“{{title}}” is already in this agreement.', { title: designTitle(design) }), 4000, 'info');
-            }
-            return open({ agreementId: agreement.id });
-        }
-        return open({ agreementId: agreement.id, designIds: [id] });
-    }
-
     return {
-        open, addDesign,
-        SCHEMA, LOCAL_RIGHTS_PROVIDER,
-        appliedDesigns, designTitle, inputParcelIds, originalsById, partiesOf, allocationOptions, allocationValue, allocationTo,
-        cashCents, cashInputText, termsOf, keptTerms, sponsorLine, ruleConfigAfterDerive, deadlineFromDate, dateFromDeadline,
-        recordFromForm, issueText, holdersText,
-        designsHtml, landHtml, allocationHtml, moneyHtml, ruleHtml, detailsHtml, consultationHtml, bodyHtml
+        open, SCHEMA, LOCAL_RIGHTS_PROVIDER, appliedDesigns, designTitle, inputParcelIds, originalsById,
+        partiesOf, allocationOptions, allocationValue, allocationTo, cashCents, cashInputText, termsOf,
+        keptTerms, sponsorLine, ruleConfigAfterDerive, deadlineFromDate, dateFromDeadline, recordFromForm,
+        issueText, holdersText, landHtml, allocationHtml, ruleHtml, detailsHtml,
+        consultationHtml, bodyHtml, personsHtml, planSelectorHtml
     };
 });

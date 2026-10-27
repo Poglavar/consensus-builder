@@ -140,9 +140,8 @@
             }
             const community = event.target.closest('[data-agreement-action="community"]');
             if (community || event.target.closest('[data-agreement-action="create"]')) {
-                const designIds = appliedDesignIds(win.proposalStorage.peekAllProposals(), win.isApplied);
                 dialog.close(null);
-                Promise.resolve(win.AgreementDialog.open({ designIds, ...(community ? { electorate: 'community' } : {}) })).catch(error => report('the agreement dialog failed', error));
+                Promise.resolve(win.AgreementDialog.open({ ...(community ? { electorate: 'community' } : {}) })).catch(error => report('the agreement dialog failed', error));
                 return;
             }
             const row = event.target.closest('[data-agreement-id]');
