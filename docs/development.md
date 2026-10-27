@@ -149,6 +149,14 @@ No new MCP tool or schema is needed for this separation of dialogs. Targeted
 `mcp-named-plans.test.js`, `plan-composition.test.js` and `plan-workspace.test.js` cover independent
 creation, membership edits, old-revision isolation and exact dependency publication.
 
+## Parcel layout handle presentation
+
+On screens with a fine pointer and hover, parcel-layout nodes, midpoint insertion handles and
+the rotation handle appear on hover or while dragging. Their hit areas stay active; boundary
+segments retain their hover highlight. Screens without hover keep visible handles. This is a CSS-only
+presentation change: authored geometry, editing gestures and validation are unchanged, so the
+existing MCP `ugt_edit_design` geometry operations provide parity without a tool or schema change.
+
 ## Public guides and videos
 
 English `frontend/how-to-use*.html` and Croatian `frontend/kako-koristiti*.html` share `frontend/css/howto.css`. Keep the language pairs, navigation anchors and procedures aligned. The hub links to each relevant walkthrough. Keep domain wording aligned with the [code-grounded vocabulary](../vocabulary.md): distinguish source parcels, formed ground and authored plots; local application from named-plan membership; and observed evidence from legal or physical completion. State units, currencies and valuation bases wherever a money amount appears.

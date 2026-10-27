@@ -309,6 +309,22 @@
     cursor: grabbing;
 }
 
+/* Keep the boundary network readable. Transparent handles retain their existing hit areas;
+   touch screens keep visible targets because they cannot discover them by hovering. */
+@media (hover: hover) and (pointer: fine) {
+    .reparcel-node-handle,
+    .reparcel-edge-handle,
+    .reparcel-sweep-handle {
+        opacity: 0;
+    }
+
+    .reparcel-node-handle:is(:hover, :focus-visible, :active, .is-dragging),
+    .reparcel-edge-handle:is(:hover, :focus-visible, :active, .is-dragging),
+    .reparcel-sweep-handle:is(:hover, :focus-visible, :active) {
+        opacity: 1;
+    }
+}
+
 .reparcel-node-popup-wrap .leaflet-popup-content-wrapper {
     max-width: min(360px, calc(100vw - 32px));
 }

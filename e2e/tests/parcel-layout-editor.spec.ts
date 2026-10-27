@@ -72,6 +72,27 @@ async function segmentPoint(page: Page): Promise<{ x: number; y: number }> {
   });
 }
 
+async function unobstructedHandlePoint(locator: Locator): Promise<{ x: number; y: number }> {
+  return locator.evaluate(element => {
+    const rect = element.getBoundingClientRect();
+    const point = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    if (document.elementFromPoint(point.x, point.y) !== element) {
+      throw new Error(`Handle ${element.className} is covered at its center`);
+    }
+    return point;
+  });
+}
+
+async function handleOpacity(locator: Locator): Promise<string> {
+  return locator.evaluate(element => getComputedStyle(element).opacity);
+}
+
+async function attachEditorScreenshot(page: Page, testInfo: import('@playwright/test').TestInfo, name: string) {
+  const path = testInfo.outputPath(name);
+  await page.screenshot({ path, fullPage: true });
+  await testInfo.attach(name, { path, contentType: 'image/png' });
+}
+
 // The ends of an east-west line across the pool (the red outline), just outside it on both sides and
 // clear of the editor's panels. Equal plots are cut north-south, so this line crosses them all.
 async function crossingLine(page: Page): Promise<Array<{ x: number; y: number }>> {
@@ -215,6 +236,65 @@ test('a boundary segment drags straight away, undo and redo walk it back and for
   await expect.poll(() => algorithm(editor)).toBe('manual');
   expect(await plotRows(editor)).toEqual(equal);
   await expect(editor.locator('[data-reparcel-status]')).toContainText('Drawing freely from the current layout');
+});
+
+test('editing handles appear on hover and hide again on desktop', async ({ mockApi: page }, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 860 });
+  const editor = await openLayoutEditor(page);
+  const node = page.locator('#map-container .reparcel-node-handle').first();
+  const midpoint = page.locator('#map-container .reparcel-edge-handle').first();
+  const sweep = page.locator('#map-container .reparcel-sweep-handle');
+  const edge = page.locator('#map-container path.geom-handle-edge').first();
+
+  await expect(node).toBeAttached();
+  await expect(midpoint).toBeAttached();
+  await expect(sweep).toBeAttached();
+  await expect.poll(() => handleOpacity(node)).toBe('0');
+  await expect.poll(() => handleOpacity(midpoint)).toBe('0');
+  await expect.poll(() => handleOpacity(sweep)).toBe('0');
+  await attachEditorScreenshot(page, testInfo, 'parcel-layout-handles-hidden.png');
+
+  for (const handle of [node, midpoint, sweep]) {
+    const point = await unobstructedHandlePoint(handle);
+    await page.mouse.move(point.x, point.y);
+    await expect.poll(() => handleOpacity(handle)).toBe('1');
+    await page.mouse.move(5, 400);
+    await expect.poll(() => handleOpacity(handle)).toBe('0');
+  }
+
+  const segment = await segmentPoint(page);
+  await page.mouse.move(segment.x, segment.y);
+  await expect.poll(() => edge.evaluate(element => getComputedStyle(element).strokeOpacity)).toBe('0.35');
+  await page.mouse.move(5, 400);
+  await expect.poll(() => handleOpacity(node)).toBe('0');
+  await expect.poll(() => handleOpacity(midpoint)).toBe('0');
+  await expect.poll(() => handleOpacity(sweep)).toBe('0');
+  await page.evaluate(() => {
+    const map=(window as any).map;
+    map.setZoom(map.getZoom()-3,{animate:false});
+  });
+  for(const handle of [node,midpoint,sweep])await expect.poll(()=>handleOpacity(handle)).toBe('0');
+  await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
+});
+
+test.describe('touch parcel layout handles', () => {
+  test.use({ viewport: { width: 1280, height: 860 }, hasTouch: true });
+
+  test('keeps node, midpoint, and sweep handles visible and opens a node popup on tap', async ({ mockApi: page }) => {
+    const editor = await openLayoutEditor(page);
+    const node = page.locator('#map-container .reparcel-node-handle').first();
+    const midpoint = page.locator('#map-container .reparcel-edge-handle').first();
+    const sweep = page.locator('#map-container .reparcel-sweep-handle');
+    for (const handle of [node, midpoint, sweep]) {
+      await expect(handle).toBeVisible();
+      await expect.poll(() => handleOpacity(handle)).toBe('1');
+    }
+
+    const point = await unobstructedHandlePoint(node);
+    await page.touchscreen.tap(point.x, point.y);
+    await expect(page.locator('.leaflet-popup .reparcel-node-popup')).toBeVisible();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
+  });
 });
 
 test('a click on a boundary offers to erase it, and Delete removes a node from its popup', async ({ mockApi: page }) => {
