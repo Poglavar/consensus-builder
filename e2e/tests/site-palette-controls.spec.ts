@@ -231,7 +231,13 @@ test.describe('Site build palette controls @core', () => {
       await track.scrollIntoViewIfNeeded();
       await page.screenshot({path:testInfo.outputPath('track-icon.png')});
     }
-    await panel.locator(`.parcel-transport-btn--${item.key}`).click();
+    await panel.locator(`.parcel-transport-btn--${item.key === 'bus' ? 'roadStation' : 'trackStation'}`).click();
+    if (item.key !== 'bus') {
+      const chooser = page.getByRole('dialog', { name: 'Track station', exact: true });
+      await expect(chooser).toBeVisible();
+      await chooser.locator(`[data-station-level="${item.key}"]`).click();
+      await expect(chooser).toBeHidden();
+    }
     if (item.key === 'track') {
       await expect(page.locator('#track-speed-confirm-btn')).toBeVisible();
       await page.locator('#track-speed-confirm-btn').click();
@@ -249,7 +255,13 @@ test.describe('Site build palette controls @core', () => {
     { key: 'elevated' },
   ]) test(`${item.key} station starts real placement mode from the site palette`, async ({ mockApi: page }) => {
     const { panel } = await beginParcelSite(page);
-    await panel.locator(`.parcel-transport-btn--${item.key}`).click();
+    await panel.locator(`.parcel-transport-btn--${item.key === 'bus' ? 'roadStation' : 'trackStation'}`).click();
+    if (item.key !== 'bus') {
+      const chooser = page.getByRole('dialog', { name: 'Track station', exact: true });
+      await expect(chooser).toBeVisible();
+      await chooser.locator(`[data-station-level="${item.key}"]`).click();
+      await expect(chooser).toBeHidden();
+    }
     const toolbar = page.locator('#station-placement-toolbar');
     await expect(toolbar).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).transitStationPlacementMode)).toBe(true);

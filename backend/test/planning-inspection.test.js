@@ -81,6 +81,27 @@ describe('cache-only parcel inspection', () => {
 });
 
 describe('shared building and proposal representations', () => {
+    it('routes public built inspection to the click stack and keeps an unhosted built inspector hidden', () => {
+        const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
+        const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
+        const inspect = body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'inspectBuilding');
+        const render = body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'renderInspector');
+        const feature = { geometry };
+        const showBuilding = vi.fn(() => true);
+        const root = { ClickStack: { showBuilding } };
+        const context = vm.createContext({ root });
+        vm.runInContext(source.slice(inspect.start, inspect.end), context);
+        expect(vm.runInContext('inspectBuilding', context)(feature, 'source-id')).toBe(true);
+        expect(showBuilding).toHaveBeenCalledWith(feature, 'source-id');
+
+        const inspector = { hidden: false, classList: { contains: vi.fn(() => false) }, replaceChildren: vi.fn() };
+        const renderContext = vm.createContext({ selected: () => representations.built(feature, { key: 'source-id', city: 'test-city' }), inspector });
+        vm.runInContext(source.slice(render.start, render.end), renderContext);
+        renderContext.renderInspector();
+        expect(inspector.hidden).toBe(true);
+        expect(inspector.replaceChildren).toHaveBeenCalledOnce();
+    });
+
     it('labels screening and zoning-area evidence neutrally while retaining the GUP normative label and qualified proposal evidence', () => {
         const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
         const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;

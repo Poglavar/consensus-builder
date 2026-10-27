@@ -27,7 +27,9 @@ export const MCP_FEATURES = Object.freeze([
     { feature: 'public-spaces', create: 'ugt_draft_space', kinds: ['park', 'square', 'lake'] },
     { feature: 'parcel-layout', create: 'ugt_draft_parcel_layout', algorithms: ['equal', 'schelling'] },
     { feature: 'corridors', create: ['ugt_draft_road', 'ugt_draft_track'] },
-    { feature: 'stations', create: 'ugt_draft_station', kinds: ['bus', 'tram', 'underground', 'elevated'] },
+    { feature: 'stations', create: 'ugt_draft_station', kinds: ['bus', 'tram', 'underground', 'elevated'],
+        categories: { road: ['bus'], track: ['tram', 'elevated', 'underground'] },
+        trackPlacement: { ground: 'tram', elevated: 'elevated', underground: 'underground' } },
     { feature: 'urban-rules', create: 'ugt_draft_urban_rule' },
     { feature: 'imports', create: ['ugt_import_design', 'ugt_import_model'], formats: ['geojson', 'osm', 'opendrive', 'glb', 'gltf'] },
     { feature: 'review', validate: 'ugt_validate_plan', compare: 'ugt_compare', render: 'ugt_render_preview', imageViews: ['2d'] }

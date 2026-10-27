@@ -245,12 +245,16 @@
     const selectionNonEmpty = ctx => ctx.selection.count > 0;
 
     function stationContextAvailable(type, ctx) {
-        if (!ctx || !ctx.global || typeof ctx.global.startTransitStationPlacement !== 'function') return false;
+        if (!ctx || !ctx.global) return false;
+        const available = type === 'track'
+            ? typeof ctx.global.chooseTrackStationType === 'function'
+            : typeof ctx.global.startTransitStationPlacement === 'function';
+        if (!available) return false;
         const parcel = ctx.parcel;
         if (parcel && parcel.parcelId !== undefined && parcel.parcelId !== null && parcel.parcelId !== ''
             && parcel.isGround !== true && parcel.isRoad !== true) return true;
         const ground = ctx.ground;
-        const action = ({ bus: 'busStation', tram: 'tramStation', underground: 'undergroundStation', elevated: 'elevatedStation' })[type];
+        const action = type === 'bus' ? 'roadStation' : 'trackStation';
         return !!(ground && action && groundMenuModel().isActionAvailable(action, ground));
     }
 
@@ -348,14 +352,10 @@
             labelKey: 'sidebar.blocks.showListButton', fallbackLabel: 'Show Block List', icon: 'fas fa-list' }),
         { id: 'blocks.clear', group: 'blocks', surfaces: ['settings'], modes: ['2d'], debugOnly: true, when: controlAvailable('parcelBlocksCheckbox'), run: callGlobal('clearBlocks'),
             labelKey: 'sidebar.blocks.clearButton', fallbackLabel: 'Clear Blocks From Local Storage', icon: 'fas fa-trash' },
-        { id: 'stations.bus', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('bus', ctx), run: callGlobal('startTransitStationPlacement', 'bus'),
-            labelKey: 'sidebar.stations.bus', fallbackLabel: 'Bus station', icon: 'fas fa-bus' },
-        { id: 'stations.tram', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('tram', ctx), run: callGlobal('startTransitStationPlacement', 'tram'),
-            labelKey: 'sidebar.stations.tram', fallbackLabel: 'Tram station', icon: 'fas fa-train-tram' },
-        { id: 'stations.underground', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('underground', ctx), run: callGlobal('startTransitStationPlacement', 'underground'),
-            labelKey: 'sidebar.stations.underground', fallbackLabel: 'Underground station', icon: 'fas fa-train-subway' },
-        { id: 'stations.elevated', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('elevated', ctx), run: callGlobal('startTransitStationPlacement', 'elevated'),
-            labelKey: 'sidebar.stations.elevated', fallbackLabel: 'Elevated train station', icon: 'fas fa-train' },
+        { id: 'stations.road', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('bus', ctx), run: callGlobal('startTransitStationPlacement', 'bus'),
+            labelKey: 'panel.parcel.build.roadStation', fallbackLabel: 'Road station', icon: 'fas fa-bus' },
+        { id: 'stations.track', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('track', ctx), run: callGlobal('chooseTrackStationType'),
+            labelKey: 'panel.parcel.build.trackStation', fallbackLabel: 'Track station', icon: 'cb-icon-track' },
         { id: 'stations.cancel', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => !!(ctx && ctx.global && typeof ctx.global.isTransitStationPlacementActive === 'function' && ctx.global.isTransitStationPlacementActive()), run: callGlobal('cancelTransitStationPlacement'),
             labelKey: 'sidebar.stations.cancel', fallbackLabel: 'Cancel placement', icon: 'fas fa-xmark' },
         control('detectExistingRoadsButton', { id: 'roads.detectExisting', group: 'roads', surfaces: ['layers'],
@@ -436,10 +436,8 @@
         groundCommand('drawSite', { labelKey: 'groundMenu.actions.drawSite', fallbackLabel: 'Draw a parcel', icon: 'fas fa-draw-polygon' }),
         groundCommand('road', { labelKey: 'panel.parcel.build.road', fallbackLabel: 'Road', icon: 'fas fa-road' }),
         groundCommand('track', { labelKey: 'panel.parcel.build.track', fallbackLabel: 'Track', icon: 'cb-icon-track' }),
-        groundCommand('busStation', { labelKey: 'panel.parcel.build.busStation', fallbackLabel: 'Bus station', icon: 'fas fa-bus' }),
-        groundCommand('tramStation', { labelKey: 'panel.parcel.build.tramStation', fallbackLabel: 'Tram station', icon: 'fas fa-tram' }),
-        groundCommand('undergroundStation', { labelKey: 'panel.parcel.build.undergroundStation', fallbackLabel: 'Metro station', icon: 'fas fa-train-subway' }),
-        groundCommand('elevatedStation', { labelKey: 'panel.parcel.build.elevatedStation', fallbackLabel: 'Elevated station', icon: 'fas fa-train' }),
+        groundCommand('roadStation', { labelKey: 'panel.parcel.build.roadStation', fallbackLabel: 'Road station', icon: 'fas fa-bus' }),
+        groundCommand('trackStation', { labelKey: 'panel.parcel.build.trackStation', fallbackLabel: 'Track station', icon: 'cb-icon-track' }),
         // ---- Selected road (the proposal card a road click opens; palette) ----
         roadCommand('crossSection', { labelKey: 'panel.road.crossSectionButton', fallbackLabel: 'Edit cross-section', icon: 'fas fa-road' }),
         // The site tool from anywhere (the palette): draw a site with nothing selected.

@@ -103,13 +103,14 @@ describe('command registry shape', () => {
             expect(entry.fallbackLabel, entry.id).toBeTruthy();
             expect(typeof entry.run, entry.id).toBe('function');
             expect(typeof entry.when, entry.id).toBe('function');
-            expect(entry.icon, entry.id).toMatch(/^fas fa-[a-z0-9-]+$/);
+            expect(entry.icon, entry.id).toMatch(/^(fas fa-[a-z0-9-]+|cb-icon-track)$/);
         }
     });
 
     it('uses only icons the vendored Font Awesome 6.4 has', () => {
         const css = fs.readFileSync(path.join(FRONTEND, 'vendor/fontawesome-6.4.0/css/all.min.css'), 'utf8');
         for (const entry of commands) {
+            if (entry.icon === 'cb-icon-track') continue;
             const name = entry.icon.split(' ')[1];
             expect(css.includes(`.${name}:before`) || css.includes(`.${name},`), `${entry.id}: ${name}`).toBe(true);
         }
@@ -345,7 +346,7 @@ describe('availability and search', () => {
 
     it('shares the 2D capability rule across command listing, ranking, and execution', () => {
         const model = { mode: 'model', global: { isThreeModeActive: () => true } };
-        for (const id of ['stations.bus', 'site.draw', 'tools.measure', 'parcel.propose', 'selection.useAsSite']) {
+        for (const id of ['stations.road', 'site.draw', 'tools.measure', 'parcel.propose', 'selection.useAsSite']) {
             expect(UiCommands.supportsMode(id, model), id).toBe(false);
             expect(UiCommands.isAvailable(id, model), id).toBe(false);
             expect(UiCommands.rankCommands(id, model, tEn).map(item => item.entry.id)).not.toContain(id);
@@ -359,11 +360,20 @@ describe('availability and search', () => {
 
     it('requires parcel or open-ground context for global station placement', () => {
         const global = { startTransitStationPlacement: vi.fn() };
-        expect(UiCommands.isAvailable('stations.bus', { mode: '2d', global })).toBe(false);
+        expect(UiCommands.isAvailable('stations.road', { mode: '2d', global })).toBe(false);
         const onParcel = { mode: '2d', global, parcel: { parcelId: 'p-1', isRoad: false } };
-        expect(UiCommands.isAvailable('stations.bus', onParcel)).toBe(true);
-        UiCommands.runCommand('stations.bus', onParcel);
+        expect(UiCommands.isAvailable('stations.road', onParcel)).toBe(true);
+        UiCommands.runCommand('stations.road', onParcel);
         expect(global.startTransitStationPlacement).toHaveBeenCalledWith('bus');
+    });
+
+    it('requires the track station chooser and dispatches it from parcel context', () => {
+        const global = { chooseTrackStationType: vi.fn() };
+        const onParcel = { mode: '2d', global, parcel: { parcelId: 'p-1' } };
+        expect(UiCommands.isAvailable('stations.track', { mode: '2d', global: { startTransitStationPlacement: vi.fn() }, parcel: onParcel.parcel })).toBe(false);
+        expect(UiCommands.isAvailable('stations.track', onParcel)).toBe(true);
+        UiCommands.runCommand('stations.track', onParcel);
+        expect(global.chooseTrackStationType).toHaveBeenCalledOnce();
     });
 
     it('keeps Use as site dispatch behind an active, nonempty selection gate', () => {

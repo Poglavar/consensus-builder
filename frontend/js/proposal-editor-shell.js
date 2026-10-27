@@ -145,7 +145,7 @@
         if (!global.document?.body) return null;
         shell = global.document.createElement('aside');
         shell.id = 'proposal-editor-shell';
-        shell.className = 'proposal-editor-shell';
+        shell.className = 'proposal-editor-shell right-screen-panel';
         shell.setAttribute('aria-label', tDraft('proposalDrafts.editorAria', 'Design draft editor'));
         global.document.body.appendChild(shell);
         shell.addEventListener('click', handleShellClick);
@@ -278,7 +278,7 @@
         }
         if ((draft.adapterKey || draft.goal) === 'station') {
             const station = payload.structureProposal || {};
-            const type = global.TransitStationModels?.specFor?.(station.stationType)?.label || station.stationType || 'Station';
+            const type = global.TransitStations?.specFor?.(station.stationType)?.label || station.stationType || 'Station';
             const bearing = Math.round(Number(station.bearing) || 0);
             const height = station.stationType === 'elevated' && Number.isFinite(Number(station.platformHeightM))
                 ? ` · ${CbFormat.formatLength(Number(station.platformHeightM))} high`

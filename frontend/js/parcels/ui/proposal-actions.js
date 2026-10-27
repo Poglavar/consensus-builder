@@ -42,22 +42,14 @@
             titleKey: 'sidebar.roads.drawTrackTooltip', titleFallback: 'Open the manual track drawing tool with curvature constraints'
         },
         {
-            key: 'bus', stationType: 'bus', icon: 'fa-bus', labelKey: 'panel.parcel.build.busStation', fallback: 'Bus station',
-            titleKey: 'sidebar.stations.bus', titleFallback: 'Bus station'
+            key: 'roadStation', stationType: 'bus', icon: 'fa-bus',
+            labelKey: 'panel.parcel.build.roadStation', fallback: 'Road station',
+            titleKey: 'panel.parcel.build.roadStation', titleFallback: 'Road station'
         },
         {
-            key: 'tram', stationType: 'tram', icon: 'fa-tram', labelKey: 'panel.parcel.build.tramStation', fallback: 'Tram station',
-            titleKey: 'sidebar.stations.tram', titleFallback: 'Tram station'
-        },
-        {
-            key: 'underground', stationType: 'underground', icon: 'fa-train-subway',
-            labelKey: 'panel.parcel.build.undergroundStation', fallback: 'Metro station',
-            titleKey: 'sidebar.stations.underground', titleFallback: 'Underground station'
-        },
-        {
-            key: 'elevated', stationType: 'elevated', icon: 'fa-train',
-            labelKey: 'panel.parcel.build.elevatedStation', fallback: 'Elevated station',
-            titleKey: 'sidebar.stations.elevated', titleFallback: 'Elevated train station'
+            key: 'trackStation', stationType: 'track', icon: 'cb-icon-track',
+            labelKey: 'panel.parcel.build.trackStation', fallback: 'Track station',
+            titleKey: 'panel.parcel.build.trackStation', titleFallback: 'Track station'
         }
     ];
 
@@ -69,7 +61,7 @@
     }
 
     function startParcelTransportTool(toolKey) {
-        const key = String(toolKey || '').trim().toLowerCase();
+        const key = String(toolKey || '').trim();
         if (key === 'road') {
             global.requestRoadDrawTool?.();
             return;
@@ -78,8 +70,9 @@
             global.requestTrackDrawTool?.();
             return;
         }
-        const stationType = PARCEL_TRANSPORT_TOOLS.find(tool => tool.stationType === key)?.stationType;
-        if (stationType) global.startTransitStationPlacement?.(stationType);
+        const stationType = PARCEL_TRANSPORT_TOOLS.find(tool => tool.key === key)?.stationType;
+        if (stationType === 'track') return global.chooseTrackStationType?.();
+        if (stationType) return global.startTransitStationPlacement?.(stationType);
     }
 
     let parcelBuildContextId = null;

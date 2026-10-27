@@ -38,7 +38,7 @@ describe('ground menu actions', () => {
 
     it('offers Draw a site first, then the transport tools, in menu order', () => {
         expect(Model.availableActions(facts()))
-            .toEqual(['drawSite', 'road', 'track', 'busStation', 'tramStation', 'undergroundStation', 'elevatedStation']);
+            .toEqual(['drawSite', 'road', 'track', 'roadStation', 'trackStation']);
     });
 
     it('drops roads where road tools are off, stations where they are, and everything on unloaded ground', () => {
@@ -72,6 +72,17 @@ describe('ground menu and site commands', () => {
         UiCommands.runCommand('ground.drawSite', { global: { GroundMenu: { runAction } }, ground });
         expect(runAction).toHaveBeenCalledWith('drawSite', ground);
         expect(() => UiCommands.runCommand('ground.road', { global: {}, ground })).toThrow(/GroundMenu/);
+    });
+
+    it('offers the two station groups and dispatches their selected actions', () => {
+        const groundFacts = { kind: 'bare', roadToolsEnabled: true, stationsEnabled: true };
+        expect(UiCommands.commandsFor('ground-menu', ctx({ ground: groundFacts })).map(c => c.id))
+            .toEqual(['ground.drawSite', 'ground.road', 'ground.track', 'ground.roadStation', 'ground.trackStation']);
+        const runAction = vi.fn();
+        const global = { GroundMenu: { runAction } };
+        UiCommands.runCommand('ground.roadStation', { global, ground: groundFacts });
+        UiCommands.runCommand('ground.trackStation', { global, ground: groundFacts });
+        expect(runAction.mock.calls).toEqual([['roadStation', groundFacts], ['trackStation', groundFacts]]);
     });
 
     it('offers Draw site in the palette while the site tool is idle, and starts it', () => {

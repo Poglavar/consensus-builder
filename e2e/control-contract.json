@@ -9243,6 +9243,34 @@
       "markup": "<a class=\"btn btn-primary\" href=\"/\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-43cb5f849d5571-1",
+      "source": "js/transit-stations.js",
+      "markup": "global.document.createElement('button')",
+      "interaction": "click",
+      "controlType": "button",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Ground-level track station",
+          "attrs": {
+            "data-station-level": "tram"
+          }
+        },
+        {
+          "name": "Elevated track station",
+          "attrs": {
+            "data-station-level": "elevated"
+          }
+        },
+        {
+          "name": "Underground track station",
+          "attrs": {
+            "data-station-level": "underground"
+          }
+        }
+      ]
     }
   ],
   "variantExclusions": [

@@ -278,3 +278,19 @@ This changes navigation presentation only; authored editing and MCP primitives a
 Verification: two targeted headless Playwright scenarios in `proposal-shell-controls.spec.ts`
 passed, covering draft autosave and an unpublished design plus edited draft surviving refresh,
 closing with unload handlers enabled, and reopening without a leave-page prompt. No full suite ran.
+
+### Station placement and building inspection
+
+The transport palette groups station creation into Road station and Track station. The latter
+chooses Ground level, Elevated station or Underground before starting the existing map placement
+tool; Cancel and Escape create nothing. Existing station geometry editors do not change levels.
+MCP parity uses `ugt_draft_station` with the same canonical `stationType` values (`bus`, `tram`,
+`elevated`, `underground`) and shared footprint/attachment validation. No new authored fields or
+MCP operations are introduced. The station-tool schema descriptions and discovery metadata explain
+the Road/Track grouping and canonical level mapping. `mcp-constructors.test.js` verifies the existing
+creation path and `mcp-discovery.test.js` verifies that mapping.
+
+Observed-building inspection has one UI owner: the Built section of the click stack. Public
+inspection and restored selections enter that section in either map view. The planning inspector
+is shared rendered content, kept hidden when an observed-building record is not hosted.
+These read-only presentation changes do not change MCP source-data inspection.

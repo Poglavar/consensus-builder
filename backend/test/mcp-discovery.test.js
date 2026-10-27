@@ -20,7 +20,11 @@ describe('tool-only MCP discovery', () => {
         const tools = fixture(), result = markUntrusted(tools.capabilities());
         expect(tools.read.request).not.toHaveBeenCalled();
         expect(result.tools.map(tool => tool.name)).toEqual(MCP_HOSTED_TOOLS);
-        expect(result.features.find(row => row.feature === 'stations').kinds).toEqual(['bus', 'tram', 'underground', 'elevated']);
+        expect(result.features.find(row => row.feature === 'stations')).toMatchObject({
+            kinds: ['bus', 'tram', 'underground', 'elevated'],
+            categories: { road: ['bus'], track: ['tram', 'elevated', 'underground'] },
+            trackPlacement: { ground: 'tram', elevated: 'elevated', underground: 'underground' }
+        });
         expect(result.features.find(row => row.feature === 'review').validate).toBe('ugt_validate_plan');
         expect(result.next.tool).toBe('ugt_help');
         expect(JSON.stringify(result).length).toBeLessThan(16_000);

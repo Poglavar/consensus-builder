@@ -349,6 +349,8 @@ test.describe('3D rendering and controls @features', () => {
     expect(await camera()).toEqual(before);
     // The remaining headers stay discoverable beneath the short Built record.
     const builtCard = stack.locator('.click-stack__section[data-kind="built"]');
+    await expect(builtCard.locator('#planning-inspector.is-hosted')).toBeVisible();
+    await expect(page.locator('#planning-inspector')).toHaveCount(1);
     expect((await builtCard.boundingBox())!.height).toBeLessThan(500);
     await expect(stack.locator('.click-stack__section[data-kind="parcels"] .click-stack__row')).toBeInViewport();
     for (const kind of kinds.slice(1)) {

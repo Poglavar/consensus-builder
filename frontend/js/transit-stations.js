@@ -48,7 +48,10 @@
     function specFor(type) {
         const key = normalizeType(type);
         const library = models();
-        if (library && typeof library.specFor === 'function') return library.specFor(key);
+        if (library && typeof library.specFor === 'function') {
+            const spec = library.specFor(key);
+            return spec ? { ...spec, label: stationLabel(key, spec.label) } : null;
+        }
         const fallback = {
             bus: { key: 'bus', label: 'Bus station', icon: 'B', footprintWidthM: 5, footprintLengthM: 18, level: 0 },
             tram: { key: 'tram', label: 'Tram station', icon: 'T', footprintWidthM: 5, footprintLengthM: 18, level: 0 },
@@ -59,7 +62,47 @@
                 minPlatformHeightM: 3, maxPlatformHeightM: 40
             }
         };
-        return fallback[key] || null;
+        const spec = fallback[key];
+        return spec ? { ...spec, label: stationLabel(key, spec.label) } : null;
+    }
+
+    function stationLabel(type, fallback = 'Station') {
+        const keys = { bus: 'roadStation', tram: 'tramStation', elevated: 'elevatedStation', underground: 'undergroundStation' };
+        const defaults = { bus: 'Road station', tram: 'Ground-level station', elevated: 'Elevated station', underground: 'Underground station' };
+        const key = `panel.parcel.build.${keys[type]}`;
+        const translated = global.i18n?.t?.(key);
+        return translated && translated !== key ? translated : defaults[type] || fallback;
+    }
+
+    function chooseTrackStationType() {
+        if (!global.document || !global.CbDialog?.open) return Promise.resolve(false);
+        const body = global.document.createElement('div');
+        body.className = 'cb-tiles station-level-choices';
+        let dialog;
+        for (const [type, icon, labelKey, fallback] of [
+            ['tram', 'ground', 'groundLevel', 'Ground level'],
+            ['elevated', 'elevated', 'elevated', 'Elevated station'],
+            ['underground', 'underground', 'underground', 'Underground']
+        ]) {
+            const button = global.document.createElement('button');
+            button.type = 'button';
+            button.className = 'cb-tile';
+            button.dataset.stationLevel = type;
+            const symbol = global.document.createElement('i');
+            symbol.className = `cb-tile__icon cb-icon-station-${icon}`;
+            symbol.setAttribute('aria-hidden', 'true');
+            const label = global.document.createElement('span');
+            label.className = 'cb-tile__label';
+            label.textContent = stationEditorText(labelKey, fallback);
+            button.append(symbol, label);
+            button.addEventListener('click', () => dialog.close(type));
+            body.appendChild(button);
+        }
+        dialog = global.CbDialog.open({
+            title: stationEditorText('trackStation', 'Track station'), size: 'sm', body,
+            actions: [{ id: 'cancel', label: stationEditorText('cancel', 'Cancel'), value: null }]
+        });
+        return dialog ? dialog.closed.then(type => type && type !== 'cancel' ? startTransitStationPlacement(type) : false) : Promise.resolve(false);
     }
 
     function clone(value) {
@@ -1517,7 +1560,7 @@
         global.map.on('mousemove', placement.onMove);
         global.addEventListener('keydown', placement.onKey, true);
         try { global.map._container.style.cursor = 'crosshair'; } catch (_) { }
-        global.document?.querySelectorAll?.(`[data-station-type="${type}"]`)
+        global.document?.querySelectorAll?.(`[data-station-type="${type}"]${type === 'bus' ? '' : ', [data-station-type="track"]'}`)
             .forEach(button => button.setAttribute('aria-pressed', 'true'));
         if (type !== 'bus') {
             const activePlacement = placement;
@@ -1548,6 +1591,7 @@
 
     initialise();
 
+    global.chooseTrackStationType = chooseTrackStationType;
     global.startTransitStationPlacement = startTransitStationPlacement;
     global.cancelTransitStationPlacement = cancelTransitStationPlacement;
     global.isTransitStationPlacementActive = isTransitStationPlacementActive;
@@ -1582,6 +1626,7 @@
         upsertStation,
         removeStationByProposalId,
         updateTransitStationsLayer,
+        chooseTrackStationType,
         startTransitStationPlacement,
         cancelTransitStationPlacement,
         openStationGeometryEditor,

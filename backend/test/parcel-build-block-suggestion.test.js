@@ -105,15 +105,13 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(html).toContain('parcel-transport-grid');
         expect(html).toContain('parcel-transport-btn--road');
         expect(html).toContain('parcel-transport-btn--track');
-        expect(html.match(/data-station-type=/g)).toHaveLength(4);
+        expect(html.match(/data-station-type=/g)).toHaveLength(2);
         expect(html).toContain('data-station-type="bus"');
-        expect(html).toContain('data-station-type="tram"');
-        expect(html).toContain('data-station-type="underground"');
-        expect(html).toContain('data-station-type="elevated"');
-        expect(html).toContain('Bus station');
-        expect(html).toContain('Tram station');
-        expect(html).toContain('Metro station');
-        expect(html).toContain('Elevated station');
+        expect(html).toContain('data-station-type="track"');
+        expect(html).toContain('Road station');
+        expect(html).toContain('Track station');
+        expect(html).not.toContain('Tram station');
+        expect(html).not.toContain('Metro station');
         expect(html).not.toContain('parcel-ownership-group');
         expect(html).not.toContain('parcel-build-btn--offer');
         // Transport follows the construction tools and parcel-layout section.
@@ -147,24 +145,23 @@ describe('whole-block fresh-proposal suggestion', () => {
         const requestRoadDrawTool = vi.fn();
         const requestTrackDrawTool = vi.fn();
         const startTransitStationPlacement = vi.fn();
+        const chooseTrackStationType = vi.fn();
         const window = loadActions({
             requestRoadDrawTool,
             requestTrackDrawTool,
-            startTransitStationPlacement
+            startTransitStationPlacement,
+            chooseTrackStationType
         });
 
         window.startParcelTransportTool('road');
         window.startParcelTransportTool('track');
-        window.startParcelTransportTool('bus');
-        window.startParcelTransportTool('tram');
-        window.startParcelTransportTool('underground');
-        window.startParcelTransportTool('elevated');
+        window.startParcelTransportTool('roadStation');
+        window.startParcelTransportTool('trackStation');
 
         expect(requestRoadDrawTool).toHaveBeenCalledOnce();
         expect(requestTrackDrawTool).toHaveBeenCalledOnce();
-        expect(startTransitStationPlacement.mock.calls).toEqual([
-            ['bus'], ['tram'], ['underground'], ['elevated']
-        ]);
+        expect(startTransitStationPlacement).toHaveBeenCalledExactlyOnceWith('bus');
+        expect(chooseTrackStationType).toHaveBeenCalledOnce();
     });
 
     it('defines one goal policy for block-scale creation and excludes exact-parcel proposals', () => {

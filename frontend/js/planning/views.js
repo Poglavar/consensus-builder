@@ -77,10 +77,12 @@
         if (!item || item.role !== 'permitted') return null;
         return String(item.sourceEvidence?.parcelReference?.parcelId || item.source?.parcel || '') || null;
     }
-    function inspectBuilding(feature, key) {
+    function inspectBuilding(feature, key, { hosted = false } = {}) {
+        if (!hosted) return root.ClickStack?.showBuilding?.(feature, key) || false;
         const record = root.PlanningRepresentations.built(feature, { key: key || root.buildingPoolFeatureKey?.(feature),
             city: root.CityConfigManager.getCurrentCityId(), footprintM2: feature.geometry ? root.turf.area(feature) : null });
-        if (record) selectRecord(record);
+        if (record) { selectRecord(record); return true; }
+        return false;
     }
     function inspectProposal(proposal) {
         const key = root.getProposalKey(proposal);
@@ -219,9 +221,10 @@
     }
     function renderInspector() {
         const item = selected();
-        inspector.hidden = !item || item.role === 'proposed';
+        const hostedBuilt = item?.role === 'existing' && inspector.classList.contains('is-hosted');
+        inspector.hidden = !item || item.role === 'proposed' || (item.role === 'existing' && !hostedBuilt);
         inspector.replaceChildren();
-        if (!item || item.role === 'proposed') return;
+        if (!item || item.role === 'proposed' || (item.role === 'existing' && !hostedBuilt)) return;
         const header = element('header', 'planning-inspector__header');
         const heading = element('div');
         const sourceResult = item.role === 'permitted';

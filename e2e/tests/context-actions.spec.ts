@@ -94,7 +94,7 @@ test.describe('Map context actions @features', () => {
     await clickMapPoint(page, 15.98255, 45.80025);
     const menu = page.locator('#click-stack');
     await expect(menu.locator('.click-stack__section[data-kind="ground"]')).toBeVisible();
-    for (const command of ['ground.road', 'ground.track', 'ground.busStation', 'ground.tramStation']) {
+    for (const command of ['ground.road', 'ground.track', 'ground.roadStation', 'ground.trackStation']) {
       await expect(menu.locator(`[data-command="${command}"]`)).toBeVisible();
     }
     await menu.locator('[data-command="ground.track"]').click();
@@ -108,7 +108,7 @@ test.describe('Map context actions @features', () => {
     // from the same bare-ground section, and its own editor toolbar carries the Cancel.
     await clickMapPoint(page, 15.98255, 45.80025);
     await expect(menu.locator('.click-stack__section[data-kind="ground"]')).toBeVisible();
-    await menu.locator('[data-command="ground.busStation"]').click();
+    await menu.locator('[data-command="ground.roadStation"]').click();
     const toolbar = page.locator('#station-placement-toolbar');
     await expect(toolbar).toBeVisible();
     await expect(page.locator('#station-placement-status')).toContainText(/bus|station/i);

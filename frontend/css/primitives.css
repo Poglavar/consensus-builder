@@ -243,7 +243,10 @@
 
 /* Monochrome authoring icons inherit the control colour. */
 .cb-icon-track,
-.cb-icon-freeform {
+.cb-icon-freeform,
+.cb-icon-station-ground,
+.cb-icon-station-elevated,
+.cb-icon-station-underground {
     display: inline-block;
     width: 1em;
     height: 1em;
@@ -259,6 +262,18 @@
 
 .cb-icon-freeform {
     mask-image: url('../assets/icons/freeform.svg');
+}
+
+.cb-icon-station-ground {
+    mask-image: url('../assets/icons/station-ground.svg');
+}
+
+.cb-icon-station-elevated {
+    mask-image: url('../assets/icons/station-elevated.svg');
+}
+
+.cb-icon-station-underground {
+    mask-image: url('../assets/icons/station-underground.svg');
 }
 
 .btn-block {

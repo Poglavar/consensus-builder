@@ -32,7 +32,8 @@ test.describe('Proposal creation and map lifecycle @features', () => {
       // Stops are transport tools in the parcel palette since the Tools sheet went (fbe3758d). The
       // corridor split parcel 1234, so open the palette from its northern remainder.
       await openParcelTabAt(page, 15.9822, 45.80045, 'propose-tab');
-      await page.locator(`#parcel-info-panel .parcel-transport-btn--${type}`).click();
+      await page.locator(`#parcel-info-panel .parcel-transport-btn--${type === 'bus' ? 'roadStation' : 'trackStation'}`).click();
+      if(type !== 'bus') await page.getByRole('dialog',{name:'Track station',exact:true}).locator(`[data-station-level="${type}"]`).click();
       await clickMapPoint(page, 15.9822, 45.80025);
       await expect.poll(() => page.evaluate(type => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.structureProposal?.stationType === type).length, type)).toBe(1);
       const station = await page.evaluate(type => (window as any).proposalStorage.getAllProposals().find((p: any) => p.structureProposal?.stationType === type), type);

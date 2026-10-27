@@ -542,9 +542,9 @@ describe('wiring', () => {
             isControlAvailable: () => true, isSectionHidden: section => hidden.includes(section)
         });
         const ids = hidden => UiCommands.commandsFor('palette', ctx(hidden)).map(c => c.id);
-        expect(ids([])).toEqual(expect.arrayContaining(['blocks.reform', 'stations.bus', 'proposals.list', 'game.new']));
+        expect(ids([])).toEqual(expect.arrayContaining(['blocks.reform', 'stations.road', 'proposals.list', 'game.new']));
         const explore = ids(['parcels', 'blocks', 'stations', 'roads', 'proposals', 'game', 'areaMonitor']);
-        for (const id of ['blocks.reform', 'stations.bus', 'roads.drawOsm', 'proposals.list', 'game.new', 'parcels.clearLocal']) expect(explore).not.toContain(id);
+        for (const id of ['blocks.reform', 'stations.road', 'roads.drawOsm', 'proposals.list', 'game.new', 'parcels.clearLocal']) expect(explore).not.toContain(id);
         expect(explore).toEqual(expect.arrayContaining(['tools.measure', 'world.open', 'settings.baseMap', 'activity.events', 'activity.actors']));
         const ranked = UiCommands.rankCommands('reform', ctx(['blocks']), null).find(item => item.entry.id === 'blocks.reform');
         expect(ranked).toMatchObject({ available: false, reason: 'hiddenForCity' });

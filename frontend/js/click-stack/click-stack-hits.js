@@ -177,5 +177,5 @@
         return features.filter(feature => feature?.geometry && ['Polygon', 'MultiPolygon', 'LineString', 'MultiLineString'].includes(feature.geometry.type));
     }
 
-    global.ClickStackHits = Object.freeze({ hitsAt, designGround, parcelLabel, featuresFor });
+    global.ClickStackHits = Object.freeze({ hitsAt, designGround, parcelLabel, buildingLabel, featuresFor });
 })(window);

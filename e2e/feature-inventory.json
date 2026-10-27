@@ -212,26 +212,18 @@
       ]
     },
     {
-      "id": "stations.bus",
+      "id": "stations.road",
       "specs": [
+        "tests/site-palette-controls.spec.ts",
+        "tests/transport-and-building-inspection.spec.ts",
         "tests/proposal-creation.spec.ts"
       ]
     },
     {
-      "id": "stations.tram",
+      "id": "stations.track",
       "specs": [
-        "tests/proposal-creation.spec.ts"
-      ]
-    },
-    {
-      "id": "stations.underground",
-      "specs": [
-        "tests/proposal-creation.spec.ts"
-      ]
-    },
-    {
-      "id": "stations.elevated",
-      "specs": [
+        "tests/site-palette-controls.spec.ts",
+        "tests/transport-and-building-inspection.spec.ts",
         "tests/proposal-creation.spec.ts"
       ]
     },
@@ -471,25 +463,13 @@
       ]
     },
     {
-      "id": "ground.busStation",
+      "id": "ground.roadStation",
       "specs": [
         "tests/context-actions.spec.ts"
       ]
     },
     {
-      "id": "ground.tramStation",
-      "specs": [
-        "tests/menu-button-controls.spec.ts"
-      ]
-    },
-    {
-      "id": "ground.undergroundStation",
-      "specs": [
-        "tests/menu-button-controls.spec.ts"
-      ]
-    },
-    {
-      "id": "ground.elevatedStation",
+      "id": "ground.trackStation",
       "specs": [
         "tests/menu-button-controls.spec.ts"
       ]

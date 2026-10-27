@@ -10,10 +10,8 @@
     'use strict';
 
     // Menu order. Each id is also the suffix of its UiCommands command (`ground.<id>`).
-    const ACTIONS = Object.freeze(['drawSite', 'road', 'track', 'busStation', 'tramStation', 'undergroundStation', 'elevatedStation']);
-    const STATION_ACTIONS = Object.freeze({
-        busStation: 'bus', tramStation: 'tram', undergroundStation: 'underground', elevatedStation: 'elevated'
-    });
+    const ACTIONS = Object.freeze(['drawSite', 'road', 'track', 'roadStation', 'trackStation']);
+    const STATION_ACTIONS = Object.freeze({ roadStation: 'bus', trackStation: 'track' });
 
     // What a click with no parcel under it hit. Never treats "not loaded yet" as bare ground
     // (unsurveyed-ground.md): only a loaded cadastral cell with no parcel at the point is bare.
