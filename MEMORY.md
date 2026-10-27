@@ -986,3 +986,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-27: Finishing plan creation or saving a plan revision opens that exact snapshot in the current view's Plan click-stack section instead of the small action dialog.
 
 - 2026-10-27: Agreement properties use tabs inside the click stack; spatial rows preview on hover and frame on click, and parallel action buttons divide their row equally. Design parcel counts name source cadastre, while displayed formed land excludes leftover remainders.
+
+- 2026-10-27: User preview links keep normal motion; do not add `reduceMotion` unless explicitly requested. Test-only animation overrides must not leak into shared links because reduced motion also hides 3D people and traffic.
