@@ -196,7 +196,13 @@ export async function ensureBotUsdcFunding({
         throw new Error('USDC funding requires a positive action amount within its explicit cap (default 0.5 USDC)');
     }
     const targetBalance = requiredAtomic > TARGET_BOT_USDC ? requiredAtomic : TARGET_BOT_USDC;
-    if (recipient.wallet === source.wallet) return { status: 'skipped', reason: 'source-wallet', wallet: recipient.wallet };
+    if (recipient.wallet === source.wallet) {
+        if (requiredAtomic > TARGET_BOT_USDC) {
+            const balance = usdcBalance(await readBalance(connection, source.wallet));
+            if (balance - requiredAtomic < SOURCE_USDC_RESERVE) throw new Error(`USDC funding wallet ${source.wallet} cannot seed its market while retaining 1 test USDC; fund the source wallet before retrying`);
+        }
+        return { status: 'skipped', reason: 'source-wallet', wallet: recipient.wallet };
+    }
     const minimum = requiredAtomic > MIN_BOT_USDC ? requiredAtomic : MIN_BOT_USDC;
     const balance = usdcBalance(await readBalance(connection, recipient.wallet));
     if (balance >= minimum) return { status: 'skipped', reason: 'sufficient-balance', wallet: recipient.wallet };

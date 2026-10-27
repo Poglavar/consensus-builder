@@ -89,13 +89,14 @@ a source fails or yields no eligible candidate; attempts are recorded, and an ex
 with source failures fails visibly. Gentle answers current rivals and waits when none exist.
 
 Sponsor market opening is optional under `AGENT_MARKET_SEED_USDC_CAP` (default `0`, disabled).
-The canonical market uses `69.31472` devnet USDC of seed liquidity. A proposed `70` allowance
+The scheduled proposers explicitly enable a `70` allowance. The canonical market uses
+`69.31472` devnet USDC of seed liquidity. This allowance
 admits one seed per run; two new seeds fail preflight. The ordinary `AGENT_DAILY_USDC_CAP`
 remains separate. Opening uses the sponsor PDA, existing canonical terms and verified devnet,
 checks balance and deadline, and checkpoints seed-funding receipts before opening. A restart
 reads an existing canonical market and never seeds it twice. Sponsor self-trading remains
 forbidden. The existing configured funding wallet and shared reserve lock fund only the exact
-seed shortfall under the explicit allowance. No allowance is enabled by this change.
+seed shortfall under the explicit allowance. The configured source retains at least one devnet USDC.
 
 The proposer serializes pins with 31-second spacing. HTTP 429 is handled once by the index client,
 honoring the longer body/header cooldown (including HTTP-date Retry-After), up to four attempts

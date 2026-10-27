@@ -319,3 +319,12 @@ it('funds a market seed only under an explicit higher cap and preserves the shar
     expectUnlocked(h);
     expect(h.values.get(source)).toBeGreaterThan(1_000_000n);
 });
+
+it('keeps the source reserve when the funding persona seeds its own market', async () => {
+    const h = harness({ balances: { [recipient]: 0n, [source]: 70_000_000n } });
+    const args = { ...h.args, persona: 'densifier-01', requiredAtomic: 69_314_720n, maxActionAtomic: 70_000_000n };
+    await expect(ensureBotUsdcFunding(args)).rejects.toThrow(/retaining 1 test USDC/);
+    h.values.set(source, 71_000_000n);
+    expect(await ensureBotUsdcFunding(args)).toMatchObject({ reason: 'source-wallet' });
+    expect(h.sendAndConfirm).not.toHaveBeenCalled();
+});
