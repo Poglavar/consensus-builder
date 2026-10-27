@@ -16,6 +16,8 @@ const steps = [
     'Use agreement tools only for allocations and decision rules. Assemble agreements before publication because roads may be reconnected.'
 ];
 export const MCP_FEATURES = Object.freeze([
+    { feature: 'community-code-voting', prepare: 'ugt_draft_agreement', edit: 'ugt_edit_agreement', inspect: 'ugt_voting_status', vote: 'ugt_cast_community_vote',
+        eligibility: 'Fixed code hashes in consultation.voting; generate codes and retain contact assignments locally. Changing eligibility creates a new agreement without transferring votes.' },
     { feature: 'named-plans', create: 'ugt_draft_plan', inspect: 'ugt_inspect_plan', edit: 'ugt_edit_plan', publish: 'ugt_publish_plan' },
     { feature: 'individual-designs', inspect: 'ugt_inspect_design', edit: 'ugt_modify_design', granularEdit: 'ugt_edit_design', publish: 'ugt_publish_design' },
     { feature: 'agreements', create: 'ugt_draft_agreement', inspect: 'ugt_inspect_agreement', edit: 'ugt_edit_agreement', publish: 'ugt_propose_agreement' },

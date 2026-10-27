@@ -6,7 +6,7 @@ export const MCP_LOCAL_TOOLS = Object.freeze([
     'ugt_buy_verified_fact', 'ugt_request_ownership', 'ugt_pledge', 'ugt_donate', 'ugt_refund_donation', 'ugt_void_pledge',
     'ugt_revoke_pledge', 'ugt_release_donations', 'ugt_fulfill_pledge', 'ugt_resolve_market', 'ugt_claim_market',
     'ugt_resolve_external_market', 'ugt_claim_external_market',
-    'ugt_approval_link', 'ugt_find_place', 'ugt_parcel_context', 'ugt_list_designs', 'ugt_get_design', 'ugt_markets', 'ugt_explain',
+    'ugt_voting_status', 'ugt_cast_community_vote', 'ugt_approval_link', 'ugt_find_place', 'ugt_parcel_context', 'ugt_list_designs', 'ugt_get_design', 'ugt_markets', 'ugt_explain',
     'ugt_draft_road', 'ugt_draft_building', 'ugt_draft_track', 'ugt_draft_station', 'ugt_draft_space', 'ugt_draft_parcel_layout', 'ugt_draft_urban_rule',
     'ugt_modify_design', 'ugt_inspect_design', 'ugt_edit_design', 'ugt_compare', 'ugt_draft_agreement', 'ugt_inspect_agreement', 'ugt_edit_agreement',
     'ugt_draft_plan', 'ugt_get_plan', 'ugt_validate_plan', 'ugt_inspect_plan', 'ugt_edit_plan', 'ugt_publish_plan', 'ugt_help', 'ugt_list_sources', 'ugt_export_draft',
@@ -15,5 +15,5 @@ export const MCP_LOCAL_TOOLS = Object.freeze([
 // Wallet-only registrations sit between these named boundaries; additions cannot shift the hosted catalogue.
 export const MCP_HOSTED_TOOLS = Object.freeze([
     ...MCP_LOCAL_TOOLS.slice(0, MCP_LOCAL_TOOLS.indexOf('ugt_chain_agreements')),
-    ...MCP_LOCAL_TOOLS.slice(MCP_LOCAL_TOOLS.indexOf('ugt_approval_link'))
+    ...MCP_LOCAL_TOOLS.slice(MCP_LOCAL_TOOLS.indexOf('ugt_voting_status'))
 ]);

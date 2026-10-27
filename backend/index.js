@@ -398,6 +398,8 @@ export function createApp({
             }
             // /agent/* pays per request, so the payment is the limiter (design decision, not an oversight).
             // Betting telemetry has its own bounded-batch limiter and must not consume the authoring budget.
+            // Code voting has its own HTTP limit and persistent authentication budget.
+            if (req.method === 'POST' && /^\/agreements\/[^/]+\/voting\/(access|ballot)$/.test(req.path)) return next();
             if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || isAgentPath(req.path) || req.path === '/bets/events' || req.path.startsWith('/bets/points/'))) {
                 return next();
             }

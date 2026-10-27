@@ -273,9 +273,13 @@
             return null;
         }
         if (raw != null && !isObject(raw)) fail('Participation metadata must be an object.');
-        if (raw && Object.keys(raw).some(key => key !== 'organiser' && key !== 'participationUrl')) fail('Participation metadata has unknown fields.');
+        if (raw && Object.keys(raw).some(key => !['organiser', 'participationUrl', 'voting'].includes(key))) fail('Participation metadata has unknown fields.');
         if (raw && ['organiser', 'participationUrl'].some(key => raw[key] != null && typeof raw[key] !== 'string')) fail('Participation fields must be text or null.');
         const result = { organiser: textOf(raw && raw.organiser), participationUrl: textOf(raw && raw.participationUrl) };
+        if (raw?.voting != null) {
+            const voting = root.CommunityVoting || (typeof require === 'function' ? require('./community/voting.js') : null);
+            result.voting = voting.configuration(raw.voting);
+        }
         if (result.organiser) { try { result.organiser = didWeb().normalizeDid(result.organiser); } catch (_) { /* validate reports it */ } }
         if (result.participationUrl) { try { result.participationUrl = participationUrl(result.participationUrl); } catch (_) { /* validate reports it */ } }
         return result;

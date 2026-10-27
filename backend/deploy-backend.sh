@@ -95,6 +95,7 @@ DDL_FILES=(
     db/agreement-ddl.sql
     db/agreement-decision-ddl.sql
     db/community-report-ddl.sql
+    db/community-voting-ddl.sql
     db/building-floor-model.sql
     db/publication-immutability.sql
     ens/parcel-ens-ddl.sql

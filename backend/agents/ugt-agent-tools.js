@@ -17,6 +17,7 @@ import { createMcpReadTools } from './mcp-read-tools.js';
 import { createMcpAssetTools } from './mcp-assets.js';
 import { createMcpComparison } from './mcp-compare.js';
 import { createMcpValidationTools } from './mcp-validation.js';
+import { createMcpVotingTools } from './mcp-voting.js';
 import os from 'node:os';
 import path from 'node:path';
 import { Keypair, PublicKey } from '@solana/web3.js';
@@ -355,6 +356,7 @@ export function createUrbanGameTheoryTools({
                 next: trustedMetadata({ action: 'Save this exact artifact. Supply it as canonical input to restore the draft after its reference expires.' }) };
         },
         ...companion,
+        ...createMcpVotingTools({ read: companion }),
         ...drafts,
         ...agreements,
         inspectAgreement: agreementPlans.inspectPlan,

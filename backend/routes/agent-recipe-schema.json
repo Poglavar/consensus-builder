@@ -37,13 +37,27 @@
       "pattern": "^https://[^/@?#]+(?:[/?#]|$)",
       "description": "Canonical HTTPS URL without credentials, exactly as URL.href writes it."
     },
+    "communityVoting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "id", "codeHashes"],
+      "properties": {
+        "schema": { "const": "community-voting/v1" },
+        "id": { "type": "string", "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$" },
+        "codeHashes": { "type": "array", "minItems": 1, "maxItems": 10000, "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "description": "Strictly sorted code verifiers generated locally by CommunityVoting.configuration. No raw codes, names or contact details." }
+      },
+      "description": "Immutable eligibility: list-salted PBKDF2-HMAC-SHA256, 600000 iterations. Changing codes creates a new agreement with independent ballots."
+    },
     "consultation": {
       "type": "object",
       "required": ["organiser", "participationUrl"],
       "additionalProperties": false,
       "properties": {
         "organiser": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/organiserDid" }] },
-        "participationUrl": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/httpsUrl" }] }
+        "participationUrl": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/httpsUrl" }] },
+        "voting": { "$ref": "#/$defs/communityVoting" }
       },
       "description": "Optional metadata for a nonbinding community consultation; no owner allocations, financial transfers, mint or chain settlement."
     },

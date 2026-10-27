@@ -24,6 +24,9 @@ import { normalizeCityCode } from '../utils/city-code.js';
 import { agreementDocument, SEMANTIC_BASE_ERROR, SEMANTIC_RECORD_ERROR } from '../semantics/published-records.js';
 import { createAgreementDecisionHandlers, createAgreementDecisionStore } from '../agreements/decisions.js';
 import { createCommunityReportHandlers, createCommunityReportStore } from '../agreements/community-reports.js';
+import { rateLimit } from 'express-rate-limit';
+import { createVotingStore } from '../agreements/voting-store.js';
+import { setupVotingRoutes } from '../agreements/voting.js';
 import {
     AGREEMENT_CLUSTERS, agreementAccountOf, createAgreementChain, isSignature, onchainFromAccount, refreshOnchain, writeOnchain
 } from '../agreements/onchain.js';
@@ -219,6 +222,30 @@ export function validateAgreementContent(content, { now = Date.now(), designCids
         }
     }
 
+    const consultation = content.consultation;
+    if (consultation != null) {
+        if (rule.electorate !== 'community') return invalid('consultation', 'Only a community agreement has consultation metadata.');
+        if (!isPlainObject(consultation) || Object.keys(consultation).some(key => !['organiser', 'participationUrl', 'voting'].includes(key))
+            || !Object.hasOwn(consultation, 'organiser') || !Object.hasOwn(consultation, 'participationUrl')) {
+            return invalid('consultation', 'Consultation contains organiser, participationUrl and optional immutable voting codes.');
+        }
+        try {
+            if (consultation.organiser !== null && (!isText(consultation.organiser, 2048)
+                || communityDidWeb.normalizeDid(consultation.organiser) !== consultation.organiser)) {
+                return invalid('consultation', 'The organiser is a canonical DID Web identifier or null.');
+            }
+            if (consultation.participationUrl !== null && (!isText(consultation.participationUrl, 2048)
+                || agreementRecord.participationUrl(consultation.participationUrl) !== consultation.participationUrl)) {
+                return invalid('consultation', 'Participation uses a canonical HTTPS URL or null.');
+            }
+            if (!canonicalBytes(consultation).equals(canonicalBytes(agreementRecord.consultationOf(consultation, rule.electorate)))) {
+                return invalid('consultation', 'Consultation metadata must have its canonical shape.');
+            }
+        } catch (error) {
+            return invalid('consultation', error.message);
+        }
+    }
+
     // Browser, MCP and HTTP publication share one area/cash contract. Published outputs carry
     // hashes rather than geometry, so only their local display fields are supplied for calculation.
     if (rule.electorate === 'owners') {
@@ -237,30 +264,6 @@ export function validateAgreementContent(content, { now = Date.now(), designCids
             if (calculated.money.lines.some(line => !Number.isSafeInteger(line.amountCents))) return invalid('money', 'Compensation exceeds the supported whole-cent range.');
         } catch (error) { return invalid('money', error.message); }
     } else if (!agreementRecord.landBalance({ inputs, outputs: content.outputs }).balanced) return invalid('land', 'Input and output land areas must balance.');
-
-    const consultation = content.consultation;
-    if (consultation != null) {
-        if (rule.electorate !== 'community') return invalid('consultation', 'Only a community agreement has consultation metadata.');
-        if (!isPlainObject(consultation) || Object.keys(consultation).length !== 2
-            || !Object.hasOwn(consultation, 'organiser') || !Object.hasOwn(consultation, 'participationUrl')) {
-            return invalid('consultation', 'Consultation is exactly { organiser, participationUrl }.');
-        }
-        try {
-            if (consultation.organiser !== null && (!isText(consultation.organiser, 2048)
-                || communityDidWeb.normalizeDid(consultation.organiser) !== consultation.organiser)) {
-                return invalid('consultation', 'The organiser is a canonical DID Web identifier or null.');
-            }
-            if (consultation.participationUrl !== null && (!isText(consultation.participationUrl, 2048)
-                || agreementRecord.participationUrl(consultation.participationUrl) !== consultation.participationUrl)) {
-                return invalid('consultation', 'Participation uses a canonical HTTPS URL or null.');
-            }
-            if (!canonicalBytes(consultation).equals(canonicalBytes(agreementRecord.consultationOf(consultation, rule.electorate)))) {
-                return invalid('consultation', 'Consultation metadata must have its canonical shape.');
-            }
-        } catch (error) {
-            return invalid('consultation', error.message);
-        }
-    }
 
     if (content.deadline != null) {
         if (!isInstant(content.deadline)) return invalid('details', 'The deadline is an ISO instant or null.');
@@ -495,6 +498,12 @@ export function setupAgreementsRoute(app, deps) {
     });
     app.get('/agreements/:cid/community-reports', communityReports.get);
     app.post('/agreements/:cid/community-reports', deps.uploadRateLimiter || createUploadRateLimiter(), communityReports.post);
+
+    setupVotingRoutes(app, {
+        store: deps.votingStore || createVotingStore(pool), loadAgreement: cid => loadAgreement(pool, cid), now,
+        limiter: rateLimit({ windowMs: 60000, limit: 240, standardHeaders: 'draft-7', legacyHeaders: false,
+            message: { code: 'try-later', error: 'Please wait before trying again.', retryAfter: 60 } })
+    });
 
     // The index learns the chain: { chain: 'solana', cluster, account, signature? } after the sponsor
     // minted the agreement, which must be a binding owners' agreement (rule.binding: only those are

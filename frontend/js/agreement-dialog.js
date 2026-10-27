@@ -297,7 +297,8 @@
             rule: owners
                 ? { electorate: 'owners', binding: values.binding === true, approvalConfig: state.approvalConfig || null, lens: Array.isArray(state.lens) ? state.lens.slice() : [], settlement: values.settlement || { ...recordApi.DEFAULT_SETTLEMENT } }
                 : { electorate: 'community', binding: false, approvalConfig: null, lens: [] },
-            consultation: owners ? null : { organiser: values.organiser || null, participationUrl: values.participationUrl || null },
+            consultation: owners ? null : { organiser: values.organiser || null, participationUrl: values.participationUrl || null,
+                ...(values.voting ? { voting: values.voting } : {}) },
             deadline: deadlineFromDate(values.deadline)
         };
         return recordApi.settle(raw);
@@ -457,7 +458,8 @@
     function consultationHtml({ organiser = '', participationUrl = '' } = {}) {
         return `<p class="agreement-hint">${esc(t('agreement.consultation.hint', 'Optional organiser identity and participation information. A nonbinding agreement records opinions and does not settle land or money.'))}</p>`
             + `<label class="proposal-editor-field"><span>${esc(t('agreement.consultation.organiser', 'Organiser website or did:web (optional)'))}</span><input type="text" data-agreement-organiser value="${esc(organiser)}" autocomplete="off"></label>`
-            + `<label class="proposal-editor-field"><span>${esc(t('agreement.consultation.participationUrl', 'Participation URL (HTTPS, optional)'))}</span><input type="url" data-agreement-participation-url value="${esc(participationUrl)}" autocomplete="off"></label>`;
+            + `<label class="proposal-editor-field"><span>${esc(t('agreement.consultation.participationUrl', 'Participation URL (HTTPS, optional)'))}</span><input type="url" data-agreement-participation-url value="${esc(participationUrl)}" autocomplete="off"></label>`
+            + '<section data-voting-roster></section>';
     }
 
     // The whole body. `view`: { designs, selected, missing, land, loading, landError, values, today }.
@@ -582,7 +584,7 @@
                 binding: existing?.rule.binding === true, title: existing?.title || '',
                 settlement: { ...(existing?.rule.settlement || api.DEFAULT_SETTLEMENT) },
                 deadline: dateFromDeadline(existing?.deadline), organiser: existing?.consultation?.organiser || '',
-                participationUrl: existing?.consultation?.participationUrl || '' },
+                participationUrl: existing?.consultation?.participationUrl || '', voting: existing?.consultation?.voting || null },
             loading: false, closed: false, sequence: 0, attempted: false, landError: null
         };
         const panels = root.AgreementPanel;
@@ -612,9 +614,14 @@
         const current = { cancel: () => finish(null) };
         session = current;
         const draft = () => recordFromForm(state, state.values);
+        let rosterPending = false;
+        const roster = root.CommunityVotingRoster?.mount(part('[data-voting-roster]'), {
+            value: state.values.voting,
+            changed: (value, pending) => { state.values.voting = value; rosterPending = pending; issues(); }
+        });
         function finish(result) {
             if (state.closed) return;
-            state.closed = true; clearInspection(); listeners.abort(); auxiliary?.close(); unregisterEscape?.();
+            state.closed = true; roster?.destroy(); clearInspection(); listeners.abort(); auxiliary?.close(); unregisterEscape?.();
             if (session === current) session = null;
             panel.classList.remove('visible'); body.replaceChildren(); doc.body.classList.remove('agreement-editor-open');
             if (modal.open) modal.close();
@@ -643,7 +650,7 @@
                 part('[data-agreement-errors]').innerHTML = issuesHtml(state.attempted ? checked.errors : []);
                 // Advanced ownership/lens readiness lives behind its own controls.
                 part('[data-agreement-warnings]').innerHTML = issuesHtml(checked.warnings.filter(row => row.section === 'land'));
-                saveButton.disabled = !state.plan || !!state.landError || !checked.valid;
+                saveButton.disabled = !state.plan || !!state.landError || !checked.valid || (state.values.electorate === 'community' && rosterPending);
             } catch (error) { saveButton.disabled = true; part('[data-agreement-errors]').textContent = error.message; }
         }
         function renderPersons() {
@@ -794,7 +801,7 @@
         body.addEventListener('focusin', event => hoverInspection(event, true), { signal });
         body.addEventListener('focusout', event => hoverInspection(event, false), { signal });
         form.addEventListener('submit', event => {
-            event.preventDefault(); if (state.loading) return;
+            event.preventDefault(); if (state.loading || (state.values.electorate === 'community' && rosterPending)) return;
             state.attempted = true;
             try {
                 readRule(); const record = draft(); const checked = api.validate(record, { designOf: id => root.proposalStorage.getProposal(id), isApplied: root.isApplied });

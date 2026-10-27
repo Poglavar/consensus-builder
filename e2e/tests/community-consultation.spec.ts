@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, stubBasemapTiles } from '../helpers/runtime';
-import { applyLayout, agreementEditor, editorSave, editorClosed, storedAgreements, openAgreementsList, proposeOverPark } from '../helpers/agreements';
+import { applyLayout, agreementEditor, editorSave, editorClosed, storedAgreements, proposeOverPark } from '../helpers/agreements';
 import { fileAgreement, pageIndex, cidOfObject } from '../helpers/mocks/shared-server';
 import { injectMockSolanaWallet } from '../helpers/blockchain';
 
@@ -18,11 +18,17 @@ const ORGANISER = 'did:web:ngo.example:ugt';
 test('Ask the community opens consultation fields and saves metadata without settlement terms @core', async ({ mockApi: page }) => {
   test.setTimeout(180_000);
   await stubBasemapTiles(page);
-  await applyLayout(page);
-  await openAgreementsList(page);
-  await page.locator('.agreement-list-dialog [data-agreement-action="community"]').click();
+  const { layoutId } = await applyLayout(page);
+  await page.evaluate(id => {
+    const w = window as any;
+    const plan = w.PlanComposition.create('Community plan', [w.proposalStorage.getProposal(id)], w.MapShare.capture(w));
+    w.PlanWorkspace.save(plan); w.PlanDialog.details(plan);
+  }, layoutId);
+  await page.getByRole('button', { name: 'Create agreement', exact: true }).click();
   const editor = agreementEditor(page);
   await expect(editor).toBeVisible();
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await editor.locator('[data-agreement-electorate][value="community"]').check();
   await expect(editor.locator('[data-agreement-electorate][value="community"]')).toBeChecked();
   await expect(editor.locator('[data-agreement-allocation]').first()).toBeHidden();
   await expect(editor.locator('[data-agreement-cash]').first()).toBeHidden();

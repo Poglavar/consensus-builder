@@ -8990,6 +8990,90 @@
       "markup": "<button class=\"btn btn-primary\" type=\"submit\"${enabled ? '' : ' disabled'}>",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-e1029cea863ad8-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<textarea data-roster-labels rows=\"3\" autocomplete=\"off\" spellcheck=\"false\">",
+      "interaction": "change",
+      "controlType": "textarea"
+    },
+    {
+      "id": "control-10b105cd4afd98-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<input type=\"number\" data-roster-count min=\"1\" max=\"100\" value=\"${local.count}\">",
+      "interaction": "change",
+      "controlType": "number"
+    },
+    {
+      "id": "control-e4374213c4d1e1-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-roster-action=\"generate\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a6c0f91f5466eb-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-roster-action=\"save\"${local.entries.length?'':' disabled'}>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-50a8e67ef685c0-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<button type=\"button\" class=\"btn btn-secondary\" data-roster-action=\"csv\"${local.entries.length?'':' disabled'}>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-f576436f1fdf0a-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<input type=\"file\" accept=\"application/json,.json\" data-roster-import>",
+      "interaction": "change",
+      "controlType": "file"
+    },
+    {
+      "id": "control-aea91cac9f1cd2-1",
+      "source": "js/community/voting-roster.js",
+      "markup": "<button type=\"button\" class=\"btn btn-quiet\" data-roster-action=\"remove\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-7cab48c88021a0-1",
+      "source": "js/community/voting-ui.js",
+      "markup": "<button type=\"button\" class=\"btn btn-sm btn-secondary\" data-voting-action=\"${action}\"${disabled?' disabled':''}>",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-963b2e7676244f-1",
+      "source": "js/community/voting-ui.js",
+      "markup": "<input type=\"text\" data-voting-code class=\"voting-code\" value=\"${esc(s.inputCode || '')}\" autocomplete=\"off\" autocorrect=\"off\" autocapitalize=\"characters\" spellcheck=\"false\" maxlength=\"100\" placeholder=\"KRM-TAV-DBN-WEX-HPS\" required>",
+      "interaction": "change",
+      "controlType": "text"
+    },
+    {
+      "id": "control-72686cfd91044b-1",
+      "source": "js/community/voting-ui.js",
+      "markup": "<button class=\"btn btn-primary\" type=\"submit\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-d57d2413c773a3-1",
+      "source": "js/community/voting-ui.js",
+      "markup": "<input type=\"radio\" name=\"community-vote\" value=\"${choice}\"${choice===(s.selected || entry.choice)?' checked':''} required>",
+      "interaction": "change",
+      "controlType": "radio"
+    },
+    {
+      "id": "control-72686cfd91044b-2",
+      "source": "js/community/voting-ui.js",
+      "markup": "<button class=\"btn btn-primary\" type=\"submit\">",
+      "interaction": "click",
+      "controlType": "button"
     }
   ],
   "variantExclusions": [

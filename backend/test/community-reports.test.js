@@ -25,6 +25,15 @@ const ownerPlanContent = (overrides = {}) => {
     const content = ownerContent(overrides);
     delete content.designs;
     content.planCid = PLAN_CID;
+    const areaM2 = content.inputs.parcels.reduce((sum, parcel) => sum + parcel.areaM2, 0);
+    content.outputs = [{ hash: 'piece1-sha256:' + 'a'.repeat(64), areaM2,
+        fromParcelIds: content.inputs.parcels.map(parcel => parcel.parcelId), role: 'plot', holders: [], geometry: null }];
+    if (content.rule.electorate === 'owners') {
+        content.rule.settlement = { method: 'none', rateCentsPerM2: 0, contributionBasisPoints: 0 };
+        content.allocations = [{ output: content.outputs[0].hash, to: { kind: 'public' } }];
+        content.money = require('../../frontend/js/agreement-record.js').settle({ ...content,
+            id: 'report-fixture', consultation: null, designs: [], outputs: content.outputs.map(output => ({ ...output, pieceId: output.hash })) }).money;
+    }
     return content;
 };
 const agreementContent = {
