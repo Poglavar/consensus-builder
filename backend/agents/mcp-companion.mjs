@@ -16,7 +16,8 @@ const point = z.tuple([z.number().min(-180).max(180), z.number().min(-85).max(85
 const consultation = z.object({ organiser: z.string().max(2048).nullable(), participationUrl: z.string().max(2048).nullable() }).strict().nullable().optional();
     const allocation = z.object({ output: z.string().min(1), to: z.discriminatedUnion('kind', [
         z.object({ kind: z.literal('party'), ownerKey: z.string().min(1) }).strict(),
-        z.object({ kind: z.literal('public') }).strict()
+        z.object({ kind: z.literal('public') }).strict(),
+        z.object({ kind: z.literal('proposer') }).strict()
     ]) }).strict();
     const settlement = z.object({ method: z.enum(['area', 'none']), rateCentsPerM2: z.number().int().nonnegative(), contributionBasisPoints: z.number().int().min(0).max(10000) }).strict();
     const approvalConfig = z.object({ schema: z.literal('proposal-approval/v1'), rights: z.record(z.string(), z.unknown()).nullable().optional(),
@@ -94,7 +95,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
     add('ugt_compare', 'Compare named plans, designs or agreements using canonical artifacts, hosted draftRef references, CIDs or published URLs. Use draftRef for private drafts instead of copying geometry. Areas are square metres; absent measurements remain null.',
         { targets: z.array(designInput).min(2).max(10), buildingSourceId: z.string().max(3507).optional(), parcelSourceId: z.string().max(3507).optional() }, 'compare');
 
-    add('ugt_draft_agreement', 'Draft an agreement on an existing named plan. Its exact member designs and complete cadastral ground are used to derive input land and outputs. Owner decisions may use an explicit rights snapshot or abstract parcel owners when names are unavailable. Settlement is controlled in EUR per square metre and balancing cash is derived. No pin, index write or signature.',
+    add('ugt_draft_agreement', 'Draft an agreement on an existing named plan. Its exact member designs and complete cadastral ground are used to derive input land and outputs. Owner decisions may use an explicit rights snapshot or abstract parcel owners when names are unavailable. Each output can go to an input party, the proposer (including private acquisition), or the public. To allocate all outputs, supply a line for every output hash. Settlement uses the city currency per square metre and balancing sponsor cash is derived. No pin, index write or signature.',
         { plan: designInput, rulePreset: z.enum(['owner-deal', 'owner-vote', 'community-vote']).default('owner-vote'), rule: agreementRule.optional(), rights: z.record(z.string(), z.unknown()).optional(), lens: z.string().optional(), allocations: z.array(allocation).optional(), settlement: settlement.optional(), currency: z.string().regex(/^[A-Z]{3}$/).default('EUR'), deadline: z.iso.datetime().nullable().optional(), sponsor: z.string().nullable().optional(), title: z.string().max(200).optional(), author: z.string().max(100).optional(), createdAt: z.iso.datetime().optional(), consultation }, 'draftAgreement');
 
     const ref = z.string().min(1).max(200);
@@ -107,7 +108,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
     ])).max(100).default([]);
     add('ugt_inspect_agreement', 'Inventory an agreement composition by CID, /agreements link or draftRef. Returns exact design/building refs and derived land pieces. Derived pieces are read-only; edit their source designs.',
         { plan: designInput, ...inventory }, 'inspectAgreement');
-    add('ugt_edit_agreement', 'Revise agreement terms against the exact existing named plan. Design composition and named-plan membership are edited with ugt_edit_plan; prior decisions stay with the original agreement.',
+    add('ugt_edit_agreement', 'Revise agreement terms against the exact existing named plan. Assign each output to an input party, proposer or public; assigning every output implements bulk allocation. Design composition and named-plan membership are edited with ugt_edit_plan; prior decisions stay with the original agreement.',
         { plan: designInput, expectedCid: cid, terms: z.object({ plan: designInput.optional(), rule: agreementRule.optional(), rights: z.record(z.string(), z.unknown()).optional(), allocations: z.array(allocation).optional(), settlement: settlement.optional(),
             title: z.string().max(200).nullable().optional(), author: z.string().max(100).nullable().optional(), sponsor: z.string().nullable().optional(), deadline: z.iso.datetime().nullable().optional(), consultation, rulePreset: z.enum(['owner-deal', 'owner-vote']).optional()
         }).default({}) }, 'editAgreement');

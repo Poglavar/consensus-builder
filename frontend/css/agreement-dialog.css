@@ -15,6 +15,7 @@
 .agreement-persons-table td { font-variant-numeric: tabular-nums; }
 .agreement-persons-table th:first-child { width: 40%; }
 .agreement-persons-table .agreement-persons-cash { display: inline-block; white-space: nowrap; font-size: var(--cb-text-xs); }
+.agreement-allocation-row select:disabled { opacity: 0.55; cursor: not-allowed; background: var(--cb-surface); }
 .agreement-editor input[type="range"] { width: 100%; }
 
 /* Input parcels and plan designs use the same inspection-list component. */

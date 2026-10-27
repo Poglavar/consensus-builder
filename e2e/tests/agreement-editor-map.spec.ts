@@ -42,6 +42,35 @@ test('creation belongs to the saved plan; four tabs preserve exact membership an
   expect(record.money.lines).toEqual([]);
 });
 
+test('bulk proposer acquisition disables parcel selectors and saves explicit recipients and compensation', async ({ mockApi: page }) => {
+  const { layoutId, ownerKey } = await applyLayout(page);
+  const editor = await create(page, layoutId);
+  await editor.getByRole('tab', { name: 'Output parcels', exact: true }).click();
+  const mode = editor.locator('[data-agreement-allocation-mode]');
+  const parcels = editor.locator('[data-agreement-allocation]');
+  await mode.selectOption('proposer');
+  for (const parcel of await parcels.all()) { await expect(parcel).toBeDisabled(); await expect(parcel).toHaveValue('proposer'); }
+  await mode.selectOption('public');
+  for (const parcel of await parcels.all()) { await expect(parcel).toBeDisabled(); await expect(parcel).toHaveValue('public'); }
+  await mode.selectOption('individual');
+  for (const parcel of await parcels.all()) { await expect(parcel).toBeEnabled(); await expect(parcel).toHaveValue('public'); }
+  await parcels.first().selectOption('proposer');
+  await expect(parcels.first()).toHaveValue('proposer');
+  await mode.selectOption('proposer');
+  await editor.getByRole('tab', { name: 'Persons', exact: true }).click();
+  const proposer = editor.locator('.agreement-persons-table tbody tr').filter({ hasText: 'Proposer' });
+  await expect(proposer).toBeVisible(); await expect(proposer).toContainText('EUR');
+  await editorSave(editor).click(); await expect(editor).toBeHidden();
+  const [saved] = await storedAgreements(page);
+  expect(saved.allocations.every((line: any) => line.to.kind === 'proposer')).toBe(true);
+  const area = saved.outputs.reduce((sum: number, o: any) => sum + o.areaM2, 0);
+  expect(saved.money.lines).toEqual([{ ownerKey, amountCents: Math.round(area * saved.rule.settlement.rateCentsPerM2) }]);
+  await page.evaluate(id => { void (window as any).AgreementDialog.open({ agreementId: id }); }, saved.id);
+  await expect(editor).toBeVisible();
+  await editor.getByRole('tab', { name: 'Output parcels', exact: true }).click();
+  await expect(mode).toHaveValue('proposer'); await expect(parcels.first()).toBeDisabled();
+});
+
 test('public allocation updates compensation, rate and sponsor tally without editable person cash', async ({ mockApi: page }) => {
   const { layoutId, ownerKey } = await applyLayout(page);
   const editor = await create(page, layoutId);

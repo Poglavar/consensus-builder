@@ -160,7 +160,7 @@
     },
     "agreement": {
       "type": "object",
-      "description": "agreement/v1: one exact named plan, its input land and output pieces, allocations, controlled settlement terms and derived cash schedule. Each owner output has one recipient or public designation. Community agreements are nonbinding consultations with no allocations or financial transfers.",
+      "description": "agreement/v1: one exact named plan, its input land and output pieces, allocations, controlled settlement terms and derived cash schedule. Each owner output has one input-party, proposer or public recipient. Community agreements are nonbinding consultations with no allocations or financial transfers.",
       "required": ["schema", "planCid", "inputs", "outputs", "allocations", "money", "rule"],
       "properties": {
         "schema": { "const": "agreement/v1" },
@@ -230,12 +230,13 @@
               "to": {
                 "oneOf": [
                   { "type": "object", "required": ["kind", "ownerKey"], "properties": { "kind": { "const": "party" }, "ownerKey": { "$ref": "#/$defs/text" } } },
-                  { "type": "object", "required": ["kind"], "properties": { "kind": { "const": "public" } } }
+                  { "type": "object", "required": ["kind"], "properties": { "kind": { "const": "public" } } },
+                  { "type": "object", "required": ["kind"], "properties": { "kind": { "const": "proposer" } } }
                 ]
               }
             }
           },
-          "description": "Exactly one recipient per owner output: one party or public. Joint and implicit holder allocations are not supported."
+          "description": "Exactly one recipient per owner output: one input party, proposer or public. Proposer receives land independently of input ownership; the sponsor balances the compensation schedule. Bulk allocation uses one explicit line per output. Joint and implicit holder allocations are not supported."
         },
         "money": {
           "type": "object",

@@ -966,3 +966,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-27: Agreements select an existing exact plan and never compose designs; four tabs separate rules, input parcels, single-recipient output parcels and read-only person totals, with scheme-controlled area compensation and abstract parcel-owner parties.
 
 - 2026-10-27: Plan creation is local composition; Share design and Share plan publish exact separate revisions, Add to plan reviews a new snapshot, and agreements are created from a saved plan in their own flow.
+
+- 2026-10-27: Output parcels supports proposer acquisition without prior input ownership, with all-Proposer/all-Public bulk allocation or individual recipients; scheme-derived compensation is funded through the balancing sponsor.

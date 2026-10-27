@@ -7394,7 +7394,11 @@
         "allocation": {
             "hint": "Quién recibe cada porción resultante. Los titulares actuales son los que los diseños conservaron.",
             "holders": "Titulares actuales",
-            "public": "Público"
+            "public": "Público",
+            "proposer": "Proponente",
+            "publicLand": "Suelo público",
+            "individual": "Asignar individualmente",
+            "allOutputs": "Asignar parcelas resultantes"
         },
         "money": {
             "hint": "Dinero por parte, en {{currency}}: positivo recibe, negativo paga. El promotor cubre la diferencia.",

@@ -131,27 +131,27 @@
         return Array.from(parties.values());
     }
 
-    // What one resulting piece can go to: its current holders (the default), one input party, or the public.
+    // One recipient per resulting piece, including acquisition by a proposer with no input land.
     function allocationOptions(inputs) {
         return [
             { value: '', label: t('agreement.workflow.chooseRecipient', 'Choose recipient') },
+            { value: 'proposer', label: t('agreement.allocation.proposer', 'Proposer') },
             ...partiesOf(inputs).map(party => ({ value: `party:${party.ownerKey}`, label: party.displayName })),
             { value: 'public', label: t('agreement.allocation.public', 'Public') }
         ];
     }
 
-    // An allocation line's `to` as a select value, and back. "holders" is no line at all: an output
-    // without a line keeps its carried-over holding.
+    // An allocation line's `to` as a select value, and back. Missing lines require a recipient.
     function allocationValue(to) {
         if (!to || typeof to !== 'object') return 'holders';
-        if (to.kind === 'public') return 'public';
+        if (to.kind === 'public' || to.kind === 'proposer') return to.kind;
         if (to.kind === 'party' && idOf(to.ownerKey)) return `party:${idOf(to.ownerKey)}`;
         return 'holders';
     }
 
     function allocationTo(value) {
         const text = idOf(value);
-        if (text === 'public') return { kind: 'public' };
+        if (text === 'public' || text === 'proposer') return { kind: text };
         if (text.startsWith('party:') && text.length > 'party:'.length) return { kind: 'party', ownerKey: text.slice('party:'.length) };
         return null;
     }
@@ -415,7 +415,11 @@
 
     // One select per resulting piece, each under the piece it names (a list, so it stays usable at
     // the dock's width and on a phone).
-    function allocationHtml(land, allocations = {}) {
+    function allocationMode(allocations = {}) {
+        const values = Object.values(allocations);
+        return values.length && ['proposer', 'public'].includes(values[0]) && values.every(value => value === values[0]) ? values[0] : 'individual';
+    }
+    function allocationHtml(land, allocations = {}, mode = 'individual') {
         const outputs = land && Array.isArray(land.outputs) ? land.outputs : [];
         if (!outputs.length) return '';
         const options = allocationOptions(land.inputs);
@@ -423,9 +427,14 @@
         const rows = outputs.map((output, index) => {
             const value = known.has(allocations[output.hash]) ? allocations[output.hash] : '';
             return `<li><label class="agreement-allocation-row"><span class="agreement-allocation-row__piece">${esc(`${t('agreement.land.piece', 'Piece')} ${index + 1} · ${areaText(output.areaM2)}`)}</span>`
-                + `<select data-agreement-allocation="${esc(output.hash)}">${options.map(option => `<option value="${esc(option.value)}"${option.value === value ? ' selected' : ''}>${esc(option.label)}</option>`).join('')}</select></label></li>`;
+                + `<select data-agreement-allocation="${esc(output.hash)}"${mode !== 'individual' ? ' disabled' : ''}>${options.map(option => `<option value="${esc(option.value)}"${option.value === value ? ' selected' : ''}>${esc(option.label)}</option>`).join('')}</select></label></li>`;
         }).join('');
-        return `<ul class="agreement-allocation-list">${rows}</ul>`;
+        const modes = [
+            ['individual', t('agreement.allocation.individual', 'Set individually')],
+            ['proposer', t('agreement.allocation.proposer', 'Proposer')],
+            ['public', t('agreement.allocation.publicLand', 'Public land')]
+        ];
+        return `<label class="proposal-editor-field"><span>${esc(t('agreement.allocation.allOutputs', 'Allocate output parcels'))}</span><select data-agreement-allocation-mode>${modes.map(([value, label]) => `<option value="${value}"${mode === value ? ' selected' : ''}>${esc(label)}</option>`).join('')}</select></label><ul class="agreement-allocation-list">${rows}</ul>`;
     }
 
     // Who decides, whether it binds, and the owners' rules (filled by the browser layer).
@@ -469,7 +478,7 @@
         const rows = ledger.parties.map(party => `<tr><th scope="row">${esc(party.displayName)}</th><td>${cell(party.areaUnknown ? null : party.contributedM2, Math.max(0, -party.cashCents))}</td><td>${cell(party.assignedM2, Math.max(0, party.cashCents))}</td></tr>`).join('');
         const publicRow = ledger.publicM2 > 0 ? `<tr><th scope="row">${esc(t('agreement.allocation.public', 'Public'))}</th><td>${cell(0, 0)}</td><td>${cell(ledger.publicM2, 0)}</td></tr>` : '';
         const sponsor = ledger.money.sponsorCents;
-        const sponsorRow = sponsor ? `<tr><th scope="row">${esc(t('agreement.workflow.sponsor', 'Sponsor'))}</th><td>${cell(0, Math.max(0, -sponsor))}</td><td>${cell(0, Math.max(0, sponsor))}</td></tr>` : '';
+        const sponsorRow = sponsor || ledger.proposerM2 > 0 ? `<tr><th scope="row">${esc(ledger.proposerM2 > 0 ? t('agreement.allocation.proposer', 'Proposer') : t('agreement.workflow.sponsor', 'Sponsor'))}</th><td>${cell(0, Math.max(0, -sponsor))}</td><td>${cell(ledger.proposerM2, Math.max(0, sponsor))}</td></tr>` : '';
         const balance = api.landBalance(record);
         return (terms?.method === 'area' ? `<p class="agreement-hint">${esc(t('agreement.workflow.rateReadOnly', 'Compensation: {{rate}} per m². Change it in Rules.', { rate: moneyText(terms.rateCentsPerM2, ledger.currency) }))}</p>` : '')
             + `<table class="agreement-persons-table"><thead><tr><th scope="col">${esc(t('agreement.workflow.person', 'Person'))}</th><th scope="col">${esc(t('agreement.workflow.putsIn', 'Puts in'))}</th><th scope="col">${esc(t('agreement.workflow.receives', 'Receives'))}</th></tr></thead><tbody>${rows}${publicRow}${sponsorRow}</tbody></table>`
@@ -565,6 +574,7 @@
             id: existing?.id || api.newId(), createdAt: existing?.createdAt || null,
             updatedAt: existing?.updatedAt || null, city: existing?.city || root.resolveCurrentCityCode?.() || null,
             plans, plan: initialPlan, designs: [], fingerprints: new Map(), land: emptyLand(),
+            allocationMode: allocationMode(termsOf(existing).allocations),
             currency: existing?.money.currency || root.CityMoney.currentCurrency(),
             approvalConfig: existing?.rule.approvalConfig || null, lens: existing?.rule.lens || [],
             values: { ...termsOf(existing), electorate: existing?.rule.electorate || electorate,
@@ -660,7 +670,7 @@
             else if (state.landError) target.innerHTML = `<p class="agreement-alert">${esc(state.landError)}</p><button type="button" class="btn" data-agreement-action="apply-plan">${esc(t('agreement.workflow.applyPlan', 'Apply plan designs'))}</button>`;
             else target.innerHTML = inputsTableHtml(state.land.inputs.parcels);
             part('[data-agreement-plan-designs]').innerHTML = inputDesignsHtml(state.designs);
-            part('[data-agreement-allocations]').innerHTML = allocationHtml(state.land, state.values.allocations);
+            part('[data-agreement-allocations]').innerHTML = allocationHtml(state.land, state.values.allocations, state.allocationMode);
             if (state.values.electorate === 'community') part('[data-agreement-allocations]').querySelectorAll('select').forEach(select => { select.disabled = true; });
             renderPersons(); issues();
         }
@@ -679,7 +689,8 @@
         function reconcileAllocations() {
             const kept = keptTerms(state.values, state.land).allocations;
             const defaults = Object.fromEntries(api.defaultAllocations(state.land.inputs, state.land.outputs).map(row => [row.output, allocationValue(row.to)]));
-            state.values.allocations = { ...defaults, ...kept };
+            state.values.allocations = state.allocationMode === 'individual' ? { ...defaults, ...kept }
+                : Object.fromEntries(state.land.outputs.map(output => [output.hash, state.allocationMode]));
         }
         async function deriveLand() {
             const sequence = ++state.sequence;
@@ -827,6 +838,9 @@
                     state.values.allocations = {}; deriveLand(); return;
                 }
                 if (target.closest('[data-agreement-rule-form]')) { readRule(); renderRule(); renderPersons(); issues(); return; }
+                if (target.matches('[data-agreement-allocation-mode]')) {
+                    state.allocationMode = target.value; reconcileAllocations(); renderLand(); return;
+                }
                 if (target.matches('[data-agreement-allocation]')) state.values.allocations[target.dataset.agreementAllocation] = target.value;
                 if (target.matches('[data-agreement-binding]')) state.values.binding = target.checked;
                 if (target.matches('[data-agreement-electorate]')) {
@@ -863,7 +877,7 @@
     }
     return {
         open, SCHEMA, LOCAL_RIGHTS_PROVIDER, appliedDesigns, designTitle, inputParcelIds, originalsById,
-        partiesOf, allocationOptions, allocationValue, allocationTo, cashCents, cashInputText, termsOf,
+        partiesOf, allocationOptions, allocationValue, allocationTo, allocationMode, cashCents, cashInputText, termsOf,
         keptTerms, sponsorLine, ruleConfigAfterDerive, deadlineFromDate, dateFromDeadline, recordFromForm,
         issueText, holdersText, landHtml, allocationHtml, ruleHtml, detailsHtml,
         consultationHtml, bodyHtml, personsHtml, planSelectorHtml, inputDesignsHtml

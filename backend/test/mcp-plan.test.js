@@ -33,10 +33,25 @@ describe('agreement MCP editing surface', () => {
         return tools;
     };
 
+    it('edits proposer acquisition through MCP and inspects land and balanced compensation', async () => {
+        const { tools, namedPlan } = await runtime();
+        const first = await tools.draftAgreement({ plan: namedPlan.draftArtifact, rulePreset: 'community-vote' });
+        const allocations = first.agreement.outputs.map(output => ({ output: output.hash, to: { kind: 'proposer' } }));
+        const changed = await tools.editAgreement({ plan: first.draftArtifact, expectedCid: first.cid, terms: {
+            rule: { electorate: 'owners', binding: false, approvalConfig: null, lens: [], settlement: { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 0 } }, allocations
+        } });
+        expect(changed.agreement.allocations).toEqual(allocations);
+        const inspected = await tools.inspectAgreement({ plan: changed.draftArtifact });
+        expect(inspected.proposerM2).toBeGreaterThan(0);
+        expect(inspected.cashSchedule.sponsorCents).toBeLessThan(0);
+        const drafted = await tools.draftAgreement({ plan: namedPlan.draftArtifact, rulePreset: 'owner-vote', allocations });
+        expect(drafted.agreement.allocations).toEqual(allocations);
+    });
     it('requires an existing named plan to draft an agreement and has no design or cash-line inputs', () => {
         const draft = schemas().get('ugt_draft_agreement');
         const plan = { schema: 'plan/v1', title: 'Existing plan', designCids: [], view: { at: '51.5,-0.1,17', mode: '2d', city: 'london' } };
         expect(draft.parse({ plan }).plan).toEqual(plan);
+        expect(draft.parse({ plan, allocations: [{ output: 'piece', to: { kind: 'proposer' } }] }).allocations[0].to.kind).toBe('proposer');
         const rule = { electorate: 'owners', binding: true, approvalConfig: { schema: 'proposal-approval/v1', rights: null,
             policy: { type: 'rules', tests: [], authorities: [{ authorityId: 'authority:district' }] }, regime: { id: 'de-umlegung-new', version: '1' } },
             lens: ['11111111111111111111111111111111'], settlement: { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 1000 } };
@@ -50,6 +65,7 @@ describe('agreement MCP editing surface', () => {
         const plan = { schema: 'plan/v1', title: 'Replacement plan', designCids: [], view: { at: '51.5,-0.1,17', mode: '2d', city: 'london' } };
         const expectedCid = cidOfObject({ schema: 'agreement/v1', revision: 1 });
         expect(edit.parse({ plan, expectedCid, terms: { plan, settlement: { method: 'area', rateCentsPerM2: 12000, contributionBasisPoints: 0 } } }).terms.plan).toEqual(plan);
+        expect(edit.parse({ plan, expectedCid, terms: { allocations: [{ output: 'piece', to: { kind: 'proposer' } }] } }).terms.allocations[0].to.kind).toBe('proposer');
         expect(edit.safeParse({ plan, expectedCid, operations: [{ type: 'remove', ref: 'design:x' }] }).success).toBe(false);
     });
 

@@ -139,6 +139,7 @@
     function recipientText(to, output, names, tr) {
         const kind = to && to.kind;
         if (kind === 'public') return tr('agreement.allocation.public', 'Public');
+        if (kind === 'proposer') return tr('agreement.allocation.proposer', 'Proposer');
         if (kind === 'party') return names.get(idOf(to.ownerKey)) || idOf(to.ownerKey);
         if (kind === 'joint') return holdersLine(to.shares, tr, names);
         const holders = output && Array.isArray(output.holders) ? output.holders : [];
@@ -159,7 +160,7 @@
                 label: `${tr('agreement.land.piece', 'Piece')} ${index + 1}`,
                 areaM2: finite(output && output.areaM2) ? output.areaM2 : null,
                 area: format().formatArea(output && output.areaM2, { missing: NO_VALUE }),
-                kind: ['public', 'party', 'joint'].includes(to.kind) ? to.kind : 'holders',
+                kind: ['public', 'proposer', 'party', 'joint'].includes(to.kind) ? to.kind : 'holders',
                 to: recipientText(to, output, names, tr)
             };
         });
@@ -195,6 +196,11 @@
             change: party.areaUnknown ? NO_VALUE : signedArea(party.changeM2),
             cash: signedMoney(party.cashCents, ledger.currency)
         }));
+        if (ledger && finite(ledger.proposerM2) && ledger.proposerM2 > 0) {
+            rows.push({ ownerKey: null, name: tr('agreement.allocation.proposer', 'Proposer'),
+                contributes: area(0), receives: area(ledger.proposerM2), change: signedArea(ledger.proposerM2),
+                cash: signedMoney(ledger.money?.sponsorCents || 0, ledger.currency) });
+        }
         if (ledger && finite(ledger.publicM2) && ledger.publicM2 > 0) {
             rows.push({
                 ownerKey: null, name: tr('agreement.allocation.public', 'Public'),

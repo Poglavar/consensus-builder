@@ -153,6 +153,15 @@ describe('ledgerRows', () => {
         expect(panel.ledgerRows(null)).toEqual([]);
     });
 
+    it('shows proposer acquisition land and its balancing cash in saved agreement rows', () => {
+        const rows = panel.ledgerRows({ parties: [], proposerM2: 2000, publicM2: 0, currency: 'EUR', money: { sponsorCents: -20000000 } });
+        expect(rows).toHaveLength(1);
+        expect(rows[0]).toMatchObject({ name: 'Proposer', contributes: format.formatArea(0), receives: format.formatArea(2000),
+            cash: `−${format.formatMoney(200000, 'EUR', { maxFractionDigits: 0, minFractionDigits: 0 })}` });
+        const raw = agreement(); raw.allocations[0].to = { kind: 'proposer' };
+        expect(panel.allocationLines(raw)[0]).toMatchObject({ kind: 'proposer', to: 'Proposer' });
+    });
+
     it('reads the ledger AgreementRecord computes', () => {
         const rows = panel.ledgerRows(record.ledger(agreement()));
         expect(rows.map(row => row.name)).toEqual(['Ana', 'Boris', 'Public']);

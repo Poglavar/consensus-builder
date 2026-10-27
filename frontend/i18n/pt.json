@@ -1908,7 +1908,11 @@
         "allocation": {
             "hint": "Quem recebe cada porção resultante. Os titulares atuais são os que os projetos mantiveram.",
             "holders": "Titulares atuais",
-            "public": "Público"
+            "public": "Público",
+            "proposer": "Proponente",
+            "publicLand": "Terreno público",
+            "individual": "Definir individualmente",
+            "allOutputs": "Atribuir parcelas resultantes"
         },
         "money": {
             "hint": "Montante por parte, em {{currency}}: positivo recebe, negativo paga. O promotor cobre a diferença.",

@@ -5,7 +5,7 @@ Agreement creation selects an independently saved immutable plan. Its designs ar
 
 Each unidentified input parcel has a stable abstract party, `parcel-owner:<parcelId>`. These parties support drafting and accounting; their generated rights snapshot remains incomplete. Plugged-in rights replace the input holders, and invalid recipient choices must be reviewed again.
 
-Area compensation is `(contributed area × (1 − contribution ratio) − allocated area) × rate`, rounded to integer cents per party. The selected scheme caps the allowed contribution ratio. The sponsor supplies or receives the cash difference. No-cash rules generate no cash lines. Saving and HTTP publication reject unbalanced land, unknown input areas, incomplete input shares, missing or multiple output recipients, non-input recipients and cash inconsistent with the rules.
+Area compensation is `(contributed area × (1 − contribution ratio) − allocated area) × rate`, rounded to integer cents per party. The selected scheme caps the allowed contribution ratio. The sponsor supplies or receives the cash difference. No-cash rules generate no cash lines. Saving and HTTP publication reject unbalanced land, unknown input areas, incomplete input shares, missing or multiple output recipients, unknown input-party recipients and cash inconsistent with the rules.
 
 This intentionally retires joint output allocations, implicit carried-holder outputs and manually entered cash terms. Recreate affected experimental agreements. Input co-ownership remains supported.
 
@@ -51,3 +51,26 @@ Research-template labels and legal/research disclaimers were removed from render
 MCP parity: these changes affect inspection and presentation only. Existing `ugt_inspect_agreement` still supplies input land, designs, output pieces, parties and rules; rights and lens edits use the existing agreement terms operations. No authored record, validation, schema or MCP mutation changed.
 
 Verification: targeted headless unit runs passed (agreement store/accounting: 40 tests; approval setup/regimes/review and locale coverage: 60 tests). Two targeted headless Playwright cases passed for input inspection and rights/lens dialogs; one further case passed for the Experimental pill and absent English/Croatian disclaimers. The inspection-row case was rerun after aligning both row titles and passed again. None were stopped. Headed verification used real source parcel lookup and the same local frontend/API checkout.
+
+
+## Proposer acquisition and bulk allocation follow-up
+
+Output parcels offers Set individually, Proposer and Public land. The bulk choices write an explicit allocation for every output and disable/grey its individual selector. Switching to individual mode retains the assignments. Saved all-Proposer/all-Public allocations reopen in that bulk mode. Individual selectors also offer Proposer, supporting mixed private, owner and public allocations.
+
+The shared contract adds `{kind: 'proposer'}`. It needs no input ownership or connected wallet. The ledger reports `proposerM2` separately from input parties and public land. Input owners retain scheme-derived compensation; the sponsor balances cash. Persons shows proposer land and balancing cash together; saved allocation/ledger views identify Proposer too. No existing record requires a migration.
+
+MCP parity: `ugt_draft_agreement` and `ugt_edit_agreement` accept proposer allocations through their shared typed union; `ugt_inspect_agreement` reports proposer area and the derived cash schedule. Bulk assignment uses the existing explicit list of output hashes. Shared record normalization/settlement and HTTP validation accept the same recipient kind. Tool discovery copy and the public recipe JSON Schema describe it. Runtime and schema tests cover drafting, editing and inspecting proposer acquisition, with immutable prior agreement identity preserved.
+
+Verification (targeted runs only, none stopped):
+
+| Run | Result |
+| --- | --- |
+| Headless unit: accounting, store, panel, MCP, locale (5 files) | 111 passed, 1 failed: new MCP fixture lacked explicit output recipients |
+| Headless unit: MCP, record, HTTP routes (3 files) | 96 passed, 21 failed; 20 route failures and 40 listen errors from sandbox socket binding; the MCP fixture correction had not applied |
+| Headless unit: MCP and HTTP routes with local binding enabled (2 files) | 68 passed, 2 failed: incorrect inspection operation in the new test and one transient route HTTP 401 |
+| Headless unit: MCP and panel after test corrections (2 files) | 48 passed, including the new saved-panel case |
+| Headless HTTP unit: the single route case that returned 401 | 1 passed, 62 skipped |
+| Headless Playwright: bulk proposer case | 1 passed |
+| Headed Playwright: bulk proposer case in background Chrome | 1 passed; rendered screenshot confirms bulk selector and grey per-parcel selectors |
+
+Across the seven unit files, all 223 distinct cases have a passing result. The new accounting case verifies HTTP validation of a published proposer allocation. Browser checks cover public/proposer bulk switching, disabled selectors, selective allocation, derived compensation, saving and reopening.

@@ -208,7 +208,7 @@
         });
     }
 
-    // Every output has one explicit party or public recipient. validate checks its membership.
+    // Every output has one explicit input party, proposer or public recipient. validate checks its membership.
     function allocationsOf(list) {
         if (list === undefined || list === null) return [];
         if (!Array.isArray(list)) fail('Allocations must be a list.');
@@ -220,7 +220,7 @@
             if (seen.has(output)) fail('An output has two allocation lines.');
             seen.add(output);
             const kind = line.to.kind;
-            if (kind === 'public') return { output, to: { kind } };
+            if (kind === 'public' || kind === 'proposer') return { output, to: { kind } };
             if (kind === 'party') return { output, to: { kind, ownerKey: keyOf(line.to.ownerKey) } };
             if (kind === 'joint' || kind === 'holders') fail('Choose one recipient for each output parcel. Split the parcel to allocate land to different persons.');
             return fail(`Unknown allocation kind ${String(kind)}.`);
@@ -556,7 +556,7 @@
 
     /**
      * Per input party: contributed land by its input shares, whole output parcels assigned to it,
-     * entitlement and change, and cash (+ receives, − pays). Public land and the balancing sponsor
+     * entitlement and change, and cash (+ receives, − pays). Public and proposer land and the balancing sponsor
      * are separate. Cash that is not whole cents throws (code 'invalid-agreement').
      */
     function ledger(raw) {
@@ -580,11 +580,12 @@
             if (to.kind === 'party') party(to.ownerKey);
         });
         const allocated = new Map(agreement.allocations.map(line => [line.output, line.to]));
-        let publicM2 = 0;
+        let publicM2 = 0, proposerM2 = 0;
         agreement.outputs.forEach(output => {
             const to = allocated.get(output.hash);
             if (!to) return;
             if (to.kind === 'public') publicM2 += output.areaM2;
+            else if (to.kind === 'proposer') proposerM2 += output.areaM2;
             else if (to.kind === 'party') party(to.ownerKey).assignedM2 += output.areaM2;
         });
         agreement.money.lines.forEach(line => {
@@ -601,7 +602,7 @@
             })),
             terms: { currency: agreement.money.currency }
         });
-        return { parties: list, publicM2, money, currency: agreement.money.currency };
+        return { parties: list, publicM2, proposerM2, money, currency: agreement.money.currency };
     }
 
     /**

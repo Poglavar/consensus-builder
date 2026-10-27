@@ -7408,7 +7408,11 @@
         "allocation": {
             "hint": "Ko dobija koji nastali deo. Sadašnji nosioci su oni koje su dizajni preneli.",
             "holders": "Sadašnji nosioci",
-            "public": "Javno"
+            "public": "Javno",
+            "proposer": "Predlagač",
+            "publicLand": "Javno zemljište",
+            "individual": "Postavi pojedinačno",
+            "allOutputs": "Dodela izlaznih parcela"
         },
         "money": {
             "hint": "Novac po strani, u valuti {{currency}}: pozitivan iznos strana prima, negativan plaća. Razliku pokriva investitor.",

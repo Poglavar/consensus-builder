@@ -32,6 +32,41 @@ describe('plan-first agreement accounting', () => {
         expect(Record.ledger(record).money.sponsorCents).toBe(0);
         expect(Record.rightsFromInputs(record.inputs).parcels.every(row => !row.complete)).toBe(true);
     });
+    it('acquires all outputs for a proposer with no input land, funded by the sponsor', () => {
+        const raw = fixture();
+        raw.allocations = raw.outputs.map(output => ({ output: output.hash, to: { kind: 'proposer' } }));
+        const record = Record.settle(raw), ledger = Record.ledger(record);
+        expect(Record.validate(record).valid).toBe(true);
+        expect(ledger.proposerM2).toBe(2000); expect(ledger.publicM2).toBe(0);
+        expect(ledger.parties.every(p => p.assignedM2 === 0)).toBe(true);
+        expect(record.money.lines).toEqual([
+            { ownerKey: 'parcel-owner:A', amountCents: 10000000 }, { ownerKey: 'parcel-owner:B', amountCents: 10000000 }
+        ]);
+        expect(ledger.money.sponsorCents).toBe(-20000000);
+        expect(Dialog.personsHtml(record)).toContain('Proposer');
+        expect(validateAgreementContent(Record.published(record), { designCids: [designCid] }).ok).toBe(true);
+        expect(Dialog.termsOf(record).allocations[raw.outputs[0].hash]).toBe('proposer');
+    });
+    it('supports selective acquisition and the same compensation rules without cash', () => {
+        const raw = fixture(); raw.allocations[0].to = { kind: 'proposer' };
+        const mixed = Record.settle(raw);
+        expect(Record.ledger(mixed).proposerM2).toBe(800);
+        expect(Record.ledger(mixed).money.sponsorCents).toBe(-8000000);
+        raw.rule.settlement.method = 'none';
+        const noCash = Record.settle(raw);
+        expect(noCash.money.lines).toEqual([]); expect(Record.ledger(noCash).proposerM2).toBe(800);
+        expect(Record.validate(noCash).valid).toBe(true);
+    });
+    it('keeps bulk assignments explicit and per-parcel controls disabled only in bulk mode', () => {
+        const record = fixture(), assignments = Object.fromEntries(record.outputs.map(o => [o.hash, 'proposer']));
+        expect(Dialog.allocationMode(assignments)).toBe('proposer');
+        expect(Dialog.allocationMode({ ...assignments, [record.outputs[0].hash]: 'public' })).toBe('individual');
+        expect(Dialog.allocationMode({})).toBe('individual');
+        const html = Dialog.allocationHtml(record, assignments, 'proposer');
+        expect(html.match(/data-agreement-allocation="[^" ]+" disabled/g)).toHaveLength(2);
+        expect(Dialog.allocationHtml(record, assignments)).not.toContain(' disabled');
+        expect(Dialog.keptTerms({ allocations: assignments }, record).allocations).toEqual(assignments);
+    });
     it('requires a saved exact plan and never creates one from the form', () => {
         const record = fixture();
         expect(codes({ ...record, plan: null })).toContain('plan-required');

@@ -197,6 +197,7 @@ describe('allocation and money', () => {
         expect(Dialog.partiesOf(land.inputs)).toEqual([{ ownerKey: 'agent-ana', displayName: 'Ana' }, { ownerKey: 'agent-ben', displayName: 'Ben' }]);
         expect(Dialog.allocationOptions(land.inputs)).toEqual([
             { value: '', label: 'Choose recipient' },
+            { value: 'proposer', label: 'Proposer' },
             { value: 'party:agent-ana', label: 'Ana' },
             { value: 'party:agent-ben', label: 'Ben' },
             { value: 'public', label: 'Public' }
@@ -372,7 +373,7 @@ describe('the sections as HTML (the hooks the browser spec targets)', () => {
     it('gives every resulting piece one select, the stored choice selected, an unknown one requires a choice', () => {
         const html = Dialog.allocationHtml(land, { 'piece1-sha256:aa': 'party:agent-ben', 'piece1-sha256:bb': 'party:agent-gone' });
         expect(html.match(/<select data-agreement-allocation=/g)).toHaveLength(2);
-        expect(html).toContain('<select data-agreement-allocation="piece1-sha256:aa"><option value="">Choose recipient</option><option value="party:agent-ana">Ana</option><option value="party:agent-ben" selected>Ben</option><option value="public">Public</option></select>');
+        expect(html).toContain('<select data-agreement-allocation="piece1-sha256:aa"><option value="">Choose recipient</option><option value="proposer">Proposer</option><option value="party:agent-ana">Ana</option><option value="party:agent-ben" selected>Ben</option><option value="public">Public</option></select>');
         expect(html).toContain('<select data-agreement-allocation="piece1-sha256:bb"><option value="" selected>');
         expect(Dialog.allocationHtml({ inputs: land.inputs, outputs: [] })).toBe('');
     });

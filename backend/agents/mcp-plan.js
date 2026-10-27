@@ -126,7 +126,7 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
                 const value = item.kind === 'piece' ? { ...item, recipient: recipients.get(item.ref.slice(6)) || null } : item;
                 return includeGeometry ? { ...value, geometry } : value;
             }),
-            parties: ledger.parties, publicM2: ledger.publicM2, settlement: plan.agreement.rule.settlement,
+            parties: ledger.parties, publicM2: ledger.publicM2, proposerM2: ledger.proposerM2, settlement: plan.agreement.rule.settlement,
             cashSchedule: ledger.money,
             total: matched.length, offset, truncated: offset + limit < matched.length,
             selectionBasis: 'References belong to this immutable plan CID. Compass selection requires the whole object bbox beyond the reference bbox; crossing objects are excluded.',

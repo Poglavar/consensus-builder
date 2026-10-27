@@ -86,7 +86,11 @@ An unchanged whole cadastral parcel commits to its source geometry, including it
 
 ### Allocation
 
-The proposed assignment of an agreement output to exactly one input-land party or to the public. Every output in an owners’ agreement has an explicit allocation. Joint output ownership and implicit carried-holder allocations are not supported; separate recipients require separate output parcels. Input parcels can still have several owners with stated shares.
+The proposed assignment of an agreement output to exactly one input-land party, to the proposer or to the public. Every output in an owners’ agreement has an explicit allocation. Joint output ownership and implicit carried-holder allocations are not supported; separate recipients require separate output parcels. Input parcels can still have several owners with stated shares.
+
+### Proposer allocation
+
+The agreement recipient role `{kind: 'proposer'}`, independent of input-land ownership. It receives explicitly selected output parcels, including all outputs in a private acquisition. Input owners retain their scheme-defined compensation; the sponsor balances the resulting cash schedule. The Persons tally combines proposer land with that balancing cash. A proposer who contributes input land remains represented separately under that input party's key.
 
 ### Sponsor
 

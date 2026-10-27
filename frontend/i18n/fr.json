@@ -1908,7 +1908,11 @@
         "allocation": {
             "hint": "Qui reçoit chaque portion résultante. Les détenteurs actuels sont ceux repris par les projets.",
             "holders": "Détenteurs actuels",
-            "public": "Public"
+            "public": "Public",
+            "proposer": "Porteur du projet",
+            "publicLand": "Terrain public",
+            "individual": "Attribuer individuellement",
+            "allOutputs": "Attribuer les parcelles de sortie"
         },
         "money": {
             "hint": "Montant par partie, en {{currency}} : un montant positif est reçu, un montant négatif est payé. Le porteur couvre la différence.",

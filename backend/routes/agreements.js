@@ -42,7 +42,7 @@ export const PLAN_TABLE = 'consensus.plan';
 // An output piece's content hash (AgreementRecord.outputHash): the prefix, then 64 hex digits.
 const isOutputHash = value => typeof value === 'string' && value.startsWith(agreementRecord.OUTPUT_HASH_PREFIX)
     && /^[0-9a-f]{64}$/.test(value.slice(agreementRecord.OUTPUT_HASH_PREFIX.length));
-const ALLOCATION_KINDS = ['party', 'public'];
+const ALLOCATION_KINDS = ['party', 'proposer', 'public'];
 const ELECTORATES = ['owners', 'community'];
 const MAX_TEXT = { title: 500, author: 255, city: 100 };
 const MAX_ID_LENGTH = 256;

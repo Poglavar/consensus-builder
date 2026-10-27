@@ -7367,7 +7367,11 @@
         "allocation": {
             "hint": "Who receives each resulting piece. The current holders are what the designs carried over.",
             "holders": "Current holders",
-            "public": "Public"
+            "public": "Public",
+            "proposer": "Proposer",
+            "publicLand": "Public land",
+            "individual": "Set individually",
+            "allOutputs": "Allocate output parcels"
         },
         "money": {
             "hint": "Cash per party, in {{currency}}: positive receives, negative pays. The sponsor covers the difference.",
