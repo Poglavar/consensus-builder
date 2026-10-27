@@ -13,6 +13,7 @@ const require = createRequire(import.meta.url);
 globalThis.proj4 ||= require('proj4');
 const SingleBuildingGeometry = require('../../frontend/js/single-building-geometry.js');
 const LakeGeometry = require('../../frontend/js/lake-geometry.js');
+const ProposalApplyStructures = require('../../frontend/js/proposals/apply/structures.js');
 // A stored park/square tree: its point and its look (park-planting.js).
 const tree = (lng, lat) => ({ coordinate: [lng, lat], kind: 'broadleaf', heightM: 10 });
 
@@ -231,24 +232,14 @@ function makeEditorHarness(decorations, options = {}) {
     };
     const context = createContext({
         document, map, L, GeometryEditHistory: historyFactory,
-        SingleBuildingGeometry, LakeGeometry,
+        SingleBuildingGeometry, LakeGeometry, ProposalApplyStructures,
+        StructureEditorObjects: require('../../frontend/js/structure-editor-objects.js'),
         StructureParcelFit: require('../../frontend/js/structure-parcel-fit.js'),
         BusyControl: require('../../frontend/js/ui/busy-control.js'),
         CbDialog: { choice: vi.fn(async () => options.fitMode === undefined ? 'largest' : options.fitMode), alert: vi.fn(async () => {}) },
         CadastralParcelRepository: { ensureFootprint: vi.fn(options.lookup || (async () => ({ result: { features: options.parcels || [] } }))) },
         __parkPlanting: require('../../frontend/js/park-planting.js'),
-        turf: {
-            booleanPointInPolygon(point) {
-                if (options.rejectOutsidePoints !== true) return true;
-                const [lng, lat] = point.coordinates;
-                return lng >= 0 && lng <= 1 && lat >= 0 && lat <= 1;
-            },
-            point: coordinates => ({ type: 'Point', coordinates }),
-            polygon: coordinates => ({ type: 'Feature', geometry: { type: 'Polygon', coordinates } }),
-            booleanWithin: () => true,
-            booleanEqual: () => false,
-            lineString: coordinates => ({ type: 'Feature', geometry: { type: 'LineString', coordinates } })
-        },
+        turf: options.turf || appTurf,
         proposalDraftStore: { getDraft: () => draft },
         proposalEditorAdapterRegistry: {
             get(key) {
@@ -429,7 +420,6 @@ describe('structure geometry editor history wiring', () => {
         const harness = makeEditorHarness(null, { kind: 'lake', geometry });
 
         expect(harness.open()).toBe(true);
-        harness.panel.fireClick({ tool: 'move' });
         harness.boundaryLayer().fire('mousedown', { latlng: { lng: 15.0005, lat: 45.8005 }, originalEvent: {} });
         harness.fireMap('mousemove', { latlng: { lng: 15.002, lat: 45.802 } });
         harness.fireMap('mouseup');
@@ -447,14 +437,14 @@ describe('structure geometry editor history wiring', () => {
         const geometry = { type: 'Polygon', coordinates: [[[15, 45.8], [15.001, 45.8], [15.001, 45.801], [15, 45.801], [15, 45.8]]] };
         const harness = makeEditorHarness(null, { kind: 'lake', geometry });
         expect(harness.open()).toBe(true);
-        const crossed = [[0, 0], [1, 1], [0, 1], [1, 0]];
-        expect(harness.polygonEditorOptions.onCommit({ ring: crossed, reason: 'insert' })).toBe(true);
-        expect(harness.lakeError.hidden).toBe(false);
-        expect(harness.lakeSave.disabled).toBe(true);
-        harness.save();
-        expect(harness.context.isStructureGeometryEditorActive()).toBe(true);
-        expect(harness.savedPayload).toBeNull();
-        harness.cancel();
+        const crossed = [[15, 45.8], [15.001, 45.801], [15, 45.801], [15.001, 45.8]];
+        expect(harness.polygonEditorOptions.onCommit({ ring: crossed, reason: 'insert' })).toBe(false);
+        expect(harness.boundaryLayer().feature.geometry).toEqual(geometry);
+        expect(harness.undoButton.disabled).toBe(true);
+
+        const saved = harness.save().structureProposal;
+        expect(saved.geometry).toEqual(geometry);
+        expect(harness.context.isStructureGeometryEditorActive()).toBe(false);
     });
 
     it('edits and saves a lake boundary with freshly derived graphics', () => {
@@ -468,9 +458,9 @@ describe('structure geometry editor history wiring', () => {
 
         expect(harness.open()).toBe(true);
         expect(harness.panel.innerHTML).toContain('Lake boundary editor');
-        expect(harness.panel.innerHTML).toContain('data-tool="move"');
+        expect(harness.boundaryLayer().options.interactive).toBe(true);
         expect(harness.polygonEditorOptions.ring).toEqual([...originalRing, originalRing[0]]);
-        expect(harness.polygonEditorOptions.undoTitle).toBe('Undo lake boundary edit');
+        expect(harness.polygonEditorOptions.undoTitle).toBe('Undo');
         expect(harness.polygonEditorOptions.onCommit({ ring: editedRing, reason: 'move' })).toBe(true);
 
         const saved = harness.save().structureProposal;
@@ -535,7 +525,6 @@ describe('structure geometry editor history wiring', () => {
         ].map(point => [point[0], point[1]]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
 
         expect(harness.open()).toBe(true);
-        harness.panel.fireClick({ tool: 'move' });
         harness.boundaryLayer().fire('mousedown', { latlng: from, originalEvent: {} });
         expect(harness.isMapDraggingEnabled()).toBe(false);
         harness.fireMap('mousemove', { latlng: intermediate });
@@ -578,68 +567,46 @@ describe('structure geometry editor history wiring', () => {
     it.each([
         ['park', { trees: [tree(15.0003, 45.8003)], paths: [[[15.0002, 45.8002], [15.0004, 45.8004]]] }],
         ['square', { fountains: [[15.0003, 45.8003]], benches: [{ coordinate: [15.0004, 45.8004], bearing: 25 }] }]
-    ])('routes %s decoration hits through the whole-boundary Move tool', (kind, decorations) => {
+    ])('enables individual %s furniture edits with Select', (kind, decorations) => {
         const geometry = { type: 'Polygon', coordinates: [[[15, 45.8], [15.001, 45.8], [15.001, 45.801], [15, 45.801], [15, 45.8]]] };
-        const originalDecorations = JSON.parse(JSON.stringify(decorations));
         const harness = makeEditorHarness(decorations, { kind, geometry });
         expect(harness.open()).toBe(true);
+        const boundaryLayer = harness.boundaryLayer();
+        const boundaryMarkers = currentMarkers(harness);
+        expect(boundaryMarkers.length).toBeGreaterThan(0);
+        expect(boundaryMarkers.every(marker => marker.options.draggable === false)).toBe(true);
+        expect(boundaryLayer.options.interactive).toBe(true);
+
+        harness.panel.fireClick({ tool: 'select' });
         const editableMarkers = currentMarkers(harness);
-        expect(editableMarkers.length).toBeGreaterThan(0);
-        expect(editableMarkers[0].options.draggable).toBe(true);
-        expect(editableMarkers[0].options.interactive).not.toBe(false);
+        expect(editableMarkers.every(marker => marker.options.draggable === true && marker.options.interactive === true)).toBe(true);
         let pathLayer = harness.groups.at(-1).items.find(item => item.options?.className === 'structure-geometry-draggable');
         if (kind === 'park') {
-            expect(pathLayer.options.interactive).not.toBe(false);
+            expect(pathLayer.options.interactive).toBe(true);
             expect(pathLayer.events.mousedown).toBeTypeOf('function');
         }
 
-        harness.panel.fireClick({ tool: 'move' });
-        const movedMarkers = currentMarkers(harness);
-        expect(movedMarkers.every(marker => marker.options.draggable === false && marker.options.interactive === false)).toBe(true);
-        expect(movedMarkers.every(marker => !marker.events.dragstart && !marker.events.click)).toBe(true);
-        pathLayer = harness.groups.at(-1).items.find(item => item.options?.className === 'structure-geometry-draggable');
-        if (kind === 'park') {
-            expect(pathLayer.options.interactive).toBe(false);
-            expect(pathLayer.events.mousedown).toBeUndefined();
-        }
-
-        const from = { lng: 15.0005, lat: 45.8005 };
-        const to = { lng: 15.0007, lat: 45.8006 };
-        const expectedGeometry = SingleBuildingGeometry.moveGeometry(geometry, from, to);
-        harness.boundaryLayer().fire('mousedown', { latlng: from, originalEvent: {} });
-        harness.fireMap('mousemove', { latlng: to });
-        harness.fireMap('mouseup');
-        expect(harness.boundaryLayer().feature.geometry).toEqual(expectedGeometry);
-
-        const expectedDecorations = JSON.parse(JSON.stringify(originalDecorations));
-        for (const [key, coordinates] of Object.entries(originalDecorations)) {
-            if (!['benches', 'trees'].includes(key) && Array.isArray(coordinates)) {
-                expectedDecorations[key] = SingleBuildingGeometry.moveCoordinateCollection(coordinates, from, to);
-            }
-        }
-        for (const key of ['benches', 'trees']) {
-            if (!Array.isArray(originalDecorations[key])) continue;
-            expectedDecorations[key] = originalDecorations[key].map(record => ({
-                ...record,
-                coordinate: SingleBuildingGeometry.moveCoordinateCollection(record.coordinate, from, to)
-            }));
-        }
-        const visiblePoints = currentMarkers(harness).map(marker => {
-            const point = marker.getLatLng();
-            return [point.lng, point.lat];
-        }).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-        const savedPointValues = [
-            ...Object.entries(expectedDecorations)
-                .filter(([key, value]) => !['benches', 'trees'].includes(key) && Array.isArray(value) && value.every(point => Array.isArray(point) && Number.isFinite(point[0])))
-                .flatMap(([, value]) => value),
-            ...(expectedDecorations.trees || []).map(record => record.coordinate),
-            ...(expectedDecorations.benches || []).map(bench => bench.coordinate)
-        ].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-        expect(visiblePoints).toEqual(savedPointValues);
+        const marker = editableMarkers[0];
+        marker.fire('dragstart');
+        marker.setLatLng([45.80045, 15.0004]);
+        marker.fire('dragend');
+        expect(marker.getLatLng()).toEqual({ lat: 45.80045, lng: 15.0004 });
         if (kind === 'park') {
             pathLayer = harness.groups.at(-1).items.find(item => item.options?.className === 'structure-geometry-draggable');
-            expect(pathLayer.latlngs).toEqual(expectedDecorations.paths[0].map(([lng, lat]) => [lat, lng]));
+            const from = { lng: 15.0003, lat: 45.8003 };
+            const to = { lng: 15.00035, lat: 45.80035 };
+            pathLayer.fire('mousedown', { latlng: from, originalEvent: {} });
+            harness.fireMap('mousemove', { latlng: to });
+            harness.fireMap('mouseup');
+            const expectedPath = [[45.80025, 15.00025], [45.80045, 15.00045]];
+            pathLayer.latlngs.forEach((point, index) => point.forEach((coordinate, axis) => {
+                expect(coordinate).toBeCloseTo(expectedPath[index][axis], 9);
+            }));
         }
+        expect(harness.boundaryLayer().feature.geometry).toEqual(geometry);
+        const saved = harness.save();
+        const movedPoint = kind === 'park' ? saved.trees[0].coordinate : saved.fountains[0];
+        expect(movedPoint).toEqual([15.0004, 45.80045]);
     });
 
     it('keeps a locked structure in its starting site and saves a site-bound placement', () => {
@@ -647,7 +614,6 @@ describe('structure geometry editor history wiring', () => {
         const harness = makeEditorHarness({ trees: [tree(15.0004, 45.8004)] }, { kind: 'park', geometry });
         expect(harness.open()).toBe(true);
         expect(harness.mapEditorSessions[0].placement.setLocked(true)).toBe(true);
-        harness.panel.fireClick({ tool: 'move' });
         harness.boundaryLayer().fire('mousedown', { latlng: { lng: 15.0005, lat: 45.8005 }, originalEvent: {} });
         harness.fireMap('mousemove', { latlng: { lng: 15.002, lat: 45.802 } });
         harness.fireMap('mouseup');
@@ -678,7 +644,6 @@ describe('structure geometry editor history wiring', () => {
         harness.undoButton.fire();
         expect(harness.boundaryLayer().feature.geometry).toEqual(geometry);
 
-        harness.panel.fireClick({ tool: 'move' });
         harness.boundaryLayer().fire('mousedown', { latlng: { lng: 15.0005, lat: 45.8005 }, originalEvent: {} });
         harness.fireMap('mousemove', { latlng: { lng: 15.0007, lat: 45.8007 } });
         harness.fireMap('mouseup');
@@ -747,7 +712,7 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.open()).toBe(true);
         expect(harness.panel.innerHTML).not.toContain('data-role="hint"');
         expect(harness.panel.innerHTML).toContain('data-action="finish-path"');
-        expect(harness.mapEditorSessions[0].hints.at(-1)).toBe('Select an item to begin.');
+        expect(harness.mapEditorSessions[0].hints.at(-1)).toBe('Drag the area to move it, or drag boundary points to reshape. Tap an edge to add a point; select a point to remove it.');
 
         harness.panel.fireClick({ tool: 'path' });
         expect(harness.finishButton.hidden).toBe(false);
@@ -761,6 +726,29 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.finishButton.hidden).toBe(false);
         expect(harness.finishButton.disabled).toBe(true);
         expect(harness.save().paths).toEqual([[[0.2, 0.2], [0.4, 0.4]]]);
+    });
+
+    it('retains a rejected path when saving or switching tools so it can be corrected', () => {
+        let validPath = false;
+        const harness = makeEditorHarness({ paths: [] }, {
+            kind: 'park', turf: { ...appTurf, booleanWithin: () => validPath }
+        });
+        expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'path' });
+        harness.fireMap('click', { latlng: { lng: 0.2, lat: 0.2 } });
+        harness.fireMap('click', { latlng: { lng: 0.4, lat: 0.4 } });
+
+        expect(harness.save()).toBeNull();
+        expect(harness.finishedDrafts).toEqual([]);
+        harness.panel.fireClick({ tool: 'tree' });
+        expect(harness.finishButton.hidden).toBe(false);
+        expect(harness.finishButton.disabled).toBe(false);
+
+        harness.undoButton.fire();
+        validPath = true;
+        harness.fireMap('click', { latlng: { lng: 0.2, lat: 0.4 } });
+        harness.panel.fireClick({ action: 'finish-path' });
+        expect(harness.save().paths).toEqual([[[0.2, 0.2], [0.2, 0.4]]]);
     });
 
     it('undoes individual path points and restores unfinished points after Finish path', () => {
@@ -785,6 +773,7 @@ describe('structure geometry editor history wiring', () => {
     it('restores a tree coordinate after a marker drag is undone', () => {
         const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 });
         expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'select' });
         const marker = currentMarkers(harness)[0];
         marker.fire('dragstart');
         marker.setLatLng([0.35, 0.4]); // Leaflet uses [latitude, longitude].
@@ -800,9 +789,12 @@ describe('structure geometry editor history wiring', () => {
         ['park bench', 'park', { benches: [{ coordinate: [0.2, 0.2], bearing: 15 }] }, 'benches', [{ coordinate: [0.4, 0.35], bearing: 15 }]],
         ['square fountain', 'square', { fountains: [[0.2, 0.2]] }, 'fountains', [[0.4, 0.35]]]
     ])('keeps the latest valid %s coordinate after a later out-of-bound drag', (_label, kind, decorations, type, expected) => {
-        const harness = makeEditorHarness(decorations, { kind, rejectOutsidePoints: true });
+        const harness = makeEditorHarness(decorations, { kind });
         expect(harness.open()).toBe(true);
-        expect(harness.context.turf.booleanPointInPolygon(harness.context.turf.point([0.4, 0.35]))).toBe(true);
+        harness.panel.fireClick({ tool: 'select' });
+        expect(harness.context.turf.booleanPointInPolygon(
+            harness.context.turf.point([0.4, 0.35]), harness.boundaryLayer().feature
+        )).toBe(true);
         const marker = currentMarkers(harness)[0];
 
         marker.setLatLng([0.35, 0.4]);
@@ -819,6 +811,7 @@ describe('structure geometry editor history wiring', () => {
     it.each(['null', 'throw'])('keeps the park editor open after draft sync %s and preserves edits for retry', (syncBehavior) => {
         const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 }, { syncBehavior });
         expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'select' });
         const marker = currentMarkers(harness)[0];
         marker.setLatLng([0.35, 0.4]);
         marker.fire('dragend');
@@ -887,6 +880,7 @@ describe('structure geometry editor history wiring', () => {
     it('does not report local success while saving a valid commit-session draft', () => {
         const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 }, { commitSession: true });
         expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'select' });
         const marker = currentMarkers(harness)[0];
         marker.setLatLng([0.35, 0.4]);
         marker.fire('dragend');
@@ -903,6 +897,7 @@ describe('structure geometry editor history wiring', () => {
         const harness = makeEditorHarness(decorations, { kind });
 
         expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'select' });
         const marker = currentMarkers(harness)[0];
         expect(marker.options.pane).toBe('onMapEditorHandles');
         expect(marker.options.zIndexOffset).toBeUndefined();
@@ -924,7 +919,8 @@ describe('structure geometry editor history wiring', () => {
         });
 
         expect(harness.open()).toBe(true);
-        const path = harness.previewLayers.find(layer => layer.options?.className === 'structure-geometry-draggable');
+        harness.panel.fireClick({ tool: 'select' });
+        const path = harness.groups.at(-1).items.find(layer => layer.options?.className === 'structure-geometry-draggable');
         expect(path).toBeDefined();
         const activeListenersBeforeDrag = {
             map: ['mousemove', 'touchmove', 'mouseup', 'touchend', 'touchcancel']
@@ -983,16 +979,21 @@ describe('structure editor parcel fitting', () => {
         expect(h.panel.innerHTML).toContain('data-action="fit-parcels"');
         await fit(h);
         expect(h.boundaryLayer().feature.geometry).toEqual(bigger.geometry);
+        if (kind !== 'lake') expect(currentMarkers(h)).toHaveLength(0); // The tree is outside the fitted parcel.
         expect(h.undoButton.disabled).toBe(false);
         h.undoButton.fire();
         expect(h.boundaryLayer().feature.geometry).toEqual(boundary);
+        if (kind !== 'lake') {
+            expect(currentMarkers(h)).toHaveLength(1);
+            expect(currentMarkers(h)[0].getLatLng()).toEqual({ lat: 51.5005, lng: -.0995 });
+        }
         expect(h.undoButton.disabled).toBe(true);
         await fit(h);
         h.save();
         expect(h.savedPayload.structureProposal.geometry).toEqual(bigger.geometry);
         expect(h.syncOptions.placement.site).toEqual(bigger.geometry);
         if (kind === 'lake') expect(h.savedPayload.structureProposal.lakeGraphics.geometry).toEqual(bigger.geometry);
-        else expect(h.savedPayload.structureProposal.decorationDesign.trees[0].coordinate).toEqual(decorations.trees[0].coordinate);
+        else expect(h.savedPayload.structureProposal.decorationDesign.trees).toEqual([]);
         expect(h.fitButton.disabled).toBe(false);
         expect(h.fitButton.attributes['aria-busy']).toBeUndefined();
     });
@@ -1001,6 +1002,8 @@ describe('structure editor parcel fitting', () => {
         const h = harnessFor({ fitMode: 'all' });
         h.open(); await fit(h);
         expect(appTurf.area(h.boundaryLayer().feature)).toBeCloseTo(appTurf.area(first) + appTurf.area(bigger), 4);
+        expect(currentMarkers(h)).toHaveLength(1);
+        expect(h.save().trees).toEqual(decorations.trees);
         expect(h.context.CbDialog.choice).toHaveBeenCalledWith(expect.any(String), [
             { value: 'largest', label: 'The biggest' }, { value: 'all', label: 'All touched' }
         ], expect.any(Object));
@@ -1042,14 +1045,13 @@ describe('structure editor parcel fitting', () => {
         expect(h.fitButton.disabled).toBe(false);
     });
 
-    it.each(['close', 'move'])('discards a pending result after a %s', async action => {
+    it.each(['close', 'boundary edit'])('discards a pending result after a %s', async action => {
         let resolve;
         const h = harnessFor({ lookup: () => new Promise(done => { resolve = done; }) });
         h.open(); const pending = fit(h);
         await vi.waitFor(() => expect(typeof resolve).toBe('function'));
         if (action === 'close') { h.cancel(); h.open(); }
         else {
-            h.panel.fireClick({ tool: 'move' });
             h.boundaryLayer().fire('mousedown', { latlng: { lng: -.0995, lat: 51.5005 }, originalEvent: {} });
             h.fireMap('mousemove', { latlng: { lng: -.0985, lat: 51.5005 } }); h.fireMap('mouseup');
         }

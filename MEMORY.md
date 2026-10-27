@@ -974,3 +974,10 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-27: Agreement authoring blocks map and unrelated controls until Create/Cancel; its shared striped Lens button edits the same persistent preference as agent details, while agreements retain individual lens snapshots.
 
 - 2026-10-27: Creating an agreement from a Plan click-stack section preserves that caller on close/cancel and returns there after creation, refreshing its agreement list rather than opening another dock.
+
+- 2026-10-27: Map editing should support native labelled controls, searchable object/property lists,
+  coordinate and metre-based alternatives to dragging, predictable focus and status announcements,
+  and meaningful image descriptions so people and browser agents can use the same editing surface.
+- 2026-10-27: The desired future MCP workflow is one working draft shared by the map and conversation;
+  ordinary edits use autosave and Undo, while publish/share creates a distinct snapshot. This is a
+  product direction, not a claim that live draft synchronization is implemented.

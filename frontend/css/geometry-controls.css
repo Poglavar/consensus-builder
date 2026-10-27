@@ -1,0 +1,63 @@
+/* Native editing controls share the app's fields, actions, surfaces and focus palette. */
+.geometry-controls {
+    margin-block: var(--cb-space-2);
+    padding: var(--cb-space-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+}
+.geometry-controls > summary {
+    cursor: pointer;
+    color: var(--cb-text-strong);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+}
+.geometry-controls__position {
+    min-width: 0;
+    margin: var(--cb-space-2) 0;
+    padding: var(--cb-space-2) 0;
+    border: 0;
+}
+.geometry-controls__position > legend { font-size: var(--cb-text-sm); font-weight: var(--cb-weight-semibold); }
+.geometry-controls__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--cb-space-2); }
+.geometry-controls__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    min-width: 0;
+    margin-block: var(--cb-space-2);
+    color: var(--cb-text-strong);
+    font-size: var(--cb-text-sm);
+}
+.geometry-controls__field > input,
+.geometry-controls__field > select { width: 100%; min-width: 0; box-sizing: border-box; }
+.geometry-controls__objects { min-height: 104px; }
+.geometry-controls__actions { display: flex; flex-wrap: wrap; gap: var(--cb-space-1); }
+.geometry-controls__actions > .btn { flex: 1 1 auto; }
+.geometry-controls__message { margin-block: var(--cb-space-2); color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+.geometry-controls__message:empty { display: none; }
+.geometry-controls__message.is-error { color: var(--cb-danger); }
+.geometry-controls [hidden], .geometry-controls__position [hidden], .geometry-controls__position[hidden], .geometry-controls__field[hidden] { display: none; }
+.geometry-controls > summary:focus-visible,
+.on-map-editor__heading > h2:focus-visible,
+.polygon-geometry-editor__vertex:focus-visible {
+    outline: 3px solid var(--cb-focus);
+    outline-offset: 3px;
+}
+.geometry-controls--floating {
+    position: absolute;
+    inset-inline-start: var(--cb-space-3);
+    bottom: 80px;
+    z-index: var(--cb-z-editor);
+    width: min(280px, calc(100% - 32px));
+    max-height: calc(100% - 180px);
+    overflow: auto;
+    pointer-events: auto;
+    color: var(--cb-text);
+    background: var(--cb-glass-sheet);
+    box-shadow: var(--cb-shadow-md);
+}
+@media (max-width: 399px) {
+    .geometry-controls__fields { grid-template-columns: minmax(0, 1fr); }
+    .geometry-controls__actions > .btn { min-height: 40px; }
+}

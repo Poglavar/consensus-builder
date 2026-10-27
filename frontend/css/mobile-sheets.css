@@ -114,7 +114,6 @@
     #grain-score-panel.mobile-sheet-ready > .grain-score-result { flex: 0 1 auto; min-height: 0; overflow: auto; }
     #grain-score-panel .grain-score-panel__header img { width: 36px; height: 36px; }
     #grain-score-panel .grain-score-panel__header { padding: var(--cb-space-2) var(--cb-space-3); }
-    .mobile-sheet-ready .on-map-editor__toggle { display: none; }
     body :is(.mobile-sheet-ready, .cb-page) :is(.btn, button.btn-quiet, .cb-segmented__option, .cb-tab) { min-height: 44px; }
     body :is(.mobile-sheet-ready, .cb-page) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]),
     body :is(.mobile-sheet-ready, .cb-page) select { min-height: 44px; }

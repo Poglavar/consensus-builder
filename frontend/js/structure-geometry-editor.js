@@ -20,7 +20,10 @@
         reselectKey: null,
         lakeError: null,
         initialSite: null,
-        subeditor: null
+        subeditor: null,
+        objectControls: null,
+        placementControls: null,
+        boundaryControls: null
     };
 
     // Everything the editor draws lives in its own pane ABOVE the structure panes (squares
@@ -208,6 +211,7 @@
     }
 
     function rejectOutside() {
+        state.session?.announce?.(t('statusOutside', 'Place items inside the structure boundary.'));
         if (typeof global.updateStatus === 'function') global.updateStatus(t('statusOutside', 'Place items inside the structure boundary.'));
     }
 
@@ -226,6 +230,7 @@
         recordHistory();
         list.splice(index, 1);
         render();
+        state.session?.announce?.(global.GeometryCoordinateControls?.text('objectRemoved', 'Object removed.'));
     }
 
     function bindErasable(layer, type, index) {
@@ -237,14 +242,7 @@
     }
 
     function geometryInsideBoundary(type, coordinates) {
-        if (!Array.isArray(coordinates)) return false;
-        if (type === 'paths') {
-            try {
-                const line = global.turf.lineString(coordinates);
-                return global.turf.booleanWithin(line, state.boundary);
-            } catch (_) { return coordinates.every(pointInside); }
-        }
-        return ringInside(coordinates);
+        return global.StructureEditorObjects.fits(type, coordinates, state.boundary, global.turf);
     }
 
     function endGeometryDrag() {
@@ -434,6 +432,8 @@
             interactive: !boundaryEditing(),
             draggable: !boundaryEditing(),
             keyboard: !boundaryEditing(),
+            title: `${toolLabel(global.StructureEditorObjects?.tools[type] || type)} ${index + 1}`,
+            alt: `${toolLabel(global.StructureEditorObjects?.tools[type] || type)} ${index + 1}`,
             // Point handles must stay above interactive paths regardless of the map's pan offset.
             pane: state.session.handlePane
         }).addTo(group);
@@ -452,12 +452,26 @@
             }
             if (POINT_RECORD_TYPES.includes(type)) state.decorations[type][index].coordinate = nextCoord;
             else state.decorations[type][index] = nextCoord;
+            state.objectControls?.update();
+            state.session?.announce?.(global.GeometryCoordinateControls?.text('positionUpdated', 'Position updated.'));
         });
         marker.on('click', event => {
             global.L.DomEvent.stopPropagation(event);
             if (state.tool === 'erase') removeDecoration(type, index);
             else if (state.tool === 'tree' && type === 'trees') rerollTree(index);
+            else selectObject(`${type}:${index}`);
         });
+        const element = marker.getElement?.();
+        if (element) {
+            element.setAttribute('role', 'button');
+            element.setAttribute('aria-label', marker.options.title);
+            element.addEventListener('keydown', event => {
+                if (event.key !== ' ') return;
+                event.preventDefault();
+                event.stopPropagation();
+                selectObject(`${type}:${index}`);
+            });
+        }
     }
 
     function renderPark(group) {
@@ -543,6 +557,7 @@
                 state.session?.placement?.update?.(state.boundary);
                 render();
                 state.polygonEditor?.render?.({ refreshRing: true });
+                state.session?.announce?.(global.GeometryCoordinateControls?.text('undone', 'Last change undone.'));
             }
         });
         historyCtl.bindKeyboard(global.document || global, {
@@ -699,6 +714,8 @@
             }
         }
         render();
+        state.session?.announce?.(global.GeometryCoordinateControls?.text('itemAdded', 'Item added.'));
+        return true;
     }
 
     function finishPath() {
@@ -710,8 +727,9 @@
             if (valid) {
                 recordHistory();
                 state.decorations.paths.push(state.pathPoints.slice());
+                state.session?.announce?.(global.GeometryCoordinateControls?.text('pathAdded', 'Path added.'));
             }
-            else rejectOutside();
+            else { rejectOutside(); return false; }
         }
         state.pathPoints = [];
         state.pathCursor = null;
@@ -751,9 +769,94 @@
         return state.polygonEditor;
     }
 
+    function toolLabel(tool) {
+        const names = { tree: 'Tree', flowerbed: 'Flowerbed', pond: 'Pond', path: 'Footpath', bench: 'Bench', fountain: 'Fountain', stall: 'Table', statue: 'Statue', select: 'Select' };
+        return t(`tools.${tool}`, names[tool] || tool);
+    }
+
+    function objectByKey(key) {
+        return global.StructureEditorObjects.entries(state.decorations, global.turf).find(entry => entry.key === key);
+    }
+
+    function selectObject(key) {
+        if (!objectByKey(key)) return;
+        setTool('select');
+        state.objectControls?.select(key);
+    }
+
+    function moveObject(key, to) {
+        const entry = objectByKey(key);
+        if (!entry) return false;
+        const next = global.StructureEditorObjects.move(entry.type, state.decorations[entry.type][entry.index], to,
+            state.boundary, global.turf, global.GeometryEditCoordinates);
+        if (!next) return false;
+        recordHistory();
+        state.decorations[entry.type][entry.index] = next;
+        render();
+        return true;
+    }
+
+    function boundaryPosition() {
+        const center = global.SingleBuildingGeometry.geometryCenter(state.boundary.geometry);
+        return [center.lng, center.lat];
+    }
+
+    function moveBoundaryTo(point) {
+        const fromPoint = boundaryPosition();
+        const from = { lng: fromPoint[0], lat: fromPoint[1] };
+        const to = { lng: point[0], lat: point[1] };
+        const placement = state.session?.placement;
+        const next = { ...state.boundary, geometry: global.SingleBuildingGeometry.moveGeometry(state.boundary.geometry, from, to) };
+        if (placement?.accepts && !placement.accepts(next)) return null;
+        if (JSON.stringify(next.geometry) === JSON.stringify(state.boundary.geometry)) return boundaryPosition();
+        recordHistory();
+        state.decorations = moveDecorations(state.decorations, from, to);
+        state.pathPoints = global.SingleBuildingGeometry.moveCoordinateCollection(state.pathPoints, from, to);
+        state.boundary = next;
+        placement?.update?.(next);
+        render();
+        state.polygonEditor?.render?.({ refreshRing: true });
+        return boundaryPosition();
+    }
+
+    function createAccessibleControls() {
+        const ui = global.GeometryCoordinateControls;
+        if (!ui || !state.session?.body) return;
+        if (!state.subeditor) {
+            const details = ui.node(global.document, 'details', 'geometry-controls', state.session.body);
+            ui.node(global.document, 'summary', '', details, ui.text('moveArea', 'Move area'));
+            state.boundaryControls = ui.create({ parent: details, onChange: moveBoundaryTo });
+        }
+        if (!state.decorations) return;
+        state.objectControls = global.StructureObjectControls.create({
+            parent: state.session.body,
+            getState: () => state,
+            toolLabel,
+            select: selectObject,
+            move: moveObject,
+            remove: key => { const entry = objectByKey(key); if (entry) removeDecoration(entry.type, entry.index); },
+            updateTree: (key, properties) => {
+                const entry = objectByKey(key);
+                if (entry?.type !== 'trees') return false;
+                const tree = state.decorations.trees[entry.index];
+                const next = parkPlanting().treeOf({ ...tree, ...properties });
+                if (!next || next.kind !== properties.kind || next.heightM !== properties.heightM) return false;
+                recordHistory();
+                state.decorations.trees[entry.index] = next;
+                render();
+                return true;
+            }
+        });
+        state.placementControls = ui.create({ parent: state.session.body, label: ui.text('placeCoordinates', 'Place at coordinates'),
+            nudges: false, successMessage: ui.text('itemAdded', 'Item added.'),
+            onChange: point => placeAt(point) ? point : null
+        });
+        state.placementControls.setCoordinate(boundaryPosition());
+    }
+
     function setTool(tool) {
         const nextTool = state.tool === tool && tool === 'boundary' ? null : tool;
-        if (state.tool === 'path' && nextTool !== 'path') finishPath();
+        if (state.tool === 'path' && nextTool !== 'path' && finishPath() === false) return;
         state.tool = nextTool;
         if (!state.subeditor && (!state.tool || state.tool === 'boundary')) createBoundaryPolygonEditor();
         else if (state.polygonEditor) {
@@ -792,7 +895,7 @@
             ].join('');
         const boundaryTool = state.subeditor ? '' : toolButton('boundary', 'fa-draw-polygon', t('tools.boundary', 'Boundary'));
         return `
-            <div class="structure-geometry-tools">${boundaryTool}${tools}${toolButton('erase', 'fa-eraser', t('tools.erase', 'Remove'))}</div>`;
+            <div class="structure-geometry-tools">${boundaryTool}${toolButton('select', 'fa-arrow-pointer', t('tools.select', 'Select'))}${tools}${toolButton('erase', 'fa-eraser', t('tools.erase', 'Remove'))}</div>`;
     }
 
     function footerMarkup() {
@@ -812,6 +915,14 @@
     function updatePanelState() {
         const panel = state.panel;
         if (!panel) return;
+        state.objectControls?.update();
+        if (state.boundaryControls) state.boundaryControls.setCoordinate(boundaryPosition());
+        if (state.placementControls) {
+            state.placementControls.root.hidden = !['tree', 'flowerbed', 'pond', 'path', 'bench', 'fountain', 'stall', 'statue'].includes(state.tool);
+            state.placementControls.setApplyLabel(state.tool === 'path'
+                ? global.GeometryCoordinateControls.text('addPathPoint', 'Add path point')
+                : global.GeometryCoordinateControls.text('addItem', 'Add item'));
+        }
         panel.querySelectorAll('[data-tool]').forEach(button => {
             const active = button.dataset.tool === state.tool;
             button.setAttribute('aria-pressed', active ? 'true' : 'false');
@@ -826,7 +937,7 @@
                 state.session.setHint(t('hintBoundary', 'Drag the area to move it, or drag boundary points to reshape. Tap an edge to add a point; select a point to remove it.'));
             } else if (!state.subeditor && (!state.tool || state.tool === 'boundary')) {
                 state.session.setHint(t('hintBoundary', 'Drag the area to move it, or drag boundary points to reshape. Tap an edge to add a point; select a point to remove it.'));
-            } else if (!state.tool) {
+            } else if (!state.tool || state.tool === 'select') {
                 state.session.setHint(state.subeditor
                     ? t('hintSurroundings', 'Edit the surroundings, then return to the building with Done. Save the building to keep all changes.')
                     : t('hintSelect', 'Select an item to begin.'));
@@ -885,6 +996,7 @@
                 const boundary = clone(state.boundary);
                 const fingerprint = JSON.stringify(boundary.geometry);
                 try {
+                    session.announce?.(global.GeometryCoordinateControls?.text('loadingParcels', 'Loading parcels…'));
                     const lookup = await global.CadastralParcelRepository.ensureFootprint(boundary.geometry);
                     // A closed editor or an intervening geometry edit owns the newer state.
                     if (state.session !== session || JSON.stringify(state.boundary.geometry) !== fingerprint) return;
@@ -909,6 +1021,7 @@
                     session.placement?.update?.(next);
                     render();
                     state.polygonEditor?.render?.({ refreshRing: true });
+                    session.announce?.(global.GeometryCoordinateControls?.text('boundaryUpdated', 'Boundary updated.'));
                 } catch (error) {
                     if (state.session !== session) return;
                     await global.CbDialog.alert(error?.code === 'no-touched-parcels'
@@ -922,12 +1035,12 @@
     }
 
     function onMapClick(event) {
-        if (!state.draftId || !state.tool || state.tool === 'erase' || boundaryEditing()) return;
+        if (!state.draftId || !state.tool || ['erase', 'select'].includes(state.tool) || boundaryEditing()) return;
         placeAt([event.latlng.lng, event.latlng.lat]);
     }
 
     function onKeyDown(event) {
-        if (!state.draftId) return;
+        if (!state.draftId || event.defaultPrevented || /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(event.target?.tagName || '') || event.target?.isContentEditable) return;
         if (event.key === 'Enter' && state.tool === 'path') {
             event.preventDefault();
             finishPath();
@@ -963,6 +1076,12 @@
         state.initialSite = null;
         state.decorations = null;
         state.subeditor = null;
+        state.objectControls?.destroy();
+        state.placementControls?.destroy();
+        state.boundaryControls?.destroy();
+        state.objectControls = null;
+        state.placementControls = null;
+        state.boundaryControls = null;
         if (historyCtl) { historyCtl.destroy(); historyCtl = null; }
         state.tool = null;
         state.pathPoints = [];
@@ -1006,7 +1125,7 @@
 
     function saveEditor() {
         if (!state.draftId) return false;
-        if (state.tool === 'path') finishPath();
+        if (state.tool === 'path' && finishPath() === false) return false;
         if (state.subeditor) {
             const complete = state.subeditor.onSave;
             const decorations = clone(state.decorations);
@@ -1115,6 +1234,7 @@
         state.draftId = draft.id;
         state.panel = session.root;
         state.panel.addEventListener('click', handlePanelClick);
+        createAccessibleControls();
         state.layer = global.L.layerGroup().addTo(global.map);
         // Hide the applied structure's own decoration rendering for the duration — the editor
         // shows the live editable copy, and static duplicates read as "objects I cannot drag".

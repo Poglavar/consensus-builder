@@ -37,10 +37,21 @@ if (typeof document !== 'undefined') {
             node.classList.remove('proposal-thumb-empty');
             node.classList.add('proposal-thumb-has-image');
             node.removeAttribute('title');
-            node.innerHTML = `
-                <img class="proposal-thumb-img" src="${imageSrc}" alt="" loading="lazy">
-                <div class="proposal-thumb-large"><img src="${imageSrc}" alt=""></div>
-            `;
+            const previewImage = document.createElement('img');
+            previewImage.className = 'proposal-thumb-img';
+            previewImage.src = imageSrc;
+            previewImage.alt = node.dataset.previewAlt || '';
+            previewImage.loading = 'lazy';
+
+            const enlargedPreview = document.createElement('div');
+            enlargedPreview.className = 'proposal-thumb-large';
+            enlargedPreview.setAttribute('aria-hidden', 'true');
+            const enlargedImage = document.createElement('img');
+            enlargedImage.src = imageSrc;
+            enlargedImage.alt = '';
+            enlargedPreview.appendChild(enlargedImage);
+
+            node.replaceChildren(previewImage, enlargedPreview);
         });
     });
 }

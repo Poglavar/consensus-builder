@@ -46,11 +46,16 @@
             node('span', 'on-map-editor__state', title, text('editing', 'Editing'));
             const heading = node('h2', '', title, options.title || '');
             heading.id = `${root.id}-title`;
+            heading.tabIndex = -1;
             heading.title = options.title || '';
             panel.setAttribute('aria-labelledby', heading.id);
             // The whole header folds the controls away and back; the chevron is its keyboard handle.
             const toggle = node('button', 'btn btn-sm on-map-editor__toggle', header);
             toggle.type = 'button';
+            toggle.addEventListener('click', event => {
+                event.stopPropagation();
+                setCollapsed(!collapsed);
+            });
             node('i', 'fas fa-chevron-up', toggle).setAttribute('aria-hidden', 'true');
             header.addEventListener('click', event => {
                 if (env.matchMedia?.('(max-width: 767.98px)').matches || event.target.closest('.close-circle-btn')) return;
@@ -62,6 +67,9 @@
             cancel.addEventListener('click', () => options.onCancel?.());
             const content = node('div', 'on-map-editor__content', panel);
             const hint = node('p', 'on-map-editor__hint', content);
+            hint.setAttribute('role', 'status');
+            hint.setAttribute('aria-live', 'polite');
+            hint.setAttribute('aria-atomic', 'true');
             const body = node('div', 'on-map-editor__body', content);
             body.id = `on-map-editor-controls-${root.id}`;
             toggle.setAttribute('aria-controls', body.id);
@@ -69,6 +77,10 @@
             const footer = node('footer', 'on-map-editor__footer', panel);
             appendContent(footer, options.footer);
             footer.hidden = !options.footer;
+            const status = node('p', 'map-shell-sr-only', root);
+            status.setAttribute('role', 'status');
+            status.setAttribute('aria-live', 'polite');
+            status.setAttribute('aria-atomic', 'true');
             const tools = node('div', 'on-map-editor__tools', root);
             appendContent(tools, options.tools);
             tools.hidden = true; // Anchored tools appear once geometry supplies a position.
@@ -172,7 +184,8 @@
 
             function updateHint() {
                 const mode = env.__mapModeState?.desired || (env.isThreeModeActive?.() ? 'model' : '2d');
-                hint.textContent = customHint ?? options.hints?.[mode] ?? '';
+                const nextHint = customHint ?? options.hints?.[mode] ?? '';
+                if (hint.textContent !== nextHint) hint.textContent = nextHint;
                 hint.hidden = !hint.textContent;
             }
 
@@ -281,6 +294,7 @@
                 owner: options.owner,
                 get collapsed() { return collapsed; },
                 setCollapsed,
+                announce(value) { if (!closed && value) status.textContent = String(value); },
                 setHint(value) {
                     if (closed) return;
                     customHint = value == null ? null : String(value);
@@ -357,6 +371,7 @@
                 env.syncMapModeLocks?.();
                 const desired = env.__mapModeState?.desired || '2d';
                 if (!modes.includes(desired)) Promise.resolve().then(() => { if (!closed) env.requestMapMode?.(modes[0]); });
+                heading.focus({ preventScroll: true });
                 return session;
             } catch (error) {
                 close();
@@ -368,6 +383,7 @@
             open,
             isActive: () => !!active,
             getOwner: () => active?.owner || null,
+            getControlsContainer: () => active?.body || null,
             getPreview: () => active?.preview || null,
             allowsMode: mode => !active || active.modes.includes(mode)
         };
