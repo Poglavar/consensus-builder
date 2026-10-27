@@ -1000,6 +1000,7 @@
     }
 
     function hideParcelInfoPanel({ preserveProposalSelection = false } = {}) {
+        global.multiParcelSelection?.clearInfoListHighlight?.();
         const parcelInfoPanel = global.document.getElementById('parcel-info-panel');
         if (parcelInfoPanel) parcelInfoPanel.classList.remove('visible');
         renderParcelHistory(null);

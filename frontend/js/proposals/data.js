@@ -923,10 +923,12 @@ const proposalStorage = {
         // lacks (a building's parameters or geometry, a structure's blockName) stays absent.
         if (proposal.buildingProposal) {
             const bp = { ...proposal.buildingProposal };
-            if (bp.parameters !== undefined) {
-                bp.parameters = bp.parameters && typeof bp.parameters === 'object' ? { ...bp.parameters } : {};
+            if (bp.parameters && typeof bp.parameters === 'object' && !Array.isArray(bp.parameters)) {
+                bp.parameters = { ...bp.parameters };
                 Object.keys(bp.parameters).forEach(key => {
-                    if (bp.parameters[key] === undefined || bp.parameters[key] === null) {
+                    // Explicit null is authored JSON, distinct from an absent field. Dropping it
+                    // changes a published design's CID and falsely marks its agreement stale.
+                    if (bp.parameters[key] === undefined) {
                         delete bp.parameters[key];
                     }
                 });
@@ -1107,6 +1109,33 @@ const multiParcelSelection = {
     isActive: false,
     selectedParcels: new Set(),
     lastSelectedParcelId: null,
+    _infoListHighlight: null,
+
+    infoListHighlightStyle() {
+        return { fillColor: '#ffb000', fillOpacity: 0.9, color: '#111827', weight: 6, opacity: 1 };
+    },
+
+    clearInfoListHighlight() {
+        const id = this._infoListHighlight;
+        if (!id) return;
+        this._infoListHighlight = null;
+        const layer = window.ParcelPresenter?.getLayer?.(id);
+        if (!layer) return;
+        const isSelected = this.selectedParcels.has(String(id));
+        if (isSelected) this.addParcelHighlight(layer);
+        else this.removeParcelHighlight(layer);
+    },
+
+    highlightInfoListParcel(id) {
+        const parcelId = String(id || '');
+        if (!parcelId || !this.selectedParcels.has(parcelId)) return;
+        this.clearInfoListHighlight();
+        const layer = window.ParcelPresenter?.getLayer?.(parcelId);
+        if (!layer) return;
+        this._infoListHighlight = parcelId;
+        layer.setStyle(this.infoListHighlightStyle());
+        layer.bringToFront?.();
+    },
 
     // Manual controls map picking; the selected land survives leaving the mode.
     toggle() {
@@ -1188,6 +1217,7 @@ const multiParcelSelection = {
 
     // Clear all selected parcels
     clearSelection() {
+        this.clearInfoListHighlight();
         // Remove highlights from all selected parcels
         this.selectedParcels.forEach(parcelId => {
             const parcel = this.findParcelById(parcelId);
@@ -1378,6 +1408,7 @@ const multiParcelSelection = {
 
     // Show multi-parcel info panel
     showMultiParcelInfo() {
+        this.clearInfoListHighlight();
         const parcels = this.getSelectedParcels();
         const landPrice = window.CityMoney.currentLandPriceOptions('land');
         const priceModel = window.ParcelPriceModel;
@@ -1493,7 +1524,7 @@ const multiParcelSelection = {
                 : CbFormat.formatMoney(estimate.amount, estimate.currency, { maxFractionDigits: 0 });
             const priceBasis = estimate.basis === 'area-model' ? 'Modeled' : (estimate.basis === 'source-estimate' ? 'Source estimate' : '');
             return `
-                            <div class="selected-parcel-item">
+                            <div class="selected-parcel-item" data-parcel-id="${escapeHtml(String(parcelId))}" tabindex="0" role="button" aria-label="${escapeHtml(parcelLabel)}">
                                 <div class="parcel-number"><span class="parcel-id-text" title="${escapeHtml(String(parcelId))}">${escapeHtml(parcelLabel)}</span></div>
                                 <div class="parcel-details">
                                             ${CbFormat.formatArea(area)} •
@@ -1509,6 +1540,36 @@ const multiParcelSelection = {
 
         // Show multi-parcel content in the Info tab
         document.getElementById('info-content').innerHTML = content;
+        const selectedParcelList = document.querySelector('.selected-parcels-list');
+        if (selectedParcelList) {
+            selectedParcelList.onpointerover = event => {
+                const item = event.target.closest?.('.selected-parcel-item');
+                if (item && selectedParcelList.contains(item)) this.highlightInfoListParcel(item.dataset.parcelId);
+            };
+            selectedParcelList.onpointerout = event => {
+                const item = event.target.closest?.('.selected-parcel-item');
+                if (item && !item.contains(event.relatedTarget)) this.clearInfoListHighlight();
+            };
+            selectedParcelList.onfocusin = event => {
+                const item = event.target.closest?.('.selected-parcel-item');
+                if (item) this.highlightInfoListParcel(item.dataset.parcelId);
+            };
+            selectedParcelList.onfocusout = event => {
+                const item = event.target.closest?.('.selected-parcel-item');
+                if (item && !item.contains(event.relatedTarget)) this.clearInfoListHighlight();
+            };
+            selectedParcelList.onclick = event => {
+                const item = event.target.closest?.('.selected-parcel-item');
+                if (item) this.highlightInfoListParcel(item.dataset.parcelId);
+            };
+            selectedParcelList.onkeydown = event => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                const item = event.target.closest?.('.selected-parcel-item');
+                if (!item) return;
+                event.preventDefault();
+                this.highlightInfoListParcel(item.dataset.parcelId);
+            };
+        }
 
         const proposeContent = `
             <div class="metric-group multi-parcel-proposal-hint">

@@ -3,6 +3,51 @@ import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, clickMapPoint, PARCEL_ID, closeParcel, runSelectionCommand, showSelectionDesignTab, selectionSection } from '../helpers/runtime';
 
 test.describe('Multi-parcel selection @core', () => {
+  test('Info rows temporarily distinguish parcels without changing selection or camera', async ({ mockApi: page }) => {
+    await openCity(page);
+    await openParcel(page);
+    await page.locator('#parcel-manual-selection').click();
+    await closeParcel(page);
+    await clickMapPoint(page, 15.9829, 45.80025);
+    await showSelectionDesignTab(page);
+    const panel = page.locator('#parcel-info-panel');
+    await panel.locator('[data-parcel-tab-id="info-tab"]').click();
+    const rows = panel.locator('.selected-parcel-item');
+    await expect(rows).toHaveCount(2);
+    const ids = [PARCEL_ID, 'HR-335754-1235'];
+    const state = () => page.evaluate(ids => {
+      const w = window as any;
+      return { ids:[...w.multiParcelSelection.selectedParcels].sort(), center:w.map.getCenter(), zoom:w.map.getZoom(),
+        styles:ids.map(id => { const options=w.ParcelPresenter.getLayer(id).options;
+          return { fill:options.fillColor, opacity:options.fillOpacity, color:options.color, weight:options.weight }; }) };
+    }, ids);
+    const baseline = await state();
+    const first = panel.locator(`.selected-parcel-item[data-parcel-id="${ids[0]}"]`);
+    const second = panel.locator(`.selected-parcel-item[data-parcel-id="${ids[1]}"]`);
+    await first.hover();
+    expect((await state()).styles[0]).not.toEqual(baseline.styles[0]);
+    expect((await state()).styles[1]).toEqual(baseline.styles[1]);
+    await page.evaluate(() => (window as any).ParcelPresenter.restoreSelectionStyles());
+    expect((await state()).styles[0]).not.toEqual(baseline.styles[0]);
+    await second.hover();
+    expect((await state()).styles[0]).toEqual(baseline.styles[0]);
+    expect((await state()).styles[1]).not.toEqual(baseline.styles[1]);
+    await first.click();
+    await first.press('Enter');
+    expect((await state()).styles[0]).not.toEqual(baseline.styles[0]);
+    const during = await state();
+    expect(during.ids).toEqual(baseline.ids);
+    expect(during.center).toEqual(baseline.center);
+    expect(during.zoom).toBe(baseline.zoom);
+    await panel.locator('[data-parcel-tab-id="propose-tab"]').click();
+    expect((await state()).styles).toEqual(baseline.styles);
+    await panel.locator('[data-parcel-tab-id="info-tab"]').click();
+    await second.focus();
+    await second.press(' ');
+    expect((await state()).styles[1]).not.toEqual(baseline.styles[1]);
+    await closeParcel(page);
+    expect((await state()).styles).toEqual(baseline.styles);
+  });
   test('selection section tracks zero and nonzero counts, map picks, Clear and Done', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page);

@@ -91,7 +91,6 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
 .planning-configurations__measure { grid-column: 1 / -1; font-variant-numeric: tabular-nums; }
 .planning-limits__scope { grid-column: 1 / -1; color: var(--cb-text); font-weight: var(--cb-weight-semibold); }
 .planning-limits dd:empty { display: none; }
-.planning-envelope-height { width: max-content; padding: var(--cb-space-1); border-radius: var(--cb-radius-sm); background: var(--cb-surface); color: var(--cb-text); font-size: var(--cb-text-xs); white-space: nowrap; }
 .planning-views[hidden], .planning-inspector[hidden] { display: none; }
 @media (max-width: 899.98px) {
     .planning-layer-name { gap: var(--cb-space-1); font-size: var(--cb-text-xs); }

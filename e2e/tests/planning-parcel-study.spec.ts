@@ -77,20 +77,32 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
     await route.fulfill({ response, body });
   });
   await page.goto(url.replace('planningScenario=family1','planningScenario=all') + '&planningStudyScenario=family1'); await waitForMapReady(page);
-  // The label names the shown configuration's height, never the bound's; the roll decides which one.
-  const heightLabel = page.locator('.planning-envelope-height');
-  await expect(heightLabel).toHaveCount(1,{timeout:45_000});
+  // The map keeps the selected envelope geometry while leaving height metrics to the inspector.
+  await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getItems().filter((item:any) => item.parcelEnvelope).length)).toBe(1);
+  await expect(page.locator('.planning-envelope-height')).toHaveCount(0,{timeout:45_000});
   const shown = async () => page.evaluate(() => { const shown = (window as any).PlanningViews.permittedFeatures((window as any).PlanningViews.getItems()[0]);
     return { configuration: shown.configuration.id, frontEdge: shown.frontEdge }; });
-  const shownHeight = () => page.evaluate(() => {
+  const shownGeometry = () => page.evaluate(() => {
     const w = window as any, shown = w.PlanningViews.permittedFeatures(w.PlanningViews.getItems()[0]);
     const features = shown.body.length ? shown.body : shown.bound;
-    return w.CbFormat.formatLength(Math.max(...features.map((feature:any) => feature.properties.topM)));
+    return features.map((feature:any) => ({ type: feature.geometry?.type, coordinates: feature.geometry?.coordinates,
+      topM: feature.properties.topM, geometryRole: feature.properties.geometryRole }));
   });
+  const expectShownGeometry = async () => {
+    const features = await shownGeometry();
+    expect(features.length).toBeGreaterThan(0);
+    for (const feature of features) {
+      expect(feature.type).toBe('Polygon');
+      expect(feature.coordinates?.[0]?.length).toBeGreaterThanOrEqual(4);
+      expect(Number.isFinite(feature.topM)).toBe(true);
+      expect(feature.topM).toBeGreaterThan(0);
+    }
+    await expect(page.locator('.planning-envelope-height')).toHaveCount(0);
+  };
   const first = await shown();
   // Two-family is flagged below its minimum lot, so the roll keeps the parcel on one-family.
   expect(first.configuration).toBe('family1');
-  await expect(heightLabel).toHaveText('10.7 m');
+  await expectShownGeometry();
   expect(studyReads).toBe(0);
   await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
   const panel=page.locator('#planning-views');
@@ -104,13 +116,13 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await panel.locator('#planning-reroll').click();
   expect(await shown()).toEqual(rolled);
   await selectNativeOption(panel.locator('.planning-scenario-select'), 'family2');
-  await expect(heightLabel).toHaveText(await shownHeight());
+  await expectShownGeometry();
   expect((await shown()).configuration).toBe('family2');
   await selectNativeOption(panel.locator('.planning-scenario-select'), 'all');
   // Envelopes carry every housing type: the control redraws them without another viewport read.
   expect(envelopeReads).toBe(1);
   await selectNativeOption(panel.locator('[data-planning-setting="permittedForm"]'), 'bound');
-  await expect(heightLabel).toHaveText(await shownHeight());
+  await expectShownGeometry();
   await selectNativeOption(panel.locator('[data-planning-setting="permittedForm"]'), 'both');
   await expect(panel.locator('[data-planning-setting="zoningAreas"]')).toHaveValue('off');
   await selectNativeOption(panel.locator('[data-planning-setting="permitted"]'), 'off');
@@ -120,7 +132,7 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await expect(page.locator('.planning-envelope-height')).toHaveCount(0);
   await selectNativeOption(panel.locator('[data-planning-setting="zoningAreas"]'), 'off');
   await selectNativeOption(panel.locator('[data-planning-setting="permitted"]'), 'solid');
-  await expect(page.locator('.planning-envelope-height')).toHaveCount(1);
+  await expectShownGeometry();
   await page.getByRole('button',{name:'Buildings and massing',exact:true}).click();
   await page.getByRole('button',{name:'Inspect permitted massing on parcel-test',exact:true}).click();
   const inspector=page.locator('#planning-inspector');
@@ -133,7 +145,7 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   // Picking a configuration pins it for this parcel; the inspector marks it and the map follows.
   await inspector.locator('[data-configuration="family1"] button').click();
   await expect(inspector.locator('[data-configuration="family1"] button')).toHaveAttribute('aria-pressed','true');
-  await expect(heightLabel).toHaveText(await shownHeight());
+  await expectShownGeometry();
   await expect(inspector.getByText(/^Assumed street side: (north|east|south|west)\./)).toBeVisible();
   await expect(page.getByRole('button', { name: 'Test a parcel here', exact: true })).toHaveCount(0);
   await expect(page.locator('[data-study-input], [data-study-results]')).toHaveCount(0);
@@ -178,7 +190,8 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
   await page.screenshot({ path: '/tmp/permitted-without-parcel-study.png' });
   await page.reload();
   await waitForMapReady(page);
-  await expect(heightLabel).toHaveCount(1);
+  await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getItems().filter((item:any) => item.parcelEnvelope).length)).toBe(1);
+  await expect(page.locator('.planning-envelope-height')).toHaveCount(0);
   expect(studyReads).toBe(0);
   await expect(page.locator('[data-study-input], [data-study-results]')).toHaveCount(0);
   expect(await page.evaluate(() => localStorage.getItem('cb_planning_parcel_study_v1'))).toBe(savedDraft);

@@ -424,6 +424,7 @@ test('a parcel layout\'s details offer no sharing or duplicate: it is published 
   await editor.locator('[data-reparcel-commit]').click();
   await expect(editor).toHaveCount(0);
   const { proposalId } = await appliedLayout(page);
+  await page.setViewportSize({ width: 390, height: 844 });
   await showProposal(page, proposalId);
   const panel = page.locator('#proposal-details-panel');
   const share = panel.locator('.btn-share-proposal');
@@ -432,6 +433,27 @@ test('a parcel layout\'s details offer no sharing or duplicate: it is published 
   await expect(share).toHaveAttribute('aria-describedby', 'proposal-publish-later-note');
   await expect(panel.locator('#proposal-publish-later-note')).toHaveText('A parcel layout is published with its agreement. Propose an agreement that includes it.');
   await expect(panel.locator('.btn-duplicate-design')).toHaveCount(0);
+  const actionGrid = panel.locator('.proposal-primary-actions');
+  const layout = await actionGrid.evaluate(grid => {
+    const buttons = [...grid.querySelectorAll<HTMLElement>(':scope > button')].filter(button => getComputedStyle(button).display !== 'none');
+    const note = grid.querySelector<HTMLElement>('.proposal-publish-later')!;
+    const gridRect = grid.getBoundingClientRect(), noteRect = note.getBoundingClientRect();
+    const buttonRects = buttons.map(button => button.getBoundingClientRect());
+    const panelRect = document.querySelector('#proposal-details-panel')!.getBoundingClientRect();
+    const footerRect = grid.closest('.panel-footer')!.getBoundingClientRect();
+    return { columns: getComputedStyle(grid).gridTemplateColumns.split(' ').length,
+      heights: buttonRects.map(rect => rect.height), buttonBottom: Math.max(...buttonRects.map(rect => rect.bottom)),
+      gridLeft: gridRect.left, gridWidth: gridRect.width, noteLeft: noteRect.left, noteWidth: noteRect.width,
+      noteTop: noteRect.top, noteBottom: noteRect.bottom, panelBottom: panelRect.bottom, footerBottom: footerRect.bottom };
+  });
+  expect(layout.columns).toBe(2);
+  expect(layout.heights.length).toBeGreaterThanOrEqual(4);
+  expect(layout.heights.every(height => height <= 56)).toBe(true);
+  expect(layout.noteTop).toBeGreaterThanOrEqual(layout.buttonBottom);
+  expect(Math.abs(layout.noteLeft - layout.gridLeft)).toBeLessThanOrEqual(1);
+  expect(Math.abs(layout.noteWidth - layout.gridWidth)).toBeLessThanOrEqual(1);
+  expect(layout.noteBottom).toBeLessThanOrEqual(layout.footerBottom);
+  expect(layout.footerBottom).toBeLessThanOrEqual(layout.panelBottom);
   // Nobody decides on or bets on a design by itself (M3): only an agreement over it is minted and bet on.
   await expect(panel.getByRole('button', { name: /\bbet\b/i })).toHaveCount(0);
   // What it offers instead: Add to agreement, the layout's main action, which opens the agreement

@@ -82,6 +82,7 @@
     function unhost({ hide = true } = {}) {
         const hosted = state.hosted;
         if (!hosted) return;
+        if (hosted.el.id === 'parcel-info-panel') global.multiParcelSelection?.clearInfoListHighlight?.();
         state.hosted = null;
         hosted.el.classList.remove('is-hosted');
         hosted.el.querySelector('.click-stack__actions--parcel')?.remove();

@@ -435,7 +435,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         <button type="button" class="btn btn-share-proposal" disabled aria-disabled="true" aria-describedby="proposal-publish-later-note">
             <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share')}
         </button>
-        <p class="proposal-publish-later" id="proposal-publish-later-note">${safeAgentText(publishRefusal.message)}</p>
     `
         : `
         <button type="button" class="btn ${appliedState ? 'btn-primary' : ''} btn-share-proposal" onclick="BusyControl.track(this, () => shareProposalFromDetails())"
@@ -559,6 +558,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}
             </button>
             ${additionalActionsHtml}
+            ${publishRefusal ? `<p class="proposal-publish-later" id="proposal-publish-later-note">${safeAgentText(publishRefusal.message)}</p>` : ''}
         </div>
         ${mapActionFailureHtml}
     `;

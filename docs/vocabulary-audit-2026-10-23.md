@@ -1951,3 +1951,36 @@ MCP parity: this is a display-only realization, not a new authored editing opera
 inspection and editable authored geometry remain available through the existing parcel-context
 and design inspect/edit primitives; source constraints and their records are unchanged. No MCP
 schema or service change is needed. The current display meaning is recorded in the glossary.
+
+### October 27: parcel inspection, compact layout actions and agreement identity
+
+Selected-parcel Info rows now temporarily emphasize the corresponding selected parcel on
+pointer hover, click, keyboard focus or Enter/Space. Other selected parcels retain their normal
+highlight. Moving away, switching tabs, collapsing/closing the panel or clearing the selection
+restores that style; no selection membership or camera state changes.
+The parcel presenter also preserves the temporary style when source data refreshes.
+
+Removed the repeated Permitted map-height labels. Those numbers described the shown form's
+height and repeated where parcels shared the same limit; source heights and inspector metrics
+remain available. Parcel-layout actions now use content-sized rows. The Share explanation
+spans both columns below the buttons instead of occupying a button cell and stretching every row.
+
+The reported published Sydney agreement reproduced a false design-changed warning. Its design
+arrived with the correct CID, but browser storage deleted an explicit null building rule from
+the authored parameters. The local copy then hashed differently from the agreement's pinned
+design. Storage now preserves authored null values. The regression failed before the fix and
+passes through import, save and reload afterwards. Reopening the same published agreement in
+the same previously affected browser re-imported the correct content and displayed Matches the
+map with Before / after available; no device-data reset or publication was performed.
+
+Verification: 645 targeted headless unit checks in nine files passed, including the presenter
+matrix. Three targeted headed
+browser cases passed together: actual Info-row interaction and restoration without selection
+or camera changes; compact two-column parcel-layout actions at 390px; and Permitted geometry,
+inspection, dice, shadows and reload with no map-height labels. The Info-row case passed again
+with presenter-refresh coverage after the visual check caught a repaint. No full suite was run.
+
+MCP parity: the inspection and layout changes affect presentation only, and preserving explicit
+null fixes the browser's identity round trip to match the existing canonical JSON contract.
+MCP already retains those source values. Existing design inspect/edit primitives and source
+geometry remain unchanged; no new operation or schema is needed. No glossary definition changes.

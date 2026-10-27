@@ -347,7 +347,8 @@
             const layer = layersById.get(id);
             if (!layer || typeof layer.setStyle !== 'function') return;
             const isMulti = global.multiParcelSelection?.selectedParcels?.has?.(id);
-            const style = isMulti
+            const infoHighlight = isMulti && global.multiParcelSelection?._infoListHighlight === id;
+            const style = infoHighlight ? global.multiParcelSelection.infoListHighlightStyle() : isMulti
                 ? { fillColor: global.MapHighlight.color, fillOpacity: 0.6, color: global.MapHighlight.color, weight: 3 }
                 : (layer._trackStyle ? { ...layer._trackStyle, color: global.MapHighlight.color, opacity: 1, weight: 4 } : global.selectedParcelStyle);
             if (style) layer.setStyle(style);

@@ -61,6 +61,26 @@ function bootStore() {
 }
 
 describe('proposalStorage authored-log persistence', () => {
+    it('preserves explicit null building parameters and a published CID through import and reload', () => {
+        const { storage } = bootStore();
+        const DesignRecord = require('../../frontend/js/design-record.js');
+        const DesignSync = require('../../frontend/js/proposals/design-sync.js');
+        const shape = { type:'Polygon', coordinates:[[[15,45],[15.001,45],[15.001,45.001],[15,45.001],[15,45]]] };
+        const design = { proposalId:'source-building', goal:'buildings', title:'Courtyard building', site:shape,
+            createdAt:'2026-10-27T09:00:00.000Z',
+            geometry:{ buildings:[{ type:'Feature', geometry:shape, properties:{ height:12, floors:4 } }] },
+            buildingProposal:{ typologyType:'single', parameters:{ height:12, floors:4, rule:null } } };
+        const content = DesignRecord.published(design), cid = DesignRecord.cidOf(design);
+        const incoming = DesignSync.localDesignFromRow({ content, cid, binding:{ parcels:[{ parcelId:'source-parcel' }] } },
+            { apiBase:'https://api.example.test' });
+        const stored = storage.importProposal(incoming, { overwrite:true });
+        expect(stored.buildingProposal.parameters).toHaveProperty('rule', null);
+        expect(DesignRecord.cidOf(stored)).toBe(cid);
+        storage.save(); storage.load();
+        const reloaded = storage.getProposal(stored.proposalId);
+        expect(DesignRecord.published(reloaded)).toEqual(content);
+        expect(DesignRecord.cidOf(reloaded)).toBe(cid);
+    });
     it('rolls back both definitions and imported plan membership if atomic storage fails, and permits retry', async () => {
         const File = require('../../frontend/js/plan-file.js');
         const UI = require('../../frontend/js/plan-file-ui.js');

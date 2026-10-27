@@ -172,13 +172,7 @@
                     style: { color: active ? root.MapHighlight.color : color(item.role), weight: active ? 4 : hull ? 1 : 1.5, dashArray: hull ? '4 4' : null,
                         fillColor: color(item.role), fillOpacity: hull ? 0.06 : display === 'solid' ? 1 : 0.18,
                         opacity: hull ? 0.8 : 1 } });
-                const height = feature.properties.topM;
                 const label = item.source.parcel || item.title;
-                if (item.parcelEnvelope && height && !hull && root.map.getZoom() >= 18) {
-                    const center = shape.getBounds().getCenter();
-                    root.L.marker(center, { pane: 'planningSources', interactive: false, keyboard: false,
-                        icon: root.L.divIcon({ className: 'planning-envelope-height', html: root.CbFormat.formatLength(height), iconSize: null }) }).addTo(layer);
-                }
                 shape.addTo(layer);
                 // The assumed street side of the shown configuration, so a roll reads as a choice, not a glitch.
                 if (feature.properties.frontEdge != null && item.derivation?.parcel) {
