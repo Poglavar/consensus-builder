@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2169",
+  "name": "Bergamo, Italy",
+  "point": [
+    45.6966084159545,
+    9.65348424783914
+  ],
+  "bindings": [
+    {
+      "appCityId": "bergamo",
+      "runtimeConfig": {
+        "id": "bergamo",
+        "wupCityCode": "2169",
+        "label": "Bergamo, Italy",
+        "currency": {
+          "locale": "it-IT",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            45.6966084159545,
+            9.65348424783914
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            45.6966084159545,
+            9.65348424783914
+          ],
+          "fallbackDataset": [
+            9.65348424783914,
+            45.6966084159545
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "it-bergamo-comune-atlantebg-catasto-particelle",
+          "idPrefix": "IT-BERGAMO-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Comune di Bergamo — AtlanteBG Catasto"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "it-bergamo-comune-atlantebg-catasto-particelle",
+      "name": "Comune di Bergamo AtlanteBG Catasto — Particelle terreni",
+      "adapter": "arcgis",
+      "endpoint": "https://territorio.comune.bergamo.it/arcgis/rest/services/AtlanteBG/Catasto/MapServer/10",
+      "idField": "CHIAVE",
+      "idType": "string",
+      "idPattern": "^A794\\|[A-Za-z0-9]*\\|[0-9]+\\|[A-Za-z0-9_./-]+$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IT-BERGAMO-",
+      "parcelNumberField": "NUMERO",
+      "outFields": [
+        "OBJECTID",
+        "CHIAVE",
+        "COMUNE",
+        "LIVELLO",
+        "NUMERO"
+      ],
+      "attributeFilters": {
+        "COMUNE": "A794",
+        "LIVELLO": "PARTICELLE"
+      },
+      "attributeNotNull": [
+        "CHIAVE"
+      ],
+      "attributeExclusions": {
+        "CHIAVE": ""
+      },
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "queryFormat": "geojson",
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 2,
+      "minRequestIntervalMs": 150,
+      "countryCode": "IT",
+      "metricSrid": 32632,
+      "nativeCrs": "EPSG:32632",
+      "responseCrs": "EPSG:4326",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "scope": "Municipal cadastral parcel records (COMUNE=A794, LIVELLO=PARTICELLE). Bounded center observations only; coverage of the wider WUP Bergamo agglomeration and full municipal completeness are unverified.",
+      "operator": "Comune di Bergamo",
+      "attribution": "Comune di Bergamo — AtlanteBG Catasto",
+      "licenceNote": "Public municipal cadastral query service. No explicit reuse licence or update cadence is stated in the REST metadata; reuse terms and cadastral currentness remain follow-ups.",
+      "catalogueUrl": "https://territorio.comune.bergamo.it/arcgis/rest/services/AtlanteBG/Catasto/MapServer/10?f=pjson",
+      "cityIds": [
+        "bergamo"
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "IT",
+          "basis": "Official Comune di Bergamo AtlanteBG Catasto group exposes Particelle terreni layer 10; COMUNE=A794 identifies Bergamo.",
+          "evidence": [
+            "https://territorio.comune.bergamo.it/arcgis/rest/services/AtlanteBG/Catasto/MapServer/10?f=pjson",
+            "https://territorio.comune.bergamo.it/arcgis/rest/services/AtlanteBG/Catasto/MapServer?f=pjson"
+          ]
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8257",
+  "name": "Colina de Laranjeiras, Brazil",
+  "point": [
+    -20.2029906373717,
+    -40.2605205020785
+  ],
+  "bindings": [
+    {
+      "appCityId": "colina_de_laranjeiras",
+      "runtimeConfig": {
+        "id": "colina_de_laranjeiras",
+        "wupCityCode": "8257",
+        "label": "Colina de Laranjeiras, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -20.2029906373717,
+            -40.2605205020785
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -20.2029906373717,
+            -40.2605205020785
+          ],
+          "fallbackDataset": [
+            -40.2605205020785,
+            -20.2029906373717
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-serra-geoserra-ctm-parcelamento-solo",
+          "idPrefix": "BR-SERRA-GEOSERRA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Prefeitura Municipal da Serra/ES · GCTM/SEFA · GeoSerra"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-serra-geoserra-ctm-parcelamento-solo",
+      "name": "GeoSerra Cadastro Técnico Municipal — Parcelamento do Solo",
+      "adapter": "arcgis",
+      "endpoint": "https://mapas.serra.es.gov.br/server/rest/services/GeoSerra_v02/Parcelamento_de_Solo/FeatureServer/66",
+      "countryCode": "BR",
+      "idField": "GlobalID",
+      "idType": "string",
+      "idQueryBraces": true,
+      "objectIdField": "OBJECTID",
+      "idPrefix": "BR-SERRA-GEOSERRA-",
+      "outFields": [
+        "OBJECTID",
+        "GlobalID"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "maxResponseBytes": 16777216,
+      "metricSrid": 32724,
+      "nativeCrs": "EPSG:31984",
+      "cityIds": [
+        "colina_de_laranjeiras"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "operator": "Prefeitura Municipal da Serra/ES — GCTM/SADJR/SEFA and DEGEO/SUBTI/SEICIT",
+      "attribution": "Prefeitura Municipal da Serra/ES · GCTM/SEFA · GeoSerra",
+      "catalogueUrl": "https://www.serra.es.gov.br/servicos/detalhes/402",
+      "licenceNote": "Anonymous public municipal tax-lot queries; explicit reuse terms are unpublished and remain a follow-up.",
+      "scope": "Serra municipal tax-lot fabric. A whole parcel at the immutable Colina de Laranjeiras locator is demonstrated; locality-wide and municipal completeness are unverified.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "BR",
+          "basis": "First-party layer description identifies Serra/ES tax lots maintained by PMS/SEFA/SADJR/GCTM; the source parcel contains the queue locality point.",
+          "evidence": [
+            "https://mapas.serra.es.gov.br/server/rest/services/GeoSerra_v02/Parcelamento_de_Solo/FeatureServer/66?f=pjson",
+            "https://mapas.serra.es.gov.br/portal/sharing/rest/content/items/919128c8db0048c2bcd7b5a7c83a7763?f=pjson",
+            "https://www.serra.es.gov.br/servicos/detalhes/402"
+          ]
+        }
+      }
+    }
+  ]
+}

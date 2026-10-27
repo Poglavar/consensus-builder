@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "695",
+  "name": "Tiranë (Tirana), Albania",
+  "point": [
+    41.3407148790726,
+    19.8059366500631
+  ],
+  "bindings": [
+    {
+      "appCityId": "tirane_tirana",
+      "runtimeConfig": {
+        "id": "tirane_tirana",
+        "wupCityCode": "695",
+        "label": "Tiranë (Tirana), Albania",
+        "currency": {
+          "locale": "sq-AL",
+          "code": "ALL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            41.3407148790726,
+            19.8059366500631
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            41.3407148790726,
+            19.8059366500631
+          ],
+          "fallbackDataset": [
+            19.8059366500631,
+            41.3407148790726
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "al-asig-zrpp-albscad-parcels-072026",
+          "idPrefix": "AL-ASIG-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "ASIG / State Cadastre Agency (ASHK), National Geoportal, ALBSCAD Cadastral Parcels."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "al-asig-zrpp-albscad-parcels-072026",
+      "name": "ASIG / ASHK ALBSCAD cadastral parcels (July 2026 layer)",
+      "countryCode": "AL",
+      "adapter": "asig-wms-kml",
+      "endpoint": "https://geoportal.asig.gov.al/service/zrpp/ows",
+      "cityIds": [
+        "tirane_tirana"
+      ],
+      "defaultForCity": true,
+      "layer": "p_kadas_albscad_072026",
+      "style": "polygon",
+      "idPrefix": "AL-ASIG-",
+      "idField": "inspireid",
+      "idFields": [
+        "inspireid"
+      ],
+      "idType": "string",
+      "outFields": [
+        "inspireid"
+      ],
+      "kmlIdEncoding": "geoserver-span-string",
+      "kmlAllowLabelPoints": true,
+      "sourceCrs": "EPSG:4326",
+      "sourceAxisOrder": "longitude,latitude",
+      "nativeCrs": "EPSG:6870",
+      "returnsWGS84": true,
+      "metricSrid": 32634,
+      "bbox": [
+        19.238927169468482,
+        39.64031238851075,
+        21.090454133262412,
+        42.661314178919916
+      ],
+      "maxBboxKm2": 4,
+      "maxFeatures": 1000,
+      "maxResponseBytes": 8388608,
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "attribution": "ASIG / State Cadastre Agency (ASHK), National Geoportal, ALBSCAD Cadastral Parcels.",
+      "scope": "Albania-wide advertised extent; live bounded Tirana parcel availability verified. Citywide completeness and current/historic validity are unestablished.",
+      "licenceNote": "Anonymous official KML export is public. An explicit geometry redistribution licence has not been established; terms and attribution require follow-up.",
+      "catalogueUrl": "https://geoportal.asig.gov.al/en/node/3372",
+      "discovery": {
+        "jurisdiction": {
+          "basis": "ASIG publishes cadastral parcels maintained by ASHK local directorates in ALBSCAD. Live native inspireid polygon reads are in urban Tirana."
+        }
+      }
+    }
+  ]
+}

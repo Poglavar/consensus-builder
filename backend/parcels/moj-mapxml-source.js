@@ -6,9 +6,11 @@ import { boundedBytes } from './gml-snapshot-source.js';
 import { sha256Hex } from './portable-hash.js';
 import { canonicalParcelFeature, upstreamError, providerHttpError, validateBounds, validateGeometry } from './source-contract.js';
 import { HttpError } from '../utils/helpers.js';
+import { createMojMapXmlRangeParcelSource } from './moj-mapxml-range-source.js';
 
 const intersects = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
 export function createMojMapXmlParcelSource(descriptor, { fetchImpl = globalThis.fetch, now = Date.now } = {}) {
+    if (descriptor.archiveAccess === 'selected-range-v1') return createMojMapXmlRangeParcelSource(descriptor, { fetchImpl, now });
     const { id, idPrefix, endpoint, sheetIndex, archiveSha256 } = descriptor;
     if (!id || !idPrefix || new URL(endpoint).protocol !== 'https:' || !/^[a-f0-9]{64}$/.test(archiveSha256)
         || !Array.isArray(sheetIndex) || !sheetIndex.length || sheetIndex.length > 512

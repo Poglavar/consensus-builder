@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3041",
+  "name": "Ibagué, Colombia",
+  "point": [
+    4.440260219627,
+    -75.2066767463464
+  ],
+  "bindings": [
+    {
+      "appCityId": "ibague",
+      "runtimeConfig": {
+        "id": "ibague",
+        "wupCityCode": "3041",
+        "label": "Ibagué, Colombia",
+        "currency": {
+          "locale": "es-CO",
+          "code": "COP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            4.440260219627,
+            -75.2066767463464
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            4.440260219627,
+            -75.2066767463464
+          ],
+          "fallbackDataset": [
+            -75.2066767463464,
+            4.440260219627
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "co-ibague-alcaldia-mivuc-area-terrenos-2026",
+          "idPrefix": "CO-IBAGUE-MIVUC-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Alcaldía de Ibagué · Observatorio Catastral MIVUC · Area_Terrenos"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "co-ibague-alcaldia-mivuc-area-terrenos-2026",
+      "name": "Alcaldía de Ibagué — Observatorio Catastral MIVUC Area_Terrenos",
+      "adapter": "arcgis",
+      "endpoint": "https://services7.arcgis.com/dky8sxmuaUSlXW9a/ArcGIS/rest/services/Observatorio_Catastral_MIVUC_WFL1/FeatureServer/0",
+      "idField": "codigo",
+      "idType": "string",
+      "idPattern": "^[0-9]{30}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CO-IBAGUE-MIVUC-",
+      "parcelNumberField": "codigo",
+      "outFields": [
+        "OBJECTID",
+        "codigo"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "offset",
+      "pageSize": 200,
+      "idBatchSize": 40,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "timeoutMs": 30000,
+      "maxResponseBytes": 16777216,
+      "countryCode": "CO",
+      "metricSrid": 32618,
+      "operator": "Alcaldía de Ibagué / Observatorio Catastral MIVUC",
+      "attribution": "Alcaldía de Ibagué · Observatorio Catastral MIVUC · Area_Terrenos",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=37abd68d7940481abef24871e8f56af7",
+      "scope": "Municipal cadastral terrain polygons published by Ibagué MIVUC. Bounded native-code samples establish parcel availability; citywide and rural completeness and historical currency remain unverified.",
+      "licenceNote": "Anonymous public query access verified. The municipal item licenseInfo and accessInformation are blank; no open reuse licence or service-use limits are established. Preserve municipal attribution; terms remain a second-pass follow-up.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "cityIds": [
+        "ibague"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

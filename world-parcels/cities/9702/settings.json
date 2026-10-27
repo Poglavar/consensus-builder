@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "9702",
+  "name": "Pingdingshan, China",
+  "point": [
+    33.7401758366548,
+    113.310270476191
+  ],
+  "bindings": [
+    {
+      "appCityId": "pingdingshan",
+      "runtimeConfig": {
+        "id": "pingdingshan",
+        "wupCityCode": "9702",
+        "label": "Pingdingshan, China",
+        "currency": {
+          "locale": "zh-CN",
+          "code": "CNY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            33.7401758366548,
+            113.310270476191
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            33.7401758366548,
+            113.310270476191
+          ],
+          "fallbackDataset": [
+            113.310270476191,
+            33.7401758366548
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "cn-pingdingshan-pdsbdcdj-gyjsyd-parcels",
+          "idPrefix": "CN-PINGDINGSHAN-ZD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "平顶山市不动产登记以图查房系统 · 地表宗地 · pdsbdcdj.cn"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "cn-pingdingshan-pdsbdcdj-gyjsyd-parcels",
+      "adapter": "arcgis",
+      "endpoint": "http://ycbs.pdsbdcdj.cn:7889/estate/forward/arcgis/rest/services/yituchafang/gyjsyd/MapServer/0/query",
+      "idPrefix": "CN-PINGDINGSHAN-ZD-",
+      "idField": "ZDTYBM",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9A-Z]{19}$",
+      "outFields": [
+        "OBJECTID",
+        "ZDTYBM"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "single-equality",
+      "pageSize": 80,
+      "idBatchSize": 1,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 2,
+      "timeoutMs": 45000,
+      "maxResponseBytes": 16777216,
+      "minRequestIntervalMs": 1100,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "name": "Pingdingshan official registered surface land parcels",
+      "operator": "Pingdingshan Natural Resources and Planning Bureau / Real Estate Registration Center",
+      "catalogueUrl": "https://ycbs.pdsbdcdj.cn/bmfw/",
+      "attribution": "平顶山市不动产登记以图查房系统 · 地表宗地 · pdsbdcdj.cn",
+      "countryCode": "CN",
+      "cityIds": [
+        "pingdingshan"
+      ],
+      "defaultForCity": true,
+      "metricSrid": 32649,
+      "sourceCrs": "EPSG:4490",
+      "scope": "Official viewer declares Pingdingshan main five urban districts; observed bounded central urban polygons. No prefecture-wide, rural, citywide completeness, current-only, title or survey-accuracy claim.",
+      "licenceNote": "Public anonymous viewer and geometry query; no explicit open-data geometry-reuse licence found. Reuse terms, rate limits and currentness remain second-pass follow-ups.",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "jurisdiction": {
+          "countryCode": "CN",
+          "city": "Pingdingshan",
+          "basis": "Official real-estate-registration viewer configuration 宗地 and first-party polygon layer 地表宗地; see source-metadata evidence."
+        }
+      }
+    }
+  ]
+}

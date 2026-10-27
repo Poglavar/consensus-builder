@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2889",
+  "name": "Podolsk, Russia",
+  "point": [
+    55.4359280576275,
+    37.5500930826687
+  ],
+  "bindings": [
+    {
+      "appCityId": "podolsk",
+      "runtimeConfig": {
+        "id": "podolsk",
+        "wupCityCode": "2889",
+        "label": "Podolsk, Russia",
+        "currency": {
+          "locale": "ru-RU",
+          "code": "RUB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            55.4359280576275,
+            37.5500930826687
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            55.4359280576275,
+            37.5500930826687
+          ],
+          "fallbackDataset": [
+            37.5500930826687,
+            55.4359280576275
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ru-mosobl-reestr54-cadastral",
+          "idPrefix": "RU-REESTR54-PODOLSK-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Кадастровые инженеры Москвы / reestr54.ru; Rosreestr/EGRN context; three observed parcel records only; wider Podolsk coverage unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ru-mosobl-reestr54-cadastral",
+      "name": "Podolsk public cadastral viewer — three observed EGRN land parcels",
+      "operator": "Кадастровые инженеры Москвы (independent public cadastral viewer; registry custody unverified)",
+      "adapter": "reestr54-bounded",
+      "endpoint": "https://kk.reestr54.ru/moskovskaya-oblast/",
+      "countryCode": "RU",
+      "cityIds": [
+        "podolsk"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "RU-REESTR54-PODOLSK-",
+      "idField": "cad_num",
+      "parcelNumberField": "cad_num",
+      "outFields": [
+        "cad_num"
+      ],
+      "nativeCrs": "EPSG:3857",
+      "srsName": "EPSG:4326",
+      "metricSrid": 32637,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "coverage": {
+        "scope": "explicit-native-id-subset",
+        "citywide": false,
+        "nativeIds": [
+          "50:55:0030204:4",
+          "50:27:0020806:828",
+          "50:55:0030614:19"
+        ],
+        "basis": "Three discovery-observed full parcels read live by exact cadastral number. Central parcel encloses the unchanged Podolsk queue point; east and west records are bounded context only, without asserted municipal membership. Finite subset only; no area enumeration or authoritative absence."
+      },
+      "scope": "Three declared native cadastral numbers only; no citywide coverage, systematic area enumeration or authoritative absence.",
+      "licence": "Unresolved; anonymous access is not an open-data or redistribution licence.",
+      "licenceNote": "Reuse permission, legal custody and upstream Rosreestr/NSPD lineage remain unverified.",
+      "attribution": "Кадастровые инженеры Москвы / reestr54.ru; Rosreestr/EGRN context; three observed parcel records only; wider Podolsk coverage unverified.",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://kk.reestr54.ru/moskovskaya-oblast/",
+          "https://kk.reestr54.ru/static/pkk/js/mapinit16102025.js"
+        ],
+        "jurisdiction": {
+          "basis": "Moscow Oblast viewer; original Podolsk locator inside central parcel 50:55:0030204:4. Offset records do not establish municipal coverage."
+        }
+      },
+      "adapterModule": "reestr54-source.js"
+    }
+  ]
+}

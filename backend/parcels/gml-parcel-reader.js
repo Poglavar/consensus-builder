@@ -8,8 +8,23 @@ import { CATASTRO_ATOM_GML_SCHEMA } from './catastro-atom-profile.js';
 
 const GML = new Set(['http://www.opengis.net/gml', 'http://www.opengis.net/gml/3.2']);
 const GML32 = 'http://www.opengis.net/gml/3.2';
+// Bremen WFS2 DescribeFeatureType and safe exact reads (2026-10-26):
+// EPSG:4326 uses literal longitude/latitude, with native ALKIS flstkennz identity.
+export const BREMEN_GML_SCHEMA = Object.freeze({
+    featureNamespace: 'http://www.deegree.org/app',
+    featureName: 'flurstuecke', idField: 'flstkennz', geometryField: 'geom',
+    gmlNamespace: GML32, sourceCrs: 'EPSG:4326',
+    axisOrder: 'easting-northing', localIdPattern: '^04[0-9_]{18}$'
+});
 const CP = /^https?:\/\/inspire\.ec\.europa\.eu\/schemas\/cp\/(?:3\.0|4\.0)$/;
 const LR = 'www.landregistry.gov.uk';
+// MapMoa omits srsName in GetFeature output; the pinned request/viewer declares EPSG:5186.
+export const CHEONGJU_GML_SCHEMA = Object.freeze({
+    featureNamespace: 'http://geogate.g-inno.com/dataserver/dh_cjcivil',
+    featureName: 'LSMD_CONT_LDREG', idField: 'PNU', geometryField: 'G2_SPATIAL',
+    gmlNamespace: 'http://www.opengis.net/gml', sourceCrs: 'EPSG:5186',
+    axisOrder: 'easting-northing', localIdPattern: '^[0-9]{19}$'
+});
 // Sofia's public MapServer returns GML 3.1 with native northing/easting axes.
 export const SOFIA_GML_SCHEMA = Object.freeze({
     featureNamespace: 'http://mapserver.gis.umn.edu/mapserver',
@@ -139,7 +154,8 @@ export const FINLAND_CP_GML_SCHEMA = Object.freeze({
     sourceCrs: 'EPSG:3067',
     axisOrder: 'easting-northing'
 });
-const CUSTOM_SCHEMAS = [SOFIA_GML_SCHEMA, MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, POLAND_EGIB_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, CATASTRO_ATOM_GML_SCHEMA];
+const CUSTOM_SCHEMAS = [BREMEN_GML_SCHEMA, CHEONGJU_GML_SCHEMA, SOFIA_GML_SCHEMA, MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, POLAND_EGIB_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, CATASTRO_ATOM_GML_SCHEMA];
+proj4.defs('EPSG:5186', '+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs');
 proj4.defs('EPSG:7801', '+proj=lcc +lat_0=42.6678756833333 +lon_0=25.5 +lat_1=42 +lat_2=43.3333333333333 +x_0=500000 +y_0=4725824.3591 +ellps=GRS80 +towgs84=0,0,0 +units=m +no_defs');
 proj4.defs('EPSG:2177', '+proj=tmerc +lat_0=0 +lon_0=18 +k=0.999923 +x_0=6500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
 proj4.defs('EPSG:2180', '+proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 +x_0=500000 +y_0=-5300000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
@@ -216,15 +232,19 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     const activeIdField = customSchema ? customSchema.idField : idField;
     const activeFeatureNamespace = customSchema ? customSchema.featureNamespace : featureNamespace;
     const activeFeatureName = customSchema ? customSchema.featureName : featureName;
+    const isBremen = canonicalCustomSchema === BREMEN_GML_SCHEMA;
     const isFinland = canonicalCustomSchema === FINLAND_CP_GML_SCHEMA;
     const isHessen = canonicalCustomSchema === HESSEN_GML_SCHEMA;
     const isGdansk = canonicalCustomSchema === GDANSK_GML_SCHEMA;
     const isSosnowiec = canonicalCustomSchema === SOSNOWIEC_GML_SCHEMA;
     const isCatastroAtom = canonicalCustomSchema === CATASTRO_ATOM_GML_SCHEMA;
     const isSofia = canonicalCustomSchema === SOFIA_GML_SCHEMA;
+    const isCheongju = canonicalCustomSchema === CHEONGJU_GML_SCHEMA;
     const isMunicipalGeometry = isGdansk || isSosnowiec;
-    const strictFlatFields = isHessen || isMunicipalGeometry || isCatastroAtom || isSofia;
-    const geometryChildren = isSofia ? { ...HESSEN_GEOMETRY_CHILDREN, msGeometry: HESSEN_GEOMETRY_CHILDREN.geometrie }
+    const strictFlatFields = isBremen || isHessen || isMunicipalGeometry || isCatastroAtom || isSofia || isCheongju;
+    const geometryChildren = isBremen ? { ...HESSEN_GEOMETRY_CHILDREN, geom: HESSEN_GEOMETRY_CHILDREN.geometrie }
+        : isCheongju ? { ...HESSEN_GEOMETRY_CHILDREN, G2_SPATIAL: HESSEN_GEOMETRY_CHILDREN.geometrie }
+        : isSofia ? { ...HESSEN_GEOMETRY_CHILDREN, msGeometry: HESSEN_GEOMETRY_CHILDREN.geometrie }
         : isMunicipalGeometry || isCatastroAtom ? GDANSK_GEOMETRY_CHILDREN : HESSEN_GEOMETRY_CHILDREN;
     const isGmlTag = tag => customSchema ? tag.uri === customSchema.gmlNamespace : GML.has(tag.uri);
     const isFeatureTag = tag => nativeCoordinates
@@ -234,6 +254,7 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     const stack = [], byId = streaming ? null : new Map();
     let current = null, polygon = null, ringKind = null, collection = false, closedCollection = false;
     let geometryDepth = null, sourceCrs = null, sourceTimestamp, numberMatched, numberMatchedUnknown = false, numberReturned, featureCount = 0, duplicateNativeCount = 0;
+    if (isCheongju) sourceCrs = CHEONGJU_GML_SCHEMA.sourceCrs;
     let streamedExtent = null;
     const projections = new Map();
     const fail = message => { throw upstreamError(message); };
@@ -242,7 +263,7 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     parser.on('opentag', tag => {
         if (!stack.length) {
             if (!collectionTag(tag) || (customSchema && tag.uri !== 'http://www.opengis.net/wfs/2.0'
-                && !(isSofia && tag.uri === 'http://www.opengis.net/wfs'))) fail('Parcel GML must be a FeatureCollection.');
+                && !((isSofia || isCheongju) && tag.uri === 'http://www.opengis.net/wfs'))) fail('Parcel GML must be a FeatureCollection.');
             collection = true;
             const matchedAttribute = attr(tag,'numberMatched');
             // Only the native HMLR import contract records and validates collection
@@ -250,6 +271,10 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
             if (nativeCoordinates) sourceTimestamp = isoTimestamp(attr(tag, 'timeStamp'));
             numberMatchedUnknown = matchedAttribute === 'unknown';
             numberMatched = count(matchedAttribute); numberReturned = count(attr(tag,'numberReturned'));
+            if (isCheongju) {
+                numberReturned = count(attr(tag, 'numberOfFeatures'));
+                if (numberReturned === undefined) fail('MapMoa omitted its returned feature count.');
+            }
             if (isCatastroAtom && (numberMatched === undefined || numberReturned !== numberMatched)) {
                 fail('Spanish ATOM parcel archive must declare complete matching feature counts.');
             }
@@ -272,7 +297,7 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
                 fail('Unexpected Spanish ATOM parcel collection content.');
             }
         }
-        if (current && (isMunicipalGeometry || isCatastroAtom || isSofia) && [activeIdField, customSchema.geometryField].includes(tag.local)
+        if (current && (isBremen || isMunicipalGeometry || isCatastroAtom || isSofia || isCheongju) && [activeIdField, customSchema.geometryField].includes(tag.local)
             && tag.uri !== current.namespace) fail('Unexpected municipal parcel field namespace.');
         if (current && strictFlatFields && tag.uri === current.namespace
             && [activeIdField, customSchema.geometryField].includes(tag.local)
@@ -331,7 +356,7 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
         if (current && strictFlatFields && geometryDepth !== null) {
             // Sosnowiec and Spanish ATOM geometry is inline. A nil component, even one carrying
             // coordinates, cannot be reinterpreted as a usable source polygon.
-            if ((isSosnowiec || isCatastroAtom || isSofia) && namespacedAttr(tag, 'http://www.w3.org/2001/XMLSchema-instance', 'nil') !== undefined) {
+            if ((isBremen || isSosnowiec || isCatastroAtom || isSofia || isCheongju) && namespacedAttr(tag, 'http://www.w3.org/2001/XMLSchema-instance', 'nil') !== undefined) {
                 const nil = namespacedAttr(tag, 'http://www.w3.org/2001/XMLSchema-instance', 'nil');
                 if (!['false', '0'].includes(nil)) fail('Parcel GML has a nil or invalid geometry component.');
             }
@@ -345,7 +370,7 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
                     fail('Invalid parcel GML geometry structure.');
                 }
                 parentFrame.hessenGeometryChildren++;
-                if ((HESSEN_SINGLE_GEOMETRY_CHILD.has(parent.local) || (isSofia && parent.local === 'msGeometry') || ((isMunicipalGeometry || isCatastroAtom) && parent.local === 'geometry')) && parentFrame.hessenGeometryChildren > 1) {
+                if ((HESSEN_SINGLE_GEOMETRY_CHILD.has(parent.local) || (isBremen && parent.local === 'geom') || (isSofia && parent.local === 'msGeometry') || ((isMunicipalGeometry || isCatastroAtom) && parent.local === 'geometry')) && parentFrame.hessenGeometryChildren > 1) {
                     fail('Parcel GML repeats a geometry component.');
                 }
             }
@@ -431,7 +456,9 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
             if (tag.local === 'posList') {
                 if (isCatastroAtom && !frame.crs) fail('Parcel GML coordinates have no inherited coordinate system.');
                 if(!sourceCrs) fail('Parcel GML coordinates have no coordinate system.');
-                if (!nativeCoordinates && !projections.has(sourceCrs)) projections.set(sourceCrs,
+                // Already-geographic source ordinates must survive unchanged;
+                // even an identity proj4 transform introduces floating-point drift.
+                if (!nativeCoordinates && sourceCrs !== 'EPSG:4326' && !projections.has(sourceCrs)) projections.set(sourceCrs,
                     sourceCrs === 'EPSG:27700' ? { forward: toWgs84 } : proj4(sourceCrs, 'EPSG:4326'));
                 const projection = nativeCoordinates ? null : projections.get(sourceCrs), ring=[];
                 let x=null,firstX,lastX,firstY,lastY;
@@ -443,7 +470,7 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
                     else{
                         if(!ring.length){firstX=x;firstY=value;}lastX=x;lastY=value;
                         const point = customSchema?.axisOrder === 'northing-easting' ? [value, x] : [x, value];
-                        ring.push(nativeCoordinates ? point : projection.forward(point));x=null;
+                        ring.push(nativeCoordinates || sourceCrs === 'EPSG:4326' ? point : projection.forward(point));x=null;
                     }
                 }
                 if(x!==null||ring.length<4||firstX!==lastX||firstY!==lastY) fail('Parcel GML polygon ring is invalid or not closed.');
@@ -537,6 +564,13 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
             numberReturned = featureCount;
             numberReturnedNormalized = true;
             numberReturnedProtocolException = 'kartverket-no-teig-zero-numberReturned-on-data-response';
+        } else if (isBremen && numberMatchedUnknown && numberReturned === 0 && featureCount > 0) {
+            // deegree documents this zero as an unknown count in the response.
+            // Only this fixed profile normalizes it; the WFS adapter still requires
+            // all parsed members to equal independent pre/post exact hit counts.
+            numberReturned = featureCount;
+            numberReturnedNormalized = true;
+            numberReturnedProtocolException = 'bremen-deegree-unknown-zero-numberReturned-on-data-response';
         } else throw parcelCountError({ numberMatched, numberReturned, featureCount });
     }
     if (!collection || !closedCollection || current

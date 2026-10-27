@@ -15,7 +15,7 @@ const BASE = Object.freeze({ SERVICE: 'WMS', VERSION: '1.3.0', REQUEST: 'GetFeat
     LAYERS: LAYER, QUERY_LAYERS: LAYER, CRS: 'EPSG:3857', INFO_FORMAT: 'application/geo+json',
     WITH_GEOMETRY: 'true', WITH_MAPTIP: 'false', WITH_DISPLAY_NAME: 'false' });
 const MAX_BYTES = 8 * 1024 * 1024, MAX_COUNT = 501;
-const invalid = () => upstreamError('GISAR returned invalid, conflicting or truncated cadastral polygons.');
+const invalid = (reason = 'invalid, conflicting or truncated cadastral polygons') => upstreamError(`GISAR returned ${reason}.`);
 const inputError = message => Object.assign(new Error(message), { status: 400, code: 'invalid-parcel-query' });
 
 // HTTP is permitted only for this fixed, public, read-only service and these bounded queries.
@@ -71,7 +71,7 @@ export function createGisarWmsParcelSource(descriptor, { fetchImpl = globalThis.
             const output = { type: geometry.type, coordinates: walk(geometry.coordinates) };
             if (!validateGeometry(output)) throw invalid();
             return output;
-        } catch { throw invalid(); }
+        } catch { throw invalid('invalid parcel geometry'); }
     }
 
     async function request(parameters, signal) {
@@ -101,11 +101,11 @@ export function createGisarWmsParcelSource(descriptor, { fetchImpl = globalThis.
             catch { throw invalid(); }
             if (payload?.type !== 'FeatureCollection' || !Array.isArray(payload.features)
                 || payload.features.length >= Number(parameters.FEATURE_COUNT) || payload.error || payload.exceededTransferLimit
-                || !geoJsonResponseCrsMatches(payload.crs, 3857)) throw invalid();
+                || !geoJsonResponseCrsMatches(payload.crs, 3857)) throw invalid('an invalid, truncated or wrong-CRS feature collection');
             const seen = new Set();
             return payload.features.map(row => {
                 const code = row?.properties?.['Код ЕНИ'];
-                if (typeof code !== 'string' || !CODE.test(code) || seen.has(code)) throw invalid();
+                if (typeof code !== 'string' || !CODE.test(code) || seen.has(code)) throw invalid('invalid or duplicate native ENI codes');
                 seen.add(code);
                 // WMS ignores PROPERTYNAME; incidental attributes are discarded immediately.
                 return canonicalParcelFeature(descriptor, { type: 'Feature', geometry: geometryToWgs84(row.geometry),
@@ -136,14 +136,19 @@ export function createGisarWmsParcelSource(descriptor, { fetchImpl = globalThis.
         const a = projection.forward(bounds.slice(0, 2)), b = projection.forward(bounds.slice(2));
         // The layer is published at scales 100..20000. Pad only the query envelope
         // to keep tiny reads in range; filter results back to the original scope without clipping.
+        // Match the square WMS image: QGIS expands a non-square extent to the image's
+        // aspect ratio, returning legitimate candidates outside its shorter axis.
         const cx = (a[0] + b[0]) / 2, cy = (a[1] + b[1]) / 2;
-        const dx = Math.max(8, (b[0] - a[0]) / 2), dy = Math.max(8, (b[1] - a[1]) / 2);
-        const projected = [cx - dx, cy - dy, cx + dx, cy + dy];
-        const pixels = Math.max(128, Math.ceil(Math.max(dx, dy) * 2));
+        const halfSize = Math.max(8, (b[0] - a[0]) / 2, (b[1] - a[1]) / 2);
+        const projected = [cx - halfSize, cy - halfSize, cx + halfSize, cy + halfSize];
+        const pixels = Math.max(128, Math.ceil(halfSize * 2));
         const rows = await request({ FILTER: LAND_FILTER, FEATURE_COUNT: MAX_COUNT,
             BBOX: projected.join(','), WIDTH: pixels, HEIGHT: pixels }, signal);
-        const padded = bboxPolygon([...projection.inverse(projected.slice(0, 2)), ...projection.inverse(projected.slice(2))]);
-        if (rows.some(row => !booleanIntersects(feature(row.geometry), padded))) throw invalid();
+        // QGIS searches an envelope transformed to the layer CRS. Live Osh reads
+        // include valid candidates outside the requested EPSG:3857 rectangle.
+        // Spatial scope belongs to this exact full-polygon predicate, not to an
+        // assumed provider envelope. Identity, geometry and transfer checks above
+        // still apply to every candidate; no polygon is clipped or repaired.
         const scope = bboxPolygon(bounds);
         return result(rows.filter(row => booleanIntersects(feature(row.geometry), scope)), 'bounds');
     }

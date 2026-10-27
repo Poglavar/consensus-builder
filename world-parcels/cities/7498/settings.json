@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7498",
+  "name": "Tomsk, Russia",
+  "point": [
+    56.4935874403217,
+    84.9837662139804
+  ],
+  "bindings": [
+    {
+      "appCityId": "tomsk",
+      "runtimeConfig": {
+        "id": "tomsk",
+        "wupCityCode": "7498",
+        "label": "Tomsk, Russia",
+        "currency": {
+          "locale": "ru-RU",
+          "code": "RUB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            56.4935874403217,
+            84.9837662139804
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            56.4935874403217,
+            84.9837662139804
+          ],
+          "fallbackDataset": [
+            84.9837662139804,
+            56.4935874403217
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ru-tomsk-reestr54-cadastral",
+          "idPrefix": "RU-REESTR54-TOMSK-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; Rosreestr/EGRN context; three observed Tomsk parcels only; wider city coverage unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ru-tomsk-reestr54-cadastral",
+      "name": "Tomsk public cadastral viewer — three observed EGRN parcels",
+      "operator": "Кадастровые инженеры Новосибирска (independent public-map operator)",
+      "adapter": "reestr54-bounded",
+      "endpoint": "https://kk.reestr54.ru/tomsk/",
+      "countryCode": "RU",
+      "cityIds": [
+        "tomsk"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "RU-REESTR54-TOMSK-",
+      "idField": "cad_num",
+      "parcelNumberField": "cad_num",
+      "outFields": [
+        "cad_num"
+      ],
+      "nativeCrs": "EPSG:3857",
+      "srsName": "EPSG:4326",
+      "metricSrid": 32645,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "coverage": {
+        "scope": "explicit-native-id-subset",
+        "citywide": false,
+        "nativeIds": [
+          "70:21:0100054:3307",
+          "70:21:0100050:122",
+          "70:21:0000000:110"
+        ],
+        "basis": "Three discovery-observed full parcels read live by exact cadastral number; bounded finite scope only. No citywide enumeration or authoritative absence is claimed."
+      },
+      "scope": "Three observed native cadastral IDs only; wider Tomsk parcel fabric is not enumerated. Viewport completeness applies only to this explicit subset.",
+      "licence": "Unresolved; anonymous access is not an open-data or redistribution licence.",
+      "licenceNote": "Reuse permission, legal custody and upstream Rosreestr/NSPD lineage remain unverified.",
+      "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; Rosreestr/EGRN context; three observed Tomsk parcels only; wider city coverage unverified.",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://kk.reestr54.ru/tomsk/",
+          "https://kk.reestr54.ru/static/pkk/js/mapinit16102025.js"
+        ],
+        "jurisdiction": {
+          "basis": "Tomsk-specific public map, native district 70:21 and original queue point inside observed parcel."
+        }
+      },
+      "adapterModule": "reestr54-source.js"
+    }
+  ]
+}

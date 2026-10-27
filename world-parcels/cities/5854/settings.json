@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5854",
+  "name": "McAllen, United States",
+  "point": [
+    26.2212316871423,
+    -98.2340869585896
+  ],
+  "bindings": [
+    {
+      "appCityId": "mcallen",
+      "runtimeConfig": {
+        "id": "mcallen",
+        "wupCityCode": "5854",
+        "label": "McAllen, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            26.2212316871423,
+            -98.2340869585896
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            26.2212316871423,
+            -98.2340869585896
+          ],
+          "fallbackDataset": [
+            -98.2340869585896,
+            26.2212316871423
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-tx-mcallen-parcelediting-hcad",
+          "idPrefix": "US-TX-MCALLEN-HCAD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "City of McAllen GIS Division / HCAD Parcels. Source-returned WGS84 parcel reference geometry."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-tx-mcallen-parcelediting-hcad",
+      "name": "McAllen HCAD appraisal parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gismap.mcallen.net/publication/rest/services/ParcelEditing/MapServer/13",
+      "countryCode": "US",
+      "stateCode": "TX",
+      "cityIds": [
+        "mcallen"
+      ],
+      "defaultForCity": true,
+      "idField": "geo_id",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9-]+$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-TX-MCALLEN-HCAD-",
+      "outFields": [
+        "OBJECTID",
+        "geo_id"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "pageSize": 100,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32614,
+      "operator": "City of McAllen GIS Division / HCAD",
+      "catalogueUrl": "https://gismap.mcallen.net/publication/rest/services/ParcelEditing/MapServer/13?f=pjson",
+      "attribution": "City of McAllen GIS Division / HCAD Parcels. Source-returned WGS84 parcel reference geometry.",
+      "licenceNote": "Anonymous public query access verified. Published service item licenseInfo is empty; reuse terms remain unconfirmed. Public access is not a reuse grant.",
+      "scope": "Bounded central McAllen HCAD appraisal parcel observations. Exact queue-point and west-window zero hits are local coverage observations. Citywide and countywide completeness are unverified.",
+      "coverageNote": "Sparse HCAD sublayer; surrounding parcels and wider municipal coverage are not established.",
+      "caveats": [
+        "Native geo_id strings are preserved literally; OBJECTID is only a transport key.",
+        "Native sourceSpatialReference is WKID 102741/latest WKID 2279. Display extent is WKID 102100/3857; queries request outSR 4326. No fitted offset or geometry repair is applied.",
+        "Current/history semantics, wider duplicate and overlap behavior, datum operation/grid accuracy, survey accuracy and legal title remain unverified.",
+        "The independently promising OracleMap layer 2 is a separate source and is not bound here."
+      ]
+    }
+  ]
+}

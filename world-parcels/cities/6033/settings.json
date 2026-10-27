@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6033",
+  "name": "Bauru, Brazil",
+  "point": [
+    -22.3181273663533,
+    -49.074484645653
+  ],
+  "bindings": [
+    {
+      "appCityId": "bauru",
+      "runtimeConfig": {
+        "id": "bauru",
+        "wupCityCode": "6033",
+        "label": "Bauru, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -22.3181273663533,
+            -49.074484645653
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -22.3181273663533,
+            -49.074484645653
+          ],
+          "fallbackDataset": [
+            -49.074484645653,
+            -22.3181273663533
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-bauru-geopixel-base-lotes-2024",
+          "idPrefix": "BR-BAURU-GPX-GID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Prefeitura Municipal de Bauru / GeoPixel — Lotes"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-bauru-geopixel-base-lotes-2024",
+      "name": "Bauru municipal cadastral lots — GeoPixel Lotes 2024",
+      "adapter": "geopixel",
+      "endpoint": "https://bauru.geopixel.com.br/geopixelcidades-bauru_server/rest/json/getPointedGeometry?themeid=3353&x=-49.074484645653&y=-22.3181273663533&buffer=0.0005",
+      "idField": "gid",
+      "idPrefix": "BR-BAURU-GPX-GID-",
+      "idPattern": "^[1-9][0-9]{0,11}$",
+      "outFields": [
+        "gid"
+      ],
+      "countryCode": "BR",
+      "metricSrid": 32722,
+      "maxConcurrentQueries": 2,
+      "capabilities": {
+        "point": true,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true
+      },
+      "operator": "Prefeitura Municipal de Bauru / SEPLAN; GeoPixel municipal platform",
+      "attribution": "Prefeitura Municipal de Bauru / GeoPixel — Lotes",
+      "catalogueUrl": "https://www2.bauru.sp.gov.br/geoprocessamento/",
+      "licenceNote": "Anonymous public municipal viewer; explicit geometry redistribution licence not located. Retain attribution; reuse terms require follow-up.",
+      "scope": "Municipal cadastral Lotes theme 3353 / base_lotes_2024. Bounded samples only; no citywide completeness claim.",
+      "caveats": [
+        "Viewer declares EPSG:31982; geometry route returns longitude,latitude WKT. Datum operation and alignment require second-pass review.",
+        "Native gid repeated across independent anonymous sessions; cross-release stability unestablished.",
+        "Stale layer tree label piracicaba: contradicts getOpenLayerMap bauru:base_lotes_2024; see purpose evidence.",
+        "Currentness, overlap, broad coverage and redistribution terms remain follow-ups.",
+        "Bounded getDataByGeom selections request gid only in Web Mercator. Selections of 80 or more rows fail closed; upstream selection completeness/paging and citywide extent remain unestablished."
+      ],
+      "maxResponseBytes": 2097152,
+      "maxFeatures": 79,
+      "declaredNativeCrs": "EPSG:31982",
+      "outputCrs": "EPSG:4326",
+      "browserTransport": "relay",
+      "cityIds": [
+        "bauru"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

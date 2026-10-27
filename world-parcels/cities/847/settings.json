@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "847",
+  "name": "Tripoli, Lebanon",
+  "point": [
+    34.4394204360595,
+    35.8416069020689
+  ],
+  "bindings": [
+    {
+      "appCityId": "tripoli",
+      "runtimeConfig": {
+        "id": "tripoli",
+        "wupCityCode": "847",
+        "label": "Tripoli, Lebanon",
+        "currency": {
+          "locale": "ar-LB",
+          "code": "LBP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            34.4394204360595,
+            35.8416069020689
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            34.4394204360595,
+            35.8416069020689
+          ],
+          "fallbackDataset": [
+            35.8416069020689,
+            34.4394204360595
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "lb-aub-icilgis-tripoli-fair-parcels",
+          "idPrefix": "LB-AUB-TRIPOLI-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "American University of Beirut, Inclusive Cloud Innovation Lab; Tripoli Fair spatial archive (Rice Spatial Studies Lab / UNESCO cooperation). Historical parcels; not a current LRC registry."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "lb-aub-icilgis-tripoli-fair-parcels",
+      "name": "AUB ICIL Tripoli Fair historical parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://icilgis.aub.edu.lb/server/rest/services/Hosted/tripoliFair_Layers_GDB/FeatureServer/6",
+      "idField": "globalid",
+      "idType": "string",
+      "idPattern": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+      "idPrefix": "LB-AUB-TRIPOLI-",
+      "objectIdField": "objectid",
+      "outFields": [
+        "objectid",
+        "globalid",
+        "type"
+      ],
+      "attributeFilters": {
+        "type": [
+          "Parcel"
+        ]
+      },
+      "pageSize": 100,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 25000,
+      "maxConcurrentQueries": 1,
+      "minRequestIntervalMs": 100,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "countryCode": "LB",
+      "country": "Lebanon",
+      "metricSrid": 32636,
+      "cityIds": [
+        "tripoli"
+      ],
+      "catalogueUrl": "https://icil.aub.edu.lb/tripoli-fair",
+      "attribution": "American University of Beirut, Inclusive Cloud Innovation Lab; Tripoli Fair spatial archive (Rice Spatial Studies Lab / UNESCO cooperation). Historical parcels; not a current LRC registry.",
+      "licenceNote": "Anonymous public layer; no reuse licence established in inspected service metadata. Attribution retained; reuse terms require second-pass confirmation.",
+      "scope": "Bounded historical Tripoli Fair-area parcel fabric, approximately [35.818354,34.429652,35.834759,34.445877]. Includes historical versions without invented temporal filtering. Exact WUP neighborhood lies outside coverage. No citywide completeness, currentness or legal-title claim.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "LB",
+          "basis": "AUB-hosted ParcelsPoly in western Tripoli; numbered type=Parcel native GlobalID rows in the archival Tripoli Fair project."
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

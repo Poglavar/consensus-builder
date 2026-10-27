@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2928",
+  "name": "Macapá, Brazil",
+  "point": [
+    0.0431561083287672,
+    -51.0688251135422
+  ],
+  "bindings": [
+    {
+      "appCityId": "macapa",
+      "runtimeConfig": {
+        "id": "macapa",
+        "wupCityCode": "2928",
+        "label": "Macapá, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            0.0431561083287672,
+            -51.0688251135422
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            0.0431561083287672,
+            -51.0688251135422
+          ],
+          "fallbackDataset": [
+            -51.0688251135422,
+            0.0431561083287672
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-sicar-ap-macapa-rural-imoveis",
+          "idPrefix": "BR-MACAPA-CAR-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Serviço Florestal Brasileiro / SICAR — Cadastro Ambiental Rural"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-sicar-ap-macapa-rural-imoveis",
+      "name": "Macapá rural-property CAR perimeters (SFB / SICAR)",
+      "adapter": "wfs",
+      "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+      "version": "2.0.0",
+      "featureType": "sicar:sicar_imoveis_ap",
+      "geometryField": "geo_area_imovel",
+      "idField": "cod_imovel",
+      "idType": "string",
+      "idPrefix": "BR-MACAPA-CAR-",
+      "idPattern": "^AP-1600303-[0-9A-F]{32}$",
+      "outFields": [
+        "cod_imovel",
+        "cod_municipio_ibge"
+      ],
+      "requestProperties": true,
+      "attributeFilters": {
+        "cod_municipio_ibge": 1600303
+      },
+      "paginationIdentity": "native-id",
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 100,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "sourceCrs": "EPSG:4674",
+      "responseAxisOrder": "longitude-latitude",
+      "metricSrid": 32622,
+      "countryCode": "BR",
+      "cityIds": [
+        "macapa"
+      ],
+      "operator": "Serviço Florestal Brasileiro / SICAR",
+      "attribution": "Serviço Florestal Brasileiro / SICAR — Cadastro Ambiental Rural",
+      "catalogueUrl": "https://www.gov.br/car/pt-br/assuntos/sobre-o-car",
+      "licenceUrl": "https://geoserver.car.gov.br/geoserver/web/",
+      "licenceNote": "Public WFS access demonstrated; the page footer licence does not establish a dataset redistribution licence. Confirm dataset reuse terms in second-pass review.",
+      "scope": "Bounded declared rural-property/possession perimeters in IBGE municipality 1600303. The unchanged WUP locator is in the urban core, where coverage is unestablished. Not municipal urban fiscal lots, legal title, survey accuracy, citywide coverage or completeness.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "defaultForCity": true,
+      "identityRecipe": "BR-MACAPA-CAR- followed by exact source-native cod_imovel in the SICAR AP namespace. GeoServer FIDs are transport identifiers only.",
+      "identityStabilityLimit": "Independent full-geometry exact reads checked for this attempt; continuity across refreshes, cancellation/history and overlapping-claim semantics remain second-pass follow-ups."
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6189",
+  "name": "Kahramanmaraş, Turkey",
+  "point": [
+    37.5814279721906,
+    36.9113462378488
+  ],
+  "bindings": [
+    {
+      "appCityId": "kahramanmaras",
+      "runtimeConfig": {
+        "id": "kahramanmaras",
+        "wupCityCode": "6189",
+        "label": "Kahramanmaraş, Turkey",
+        "currency": {
+          "locale": "tr-TR",
+          "code": "TRY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            37.5814279721906,
+            36.9113462378488
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            37.5814279721906,
+            36.9113462378488
+          ],
+          "fallbackDataset": [
+            36.9113462378488,
+            37.5814279721906
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tr-kahramanmaras-bb-megsis-parsel",
+          "idPrefix": "tr-kahramanmaras-bb-megsis-parsel:globalid=",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Kahramanmaraş Büyükşehir Belediyesi Kent Rehberi / Coğrafi Bilgi Sistemleri"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tr-kahramanmaras-bb-megsis-parsel",
+      "name": "Kahramanmaraş Büyükşehir Belediyesi Megsis_Parsel",
+      "adapter": "arcgis",
+      "endpoint": "https://kentrehberi.kahramanmaras.bel.tr/server/rest/services/Megsis_Parsel/MapServer/0",
+      "queryMode": "identify",
+      "idField": "globalid",
+      "idPrefix": "tr-kahramanmaras-bb-megsis-parsel:globalid=",
+      "idType": "string",
+      "parcelNumberField": "globalid",
+      "outFields": [
+        "globalid"
+      ],
+      "countryCode": "TR",
+      "cityIds": [
+        "kahramanmaras"
+      ],
+      "metricSrid": 32637,
+      "sourceCrs": "EPSG:4326",
+      "responseSrid": 4326,
+      "boundsSrid": 4326,
+      "identifyExtent": [
+        36.14892844796003,
+        37.12661763443816,
+        37.83634113195802,
+        38.64463499419708
+      ],
+      "identifyRecordLimit": 2000,
+      "maxBboxKm2": 0.1,
+      "maxConcurrentQueries": 2,
+      "timeoutMs": 20000,
+      "browserTransport": "relay",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true
+      },
+      "operator": "Kahramanmaraş Büyükşehir Belediyesi",
+      "attribution": "Kahramanmaraş Büyükşehir Belediyesi Kent Rehberi / Coğrafi Bilgi Sistemleri",
+      "licenceNote": "Public municipal parcel viewer and anonymous REST identify. No explicit redistribution licence or automated reuse/rate terms found; retain as follow-up.",
+      "scope": "Bounded central Kahramanmaraş cadastral parcel observations. Source extent is not a coverage boundary; citywide completeness, current/historic status and cadastral datum lineage unverified.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "TR",
+          "basis": "First-party municipal Kent Rehberi Parsel Sorgu widget and Megsis_Parsel polygon layer.",
+          "evidence": [
+            "https://kentrehberi.kahramanmaras.bel.tr/kent_rehberi/cdn/1/config.json",
+            "https://kentrehberi.kahramanmaras.bel.tr/server/rest/services/Megsis_Parsel/MapServer/0?f=json"
+          ]
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

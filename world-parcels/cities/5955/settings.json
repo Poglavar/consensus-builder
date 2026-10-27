@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5955",
+  "name": "Saltillo, Mexico",
+  "point": [
+    25.4195427495544,
+    -100.985381620302
+  ],
+  "bindings": [
+    {
+      "appCityId": "saltillo",
+      "runtimeConfig": {
+        "id": "saltillo",
+        "wupCityCode": "5955",
+        "label": "Saltillo, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            25.4195427495544,
+            -100.985381620302
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            25.4195427495544,
+            -100.985381620302
+          ],
+          "fallbackDataset": [
+            -100.985381620302,
+            25.4195427495544
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-saltillo-visor-urban-predios",
+          "idPrefix": "MX-SALTILLO-VISOR|idCarto|",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Municipio de Saltillo · Visor Saltillo · municipal predios"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-saltillo-visor-urban-predios",
+      "name": "Visor Saltillo municipal predios",
+      "adapter": "saltillo-visor",
+      "endpoint": "https://visor.saltillo.gob.mx/buscar_php_puro_utm.php",
+      "locatorEndpoint": "https://visor.saltillo.gob.mx/buscar_por_texto.php",
+      "operator": "Municipio de Saltillo / Catastro / Visor Saltillo",
+      "countryCode": "MX",
+      "cityIds": [
+        "saltillo"
+      ],
+      "idField": "idCarto",
+      "parcelNumberField": "idCarto",
+      "idPrefix": "MX-SALTILLO-VISOR|idCarto|",
+      "idType": "integer",
+      "outFields": [
+        "idCarto"
+      ],
+      "geometryField": "coords",
+      "responseSrid": 4326,
+      "responseCrs": "EPSG:4326",
+      "nativeCrsDeclared": false,
+      "responseAxisOrder": "lat,lng objects converted to GeoJSON longitude,latitude",
+      "metricSrid": 32614,
+      "queryMode": "point-neighborhood",
+      "capabilities": {
+        "point": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "areaCompleteness": "unverified",
+      "maxResponseBytes": 16777216,
+      "maxFeatures": 15000,
+      "maxAreaKm2": 0.05,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "scope": "Bounded municipal urban predios returned around a map point. Area completeness, radius, transfer behavior and municipal extent are unverified. Unidentified objects are excluded; distinct native IDs are preserved even when polygons overlap. Adjacent small cells share bounded 0.004-degree map-point requests for 30 seconds; exact-ID operations independently locate and refetch their native rings. Unusable source rings are reported and omitted without repair; an exact read of an unusable native ID fails. A native ID with conflicting rings is reported as ambiguous and excluded, never resolved by taking the first ring. Requested ambiguous IDs fail exact reads.",
+      "attribution": "Municipio de Saltillo · Visor Saltillo · municipal predios",
+      "licenceNote": "Anonymous public viewer access. No explicit reuse licence found; licence/republication terms remain a second-pass follow-up.",
+      "discovery": {
+        "jurisdiction": {
+          "basis": "Official Saltillo Catastro/e-Catastro and Visor predio lookup; identified municipal rings, not optional planning overlays."
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

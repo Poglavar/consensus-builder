@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8103",
+  "name": "Petrolina, Brazil",
+  "point": [
+    -9.39892391278909,
+    -40.5095220912627
+  ],
+  "bindings": [
+    {
+      "appCityId": "petrolina",
+      "runtimeConfig": {
+        "id": "petrolina",
+        "wupCityCode": "8103",
+        "label": "Petrolina, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -9.39892391278909,
+            -40.5095220912627
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -9.39892391278909,
+            -40.5095220912627
+          ],
+          "fallbackDataset": [
+            -40.5095220912627,
+            -9.39892391278909
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-incra-geonode-parcels",
+          "idPrefix": "BR-INCRA-SIGEF-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "INCRA / SIGEF GEO · SERPRO GeoNode · rural cadastral parcels"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-incra-geonode-parcels",
+      "name": "INCRA / SIGEF GEO rural cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://geonodeincra.serpro.gov.br/geoserver/ows",
+      "featureType": "geonode:sigef_geo",
+      "version": "1.0.0",
+      "idField": "parcela_codigo",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "idPrefix": "BR-INCRA-SIGEF-",
+      "outFields": [
+        "parcela_codigo"
+      ],
+      "geometryField": "geometry",
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "countryCode": "BR",
+      "metricSrid": 32723,
+      "cityIds": [
+        "petrolina"
+      ],
+      "scope": "Federal rural SIGEF cadastral parcels within São Luís. Verified polygons occupy one cluster about 4 km south of the unchanged city locator. Municipal urban tax-cadastre and citywide completeness are unverified.",
+      "attribution": "INCRA / SIGEF GEO · SERPRO GeoNode · rural cadastral parcels",
+      "catalogueUrl": "https://geonodeincra.serpro.gov.br/catalogue/csw",
+      "licenceUrl": "https://geoportal.incra.gov.br/developer/",
+      "licenceNote": "INCRA developer documentation permits using OGC services in applications; no explicit dataset redistribution licence or refresh cadence established. Attribute INCRA / SIGEF GEO and verify terms for intended reuse.",
+      "defaultForCity": true,
+      "metricSridByCity": {
+        "petrolina": 32724
+      }
+    }
+  ]
+}

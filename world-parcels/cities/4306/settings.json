@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4306",
+  "name": "Villavicencio, Colombia",
+  "point": [
+    4.13521945098606,
+    -73.6256559223982
+  ],
+  "bindings": [
+    {
+      "appCityId": "villavicencio",
+      "runtimeConfig": {
+        "id": "villavicencio",
+        "wupCityCode": "4306",
+        "label": "Villavicencio, Colombia",
+        "currency": {
+          "locale": "es-CO",
+          "code": "COP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            4.13521945098606,
+            -73.6256559223982
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            4.13521945098606,
+            -73.6256559223982
+          ],
+          "fallbackDataset": [
+            -73.6256559223982,
+            4.13521945098606
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "co-villavicencio-municipal-u-terreno-arcgis",
+          "idPrefix": "CO-VILLAVICENCIO-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Alcaldía de Villavicencio / Secretaría de Catastro y Espacio Público · U_TERRENO"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "co-villavicencio-municipal-u-terreno-arcgis",
+      "name": "Villavicencio municipal U_TERRENO cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://services7.arcgis.com/c0V1cyhKZwmv8Gtf/ArcGIS/rest/services/U_TERRENO/FeatureServer/1",
+      "idField": "CODIGO",
+      "idType": "string",
+      "idPattern": "^[0-9]{30}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CO-VILLAVICENCIO-",
+      "parcelNumberField": "CODIGO",
+      "outFields": [
+        "OBJECTID",
+        "CODIGO"
+      ],
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "countryCode": "CO",
+      "metricSrid": 32618,
+      "sourceCrs": "EPSG:3116",
+      "cityIds": [
+        "villavicencio"
+      ],
+      "operator": "Alcaldía de Villavicencio / Secretaría de Catastro y Espacio Público",
+      "attribution": "Alcaldía de Villavicencio / Secretaría de Catastro y Espacio Público · U_TERRENO",
+      "scope": "Public municipal cadastral terrains. Useful bounded urban samples only; municipal boundary correspondence, rural coverage and all-city completeness are unverified.",
+      "licenceNote": "Anonymous public cadastral consultation; no explicit reuse licence observed in municipal notice or service/layer copyright metadata. Reuse terms require follow-up.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CO",
+          "basis": "Official municipal notice confirms cadastral GIS purpose; live first-party service description identifies cadastral terrain for Villavicencio.",
+          "evidence": [
+            "evidence/purpose-and-currency.json",
+            "evidence/service-metadata.json",
+            "evidence/layer-metadata.json"
+          ]
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5063",
+  "name": "Tucson, United States",
+  "point": [
+    32.2341331710701,
+    -110.899238325088
+  ],
+  "bindings": [
+    {
+      "appCityId": "tucson",
+      "runtimeConfig": {
+        "id": "tucson",
+        "wupCityCode": "5063",
+        "label": "Tucson, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            32.2341331710701,
+            -110.899238325088
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            32.2341331710701,
+            -110.899238325088
+          ],
+          "fallbackDataset": [
+            -110.899238325088,
+            32.2341331710701
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-az-adwr-pima-parcels",
+          "idPrefix": "US-AZ-PIMA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Arizona Department of Water Resources; Pima County Assessor / Pima County GIS"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-az-adwr-pima-parcels",
+      "name": "ADWR Pima County Assessor parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://services.arcgis.com/C34zQ7veRS0V1t04/arcgis/rest/services/Parcels/FeatureServer/10",
+      "idField": "ID",
+      "idType": "string",
+      "idPattern": "^PM[A-Za-z0-9]{1,18}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-AZ-PIMA-",
+      "outFields": [
+        "OBJECTID",
+        "ID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "US",
+      "stateCode": "AZ",
+      "metricSrid": 32612,
+      "cityIds": [
+        "tucson"
+      ],
+      "operator": "Arizona Department of Water Resources; upstream Pima County Assessor / Pima County GIS",
+      "attribution": "Arizona Department of Water Resources; Pima County Assessor / Pima County GIS",
+      "scope": "Pima County assessor parcel layer. Initial live qualification is limited to the Tucson queue-point parcel; municipal and citywide completeness are unverified.",
+      "licenceUrl": "https://www.azwater.gov/gis-data-and-maps",
+      "licenceNote": "Public anonymous live service, provided as-is. ADWR retains intellectual property interests and requests that recipients obtain copies directly rather than redistribute data for reuse. Reuse review remains open; technical qualification is not legal clearance.",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=c33b63281f80430f89db6f3401154674",
+      "defaultForCity": true
+    }
+  ]
+}

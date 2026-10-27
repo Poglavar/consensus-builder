@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "10468",
+  "name": "Huaibei, China",
+  "point": [
+    33.9761314390129,
+    116.788811462295
+  ],
+  "bindings": [
+    {
+      "appCityId": "huaibei",
+      "runtimeConfig": {
+        "id": "huaibei",
+        "wupCityCode": "10468",
+        "label": "Huaibei, China",
+        "currency": {
+          "locale": "zh-CN",
+          "code": "CNY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            33.9761314390129,
+            116.788811462295
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            33.9761314390129,
+            116.788811462295
+          ],
+          "fallbackDataset": [
+            116.788811462295,
+            33.9761314390129
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "cn-huaibei-natural-resources-cadastral-viewer",
+          "idPrefix": "CN-HUAIBEI-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Huaibei Municipal Natural Resources and Planning Bureau · public cadastral-map query service"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "cn-huaibei-natural-resources-cadastral-viewer",
+      "endpoint": "http://60.172.200.224:9293/getDJ/hbdj/tb-parcel/list",
+      "adapter": "huaibei-cadastre",
+      "idPrefix": "CN-HUAIBEI-",
+      "idField": "ID",
+      "idType": "integer",
+      "outFields": [
+        "ID"
+      ],
+      "name": "Huaibei municipal registration-based cadastral parcels",
+      "operator": "Huaibei Municipal Natural Resources and Planning Bureau",
+      "countryCode": "CN",
+      "cityIds": [
+        "huaibei"
+      ],
+      "defaultForCity": true,
+      "metricSrid": 32650,
+      "returnsWGS84": true,
+      "browserTransport": "relay",
+      "maxFeatures": 1000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 16777216,
+      "maxConcurrentQueries": 1,
+      "catalogueUrl": "https://zrghj.huaibei.gov.cn/gzdt/jndt/57377631.html",
+      "attribution": "Huaibei Municipal Natural Resources and Planning Bureau · public cadastral-map query service",
+      "scope": "Municipal registered above-ground parcel layer (type=0); bounded city-centre proof only. No citywide completeness, currentness or survey accuracy claim. Native source coordinate arrays are unchanged; CRS authority and datum are pending independent second-pass review.",
+      "licenceNote": "Anonymous public viewer; no explicit open-data reuse licence identified. Reuse terms remain a follow-up.",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://zrghj.huaibei.gov.cn/gzdt/jndt/57377631.html"
+        ],
+        "jurisdiction": {
+          "countryCode": "CN",
+          "city": "Huaibei",
+          "basis": "Municipal notice explicitly links this cadastral viewer and identifies registration-based parcel purpose."
+        }
+      }
+    }
+  ]
+}

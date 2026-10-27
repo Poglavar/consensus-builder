@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5555",
+  "name": "Cheboksary, Russia",
+  "point": [
+    56.1183130669807,
+    47.2546672928967
+  ],
+  "bindings": [
+    {
+      "appCityId": "cheboksary",
+      "runtimeConfig": {
+        "id": "cheboksary",
+        "wupCityCode": "5555",
+        "label": "Cheboksary, Russia",
+        "currency": {
+          "locale": "ru-RU",
+          "code": "RUB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            56.1183130669807,
+            47.2546672928967
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            56.1183130669807,
+            47.2546672928967
+          ],
+          "fallbackDataset": [
+            47.2546672928967,
+            56.1183130669807
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ru-chuvashia-reestr54-cheboksary-cadastral",
+          "idPrefix": "RU-REESTR54-CHEBOKSARY-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; three observed Cheboksary EGRN parcels only; wider city coverage unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ru-chuvashia-reestr54-cheboksary-cadastral",
+      "name": "Cheboksary public cadastral map — three observed EGRN parcels",
+      "operator": "Кадастровые инженеры Новосибирска (independent public-map operator)",
+      "adapter": "reestr54-bounded",
+      "endpoint": "https://kk.reestr54.ru/chuvashskaya-respublika/",
+      "countryCode": "RU",
+      "cityIds": [
+        "cheboksary"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "RU-REESTR54-CHEBOKSARY-",
+      "idField": "cad_num",
+      "parcelNumberField": "cad_num",
+      "outFields": [
+        "cad_num"
+      ],
+      "nativeCrs": "EPSG:3857",
+      "srsName": "EPSG:4326",
+      "metricSrid": 32638,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "coverage": {
+        "scope": "explicit-native-id-subset",
+        "citywide": false,
+        "nativeIds": [
+          "21:01:010609:208",
+          "21:01:030202:67",
+          "21:01:030313:102"
+        ],
+        "basis": "Three discovery-observed full parcels read live by exact cadastral number; bounded finite scope only. No citywide enumeration or authoritative absence is claimed."
+      },
+      "scope": "Three observed native cadastral IDs only; wider Cheboksary parcel fabric is not enumerated. Viewport completeness applies only to this explicit subset.",
+      "licence": "Unresolved; anonymous access is not an open-data or redistribution licence.",
+      "licenceNote": "Reuse permission, legal custody and upstream Rosreestr/NSPD lineage remain unverified.",
+      "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; three observed Cheboksary EGRN parcels only; wider city coverage unverified.",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://kk.reestr54.ru/chuvashskaya-respublika/",
+          "https://kk.reestr54.ru/static/pkk/js/mapinit16102025.js"
+        ],
+        "jurisdiction": {
+          "basis": "Chuvash Republic public cadastral map and native district 21:01; three records around the unchanged Cheboksary queue point."
+        }
+      },
+      "adapterModule": "reestr54-source.js"
+    }
+  ]
+}

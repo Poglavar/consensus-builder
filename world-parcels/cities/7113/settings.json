@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7113",
+  "name": "Orenburg, Russia",
+  "point": [
+    51.795436024663,
+    55.1172994900619
+  ],
+  "bindings": [
+    {
+      "appCityId": "orenburg",
+      "runtimeConfig": {
+        "id": "orenburg",
+        "wupCityCode": "7113",
+        "label": "Orenburg, Russia",
+        "currency": {
+          "locale": "ru-RU",
+          "code": "RUB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            51.795436024663,
+            55.1172994900619
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            51.795436024663,
+            55.1172994900619
+          ],
+          "fallbackDataset": [
+            55.1172994900619,
+            51.795436024663
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ru-orenburg-reestr54-public-cadastre",
+          "idPrefix": "RU-REESTR54-ORENBURG-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Кадастровые инженеры г. Оренбург / reestr54.ru; independent public cadastral viewer; three observed land parcels only; citywide coverage unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ru-orenburg-reestr54-public-cadastre",
+      "name": "Orenburg public cadastral map — three observed land parcels",
+      "operator": "Кадастровые инженеры г. Оренбург / reestr54.ru (independent public cadastral viewer; official custody unverified)",
+      "adapter": "reestr54-bounded",
+      "adapterModule": "reestr54-source.js",
+      "endpoint": "https://kk.reestr54.ru/orenburgskaya-oblast/",
+      "countryCode": "RU",
+      "cityIds": [
+        "orenburg"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "RU-REESTR54-ORENBURG-",
+      "idField": "cad_num",
+      "parcelNumberField": "cad_num",
+      "outFields": [
+        "cad_num"
+      ],
+      "nativeCrs": "EPSG:3857",
+      "srsName": "EPSG:4326",
+      "metricSrid": 32640,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "coverage": {
+        "scope": "explicit-native-id-subset",
+        "citywide": false,
+        "nativeIds": [
+          "56:44:0404010:30",
+          "56:44:0404010:31",
+          "56:44:0244005:6085"
+        ],
+        "basis": "Three accepted native cadastral numbers at the unchanged Orenburg locator and a southern city point. Runtime reads only this explicitly declared subset live; this is not systematic area enumeration."
+      },
+      "scope": "Three observed Orenburg land parcels only; broader city and regional completeness unverified. No authoritative absence.",
+      "licence": "Unresolved; anonymous access does not establish geometry reuse or redistribution permission.",
+      "licenceNote": "Operator/upstream custody, currentness and reuse permission remain second-pass follow-ups.",
+      "attribution": "Кадастровые инженеры г. Оренбург / reestr54.ru; independent public cadastral viewer; three observed land parcels only; citywide coverage unverified.",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://kk.reestr54.ru/orenburgskaya-oblast/",
+          "https://kk.reestr54.ru/static/pkk/js/mapinit16102025.js"
+        ],
+        "jurisdiction": {
+          "basis": "Orenburg Oblast viewer, exact queue locator and southern city observations; cadastral district 56:44."
+        }
+      }
+    }
+  ]
+}

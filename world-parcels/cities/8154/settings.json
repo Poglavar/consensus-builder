@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8154",
+  "name": "Kamoke, Pakistan",
+  "point": [
+    31.976363675421,
+    74.2232766931292
+  ],
+  "bindings": [
+    {
+      "appCityId": "kamoke",
+      "runtimeConfig": {
+        "id": "kamoke",
+        "wupCityCode": "8154",
+        "label": "Kamoke, Pakistan",
+        "currency": {
+          "locale": "en-PK",
+          "code": "PKR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            31.976363675421,
+            74.2232766931292
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            31.976363675421,
+            74.2232766931292
+          ],
+          "fallbackDataset": [
+            74.2232766931292,
+            31.976363675421
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "pk-pulse-gujranwala-kamoke-cadastral",
+          "idPrefix": "pk-pulse-gujranwala-kamoke-objectid:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "pk-pulse-gujranwala-kamoke-cadastral",
+      "name": "Punjab PULSE Gujranwala cadastral reference polygons — Kamoke",
+      "adapter": "pulse-public",
+      "endpoint": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/8",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "pk-pulse-gujranwala-kamoke-objectid:",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "boundsSrid": 3857,
+      "boundsProjection": "EPSG:3857",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "countryCode": "PK",
+      "metricSrid": 32643,
+      "cityIds": [
+        "kamoke"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "operator": "Punjab Urban Land Systems Enhancement (PULSE) / Punjab Land Records Authority",
+      "catalogueUrl": "https://lis.pulse.gop.pk/",
+      "attribution": "Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons",
+      "scope": "Gujranwala layer 8; bounded Kamonki Zarai parcel availability near the unchanged Kamoke locator. Municipal and citywide completeness unverified. Mussavie-based indicative property lines, not legal boundaries.",
+      "licenceNote": "Public viewer offers anonymous parcel-reference geometry. No explicit open-data reuse licence established; licence, currentness, survey accuracy and long-term OBJECTID continuity remain review follow-ups. Personal attributes and public reader tokens are excluded."
+    }
+  ]
+}

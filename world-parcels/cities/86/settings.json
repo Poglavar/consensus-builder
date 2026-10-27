@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "86",
+  "name": "Kaliningrad, Russia",
+  "point": [
+    54.7148268101403,
+    20.5072107472647
+  ],
+  "bindings": [
+    {
+      "appCityId": "kaliningrad",
+      "runtimeConfig": {
+        "id": "kaliningrad",
+        "wupCityCode": "86",
+        "label": "Kaliningrad, Russia",
+        "currency": {
+          "locale": "ru-RU",
+          "code": "RUB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            54.7148268101403,
+            20.5072107472647
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            54.7148268101403,
+            20.5072107472647
+          ],
+          "fallbackDataset": [
+            20.5072107472647,
+            54.7148268101403
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ru-reestr54-kaliningrad-cadastral",
+          "idPrefix": "RU-REESTR54-KALININGRAD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; Rosreestr/EGRN context; three observed Kaliningrad parcels only; wider city coverage unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ru-reestr54-kaliningrad-cadastral",
+      "name": "Kaliningrad public cadastral viewer — three observed EGRN parcels",
+      "operator": "Кадастровые инженеры Новосибирска (independent public-map operator)",
+      "adapter": "reestr54-bounded",
+      "endpoint": "https://kk.reestr54.ru/kaliningrad/",
+      "countryCode": "RU",
+      "cityIds": [
+        "kaliningrad"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "RU-REESTR54-KALININGRAD-",
+      "idField": "cad_num",
+      "parcelNumberField": "cad_num",
+      "outFields": [
+        "cad_num"
+      ],
+      "nativeCrs": "EPSG:3857",
+      "srsName": "EPSG:4326",
+      "metricSrid": 32634,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "coverage": {
+        "scope": "explicit-native-id-subset",
+        "citywide": false,
+        "nativeIds": [
+          "39:15:132311:22",
+          "39:15:131919:1446",
+          "39:15:150503:1"
+        ],
+        "basis": "Three discovery-observed full land parcels returned live by exact cadastral number on two independent reads. No citywide enumeration or authoritative absence is claimed."
+      },
+      "scope": "Three observed native cadastral IDs only; wider Kaliningrad parcel fabric is not enumerated. Viewport completeness applies only to this explicit subset.",
+      "licence": "Unresolved; anonymous access is not an open-data or redistribution licence.",
+      "licenceNote": "Reuse permission, legal custody and upstream Rosreestr/NSPD lineage remain unverified.",
+      "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; Rosreestr/EGRN context; three observed Kaliningrad parcels only; wider city coverage unverified.",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://kk.reestr54.ru/kaliningrad/",
+          "https://kk.reestr54.ru/static/pkk/js/mapinit16102025.js"
+        ],
+        "jurisdiction": {
+          "basis": "Kaliningrad-specific public cadastral map and native cadastral district 39:15; central observed polygon contains the unchanged queue point."
+        }
+      },
+      "adapterModule": "reestr54-source.js"
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3976",
+  "name": "Maringá, Brazil",
+  "point": [
+    -23.4200314948645,
+    -51.9182787611961
+  ],
+  "bindings": [
+    {
+      "appCityId": "maringa",
+      "runtimeConfig": {
+        "id": "maringa",
+        "wupCityCode": "3976",
+        "label": "Maringá, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -23.4200314948645,
+            -51.9182787611961
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -23.4200314948645,
+            -51.9182787611961
+          ],
+          "fallbackDataset": [
+            -51.9182787611961,
+            -23.4200314948645
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-pr-paranacidade-lote-cadastral",
+          "idPrefix": "BR-PR-PARANACIDADE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Paranacidade / Paraná Interativo / Governo do Estado do Paraná"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-pr-paranacidade-lote-cadastral",
+      "name": "Paraná Interativo Lote Cadastral — Maringá",
+      "adapter": "arcgis",
+      "endpoint": "https://paranainterativo.pr.gov.br/interativo2/rest/services/BaseDadosParanaInterativo/FeatureServer/13",
+      "idField": "CdLote_A",
+      "idType": "string",
+      "idPattern": "^[0-9]{1,16}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "BR-PR-PARANACIDADE-",
+      "outFields": [
+        "OBJECTID",
+        "CdLote_A",
+        "CdMunicipioIBGE"
+      ],
+      "attributeFilters": {
+        "CdMunicipioIBGE": "4115200"
+      },
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "countryCode": "BR",
+      "metricSrid": 32722,
+      "operator": "Paranacidade / Governo do Estado do Paraná",
+      "attribution": "Paranacidade / Paraná Interativo / Governo do Estado do Paraná",
+      "scope": "Maringá-coded cadastral lot records (CdMunicipioIBGE=4115200). Bounded live evidence only; citywide, rural and district completeness is unverified.",
+      "licenceNote": "Anonymous first-party query/download service. Layer copyrightText is blank; no explicit reuse licence, source vintage or update cadence verified.",
+      "sourcePurpose": "Official Lote Cadastral cadastral lot polygon layer; not a planning overlay or sale listing.",
+      "sourceCrs": "EPSG:31982",
+      "cityIds": [
+        "maringa"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

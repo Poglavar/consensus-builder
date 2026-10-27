@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3436",
+  "name": "Corrientes, Argentina",
+  "point": [
+    -27.4831823745684,
+    -58.8116752711116
+  ],
+  "bindings": [
+    {
+      "appCityId": "corrientes",
+      "runtimeConfig": {
+        "id": "corrientes",
+        "wupCityCode": "3436",
+        "label": "Corrientes, Argentina",
+        "currency": {
+          "locale": "es-AR",
+          "code": "ARS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -27.4831823745684,
+            -58.8116752711116
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -27.4831823745684,
+            -58.8116752711116
+          ],
+          "fallbackDataset": [
+            -58.8116752711116,
+            -27.4831823745684
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "AR-CORRIENTES-MUNI-IDEMCC-WMS-PARCELS",
+          "idPrefix": "AR-CORRIENTES-MUNI-GID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Municipalidad de la Ciudad de Corrientes / Dirección General de Sistemas de Información Geográfica / IDEMCC — Parcelario Catastral"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "AR-CORRIENTES-MUNI-IDEMCC-WMS-PARCELS",
+      "name": "Corrientes IDEMCC municipal cadastral parcels",
+      "adapter": "corrientes-wms",
+      "endpoint": "https://gisdesa.ciudaddecorrientes.gov.ar:8282/geoserver/wms",
+      "countryCode": "AR",
+      "cityIds": [
+        "corrientes"
+      ],
+      "defaultForCity": true,
+      "layer": "informacion_catastral:vw_parcelas",
+      "idField": "gid",
+      "idFields": [
+        "gid"
+      ],
+      "idPrefix": "AR-CORRIENTES-MUNI-GID-",
+      "outFields": [
+        "gid"
+      ],
+      "geometryField": "the_geom",
+      "sourceCrs": "EPSG:22185",
+      "responseCrs": "EPSG:4326",
+      "responseSrid": 4326,
+      "outputSrid": 4326,
+      "responseAxisOrder": "longitude-latitude",
+      "metricSrid": 32721,
+      "version": "1.3.0",
+      "maxFeatures": 500,
+      "maxResponseBytes": 8388608,
+      "maxAreaKm2": 0.25,
+      "maxBboxKm2": 0.25,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+      "operator": "Municipalidad de la Ciudad de Corrientes / Dirección General de Sistemas de Información Geográfica / IDEMCC",
+      "attribution": "Municipalidad de la Ciudad de Corrientes / Dirección General de Sistemas de Información Geográfica / IDEMCC — Parcelario Catastral",
+      "catalogueUrl": "https://gis.ciudaddecorrientes.gov.ar/idemcc/",
+      "licenceNote": "Anonymous public municipal geoservices; explicit geometry reuse licence and required attribution terms remain unverified follow-ups.",
+      "scope": "Bounded municipal parcel evidence near the unchanged WUP point. Neither citywide completeness nor current/historic semantics or survey alignment is established.",
+      "capabilities": {
+        "point": true,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "identityProvenance": {
+        "kind": "native",
+        "field": "gid",
+        "recipe": "AR-CORRIENTES-MUNI-GID- plus exact decimal native gid. Each KML read has one numeric gid equality filter; a second feature is rejected. Generated GeoServer fids and row order are ignored."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "AR",
+          "basis": "The official municipal IDEMCC viewer labels this layer Parcelario Catastral; its JavaScript maps that label to informacion_catastral:vw_parcelas on the bound endpoint.",
+          "evidence": [
+            "https://gis.ciudaddecorrientes.gov.ar/idemcc/",
+            "https://gis.ciudaddecorrientes.gov.ar/geoservicios.php"
+          ]
+        }
+      },
+      "queryContractNote": "Fixed 0.001-degree GFI frames return only safe gid manifests. Full exact-ID geometry is read fresh from GetMap KML with KMATTR:false, not the scale-generalized native GFI geometry. Preserve all KML coordinates, rings and holes."
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6859",
+  "name": "Tuxtla Gutiérrez, Mexico",
+  "point": [
+    16.7585527528798,
+    -93.1112643976691
+  ],
+  "bindings": [
+    {
+      "appCityId": "tuxtla_gutierrez",
+      "runtimeConfig": {
+        "id": "tuxtla_gutierrez",
+        "wupCityCode": "6859",
+        "label": "Tuxtla Gutiérrez, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            16.7585527528798,
+            -93.1112643976691
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            16.7585527528798,
+            -93.1112643976691
+          ],
+          "fallbackDataset": [
+            -93.1112643976691,
+            16.7585527528798
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-sedatu-ran-pit07-chiapas-parcels-2020",
+          "idPrefix": "MX-RAN-PIT07-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Registro Agrario Nacional (RAN) / SEDATU IDE/PNIRC, PIT7 Parcelas Chiapas 2020, CC BY 4.0. Historical partial social-property coverage. Canonical IDs adapted; source geometry unchanged."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-sedatu-ran-pit07-chiapas-parcels-2020",
+      "name": "SEDATU / RAN PIT7 Chiapas social-property parcels (2020)",
+      "adapter": "wfs",
+      "endpoint": "https://ide.sedatu.gob.mx/geoserver/ows",
+      "featureType": "geonode:a__07_PARCELAS_RAN_2020",
+      "version": "1.0.0",
+      "idField": "CLAVE",
+      "idType": "string",
+      "idPrefix": "MX-RAN-PIT07-",
+      "outFields": [
+        "CLAVE"
+      ],
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 1,
+      "minRequestIntervalMs": 150,
+      "countryCode": "MX",
+      "metricSrid": 32615,
+      "cityIds": [
+        "tuxtla_gutierrez"
+      ],
+      "defaultForCity": true,
+      "scope": "Historical Chiapas RAN ejido/community social-property parcels (2020). Bounded positive observations south and west of Tuxtla municipality locator. Central urban/fiscal cadastre and municipality-wide completeness are unverified; state layer includes neighboring municipalities.",
+      "attribution": "Registro Agrario Nacional (RAN) / SEDATU IDE/PNIRC, PIT7 Parcelas Chiapas 2020, CC BY 4.0. Historical partial social-property coverage. Canonical IDs adapted; source geometry unchanged.",
+      "catalogueUrl": "https://ide.sedatu.gob.mx/catalogue/csw_to_extra_format/5eeefe1c-5f68-11ec-b6bf-005056b8fa85/a__07_PARCELAS_RAN_2020.html",
+      "metadataUrl": "https://ide.sedatu.gob.mx/catalogue/csw_to_extra_format/5eeefe1c-5f68-11ec-b6bf-005056b8fa85/a__07_PARCELAS_RAN_2020.html",
+      "nativeCrs": "EPSG:4326",
+      "responseCrs": "EPSG:4326",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometryQuery": true
+      },
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "license": "CC BY 4.0",
+      "browserTransport": "relay",
+      "ownership": false,
+      "operator": "Registro Agrario Nacional (RAN) / SEDATU SITU",
+      "idPattern": "^[0-9]{8}-[0-9]{19}$",
+      "licenceNote": "CC BY 4.0 per first-party metadata. SEDATU disclaims responsibility for use. Preserve RAN/SEDATU attribution and link to source and licence; canonical identifiers adapted, source coordinates unchanged."
+    }
+  ]
+}

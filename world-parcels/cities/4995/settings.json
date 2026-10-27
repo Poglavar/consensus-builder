@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4995",
+  "name": "Niigata, Japan",
+  "point": [
+    37.9036901987003,
+    139.048139919901
+  ],
+  "bindings": [
+    {
+      "appCityId": "niigata",
+      "runtimeConfig": {
+        "id": "niigata",
+        "wupCityCode": "4995",
+        "label": "Niigata, Japan",
+        "currency": {
+          "locale": "ja-JP",
+          "code": "JPY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            37.9036901987003,
+            139.048139919901
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            37.9036901987003,
+            139.048139919901
+          ],
+          "fallbackDataset": [
+            139.048139919901,
+            37.9036901987003
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "jp-niigata-emap-fixed-tax-parcels-2025",
+          "idPrefix": "JP-NIIGATA-EMAP-9000000010-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Niigata City · にいがたeマップ · fixed-asset-tax reference parcels, 2025-01-01"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "jp-niigata-emap-fixed-tax-parcels-2025",
+      "name": "Niigata e-map fixed-asset-tax parcel-number map (2025)",
+      "adapter": "geogeo-emap",
+      "endpoint": "https://niigata.e-map.geogeo.jp/locsearch/attsbylatlng.json",
+      "bboxEndpoint": "https://niigata.e-map.geogeo.jp/locsearch/attsbybox.json",
+      "exactEndpoint": "https://niigata.e-map.geogeo.jp/maps",
+      "themeId": "20",
+      "layerId": "9000000010",
+      "idField": "itemid",
+      "idType": "integer",
+      "idPrefix": "JP-NIIGATA-EMAP-9000000010-",
+      "outFields": [
+        "itemid"
+      ],
+      "parcelNumberField": "itemid",
+      "responseSrid": 4326,
+      "metricSrid": 32654,
+      "countryCode": "JP",
+      "cityIds": [
+        "niigata"
+      ],
+      "defaultForCity": true,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "boundsQueryMode": "bounded-viewer-rectangle-responses",
+      "idsQueryMode": "viewer-search-linkkey-exact-itemid",
+      "operator": "Niigata City, official にいがたeマップ",
+      "attribution": "Niigata City · にいがたeマップ · fixed-asset-tax reference parcels, 2025-01-01",
+      "catalogueUrl": "https://niigata.e-map.geogeo.jp/maps?mode=theme&lid=0&mid=20",
+      "scope": "Bounded parcel-number reference coverage in the published vector layer near Niigata city centre. Vector extent [139.01619947710566,37.81787512795239,139.17271026916197,37.91222075817882]; no whole-city completeness claim.",
+      "licenceNote": "Restrictive city terms prohibit reproduction/republication except as permitted by copyright law. No open reuse permission established. Technical qualification and private app verification do not establish republication permission; retain this issue for coordinator publication review.",
+      "reuseStatus": "restrictive-terms-reuse-review-required",
+      "sourceDate": "2025-01-01",
+      "caveats": [
+        "Approximate fixed-asset-tax parcel-number reference map, not a legal survey, registry map or proof of rights.",
+        "Viewer coordinatesystem=6676; JSON geometry observed in longitude/latitude. responseSrid=4326 describes runtime wire interpretation, not independently established datum/epoch/operation proof. Source geometry is unchanged.",
+        "Bounded responses consumed in small cells. Hidden caps, edge coverage and citywide completeness remain second-pass follow-ups.",
+        "Native itemid exact rereads are live and uncached. ID continuity across annual source rebuilds is not established.",
+        "Raster outside-layer coverage is not vector coverage. Reproduction/republication terms must be resolved before public activation."
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "basis": "Official Niigata City theme mid=20 固定資産税地番図 / layer 9000000010 地番図; current first-party purpose and terms saved in source-metadata.json."
+        }
+      }
+    }
+  ]
+}

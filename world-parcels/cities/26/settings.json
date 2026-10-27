@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "26",
+  "name": "Port of Spain, Trinidad & Tobago",
+  "point": [
+    10.6579002575209,
+    -61.441428041308
+  ],
+  "bindings": [
+    {
+      "appCityId": "port_of_spain",
+      "runtimeConfig": {
+        "id": "port_of_spain",
+        "wupCityCode": "26",
+        "label": "Port of Spain, Trinidad & Tobago",
+        "currency": {
+          "locale": "en-TT",
+          "code": "TTD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            10.6579002575209,
+            -61.441428041308
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            10.6579002575209,
+            -61.441428041308
+          ],
+          "fallbackDataset": [
+            -61.441428041308,
+            10.6579002575209
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tt-cmis-surmap-public-cadastral-parcels",
+          "idPrefix": "TT-CMIS-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Trinidad and Tobago Surveys and Mapping Division · CMIS public parcel map"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tt-cmis-surmap-public-cadastral-parcels",
+      "name": "Trinidad and Tobago CMIS public cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://cmis.surveys.gov.tt/server/rest/services/CMIS_Parcels/Cadastral_Parcels_Public/FeatureServer/0",
+      "idField": "upin",
+      "idType": "string",
+      "objectIdField": "objectid",
+      "idPrefix": "TT-CMIS-",
+      "outFields": [
+        "objectid",
+        "upin"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "pageSize": 100,
+      "idBatchSize": 30,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "minRequestIntervalMs": 150,
+      "countryCode": "TT",
+      "metricSrid": 32620,
+      "cityIds": [
+        "port_of_spain"
+      ],
+      "operator": "Surveys and Mapping Division, Government of Trinidad and Tobago",
+      "catalogueUrl": "https://cmis.surveys.gov.tt/",
+      "attribution": "Trinidad and Tobago Surveys and Mapping Division · CMIS public parcel map",
+      "scope": "Bounded parcel availability in the Port of Spain urban area near the frozen WUP point (Petit Bourg / San Juan/Laventille). Port of Spain City Corporation and citywide completeness are unverified.",
+      "licenceNote": "Official anonymous public CMIS map; no explicit unrestricted redistribution licence observed. Attribution retained; reuse terms need follow-up.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "TT",
+          "basis": "National Surveys and Mapping Division CMIS public cadastral parcel layer; city binding is bounded urban-area availability only.",
+          "evidence": [
+            "https://agriculture.gov.tt/divisions-units/divisions/surveys-and-mapping/products/",
+            "https://cmis.surveys.gov.tt/"
+          ]
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

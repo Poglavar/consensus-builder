@@ -6,9 +6,12 @@ import { Readable } from 'node:stream';
 export function createHttpsJsonFetch(extraCa, { getImpl = get, requestImpl = httpsRequest, maxBytes = 20 * 1024 * 1024 } = {}) {
     const agent = new Agent({ ca: [...rootCertificates, extraCa], rejectUnauthorized: true, keepAlive: true, maxSockets: 6 });
     return async (url, { headers, signal, method = 'GET', body } = {}) => {
+        // The relay supplies Fetch Headers; node:https requires a plain header object.
+        const requestHeaders = headers instanceof Headers || Array.isArray(headers)
+            ? Object.fromEntries(new Headers(headers)) : headers;
         const response = await new Promise((resolve, reject) => {
             const isGet = method === 'GET' && body === undefined;
-            const request = (isGet ? getImpl : requestImpl)(url, { headers, signal, agent, method }, resolve);
+            const request = (isGet ? getImpl : requestImpl)(url, { headers: requestHeaders, signal, agent, method }, resolve);
             request.once('error', reject);
             if (!isGet) request.end(body);
         });

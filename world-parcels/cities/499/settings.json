@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "499",
+  "name": "Buenaventura, Colombia",
+  "point": [
+    3.87751185998404,
+    -77.019907696878
+  ],
+  "bindings": [
+    {
+      "appCityId": "buenaventura",
+      "runtimeConfig": {
+        "id": "buenaventura",
+        "wupCityCode": "499",
+        "label": "Buenaventura, Colombia",
+        "currency": {
+          "locale": "es-CO",
+          "code": "COP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            3.87751185998404,
+            -77.019907696878
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            3.87751185998404,
+            -77.019907696878
+          ],
+          "fallbackDataset": [
+            -77.019907696878,
+            3.87751185998404
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "co-igac-public-cadastre-08-2026-wfs",
+          "idPrefix": "CO-IGAC-CATASTRO_PUBLICO_31082026-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "IGAC · Base Catastral Pública del Gestor IGAC 08 2026 · CC BY-SA 4.0"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "co-igac-public-cadastre-08-2026-wfs",
+      "name": "IGAC public cadastral terrain, August 2026",
+      "adapter": "wfs",
+      "wfsProfile": "igac-public-fes-v1",
+      "endpoint": "https://dservices2.arcgis.com/RVvWzU3lgJISqdke/arcgis/services/CATASTRO_PUBLICO_31082026/WFSServer",
+      "version": "2.0.0",
+      "featureType": "CATASTRO_PUBLICO_31082026:U_TERRENO",
+      "featureTypes": [
+        "CATASTRO_PUBLICO_31082026:U_TERRENO",
+        "CATASTRO_PUBLICO_31082026:R_TERRENO"
+      ],
+      "municipalityCode": "76109",
+      "idField": "Codigo",
+      "idType": "string",
+      "idPrefix": "CO-IGAC-CATASTRO_PUBLICO_31082026-",
+      "outFields": [
+        "Codigo"
+      ],
+      "geometryField": "Shape",
+      "requestProperties": true,
+      "boundsSrid": 3857,
+      "pageSize": 1000,
+      "idBatchSize": 1,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "CO",
+      "metricSrid": 32618,
+      "cityIds": [
+        "buenaventura"
+      ],
+      "operator": "Instituto Geográfico Agustín Codazzi (IGAC)",
+      "attribution": "IGAC · Base Catastral Pública del Gestor IGAC 08 2026 · CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "licenceNote": "Explicit source item terms require attribution and share-alike for derived parcel data. The catalog CC BY link does not override these terms.",
+      "scope": "Municipality 76109, urban and rural cadastral terrain. Bounded Buenaventura urban parcel reads verified; district and settlement completeness unestablished.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CO",
+          "basis": "Official IGAC public cadastre; municipality code 76109 identifies Buenaventura.",
+          "evidence": [
+            "https://www.datos.gov.co/api/views/ny62-ftfh",
+            "https://www.arcgis.com/sharing/rest/content/items/e0dfe7bf112f448bb14662b6279df9d4?f=pjson"
+          ]
+        }
+      },
+      "sourceCrs": "EPSG:3857",
+      "nativeCrs": "EPSG:3857",
+      "responseCrs": "EPSG:4326",
+      "responseAxisOrder": "longitude-latitude",
+      "nativeCrsNote": "WFS capabilities and item advertise Web Mercator (102100/EPSG:3857). Native datum/operation and independent alignment remain second-pass work; preserve EPSG:4326 response coordinates exactly.",
+      "defaultForCity": true
+    }
+  ]
+}

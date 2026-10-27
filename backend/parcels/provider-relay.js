@@ -1,4 +1,19 @@
+import { isSakaryaSource, isSakaryaRequest, SAKARYA_ORIGIN, SAKARYA_VIEWER } from './sakarya-sbb-source.js';
+import { isGeopixelSource, parseGeopixelOperation, createGeopixelSource } from './geopixel-source.js';
+import { withSourceConcurrency } from './source-controls.js';
+import { isArcgisHubParcelUrl } from './arcgis-hub-source.js';
+import { createArchiveRangeFetch } from './archive-range-fetch.js';
+import { createFlatgeobufRangeParcelSource } from './flatgeobuf-range-source.js';
+import { isHuaibeiSource, isHuaibeiParcelRequest } from './huaibei-source.js';
+import { isEmapParcelUrl } from './geogeo-emap-source.js';
+import { CHANGHUA_SOURCE, CHANGHUA_ENDPOINT, validateChanghuaForm, parseChanghuaBatch, createChanghuaParcelSource } from './changhua-source.js';
+import { isTatarstanSource, isTatarstanRequest } from './tatarstan-cadastre-source.js';
+import { isReestr54Source, isReestr54Request } from './reestr54-source.js';
+import { isMersinProtocolSource, createMersinParcelSource, parseMersinOperation } from './mersin-eimar-source.js';
+import { DIYARBAKIR_SOURCE_ID, DIYARBAKIR_ENDPOINT, createDiyarbakirParcelSource, parseDiyarbakirOperation } from './diyarbakir-eimar-source.js';
 import { createShapefileRangeParcelSource } from './shapefile-range-source.js';
+import { createMojMapXmlRangeParcelSource } from './moj-mapxml-range-source.js';
+import { isKadastrResourceUrl, KADASTR_LOOKUP_ROOT, KADASTR_TILE_ENDPOINT } from './ua-kadastr-source.js';
 import { KARTVERKET_ENDPOINT, KARTVERKET_EXACT_ENDPOINT } from './kartverket-source.js';
 import { createSantosLotesSource } from './santos-lotes-source.js';
 import { isTorinoArchive, TORINO_ARCHIVE_ENDPOINT } from './shapefile-snapshot-source.js';
@@ -6,6 +21,10 @@ import { createGeojsonRangeParcelSource } from './geojson-range-source.js';
 import { isDncSnigCompanion, SNIG_CADASTRAL_LAYER } from './uy-dnc-snig-source.js';
 import { isCadgisCompanion, CADGIS_LIVE_LAYER } from './be-cadgis-source.js';
 import { GWANGJU_AREA_ENDPOINT, GWANGJU_PNU_ENDPOINT } from './gwangju-jijuk-source.js';
+import { CHEONGJU_ENDPOINT } from './cheongju-mapmoa-source.js';
+import { fetchCheongjuMapmoa } from './cheongju-mapmoa-fetch.js';
+import { isGuangxiParcelSource, fetchGuangxiParcel } from './cn-gx-tianditu-fetch.js';
+import { isMylandWfsSource, fetchMylandWfs } from './myland-wfs-fetch.js';
 // Fixed-source relay transport. Every URL is matched against a registered descriptor before DNS.
 import { lookup } from 'node:dns/promises';
 import { Agent, request } from 'node:https';
@@ -16,15 +35,29 @@ import { Readable } from 'node:stream';
 import { isIP } from 'node:net';
 import { readFile } from 'node:fs/promises';
 import { createHttpsJsonFetch } from './https-json-fetch.js';
+import { isCorrientesSource, parseCorrientesOperation, createCorrientesWmsSource } from './corrientes-wms-source.js';
 import { createPublicSourceFetch, isPublicSourceAddress, validatePublicSourceUrl } from './public-source-fetch.js';
 import { decodeCustomSource } from './custom-source-config.js';
 import { officialArchiveFetch } from './gml-snapshot-source.js';
 import { AKWAGIS_PUBLIC_TOKEN_URL } from './akwagis-public-fetch.js';
 import { isTainanPublicSource, TAINAN_PUBLIC_TOKEN_URL } from './tainan-public-fetch.js';
+import { isNakshaPublicSource, NAKSHA_PUBLIC_TOKEN_URL } from './naksha-public-fetch.js';
+import { fetchNakshaRelay } from './naksha-relay-fetch.js';
 import { createUgnlisParcelSource, UGN_SOURCE_ENDPOINT, UGN_FILTER_ENDPOINT } from './ugnlis-source.js';
 import { createTaichungParcelSource, TAICHUNG_ENDPOINT } from './taichung-source.js';
 import { isTucumanWfsSource, isTucumanWfsUrl } from './tucuman-wfs-transport.js';
+import { isWfsUrlProxyRequest } from './wfs-url-proxy.js';
+import { isPraiaGrandeReaderRequest } from './praia-grande-reader-fetch.js';
 import { isXuchangSource, isXuchangQueryUrl } from './xuchang-transport.js';
+import { isSeyhanSource, isSeyhanQueryUrl } from './seyhan-transport.js';
+import { isPingdingshanSource, isPingdingshanQueryUrl } from './pingdingshan-transport.js';
+import { isMelakaSource, isMelakaQueryUrl } from './melaka-transport.js';
+import { isJiyuanSource, isJiyuanQueryUrl } from './jiyuan-transport.js';
+import { isOttawaParcelSource, isOttawaParcelRequest, OTTAWA_REFERER } from './ottawa-proxy.js';
+import { isGeosaParcelSource, GEOSA_REFERER } from './geosa-transport.js';
+import { arcgisIdentifyEndpoint } from './arcgis-identify-source.js';
+import { isNcaSource, NCA_HRODNA_SCOPE } from './by-nca-source.js';
+import { SALTILLO_SOURCE_ID, SALTILLO_ENDPOINT, SALTILLO_LOCATOR, isSaltilloParcelRequest } from './saltillo-visor-source.js';
 
 const HMLR = 'https://use-land-property-data.service.gov.uk';
 const HMLR_ROOT = `${HMLR}/datasets/inspire/download`;
@@ -39,11 +72,14 @@ const BEV_ORIGIN = 'https://kataster.bev.gv.at';
 const MAX_REQUEST_BYTES = 16 * 1024;
 const NO_REDIRECT = new Set(['error', 'manual', 'follow']);
 const safeManualRedirects = new WeakMap();
+let mylandRelayFetch;
 // Cache the bounded directory per immutable catalog descriptor. Exact-ID methods
 // still re-fetch the record and verify its native ID on every call.
 const ugnlisRelaySources = new WeakMap();
 const geojsonRangeRelaySources = new WeakMap();
 const santosRelaySources = new WeakMap();
+// One public session per fixed descriptor; geometry is still fetched on every read.
+const geopixelRelaySources = new WeakMap();
 
 export const HMLR_BROWSER_DESCRIPTOR = Object.freeze({
     id: 'gb-hmlr-browser-v1', name: 'HM Land Registry INSPIRE archive', adapter: 'gml-snapshot',
@@ -64,9 +100,15 @@ function exactResource(url, resource) {
 
 function descriptorResources(descriptor) {
     const resources = [];
+    if (descriptor.id === SALTILLO_SOURCE_ID && descriptor.adapter === 'saltillo-visor'
+        && descriptor.endpoint === SALTILLO_ENDPOINT && descriptor.locatorEndpoint === SALTILLO_LOCATOR) resources.push(SALTILLO_LOCATOR);
+    const identifyEndpoint = arcgisIdentifyEndpoint(descriptor);
+    if (identifyEndpoint) resources.push(identifyEndpoint);
     if (descriptor.id === 'no-kartverket-eiendom-api-omrader' && descriptor.adapter === 'kartverket-eiendom'
         && descriptor.endpoint === KARTVERKET_ENDPOINT) resources.push(KARTVERKET_EXACT_ENDPOINT);
+    if (isJiyuanSource(descriptor)) resources.push(`${descriptor.endpoint}/0/query`);
     if (isTainanPublicSource(descriptor)) resources.push(TAINAN_PUBLIC_TOKEN_URL);
+    if (isNakshaPublicSource(descriptor)) resources.push(NAKSHA_PUBLIC_TOKEN_URL);
     if (isDncSnigCompanion(descriptor)) resources.push(`${SNIG_CADASTRAL_LAYER}/query`);
     if (descriptor.adapter === 'gwangju-jijuk' && descriptor.endpoint === GWANGJU_AREA_ENDPOINT
         && descriptor.exactEndpoint === GWANGJU_PNU_ENDPOINT) resources.push(GWANGJU_PNU_ENDPOINT);
@@ -141,6 +183,10 @@ function adapterDynamicResourceAllowed(url, descriptor) {
     const basePath = endpoint.pathname.replace(/\/$/, '');
     if (descriptor.adapter === 'vector-tiles' && Number.isSafeInteger(descriptor.zoom)
         && descriptor.zoom >= 10 && descriptor.zoom <= 18 && !url.search) {
+        // The shared NCA descriptor retains z14 for existing cities. Hrodna's
+        // additional scope admits only its independently checked nine z16 tiles.
+        if (isNcaSource(descriptor) && NCA_HRODNA_SCOPE.tiles.some(tile => exactResource(url,
+            descriptor.endpoint.replace('{z}/{x}/{y}', tile)))) return true;
         // Permit only this catalogued XYZ template at its fixed production zoom.
         const template = new URL(descriptor.endpoint.replace('{z}', descriptor.zoom)
             .replace('{x}', '123456789').replace('{y}', '987654321')).pathname;
@@ -169,6 +215,17 @@ function isHmlr(descriptor) {
 }
 
 function resourceAllowed(url, descriptor, sourceId) {
+    if (isPraiaGrandeReaderRequest(url, descriptor)) return true;
+    if (descriptor.adapter === 'arcgis-hub') return isArcgisHubParcelUrl(descriptor, url);
+    if (isHuaibeiSource(descriptor)) return isHuaibeiParcelRequest(url, 'POST', '{"type":0,"fields":["ID","geometry"]}');
+    if (descriptor.adapter === 'geogeo-emap') return isEmapParcelUrl(descriptor, url);
+    if (isTatarstanSource(descriptor)) return isTatarstanRequest(descriptor, url);
+    // Matching only proxy.ashx's path would permit arbitrary nested destinations.
+    if (isOttawaParcelSource(descriptor)) return isOttawaParcelRequest(url);
+    if (descriptor.adapter === 'ua-kadastr-landuse' && sourceId === 'ua-kadastr-com-ua-landuse'
+        && descriptor.endpoint?.startsWith(KADASTR_LOOKUP_ROOT) && descriptor.tileEndpoint === KADASTR_TILE_ENDPOINT) {
+        return isKadastrResourceUrl(url);
+    }
     if (sourceId.startsWith('custom.')) {
         const endpoint = new URL(descriptor.endpoint);
         if (url.origin === endpoint.origin && (url.pathname === endpoint.pathname
@@ -191,6 +248,7 @@ function resourceAllowed(url, descriptor, sourceId) {
     if (descriptor.adapter === 'bev-tiles' && descriptor.endpoint === 'https://kataster.bev.gv.at/tiles/kataster/{z}/{x}/{y}.pbf'
         && bevResourceAllowed(url)) return true;
     if (ogcItemResourceAllowed(url, descriptor)) return true;
+    if (isWfsUrlProxyRequest(url, descriptor)) return true;
     if (adapterDynamicResourceAllowed(url, descriptor)) return true;
     // CKAN issues a temporary signed download to this fixed public S3 resource. Its
     // generated query stays in transport memory; only the pinned resource path is allowed.
@@ -233,6 +291,7 @@ function normalizeTarget(sourceId, descriptor, input) {
     if (typeof input?.url !== 'string' || input.url.length > 16384) throw relayError(400);
     let target;
     try { target = new URL(input.url); } catch { throw relayError(400); }
+    const huaibeiHttp = isHuaibeiSource(descriptor) && isHuaibeiParcelRequest(target, input.method, input.body);
     const gisarHttp = sourceId === GISAR_SOURCE_ID && descriptor.adapter === 'kg-gisar-wms'
         && descriptor.endpoint === GISAR_ENDPOINT && isGisarParcelUrl(target);
     const sofiaHttp = sourceId === SOFIA_SOURCE_ID && descriptor.adapter === 'sofia-isofmap'
@@ -240,7 +299,11 @@ function normalizeTarget(sourceId, descriptor, input) {
             || (target.href === SOFIA_ENDPOINT && input.method === 'POST'));
     const tucumanHttp = isTucumanWfsSource(descriptor) && isTucumanWfsUrl(target);
     const xuchangHttp = isXuchangSource(descriptor) && isXuchangQueryUrl(target);
-    if ((target.protocol !== 'https:' && !gisarHttp && !sofiaHttp && !tucumanHttp && !xuchangHttp && !isTorinoArchive(descriptor, target.href)) || target.username || target.password || target.hash || !resourceAllowed(target, descriptor, sourceId)) {
+    const seyhanHttp = isSeyhanSource(descriptor) && isSeyhanQueryUrl(target);
+    const jiyuanHttp = isJiyuanSource(descriptor) && isJiyuanQueryUrl(target);
+    const melakaHttp = isMelakaSource(descriptor) && isMelakaQueryUrl(target);
+    const pingdingshanHttp = isPingdingshanSource(descriptor) && isPingdingshanQueryUrl(target);
+    if ((target.protocol !== 'https:' && !huaibeiHttp && !gisarHttp && !sofiaHttp && !tucumanHttp && !xuchangHttp && !seyhanHttp && !pingdingshanHttp && !melakaHttp && !jiyuanHttp && !isTorinoArchive(descriptor, target.href)) || target.username || target.password || target.hash || !resourceAllowed(target, descriptor, sourceId)) {
         throw relayError(403, 'Parcel provider URL is outside this source.');
     }
     if (sourceId.startsWith('custom.')) {
@@ -267,6 +330,14 @@ function relayRequestHeaders(input, descriptor, target, method) {
     const shared = new Set(['accept', 'content-type', 'accept-language']);
     const special = descriptor.adapter;
     const permitted = new Set(shared);
+    if (isPraiaGrandeReaderRequest(target, descriptor)) permitted.add('x-no-cache');
+    if (isHuaibeiSource(descriptor)) permitted.add('token');
+    if (isReestr54Source(descriptor)) {
+        permitted.add('referer'); permitted.add('cookie'); permitted.add('x-csrftoken');
+    }
+    if (isSakaryaSource(descriptor)) { permitted.add('referer'); permitted.add('origin'); }
+    if (isOttawaParcelSource(descriptor)) permitted.add('referer');
+    if (isGeosaParcelSource(descriptor)) permitted.add('referer');
     if (isHmlr(descriptor) && target.origin === HMLR) permitted.add('if-match');
     if (special === 'dlrs-sheet' || special === 'bd-bhumi-naksha') permitted.add('referer');
     if (special === 'bd-bhumi-naksha') permitted.add('cookie');
@@ -277,12 +348,17 @@ function relayRequestHeaders(input, descriptor, target, method) {
     if (special === 'kerala-entebhoomi') { permitted.add('cookie'); permitted.add('x-csrf-token'); }
     for (const [name, value] of Object.entries(input)) {
         const key = name.toLowerCase();
+        if (key === 'x-no-cache' && value !== 'true') throw relayError(400);
         if (!permitted.has(key) || typeof value !== 'string' || value.length > 8192 || /[\r\n\0]/.test(value)) throw relayError(400);
         if (key === 'if-match' && (!isHmlr(descriptor) || target.origin !== HMLR || !/^"[\x21\x23-\x7e]{1,200}"$/.test(value))) throw relayError(400);
         if (key === 'referer') {
             let referrer;
             try { referrer = new URL(value); } catch { throw relayError(400); }
-            const valid = special === 'dda-public-plots' ? value === DDA_VIEWER
+            const valid = isOttawaParcelSource(descriptor) ? value === OTTAWA_REFERER
+                : isGeosaParcelSource(descriptor) ? value === GEOSA_REFERER
+                : isSakaryaSource(descriptor) ? value === SAKARYA_VIEWER
+                : isReestr54Source(descriptor) ? value === descriptor.endpoint
+                : special === 'dda-public-plots' ? value === DDA_VIEWER
                 : special === 'pulse-public' ? value === 'https://lis.pulse.gop.pk/'
                 : special === 'shenzhen-land-certain' ? value === SHENZHEN_VIEWER
                 : special === 'dlrs-sheet' ? value === 'https://settlement.gov.bd/'
@@ -291,14 +367,18 @@ function relayRequestHeaders(input, descriptor, target, method) {
             if (!valid || referrer.protocol !== 'https:') throw relayError(400);
         }
         if (key === 'origin') {
-            const valid = special === 'shenzhen-land-certain' && value === 'https://pnr.sz.gov.cn'
+            const valid = isSakaryaSource(descriptor) && value === SAKARYA_ORIGIN
+                || special === 'shenzhen-land-certain' && value === 'https://pnr.sz.gov.cn'
                 || special === 'kerala-entebhoomi' && [KERALA_APP, KERALA_MAP].includes(value);
             if (!valid) throw relayError(400);
         }
         if (key === 'x-openapi-subscriptiontoken' && special !== 'shenzhen-land-certain') throw relayError(400);
         if (key === 'x-csrf-token' && special !== 'kerala-entebhoomi') throw relayError(400);
-        if (key === 'cookie' && special !== 'kerala-entebhoomi' && special !== 'bd-bhumi-naksha') throw relayError(400);
+        if (key === 'cookie' && special !== 'kerala-entebhoomi' && special !== 'bd-bhumi-naksha' && !isReestr54Source(descriptor)) throw relayError(400);
+        if (isReestr54Source(descriptor) && (key === 'cookie' && !/^csrftoken=[A-Za-z0-9]{32,64}$/.test(value)
+            || key === 'x-csrftoken' && !/^[A-Za-z0-9]{32,64}$/.test(value))) throw relayError(400);
         if (key === 'cookie' && special === 'bd-bhumi-naksha' && target.origin !== 'https://map.land.gov.bd') throw relayError(400);
+        if (key === 'token' && (!isHuaibeiSource(descriptor) || value !== 'wwg')) throw relayError(400);
         headers.set(key, value);
     }
     const contentType = headers.get('content-type')?.split(';', 1)[0].trim().toLowerCase();
@@ -323,11 +403,60 @@ export function validateParcelProviderRelayRequest(sourceId, input, { sources = 
     if (isTorinoArchive(descriptor, target.href) && input.redirect && input.redirect !== 'error') throw relayError(400);
     const sofiaOperation = sourceId === SOFIA_SOURCE_ID && descriptor.adapter === 'sofia-isofmap'
         && descriptor.endpoint === SOFIA_ENDPOINT && target.href === SOFIA_ENDPOINT && method === 'POST';
-    if (target.protocol === 'http:' && method !== 'GET' && !sofiaOperation) throw relayError(400);
+    const huaibeiOperation = isHuaibeiSource(descriptor) && isHuaibeiParcelRequest(target, method, input.body);
+    if (target.protocol === 'http:' && method !== 'GET' && !sofiaOperation && !huaibeiOperation) throw relayError(400);
+    if (descriptor.adapter === 'geogeo-emap' && method !== 'GET') throw relayError(400);
+    if (descriptor.adapter === 'arcgis-hub' && method !== 'GET') throw relayError(400);
     const headers = relayRequestHeaders(input.headers, descriptor, target, method);
     const body = input.body;
+    if (isNakshaPublicSource(descriptor) && target.href === NAKSHA_PUBLIC_TOKEN_URL
+        && (method !== 'POST' || headers.get('content-type') !== 'application/json' || body !== '{}')) throw relayError(400);
+    if (descriptor.adapter === 'flatgeobuf-range') {
+        if (target.href !== descriptor.endpoint || method !== 'POST' || headers.get('content-type') !== 'application/json') throw relayError(400);
+        let operation;
+        try { operation = JSON.parse(body); } catch { throw relayError(400); }
+        if (!operation || !['queryBounds', 'queryIds', 'queryGeometry'].includes(operation._geojsonRangeOperation)
+            || Object.keys(operation).some(key => !['_geojsonRangeOperation', 'input'].includes(key))) throw relayError(400);
+    }
+    if (isOttawaParcelSource(descriptor) && (method !== 'GET' || input.body !== undefined
+        || headers.get('referer') !== OTTAWA_REFERER || input.redirect && input.redirect !== 'error')) throw relayError(400);
+    if (isHuaibeiSource(descriptor) && (!huaibeiOperation || headers.get('token') !== 'wwg'
+        || headers.get('content-type') !== 'application/json;charset=UTF-8')) throw relayError(400);
+    if (isSakaryaSource(descriptor) && (!isSakaryaRequest(descriptor, target, method, body)
+        || headers.get('content-type') !== 'application/json' || headers.get('origin') !== SAKARYA_ORIGIN
+        || headers.get('referer') !== SAKARYA_VIEWER)) throw relayError(400);
+    if (isTatarstanSource(descriptor) && !isTatarstanRequest(descriptor, target, method, body)) throw relayError(400);
+    if (isReestr54Source(descriptor) && (!isReestr54Request(descriptor, target, method, body)
+        || method === 'POST' && (headers.get('content-type') !== 'application/json'
+            || headers.get('referer') !== descriptor.endpoint
+            || headers.get('cookie') !== `csrftoken=${headers.get('x-csrftoken')}`))) throw relayError(400);
     if (method === 'GET' && body !== undefined && body !== null || method === 'POST' && typeof body !== 'string') throw relayError(400);
     if (method === 'POST' && Buffer.byteLength(body, 'utf8') > MAX_REQUEST_BYTES) throw relayError(413);
+    if (descriptor.adapter === 'changhua-urbangis') {
+        if (sourceId !== CHANGHUA_SOURCE || target.href !== CHANGHUA_ENDPOINT || descriptor.endpoint !== CHANGHUA_ENDPOINT
+            || method !== 'POST' || headers.get('content-type') !== 'application/x-www-form-urlencoded') throw relayError(400);
+        if (!parseChanghuaBatch(body)) validateChanghuaForm(body);
+    }
+    if (descriptor.adapter === 'saltillo-visor' && (sourceId !== SALTILLO_SOURCE_ID
+        || descriptor.endpoint !== SALTILLO_ENDPOINT || !isSaltilloParcelRequest(target, method, body)
+        || (method === 'POST' && headers.get('content-type') !== 'application/x-www-form-urlencoded'))) throw relayError(400);
+    if (isMersinProtocolSource(descriptor)) {
+        if (target.href !== descriptor.endpoint || method !== 'POST' || headers.get('content-type') !== 'application/json') throw relayError(400);
+        parseMersinOperation(body);
+    }
+    if (isGeopixelSource(descriptor)) {
+        if (target.href !== descriptor.endpoint || method !== 'POST' || headers.get('content-type') !== 'application/json') throw relayError(400);
+        parseGeopixelOperation(body);
+    }
+    if (isCorrientesSource(descriptor) && method === 'POST') {
+        if (target.href !== descriptor.endpoint || headers.get('content-type') !== 'application/json') throw relayError(400);
+        parseCorrientesOperation(body);
+    }
+    if (sourceId === DIYARBAKIR_SOURCE_ID && descriptor.adapter === 'diyarbakir-eimar'
+        && descriptor.endpoint === DIYARBAKIR_ENDPOINT) {
+        if (target.href !== DIYARBAKIR_ENDPOINT || method !== 'POST' || headers.get('content-type') !== 'application/json') throw relayError(400);
+        parseDiyarbakirOperation(body);
+    }
     if (sofiaOperation) {
         if (headers.get('content-type') !== 'application/json') throw relayError(400);
         parseSofiaRelayOperation(body);
@@ -338,8 +467,8 @@ export function validateParcelProviderRelayRequest(sourceId, input, { sources = 
     return { sourceId, descriptor, target, method, headers, body: body ?? undefined, redirect: input.redirect,
         hmlr: isHmlr(descriptor) && target.origin === HMLR, custom: sourceId.startsWith('custom.'),
         maxResponseBytes: responseByteLimit(descriptor, target),
-        timeoutMs: isHmlr(descriptor) || descriptor.adapter === 'moj-mapxml' || descriptor.adapter === 'shapefile-range' || descriptor.adapter === 'ugnlis-parcel-search' || sofiaOperation || descriptor.snapshotFormat === 'shapefile-zip' || descriptor.adapter === 'santos-lotes' ? 60000
-            : ['bd-bhumi-naksha', 'taichung-gismap'].includes(descriptor.adapter) ? 45000
+        timeoutMs: isHmlr(descriptor) || descriptor.adapter === 'moj-mapxml' || descriptor.adapter === 'flatgeobuf-range' || descriptor.adapter === 'shapefile-range' || descriptor.adapter === 'ugnlis-parcel-search' || descriptor.adapter === 'diyarbakir-eimar' || descriptor.adapter === 'mersin-eimar' || isCorrientesSource(descriptor) || isGeopixelSource(descriptor) || sofiaOperation || descriptor.snapshotFormat === 'shapefile-zip' || descriptor.adapter === 'santos-lotes' ? 60000
+            : ['bd-bhumi-naksha', 'taichung-gismap', 'changhua-urbangis', 'huaibei-cadastre'].includes(descriptor.adapter) ? 45000
                 : ['wfs', 'arcgis'].includes(descriptor.adapter) && Number.isSafeInteger(descriptor.timeoutMs)
                     && descriptor.timeoutMs >= 1000 && descriptor.timeoutMs <= 45000 ? descriptor.timeoutMs : 15000 };
 }
@@ -361,8 +490,9 @@ export function createProviderRelayFetch({ lookupImpl = lookup, requestImpl = re
     const agent = keepAlive ? new Agent({ keepAlive: true, maxSockets: 8, maxFreeSockets: 1, timeout: 10000 }) : false;
     return async function providerRelayFetch(target, { method = 'GET', headers = new Headers(), body, signal,
         userAgent = 'consensus-builder/1.0 (+https://urbangametheory.xyz)' } = {}) {
-        const permittedHttp = target instanceof URL && method === 'GET'
-            && (isGisarParcelUrl(target) || isSofiaParcelUrl(target) || isTucumanWfsUrl(target) || isXuchangQueryUrl(target) || target.href === TORINO_ARCHIVE_ENDPOINT);
+        const permittedHttp = isHuaibeiParcelRequest(target, method, body) || target instanceof URL && method === 'GET'
+            && (isGisarParcelUrl(target) || isSofiaParcelUrl(target) || isTucumanWfsUrl(target)
+                || isXuchangQueryUrl(target) || isSeyhanQueryUrl(target) || isPingdingshanQueryUrl(target) || isMelakaQueryUrl(target) || isJiyuanQueryUrl(target) || target.href === TORINO_ARCHIVE_ENDPOINT);
         if (!(target instanceof URL) || (target.protocol !== 'https:' && !permittedHttp) || target.username || target.password || target.hash
             || !['GET', 'POST'].includes(method) || (method === 'GET' && body !== undefined)
             || (method === 'POST' && (typeof body !== 'string' || Buffer.byteLength(body, 'utf8') > MAX_REQUEST_BYTES))) throw relayError(400);
@@ -442,9 +572,65 @@ export async function fetchParcelProviderRelay(request, options = {}) {
             : descriptor.adapter === 'kerala-entebhoomi'
                 ? 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
                 : undefined;
+    if (!transport && descriptor.id === 'kr-cheongju-mapmoa-cadastral-wfs'
+        && descriptor.adapter === 'cheongju-mapmoa' && descriptor.endpoint === CHEONGJU_ENDPOINT) {
+        transport = (url, init) => fetchCheongjuMapmoa(url, init);
+    }
+    if (!transport && isGuangxiParcelSource(descriptor)) {
+        transport = (url, init) => fetchGuangxiParcel(url, init);
+    }
+    if (!transport && isNakshaPublicSource(descriptor)) {
+        transport = (url, init) => fetchNakshaRelay(url, init);
+    }
     if (!transport) {
-        const providerFetch = options.providerFetch || createProviderRelayFetch({ keepAlive: ['ugnlis-parcel-search', 'geojson-range', 'shapefile-range', 'santos-lotes'].includes(descriptor.adapter) });
+        const providerFetch = options.providerFetch || (isMylandWfsSource(descriptor)
+            ? (mylandRelayFetch ||= createProviderRelayFetch({ keepAlive: true }))
+            : createProviderRelayFetch({ keepAlive: ['ugnlis-parcel-search', 'geojson-range', 'shapefile-range', 'flatgeobuf-range', 'santos-lotes', 'geopixel'].includes(descriptor.adapter) }));
         transport = (url, init) => providerFetch(url, { ...init, ...(userAgent ? { userAgent } : {}) }, { timeoutMs });
+    }
+    if (isMylandWfsSource(descriptor)) {
+        // Retain the relay's public-DNS validation and TLS transport on every attempt.
+        const providerTransport = transport;
+        transport = (url, init) => fetchMylandWfs(url, init,
+            { fetchImpl: (target, options) => providerTransport(new URL(target), options) });
+    }
+    if (isMersinProtocolSource(descriptor) && target.href === descriptor.endpoint && method === 'POST') {
+        const envelope = parseMersinOperation(body);
+        // Only this pinned adapter can issue anonymous nonce requests upstream.
+        const adapter = createMersinParcelSource(descriptor, { fetchImpl: (url, init) => transport(new URL(url),
+            { ...init, headers: new Headers(init.headers) }) });
+        const data = await adapter[envelope._mersinOperation](envelope.input, { signal: options.signal });
+        return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } });
+    }
+    if (isGeopixelSource(descriptor)) {
+        const envelope = parseGeopixelOperation(body);
+        let adapter = options.providerFetch ? null : geopixelRelaySources.get(descriptor);
+        if (!adapter) {
+            // Share the public session across at most two operations (four exact
+            // requests each), so viewport work leaves capacity for interactive reads.
+            adapter = withSourceConcurrency(createGeopixelSource(descriptor, { fetchImpl: (url, init) => transport(new URL(url),
+                { ...init, headers: new Headers(init.headers) }) }), { limit: Math.min(2, descriptor.maxConcurrentQueries ?? 1) });
+            if (!options.providerFetch) geopixelRelaySources.set(descriptor, adapter);
+        }
+        const data = await adapter[envelope._geopixelOperation](envelope.input, { signal: options.signal });
+        return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } });
+    }
+    if (isCorrientesSource(descriptor) && target.href === descriptor.endpoint && method === 'POST') {
+        const envelope = parseCorrientesOperation(body);
+        const adapter = createCorrientesWmsSource(descriptor, { fetchImpl: (url, init) => transport(new URL(url),
+            { ...init, headers: new Headers(init.headers) }) });
+        const data = await adapter[envelope._corrientesOperation](envelope.input, { signal: options.signal });
+        return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } });
+    }
+    if (descriptor.id === DIYARBAKIR_SOURCE_ID && descriptor.adapter === 'diyarbakir-eimar'
+        && descriptor.endpoint === DIYARBAKIR_ENDPOINT && target.href === DIYARBAKIR_ENDPOINT && method === 'POST') {
+        const envelope = parseDiyarbakirOperation(body);
+        // The fixed-source adapter alone supplies upstream URLs/headers. The browser
+        // cannot inject cookies, credentials, arbitrary endpoints or NetGIS queries.
+        const adapter = createDiyarbakirParcelSource(descriptor, { fetchImpl: (url, init) => transport(new URL(url),
+            { ...init, headers: new Headers(init.headers) }) });
+        const data = await adapter[envelope._dbbOperation](envelope.input, { signal: options.signal });
+        return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } });
     }
     if (descriptor.id === SOFIA_SOURCE_ID && descriptor.adapter === 'sofia-isofmap'
         && descriptor.endpoint === SOFIA_ENDPOINT && target.href === SOFIA_ENDPOINT && method === 'POST') {
@@ -468,18 +654,25 @@ export async function fetchParcelProviderRelay(request, options = {}) {
         const data = await adapter[envelope._santosOperation](envelope.input);
         return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } });
     }
-    if (['geojson-range', 'shapefile-range'].includes(descriptor.adapter) && target.href === descriptor.endpoint && method === 'POST') {
+    if ((['geojson-range', 'shapefile-range', 'flatgeobuf-range'].includes(descriptor.adapter)
+        || descriptor.adapter === 'moj-mapxml' && descriptor.archiveAccess === 'selected-range-v1')
+        && target.href === descriptor.endpoint && method === 'POST') {
         let envelope;
         try { envelope = JSON.parse(body); } catch { throw relayError(400); }
         if (!envelope || !['queryBounds', 'queryIds', 'queryGeometry'].includes(envelope._geojsonRangeOperation)
             || Object.keys(envelope).some(key => !['_geojsonRangeOperation', 'input'].includes(key))) throw relayError(400);
         let adapter = options.providerFetch ? null : geojsonRangeRelaySources.get(descriptor);
         if (!adapter) {
-            adapter = (descriptor.adapter === 'shapefile-range' ? createShapefileRangeParcelSource : createGeojsonRangeParcelSource)(descriptor, { fetchImpl: (url, init) => transport(new URL(url),
-                { ...init, headers: new Headers(init.headers) }) });
+            const factory = descriptor.adapter === 'moj-mapxml' ? createMojMapXmlRangeParcelSource
+                : descriptor.adapter === 'flatgeobuf-range' ? createFlatgeobufRangeParcelSource
+                : descriptor.adapter === 'shapefile-range' ? createShapefileRangeParcelSource : createGeojsonRangeParcelSource;
+            const rangeTransport = descriptor.archiveAccess === 'verified-native-sequence-v1'
+                ? createArchiveRangeFetch(descriptor, transport) : (url, init) => transport(new URL(url),
+                    { ...init, headers: new Headers(init.headers) });
+            adapter = factory(descriptor, { fetchImpl: rangeTransport });
             if (!options.providerFetch) geojsonRangeRelaySources.set(descriptor, adapter);
         }
-        const data = await adapter[envelope._geojsonRangeOperation](envelope.input);
+        const data = await adapter[envelope._geojsonRangeOperation](envelope.input, { signal: options.signal });
         return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } });
     }
     if (descriptor.adapter === 'ugnlis-parcel-search' && target.href === UGN_SOURCE_ENDPOINT && method === 'POST') {
@@ -507,6 +700,15 @@ export async function fetchParcelProviderRelay(request, options = {}) {
                 const data = await Promise.race([work, cancelled]);
                 return new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json' } });
             } finally { options.signal?.removeEventListener('abort', cancel); }
+        }
+    }
+    if (descriptor.id === CHANGHUA_SOURCE && descriptor.adapter === 'changhua-urbangis' && target.href === CHANGHUA_ENDPOINT && method === 'POST') {
+        const ids = parseChanghuaBatch(body);
+        if (ids) {
+            const adapter = createChanghuaParcelSource(descriptor, { fetchImpl: (url, init) => transport(new URL(url),
+                { ...init, headers: new Headers(init.headers) }) });
+            const data = await adapter.queryNativeIds(ids, { signal: options.signal });
+            return new Response(JSON.stringify(data), {headers:{'content-type':'application/json'}});
         }
     }
     if (descriptor.adapter === 'taichung-gismap' && descriptor.endpoint === TAICHUNG_ENDPOINT

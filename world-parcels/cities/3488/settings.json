@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3488",
+  "name": "Ottawa, Canada",
+  "point": [
+    45.394698033191,
+    -75.7069132350533
+  ],
+  "bindings": [
+    {
+      "appCityId": "ottawa",
+      "runtimeConfig": {
+        "id": "ottawa",
+        "wupCityCode": "3488",
+        "label": "Ottawa, Canada",
+        "currency": {
+          "locale": "en-CA",
+          "code": "CAD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            45.394698033191,
+            -75.7069132350533
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            45.394698033191,
+            -75.7069132350533
+          ],
+          "fallbackDataset": [
+            -75.7069132350533,
+            45.394698033191
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ca-on-ottawa-geoottawa-property-parcels",
+          "idPrefix": "CA-ON-OTTAWA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "City of Ottawa GeoOttawa; parcel geometry supplied by Teranet Enterprises Inc."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ca-on-ottawa-geoottawa-property-parcels",
+      "name": "City of Ottawa GeoOttawa Property Parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://maps.ottawa.ca/proxy/proxy.ashx?https://maps.ottawa.ca/arcgis/rest/services/Property_Information/MapServer/3",
+      "idField": "PIN",
+      "idType": "string",
+      "idPattern": "^[0-9]{9}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CA-ON-OTTAWA-",
+      "outFields": [
+        "OBJECTID",
+        "PIN"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "idBatchSize": 20,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "minRequestIntervalMs": 100,
+      "countryCode": "CA",
+      "metricSrid": 32618,
+      "cityIds": [
+        "ottawa"
+      ],
+      "defaultForCity": true,
+      "browserTransport": "relay",
+      "capabilities": {
+        "exactId": true,
+        "areaEnumeration": true,
+        "bbox": true
+      },
+      "operator": "City of Ottawa GeoOttawa",
+      "attribution": "City of Ottawa GeoOttawa; parcel geometry supplied by Teranet Enterprises Inc.",
+      "catalogueUrl": "https://maps.ottawa.ca/geoottawa/",
+      "licenceStatus": "unresolved-city-teranet-application-reuse",
+      "licenceNote": "Service metadata states parcel data is provided by Teranet and bound by the City–Teranet licence. Anonymous viewer access does not establish redistribution or application-reuse permission; confirm terms before publication.",
+      "scope": "City Property Parcels / Parcelles de propriété layer. Initial evidence comprises bounded exact PIN reads in central Ottawa and Orleans only; no citywide completeness, legal survey accuracy, temporal-validity or rural coverage claim. Native PIN uniqueness outside tested records and datum alignment require second-pass review."
+    }
+  ]
+}

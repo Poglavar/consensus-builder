@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2362",
+  "name": "Lop Buri, Thailand",
+  "point": [
+    14.8115111082598,
+    100.644267089142
+  ],
+  "bindings": [
+    {
+      "appCityId": "lop_buri",
+      "runtimeConfig": {
+        "id": "lop_buri",
+        "wupCityCode": "2362",
+        "label": "Lop Buri, Thailand",
+        "currency": {
+          "locale": "th-TH",
+          "code": "THB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            14.8115111082598,
+            100.644267089142
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            14.8115111082598,
+            100.644267089142
+          ],
+          "fallbackDataset": [
+            100.644267089142,
+            14.8115111082598
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "th-alro-parcel-wgs-mapserver",
+          "idPrefix": "TH-ALRO-OBJECTID=",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "สำนักงานการปฏิรูปที่ดินเพื่อเกษตรกรรม (ALRO) / Agricultural Land Reform Office, Ministry of Agriculture and Cooperatives"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "th-alro-parcel-wgs-mapserver",
+      "name": "ALRO land-reform parcel polygons — western Lop Buri fringe",
+      "adapter": "arcgis",
+      "endpoint": "https://gisportal.alro.go.th/arcgis/rest/services/Internal/ALRO_Parcel_WGS/MapServer/0",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "TH-ALRO-OBJECTID=",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 2000,
+      "idBatchSize": 40,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 5,
+      "timeoutMs": 30000,
+      "minRequestIntervalMs": 300,
+      "maxConcurrentQueries": 1,
+      "maxResponseBytes": 16777216,
+      "countryCode": "TH",
+      "metricSrid": 32647,
+      "cityIds": [
+        "lop_buri"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "scope": "Partial ALRO land-reform fabric observed on the western fringe of Lop Buri, around 100.6002E,14.8207N. No observed coverage at the immutable WUP locator; no municipal, districtwide, citywide or general DOL title-fabric completeness claim.",
+      "operator": "Agricultural Land Reform Office (ALRO), Ministry of Agriculture and Cooperatives, Thailand",
+      "attribution": "สำนักงานการปฏิรูปที่ดินเพื่อเกษตรกรรม (ALRO) / Agricultural Land Reform Office, Ministry of Agriculture and Cooperatives",
+      "licenceNote": "The public ALRO portal item states use is limited to the ALRO portal system. Preserve the first-party wording for reuse review; this technical integration does not establish redistribution permission or legal suitability.",
+      "sourceCrs": "EPSG:32647"
+    }
+  ]
+}

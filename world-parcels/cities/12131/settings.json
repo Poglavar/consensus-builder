@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "12131",
+  "name": "Chiayi, Taiwan",
+  "point": [
+    23.4788024733936,
+    120.452751544633
+  ],
+  "bindings": [
+    {
+      "appCityId": "chiayi",
+      "runtimeConfig": {
+        "id": "chiayi",
+        "wupCityCode": "12131",
+        "label": "Chiayi, Taiwan",
+        "currency": {
+          "locale": "zh-TW",
+          "code": "TWD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            23.4788024733936,
+            120.452751544633
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            23.4788024733936,
+            120.452751544633
+          ],
+          "fallbackDataset": [
+            120.452751544633,
+            23.4788024733936
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tw-chiayi-limi-cadastral-112",
+          "idPrefix": "TW-CHIAYI-LIMI-103-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "LIMI · 嘉義市地籍112_from嘉市府_97 (title credits Chiayi City Government)"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tw-chiayi-limi-cadastral-112",
+      "name": "Chiayi City cadastral parcels 112 (LIMI)",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.limi.com.tw/server/rest/services/Hosted/%E5%98%89%E7%BE%A9%E5%B8%82%E5%9C%B0%E7%B1%8D112_from%E5%98%89%E5%B8%82%E5%BA%9C_97/FeatureServer/103",
+      "idField": "objectid",
+      "objectIdField": "objectid",
+      "idType": "integer",
+      "idPrefix": "TW-CHIAYI-LIMI-103-",
+      "outFields": [
+        "objectid"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 200,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 30000,
+      "maxResponseBytes": 16777216,
+      "minRequestIntervalMs": 100,
+      "maxConcurrentQueries": 2,
+      "countryCode": "TW",
+      "metricSrid": 32651,
+      "nativeCrs": "EPSG:3826",
+      "returnsWGS84": true,
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "cityIds": [
+        "chiayi"
+      ],
+      "defaultForCity": true,
+      "operator": "LIMI public ArcGIS service; layer title credits Chiayi City Government",
+      "attribution": "LIMI · 嘉義市地籍112_from嘉市府_97 (title credits Chiayi City Government)",
+      "licenceNote": "Anonymous public queries are available. Reuse terms and independent government custody are unverified; blank layer description/copyright are not a licence. No legal-title or survey-accuracy claim.",
+      "scope": "Chiayi City cadastral layer. Initial proof is one full unchanged parcel at the immutable city point, with repeatable native OID reads. Bounded app viewport reads do not establish citywide completeness, Chiayi County coverage or coverage of the full WUP agglomeration. Title references year 112; currentness is unverified.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "TW",
+          "basis": "Publisher layer title identifies 嘉義市地籍112_from嘉市府_97; polygon geometry and section/parcel-number schema establish cadastral purpose. Independent government endorsement of this LIMI host is unverified.",
+          "evidence": [
+            "https://gis.limi.com.tw/server/rest/services/Hosted/%E5%98%89%E7%BE%A9%E5%B8%82%E5%9C%B0%E7%B1%8D112_from%E5%98%89%E5%B8%82%E5%BA%9C_97/FeatureServer/103?f=json"
+          ]
+        }
+      }
+    }
+  ]
+}

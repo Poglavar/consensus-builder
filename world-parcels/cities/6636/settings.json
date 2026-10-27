@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6636",
+  "name": "Ribeirao Preto, Brazil",
+  "point": [
+    -21.1646832046268,
+    -47.8092772516774
+  ],
+  "bindings": [
+    {
+      "appCityId": "ribeirao_preto",
+      "runtimeConfig": {
+        "id": "ribeirao_preto",
+        "wupCityCode": "6636",
+        "label": "Ribeirao Preto, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -21.1646832046268,
+            -47.8092772516774
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -21.1646832046268,
+            -47.8092772516774
+          ],
+          "fallbackDataset": [
+            -47.8092772516774,
+            -21.1646832046268
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-ribeirao-preto-geoportal-cadastro-coderp-lote",
+          "idPrefix": "BR-RIBEIRAO-PRETO-LOTE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Prefeitura Municipal de Ribeirão Preto / CODERP · Geoportal Cadastro Urbano · Lote"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-ribeirao-preto-geoportal-cadastro-coderp-lote",
+      "name": "Ribeirao Preto municipal Geoportal / CODERP Lote",
+      "adapter": "arcgis",
+      "endpoint": "https://webgis.ribeiraopreto.sp.gov.br/server/rest/services/GeoPortal/Geoportal_Cadastro_Coderp/MapServer/0",
+      "idField": "gid",
+      "objectIdField": "gid",
+      "idType": "integer",
+      "idPrefix": "BR-RIBEIRAO-PRETO-LOTE-",
+      "outFields": [
+        "gid"
+      ],
+      "queryFormat": "esri-json",
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "countryCode": "BR",
+      "metricSrid": 32723,
+      "sourceCrs": "EPSG:31983",
+      "caCertificate": "./certificates/thawte-tls-rsa-ca-g1.pem",
+      "browserTransport": "relay",
+      "scope": "Municipal urban cadastral lot layer; bounded observations only. Urban completeness, rural/district coverage, current/history/unit semantics and overlaps remain unverified.",
+      "attribution": "Prefeitura Municipal de Ribeirão Preto / CODERP · Geoportal Cadastro Urbano · Lote",
+      "catalogueUrl": "https://www.ribeiraopreto.sp.gov.br/portal/planejamento/pdu-10-depto-urbanismo",
+      "cityIds": [
+        "ribeirao_preto"
+      ],
+      "licenceStatus": "No explicit reuse licence observed in public metadata.",
+      "defaultForCity": true
+    }
+  ]
+}

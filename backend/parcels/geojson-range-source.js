@@ -136,8 +136,10 @@ export function createGeojsonRangeParcelSource(input, { fetchImpl = fetch, now =
 
 // The fixed-source relay runs the same range reader, so browsers need no private-data snapshot.
 export function createGeojsonRangeBrowserSource(d, { fetchImpl = fetch } = {}) {
-    const query = operation => async input => {
+    const query = operation => async (input, { signal } = {}) => {
+        signal?.throwIfAborted();
         const response = await fetchImpl(d.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            signal,
             body: JSON.stringify({ _geojsonRangeOperation: operation, input }) });
         if (!response.ok) throw providerHttpError(response);
         const reader = response.body.getReader(), chunks = []; let size = 0;

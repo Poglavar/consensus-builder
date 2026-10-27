@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5621",
+  "name": "Provo, United States",
+  "point": [
+    40.3078525920474,
+    -111.714794014436
+  ],
+  "bindings": [
+    {
+      "appCityId": "provo",
+      "runtimeConfig": {
+        "id": "provo",
+        "wupCityCode": "5621",
+        "label": "Provo, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            40.3078525920474,
+            -111.714794014436
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            40.3078525920474,
+            -111.714794014436
+          ],
+          "fallbackDataset": [
+            -111.714794014436,
+            40.3078525920474
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-ut-provo-county-parcels-provo-portal",
+          "idPrefix": "US-UT-PROVO-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Provo City; Utah County Recorders, Assessor and Information System Departments. Real-property parcels; source geometry preserved."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-ut-provo-county-parcels-provo-portal",
+      "name": "Provo / Utah County real-property parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gispublicweb.provo.gov/ArcGIS/rest/services/Parcel/FeatureServer/1",
+      "idField": "PARCELID",
+      "idType": "string",
+      "idPattern": "^[0-9]{1,12}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-UT-PROVO-",
+      "outFields": [
+        "OBJECTID",
+        "PARCELID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "countryCode": "US",
+      "stateCode": "UT",
+      "metricSrid": 32612,
+      "sourceCrs": "EPSG:3566",
+      "returnsWGS84": true,
+      "scope": "Utah County parcels exposed by Provo City; positive proof limited to three northeastern Provo-labelled parcels. Queue-point coverage and citywide completeness unproven. Condominiums may repeat geometry.",
+      "operator": "Provo City GIS; Utah County Recorders, Assessor and Information System Departments",
+      "attribution": "Provo City; Utah County Recorders, Assessor and Information System Departments. Real-property parcels; source geometry preserved.",
+      "licenceUrl": "https://www.utahcounty.gov/disclaimer.html",
+      "catalogueUrl": "https://is.utahcounty.gov/gis/downloads",
+      "cityIds": [
+        "provo"
+      ],
+      "identityKind": "native-key-geometry-sha256-v1",
+      "defaultForCity": true
+    }
+  ]
+}

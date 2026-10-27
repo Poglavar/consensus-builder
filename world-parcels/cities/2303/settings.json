@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2303",
+  "name": "London, Canada",
+  "point": [
+    42.9854320723653,
+    -81.246421845116
+  ],
+  "bindings": [
+    {
+      "appCityId": "london_ca",
+      "runtimeConfig": {
+        "id": "london_ca",
+        "wupCityCode": "2303",
+        "label": "London, Canada",
+        "currency": {
+          "locale": "en-CA",
+          "code": "CAD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            42.9854320723653,
+            -81.246421845116
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            42.9854320723653,
+            -81.246421845116
+          ],
+          "fallbackDataset": [
+            -81.246421845116,
+            42.9854320723653
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ca-on-london-city-open-data-parcels",
+          "idPrefix": "CA-ON-LONDON-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Corporation of the City of London, Development Services and Geomatics. General parcel representations, not a legal survey. <a href=\"https://london.maps.arcgis.com/sharing/rest/content/items/e31458fd0c7e41dd9f93144a9550781d/data\">City Open Data Terms of Use</a>."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ca-on-london-city-open-data-parcels",
+      "name": "City of London Open Data Parcels",
+      "adapter": "arcgis-hub",
+      "endpoint": "https://hub.arcgis.com/api/download/v1/items/1b14d93461b34591b5bd32a881763dbe/geojson?redirect=true&layers=53&where=1%3D1",
+      "serviceEndpoint": "https://maps.london.ca/server/rest/services/OpenData/OpenData_BaseMaps/MapServer/53",
+      "idField": "GIS_ID",
+      "idType": "integer",
+      "idPrefix": "CA-ON-LONDON-",
+      "outFields": [
+        "GIS_ID"
+      ],
+      "maxFeatures": 5000,
+      "maxResponseBytes": 4194304,
+      "timeoutMs": 45000,
+      "exportGridSize": 0.005,
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 4,
+      "countryCode": "CA",
+      "metricSrid": 32617,
+      "sourceCrs": "EPSG:26917",
+      "responseSrid": 4326,
+      "browserTransport": "relay",
+      "cityIds": [
+        "london_ca"
+      ],
+      "scope": "City of London general parcel mapping derived from assessment and ownership data. Live bounded observations establish availability only; citywide completeness, currentness and legal accuracy are unverified. Not sanctioned by MPAC or Teranet and unsuitable for permit applications, engineering, detailed planning, development or property-use reliance.",
+      "attribution": "Corporation of the City of London, Development Services and Geomatics. General parcel representations, not a legal survey. <a href=\"https://london.maps.arcgis.com/sharing/rest/content/items/e31458fd0c7e41dd9f93144a9550781d/data\">City Open Data Terms of Use</a>.",
+      "licenceUrl": "https://london.maps.arcgis.com/sharing/rest/content/items/e31458fd0c7e41dd9f93144a9550781d/data",
+      "catalogueUrl": "https://opendata.london.ca/datasets/1b14d93461b34591b5bd32a881763dbe_53/explore",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CA",
+          "cityCode": "2303",
+          "basis": "City-owned ArcGIS item and municipal maps page identify London, Ontario; published extent includes the frozen city point."
+        }
+      },
+      "exportTimeoutMs": 120000,
+      "defaultForCity": true
+    }
+  ]
+}

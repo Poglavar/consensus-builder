@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4032",
+  "name": "Sakarya, Turkey",
+  "point": [
+    40.7632117164762,
+    30.4078913508982
+  ],
+  "bindings": [
+    {
+      "appCityId": "sakarya",
+      "runtimeConfig": {
+        "id": "sakarya",
+        "wupCityCode": "4032",
+        "label": "Sakarya, Turkey",
+        "currency": {
+          "locale": "tr-TR",
+          "code": "TRY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            40.7632117164762,
+            30.4078913508982
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            40.7632117164762,
+            30.4078913508982
+          ],
+          "fallbackDataset": [
+            30.4078913508982,
+            40.7632117164762
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tr-sakarya-sbbpublicapi-kentrehberi-parcels",
+          "idPrefix": "TR-SBB-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Sakarya Büyükşehir Belediyesi · SBB Public API / Kent Rehberi"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tr-sakarya-sbbpublicapi-kentrehberi-parcels",
+      "name": "Sakarya SBB Kent Rehberi cadastral parcels — three observed native IDs",
+      "operator": "Sakarya Büyükşehir Belediyesi",
+      "adapter": "sakarya-sbb-bounded",
+      "adapterModule": "sakarya-sbb-source.js",
+      "endpoint": "https://sbbpublicapi.sakarya.bel.tr/api/v1/CityGuide/Zoning/GetParcelNumberDetail",
+      "countryCode": "TR",
+      "cityIds": [
+        "sakarya"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "TR-SBB-",
+      "idField": "id",
+      "parcelNumberField": "id",
+      "outFields": [
+        "id"
+      ],
+      "identityKind": "native",
+      "nativeCrs": "EPSG:4326",
+      "sourceCrs": "EPSG:4326",
+      "srsName": "EPSG:4326",
+      "crsEvidenceStatus": "observed-lon-lat-only; formal native CRS and datum deferred",
+      "metricSrid": 32636,
+      "maxResponseBytes": 1048576,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "coverage": {
+        "scope": "explicit-native-id-subset",
+        "citywide": false,
+        "nativeIds": [
+          "753339386",
+          "680964700",
+          "754341611"
+        ],
+        "basis": "Three discovery IDs in nearby Erenler lots 101, 102 and 103; fresh repeat reads required. Bounds/point operations filter only this declared finite subset, not all cadastral records. Queue locator itself has administrative context only."
+      },
+      "scope": "Three observed cadastral parcels in Erenler, Sakarya; wider coverage and currentness unverified.",
+      "attribution": "Sakarya Büyükşehir Belediyesi · SBB Public API / Kent Rehberi",
+      "licence": "Non-commercial use only; attribution required.",
+      "licenceUrl": "https://sbbpublicapi.sakarya.bel.tr/terms",
+      "licenceNote": "Prior written SBB permission required for map/platform integration, third-party data service or bulk/systematic copying. Publication permission has not been established; this candidate is for bounded local research verification.",
+      "catalogueUrl": "https://rehber.sakarya.bel.tr/harita/imar",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://rehber.sakarya.bel.tr/harita/imar",
+          "https://sbbpublicapi.sakarya.bel.tr/api/v1/CityGuide/Zoning/GetParcelNumberDetail"
+        ],
+        "jurisdiction": {
+          "basis": "Municipal Sakarya lookup; native observed records lie in Erenler. District polygons do not prove parcel completeness."
+        }
+      }
+    }
+  ]
+}

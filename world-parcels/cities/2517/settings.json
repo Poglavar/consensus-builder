@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2517",
+  "name": "Jeonju, South Korea",
+  "point": [
+    35.826577907427,
+    127.123662148617
+  ],
+  "bindings": [
+    {
+      "appCityId": "jeonju",
+      "runtimeConfig": {
+        "id": "jeonju",
+        "wupCityCode": "2517",
+        "label": "Jeonju, South Korea",
+        "currency": {
+          "locale": "ko-KR",
+          "code": "KRW"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            35.826577907427,
+            127.123662148617
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            35.826577907427,
+            127.123662148617
+          ],
+          "fallbackDataset": [
+            127.123662148617,
+            35.826577907427
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "kr-jeonju-lifemap-lp-pa-cbnd-wfs",
+          "idPrefix": "KR-JEONJU-LP_PA_CBND-PNU-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Jeonju City 생활지리정보 · LP_PA_CBND continuous cadastral map"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "kr-jeonju-lifemap-lp-pa-cbnd-wfs",
+      "name": "Jeonju City continuous cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://map.jeonju.go.kr/lifemap/gs-gate/wfs",
+      "version": "1.0.0",
+      "featureType": "jeonju:LP_PA_CBND",
+      "idField": "PNU",
+      "idType": "string",
+      "idPattern": "^[0-9]{19}$",
+      "idPrefix": "KR-JEONJU-LP_PA_CBND-PNU-",
+      "geometryField": "GEOM",
+      "outFields": [
+        "PNU"
+      ],
+      "requestProperties": true,
+      "responseSrid": 5186,
+      "projection": "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs +type=crs",
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 2,
+      "maxResponseBytes": 1048576,
+      "maxConcurrentQueries": 2,
+      "minRequestIntervalMs": 150,
+      "timeoutMs": 30000,
+      "browserTransport": "relay",
+      "metricSrid": 32652,
+      "countryCode": "KR",
+      "cityIds": [
+        "jeonju"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "operator": "Jeonju City 생활지리정보",
+      "catalogueUrl": "https://map.jeonju.go.kr/map",
+      "attribution": "Jeonju City 생활지리정보 · LP_PA_CBND continuous cadastral map",
+      "scope": "Official municipal continuous cadastral layer. Bounded parcel availability only; citywide completeness, boundary conformity, legal currentness and survey accuracy remain unverified.",
+      "licenceNote": "Anonymous first-party WFS access observed. No explicit municipal geometry reuse licence established; retain Jeonju attribution. National catalogue metadata is not a licence grant."
+    }
+  ]
+}

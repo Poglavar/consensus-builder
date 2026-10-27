@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "12033",
+  "name": "Aizawl, India",
+  "point": [
+    23.7330359417012,
+    92.7199494866714
+  ],
+  "bindings": [
+    {
+      "appCityId": "aizawl",
+      "runtimeConfig": {
+        "id": "aizawl",
+        "wupCityCode": "12033",
+        "label": "Aizawl, India",
+        "currency": {
+          "locale": "en-IN",
+          "code": "INR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            23.7330359417012,
+            92.7199494866714
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            23.7330359417012,
+            92.7199494866714
+          ],
+          "fallbackDataset": [
+            92.7199494866714,
+            23.7330359417012
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "in-mz-naksha-aizawl-urban-parcels",
+          "idPrefix": "IN-MZ-NAKSHA:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Government of India Department of Land Resources · NAKSHA · Mizoram urban survey parcels (draft pilot)"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "in-mz-naksha-aizawl-urban-parcels",
+      "name": "NAKSHA Mizoram urban survey parcels — Aizawl",
+      "adapter": "arcgis",
+      "endpoint": "https://nakshagis.dolr.gov.in/utm4647/rest/services/Naksha_46/Naksha_mz_15_46/FeatureServer/0/query",
+      "publicTokenUrl": "https://naksha.dolr.gov.in/NakshaPortalAPI/api/Map/GetArcGISToken",
+      "idField": "globalid",
+      "idType": "string",
+      "objectIdField": "objectid",
+      "idPrefix": "IN-MZ-NAKSHA:",
+      "idPattern": "^\\{[0-9A-Fa-f]{8}(?:-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}\\}$",
+      "outFields": [
+        "objectid",
+        "globalid",
+        "ulb_lgd_cd"
+      ],
+      "attributeFilters": {
+        "ulb_lgd_cd": "277318"
+      },
+      "queryFormat": "geojson",
+      "pageSize": 100,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 4,
+      "timeoutMs": 45000,
+      "maxResponseBytes": 16777216,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "countryCode": "IN",
+      "metricSrid": 32646,
+      "sourceCrs": "EPSG:32646",
+      "cityIds": [
+        "aizawl"
+      ],
+      "operator": "Government of India Department of Land Resources / NAKSHA",
+      "attribution": "Government of India Department of Land Resources · NAKSHA · Mizoram urban survey parcels (draft pilot)",
+      "scope": "Partial Aizawl ULB 277318 urban plot survey; sampled polygons only. No citywide or final-title claim.",
+      "licenceNote": "Anonymous public-viewer access; explicit reuse licence unestablished.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "IN",
+          "basis": "First-party state 15 configuration and Aizawl ULB 277318 polygons.",
+          "evidence": [
+            "https://naksha.dolr.gov.in/NakshaPortal/"
+          ]
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

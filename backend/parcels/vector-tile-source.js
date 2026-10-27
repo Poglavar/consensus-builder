@@ -8,6 +8,9 @@ import { HttpError } from '../utils/helpers.js';
 import { providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
 import { geometryParcelFeature, parseGeometryParcelId, geometryLookupBounds, GEOMETRY_IDENTITY_KIND } from './geometry-identity.js';
 import { OVERLAP_GROUND_POLICY, withOverlapGround } from './overlap-ground.js';
+import { createNativeInteriorTileSource } from './vector-tile-native-source.js';
+import { createGeographicInteriorTileSource } from './vector-tile-geographic-source.js';
+import { createNcaParcelSource, isNcaSource } from './by-nca-source.js';
 
 const columnName = value => typeof value === 'string' && /^[A-Za-z_][A-Za-z0-9_.()]{0,63}$/.test(value);
 const overlaps = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
@@ -89,6 +92,11 @@ function connectedParts(fragments) {
 }
 
 export function createVectorTileParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
+    if (descriptor.tileMatrix === 'geographic-2x1') return createGeographicInteriorTileSource(descriptor, { fetchImpl });
+    if (descriptor.identityKind === 'native' && descriptor.geometryMode === 'interior-only') {
+        if (isNcaSource(descriptor)) return createNcaParcelSource(descriptor, { fetchImpl });
+        return createNativeInteriorTileSource(descriptor, { fetchImpl });
+    }
     const { id, endpoint, idPrefix, layer, groupFields, outFields, parcelNumberField } = descriptor;
     const zoom = descriptor.zoom, extent = descriptor.extent ?? 4096;
     const maxTiles = descriptor.maxTiles ?? 36, maxFeatures = descriptor.maxFeatures ?? 4000;

@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2654",
+  "name": "Kuantan, Malaysia",
+  "point": [
+    3.8120664604539,
+    103.305658093593
+  ],
+  "bindings": [
+    {
+      "appCityId": "kuantan",
+      "runtimeConfig": {
+        "id": "kuantan",
+        "wupCityCode": "2654",
+        "label": "Kuantan, Malaysia",
+        "currency": {
+          "locale": "en-MY",
+          "code": "MYR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            3.8120664604539,
+            103.305658093593
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            3.8120664604539,
+            103.305658093593
+          ],
+          "fallbackDataset": [
+            103.305658093593,
+            3.8120664604539
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "my-planmalaysia-iplan-lot-pahang",
+          "idPrefix": "MY-IPLAN-PH-UPI-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "PLANMalaysia iPLAN; JUPEM cadastral lots"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "my-planmalaysia-iplan-lot-pahang",
+      "name": "PLANMalaysia iPLAN Lot Pahang",
+      "adapter": "arcgis",
+      "endpoint": "https://scharms.planmalaysia.gov.my/arcgis/rest/services/iPLAN/LOT_06/MapServer/0",
+      "idField": "UPI",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9A-Za-z]+$",
+      "idPrefix": "MY-IPLAN-PH-UPI-",
+      "outFields": [
+        "OBJECTID",
+        "UPI"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "timeoutMs": 40000,
+      "countryCode": "MY",
+      "metricSrid": 32648,
+      "cityIds": [
+        "kuantan"
+      ],
+      "sourceCrs": "EPSG:4742",
+      "operator": "PLANMalaysia; cadastral lots referenced to JUPEM",
+      "catalogueUrl": "https://scharms.planmalaysia.gov.my/arcgis/rest/services/iPLAN/LOT_06/MapServer/0?f=pjson",
+      "attribution": "PLANMalaysia iPLAN; JUPEM cadastral lots",
+      "licenceNote": "Anonymous public query observed. No explicit reuse or redistribution licence established; retain attribution. Terms require second-pass confirmation.",
+      "scope": "Pahang cadastral lot layer; tested bounded Kuantan samples. Full Kuantan/MBK coverage, source currentness, historic validity and long-term UPI continuity are unverified.",
+      "defaultForCity": true,
+      "maxResponseBytes": 16777216
+    }
+  ]
+}

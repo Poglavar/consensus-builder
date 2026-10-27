@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3663",
+  "name": "Denizli, Turkey",
+  "point": [
+    37.7769297462601,
+    29.0816895081799
+  ],
+  "bindings": [
+    {
+      "appCityId": "denizli",
+      "runtimeConfig": {
+        "id": "denizli",
+        "wupCityCode": "3663",
+        "label": "Denizli, Turkey",
+        "currency": {
+          "locale": "tr-TR",
+          "code": "TRY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            37.7769297462601,
+            29.0816895081799
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            37.7769297462601,
+            29.0816895081799
+          ],
+          "fallbackDataset": [
+            29.0816895081799,
+            37.7769297462601
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tr-denizli-adres-parsel",
+          "idPrefix": "TR-DENIZLI-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Denizli Büyükşehir Belediyesi · adres PARSEL"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tr-denizli-adres-parsel",
+      "name": "Denizli Büyükşehir Belediyesi adres PARSEL",
+      "adapter": "arcgis",
+      "endpoint": "https://adres.denizli.bel.tr/arcgis/rest/services/yayinlar/sorgu/MapServer/3",
+      "countryCode": "TR",
+      "country": "Türkiye",
+      "operator": "Denizli Büyükşehir Belediyesi",
+      "authority": "Denizli Büyükşehir Belediyesi",
+      "idField": "GLOBALID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+      "idPrefix": "TR-DENIZLI-",
+      "outFields": [
+        "GLOBALID",
+        "OBJECTID"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 200,
+      "idBatchSize": 3,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 2097152,
+      "timeoutMs": 45000,
+      "minRequestIntervalMs": 150,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "metricSrid": 32635,
+      "sourceCrs": "EPSG:3857",
+      "returnsWGS84": true,
+      "attribution": "Denizli Büyükşehir Belediyesi · adres PARSEL",
+      "catalogueUrl": "https://adres.denizli.bel.tr/arcgis/rest/services/yayinlar/sorgu/MapServer/3?f=pjson",
+      "homepage": "https://cografibilgisistemi.denizli.bel.tr/index.html",
+      "scope": "Bounded central/east municipal Denizli parcel observations. Neither the layer extent nor the separate province-wide TAKPAS viewer establishes citywide or 19-district completeness. Current/historic and subtype semantics remain second-pass follow-ups.",
+      "licenceNote": "Anonymous municipal query service; no explicit public reuse licence established. Attribution retained. Permission and publication terms remain unresolved follow-ups.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "discovery": {
+        "sourcePurpose": "cadastral-parcels",
+        "jurisdiction": {
+          "countryCode": "TR",
+          "city": "Denizli",
+          "basis": "First-party local PARSEL layer 3 at the immutable Denizli locator, distinct from TKGM_PARSEL layer 8.",
+          "evidence": [
+            "https://adres.denizli.bel.tr/arcgis/rest/services/yayinlar/sorgu/MapServer/3?f=pjson",
+            "https://cografibilgisistemi.denizli.bel.tr/index.html"
+          ]
+        }
+      },
+      "cityIds": [
+        "denizli"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

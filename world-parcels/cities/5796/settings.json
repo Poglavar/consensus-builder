@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5796",
+  "name": "Stavropol, Russia",
+  "point": [
+    45.0347992411262,
+    41.9574361606745
+  ],
+  "bindings": [
+    {
+      "appCityId": "stavropol",
+      "runtimeConfig": {
+        "id": "stavropol",
+        "wupCityCode": "5796",
+        "label": "Stavropol, Russia",
+        "currency": {
+          "locale": "ru-RU",
+          "code": "RUB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            45.0347992411262,
+            41.9574361606745
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            45.0347992411262,
+            41.9574361606745
+          ],
+          "fallbackDataset": [
+            41.9574361606745,
+            45.0347992411262
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ru-stavropol-reestr54-cadastral-map",
+          "idPrefix": "RU-REESTR54-STAVROPOL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; independent public cadastral viewer; three observed Stavropol land parcels only; wider coverage unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ru-stavropol-reestr54-cadastral-map",
+      "name": "Stavropol public cadastral viewer — three observed land parcels",
+      "operator": "Кадастровые инженеры Новосибирска (independent public-map operator)",
+      "adapter": "reestr54-bounded",
+      "endpoint": "https://kk.reestr54.ru/stavropol/",
+      "countryCode": "RU",
+      "cityIds": [
+        "stavropol"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "RU-REESTR54-STAVROPOL-",
+      "idField": "cad_num",
+      "parcelNumberField": "cad_num",
+      "outFields": [
+        "cad_num"
+      ],
+      "nativeCrs": "EPSG:3857",
+      "srsName": "EPSG:4326",
+      "metricSrid": 32637,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "coverage": {
+        "scope": "explicit-native-id-subset",
+        "citywide": false,
+        "nativeIds": [
+          "26:12:030119:77",
+          "26:12:030119:1405",
+          "26:11:081401:4800"
+        ],
+        "basis": "Three discovery-observed native cadastral IDs only. Fresh repeatable exact reads required by qualification. No area enumeration, citywide completeness or authoritative absence claimed."
+      },
+      "scope": "Three observed native cadastral IDs only, at the frozen Stavropol centre and southeast probe. Viewport results enumerate this finite subset only.",
+      "licence": "Unresolved; anonymous access is not an open-data or redistribution licence.",
+      "licenceNote": "Reuse permission, legal custody and upstream Rosreestr/NSPD lineage remain unverified.",
+      "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; independent public cadastral viewer; three observed Stavropol land parcels only; wider coverage unverified.",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://kk.reestr54.ru/stavropol/",
+          "https://kk.reestr54.ru/static/pkk/js/pkk04112025.js?v=20251210_5"
+        ],
+        "jurisdiction": {
+          "basis": "Stavropol-specific provider page, native cadastral districts 26:12 and 26:11, centre and southeast source polygons localized in discovery; citywide service extent unverified."
+        }
+      },
+      "adapterModule": "reestr54-source.js"
+    }
+  ]
+}

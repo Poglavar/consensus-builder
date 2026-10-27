@@ -10,7 +10,9 @@ function linearPolygon(geometry, collectionCrs) {
     if (!geometry || geometry.curveRings !== undefined || geometry.hasZ || geometry.hasM
         || !wgs84(geometry.spatialReference || collectionCrs)
         || !Array.isArray(geometry.rings) || !geometry.rings.length) {
-        throw upstreamError('Unsupported Esri parcel polygon representation.');
+        // A particular parcel's unsupported representation is not a provider outage.
+        // Keep the failed read explicit without cooling down other, usable parcel reads.
+        throw upstreamError('Unsupported Esri parcel polygon representation.', 502, 'parcel-source-geometry-unsupported');
     }
     const shells = [], holes = [];
     for (const sourceRing of geometry.rings) {

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8119",
+  "name": "Pakpattan, Pakistan",
+  "point": [
+    30.350024562134,
+    73.3863839725262
+  ],
+  "bindings": [
+    {
+      "appCityId": "pakpattan",
+      "runtimeConfig": {
+        "id": "pakpattan",
+        "wupCityCode": "8119",
+        "label": "Pakpattan, Pakistan",
+        "currency": {
+          "locale": "en-PK",
+          "code": "PKR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            30.350024562134,
+            73.3863839725262
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            30.350024562134,
+            73.3863839725262
+          ],
+          "fallbackDataset": [
+            73.3863839725262,
+            30.350024562134
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "pk-pulse-pakpattan-cadastral",
+          "idPrefix": "PK-PULSE-PAKPATTAN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "pk-pulse-pakpattan-cadastral",
+      "name": "Punjab PULSE Pakpattan cadastral reference polygons",
+      "adapter": "pulse-public",
+      "endpoint": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/26",
+      "idField": "OBJECTID",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "PK-PULSE-PAKPATTAN-",
+      "outFields": [
+        "OBJECTID",
+        "District",
+        "Tehsil",
+        "Mouza"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "boundsSrid": 3857,
+      "boundsProjection": "EPSG:3857",
+      "countryCode": "PK",
+      "metricSrid": 32643,
+      "cityIds": [
+        "pakpattan"
+      ],
+      "operator": "Punjab PULSE / Punjab Land Records Authority",
+      "scope": "Bounded Pakpattan Urban cadastral-reference coverage within Pakpattan District and Tehsil, confined by exact publisher locality fields on every read. Full native OBJECTID polygons, unchanged EPSG:4326 output requested from native EPSG:3857. Initial repeatable exact reads establish parcel availability only. Citywide completeness, municipal boundary relation, current/historic semantics, long-term OBJECTID continuity, overlaps, survey accuracy and datum operation remain second-pass follow-ups; no currentness filter inferred from propstatus.",
+      "attribution": "Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons",
+      "catalogueUrl": "https://lis.pulse.gop.pk/",
+      "licenceNote": "Public anonymous viewer geometry with publisher attribution; explicit reuse terms and legal/survey accuracy remain unverified. Owner, address, tax/account and personal fields excluded; reader tokens stay in memory.",
+      "maxConcurrentQueries": 2,
+      "attributeFilters": {
+        "District": "Pakpattan",
+        "Tehsil": "Pakpattan",
+        "Mouza": "Pakpattan Urban"
+      },
+      "queryFormat": "geojson",
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 25000,
+      "defaultForCity": true
+    }
+  ]
+}

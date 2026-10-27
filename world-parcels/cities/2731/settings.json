@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2731",
+  "name": "Manizales, Colombia",
+  "point": [
+    5.05763763232812,
+    -75.4975616323303
+  ],
+  "bindings": [
+    {
+      "appCityId": "manizales",
+      "runtimeConfig": {
+        "id": "manizales",
+        "wupCityCode": "2731",
+        "label": "Manizales, Colombia",
+        "currency": {
+          "locale": "es-CO",
+          "code": "COP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            5.05763763232812,
+            -75.4975616323303
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            5.05763763232812,
+            -75.4975616323303
+          ],
+          "fallbackDataset": [
+            -75.4975616323303,
+            5.05763763232812
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "co-manizales-alcaldia-predios-plusvalia",
+          "idPrefix": "CO-MANIZALES-PLUSVALIA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Alcaldía de Manizales · Predios con Efecto de Plusvalía · partial cadastral coverage"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "co-manizales-alcaldia-predios-plusvalia",
+      "name": "Alcaldía de Manizales — Predios con Efecto de Plusvalía",
+      "adapter": "arcgis",
+      "endpoint": "https://services6.arcgis.com/PtpS85InlUyG2Gqs/arcgis/rest/services/Predios_con_Efecto_de_Plusval%C3%ADa/FeatureServer/0",
+      "idField": "FICHA_NUEV",
+      "idType": "string",
+      "idPattern": "^[0-9]{1,254}$",
+      "objectIdField": "FID",
+      "idPrefix": "CO-MANIZALES-PLUSVALIA-",
+      "outFields": [
+        "FID",
+        "FICHA_NUEV"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "minRequestIntervalMs": 100,
+      "countryCode": "CO",
+      "metricSrid": 32618,
+      "countryName": "Colombia",
+      "operator": "Alcaldía de Manizales",
+      "cityIds": [
+        "manizales"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "scope": "Partial municipal cadastral parcel subset selected for efecto de plusvalía; not complete urban/rural cadastral coverage. The fixed WUP locator has no proven parcel overlap.",
+      "attribution": "Alcaldía de Manizales · Predios con Efecto de Plusvalía · partial cadastral coverage",
+      "licenceNote": "Anonymous public access; item licenseInfo and accessInformation are null. No open-data licence inferred; reuse terms unresolved.",
+      "sourceCrs": "EPSG:3857 (WKID 102100); request outSR=4326",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CO",
+          "basis": "Municipal ArcGIS organization PtpS85InlUyG2Gqs is Alcaldía de Manizales; item owner alcaldiamanizales publishes the polygon layer with native FICHA_NUEV alias Ficha Catastral.",
+          "evidence": [
+            "https://www.arcgis.com/sharing/rest/content/items/122bdabbe2a44dfbae6e3454ec7362e7?f=pjson",
+            "https://services6.arcgis.com/PtpS85InlUyG2Gqs/arcgis/rest/services/Predios_con_Efecto_de_Plusval%C3%ADa/FeatureServer/0?f=pjson",
+            "https://www.arcgis.com/sharing/rest/portals/PtpS85InlUyG2Gqs?f=json"
+          ]
+        }
+      },
+      "notes": "Plusvalía-selected cadastral records only; lastEditDate 1622756677341 (2021-06-03). No full-city coverage, currentness or legal-title claim."
+    }
+  ]
+}
