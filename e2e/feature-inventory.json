@@ -617,6 +617,12 @@
       "specs": [
         "tests/theme-controls.spec.ts"
       ]
+    },
+    {
+      "id": "settings.checkUpdates",
+      "specs": [
+        "tests/app-updates.spec.ts"
+      ]
     }
   ],
   "workflows": [
@@ -902,6 +908,12 @@
       "description": "Create a community consultation, follow participation and report links, sign and verify website-attributed results with retained history.",
       "specs": [
         "tests/community-consultation.spec.ts"
+      ]
+    },
+    {
+      "feature": "Application build display, update checks, notification dismissal and explicit reload protection",
+      "specs": [
+        "tests/app-updates.spec.ts"
       ]
     }
   ],

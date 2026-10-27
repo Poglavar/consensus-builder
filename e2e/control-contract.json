@@ -9271,6 +9271,34 @@
           }
         }
       ]
+    },
+    {
+      "id": "control-a742d340d4db90-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-app-update-reload data-i18n-key=\"appUpdates.reload\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-a56e0869bc399e-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"app-update-later\" class=\"btn\" data-i18n-key=\"appUpdates.later\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-b7d4914a2af334-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"app-update-check\" class=\"btn\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-ba886f3416d765-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"btn btn-primary\" data-app-update-reload data-i18n-key=\"appUpdates.reload\" hidden>",
+      "interaction": "click",
+      "controlType": "button"
     }
   ],
   "variantExclusions": [

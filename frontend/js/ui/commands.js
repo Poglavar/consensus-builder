@@ -458,6 +458,8 @@
             labelKey: 'selectedParcels.actions.done', fallbackLabel: 'Done selecting', icon: 'fas fa-check' },
 
         // ---- Settings sheet ----
+        control('app-update-check', { id: 'settings.checkUpdates', group: 'settings', surfaces: ['settings'],
+            labelKey: 'appUpdates.check', fallbackLabel: 'Check for updates', icon: 'fas fa-arrows-rotate' }),
         control('parcel-source-notice-button', { id: 'settings.parcelSourceNotice', group: 'settings', surfaces: ['settings'],
             labelKey: 'parcelSourceNotice.title', fallbackLabel: 'Parcel source information', icon: 'fas fa-info-circle' }),
         control('parcel-source-settings-button', { id: 'settings.parcelSourceSettings', group: 'settings', surfaces: ['layers'], modes: ['2d'],

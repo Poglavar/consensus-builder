@@ -307,7 +307,7 @@ button.status-log-message {
     pointer-events: none;
 }
 
-#map-feedback-stack:has(#floating-status-text:empty):not(:has(.three-view-hint)) {
+#map-feedback-stack:has(#floating-status-text:empty):not(:has(.three-view-hint)):not(:has(.app-update-notice:not([hidden]))) {
     display: none;
 }
 
