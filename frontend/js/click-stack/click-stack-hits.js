@@ -141,7 +141,7 @@
             return footprint ? [footprint] : [];
         };
         let features = [];
-        if (kind === 'plans') features = instance.features || [];
+        if (kind === 'plans' || kind === 'agreements') features = instance.features || instance.plan?.features || [];
         else if (kind === 'designs') features = designFeatures(instance.id);
         else if (kind === 'permitted') {
             const item = instance.item || global.PlanningViews?.getItems?.().find(item => item.id === instance.id);

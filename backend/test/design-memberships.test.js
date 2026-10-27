@@ -8,7 +8,7 @@ import { dictionary, testI18n } from './helpers/i18n.js';
 import { makeDocument } from './helpers/fake-dom.js';
 
 const require = createRequire(import.meta.url);
-const { localAgreements, localPlans, mergeRows, fetchPage, createSession, inspect, mountAgreements, mountSection } = require('../../frontend/js/design-memberships.js');
+const { localAgreements, localPlans, mergeRows, fetchPage, createSession, inspect, createAgreementScope, mountSection } = require('../../frontend/js/design-memberships.js');
 const page = (kind, items = [], nextOffset = null) => Response.json({ [kind]: items, hasMore: nextOffset !== null, nextOffset });
 
 function fixture({ published = true, agreements = [], fetch = vi.fn(async url => page(new URL(url).pathname.slice(1))) } = {}) {
@@ -272,19 +272,32 @@ describe('read-only parent inspection', () => {
         expect(host.querySelector('.click-stack__share-plan')).toBeTruthy();
     });
 
-    it('opens a local agreement from its plan row without applying spatial changes', async () => {
-        const doc = makeDocument(), host = doc.createElement('section'); doc.body.appendChild(host);
-        const agreement = { id: 'local-agreement', title: 'Terms', plan: { cid: 'plan-exact' } };
-        const f = fixture({ agreements: [agreement] });
-        f.win.ApplyProposal = { apply: vi.fn() };
-        f.win.DesignSync.applyDesign = vi.fn();
-        mountAgreements(host, { cid: 'plan-exact', draft: true }, f.win);
-        const row = host.querySelector('button');
-        expect(row.textContent).toBe('Terms');
-        row.click();
-        await vi.waitFor(() => expect(f.win.AgreementPanel.open).toHaveBeenCalledWith('local-agreement'));
-        expect(f.win.ApplyProposal.apply).not.toHaveBeenCalled();
-        expect(f.win.DesignSync.applyDesign).not.toHaveBeenCalled();
+    it('scopes agreements to the selected exact plan and refreshes local saves', async () => {
+        const agreements = [{ id: 'a1', title: 'First terms', plan: { cid: 'plan-one' } }, { id: 'a2', title: 'Other terms', plan: { cid: 'plan-two' } }];
+        const f = fixture({ agreements });
+        let changed; f.win.AgreementStore.subscribe = fn => { changed = fn; return vi.fn(); };
+        let plan = { cid: 'plan-one', draft: true };
+        const updates = vi.fn(), scope = createAgreementScope(f.win, { getPlan: () => plan, onChange: updates });
+        scope.sync(); await vi.waitFor(() => expect(updates).toHaveBeenCalled());
+        expect(updates.mock.lastCall[0].map(row => row.id)).toEqual(['a1']);
+        plan = { cid: 'plan-two', draft: true }; scope.sync();
+        await vi.waitFor(() => expect(updates.mock.lastCall[0].map(row => row.id)).toEqual(['a2']));
+        agreements.push({ id: 'a3', title: 'New terms', plan: { cid: 'plan-two' } }); changed();
+        await vi.waitFor(() => expect(updates.mock.lastCall[0].map(row => row.id)).toEqual(['a2', 'a3']));
+        expect(f.win.fetch).not.toHaveBeenCalled(); scope.dispose();
+    });
+
+    it('discards a delayed agreement response after switching exact plans', async () => {
+        let finish;
+        const fetch = vi.fn(() => new Promise(resolve => { finish = resolve; }));
+        const f = fixture({ fetch, agreements: [{ id: 'new', title: 'Current', plan: { cid: 'plan-new' } }] });
+        let plan = { cid: 'plan-old', draft: false };
+        const updates = vi.fn(), scope = createAgreementScope(f.win, { getPlan: () => plan, onChange: updates });
+        const pending = scope.sync();
+        plan = { cid: 'plan-new', draft: true }; scope.sync();
+        finish(page('agreements', [{ cid: 'stale-agreement', planCid: 'plan-old' }]));
+        await pending; await Promise.resolve();
+        expect(updates.mock.lastCall[0].map(row => row.id)).toEqual(['new']); scope.dispose();
     });
 
     it('does not restore stale plan highlights after its host was detached', async () => {

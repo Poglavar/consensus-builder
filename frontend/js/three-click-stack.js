@@ -14,8 +14,8 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (global) {
     'use strict';
 
-    const ORDER = Object.freeze(['built', 'plans', 'designs', 'permitted', 'parcels']);
-    const ICONS = Object.freeze({ plans: 'fas fa-layer-group', built: 'fas fa-building', designs: 'fas fa-drafting-compass', permitted: 'fas fa-cube', parcels: 'fas fa-border-all' });
+    const ORDER = Object.freeze(['built', 'agreements', 'plans', 'designs', 'permitted', 'parcels']);
+    const ICONS = Object.freeze({ agreements: 'fas fa-file-signature', plans: 'fas fa-layer-group', built: 'fas fa-building', designs: 'fas fa-drafting-compass', permitted: 'fas fa-cube', parcels: 'fas fa-border-all' });
 
     // ── pure rules ────────────────────────────────────────────────────────────────────────────
 
@@ -40,6 +40,8 @@
     // input: { built, designs, permitted, parcels } arrays of { id, label, ... }; focus: a kind;
     // selected: { [kind]: id } for the instance a strip shows first (the clicked proposal).
     function buildThreeStack(input = {}, { focus = null, selected = {} } = {}) {
+        const plan = input.plans?.find(item => item.id === selected.plans) || input.plans?.[0];
+        input = { ...input, agreements: (input.agreements || []).filter(item => plan?.cid && (item.plan?.cid || item.planCid) === plan.cid) };
         const sections = [];
         for (const kind of ORDER) {
             const seen = new Set();
@@ -110,6 +112,7 @@
 
     function rowTitle(section) {
         switch (section.kind) {
+            case 'agreements': return t('designMemberships.agreements', 'Agreements');
             case 'plans': return t('designMemberships.plan', 'Plan');
             case 'built': return section.multi ? t('clickStack.builtMany', 'Built ({{count}})', { count: section.count }) : t('threeMode.controls.built', 'Built');
             case 'designs': return section.multi ? t('clickStack.designs', 'Designs ({{count}})', { count: section.count }) : t('proposalDrafts.tabs.design', 'Design');
@@ -202,6 +205,29 @@
             list.appendChild(wrap);
         });
         el.appendChild(list);
+        syncAgreements();
+    }
+
+    function syncAgreements() {
+        if (!isOpen() || !global.DesignMemberships?.createAgreementScope) return;
+        if (!state.agreementScope) state.agreementScope = global.DesignMemberships.createAgreementScope(global, {
+            getPlan: () => state.stack && selectedInstance(state.stack, 'plans'),
+            onChange(rows, group) {
+                if (!isOpen()) return;
+                state.agreementGroup = group;
+                const previous = state.stack;
+                const selected = Object.fromEntries(previous.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
+                state.input.agreements = rows;
+                const next = buildThreeStack(state.input, { selected, focus: previous.expanded });
+                const has = kind => next.sections.some(section => section.kind === kind);
+                state.stack = { ...next, expanded: has(previous.expanded) ? previous.expanded : null,
+                    selectedKind: has(previous.selectedKind) ? previous.selectedKind : 'plans' };
+                const keepBody = state.stack.expanded && state.stack.expanded !== 'agreements'
+                    ? state.el.querySelector(`.click-stack__section[data-kind="${state.stack.expanded}"] .click-stack__body`) : null;
+                render({ keepBody }); if (!keepBody) activate();
+            }
+        });
+        state.agreementScope.sync();
     }
 
     function activate(options = state.activationOptions) {
@@ -212,7 +238,11 @@
         try {
             const instance = selectedInstance(state.stack, kind);
             state.adapter.activate(kind, instance, body, options);
-            if (kind === 'plans') {
+            if (kind === 'agreements') {
+                body.replaceChildren();
+                global.DesignMemberships.mountAgreement(body, instance, global, { group: state.agreementGroup,
+                    onFocus: item => { if (isOpen() && state.stack.selectedKind === 'agreements' && selectedInstance(state.stack, 'agreements')?.id === item.id) state.adapter.focus?.('agreements', item); } });
+            } else if (kind === 'plans') {
                 body.replaceChildren();
                 const version = state.membershipVersion;
                 const mount = () => {
@@ -246,7 +276,7 @@
         state.adapter?.release?.();
         state.adapter = adapter;
         state.input = { ...input };
-        delete state.input.agreements;
+
         state.click = options.click || null;
         state.activationOptions = {};
         state.stack = buildThreeStack(input, options);
@@ -256,7 +286,7 @@
         state.el.classList.add('visible');
         doc.body.classList.add('three-click-stack-open');
         activate();
-        syncMemberships(true);
+        syncMemberships(true); syncAgreements();
         return true;
     }
 
@@ -284,6 +314,7 @@
         const adapter = state.adapter;
         adapter?.release?.();
         state.memberships?.dispose();
+        state.agreementScope?.dispose(); state.agreementScope = null;
         state.memberships = null;
         state.membershipDesign = null;
         state.membershipVersion++;
@@ -366,7 +397,7 @@
             state.memberships = session;
             const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
             const previous = state.stack;
-            state.input = { ...state.input, plans: session.instances('plans', previous.selectedKind === 'plans') };
+            state.input = { ...state.input, plans: Array.from(new Map([...session.instances('plans', previous.selectedKind === 'plans'), ...(state.input.planContext ? [state.input.planContext] : [])].map(item => [item.id, item])).values()) };
             state.input.designs = state.input.designs.map(item => item.id === design.id ? { ...item, cid: session.cid } : item);
             const next = buildThreeStack(state.input, { selected, focus: previous.selectedKind });
             state.stack = { ...next, expanded: previous.expanded && next.sections.some(section => section.kind === previous.expanded) ? previous.expanded : null };

@@ -1627,6 +1627,14 @@
         return true;
     }
 
+    function showThreeModePlan(instance) {
+        if (!isActive) return false;
+        window.AgreementPanel?.close();
+        window.ThreeClickStack.show({ plans: [instance], planContext: instance, designs: instance.members },
+            { focus: 'plans', selected: { plans: instance.id }, container: document.getElementById('map-container') || document.body }, clickStackAdapter);
+        return true;
+    }
+
     function showThreeModeParcel(parcelId) {
         if (!isActive || !parcelId) return false;
         withStackDriving(() => showClickStack(null, { parcel: { id: String(parcelId) } }));
@@ -9493,6 +9501,7 @@
     window.focusThreeModeOnProposals = focusThreeModeOnProposals;
     window.showThreeModeDesign = showThreeModeDesign;
     window.showThreeModeParcel = showThreeModeParcel;
+    window.showThreeModePlan = showThreeModePlan;
     window.getThree3DGeoView = getGeoCameraView;
     window.setThreeXrayEnabled = setXrayEnabled;
     window.setThreeFloorCutaway = setFloorCutaway;

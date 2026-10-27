@@ -103,3 +103,32 @@ Targeted verification: five headless unit files passed (110 tests: memberships, 
 A two-case targeted headed Playwright run passed desktop return/create/list refresh; the phone case repeated the hidden-X locator issue before the phone test was corrected.
 
 Final verification: the corrected phone case passed in a targeted headed Playwright run; its screenshot and the desktop screenshot were visually inspected. All three targeted headless Playwright cases then passed, covering both viewport widths and the independent-agreement list. The verified preview still resolved the local API; real parcel lookup and complete design binding both returned HTTP 200. No tests were stopped.
+
+
+## Agreement stack section and Plan navigation
+
+User decision: Agreements belongs above Plans in the click stack, scoped to the selected exact Plan revision. Multiple agreements use the shared instance selector. The section shows decision terms and owner allocations, with Agreement details opening the full record. Community agreements do not display allocation terms. The same controller serves map and model-view stacks, refreshes local saves, paginates the public index and rejects stale responses after a plan switch.
+
+Agreement details now renders its Plan entry as a button for both saved and published records. It reads the exact plan/design snapshots, then selects/expands Plan in the current view. It does not navigate to a `/plans/` route, import/apply designs, replace the workspace or move the camera. Read-only agreement inspection can use the button too. Plan snapshots opened this way remain in the stack while reverse membership queries complete.
+
+MCP parity: no authored field, schema or editing operation changed. Agreements still name one exact `planCid`. Existing `ugt_get_plan` and `ugt_inspect_agreement` inspect those revisions, and `ugt_parcel_context` supplies contextual agreements. The new stack section is read-only navigation over the same records. Exact-plan index filtering and cancellation are verified through the shared membership unit tests; no new MCP mutation is required.
+
+Targeted verification runs (none stopped):
+
+| Type and scope | Result |
+| --- | --- |
+| Headless unit: memberships, map model/panel, 3D stack, agreement panel, sharing (6 files) | Initially 120 passed, 8 failed: obsolete link/list assertions and incomplete module/translation fixtures |
+| Same six headless unit files after fixture/API updates | 130 passed |
+| Headless Playwright: Plan navigation and phone agreement section (2 cases) | 2 passed |
+| Headless unit: memberships, locales, optional loader (3 matching files) | 60 passed, 1 failed on in-progress voting translations from another session |
+| Headless Playwright: plan switching, return/create and 3D scope (5 cases) | 3 passed; 2 3D cases exposed missing scope initialization on direct plan opening |
+| Headless Playwright: 3D scope at desktop/phone widths after initialization fix | 2 passed |
+| Headless unit: memberships (including stale response), 3D stack and map model (3 files) | 51 passed |
+| Headed Playwright: Plan navigation and phone layout | 2 passed; screenshots reviewed |
+| Headless unit: locale coverage after concurrent translations completed | 22 passed |
+
+Concurrent voting edits share agreement-panel.js, index.html, locale dictionaries and vocabulary.md. Their edits are preserved; mixed files are left uncommitted according to the workspace rule. The navigation hunks in agreement-panel.js replace the Plan link, allow the action in read-only inspection and call ClickStack.showPlan; locale hunks add clickStackRelations.chooseAgreement; vocabulary updates the plan/stack relationship.
+
+A final targeted headless Playwright Plan-navigation case passed after omitting allocation terms for community agreements. The final case checks the shared selector/terms layout; the earlier headed screenshots were visually reviewed. The broader locale-coverage check is green after the concurrent voting translations were completed.
+
+Preview verification: the frontend/API listening processes belong to this checkout; the browser resolved the explicit local backend. Real cadastral lookup returned one feature and a complete design-binding response (both HTTP 200). The 3D checks exercise the real stack DOM/CSS without booting the scene renderer. The changed Plan-button assertion in agreement-panel.test.js stays with its uncommitted mixed implementation file.

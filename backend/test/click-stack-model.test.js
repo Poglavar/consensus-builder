@@ -21,6 +21,14 @@ it('navigates parcel → design → plan relationships without exposing agreemen
 
 const kinds = stack => stack.sections.map(section => section.kind);
 
+it('places agreements for the selected exact plan above Plans without accepting unrelated spatial hits', () => {
+    const stack = model.buildClickStack({ plans: [{ id: 'plan-a', cid: 'plan-a' }], agreements: [
+        { id: 'a1', planCid: 'plan-a', onParcel: true }, { id: 'a2', plan: { cid: 'plan-a' }, onParcel: true }, { id: 'other', planCid: 'plan-b' }
+    ] });
+    expect(stack.sections.map(row => row.kind)).toEqual(['agreements', 'plans']);
+    expect(stack.sections[0].count).toBe(2); expect(stack.expanded).toBe('plans');
+});
+
 describe('click stack model', () => {
     it('orders plans, designs, built, permitted, formed parcel, cadastral parcels, showing only what is there', () => {
         expect(kinds(model.buildClickStack({ built: [{ id: 'b1' }], parcels: [{ id: 'p1' }] }))).toEqual(['built', 'parcels']);

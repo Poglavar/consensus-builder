@@ -7,8 +7,9 @@ right-side panels that clicks used to open one at a time.
 ## What a click does
 
 - A click on the 2D map collects **everything under the point**, by geometry, not by which
-  layer is drawn on top: agreements, designs, built buildings, permitted massing, the formed
-  parcel, cadastral parcels, and the coordinates. Layers no longer swallow clicks.
+  layer is drawn on top: designs, built buildings, permitted massing, formed ground, cadastral
+  parcels and coordinates. Exact-revision Plans and their scoped Agreements are related context;
+  agreements have no independent pick geometry. Layers no longer swallow clicks.
 - When **no design is under the point**, the parcel there also adds what stands on it
   (2026-10-23): its buildings to Built and its proposals to Designs, this browser's and the
   published ones it has no copy of (a published one is imported when opened). They follow the
@@ -49,19 +50,21 @@ right-side panels that clicks used to open one at a time.
 - Relationship groups are small, explicitly labelled link groups **inside the expanded card body**.
   Their links wrap to fit the card; they do not create horizontal scrolling. A group navigates
   related objects, never siblings of the object already selected:
-  - A plan or agreement offers its included designs. A plan stores a set of design CIDs; an
-    agreement retains its authored membership order.
+  - A plan offers its included designs. An agreement references exactly one Plan revision;
+    it has no independently authored design membership.
   - A design offers the plans and agreements it belongs to, plus its affected parcels or formed land.
   - A formed parcel offers its producing design and source cadastral parcels.
   - A source parcel can offer its formed pieces or designs on that parcel.
   A group is omitted when its sole target is the same sole visible instance already shown in the
   target section. Missing or off-screen targets remain useful links. Selecting a related item
   selects and expands its section.
-- **Plans and agreements are separate sections above Designs.** Their list membership is loaded
-  on demand for the selected exact design revision. Inspecting one reads its referenced designs'
-  geometry and highlights their features without importing or applying those designs. The expanded
-  body explains what a plan or agreement represents and provides an explicit link to open the plan
-  or agreement details; the link retains the configured `backend` override.
+- **Agreements sit above Plans, followed by Designs.** Plans are discovered for the exact design
+  revision; agreements are loaded only for the selected exact Plan CID. Switching Plans replaces
+  the agreement choices, and stale responses from the previous plan are discarded. Agreement
+  sections show decision/allocation terms with an explicit Agreement details action. Inspecting
+  either a plan or its agreement highlights the plan’s extent without importing or applying its
+  designs. The Plan button in agreement details selects that Plan in the current stack, preserving
+  the camera, workspace and address. Multiple agreements share the same native instance selector.
 - When a section has multiple instances, its expanded card contains a compact native selector for
   switching among those peers. A singleton has no selector.
 - The Design selector says **Location you clicked has multiple designs. Select which to inspect:**
@@ -72,8 +75,9 @@ right-side panels that clicks used to open one at a time.
   Its count is the number of separate designs overlapping the location or using its parcel;
   selecting one changes the inspected design.
 - The expanded section is the **action view**:
-  - Plan or agreement: meaning, name, included designs and their combined map highlight. "Open
-    plan" loads the saved composition; "Agreement details" opens the agreement record.
+  - Plan: meaning, name, included designs, combined map highlight, Share plan and Create agreement.
+    Agreement: decision/allocation terms and the inherited plan extent; Agreement details opens
+    the full agreement record.
   - Design: the proposal's actions panel itself (2026-10-23), without its own − and ×: an
     Overview tab (name, rung badges, type, author, parcel count and one area) and a Details tab
     (land and ownership, verification, the record), with the actions under both; plus the

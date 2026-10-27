@@ -21,7 +21,7 @@
     const HOSTABLE = ['proposal-details-panel', 'planning-inspector', 'parcel-info-panel'];
     // Right-dock panels the stack never hosts: when one opens, the stack steps aside.
     const DOCKED_ELSEWHERE = ['block-info-panel', 'road-info-panel', 'road-analysis-panel'];
-    const ICONS = Object.freeze({ plans: 'fas fa-layer-group', designs: 'fas fa-drafting-compass', built: 'fas fa-building',
+    const ICONS = Object.freeze({ agreements: 'fas fa-file-signature', plans: 'fas fa-layer-group', designs: 'fas fa-drafting-compass', built: 'fas fa-building',
         permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
     const state = { el: null, stack: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null };
@@ -174,6 +174,7 @@
         const instance = section.instances[section.selectedIndex];
         switch (section.kind) {
             case 'selection': return t('selectedParcels.count', 'Selected parcels ({{count}})', { count: section.count });
+            case 'agreements': return t('designMemberships.agreements', 'Agreements');
             case 'plans': return t('designMemberships.plan', 'Plan');
             case 'designs': return section.count > 1 ? t('designs', 'Designs ({{count}})', { count: section.count }) : t('proposalDrafts.tabs.design', 'Design');
             case 'built': return section.count > 1 ? t('buildings', 'Buildings ({{count}})', { count: section.count }) : t('building', 'Building');
@@ -269,11 +270,33 @@
             list.appendChild(wrap);
         });
         el.appendChild(list);
+        syncAgreements();
         if (state.latlng) {
             const coords = button('click-stack__coords', `${state.latlng.lat.toFixed(6)}, ${state.latlng.lng.toFixed(6)}`, { action: 'coords' });
             coords.title = t('copyCoordinates', 'Copy coordinates');
             el.appendChild(coords);
         }
+    }
+
+    function syncAgreements() {
+        if (!isOpen() || !global.DesignMemberships?.createAgreementScope) return;
+        if (!state.agreementScope) state.agreementScope = global.DesignMemberships.createAgreementScope(global, {
+            getPlan: () => state.stack && model.selectedInstance(state.stack, 'plans'),
+            onChange(rows, group) {
+                if (!isOpen()) return;
+                state.agreementGroup = group;
+                const previous = state.stack;
+                const selected = Object.fromEntries(previous.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
+                state.hits.agreements = rows;
+                const next = model.buildClickStack(state.hits, { selected });
+                const has = kind => next.sections.some(section => section.kind === kind);
+                const expanded = has(previous.expanded) ? previous.expanded : previous.expanded === 'agreements' ? 'plans' : null;
+                state.stack = { ...next, expanded, selectedKind: has(previous.selectedKind) ? previous.selectedKind : 'plans', topRef: previous.topRef };
+                const keepBody = expanded && expanded !== 'agreements' ? bodyOf(expanded) : null;
+                render({ keepBody }); if (!keepBody && expanded) activate(expanded);
+            }
+        });
+        state.agreementScope.sync();
     }
 
     function bodyOf(kind) {
@@ -332,7 +355,11 @@
                 global.clearProposalHighlights?.();
                 global.ProposalSelection?.clear?.();
             }
-            if (kind === 'plans') {
+            if (kind === 'agreements') {
+                unhost();
+                global.DesignMemberships.mountAgreement(body, instance, global, { group: state.agreementGroup,
+                    onFocus: item => { if (isOpen() && state.stack.selectedKind === 'agreements' && model.selectedInstance(state.stack, 'agreements')?.id === item.id) highlightSection('agreements', item); } });
+            } else if (kind === 'plans') {
                 unhost();
                 const version = state.membershipVersion;
                 const mount = () => {
@@ -439,7 +466,7 @@
     function refreshSpot(latlng) {
         if (!isOpen() || state.latlng !== latlng) return;
         const hits = { ...global.ClickStackHits.hitsAt(latlng) };
-        delete hits.agreements;
+        hits.agreements = state.hits?.agreements || [];
         if (state.memberships) {
             hits.plans = state.memberships.instances('plans', state.stack.selectedKind === 'plans');
             hits.designs = hits.designs.map(item => String(item.proposal?.proposalId) === state.memberships.proposalId
@@ -547,7 +574,7 @@
         state.stack = stack;
         state.latlng = latlng;
         state.hits = { ...hits };
-        delete state.hits.agreements;
+
         render();
         const el = ensureElement();
         el.hidden = false;
@@ -555,7 +582,7 @@
         doc.body.classList.add('click-stack-open');
         if (stack.expanded) activate(stack.expanded);
         else highlightSection(stack.selectedKind, model.selectedInstance(stack, stack.selectedKind));
-        syncMemberships(true);
+        syncMemberships(true); syncAgreements();
     }
 
     function close({ keepPanels = false, keepSelection = false } = {}) {
@@ -582,6 +609,7 @@
         global.clearProposalHoverLayers?.();
         global.highlightFeaturesForInspection?.([]);
         state.memberships?.dispose();
+        state.agreementScope?.dispose(); state.agreementScope = null;
         state.memberships = null;
         state.membershipDesign = null;
         state.membershipVersion++;
@@ -676,7 +704,7 @@
             state.memberships = session;
             const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
             const previous = state.stack;
-            state.hits = { ...state.hits, plans: session.instances('plans', previous.selectedKind === 'plans') };
+            state.hits = { ...state.hits, plans: Array.from(new Map([...session.instances('plans', previous.selectedKind === 'plans'), ...(state.hits.planContext ? [state.hits.planContext] : [])].map(item => [item.id, item])).values()) };
             // Annotate only the exact inspected revision for relationship matching.
             state.hits.designs = state.hits.designs.map(item => item.id === design.id ? { ...item, cid: session.cid } : item);
             const next = model.buildClickStack(state.hits, { selected });
@@ -719,6 +747,17 @@
         // No click opened this spot, so the first click on the design is a new one (it selects what
         // it hits, such as a road's stretch), not "the same spot again", which would close the stack.
         show({ ...stack, topRef: null }, latlng, hits);
+    }
+
+    async function showPlan(plan, { designs = [], draft = false } = {}) {
+        if (!global.DesignMemberships) await global.ensureOptionalTool('designMemberships');
+        const instance = { id: plan.cid, cid: plan.cid, content: plan.content, label: plan.content.title, draft, localDesigns: designs };
+        Object.assign(instance, await global.DesignMemberships.inspect('plans', instance, global));
+        if (doc.body.classList.contains('three-mode-active')) return global.showThreeModePlan(instance);
+        const hits = { plans: [instance], planContext: instance, designs: instance.members };
+        const stack = model.expand(model.buildClickStack(hits, { selected: { plans: instance.id } }), 'plans');
+        state.lastClick = null;
+        show({ ...stack, topRef: null }, global.map.getCenter(), hits);
     }
 
     function showParcel(feature) {
@@ -797,6 +836,6 @@
 
     // Selection owns the map focus, including while its details are collapsed.
     const holdsHighlight = () => isOpen() && !!state.stack?.selectedKind;
-    global.ClickStack = Object.freeze({ handleClick, showDesign, showParcel, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
+    global.ClickStack = Object.freeze({ handleClick, showDesign, showPlan, showParcel, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
         current: () => state.stack, point: () => state.latlng });
 })(window);

@@ -112,7 +112,7 @@
         caption.id = `${id}-label`;
         caption.className = 'click-stack__selector-label';
         const captions = { designs: 'chooseDesign', built: 'chooseBuilding', parcels: 'chooseParcel', formed: 'chooseParcel',
-            plans: 'choosePlan', permitted: 'choosePermitted' };
+            plans: 'choosePlan', agreements: 'chooseAgreement', permitted: 'choosePermitted' };
         caption.textContent = translate(captions[section.kind] || 'chooseInstance', win);
         const select = doc.createElement('select');
         select.id = id;

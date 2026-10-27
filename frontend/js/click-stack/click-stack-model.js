@@ -35,10 +35,10 @@
     // parcel): it opens like a cadastral parcel, and is where the next design starts. Cadastral
     // parcels below it are the originals it came from. Ground is bare land with no register (the
     // former ground menu): it offers what can be drawn there, and shows only when nothing else is.
-    const ORDER = Object.freeze(['plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
-    const MULTI = new Set(['plans', 'designs', 'built', 'permitted', 'formed', 'parcels']);
-    const EXPANDABLE = new Set(['plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
-    const NEWEST_FIRST = new Set(['plans', 'designs']);
+    const ORDER = Object.freeze(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
+    const MULTI = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels']);
+    const EXPANDABLE = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'ground']);
+    const NEWEST_FIRST = new Set(['agreements', 'plans', 'designs']);
 
     const time = value => {
         const parsed = typeof value === 'number' ? value : Date.parse(value || '');
@@ -77,6 +77,9 @@
     // options.remembered: the kind last expanded; options.selected: { [kind]: id } to keep a
     // chosen instance (a strip click) when the same spot is rebuilt.
     function buildClickStack(hits = {}, options = {}) {
+        const plans = instancesOf('plans', hits.plans);
+        const plan = plans.find(item => item.id === options.selected?.plans) || plans[0];
+        hits = { ...hits, agreements: (hits.agreements || []).filter(item => plan?.cid && (item.plan?.cid || item.planCid) === plan.cid) };
         const sections = [];
         for (const kind of ORDER) {
             const instances = instancesOf(kind, hits[kind]);

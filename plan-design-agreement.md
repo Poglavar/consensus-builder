@@ -25,8 +25,10 @@ internal local-record identifier, not a public entity label. Nonbinding and bind
 of agreement; “consultation” is not a separate UI noun. The existing `consultation` metadata field
 continues to store optional organiser and participation details.
 
-The click stack contains Plan and Design sections. Parcels link to their Designs, Designs link to
-Plans, and Plans link to Agreements in their own section. Agreement links open a separate dialog.
+The click stack contains Agreements above Plans, followed by Designs and source objects. Agreements
+are scoped to the selected exact Plan revision and share a selector when there are several. Their
+section shows decision/allocation terms and opens the full agreement details. The Plan button in
+those details selects the referenced Plan in the current stack without loading or applying it.
 Plans and Agreements retain separate share URLs. Execution markets and bets remain attached to
 eligible binding Agreements, so agreements concerning the same plan retain independent markets.
 

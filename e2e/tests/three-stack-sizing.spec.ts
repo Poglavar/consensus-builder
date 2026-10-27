@@ -17,6 +17,36 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
       await page.addScriptTag({ path: path.join(frontend, 'js/mobile-dock-sheet.js') });
     });
 
+    test('scoped agreement selector sits above Plans and follows the selected plan', async ({ page }) => {
+      for (const file of ['click-stack/click-stack-relations', 'design-memberships', 'ui/busy-control']) {
+        await page.addScriptTag({ path: path.join(frontend, `js/${file}.js`) });
+      }
+      await page.evaluate(() => {
+        const w = window as any;
+        w.i18n = { t: (key: string) => ({ 'designMemberships.agreement': 'Agreement', 'designMemberships.openAgreement': 'Agreement details',
+          'designMemberships.plan': 'Plan', 'clickStackRelations.chooseAgreement': 'Choose agreement', 'clickStackRelations.choosePlan': 'Choose plan' } as any)[key] || key };
+        w.AgreementStore = { list: () => [{ id: 'a1', title: 'First terms', plan: { cid: 'p1' } },
+          { id: 'a2', title: 'Alternative terms', plan: { cid: 'p1' } }, { id: 'a3', title: 'Other plan terms', plan: { cid: 'p2' } }] };
+        w.NamedPlans = {}; w.AgreementPanel = { open: (id: string) => { w.openedAgreement = id; } };
+        w.ThreeClickStack.show({ plans: ['p1', 'p2'].map(id => ({ id, cid: id, label: id, draft: true, content: { title: id, designCids: [] } })) },
+          { focus: 'plans', container: document.getElementById('map-container') }, { activate() {}, focus() {} });
+      });
+      const root = page.locator('#three-click-stack'), agreements = root.locator('[data-kind="agreements"].click-stack__section');
+      await expect(agreements).toBeVisible();
+      expect(await root.locator('.click-stack__section').evaluateAll(rows => rows.map(row => (row as HTMLElement).dataset.kind))).toEqual(['agreements', 'plans']);
+      await agreements.locator('.click-stack__row').click();
+      const choices = agreements.locator('.click-stack__selector');
+      await expect(choices.locator('option')).toHaveCount(2);
+      await choices.selectOption('a2'); await expect(agreements.locator('.agreement-object-heading')).toHaveText('Alternative terms');
+      await root.locator('.click-stack__section[data-kind="plans"] .click-stack__row').click();
+      await root.locator('.click-stack__selector[data-kind="plans"]').selectOption('p2');
+      await agreements.locator('.click-stack__row').click();
+      await expect(agreements.locator('.agreement-object-heading')).toHaveText('Other plan terms');
+      await expect(agreements.locator('.click-stack__selector')).toHaveCount(0);
+      await agreements.getByRole('button', { name: 'Agreement details', exact: true }).click();
+      expect(await page.evaluate(() => (window as any).openedAgreement)).toBe('a3');
+    });
+
     for (const scenario of [
       { kind: 'built', paragraphs: 1, hosted: true },
       { kind: 'built', paragraphs: 70, hosted: true },

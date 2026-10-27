@@ -1,3 +1,4 @@
+import { testI18n } from './helpers/i18n.js';
 // The 3D model view's click stack (frontend/js/three-click-stack.js): which sections a click in the
 // scene shows, in what order (Built → Design → Permitted → Parcel), which one opens, and which
 // instance a strip shows first. The panel is checked in the browser; these are its pure rules.
@@ -14,6 +15,13 @@ const model = require('../../frontend/js/click-stack/click-stack-model.js');
 
 const feature = { type: 'Feature', properties: {}, geometry: null };
 
+it('places scoped agreements immediately above Plans in the model view', () => {
+    const value = stack.buildThreeStack({ built: [{ id: 'b1' }], plans: [{ id: 'p1', cid: 'p1' }],
+        agreements: [{ id: 'a1', planCid: 'p1' }, { id: 'wrong', planCid: 'p2' }] }, { focus: 'plans' });
+    expect(value.sections.map(row => row.kind)).toEqual(['built', 'agreements', 'plans']);
+    expect(value.sections[1].count).toBe(1); expect(value.expanded).toBe('plans');
+});
+
 describe('3D click stack contextual selection', () => {
     it('hides the design count and authored type while collapsed, retaining the selected design name', () => {
         const document = makeDocument();
@@ -21,6 +29,7 @@ describe('3D click stack contextual selection', () => {
             document, console, ClickStackRelations: relations,
             ProposalDesignGoals: require('../../frontend/js/proposals/design-goals.js')
         };
+        context.i18n ||= testI18n();
         context.window = context;
         vm.createContext(context);
         vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
@@ -51,6 +60,7 @@ describe('3D click stack contextual selection', () => {
     it('cycles repeated scene picks, retains the camera policy on refresh, and resets for a new or closed stack', () => {
         const document = makeDocument();
         const context = { document, console };
+        context.i18n ||= testI18n();
         context.window = context;
         vm.createContext(context);
         vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
@@ -76,6 +86,7 @@ describe('3D click stack contextual selection', () => {
     it('retains shared-view selection policy through scene refresh and section reopening', () => {
         const document = makeDocument();
         const context = { document, console };
+        context.i18n ||= testI18n();
         context.window = context;
         vm.createContext(context);
         vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
@@ -93,6 +104,7 @@ describe('3D click stack contextual selection', () => {
     it('navigates between design and parcel, keeping collapsed selection focused', () => {
         const document = makeDocument();
         const context = { document, console, __clickStackModel: model, ClickStackRelations: relations };
+        context.i18n ||= testI18n();
         context.window = context;
         vm.createContext(context);
         vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
@@ -122,6 +134,7 @@ describe('3D click stack contextual selection', () => {
             DesignMemberships: { mountSection: vi.fn((...args) => mounted.push(args)) },
             loadDesignMemberships: vi.fn((proposal, callback) => new Promise(resolve => pending.push({ proposal, callback, resolve })))
         };
+        context.i18n ||= testI18n();
         context.window = context;
         vm.createContext(context);
         vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
@@ -188,6 +201,7 @@ describe('3D click stack contextual selection', () => {
             DesignSync: { publishedCid: record => record?.cid || null },
             loadDesignMemberships: vi.fn((record, callback) => new Promise(resolve => pending.push({ record, callback, resolve })))
         };
+        context.i18n ||= testI18n();
         context.window = context;
         vm.createContext(context);
         vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);

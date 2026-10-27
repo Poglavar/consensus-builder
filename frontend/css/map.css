@@ -1714,3 +1714,11 @@ body.three-mode-active #agent-bubbles-container {
 
 .click-stack__heading { display: flex; align-items: center; }
 .click-stack__heading > .click-stack__row { flex: 1; min-width: 0; width: auto; }
+
+/* Agreement terms are context for the selected plan and share the stack's section rhythm. */
+.click-stack__body.click-stack__agreement { gap: var(--cb-space-3); padding: var(--cb-space-3); }
+.click-stack__agreement-terms { display: grid; gap: var(--cb-space-3); min-width: 0; }
+.click-stack__agreement-terms .agreement-panel-section {
+    margin: 0; padding: var(--cb-space-3); border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md); background: var(--cb-surface-2);
+}

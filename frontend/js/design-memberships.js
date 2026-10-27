@@ -167,68 +167,80 @@
             members: data.members.map(member => member.proposal) });
     }
 
-    // Agreements refer to this exact plan; they open a dialog, never a spatial stack section.
-    function mountAgreements(host, instance, win) {
-        const doc = host.ownerDocument, t = translator(win);
-        const section = doc.createElement('div');
-        section.className = 'click-stack__choices';
-        section.dataset.kind = 'agreements';
-        const heading = doc.createElement('span');
-        heading.className = 'click-stack__relation-label';
-        heading.textContent = t('planAgreements');
-        const list = doc.createElement('div'); list.className = 'click-stack__strip';
-        section.append(heading, list); host.appendChild(section);
-        let items = localAgreements(instance.cid, win.AgreementStore.list(), agreement => agreement.published?.cid || null);
-        let offset = instance.draft ? null : 0, loading = false, failed = false;
-        function render() {
-            if (!host.isConnected) return;
-            list.replaceChildren();
-            for (const row of items) {
-                const link = doc.createElement(row.cid ? 'a' : 'button');
-                link.className = 'click-stack__chip';
-                link.textContent = row.title || t('agreement');
-                if (row.cid) link.href = membershipLink('agreements', row.cid, win);
-                else link.type = 'button';
-                link.addEventListener('click', async event => {
-                    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-                    event.preventDefault(); event.stopPropagation();
-                    try {
-                        if (row.localId) await win.AgreementPanel.open(row.localId);
-                        else await win.AgreementSync.openDetails(row.cid);
-                    } catch (error) { win.showStyledAlert(error.message); }
-                });
-                list.appendChild(link);
-            }
-            if (loading || (!items.length && !failed)) {
-                const message = doc.createElement('span'); message.className = 'click-stack__facts';
-                message.textContent = t(loading ? 'loading' : 'emptyAgreements'); list.appendChild(message);
-            }
-            if (failed || (!loading && offset !== null)) {
-                const more = doc.createElement('button'); more.type = 'button'; more.className = 'btn btn-sm';
-                more.textContent = t(failed ? 'retry' : 'more'); more.addEventListener('click', load); list.appendChild(more);
-            }
-            if (failed) {
-                const message = doc.createElement('span'); message.setAttribute('role', 'status');
-                message.textContent = t('failed'); list.appendChild(message);
-            }
-        }
+    // Agreements belong to the selected exact plan, not to independently picked geometry.
+    function createAgreementScope(win, { getPlan, onChange }) {
+        let plan = null, generation = 0, items = [], offset = null, loading = false, failed = false, controller = null;
+        const locals = () => plan ? localAgreements(plan.cid, win.AgreementStore.list(), row => row.published?.cid || null) : [];
+        const notify = () => {
+            const version = generation;
+            queueMicrotask(() => {
+                if (version !== generation) return;
+                const rows = mergeRows(items, locals()).map(row => ({ ...row, id: String(row.localId || row.cid),
+                    label: row.title || translator(win)('agreement'), createdAt: row.createdAt || row.agreement?.createdAt,
+                    plan, onParcel: true }));
+                if (!rows.length && plan && (loading || failed)) rows.push({ id: `agreements:${plan.cid}`, plan,
+                    label: translator(win)(failed ? 'failed' : 'loading'), membershipPlaceholder: true, onParcel: true });
+                onChange(rows, { loading, failed, more: offset !== null, load, plan });
+            });
+        };
         async function load() {
-            if (loading) return;
-            loading = true; failed = false; render();
+            if (!plan || loading || offset === null) return;
+            const version = generation;
+            loading = true; failed = false;
+            if (!items.length && !locals().length) notify();
             try {
                 const page = await fetchPage({ fetch: win.fetch.bind(win), backend: win.resolveBackendBaseUrl().replace(/\/$/, ''),
-                    kind: 'agreements', planCid: instance.cid, offset: offset || 0, signal: AbortSignal.timeout(15000) });
+                    kind: 'agreements', planCid: plan.cid, offset, signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) });
+                if (version !== generation) return;
                 items = mergeRows(items, page.items); offset = page.nextOffset;
             } catch (error) {
+                if (version !== generation || controller.signal.aborted) return;
                 failed = true;
                 win.console.warn(`[${new Date().toISOString()}] [DesignMemberships] plan agreements lookup failed`, error);
-            } finally { loading = false; render(); }
+            } finally { if (version === generation) { loading = false; notify(); } }
         }
-        if (offset !== null) load(); else render();
-        return () => {
-            items = mergeRows(localAgreements(instance.cid, win.AgreementStore.list(), agreement => agreement.published?.cid || null), items);
-            render();
+        const unsubscribe = win.AgreementStore.subscribe?.(notify);
+        return {
+            sync() {
+                const selected = getPlan();
+                if ((selected?.cid || null) === (plan?.cid || null)) return;
+                controller?.abort(); generation++; plan = selected?.membershipPlaceholder ? null : selected;
+                items = []; loading = false; failed = false; offset = plan && !plan.draft ? 0 : null;
+                controller = new AbortController(); notify();
+                if (offset !== null) return load();
+            },
+            dispose() { controller?.abort(); generation++; unsubscribe?.(); }
         };
+    }
+
+    function mountAgreement(host, instance, win, { onFocus = () => {}, group = {} } = {}) {
+        const doc = host.ownerDocument, t = translator(win);
+        host.classList.add('click-stack__agreement');
+        const title = doc.createElement('h4'); title.className = 'agreement-object-heading'; title.textContent = instance.label;
+        host.appendChild(title);
+        const agreement = instance.agreement || instance.content;
+        if (agreement?.rule && win.AgreementPanel) {
+            const details = doc.createElement('div'); details.className = 'click-stack__agreement-terms';
+            details.innerHTML = win.AgreementPanel.ruleHtml(win.AgreementPanel.ruleSummary(agreement.rule))
+                + (agreement.rule.electorate === 'owners' ? win.AgreementPanel.allocationHtml(win.AgreementPanel.allocationLines(agreement)) : '');
+            host.appendChild(details);
+        }
+        const details = doc.createElement('button'); details.type = 'button'; details.className = 'btn'; details.textContent = t('openAgreement');
+        details.addEventListener('click', () => win.BusyControl.track(details, async () => {
+            if (instance.localId) await win.AgreementPanel.open(instance.localId);
+            else await win.AgreementSync.openDetails(instance.cid);
+        }).catch(error => win.showStyledAlert(error.message)));
+        if (!instance.membershipPlaceholder) host.appendChild(details);
+        if (group.failed || group.more) {
+            const more = doc.createElement('button'); more.type = 'button'; more.className = 'btn btn-sm';
+            more.textContent = t(group.failed ? 'retry' : 'more'); more.disabled = group.loading;
+            more.addEventListener('click', () => win.BusyControl.track(more, group.load)); host.appendChild(more);
+        }
+        if (instance.membershipPlaceholder) return;
+        inspect('plans', instance.plan, win).then(data => {
+            if (!host.isConnected) return;
+            Object.assign(instance, { features: data.features }); onFocus(instance);
+        }).catch(error => win.console.warn(`[${new Date().toISOString()}] [DesignMemberships] agreement extent unavailable`, error));
     }
 
     function mountSection(host, kind, instance, session, win, { onFocus = () => {}, hits = {} } = {}) {
@@ -261,7 +273,6 @@
             shareIcon.setAttribute('aria-hidden', 'true');
             share.replaceChildren(shareIcon, node('span', '', t('sharePlan')));
             actions.appendChild(share);
-            let refreshAgreements;
             const createAgreement = action(t('createAgreement'), async () => {
                 try {
                     let selectedPlan;
@@ -269,15 +280,13 @@
                         const data = session ? await session.details(kind, instance) : await inspect(kind, instance, win);
                         selectedPlan = win.NamedPlans.remember({ cid: instance.cid, content: data.content }, data.members.map(member => member.id));
                     });
-                    const saved = await win.AgreementDialog.open({ plan: selectedPlan, preserveContext: true });
-                    if (saved) refreshAgreements();
+                    await win.AgreementDialog.open({ plan: selectedPlan, preserveContext: true });
                     onFocus(instance);
                 } catch (error) { win.showStyledAlert(error.message); }
             });
             createAgreement.className = 'btn click-stack__create-agreement';
             actions.appendChild(createAgreement);
             host.appendChild(actions);
-            refreshAgreements = mountAgreements(host, instance, win);
             const details = node('div', 'click-stack__membership-details');
             host.appendChild(details);
             const load = async () => {
@@ -309,6 +318,6 @@
         } else if (!group.loading && group.nextOffset !== null) host.appendChild(action(t('more'), () => session.load(kind)));
     }
 
-    return { localAgreements, localPlans, mountAgreements, mergeRows, membershipLink, fetchPage, createSession, inspect,
+    return { localAgreements, localPlans, createAgreementScope, mountAgreement, mergeRows, membershipLink, fetchPage, createSession, inspect,
         sharePlan, mountSection };
 });
