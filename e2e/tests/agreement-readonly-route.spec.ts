@@ -13,8 +13,9 @@ test('a Plan agreement link opens terms without applying or storing designs', as
     city, site: { type: 'Polygon', coordinates: [[[15.96,45.8],[15.9601,45.8],[15.9601,45.8001],[15.96,45.8001],[15.96,45.8]]] }, toleranceM: null, geometry: null, origin: null, authoredAt: new Date().toISOString(),
     structureProposal: { kind: 'park', blockName: null },
   });
-  const planCid = filePlan(index, { schema: 'plan/v1', title: 'Shared read-only agreement', designCids: [designCid],
-    view: { at: '45.8,15.96,16', mode: '2d', city, language: 'en' } });
+  const planContent = await primary.evaluate(({ designCid, city }) => (window as any).PlanRecord.create('Shared read-only agreement', [designCid],
+    { at: '45.8,15.96,16', mode: '2d', city, language: 'en' }), { designCid, city });
+  const planCid = filePlan(index, planContent);
   const cid = fileAgreement(index, {
     schema: 'agreement/v1', title: 'Shared read-only agreement', author: 'fixture', sponsor: null, city,
     createdAt: new Date().toISOString(), planCid,
@@ -24,14 +25,12 @@ test('a Plan agreement link opens terms without applying or storing designs', as
   });
   await primary.evaluate(async planCid => {
     const w = window as any;
-    await w.ensureOptionalTool('designMemberships');
-    const host = document.createElement('section');
-    host.id = 'test-plan-agreements';
-    host.style.cssText = 'position:fixed;top:100px;right:20px;z-index:10000';
-    document.body.appendChild(host);
-    w.DesignMemberships.mountAgreements(host, { cid: planCid }, w);
+    const plan = await w.NamedPlans.fetchPlan(planCid);
+    await w.ClickStack.showPlan({ cid: planCid, content: plan.content });
   }, planCid);
-  await primary.locator('#test-plan-agreements').getByRole('link', { name: 'Shared read-only agreement', exact: true }).click();
+  const section = primary.locator('#click-stack .click-stack__section[data-kind="agreements"]');
+  await expect(section).toBeVisible();
+  await section.locator('.click-stack__row').click();
 
   const panel = agreementPanel(primary);
   await expect(panel).toBeVisible({ timeout: 90_000 });
@@ -42,7 +41,9 @@ test('a Plan agreement link opens terms without applying or storing designs', as
   await expect(panel.locator('[data-agreement-design]')).toBeDisabled();
   expect(await primary.evaluate(() => (window as any).AgreementStore.list())).toEqual([]);
   expect(await primary.evaluate(() => (window as any).proposalStorage.getAllProposals())).toEqual([]);
-  await expect(panel.locator(`a[href*='/plans/${planCid}']`)).toBeVisible();
+  await expect(panel.locator('[data-agreement-action="plan"]')).toBeVisible();
+  await expect(panel).toHaveClass(/is-hosted/);
+  await expect(primary.getByRole('button', { name: 'Agreement details', exact: true })).toHaveCount(0);
 
   const requests = index.requests;
   expect(requests.some(request => request.method === 'GET' && request.path === `/agreements/${cid}`)).toBe(true);

@@ -589,7 +589,7 @@
         };
         const panels = root.AgreementPanel;
         const replaced = panels?.isOpen?.() ? panels.current() : null;
-        if (replaced) panels.close();
+        if (replaced && !preserveContext) panels.close();
         if (!preserveContext) makeWay(doc);
         const panel = ensurePanel(doc), body = panel.querySelector('[data-agreement-editor-body]');
         const form = panel.querySelector('form'), saveButton = panel.querySelector('[data-agreement-action="save"]');
@@ -626,7 +626,7 @@
             panel.classList.remove('visible'); body.replaceChildren(); doc.body.classList.remove('agreement-editor-open');
             if (modal.open) modal.close();
             parent.appendChild(panel); modal.remove();
-            const reopen = preserveContext ? replaced : result?.id || replaced;
+            const reopen = preserveContext ? null : result?.id || replaced;
             if (reopen) Promise.resolve(panels.open(reopen)).catch(report);
             resolveClosed(result || null);
         }

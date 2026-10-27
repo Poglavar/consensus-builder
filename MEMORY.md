@@ -975,4 +975,6 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 
 - 2026-10-27: Agreements appears above Plans in both click stacks and is scoped to the selected exact Plan revision; agreement-details Plan buttons inspect that revision in place without navigation, workspace application or camera movement.
 
+- 2026-10-27: Click stacks display the selected level and its nearest available neighbours, omit raw coordinates, and host full Agreement properties in the expanded section so inspection needs only one surface.
+
 - 2026-10-27: Community voting uses reusable random codes assigned and distributed by a trusted organiser; personal assignments stay in local browser/files, and immutable agreement verifiers fix eligibility. Adding or replacing codes requires a new agreement with separate votes. Code holders may change votes and inspect every change; server-side guessing limits supplement code entropy.

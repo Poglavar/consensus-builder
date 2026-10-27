@@ -13,6 +13,7 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
       for (const file of ['tokens', 'primitives', 'base', 'map', 'panels', 'utilities', 'map-shell', 'planning-views', 'mobile-sheets', 'three-click-stack']) {
         await page.addStyleTag({ path: path.join(frontend, `css/${file}.css`) });
       }
+      await page.addScriptTag({ path: path.join(frontend, 'js/click-stack/click-stack-model.js') });
       await page.addScriptTag({ path: path.join(frontend, 'js/three-click-stack.js') });
       await page.addScriptTag({ path: path.join(frontend, 'js/mobile-dock-sheet.js') });
     });
@@ -27,7 +28,9 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
           'designMemberships.plan': 'Plan', 'clickStackRelations.chooseAgreement': 'Choose agreement', 'clickStackRelations.choosePlan': 'Choose plan' } as any)[key] || key };
         w.AgreementStore = { list: () => [{ id: 'a1', title: 'First terms', plan: { cid: 'p1' } },
           { id: 'a2', title: 'Alternative terms', plan: { cid: 'p1' } }, { id: 'a3', title: 'Other plan terms', plan: { cid: 'p2' } }] };
-        w.NamedPlans = {}; w.AgreementPanel = { open: (id: string) => { w.openedAgreement = id; } };
+        w.NamedPlans = {}; w.AgreementPanel = { release() {}, async mount(host: HTMLElement, instance: any) {
+          w.mountedAgreement = instance.id; const title = document.createElement('h4'); title.className = 'agreement-object-heading'; title.textContent = instance.label; host.appendChild(title);
+        } };
         w.ThreeClickStack.show({ plans: ['p1', 'p2'].map(id => ({ id, cid: id, label: id, draft: true, content: { title: id, designCids: [] } })) },
           { focus: 'plans', container: document.getElementById('map-container') }, { activate() {}, focus() {} });
       });
@@ -43,8 +46,8 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
       await agreements.locator('.click-stack__row').click();
       await expect(agreements.locator('.agreement-object-heading')).toHaveText('Other plan terms');
       await expect(agreements.locator('.click-stack__selector')).toHaveCount(0);
-      await agreements.getByRole('button', { name: 'Agreement details', exact: true }).click();
-      expect(await page.evaluate(() => (window as any).openedAgreement)).toBe('a3');
+      await expect(agreements.getByRole('button', { name: 'Agreement details', exact: true })).toHaveCount(0);
+      expect(await page.evaluate(() => (window as any).mountedAgreement)).toBe('a3');
     });
 
     for (const scenario of [
@@ -85,8 +88,7 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
           });
         }, scenario);
 
-        // Four section headings plus source metrics exceed half of a short phone screen.
-        // Give the short record room to fit, then check that the sheet uses only that content.
+        // Give the short record and its neighbouring headings room to fit on a phone.
         if (scenario.paragraphs === 1 && viewport.width < 768) {
           await page.locator('#three-click-stack > .mobile-dock-sheet-handle').focus();
           await page.keyboard.press('End');
@@ -102,6 +104,7 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
             content: content.getBoundingClientRect().toJSON(),
             bodyScrollHeight: body.scrollHeight,
             bodyClientHeight: body.clientHeight,
+            bodyPadding: parseFloat(getComputedStyle(body).paddingTop) + parseFloat(getComputedStyle(body).paddingBottom),
             stackScrollHeight: stack.scrollHeight,
             stackClientHeight: stack.clientHeight,
             headings: [...stack.querySelectorAll('.click-stack__heading')].map(el => el.getBoundingClientRect().toJSON()),
@@ -127,7 +130,7 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 
           expect(heading.bottom).toBeLessThanOrEqual(metrics.stack.bottom + 1);
         }
         if (scenario.paragraphs === 1) {
-          expect(metrics.body.height - metrics.content.height).toBeLessThan(20);
+          expect(metrics.body.height - metrics.content.height).toBeLessThanOrEqual(metrics.bodyPadding + 1);
           expect(metrics.stack.height).toBeLessThan(metrics.maxHeight);
           expect(metrics.bodyScrollHeight).toBeLessThanOrEqual(metrics.bodyClientHeight + 1);
         } else {

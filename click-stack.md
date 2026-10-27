@@ -39,8 +39,10 @@ right-side panels that clicks used to open one at a time.
 
 ## Rows, relationships and expansion
 
-- Every section has a **header row** that stays visible and clickable. Expanding a
-  section collapses all the others; at most one is expanded.
+- The stack displays the selected level and the nearest available level above and below it.
+  Selecting a neighbouring row moves this window; the complete inventory remains available.
+  Every displayed section has a clickable header. Expanding a section collapses the others;
+  at most one is expanded. There is no coordinate footer.
 - Collapsed headers are one row: the object kind followed by its selected name or parcel ID,
   truncated with an ellipsis. The cadastral header has no copy button.
 - A collapsed Design header shows only “Design” and the selected name on one line, with no
@@ -61,7 +63,7 @@ right-side panels that clicks used to open one at a time.
 - **Agreements sit above Plans, followed by Designs.** Plans are discovered for the exact design
   revision; agreements are loaded only for the selected exact Plan CID. Switching Plans replaces
   the agreement choices, and stale responses from the previous plan are discarded. Agreement
-  sections show decision/allocation terms with an explicit Agreement details action. Inspecting
+  sections host the full scrollable agreement properties and actions. Inspecting
   either a plan or its agreement highlights the plan’s extent without importing or applying its
   designs. The Plan button in agreement details selects that Plan in the current stack, preserving
   the camera, workspace and address. Multiple agreements share the same native instance selector.
@@ -76,8 +78,9 @@ right-side panels that clicks used to open one at a time.
   selecting one changes the inspected design.
 - The expanded section is the **action view**:
   - Plan: meaning, name, included designs, combined map highlight, Share plan and Create agreement.
-    Agreement: decision/allocation terms and the inherited plan extent; Agreement details opens
-    the full agreement record.
+    Agreement: the full agreement record, including decision/allocation terms, publication,
+    approvals and other applicable actions, with the inherited plan extent. There is no separate
+    properties dock. Editing opens the existing modal and returns to this section.
   - Design: the proposal's actions panel itself (2026-10-23), without its own − and ×: an
     Overview tab (name, rung badges, type, author, parcel count and one area) and a Details tab
     (land and ownership, verification, the record), with the actions under both; plus the

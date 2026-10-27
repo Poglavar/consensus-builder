@@ -476,9 +476,9 @@
         }
 
         // Inspect terms without applying a plan or replacing unrelated local work.
-        async function openDetails(cid) {
+        async function resolveDetails(cid) {
             const local = localCopyOf(cid);
-            if (local) return win.AgreementPanel.open(local.id);
+            if (local) return { agreement: local, designs: [], readOnly: false };
             const row = await fetchAgreement(cid);
             const downloaded = await win.DesignSync.fetchDesigns(row.plan.content.designCids);
             if (downloaded.missing.length) throw failure('design-missing', t('agreement.publish.errors.designMissing', 'A design of this plan could not be loaded.'));
@@ -487,7 +487,13 @@
             const byId = new Map(designs.map(design => [design.proposalId, design]));
             const record = recordFromPublished(row, { id: cid, apiBase: backendBase(), localIdOf: cid => cid,
                 designOf: id => byId.get(id) });
-            return win.AgreementPanel.openReadOnly(record, { designs });
+            return { agreement: record, designs, readOnly: true };
+        }
+
+        async function openDetails(cid) {
+            const resolved = await resolveDetails(cid);
+            return resolved.readOnly ? win.AgreementPanel.openReadOnly(resolved.agreement, { designs: resolved.designs })
+                : win.AgreementPanel.open(resolved.agreement.id);
         }
 
         // The agreements of a city the index lists as minted (GET /agreements?city=&minted=1), newest first.
@@ -504,7 +510,7 @@
 
         return {
             publishAgreement, proposeAgain, fetchAgreement, fetchMinted, handleAgreementRoute, agreementLink, localCopyOf,
-            refusalMessage, recordOnchain, adoptOnchain, createForPlan, openDetails
+            refusalMessage, recordOnchain, adoptOnchain, createForPlan, openDetails, resolveDetails
         };
     }
 

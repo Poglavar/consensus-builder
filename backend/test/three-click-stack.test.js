@@ -29,6 +29,7 @@ describe('3D click stack contextual selection', () => {
             document, console, ClickStackRelations: relations,
             ProposalDesignGoals: require('../../frontend/js/proposals/design-goals.js')
         };
+        context.__clickStackModel = model;
         context.i18n ||= testI18n();
         context.window = context;
         vm.createContext(context);
@@ -60,6 +61,7 @@ describe('3D click stack contextual selection', () => {
     it('cycles repeated scene picks, retains the camera policy on refresh, and resets for a new or closed stack', () => {
         const document = makeDocument();
         const context = { document, console };
+        context.__clickStackModel = model;
         context.i18n ||= testI18n();
         context.window = context;
         vm.createContext(context);
@@ -86,6 +88,7 @@ describe('3D click stack contextual selection', () => {
     it('retains shared-view selection policy through scene refresh and section reopening', () => {
         const document = makeDocument();
         const context = { document, console };
+        context.__clickStackModel = model;
         context.i18n ||= testI18n();
         context.window = context;
         vm.createContext(context);
@@ -134,6 +137,7 @@ describe('3D click stack contextual selection', () => {
             DesignMemberships: { mountSection: vi.fn((...args) => mounted.push(args)) },
             loadDesignMemberships: vi.fn((proposal, callback) => new Promise(resolve => pending.push({ proposal, callback, resolve })))
         };
+        context.__clickStackModel = model;
         context.i18n ||= testI18n();
         context.window = context;
         vm.createContext(context);
@@ -201,6 +205,7 @@ describe('3D click stack contextual selection', () => {
             DesignSync: { publishedCid: record => record?.cid || null },
             loadDesignMemberships: vi.fn((record, callback) => new Promise(resolve => pending.push({ record, callback, resolve })))
         };
+        context.__clickStackModel = model;
         context.i18n ||= testI18n();
         context.window = context;
         vm.createContext(context);

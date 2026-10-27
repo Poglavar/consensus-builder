@@ -27,8 +27,9 @@ continues to store optional organiser and participation details.
 
 The click stack contains Agreements above Plans, followed by Designs and source objects. Agreements
 are scoped to the selected exact Plan revision and share a selector when there are several. Their
-section shows decision/allocation terms and opens the full agreement details. The Plan button in
-those details selects the referenced Plan in the current stack without loading or applying it.
+expanded section contains the full scrollable agreement properties and actions. The Plan button
+selects the referenced Plan in the current stack without loading or applying it. The stack displays
+only the selected level and the nearest available level above and below it, without a coordinate footer.
 Plans and Agreements retain separate share URLs. Execution markets and bets remain attached to
 eligible binding Agreements, so agreements concerning the same plan retain independent markets.
 

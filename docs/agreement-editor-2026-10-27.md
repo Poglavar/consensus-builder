@@ -132,3 +132,29 @@ Concurrent voting edits share agreement-panel.js, index.html, locale dictionarie
 A final targeted headless Playwright Plan-navigation case passed after omitting allocation terms for community agreements. The final case checks the shared selector/terms layout; the earlier headed screenshots were visually reviewed. The broader locale-coverage check is green after the concurrent voting translations were completed.
 
 Preview verification: the frontend/API listening processes belong to this checkout; the browser resolved the explicit local backend. Real cadastral lookup returned one feature and a complete design-binding response (both HTTP 200). The 3D checks exercise the real stack DOM/CSS without booting the scene renderer. The changed Plan-button assertion in agreement-panel.test.js stays with its uncommitted mixed implementation file.
+
+## Adjacent levels and integrated agreement properties
+
+The stack now displays the selected level and its nearest available neighbour on either side in both views. The complete hit inventory remains intact, and clicking a neighbour moves the visible window. The raw-coordinate footer is removed. The expanded Agreements section hosts the existing full properties renderer and actions, replacing the compact summary and separate details surface. Published read-only records use the same surface without importing designs or agreements. Local edits return to the same section; changing the referenced plan reopens the agreement in its new context. Membership refreshes preserve the hosted body, its controls and current selection while updating pagination and selectors.
+
+Phone properties scroll within the shared sheet. Long 3D source cards shrink within their available height so adjacent headings remain reachable. The duplicate agreement panel header is hidden when hosted; a single agreement retains its name in the stack heading.
+
+MCP parity: no authored field or operation changed. The same AgreementDialog, AgreementStore and AgreementPanel controllers edit and display the existing record contract. Existing `ugt_draft_agreement`, `ugt_edit_agreement` and `ugt_inspect_agreement` cover the authored content; the targeted headless `mcp-plan` and `mcp-ground` checks passed (17 tests). No new tool or schema is needed for this navigation change.
+
+Targeted verification runs:
+
+| Type and scope | Result |
+| --- | --- |
+| Headless unit: model, map panel, 3D stack, relations, agreement panel and sync (6 files) | 154 passed |
+| Headless Playwright: adjacent levels and full properties (1 case) | Passed |
+| Headless Playwright: navigation, switching, mobile, read-only and 3D scope (7 cases) | Stopped after 3 failures: a noncanonical read-only fixture and 2 initial park-setup timeouts; 4 cases did not run |
+| Headless Playwright: isolated Plan navigation with trace (1 case) | Passed |
+| Headless Playwright: switching, mobile, read-only, 3D scope and editing (6 cases) | 5 passed; editing failed during initial page navigation before feature setup |
+| Headless Playwright: isolated editing with a longer navigation allowance (1 case) | Passed |
+| Headless unit: the six controller files plus memberships (7 files) | 177 passed, 2 stale action-button assertions failed after a concurrent action layout change |
+| Headless unit: agreement panel after updating those assertions (1 file) | 41 passed |
+| Headless Playwright: 3D stack sizing (10 cases) | 7 passed, 3 failed: 2 hardcoded padding expectations and 1 phone card-shrinking defect |
+| Headed Playwright: phone agreement layout plus desktop/phone short and long cards (5 cases) | 5 passed after padding assertions and shrinking correction |
+| Headed Playwright: phone agreement scroll reachability (1 case) | Passed; top and scrolled-bottom screenshots visually reviewed |
+
+The read-only fixture now uses canonical PlanRecord creation. The 3D checks exercise stack DOM/CSS without starting the scene renderer. Browser source verification used the explicitly selected local API: one real cadastral parcel and complete design binding returned HTTP 200, and both listening processes belonged to this checkout. Dedicated verification Chrome was closed. Mixed files containing concurrent semantic, voting and layout changes remain uncommitted; their edits are preserved.

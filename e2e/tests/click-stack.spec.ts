@@ -43,6 +43,7 @@ const remembered = (page: Page) => page.evaluate(() => localStorage.getItem('cb.
 test.describe('Click stack @core', () => {
   test('agreements sit above Plans and their Plan button inspects the exact plan without reload or reapplication', async ({ mockApi: page }, testInfo) => {
     await twoAgreementsOnPark(page, ['Agreement action coverage']);
+    await expandStackSection(page, 'plans');
     const agreements = stackSection(page, 'agreements');
     await expect(agreements).toBeVisible();
     const kinds = await sectionKinds(page); expect(kinds.indexOf('agreements')).toBeLessThan(kinds.indexOf('plans'));
@@ -52,8 +53,8 @@ test.describe('Click stack @core', () => {
     const screenshot = testInfo.outputPath('agreements-section.png');
     await clickStack(page).screenshot({ path: screenshot });
     await testInfo.attach('Agreements section', { path: screenshot, contentType: 'image/png' });
-    await agreements.getByRole('button', { name: 'Agreement details', exact: true }).click();
-    await expect(agreementPanel(page)).toBeVisible();
+    await expect(agreements.getByRole('button', { name: 'Agreement details', exact: true })).toHaveCount(0);
+    await expect(agreements.locator('#agreement-panel')).toBeVisible();
     const before = await page.evaluate(() => { const w = window as any; w.__planNavigationToken = 'same-window'; w.__planApplyCalls = 0;
       const apply = w.handleSharedDesignRoute; w.handleSharedDesignRoute = (...args: any[]) => { w.__planApplyCalls++; return apply(...args); }; return {
       designs: JSON.stringify(w.proposalStorage.getAllProposals()), at: [w.map.getCenter().lat, w.map.getCenter().lng, w.map.getZoom()], url: location.href
@@ -83,12 +84,48 @@ test.describe('Click stack @core', () => {
     const plans = stackSection(page, 'plans'), agreements = stackSection(page, 'agreements');
     await plans.locator('.click-stack__selector').selectOption(ids.other);
     await expandStackSection(page, 'agreements');
-    await expect(agreements.locator('.agreement-object-heading')).toHaveText('Other plan terms');
+    await expect(agreements.locator('#agreement-panel-title')).toHaveText('Other plan terms');
+    await expect(agreements.locator('.click-stack__row-detail')).toBeVisible();
     await expect(agreements.locator('.click-stack__selector')).toHaveCount(0);
     await expandStackSection(page, 'plans'); await plans.locator('.click-stack__selector').selectOption(ids.old);
     await expandStackSection(page, 'agreements');
     await expect(agreements.locator('.click-stack__selector option')).toHaveCount(2);
     expect(await agreements.locator('.click-stack__selector option').allTextContents()).not.toContain('Other plan terms');
+  });
+
+  test('the stack shows only the selected level and neighbours, with full agreement properties and no coordinates', async ({ mockApi: page }) => {
+    await twoAgreementsOnPark(page);
+    await expect.poll(() => page.evaluate(() => (window as any).ClickStack.current().sections.map((s: any) => s.kind))).toContain('agreements');
+    expect(await sectionKinds(page)).toEqual(['plans', 'designs', 'formed']);
+    await expandStackSection(page, 'plans'); expect(await sectionKinds(page)).toEqual(['agreements', 'plans', 'designs']);
+    await expandStackSection(page, 'agreements'); expect(await sectionKinds(page)).toEqual(['agreements', 'plans']);
+    const properties = stackSection(page, 'agreements').locator('#agreement-panel');
+    await expect(properties).toBeVisible(); await expect(properties).toHaveClass(/is-hosted/);
+    await expect(properties.locator('[data-agreement-region="body"]')).toContainText('Decision rule');
+    await expect(properties.locator('[data-agreement-action="plan"]')).toBeVisible();
+    await expect(properties.locator('.panel-header')).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Agreement details', exact: true })).toHaveCount(0);
+    await expect(page.locator('.click-stack__coords')).toHaveCount(0);
+    await expandStackSection(page, 'plans'); await expect(properties).toBeHidden();
+    await expandStackSection(page, 'designs'); await expandStackSection(page, 'formed');
+    expect(await sectionKinds(page)).toEqual(['designs', 'formed', 'parcels']);
+    await expandStackSection(page, 'parcels'); expect(await sectionKinds(page)).toEqual(['formed', 'parcels']);
+    expect(await page.evaluate(() => (window as any).ClickStack.current().sections.length)).toBe(5);
+  });
+
+  test('editing hosted agreement properties returns to the same expanded section', async ({ mockApi: page }) => {
+    page.setDefaultNavigationTimeout(60000);
+    await twoAgreementsOnPark(page); await expandStackSection(page, 'plans'); await expandStackSection(page, 'agreements');
+    const section = stackSection(page, 'agreements');
+    await section.locator('.click-stack__selector').selectOption({ label: 'Second agreement' });
+    const id = await page.evaluate(() => (window as any).AgreementPanel.current());
+    await section.locator('[data-agreement-action="edit"]').click();
+    const editor = agreementEditor(page); await expect(editor).toBeVisible();
+    await editor.locator('.panel-footer [data-agreement-action="cancel"]').click();
+    await expect(editor).toBeHidden(); await expect(section.locator('#agreement-panel')).toBeVisible();
+    expect(await page.evaluate(() => (window as any).AgreementPanel.current())).toBe(id);
+    await expect(section.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
   });
 
   for (const width of [1280, 390]) {
@@ -253,11 +290,7 @@ test.describe('Click stack @core', () => {
     for (const id of ['parcel.propose', 'parcel.details', 'parcel.proposals', 'parcel.tools', 'parcel.history', 'parcel.selectMore', 'parcel.detectBlock']) {
       await expect(parcels.locator(`[data-command="${id}"]`)).toHaveCount(0);
     }
-    // The footer copies the clicked point's coordinates.
-    const coords = stack.locator('.click-stack__coords');
-    await expect(coords).toHaveText(/^45\.80\d+, 15\.98\d+$/);
-    await coords.click();
-    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(await coords.textContent());
+    await expect(stack.locator('.click-stack__coords')).toHaveCount(0);
     expect(await page.evaluate(() => (window as any).currentParcel?.id)).toBe(PARCEL_ID);
 
     // A repeat click retains the selection.
@@ -362,8 +395,7 @@ test.describe('Click stack @core', () => {
     const kinds = await sectionKinds(page);
     expect(kinds[0]).toBe('designs');
     expect(kinds).toContain('formed');
-    expect(kinds).toContain('parcels');
-    expect(kinds.indexOf('formed')).toBeLessThan(kinds.indexOf('parcels'));
+    expect(kinds).not.toContain('parcels');
     // The topmost section opens first: the design's summary in the planning inspector.
     const designs = stackSection(page, 'designs');
     await expect(designs.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
@@ -405,7 +437,7 @@ test.describe('Click stack @core', () => {
     // Expanding the cadastral parcel collapses the others; the choice is remembered. The original
     // was consumed by the park: it shows its record, with no actions that build on it.
     await expandStackSection(page, 'parcels');
-    await expect(designs.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'false');
+    await expect(designs).toHaveCount(0);
     await expect(designs.locator('.click-stack__body')).toHaveCount(0);
     await expect(formed.locator('.click-stack__body')).toHaveCount(0);
     await expect(stackSection(page, 'parcels').locator('#parcel-info-panel')).toBeVisible();
@@ -417,7 +449,7 @@ test.describe('Click stack @core', () => {
     await expect(clickStack(page)).toBeHidden();
     await clickDesignOnMap(page, parkId);
     await expect(stackSection(page, 'parcels').locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
-    await expect(designs.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'false');
+    await expect(designs).toHaveCount(0);
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => (window as any).ProposalManager?._initialReapplyDone === true);
     expect(await remembered(page)).toBe('parcels');
@@ -429,19 +461,26 @@ test.describe('Click stack @core', () => {
     const titles = ['Garden neighbourhood — shared streets and public gardens', 'Garden neighbourhood — alternative housing and open spaces'];
     await twoAgreementsOnPark(page, titles);
     await page.setViewportSize({ width: 390, height: 844 });
+    await expandStackSection(page, 'plans');
     await expandStackSection(page, 'agreements');
     const agreements = stackSection(page, 'agreements');
     await expect(agreements.locator('.click-stack__selector option')).toHaveCount(2);
     const size = await clickStack(page).evaluate(el => ({ width: el.clientWidth, scroll: el.scrollWidth }));
     expect(size.scroll).toBeLessThanOrEqual(size.width);
     await agreements.locator('.click-stack__selector').selectOption({ label: titles[1] });
-    await expect(agreements.locator('.agreement-object-heading')).toHaveText(titles[1]);
+    await expect(agreements.locator('#agreement-panel-title')).toHaveText(titles[1]);
     const screenshot = testInfo.outputPath('phone-agreements-section.png');
     await clickStack(page).screenshot({ path: screenshot });
     await testInfo.attach('Phone Agreements section', { path: screenshot, contentType: 'image/png' });
-    await agreements.getByRole('button', { name: 'Agreement details', exact: true }).click();
-    await expect(agreementPanel(page)).toBeVisible();
+    await expect(agreements.locator('#agreement-panel')).toBeVisible();
+    await expect(agreements.getByRole('button', { name: 'Agreement details', exact: true })).toHaveCount(0);
     await expect(page.locator('#agreement-panel-title')).toHaveText(titles[1]);
+    const lastProperty = agreements.locator('[data-agreement-region="body"] > :last-child');
+    await lastProperty.scrollIntoViewIfNeeded();
+    await expect(lastProperty).toBeInViewport();
+    const bottomScreenshot = testInfo.outputPath('phone-agreement-properties-bottom.png');
+    await clickStack(page).screenshot({ path: bottomScreenshot });
+    await testInfo.attach('Phone agreement properties scrolled', { path: bottomScreenshot, contentType: 'image/png' });
   });
 
   test('the pieces a road leaves of a parcel open as formed ground that a new design can start on', async ({ mockApi: page }) => {

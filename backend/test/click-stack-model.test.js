@@ -29,6 +29,15 @@ it('places agreements for the selected exact plan above Plans without accepting 
     expect(stack.sections[0].count).toBe(2); expect(stack.expanded).toBe('plans');
 });
 
+it('shows one neighbouring level on either side without dropping the rest of the inventory', () => {
+    const sections = ['agreements', 'plans', 'designs', 'formed', 'parcels'].map(kind => ({ kind }));
+    expect(model.visibleSections({ sections, selectedKind: 'plans' }).map(row => row.kind)).toEqual(['agreements', 'plans', 'designs']);
+    expect(model.visibleSections({ sections, selectedKind: 'designs' }).map(row => row.kind)).toEqual(['plans', 'designs', 'formed']);
+    expect(model.visibleSections({ sections, selectedKind: 'agreements' }).map(row => row.kind)).toEqual(['agreements', 'plans']);
+    expect(model.visibleSections({ sections, selectedKind: 'parcels' }).map(row => row.kind)).toEqual(['formed', 'parcels']);
+    expect(sections).toHaveLength(5);
+});
+
 describe('click stack model', () => {
     it('orders plans, designs, built, permitted, formed parcel, cadastral parcels, showing only what is there', () => {
         expect(kinds(model.buildClickStack({ built: [{ id: 'b1' }], parcels: [{ id: 'p1' }] }))).toEqual(['built', 'parcels']);

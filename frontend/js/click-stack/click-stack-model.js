@@ -128,6 +128,13 @@
         return { ...stack, sections, topRef: topRefOf(sections) };
     }
 
+    // Keep the complete hit inventory while showing only the selected level and its neighbours.
+    function visibleSections(stack) {
+        if (!stack?.sections?.length) return [];
+        const selected = Math.max(0, stack.sections.findIndex(section => section.kind === stack.selectedKind));
+        return stack.sections.slice(Math.max(0, selected - 1), selected + 2);
+    }
+
     function selectedInstance(stack, kind) {
         const section = stack.sections.find(item => item.kind === kind);
         return section ? section.instances[section.selectedIndex] : null;
@@ -239,5 +246,5 @@
         });
     }
 
-    return Object.freeze({ ORDER, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance, contextFor, visibleContextFor });
+    return Object.freeze({ ORDER, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance, visibleSections, contextFor, visibleContextFor });
 });
