@@ -4,6 +4,10 @@ The canonical definitions of concepts in Consensus Builder. Names in backticks i
 
 [The model specification](plan-design-agreement.md) describes the protocols. [The historical semantic audit](docs/vocabulary-audit-2026-10-23.md) retains implementation history, research, superseded contracts and unresolved findings; it is not the current glossary.
 
+### Autonomous proposed-design selection
+
+An explicit persona policy ranking proposed building floor area and the parcel ground outside its footprint. Mapped controls retain their source; missing controls are recorded as design assumptions. Existing-stock measurements, net floor-area uplift and modeled gain remain unknown without a complete named inventory. The separate uplift policy requires that inventory and a mapped urban rule. A retired experimental agreement is a terminal automation skip, not a chain execution or settlement. Sponsor market seed liquidity has an explicit devnet allowance separate from trading budgets; seeding does not buy sponsor shares.
+
 ## Designs, agreements and identity
 
 ### Design

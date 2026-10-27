@@ -12,7 +12,7 @@ function transientHttpReason(response) {
 
 export function createRetryingFetch({ fetchImpl = globalThis.fetch, attempts = 4,
     firstDelayMs = 1000, maxDelayMs = 10000, timeoutMs = 15000, wait = delay,
-    retryMethods = DEFAULT_RETRY_METHODS, shouldRetryRequest = null, inspectResponse = null,
+    retryMethods = DEFAULT_RETRY_METHODS, shouldRetryRequest = null, shouldRetryResponse = () => true, inspectResponse = null,
     requestLabel = ({ method }) => method.toLowerCase(), onAttempt = null,
     log = message => console.warn(`[${new Date().toISOString()}] [fetch-retry] ${message}`) } = {}) {
     if (typeof fetchImpl !== 'function') throw new Error('a fetch implementation is required');
@@ -38,7 +38,7 @@ export function createRetryingFetch({ fetchImpl = globalThis.fetch, attempts = 4
                 response = await fetchImpl(input, { ...init, signal });
                 reason = transientHttpReason(response);
                 if (!reason && response.ok && inspectResponse) reason = await inspectResponse(response, request);
-                if (!reason || attempt === limit) return response;
+                if (!reason || attempt === limit || !shouldRetryResponse(response, request)) return response;
             } catch (error) {
                 if (init.signal?.aborted || attempt === limit) throw error;
                 reason = 'transport failure';

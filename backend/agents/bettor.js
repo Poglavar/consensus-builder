@@ -23,6 +23,7 @@ function agreementChain(connection) {
 export const DEFAULT_B = 100_000_000n;
 export const GRACE_SECONDS = 0;
 export const MAX_POSITION = 0n;
+export const MARKET_SEED_ATOMIC = lmsr.maxLoss(DEFAULT_B);
 
 function failure(message, code) {
     return Object.assign(new Error(message), { code });
@@ -175,4 +176,33 @@ export function usdcToAtomic(decimalString) {
     if (!/^\d+(?:\.\d{1,6})?$/.test(text)) throw new Error(`"${decimalString}" is not a non-negative decimal amount of USDC with up to six decimals`);
     const [whole, fraction = ''] = text.split('.');
     return BigInt(whole) * 1_000_000n + BigInt(fraction.padEnd(6, '0') || '0');
+}
+
+/** Open only the sponsor's canonical devnet market; never buy shares for that sponsor. */
+export async function openAgreementMarket({ connection, sponsorKeypair, subject, maxSeedAtomic,
+    ensureSeed = async () => {}, readSeedBalance = async (rpc, wallet) => {
+        const ata = splToken.getAssociatedTokenAddressSync(new web3.PublicKey(DEVNET_USDC_MINT), wallet);
+        try {
+            const token = await splToken.getAccount(rpc, ata, 'confirmed');
+            if (!token.owner.equals(wallet) || !token.mint.equals(new web3.PublicKey(DEVNET_USDC_MINT))) throw new Error('Market seed account identity mismatch');
+            return token.amount;
+        } catch (error) {
+            if (error instanceof splToken.TokenAccountNotFoundError) return 0n;
+            throw error;
+        }
+    }, sendAndConfirm = web3.sendAndConfirmTransaction } = {}) {
+    if (!sponsorKeypair?.publicKey) throw new Error('sponsorKeypair is required');
+    const context = await readAgreementMarket(connection, subject);
+    const { agreement, address, market: raw } = context;
+    if (agreement.authority !== sponsorKeypair.publicKey.toBase58()) throw failure('Only the agreement sponsor can open its market.', 'NOT_SPONSOR');
+    if (raw) return { replayed: true, signature: null, address: address.toBase58(), seedAtomic: String(raw.seed) };
+    if (agreement.status !== 'Active' || agreement.deadline <= await chainTime(context.connection)) throw failure('A market needs an Active agreement with a future deadline.', 'MARKET_CLOSED');
+    if (typeof maxSeedAtomic !== 'bigint' || maxSeedAtomic < MARKET_SEED_ATOMIC) throw failure('Canonical market seed exceeds the configured devnet market-seed allowance.', 'MARKET_SEED_CAP');
+    const funding = await ensureSeed(MARKET_SEED_ATOMIC);
+    const balance = await readSeedBalance(context.connection, sponsorKeypair.publicKey);
+    if (typeof balance !== 'bigint' || balance < MARKET_SEED_ATOMIC) throw failure(`Market seed requires ${MARKET_SEED_ATOMIC} atomic devnet USDC units.`, 'INSUFFICIENT_USDC');
+    const signature = await send(context.connection, [market.buildCreateLmsrMarketIx({ proposal: subject,
+        creator: agreement.authority, stakeMint: DEVNET_USDC_MINT, b: DEFAULT_B,
+        closesAt: agreement.deadline, graceSeconds: GRACE_SECONDS, maxPosition: MAX_POSITION })], sponsorKeypair, sendAndConfirm);
+    return { replayed: false, signature, address: address.toBase58(), seedAtomic: String(MARKET_SEED_ATOMIC), funding };
 }

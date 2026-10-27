@@ -75,10 +75,34 @@ Promoting a parcel baseline to `complete` requires evidence for the relevant are
 verified import integrity, and sufficient height/floor-area evidence for the claimed quantity.
 
 Unknown stock still permits a geometry preview. Gain, offers and score components that depend on
-unknown quantities remain null. Generic automatic and LLM selection require a complete named
+unknown quantities remain null. The uplift selection policy requires a complete named
 baseline, a mapped urban rule and positive supported uplift; the publication/minting path checks
 the same eligibility on resume. This intentionally invalidates older numeric-only candidate
 checkpoints: replan them with the required evidence rather than adapting their assumed zeros.
+Builder, Densifier and Gentle explicitly use `planningPolicy: 'proposed-design'`. Its separate
+`designPolicy.score` ranks proposed floor area and ground outside the proposed footprint using
+the persona's `designWeights`. It never substitutes for baseline-dependent score, gain or offer.
+Mapped controls retain their provenance; missing controls are recorded and described as design
+assumptions. All policies retain exact-parcel binding preflight and known non-positive floor-area
+uplift rejection. A proposer tries at most three configured areas in deterministic rotation when
+a source fails or yields no eligible candidate; attempts are recorded, and an exhausted search
+with source failures fails visibly. Gentle answers current rivals and waits when none exist.
+
+Sponsor market opening is optional under `AGENT_MARKET_SEED_USDC_CAP` (default `0`, disabled).
+The canonical market uses `69.31472` devnet USDC of seed liquidity. A proposed `70` allowance
+admits one seed per run; two new seeds fail preflight. The ordinary `AGENT_DAILY_USDC_CAP`
+remains separate. Opening uses the sponsor PDA, existing canonical terms and verified devnet,
+checks balance and deadline, and checkpoints seed-funding receipts before opening. A restart
+reads an existing canonical market and never seeds it twice. Sponsor self-trading remains
+forbidden. The existing configured funding wallet and shared reserve lock fund only the exact
+seed shortfall under the explicit allowance. No allowance is enabled by this change.
+
+The proposer serializes pins with 31-second spacing. HTTP 429 is handled once by the index client,
+honoring the longer body/header cooldown (including HTTP-date Retry-After), up to four attempts
+and at most 16 minutes per wait. Transport/5xx retries remain separate. A retired experimental
+agreement gets a durable `retired` automation skip, without claiming chain settlement or retrying
+it on every subsequent run.
+
 The separately screened housing-research policy can select explicit concepts, with unknown gain
 and offer; it does not claim net uplift over existing stock.
 
@@ -402,3 +426,6 @@ spherical calculation at 1 mm² resolution; the radius stays Turf 6.5’s 637813
 uses the existing 0.25 m² ancestry floor, retaining legitimate small parcel contributions. These
 corrections can change experimental agreement CIDs; recreate affected records rather than retaining
 a second geometry or area contract.
+
+MCP parity: these changes affect scheduled persona selection and execution only. Design, plan
+and agreement authoring/publication schemas and existing MCP editing primitives are unchanged.

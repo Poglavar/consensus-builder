@@ -80,7 +80,7 @@ describe('ensureBotUsdcFunding', () => {
         const h = harness();
         for (const amount of [undefined, null, 0n, -1n, 500_001n, 1, '100000']) {
             await expect(ensureBotUsdcFunding({ ...h.args, requiredAtomic: amount }))
-                .rejects.toThrow(/positive action amount of at most 0.5 USDC/);
+                .rejects.toThrow(/positive action amount within its explicit cap/);
         }
         expect(h.readBalance).not.toHaveBeenCalled();
         expect(h.pool.connect).not.toHaveBeenCalled();
@@ -300,4 +300,22 @@ describe('fundBotAction', () => {
             log.mockRestore();
         }
     });
+});
+
+it('funds a market seed only under an explicit higher cap and preserves the shared reserve', async () => {
+    const h = harness({ balances: { [recipient]: 250_000n, [source]: 100_000_000n } });
+    const requiredAtomic = 69_314_720n;
+    await expect(ensureBotUsdcFunding({ ...h.args, requiredAtomic })).rejects.toThrow(/explicit cap/);
+    expect(h.sendAndConfirm).not.toHaveBeenCalled();
+    h.sendAndConfirm.mockImplementation(async (_rpc, tx) => {
+        const amount = tx.instructions[1].data.readBigUInt64LE(1);
+        expect(amount).toBe(requiredAtomic - 250_000n);
+        h.values.set(recipient, requiredAtomic); h.values.set(source, 100_000_000n - amount);
+        return 'market-funding-signature';
+    });
+    const receipt = await ensureBotUsdcFunding({ ...h.args, requiredAtomic, maxActionAtomic: 70_000_000n });
+    expect(receipt).toMatchObject({ status: 'funded', balanceAtomic: requiredAtomic.toString() });
+    expect(h.sendAndConfirm).toHaveBeenCalledTimes(1);
+    expectUnlocked(h);
+    expect(h.values.get(source)).toBeGreaterThan(1_000_000n);
 });

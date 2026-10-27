@@ -173,6 +173,50 @@ describe('the stages of one pick', () => {
         expect(h.actions[1].message).toBe(`densifier-01 proposed "${pick.name}" as a binding agreement on its own parcel ${PARCEL_ID}.`);
     });
 
+    it('publishes and mints an explicit design without inventing a baseline or gain', async () => {
+        const h = harness({ cand: candidate({ builtKnown: false, builtGfaM2: null, buildingCoverage: 'unknown',
+            gain: null, offer: null, score: null, plannedFloors: 4,
+            designPolicy: { kind: 'proposed-design', ruleBasis: 'assumed', footprintM2: 125, openSpaceRatio: 0.5, score: 0.8 } }) });
+        expect(await h.go()).toEqual({});
+        expect(h.state.agreements[pick.candidateId].content.planCid).toEqual(expect.any(String));
+        expect(h.state.mints[pick.candidateId].account).toEqual(expect.any(String));
+        expect(h.args.candidate.builtGfaM2).toBeNull(); expect(h.args.candidate.gain).toBeNull();
+    });
+    it('checkpoints an explicitly funded sponsor market and never self-trades or opens it twice', async () => {
+        const h = harness();
+        const openMarketImpl = vi.fn(async options => {
+            expect(options.maxSeedAtomic).toBe(70_000_000n);
+            await options.ensureSeed(69_314_720n);
+            return { address: 'market-fixture', seedAtomic: '69314720', signature: 'market-signature' };
+        });
+        const fundMarketSeed = vi.fn(async () => ({ status: 'funded' }));
+        const args = { ...h.args, marketSeedCapUsdc: 70, openMarketImpl, fundMarketSeed };
+        await advancePick(args);
+        expect(h.state.markets[pick.candidateId].signature).toBe('market-signature');
+        expect(h.state.stakes[pick.candidateId].skipReason).toBe('agreement-sponsor-cannot-trade-own-market');
+        await advancePick(args);
+        expect(openMarketImpl).toHaveBeenCalledTimes(1); expect(fundMarketSeed).toHaveBeenCalledTimes(1);
+        expect(h.actions.map(a => a.type)).toContain('openMarket');
+    });
+
+    it('keeps seed-funding receipts when market confirmation is interrupted, then resumes by chain state', async () => {
+        const h = harness(); let landed = false;
+        const fundMarketSeed = vi.fn(async () => ({ status: 'funded', signature: 'seed-funding-signature' }));
+        const openMarketImpl = vi.fn(async options => {
+            if (landed) return { address: 'market-fixture', seedAtomic: '69314720', replayed: true, signature: null };
+            await options.ensureSeed(69_314_720n); landed = true;
+            throw new Error('confirmation interrupted');
+        });
+        const args = { ...h.args, marketSeedCapUsdc: 70, openMarketImpl, fundMarketSeed };
+        await expect(advancePick(args)).rejects.toThrow('confirmation interrupted');
+        expect(h.state.marketFunding[pick.candidateId].signature).toBe('seed-funding-signature');
+        expect(h.saves.some(save => save.patch.marketFunding)).toBe(true);
+        expect(h.state.markets[pick.candidateId]).toBeUndefined();
+        await advancePick(args);
+        expect(h.state.markets[pick.candidateId].replayed).toBe(true);
+        expect(fundMarketSeed).toHaveBeenCalledTimes(1);
+    });
+
     it('resumes where it stopped: a rerun signs, publishes and saves nothing; --until stops after a stage', async () => {
         const state = freshState();
         const first = harness({ state, until: 'proposed' });

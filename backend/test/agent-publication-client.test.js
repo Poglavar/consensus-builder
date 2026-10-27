@@ -252,3 +252,48 @@ describe('owner decisions and reads', () => {
         await expect(client.listAgreements({ design: 'agent-1' })).rejects.toThrow(/design must be a CIDv1/);
     });
 });
+
+describe('upload pacing and rate-limit recovery', () => {
+    const answer = (status, body, headers = {}) => new Response(JSON.stringify(body), { status, headers });
+    it('waits the full server cooldown once without short 429 retries', async () => {
+        const calls = [], waits = [];
+        let clock = 0;
+        const client = createIndexClient({ apiBase: API, waitOnRateLimit: true, now: () => clock,
+            wait: async ms => { waits.push(ms); clock += ms; },
+            fetchImpl: async (_url, init) => {
+                calls.push(clock);
+                if (calls.length === 1) return answer(429, { code: 'upload-rate-limited', retryAfterSeconds: 900 }, { 'retry-after': '30' });
+                return answer(200, { cid: JSON.parse(init.body).cid });
+            } });
+        expect(await client.pin('design', design)).toMatchObject({ cid: addressOf(design).cid });
+        expect(waits).toEqual([900_000]); expect(calls).toEqual([0, 900_000]);
+    });
+    it('serializes concurrent pins and reuses already pinned CIDs', async () => {
+        let clock = 0;
+        const calls = [], waits = [];
+        const client = createIndexClient({ apiBase: API, pinIntervalMs: 31_000, now: () => clock,
+            wait: async ms => { waits.push(ms); clock += ms; },
+            fetchImpl: async (_url, init) => { calls.push(clock); return answer(200, { cid: JSON.parse(init.body).cid }); } });
+        await Promise.all([client.pin('design', design), client.pin('design', design), client.pin('plan', planContent)]);
+        expect(calls).toEqual([0, 31_000]); expect(waits).toEqual([31_000]);
+    });
+    it('honors date headers, backs off missing cooldowns and stops after four refusals', async () => {
+        let clock = Date.parse('2026-10-27T00:00:00Z');
+        const waits = [], calls = [];
+        const client = createIndexClient({ apiBase: API, waitOnRateLimit: true, now: () => clock,
+            wait: async ms => { waits.push(ms); clock += ms; },
+            fetchImpl: async () => { calls.push(clock); return answer(429, { code: 'upload-rate-limited' },
+                calls.length === 1 ? { 'retry-after': 'Tue, 27 Oct 2026 00:02:00 GMT' } : {}); } });
+        await expect(client.pin('design', design)).rejects.toMatchObject({ status: 429, code: 'upload-rate-limited' });
+        expect(waits).toEqual([120_000, 120_000, 240_000]); expect(calls).toHaveLength(4);
+    });
+    it('does not retry before an excessive cooldown or retry a deterministic rejection', async () => {
+        for (const status of [429, 400]) {
+            let calls = 0;
+            const client = createIndexClient({ apiBase: API, waitOnRateLimit: true,
+                wait: async () => { throw new Error('must not wait or retry'); },
+                fetchImpl: async () => { calls++; return answer(status, { retryAfterSeconds: 3600 }); } });
+            await expect(client.pin('design', design)).rejects.toMatchObject({ status }); expect(calls).toBe(1);
+        }
+    });
+});
