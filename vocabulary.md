@@ -231,6 +231,10 @@ The browser-local result of applying a design to the parcel fabric. It includes 
 
 A design's operation that cuts or replaces live ground and produces land pieces. Creating a fabric piece is separate from minting a blockchain account.
 
+One authored site can produce several body pieces or explicit layout plots, plus remainders of its
+source land. Producer metadata groups the materialization effects; it does not make remainders
+part of the design's body. Cadastral input references are independent of the number of body pieces.
+
 A building's formed land take and its subtracted remainders use the same clipping grid (nine decimal places in longitude and latitude). This is derived geometry; the authored land take and building footprint retain their original coordinates. Facade intersections use the same clipper so different coordinate precision cannot create a second ownership slice along that cut.
 
 ### Remainder

@@ -788,7 +788,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             </div>
             <div class="proposal-overview-facts">
             <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.metrics.parcels', 'Parcels in design:')}</span> <span class="metric-value">${parcelIds.length}</span>
+                <span class="metric-label">${tProposal('panel.proposal.metrics.parcels', 'Source parcels:')}</span> <span class="metric-value">${parcelIds.length}</span>
             </div>
             ${areaSummary.hasSite ? `<div class="metric-group" data-proposal-area-basis="site">
                 <span class="metric-label">${tProposal('panel.proposal.metrics.siteArea', 'Site area:')}</span>

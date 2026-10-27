@@ -38,7 +38,7 @@ test('a Plan agreement link opens terms without applying or storing designs', as
   await expect(panel.locator('.agreement-panel-designs')).toContainText('Shared read-only agreement park');
   await expect(panel.locator('[data-agreement-read-only-status]')).toContainText('Local map status is not evaluated');
   await expect(panel.locator('[data-agreement-status], [data-agreement-action="edit"], [data-agreement-action="delete"], [data-agreement-action="propose"]')).toHaveCount(0);
-  await expect(panel.locator('[data-agreement-design]')).toBeDisabled();
+  await expect(panel.locator('[data-agreement-design]')).toBeEnabled();
   expect(await primary.evaluate(() => (window as any).AgreementStore.list())).toEqual([]);
   expect(await primary.evaluate(() => (window as any).proposalStorage.getAllProposals())).toEqual([]);
   await expect(panel.locator('[data-agreement-action="plan"]')).toBeVisible();

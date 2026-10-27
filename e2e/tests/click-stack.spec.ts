@@ -475,7 +475,7 @@ test.describe('Click stack @core', () => {
     await expect(agreements.locator('#agreement-panel')).toBeVisible();
     await expect(agreements.getByRole('button', { name: 'Agreement details', exact: true })).toHaveCount(0);
     await expect(page.locator('#agreement-panel-title')).toHaveText(titles[1]);
-    const lastProperty = agreements.locator('[data-agreement-region="body"] > :last-child');
+    const lastProperty = agreements.locator('[data-agreement-properties-panel="overview"] > :last-child');
     await lastProperty.scrollIntoViewIfNeeded();
     await expect(lastProperty).toBeInViewport();
     const bottomScreenshot = testInfo.outputPath('phone-agreement-properties-bottom.png');

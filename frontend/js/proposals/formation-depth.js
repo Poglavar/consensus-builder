@@ -15,6 +15,17 @@
         return FORMATION_GOALS.indexOf(String(goal === undefined || goal === null ? '' : goal).trim()) !== -1;
     }
 
+    // Producer metadata also names leftovers created by a cut. Only the body's explicit role
+    // belongs under the design; remainders retain their own land identity and carried rights.
+    function isBodyParcel(proposal, feature) {
+        const props = feature?.properties || {};
+        if (proposal?.goal === 'parcel-layout') return props.readjustmentPiece?.role === 'plot';
+        if (['single', 'buildings'].includes(proposal?.goal)) return props.buildingParcel === true;
+        if (proposal?.goal === 'road-track') return props.isCorridor === true || props.isRoad === true || props.isTrack === true;
+        if (['park', 'square', 'lake', 'station'].includes(proposal?.goal)) return props.structureType === (proposal.structureProposal?.kind || proposal.goal);
+        return false;
+    }
+
     function normalizedIds(values) {
         return Array.from(new Set((Array.isArray(values) ? values : [])
             .map(value => value === undefined || value === null ? '' : String(value).trim())
@@ -261,6 +272,7 @@
     const api = {
         FORMATION_GOALS,
         isFormationGoal,
+        isBodyParcel,
         roleOf,
         mayHaveEmptyDeclaration,
         conformanceOf,

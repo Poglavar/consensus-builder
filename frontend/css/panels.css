@@ -541,6 +541,12 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 .parcel-history-section summary .fa-clock-rotate-left {
     color: var(--cb-text-muted);
 }
+.parcel-history-section > summary {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+.parcel-history-section > summary > .parcel-id-text { flex: 1; }
 
 /* The Proposals tab with nothing in it yet, and the list for a set of parcels (a multi-selection,
    a site: js/parcels/parcel-set-proposals.js). */

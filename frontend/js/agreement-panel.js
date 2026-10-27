@@ -159,6 +159,7 @@
                 hash: idOf(output && output.hash),
                 label: `${tr('agreement.land.piece', 'Piece')} ${index + 1}`,
                 areaM2: finite(output && output.areaM2) ? output.areaM2 : null,
+                hasGeometry: !!output?.geometry,
                 area: format().formatArea(output && output.areaM2, { missing: NO_VALUE }),
                 kind: ['public', 'proposer', 'party', 'joint'].includes(to.kind) ? to.kind : 'holders',
                 to: recipientText(to, output, names, tr)
@@ -190,6 +191,7 @@
         const area = value => format().formatArea(value, { missing: NO_VALUE });
         const rows = (ledger && Array.isArray(ledger.parties) ? ledger.parties : []).map(party => ({
             ownerKey: idOf(party.ownerKey),
+            recipientKind: 'party',
             name: party.displayName || idOf(party.ownerKey),
             contributes: party.areaUnknown ? NO_VALUE : area(party.contributedM2),
             receives: area(party.assignedM2),
@@ -197,13 +199,13 @@
             cash: signedMoney(party.cashCents, ledger.currency)
         }));
         if (ledger && finite(ledger.proposerM2) && ledger.proposerM2 > 0) {
-            rows.push({ ownerKey: null, name: tr('agreement.allocation.proposer', 'Proposer'),
+            rows.push({ ownerKey: null, recipientKind: 'proposer', name: tr('agreement.allocation.proposer', 'Proposer'),
                 contributes: area(0), receives: area(ledger.proposerM2), change: signedArea(ledger.proposerM2),
                 cash: signedMoney(ledger.money?.sponsorCents || 0, ledger.currency) });
         }
         if (ledger && finite(ledger.publicM2) && ledger.publicM2 > 0) {
             rows.push({
-                ownerKey: null, name: tr('agreement.allocation.public', 'Public'),
+                ownerKey: null, recipientKind: 'public', name: tr('agreement.allocation.public', 'Public'),
                 contributes: NO_VALUE, receives: area(ledger.publicM2), change: signedArea(ledger.publicM2), cash: NO_VALUE
             });
         }
@@ -496,8 +498,8 @@
             + decide);
     }
 
-    function designsHtml(rows, tr = t, readOnly = false) {
-        const items = rows.map(row => `<li><button type="button" class="btn btn-quiet agreement-panel-design" data-agreement-design="${esc(row.proposalId)}"${row.missing || readOnly ? ' disabled' : ''}>`
+    function designsHtml(rows, tr = t) {
+        const items = rows.map(row => `<li><button type="button" class="cb-option agreement-panel-object agreement-panel-design" data-agreement-design="${esc(row.proposalId)}" data-agreement-inspect="design" data-agreement-object-id="${esc(row.proposalId)}" aria-pressed="false"${row.missing ? ' disabled' : ''}>`
             + `<span class="agreement-panel-design__text"><span class="agreement-panel-design__title">${esc(row.title)}</span>`
             + (row.type ? `<span class="agreement-panel-design__type">${esc(row.type)}</span>` : '') + '</span>'
             + (row.applied ? `<span class="cb-badge cb-badge--applied">${esc(tr('agreement.designs.onMap', 'Applied'))}</span>` : '')
@@ -521,9 +523,10 @@
     function allocationHtml(lines, tr = t) {
         if (!lines.length) return '';
         const items = lines.map(line => `<li class="agreement-panel-allocation" data-agreement-piece="${esc(line.hash)}">`
+            + `<button type="button" class="cb-option agreement-panel-object" data-agreement-inspect="output" data-agreement-object-id="${esc(line.hash)}" aria-pressed="false"${line.hasGeometry ? '' : ' disabled'}>`
             + `<span class="agreement-panel-allocation__piece">${esc(line.label)}</span>`
             + `<span class="agreement-panel-allocation__area">${esc(line.area)}</span>`
-            + `<span class="agreement-panel-allocation__to"><i class="fas fa-arrow-right" aria-hidden="true"></i> ${esc(line.to)}</span></li>`).join('');
+            + `<span class="agreement-panel-allocation__to"><i class="fas fa-arrow-right" aria-hidden="true"></i> ${esc(line.to)}</span></button></li>`).join('');
         return sectionHtml(tr('agreement.sections.allocation', 'Allocation'), `<ul class="agreement-panel-allocations">${items}</ul>`);
     }
 
@@ -535,7 +538,7 @@
             tr('agreement.money.party', 'Party'), tr('agreement.panel.ledger.contributes', 'Contributes'), tr('agreement.panel.ledger.receives', 'Receives'),
             tr('agreement.panel.ledger.change', 'Net change'), tr('agreement.panel.ledger.cash', 'Cash')
         ];
-        const body = rows.map(row => `<tr><th scope="row">${esc(row.name)}</th><td>${esc(row.contributes)}</td><td>${esc(row.receives)}</td>`
+        const body = rows.map(row => `<tr data-agreement-row-inspect><th scope="row"><button type="button" class="cb-link" data-agreement-inspect="${row.recipientKind === 'party' ? 'person' : esc(row.recipientKind)}" data-agreement-object-id="${esc(row.ownerKey || row.recipientKind)}" aria-pressed="false">${esc(row.name)}</button></th><td>${esc(row.contributes)}</td><td>${esc(row.receives)}</td>`
             + `<td>${esc(row.change)}</td><td>${esc(row.cash)}</td></tr>`).join('');
         return sectionHtml(title, '<div class="agreement-panel-ledger-scroll"><table class="agreement-panel-ledger">'
             + `<thead><tr>${head.map(label => `<th scope="col">${esc(label)}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`
@@ -549,6 +552,38 @@
             + (deadline ? `<p class="agreement-panel-meta">${esc(tr('agreement.panel.deadline', 'Deadline: {{date}}', { date: deadline }))}</p>` : ''));
     }
 
+    function inputsHtml(agreement, tr = t) {
+        const rows = (agreement.inputs?.parcels || []).map(parcel => `<li><button type="button" class="cb-option agreement-panel-object" data-agreement-inspect="input" data-agreement-object-id="${esc(parcel.parcelId)}" aria-pressed="false">`
+            + `<span class="agreement-panel-design__text"><span>${esc(parcel.parcelId)}</span><span class="agreement-panel-design__type">${esc(holdersLine(parcel.holders, tr))}</span></span>`
+            + `<span>${esc(format().formatArea(parcel.areaM2, { missing: NO_VALUE }))}</span></button></li>`).join('');
+        return `<ul class="agreement-panel-inputs">${rows}</ul>`;
+    }
+
+    // Published output geometry comes from the agreement, inputs from original cadastre, and
+    // designs from the exact records displayed in this panel. Missing geometry stays unavailable.
+    function inspectionFeatures(agreement, kind, key, { designOf, inputOf, outlineOf }) {
+        const input = id => { const feature = inputOf(id); return feature?.geometry ? [feature] : []; };
+        const output = item => item?.geometry ? [{ type: 'Feature', properties: { agreementOutput: item.hash }, geometry: item.geometry }] : [];
+        if (kind === 'design') { const design = designOf(key); return design ? outlineOf(design) : []; }
+        if (kind === 'input') return input(key);
+        if (kind === 'output') return output((agreement.outputs || []).find(item => item.hash === key));
+        const inputs = kind === 'person' ? (agreement.inputs?.parcels || [])
+            .filter(parcel => (parcel.holders || []).some(holder => holder.ownerKey === key)).flatMap(parcel => input(parcel.parcelId)) : [];
+        const hashes = new Set((agreement.allocations || []).filter(line => kind === 'person'
+            ? line.to?.kind === 'party' && line.to.ownerKey === key : line.to?.kind === kind).map(line => line.output));
+        return [...inputs, ...(agreement.outputs || []).filter(item => hashes.has(item.hash)).flatMap(output)];
+    }
+
+    function tabbedHtml(panels, selected, tr = t) {
+        const labels = { overview: tr('panel.proposal.tabs.overview', 'Overview'), inputs: tr('agreement.workflow.inputs', 'Input parcels'),
+            outputs: tr('agreement.workflow.outputs', 'Output parcels'), persons: tr('agreement.workflow.persons', 'Persons'), rules: tr('agreement.workflow.rules', 'Rules') };
+        const label = kind => labels[kind];
+        const kinds = Object.keys(panels);
+        return `<div class="cb-tabs cb-tabs--fill agreement-properties-tabs" role="tablist" aria-label="${esc(tr('agreement.panel.title', 'Agreement'))}">`
+            + kinds.map(kind => `<button type="button" class="cb-tab" role="tab" id="agreement-properties-tab-${kind}" aria-controls="agreement-properties-panel-${kind}" aria-selected="${kind === selected}" tabindex="${kind === selected ? 0 : -1}" data-agreement-properties-tab="${kind}">${esc(label(kind))}</button>`).join('') + '</div>'
+            + kinds.map(kind => `<div class="agreement-properties-tabpanel" role="tabpanel" id="agreement-properties-panel-${kind}" aria-labelledby="agreement-properties-tab-${kind}" data-agreement-properties-panel="${kind}"${kind === selected ? '' : ' hidden'}>${panels[kind]}</div>`).join('');
+    }
+
     // ---- the browser panel -----------------------------------------------------------------------
 
     function browserPanel(win) {
@@ -558,7 +593,8 @@
         // loading, value, error }); chainBusy: the chain action running ({ action, phase }).
         const state = {
             token: 0, id: null, agreement: null, check: null, checking: false, error: null, panel: null, wired: false, remote: null,
-            chain: null, chainToken: 0, chainBusy: null, readOnlyAgreement: null, readOnlyDesigns: null
+            chain: null, chainToken: 0, chainBusy: null, readOnlyAgreement: null, readOnlyDesigns: null,
+            tab: 'overview', inspected: [], inspectedKey: null
         };
         const community = win.CommunityConsultation?.createController(win, {
             changed: () => { if (isOpen()) renderPanel(); }
@@ -626,6 +662,11 @@
                 </div>
                 <div class="panel-body" data-agreement-region="body"></div>`;
             panel.addEventListener('click', onPanelClick);
+            panel.addEventListener('keydown', onTabKeyDown);
+            panel.addEventListener('pointerover', event => onInspectionHover(event, true));
+            panel.addEventListener('pointerout', event => onInspectionHover(event, false));
+            panel.addEventListener('focusin', event => onInspectionHover(event, true));
+            panel.addEventListener('focusout', event => onInspectionHover(event, false));
             (doc.getElementById('map-container') || doc.body).appendChild(panel);
             state.panel = panel;
             return panel;
@@ -661,21 +702,22 @@
                     ? t('agreement.publish.readOnlyPieces', 'Its pieces are available by hash only in this read-only view.')
                     : t('agreement.publish.rederive', 'Its pieces are known here by their hashes only: apply its designs on the same ground to re-derive them and compare.'))}</p>`
                 : '';
-            return status
-                + (agreement.plan ? sectionHtml(t('plan.label', 'Plan'),
+            const overview = (agreement.plan ? sectionHtml(t('plan.label', 'Plan'),
                     `<button type="button" class="btn btn-sm" data-agreement-action="plan">${esc(agreement.plan.content.title)}</button>`) : '')
-                + byHashOnly
-                + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement), readOnly })
-                + (!current && !readOnly ? `<p class="agreement-panel-hint" data-agreement-compare-unavailable>${esc(t('agreement.panel.compareUnavailable', 'Before / after is available when this agreement matches the designs applied on the map.'))}</p>` : '')
                 + publishedHtml({ published: agreement.published, remote: observedRemote(state.remote, chainView(agreement)?.chain), electorate: agreement.rule && agreement.rule.electorate, readOnly, consultation: community && agreement.consultation })
                 + (community && agreement.rule?.electorate === 'community' ? '<section class="agreement-panel-section" data-community-consultation></section>' : '')
                 + (voting && agreement.rule?.electorate === 'community' && agreement.consultation?.voting && agreement.published ? '<section class="agreement-panel-section" data-community-voting></section>' : '')
                 + (community && agreement.rule?.electorate === 'community' ? win.CommunityConsultation.picturesHtml(state.remote) : '')
                 + (binding ? chainHtml({ ...chainView(agreement), readOnly }) : nonBindingChainHtml(agreement.published))
-                + designsHtml(designRows(agreement, { designOf, isApplied: win.isApplied, typeLabel }), t, readOnly)
-                + landHtml(landSummary(agreement))
-                + (agreement.rule?.electorate === 'community' ? '' : allocationHtml(allocationLines(agreement)) + ledgerHtml(ledger))
-                + ruleHtml(rule, deadline);
+                + designsHtml(designRows(agreement, { designOf, isApplied: win.isApplied, typeLabel }));
+            const panels = { overview, inputs: landHtml(landSummary(agreement)) + inputsHtml(agreement),
+                ...(agreement.rule?.electorate === 'community' ? {} : { outputs: byHashOnly + allocationHtml(allocationLines(agreement)), persons: ledgerHtml(ledger) }),
+                rules: ruleHtml(rule, deadline) };
+            if (!(state.tab in panels)) state.tab = 'overview';
+            return status
+                + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement), readOnly })
+                + (!current && !readOnly ? `<p class="agreement-panel-hint" data-agreement-compare-unavailable>${esc(t('agreement.panel.compareUnavailable', 'Before / after is available when this agreement matches the designs applied on the map.'))}</p>` : '')
+                + tabbedHtml(panels, state.tab);
         }
 
         function renderPanel() {
@@ -688,6 +730,9 @@
             close.setAttribute('aria-label', closeLabel);
             close.title = closeLabel;
             panel.querySelector('[data-agreement-region="body"]').innerHTML = bodyHtml();
+            if (state.inspectedKey) panel.querySelectorAll('[data-agreement-inspect]').forEach(button => {
+                button.setAttribute('aria-pressed', String(`${button.dataset.agreementInspect}:${button.dataset.agreementObjectId}` === state.inspectedKey));
+            });
             community?.render(panel.querySelector('[data-community-consultation]'), state.agreement);
             voting?.render(panel.querySelector('[data-community-voting]'), state.agreement);
             // The owners' decisions on a proposed agreement (proposals/approval-panel.js).
@@ -1167,16 +1212,78 @@
         }
 
         // A design's own details take the right dock, so this panel steps aside.
-        function selectDesign(proposalId) {
-            if (typeof win.selectAndHighlightProposal !== 'function') throw new Error('selectAndHighlightProposal is not loaded.');
-            close();
-            win.selectAndHighlightProposal(proposalId, null, true, true);
+        function activateTab(kind, focus = false) {
+            state.tab = kind;
+            state.panel.querySelectorAll('[data-agreement-properties-tab]').forEach(button => {
+                const selected = button.dataset.agreementPropertiesTab === kind;
+                button.setAttribute('aria-selected', String(selected)); button.tabIndex = selected ? 0 : -1;
+                if (selected && focus) button.focus();
+            });
+            state.panel.querySelectorAll('[data-agreement-properties-panel]').forEach(panel => { panel.hidden = panel.dataset.agreementPropertiesPanel !== kind; });
+        }
+
+        function onTabKeyDown(event) {
+            const tab = event.target.closest('[data-agreement-properties-tab]');
+            if (!tab || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+            event.preventDefault(); event.stopPropagation();
+            const tabs = [...state.panel.querySelectorAll('[data-agreement-properties-tab]')], index = tabs.indexOf(tab);
+            const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1
+                : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+            activateTab(tabs[next].dataset.agreementPropertiesTab, true);
+        }
+
+        function featuresOf(button) {
+            return inspectionFeatures(state.agreement, button.dataset.agreementInspect, button.dataset.agreementObjectId, {
+                designOf, inputOf: id => win.CadastralParcelRepository.get(id), outlineOf: design => win.MapPick.outlineOf(design)
+            });
+        }
+
+        function showInspection(features, { hover = false, zoom = false } = {}) {
+            if (win.isThreeModeActive?.()) { win.inspectThreeModeFeatures(features, { zoom }); return; }
+            if (hover) win.highlightFeatureGroupsForHover([{ features, className: 'agreement-map-hover' }]);
+            else win.highlightFeaturesForInspection(features, { className: 'agreement-map-focus' });
+            if (zoom && features.length) {
+                const bounds = win.L.geoJSON({ type: 'FeatureCollection', features }).getBounds();
+                if (bounds.isValid()) win.map.fitBounds(bounds, { ...win.getProposalPanelFitPadding(40), maxZoom: 20, animate: false });
+            }
+        }
+
+        function onInspectionHover(event, entering) {
+            const button = event.target.closest('[data-agreement-inspect]') || event.target.closest('[data-agreement-row-inspect]')?.querySelector('button');
+            const region = button?.closest('[data-agreement-row-inspect]') || button;
+            if (!button || button.disabled || region.contains(event.relatedTarget)) return;
+            if (!entering) {
+                win.clearProposalHoverLayers();
+                if (win.isThreeModeActive?.()) {
+                    if (state.inspected.length) showInspection(state.inspected);
+                    else win.ThreeClickStack.restoreFocus();
+                }
+                return;
+            }
+            const features = featuresOf(button);
+            if (features.length) showInspection(features, { hover: true });
+        }
+
+        async function inspectObject(button) {
+            const token = state.token;
+            let features = featuresOf(button);
+            if (!features.length && ['input', 'person'].includes(button.dataset.agreementInspect)) {
+                await originalFeatures((state.agreement.inputs?.parcels || []).map(parcel => parcel.parcelId));
+                if (token !== state.token) return;
+                features = featuresOf(button);
+            }
+            if (!features.length) return;
+            win.clearProposalHoverLayers(); state.inspected = features;
+            state.inspectedKey = `${button.dataset.agreementInspect}:${button.dataset.agreementObjectId}`;
+            state.panel.querySelectorAll('[data-agreement-inspect]').forEach(row => row.setAttribute('aria-pressed', String(row === button)));
+            showInspection(features, { zoom: true });
         }
 
         function onPanelClick(event) {
-            const design = event.target.closest('[data-agreement-design]');
-            if (state.readOnlyAgreement && design) return;
-            if (design) { selectDesign(design.getAttribute('data-agreement-design')); return; }
+            const tab = event.target.closest('[data-agreement-properties-tab]');
+            if (tab) { activateTab(tab.dataset.agreementPropertiesTab); return; }
+            const object = event.target.closest('[data-agreement-inspect]') || event.target.closest('[data-agreement-row-inspect]')?.querySelector('button');
+            if (object && !object.disabled) { win.BusyControl.track(object, () => inspectObject(object)).catch(error => win.showStyledAlert(error.message)); return; }
             const action = event.target.closest('[data-agreement-action]');
             if (!action || action.disabled) return;
             const actionName = action.getAttribute('data-agreement-action');
@@ -1247,6 +1354,7 @@
             // Another agreement's before / after does not belong to this one.
             if (state.id && state.id !== agreementId && comparing(state.id)) win.ProposalBeforeAfter.dispose();
             if (state.id !== agreementId) {
+                state.tab = 'overview'; state.inspected = []; state.inspectedKey = null;
                 state.remote = null;
                 state.chain = null;
                 state.chainBusy = null;
@@ -1261,6 +1369,7 @@
             state.checking = true;
             renderPanel();
             await refresh(token);
+            if (token === state.token && state.readOnlyAgreement) await originalFeatures((state.agreement?.inputs?.parcels || []).map(parcel => parcel.parcelId));
         }
 
         async function open(id) {
@@ -1313,6 +1422,8 @@
             }
             community?.reset();
             voting?.reset();
+            if (state.inspectedKey) win.highlightFeaturesForInspection?.([]);
+            win.clearProposalHoverLayers?.(); state.inspected = []; state.inspectedKey = null;
             state.token += 1;
             if (comparing(state.id)) win.ProposalBeforeAfter.dispose();
             state.id = null;
@@ -1336,6 +1447,7 @@
     return {
         titleOf, statusOf, landSummary, allocationLines, ledgerRows, ruleSummary, ruleShort, designRows, groundIds, holdersLine,
         statusHtml, actionsHtml, remoteStatusOf, observedRemote, publishedHtml, designsHtml, landHtml, allocationHtml, ledgerHtml, ruleHtml,
+        inputsHtml, inspectionFeatures, tabbedHtml,
         shortKey, chainStatusText, mintReadiness, isBinding, chainHtml, nonBindingChainHtml, browserPanel
     };
 });

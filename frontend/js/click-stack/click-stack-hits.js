@@ -135,7 +135,8 @@
         const proposal = instance?.proposal || global.proposalStorage?.getProposal?.(instance?.id);
         if (!proposal) return { formed: [], parcels: [] };
         const id = String(proposal.proposalId || instance.id);
-        const formed = (global.LiveParcelFabric.producedBy(id) || []).map(feature => {
+        const formed = (global.LiveParcelFabric.producedBy(id) || [])
+            .filter(feature => global.__formationDepth.isBodyParcel(proposal, feature)).map(feature => {
             const parcelId = String(global.LiveParcelFabric.featureId(feature));
             return { id: parcelId, label: parcelLabel(parcelId, feature), feature, designId: id,
                 designLabel: designLabel(proposal, id) };

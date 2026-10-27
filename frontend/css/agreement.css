@@ -42,7 +42,6 @@
     }
     #agreement-panel .panel-header { padding: var(--cb-space-2) var(--cb-space-3); }
     #agreement-panel [data-agreement-action="close"] { display: none; }
-    #agreement-panel .agreement-panel-actions { display: grid; grid-template-columns: 1fr; }
 }
 
 /* Approval links select an action visually even before its wallet is connected. */
@@ -197,7 +196,25 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--cb-space-2);
+    align-items: stretch;
 }
+
+.agreement-panel-actions > .btn { flex: 1 1 0; min-width: 0; white-space: normal; }
+.agreement-properties-tabs { flex-shrink: 0; }
+.agreement-properties-tabs > .cb-tab { min-width: 0; white-space: normal; padding-inline: var(--cb-space-1); }
+.agreement-properties-tabpanel:not([hidden]) { display: flex; flex-direction: column; gap: var(--cb-space-3); }
+.agreement-panel-object {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+    width: 100%;
+    text-align: left;
+}
+.agreement-panel-object[aria-pressed="true"] { outline: 2px solid var(--cb-primary); outline-offset: -2px; }
+.agreement-panel-allocation > .agreement-panel-object { align-items: baseline; }
+[data-agreement-row-inspect] { cursor: pointer; }
+[data-agreement-row-inspect]:hover, [data-agreement-row-inspect]:has([aria-pressed="true"]) { background: var(--cb-surface-2); }
 
 .agreement-panel-section {
     display: flex;
@@ -220,6 +237,7 @@
 
 /* ---- Designs: each a quiet button row (css/primitives.css), laid out as a list row ---- */
 .agreement-panel-designs,
+.agreement-panel-inputs,
 .agreement-panel-allocations {
     margin: 0;
     padding: 0;

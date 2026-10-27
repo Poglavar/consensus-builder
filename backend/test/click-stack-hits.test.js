@@ -3,6 +3,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
+const formation = createRequire(import.meta.url)('../../frontend/js/proposals/formation-depth.js');
 
 const source = readFileSync(new URL('../../frontend/js/click-stack/click-stack-hits.js', import.meta.url), 'utf8');
 
@@ -13,6 +15,7 @@ const parcelFeature = (props = {}) => ({ type: 'Feature', properties: props, geo
 function loadHits({ stack = [], buildings = [], planning = null, bareGround = false,
     registry = {}, proposals = {}, parcelProposals = [], parcelBuildings = [] } = {}) {
     const context = {
+        __formationDepth: formation,
         console,
         __drillUi: { stackAt: vi.fn(() => stack) },
         buildingsAt: vi.fn(() => buildings),
@@ -39,10 +42,10 @@ const bareEntry = (id, props = {}) => ({ kind: 'parcel', id, depth: 0, feature: 
 describe('click stack hits', () => {
     it('resolves all live outputs of a selected plan member without needing a map hit', () => {
         const source = parcelFeature({ parcelId: 'source' });
-        const outputs = [parcelFeature({ parcelId: 'piece-a' }), parcelFeature({ parcelId: 'piece-b' })];
+        const outputs = [parcelFeature({ parcelId: 'piece-a', structureType: 'park' }), parcelFeature({ parcelId: 'piece-b', structureType: 'park' }), parcelFeature({ parcelId: 'leftover' })];
         const { context } = loadHits({ registry: { source } });
         context.LiveParcelFabric = { producedBy: vi.fn(() => outputs), featureId: feature => feature.properties.parcelId, get: () => null };
-        const result = context.ClickStackHits.designGround({ id: 'park', proposal: { proposalId: 'park', title: 'Park', cadastreParcelIds: ['source'] } });
+        const result = context.ClickStackHits.designGround({ id: 'park', proposal: { proposalId: 'park', title: 'Park', goal: 'park', cadastreParcelIds: ['source'] } });
         expect(result.formed.map(item => item.id)).toEqual(['piece-a', 'piece-b']);
         expect(result.formed.every(item => item.designId === 'park')).toBe(true);
         expect(result.parcels).toEqual([{ id: 'source', label: 'source', feature: source, live: false }]);

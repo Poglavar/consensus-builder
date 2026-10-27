@@ -43,6 +43,8 @@ right-side panels that clicks used to open one at a time.
   Selecting a neighbouring row moves this window; the complete inventory remains available.
   Every displayed section has a clickable header. Expanding a section collapses the others;
   at most one is expanded. There is no coordinate footer.
+- Parallel action buttons share their row's width equally, including pairs and triples. Larger
+  relationship groups wrap into equal-width rows; long labels wrap within their button.
 - Desktop navigation and feedback stay centred on the viewport when inspection opens. The
   right column can extend to the bottom edge while it clears those controls horizontally; where
   they overlap, its maximum height stops above the highest visible control with a small gap.
@@ -81,13 +83,20 @@ right-side panels that clicks used to open one at a time.
   selecting one changes the inspected design.
 - The expanded section is the **action view**:
   - Selecting a Design from a Plan resolves that design's current live output parcels and original
-    cadastral inputs without requiring another map click. Switching peer designs replaces this
+    cadastral inputs without requiring another map click. The design's body pieces or layout plots
+    are shown, excluding remainder land that shares producer metadata. Its Source parcels metric
+    counts cadastral inputs. Switching peer designs replaces this
     ground context while retaining the plan and design choices. Unapplied designs have no live
     formed outputs; inspecting them does not create any.
   - Plan: meaning, name, included designs, combined map highlight, Share plan and Create agreement.
     Agreement: the full agreement record, including decision/allocation terms, publication,
     approvals and other applicable actions, with the inherited plan extent. There is no separate
     properties dock. Editing opens the existing modal and returns to this section.
+    Overview contains the plan, designs, publication and applicable voting/chain controls. Input
+    parcels, Output parcels, Persons and Rules have their own tabs; community agreements omit the
+    allocation and person tabs. Tabs retain their selection through refresh. Hover/focus previews
+    spatial rows, and clicking frames and highlights them without leaving the agreement. Person
+    rows inspect their contributed and allocated land. Hash-only outputs remain non-spatial.
   - Design: the proposal's actions panel itself (2026-10-23), without its own − and ×: an
     Overview tab (name, rung badges, type, author, parcel count and one area) and a Details tab
     (land and ownership, verification, the record), with the actions under both; plus the

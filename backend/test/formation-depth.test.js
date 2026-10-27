@@ -14,6 +14,21 @@ beforeAll(() => {
 const BASE = 'HR-335550-1791/25';
 const OTHER = 'HR-335550-1804/1';
 
+describe('design body parcels', () => {
+    it('distinguishes the park body from leftovers carrying the same producer', () => {
+        const park = { goal: 'park', structureProposal: { kind: 'park' } };
+        expect(records.isBodyParcel(park, { properties: { structureType: 'park' } })).toBe(true);
+        expect(records.isBodyParcel(park, { properties: { producedByProposalId: 'park' } })).toBe(false);
+    });
+    it('keeps multiple authored layout plots while excluding layout remainders', () => {
+        const layout = { goal: 'parcel-layout' };
+        expect(records.isBodyParcel(layout, { properties: { readjustmentPiece: { role: 'plot' } } })).toBe(true);
+        expect(records.isBodyParcel(layout, { properties: { structureType: 'park', readjustmentPiece: { role: 'remainder' } } })).toBe(false);
+        expect(records.isBodyParcel({ goal: 'single' }, { properties: { buildingParcel: true } })).toBe(true);
+        expect(records.isBodyParcel({ goal: 'road-track' }, { properties: { isCorridor: true } })).toBe(true);
+    });
+});
+
 describe('the authored road is its record (roads.md §11)', () => {
     const A = { lat: 45.8001, lng: 15.9701 };
     const B = { lat: 45.8004, lng: 15.9712 };

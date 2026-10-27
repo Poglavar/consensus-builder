@@ -71,6 +71,21 @@ function agreement(overrides = {}) {
 }
 
 describe('statusOf', () => {
+    it('inspects exact input, output and person geometry without changing ownership or records', () => {
+        const value = agreement(), original = { type: 'Feature', properties: { parcelId: 'k9' }, geometry: rect(0, 0, 3, 2) };
+        const context = { designOf: id => id === 'layout-1' ? { proposalId: id } : null,
+            inputOf: id => id === 'k9' ? original : null, outlineOf: () => [original] };
+        const before = JSON.stringify(value);
+        expect(panel.inspectionFeatures(value, 'input', 'k9', context)).toEqual([original]);
+        expect(panel.inspectionFeatures(value, 'design', 'layout-1', context)).toEqual([original]);
+        expect(panel.inspectionFeatures(value, 'output', value.outputs[0].hash, context)[0].geometry).toEqual(value.outputs[0].geometry);
+        const person = panel.inspectionFeatures(value, 'person', 'agent-ana', context);
+        expect(person[0]).toEqual(original);
+        expect(person.slice(1).map(feature => feature.geometry)).toEqual(value.outputs.slice(2).map(output => output.geometry));
+        expect(panel.inspectionFeatures(value, 'public', 'public', context).map(feature => feature.geometry)).toEqual([value.outputs[0].geometry]);
+        expect(panel.inspectionFeatures(value, 'output', 'missing', context)).toEqual([]);
+        expect(JSON.stringify(value)).toBe(before);
+    });
     it('says the agreement matches the map when the check is current', () => {
         expect(panel.statusOf({ current: true, reasons: [] })).toEqual({ current: true, tone: 'success', label: 'Matches the map', reasons: [] });
     });
@@ -246,7 +261,7 @@ describe('panel HTML', () => {
         expect(proposed).not.toContain('data-agreement-action="delete"');
     });
 
-    it('renders a secondary-tab agreement as content only, without edit, delete, chain, vote or design actions', () => {
+    it('keeps published inspection read-only while allowing spatial previews', () => {
         const actions = panel.actionsHtml({ published: true, readOnly: true, canCompare: true, canBet: true });
         expect(actions).toContain('data-agreement-action="compare" aria-pressed="false" disabled');
         expect(actions).not.toContain('data-agreement-action="edit"');
@@ -255,8 +270,8 @@ describe('panel HTML', () => {
         expect(actions).not.toContain('data-agreement-action="bet"');
         expect(panel.publishedHtml({ published: PUBLISHED, readOnly: true })).toContain('data-agreement-read-only');
         expect(panel.publishedHtml({ published: PUBLISHED, readOnly: true })).not.toContain('data-approval-card-slot');
-        expect(panel.designsHtml([{ proposalId: 'd1', title: 'Layout', type: 'Layout', missing: false }], undefined, true))
-            .toContain('data-agreement-design="d1" disabled');
+        expect(panel.designsHtml([{ proposalId: 'd1', title: 'Layout', type: 'Layout', missing: false }]))
+            .toContain('data-agreement-inspect="design"');
         expect(panel.chainHtml({ published: true, readOnly: true, ref: null, actions: { canMint: true } }))
             .not.toContain('data-agreement-action="mint"');
     });
@@ -349,11 +364,11 @@ describe('panel HTML', () => {
         expect(community).toContain('cb-badge--danger');
     });
 
-    it('makes every design a button that selects it, and every piece a line', () => {
+    it('makes designs and output pieces inspectable rows, disabling missing geometry', () => {
         const designs = panel.designsHtml([{ proposalId: 'layout-1', title: 'Layout', type: 'Parcel layout', missing: false, applied: true },
             { proposalId: 'gone', title: 'Gone', type: '', missing: true, applied: false }]);
-        expect(designs).toContain('<button type="button" class="btn btn-quiet agreement-panel-design" data-agreement-design="layout-1">');
-        expect(designs).toContain('data-agreement-design="gone" disabled');
+        expect(designs).toMatch(/<button[^>]+data-agreement-design="layout-1"[^>]+data-agreement-inspect="design"[^>]*>/);
+        expect(designs).toMatch(/data-agreement-design="gone"[^>]+ disabled/);
         expect(designs.match(/cb-badge--applied/g)).toHaveLength(1);
         const pieces = panel.allocationHtml(panel.allocationLines(agreement()));
         expect(pieces.match(/data-agreement-piece=/g)).toHaveLength(4);

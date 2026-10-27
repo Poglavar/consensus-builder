@@ -9504,6 +9504,12 @@
     window.scheduleViewAngleHint = scheduleViewAngleHint;
     window.isThreeModeActive = function () { return isActive; };
     window.focusThreeModeOnProposals = focusThreeModeOnProposals;
+    window.inspectThreeModeFeatures = (features, { zoom = false } = {}) => {
+        if (!isActive) return false;
+        highlightStackObject('agreements', { id: 'agreement-inspection', features });
+        if (zoom) frameIsolatedFeatures(features);
+        return true;
+    };
     window.showThreeModeDesign = showThreeModeDesign;
     window.showThreeModeParcel = showThreeModeParcel;
     window.showThreeModePlan = showThreeModePlan;

@@ -984,3 +984,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-27: Desktop navigation and messaging retain their viewport anchors; the click stack uses bottom-row space when clear and shortens only where it would overlap visible controls.
 
 - 2026-10-27: Finishing plan creation or saving a plan revision opens that exact snapshot in the current view's Plan click-stack section instead of the small action dialog.
+
+- 2026-10-27: Agreement properties use tabs inside the click stack; spatial rows preview on hover and frame on click, and parallel action buttons divide their row equally. Design parcel counts name source cadastre, while displayed formed land excludes leftover remainders.
