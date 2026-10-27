@@ -73,8 +73,6 @@ test.describe('Sources and adapters explorer @features', () => {
     await openCity(page);
     const backend = await page.evaluate(() => (window as any).getBackendBase());
     await page.locator('#settings-button').click();
-    const sourcesSection = page.locator('#settings-sheet details.accordion-section[data-section="sources"]');
-    await sourcesSection.locator(':scope > summary').click();
     const link = page.locator('#source-system-link');
     await expect(link).toBeVisible();
     await Promise.all([
@@ -84,6 +82,11 @@ test.describe('Sources and adapters explorer @features', () => {
     expect(new URL(page.url()).searchParams.get('backend')).toBe(backend);
     await expect(page.locator('#source-api-base')).toHaveText(backend);
     await expect(page.locator('#source-status')).toContainText('2 abstractions · 3 registered sources');
+    const alias = new URL(page.url()); alias.pathname = '/sources';
+    await page.goto(alias.href);
+    await expect(page.getByRole('heading', { name: 'Sources & adapters', exact: true })).toBeVisible();
+    await expect(page.locator('#source-status')).toContainText('2 abstractions · 3 registered sources');
+    expect(new URL(page.url()).searchParams.get('backend')).toBe(backend);
   });
 
   test('loads source contracts, switches adapters and sources, and translates the static explorer labels', async ({ mockApi: page }) => {

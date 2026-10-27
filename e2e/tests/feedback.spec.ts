@@ -43,11 +43,22 @@ test('a failed report keeps its text and reuses its receipt ID on retry in the s
 
 test('the map contact section links to the feedback form', async ({ mockApi: page }) => {
   await openCity(page);
+  const backend = await page.evaluate(() => {
+    const w = window as any, url = new URL(location.href);
+    url.searchParams.set('backend', 'http://localhost:4199'); history.replaceState(null, '', url);
+    return w.getBackendBase();
+  });
   await expect(page.locator('[data-feedback-link]')).toHaveAttribute('href', '/feedback.html', { timeout: 30_000 });
   await expect(page.locator('[data-feedback-link]')).toContainText('Feedback');
   await page.locator('#settings-button').click();
   const info = page.locator('#settings-sheet [data-section="help"]');
   await info.locator('[data-feedback-link]').click();
   await expect(page).toHaveURL(/\/feedback\.html\?/);
+  await expect(page.locator('#feedback-message')).toBeVisible();
+  expect(new URL(page.url()).searchParams.get('backend')).toBe(backend);
+  expect(await page.evaluate(() => (window as any).getBackendBase())).toBe(backend);
+  const alias = new URL(page.url()); alias.pathname = '/feedback';
+  await page.goto(alias.href);
+  await expect(page.getByRole('heading', { name: 'Feedback & bug reports', exact: true })).toBeVisible();
   await expect(page.locator('#feedback-message')).toBeVisible();
 });

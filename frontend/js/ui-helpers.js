@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
         link.dataset.i18nKey = 'feedback.open'; link.href = '/feedback.html';
         link.addEventListener('click', () => {
             const target = new URL('/feedback.html', window.location.origin);
+            const backend = window.getBackendBase?.();
+            if (backend) target.searchParams.set('backend', backend);
             target.searchParams.set('page', window.location.origin + window.location.pathname);
             target.searchParams.set('lang', window.i18n.getLocale());
             link.href = target.href;
