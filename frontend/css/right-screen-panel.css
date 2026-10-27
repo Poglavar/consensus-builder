@@ -1,0 +1,80 @@
+/* Right-side map surfaces share the click stack's dimensions and visual language.
+   right-dock-panel additionally opts existing inspectors into their phone-sheet behaviour.
+   Wide tables and comparisons belong in centred dialogs, not a wider right column. */
+.right-screen-panel {
+    font-family: var(--cb-font-sans);
+    font-size: var(--cb-text-base);
+    line-height: var(--cb-leading);
+    color: var(--cb-text);
+}
+
+.right-screen-panel:not(.click-stack):not(.is-hosted),
+.click-stack__card {
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    box-shadow: var(--cb-shadow-sm);
+}
+
+.right-screen-panel > :is(.map-sheet-header, .panel-header, .urban-block-panel-header, .site-panel__head, .proposal-editor-header) {
+    padding: var(--cb-space-3);
+    gap: var(--cb-space-2);
+}
+
+.right-screen-panel > :is(.map-sheet-header, .panel-header, .urban-block-panel-header, .site-panel__head, .proposal-editor-header) :is(h2, h3) {
+    margin: 0;
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+    line-height: var(--cb-leading);
+}
+
+.right-screen-panel > :is(.map-sheet-body, .panel-body, .urban-block-info, .urban-block-list-view, .proposal-editor-body) {
+    min-height: 0;
+    padding: var(--cb-space-3);
+    overscroll-behavior: contain;
+    overflow-wrap: anywhere;
+}
+
+@media (min-width: 768px) {
+    .right-screen-panel:not(.is-hosted) {
+        --right-panel-top: calc(var(--map-shell-top-clearance) + var(--cb-space-2));
+        max-height: calc(100dvh - var(--right-panel-top) - var(--right-dock-bottom));
+    }
+
+    .map-sheet.right-screen-panel {
+        position: fixed;
+        top: var(--right-panel-top);
+        right: var(--right-dock-gap);
+        bottom: auto;
+        left: auto;
+        height: auto;
+    }
+
+    /* A list keeps a useful scrolling viewport, just like an expanded stack section. */
+    .map-sheet--dock.right-screen-panel {
+        height: calc(100dvh - var(--right-panel-top) - var(--right-dock-bottom));
+    }
+
+    .on-map-editor__panel.right-screen-panel,
+    .planning-inspector.right-screen-panel,
+    .urban-block-panel.right-screen-panel,
+    .grain-score-panel.right-screen-panel,
+    .proposal-editor-shell.right-screen-panel {
+        top: var(--right-panel-top);
+        right: var(--right-dock-gap);
+    }
+
+    .proposal-editor-shell.right-screen-panel {
+        bottom: var(--right-dock-bottom);
+    }
+}
+
+/* Retain the shared phone sheet's geometry and drag behaviour. */
+@media (max-width: 767.98px) {
+    .right-screen-panel:not(.is-hosted) {
+        width: auto;
+        max-width: 100%;
+    }
+}

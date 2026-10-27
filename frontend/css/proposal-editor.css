@@ -9,7 +9,6 @@
     right: max(12px, env(safe-area-inset-right));
     bottom: max(12px, env(safe-area-inset-bottom));
     display: none;
-    width: min(430px, calc(100vw - 24px));
     min-width: 300px;
     overflow: hidden;
     color: var(--cb-text);

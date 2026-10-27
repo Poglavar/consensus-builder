@@ -51,7 +51,6 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
     position: absolute;
     right: var(--cb-space-4);
     top: calc(var(--map-shell-top-clearance) + var(--cb-space-3));
-    width: var(--cb-planning-inspector-width);
     max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - var(--cb-space-6));
     overflow: auto;
     font-size: var(--cb-text-base);

@@ -536,7 +536,6 @@
             footer,
             tools,
             modes: ['2d'],
-            wide: true,
             hints: { '2d': t('parcelLayout.editor.mapHint', 'Draw the plots here. Who receives which plot is decided later, in the agreement.') },
             handleEscape: false,
             onCancel: cancelModal

@@ -667,7 +667,7 @@
         const host = doc.getElementById('map-container') || doc.body;
         const panel = doc.createElement('section');
         panel.id = 'site-panel';
-        panel.className = 'site-panel right-dock-panel';
+        panel.className = 'site-panel right-dock-panel right-screen-panel';
         panel.setAttribute('role', 'region');
         panel.innerHTML = `
             <div class="site-panel__head" data-site-region="head"></div>
@@ -874,7 +874,7 @@
         const host = doc.getElementById('map-container') || doc.body;
         const panel = doc.createElement('section');
         panel.id = 'site-info-panel';
-        panel.className = 'info-panel right-dock-panel site-info-panel';
+        panel.className = 'info-panel right-dock-panel right-screen-panel site-info-panel';
         panel.setAttribute('role', 'region');
         panel.innerHTML = `
             <div class="panel-header">

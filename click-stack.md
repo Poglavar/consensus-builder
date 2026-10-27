@@ -16,7 +16,10 @@ right-side panels that clicks used to open one at a time.
   point's own hits, and only the point's own hits open by default,
   so a click on open ground still opens the parcel.
 - The result opens as **individual cards directly over the map**, in the shared right-dock
-  column (`--right-dock-width`; full width on phones). Small gaps and short connector lines
+  column (400 CSS pixels via `--right-dock-width`, with a 10px right gap; full width on phones).
+  The shared `right-screen-panel` class also styles other right-side inspectors, settings, lists
+  and map editors. Wider content uses a centred dialog rather than widening that column.
+  Small gaps and short connector lines
   show that these sections describe layers of one spot. The positioning container has no
   background, heading, or close button; each section owns the shared translucent surface.
 - One section is always **selected** while the stack is open. Expansion only controls its

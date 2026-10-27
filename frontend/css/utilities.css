@@ -1149,9 +1149,6 @@ input.proposal-author-name {
     position: fixed;
     right: 10px;
     bottom: var(--map-shell-bottom-clearance);
-    border: 1px solid var(--cb-line-strong);
-    border-radius: 12px;
-    box-shadow: var(--cb-shadow-md);
     /* One step above the parcel panel it shares the dock with, under the sheets: panels no longer
        step aside when a sheet opens, so a card at dialog level covered the sheet's own buttons. */
     z-index: calc(var(--cb-z-panel) + 20);

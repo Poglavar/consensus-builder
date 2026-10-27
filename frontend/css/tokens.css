@@ -93,7 +93,6 @@
     --cb-planning-permitted: #168b87;
     --cb-planning-proposed: #c26336;
     --cb-planning-control-width: 440px;
-    --cb-planning-inspector-width: 330px;
 
     /* The night-sky artwork stays dark; its controls use the shared dark theme below. */
     --cb-scene-sky: #87ceeb;

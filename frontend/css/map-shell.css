@@ -472,26 +472,13 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     box-sizing: border-box;
 }
 
-/* ---- Dock sheets: Proposals, Bets, Activity ----
-   The bottom row's three destinations share one frame: the same width and height, centred on the
-   row (its data-sheet-anchor in index.html), so switching between them swaps the content and
-   nothing moves or resizes. Wide enough for a row with a thumbnail, a title and its actions. On a
-   phone they fill the screen above the bar instead (the phone block at the end of this file). */
+/* ---- Navigation sheets ----
+   Bets and Activity share a wider frame centred on the navigation row. Lists opts into the
+   right-screen-panel column; that contract owns its desktop width and placement. Phone sheets
+   share the resize controls in mobile-sheets.css. */
 .map-sheet--dock {
     width: 560px;
     height: min(var(--sheet-max-height, 70vh), 80vh, 880px);
-}
-
-@media (min-width: 768px) {
-    #proposals-sheet {
-        top: var(--map-shell-top-clearance);
-        bottom: var(--map-shell-bottom-clearance);
-        left: auto;
-        right: var(--map-shell-edge);
-        width: clamp(360px, 36vw, 560px);
-        height: auto;
-        max-height: none;
-    }
 }
 
 .map-sheet .btn-group {

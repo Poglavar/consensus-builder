@@ -33,7 +33,6 @@
        change what it shows, and the panel no longer grows or shrinks with them. */
     top: var(--map-shell-top-clearance);
     right: 10px;
-    width: 350px;
     height: min(30rem, calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance)));
     box-sizing: border-box;
     overflow-y: auto;

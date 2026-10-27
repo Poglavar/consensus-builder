@@ -542,7 +542,7 @@
         if (existing) return existing;
         const panel = doc.createElement('section');
         panel.id = 'agreement-editor';
-        panel.className = 'info-panel right-dock-panel agreement-editor';
+        panel.className = 'info-panel right-dock-panel right-screen-panel agreement-editor';
         panel.setAttribute('role', 'region');
         panel.setAttribute('aria-labelledby', 'agreement-editor-title');
         panel.innerHTML = '<div class="panel-header">'

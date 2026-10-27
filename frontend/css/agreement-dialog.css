@@ -144,7 +144,6 @@
     right: var(--right-dock-gap);
     bottom: var(--right-dock-bottom);
     padding: 0;
-    border: 1px solid var(--cb-line-glass);
     font-size: var(--cb-text-base);
     line-height: var(--cb-leading);
     overflow: hidden;

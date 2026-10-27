@@ -1,6 +1,3 @@
-#proposals-sheet > .map-sheet-header { position: relative; justify-content: center; }
-#proposals-sheet-title { text-align: center; flex: 1; margin-inline: var(--cb-control-height); }
-#proposals-sheet > .map-sheet-header > .map-sheet-close { position: absolute; inset-inline-end: var(--cb-space-3); }
 .plan-dialog .cb-dialog__header { position: relative; justify-content: center; }
 .plan-dialog .cb-dialog__title { text-align: center; margin-inline: var(--cb-control-height); }
 .plan-dialog .cb-dialog__header .close-circle-btn { position: absolute; inset-inline-end: var(--cb-space-4); }

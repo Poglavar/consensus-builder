@@ -118,7 +118,7 @@
 
         const panel = document.createElement('section');
         panel.id = 'grain-score-panel';
-        panel.className = 'grain-score-panel';
+        panel.className = 'grain-score-panel right-screen-panel';
         panel.hidden = true;
         panel.setAttribute('role', 'dialog');
         panel.setAttribute('aria-modal', 'false');

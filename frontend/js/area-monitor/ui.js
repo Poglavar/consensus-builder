@@ -396,7 +396,7 @@
 
         const panel = document.createElement('div');
         panel.id = 'area-monitor-detail-panel';
-        panel.className = 'info-panel visible';
+        panel.className = 'info-panel right-screen-panel visible';
 
         const externalLinks = [];
         if (monitor.eojnUrl) {

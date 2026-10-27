@@ -141,7 +141,7 @@
         if (state.el && state.el.parentElement === container) return state.el;
         const el = doc.createElement('aside');
         el.id = 'three-click-stack';
-        el.className = 'click-stack right-dock-panel';
+        el.className = 'click-stack right-dock-panel right-screen-panel';
         el.hidden = true;
         el.addEventListener('click', onPanelClick);
         el.addEventListener('change', onPanelChange);

@@ -652,7 +652,7 @@
             if (state.panel) return state.panel;
             const panel = doc.createElement('section');
             panel.id = 'agreement-panel';
-            panel.className = 'info-panel right-dock-panel agreement-panel';
+            panel.className = 'info-panel right-dock-panel right-screen-panel agreement-panel';
             panel.setAttribute('role', 'region');
             panel.setAttribute('aria-labelledby', 'agreement-panel-title');
             panel.innerHTML = `

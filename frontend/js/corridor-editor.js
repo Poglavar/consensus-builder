@@ -2637,7 +2637,7 @@ function corridorEditorOpenOverlayBody() {
     corridorEditorSession = window.OnMapEditor.open({
         owner: 'corridor-editor', id: 'corridor-editor-overlay',
         title: corridorEditorI18n('modal.corridor.title', 'Cross-section'),
-        wide: true, modes: ['2d'], onCancel: corridorEditorRequestCancel,
+        modes: ['2d'], onCancel: corridorEditorRequestCancel,
         content: `<p class="corridor-editor-subtitle">${drawing
             ? corridorEditorI18n('modal.corridor.drawingSubtitle', 'Changes update the road on the map before you create the proposal')
             : corridorEditorI18n('modal.corridor.proposalSubtitle', 'Preview changes here, then save them to this road')}</p>

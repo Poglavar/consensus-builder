@@ -1276,7 +1276,6 @@
                 content,
                 footer,
                 modes: ['2d', 'model'],
-                wide: false,
                 tools: rotationTools,
                 hints: {
                     '2d': translateRowHouseText('rowHouses.modal.helper.adjust', 'Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.')

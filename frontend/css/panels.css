@@ -23,10 +23,10 @@
    THE single source of truth for every panel that docks to the right edge of the map: the parcel
    info panel (and the proposal buttons inside it), the proposal details panel, the road/track info
    panel, and the road-impact dialog. They used to carry four different widths (300 / 400 / fit-content
-   400-560 / 480), so the right-hand column read as a ragged stack. Give a panel `.right-dock-panel`
+   400-560 / 480), so the right-hand column read as a ragged stack. Give a panel `.right-screen-panel`
    and it inherits the width — never re-declare a width on the panel itself.
 
-   On phones the same class becomes a bottom sheet. It opens tall enough to make the parcel build
+   `.right-dock-panel` additionally opts inspectors into the resizable phone dock. It opens tall enough to make the parcel build
    palette useful, stays above the Game bar, and can be resized from its handle. */
 :root {
     --right-dock-width: 400px;
@@ -41,6 +41,7 @@
     }
 }
 
+.right-screen-panel:not(.is-hosted),
 .right-dock-panel {
     width: var(--right-dock-width);
     max-width: calc(100vw - 2 * var(--right-dock-gap));
@@ -763,8 +764,6 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     position: absolute;
     top: var(--map-shell-top-clearance);
     right: 10px;
-    width: 320px;
-    max-width: calc(100vw - 20px);
     height: min(60vh, calc(100% - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance)));
     display: none;
     padding: 0;
@@ -1435,15 +1434,6 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 /* Proposal details panel now uses .panel-header and .panel-body structure */
-
-/* Responsive width for the info panels that are NOT part of the right dock. The dock's panels
-   (#parcel-info-panel, #proposal-details-panel, #road-info-panel) are
-   deliberately absent: this rule has ID specificity, so listing one here silently overrides
-   .right-dock-panel and the shared --right-dock-width stops meaning anything. */
-#block-info-panel,
-#area-monitor-detail-panel {
-    width: min(90vw, 400px);
-}
 
 /* The watched-area panel (js/area-monitor/ui.js): docked bottom right on the panels' rung; its
    controls are the shared btn / close-circle-btn / cb-link (css/primitives.css). A fixed height

@@ -817,7 +817,6 @@
                 content,
                 footer,
                 modes: ['2d', 'model'],
-                wide: false,
                 onCancel: requestCloseParcelBasedModal
             });
             if (!parcelBasedModal) return false;
