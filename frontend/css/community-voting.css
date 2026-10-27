@@ -13,3 +13,19 @@
 :is([data-community-voting], [data-voting-roster]) summary { cursor: pointer; min-height: 44px; }
 :is([data-community-voting], [data-voting-roster]) .proposal-editor-field { display: grid; gap: .35rem; margin-block: .75rem; }
 :is([data-community-voting], [data-voting-roster]) textarea { width: 100%; box-sizing: border-box; }
+
+/* Native progress values carry the data; CSS owns the palette and track geometry. */
+[data-community-voting] .voting-tally { display: grid; gap: var(--cb-space-2); margin-block: var(--cb-space-4); padding: var(--cb-space-3); border-radius: var(--cb-radius-md); background: var(--cb-surface-2); }
+[data-community-voting] .voting-tally h4 { margin: 0 0 var(--cb-space-2); }
+[data-community-voting] .voting-meter-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: var(--cb-space-2); font-size: var(--cb-text-sm); }
+[data-community-voting] .voting-meter-head strong { font-variant-numeric: tabular-nums; }
+[data-community-voting] .voting-meter { --voting-color: var(--cb-primary); display: block; appearance: none; width: 100%; height: var(--cb-space-2); border: 0; border-radius: var(--cb-radius-pill); overflow: hidden; background: var(--cb-surface-3); accent-color: var(--voting-color); }
+[data-community-voting] .voting-meter::-webkit-progress-bar { background: var(--cb-surface-3); border-radius: var(--cb-radius-pill); }
+[data-community-voting] .voting-meter::-webkit-progress-value { background: var(--voting-color); border-radius: var(--cb-radius-pill); }
+[data-community-voting] .voting-meter::-moz-progress-bar { background: var(--voting-color); border-radius: var(--cb-radius-pill); }
+[data-community-voting] [data-voting-meter="support"] { --voting-color: var(--cb-success); }
+[data-community-voting] [data-voting-meter="oppose"] { --voting-color: var(--cb-danger); }
+[data-community-voting] [data-voting-meter="abstain"] { --voting-color: var(--cb-text-muted); }
+[data-community-voting] .voting-result { display: grid; gap: var(--cb-space-1); }
+[data-community-voting] .voting-tally-note { margin: 0; font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
+[data-community-voting] .voting-tally > button { justify-self: start; margin-top: var(--cb-space-2); }

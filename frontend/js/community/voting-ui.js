@@ -9,6 +9,23 @@
     }
     const choiceText = choice => ({support:t('support','Support'),oppose:t('oppose','Oppose'),abstain:t('abstain','Abstain')})[choice] || t('noVote','No vote yet');
     const button = (action,label,disabled=false) => `<button type="button" class="btn btn-sm btn-secondary" data-voting-action="${action}"${disabled?' disabled':''}>${esc(label)}</button>`;
+    function tallyHtml(summary) {
+        const {votes,eligible,counts}=summary;
+        const percent=(value,total)=>root.CbFormat.formatPercent(total?value/total:0,{maxFractionDigits:1});
+        const turnout=t('turnoutCount','{{votes}} of {{eligible}} voted · {{percent}}',{
+            votes:root.CbFormat.formatNumber(votes),eligible:root.CbFormat.formatNumber(eligible),percent:percent(votes,eligible)});
+        return `<section class="voting-tally" aria-label="${esc(t('results','Voting progress'))}">`
+            + `<h4>${esc(t('results','Voting progress'))}</h4><div class="voting-meter-head"><span>${esc(t('turnout','Turnout'))}</span><strong>${esc(turnout)}</strong></div>`
+            + `<progress class="voting-meter" data-voting-meter="turnout" value="${esc(votes)}" max="${Math.max(1,eligible)}" aria-label="${esc(t('turnout','Turnout'))}" aria-valuetext="${esc(turnout)}"></progress>`
+            + `<p class="voting-tally-note">${esc(t('remaining','Not yet voted: {{count}}',{count:root.CbFormat.formatNumber(eligible-votes)}))}</p>`
+            + `<p class="voting-tally-note">${esc(t('castShare','Share of votes cast'))}</p>`
+            + V().CHOICES.map(choice=>{
+                const detail=`${root.CbFormat.formatNumber(counts[choice])} · ${percent(counts[choice],votes)}`;
+                return `<div class="voting-result" data-voting-result="${choice}"><div class="voting-meter-head"><span>${esc(choiceText(choice))}</span><strong>${esc(detail)}</strong></div>`
+                    + `<progress class="voting-meter" data-voting-meter="${choice}" value="${esc(counts[choice])}" max="${Math.max(1,votes)}" aria-label="${esc(choiceText(choice))}" aria-valuetext="${esc(detail)}"></progress></div>`;
+            }).join('')
+            + button('results',t('refreshResults','Refresh results'))+'</section>';
+    }
     function refusal(code) {
         return ({
             'invalid-code':t('invalidCode','That code was not recognised. Check the letters and try again.'),
@@ -34,15 +51,14 @@
         }
         async function refresh() {
             state.summary=await request('');
-            if(state.code) state.ballot=await request('/access',{code:state.code});
+            if(state.code) {state.ballot=await request('/access',{code:state.code});state.summary=state.ballot;}
         }
         function draw() {
             const s=state, summary=s.summary, entry=s.ballot?.entry;
             const closed=summary?.closed;
             const history=entry?.history || [];
             slot.innerHTML=`<h3>${esc(t('title','Vote with a code'))}</h3>`
-                + (summary?`<p class="agreement-panel-meta">${esc(t('totals','{{votes}} votes · {{eligible}} eligible codes',{votes:summary.votes,eligible:summary.eligible}))}</p>`
-                    + `<p class="agreement-panel-meta">${V().CHOICES.map(choice=>`${esc(choiceText(choice))}: ${summary.counts[choice]}`).join(' · ')}</p>`:'')
+                + (summary?tallyHtml(summary):'')
                 + (closed?`<p class="cb-notice">${esc(t('closed','Voting has closed. You can still check your vote and its history.'))}</p>`:'')
                 + (s.error?`<p role="alert" class="agreement-panel-note agreement-panel-note--danger">${esc(s.error)}</p>`:'')
                 + (s.success?`<p role="status" class="agreement-panel-meta">${esc(s.success)}</p>`:'')
@@ -74,7 +90,7 @@
                 run(control,async()=>{
                     if(event.target.matches('[data-voting-access]')) {
                         const code=state.inputCode || ''; 
-                        state.ballot=await request('/access',{code});state.code=code;state.selected=state.ballot.entry.choice;
+                        state.ballot=await request('/access',{code});state.summary=state.ballot;state.code=code;state.selected=state.ballot.entry.choice;
                     } else {
                         await request('/ballot',{code:state.code,choice:state.selected || state.ballot.entry.choice,expectedVersion:state.ballot.entry.version,requestId:win.crypto.randomUUID()});
                         state.ballot=await request('/access',{code:state.code});state.summary=state.ballot;
@@ -88,6 +104,7 @@
                 const action=control.dataset.votingAction;
                 run(control,async()=>{
                     if(action==='refresh') await refresh();
+                    if(action==='results') state.summary=await request('');
                     if(action==='leave') {state.code=null;state.inputCode='';state.ballot=null;state.selected=null;}
                 });
             };

@@ -147,3 +147,18 @@ version, and a retry-stable request ID. Neither tool accepts names, email addres
   control audit still reports unrelated pre-existing navigation/control inventory mismatches.
   MCP parity is verified through the actual agreement-edit and ballot schemas and the shared API
   adapters; personal assignment management intentionally runs locally, outside hosted MCP.
+
+The public Voting progress card shows turnout against the fixed eligible-code count, remaining
+unvoted codes, and Support / Oppose / Abstain counts with percentages of votes cast. Abstentions
+count toward turnout. It updates after code checks, saved votes and history refreshes; Refresh
+results reads the public totals without requiring a code. These are current totals, not a time
+series. MCP parity needs no new operation: `ugt_voting_status` already returns the same totals,
+eligibility and choice counts. No decision threshold or quorum is inferred from these bars.
+
+Progress-card verification: 22 targeted headless locale unit checks passed. One targeted headless
+Playwright voting scenario initially failed because the concurrent agreement-navigation change
+called `DesignMemberships` before its optional script loaded; the shared agreement entry point now
+awaits that dependency. The rerun passed, checking empty results, 50% turnout, 100% of cast votes,
+changed choices without additional turnout, and public refresh. Dedicated headed-browser inspection
+confirmed the real local sample at desktop and 390-pixel width, with no horizontal overflow. No
+full suite was run; existing control identities cover the added refresh action.
