@@ -22,8 +22,11 @@
         const routeCid = parsePath(win.location.pathname);
         let current = null;
         const t = (key, fallback, params) => win.getProposalI18nHelper()(key, fallback, params);
-        const observe = (operation, options, action) => win.AppDiagnostics
-            ? win.AppDiagnostics.run(operation, { ...options, context: { surface: 'named-plan' } }, action) : action();
+        const observe = (operation, options, action) => {
+            const observation = { ...options, context: { surface: 'named-plan' } };
+            return win.AppDiagnostics
+                ? win.AppDiagnostics.run(operation, observation, () => action(observation)) : action(observation);
+        };
         const backend = () => win.resolveBackendBaseUrl().replace(/\/$/, '');
         const verify = (row, cid) => {
             const error = win.PlanRecord.validate(row?.content);
@@ -95,10 +98,13 @@
             },
             get current() { return current; },
             async save(content) {
-                return observe('save', { entity: 'plan', planKey: content, code: 'plan-save-failed' }, async () => {
+                return observe('save', { entity: 'plan', code: 'plan-save-failed' }, async observation => {
                 const error = win.PlanRecord.validate(content);
                 if (error) throw new Error(error);
+                // Use stable content identity for diagnostics, but only after validation and
+                // hashing succeed inside the observed action. Object identity changes on clones.
                 const cid = win.Cid.cidOfObject(content);
+                observation.planKey = cid;
                 verify(await request('POST', '/plans', { content }), cid);
                 // Read back the durable record before presenting its link as saved.
                 current = await fetchPlan(cid);

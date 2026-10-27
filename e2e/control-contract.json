@@ -950,9 +950,9 @@
       "controlType": "checkbox"
     },
     {
-      "id": "control-704627e1f2a4fd-1",
+      "id": "control-fe66c04c614520-1",
       "source": "index.html",
-      "markup": "<button id=\"cadastre-view-toggle\" class=\"btn\" data-map-modes=\"2d\" title=\"Cadastre view: original parcels only\" data-i18n-key=\"claims.cadastreViewToggle\" data-i18n-attr=\"title\">",
+      "markup": "<button type=\"button\" id=\"cadastre-view-toggle\" class=\"btn\" data-map-modes=\"2d\" title=\"Cadastre view: original parcels only\" data-i18n-key=\"claims.cadastreViewToggle\" data-i18n-attr=\"title\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -992,23 +992,23 @@
       "controlType": "checkbox"
     },
     {
-      "id": "control-b2c0299bb90480-1",
+      "id": "control-6b4f51dab5a05f-1",
       "source": "index.html",
-      "markup": "<button class=\"btn btn-primary btn-block\" onclick=\"countBlocks()\" data-i18n-key=\"sidebar.blocks.reformTooltip\" data-i18n-attr=\"title\">",
+      "markup": "<button type=\"button\" class=\"btn btn-primary btn-block\" onclick=\"countBlocks()\" data-i18n-key=\"sidebar.blocks.reformTooltip\" data-i18n-attr=\"title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-2b9dbd7a5db37a-1",
+      "id": "control-14b35093351ce5-1",
       "source": "index.html",
-      "markup": "<button class=\"btn btn-primary btn-block\" onclick=\"animateFloodfillFromSelected()\" data-i18n-key=\"sidebar.blocks.fromSelectedTooltip\" data-i18n-attr=\"title\">",
+      "markup": "<button type=\"button\" class=\"btn btn-primary btn-block\" onclick=\"animateFloodfillFromSelected()\" data-i18n-key=\"sidebar.blocks.fromSelectedTooltip\" data-i18n-attr=\"title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-ac29d2ef40a090-1",
+      "id": "control-d2e2db7526112f-1",
       "source": "index.html",
-      "markup": "<button id=\"showBlockListButton\" class=\"btn btn-block\" onclick=\"showBlocksList()\" disabled>",
+      "markup": "<button type=\"button\" id=\"showBlockListButton\" class=\"btn btn-block\" onclick=\"showBlocksList()\" disabled>",
       "interaction": "click",
       "controlType": "button"
     },
@@ -1117,22 +1117,22 @@
       "controlType": "checkbox"
     },
     {
-      "id": "control-5e0793293b687c-1",
+      "id": "control-70d95cec86ba62-1",
       "source": "index.html",
-      "markup": "<button id=\"detectExistingRoadsButton\" class=\"btn\" data-i18n-key=\"sidebar.roads.detectExistingTooltip\" data-i18n-attr=\"title\" onclick=\"detectExistingRoads()\">",
+      "markup": "<button type=\"button\" id=\"detectExistingRoadsButton\" class=\"btn\" data-i18n-key=\"sidebar.roads.detectExistingTooltip\" data-i18n-attr=\"title\" onclick=\"detectExistingRoads()\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-32d86e00730d1e-1",
+      "id": "control-4ec847677f2e5b-1",
       "source": "index.html",
-      "markup": "<button class=\"btn btn-primary btn-block\" onclick=\"detectRoadsUsingAI()\" disabled hidden data-i18n-key=\"sidebar.roads.detectAiTooltip\" data-i18n-attr=\"title\">",
+      "markup": "<button type=\"button\" class=\"btn btn-primary btn-block\" onclick=\"detectRoadsUsingAI()\" disabled hidden data-i18n-key=\"sidebar.roads.detectAiTooltip\" data-i18n-attr=\"title\">",
       "exempt": "The AI road placeholder is permanently disabled and hidden; no implementation exists.",
       "mustRemainInactive": true,
       "guards": [
         {
           "source": "index.html",
-          "pattern": "<button\\s+class=\"btn\\s+btn-primary\\s+btn-block\"\\s+onclick=\"detectRoadsUsingAI\\(\\)\"\\s+disabled\\s+hidden\\s+data-i18n-key=\"sidebar\\.roads\\.detectAiTooltip\"\\s+data-i18n-attr=\"title\">",
+          "pattern": "<button\\s+type=\"button\"\\s+class=\"btn\\s+btn-primary\\s+btn-block\"\\s+onclick=\"detectRoadsUsingAI\\(\\)\"\\s+disabled\\s+hidden\\s+data-i18n-key=\"sidebar\\.roads\\.detectAiTooltip\"\\s+data-i18n-attr=\"title\">",
           "occurrences": 1
         }
       ],
@@ -1140,15 +1140,15 @@
       "controlType": "button"
     },
     {
-      "id": "control-9554b4645be2d6-1",
+      "id": "control-021f71725cc47b-1",
       "source": "index.html",
-      "markup": "<button class=\"btn btn-primary btn-block\" onclick=\"algorithmicRoads()\" disabled hidden data-i18n-key=\"sidebar.roads.drawAlgorithmicTooltip\" data-i18n-attr=\"title\">",
+      "markup": "<button type=\"button\" class=\"btn btn-primary btn-block\" onclick=\"algorithmicRoads()\" disabled hidden data-i18n-key=\"sidebar.roads.drawAlgorithmicTooltip\" data-i18n-attr=\"title\">",
       "exempt": "The algorithmic road placeholder is permanently disabled and hidden; no implementation exists.",
       "mustRemainInactive": true,
       "guards": [
         {
           "source": "index.html",
-          "pattern": "<button\\s+class=\"btn\\s+btn-primary\\s+btn-block\"\\s+onclick=\"algorithmicRoads\\(\\)\"\\s+disabled\\s+hidden\\s+data-i18n-key=\"sidebar\\.roads\\.drawAlgorithmicTooltip\"\\s+data-i18n-attr=\"title\">",
+          "pattern": "<button\\s+type=\"button\"\\s+class=\"btn\\s+btn-primary\\s+btn-block\"\\s+onclick=\"algorithmicRoads\\(\\)\"\\s+disabled\\s+hidden\\s+data-i18n-key=\"sidebar\\.roads\\.drawAlgorithmicTooltip\"\\s+data-i18n-attr=\"title\">",
           "occurrences": 1
         }
       ],
@@ -1156,58 +1156,58 @@
       "controlType": "button"
     },
     {
-      "id": "control-ec48531b6e54af-1",
+      "id": "control-eb13acb214394b-1",
       "source": "index.html",
-      "markup": "<button class=\"btn btn-primary btn-block\" onclick=\"drawOSMRoads()\" data-i18n-key=\"sidebar.roads.drawOsmTooltip\" data-i18n-attr=\"title\">",
+      "markup": "<button type=\"button\" class=\"btn btn-primary btn-block\" onclick=\"drawOSMRoads()\" data-i18n-key=\"sidebar.roads.drawOsmTooltip\" data-i18n-attr=\"title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-d0211bf6f35fdc-1",
+      "id": "control-61110d8f4c8c0f-1",
       "source": "index.html",
-      "markup": "<button class=\"btn btn-primary btn-block\" onclick=\"detectRoadsFromOSM()\" data-i18n-key=\"sidebar.roads.detectOsmTooltip\" data-i18n-attr=\"title\">",
+      "markup": "<button type=\"button\" class=\"btn btn-primary btn-block\" onclick=\"detectRoadsFromOSM()\" data-i18n-key=\"sidebar.roads.detectOsmTooltip\" data-i18n-attr=\"title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-42e4cf7e280153-1",
+      "id": "control-9885c9c49efd08-1",
       "source": "index.html",
-      "markup": "<button class=\"btn btn-primary btn-block\" onclick=\"drawGUPRoads()\" data-i18n-key=\"sidebar.roads.drawGupTooltip\" data-i18n-attr=\"title\">",
+      "markup": "<button type=\"button\" class=\"btn btn-primary btn-block\" onclick=\"drawGUPRoads()\" data-i18n-key=\"sidebar.roads.drawGupTooltip\" data-i18n-attr=\"title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-30cd83283bc198-1",
+      "id": "control-0c6a542dd8610d-1",
       "source": "index.html",
-      "markup": "<button class=\"btn btn-primary btn-block\" onclick=\"detectRoadsFromGUP()\" data-i18n-key=\"sidebar.roads.detectGupTooltip\" data-i18n-attr=\"title\">",
+      "markup": "<button type=\"button\" class=\"btn btn-primary btn-block\" onclick=\"detectRoadsFromGUP()\" data-i18n-key=\"sidebar.roads.detectGupTooltip\" data-i18n-attr=\"title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-c483c28423672d-1",
+      "id": "control-0f55aaf30475bf-1",
       "source": "index.html",
-      "markup": "<button class=\"btn btn-primary btn-block\" onclick=\"drawWFSRoadParcels()\" data-i18n-key=\"sidebar.roads.drawDguTooltip\" data-i18n-attr=\"title\">",
+      "markup": "<button type=\"button\" class=\"btn btn-primary btn-block\" onclick=\"drawWFSRoadParcels()\" data-i18n-key=\"sidebar.roads.drawDguTooltip\" data-i18n-attr=\"title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-8848c3271f48b2-1",
+      "id": "control-5406b09751d248-1",
       "source": "index.html",
-      "markup": "<button class=\"btn btn-primary btn-block\" onclick=\"detectRoadsFromWFS()\" data-i18n-key=\"sidebar.roads.detectDguTooltip\" data-i18n-attr=\"title\">",
+      "markup": "<button type=\"button\" class=\"btn btn-primary btn-block\" onclick=\"detectRoadsFromWFS()\" data-i18n-key=\"sidebar.roads.detectDguTooltip\" data-i18n-attr=\"title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-24b6383bfb1b79-1",
+      "id": "control-1209215a9fdd83-1",
       "source": "index.html",
-      "markup": "<button id=\"applyGovernmentRoadPlanButton\" class=\"btn btn-primary btn-block\" data-i18n-key=\"sidebar.roads.applyGovPlanTooltip\" data-i18n-attr=\"title\">",
+      "markup": "<button type=\"button\" id=\"applyGovernmentRoadPlanButton\" class=\"btn btn-primary btn-block\" data-i18n-key=\"sidebar.roads.applyGovPlanTooltip\" data-i18n-attr=\"title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-a6b4d1cbad1171-1",
+      "id": "control-b2127fac2faf6e-1",
       "source": "index.html",
-      "markup": "<button id=\"analyzeAllRoadsButton\" class=\"btn btn-primary btn-block\" data-i18n-key=\"sidebar.roads.analyzeOsmTooltip\" data-i18n-attr=\"title\" onclick=\"analyzeAllOSMRoadSegmentsInView()\">",
+      "markup": "<button type=\"button\" id=\"analyzeAllRoadsButton\" class=\"btn btn-primary btn-block\" data-i18n-key=\"sidebar.roads.analyzeOsmTooltip\" data-i18n-attr=\"title\" onclick=\"analyzeAllOSMRoadSegmentsInView()\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -2460,9 +2460,38 @@
       "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"rights\">"
     },
     {
-      "id": "control-fa6b29e8171296-1",
+      "id": "control-198f6a24e99591-1",
       "source": "js/agreement-dialog.js",
-      "markup": "<button type=\"button\" role=\"tab\" id=\"agreement-tab-${tab}\" aria-controls=\"agreement-tabpanel-${tab}\" aria-selected=\"${tab === 'inputs'}\" tabindex=\"${tab === 'inputs' ? 0 : -1}\" data-agreement-tab=\"${tab}\">"
+      "markup": "<button type=\"button\" class=\"cb-tab\" role=\"tab\" id=\"agreement-tab-${tab}\" aria-controls=\"agreement-tabpanel-${tab}\" aria-selected=\"${tab === 'inputs'}\" tabindex=\"${tab === 'inputs' ? 0 : -1}\" data-agreement-tab=\"${tab}\">",
+      "interaction": "click",
+      "controlType": "button",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Agreement inputs tab",
+          "attrs": {
+            "data-agreement-tab": "inputs"
+          }
+        },
+        {
+          "name": "Agreement outputs tab",
+          "attrs": {
+            "data-agreement-tab": "outputs"
+          }
+        },
+        {
+          "name": "Agreement persons tab",
+          "attrs": {
+            "data-agreement-tab": "persons"
+          }
+        },
+        {
+          "name": "Agreement rules tab",
+          "attrs": {
+            "data-agreement-tab": "rules"
+          }
+        }
+      ]
     },
     {
       "id": "control-cd7e81d4355a78-1",
@@ -2602,9 +2631,20 @@
       "controlType": "button"
     },
     {
-      "id": "control-5049544c816d75-1",
+      "id": "control-3c0e771daec021-1",
       "source": "js/agreement-panel.js",
-      "markup": "<button type=\"button\" class=\"btn btn-quiet agreement-panel-design\" data-agreement-design=\"${esc(row.proposalId)}\"${row.missing || readOnly ? ' disabled' : ''}>"
+      "markup": "<button type=\"button\" class=\"cb-option agreement-panel-object agreement-panel-design\" data-agreement-design=\"${esc(row.proposalId)}\" data-agreement-inspect=\"design\" data-agreement-object-id=\"${esc(row.proposalId)}\" aria-pressed=\"false\"${row.missing ? ' disabled' : ''}>",
+      "interaction": "click",
+      "controlType": "button",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Inspect agreement design",
+          "attrs": {
+            "data-agreement-inspect": "design"
+          }
+        }
+      ]
     },
     {
       "id": "control-f1e142fd677d5b-1",
@@ -9313,6 +9353,106 @@
       "markup": "<a class=\"btn\" href=\"how-to-use.html\" target=\"_blank\" rel=\"noopener noreferrer\" data-i18n-key=\"settingsPanel.userGuide\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-5bf08e81c39db1-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-option agreement-panel-object\" data-agreement-inspect=\"output\" data-agreement-object-id=\"${esc(line.hash)}\" aria-pressed=\"false\"${line.hasGeometry ? '' : ' disabled'}>",
+      "interaction": "click",
+      "controlType": "button",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Select agreement output piece",
+          "attrs": {
+            "data-agreement-inspect": "output"
+          }
+        }
+      ]
+    },
+    {
+      "id": "control-b36b8d2240109f-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-link\" data-agreement-inspect=\"${row.recipientKind === 'party' ? 'person' : esc(row.recipientKind)}\" data-agreement-object-id=\"${esc(row.ownerKey || row.recipientKind)}\" aria-pressed=\"false\">",
+      "interaction": "click",
+      "controlType": "button",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Inspect person ledger row",
+          "attrs": {
+            "data-agreement-inspect": "person"
+          }
+        },
+        {
+          "name": "Inspect proposer ledger row",
+          "attrs": {
+            "data-agreement-inspect": "proposer"
+          }
+        },
+        {
+          "name": "Inspect public ledger row",
+          "attrs": {
+            "data-agreement-inspect": "public"
+          }
+        }
+      ]
+    },
+    {
+      "id": "control-a95a3fa21ec212-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-option agreement-panel-object\" data-agreement-inspect=\"input\" data-agreement-object-id=\"${esc(parcel.parcelId)}\" aria-pressed=\"false\">",
+      "interaction": "click",
+      "controlType": "button",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Select agreement input parcel",
+          "attrs": {
+            "data-agreement-inspect": "input"
+          }
+        }
+      ]
+    },
+    {
+      "id": "control-b2deafc1d3315d-1",
+      "source": "js/agreement-panel.js",
+      "markup": "<button type=\"button\" class=\"cb-tab\" role=\"tab\" id=\"agreement-properties-tab-${kind}\" aria-controls=\"agreement-properties-panel-${kind}\" aria-selected=\"${kind === selected}\" tabindex=\"${kind === selected ? 0 : -1}\" data-agreement-properties-tab=\"${kind}\">",
+      "interaction": "click",
+      "controlType": "button",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Agreement properties overview tab",
+          "attrs": {
+            "data-agreement-properties-tab": "overview"
+          }
+        },
+        {
+          "name": "Agreement properties inputs tab",
+          "attrs": {
+            "data-agreement-properties-tab": "inputs"
+          }
+        },
+        {
+          "name": "Agreement properties outputs tab",
+          "attrs": {
+            "data-agreement-properties-tab": "outputs"
+          }
+        },
+        {
+          "name": "Agreement properties persons tab",
+          "attrs": {
+            "data-agreement-properties-tab": "persons"
+          }
+        },
+        {
+          "name": "Agreement properties rules tab",
+          "attrs": {
+            "data-agreement-properties-tab": "rules"
+          }
+        }
+      ]
     }
   ],
   "variantExclusions": [

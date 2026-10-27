@@ -67,19 +67,20 @@
         "sas-lib": "^1.0.10",
         "saxes": "^6.0.0",
         "three": "0.184.0",
-        "zod": "^4.6.5"
+        "zod": "^4.6.7"
     },
     "devDependencies": {
         "@babel/parser": "^7.29.9",
         "@modelcontextprotocol/client": "^2.3.1",
-        "@vitest/coverage-v8": "^4.1.11",
+        "@vitest/coverage-v8": "^4.1.12",
         "esbuild": "0.28.2",
         "jsonld": "9.0.0",
         "nodemon": "^3.1.14",
         "supertest": "^7.0.0",
-        "vitest": "^4.1.11"
+        "vitest": "^4.1.12"
     },
     "overrides": {
-        "jayson": "5.0.0"
+        "jayson": "5.0.0",
+        "bigint-buffer": "npm:@exodus/bigint-buffer@1.1.5-exodus.1"
     }
 }

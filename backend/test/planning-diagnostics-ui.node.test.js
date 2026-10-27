@@ -4,8 +4,10 @@ import { createRequire } from 'node:module';
 import { randomUUID } from 'node:crypto';
 const require = createRequire(import.meta.url);
 const D = require('../../frontend/js/app-diagnostics.js');
+const Cid = require('../../frontend/js/cid.js');
 const FileUI = require('../../frontend/js/plan-file-ui.js');
 const NamedPlans = require('../../frontend/js/named-plans.js');
+const PlanRecord = require('../../frontend/js/plan-record.js');
 const DesignSync = require('../../frontend/js/proposals/design-sync.js');
 const BusyControl = require('../../frontend/js/ui/busy-control.js');
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
@@ -16,6 +18,7 @@ class Element {
     children = []; listeners = {}; attributes = {}; dataset = {}; classList = { toggle() {} };
     appendChild(child) { this.children.push(child); return child; }
     append(...children) { this.children.push(...children); }
+    prepend(...children) { this.children.unshift(...children); }
     setAttribute(key, value) { this.attributes[key] = value; }
     removeAttribute(key) { delete this.attributes[key]; }
     querySelector(selector) { return this.children.find(child => child.attributes?.[selector.slice(1, -1)] !== undefined) || null; }
@@ -24,7 +27,7 @@ class Element {
     click() { this.clicked = true; return this.listeners.click?.(); }
 }
 function browser() {
-    const blobs = [], alerts = [], footer = new Element(), callbacks = {};
+    const blobs = [], alerts = [], footer = new Element(), callbacks = {}, stored = new Map();
     const win = { document: { readyState: 'complete', body: new Element(), title: '', createElement: () => new Element(),
         querySelector: () => footer }, addEventListener: (name, callback) => { callbacks[name] = callback; },
         removeEventListener(name) { delete callbacks[name]; },
@@ -34,8 +37,13 @@ function browser() {
         AppDiagnostics: D.create({ uuid: randomUUID }), location: { href: 'https://ugt.example/', pathname: '/', search: '' },
         resolveBackendBaseUrl: () => 'https://api.example', resolveFrontendBaseUrl: () => 'https://ugt.example',
         Cid: { cidOfObject: () => 'private raw cid', isCid: () => true },
-        PlanRecord: { validate: () => null }, PersistentStorage: { forEach() {} } };
-    return { win, alerts, blobs, footer, callbacks };
+        PlanRecord: { validate: () => null }, PersistentStorage: {
+            getItem: key => stored.get(key) ?? null,
+            setItem(key, value) { stored.set(key, String(value)); },
+            removeItem: key => stored.delete(key),
+            forEach(callback) { stored.forEach((value, key) => callback(value, key)); }
+        } };
+    return { win, alerts, blobs, footer, callbacks, stored };
 }
 test('unexpected errors/rejections cannot recurse or leak error text; local download works without network', async () => {
     const { win, blobs, footer, callbacks } = browser(); let requests = 0;
@@ -69,7 +77,9 @@ test('file import only succeeds after atomic commit; invalid input, cancellation
     win.PlanFile = { MAX_BYTES: 1000, parse(text) { if (text === 'bad') throw Error(secret); return { plan: { title: secret, view: { at: '45,15,17' } }, designs: [] }; },
         validate() {}, importInto: () => ({ cid: 'private raw cid', memberIds: [], content: { title: secret } }) };
     win.ProposalManager = { runParcelMutation: async (_kind, _id, action) => {
-        if (commitFails) throw Error(secret); commits++; return action({ _parcelMutation: { proposals: {}, storage: { setItem() {} } } });
+        if (commitFails) throw Error(secret); commits++; return action({ _parcelMutation: { proposals: {}, storage: {
+                setItem(key, value) { win.PersistentStorage.setItem(key, value); }
+            } } });
     } };
     win.showSimpleShareModal = options => {
         if (options.title === 'Review plan file') {
@@ -85,6 +95,7 @@ test('file import only succeeds after atomic commit; invalid input, cancellation
     await select('bad'); await select('valid', 1001); cancel = true; await select('valid'); assert.equal(commits, 0);
     cancel = false; commitFails = true; await select('valid'); assert.equal(commits, 0);
     commitFails = false; await select('valid'); assert.equal(commits, 1);
+    assert.equal(JSON.parse(win.PersistentStorage.getItem('ugt-imported-plan:private raw cid')).content.title, secret);
     const outcomes = win.AppDiagnostics.snapshot().entries.filter(row => row.operation === 'import').map(row => row.outcome);
     assert.deepEqual(outcomes, ['failure', 'failure', 'cancelled', 'failure', 'success']);
     assert.ok(alerts.every(message => !message.includes('SECRET'))); assert.ok(!win.AppDiagnostics.exportText().includes('SECRET'));
@@ -99,6 +110,68 @@ test('named plan save verifies readback before success and preserves recovery on
     fail = false; assert.equal((await api.save(row.content)).cid, row.cid);
     assert.deepEqual(win.AppDiagnostics.snapshot().entries.filter(e => e.operation === 'save').map(e => e.outcome), ['success', 'failure', 'success']);
     assert.ok(!win.AppDiagnostics.exportText().includes('SECRET'));
+});
+
+test('invalid plans and CID hashing failures stay inside observed save and never request the server', async () => {
+    const { win } = browser(); let requests = 0, hashes = 0;
+    win.fetch = async () => { requests++; throw Error(secret); };
+    win.PlanRecord.validate = () => secret;
+    const originalCidOfObject = win.Cid.cidOfObject;
+    win.Cid.cidOfObject = () => { hashes++; throw Error(secret); };
+    const api = NamedPlans.browser(win);
+    await assert.rejects(api.save({ title: secret }));
+    assert.equal(hashes, 0, 'invalid content must fail before hashing');
+    win.PlanRecord.validate = () => null;
+    await assert.rejects(api.save({ title: secret }));
+    assert.equal(hashes, 1);
+    assert.equal(requests, 0);
+    const operations = win.AppDiagnostics.snapshot().entries.filter(entry => entry.operation === 'save');
+    assert.deepEqual(operations.map(entry => entry.outcome), ['failure', 'failure']);
+    assert.ok(operations.every(entry => entry.planId === null));
+    assert.ok(!win.AppDiagnostics.exportText().includes('SECRET'));
+    win.Cid.cidOfObject = originalCidOfObject;
+});
+
+test('plan import and repeated saves share one private handle for a CID, while distinct CIDs stay separate', async () => {
+    const { win, alerts } = browser();
+    win.Cid = Cid;
+    win.PlanRecord = PlanRecord;
+    const designCid = Cid.cidOfObject({ test: 'member' });
+    const imported = PlanRecord.create('same plan', [designCid], { at: '45,15,16', mode: '2d', city: 'zagreb', language: 'en' });
+    const cidOfObject = Cid.cidOfObject;
+    win.PlanFile = { MAX_BYTES: 1000, parse: () => ({ plan: imported, designs: [] }), validate() {},
+        importInto: file => ({ cid: cidOfObject(file.plan), content: file.plan, memberIds: [] }) };
+    win.ProposalManager = { runParcelMutation: async (_kind, _id, action) => action({ _parcelMutation: { proposals: {}, storage: {
+        setItem(key, value) { win.PersistentStorage.setItem(key, value); }
+    } } }) };
+    win.showSimpleShareModal = options => {
+        if (options.title === 'Review plan file') queueMicrotask(() => options.actions.find(action => action.id === 'import').onClick({ close() {} }));
+        return { close() {} };
+    };
+    const fileUi = FileUI.browser(win), controls = fileUi.controls(), input = controls.children.find(child => child.type === 'file');
+    input.files = [{ size: 10, text: async () => '{"valid":true}' }];
+    await input.listeners.change();
+    const cid = cidOfObject(imported);
+    assert.ok(win.PersistentStorage.getItem(`ugt-imported-plan:${cid}`));
+    assert.deepEqual(win.AppDiagnostics.snapshot().entries.filter(entry => entry.operation === 'import').map(entry => entry.outcome), ['success']);
+    let row = null;
+    win.fetch = async (_url, options) => {
+        if (options.method === 'POST') row = { cid: cidOfObject(JSON.parse(options.body).content), content: JSON.parse(options.body).content };
+        return { ok: true, json: async () => row };
+    };
+    const api = NamedPlans.browser(win);
+    await api.save(imported);
+    const reorderedClone = { view: { ...imported.view }, designCids: [...imported.designCids], title: imported.title, schema: imported.schema };
+    await api.save(reorderedClone);
+    await api.save({ ...imported, view: { ...imported.view, at: '46,16,16' } });
+    const operations = win.AppDiagnostics.snapshot().entries.filter(entry => entry.kind === 'operation');
+    assert.deepEqual(operations.map(entry => entry.operation), ['import', 'save', 'save', 'save']);
+    assert.equal(operations[0].planId, operations[1].planId);
+    assert.equal(operations[1].planId, operations[2].planId);
+    assert.notEqual(operations[2].planId, operations[3].planId);
+    const exported = win.AppDiagnostics.exportText();
+    assert.ok(!exported.includes('same plan'));
+    assert.ok(!exported.includes(cid));
 });
 
 test('clipboard recovery reports a failure without claiming a successful share', async () => {

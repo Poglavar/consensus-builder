@@ -318,15 +318,10 @@
       ]
     },
     {
-      "id": "proposals.planStats",
+      "id": "proposals.agreements",
       "specs": [
-        "tests/plan-stats.spec.ts"
-      ]
-    },
-    {
-      "id": "proposals.grainScore",
-      "specs": [
-        "tests/world-and-ground.spec.ts"
+        "tests/agreement-dialog.spec.ts",
+        "tests/agreement-chain.spec.ts"
       ]
     },
     {
@@ -334,12 +329,6 @@
       "specs": [
         "tests/plan-workflows.spec.ts",
         "tests/named-plans.spec.ts"
-      ]
-    },
-    {
-      "id": "proposals.clearLocal",
-      "specs": [
-        "tests/settings-maintenance.spec.ts"
       ]
     },
     {
