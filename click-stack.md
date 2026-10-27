@@ -80,6 +80,10 @@ right-side panels that clicks used to open one at a time.
   Its count is the number of separate designs overlapping the location or using its parcel;
   selecting one changes the inspected design.
 - The expanded section is the **action view**:
+  - Selecting a Design from a Plan resolves that design's current live output parcels and original
+    cadastral inputs without requiring another map click. Switching peer designs replaces this
+    ground context while retaining the plan and design choices. Unapplied designs have no live
+    formed outputs; inspecting them does not create any.
   - Plan: meaning, name, included designs, combined map highlight, Share plan and Create agreement.
     Agreement: the full agreement record, including decision/allocation terms, publication,
     approvals and other applicable actions, with the inherited plan extent. There is no separate

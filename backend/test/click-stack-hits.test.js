@@ -37,6 +37,25 @@ const formedEntry = (id, producerId, props = {}) => ({ kind: 'parcel', id, depth
 const bareEntry = (id, props = {}) => ({ kind: 'parcel', id, depth: 0, feature: parcelFeature(props) });
 
 describe('click stack hits', () => {
+    it('resolves all live outputs of a selected plan member without needing a map hit', () => {
+        const source = parcelFeature({ parcelId: 'source' });
+        const outputs = [parcelFeature({ parcelId: 'piece-a' }), parcelFeature({ parcelId: 'piece-b' })];
+        const { context } = loadHits({ registry: { source } });
+        context.LiveParcelFabric = { producedBy: vi.fn(() => outputs), featureId: feature => feature.properties.parcelId, get: () => null };
+        const result = context.ClickStackHits.designGround({ id: 'park', proposal: { proposalId: 'park', title: 'Park', cadastreParcelIds: ['source'] } });
+        expect(result.formed.map(item => item.id)).toEqual(['piece-a', 'piece-b']);
+        expect(result.formed.every(item => item.designId === 'park')).toBe(true);
+        expect(result.parcels).toEqual([{ id: 'source', label: 'source', feature: source, live: false }]);
+        expect(context.LiveParcelFabric.producedBy).toHaveBeenCalledWith('park');
+    });
+
+    it('does not invent a formed parcel for an unapplied design or a missing record', () => {
+        const { context } = loadHits();
+        context.LiveParcelFabric = { producedBy: () => [], get: () => null };
+        expect(context.ClickStackHits.designGround({ id: 'draft', proposal: { proposalId: 'draft', cadastreParcelIds: ['source'] } }).formed).toEqual([]);
+        expect(context.ClickStackHits.designGround({ id: 'missing' })).toEqual({ formed: [], parcels: [] });
+    });
+
     it('focuses the selected design geometry and the exact selected parcel', () => {
         const source = parcelFeature({ parcelId: 'source' });
         const shapeA = parcelFeature({ design: 'a' }), shapeB = parcelFeature({ design: 'b' });

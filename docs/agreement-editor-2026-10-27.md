@@ -177,3 +177,26 @@ and failed publication remained retryable. No full suites were run and no runs w
 Related agreement, list and 3D-camera browser assertions now use the stack after creation; those
 specs were updated but not executed in this pass. Mixed index.html, Lists spec, development guide
 and memory changes remain uncommitted alongside concurrent work.
+
+## Formed parcels when inspecting a plan member
+
+The Plan stack was seeded with its members but no ground hits. Expanding its Design row or changing
+the design selector only hosted the design panel, so no Formed parcel section appeared. Directly
+opening the same design from Lists resolved ground at its geometry and exposed the inconsistency.
+
+Design inspection now reads all current live outputs through LiveParcelFabric.producedBy and reads
+the selected record's cadastral inputs from the immutable source repository. Expanding or switching
+a plan member rebuilds that ground context while retaining peer designs and plan selection. Direct
+design inspection uses the same lookup. It does not apply designs, create parcels, change authored
+records or move the camera. Unapplied/missing designs do not acquire invented formed outputs.
+
+MCP parity: only read-only navigation changed. Produced parcel geometry and cadastral provenance
+retain their existing sources of truth and MCP inspection contracts; no editing field, operation,
+tool or schema changed. Two targeted headless unit files passed (53 tests), covering all outputs,
+missing/unapplied records and design-selector ground replacement. One targeted headed Playwright
+case passed: Plan → Design exposes formed ground without another map click, retains stored records
+and camera, and can expand the output to reveal its cadastral source. Its screenshot was reviewed.
+No full suites were run and no runs were stopped. The original browser tab was inspected using
+its saved records; a later browser connection timeout prevented final verification on that exact
+tab. The automated check uses the real application with mocked source responses. Temporary
+diagnostic logging was removed. Mixed stack-panel and entry-point changes remain uncommitted.

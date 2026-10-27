@@ -81,7 +81,7 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
                 body.appendChild(relations.renderGroup(group, doc, win));
             }
         } },
-        ClickStackHits: { hitsAt: vi.fn(latlng => hitsBySpot.get(latlng.lat) || {}), featuresFor: vi.fn((_kind, item) => item.feature ? [item.feature] : []) },
+        ClickStackHits: { hitsAt: vi.fn(latlng => hitsBySpot.get(latlng.lat) || {}), designGround: vi.fn(() => ({})), featuresFor: vi.fn((_kind, item) => item.feature ? [item.feature] : []) },
         __drillUi: { stackAt: vi.fn(() => [{ kind: 'parcel', id: 'p1', depth: 0 }, { kind: 'proposal', key: 'd1' }]) },
         MapPick: { active: () => false, pick: vi.fn() },
         highlightFeaturesForInspection: vi.fn(),
@@ -662,6 +662,28 @@ describe('click stack panel: other surfaces and the dock', () => {
         expect(h.context.hideParcelInfoPanel).toHaveBeenCalled();
         expect(h.context.PlanningViews.select).toHaveBeenCalledWith(null);
         expect(h.api.isOpen()).toBe(true);
+    });
+});
+
+describe('plan member ground context', () => {
+    it('adds a selected member’s formed parcels and changes them with the design selector', async () => {
+        const h = loadPanel();
+        h.context.map = { getCenter: () => SPOT_A };
+        h.context.DesignMemberships.inspect = vi.fn(async () => ({ members: HITS_A.designs, features: [] }));
+        h.context.ClickStackHits.designGround.mockImplementation(instance => ({
+            formed: [{ id: `piece-${instance.id}`, designId: instance.id, feature: parcelFeature }],
+            parcels: [{ id: `source-${instance.id}`, feature: parcelFeature, live: false }]
+        }));
+        await h.api.showPlan({ cid: 'plan-one', content: { title: 'Two designs', designCids: [] } });
+        expect(h.api.current().sections.map(section => section.kind)).toEqual(['plans', 'designs']);
+        h.api.expand('designs');
+        expect(h.kinds()).toEqual(['plans', 'designs', 'formed']);
+        expect(model.selectedInstance(h.api.current(), 'formed').id).toBe('piece-d1');
+        const selector = h.section('designs').querySelector('.click-stack__selector');
+        selector.value = 'd2'; selector.dispatchEvent({ type: 'change', target: selector });
+        expect(model.selectedInstance(h.api.current(), 'formed').id).toBe('piece-d2');
+        expect(model.selectedInstance(h.api.current(), 'parcels').id).toBe('source-d2');
+        expect(model.selectedInstance(h.api.current(), 'plans').id).toBe('plan-one');
     });
 });
 

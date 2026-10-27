@@ -129,6 +129,23 @@
         return hits;
     }
 
+    // Inspecting a plan member is not a map hit. Resolve the selected design's own current
+    // outputs and immutable source land, independently of where the stack was first opened.
+    function designGround(instance) {
+        const proposal = instance?.proposal || global.proposalStorage?.getProposal?.(instance?.id);
+        if (!proposal) return { formed: [], parcels: [] };
+        const id = String(proposal.proposalId || instance.id);
+        const formed = (global.LiveParcelFabric.producedBy(id) || []).map(feature => {
+            const parcelId = String(global.LiveParcelFabric.featureId(feature));
+            return { id: parcelId, label: parcelLabel(parcelId, feature), feature, designId: id,
+                designLabel: designLabel(proposal, id) };
+        });
+        const ids = [...new Set((proposal.cadastreParcelIds || []).map(String))];
+        const parcels = ids.map(id => ({ id, label: parcelLabel(id, baseFeature(id)), feature: baseFeature(id),
+            live: !!global.LiveParcelFabric.get(id) }));
+        return { formed, parcels };
+    }
+
     // The selected object's own geometry, shared by the 2D and model-view focus outlines.
     // A design's source parcels are provenance; its authored/result geometry is the selection.
     function featuresFor(kind, instance) {
@@ -154,5 +171,5 @@
         return features.filter(feature => feature?.geometry && ['Polygon', 'MultiPolygon', 'LineString', 'MultiLineString'].includes(feature.geometry.type));
     }
 
-    global.ClickStackHits = Object.freeze({ hitsAt, parcelLabel, featuresFor });
+    global.ClickStackHits = Object.freeze({ hitsAt, designGround, parcelLabel, featuresFor });
 })(window);
