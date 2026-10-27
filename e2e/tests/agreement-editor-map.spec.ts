@@ -11,7 +11,7 @@ async function create(page: Page, layoutId: string) {
   const composer = page.locator('.plan-dialog');
   await composer.locator('input[type="text"]').fill('Block agreement plan');
   await composer.getByRole('button', { name: 'Create plan', exact: true }).click();
-  await page.locator('.plan-dialog').getByRole('button', { name: 'Create agreement', exact: true }).click();
+  await page.locator('#click-stack .click-stack__section[data-kind="plans"]').getByRole('button', { name: 'Create agreement', exact: true }).click();
   const editor = agreementEditor(page);
   await expect(editor).toBeVisible();
   await expect(editor.locator('[data-agreement-input]')).toHaveCount(1);

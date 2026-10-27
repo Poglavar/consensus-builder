@@ -25,7 +25,7 @@ for (const mode of ['model', 'photo'] as const) {
     await page.locator('.command-palette__input').fill('Open Designs');
     await page.locator('.command-palette__item').filter({ hasText: 'Open Designs' }).click();
     await page.locator('#shareAppliedProposalsButton').click();
-    await page.locator('#designs-plans').getByRole('button', { name: 'Create plan', exact: true }).click();
+    await page.locator('#lists-actions').getByRole('button', { name: 'Create plan', exact: true }).click();
     const composer = page.locator('.plan-composer');
     await composer.getByLabel('Plan name', { exact: true }).fill('Camera view');
     await composer.locator('.plan-dialog__choices input[type=checkbox]').check();
@@ -38,21 +38,21 @@ for (const mode of ['model', 'photo'] as const) {
     // View options are part of creation. They cannot publish a draft or create a public link.
     expect(index.requests.filter(r => r.method === 'POST' && ['/pins', '/designs', '/plans'].includes(r.path))).toHaveLength(0);
     await composer.getByRole('button', { name: 'Create plan', exact: true }).click();
-    await expect(page.locator('.plan-details')).toBeVisible();
+    const planSection = page.locator('#three-click-stack .click-stack__section[data-kind="plans"]');
+    await expect(planSection.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
     let saved = await page.evaluate(() => (window as any).PlanWorkspace.list().find((p: any) => p.content.title === 'Camera view'));
     expect(saved.content.view).toMatchObject({ mode, rotate: true, camera: null });
-    await page.locator('.plan-details').getByRole('button', { name: 'Edit plan', exact: true }).click();
     // A new composition can also retain the original captured camera.
     await page.keyboard.press('Escape');
     await page.evaluate(id => (window as any).PlanDialog.create({ members: [(window as any).proposalStorage.getProposal(id)] }), id);
     await composer.getByLabel('Plan name', { exact: true }).fill('Camera included');
     await composer.locator('[data-plan-view="rotate"]').check();
     await composer.getByRole('button', { name: 'Create plan', exact: true }).click();
-    await expect(page.locator('.plan-details')).toBeVisible();
+    await expect(planSection.locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
     saved = await page.evaluate(() => (window as any).PlanWorkspace.list().find((p: any) => p.content.title === 'Camera included'));
     expect(saved.content.view).toMatchObject({ mode, rotate: true });
     for (const key of Object.keys(camera)) expect(saved.content.view.camera[key]).toBeCloseTo(captured[key], 4);
-    await page.locator('.plan-details').getByRole('button', { name: 'Share plan', exact: true }).click();
+    await planSection.getByRole('button', { name: 'Share plan', exact: true }).click();
     const share = page.locator('.plan-share');
     await expect(share.locator('[data-plan-view]')).toHaveCount(0);
     expect(index.requests.filter(r => r.method === 'POST' && ['/pins', '/designs', '/plans'].includes(r.path))).toHaveLength(0);

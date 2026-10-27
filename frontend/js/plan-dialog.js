@@ -67,7 +67,8 @@
         let dialog;
         const save=button(t(baseRow ? 'saveRevision' : 'createPlan'), async () => {
             const row=win.PlanComposition.create(name.value,[...selected].map(cid=>sources.get(cid)),view);
-            win.PlanWorkspace.save(row); dialog.close(); await details(row);
+            win.PlanWorkspace.save(row); dialog.close();
+            await win.ClickStack.showPlan(row, { designs: win.PlanComposition.localRecords(row, { apiBase: win.DesignSync.apiBase() }), draft: !row.published });
         },true);
         const cancel=button(t('cancel'),()=>dialog.close()); footer.append(cancel,save); body.append(footer);
         const update=()=>{count.textContent=t('selected',{count:selected.size});save.disabled=!name.value.trim()||!selected.size;};

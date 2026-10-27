@@ -158,3 +158,22 @@ Targeted verification runs:
 | Headed Playwright: phone agreement scroll reachability (1 case) | Passed; top and scrolled-bottom screenshots visually reviewed |
 
 The read-only fixture now uses canonical PlanRecord creation. The 3D checks exercise stack DOM/CSS without starting the scene renderer. Browser source verification used the explicitly selected local API: one real cadastral parcel and complete design binding returned HTTP 200, and both listening processes belonged to this checkout. Dedicated verification Chrome was closed. Mixed files containing concurrent semantic, voting and layout changes remain uncommitted; their edits are preserved.
+
+## Plan creation opens the stack
+
+Creating a plan or saving a revision now opens that exact saved snapshot in the current view's
+expanded Plan section through ClickStack.showPlan, replacing the small post-save action dialog.
+The section retains Share plan and Create agreement. Existing explicit PlanDialog.details callers
+are unchanged. Creation still saves locally without publishing or applying designs.
+
+MCP parity: only the post-save navigation changed; the same PlanComposition and PlanWorkspace
+contracts create and validate the snapshot. Existing draft/edit/inspect/publish plan operations
+remain sufficient, with no new field or schema. Two targeted headless unit files passed
+(share-plan-panel-contract and mcp-plan, 11 tests). Three targeted headed Playwright named-plan
+cases passed: desktop and phone creation opened the exact expanded Plan section without a details
+dialog or premature publication, sharing retained the saved revision after a member's local edit,
+and failed publication remained retryable. No full suites were run and no runs were stopped.
+
+Related agreement, list and 3D-camera browser assertions now use the stack after creation; those
+specs were updated but not executed in this pass. Mixed index.html, Lists spec, development guide
+and memory changes remain uncommitted alongside concurrent work.
