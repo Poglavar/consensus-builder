@@ -3,6 +3,92 @@
   "allowedSkips": [],
   "controls": [
     {
+      "id": "control-2342074e0cb4ee-1",
+      "source": "js/plan-dialog.js",
+      "markup": "document.createElement(tag)",
+      "interaction": "auto",
+      "controlType": "dynamic",
+      "exhaustiveVariants": true,
+      "variants": [
+        {
+          "name": "Create a saved plan",
+          "label": "Create plan",
+          "interaction": "click"
+        },
+        {
+          "name": "Save a new plan revision",
+          "label": "Save new revision",
+          "interaction": "click"
+        },
+        {
+          "name": "Cancel plan editing",
+          "label": "Cancel",
+          "interaction": "click"
+        },
+        {
+          "name": "Open a saved plan",
+          "label": "Open plan",
+          "interaction": "click"
+        },
+        {
+          "name": "Share a saved plan",
+          "label": "Share plan",
+          "interaction": "click"
+        },
+        {
+          "name": "Edit a saved plan",
+          "label": "Edit plan",
+          "interaction": "click"
+        },
+        {
+          "name": "Create agreement from saved plan",
+          "label": "Create agreement",
+          "interaction": "click"
+        },
+        {
+          "name": "Publish a plan and copy its link",
+          "label": "Publish and copy link",
+          "interaction": "click"
+        },
+        {
+          "name": "Copy a published plan link",
+          "label": "Copy link",
+          "interaction": "click"
+        },
+        {
+          "name": "Enter a plan name",
+          "label": "Plan name",
+          "interaction": "change"
+        },
+        {
+          "name": "Search plan designs",
+          "label": "Search designs",
+          "interaction": "change"
+        },
+        {
+          "name": "Select plan members",
+          "attrs": {
+            "type": "checkbox"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Choose saved camera",
+          "attrs": {
+            "data-plan-view": "camera"
+          },
+          "interaction": "change"
+        },
+        {
+          "name": "Choose saved rotation",
+          "attrs": {
+            "data-plan-view": "rotate"
+          },
+          "interaction": "change"
+        }
+      ]
+    },
+    {
       "id": "control-156bc1c5231592-1",
       "source": "js/workspace-screen.js",
       "markup": "doc.createElement('button')",
@@ -1392,13 +1478,6 @@
       "markup": "<button type=\"button\" id=\"sun-now\" class=\"btn btn-sm\" data-i18n-key=\"threeMode.sun.now\">"
     },
     {
-      "id": "control-48bcc8601ff8ab-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"designs-agreements-button\" class=\"btn btn-sm\" data-i18n-key=\"sidebar.proposals.agreementsButton\" onclick=\"window.AgreementList.open()\">",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-dc7af30c67cb8d-5",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
@@ -1411,9 +1490,9 @@
       "markup": "<button type=\"button\" id=\"designs-browse-tab\" class=\"cb-segmented__option\" role=\"tab\" aria-selected=\"true\" aria-controls=\"designs-browse\" onclick=\"openDesignsTab('browse')\">"
     },
     {
-      "id": "control-59606b7caef5ef-1",
+      "id": "control-ff8699b69fa31a-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" id=\"shareAppliedProposalsButton\" class=\"cb-segmented__option\" role=\"tab\" tabindex=\"-1\" aria-selected=\"false\" aria-controls=\"designs-share\" onclick=\"openDesignsTab('share')\">",
+      "markup": "<button type=\"button\" id=\"shareAppliedProposalsButton\" class=\"cb-segmented__option\" role=\"tab\" tabindex=\"-1\" aria-selected=\"false\" aria-controls=\"designs-plans\" onclick=\"openDesignsTab('plans')\">",
       "interaction": "click",
       "controlType": "button"
     },
@@ -5878,11 +5957,6 @@
       "controlType": "button"
     },
     {
-      "id": "control-49ddc1ce98b200-1",
-      "source": "js/proposals/details-panel.js",
-      "markup": "<button type=\"button\" class=\"btn ${agreementOnlyPublication ? 'btn-primary ' : ''}btn-create-agreement\" onclick=\"window.AgreementDialog.addDesign(${inlineJsArg(proposalKey)})\">"
-    },
-    {
       "id": "control-08edf049b57aee-1",
       "source": "js/proposals/details-panel.js",
       "markup": "<button type=\"button\" class=\"btn btn-duplicate-design\" onclick=\"startDesignDuplication(${inlineJsArg(proposalKey)})\" title=\"${tProposal('panel.proposal.actions.duplicateDesignHint', 'Move a copy with the pointer and click to place a new design.')}\" aria-label=\"${tProposal('panel.proposal.actions.duplicateDesign', 'Duplicate')}\">",
@@ -5980,6 +6054,22 @@
       "markup": "<button type=\"button\" class=\"btn btn-quiet btn-sm proposal-id-copy\" title=\"${escapedProposalDisplayId}\" onclick=\"copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})\">",
       "interaction": "click",
       "controlType": "button"
+    },
+    {
+      "id": "control-0707278b1ad024-1",
+      "source": "js/proposals/details-panel.js",
+      "markup": "<button type=\"button\" class=\"btn btn-add-to-plan\" onclick=\"BusyControl.track(this, () =>",
+      "interaction": "click",
+      "controlType": "button",
+      "variants": [
+        {
+          "name": "Add design to a plan",
+          "classes": [
+            "btn-add-to-plan"
+          ]
+        }
+      ],
+      "exhaustiveVariants": true
     },
     {
       "id": "control-cd73c88bd50cc9-1",
@@ -6413,128 +6503,6 @@
       "markup": "<button class=\"proposal-server-retry\">",
       "interaction": "click",
       "controlType": "button"
-    },
-    {
-      "id": "control-7cd07576118fe2-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "Highlight all designs",
-          "label": "All"
-        },
-        {
-          "name": "Highlight published designs",
-          "label": "Published"
-        },
-        {
-          "name": "Highlight unpublished designs",
-          "label": "Not published yet"
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button",
-      "exhaustiveVariants": true
-    },
-    {
-      "id": "control-a9e7f6ba35b5c1-1",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement(input)",
-      "interaction": "change",
-      "controlType": "input",
-      "exempt": "The share panel link is a read-only output; its Copy URL action is covered separately.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/proposals/dialog-share.js",
-          "includes": "linkInput.readOnly = true;"
-        }
-      ]
-    },
-    {
-      "id": "control-7cd07576118fe2-2",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "Copy the selected composition link",
-          "label": "Copy URL"
-        }
-      ],
-      "exhaustiveVariants": true,
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-7cd07576118fe2-3",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "Name a plan",
-          "label": "Name this plan"
-        },
-        {
-          "name": "Rename a plan",
-          "label": "Rename plan"
-        }
-      ],
-      "exhaustiveVariants": true,
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-7cd07576118fe2-4",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button",
-      "variants": [
-        {
-          "name": "Save a named plan link",
-          "classes": [
-            "share-plan-save-name"
-          ]
-        }
-      ],
-      "exhaustiveVariants": true
-    },
-    {
-      "id": "control-7cd07576118fe2-5",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button",
-      "variants": [
-        {
-          "name": "Publish selected designs",
-          "classes": [
-            "share-plan-publish-selected"
-          ]
-        }
-      ],
-      "exhaustiveVariants": true
-    },
-    {
-      "id": "control-a9e7f6ba35b5c1-2",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input"
-    },
-    {
-      "id": "control-7cd07576118fe2-6",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')",
-      "variants": [
-        {
-          "name": "Create an agreement for the selection",
-          "classes": [
-            "share-plan-create-agreement"
-          ]
-        }
-      ],
-      "exhaustiveVariants": true
     },
     {
       "id": "control-5ea11b34e3cfd2-1",
@@ -8863,43 +8831,6 @@
       ],
       "exhaustiveVariants": true,
       "dispatchEvidence": "The append factory renders close, five editable rate fields, submit, reset and a JSON file input. Static descriptions are not controls."
-    },
-    {
-      "id": "control-7cd07576118fe2-7",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button",
-      "variants": [
-        {
-          "name": "Highlight a selected design",
-          "classes": [
-            "share-plan-row__main"
-          ]
-        }
-      ],
-      "exhaustiveVariants": true
-    },
-    {
-      "id": "control-a9e7f6ba35b5c1-3",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('input')",
-      "interaction": "change",
-      "controlType": "input"
-    },
-    {
-      "id": "control-7cd07576118fe2-8",
-      "source": "js/proposals/dialog-share.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button",
-      "variants": [
-        {
-          "name": "Publish one design",
-          "label": "Publish"
-        }
-      ],
-      "exhaustiveVariants": true
     },
     {
       "id": "control-65e1fefeca06b6-1",

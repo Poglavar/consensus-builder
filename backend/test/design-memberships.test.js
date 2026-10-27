@@ -110,6 +110,19 @@ describe('design membership sessions', () => {
         expect(f.win.fetch).not.toHaveBeenCalled();
     });
 
+    it('finds independently saved private plans by exact unpublished revision', async () => {
+        const f = fixture({ published: false });
+        f.win.DesignRecord = { cidOf: () => 'local-revision' };
+        f.win.NamedPlans.list = () => [
+            { cid: 'matching-plan', content: { title: 'Private park plan', designCids: ['local-revision'] }, designs: [] },
+            { cid: 'old-plan', content: { title: 'Older revision', designCids: ['old-revision'] }, designs: [] }
+        ];
+        const session = f.session();
+        await session.ready;
+        expect(session.groups.plans.items).toMatchObject([{ cid: 'matching-plan', title: 'Private park plan', draft: true }]);
+        expect(f.win.fetch).not.toHaveBeenCalled();
+    });
+
     it('disposes a session so late lookup results cannot write or notify', async () => {
         const pending = [];
         const fetch = vi.fn(url => new Promise(resolve => pending.push({ url, resolve })));
@@ -246,7 +259,7 @@ describe('read-only parent inspection', () => {
         expect(win.DesignSync.importDesign).not.toHaveBeenCalled();
     });
 
-    it('renders the plan meaning and an explicit backend-preserving navigation link', async () => {
+    it('keeps plan actions in place without a navigation or reimport link', async () => {
         const doc = makeDocument(), host = doc.createElement('section'); doc.body.appendChild(host);
         const f = fixture();
         f.win.i18n.t = key => key === 'designMemberships.planMeaning' ? 'Plan meaning' : key === 'designMemberships.openPlan' ? 'Open plan' : key;
@@ -254,10 +267,9 @@ describe('read-only parent inspection', () => {
         const session = { groups: { plans: { loading: false, error: false, nextOffset: null } }, details: vi.fn(async () => ({ members: [], features: [] })) };
         mountSection(host, 'plans', { id: 'plan-cid', cid: 'plan-cid', label: 'Plan title' }, session, f.win);
         await vi.waitFor(() => expect(host.querySelector('.click-stack__membership-details')).toBeTruthy());
-        const link = host.querySelector('a');
         expect(host.textContent).toContain('Plan meaning');
-        expect(link.textContent).toBe('Open plan');
-        expect(link.href).toContain('/plans/plan-cid?backend=https%3A%2F%2Fapi.example');
+        expect(host.querySelector('.click-stack__actions').querySelector('a')).toBeNull();
+        expect(host.querySelector('.click-stack__share-plan')).toBeTruthy();
     });
 
     it('opens a local agreement from its plan row without applying spatial changes', async () => {

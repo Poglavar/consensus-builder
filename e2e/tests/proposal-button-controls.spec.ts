@@ -1,7 +1,7 @@
 // Exercise proposal action buttons and assert the resulting UI and stored state: the related-design
 // link, the grain-score Repeat control, and Share publishing a design (POST /pins, /designs).
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal, PARCEL_ID, showProposalTab, confirmDesignOnlyShare } from '../helpers/runtime';
+import { openCity, createSpace, showProposal, PARCEL_ID, showProposalTab } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 async function addProposal(page: import('@playwright/test').Page, proposal: Record<string, unknown>): Promise<string> {
@@ -79,7 +79,7 @@ test.describe('proposal detail button controls @features', () => {
     await expect(panel.locator('[data-grain-role="totalScore"]')).toHaveText(firstScore);
   });
 
-  test('Share in the footer publishes the design and copies its link, and the applied-designs panel highlights it as published', async ({ mockApi: page }) => {
+  test('design Share publishes one design; saved-plan composition stays local until Share plan', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
@@ -87,9 +87,8 @@ test.describe('proposal detail button controls @features', () => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
     await showExpandedProposal(page, proposalId);
     await page.locator('#proposal-details-footer .btn-share-proposal').click();
-    await confirmDesignOnlyShare(page);
 
-    // Share pins and indexes the design under its CID and copies its /designs link.
+    // Share publishes one design and copies its /designs link.
     const index = pageIndex(page);
     await expect.poll(() => index.designs.size, { timeout: 30_000 }).toBe(1);
     const [cid] = [...index.designs.keys()];
@@ -100,38 +99,42 @@ test.describe('proposal detail button controls @features', () => {
     expect(index.requests.filter(request => request.method === 'POST').map(request => request.path)).toEqual(['/pins', '/designs']);
     await expect(page.locator(`#proposal-details-content [data-proposal-published-cid="${cid}"]`)).toBeAttached();
 
-    // The whole applied plan: its row is already published, and the selection's link is the same.
+    // A plan is composed locally from published designs, then published from its own actions.
     await page.locator('#proposals-button').click();
     const sheet = page.locator('#proposals-sheet');
-    const currentView = await page.evaluate(() => (window as any).MapShare.capture(window));
     await sheet.locator('#shareAppliedProposalsButton').click();
-    const plan = sheet.locator('#designs-share .share-plan-panel--embedded');
-    await expect(plan).toBeVisible({ timeout: 30000 });
-    await expect(plan.locator('.share-plan-progress')).toHaveCount(0, { timeout: 30000 });
-    const row = plan.locator('.share-plan-row').filter({ hasText: /park/i });
-    await expect(row.locator('.share-plan-row__published')).toBeVisible();
-    await expect(row.getByRole('button', { name: 'Publish', exact: true })).toBeHidden();
-    const mapShareUrl = new URL(await plan.locator('.share-plan-link__input[readonly]').inputValue());
-    expect(mapShareUrl.pathname).toBe(individualLink.pathname);
-    expect(mapShareUrl.searchParams.get('at')).toBe(currentView.at);
-    expect(mapShareUrl.searchParams.get('city')).toBe(currentView.city);
-    expect(mapShareUrl.searchParams.get('lang')).toBe(currentView.language);
-    expect(mapShareUrl.searchParams.has('3d')).toBe(currentView.mode === 'model');
-    expect(mapShareUrl.searchParams.has('photo')).toBe(currentView.mode === 'photo');
-    for (const [key, value] of Object.entries(currentView.settings || {})) {
-      expect(mapShareUrl.searchParams.get(key)).toBe(String(value));
-    }
-
-    const publishedMode = plan.getByRole('button', { name: 'Published', exact: true });
-    await publishedMode.click();
-    await expect(publishedMode).toHaveAttribute('aria-pressed', 'true');
-    const pendingMode = plan.getByRole('button', { name: 'Not published yet', exact: true });
-    await pendingMode.click();
-    await expect(pendingMode).toHaveAttribute('aria-pressed', 'true');
-    await expect(publishedMode).toHaveAttribute('aria-pressed', 'false');
+    const plans = sheet.locator('#designs-plans');
+    await plans.getByRole('button', { name: 'Create plan', exact: true }).click();
+    const composer = page.locator('.plan-composer');
+    await expect(composer.locator('.plan-dialog__count')).toHaveText('0 selected');
+    const save = composer.getByRole('button', { name: 'Create plan', exact: true });
+    await expect(save).toBeDisabled();
+    await composer.getByLabel('Plan name', { exact: true }).fill('Garden plan');
+    await expect(save).toBeDisabled();
+    await composer.locator('.plan-dialog__choice input[type="checkbox"]').first().check();
+    await expect(composer.locator('.plan-dialog__count')).toHaveText('1 selected');
+    await expect(save).toBeEnabled();
+    const beforeSave = index.requests.filter(request => request.method === 'POST').length;
+    await save.click();
+    const details = page.locator('.plan-details');
+    await expect(details.locator('.plan-dialog__members li')).toHaveText(['Park · parcel 1234']);
+    expect(index.requests.filter(request => request.method === 'POST')).toHaveLength(beforeSave);
+    await details.getByRole('button', { name: 'Share plan', exact: true }).click();
+    const planShare = page.locator('.plan-share');
+    const beforePlanShare = index.requests.filter(request => request.method === 'POST').length;
+    await planShare.getByRole('button', { name: 'Publish and copy link', exact: true }).click();
+    const planLink = planShare.getByLabel('Plan link', { exact: true });
+    await expect(planLink).toBeVisible();
+    const planUrl = new URL(await planLink.inputValue());
+    expect(planUrl.pathname).toMatch(/^\/plans\//);
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(planUrl.toString());
+    const planPosts = index.requests.filter(request => request.method === 'POST').slice(beforePlanShare);
+    expect(planPosts.map(request => request.path)).toContain('/plans');
+    expect(planPosts.some(request => request.path === '/designs')).toBe(false);
+    expect(planPosts.some(request => request.path === '/agreements')).toBe(false);
+    await page.keyboard.press('Escape');
+    await expect(planShare).toBeHidden();
     await page.keyboard.press('Escape');
     await expect(sheet).toBeHidden();
-    // Publishing went through Share alone: the panel sent nothing.
-    expect(index.requests.filter(request => request.method === 'POST')).toHaveLength(2);
   });
 });

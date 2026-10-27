@@ -17,7 +17,7 @@ for (const width of [1280, 390]) {
           ['map-sheet', ''], ['map-sheet map-sheet--dock', ''], ['proposal-editor-shell', ''],
           ['on-map-editor__panel', ''], ['site-panel', ''], ['info-panel', 'site-info-panel'],
           ['urban-block-panel', ''], ['planning-inspector', ''], ['parcel-estimate-panel', ''],
-          ['share-plan-panel-content', ''], ['grain-score-panel', ''], ['command-palette', ''],
+          ['cb-dialog plan-dialog', ''], ['grain-score-panel', ''], ['command-palette', ''],
           ['on-map-editor__tools reparcel-tools-map', ''], ['ai-scene-follow-card', ''],
           ['memory-monitor-panel', ''],
         ];

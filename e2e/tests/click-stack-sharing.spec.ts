@@ -1,4 +1,4 @@
-// Click-stack sharing offers an explicit scope and opens the existing panel with exact plan members.
+// Design sharing publishes/copies one design; saved plans have their own sharing action.
 import { Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
@@ -35,87 +35,77 @@ async function openComposition(page: Page, includeSecond = true) {
   return { index, cids, planCid, id };
 }
 
-async function expectExactMembers(page: Page, cids: string[]) {
-  const panel = page.locator('.share-plan-panel');
-  await expect(panel.locator('.share-plan-row')).toHaveCount(3);
-  await expect(panel.getByRole('checkbox', { name: 'Garden one', exact: true })).toBeChecked();
-  await expect(panel.getByRole('checkbox', { name: 'Garden two', exact: true })).toBeChecked();
-  await expect(panel.getByRole('checkbox', { name: 'Outside garden', exact: true })).not.toBeChecked();
-  await expect.poll(async () => {
-    const input = panel.locator('.share-plan-link__input[readonly]');
-    if (!(await input.isVisible())) return [];
-    return new URL(await input.inputValue()).pathname.replace('/designs/', '').split(',').sort();
-  }).toEqual(cids.slice(0, 2).sort());
+async function expectExactPlanShare(page: Page, title: string, planCid: string, expectedMembers: string[]) {
+  const dialog = page.locator('.plan-share');
+  await expect(dialog.locator('h3')).toHaveText(title);
+  const members = dialog.locator('.plan-dialog__members li');
+  await expect(members).toHaveCount(expectedMembers.length);
+  await expect.poll(() => members.allTextContents().then(titles => titles.sort()))
+    .toEqual([...expectedMembers].sort());
+  await expect(dialog.locator('input[type="checkbox"]')).toHaveCount(0);
+  const link = dialog.getByLabel('Plan link', { exact: true });
+  await expect(link).toBeVisible();
+  await expect.poll(async () => new URL(await link.inputValue()).pathname).toBe(`/plans/${planCid}`);
+  await dialog.getByRole('button', { name: 'Copy link', exact: true }).click();
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()))
+    .toContain(`/plans/${planCid}`);
 }
 
-test('design Share warns before publishing, can cancel, and offers the whole plan', async ({ mockApi: page }) => {
-  const { index, cids } = await openComposition(page);
+test('design Share copies only that design; saved-plan Share opens its exact members', async ({ mockApi: page }) => {
+  const { index, cids, planCid } = await openComposition(page);
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   const share = stackSection(page, 'designs').locator('.btn-share-proposal');
   await share.click();
-  const warning = page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true });
-  await expect(warning).toContainText('publishes only this design');
-  await expect(warning).toContainText('The rest of the plan is not included.');
+  await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()))
+    .toContain(`/designs/${cids[0]}`);
   expect(index.requests.filter(row => row.method === 'POST' && ['/pins', '/designs', '/plans'].includes(row.path))).toHaveLength(0);
-  await warning.getByRole('button', { name: 'Cancel', exact: true }).click();
-  await expect(warning).toBeHidden();
-  await expect(share).toBeVisible();
-  await share.click();
-  await warning.getByRole('button', { name: 'Share the whole plan', exact: true }).click();
-  await expectExactMembers(page, cids);
+
+  await expandStackSection(page, 'plans');
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await expect(stackSection(page,'plans').getByRole('link',{name:'Open plan',exact:true})).toHaveCount(0);
+  await stackSection(page, 'plans').getByRole('button', { name: 'Share plan', exact: true }).click();
+  await expectExactPlanShare(page, 'Garden collection', planCid, ['Garden one', 'Garden two']);
   expect(index.requests.filter(row => row.method === 'POST' && ['/pins', '/designs', '/plans'].includes(row.path))).toHaveLength(0);
 });
 
 for (const width of [1280, 390]) {
   test(`plan Share includes an unapplied remote member and excludes unrelated designs at ${width}px`, async ({ mockApi: page }) => {
     await page.setViewportSize({ width, height: 844 });
-    const { cids } = await openComposition(page, false);
+    const { index, cids, planCid, id } = await openComposition(page, false);
+    await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
     await expandStackSection(page, 'plans');
     const share = stackSection(page, 'plans').getByRole('button', { name: 'Share plan', exact: true });
     await expect(share).toHaveClass(/btn-primary/);
     await share.click();
-    await expectExactMembers(page, cids);
+    await expectExactPlanShare(page, 'Garden collection', planCid, ['Garden one', 'Garden two']);
+    expect(index.requests.filter(row => row.method === 'POST' && ['/pins','/designs','/plans','/agreements'].includes(row.path))).toHaveLength(0);
     // Reading a plan for sharing must not import or apply its missing member.
     expect(await page.evaluate(cid => (window as any).DesignSync.localCopyOf(cid), cids[1])).toBeNull();
     expect(await page.evaluate(() => {
       const w = window as any;
       return w.proposalStorage.getAllProposals().filter((record: any) => w.isApplied(record)).length;
     })).toBe(2);
-    const panel = page.locator('.share-plan-panel');
-    await panel.getByRole('checkbox', { name: 'Garden one', exact: true }).uncheck();
-    await panel.getByRole('checkbox', { name: 'Outside garden', exact: true }).check();
-    await page.locator('#designs-browse-tab').click();
-    await page.locator('#shareAppliedProposalsButton').click();
-    await expect(panel.getByRole('checkbox', { name: 'Garden one', exact: true })).not.toBeChecked();
-    await expect(panel.getByRole('checkbox', { name: 'Garden two', exact: true })).toBeChecked();
-    await expect(panel.getByRole('checkbox', { name: 'Outside garden', exact: true })).toBeChecked();
     await page.keyboard.press('Escape');
-    await expect(page.locator('#proposals-sheet')).toBeHidden();
-    await page.locator('#proposals-button').click();
-    await page.locator('#shareAppliedProposalsButton').click();
-    await expect(panel.locator('.share-plan-row')).toHaveCount(2);
-    await expect(panel.getByRole('checkbox', { name: 'Garden one', exact: true })).toBeChecked();
-    await expect(panel.getByRole('checkbox', { name: 'Outside garden', exact: true })).toBeChecked();
+    await expect(page.locator('.plan-dialog')).toBeHidden();
+    await clickDesignOnMap(page, id, { x: 0.3, y: 0.2 });
+    await expandStackSection(page, 'designs');
+    await expandStackSection(page, 'plans');
+    await share.click();
+    await expectExactPlanShare(page, 'Garden collection', planCid, ['Garden one', 'Garden two']);
   });
 }
 
-test('a design included in several plans lets the person choose which plan to share', async ({ mockApi: page }) => {
+test('design Share stays on the selected design when it belongs to several plans', async ({ mockApi: page }) => {
   const { index, cids } = await openComposition(page);
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   filePlan(index, plans.create('Alternate garden collection', [cids[0], cids[2]], {
     at: '45.80025,15.9822,18', mode: '2d', city: 'zg', language: 'en'
   }));
   await stackSection(page, 'designs').locator('.btn-share-proposal').click();
-  await page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })
-    .getByRole('button', { name: 'Share the whole plan', exact: true }).click();
-  const chooser = page.getByRole('alertdialog', { name: 'Share plan', exact: true });
-  await expect(chooser).toContainText('Which plan do you want to share?');
-  await chooser.getByRole('button', { name: 'Alternate garden collection', exact: true }).click();
-  const panel = page.locator('.share-plan-panel');
-  await expect(panel.getByRole('checkbox', { name: 'Garden one', exact: true })).toBeChecked();
-  await expect(panel.getByRole('checkbox', { name: 'Garden two', exact: true })).not.toBeChecked();
-  await expect(panel.getByRole('checkbox', { name: 'Outside garden', exact: true })).toBeChecked();
-  await expect.poll(async () => {
-    const input = panel.locator('.share-plan-link__input[readonly]');
-    if (!(await input.isVisible())) return [];
-    return new URL(await input.inputValue()).pathname.replace('/designs/', '').split(',').sort();
-  }).toEqual([cids[0], cids[2]].sort());
+  await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
+  await expect(page.locator('.share-plan-panel')).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()))
+    .toContain(`/designs/${cids[0]}`);
+  expect(index.requests.filter(row => row.method === 'POST' && ['/pins', '/designs', '/plans'].includes(row.path))).toHaveLength(0);
 });

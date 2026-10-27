@@ -127,13 +127,16 @@ describe('browser gates follow the policy', () => {
         expect(design.published).toEqual({ cid: result.cid, publishedAt: '2026-10-21T10:00:01.000Z', apiBase: 'https://api.example.test' });
     });
 
-    it('opens the share preview for a guest without publishing or asking for a name', async () => {
-        const showSharePlanPanel = vi.fn(async () => 'panel-ready'), guestPolicyBlocks = vi.fn();
-        const context = vm.createContext({ console, window: {}, URLSearchParams, showSharePlanPanel, guestPolicyBlocks,
-            document: { getElementById: () => null }, requestAnimationFrame: callback => callback() });
-        vm.runInContext(read('proposals/sharing-routes.js'), context);
-        await expect(context.shareAppliedProposals({})).resolves.toBe('panel-ready');
-        expect(showSharePlanPanel).toHaveBeenCalledTimes(1);
-        expect(guestPolicyBlocks).not.toHaveBeenCalled();
+    it('lets a guest open and copy an existing plan; only creating missing public records is gated', () => {
+        const dialog = read('plan-dialog.js'), workspace = read('plan-workspace.js');
+        expect(dialog).toContain('async function share(plan, members=[])');
+        expect(dialog).toContain('win.PlanWorkspace.resolve(plan,members)');
+        expect(dialog).not.toContain("guestPolicyBlocks('publish')");
+        // An already-published canonical plan returns before the publication gate; guests can share it.
+        const existing = workspace.indexOf('if(existing)return existing;');
+        const gate = workspace.indexOf("win.guestPolicyBlocks('publish')");
+        expect(existing).toBeGreaterThan(-1);
+        expect(gate).toBeGreaterThan(existing);
+        expect(policy.check('publish', GUEST).allowed).toBe(false);
     });
 });

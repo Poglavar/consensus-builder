@@ -8,7 +8,7 @@ const camera = { targetLat: 45.80025, targetLng: 15.9822, headingDeg: 40, pitchR
 const cameraParam = Object.values(camera).join(',');
 
 for (const mode of ['model', 'photo'] as const) {
-  test(`${mode} sharing offers camera and rotation choices and saves them in a named plan`, async ({ mockApi: page }, testInfo) => {
+  test(`${mode} plan creation saves camera and rotation choices; sharing cannot edit them`, async ({ mockApi: page }, testInfo) => {
     await mockBuildingScene(page);
     if (mode === 'photo') await mockPhotoTiles(page);
     await openCity(page);
@@ -25,42 +25,37 @@ for (const mode of ['model', 'photo'] as const) {
     await page.locator('.command-palette__input').fill('Open Designs');
     await page.locator('.command-palette__item').filter({ hasText: 'Open Designs' }).click();
     await page.locator('#shareAppliedProposalsButton').click();
-    await expect(page.locator('.share-plan-link')).toBeHidden();
-    await expect(page.locator('.share-plan-publish-selected')).toBeVisible();
-    // Merely choosing view options cannot publish a draft or turn it into a share link.
-    await page.locator('#share-rotate').check();
-    await expect(page.locator('.share-plan-link')).toBeHidden();
-    expect(index.requests.filter(r => r.method === 'POST' && ['/pins', '/designs'].includes(r.path))).toHaveLength(0);
-    await page.locator('#proposals-sheet [data-sheet-close]').click();
-    await page.evaluate(({ id, cid }) => { const w = window as any;
-      w.DesignSync.markPublished(w.proposalStorage.getProposal(id), { cid, apiBase: w.resolveBackendBaseUrl() });
-    }, { id, cid });
-    await page.keyboard.press('ControlOrMeta+k');
-    await page.locator('.command-palette__input').fill('Open Designs');
-    await page.locator('.command-palette__item').filter({ hasText: 'Open Designs' }).click();
-    await page.locator('#shareAppliedProposalsButton').click();
-    const link = page.locator('.share-plan-link__input[readonly]');
-    await expect(link).toBeVisible();
-    let url = new URL(await link.inputValue());
-    expect(url.searchParams.has('draft')).toBe(false);
-    expect(url.searchParams.get('rotate')).toBe('0');
-    const pose = await page.evaluate(value => (window as any).MapShare.readCamera(value), url.searchParams.get('camera'));
-    for (const key of Object.keys(camera)) expect(pose[key]).toBeCloseTo(captured[key], 4);
-    await page.locator('#share-include-camera').uncheck();
-    expect(new URL(await link.inputValue()).searchParams.has('camera')).toBe(false);
-    await page.locator('#share-rotate').check();
-    url = new URL(await link.inputValue());
-    expect(url.searchParams.get('rotate')).toBe('1');
-    expect(url.searchParams.has('camera')).toBe(false);
-    await page.locator('#share-include-camera').check();
-    await page.getByRole('button', { name: 'Name this plan', exact: true }).click();
-    await page.getByLabel('Plan name', { exact: true }).fill('Camera view');
-    await page.getByRole('button', { name: 'Save plan link', exact: true }).click();
-    await expect(link).toHaveValue(/\/plans\/bafkrei[a-z2-7]{52}$/);
-    const saved = index.plans.get(new URL(await link.inputValue()).pathname.split('/').pop()!)!;
+    await page.locator('#designs-plans').getByRole('button', { name: 'Create plan', exact: true }).click();
+    const composer = page.locator('.plan-composer');
+    await composer.getByLabel('Plan name', { exact: true }).fill('Camera view');
+    await composer.locator('.plan-dialog__choices input[type=checkbox]').check();
+    const includeCamera = composer.locator('[data-plan-view="camera"]');
+    const rotate = composer.locator('[data-plan-view="rotate"]');
+    await expect(includeCamera).toBeChecked();
+    await expect(rotate).not.toBeChecked();
+    await includeCamera.uncheck();
+    await rotate.check();
+    // View options are part of creation. They cannot publish a draft or create a public link.
+    expect(index.requests.filter(r => r.method === 'POST' && ['/pins', '/designs', '/plans'].includes(r.path))).toHaveLength(0);
+    await composer.getByRole('button', { name: 'Create plan', exact: true }).click();
+    await expect(page.locator('.plan-details')).toBeVisible();
+    let saved = await page.evaluate(() => (window as any).PlanWorkspace.list().find((p: any) => p.content.title === 'Camera view'));
+    expect(saved.content.view).toMatchObject({ mode, rotate: true, camera: null });
+    await page.locator('.plan-details').getByRole('button', { name: 'Edit plan', exact: true }).click();
+    // A new composition can also retain the original captured camera.
+    await page.keyboard.press('Escape');
+    await page.evaluate(id => (window as any).PlanDialog.create({ members: [(window as any).proposalStorage.getProposal(id)] }), id);
+    await composer.getByLabel('Plan name', { exact: true }).fill('Camera included');
+    await composer.locator('[data-plan-view="rotate"]').check();
+    await composer.getByRole('button', { name: 'Create plan', exact: true }).click();
+    await expect(page.locator('.plan-details')).toBeVisible();
+    saved = await page.evaluate(() => (window as any).PlanWorkspace.list().find((p: any) => p.content.title === 'Camera included'));
     expect(saved.content.view).toMatchObject({ mode, rotate: true });
     for (const key of Object.keys(camera)) expect(saved.content.view.camera[key]).toBeCloseTo(captured[key], 4);
-    await expect(page.locator('#share-rotate')).toBeEnabled();
+    await page.locator('.plan-details').getByRole('button', { name: 'Share plan', exact: true }).click();
+    const share = page.locator('.plan-share');
+    await expect(share.locator('[data-plan-view]')).toHaveCount(0);
+    expect(index.requests.filter(r => r.method === 'POST' && ['/pins', '/designs', '/plans'].includes(r.path))).toHaveLength(0);
     await page.screenshot({ path: testInfo.outputPath(`share-camera-${mode}.png`) });
   });
 }

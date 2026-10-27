@@ -2,7 +2,7 @@
 // land-use, summary and road-designation controls, the share panel's selection, Publish and Copy URL,
 // the epoch timeline and the design index's Retry.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, PARCEL_ID } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, PARCEL_ID, showProposal } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
@@ -95,60 +95,52 @@ test.describe('proposal button controls: modal and alternate states @features', 
     await expect(content).toBeHidden();
   });
 
-  test('applied-design selection, row Publish and Copy URL all change the visible state', async ({ mockApi: page }) => {
+  test('plan composition starts empty, saves locally, then publishes and copies the saved plan', async ({ mockApi: page }) => {
     await openCity(page);
     await establishLocalProfile(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
     const id = await createSpace(page, 'park');
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(page.url()).origin });
+    await showProposal(page, id);
+    await page.locator('#proposal-details-panel .btn-share-proposal').click();
+    await expect(page.locator('#proposal-details-panel .cb-badge--published')).toBeAttached({ timeout: 30000 });
     await openProposalList(page);
     const sheet = page.locator('#proposals-sheet');
     const shareTab = sheet.locator('#shareAppliedProposalsButton');
     await shareTab.click();
-
-    const plan = sheet.locator('#designs-share .share-plan-panel--embedded');
-    await expect(plan).toBeVisible({ timeout: 30000 });
-    await expect(sheet.getByRole('heading', { name: 'Designs', exact: true })).toBeVisible();
-    await expect(shareTab).toHaveAttribute('aria-selected', 'true');
-    await expect(plan.locator('.share-plan-progress')).toHaveCount(0, { timeout: 30000 });
-    await test.info().attach('applied-design-sharing', { body: await plan.screenshot(), contentType: 'image/png' });
-    const highlightAll = plan.getByRole('button', { name: 'All', exact: true });
-    await plan.getByRole('button', { name: 'Not published yet', exact: true }).click();
-    await highlightAll.click();
-    await expect(highlightAll).toHaveAttribute('aria-pressed', 'true');
-    const status = plan.locator('.share-plan-status');
-    const row = plan.locator('.share-plan-row').first();
-    const selected = row.locator('input[type="checkbox"]');
-    await selected.focus();
-    await expect(selected).toBeFocused();
-    await selected.uncheck();
-    await expect(status).toHaveText('Select at least one design to share.');
-    await selected.check();
-    await expect(status).toHaveText('Publish at least one design to get a link.');
-    const link = plan.locator('.share-plan-link__input[readonly]');
-    await expect(link).toBeHidden();
-
-    // Publish pins and indexes this one design; the row says Published and the link names its CID.
+    const plans = sheet.locator('#designs-plans');
+    await plans.getByRole('button', { name: 'Create plan', exact: true }).click();
+    const composer = page.locator('.plan-composer');
+    await expect(composer.locator('.plan-dialog__count')).toHaveText('0 selected');
+    const save = composer.getByRole('button', { name: 'Create plan', exact: true });
+    await expect(save).toBeDisabled();
+    await composer.getByLabel('Plan name', { exact: true }).fill('Button control plan');
+    await expect(save).toBeDisabled();
+    await composer.locator('.plan-dialog__choice input[type="checkbox"]').first().check();
+    await expect(composer.locator('.plan-dialog__count')).toHaveText('1 selected');
+    await expect(save).toBeEnabled();
     const index = pageIndex(page);
-    await row.getByRole('button', { name: 'Publish', exact: true }).click();
-    await expect(row.locator('.share-plan-row__published')).toBeVisible({ timeout: 30000 });
-    expect(index.requests.filter(request => request.method === 'POST').map(request => request.path)).toEqual(['/pins', '/designs']);
-    const [cid] = [...index.designs.keys()];
-    expect(await page.evaluate(key => {
-      const w = window as any;
-      const record = w.proposalStorage.getProposal(key);
-      return { published: record.published.cid, current: w.DesignSync.publishedCid(record) };
-    }, id)).toEqual({ published: cid, current: cid });
+    const beforeSave = index.requests.filter(request => request.method === 'POST').length;
+    await save.click();
+    const details = page.locator('.plan-details');
+    await expect(details.locator('.plan-dialog__members li')).toHaveCount(1);
+    expect(index.requests.filter(request => request.method === 'POST')).toHaveLength(beforeSave);
+    await details.getByRole('button', { name: 'Share plan', exact: true }).click();
+    const plan = page.locator('.plan-share');
+    await expect(plan).toBeVisible();
+    const baseline = index.requests.filter(request => request.method === 'POST').length;
+    await plan.getByRole('button', { name: 'Publish and copy link', exact: true }).click();
+    const link = plan.getByLabel('Plan link', { exact: true });
+    await expect(link).toBeVisible();
     const url = new URL(await link.inputValue());
-    expect(url.pathname).toBe(`/designs/${cid}`);
-    expect(url.searchParams.get('city')).toBe('zagreb');
-    expect(url.searchParams.get('lang')).toBe('en');
-    expect(url.searchParams.get('at')).toBe(await page.evaluate(() => (window as any).MapShare.capture(window).at));
-    await expect(status).toHaveText('');
-    await plan.getByRole('button', { name: 'Copy URL', exact: true }).click();
+    expect(url.pathname).toMatch(/^\/plans\//);
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(url.toString());
+    const posts = index.requests.filter(request => request.method === 'POST').slice(baseline);
+    expect(posts.map(request => request.path)).toContain('/plans');
+    expect(posts.some(request => request.path === '/agreements')).toBe(false);
+
+    await expect(sheet.getByRole('heading', { name: 'Plan', exact: true })).toBeVisible();
     await page.keyboard.press('Escape');
-    await expect(sheet).toBeHidden();
   });
 
   test('proposal list epoch buttons move the cumulative timeline and restore all years', async ({ mockApi: page }) => {

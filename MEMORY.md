@@ -964,3 +964,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-27: Freeform whole-parcel surroundings require building overlap; moving the last building away releases that parcel and restores its source state, because standalone parcel paving is not offered.
 
 - 2026-10-27: Agreements select an existing exact plan and never compose designs; four tabs separate rules, input parcels, single-recipient output parcels and read-only person totals, with scheme-controlled area compensation and abstract parcel-owner parties.
+
+- 2026-10-27: Plan creation is local composition; Share design and Share plan publish exact separate revisions, Add to plan reviews a new snapshot, and agreements are created from a saved plan in their own flow.

@@ -877,12 +877,12 @@ async function mountProposalList() {
     finally { _proposalListMountPromise = null; }
 }
 
-// One Designs panel owns browsing and sharing; leaving Share always releases its map pick mode.
+// Plan sheet: the design library and saved snapshots. Creation and sharing use separate dialogs.
 function setDesignsPanelTab(tab) {
-    const sharing = tab === 'share';
-    document.getElementById('designs-browse').hidden = sharing;
-    document.getElementById('designs-share').hidden = !sharing;
-    for (const [id, active] of [['designs-browse-tab', !sharing], ['shareAppliedProposalsButton', sharing]]) {
+    const plans = tab === 'plans';
+    document.getElementById('designs-browse').hidden = plans;
+    document.getElementById('designs-plans').hidden = !plans;
+    for (const [id, active] of [['designs-browse-tab', !plans], ['shareAppliedProposalsButton', plans]]) {
         const button = document.getElementById(id);
         button.setAttribute('aria-selected', String(active));
         button.tabIndex = active ? 0 : -1;
@@ -890,31 +890,20 @@ function setDesignsPanelTab(tab) {
 }
 
 function openDesignsTab(tab) {
-    const request = ++_designsPanelRequest;
-    if (tab === 'share') {
-        setDesignsPanelTab('share');
-        return shareAppliedProposals({ isCurrent: () => request === _designsPanelRequest });
-    }
-    closeSharePlanPanel({ fromPanel: true, preserveSelection: true });
-    setDesignsPanelTab('browse');
+    ++_designsPanelRequest;
     if (!window.MapShell.isOpen('proposals-sheet')) window.MapShell.openSheet('proposals-sheet');
-    return mountProposalList();
+    setDesignsPanelTab(tab);
+    return tab === 'plans' ? window.PlanDialog.showPlans() : mountProposalList();
 }
 
 function handleProposalSheetOpened(event) {
     if (event?.detail?.id !== 'proposals-sheet') return;
-    setDesignsPanelTab('browse');
-    mountProposalList();
+    setDesignsPanelTab('browse'); mountProposalList();
 }
-
 function handleProposalSheetClosed(event) {
     if (event?.detail?.id !== 'proposals-sheet') return;
-    _designsPanelRequest++;
-    closeSharePlanPanel({ fromPanel: true });
-    closeProposalList({ fromSheet: true });
-    setDesignsPanelTab('browse');
+    _designsPanelRequest++; closeProposalList({ fromSheet: true }); setDesignsPanelTab('browse');
 }
-
 if (typeof document !== 'undefined') {
     document.addEventListener('mapshell:sheetopened', handleProposalSheetOpened);
     document.addEventListener('mapshell:sheetclosed', handleProposalSheetClosed);
@@ -922,9 +911,9 @@ if (typeof document !== 'undefined') {
         const tab = event.target.closest?.('.designs-panel-tabs [role="tab"]');
         if (!tab || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
         event.preventDefault();
-        const sharing = event.key === 'End' || (event.key !== 'Home' && tab.id === 'designs-browse-tab');
-        document.getElementById(sharing ? 'shareAppliedProposalsButton' : 'designs-browse-tab').focus();
-        openDesignsTab(sharing ? 'share' : 'browse');
+        const plans = event.key === 'End' || (event.key !== 'Home' && tab.id === 'designs-browse-tab');
+        document.getElementById(plans ? 'shareAppliedProposalsButton' : 'designs-browse-tab').focus();
+        openDesignsTab(plans ? 'plans' : 'browse');
     });
 }
 
@@ -950,20 +939,16 @@ function proposalPanelFitPadding(rect, viewport, margin = 40) {
 }
 
 // fitBounds padding that keeps content in the VISIBLE map, clear of whichever proposal panel is
-// currently covering it: the share-plan panel, the list sheet while browsing, or the details panel
+// currently covering it: the list sheet while browsing or the details panel
 // once a proposal or agreement is selected (proposalPanelFitPadding decides which side). Returns a plain
 // {paddingTopLeft, paddingBottomRight} for fitBounds — a symmetric margin when no panel is open.
 // Shared by fit-all-on-open, the preview zoom, and proposal selection.
 function getProposalPanelFitPadding(margin = 40) {
     let rect = null;
     try {
-        // The share-plan panel exists in the DOM only while open, so presence means visible.
-        const sharePanel = document.querySelector('.share-plan-panel-content');
         const listModal = document.querySelector('.proposal-list-modal');
         const listPanel = document.querySelector('.proposal-list-modal-content');
-        if (sharePanel) {
-            rect = sharePanel.getBoundingClientRect();
-        } else if (listModal && window.MapShell?.isOpen?.('proposals-sheet') && listPanel) {
+        if (listModal && window.MapShell?.isOpen?.('proposals-sheet') && listPanel) {
             rect = listPanel.getBoundingClientRect();
         } else {
             const details = ['agreement-panel', 'proposal-details-panel'].map(id => document.getElementById(id))
@@ -1014,7 +999,7 @@ function fitMapToAppliedProposals() {
 
     if (!combined || !combined.isValid()) return false;
 
-    // Pad the side the open panel covers (proposals list OR share-plan panel) so proposals
+    // Pad the side the open panel covers (proposals list) so proposals
     // aren't framed underneath it.
     const { paddingTopLeft, paddingBottomRight } = getProposalPanelFitPadding(40);
 
@@ -1145,9 +1130,7 @@ function updateShowProposalsButton() {
     }
 
     const sharePlanButton = document.getElementById('shareAppliedProposalsButton');
-    // While the plan is being prepared the button owns its own disabled state — re-enabling it here
-    // would invite a second click straight into a half-built panel.
-    if (sharePlanButton && !sharePlanButton.dataset.sharePlanBusy) {
+    if (sharePlanButton) {
         sharePlanButton.disabled = false;
     }
 

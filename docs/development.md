@@ -126,6 +126,29 @@ Every change to human editing includes this check, even when no MCP code change 
 
 See [MCP editing](mcp-editing.md) for supported primitives and authored-field boundaries.
 
+## Plan dialog and authoring boundaries
+
+The **Plan dialog** contains the **Designs library** and **Saved plans** tabs. **Create plan**
+opens the **Plan composer**, which chooses a name, member revisions and saved view and writes only
+local storage. **Add to plan** opens a new composition or a reviewed revision of a saved plan.
+The **Plan details** dialog owns Edit plan, Share plan and Create agreement. The **Share plan**
+dialog publishes or copies exactly one saved revision; it never edits membership. A design's
+Share action publishes or copies only that design. Agreement creation and sharing remain in the
+agreement editor and agreement details respectively.
+
+`PlanComposition` carries canonical member content alongside the immutable `plan/v1` content so
+later local design edits cannot change a saved plan. `PlanWorkspace` resolves and publishes those
+exact revisions. The public plan format and publication policy are unchanged. Presentation uses
+shared `CbDialog`, `BusyControl`, `btn` and `cb-actions` categories; `css/plan-dialog.css` supplies
+layout and reads the shared theme roles from `css/primitives.css`.
+
+MCP parity uses existing `ugt_draft_plan`, `ugt_inspect_plan`, `ugt_edit_plan` and `ugt_publish_plan`
+operations, with the same `PlanRecord` validator and immutable member content. Adding a design is
+an `ugt_edit_plan` add operation against the inspected CID; it returns a new private revision.
+No new MCP tool or schema is needed for this separation of dialogs. Targeted
+`mcp-named-plans.test.js`, `plan-composition.test.js` and `plan-workspace.test.js` cover independent
+creation, membership edits, old-revision isolation and exact dependency publication.
+
 ## Public guides and videos
 
 English `frontend/how-to-use*.html` and Croatian `frontend/kako-koristiti*.html` share `frontend/css/howto.css`. Keep the language pairs, navigation anchors and procedures aligned. The hub links to each relevant walkthrough. Keep domain wording aligned with the [code-grounded vocabulary](../vocabulary.md): distinguish source parcels, formed ground and authored plots; local application from named-plan membership; and observed evidence from legal or physical completion. State units, currencies and valuation bases wherever a money amount appears.

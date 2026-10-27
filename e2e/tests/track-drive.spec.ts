@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, drawCorridor, showProposal, confirmDesignOnlyShare } from '../helpers/runtime';
+import { openCity, drawCorridor, showProposal } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 test('a published track opens the configured cab simulator with its design CID', async ({ mockApi: page }) => {
@@ -16,7 +16,6 @@ test('a published track opens the configured cab simulator with its design CID',
   // The sim reads designs from the index by CID, so an unpublished track has no Drive.
   await expect(details.locator('.btn-drive-proposal')).toHaveCount(0);
   await details.locator('.btn-share-proposal').click();
-  await confirmDesignOnlyShare(page);
   const index = pageIndex(page);
   await expect.poll(() => index.designs.size, { timeout: 30_000 }).toBe(1);
   const [cid] = [...index.designs.keys()];

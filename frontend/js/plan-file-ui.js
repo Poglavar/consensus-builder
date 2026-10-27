@@ -75,10 +75,11 @@
                 return plan;
             }, { _mapMutation: false });
         }
-        function openPlan(plan) {
+        async function openPlan(plan) {
             const members = plan.memberIds.map(id => win.proposalStorage.getProposal(id)).filter(Boolean);
             if (members.length !== plan.memberIds.length) throw new Error(t('missingMembers', 'Some imported designs were removed from this device. Import the file again to restore them.'));
-            return win.showSharePlanPanel({ members, plan, view: plan.content.view });
+            const snapshot = await win.PlanWorkspace.resolve(plan, members);
+            return win.PlanDialog.details(snapshot);
         }
         function importedPlans() {
             const plans = [];
@@ -99,7 +100,7 @@
                 body.appendChild(button);
             }
         }
-        function controls({ getRecords = null, getView = () => win.MapShare.capture(win), getTitle = () => 'My plan', getSources = () => ({}) } = {}) {
+        function controls({ getRecords = null, getView = () => win.MapShare.capture(win), getTitle = () => 'My plan', getSources = () => ({}), importAllowed = true } = {}) {
             const group = doc.createElement('div'); group.className = 'plan-file-controls';
             let busy = false;
             const buttons = [];
@@ -119,6 +120,7 @@
                 button(t('json', 'Download editable plan'), async () => download(win.PlanFile.stringify(await make()), 'plan.ugt.json', 'application/json'), 'json');
                 button(t('geojson', 'Download GeoJSON'), () => download(JSON.stringify(win.PlanFile.geojsonRecords(structuredClone(getRecords()), { title: getTitle(), view: structuredClone(getView()) }), null, 2) + '\n', 'plan.geojson', 'application/geo+json'), 'geojson');
             }
+            if (!importAllowed) return group;
             const input = doc.createElement('input'); input.type = 'file'; input.accept = '.json,application/json'; input.hidden = true;
             input.setAttribute('aria-label', t('import', 'Import plan file'));
             // File-picker cancellation starts no work, and clearing after each choice permits the

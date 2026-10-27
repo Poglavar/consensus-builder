@@ -38,7 +38,8 @@ test.beforeEach(async ({ page }) => {
     w.MapShare = { capture: () => ({ at: '45,15,17', mode: '2d', city: 'zagreb' }) };
     const site = { type: 'Polygon', coordinates: [[[15,45],[15.001,45],[15.001,45.001],[15,45.001],[15,45]]] };
     w.sample = { proposalId: 'sample', goal: 'park', title: '<img src=x onerror=alert(1)>', site, structureProposal: { kind: 'park', geometry: site } };
-    w.showSharePlanPanel = (options: any) => { w.opened = options; };
+    w.PlanWorkspace = { resolve: async (plan: any, members: any[]) => ({ ...plan, members }) };
+    w.PlanDialog = { details: (plan: any) => { w.opened = plan; } };
   });
   await page.addScriptTag({ path: path.join(root, 'js/plan-file-ui.js') });
   await page.addStyleTag({ content: '.cb-dialog-backdrop{position:fixed;inset:0;background:#fff}.cb-dialog{background:white;padding:20px}.cb-dialog button{margin:5px}' });
@@ -65,7 +66,7 @@ test('preview, cancel, repeated choice and confirmation preserve unapplied draft
   const snapshot = await page.evaluate(() => { const w = window as any; return { writes: w.writes, records: w.proposalStorage.getAllProposals(), applies: w.applies }; });
   expect(snapshot.records).toHaveLength(1); expect(snapshot.records[0].applied).toBe(false); expect(snapshot.records[0].published).toBeUndefined(); expect(snapshot.applies).toBe(0);
   await page.getByRole('button', { name: 'Open imported plan' }).click();
-  expect(await page.evaluate(() => (window as any).opened.view.at)).toBe('45,15,17');
+  expect(await page.evaluate(() => (window as any).opened.content.view.at)).toBe('45,15,17');
   await choose(page); await page.getByRole('button', { name: 'Import as drafts' }).click();
   await expect(page.getByRole('heading', { name: 'Plan imported', exact: true })).toBeVisible();
   expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(1);

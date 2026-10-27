@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { createSpace, drawCorridor, openCity, chooseProfileName, showProposal, stubBasemapTiles, confirmDesignOnlyShare } from '../helpers/runtime';
+import { createSpace, drawCorridor, openCity, chooseProfileName, showProposal, stubBasemapTiles } from '../helpers/runtime';
 import { canonicalJson, cidOfBytes, cidOfObject, pageIndex } from '../helpers/mocks/shared-server';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -53,7 +53,6 @@ async function publishBuildingCollection(page: import('@playwright/test').Page, 
   await showProposal(page, proposalId);
   const details = page.locator('#proposal-details-panel');
   await details.locator('.btn-share-proposal').click();
-  await confirmDesignOnlyShare(page);
   await chooseProfileName(page, `${options.title} author`);
   expect(postsOf(page)).toEqual([]);
   const readyToShare = await page.evaluate(id => {
@@ -74,7 +73,6 @@ async function publishBuildingCollection(page: import('@playwright/test').Page, 
 
   await showProposal(page, proposalId);
   await details.locator('.btn-share-proposal').click();
-  await confirmDesignOnlyShare(page);
   await expect(details.locator('.cb-badge--published')).toBeVisible({ timeout: 30_000 });
 
   const posts = postsOf(page);
@@ -127,13 +125,11 @@ for (const kind of ['road', 'track'] as const) {
     await showProposal(page, proposalId);
     const details = page.locator('#proposal-details-panel');
     await details.locator('.btn-share-proposal').click();
-    await confirmDesignOnlyShare(page);
     await chooseProfileName(page, `${kind} author`);
     expect(postsOf(page)).toEqual([]);
 
     await showProposal(page, proposalId);
     await details.locator('.btn-share-proposal').click();
-    await confirmDesignOnlyShare(page);
     await expect(details.locator('.cb-badge--published')).toBeVisible({ timeout: 30_000 });
 
     const posts = postsOf(page);

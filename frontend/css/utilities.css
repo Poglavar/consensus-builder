@@ -1059,7 +1059,7 @@ input.proposal-author-name {
     opacity: 0;
     transform: translateY(-12px);
     transition: opacity 0.3s ease, transform 0.3s ease;
-    pointer-events: auto;
+    pointer-events: none;
 }
 
 .ephemeral-message.visible {

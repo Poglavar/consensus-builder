@@ -76,7 +76,7 @@
     }
 
     /* Keep dismissal available to keyboard/assistive navigation without a second visible X. */
-    .mobile-sheet-ready > :is(.panel-header, .map-sheet-header, .cb-dialog__header, .share-plan-panel-header, .on-map-editor__header, .grain-score-panel__header, .road-panel-header, .site-panel__head, .urban-block-panel-header) .close-circle-btn {
+    .mobile-sheet-ready > :is(.panel-header, .map-sheet-header, .cb-dialog__header, .on-map-editor__header, .grain-score-panel__header, .road-panel-header, .site-panel__head, .urban-block-panel-header) .close-circle-btn {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -109,8 +109,6 @@
     .mobile-sheet-ready .cb-dialog__footer:has(> [data-action-id="close"]:only-child) { display: none; }
     #parcel-coverage-modal .cb-dialog__footer > #parcel-coverage-close-btn,
     #status-log-modal .cb-dialog__footer > #status-log-modal-close { display: none; }
-    .share-plan-panel.mobile-sheet-ready { display: flex; flex-direction: column; }
-    .share-plan-panel.mobile-sheet-ready > .share-plan-panel-content { flex: 0 1 auto; min-height: 0; height: auto; }
     .mobile-sheet-ready .on-map-editor__content { flex: 0 1 auto; }
     #grain-score-panel.mobile-sheet-ready { display: flex; flex-direction: column; }
     #grain-score-panel.mobile-sheet-ready > .grain-score-result { flex: 0 1 auto; min-height: 0; overflow: auto; }

@@ -1,8 +1,7 @@
-// proposals/sharing-routes.js — sharing designs and opening shared designs (plan-design-agreement.md,
-// M2 "Browser"). The design card asks for a sharing scope; sharing that design alone publishes it
-// (DesignSync.publishDesign) and copies its /designs/<cid> link. The sharing panel publishes a selection and links
-// /designs/<cid>,<cid>. handleSharedDesignRoute opens such a link: it reads the designs from the index,
-// imports them, applies them in replay order, frames them and opens the latest one's details
+// proposals/sharing-routes.js — sharing designs and opening shared designs. Share on a design
+// publishes that exact design (DesignSync.publishDesign) and copies its /designs/<cid> link; saved
+// plans have a separate sharing flow. handleSharedDesignRoute opens a shared design link: it reads
+// designs from the index, imports them, applies them in replay order, frames them and opens the latest one's details
 // (core.js handleProposalRouteFromUrl dispatches the path here; agreement-sync.js reuses it).
 
 function getSharedGroundService() {
@@ -113,52 +112,12 @@ function focusMapOnSharedProposal(proposal, payload) {
     return false;
 }
 
-/** Spinner on the sidebar's "Share applied proposals" button. The label/subtext give way to it so the
-    button keeps its size, and the busy flag survives updateShowProposalsButton re-enabling it. */
-function setSharePlanButtonBusy(busy) {
-    const button = document.getElementById('shareAppliedProposalsButton');
-    if (!button) return;
-    const label = button.querySelector('.share-plan-label');
-    const subtext = button.querySelector('.share-plan-subtext');
-    const spinner = button.querySelector('.share-plan-spinner');
-    if (busy) button.dataset.sharePlanBusy = '1';
-    else delete button.dataset.sharePlanBusy;
-    // Tabs keep keyboard focus while their contents load.
-    button.disabled = !!busy && button.getAttribute?.('role') !== 'tab';
-    if (label) label.hidden = !!busy;
-    if (subtext) subtext.hidden = !!busy;
-    if (spinner) spinner.hidden = !busy;
-}
-
-// Resolves when the panel is ready to look at, so a caller that opened this from its own dialog
-// can keep that dialog up meanwhile. `options` is passed straight through (see showSharePlanPanel).
-function shareAppliedProposals(options) {
-    // Reading or copying an existing publication needs no profile; publishing asks for an author.
-    if (typeof setSharePlanButtonBusy === 'function') setSharePlanButtonBusy(true);
-    // Opening the panel starts with a long SYNCHRONOUS block: a row per applied proposal, plus one
-    // map overlay each (turf intersections + a Leaflet layer), plus fitting the map. Starting it in
-    // this same task would freeze the page before the spinner ever painted, so yield two frames —
-    // one to apply the style, one to be sure it reached the screen.
-    return new Promise((resolve) => {
-        const open = () => {
-            let ready = null;
-            try {
-                // Switching tabs or closing Designs cancels an opening deferred by two frames.
-                if (!options?.isCurrent || options.isCurrent()) ready = showSharePlanPanel(options);
-            } finally {
-                // Release the tab spinner on success, cancellation and failure.
-                if (typeof setSharePlanButtonBusy === 'function') setSharePlanButtonBusy(false);
-            }
-            // A thenable is adopted; an older build that returns nothing resolves right away, which
-            // is the previous behaviour rather than a hang.
-            resolve(ready);
-        };
-        if (typeof requestAnimationFrame === 'function') {
-            requestAnimationFrame(() => requestAnimationFrame(open));
-        } else {
-            open();
-        }
-    });
+// Context callers choose one explicit action: share a saved snapshot, or compose a new plan.
+function shareAppliedProposals(options = {}) {
+    if (options.isCurrent && !options.isCurrent()) return Promise.resolve(null);
+    return options.plan
+        ? window.PlanDialog.share(options.plan, options.members || [])
+        : window.PlanDialog.create({ members: options.members || proposalStorage.getAllProposals().filter(isProposalCurrentlyApplied) });
 }
 
 // The design a Share action names: the object given, the design open in the details panel, or a
@@ -236,25 +195,7 @@ async function shareProposalFromDetails() {
     const idElement = panel ? panel.querySelector('[data-proposal-id]') : null;
     const proposal = resolveDesignToShare(currentProposalDetailsContext || idElement?.getAttribute('data-proposal-id'));
     if (!proposal) return null;
-    const t = getProposalI18nHelper();
-    const scope = await window.CbDialog.choice(t('proposals.share.scope.message',
-        'Sharing this design publishes only this design and copies its link. The rest of the plan is not included.'), [
-        { value: 'plan', label: t('proposals.share.scope.plan', 'Share the whole plan'), primary: true },
-        { value: 'design', label: t('proposals.share.scope.design', 'Share only this design') },
-        { value: 'file', label: t('planFile.design', 'Download design') },
-        { value: 'cancel', label: t('common.cancel', 'Cancel') }
-    ], { title: t('proposals.share.scope.title', 'Share design or plan?') });
-    if (scope === 'design') return shareSingleProposal(proposal);
-    if (scope === 'file') return window.PlanFileUI.design(proposal);
-    if (scope !== 'plan') return null;
-    try {
-        await window.ensureOptionalTool('designMemberships');
-        return await window.DesignMemberships.shareFromDesign(proposal, window);
-    } catch (error) {
-        console.error(`[${new Date().toISOString()}] [share] opening plan sharing failed`, error);
-        window.showStyledAlert(error.message);
-        return null;
-    }
+    return shareSingleProposal(proposal);
 }
 
 function sharedMaterializationPhase(record) {

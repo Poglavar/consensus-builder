@@ -1,6 +1,6 @@
 // Cover map search, globe navigation, city switching, and real Leaflet zoom controls.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal, confirmDesignOnlyShare } from '../helpers/runtime';
+import { openCity, createSpace, showProposal } from '../helpers/runtime';
 import { waitForMapReady } from '../helpers/app';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 import { attachSharedIndex, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
@@ -34,7 +34,6 @@ async function publishSharedPark(page: import('@playwright/test').Page): Promise
   const proposalId = await createSpace(page, 'park');
   await showProposal(page, proposalId);
   await page.locator('#proposal-details-panel .btn-share-proposal').click();
-  await confirmDesignOnlyShare(page);
   const index = pageIndex(page);
   await expect.poll(() => index.designs.size, { timeout: 30_000 }).toBe(1);
   const [row] = [...index.designs.values()];

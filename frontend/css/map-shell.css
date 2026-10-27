@@ -636,21 +636,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     outline-offset: 2px;
 }
 
-/* Rows that carry a second line (share plan's "apply some first", the spinners) follow the reading direction. */
-.map-sheet .share-plan-button {
-    flex-wrap: wrap;
-}
-
-.map-sheet .share-plan-label,
-.map-sheet .share-plan-subtext {
-    text-align: start;
-}
-
-.map-sheet .share-plan-subtext {
-    padding-left: 24px;
-    color: var(--cb-text-muted);
-}
-
 .map-sheet select:not(.proposal-epoch-card-select) {
     width: 100%;
     min-height: var(--sheet-row-height);
@@ -1079,10 +1064,7 @@ body.app-loading .map-shell-cluster {
 /* First visible labels use the selected locale; the map can load in parallel. */
 body.i18n-loading [data-i18n-key] { visibility: hidden; }
 
-/* Designs and sharing share one dock, one header and one phone resize handle. */
+/* The design library and saved plans share one dock and phone resize handle. */
 .designs-panel-tabs { margin: 8px 12px; flex-shrink: 0; }
-#designs-browse:not([hidden]), #designs-share:not([hidden]) { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; overflow: hidden; }
-#proposals-sheet .share-plan-panel--embedded { display: flex; flex-direction: column; overflow: hidden; position: relative; inset: auto; width: 100%; height: 100%; min-height: 0; z-index: auto; padding: 0; }
-#proposals-sheet .share-plan-panel-content { position: relative; flex: 1; min-height: 0; box-shadow: none; background: transparent; backdrop-filter: none; }
+#designs-browse:not([hidden]) { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; overflow: hidden; }
 body.map-pick-mode #proposals-sheet { pointer-events: auto; opacity: 1; }
-#proposals-sheet .share-plan-link > .btn { width: auto; flex: 0 0 auto; white-space: nowrap; }

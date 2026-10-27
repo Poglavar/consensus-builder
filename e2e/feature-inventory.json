@@ -338,16 +338,10 @@
       ]
     },
     {
-      "id": "proposals.sharePlan",
+      "id": "proposals.plans",
       "specs": [
-        "tests/proposals-sharing.spec.ts"
-      ]
-    },
-    {
-      "id": "proposals.agreements",
-      "specs": [
-        "tests/agreement-dialog.spec.ts",
-        "tests/agreement-editor-map.spec.ts"
+        "tests/plan-workflows.spec.ts",
+        "tests/named-plans.spec.ts"
       ]
     },
     {
@@ -720,13 +714,13 @@
       ]
     },
     {
-      "feature": "proposing an agreement: Propose (after a profile name) pins the parcel layout and the agreement/v1 object and indexes them, the panel shows it Proposed under its CID without Edit, Copy link, the owners’ decisions card reading the relay and closing once expired, /agreements/<cid> opening it on another device, and a hung agreement read giving up at the parcel-load deadline",
+      "feature": "proposing an agreement: Propose (after a profile name) pins the parcel layout and the agreement/v1 object and indexes them, the panel shows it Proposed under its CID without Edit, Copy link, the owners\u2019 decisions card reading the relay and closing once expired, /agreements/<cid> opening it on another device, and a hung agreement read giving up at the parcel-load deadline",
       "specs": [
         "tests/agreement-propose.spec.ts"
       ]
     },
     {
-      "feature": "owner decisions on a proposed agreement: the decisions card, a second lens member, review on a phone, an authority in the scheme, each owner’s deal readable by anyone, decisions shared through the relay between two browsers",
+      "feature": "owner decisions on a proposed agreement: the decisions card, a second lens member, review on a phone, an authority in the scheme, each owner\u2019s deal readable by anyone, decisions shared through the relay between two browsers",
       "specs": [
         "tests/proposal-approval-lens.spec.ts"
       ]
@@ -867,7 +861,7 @@
       ]
     },
     {
-      "feature": "published track cab-simulator handoff (the sim receives the track’s design CID once it is shared)",
+      "feature": "published track cab-simulator handoff (the sim receives the track\u2019s design CID once it is shared)",
       "specs": [
         "tests/track-drive.spec.ts"
       ]
@@ -879,7 +873,7 @@
       ]
     },
     {
-      "feature": "a design published through the courier and the index with its city’s parcel source, proposals and agreements opening in their own city (a wrong-city link asks first), address bar following the map, read-only second tab per city",
+      "feature": "a design published through the courier and the index with its city\u2019s parcel source, proposals and agreements opening in their own city (a wrong-city link asks first), address bar following the map, read-only second tab per city",
       "specs": [
         "tests/world-city-publication.spec.ts"
       ]

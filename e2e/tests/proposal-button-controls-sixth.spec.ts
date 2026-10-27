@@ -3,7 +3,7 @@ import { openDesignReview } from '../helpers/design-review';
 // the design index's Download, the create dialog's and details' geometry tools, the lens editor and
 // the copy-by-hand link of a published design.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, showProposal, PARCEL_GEOMETRY, PARCEL_ID, confirmDesignOnlyShare } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { cidOfObject, pageIndex } from '../helpers/mocks/shared-server';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
@@ -174,7 +174,6 @@ test.describe('proposal button controls sixth pass @features', () => {
     await showProposal(page, proposalId);
     const index = pageIndex(page);
     await page.locator('#proposal-details-footer .btn-share-proposal').click();
-    await confirmDesignOnlyShare(page);
 
     const modal = page.locator('.share-modal-overlay');
     await expect(modal).toBeVisible({ timeout: 30000 });
@@ -192,7 +191,6 @@ test.describe('proposal button controls sixth pass @features', () => {
     // Shared again, the design is already published: the same link, nothing sent again.
     await showProposal(page, proposalId);
     await page.locator('#proposal-details-footer .btn-share-proposal').click();
-    await confirmDesignOnlyShare(page);
     await expect(modal).toBeVisible();
     await expect(modal.locator('.design-link__input')).toHaveValue(link);
     await modal.locator('.share-modal .cb-dialog__footer .btn-primary').click();

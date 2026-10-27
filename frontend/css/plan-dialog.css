@@ -1,0 +1,24 @@
+#proposals-sheet > .map-sheet-header { position: relative; justify-content: center; }
+#proposals-sheet-title { text-align: center; flex: 1; margin-inline: var(--cb-control-height); }
+#proposals-sheet > .map-sheet-header > .map-sheet-close { position: absolute; inset-inline-end: var(--cb-space-3); }
+.plan-dialog .cb-dialog__header { position: relative; justify-content: center; }
+.plan-dialog .cb-dialog__title { text-align: center; margin-inline: var(--cb-control-height); }
+.plan-dialog .cb-dialog__header .close-circle-btn { position: absolute; inset-inline-end: var(--cb-space-4); }
+.plan-composer, .plan-share, .plan-details { display: grid; gap: var(--cb-space-2); min-width: 0; }
+.plan-share > h3, .plan-details > h3, .plan-dialog__members { margin-block: 0; }
+.plan-dialog__status:empty { display: none; }
+.plan-dialog__field { display: grid; gap: 6px; font-weight: 600; }
+.plan-dialog__field input { width: 100%; min-width: 0; }
+.plan-dialog__choices { display: grid; gap: 4px; max-height: 45dvh; overflow: auto; }
+.plan-dialog__choice { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--cb-line); border-radius: 8px; cursor: pointer; }
+.plan-dialog__choice span { min-width: 0; overflow-wrap: anywhere; }
+.plan-dialog__choice small { display: block; color: var(--cb-text-muted); font-weight: 400; }
+.plan-dialog__members { padding-inline-start: 20px; overflow-wrap: anywhere; }
+.plan-dialog__count, .plan-dialog__status { margin: 0; }
+.plan-dialog__view { display: grid; gap: var(--cb-space-2); }
+.plan-dialog__view label { display: flex; align-items: center; gap: var(--cb-space-2); }
+.plan-dialog__footer { justify-content: flex-end; }
+.plan-dialog__saved { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--cb-line); }
+.plan-dialog__saved > strong { flex: 1 1 100%; overflow-wrap: anywhere; }
+#designs-plans { display: grid; align-content: start; gap: 12px; flex: 1 1 0; min-height: 0; overflow: auto; padding: var(--cb-space-3); }
+#designs-plans[hidden] { display: none; }
