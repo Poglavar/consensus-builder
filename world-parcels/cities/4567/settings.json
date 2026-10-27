@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4567",
+  "name": "Acapulco, Mexico",
+  "point": [
+    16.8781918527816,
+    -99.8616372043014
+  ],
+  "bindings": [
+    {
+      "appCityId": "acapulco",
+      "runtimeConfig": {
+        "id": "acapulco",
+        "wupCityCode": "4567",
+        "label": "Acapulco, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            16.8781918527816,
+            -99.8616372043014
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            16.8781918527816,
+            -99.8616372043014
+          ],
+          "fallbackDataset": [
+            -99.8616372043014,
+            16.8781918527816
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-sedatu-ran-guerrero-parcels-2020",
+          "idPrefix": "MX-RAN-GRO-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Registro Agrario Nacional (RAN) / SEDATU IDE · PIT12 Parcelas Guerrero 2020. Historical social-property parcel coverage."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-sedatu-ran-guerrero-parcels-2020",
+      "name": "SEDATU / RAN Guerrero agrarian parcels (2020)",
+      "adapter": "wfs",
+      "endpoint": "https://ide.sedatu.gob.mx/geoserver/ows",
+      "featureType": "geonode:a__12_PARCELAS_RAN_2020",
+      "version": "2.0.0",
+      "idField": "CLAVE",
+      "idType": "string",
+      "idPrefix": "MX-RAN-GRO-",
+      "idPattern": "^[0-9]{8}-[0-9]{19}$",
+      "outFields": [
+        "CLAVE",
+        "DES_TIPOPR"
+      ],
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "attributeFilters": {
+        "DES_TIPOPR": "PARCELA"
+      },
+      "attributeNotNull": [
+        "CLAVE"
+      ],
+      "paginationIdentity": "native-id",
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 1,
+      "minRequestIntervalMs": 150,
+      "countryCode": "MX",
+      "metricSrid": 32614,
+      "cityIds": [
+        "acapulco"
+      ],
+      "defaultForCity": true,
+      "scope": "Historical 2020 RAN ejido/community agrarian parcels classified PARCELA with non-null CLAVE. Bounded eastern Acapulco fringe proof only; private urban cadastre, currentness, municipal boundary conformity and citywide completeness unestablished.",
+      "attribution": "Registro Agrario Nacional (RAN) / SEDATU IDE · PIT12 Parcelas Guerrero 2020. Historical social-property parcel coverage.",
+      "operator": "Registro Agrario Nacional (RAN) / SEDATU",
+      "metadataUrl": "https://ide.sedatu.gob.mx/api/v2/datasets/1668",
+      "catalogueUrl": "https://ide.sedatu.gob.mx/catalogue/#/dataset/1668",
+      "nativeCrs": "EPSG:4326",
+      "responseCrs": "CRS:84",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometryQuery": true
+      },
+      "browserTransport": "relay",
+      "ownership": false,
+      "licenceNote": "First-party dataset API license.identifier is blank; attribution is RAN, SEDATU. Source-specific reuse terms need follow-up; no open licence is asserted."
+    }
+  ]
+}

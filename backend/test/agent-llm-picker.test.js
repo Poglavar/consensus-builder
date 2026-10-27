@@ -167,6 +167,8 @@ describe('buildPickRequests', () => {
             builtKnown: true,
             buildingSourceId: 'survey-fixture',
             buildingCoverage: 'complete',
+            designPolicy: null,
+            ruleSource: 'urban-rule',
             allowedFloors: 4,
             proposedGfaM2: 900,
             gain: 2418801,
@@ -476,4 +478,19 @@ describe('runPickBatch through the shared layer', () => {
             expect(src, file).not.toMatch(/AGENT_LLM_MODEL|DEFAULT_MODEL/);
         }
     });
+});
+
+it('uses declared design weights and preserves control provenance in the LLM request', () => {
+    const actor = { name: 'test-builder', planningPolicy: 'proposed-design', dailyProposals: 1,
+        designWeights: { floorArea: 0.2, openSpace: 0.8 }, weights: { density: 1 } };
+    const planned = candidate(1, { score: null, gain: null, builtKnown: false, builtGfaM2: null, plannedFloors: 4,
+        designPolicy: { kind: 'proposed-design', ruleBasis: 'assumed', footprintM2: 200, openSpaceRatio: 0.5, score: 0.6,
+            controls: { floors: { value: 4, basis: 'assumed' }, setback: { value: 3, basis: 'mapped' } } } });
+    const [request] = buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [{ persona: actor, candidates: [planned] }] });
+    expect(request.params.system).toContain('proposed floor area — weight 0.2');
+    expect(request.params.system).toContain('ground outside the proposed footprint — weight 0.8');
+    expect(request.params.system).not.toContain('the value a design creates');
+    const payload = JSON.parse(request.params.messages[0].content[0].text);
+    expect(payload.candidates[0].designPolicy.controls.floors.basis).toBe('assumed');
+    expect(payload.candidates[0].gain).toBeNull();
 });

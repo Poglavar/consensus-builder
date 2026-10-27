@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1419",
+  "name": "Al Ain, United Arab Emirates",
+  "point": [
+    24.2035073465852,
+    55.7135597798112
+  ],
+  "bindings": [
+    {
+      "appCityId": "al_ain",
+      "runtimeConfig": {
+        "id": "al_ain",
+        "wupCityCode": "1419",
+        "label": "Al Ain, United Arab Emirates",
+        "currency": {
+          "locale": "ar-AE",
+          "code": "AED"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            24.2035073465852,
+            55.7135597798112
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            24.2035073465852,
+            55.7135597798112
+          ],
+          "fallbackDataset": [
+            55.7135597798112,
+            24.2035073465852
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ae-abudhabi-dmt-onwani-smarthub-plot",
+          "idPrefix": "AE-AD-DMT-GISID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Department of Municipalities and Transport (DMT), Abu Dhabi; MyLand/Onwani PLOT layer. Bounded Abu Dhabi availability verified; completeness, historical/current semantics and survey accuracy unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ae-abudhabi-dmt-onwani-smarthub-plot",
+      "name": "Abu Dhabi DMT MyLand / Onwani PLOT parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://onwani.abudhabi.ae/arcgis/rest/services/MyLand/SMARTHUB/MapServer/0",
+      "idField": "GISID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{1,20}$",
+      "idPrefix": "AE-AD-DMT-GISID-",
+      "outFields": [
+        "OBJECTID",
+        "GISID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 200,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "maxResponseBytes": 16777216,
+      "maxConcurrentQueries": 1,
+      "countryCode": "AE",
+      "sourceCrs": "EPSG:4326",
+      "metricSrid": 32640,
+      "cityIds": [
+        "al_ain"
+      ],
+      "defaultForCity": true,
+      "operator": "Department of Municipalities and Transport (DMT), Abu Dhabi",
+      "attribution": "Department of Municipalities and Transport (DMT), Abu Dhabi; MyLand/Onwani PLOT layer. Bounded Abu Dhabi availability verified; completeness, historical/current semantics and survey accuracy unverified.",
+      "licenceNote": "Anonymous first-party query access observed. No separate reuse licence or rate-limit policy established; terms remain a second-pass follow-up.",
+      "scope": "Municipal PLOT cadastral polygons; bounded Abu Dhabi city evidence only. Layer extent does not establish citywide or emirate completeness.",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "AE",
+          "basis": "Official DMT MyLand land search and public SMARTHUB PLOT polygon metadata with native GISID and plot fields.",
+          "evidence": [
+            "https://pages.dmt.gov.ae/en/onwani",
+            "https://onwani.abudhabi.ae/arcgis/rest/services/MyLand/SMARTHUB/MapServer/0"
+          ]
+        }
+      }
+    }
+  ]
+}

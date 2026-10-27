@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "870",
+  "name": "Osh, Kyrgyzstan",
+  "point": [
+    40.5260441990085,
+    72.807912074273
+  ],
+  "bindings": [
+    {
+      "appCityId": "osh",
+      "runtimeConfig": {
+        "id": "osh",
+        "wupCityCode": "870",
+        "label": "Osh, Kyrgyzstan",
+        "currency": {
+          "locale": "ky-KG",
+          "code": "KGS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            40.5260441990085,
+            72.807912074273
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            40.5260441990085,
+            72.807912074273
+          ],
+          "fallbackDataset": [
+            72.807912074273,
+            40.5260441990085
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "kg-bishkek-gisar-eni",
+          "idPrefix": "KG-GISAR-ENI-CODE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "GISAR · State Cadastre of the Kyrgyz Republic"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "kg-bishkek-gisar-eni",
+      "name": "Kyrgyz GISAR cadastral parcels — Участки ЕНИ",
+      "adapter": "kg-gisar-wms",
+      "endpoint": "http://map.darek.kg/qgis/qgis_mapserv.fcgi.exe?MAP=C%3A%2FOSGeo4W64%2Fprojects%2F%D0%93%D0%98%D0%A1%D0%90%D0%A0%2F%D0%93%D0%98%D0%A1%D0%90%D0%A0.qgz",
+      "layer": "Участки ЕНИ",
+      "idField": "propcode",
+      "outFields": [
+        "propcode"
+      ],
+      "idPrefix": "KG-GISAR-ENI-CODE-",
+      "countryCode": "KG",
+      "cityIds": [
+        "osh"
+      ],
+      "metricSrid": 32643,
+      "responseSrid": 3857,
+      "browserTransport": "relay",
+      "maxResponseBytes": 8388608,
+      "maxConcurrentQueries": 2,
+      "capabilities": {
+        "bounds": true,
+        "exactIds": true,
+        "point": true,
+        "areaEnumeration": true
+      },
+      "operator": "GISAR / State Cadastre of the Kyrgyz Republic",
+      "attribution": "GISAR · State Cadastre of the Kyrgyz Republic",
+      "catalogueUrl": "https://bgir.tunduk.kg/Category/InformationSystem/Details?id=220",
+      "scope": "Bounded live cadastral ENI parcel reads around Bishkek. Full native ENI codes identify parcels; administrative prefix records are excluded. No citywide completeness claim.",
+      "licenceNote": "Anonymous public map access; explicit reuse licence, exact map-host custody and record currentness remain second-pass follow-ups.",
+      "defaultForCity": true
+    }
+  ]
+}

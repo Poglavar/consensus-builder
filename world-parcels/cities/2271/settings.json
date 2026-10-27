@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2271",
+  "name": "Khamis Mushayt, Saudi Arabia",
+  "point": [
+    18.3008221884283,
+    42.7365518514848
+  ],
+  "bindings": [
+    {
+      "appCityId": "khamis_mushayt",
+      "runtimeConfig": {
+        "id": "khamis_mushayt",
+        "wupCityCode": "2271",
+        "label": "Khamis Mushayt, Saudi Arabia",
+        "currency": {
+          "locale": "ar-SA",
+          "code": "SAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            18.3008221884283,
+            42.7365518514848
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            18.3008221884283,
+            42.7365518514848
+          ],
+          "fallbackDataset": [
+            42.7365518514848,
+            18.3008221884283
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "sa-geosa-ndm-landparcel",
+          "idPrefix": "SAU-GEOSA-NDM-LANDPARCEL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "GEOSA · National Geospatial Platform NDM Land Parcels"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "sa-geosa-ndm-landparcel",
+      "name": "GEOSA National Geospatial Platform NDM Land Parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://www.geoportal.sa/portal/sharing/servers/c3b7cc00898344d99c5c1781c5f68e9a/rest/services/NDM/LandParcel/FeatureServer/0",
+      "idField": "SUBDIVPARCEL_UNIFIED_ID",
+      "idType": "string",
+      "idPattern": "^[0-9]{17}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "SAU-GEOSA-NDM-LANDPARCEL-",
+      "outFields": [
+        "OBJECTID",
+        "SUBDIVPARCEL_UNIFIED_ID"
+      ],
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "queryFormat": "geojson",
+      "pageSize": 500,
+      "idBatchSize": 10,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 1,
+      "timeoutMs": 45000,
+      "maxResponseBytes": 16777216,
+      "minRequestIntervalMs": 1100,
+      "countryCode": "SA",
+      "metricSrid": 32638,
+      "cityIds": [
+        "khamis_mushayt"
+      ],
+      "defaultForCity": true,
+      "browserTransport": "relay",
+      "scope": "National cadastral land-parcel layer; three complete parcels independently reread in a bounded northeast Khamis Mushayt locality. No municipal or citywide completeness claim.",
+      "operator": "General Authority for Survey and Geospatial Information (GEOSA), Saudi Arabia",
+      "attribution": "GEOSA · National Geospatial Platform NDM Land Parcels",
+      "licenceNote": "Public anonymous official map queries. No explicit reuse/redistribution licence in the checked layer or web map; permission and production rate policy remain unverified.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "maxConcurrentQueries": 1
+    }
+  ]
+}

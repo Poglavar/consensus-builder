@@ -333,6 +333,38 @@ describe('the settlement phase of a run (run.mjs settleStage)', () => {
         expect(chain.signed()).toHaveLength(signed);
     });
 
+    it('records retired content as a terminal skip without a chain or relay action', async () => {
+        const agreement = await earlierAgreement('Retired');
+        const pool = createLedgerPool({ runs: [
+            runRow('previous', '2026-10-20', [{ ...agreement, content: { ...agreement.content, designs: [] } }]),
+            { run_id: 'current', persona: persona.name, day: '2026-10-22', summary: {} }
+        ] });
+        const signed = chain.signed().length;
+        const entry = { persona, runId: 'current', day: '2026-10-22', run: pool.run('current') };
+        expect((await settle(pool, [entry])).failures).toEqual([]);
+        expect(pool.run('current').summary.settlements[agreement.account]).toMatchObject({ state: 'retired', retired: true, settled: false });
+        expect(chain.signed()).toHaveLength(signed);
+        expect(chain.agreement(agreement.account).status).toBe('Active');
+        expect(world.onchainCalls).toEqual([]);
+        expect(await world.decisionStore.list(agreement.cid)).toEqual([]);
+        expect((await settle(pool, [{ ...entry, run: pool.run('current') }])).report).toEqual([]);
+    });
+    it('checkpoints an explicit retired-format 410 and continues to the next agreement', async () => {
+        const retired = await earlierAgreement('Retired server record');
+        const valid = await earlierAgreement('Current server record');
+        const listDecisions = world.index.listDecisions;
+        world.index.listDecisions = async cid => {
+            if (cid === retired.cid) throw Object.assign(new Error('Retired experimental format'), { status: 410, code: 'retired-agreement-format' });
+            return listDecisions(cid);
+        };
+        const pool = createLedgerPool({ runs: [runRow('previous', '2026-10-20', [retired, valid]),
+            { run_id: 'current', persona: persona.name, day: '2026-10-22', summary: {} }] });
+        const entry = { persona, runId: 'current', day: '2026-10-22', run: pool.run('current') };
+        expect((await settle(pool, [entry])).failures).toEqual([]);
+        expect(pool.run('current').summary.settlements[retired.account]).toMatchObject({ retired: true, settled: false });
+        expect(chain.agreement(retired.account).status).toBe('Active');
+        expect(chain.agreement(valid.account).status).toBe('Executed');
+    });
     it('lists what it would settle in a dry run without loading a key or writing a checkpoint', async () => {
         const agreement = await earlierAgreement('Dry');
         const pool = createLedgerPool({ runs: [runRow('2026-10-20-densifier-01', '2026-10-20', [agreement])] });

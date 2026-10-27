@@ -1,0 +1,4 @@
+Bundled license information:
+
+aes-js/lib.esm/aes.js:
+  /*! MIT License. Copyright 2015-2022 Richard Moore <me@ricmoo.com>. See LICENSE.txt. */

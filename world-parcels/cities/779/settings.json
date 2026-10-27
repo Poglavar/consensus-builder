@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "779",
+  "name": "Santiago de los Caballeros, Dominican Republic",
+  "point": [
+    19.4585492131198,
+    -70.6940314853587
+  ],
+  "bindings": [
+    {
+      "appCityId": "santiago_de_los_caballeros",
+      "runtimeConfig": {
+        "id": "santiago_de_los_caballeros",
+        "wupCityCode": "779",
+        "label": "Santiago de los Caballeros, Dominican Republic",
+        "currency": {
+          "locale": "es-DO",
+          "code": "DOP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            19.4585492131198,
+            -70.6940314853587
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            19.4585492131198,
+            -70.6940314853587
+          ],
+          "fallbackDataset": [
+            -70.6940314853587,
+            19.4585492131198
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "do-dgcn-santiago-mapa-webmap-poligono",
+          "idPrefix": "DO-DGCN-SANTIAGO-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Dirección General del Catastro Nacional / DivisionCartografia; Mapa de Santiago, ArcGIS item a8d91258763842f28da45a10e55ca062"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "do-dgcn-santiago-mapa-webmap-poligono",
+      "name": "DGCN / DivisionCartografia — Mapa de Santiago, poligono parcels",
+      "countryCode": "DO",
+      "adapter": "arcgis-webmap",
+      "endpoint": "https://www.arcgis.com/sharing/rest/content/items/a8d91258763842f28da45a10e55ca062/data",
+      "idPrefix": "DO-DGCN-SANTIAGO-",
+      "objectIdField": "FID",
+      "idField": "ID_RefC",
+      "idFields": [
+        "ID_RefC"
+      ],
+      "idType": "string",
+      "idPattern": "^[0-9]{13}$",
+      "outFields": [
+        "ID_RefC"
+      ],
+      "webmapLayerName": "poligono",
+      "skipBlankRecords": true,
+      "sourceCrs": "EPSG:3857",
+      "nativeCrs": "EPSG:102100 (latestWkid 3857)",
+      "responseCrs": "EPSG:4326",
+      "coordinateOrder": "longitude,latitude",
+      "metricSrid": 32619,
+      "returnsWGS84": true,
+      "bbox": [
+        -70.6947,
+        19.4602,
+        -70.6884,
+        19.4634
+      ],
+      "maxBboxKm2": 25,
+      "maxSnapshotBytes": 1048576,
+      "maxSnapshotFeatures": 100,
+      "expectedSnapshotFeatures": 53,
+      "maxFeatures": 100,
+      "snapshotTimeoutMs": 30000,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "cityIds": [
+        "santiago_de_los_caballeros"
+      ],
+      "defaultForCity": true,
+      "attribution": "Dirección General del Catastro Nacional / DivisionCartografia; Mapa de Santiago, ArcGIS item a8d91258763842f28da45a10e55ca062",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=a8d91258763842f28da45a10e55ca062",
+      "operator": "Dirección General del Catastro Nacional (DGCN)",
+      "scope": "Finite 53-parcel Los Jardines Metropolitanos sector in Santiago; city locator is outside mapped sector. No citywide completeness, currentness or legal-title claim. Item modified 2017-08-24.",
+      "licenceNote": "Public anonymous access; licenseInfo and accessInformation are null. Explicit reuse terms remain unestablished.",
+      "discovery": {
+        "jurisdiction": {
+          "basis": "Official DGCN CAF document links the DivisionCartografia publisher; Mapa de Santiago is tagged parcelas and poligono has native cadastral fields. All 53 usable records have Municipio/Provincia SANTIAGO, Sector LOS JARDINES METROPOLITANOS."
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6899",
+  "name": "Rahim Yar Khan, Pakistan",
+  "point": [
+    28.4203157275567,
+    70.3064340473504
+  ],
+  "bindings": [
+    {
+      "appCityId": "rahim_yar_khan",
+      "runtimeConfig": {
+        "id": "rahim_yar_khan",
+        "wupCityCode": "6899",
+        "label": "Rahim Yar Khan, Pakistan",
+        "currency": {
+          "locale": "en-PK",
+          "code": "PKR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            28.4203157275567,
+            70.3064340473504
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            28.4203157275567,
+            70.3064340473504
+          ],
+          "fallbackDataset": [
+            70.3064340473504,
+            28.4203157275567
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "pk-pulse-rahim-yar-khan-cadastral",
+          "idPrefix": "pk-pulse-rahim-yar-khan-objectid:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "pk-pulse-rahim-yar-khan-cadastral",
+      "name": "Punjab PULSE Rahim Yar Khan cadastral reference polygons",
+      "adapter": "pulse-public",
+      "endpoint": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/27",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "pk-pulse-rahim-yar-khan-objectid:",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "boundsSrid": 3857,
+      "boundsProjection": "EPSG:3857",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 16777216,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "countryCode": "PK",
+      "metricSrid": 32642,
+      "cityIds": [
+        "rahim_yar_khan"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "operator": "Punjab Urban Land Systems Enhancement (PULSE) / Punjab Land Records Authority",
+      "catalogueUrl": "https://lis.pulse.gop.pk/",
+      "attribution": "Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons",
+      "scope": "Rahim Yar Khan layer 27; bounded parcel availability near the unchanged WUP locator. No citywide, municipal or district completeness claim. Source maps derive from Mussavie records and represent indicative property lines, not legal boundaries.",
+      "licenceNote": "Public viewer offers anonymous parcel-reference geometry. No explicit open-data reuse licence established; licence, currentness, survey accuracy and long-term OBJECTID continuity remain review follow-ups. Personal attributes and public reader tokens are excluded."
+    }
+  ]
+}

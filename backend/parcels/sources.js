@@ -1,3 +1,25 @@
+import { isGuangxiParcelSource, fetchGuangxiParcel } from './cn-gx-tianditu-fetch.js';
+import { isMylandWfsSource, fetchMylandWfs } from './myland-wfs-fetch.js';
+import { createArcgisHubParcelSource } from './arcgis-hub-source.js';
+import { createAsigWmsKmlParcelSource } from './asig-wms-kml-source.js';
+import { createChanghuaParcelSource } from './changhua-source.js';
+import { createCheongjuMapmoaParcelSource } from './cheongju-mapmoa-source.js';
+import { createCorrientesWmsSource } from './corrientes-wms-source.js';
+import { createDiyarbakirParcelSource } from './diyarbakir-eimar-source.js';
+import { createFlatgeobufRangeParcelSource } from './flatgeobuf-range-source.js';
+import { createGeogeoEmapSource } from './geogeo-emap-source.js';
+import { createGeopixelSource } from './geopixel-source.js';
+import { createHuaibeiParcelSource } from './huaibei-source.js';
+import { createMersinParcelSource } from './mersin-eimar-source.js';
+import { createNetgisParcelSource } from './netgis-runxml-source.js';
+import { createReestr54Source } from './reestr54-source.js';
+import { createRuCadastralReportSource } from './ru-cadastral-report-source.js';
+import { createSakaryaSbbSource } from './sakarya-sbb-source.js';
+import { createSaltilloVisorSource } from './saltillo-visor-source.js';
+import { createSisgranWmsSource } from './sisgran-wms-source.js';
+import { createTatarstanCadastreSource } from './tatarstan-cadastre-source.js';
+import { createToscanaCatastoSource } from './toscana-catasto-source.js';
+import { createKadastrParcelSource } from './ua-kadastr-source.js';
 import { createSupermapParcelSource } from './supermap-source.js';
 import { createTaichungParcelSource } from './taichung-source.js';
 import { createMojMapXmlParcelSource } from './moj-mapxml-source.js';
@@ -61,6 +83,26 @@ const runtimeSources = new Map();
 export function clearParcelSourceRuntimeCache() { runtimeSources.clear(); }
 
 const parcelFactories = {
+    'arcgis-hub': createArcgisHubParcelSource,
+    'asig-wms-kml': createAsigWmsKmlParcelSource,
+    'changhua-urbangis': createChanghuaParcelSource,
+    'cheongju-mapmoa': createCheongjuMapmoaParcelSource,
+    'corrientes-wms': createCorrientesWmsSource,
+    'diyarbakir-eimar': createDiyarbakirParcelSource,
+    'flatgeobuf-range': createFlatgeobufRangeParcelSource,
+    'geogeo-emap': createGeogeoEmapSource,
+    'geopixel': createGeopixelSource,
+    'huaibei-cadastre': createHuaibeiParcelSource,
+    'mersin-eimar': createMersinParcelSource,
+    'netgis-runxml': createNetgisParcelSource,
+    'reestr54-bounded': createReestr54Source,
+    'ru-cadastral-report': createRuCadastralReportSource,
+    'sakarya-sbb-bounded': createSakaryaSbbSource,
+    'saltillo-visor': createSaltilloVisorSource,
+    'sisgran-wms': createSisgranWmsSource,
+    'tatarstan-cadastre-bounded': createTatarstanCadastreSource,
+    'toscana-catasto': createToscanaCatastoSource,
+    'ua-kadastr-landuse': createKadastrParcelSource,
     'supermap-map': createSupermapParcelSource,
     'taichung-gismap': createTaichungParcelSource,
     'moj-mapxml': createMojMapXmlParcelSource,
@@ -126,6 +168,14 @@ export function createParcelSource(descriptor, options = {}) {
     if (descriptor.id?.startsWith('custom.')) {
         descriptor = decodeCustomSource(descriptor.id);
         options = { ...options, fetchImpl: options.fetchImpl || customFetch };
+    }
+    if (isGuangxiParcelSource(descriptor)) {
+        const fetchImpl = options.fetchImpl || globalThis.fetch;
+        options = { ...options, fetchImpl: (url, init) => fetchGuangxiParcel(url, init, { fetchImpl }) };
+    }
+    if (isMylandWfsSource(descriptor)) {
+        const fetchImpl = options.fetchImpl || globalThis.fetch;
+        options = { ...options, fetchImpl: (url, init) => fetchMylandWfs(url, init, { fetchImpl }) };
     }
     if (!parcelFactories[descriptor.adapter]) throw new Error(`Unsupported parcel adapter: ${descriptor.adapter}`);
     if (descriptor.caCertificate && !options.fetchImpl) {

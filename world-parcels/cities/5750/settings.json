@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5750",
+  "name": "Adana, Turkey",
+  "point": [
+    37.0133674018056,
+    35.27607428462
+  ],
+  "bindings": [
+    {
+      "appCityId": "adana",
+      "runtimeConfig": {
+        "id": "adana",
+        "wupCityCode": "5750",
+        "label": "Adana, Turkey",
+        "currency": {
+          "locale": "tr-TR",
+          "code": "TRY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            37.0133674018056,
+            35.27607428462
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            37.0133674018056,
+            35.27607428462
+          ],
+          "fallbackDataset": [
+            35.27607428462,
+            37.0133674018056
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tr-seyhan-gispya-kentrehberi-parsel",
+          "idPrefix": "TR-SEYHAN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Seyhan Belediyesi Kent Rehberi · PARSEL"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tr-seyhan-gispya-kentrehberi-parsel",
+      "name": "Seyhan Belediyesi Kent Rehberi PARSEL",
+      "adapter": "arcgis",
+      "endpoint": "http://gispya.seyhan.bel.tr/arcgis/rest/services/KENTREHBERI/MapServer/4",
+      "idField": "GLOBALID",
+      "idType": "string",
+      "idPattern": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "TR-SEYHAN-",
+      "outFields": [
+        "GLOBALID",
+        "OBJECTID"
+      ],
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 20000,
+      "minRequestIntervalMs": 150,
+      "maxResponseBytes": 16777216,
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 2,
+      "countryCode": "TR",
+      "metricSrid": 32636,
+      "cityIds": [
+        "adana"
+      ],
+      "operator": "Seyhan Belediyesi",
+      "attribution": "Seyhan Belediyesi Kent Rehberi · PARSEL",
+      "scope": "Municipal parcel fabric in sampled Seyhan locations, central Adana. No Adana-wide or district-wide completeness established. Sample TIP/VERIDURUM fields are null; cadastral/development subtype and currentness remain unknown.",
+      "licenceNote": "Anonymous municipal map service; no explicit reuse licence, rate terms or freshness guarantee found. HTTPS certificate remains expired; public HTTP is relayed without disabling TLS verification.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "TR",
+          "basis": "First-party Seyhan PARSEL Feature Layer declares polygon parcels with cadastral and development subtypes, distinct from other map layers. Bounded proof covers Seyhan only.",
+          "evidence": [
+            "https://ebelediye.seyhan.bel.tr/Imar",
+            "http://gispya.seyhan.bel.tr/arcgis/rest/services/KENTREHBERI/MapServer/4"
+          ]
+        },
+        "keepPublishedFields": true
+      },
+      "defaultForCity": true
+    }
+  ]
+}

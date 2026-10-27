@@ -48,6 +48,8 @@
          offline development was impossible. Files are the unmodified npm dist artefacts — re-fetch a
          version with `npm pack <pkg>@<version>` and diff if you need to verify one. -->
 
+    <script src="js/app-diagnostics.js"></script>
+
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="vendor/leaflet-1.9.4/leaflet.css" />
 
@@ -2286,7 +2288,7 @@
 
             if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ready && typeof PersistentStorage.ready.then === 'function') {
                 PersistentStorage.ready.then(boot).catch(error => {
-                    console.error('Could not open the saved workspace', error);
+                    window.AppDiagnostics.report(error, { code: 'workspace-unavailable', context: { surface: 'workspace' } });
                     window.WorkspaceScreen.show('error');
                 });
             } else if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {

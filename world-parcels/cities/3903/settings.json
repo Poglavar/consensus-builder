@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3903",
+  "name": "Belgorod, Russia",
+  "point": [
+    50.5919318148311,
+    36.5862404865279
+  ],
+  "bindings": [
+    {
+      "appCityId": "belgorod",
+      "runtimeConfig": {
+        "id": "belgorod",
+        "wupCityCode": "3903",
+        "label": "Belgorod, Russia",
+        "currency": {
+          "locale": "ru-RU",
+          "code": "RUB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            50.5919318148311,
+            36.5862404865279
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            50.5919318148311,
+            36.5862404865279
+          ],
+          "fallbackDataset": [
+            36.5862404865279,
+            50.5919318148311
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ru-belgorod-reestr54-cadastral",
+          "idPrefix": "RU-REESTR54-BELGOROD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru independent public cadastral viewer; EGRN context; one observed Belgorod parcel only; wider city coverage unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ru-belgorod-reestr54-cadastral",
+      "name": "Belgorod public cadastral viewer — one observed EGRN parcel",
+      "operator": "Кадастровые инженеры Новосибирска (independent public-map operator)",
+      "adapter": "reestr54-bounded",
+      "endpoint": "https://kk.reestr54.ru/belgorod/",
+      "countryCode": "RU",
+      "cityIds": [
+        "belgorod"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "RU-REESTR54-BELGOROD-",
+      "idField": "cad_num",
+      "parcelNumberField": "cad_num",
+      "outFields": [
+        "cad_num"
+      ],
+      "nativeCrs": "EPSG:3857",
+      "srsName": "EPSG:4326",
+      "metricSrid": 32637,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "coverage": {
+        "scope": "explicit-native-id-subset",
+        "citywide": false,
+        "nativeIds": [
+          "31:16:0117011:23"
+        ],
+        "basis": "One queue-point parcel identified by native cadastral number; live exact reads required by qualifier. No bbox enumeration or authoritative absence is claimed."
+      },
+      "scope": "One explicitly configured native cadastral parcel only; wider Belgorod parcel fabric is not enumerated. Viewport completeness applies only to this finite subset.",
+      "licence": "Unresolved; anonymous access is not an open-data or redistribution licence.",
+      "licenceNote": "Reuse permission, legal custody and upstream Rosreestr/NSPD lineage remain unverified.",
+      "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru independent public cadastral viewer; EGRN context; one observed Belgorod parcel only; wider city coverage unverified.",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://kk.reestr54.ru/belgorod/",
+          "https://kk.reestr54.ru/static/pkk/js/pkk04112025.js?v=20251210_5"
+        ],
+        "jurisdiction": {
+          "basis": "Belgorod-specific cadastral map; queue-point parcel 31:16:0117011:23 from accepted discovery; live repeatability checked independently."
+        }
+      },
+      "adapterModule": "reestr54-source.js"
+    }
+  ]
+}

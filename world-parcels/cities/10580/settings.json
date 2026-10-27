@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "10580",
+  "name": "Beihai, China",
+  "point": [
+    21.4818101454114,
+    109.151254850922
+  ],
+  "bindings": [
+    {
+      "appCityId": "beihai",
+      "runtimeConfig": {
+        "id": "beihai",
+        "wupCityCode": "10580",
+        "label": "Beihai, China",
+        "currency": {
+          "locale": "zh-CN",
+          "code": "CNY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            21.4818101454114,
+            109.151254850922
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            21.4818101454114,
+            109.151254850922
+          ],
+          "fallbackDataset": [
+            109.151254850922,
+            21.4818101454114
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "cn-gx-tianditu-zongdi-natural-building",
+          "idPrefix": "cn-gx-tianditu-zongdi-natural-building:ZDID:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "TianDiTu Guangxi / Guangxi Natural Resources Department · 宗地 (parcel polygons)"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "cn-gx-tianditu-zongdi-natural-building",
+      "name": "TianDiTu Guangxi public real-estate parcel polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://guangxi.tianditu.gov.cn/mapgxservice/rest/services/TMP/oldTM260414new/MapServer/8",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "cn-gx-tianditu-zongdi-natural-building:ZDID:",
+      "outFields": [
+        "ZDID",
+        "OBJECTID"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "composite-object-ids",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "minRequestIntervalMs": 200,
+      "maxConcurrentQueries": 1,
+      "countryCode": "CN",
+      "metricSrid": 32649,
+      "projection": "EPSG:32649",
+      "sourceCrs": "EPSG:4490",
+      "cityIds": [
+        "beihai"
+      ],
+      "defaultForCity": true,
+      "operator": "Guangxi Zhuang Autonomous Region Natural Resources Department / TianDiTu Guangxi",
+      "catalogueUrl": "https://guangxi.tianditu.gov.cn/",
+      "attribution": "TianDiTu Guangxi / Guangxi Natural Resources Department · 宗地 (parcel polygons)",
+      "licenceNote": "Anonymous first-party public map service. No explicit reuse licence found; detailed reuse terms and currentness remain follow-up findings.",
+      "scope": "Bounded parcel availability around the Beihai WUP locator in Haicheng. Official regional catalog describes Guangxi-wide real-estate parcels and natural buildings; layer 8 selects parcels. Does not establish Beihai-wide completeness, currentness, survey accuracy or legal title.",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "idFields": [
+        "ZDID",
+        "OBJECTID"
+      ],
+      "idFieldTypes": {
+        "ZDID": "string",
+        "OBJECTID": "integer"
+      },
+      "browserTransport": "relay",
+      "parcelNumberField": "ZDID"
+    }
+  ]
+}

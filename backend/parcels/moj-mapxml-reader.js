@@ -4,6 +4,9 @@ import proj4 from 'proj4';
 import { upstreamError, validateGeometry } from './source-contract.js';
 
 export const MOJ_ZONE_10 = '+proj=tmerc +lat_0=40 +lon_0=140.833333333333333 +k=0.9999 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs';
+export const MOJ_ZONE_6 = '+proj=tmerc +lat_0=36 +lon_0=136 +k=0.9999 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs';
+export const MOJ_ZONE_7 = '+proj=tmerc +lat_0=36 +lon_0=137.166666666666667 +k=0.9999 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs';
+const PROJECTIONS = { '公共座標6系': MOJ_ZONE_6, '公共座標7系': MOJ_ZONE_7, '公共座標10系': MOJ_ZONE_10 };
 const MAP = 'http://www.moj.go.jp/MINJI/tizuxml', GEOM = 'http://www.moj.go.jp/MINJI/tizuzumen';
 const fail = () => { throw upstreamError('Unsupported or incomplete Ministry of Justice parcel geometry.'); };
 const children = (node, name) => node.children.filter(child => child.name === name);
@@ -13,16 +16,16 @@ const single = nodes => { if (nodes.length !== 1) fail(); return nodes[0]; };
 const number = node => { if (!node || !/^[-+]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(node.text.trim())) fail(); return Number(node.text); };
 const xy = node => [number(single(children(node, 'Y'))), number(single(children(node, 'X')))];
 
-export function parseMojMapXml(bytes, filename, { maxFeatures = 100000 } = {}) {
+export function parseMojMapXml(bytes, filename, { maxFeatures = 100000, expectedCoordinateSystem, municipalityCode } = {}) {
     if (!(bytes instanceof Uint8Array) || bytes.length > 48 * 1024 * 1024 || !/^\d{5}-\d{4}-\d+\.xml$/.test(filename)) fail();
     const points = new Map(), curves = new Map(), surfaces = new Map(), parcels = new Map();
-    const stack = []; let capture = null, coordinateSystem = null, datumClassification = null, nodes = 0;
+    const stack = []; let capture = null, coordinateSystem = null, datumClassification = null, nativeMunicipality = null, nodes = 0;
     const parser = new SaxesParser({ xmlns: true });
     parser.on('doctype', fail);
     parser.on('opentag', tag => {
         if (++nodes > 3000000 || stack.length > 64) fail();
         const root = !capture && ((tag.uri === GEOM && ['GM_Point', 'GM_Curve', 'GM_Surface'].includes(tag.local))
-            || (tag.uri === MAP && ['筆', '座標系', '測地系判別'].includes(tag.local)));
+            || (tag.uri === MAP && (tag.local === '筆' || stack.length === 1 && ['座標系', '測地系判別', '市区町村コード'].includes(tag.local))));
         const safe = root || capture && (tag.uri === GEOM || tag.uri === MAP && tag.local === '形状');
         const node = safe ? { name: tag.local, text: '', children: [], id: tag.attributes.id?.value,
             ref: tag.attributes.idref?.value } : null;
@@ -30,7 +33,7 @@ export function parseMojMapXml(bytes, filename, { maxFeatures = 100000 } = {}) {
         else if (node && stack.at(-1)) stack.at(-1).children.push(node);
         stack.push(node);
     });
-    parser.on('text', text => { const node = stack.at(-1); if (node && ['X', 'Y', 'GM_OrientablePrimitive.orientation', '座標系', '測地系判別'].includes(node.name)) { node.text += text; if (node.text.length > 1024) fail(); } });
+    parser.on('text', text => { const node = stack.at(-1); if (node && ['X', 'Y', 'GM_OrientablePrimitive.orientation', '座標系', '測地系判別', '市区町村コード'].includes(node.name)) { node.text += text; if (node.text.length > 1024) fail(); } });
     parser.on('closetag', () => {
         const node = stack.pop(); if (!node || node !== capture) return;
         capture = null;
@@ -38,6 +41,7 @@ export function parseMojMapXml(bytes, filename, { maxFeatures = 100000 } = {}) {
         switch (node.name) {
         case '座標系': coordinateSystem = node.text.trim(); break;
         case '測地系判別': datumClassification = node.text.trim(); break;
+        case '市区町村コード': nativeMunicipality = node.text.trim(); break;
         case 'GM_Point': add(points, xy(single(descendants(node, 'DirectPosition')))); break;
         case 'GM_Curve': add(curves, node); break;
         case 'GM_Surface': add(surfaces, node); break;
@@ -49,7 +53,9 @@ export function parseMojMapXml(bytes, filename, { maxFeatures = 100000 } = {}) {
         for (let i = 0; i < bytes.length; i += 65536) parser.write(decoder.decode(bytes.subarray(i, i + 65536), { stream: true }));
         parser.write(decoder.decode()).close();
     } catch { fail(); }
-    if (coordinateSystem !== '公共座標10系') fail();
+    if (!Object.hasOwn(PROJECTIONS, coordinateSystem)
+        || expectedCoordinateSystem && coordinateSystem !== expectedCoordinateSystem
+        || municipalityCode && nativeMunicipality !== municipalityCode) fail();
     const resolved = new Map();
     function curve(id, visited = new Set()) {
         if (resolved.has(id)) return resolved.get(id);
@@ -92,7 +98,7 @@ export function parseMojMapXml(bytes, filename, { maxFeatures = 100000 } = {}) {
         }
         fail();
     }
-    const transform = proj4(MOJ_ZONE_10, 'EPSG:4326');
+    const transform = proj4(PROJECTIONS[coordinateSystem], 'EPSG:4326');
     const features = [];
     for (const [id, surfaceId] of parcels) {
         const surface = surfaces.get(surfaceId); if (!surface) fail();
@@ -107,5 +113,5 @@ export function parseMojMapXml(bytes, filename, { maxFeatures = 100000 } = {}) {
         if (!validateGeometry(geometry)) fail();
         features.push({ type: 'Feature', id: `${filename}#${id}`, properties: { id: `${filename}#${id}` }, geometry });
     }
-    return { features, metadata: { filename, coordinateSystem, datumClassification, parcelCount: parcels.size } };
+    return { features, metadata: { filename, coordinateSystem, datumClassification, municipalityCode: nativeMunicipality, parcelCount: parcels.size } };
 }

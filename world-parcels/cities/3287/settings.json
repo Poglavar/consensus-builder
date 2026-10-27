@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3287",
+  "name": "Florence, Italy",
+  "point": [
+    43.7814801703684,
+    11.2283419834417
+  ],
+  "bindings": [
+    {
+      "appCityId": "florence",
+      "runtimeConfig": {
+        "id": "florence",
+        "wupCityCode": "3287",
+        "label": "Florence, Italy",
+        "currency": {
+          "locale": "it-IT",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            43.7814801703684,
+            11.2283419834417
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            43.7814801703684,
+            11.2283419834417
+          ],
+          "fallbackDataset": [
+            11.2283419834417,
+            43.7814801703684
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "it-regione-toscana-geoscopio-catasto-particelle-wms",
+          "idPrefix": "IT-TOSCANA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Regione Toscana · Geoscopio / SIPT · Agenzia delle Entrate Catasto Terreni"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "it-regione-toscana-geoscopio-catasto-particelle-wms",
+      "name": "Regione Toscana Geoscopio Catasto Terreni cadastral parcels",
+      "adapter": "toscana-catasto",
+      "endpoint": "https://www502.regione.toscana.it/ows_catasto/com.rt.wms.RTmap/ows?map=owscatasto&",
+      "layer": "rt_cat.idcatpart.rt",
+      "locatorLayer": "rt_cat.idcatpart.bbox.rt",
+      "idField": "featureid",
+      "idFields": [
+        "featureid"
+      ],
+      "idPrefix": "IT-TOSCANA-",
+      "outFields": [
+        "featureid"
+      ],
+      "countryCode": "IT",
+      "cityIds": [
+        "florence"
+      ],
+      "defaultForCity": true,
+      "metricSrid": 32632,
+      "responseSrid": 4326,
+      "sourceCrs": "EPSG:4326",
+      "version": "1.3.0",
+      "capabilities": {
+        "point": true,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 2,
+      "maxBboxKm2": 1,
+      "maxFeatures": 500,
+      "maxResponseBytes": 8388608,
+      "operator": "Regione Toscana - Direzione Urbanistica / SIPT; Agenzia delle Entrate Catasto Terreni",
+      "attribution": "Regione Toscana · Geoscopio / SIPT · Agenzia delle Entrate Catasto Terreni",
+      "catalogueUrl": "https://www502.regione.toscana.it/geoscopio/servizi/wms/CATASTO.htm",
+      "licenceNote": "Regional WMS documentation states Creative Commons sharing; specific variant and cadastral dataset terms remain a second-pass follow-up. Capabilities: Fees none; AccessConstraints none.",
+      "scope": "Regional Tuscany cadastral parcel service, with observed Florence polygons. Bounded availability and radius enumeration do not establish municipal completeness.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "IT",
+          "basis": "First-party regional documentation and live capabilities explicitly identify systematic cadastral parcels from Catasto Terreni.",
+          "evidence": [
+            "https://www502.regione.toscana.it/geoscopio/servizi/wms/CATASTO.htm",
+            "https://www.regione.toscana.it/servizi-catastali"
+          ]
+        }
+      }
+    }
+  ]
+}

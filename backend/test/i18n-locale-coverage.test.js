@@ -17,6 +17,8 @@ const PLURAL_FORMS = ['zero', 'one', 'two', 'few', 'many', 'other'];
 // listed here on purpose; a new dynamic call site with an unlisted prefix fails the test.
 const DYNAMIC_KEY_PREFIXES = [
     'planDialog.',
+    'diagnostics.errors.',
+    'diagnostics.ui.',
     'alerts.messages.',
     'designMemberships.',
     'clickStackRelations.',
@@ -207,6 +209,16 @@ describe('i18n locale coverage', () => {
         ];
         for (const lang of LANGS) for (const key of dynamicKeys) {
             expect(hasKey(locales[lang], key), `${lang}: ${key}`).toBe(true);
+        }
+    });
+
+    it('defines every dynamically selected diagnostic error and UI message in every locale', () => {
+        const keys = Object.keys(locales.en).filter(key => key.startsWith('diagnostics.errors.') || key.startsWith('diagnostics.ui.'));
+        expect(keys.length).toBeGreaterThan(20);
+        const placeholders = value => [...String(value).matchAll(/\{\{\s*([\w.-]+)\s*\}\}/g)].map(match => match[1]).sort();
+        for (const lang of LANGS) for (const key of keys) {
+            expect(hasKey(locales[lang], key), `${lang}: ${key}`).toBe(true);
+            expect(placeholders(locales[lang][key]), `${lang}: ${key} placeholders`).toEqual(placeholders(locales.en[key]));
         }
     });
 

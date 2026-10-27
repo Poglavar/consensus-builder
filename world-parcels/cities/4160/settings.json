@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4160",
+  "name": "Eskisehir, Turkey",
+  "point": [
+    39.7626964176253,
+    30.5498458711481
+  ],
+  "bindings": [
+    {
+      "appCityId": "eskisehir",
+      "runtimeConfig": {
+        "id": "eskisehir",
+        "wupCityCode": "4160",
+        "label": "Eskisehir, Turkey",
+        "currency": {
+          "locale": "tr-TR",
+          "code": "TRY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            39.7626964176253,
+            30.5498458711481
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            39.7626964176253,
+            30.5498458711481
+          ],
+          "fallbackDataset": [
+            30.5498458711481,
+            39.7626964176253
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tr-eskisehir-tepebasi-kentrehberi-parcels",
+          "idPrefix": "TR-TEPEBASI-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Tepebaşı Belediyesi Kent Rehberi · smpns:MISMAP_NUM_KADASTRO_PARSEL"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tr-eskisehir-tepebasi-kentrehberi-parcels",
+      "name": "Tepebaşı Belediyesi Kent Rehberi cadastral parcels",
+      "operator": "Tepebaşı Belediyesi",
+      "adapter": "wfs",
+      "endpoint": "https://kent.tepebasi.bel.tr:8181/geoserver/wfs",
+      "wfsUrlProxy": "https://kentrehberi.tepebasi.bel.tr:81/proxy.ashx",
+      "browserTransport": "relay",
+      "version": "1.1.0",
+      "featureType": "smpns:MISMAP_NUM_KADASTRO_PARSEL",
+      "geometryField": "GEOMETRY",
+      "requestProperties": true,
+      "idField": "ID",
+      "idType": "integer",
+      "idPrefix": "TR-TEPEBASI-",
+      "outFields": [
+        "ID"
+      ],
+      "responseSrid": 3857,
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 1048576,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "TR",
+      "metricSrid": 32636,
+      "cityIds": [
+        "eskisehir"
+      ],
+      "scope": "Bounded municipal Tepebaşı cadastral parcels within Eskişehir. Whole-city, Odunpazarı, district completeness and currentness unproved.",
+      "catalogueUrl": "https://kentrehberi.tepebasi.bel.tr:81//Kentrehberiapp/Index",
+      "attribution": "Tepebaşı Belediyesi Kent Rehberi · smpns:MISMAP_NUM_KADASTRO_PARSEL",
+      "licenceNote": "WFS Fees NONE and AccessConstraints NONE; no separate reuse licence established. Municipal attribution retained.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "TR",
+          "basis": "Municipal viewer labels PARSEL and publishes the cadastral MISMAP_NUM_KADASTRO_PARSEL WFS layer in Tepebaşı, Eskişehir.",
+          "evidence": [
+            "https://kentrehberi.tepebasi.bel.tr:81//Kentrehberiapp/Index",
+            "https://kent.tepebasi.bel.tr:8181/geoserver/wfs"
+          ]
+        }
+      },
+      "boundsSrid": 3857,
+      "omitSortBy": true,
+      "defaultForCity": true
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5604",
+  "name": "Samsun, Turkey",
+  "point": [
+    41.2942278241548,
+    36.3162698732391
+  ],
+  "bindings": [
+    {
+      "appCityId": "samsun",
+      "runtimeConfig": {
+        "id": "samsun",
+        "wupCityCode": "5604",
+        "label": "Samsun, Turkey",
+        "currency": {
+          "locale": "tr-TR",
+          "code": "TRY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            41.2942278241548,
+            36.3162698732391
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            41.2942278241548,
+            36.3162698732391
+          ],
+          "fallbackDataset": [
+            36.3162698732391,
+            41.2942278241548
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tr-ilkadim-belediyesi-netgis-kentrehberi-parsel",
+          "idPrefix": "TR-ILKADIM-KENTREHBERI-OBJECTID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "İlkadım Belediyesi Kent Rehberi · NetGIS REHBER7"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tr-ilkadim-belediyesi-netgis-kentrehberi-parsel",
+      "name": "İlkadım Belediyesi Kent Rehberi cadastral parcels",
+      "adapter": "netgis-runxml",
+      "endpoint": "https://keos.ilkadim.bel.tr/netgis7/ncwebgisservice.asmx/RunXML",
+      "countryCode": "TR",
+      "country": "Türkiye",
+      "authority": "İlkadım Belediyesi",
+      "license": "Public read-only municipal viewer; no explicit open-data licence or automated redistribution terms established. Attribution retained; terms remain a follow-up.",
+      "attribution": "İlkadım Belediyesi Kent Rehberi · NetGIS REHBER7",
+      "homepage": "https://keos.ilkadim.bel.tr/keos/",
+      "workspace": "REHBER7",
+      "layer": "kentrehberi_parsel",
+      "idField": "objectid",
+      "idPrefix": "TR-ILKADIM-KENTREHBERI-OBJECTID-",
+      "outFields": [
+        "objectid"
+      ],
+      "sourceCrs": "EPSG:7934",
+      "sourceProjection": "PROJCS[\"ITRF96 / TM36\", GEOGCS[\"ITRF 1996\", DATUM[\"International Terrestrial Reference Frame 1996\", SPHEROID[\"GRS 1980\", 6378137, 298.257222101, AUTHORITY[\"EPSG\", \"7019\"]], AUTHORITY[\"EPSG\", \"6654\"]], PRIMEM[\"Greenwich\", 0, AUTHORITY[\"EPSG\", \"8901\"]], UNIT[\"Degree\", 0.0174532925199433, AUTHORITY[\"EPSG\", \"9102\"]]], PROJECTION[\"Transverse_Mercator\", AUTHORITY[\"EPSG\", \"9807\"]], PARAMETER[\"Central_Meridian\", 36], PARAMETER[\"Latitude_Of_Origin\", 0], PARAMETER[\"Scale_Factor\", 1], PARAMETER[\"False_Easting\", 500000], PARAMETER[\"False_Northing\", 0], UNIT[\"Metre\", 1, AUTHORITY[\"EPSG\", \"9001\"]], AUTHORITY[\"EPSG\", \"7934\"]]",
+      "responseCrs": "EPSG:4326",
+      "returnsWGS84": true,
+      "metricSrid": 32637,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "pageSize": 200,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 2097152,
+      "timeoutMs": 45000,
+      "coverage": {
+        "scope": "bounded-sample",
+        "citywideCompleteness": false,
+        "basis": "Bounded central İlkadım municipal cadastral table; citywide Samsun completeness is unproven."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "TR",
+          "city": "Samsun",
+          "basis": "Official İlkadım municipality Kadastro > Parsel table contains the unchanged Samsun queue point. Limited to municipal table coverage."
+        },
+        "sourcePurpose": "cadastral-parcels"
+      },
+      "maxConcurrentQueries": 1,
+      "scope": "İlkadım municipal cadastral table; bounded local coverage, all-Samsun completeness unproven.",
+      "licenceNote": "Public read-only municipal viewer; no explicit open-data licence or automated redistribution terms established. Attribution retained; terms remain a follow-up.",
+      "duplicateNativeRowPolicy": "Coalesce only identical native ID plus identical full geometry; reject conflicts and retain distinct IDs with identical/overlapping geometry. Transfer caps count raw rows.",
+      "cityIds": [
+        "samsun"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

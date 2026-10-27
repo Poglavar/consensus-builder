@@ -34,6 +34,8 @@ function crc32(bytes) {
     let n = 0xffffffff; for (const b of bytes) n = crcTable[(n ^ b) & 255] ^ (n >>> 8); return (n ^ 0xffffffff) >>> 0;
 }
 export const SHAPEFILE_CRS = Object.freeze({
+    // MAGNA-SIRGAS 2018 / Origen-Nacional. SHP uses easting,northing; no fitted offset.
+    'EPSG:9377': '+proj=tmerc +lat_0=4 +lon_0=-73 +k=0.9992 +x_0=5000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs',
     // Monte Mario / Italy zone 1; approximate EPSG:1660 Helmert, no fitted offset or grid.
     'EPSG:3003': '+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 +ellps=intl +towgs84=-104.1,-49.1,-9.9,0.971,-2.917,0.714,-11.68 +units=m +no_defs',
     'EPSG:6677': '+proj=tmerc +lat_0=36 +lon_0=139.833333333333333 +k=0.9999 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs',
@@ -116,14 +118,14 @@ export function readShapefileZipMembers(bytes, descriptor) {
     return readBoundedZipMembers(bytes, descriptor, () => descriptor.shapefileMembers);
 }
 
-function verifiedProjection(prj, sourceCrs) {
+export function verifiedProjection(prj, sourceCrs) {
     let text, parsed;
     try { text = new TextDecoder('utf-8', { fatal: true }).decode(prj); parsed = proj4(text).oProj; }
     catch { fail('Invalid parcel projection metadata.'); }
     const expected = proj4(SHAPEFILE_CRS[sourceCrs]).oProj;
     const parameters = ['a', 'b', 'lat0', 'long0', 'k0', 'x0', 'y0'];
-    const projectionNames = ['EPSG:6677', 'EPSG:2454', 'EPSG:3003'].includes(sourceCrs) ? ['tmerc', 'Transverse_Mercator'] : ['lcc', 'Lambert_Conformal_Conic'];
-    const datumName = sourceCrs === 'EPSG:3003' ? /Monte[_ ]?Mario/i : sourceCrs === 'EPSG:2454' ? /JGD[_ ]?2000/i : sourceCrs === 'EPSG:6677' ? /JGD[_ ]?2011/i : /RGF[_ ]?(?:1993|93)/i;
+    const projectionNames = ['EPSG:6677', 'EPSG:2454', 'EPSG:3003', 'EPSG:9377'].includes(sourceCrs) ? ['tmerc', 'Transverse_Mercator'] : ['lcc', 'Lambert_Conformal_Conic'];
+    const datumName = sourceCrs === 'EPSG:9377' ? /MAGNA[_ -]SIRGAS[_ ]2018/i : sourceCrs === 'EPSG:3003' ? /Monte[_ ]?Mario/i : sourceCrs === 'EPSG:2454' ? /JGD[_ ]?2000/i : sourceCrs === 'EPSG:6677' ? /JGD[_ ]?2011/i : /RGF[_ ]?(?:1993|93)/i;
     const parallels = sourceCrs === 'EPSG:2154' && [parsed.lat1, parsed.lat2].sort().some((n, i) =>
         !Number.isFinite(n) || Math.abs(n - [expected.lat1, expected.lat2].sort()[i]) > 1e-10);
     if (!projectionNames.includes(parsed.projName) || !['meter', 'm'].includes(parsed.units) || parallels
@@ -139,14 +141,14 @@ function verifiedProjection(prj, sourceCrs) {
 }
 
 // Schema first. Unselected columns are skipped as bytes and never decoded or retained.
-export function readShapefileDbf(bytes, descriptor, cpg) {
+export function readShapefileDbf(bytes, descriptor, cpg, { partial = false } = {}) {
     const v = viewOf(bytes);
     if (bytes.length < 33 || bytes[0] !== 3) fail('Unsupported parcel DBF version.');
     const count = v.getUint32(4, true), header = v.getUint16(8, true), width = v.getUint16(10, true);
     const end = header + count * width;
     if (header < 33 || (header - 33) % 32 || header > bytes.length || bytes[header - 1] !== 13 || !width
         || count > descriptor.maxSnapshotFeatures || count !== descriptor.expectedSnapshotFeatures
-        || !(end === bytes.length || (end + 1 === bytes.length && bytes[end] === (descriptor.dbfEof === 'null' ? 0 : 26)))) fail('Parcel DBF count or length is incomplete.');
+        || (!partial && !(end === bytes.length || (end + 1 === bytes.length && bytes[end] === (descriptor.dbfEof === 'null' ? 0 : 26))))) fail('Parcel DBF count or length is incomplete.');
     let offset = 1; const schema = new Map();
     for (let cursor = 32; cursor < header - 1; cursor += 32) {
         const nameBytes = bytes.subarray(cursor, cursor + 11);
@@ -171,6 +173,7 @@ export function readShapefileDbf(bytes, descriptor, cpg) {
         return { ...column, field };
     });
     function properties(index) {
+        if (!Number.isSafeInteger(index) || index < 0 || index >= count || header + (index + 1) * width > bytes.length) fail('Parcel DBF row is unavailable.');
         const start = header + index * width;
         if (bytes[start] !== 32) fail('Parcel DBF has deleted or invalid rows; snapshot is incomplete.');
         return Object.fromEntries(selected.map(column => {
@@ -189,12 +192,14 @@ export function readShapefileDbf(bytes, descriptor, cpg) {
                 }
             }
             if (descriptor.idType === 'integer' && (!/^(0|[1-9]\d*)$/.test(String(value)) || !Number.isSafeInteger(Number(value)))) fail('Invalid integer DBF identity.');
-            try { encodeSnapshotNativeId([value]); } catch { fail('Invalid native DBF identity.'); }
+            if (!(value === '' && descriptor.emptyIdFields?.includes(column.field))) {
+                try { encodeSnapshotNativeId([value]); } catch { fail('Invalid native DBF identity.'); }
+            }
             if (typeof value === 'string' && /[\x00-\x1f\x7f]/.test(value)) fail('Invalid native DBF identity.');
             return [column.field, value];
         }));
     }
-    return { count, properties };
+    return { count, properties, availableCount: Math.min(count, Math.floor((bytes.length - header) / width)) };
 }
 
 function shapeHeader(bytes) {

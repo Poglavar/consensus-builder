@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "9278",
+  "name": "Jiyuan, China",
+  "point": [
+    35.0800381150825,
+    112.576355303532
+  ],
+  "bindings": [
+    {
+      "appCityId": "jiyuan",
+      "runtimeConfig": {
+        "id": "jiyuan",
+        "wupCityCode": "9278",
+        "label": "Jiyuan, China",
+        "currency": {
+          "locale": "zh-CN",
+          "code": "CNY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            35.0800381150825,
+            112.576355303532
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            35.0800381150825,
+            112.576355303532
+          ],
+          "fallbackDataset": [
+            112.576355303532,
+            35.0800381150825
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "cn-jiyuan-yituchafang-zd",
+          "idPrefix": "CN-JIYUAN-YTCF-ZDTYBM-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "济源示范区自然资源和规划局 / 济源市不动产登记中心; 不动产登记以图查房系统"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "name": "Jiyuan 以图查房 official cadastral parcel layer",
+      "adapter": "arcgis",
+      "endpoint": "http://221.13.152.245:7878/estate/forward/arcgis/rest/services/YTCF/ZD/MapServer",
+      "layerId": 0,
+      "idField": "ZDTYBM",
+      "objectIdField": "FID",
+      "idType": "string",
+      "idPrefix": "CN-JIYUAN-YTCF-ZDTYBM-",
+      "outFields": [
+        "FID",
+        "ZDTYBM"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "single-equality",
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "timeoutMs": 45000,
+      "metricSrid": 32649,
+      "attribution": "济源示范区自然资源和规划局 / 济源市不动产登记中心; 不动产登记以图查房系统",
+      "licenceNote": "Anonymous public reads were observed, but no explicit machine-readable reuse or redistribution licence was found in the inspected first-party pages or ArcGIS metadata; attribution and reuse terms remain qualification follow-up.",
+      "scope": "Layer full extent [112.05381509231057, 34.90992784816617, 112.77051245080578, 35.253181278565535] in longitude/latitude. Positive observations cover the exact WUP point and bounded west/east windows; this is not a citywide completeness or legal-title claim.",
+      "capabilities": {
+        "geometry": "full polygon rings through Esri JSON",
+        "areaEnumeration": true,
+        "exactId": true,
+        "returnIdsOnly": true,
+        "maxRecordCount": 1000
+      },
+      "id": "cn-jiyuan-yituchafang-zd",
+      "countryCode": "CN",
+      "cityIds": [
+        "jiyuan"
+      ],
+      "defaultForCity": true,
+      "operator": "济源示范区自然资源和规划局 / 济源市不动产登记中心",
+      "pageSize": 80,
+      "idBatchSize": 1,
+      "browserTransport": "relay",
+      "maxResponseBytes": 16777216,
+      "sourceCrs": "EPSG:4490",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CN",
+          "basis": "Official Jiyuan registration-linked cadastral publication; bounded sample only.",
+          "evidence": [
+            "https://www.jiyuan.gov.cn/gov_special/yshjzjy/ysdt/gzdt_21051/t904367.html",
+            "https://zrzyghj.jiyuan.gov.cn/bmfw/"
+          ]
+        }
+      }
+    }
+  ]
+}

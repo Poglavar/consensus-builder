@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3563",
+  "name": "Tula, Russia",
+  "point": [
+    54.1954315651313,
+    37.6188269247801
+  ],
+  "bindings": [
+    {
+      "appCityId": "tula",
+      "runtimeConfig": {
+        "id": "tula",
+        "wupCityCode": "3563",
+        "label": "Tula, Russia",
+        "currency": {
+          "locale": "ru-RU",
+          "code": "RUB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            54.1954315651313,
+            37.6188269247801
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            54.1954315651313,
+            37.6188269247801
+          ],
+          "fallbackDataset": [
+            37.6188269247801,
+            54.1954315651313
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ru-tula-reestr54-cadastral",
+          "idPrefix": "RU-REESTR54-TULA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; independent public cadastral viewer; three observed Tula EGRN parcels only; wider coverage unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ru-tula-reestr54-cadastral",
+      "name": "Tula public cadastral map — three observed EGRN parcels",
+      "operator": "Кадастровые инженеры Новосибирска (independent public-map operator)",
+      "adapter": "reestr54-bounded",
+      "endpoint": "https://kk.reestr54.ru/tula/",
+      "countryCode": "RU",
+      "cityIds": [
+        "tula"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "RU-REESTR54-TULA-",
+      "idField": "cad_num",
+      "parcelNumberField": "cad_num",
+      "outFields": [
+        "cad_num"
+      ],
+      "nativeCrs": "EPSG:3857",
+      "srsName": "EPSG:4326",
+      "metricSrid": 32637,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "coverage": {
+        "scope": "explicit-native-id-subset",
+        "citywide": false,
+        "nativeIds": [
+          "71:30:050102:664",
+          "71:30:020603:10199",
+          "71:30:030906:681"
+        ],
+        "basis": "Exactly three discovery-observed native cadastral IDs, freshly read live by exact number. Bounds and point queries filter this explicit subset; no citywide enumeration or authoritative absence is claimed."
+      },
+      "scope": "Three observed Tula native cadastral IDs only. Complete viewport results refer only to this explicit subset.",
+      "licence": "Unresolved; anonymous access is not an open-data or redistribution licence.",
+      "licenceNote": "Reuse permission, legal custody and upstream Rosreestr/NSPD lineage remain unverified.",
+      "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; independent public cadastral viewer; three observed Tula EGRN parcels only; wider coverage unverified.",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://kk.reestr54.ru/tula/",
+          "https://kk.reestr54.ru/static/pkk/js/mapinit16102025.js",
+          "https://kk.reestr54.ru/static/pkk/js/pkk04112025.js?v=20251210_5"
+        ],
+        "jurisdiction": {
+          "basis": "Tula-specific map title, native district 71:30, and original queue point in the discovery polygon."
+        }
+      },
+      "adapterModule": "reestr54-source.js"
+    }
+  ]
+}

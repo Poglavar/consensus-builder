@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4142",
+  "name": "Chihuahua, Mexico",
+  "point": [
+    28.6631281127536,
+    -106.091986728701
+  ],
+  "bindings": [
+    {
+      "appCityId": "chihuahua",
+      "runtimeConfig": {
+        "id": "chihuahua",
+        "wupCityCode": "4142",
+        "label": "Chihuahua, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            28.6631281127536,
+            -106.091986728701
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            28.6631281127536,
+            -106.091986728701
+          ],
+          "fallbackDataset": [
+            -106.091986728701,
+            28.6631281127536
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-chihuahua-implan-geo-predio-urbano",
+          "idPrefix": "MX-CHIHUAHUA-IMPLAN-PREDIO-URBANO-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "IMPLAN Municipio de Chihuahua / Geo IMPLAN · Predio Urbano"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-chihuahua-implan-geo-predio-urbano",
+      "adapter": "arcgis",
+      "endpoint": "https://geodbcuu.mpiochih.gob.mx/serviciosweb/rest/services/Hosted/GEOIMPLAN/FeatureServer/2",
+      "idPrefix": "MX-CHIHUAHUA-IMPLAN-PREDIO-URBANO-",
+      "idField": "cve_std",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "outFields": [
+        "objectid",
+        "cve_std"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "timeoutMs": 45000,
+      "maxResponseBytes": 16777216,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "maxConcurrentQueries": 2,
+      "name": "Geo IMPLAN — Predio Urbano, Chihuahua",
+      "operator": "Instituto de Planeación Integral del Municipio de Chihuahua (IMPLAN) / Municipio de Chihuahua",
+      "catalogueUrl": "https://idecuu.mpiochih.gob.mx/implan/apps/experiencebuilder/experience/?id=cd1420d3cbef4892881c5a9484a7363b",
+      "attribution": "IMPLAN Municipio de Chihuahua / Geo IMPLAN · Predio Urbano",
+      "countryCode": "MX",
+      "metricSrid": 32613,
+      "cityIds": [
+        "chihuahua"
+      ],
+      "scope": "Municipal urban cadastral parcel layer. Three central Chihuahua samples have repeatable unchanged Polygon reads. Viewport identity audit found repeated cve_std values, including Sin clave placeholders: references combine the literal native key with SHA-256 of each complete unchanged geometry. Partial observed scope; citywide completeness, title and currentness are unverified.",
+      "licenceNote": "Anonymous public municipal service. Public portal item has blank licence/access information; reuse terms remain unverified.",
+      "sourceCrs": "EPSG:3857",
+      "identityKind": "native-key-geometry-sha256-v1",
+      "defaultForCity": true
+    }
+  ]
+}

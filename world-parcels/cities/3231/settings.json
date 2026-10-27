@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3231",
+  "name": "Bremen, Germany",
+  "point": [
+    53.0806090875204,
+    8.83227373169138
+  ],
+  "bindings": [
+    {
+      "appCityId": "bremen",
+      "runtimeConfig": {
+        "id": "bremen",
+        "wupCityCode": "3231",
+        "label": "Bremen, Germany",
+        "currency": {
+          "locale": "de-DE",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            53.0806090875204,
+            8.83227373169138
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            53.0806090875204,
+            8.83227373169138
+          ],
+          "fallbackDataset": [
+            8.83227373169138,
+            53.0806090875204
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "de-hb-alkis-flurstuecke-wfs",
+          "idPrefix": "DE-HB-ALKIS-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Landesamt GeoInformation Bremen · CC BY 4.0"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "de-hb-alkis-flurstuecke-wfs",
+      "adapter": "gml-wfs",
+      "version": "2.0.0",
+      "endpoint": "https://geodienste.bremen.de/wfs_hduk2958loah3976niun",
+      "featureType": "app:flurstuecke",
+      "idField": "flstkennz",
+      "geometryField": "geom",
+      "responseCrs": "EPSG:4326",
+      "idPrefix": "DE-HB-ALKIS-",
+      "idType": "string",
+      "parcelNumberField": "flstkennz",
+      "outFields": [
+        "flstkennz"
+      ],
+      "maxBboxKm2": 1,
+      "pageSize": 50,
+      "maxFeatures": 1500,
+      "maxResponseBytes": 2097152,
+      "maxTotalResponseBytes": 8388608,
+      "timeoutMs": 12000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "DE",
+      "stateCode": "DE-HB",
+      "metricSrid": 32632,
+      "cityIds": [
+        "bremen"
+      ],
+      "name": "Bremen ALKIS cadastral parcels",
+      "operator": "Landesamt GeoInformation Bremen / Koordinierungsstelle GDI-FHB",
+      "scope": "Official ALKIS Flurstücke for Land Bremen, including Bremen and Bremerhaven. Initial qualification uses three exact parcel IDs around the unchanged Bremen locator; bounded evidence does not prove citywide completeness. Native flstkennz identity and full source polygon coordinates are preserved.",
+      "attribution": "Landesamt GeoInformation Bremen · CC BY 4.0",
+      "catalogueUrl": "https://metaver.de/trefferanzeige?docuuid=FA4D0ED5-EE47-4959-A620-DA34AA76663E",
+      "license": "CC-BY-4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenceNote": "WFS capabilities declare CC BY 4.0 with source acknowledgement: Landesamt GeoInformation Bremen. Anonymous identity/geometry reads only. No historical filtering or geometry repair. Source accuracy, aktualit semantics, completeness and native CRS alignment remain second-pass follow-ups.",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "DE",
+          "admin1": [
+            "DE-HB"
+          ],
+          "basis": "Official Land Bremen ALKIS cadastral parcel WFS; state scope includes Bremerhaven.",
+          "evidence": [
+            "https://metaver.de/trefferanzeige?docuuid=FA4D0ED5-EE47-4959-A620-DA34AA76663E"
+          ]
+        },
+        "keepPublishedFields": true
+      },
+      "browserTransport": "relay",
+      "defaultForCity": true
+    }
+  ]
+}

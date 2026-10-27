@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5412",
+  "name": "Cuernavaca, Mexico",
+  "point": [
+    18.9002326333403,
+    -99.2070715878608
+  ],
+  "bindings": [
+    {
+      "appCityId": "cuernavaca",
+      "runtimeConfig": {
+        "id": "cuernavaca",
+        "wupCityCode": "5412",
+        "label": "Cuernavaca, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            18.9002326333403,
+            -99.2070715878608
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            18.9002326333403,
+            -99.2070715878608
+          ],
+          "fallbackDataset": [
+            -99.2070715878608,
+            18.9002326333403
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-morelos-isryc-cuernavaca-predios-arcgis-28",
+          "idPrefix": "MX-MORELOS-CUERNAVACA-PREDIOS-OBJECTID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "ISRYCEM / Geoportal Catastral y Registral del Estado de Morelos · Cuernavaca Predios"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-morelos-isryc-cuernavaca-predios-arcgis-28",
+      "name": "Cuernavaca — Morelos ISRYCEM Predios",
+      "adapter": "arcgis",
+      "endpoint": "https://geoportal.morelos.gob.mx/server/rest/services/rpp/7/MapServer/28",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "MX-MORELOS-CUERNAVACA-PREDIOS-OBJECTID-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "boundsSrid": 32614,
+      "boundsProjection": "+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs",
+      "queryFormat": "esri-json",
+      "sourceCrs": "EPSG:32614",
+      "pageSize": 200,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "maxResponseBytes": 16777216,
+      "countryCode": "MX",
+      "metricSrid": 32614,
+      "cityIds": [
+        "cuernavaca"
+      ],
+      "operator": "Instituto de Servicios Registrales y Catastrales del Estado de Morelos (ISRYCEM)",
+      "attribution": "ISRYCEM / Geoportal Catastral y Registral del Estado de Morelos · Cuernavaca Predios",
+      "licenceNote": "No machine-readable reuse licence was found in the first-party metadata. Preserve ISRYCEM attribution; reuse terms require follow-up.",
+      "scope": "Municipal Predios layer for CUERNAVACA; useful bounded parcel evidence at the unchanged WUP point and two additional areas. Citywide and agglomeration completeness, currentness and legal survey accuracy are unverified.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "MX",
+          "admin1": [
+            "MX-MOR"
+          ],
+          "basis": "Official Morelos cadastral settings designate layer 28 as Predios; service rpp/7 is CUERNAVACA.",
+          "evidence": [
+            "https://geoportal.morelos.gob.mx/RPPYC/config/settings.js",
+            "https://geoportal.morelos.gob.mx/server/rest/services/rpp/7/MapServer/28?f=pjson"
+          ]
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

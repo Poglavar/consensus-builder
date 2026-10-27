@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import { Keypair, PublicKey } from '@solana/web3.js';
-import { buyAgreementShares, sellAgreementShares, readAgreementMarket, usdcToAtomic, DEFAULT_B } from '../agents/bettor.js';
+import { buyAgreementShares, sellAgreementShares, readAgreementMarket, usdcToAtomic, DEFAULT_B, openAgreementMarket, MARKET_SEED_ATOMIC } from '../agents/bettor.js';
 import { agreementAccountOf, AGREEMENT_PROGRAM_ID, DEVNET_GENESIS_HASH } from '../agreements/onchain.js';
 import { encodeAgreementAccount, lmsrPositionAccount } from './helpers/agent-chain-fakes.js';
 
@@ -117,5 +117,42 @@ describe('agent LMSR buy path', () => {
         expect(usdcToAtomic('0.000001')).toBe(1n);
         expect(() => usdcToAtomic(0.25)).toThrow(/STRING/);
         expect(() => usdcToAtomic('0.1234567')).toThrow(/six decimals/);
+    });
+});
+
+describe('sponsor canonical market opening', () => {
+    it('opens the canonical market once with bounded seed and replays an existing market without funding', async () => {
+        const sponsor = Keypair.generate();
+        const h = setup({ sponsor, signer: sponsor, withMarket: false });
+        let funded = 0;
+        const options = { connection: h.connection, sponsorKeypair: sponsor, subject: h.subject,
+            maxSeedAtomic: 70_000_000n, ensureSeed: async amount => { funded++; expect(amount).toBe(69_314_720n); },
+            readSeedBalance: async () => MARKET_SEED_ATOMIC, sendAndConfirm: h.sendAndConfirm };
+        const result = await openAgreementMarket(options);
+        expect(result).toMatchObject({ replayed: false, signature: 'signature-1', seedAtomic: '69314720' });
+        expect(h.sends).toHaveLength(1); expect(funded).toBe(1);
+        expect(h.sends[0].transaction.instructions[0].keys.some(k => k.pubkey.toBase58() === h.subject)).toBe(true);
+        const encoded = encodeMarket({ account: h.subject, sponsor: sponsor.publicKey.toBase58(), deadline: h.deadline });
+        h.records.set(encoded.address.toBase58(), encoded);
+        expect(await openAgreementMarket({ ...options, maxSeedAtomic: 0n,
+            ensureSeed: async () => { throw new Error('must not fund twice'); } })).toMatchObject({ replayed: true, signature: null });
+        expect(h.sends).toHaveLength(1);
+    });
+    it('refuses non-sponsors, missing seed and cap overruns without a transaction', async () => {
+        const h = setup({ withMarket: false });
+        const base = { connection: h.connection, subject: h.subject, sponsorKeypair: h.sponsor,
+            maxSeedAtomic: 70_000_000n, readSeedBalance: async () => 0n, sendAndConfirm: h.sendAndConfirm };
+        await expect(openAgreementMarket({ ...base, sponsorKeypair: h.signer })).rejects.toMatchObject({ code: 'NOT_SPONSOR' });
+        await expect(openAgreementMarket({ ...base, maxSeedAtomic: 350_000n })).rejects.toMatchObject({ code: 'MARKET_SEED_CAP' });
+        await expect(openAgreementMarket(base)).rejects.toMatchObject({ code: 'INSUFFICIENT_USDC' });
+        expect(h.sends).toEqual([]);
+    });
+    it('rejects wrong-network and past-deadline agreements before funding', async () => {
+        const wrong = setup({ withMarket: false, wrongNetwork: true });
+        await expect(openAgreementMarket({ connection: wrong.connection, subject: wrong.subject, sponsorKeypair: wrong.sponsor,
+            maxSeedAtomic: 70_000_000n })).rejects.toThrow(/devnet|genesis/i);
+        const past = setup({ withMarket: false }); past.connection.getBlockTime = async () => past.deadline + 1;
+        await expect(openAgreementMarket({ connection: past.connection, subject: past.subject, sponsorKeypair: past.sponsor,
+            maxSeedAtomic: 70_000_000n })).rejects.toMatchObject({ code: 'MARKET_CLOSED' });
     });
 });

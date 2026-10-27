@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5962",
+  "name": "Sivas, Turkey",
+  "point": [
+    39.7472798753576,
+    37.0120436902672
+  ],
+  "bindings": [
+    {
+      "appCityId": "sivas",
+      "runtimeConfig": {
+        "id": "sivas",
+        "wupCityCode": "5962",
+        "label": "Sivas, Turkey",
+        "currency": {
+          "locale": "tr-TR",
+          "code": "TRY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            39.7472798753576,
+            37.0120436902672
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            39.7472798753576,
+            37.0120436902672
+          ],
+          "fallbackDataset": [
+            37.0120436902672,
+            39.7472798753576
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tr-sivas-belediyesi-eimar-parsel",
+          "idPrefix": "tr-sivas-belediyesi-eimar-parsel:OBJECTID=",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Sivas Belediyesi E-İmar · PARSEL"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tr-sivas-belediyesi-eimar-parsel",
+      "name": "Sivas Belediyesi E-İmar PARSEL cadastral parcels",
+      "adapter": "mersin-eimar",
+      "endpoint": "https://keos.sivas.bel.tr/imardurumu/service/imarsvc.aspx",
+      "viewerEndpoint": "https://keos.sivas.bel.tr/imardurumu/",
+      "layer": "PARSEL",
+      "idPrefix": "tr-sivas-belediyesi-eimar-parsel:OBJECTID=",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "parcelNumberField": "OBJECTID",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "geometryField": "POLY",
+      "countryCode": "TR",
+      "cityIds": [
+        "sivas"
+      ],
+      "metricSrid": 32637,
+      "returnsWGS84": true,
+      "browserTransport": "relay",
+      "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+      "queryMode": "configured-cadastral-block-search",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "maxResponseBytes": 1048576,
+      "maxFeatures": 999,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "operator": "Sivas Belediyesi, İmar ve Şehircilik Müdürlüğü",
+      "attribution": "Sivas Belediyesi E-İmar · PARSEL",
+      "scope": "Bounded KILAVUZ block 6424 window in Sivas Merkez. Live public block search filtered against exact cadastral block and requested viewport, preserving full polygons. The immutable city locator, all Merkez, other districts and citywide completeness are unverified.",
+      "licenceNote": "Anonymous municipal informational viewer access. No explicit automated redistribution licence established; attribution retained. Reuse permission and rate terms remain follow-up.",
+      "catalogueUrl": "https://keos.sivas.bel.tr/imardurumu/",
+      "nativeCrsNote": "POLY is GeoJSON-shaped longitude,latitude consumed by the official MapLibre viewer. No explicit EPSG, datum or epoch declaration observed. Geographic runtime interpretation is not independent survey alignment proof. No reprojection, fitting, repair, rounding or clipping.",
+      "spatialScopes": [
+        {
+          "block": "6424",
+          "bbox": [
+            37.046659,
+            39.742378,
+            37.047327,
+            39.742884
+          ]
+        }
+      ],
+      "extent": [
+        37.046659,
+        39.742378,
+        37.047327,
+        39.742884
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

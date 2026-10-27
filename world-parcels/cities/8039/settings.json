@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8039",
+  "name": "Sterling Heights, United States",
+  "point": [
+    42.4672562666258,
+    -82.953282452946
+  ],
+  "bindings": [
+    {
+      "appCityId": "sterling_heights",
+      "runtimeConfig": {
+        "id": "sterling_heights",
+        "wupCityCode": "8039",
+        "label": "Sterling Heights, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            42.4672562666258,
+            -82.953282452946
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            42.4672562666258,
+            -82.953282452946
+          ],
+          "fallbackDataset": [
+            -82.953282452946,
+            42.4672562666258
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-mi-macomb-county-parcel-fabric",
+          "idPrefix": "US-MI-MACOMB-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Macomb County Planning and Economic Development, Mapping and Data Services; Macomb County Parcels Web."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-mi-macomb-county-parcel-fabric",
+      "name": "Macomb County Parcels Web tax parcel fabric",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.macombgov.org/arcgis1/rest/services/PARCEL_FABRIC/Parcels_Web/FeatureServer/0",
+      "idField": "TAX_ID",
+      "idType": "string",
+      "idPattern": "^[0-9]{2}-[0-9]{2}-[0-9]{3}-[0-9]{3}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-MI-MACOMB-",
+      "outFields": [
+        "OBJECTID",
+        "TAX_ID"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 1,
+      "minRequestIntervalMs": 150,
+      "countryCode": "US",
+      "stateCode": "MI",
+      "metricSrid": 32617,
+      "sourceCrs": "EPSG:2253",
+      "queryFormat": "geojson",
+      "browserTransport": "relay",
+      "scope": "Macomb County public parcel fabric. One exact native-ID parcel wholly inside the official Sterling Heights boundary is proven. The frozen WUP point is outside that municipality; no all-city coverage or completeness claim.",
+      "attribution": "Macomb County Planning and Economic Development, Mapping and Data Services; Macomb County Parcels Web.",
+      "catalogueUrl": "https://www.macombgov.org/departments/planning-and-economic-development/mapping-and-data-services",
+      "licenceNote": "Public anonymous queries work. Empty copyrightText and no explicit reuse licence established; attribution is retained and redistribution terms remain a second-pass follow-up.",
+      "cityIds": [
+        "sterling_heights"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

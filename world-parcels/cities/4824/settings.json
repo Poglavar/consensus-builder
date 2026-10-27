@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4824",
+  "name": "Valledupar, Colombia",
+  "point": [
+    10.4651505401655,
+    -73.2597933292061
+  ],
+  "bindings": [
+    {
+      "appCityId": "valledupar",
+      "runtimeConfig": {
+        "id": "valledupar",
+        "wupCityCode": "4824",
+        "label": "Valledupar, Colombia",
+        "currency": {
+          "locale": "es-CO",
+          "code": "COP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            10.4651505401655,
+            -73.2597933292061
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            10.4651505401655,
+            -73.2597933292061
+          ],
+          "fallbackDataset": [
+            -73.2597933292061,
+            10.4651505401655
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "co-valledupar-catastroenlinea-u-terreno",
+          "idPrefix": "CO-VALLEDUPAR-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Municipality of Valledupar / Tuterritorio S.A.S. — Catastro en Línea / CatastroPro, urban cadastral TERRENO (13 October 2026 snapshot)."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "co-valledupar-catastroenlinea-u-terreno",
+      "name": "Valledupar urban cadastral TERRENO — Catastro en Línea",
+      "adapter": "shapefile-range",
+      "archiveAccess": "native-dbf-range-v1",
+      "endpoint": "https://catastroenlinea.com.co/Datos/20001/DatosAbiertos/U_TERRENO.zip",
+      "sourceLayer": "U_TERRENO",
+      "operator": "Municipality of Valledupar / Tuterritorio S.A.S.; Catastro en Línea / CatastroPro",
+      "countryCode": "CO",
+      "cityIds": [
+        "valledupar"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "CO-VALLEDUPAR-",
+      "idField": "codigo",
+      "idFields": [
+        "codigo",
+        "Shape_Id"
+      ],
+      "outFields": [
+        "codigo",
+        "Shape_Id"
+      ],
+      "identityKind": "native-composite",
+      "expectedEtag": "\"55e830285bdd1:0\"",
+      "expectedSnapshotBytes": 9873064,
+      "expectedSnapshotFeatures": 92270,
+      "expectedSnapshotSha256": "97592c8f3c74a9052158516c5594bfd0d7bcd429eb95fa977c41581a622d61ce",
+      "sourceCrs": "EPSG:9377",
+      "nativeCrs": "EPSG:9377",
+      "metricSrid": 32618,
+      "returnsWGS84": true,
+      "geometryType": "Polygon/MultiPolygon",
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 1,
+      "rangeBytes": 4096,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxRecordPoints": 100000,
+      "dbfEncoding": "utf-8",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometryQuery": true
+      },
+      "zipMembers": {
+        "cpg": {
+          "name": "U_TERRENO.cpg",
+          "method": 0,
+          "localOffset": 0,
+          "dataStart": 43,
+          "compressedBytes": 5,
+          "uncompressedBytes": 5,
+          "crc32": 243350608
+        },
+        "dbf": {
+          "name": "U_TERRENO.dbf",
+          "method": 8,
+          "localOffset": 48,
+          "dataStart": 91,
+          "compressedBytes": 719259,
+          "uncompressedBytes": 5167250,
+          "crc32": 4007344037
+        },
+        "prj": {
+          "name": "U_TERRENO.prj",
+          "method": 8,
+          "localOffset": 719350,
+          "dataStart": 719393,
+          "compressedBytes": 290,
+          "uncompressedBytes": 461,
+          "crc32": 4157286132
+        },
+        "shp": {
+          "name": "U_TERRENO.shp",
+          "method": 8,
+          "localOffset": 720060,
+          "dataStart": 720103,
+          "compressedBytes": 8839367,
+          "uncompressedBytes": 22761440,
+          "crc32": 2316586313
+        }
+      },
+      "attribution": "Municipality of Valledupar / Tuterritorio S.A.S. — Catastro en Línea / CatastroPro, urban cadastral TERRENO (13 October 2026 snapshot).",
+      "catalogueUrl": "https://catastroenlinea.com.co/datosabiertos.aspx",
+      "licenceUrl": "https://catastroenlinea.com.co/datosabiertos.aspx",
+      "licenceNote": "Publisher open-data page explicitly states free unrestricted reuse and creation of derived services (Numeral 6 Ley 1712 de 2014). Attribution retained; no separate standardized licence identifier is asserted.",
+      "dataVersion": "ZIP Last-Modified 2026-10-13T15:33:25Z, DBF snapshot 2026-10-13; fail closed if ETag/member metadata changes. Requalify before updating the pin.",
+      "scope": "Published Valledupar DIVIPOLA 20001 urban U_TERRENO only. Rural cadastre is separate. Bounded checks do not prove urban or municipal completeness; 92270 snapshot rows versus 92280 reported viewer rows remain follow-up. Seven null-geometry rows are unavailable polygons, not fabricated or removed records. Duplicate codes and duplicate geometries with different composite IDs are preserved.",
+      "identity": {
+        "scheme": "native-composite",
+        "native": true,
+        "recipe": "Exact case-sensitive codigo + literal | + integer Shape_Id is the publisher identity. Canonical transport encodes each component with encodeSnapshotNativeId and joins with ~ after CO-VALLEDUPAR-. No row number, FID, geometry hash or deduplication is used. An empty codigo is preserved as an empty first tuple component; the native integer Shape_Id remains mandatory. Such rows are never merged or assigned file-order IDs.",
+        "stabilityLimits": "Composite unique in retained snapshot; continuity across a future publisher release remains unverified."
+      },
+      "projection": {
+        "nativeAxes": "easting,northing",
+        "definition": "+proj=tmerc +lat_0=4 +lon_0=-73 +k=0.9992 +x_0=5000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs",
+        "operation": "Inverse Transverse Mercator from publisher MAGNA-SIRGAS 2018 / Origen-Nacional PRJ to longitude,latitude; no fitted offsets, coordinate rounding, geometry repair or simplification.",
+        "uncertainty": "Epoch/datum alignment to WGS84 and independent basemap accuracy remain second-pass follow-ups; no grid operation asserted."
+      },
+      "discovery": {
+        "sourcePurpose": "cadastral-parcels",
+        "jurisdiction": {
+          "countryCode": "CO",
+          "city": "Valledupar",
+          "basis": "First-party Tuterritorio operator link and Catastro en Línea open-data urban TERRENO listing for Valledupar (20001), distinct from construction, blocks and sectors."
+        },
+        "evidenceUrls": [
+          "https://www.tuterritorio.gov.co/servicios",
+          "https://catastroenlinea.com.co/datosabiertos.aspx",
+          "https://catastroenlinea.com.co/Datos/20001/DatosAbiertos/U_TERRENO.zip"
+        ]
+      },
+      "emptyIdFields": [
+        "codigo"
+      ]
+    }
+  ]
+}

@@ -251,6 +251,8 @@
         function failure(code, message, extra = {}) {
             return Object.assign(new Error(message), { code }, extra);
         }
+        const observe = (operation, code, action) => win.AppDiagnostics
+            ? win.AppDiagnostics.run(operation, { entity: 'design', code, context: { surface: 'design-index' } }, action) : action();
 
         // The user-facing sentence for a refusal of a design publish, by the server's code.
         function refusalMessage(status, body) {
@@ -501,11 +503,13 @@
         // Copies a link; resolves whether the clipboard took it.
         async function copyLink(url) {
             try {
-                if (!win.navigator.clipboard || typeof win.navigator.clipboard.writeText !== 'function') return false;
+                if (!win.navigator.clipboard || typeof win.navigator.clipboard.writeText !== 'function') throw new Error('clipboard unavailable');
                 await win.navigator.clipboard.writeText(url);
+                win.AppDiagnostics?.event('share', 'success', { entity: 'design', context: { surface: 'share-panel' } });
                 return true;
             } catch (error) {
-                warn('the clipboard refused the link', error);
+                const diagnostic = win.AppDiagnostics?.report(error, { code: 'clipboard-unavailable', context: { surface: 'share-panel' } });
+                win.AppDiagnostics?.event('share', 'failure', { entity: 'design', correlationId: diagnostic?.correlationId, context: { surface: 'share-panel' } });
                 return false;
             }
         }
@@ -599,8 +603,8 @@
                 }
             } catch (error) {
                 if (state.summaryRequestId === requestId) {
-                    warn('the design index could not be listed', error);
-                    state.error = (error && error.message) || 'Unable to load published designs';
+                    const diagnostic = win.AppDiagnostics?.report(error, { code: 'design-load-failed', context: { surface: 'design-index' } });
+                    state.error = diagnostic?.message || 'Unable to load published designs. Check the connection and retry.';
                 }
             } finally {
                 if (state.summaryRequestId === requestId) {
@@ -650,7 +654,8 @@
 
         return {
             api: {
-                publishDesign, pinDesign, pinObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf,
+                publishDesign: record => observe('publish', 'design-publish-failed', () => publishDesign(record)),
+                pinDesign, pinObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf,
                 designLink, copyLink, prepareMapPreview, parcelSourceIdOf, refusalMessage, clearPublicationProblem,
                 // A local record's exact CID at the current index, or an index summary's own.
                 publishedCid: record => (isObject(record) && record.indexed === true && cidApi().isCid(record.cid)

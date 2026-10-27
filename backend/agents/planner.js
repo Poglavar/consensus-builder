@@ -166,7 +166,8 @@ export function planCandidates(parcels, persona, {
             geometry: parcel.geometry,
             ...baseline,
             ...(parcel.buildingObservations ? { buildingObservations: { ...parcel.buildingObservations } } : {}),
-            rule: { maxFloors: allowedFloors, minSetbackM: rule.minDistance, source: ruleSourceOf(sourceRule) },
+            rule: { maxFloors: allowedFloors, minSetbackM: rule.minDistance, source: ruleSourceOf(sourceRule),
+                ...(persona.planningPolicy === 'proposed-design' ? { controls: { floors: num(sourceRule?.maxFloors) === null ? 'assumed' : 'mapped', setback: num(sourceRule?.minSetbackM) === null ? 'assumed' : 'mapped' } } : {}) },
             allowedFloors,
             plannedFloors: rule.maxFloors,
             parcelNumber: parcel.parcelNumber ?? null,
@@ -188,6 +189,7 @@ export function planCandidates(parcels, persona, {
 
     // valueUplift is relative to the best gain in THIS set, so it can only be filled once the set
     // is known. With no positive gain anywhere the term contributes nothing rather than dividing.
+    const maxProposedGfa = Math.max(1, ...candidates.map(candidate => candidate.proposedGfaM2));
     const maxGain = candidates.reduce((best, c) => c.gain === null ? best : Math.max(best, c.gain), 0);
     const weights = {
         density: weightOf(persona, 'density'),
@@ -197,6 +199,19 @@ export function planCandidates(parcels, persona, {
     };
     for (const candidate of candidates) {
         candidate.scoreParts.valueUplift = candidate.gain === null ? null : maxGain > 0 ? candidate.gain / maxGain : 0;
+        if (persona.planningPolicy === 'proposed-design') {
+            const footprintM2 = num(measureBuilding(candidate.massing, {}, { floorHeightM }).footprintM2);
+            const openSpaceRatio = candidate.areaM2 > 0 && footprintM2 !== null ? Math.max(0, 1 - footprintM2 / candidate.areaM2) : null;
+            const designWeights = persona.designWeights;
+            if (!designWeights || ![designWeights.floorArea, designWeights.openSpace].every(value => typeof value === 'number' && Number.isFinite(value) && value >= 0) || designWeights.floorArea + designWeights.openSpace <= 0) {
+                throw new Error('proposed-design policy needs positive designWeights for floorArea/openSpace');
+            }
+            candidate.designPolicy = { kind: 'proposed-design', ruleBasis: candidate.rule.source === 'urban-rule' ? 'mapped' : 'assumed', controls: {
+                    floors: { value: candidate.allowedFloors, basis: candidate.rule.controls.floors },
+                    setback: { value: candidate.rule.minSetbackM, basis: candidate.rule.controls.setback }
+                }, footprintM2, openSpaceRatio,
+                score: openSpaceRatio === null ? null : designWeights.floorArea * candidate.proposedGfaM2 / maxProposedGfa + designWeights.openSpace * openSpaceRatio };
+        }
         const weighted = Object.entries(weights).filter(([, weight]) => weight !== 0);
         candidate.score = weighted.some(([part]) => candidate.scoreParts[part] === null) ? null
             : weighted.reduce((score, [part, weight]) => score + weight * candidate.scoreParts[part], 0);
@@ -204,8 +219,9 @@ export function planCandidates(parcels, persona, {
 
     // candidateId breaks ties so the order is total, not merely sorted — two parcels with equal
     // scores must not swap places between runs.
-    candidates.sort((a, b) => (a.score === null) - (b.score === null)
-        || (a.score !== null && b.score !== null ? b.score - a.score : 0)
+    const rank = candidate => candidate.designPolicy?.score ?? candidate.score;
+    candidates.sort((a, b) => (rank(a) === null) - (rank(b) === null)
+        || (rank(a) !== null && rank(b) !== null ? rank(b) - rank(a) : 0)
         || a.candidateId.localeCompare(b.candidateId));
     return candidates.slice(0, Math.max(0, limit));
 }

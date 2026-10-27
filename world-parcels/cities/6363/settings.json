@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6363",
+  "name": "North Richland Hills, United States",
+  "point": [
+    32.8621940092415,
+    -97.1985157079356
+  ],
+  "bindings": [
+    {
+      "appCityId": "north_richland_hills",
+      "runtimeConfig": {
+        "id": "north_richland_hills",
+        "wupCityCode": "6363",
+        "label": "North Richland Hills, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            32.8621940092415,
+            -97.1985157079356
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            32.8621940092415,
+            -97.1985157079356
+          ],
+          "fallbackDataset": [
+            -97.1985157079356,
+            32.8621940092415
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-tx-tarrant-tad-parcels",
+          "idPrefix": "US-TX-TARRANT-TAD-OBJECTID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Tarrant County GIS; Tarrant Appraisal District. Public reference parcel mapping; not a legal survey or title determination."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-tx-tarrant-tad-parcels",
+      "name": "Tarrant Appraisal District parcels via Tarrant County",
+      "adapter": "arcgis",
+      "endpoint": "https://mapit.tarrantcounty.com/arcgis/rest/services/Dynamic/TADParcels/FeatureServer/0",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-TX-TARRANT-TAD-OBJECTID-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "countryCode": "US",
+      "stateCode": "TX",
+      "metricSrid": 32614,
+      "attribution": "Tarrant County GIS; Tarrant Appraisal District. Public reference parcel mapping; not a legal survey or title determination.",
+      "licenceUrl": "https://mapit.tarrantcounty.com/arcgis/rest/services/Dynamic/TADParcels/FeatureServer",
+      "licenceNote": "Public query service credits Tarrant Appraisal District. No dedicated reuse licence stated in service metadata; no broader reuse permission inferred.",
+      "catalogueUrl": "https://mapit.tarrantcounty.com/arcgis/rest/services/Dynamic/TADParcels/FeatureServer/0",
+      "scope": "Bounded North Richland Hills parcel availability within the county TAD layer. Citywide completeness, currentness, survey accuracy, provider rebuild OID continuity and overlap semantics remain unverified.",
+      "cityIds": [
+        "north_richland_hills"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

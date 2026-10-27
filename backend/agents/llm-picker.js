@@ -70,6 +70,9 @@ function maxPicksOf(persona) {
 // about X, and you do not care about Y" is what a model can act on — and it keeps the stance and
 // the score the planner already applied describing the same thing.
 function stanceOf(persona) {
+    if (persona?.planningPolicy === 'proposed-design') {
+        return `  - proposed floor area — weight ${persona.designWeights.floorArea}\n  - ground outside the proposed footprint — weight ${persona.designWeights.openSpace}\n  - existing stock and net uplift are not ranking inputs`;
+    }
     const weights = (persona && persona.weights) || {};
     const labels = {
         density: 'adding floor area where the plan permits it',
@@ -96,7 +99,7 @@ function systemPromptFor(persona, day) {
         '',
         'Rules:',
         `- Choose AT MOST ${maxPicks} candidate${maxPicks === 1 ? '' : 's'}. Fewer is fine; choosing none is fine if none is worth publishing.`,
-        '- Prefer single-parcel lots with real uplift over the floor area already built there.',
+        '- For proposed-design policy candidates, compare proposed floor area and ground left outside the footprint; assumed controls are design choices, never permitted zoning. Claim net uplift only where the candidate supplies a supported existing-stock baseline.',
         '- Write each rationale as 2-3 sentences in English, addressed to the parcel owner and to the public: what you propose, and why it is worth their while.',
         `- Write a short name, at most ${MAX_NAME_CHARS} characters.`,
         '- Use ONLY the numbers given to you in the candidate list. Never invent an area, a height, a price or a gain that is not there.',
@@ -119,6 +122,8 @@ function candidateDigest(candidate) {
         builtKnown: baseline.builtKnown,
         buildingSourceId: baseline.buildingSourceId,
         buildingCoverage: baseline.buildingCoverage,
+        designPolicy: candidate.designPolicy ?? null,
+        ruleSource: candidate.rule?.source ?? null,
         allowedFloors: candidate.allowedFloors ?? null,
         proposedGfaM2: round(candidate.proposedGfaM2),
         gain: round(candidate.gain),

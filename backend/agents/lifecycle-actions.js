@@ -271,6 +271,9 @@ function yesPayout(market, position, outcome) {
 export async function inspectSettlement({ connection, owner, agreement, lensKey = null, nowSeconds = Math.floor(Date.now() / 1000), readers = {} } = {}) {
     if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
     if (!owner) throw new Error('owner is required');
+    // Retired experimental content cannot be decided by the current contract. Keep its chain
+    // state untouched; the runner records a terminal automation skip, not an execution.
+    if (agreement.retired) return { ...agreement, state: 'retired', outcome: null, steps: [] };
     const read = { ...SETTLEMENT_READERS, ...readers };
     const ownerKey = new web3.PublicKey(owner);
     const state = await read.readAgreement(connection, agreement.account);

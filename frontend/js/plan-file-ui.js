@@ -14,7 +14,12 @@
     function browser(win) {
         const doc = win.document;
         const t = (key, fallback, params) => win.getProposalI18nHelper()(`planFile.${key}`, fallback, params);
-        const error = e => win.showStyledAlert(e.message || String(e));
+        const error = (e, code = 'plan-open-failed') => {
+            const diagnostic = win.AppDiagnostics?.report(e, { code, context: { surface: 'plan-file' } });
+            win.showStyledAlert(diagnostic?.message || 'The plan action could not finish. Please retry.');
+        };
+        const observe = (operation, options, action) => win.AppDiagnostics
+            ? win.AppDiagnostics.run(operation, { ...options, context: { surface: 'plan-file', ...options.context } }, action) : action();
         function download(text, name, type) {
             const url = win.URL.createObjectURL(new win.Blob([text], { type }));
             const a = doc.createElement('a');
@@ -68,12 +73,12 @@
         }
         async function commitImport(file) {
             win.PlanFile.validate(file);
-            return win.ProposalManager.runParcelMutation('import-plan-file', null, options => {
+            return observe('import', { entity: 'plan', planKey: win.Cid.cidOfObject(file.plan), code: 'plan-import-failed' }, () => win.ProposalManager.runParcelMutation('import-plan-file', null, options => {
                 const context = options._parcelMutation;
                 const plan = win.PlanFile.importInto(file, context.proposals);
                 context.storage.setItem(PREFIX + plan.cid, JSON.stringify(plan));
                 return plan;
-            }, { _mapMutation: false });
+            }, { _mapMutation: false }));
         }
         async function openPlan(plan) {
             const members = plan.memberIds.map(id => win.proposalStorage.getProposal(id)).filter(Boolean);
@@ -96,7 +101,7 @@
             for (const plan of plans) {
                 const button = doc.createElement('button'); button.type = 'button'; button.className = 'btn';
                 button.textContent = plan.content.title;
-                button.addEventListener('click', () => { modal.close(); Promise.resolve().then(() => openPlan(plan)).catch(error); });
+                button.addEventListener('click', () => { modal.close(); Promise.resolve().then(() => openPlan(plan)).catch(e => error(e)); });
                 body.appendChild(button);
             }
         }
@@ -110,7 +115,11 @@
                 b.addEventListener('click', async () => {
                     if (busy) return;
                     busy = true; buttons.forEach(c => { c.disabled = true; });
-                    try { await win.BusyControl.track(b, async () => { await new Promise(win.requestAnimationFrame); return action(); }); } catch (e) { error(e); }
+                    try { await win.BusyControl.track(b, async () => {
+                        await new Promise(win.requestAnimationFrame);
+                        return ['json', 'geojson'].includes(hook)
+                            ? observe('export', { entity: 'file', code: 'plan-export-failed', context: { format: hook } }, action) : action();
+                    }); } catch (e) { error(e, ['json', 'geojson'].includes(hook) ? 'plan-export-failed' : 'plan-open-failed'); }
                     finally { busy = false; buttons.forEach(c => { c.disabled = false; }); }
                 });
                 buttons.push(b); group.appendChild(b); return b;
@@ -135,15 +144,24 @@
                 busy = true; buttons.forEach(b => { b.disabled = true; });
                 try {
                     await win.BusyControl.track(choose, async () => {
-                        if (file.size > win.PlanFile.MAX_BYTES) throw new Error(t('tooLarge', 'Plan files are limited to 32 MiB.'));
-                        const planFile = win.PlanFile.parse(await file.text());
-                        if (!await review(planFile)) return;
+                        let planFile;
+                        try {
+                            if (file.size > win.PlanFile.MAX_BYTES) throw new Error(t('tooLarge', 'Plan files are limited to 32 MiB.'));
+                            planFile = win.PlanFile.parse(await file.text());
+                        } catch (e) {
+                            win.AppDiagnostics?.event('import', 'failure', { entity: 'file', context: { surface: 'plan-file', format: 'json' } });
+                            throw e;
+                        }
+                        if (!await review(planFile)) {
+                            win.AppDiagnostics?.event('import', 'cancelled', { entity: 'file', context: { surface: 'plan-file', format: 'json' } });
+                            return;
+                        }
                         const plan = await commitImport(planFile);
                         win.updateShowProposalsButton?.(); win.refreshProposalsLayer?.();
                         win.showSimpleShareModal({ title: t('imported', 'Plan imported'), body: t('importedBody', 'The designs are saved as local drafts. Open the imported plan to review its members, download it again or publish a link.'),
-                            actions: [{ label: t('open', 'Open imported plan'), primary: true, onClick: () => Promise.resolve().then(() => openPlan(plan)).catch(error) }] });
+                            actions: [{ label: t('open', 'Open imported plan'), primary: true, onClick: () => Promise.resolve().then(() => openPlan(plan)).catch(e => error(e)) }] });
                     });
-                } catch (e) { error(e); }
+                } catch (e) { error(e, 'plan-import-failed'); }
                 finally { busy = false; buttons.forEach(b => { b.disabled = false; }); }
             });
             button(t('importedPlans', 'Imported plans'), importedPlans, 'plans');

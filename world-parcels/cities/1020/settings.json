@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1020",
+  "name": "Valparaíso, Chile",
+  "point": [
+    -33.0407839941597,
+    -71.5026149529519
+  ],
+  "bindings": [
+    {
+      "appCityId": "valparaiso",
+      "runtimeConfig": {
+        "id": "valparaiso",
+        "wupCityCode": "1020",
+        "label": "Valparaíso, Chile",
+        "currency": {
+          "locale": "es-CL",
+          "code": "CLP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -33.0407839941597,
+            -71.5026149529519
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -33.0407839941597,
+            -71.5026149529519
+          ],
+          "fallbackDataset": [
+            -71.5026149529519,
+            -33.0407839941597
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "cl-minvu-geoide-predios-valparaiso",
+          "idPrefix": "CL-MINVU-PREDIOS-VALPARAISO-FID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Ministerio de Vivienda y Urbanismo (MINVU), GeoIDE · PREDIOS_VALPARAISO. Indicative parcel geometry; reuse licence and currentness unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "cl-minvu-geoide-predios-valparaiso",
+      "name": "MINVU GeoIDE PREDIOS_VALPARAISO",
+      "adapter": "arcgis",
+      "endpoint": "https://geoide.minvu.cl/server/rest/services/Hosted/PREDIOS_VALPARAISO/FeatureServer/0",
+      "operator": "Ministerio de Vivienda y Urbanismo (MINVU), GeoIDE",
+      "countryCode": "CL",
+      "idField": "fid",
+      "idType": "integer",
+      "objectIdField": "fid",
+      "idPrefix": "CL-MINVU-PREDIOS-VALPARAISO-FID-",
+      "outFields": [
+        "fid"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "minRequestIntervalMs": 150,
+      "metricSrid": 32719,
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "sourceCrs": "EPSG:3857",
+      "scope": "MINVU regional predios layer with observed Valparaíso and Viña del Mar parcels; bounded coverage only, not complete WUP agglomeration coverage.",
+      "attribution": "Ministerio de Vivienda y Urbanismo (MINVU), GeoIDE · PREDIOS_VALPARAISO. Indicative parcel geometry; reuse licence and currentness unverified.",
+      "licenceUrl": "https://geoide.minvu.cl/server/rest/services/Hosted/PREDIOS_VALPARAISO/FeatureServer",
+      "catalogueUrl": "https://geoide.minvu.cl/server/rest/services/Hosted/PREDIOS_VALPARAISO/FeatureServer/0",
+      "license": "No explicit layer-specific reuse licence observed; follow-up required.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CL",
+          "basis": "First-party MINVU predios polygon layer; saved official metadata and same-day native fid 118930 read in comuna VALPARAISO, code 05101."
+        }
+      },
+      "cityIds": [
+        "valparaiso"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

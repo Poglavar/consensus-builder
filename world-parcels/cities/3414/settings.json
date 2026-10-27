@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3414",
+  "name": "Al Ahsa, Saudi Arabia",
+  "point": [
+    25.3827109762729,
+    49.5978211795765
+  ],
+  "bindings": [
+    {
+      "appCityId": "al_ahsa",
+      "runtimeConfig": {
+        "id": "al_ahsa",
+        "wupCityCode": "3414",
+        "label": "Al Ahsa, Saudi Arabia",
+        "currency": {
+          "locale": "ar-SA",
+          "code": "SAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            25.3827109762729,
+            49.5978211795765
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            25.3827109762729,
+            49.5978211795765
+          ],
+          "fallbackDataset": [
+            49.5978211795765,
+            25.3827109762729
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "sa-al-ahsa-municipality-geographical-explorer-parcels",
+          "idPrefix": "SA-ALAHSA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Al-Ahsa Municipality · General Directorate of Geographic Information Systems and Urban Observatory"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "sa-al-ahsa-municipality-geographical-explorer-parcels",
+      "name": "Al-Ahsa Municipality Geographic Explorer land parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gis-2025.alhasa.gov.sa/server/rest/services/AlhasaGeographicalExplorer/AlhasaSubDivisionParcelS/MapServer/0",
+      "idField": "GLOBALID",
+      "idType": "string",
+      "idPattern": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+      "objectIdField": "GLOBALID",
+      "idPrefix": "SA-ALAHSA-",
+      "outFields": [
+        "GLOBALID"
+      ],
+      "boundsQueryMode": "single-response",
+      "idsQueryMode": "single-response",
+      "pageSize": 2000,
+      "idBatchSize": 10,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 1,
+      "timeoutMs": 45000,
+      "maxResponseBytes": 16777216,
+      "minRequestIntervalMs": 200,
+      "countryCode": "SA",
+      "metricSrid": 32639,
+      "cityIds": [
+        "al_ahsa"
+      ],
+      "scope": "Municipal land-parcel boundaries; useful bounded Al Hofuf urban sample around the unchanged Al Ahsa city locator. Citywide and governorate-wide completeness remain unverified.",
+      "operator": "Al-Ahsa Municipality, General Directorate of Geographic Information Systems and Urban Observatory",
+      "attribution": "Al-Ahsa Municipality · General Directorate of Geographic Information Systems and Urban Observatory",
+      "licenceNote": "Anonymous public municipal viewer service. Explicit reuse licence absent from checked app and layer metadata; no broader redistribution permission asserted.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "defaultForCity": true
+    }
+  ]
+}

@@ -336,6 +336,7 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
                 missingIds: error?.parcelIds || []
             });
         }
+        // The owning operation reports with its specific context and cancellation semantics.
         throw error;
     }
 }

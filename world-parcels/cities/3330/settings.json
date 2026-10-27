@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3330",
+  "name": "Resistencia, Argentina",
+  "point": [
+    -27.4604610198904,
+    -58.9870161189504
+  ],
+  "bindings": [
+    {
+      "appCityId": "resistencia",
+      "runtimeConfig": {
+        "id": "resistencia",
+        "wupCityCode": "3330",
+        "label": "Resistencia, Argentina",
+        "currency": {
+          "locale": "es-AR",
+          "code": "ARS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -27.4604610198904,
+            -58.9870161189504
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -27.4604610198904,
+            -58.9870161189504
+          ],
+          "fallbackDataset": [
+            -58.9870161189504,
+            -27.4604610198904
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ar-chaco-sit-parcelario-urbano-2021",
+          "idPrefix": "AR-CHACO-SIT-ID_NOMENCL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "SIT Chaco · Gobierno de la Provincia del Chaco · Parcelario Urbano 2021"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ar-chaco-sit-parcelario-urbano-2021",
+      "name": "SIT Chaco Parcelario Urbano 2021",
+      "operator": "Gobierno de la Provincia del Chaco / Sistema de Información Territorial del Chaco",
+      "cadastralCustodian": "Dirección Provincial de Catastro y Cartografía del Chaco",
+      "adapter": "wfs",
+      "endpoint": "https://sit.chaco.gob.ar/geoserver/BASE_DES_TERR/ows",
+      "version": "1.0.0",
+      "featureType": "BASE_DES_TERR:parcelario_urbano_2021",
+      "idField": "ID_NOMENCL",
+      "idType": "string",
+      "idPrefix": "AR-CHACO-SIT-ID_NOMENCL-",
+      "outFields": [
+        "ID_NOMENCL"
+      ],
+      "geometryField": "geom",
+      "requestProperties": true,
+      "responseSrid": 4326,
+      "nativeCrs": "EPSG:5347",
+      "responseCrs": "EPSG:4326",
+      "returnsWGS84": true,
+      "attributeExclusions": {
+        "ID_NOMENCL": [
+          "020060C000000000000000000080"
+        ]
+      },
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 1048576,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 1,
+      "countryCode": "AR",
+      "countryName": "Argentina",
+      "metricSrid": 32721,
+      "cityIds": [
+        "resistencia"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "attribution": "SIT Chaco · Gobierno de la Provincia del Chaco · Parcelario Urbano 2021",
+      "catalogueUrl": "https://sit.chaco.gob.ar/geoservicios",
+      "homepage": "https://sit.chaco.gob.ar/visualizador_baseterritorial",
+      "licenceNote": "Public WFS access documented. No explicit geometry redistribution licence established; preserve attribution. Source currentness and legal accuracy remain unverified.",
+      "scope": "Provincial urban cadastral parcel layer with bounded Resistencia availability; no citywide or province-wide completeness claim. Full source geometry retained. Documented malformed native row excluded.",
+      "limitations": [
+        "2021 is layer vintage, not verified currentness.",
+        "Explicit redistribution licence not established; public WFS access alone is not a licence.",
+        "Independent native CRS datum/operation/grid and wire-axis validation deferred.",
+        "Bounded samples do not establish municipal or citywide completeness."
+      ]
+    }
+  ]
+}

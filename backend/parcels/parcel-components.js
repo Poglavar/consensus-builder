@@ -14,7 +14,7 @@ export function retainParcel(byId, canonical, descriptor) {
         throw upstreamError('Parcel provider returned inconsistent administrative references for one parcel ID.');
     }
     if (JSON.stringify(previous.geometry) !== JSON.stringify(canonical.geometry)) {
-        if (descriptor.nativeGeometryMode !== 'parts') throw upstreamError('Parcel provider returned conflicting geometry for one parcel ID.');
+        if (descriptor.nativeGeometryMode !== 'parts') throw upstreamError(`Parcel provider returned conflicting geometry for one parcel ID. (${canonical.id})`);
         try {
             if (descriptor.disjointParts) {
                 const overlap = intersect(geoFeature(previous.geometry), geoFeature(canonical.geometry));

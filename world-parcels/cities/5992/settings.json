@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5992",
+  "name": "Utsunomiya, Japan",
+  "point": [
+    36.5514923896268,
+    139.885051050438
+  ],
+  "bindings": [
+    {
+      "appCityId": "utsunomiya",
+      "runtimeConfig": {
+        "id": "utsunomiya",
+        "wupCityCode": "5992",
+        "label": "Utsunomiya, Japan",
+        "currency": {
+          "locale": "ja-JP",
+          "code": "JPY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            36.5514923896268,
+            139.885051050438
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            36.5514923896268,
+            139.885051050438
+          ],
+          "fallbackDataset": [
+            139.885051050438,
+            36.5514923896268
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "jp-utsunomiya-city-chibanzu-2026-01-01",
+          "idPrefix": "jp-utsunomiya-city-chibanzu-2026-01-01/native-shp-parts-sha256-v1/",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Utsunomiya City / Asset Tax Division, 地籍図 (2026-01-01), CC BY; municipal tax-map reference, not certified boundaries or title."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "jp-utsunomiya-city-chibanzu-2026-01-01",
+      "name": "Utsunomiya City 地籍図データ / 筆界線 parcel polygons",
+      "adapter": "shapefile-range",
+      "archiveAccess": "streamed-zip-members-v1",
+      "endpoint": "https://catalog.city.utsunomiya.tochigi.jp/dataset/cfb84636-4468-4051-ab14-ea3485653934/resource/85dcff85-23b0-4b30-95cc-c16f02f2bb73/download/01_01.zip",
+      "idPrefix": "jp-utsunomiya-city-chibanzu-2026-01-01/native-shp-parts-sha256-v1/",
+      "outFields": [],
+      "operator": "Utsunomiya City, Asset Tax Division",
+      "countryCode": "JP",
+      "cityIds": [
+        "utsunomiya"
+      ],
+      "defaultForCity": true,
+      "metricSrid": 32654,
+      "sourceCrs": "EPSG:6677",
+      "nativeCrs": "EPSG:6677",
+      "returnsWGS84": true,
+      "geometryType": "Polygon",
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 1,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometryQuery": true
+      },
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "catalogueUrl": "https://catalog.city.utsunomiya.tochigi.jp/dataset/chibannzu-070101",
+      "licenceUrl": "https://catalog.city.utsunomiya.tochigi.jp/dataset/chibannzu-070101",
+      "licenceNote": "CC BY. Municipal tax-map reference only; no legal boundary, title, exact position or survey accuracy certification.",
+      "attribution": "Utsunomiya City / Asset Tax Division, 地籍図 (2026-01-01), CC BY; municipal tax-map reference, not certified boundaries or title.",
+      "dataVersion": "2026-01-01",
+      "scope": "Seven municipal parcel polygon resources 筆界線01..07. Publisher declares entire city; runtime completeness and citywide coverage are not established by bounded qualification.",
+      "identityKind": "native-shp-parts-sha256-v1",
+      "identity": {
+        "scheme": "native-shp-parts-sha256-v1",
+        "native": false,
+        "recipe": "Source ID + /native-shp-parts-sha256-v1/ + two-digit resource zone + / + lowercase SHA-256 of the unchanged SHP Polygon record bytes starting at byte 36: little-endian part count, point count, part-start indices and every native IEEE754 XY ordinate. Excludes record number, byte offset, shape type and redundant envelope. Distinct geometry remains distinct even for repeated native ledger composites; identical geometry within a resource deduplicates. Coordinate or ring-order edits change the reference; cross-release stability is not claimed. No DBF attributes are decoded."
+      },
+      "projection": {
+        "nativeAxes": "easting,northing",
+        "definition": "+proj=tmerc +lat_0=36 +lon_0=139.833333333333333 +k=0.9999 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs",
+        "operation": "Inverse Japan Plane Rectangular CS IX (GRS80); PRJ verified on every cold read. Longitude,latitude display; no fitted offsets.",
+        "uncertainty": "JGD2011 epoch/datum relationship to WGS84 and external basemap alignment remain second-pass follow-ups."
+      },
+      "discovery": {
+        "sourcePurpose": "cadastral-parcels",
+        "jurisdiction": {
+          "countryCode": "JP",
+          "city": "Utsunomiya",
+          "basis": "Official city fixed-asset-tax page and linked municipal CKAN publication."
+        },
+        "evidenceUrls": [
+          "https://catalog.city.utsunomiya.tochigi.jp/dataset/chibannzu-070101",
+          "https://www.city.utsunomiya.lg.jp/kurashi/zeikin/koteishisanzei/1041437.html"
+        ]
+      },
+      "snapshots": [
+        {
+          "key": "01",
+          "endpoint": "https://catalog.city.utsunomiya.tochigi.jp/dataset/cfb84636-4468-4051-ab14-ea3485653934/resource/85dcff85-23b0-4b30-95cc-c16f02f2bb73/download/01_01.zip",
+          "bytes": 12582854,
+          "records": 99155,
+          "shp": "01_地番図01/筆界線01.shp",
+          "prj": "01_地番図01/筆界線01.prj",
+          "nativeBbox": [
+            -28.001,
+            58765.604,
+            9801.906,
+            67410.294
+          ]
+        },
+        {
+          "key": "02",
+          "endpoint": "https://catalog.city.utsunomiya.tochigi.jp/dataset/cfb84636-4468-4051-ab14-ea3485653934/resource/ed7e8f94-a6ca-4005-a2c3-453e94c86d16/download/02_02.zip",
+          "bytes": 11519396,
+          "records": 89628,
+          "shp": "02_地番図02/筆界線02.shp",
+          "prj": "02_地番図02/筆界線02.prj",
+          "nativeBbox": [
+            1717.882,
+            53294.92,
+            12228.59,
+            65865.853
+          ]
+        },
+        {
+          "key": "03",
+          "endpoint": "https://catalog.city.utsunomiya.tochigi.jp/dataset/cfb84636-4468-4051-ab14-ea3485653934/resource/e6926520-849d-4c41-9ad4-854961bdfc0a/download/03_03.zip",
+          "bytes": 8854113,
+          "records": 65387,
+          "shp": "03_地番図03/筆界線03.shp",
+          "prj": "03_地番図03/筆界線03.prj",
+          "nativeBbox": [
+            7006.16,
+            52358.558,
+            15899.375,
+            67580.219
+          ]
+        },
+        {
+          "key": "04",
+          "endpoint": "https://catalog.city.utsunomiya.tochigi.jp/dataset/cfb84636-4468-4051-ab14-ea3485653934/resource/dfd6d882-29c8-4c17-988b-05052b534931/download/04_04.zip",
+          "bytes": 9695778,
+          "records": 69970,
+          "shp": "04_地番図04/筆界線04.shp",
+          "prj": "04_地番図04/筆界線04.prj",
+          "nativeBbox": [
+            -1543.234,
+            63347.973,
+            8847.867,
+            71992.949
+          ]
+        },
+        {
+          "key": "05",
+          "endpoint": "https://catalog.city.utsunomiya.tochigi.jp/dataset/cfb84636-4468-4051-ab14-ea3485653934/resource/0fe9d862-2de1-4b35-8229-f4b34c9b098f/download/05_05.zip",
+          "bytes": 14123946,
+          "records": 77175,
+          "shp": "05_地番図05/筆界線05.shp",
+          "prj": "05_地番図05/筆界線05.prj",
+          "nativeBbox": [
+            -8107.756,
+            61602.056,
+            3349.842,
+            79542.509
+          ]
+        },
+        {
+          "key": "06",
+          "endpoint": "https://catalog.city.utsunomiya.tochigi.jp/dataset/cfb84636-4468-4051-ab14-ea3485653934/resource/7c41618e-e492-4a2d-919a-87a6b7a22e7b/download/06_06.zip",
+          "bytes": 13237007,
+          "records": 96871,
+          "shp": "06_地番図06/筆界線06.shp",
+          "prj": "06_地番図06/筆界線06.prj",
+          "nativeBbox": [
+            -1454.886,
+            51470.074,
+            6717.791,
+            64068.169
+          ]
+        },
+        {
+          "key": "07",
+          "endpoint": "https://catalog.city.utsunomiya.tochigi.jp/dataset/cfb84636-4468-4051-ab14-ea3485653934/resource/1ceae7a6-3637-484a-adaf-635c2de93a8b/download/07_07.zip",
+          "bytes": 14133295,
+          "records": 97631,
+          "shp": "07_地番図07/筆界線07.shp",
+          "prj": "07_地番図07/筆界線07.prj",
+          "nativeBbox": [
+            591.467,
+            64692.579,
+            12357.12,
+            81006.764
+          ]
+        }
+      ]
+    }
+  ]
+}

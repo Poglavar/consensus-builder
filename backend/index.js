@@ -61,6 +61,7 @@ import { setupTransactionsRoute } from './routes/transactions.js';
 import { setupMarketsRoute } from './routes/markets.js';
 import { setupBetsShareRoute } from './routes/bets-share.js';
 import { setupBetsEventsRoute } from './routes/bets-events.js';
+import { setupPlanningDiagnostics } from './routes/planning-diagnostics.js';
 import { setupBetsPointsRoutes } from './routes/bets-points.js';
 import { createAgreementMarketSource } from './markets/agreement-source.js';
 import { setupLmsrRecipesRoute } from './routes/lmsr-recipes.js';
@@ -356,6 +357,7 @@ export function createApp({
         }
         next();
     });
+    setupPlanningDiagnostics(app, activePool, { env });
     app.use(express.json({ limit: '15mb' }));
     app.use(express.urlencoded({ limit: '15mb', extended: true }));
 

@@ -22,6 +22,7 @@ describe('algorithmic agent schedule', () => {
         // A settled agreement signs at most four transactions: attest, execute or expire, resolve, claim.
         const perSettlement = SIGNED_SETTLEMENT_STEPS.length - 1;
         for (const proposer of proposers) {
+            expect(proposer.env.AGENT_MARKET_SEED_USDC_CAP).toBe('70');
             expect(proposer.args).toContain('--seed-owners');
             expect(proposer.args).toContain('--live');
             const name = proposer.args.match(/--persona (\S+)/)[1];
@@ -30,9 +31,10 @@ describe('algorithmic agent schedule', () => {
             const policy = executionPolicy(proposer.env);
             const settle = settlementPolicy(proposer.env);
             expect(settle.maxPerRun).toBe(3);
-            const picks = summarizeExecutionPlan([{ persona, run: { summary: { picks: Array.from({ length: persona.dailyProposals }, (_, index) => ({ pickId: `p${index}` })) } } }]);
+            const picks = summarizeExecutionPlan([{ persona, run: { summary: { picks: Array.from({ length: persona.dailyProposals }, (_, index) => ({ pickId: `p${index}` })) } } }], policy);
             expect(policy.maxActions).toBeGreaterThanOrEqual(picks.actionCount + settle.maxPerRun * perSettlement);
             expect(policy.maxUsdc).toBeGreaterThanOrEqual(picks.maxUsdc);
+            expect(policy.maxMarketSeedUsdc).toBeGreaterThanOrEqual(picks.maxMarketSeedUsdc);
             // The proposer renders no thumbnails any more: the index does.
             expect(proposer.env).not.toHaveProperty('MAPTILER_API_KEY');
             expect(proposer.env).not.toHaveProperty('AGENT_RETIRE_AFTER_DAYS');
@@ -81,7 +83,7 @@ describe('algorithmic agent schedule', () => {
         expect(app.env).toMatchObject({
             AGENT_DAILY_ACTION_CAP: '15',
             AGENT_SETTLE_MAX_PER_RUN: '3',
-            AGENT_DAILY_USDC_CAP: '0.35'
+            AGENT_DAILY_USDC_CAP: '0.35', AGENT_MARKET_SEED_USDC_CAP: '70'
         });
         expect(app.env).not.toHaveProperty('AGENT_LLM_MODEL');
         expect(app.env).not.toHaveProperty('AGENT_LLM_DAILY_CAP_USD');
@@ -145,7 +147,7 @@ describe('algorithmic agent schedule', () => {
         ]) {
             const entry = apps.find(item => item.name === name);
             expect(entry).toMatchObject({ script: 'agents/run.mjs', instances: 1, autorestart: false, cron_restart: cron,
-                env: { AGENT_DAILY_ACTION_CAP: '15', AGENT_SETTLE_MAX_PER_RUN: '3', AGENT_DAILY_USDC_CAP: '0.35' } });
+                env: { AGENT_DAILY_ACTION_CAP: '15', AGENT_SETTLE_MAX_PER_RUN: '3', AGENT_DAILY_USDC_CAP: '0.35', AGENT_MARKET_SEED_USDC_CAP: '70' } });
             expect(entry.args).toContain(`--persona ${persona}`);
             expect(entry.args).toContain('--controller algorithm');
             expect(entry.args).toContain('--slot auto');

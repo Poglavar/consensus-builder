@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7556",
+  "name": "Barnaul, Russia",
+  "point": [
+    53.3421465888379,
+    83.7146605640255
+  ],
+  "bindings": [
+    {
+      "appCityId": "barnaul",
+      "runtimeConfig": {
+        "id": "barnaul",
+        "wupCityCode": "7556",
+        "label": "Barnaul, Russia",
+        "currency": {
+          "locale": "ru-RU",
+          "code": "RUB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            53.3421465888379,
+            83.7146605640255
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            53.3421465888379,
+            83.7146605640255
+          ],
+          "fallbackDataset": [
+            83.7146605640255,
+            53.3421465888379
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ru-altai-reestr54-barnaul-cadastral",
+          "idPrefix": "RU-REESTR54-BARNAUL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; three observed EGRN parcels only; wider city coverage unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ru-altai-reestr54-barnaul-cadastral",
+      "name": "Barnaul public cadastral map — three observed EGRN parcels",
+      "operator": "Кадастровые инженеры Новосибирска (independent public-map operator)",
+      "adapter": "reestr54-bounded",
+      "endpoint": "https://kk.reestr54.ru/barnaul/",
+      "countryCode": "RU",
+      "cityIds": [
+        "barnaul"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "RU-REESTR54-BARNAUL-",
+      "idField": "cad_num",
+      "parcelNumberField": "cad_num",
+      "outFields": [
+        "cad_num"
+      ],
+      "nativeCrs": "EPSG:3857",
+      "srsName": "EPSG:4326",
+      "metricSrid": 32644,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "coverage": {
+        "scope": "explicit-native-id-subset",
+        "citywide": false,
+        "nativeIds": [
+          "22:63:000000:1471",
+          "22:63:000000:1541",
+          "22:63:050814:79"
+        ],
+        "basis": "Exactly the three native cadastral IDs observed by discovery. Runtime enumerates this explicit subset using fresh exact-ID requests. Other source records are outside the configured app scope; complete means complete within this finite subset only."
+      },
+      "scope": "Only three observed native cadastral IDs; wider Barnaul parcel fabric is not enumerated. Viewport results are complete only for this explicit subset.",
+      "licence": "Unresolved; anonymous access is not an open-data or redistribution licence.",
+      "licenceNote": "Reuse permission, legal custody and upstream Rosreestr/NSPD lineage remain unverified.",
+      "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; three observed EGRN parcels only; wider city coverage unverified.",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://kk.reestr54.ru/barnaul/",
+          "https://kk.reestr54.ru/static/pkk/js/mapinit16102025.js"
+        ],
+        "jurisdiction": {
+          "basis": "Barnaul-specific public map and native district 22:63."
+        }
+      },
+      "adapterModule": "reestr54-source.js"
+    }
+  ]
+}

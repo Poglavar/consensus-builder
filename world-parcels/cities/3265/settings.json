@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3265",
+  "name": "Pohang-si, South Korea",
+  "point": [
+    36.0230093811178,
+    129.376100854545
+  ],
+  "bindings": [
+    {
+      "appCityId": "pohang_si",
+      "runtimeConfig": {
+        "id": "pohang_si",
+        "wupCityCode": "3265",
+        "label": "Pohang-si, South Korea",
+        "currency": {
+          "locale": "ko-KR",
+          "code": "KRW"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            36.0230093811178,
+            129.376100854545
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            36.0230093811178,
+            129.376100854545
+          ],
+          "fallbackDataset": [
+            129.376100854545,
+            36.0230093811178
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "kr-pohang-phgis-wfs-lp-pa-cbnd",
+          "idPrefix": "KR-POHANG-PNU-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Pohang-si Spatial Information Portal · 연속지적도 (LP_PA_CBND)"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "kr-pohang-phgis-wfs-lp-pa-cbnd",
+      "name": "Pohang-si continuous cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://pohang.go.kr/phgis/gs-gate/wfs",
+      "featureType": "uis:LP_PA_CBND",
+      "version": "1.1.0",
+      "idField": "PNU",
+      "idType": "string",
+      "idPattern": "^[0-9]{19}$",
+      "idPrefix": "KR-POHANG-PNU-",
+      "geometryField": "GEOM",
+      "outFields": [
+        "PNU"
+      ],
+      "requestProperties": true,
+      "responseSrid": 5187,
+      "projection": "+proj=tmerc +lat_0=38 +lon_0=129 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs",
+      "boundsSrid": 5187,
+      "boundsProjection": "+proj=tmerc +lat_0=38 +lon_0=129 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs",
+      "filterBoundsGeometry": true,
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxFeatures": 10000,
+      "maxResponseBytes": 16777216,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "timeoutMs": 45000,
+      "browserTransport": "relay",
+      "metricSrid": 32652,
+      "countryCode": "KR",
+      "cityIds": [
+        "pohang_si"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "operator": "Pohang City / Pohang-si Spatial Information Portal",
+      "catalogueUrl": "https://pohang.go.kr/phgis/system",
+      "attribution": "Pohang-si Spatial Information Portal · 연속지적도 (LP_PA_CBND)",
+      "scope": "Official municipal continuous cadastral layer. Bounded observed coverage only; advertised extent does not prove citywide coverage or completeness.",
+      "licenceNote": "Anonymous first-party public viewer and WFS access observed; source-specific programmatic reuse terms and rate limits remain unconfirmed. Preserve Pohang City attribution.",
+      "connectRetries": 1,
+      "matchCountMode": "remaining"
+    }
+  ]
+}

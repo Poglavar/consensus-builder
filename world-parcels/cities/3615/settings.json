@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3615",
+  "name": "Yaroslavl, Russia",
+  "point": [
+    57.6293321926899,
+    39.8624610725571
+  ],
+  "bindings": [
+    {
+      "appCityId": "yaroslavl",
+      "runtimeConfig": {
+        "id": "yaroslavl",
+        "wupCityCode": "3615",
+        "label": "Yaroslavl, Russia",
+        "currency": {
+          "locale": "ru-RU",
+          "code": "RUB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            57.6293321926899,
+            39.8624610725571
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            57.6293321926899,
+            39.8624610725571
+          ],
+          "fallbackDataset": [
+            39.8624610725571,
+            57.6293321926899
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ru-yaroslavl-kadastrovaya-karta-com-report",
+          "idPrefix": "RU-YAROSLAVL-REPORT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Кадастровая-карта.com; one historic public cadastral report; projection unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ru-yaroslavl-kadastrovaya-karta-com-report",
+      "name": "Кадастровая-карта.com Yaroslavl historic public parcel report",
+      "operator": "Кадастровая-карта.com (independent report publisher)",
+      "adapter": "ru-cadastral-report",
+      "endpoint": "https://xn----7sbaabako6cg4bxggpi0t.com/кадастровая_карта/5c2a76f832ec072654500bf985a90d6d/yaroslavskaya-oblast-yaroslavl-kedrova-6",
+      "countryCode": "RU",
+      "cityIds": [
+        "yaroslavl"
+      ],
+      "idPrefix": "RU-YAROSLAVL-REPORT-",
+      "idField": "cadnum",
+      "parcelNumberField": "cadnum",
+      "outFields": [
+        "cadnum"
+      ],
+      "nativeId": "76:23:030701:29",
+      "nativeCrs": "MSK-76 zone 1 interpretation; provider label MSK-33 conflicts",
+      "nativeProjection": "+proj=tmerc +lat_0=0 +lon_0=38.55 +k=1 +x_0=1250000 +y_0=-6014743.504 +ellps=krass +towgs84=23.57,-140.95,-79.8,0,0.35,0.79,-0.22 +units=m +no_defs",
+      "srsName": "EPSG:4326",
+      "metricSrid": 32637,
+      "maxResponseBytes": 1048576,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "attribution": "Кадастровая-карта.com; one historic public cadastral report; projection unverified.",
+      "coverage": {
+        "scope": "single-published-historic-report",
+        "citywide": false,
+        "nativeIds": [
+          "76:23:030701:29"
+        ]
+      },
+      "licence": "Unresolved; public access is not a redistribution licence.",
+      "discovery": {
+        "jurisdiction": {
+          "basis": "Publisher Yaroslavl city index and native cadastral district 76:23."
+        },
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://xn----7sbaabako6cg4bxggpi0t.com/yaroslavskaya-oblast/yaroslavl",
+          "https://xn----7sbaabako6cg4bxggpi0t.com/кадастровая_карта/5c2a76f832ec072654500bf985a90d6d/yaroslavskaya-oblast-yaroslavl-kedrova-6"
+        ]
+      },
+      "identityKind": "native-cadastral-number",
+      "idType": "string",
+      "geometryField": "Coords1",
+      "responseCrs": "EPSG:4326",
+      "responseSrid": 4326,
+      "responseAxisOrder": "GeoJSON longitude,latitude; source northing,easting reversed before projection",
+      "nativeAxisOrder": "northing,easting",
+      "nativeCrsDeclared": true,
+      "maxFeatures": 1,
+      "maxAreaKm2": 25,
+      "queryMode": "bounded-public-report",
+      "scope": "Exactly one published historic parcel report; bbox filters this report only; no area enumeration or citywide completeness.",
+      "licenceNote": "Unresolved; public access is not a redistribution licence."
+    }
+  ]
+}

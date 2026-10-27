@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import {
     assertExecutionPlan, dayString, decisionCompletion, executionPolicy, ownedAgreementsFromRuns, planSettlements,
-    settlementPolicy, settlementsSpent, summarizeExecutionPlan
+    settlementPolicy, settlementsSpent, summarizeExecutionPlan, planningNeedsRefresh, hasPublishedWork
 } from '../agents/run-policy.js';
 
 const WALLET = 'G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg';
@@ -20,26 +20,25 @@ function entry(picks = 1, stakeUsdc = '0.25') {
 
 describe('live agent execution policy', () => {
     it('defaults to four signed actions and 0.35 USDC, overridable from env', () => {
-        expect(executionPolicy({})).toEqual({ maxActions: 4, maxUsdc: 0.35 });
-        expect(executionPolicy({ AGENT_DAILY_ACTION_CAP: '15', AGENT_DAILY_USDC_CAP: '0.02' })).toEqual({ maxActions: 15, maxUsdc: 0.02 });
+        expect(executionPolicy({})).toEqual({ maxActions: 4, maxUsdc: 0.35, maxMarketSeedUsdc: 0 });
+        expect(executionPolicy({ AGENT_DAILY_ACTION_CAP: '15', AGENT_DAILY_USDC_CAP: '0.02' })).toEqual({ maxActions: 15, maxUsdc: 0.02, maxMarketSeedUsdc: 0 });
         expect(() => executionPolicy({ AGENT_DAILY_ACTION_CAP: 'many' })).toThrow(/AGENT_DAILY_ACTION_CAP/);
         expect(() => executionPolicy({ AGENT_DAILY_USDC_CAP: '-1' })).toThrow(/AGENT_DAILY_USDC_CAP/);
     });
 
-    it('plans three signed actions per pick (create+fund, market, stake) and only the stake in USDC', () => {
-        const plan = assertExecutionPlan(summarizeExecutionPlan([entry()]));
-        expect(plan).toEqual({
-            pickCount: 1, actionCount: 3, maxUsdc: 0.25,
-            picks: [{ persona: 'densifier-01', pickId: 'agent-densifier-01-2026-10-22-1', actions: 3, usdc: 0.25 }]
-        });
-        expect(summarizeExecutionPlan([entry(0)])).toMatchObject({ pickCount: 0, actionCount: 0, maxUsdc: 0 });
-        expect(summarizeExecutionPlan([{ persona: { name: 'p' }, run: null }])).toMatchObject({ pickCount: 0 });
+    it('budgets sponsor creation and optional market seed separately from forbidden self-trading', () => {
+        expect(assertExecutionPlan(summarizeExecutionPlan([entry()]))).toMatchObject({
+            pickCount: 1, actionCount: 1, maxUsdc: 0, maxMarketSeedUsdc: 0 });
+        const policy = executionPolicy({ AGENT_MARKET_SEED_USDC_CAP: '70' });
+        expect(assertExecutionPlan(summarizeExecutionPlan([entry()], policy), policy)).toMatchObject({
+            pickCount: 1, actionCount: 3, maxUsdc: 0, maxMarketSeedUsdc: 69.31472 });
+        expect(summarizeExecutionPlan([entry(0)], policy)).toMatchObject({ pickCount: 0, actionCount: 0, maxMarketSeedUsdc: 0 });
     });
-
-    it('refuses more signed actions than the cap, and more USDC than the ceiling', () => {
-        expect(() => assertExecutionPlan(summarizeExecutionPlan([entry(2)]))).toThrow('agent action cap reached: 6 planned > 4');
-        const policy = executionPolicy({ AGENT_DAILY_ACTION_CAP: '4', AGENT_DAILY_USDC_CAP: '0.20' });
-        expect(() => assertExecutionPlan(summarizeExecutionPlan([entry()], policy), policy)).toThrow('agent USDC cap reached: 0.25 planned > 0.20');
+    it('refuses action, token-spending and market-seed cap overruns before signing', () => {
+        expect(() => assertExecutionPlan(summarizeExecutionPlan([entry(5)]))).toThrow('agent action cap reached: 5 planned > 4');
+        const policy = executionPolicy({ AGENT_DAILY_ACTION_CAP: '15', AGENT_MARKET_SEED_USDC_CAP: '70' });
+        expect(() => assertExecutionPlan(summarizeExecutionPlan([entry(2)], policy), policy)).toThrow('agent market-seed cap reached');
+        expect(() => assertExecutionPlan({ actionCount: 1, maxUsdc: 0.4, maxMarketSeedUsdc: 0 })).toThrow('agent USDC cap reached');
         expect(() => summarizeExecutionPlan([entry(1, 'lots')])).toThrow(/persona.stakeUsdc/);
     });
 
@@ -147,7 +146,7 @@ describe('settlement selection', () => {
         expect(capped.limited).toBe(1);
 
         // AGENT_DAILY_ACTION_CAP 4 with one pick planned (3 actions) leaves one signature: nothing fits.
-        const starved = planSettlements(backlog, { actionBudget: 4 - summarizeExecutionPlan([entry()]).actionCount });
+        const starved = planSettlements(backlog, { actionBudget: 4 - summarizeExecutionPlan([entry()], executionPolicy({ AGENT_MARKET_SEED_USDC_CAP: '70' })).actionCount });
         expect(starved.selected).toEqual([]);
         expect(starved.skipped.every(item => item.reason === 'action-cap')).toBe(true);
         expect(starved.limited).toBe(4);
@@ -174,4 +173,15 @@ describe('settlement selection', () => {
         expect(plan.skipped).toEqual([expect.objectContaining({ account: 'd', reason: 'settle-cap' })]);
         expect(() => planSettlements([], { actionBudget: Number.NaN })).toThrow(/actionBudget/);
     });
+});
+
+it('replans outdated unpublished candidates but recognizes already-published immutable work', () => {
+    const persona = { planningPolicy: 'proposed-design' };
+    const run = { summary: { candidates: [{ candidateId: 'one' }], picks: [] } };
+    expect(planningNeedsRefresh(run, persona)).toBe(true);
+    expect(hasPublishedWork(run)).toBe(false);
+    run.summary.designs = { one: { indexedAt: '2026-10-27T00:00:00Z' } };
+    expect(hasPublishedWork(run)).toBe(true);
+    run.summary.candidates[0].designPolicy = { kind: 'proposed-design' };
+    expect(planningNeedsRefresh(run, persona)).toBe(false);
 });

@@ -1,3 +1,5 @@
+import { MARKET_SEED_ATOMIC } from './bettor.js';
+
 // Pure execution limits for the live agents. Model spend is capped separately in ledger.js; this
 // policy bounds irreversible/signed work before a runner touches a wallet.
 
@@ -11,7 +13,8 @@ function finiteNonNegative(value, fallback, label) {
 export function executionPolicy(env = {}) {
     return {
         maxActions: Math.floor(finiteNonNegative(env.AGENT_DAILY_ACTION_CAP, 4, 'AGENT_DAILY_ACTION_CAP')),
-        maxUsdc: finiteNonNegative(env.AGENT_DAILY_USDC_CAP, 0.35, 'AGENT_DAILY_USDC_CAP')
+        maxUsdc: finiteNonNegative(env.AGENT_DAILY_USDC_CAP, 0.35, 'AGENT_DAILY_USDC_CAP'),
+        maxMarketSeedUsdc: finiteNonNegative(env.AGENT_MARKET_SEED_USDC_CAP, 0, 'AGENT_MARKET_SEED_USDC_CAP')
     };
 }
 
@@ -19,16 +22,16 @@ export function summarizeExecutionPlan(entries, policy = executionPolicy()) {
     const plans = [];
     for (const entry of entries || []) {
         const picks = entry?.run?.summary?.picks || [];
-        const stakeUsdc = finiteNonNegative(entry?.persona?.stakeUsdc, 0, 'persona.stakeUsdc');
+        // Validate configured amounts even though sponsor self-trading is forbidden.
+        finiteNonNegative(entry?.persona?.stakeUsdc, 0, 'persona.stakeUsdc');
         for (const pick of picks) {
             plans.push({
                 persona: entry.persona.name,
                 pickId: pick.pickId,
-                // Worst case: the agreement's create + fund (one transaction), the market creation and
-                // the YES stake. A pre-existing market removes one signature, but the pre-flight cap is
-                // conservative. Pinning and indexing sign nothing.
-                actions: 3,
-                usdc: stakeUsdc
+                // Conservative: create+fund, seed-wallet top-up, market opening. No sponsor trade.
+                actions: policy.maxMarketSeedUsdc > 0 ? 3 : 1,
+                usdc: 0,
+                marketSeedUsdc: policy.maxMarketSeedUsdc > 0 && !entry.run.summary.markets?.[pick.candidateId] ? Number(MARKET_SEED_ATOMIC) / 1e6 : 0
             });
         }
     }
@@ -36,6 +39,7 @@ export function summarizeExecutionPlan(entries, policy = executionPolicy()) {
         pickCount: plans.length,
         actionCount: plans.reduce((sum, plan) => sum + plan.actions, 0),
         maxUsdc: plans.reduce((sum, plan) => sum + plan.usdc, 0),
+        maxMarketSeedUsdc: plans.reduce((sum, plan) => sum + plan.marketSeedUsdc, 0),
         picks: plans
     };
 }
@@ -46,6 +50,9 @@ export function assertExecutionPlan(plan, policy = executionPolicy()) {
     }
     if (plan.maxUsdc > policy.maxUsdc + Number.EPSILON) {
         throw new Error(`agent USDC cap reached: ${plan.maxUsdc.toFixed(2)} planned > ${policy.maxUsdc.toFixed(2)}`);
+    }
+    if (plan.maxMarketSeedUsdc > policy.maxMarketSeedUsdc + Number.EPSILON) {
+        throw new Error(`agent market-seed cap reached: ${plan.maxMarketSeedUsdc} planned > ${policy.maxMarketSeedUsdc}`);
     }
     return plan;
 }
@@ -94,13 +101,13 @@ function soleOwnerOf(content, wallet) {
  * This persona's minted agreements from its own consensus.agent_run rows (summary.mints and
  * summary.agreements per pick), oldest run first, one entry per account, each with its published content,
  * its lens and whether `wallet` owns all of its land alone (soleOwner). An account some run recorded as
- * settled (summary.settlements[account].settled) is left out.
+ * settled or retired by automation (summary.settlements[account]) is left out.
  */
 export function ownedAgreementsFromRuns(runs, personaName, wallet = null) {
     const mine = (runs || []).filter(run => run?.persona === personaName);
-    // Settled for good in some run (terminal, its market resolved and claimed): never read again.
+    // Finished by automation: chain-settled, or explicitly skipped as retired content.
     const settled = new Set(mine.flatMap(run => Object.entries(run.summary?.settlements || {})
-        .filter(([, record]) => record?.settled === true).map(([account]) => account)));
+        .filter(([, record]) => record?.settled === true || record?.retired === true).map(([account]) => account)));
     const owned = [];
     const seen = new Set(settled);
     for (const run of mine) {
@@ -112,6 +119,7 @@ export function ownedAgreementsFromRuns(runs, personaName, wallet = null) {
             seen.add(mint.account);
             owned.push({
                 pickId: pick.pickId, cid: agreement.cid, account: mint.account, deadline: agreement.deadline ?? null,
+                ...((Object.hasOwn(agreement.content || {}, 'designs') || Object.hasOwn(agreement.content || {}, 'designCids')) ? { retired: true } : {}),
                 content: agreement.content ?? null, lens: agreement.content?.rule?.lens?.[0] ?? null,
                 soleOwner: soleOwnerOf(agreement.content, wallet),
                 sourceRunId: run.run_id, sourceDay: dayString(run.day), staked: Boolean(summary.stakes?.[pick.candidateId])
@@ -226,4 +234,16 @@ export function societyBudget(policy, spent = { actions: 0, usdc: 0 }) {
         actionsLeft: Math.max(0, policy.maxActions - spent.actions),
         usdcLeft: Math.max(0, Number((policy.maxUsdc - spent.usdc).toFixed(6)))
     };
+}
+
+/** Old unpublished planning checkpoints must be replanned under the persona's current policy. */
+export function planningNeedsRefresh(run, persona) {
+    return Boolean(run?.summary?.candidates?.length && persona?.planningPolicy === 'proposed-design'
+        && run.summary.candidates.some(candidate => candidate.designPolicy?.kind !== persona.planningPolicy));
+}
+
+export function hasPublishedWork(run) {
+    const summary = run?.summary || {};
+    return ['designs', 'agreements'].some(key => Object.values(summary[key] || {}).some(record => record?.indexedAt))
+        || ['mints', 'onchain'].some(key => Object.keys(summary[key] || {}).length > 0);
 }

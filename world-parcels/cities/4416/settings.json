@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4416",
+  "name": "Kanazawa, Japan",
+  "point": [
+    36.5670173027101,
+    136.632880385073
+  ],
+  "bindings": [
+    {
+      "appCityId": "kanazawa",
+      "runtimeConfig": {
+        "id": "kanazawa",
+        "wupCityCode": "4416",
+        "label": "Kanazawa, Japan",
+        "currency": {
+          "locale": "ja-JP",
+          "code": "JPY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            36.5670173027101,
+            136.632880385073
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            36.5670173027101,
+            136.632880385073
+          ],
+          "fallbackDataset": [
+            136.632880385073,
+            36.5670173027101
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "jp-moj-kanazawa-registered-map-2026",
+          "idPrefix": "JP-MOJ-2026-KANAZAWA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "「登記所備付地図データ 金沢市」（法務省） https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-855 (used 2026-10-26); adapted from Map XML to WGS84, selected sheet 436 only."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "jp-moj-kanazawa-registered-map-2026",
+      "name": "Kanazawa Ministry of Justice registry-map parcels (2026, selected public-coordinate sheet 436)",
+      "operator": "法務省 / Ministry of Justice; G-spatial Information Center distribution",
+      "adapter": "moj-mapxml",
+      "endpoint": "https://www.geospatial.jp/ckan/dataset/f03a4d59-271c-46ac-bdb5-6f0164db4797/resource/b9be3391-9781-4946-bea2-a08eb8ae89fc/download/17201-2200-2026.zip",
+      "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=houmusyouchizu-2026-1-855",
+      "countryCode": "JP",
+      "cityIds": [
+        "kanazawa"
+      ],
+      "idPrefix": "JP-MOJ-2026-KANAZAWA-",
+      "idField": "id",
+      "idFields": [
+        "id"
+      ],
+      "outFields": [
+        "id"
+      ],
+      "idType": "string",
+      "identityRecipe": "JP-MOJ-2026-KANAZAWA-{published inner sheet filename without .zip}-{native 筆/@id}. Native municipality/package/sheet and edition namespaces; no geometry-derived identity.",
+      "identityStabilityLimit": "Pinned 2026 archive only; continuity across revised sheets or editions is unverified. Do not merge overlapping geometry identities.",
+      "archiveAccess": "selected-range-v1",
+      "archiveSha256": "19e78a9424b807948606414dc2b22fe216757d4613073daf704790392d57ad91",
+      "archiveHashBasis": "Retained discovery full-archive hash; current runtime checks selected nested-sheet SHA-256, exact ranges, archive byte length and ETag. No whole-archive fetch.",
+      "archiveBytes": 333178974,
+      "archiveEtag": "\"a7b0babfc11868b8e7e0af6a9f2654f5\"",
+      "municipalityCode": "17201",
+      "coordinateSystem": "公共座標7系",
+      "sheetIndex": [
+        {
+          "zip": "17201-2200-436.zip",
+          "xml": "17201-2200-436.xml",
+          "rangeStart": 152904685,
+          "rangeBytes": 17939,
+          "sha256": "ad76993ce73456d96917815aacc906bd1b51ba874f05bf66b5a8a801a14dffa1",
+          "xmlBytes": 553648,
+          "bbox": [
+            136.65006452964369,
+            36.62668061449236,
+            136.65267446075055,
+            36.62892671131859
+          ]
+        }
+      ],
+      "sourceCrs": "EPSG:6675",
+      "nativeAxisOrder": "northing-easting",
+      "responseCrs": "EPSG:4326",
+      "returnsWGS84": true,
+      "metricSrid": 32653,
+      "dataVersion": "2026",
+      "browserTransport": "relay",
+      "maxResponseBytes": 16777216,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "defaultForCity": true,
+      "capabilities": {
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "scope": "Bounded Kanazawa coverage: only 2026 public-coordinate sheet 17201-2200-436, 45 native parcel records around 136.65006–136.65268 E, 36.62668–36.62893 N, about 6.8 km north of the unchanged city locator. No parcel coverage at the locator or citywide completeness is claimed. All other sheets, including central sheet 637 and arbitrary-coordinate sheets, are outside enabled scope.",
+      "attribution": "「登記所備付地図データ 金沢市」（法務省） https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-855 (used 2026-10-26); adapted from Map XML to WGS84, selected sheet 436 only.",
+      "licenceUrl": "https://www.geospatial.jp/ckan/dataset/fc3b0593-ce9e-40d1-aa33-94382d5f0da1/resource/47871bf1-4c85-48f7-a8fe-b27c6643c1c5/download/license.pdf",
+      "licenceNote": "MOJ custom terms permit reuse/adaptation and commercial use with attribution and adaptation disclosure. No personal data collection or individual identification through linkage. Source accuracy/currentness are not guaranteed.",
+      "projection": {
+        "nativeWireAxes": "XML X=northing, Y=easting; proj4 input [Y,X]",
+        "operation": "Inverse Japan Plane Rectangular CS VII Transverse Mercator, latitude origin 36, longitude origin 137 10/60, scale 0.9999, GRS80. No fitted offset or additional datum grid applied.",
+        "datumClassification": "Root 測地系判別=変換; TKY2JGD 1.3.79, parameter 2.1.1. JGD2000/JGD2011 realization, epoch and original grid provenance remain second-pass uncertainties; EPSG:6675 is the documented initial implementation interpretation.",
+        "fittedOffsetApplied": false
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "JP",
+          "basis": "Live MOJ-authored CKAN identifies 金沢市 registry maps under Real Property Registration Act Article 14(1)/(4). Selected XML identifies municipality 17201 / 金沢市 and public coordinate zone VII.",
+          "evidence": [
+            "https://www.geospatial.jp/ckan/api/3/action/package_show?id=houmusyouchizu-2026-1-855",
+            "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-855"
+          ]
+        },
+        "evidenceUrls": [
+          "https://www.geospatial.jp/ckan/api/3/action/package_show?id=houmusyouchizu-2026-1-855",
+          "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-855"
+        ],
+        "coverage": "selected-sheet-only"
+      }
+    }
+  ]
+}

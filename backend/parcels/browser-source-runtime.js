@@ -1,3 +1,22 @@
+import { createArcgisHubParcelSource } from './arcgis-hub-source.js';
+import { createAsigWmsKmlParcelSource } from './asig-wms-kml-source.js';
+import { createChanghuaBrowserParcelSource } from './changhua-source.js';
+import { createCheongjuMapmoaParcelSource } from './cheongju-mapmoa-source.js';
+import { createCorrientesBrowserSource } from './corrientes-wms-source.js';
+import { createDiyarbakirBrowserSource } from './diyarbakir-eimar-source.js';
+import { createGeogeoEmapSource } from './geogeo-emap-source.js';
+import { createGeopixelBrowserSource } from './geopixel-source.js';
+import { createHuaibeiParcelSource } from './huaibei-source.js';
+import { createMersinBrowserSource } from './mersin-eimar-source.js';
+import { createNetgisParcelSource } from './netgis-runxml-source.js';
+import { createReestr54Source } from './reestr54-source.js';
+import { createRuCadastralReportSource } from './ru-cadastral-report-source.js';
+import { createSakaryaSbbSource } from './sakarya-sbb-source.js';
+import { createSaltilloVisorSource } from './saltillo-visor-source.js';
+import { createSisgranWmsSource } from './sisgran-wms-source.js';
+import { createTatarstanCadastreSource } from './tatarstan-cadastre-source.js';
+import { createToscanaCatastoSource } from './toscana-catasto-source.js';
+import { createKadastrParcelSource } from './ua-kadastr-source.js';
 import { createSupermapParcelSource } from './supermap-source.js';
 import { createTaichungBrowserParcelSource } from './taichung-source.js';
 import { createMojMapXmlParcelSource } from './moj-mapxml-source.js';
@@ -57,9 +76,30 @@ function expectedEtagForUrl(descriptor, url) {
 }
 
 export const browserParcelFactories = Object.freeze({
+    'arcgis-hub': createArcgisHubParcelSource,
+    'asig-wms-kml': createAsigWmsKmlParcelSource,
+    'changhua-urbangis': createChanghuaBrowserParcelSource,
+    'cheongju-mapmoa': createCheongjuMapmoaParcelSource,
+    'corrientes-wms': createCorrientesBrowserSource,
+    'diyarbakir-eimar': createDiyarbakirBrowserSource,
+    'flatgeobuf-range': createGeojsonRangeBrowserSource,
+    'geogeo-emap': createGeogeoEmapSource,
+    'geopixel': createGeopixelBrowserSource,
+    'huaibei-cadastre': createHuaibeiParcelSource,
+    'mersin-eimar': createMersinBrowserSource,
+    'netgis-runxml': createNetgisParcelSource,
+    'reestr54-bounded': createReestr54Source,
+    'ru-cadastral-report': createRuCadastralReportSource,
+    'sakarya-sbb-bounded': createSakaryaSbbSource,
+    'saltillo-visor': createSaltilloVisorSource,
+    'sisgran-wms': createSisgranWmsSource,
+    'tatarstan-cadastre-bounded': createTatarstanCadastreSource,
+    'toscana-catasto': createToscanaCatastoSource,
+    'ua-kadastr-landuse': createKadastrParcelSource,
     'supermap-map': createSupermapParcelSource,
     'taichung-gismap': createTaichungBrowserParcelSource,
-    'moj-mapxml': createMojMapXmlParcelSource,
+    'moj-mapxml': (descriptor, options) => descriptor.archiveAccess === 'selected-range-v1'
+        ? createGeojsonRangeBrowserSource(descriptor, options) : createMojMapXmlParcelSource(descriptor, options),
     'ugnlis-parcel-search': createUgnlisBrowserParcelSource,
     'ecommunes-xml': createDivoEcommunesSource,
     'arcgis-webmap': createArcgisWebmapParcelSource,

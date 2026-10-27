@@ -26,10 +26,21 @@ export function webmapParcelCollection(payload, descriptor) {
         throw upstreamError('Invalid embedded parcel collection.');
     }
     const collectionReference = featureSet.spatialReference || definition.extent?.spatialReference;
+    const idField = descriptor.idField || descriptor.objectIdField;
     const seen = new Set();
-    return { type: 'FeatureCollection', features: featureSet.features.map(feature => {
-        const nativeId = feature?.attributes?.[descriptor.objectIdField];
-        if (!Number.isSafeInteger(nativeId) || nativeId < 0 || seen.has(nativeId)) {
+    return { type: 'FeatureCollection', features: featureSet.features.flatMap(feature => {
+        const nativeId = feature?.attributes?.[idField];
+        // Some authored collections contain an empty editor row. Only an explicitly
+        // enabled, geometry-less row with a present but blank parcel ID is ignored.
+        // Numeric editor defaults need not be blank. An identified parcel always fails.
+        if (descriptor.skipBlankRecords === true && feature?.geometry == null
+            && Object.hasOwn(feature?.attributes || {}, idField)
+            && (nativeId == null || (typeof nativeId === 'string' && !nativeId.trim()))) return [];
+        const validId = descriptor.idType === 'string'
+            ? typeof nativeId === 'string' && nativeId.length > 0 && nativeId.length <= 256 && nativeId.trim() === nativeId
+                && (!descriptor.idPattern || new RegExp(descriptor.idPattern).test(nativeId))
+            : Number.isSafeInteger(nativeId) && nativeId >= 0;
+        if (!validId || seen.has(nativeId)) {
             throw upstreamError('Invalid or repeated embedded parcel identity.');
         }
         seen.add(nativeId);
@@ -65,16 +76,20 @@ export function webmapParcelCollection(payload, descriptor) {
             containers[0].holes.push(hole);
         }
         const coordinates = shells.map(shell => [shell.ring, ...shell.holes]);
-        return { type: 'Feature', properties: { [descriptor.objectIdField]: nativeId },
+        return [{ type: 'Feature', properties: { [idField]: nativeId },
             geometry: coordinates.length === 1 ? { type: 'Polygon', coordinates: coordinates[0] }
-                : { type: 'MultiPolygon', coordinates } };
+                : { type: 'MultiPolygon', coordinates } }];
     }) };
 }
 
 export function createArcgisWebmapParcelSource(descriptor, { fetchImpl = fetch, now = Date.now } = {}) {
+    const idField = descriptor.idField || descriptor.objectIdField;
     if (!descriptor.webmapLayerName || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(descriptor.objectIdField || '')
-        || descriptor.idFields?.length !== 1 || descriptor.idFields[0] !== descriptor.objectIdField
-        || descriptor.outFields?.length !== 1 || descriptor.outFields[0] !== descriptor.objectIdField) {
+        || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(idField || '')
+        || ![undefined, 'number', 'string'].includes(descriptor.idType)
+        || (descriptor.skipBlankRecords !== undefined && typeof descriptor.skipBlankRecords !== 'boolean')
+        || descriptor.idFields?.length !== 1 || descriptor.idFields[0] !== idField
+        || descriptor.outFields?.length !== 1 || descriptor.outFields[0] !== idField) {
         throw new Error('Invalid embedded Web Map parcel descriptor.');
     }
     const maxBytes = descriptor.maxSnapshotBytes ?? 3 * 1024 * 1024;

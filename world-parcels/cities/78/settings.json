@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "78",
+  "name": "Valletta, Malta",
+  "point": [
+    35.8884178953846,
+    14.4872715961767
+  ],
+  "bindings": [
+    {
+      "appCityId": "valletta",
+      "runtimeConfig": {
+        "id": "valletta",
+        "wupCityCode": "78",
+        "label": "Valletta, Malta",
+        "currency": {
+          "locale": "en-MT",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            35.8884178953846,
+            14.4872715961767
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            35.8884178953846,
+            14.4872715961767
+          ],
+          "fallbackDataset": [
+            14.4872715961767,
+            35.8884178953846
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mt-pa-lra-registered-land-parcels-wfs",
+          "idPrefix": "MT-LRA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Planning Authority Malta / Land Registry Malta; Malta Data Portal (CC BY 4.0)"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mt-pa-lra-registered-land-parcels-wfs",
+      "name": "Malta Parcels of Registered Land",
+      "adapter": "wfs",
+      "wfsProfile": "haleconnect-inspire-v1",
+      "endpoint": "https://haleconnect.com/ows/services/org.1261.9e965259-f5a1-4e3e-8a64-41281f4d7ffe_wfs",
+      "version": "2.0.0",
+      "featureType": "cp:CadastralParcel",
+      "geometryField": "geometry",
+      "idField": null,
+      "idType": "string",
+      "nativeIdMode": "feature-id",
+      "idPattern": "^CP_[0-9]+_[0-9]+$",
+      "idPrefix": "MT-LRA-",
+      "outFields": [],
+      "requestProperties": true,
+      "responseSrid": 4326,
+      "metricSrid": 32633,
+      "pageSize": 1000,
+      "idBatchSize": 1,
+      "maxFeatures": 1000,
+      "maxResponseBytes": 1048576,
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 2,
+      "timeoutMs": 30000,
+      "cityIds": [
+        "valletta"
+      ],
+      "countryCode": "MT",
+      "attribution": "Planning Authority Malta / Land Registry Malta; Malta Data Portal (CC BY 4.0)",
+      "operator": "Planning Authority Malta / Land Registry Malta",
+      "catalogueUrl": "https://portal.data.gov.mt/dataset/parcels-of-registered-land",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "licenceNote": "CC BY 4.0; portal metadata is work in progress and not confirmed official records.",
+      "scope": "Registered-land cadastral parcels; incomplete coverage may occur. Valletta peninsula sample verified; citywide completeness unverified.",
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "MT",
+          "basis": "Official Malta portal links the Planning Authority hosted national registered-land INSPIRE cadastral parcel WFS."
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

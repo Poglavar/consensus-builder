@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3763",
+  "name": "Dnipro, Ukraine",
+  "point": [
+    48.464650886876,
+    35.0208595888766
+  ],
+  "bindings": [
+    {
+      "appCityId": "dnipro",
+      "runtimeConfig": {
+        "id": "dnipro",
+        "wupCityCode": "3763",
+        "label": "Dnipro, Ukraine",
+        "currency": {
+          "locale": "uk-UA",
+          "code": "UAH"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            48.464650886876,
+            35.0208595888766
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            48.464650886876,
+            35.0208595888766
+          ],
+          "fallbackDataset": [
+            35.0208595888766,
+            48.464650886876
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ua-kadastr-com-ua-landuse",
+          "idPrefix": "UA-KADASTR-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Kadastr.com.ua · independent public cadastral map. Underlying registry provenance, currentness and survey alignment unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ua-kadastr-com-ua-landuse",
+      "name": "Kadastr.com.ua Dnipro cadastral parcels",
+      "adapter": "ua-kadastr-landuse",
+      "endpoint": "https://back.geoserver.click/api/landuse/1210100000%3A01%3A002%3A0009",
+      "tileEndpoint": "https://jdwepohzmflyupbpmxkg.supabase.co/functions/v1/kadastrova-karta-proxy",
+      "operator": "Kadastr.com.ua independent public cadastral-map provider",
+      "countryCode": "UA",
+      "cityIds": [
+        "dnipro"
+      ],
+      "idPrefix": "UA-KADASTR-",
+      "idField": "cadnum",
+      "idType": "string",
+      "parcelNumberField": "cadnum",
+      "outFields": [
+        "cadnum"
+      ],
+      "responseSrid": 4326,
+      "responseAxisOrder": "longitude-latitude",
+      "sourceCrs": "Undeclared by API; geographic longitude/latitude observed, treated as WGS84 for display; georeferencing unverified",
+      "metricSrid": 32636,
+      "maxFeatures": 80,
+      "maxTiles": 9,
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 1,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 25000,
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "scope": "Bounded availability of native cadnum parcels in Dnipro. Tile index discovers IDs; the landuse API supplies unchanged full geometry. Provider index completeness, citywide coverage and currentness are unverified.",
+      "attribution": "Kadastr.com.ua · independent public cadastral map. Underlying registry provenance, currentness and survey alignment unverified.",
+      "catalogueUrl": "https://kadastr.com.ua/",
+      "licenceNote": "Public anonymous viewer/API. No explicit reuse licence established; redistribution terms require follow-up.",
+      "defaultForCity": true
+    }
+  ]
+}

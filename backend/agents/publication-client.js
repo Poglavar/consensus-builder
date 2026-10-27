@@ -58,22 +58,27 @@ export function onchainNames(row, account) {
 
 /**
  * @param {{ apiBase: string, origin?: string|null, fetchImpl?: Function, timeoutMs?: number,
- *           waitOnRateLimit?: boolean, wait?: Function, log?: Function }} options
+ *           waitOnRateLimit?: boolean, pinIntervalMs?: number, now?: Function, wait?: Function, log?: Function }} options
  *   origin: sent on writes (the API's write guard admits the app's origins; a headless caller names one).
  *   waitOnRateLimit: wait out a 429 (Retry-After, at most MAX_RATE_LIMIT_WAIT_MS) instead of failing.
  */
 export function createIndexClient({
     apiBase, origin = null, fetchImpl = globalThis.fetch, timeoutMs = 60_000,
-    waitOnRateLimit = false, wait = delay, log = () => {}
+    waitOnRateLimit = false, pinIntervalMs = 0, now = Date.now, wait = delay, log = () => {}
 } = {}) {
     const base = cleanApiBase(apiBase);
+    if (!Number.isFinite(pinIntervalMs) || pinIntervalMs < 0) throw new Error('pinIntervalMs must be non-negative');
     // POST is replayed only on transport failures and 5xx: every write here is keyed by a CID.
     const retrying = createRetryingFetch({
         fetchImpl, timeoutMs, retryMethods: new Set(['GET', 'POST']),
+        // This client owns 429 cooldowns: the generic short retry loop must not replay them first.
+        shouldRetryResponse: response => response.status !== 429, wait,
         requestLabel: ({ method }) => `index-${method.toLowerCase()}`
     });
 
     const pinned = new Map();
+    let pinQueue = Promise.resolve();
+    let nextPinAt = 0;
 
     async function call(method, path, body) {
         for (let round = 1; ; round += 1) {
@@ -87,8 +92,14 @@ export function createIndexClient({
             let json = null;
             try { json = text ? JSON.parse(text) : null; } catch (_) { json = null; }
             if (response.status === 429 && waitOnRateLimit && round < RATE_LIMIT_ROUNDS) {
-                const seconds = Number(json?.retryAfterSeconds ?? response.headers.get('retry-after'));
-                const ms = Math.min(MAX_RATE_LIMIT_WAIT_MS, Number.isFinite(seconds) && seconds > 0 ? seconds * 1000 : 60_000);
+                const header = response.headers.get('retry-after');
+                const headerSeconds = Number(header);
+                const headerMs = Number.isFinite(headerSeconds) ? headerSeconds * 1000 : Date.parse(header) - now();
+                const bodyMs = Number(json?.retryAfterSeconds) * 1000;
+                const declared = Math.max(Number.isFinite(headerMs) ? headerMs : 0, Number.isFinite(bodyMs) ? bodyMs : 0);
+                const ms = declared > 0 ? declared : 60_000 * 2 ** (round - 1);
+                // Never retry earlier than a server cooldown that exceeds our bounded wait.
+                if (ms > MAX_RATE_LIMIT_WAIT_MS) return { status: response.status, ok: response.ok, body: json, text };
                 log(`${method} ${path.split('?')[0]}: rate limited; waiting ${Math.round(ms / 1000)} s (round ${round}/${RATE_LIMIT_ROUNDS - 1})`);
                 await wait(ms);
                 continue;
@@ -102,12 +113,21 @@ export function createIndexClient({
         if (!['design', 'plan', 'agreement'].includes(kind)) throw new Error('kind must be design, plan or agreement');
         const { cid, bytes } = addressOf(object);
         if (pinned.has(cid)) return pinned.get(cid);
-        const result = await call('POST', '/pins', { kind, cid, bytes: bytes.toString('base64') });
-        if (!result.ok) throw refusal(`pin ${kind} ${cid}`, result);
-        if (result.body?.cid !== cid) throw mismatch(`pin ${kind}`, cid, result.body?.cid);
-        const receipt = { cid, pinnedAt: result.body.pinnedAt ?? null };
-        pinned.set(cid, receipt);
-        return receipt;
+        const queued = pinQueue.then(async () => {
+            if (pinned.has(cid)) return pinned.get(cid);
+            const pause = nextPinAt - now();
+            if (pause > 0) await wait(pause);
+            nextPinAt = now() + pinIntervalMs;
+            const result = await call('POST', '/pins', { kind, cid, bytes: bytes.toString('base64') });
+            nextPinAt = now() + pinIntervalMs;
+            if (!result.ok) throw refusal(`pin ${kind} ${cid}`, result);
+            if (result.body?.cid !== cid) throw mismatch(`pin ${kind}`, cid, result.body?.cid);
+            const receipt = { cid, pinnedAt: result.body.pinnedAt ?? null };
+            pinned.set(cid, receipt);
+            return receipt;
+        });
+        pinQueue = queued.catch(() => {});
+        return queued;
     }
 
     /** POST /designs: { row, created } (created false: the CID was indexed already). */

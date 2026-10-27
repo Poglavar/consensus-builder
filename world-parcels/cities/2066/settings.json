@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2066",
+  "name": "Pereira, Colombia",
+  "point": [
+    4.81360908585759,
+    -75.7010941066248
+  ],
+  "bindings": [
+    {
+      "appCityId": "pereira",
+      "runtimeConfig": {
+        "id": "pereira",
+        "wupCityCode": "2066",
+        "label": "Pereira, Colombia",
+        "currency": {
+          "locale": "es-CO",
+          "code": "COP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            4.81360908585759,
+            -75.7010941066248
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            4.81360908585759,
+            -75.7010941066248
+          ],
+          "fallbackDataset": [
+            -75.7010941066248,
+            4.81360908585759
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "co-pereira-amco-terreno-catastro-2025",
+          "idPrefix": "CO-PEREIRA-AMCO-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Municipio de Pereira / SIGPER; Área Metropolitana Centro Occidente (AMCO), cadastral terrain supplied 2025-05-09. Indicative geometry; coverage and currentness unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "co-pereira-amco-terreno-catastro-2025",
+      "name": "Pereira SIGPER / AMCO cadastral terrain (2025-05-09)",
+      "adapter": "arcgis",
+      "endpoint": "https://services3.arcgis.com/Zdpg0E6lri7EggIc/arcgis/rest/services/Terreno_Catastro__AMCO___09052025_/FeatureServer/0",
+      "idField": "idterreno",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CO-PEREIRA-AMCO-",
+      "outFields": [
+        "OBJECTID",
+        "idterreno"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 30000,
+      "maxResponseBytes": 16777216,
+      "maxConcurrentQueries": 2,
+      "countryCode": "CO",
+      "metricSrid": 32618,
+      "nativeCrs": "EPSG:9377",
+      "responseCrs": "EPSG:4326",
+      "scope": "AMCO cadastral terrain published by Pereira SIGPER. Bounded central Pereira exact-ID samples only; wider Pereira and AMCO coverage, currentness and ground topology unverified. Historical nested overlaps remain a second-pass follow-up.",
+      "operator": "Municipio de Pereira / Secretaría de Planeación (SIGPER); terrain supplied by Área Metropolitana Centro Occidente (AMCO)",
+      "attribution": "Municipio de Pereira / SIGPER; Área Metropolitana Centro Occidente (AMCO), cadastral terrain supplied 2025-05-09. Indicative geometry; coverage and currentness unverified.",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=9fd810a194e04f20aad16a485ead80cb",
+      "licenceNote": "Public municipal geographic open-data portal and anonymous service access; item/service license fields are blank. Specific reuse terms remain undocumented.",
+      "cityIds": [
+        "pereira"
+      ],
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "identityNote": "Native idterreno values are safe integer terrain identifiers in observed rows. globalid is nullable in live viewport rows and is not used as canonical identity. No rows are filtered out.",
+      "defaultForCity": true
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1122",
+  "name": "La Paz, Mexico",
+  "point": [
+    24.1214845987258,
+    -110.31000709561
+  ],
+  "bindings": [
+    {
+      "appCityId": "la_paz",
+      "runtimeConfig": {
+        "id": "la_paz",
+        "wupCityCode": "1122",
+        "label": "La Paz, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            24.1214845987258,
+            -110.31000709561
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            24.1214845987258,
+            -110.31000709561
+          ],
+          "fallbackDataset": [
+            -110.31000709561,
+            24.1214845987258
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-lapaz-bcs-visorurbano-predios2",
+          "idPrefix": "MX-LAPAZ-PREDIOS2-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "H. Ayuntamiento de La Paz, Baja California Sur · Visor Urbano · Dirección General de Gobierno Digital"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-lapaz-bcs-visorurbano-predios2",
+      "name": "Visor Urbano La Paz B.C.S. — municipal cadastral predios",
+      "adapter": "wfs",
+      "endpoint": "https://geoserverb.lapaz.gob.mx/geoserver/cartografia/wms",
+      "featureType": "cartografia:predios2",
+      "layer": "cartografia:predios2",
+      "version": "1.0.0",
+      "idField": "id",
+      "idFields": [
+        "id"
+      ],
+      "idType": "integer",
+      "idPrefix": "MX-LAPAZ-PREDIOS2-",
+      "outFields": [
+        "id"
+      ],
+      "geometryField": "geom",
+      "requestProperties": true,
+      "paginationIdentity": "native-id",
+      "pageSize": 2000,
+      "idBatchSize": 1,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 120,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 1,
+      "responseSrid": 4326,
+      "countryCode": "MX",
+      "metricSrid": 32612,
+      "cityIds": [
+        "la_paz"
+      ],
+      "defaultForCity": true,
+      "browserTransport": "relay",
+      "attribution": "H. Ayuntamiento de La Paz, Baja California Sur · Visor Urbano · Dirección General de Gobierno Digital",
+      "operator": "H. Ayuntamiento de La Paz, Baja California Sur",
+      "catalogueUrl": "https://visorurbano.lapaz.gob.mx/",
+      "scope": "Municipal cadastral predios; bounded urban observations, citywide completeness unverified.",
+      "licenceNote": "Public informational viewer, no legal effects; explicit reuse licence and attribution terms remain unverified.",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "duplicateNativeRows": "same-page-identical-geometry"
+    }
+  ]
+}

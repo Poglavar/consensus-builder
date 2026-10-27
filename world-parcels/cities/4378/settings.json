@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4378",
+  "name": "Himeji, Japan",
+  "point": [
+    34.8196799473297,
+    134.658654075614
+  ],
+  "bindings": [
+    {
+      "appCityId": "himeji",
+      "runtimeConfig": {
+        "id": "himeji",
+        "wupCityCode": "4378",
+        "label": "Himeji, Japan",
+        "currency": {
+          "locale": "ja-JP",
+          "code": "JPY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            34.8196799473297,
+            134.658654075614
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            34.8196799473297,
+            134.658654075614
+          ],
+          "fallbackDataset": [
+            134.658654075614,
+            34.8196799473297
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "jp-moj-aigid-himeji-2026-public-coordinate-parcels",
+          "idPrefix": "jp-moj-aigid-himeji-2026-public-coordinate-parcels/native-shape-sha256-v1/",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Japan Ministry of Justice 登記所備付地図 data; AIGID / Geospatial Information Center conversion and distribution; Himeji City (28201) public-coordinate package, 2026 resource. Display conversion from JGD2011 Japan Plane Rectangular CS V."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "jp-moj-aigid-himeji-2026-public-coordinate-parcels",
+      "name": "Japan MOJ registry-office map parcels — Himeji public-coordinate 2026 distribution",
+      "adapter": "shapefile-range",
+      "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/28/aigid-moj-28201/28201_%E5%A7%AB%E8%B7%AF%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%995%E7%B3%BB_%E7%AD%86R_2026.geojson",
+      "geometryEndpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/28/aigid-moj-28201/28201_%E5%A7%AB%E8%B7%AF%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%995%E7%B3%BB_%E7%AD%86R_2026.shp.zip",
+      "geometryEtag": "\"62252ad74c7831dc47772558e78c1735-3\"",
+      "geometryArchiveBytes": 20346403,
+      "geometryMember": {
+        "name": "28201_姫路市_公共座標5系_筆R_2026.shp",
+        "dataStart": 2625719,
+        "compressedBytes": 17158532,
+        "uncompressedBytes": 38986316,
+        "crc32": 274112650,
+        "records": 149030
+      },
+      "idPrefix": "jp-moj-aigid-himeji-2026-public-coordinate-parcels/native-shape-sha256-v1/",
+      "outFields": [],
+      "operator": "Japan Ministry of Justice; AIGID / G-spatial Information Center conversion and distribution",
+      "countryCode": "JP",
+      "cityIds": [
+        "himeji"
+      ],
+      "defaultForCity": true,
+      "metricSrid": 32653,
+      "sourceCrs": "EPSG:6673",
+      "nativeCrs": "EPSG:6673",
+      "returnsWGS84": true,
+      "geometryType": "Polygon",
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 1,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometryQuery": true
+      },
+      "rangeBytes": 65536,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-28201",
+      "licenceUrl": "https://www.geospatial.jp/ckan/organization/moj-mapdata",
+      "licenceNote": "Live Himeji CKAN metadata reports Creative Commons Attribution (cc-by). Original MOJ map-data terms and conversion caveats also apply. No legal-boundary, title, survey-accuracy or currentness guarantee.",
+      "attribution": "Japan Ministry of Justice 登記所備付地図 data; AIGID / Geospatial Information Center conversion and distribution; Himeji City (28201) public-coordinate package, 2026 resource. Display conversion from JGD2011 Japan Plane Rectangular CS V.",
+      "dataVersion": "2026 catalog/URL distribution; GeoJSON collection name ends in 2025; object last modified 2026-08-07. The publisher does not explain this discrepancy; it is not presented as confirmed 2026 map content.",
+      "scope": "Published public-coordinate registry-map polygons for Himeji (28201). The complete paired SHP geometry member is streamed and verified at runtime; arbitrary-coordinate sheets are excluded by the publisher. Bounded qualification and app checks do not establish citywide completeness. Locator remains the immutable WUP point and may have no containing parcel.",
+      "identityKind": "native-shape-sha256-v1",
+      "identity": {
+        "scheme": "native-shape-sha256-v1",
+        "recipe": "Lowercase SHA-256 of the unchanged little-endian SHP geometry record content, excluding its 8-byte record framing. This includes geometry type, source-derived bbox, ring indices and every native double coordinate, with no row number or byte offset in the identity. Prefix with source ID + /native-shape-sha256-v1/. Identical native geometries deduplicate; source corrections/reordering of coordinates change references.",
+        "native": false,
+        "reason": "ID repeats across source sheets. Geometry-derived references allow anonymous geometry-only SHP reads without requesting any DBF attributes. These are source geometry references, not legal parcel identifiers.",
+        "stabilityLimits": "Stable for unchanged native SHP record geometry in this pinned release; identical record geometries share a reference. Corrections, coordinate or ring reordering can change references; cross-edition continuity is not asserted."
+      },
+      "projection": {
+        "nativeAxes": "easting,northing",
+        "operation": "JGD2011 Japan Plane Rectangular CS V inverse Transverse Mercator to longitude,latitude on GRS80, used as geographic WGS84 display coordinates without fitted offset.",
+        "definition": "+proj=tmerc +lat_0=36 +lon_0=134.333333333333 +k=0.9999 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs",
+        "uncertainty": "JGD2011 epoch/datum transformation to WGS84 and external basemap alignment are not independently surveyed; second-pass follow-up."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "JP",
+          "city": "Himeji",
+          "municipalityCode": "28201",
+          "basis": "Current first-party CKAN package 兵庫県-姫路市 explicitly describes MOJ registry-office map conversion, public-coordinate sheets only, JGD2011."
+        },
+        "sourcePurpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-28201",
+          "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-1345"
+        ],
+        "pairedFormatEvidence": "The live CKAN resource list contains both the immutable receipt GeoJSON endpoint and the same-stem 2026 SHP ZIP. Runtime reads only that ZIP geometry member; no DBF is fetched."
+      }
+    }
+  ]
+}

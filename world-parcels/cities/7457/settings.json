@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7457",
+  "name": "Praia Grande, Brazil",
+  "point": [
+    -24.0112734460701,
+    -46.4707057551489
+  ],
+  "bindings": [
+    {
+      "appCityId": "praia_grande",
+      "runtimeConfig": {
+        "id": "praia_grande",
+        "wupCityCode": "7457",
+        "label": "Praia Grande, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -24.0112734460701,
+            -46.4707057551489
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -24.0112734460701,
+            -46.4707057551489
+          ],
+          "fallbackDataset": [
+            -46.4707057551489,
+            -24.0112734460701
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-praia-grande-geopg-lotes",
+          "idPrefix": "BR-PRAIA-GRANDE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Prefeitura de Praia Grande / SEPLAN — Planta Cadastral / GEOPG. Consultative use; no legal or building-alignment precision."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-praia-grande-geopg-lotes",
+      "name": "Praia Grande — SEPLAN cadastral lots",
+      "adapter": "wfs",
+      "cityIds": [
+        "praia_grande"
+      ],
+      "countryCode": "BR",
+      "endpoint": "https://geoserver.praiagrande.sp.gov.br/PraiaGrandePlantaCadastral/wfs",
+      "featureType": "PraiaGrandePlantaCadastral:lotes",
+      "version": "1.1.0",
+      "idField": "top_id",
+      "idType": "string",
+      "idPrefix": "BR-PRAIA-GRANDE-",
+      "idPattern": "^[0-9]+$",
+      "outFields": [
+        "top_id"
+      ],
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "responseSrid": 4326,
+      "idFilter": "ogc",
+      "wfsPublicReader": "jina-v1",
+      "pageSize": 100,
+      "idBatchSize": 10,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "maxResponseBytes": 2097152,
+      "timeoutMs": 45000,
+      "minRequestIntervalMs": 3200,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "metricSrid": 32723,
+      "operator": "Prefeitura da Estância Balneária de Praia Grande / SEPLAN / GEOPG",
+      "catalogueUrl": "https://plantacadastral.praiagrande.sp.gov.br/",
+      "scope": "Praia Grande municipal consultative cadastral lot geometry interpreted from IPTU, subdivision records and aerial survey; not a legal-title register.",
+      "coverageNote": "Municipal cadastral ground; initial bounded parcel proof does not establish all-city coverage or category completeness.",
+      "attribution": "Prefeitura de Praia Grande / SEPLAN — Planta Cadastral / GEOPG. Consultative use; no legal or building-alignment precision.",
+      "licenceNote": "Public anonymous viewer and WFS. No explicit reuse licence established; retain publisher attribution and consultative-use caveats.",
+      "caveats": [
+        "Coordinates are supplied by the source and are not survey or legal boundary evidence.",
+        "The viewer describes several ground categories; category-specific completeness and annual TOP_ID stability remain unverified.",
+        "A public third-party text reader carries bounded HTTPS WFS requests because direct DNS/TCP access fails in the qualification environment. Reader caching is disabled; availability and rate limits remain external dependencies.",
+        "Native CRS, datum operation and alignment have not received independent second-pass review. No fitted offset or geometry change is applied."
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

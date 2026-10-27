@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2372",
+  "name": "Culiacán, Mexico",
+  "point": [
+    24.7928752109654,
+    -107.402476360497
+  ],
+  "bindings": [
+    {
+      "appCityId": "culiacan",
+      "runtimeConfig": {
+        "id": "culiacan",
+        "wupCityCode": "2372",
+        "label": "Culiacán, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            24.7928752109654,
+            -107.402476360497
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            24.7928752109654,
+            -107.402476360497
+          ],
+          "fallbackDataset": [
+            -107.402476360497,
+            24.7928752109654
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-sinaloa-ices-vte-predio-culiacan",
+          "idPrefix": "MX-SINALOA-ICES-CULIACAN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Instituto Catastral del Estado de Sinaloa (ICES) · Visor Territorial · PredioCuliacan"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-sinaloa-ices-vte-predio-culiacan",
+      "name": "ICES Visor Territorial — Culiacán cadastral Predios",
+      "adapter": "wfs",
+      "endpoint": "https://geoservervte.sinaloa.gob.mx/geoserver/wfs",
+      "featureType": "ices:PredioCuliacan",
+      "version": "2.0.0",
+      "idField": "Clave",
+      "idType": "string",
+      "idPattern": "^[0-9]{18}$",
+      "idPrefix": "MX-SINALOA-ICES-CULIACAN-",
+      "geometryField": "geom",
+      "outFields": [
+        "Clave"
+      ],
+      "requestProperties": true,
+      "paginationIdentity": "native-id",
+      "filterBoundsGeometry": true,
+      "pageSize": 200,
+      "idBatchSize": 40,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 1,
+      "minRequestIntervalMs": 100,
+      "countryCode": "MX",
+      "metricSrid": 32613,
+      "sourceCrs": "EPSG:6368",
+      "cityIds": [
+        "culiacan"
+      ],
+      "operator": "Instituto Catastral del Estado de Sinaloa (ICES)",
+      "attribution": "Instituto Catastral del Estado de Sinaloa (ICES) · Visor Territorial · PredioCuliacan",
+      "catalogueUrl": "https://ices.gob.mx/portal/",
+      "licenceNote": "WFS advertises no fees or access constraints. An explicit reuse licence was not established; preserve ICES attribution and confirm reuse terms in second-pass review.",
+      "scope": "Culiacán cadastral parcels in bounded urban queries. Advertised broad extent does not prove citywide or municipal completeness; currentness, legal-title validity and survey accuracy are unverified.",
+      "browserTransport": "relay",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "MX",
+          "admin1": [
+            "MX-SIN"
+          ],
+          "basis": "ICES official portal defines its cadastral registration role and links Visor Territorial. The public WFS exposes ices:PredioCuliacan, native cadastral Clave and polygon geom.",
+          "evidence": [
+            "https://ices.gob.mx/portal/",
+            "https://vte.sinaloa.gob.mx/",
+            "https://geoservervte.sinaloa.gob.mx/geoserver/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=ices%3APredioCuliacan"
+          ]
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

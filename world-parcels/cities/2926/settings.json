@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2926",
+  "name": "Temuco, Chile",
+  "point": [
+    -38.7378808982456,
+    -72.6061192362359
+  ],
+  "bindings": [
+    {
+      "appCityId": "temuco",
+      "runtimeConfig": {
+        "id": "temuco",
+        "wupCityCode": "2926",
+        "label": "Temuco, Chile",
+        "currency": {
+          "locale": "es-CL",
+          "code": "CLP"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -38.7378808982456,
+            -72.6061192362359
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -38.7378808982456,
+            -72.6061192362359
+          ],
+          "fallbackDataset": [
+            -72.6061192362359,
+            -38.7378808982456
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "cl-temuco-municipality-predios",
+          "idPrefix": "CL-TEMUCO-MUNICIPAL-PREDIOS-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Municipalidad de Temuco · Departamento de Estudios e Información Territorial · Predios. Municipal reuse restrictions apply."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "cl-temuco-municipality-predios",
+      "name": "Municipalidad de Temuco IDE Predios",
+      "adapter": "arcgis",
+      "endpoint": "https://services5.arcgis.com/eRZzgPfrzSdIBqJq/arcgis/rest/services/Predios/FeatureServer/2",
+      "operator": "Municipalidad de Temuco, Departamento de Estudios e Información Territorial; Departamento de Catastro DOM",
+      "countryCode": "CL",
+      "idField": "globalid",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "idQueryBraces": true,
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CL-TEMUCO-MUNICIPAL-PREDIOS-",
+      "outFields": [
+        "OBJECTID",
+        "globalid"
+      ],
+      "pageSize": 2000,
+      "idBatchSize": 20,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "minRequestIntervalMs": 150,
+      "metricSrid": 32718,
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "sourceCrs": "EPSG:32718",
+      "scope": "Municipal comuna Predios; bounded central and exact city-point evidence. Full city/comuna coverage and currentness unverified.",
+      "attribution": "Municipalidad de Temuco · Departamento de Estudios e Información Territorial · Predios. Municipal reuse restrictions apply.",
+      "licenceUrl": "https://www.arcgis.com/home/item.html?id=5bd31fb72ca54da8b967ce962e5563b8",
+      "catalogueUrl": "https://services5.arcgis.com/eRZzgPfrzSdIBqJq/arcgis/rest/services/Predios/FeatureServer/2",
+      "license": "Public-plan visualization/access is stated, with an explicit prohibition on alteration, modification or downloading by any method. Application reuse permission remains unresolved; technical verification is not activation approval.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CL",
+          "basis": "Current municipal item and FeatureServer describe predios of the comuna de Temuco with fiscal roles; native polygon layer 2."
+        }
+      },
+      "cityIds": [
+        "temuco"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

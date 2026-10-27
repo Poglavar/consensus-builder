@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4896",
+  "name": "Mar del Plata, Argentina",
+  "point": [
+    -38.0059865658341,
+    -57.5728242594257
+  ],
+  "bindings": [
+    {
+      "appCityId": "mar_del_plata",
+      "runtimeConfig": {
+        "id": "mar_del_plata",
+        "wupCityCode": "4896",
+        "label": "Mar del Plata, Argentina",
+        "currency": {
+          "locale": "es-AR",
+          "code": "ARS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -38.0059865658341,
+            -57.5728242594257
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -38.0059865658341,
+            -57.5728242594257
+          ],
+          "fallbackDataset": [
+            -57.5728242594257,
+            -38.0059865658341
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ar-pba-arba-idera-wfs-parcela",
+          "idPrefix": "AR-PBA-ARBA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "ARBA · Departamento Cartográfico / Subgerencia de Tecnología Geoespacial"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ar-pba-arba-idera-wfs-parcela",
+      "name": "ARBA Buenos Aires cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://geo.arba.gov.ar/geoserver/idera/wfs",
+      "featureType": "idera:Parcela",
+      "version": "2.0.0",
+      "geometryField": "geom",
+      "nativeIdMode": "feature-id",
+      "featureIdParameter": "resourceId",
+      "idField": null,
+      "idType": "string",
+      "idPrefix": "AR-PBA-ARBA-",
+      "idPattern": "^Parcela\\.[0-9A-Z]{42}$",
+      "outFields": [],
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 1048576,
+      "timeoutMs": 45000,
+      "countryCode": "AR",
+      "stateCode": "BA",
+      "metricSrid": 32721,
+      "cityIds": [
+        "mar_del_plata"
+      ],
+      "defaultForCity": true,
+      "sourceCrs": "EPSG:5347",
+      "returnsWGS84": true,
+      "capabilities": {
+        "exactIds": true,
+        "areaEnumeration": true
+      },
+      "operator": "Agencia de Recaudación de la Provincia de Buenos Aires (ARBA)",
+      "scope": "Provincial cadastral layer; qualification establishes bounded La Plata samples only, not citywide or Partido completeness. No current/historic filtering inferred.",
+      "attribution": "ARBA · Departamento Cartográfico / Subgerencia de Tecnología Geoespacial",
+      "catalogueUrl": "https://www.arba.gov.ar/geoarba/inicio.asp",
+      "licenceNote": "Official anonymous vector access; no explicit reuse licence established. Reuse permission and attribution requirements remain second-pass follow-ups."
+    }
+  ]
+}

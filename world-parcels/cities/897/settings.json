@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "897",
+  "name": "Chiclayo, Peru",
+  "point": [
+    -6.7699903534786,
+    -79.8447236775502
+  ],
+  "bindings": [
+    {
+      "appCityId": "chiclayo",
+      "runtimeConfig": {
+        "id": "chiclayo",
+        "wupCityCode": "897",
+        "label": "Chiclayo, Peru",
+        "currency": {
+          "locale": "es-PE",
+          "code": "PEN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -6.7699903534786,
+            -79.8447236775502
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -6.7699903534786,
+            -79.8447236775502
+          ],
+          "fallbackDataset": [
+            -79.8447236775502,
+            -6.7699903534786
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "pe-cofopri-serfor-ide-lotes",
+          "idPrefix": "PE-COFOPRI-IDE-LOTES-OBJECTID_1-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "COFOPRI / Organismo de Formalización de la Propiedad Informal; SERFOR Geoservicios, Int_IDE_COFOPRI / LOTES."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "pe-cofopri-serfor-ide-lotes",
+      "name": "COFOPRI IDE LOTES via SERFOR",
+      "adapter": "arcgis",
+      "endpoint": "https://geo.serfor.gob.pe/geoservicios/rest/services/Integracion/Int_IDE_COFOPRI/MapServer/2",
+      "idField": "OBJECTID_1",
+      "objectIdField": "OBJECTID_1",
+      "idType": "integer",
+      "idPrefix": "PE-COFOPRI-IDE-LOTES-OBJECTID_1-",
+      "outFields": [
+        "OBJECTID_1",
+        "ID_DIST"
+      ],
+      "attributeFilters": {
+        "ID_DIST": "140101"
+      },
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "countryCode": "PE",
+      "metricSrid": 32717,
+      "cityIds": [
+        "chiclayo"
+      ],
+      "operator": "COFOPRI; published by SERFOR Geoservicios",
+      "scope": "Bounded Chiclayo district ID_DIST=140101 lots. Positive parcels southwest of the unchanged WUP locator; citywide completeness is unestablished. This integration is not verified as the newer 2024–2026 project output.",
+      "attribution": "COFOPRI / Organismo de Formalización de la Propiedad Informal; SERFOR Geoservicios, Int_IDE_COFOPRI / LOTES.",
+      "catalogueUrl": "https://geo.serfor.gob.pe/geoservicios/rest/services/Integracion/Int_IDE_COFOPRI/MapServer/2",
+      "licenceNote": "Anonymous government service access verified. Checked metadata state no explicit reuse licence, update schedule or automated-reuse terms; permission and continuity remain follow-up questions.",
+      "maxConcurrentQueries": 1,
+      "defaultForCity": true
+    }
+  ]
+}

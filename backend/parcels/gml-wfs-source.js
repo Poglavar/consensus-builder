@@ -2,7 +2,7 @@
 import { bbox as geometryBbox, booleanIntersects, bboxPolygon, feature as geoFeature } from '@turf/turf';
 import proj4 from 'proj4';
 import { HttpError } from '../utils/helpers.js';
-import { MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, POLAND_EGIB_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, parseGmlParcels } from './gml-parcel-reader.js';
+import { BREMEN_GML_SCHEMA, MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, POLAND_EGIB_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, parseGmlParcels } from './gml-parcel-reader.js';
 import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
 
 function delay(ms, { signal } = {}) {
@@ -23,6 +23,17 @@ function delay(ms, { signal } = {}) {
 
 const FES_NS = 'http://www.opengis.net/fes/2.0';
 const PROFILES = Object.freeze({
+    // Capabilities explicitly disable result paging. Read only bounded complete
+    // match sets, counted independently before and after the data response.
+    'de-hb-alkis-flurstuecke-wfs': Object.freeze({
+        endpoint: 'https://geodienste.bremen.de/wfs_hduk2958loah3976niun',
+        typeName: 'app:flurstuecke', idField: 'flstkennz', geometryField: 'geom',
+        featureNamespace: BREMEN_GML_SCHEMA.featureNamespace, idPrefix: 'DE-HB-ALKIS-',
+        responseCrs: 'EPSG:4326', responseCrsUrn: 'EPSG:4326',
+        propertyName: 'app:flstkennz,app:geom',
+        namespaces: `xmlns(app,${BREMEN_GML_SCHEMA.featureNamespace})`,
+        version: '2.0.0', unpaged: true, bboxKvp: true, schema: BREMEN_GML_SCHEMA
+    }),
     'gdansk-gml-wfs': Object.freeze({
         endpoint: 'https://ewid-wms.gdansk.gda.pl/iip/ows',
         typeName: 'ms:dzialki', idField: 'ID_DZIALKI', geometryField: 'geometry',

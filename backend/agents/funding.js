@@ -183,7 +183,7 @@ async function withUsdcFundingLock(pool, sourceWallet, work) {
 
 /** Top up a configured actor only when its next token-spending action needs USDC. */
 export async function ensureBotUsdcFunding({
-    connection, persona, pool, requiredAtomic,
+    connection, persona, pool, requiredAtomic, maxActionAtomic = TARGET_BOT_USDC,
     enabled = process.env.AGENT_USDC_FUNDING_ENABLED === '1',
     readBalance = readUsdcBalance,
     loadFunder = loadConfiguredFunder,
@@ -192,10 +192,17 @@ export async function ensureBotUsdcFunding({
     if (!enabled) return { status: 'skipped', reason: 'disabled' };
     const recipient = configuredPersona(persona);
     const source = configuredSource();
-    if (typeof requiredAtomic !== 'bigint' || requiredAtomic <= 0n || requiredAtomic > TARGET_BOT_USDC) {
-        throw new Error('USDC funding requires a positive action amount of at most 0.5 USDC');
+    if (typeof maxActionAtomic !== 'bigint' || maxActionAtomic <= 0n || typeof requiredAtomic !== 'bigint' || requiredAtomic <= 0n || requiredAtomic > maxActionAtomic) {
+        throw new Error('USDC funding requires a positive action amount within its explicit cap (default 0.5 USDC)');
     }
-    if (recipient.wallet === source.wallet) return { status: 'skipped', reason: 'source-wallet', wallet: recipient.wallet };
+    const targetBalance = requiredAtomic > TARGET_BOT_USDC ? requiredAtomic : TARGET_BOT_USDC;
+    if (recipient.wallet === source.wallet) {
+        if (requiredAtomic > TARGET_BOT_USDC) {
+            const balance = usdcBalance(await readBalance(connection, source.wallet));
+            if (balance - requiredAtomic < SOURCE_USDC_RESERVE) throw new Error(`USDC funding wallet ${source.wallet} cannot seed its market while retaining 1 test USDC; fund the source wallet before retrying`);
+        }
+        return { status: 'skipped', reason: 'source-wallet', wallet: recipient.wallet };
+    }
     const minimum = requiredAtomic > MIN_BOT_USDC ? requiredAtomic : MIN_BOT_USDC;
     const balance = usdcBalance(await readBalance(connection, recipient.wallet));
     if (balance >= minimum) return { status: 'skipped', reason: 'sufficient-balance', wallet: recipient.wallet };
@@ -205,7 +212,7 @@ export async function ensureBotUsdcFunding({
     return withUsdcFundingLock(pool, source.wallet, async () => {
         const current = usdcBalance(await readBalance(connection, recipient.wallet));
         if (current >= minimum) return { status: 'skipped', reason: 'sufficient-balance', wallet: recipient.wallet };
-        const amount = TARGET_BOT_USDC - current;
+        const amount = targetBalance - current;
         const sourceBalance = usdcBalance(await readBalance(connection, source.wallet));
         if (sourceBalance - amount < SOURCE_USDC_RESERVE) {
             throw new Error(`USDC funding wallet ${source.wallet} cannot top up ${recipient.wallet} while retaining 1 test USDC; fund the source wallet before retrying`);
@@ -225,7 +232,7 @@ export async function ensureBotUsdcFunding({
         const [afterRecipient, afterSource] = await Promise.all([
             readBalance(connection, recipient.wallet), readBalance(connection, source.wallet)
         ]);
-        if (usdcBalance(afterRecipient) < TARGET_BOT_USDC || usdcBalance(afterSource) < SOURCE_USDC_RESERVE) {
+        if (usdcBalance(afterRecipient) < targetBalance || usdcBalance(afterSource) < SOURCE_USDC_RESERVE) {
             throw new Error(`USDC top-up transaction ${signature} confirmed but balance readback failed; inspect this receipt before retrying`);
         }
         return { status: 'funded', wallet: recipient.wallet, sourceWallet: source.wallet,

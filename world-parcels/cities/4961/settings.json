@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4961",
+  "name": "Otsu, Japan",
+  "point": [
+    35.0275788911215,
+    135.934138565062
+  ],
+  "bindings": [
+    {
+      "appCityId": "otsu",
+      "runtimeConfig": {
+        "id": "otsu",
+        "wupCityCode": "4961",
+        "label": "Otsu, Japan",
+        "currency": {
+          "locale": "ja-JP",
+          "code": "JPY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            35.0275788911215,
+            135.934138565062
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            35.0275788911215,
+            135.934138565062
+          ],
+          "fallbackDataset": [
+            135.934138565062,
+            35.0275788911215
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "jp-moj-otsu-registered-map-2026",
+          "idPrefix": "JP-MOJ-2026-OTSUSI-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "登記所備付地図データ 大津市（法務省）, 2026 edition; G-spatial Information Center. Used 2026-10-26; adapted from Map XML to WGS84. https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-1204"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "jp-moj-otsu-registered-map-2026",
+      "name": "Otsu Ministry of Justice registry-map parcels (2026, selected public-coordinate sheet 401)",
+      "operator": "法務省 / Ministry of Justice; G-spatial Information Center distribution",
+      "adapter": "moj-mapxml",
+      "endpoint": "https://www.geospatial.jp/ckan/dataset/be71f8da-3320-4deb-95f8-1d0bdb3e73c3/resource/17960975-58e8-4031-a3f8-8327fe74365f/download/25201-1600-2026.zip",
+      "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=houmusyouchizu-2026-1-1204",
+      "countryCode": "JP",
+      "cityIds": [
+        "otsu"
+      ],
+      "idPrefix": "JP-MOJ-2026-OTSUSI-",
+      "idField": "id",
+      "idFields": [
+        "id"
+      ],
+      "outFields": [
+        "id"
+      ],
+      "idType": "string",
+      "identityRecipe": "JP-MOJ-2026-OTSUSI-{published inner sheet filename without .zip}-{native 筆/@id}. Native sheet and parcel ID, municipality and edition namespaces; no geometry or order derived identity.",
+      "identityStabilityLimit": "Pinned 2026 archive only; continuity across revised sheets or editions is unverified. Do not merge overlapping geometry identities.",
+      "archiveAccess": "selected-range-v1",
+      "archiveSha256": "5e1a5365652f1cfe8173440c654cfebedef72b891dcd3053d35e35b5b553af8e",
+      "archiveHashBasis": "Retained discovery full-archive hash; current runtime checks selected nested-sheet SHA-256, exact ranges, archive byte length and ETag. No whole-archive fetch.",
+      "archiveBytes": 118775843,
+      "archiveEtag": "\"7c4f2b77bd988bbc5829caf124ea496d\"",
+      "municipalityCode": "25201",
+      "coordinateSystem": "公共座標6系",
+      "sheetIndex": [
+        {
+          "zip": "25201-1600-401.zip",
+          "xml": "25201-1600-401.xml",
+          "rangeStart": 99287229,
+          "rangeBytes": 63612,
+          "sha256": "acf73be96209a2f149f8fff190207847d6c21d8283939d8eeeace4238f81c5e4",
+          "xmlBytes": 2153369,
+          "bbox": [
+            135.86216079206199,
+            35.0070897544566,
+            135.8646832575832,
+            35.009577223943246
+          ]
+        }
+      ],
+      "sourceCrs": "EPSG:6674",
+      "nativeAxisOrder": "northing-easting",
+      "responseCrs": "EPSG:4326",
+      "returnsWGS84": true,
+      "metricSrid": 32653,
+      "dataVersion": "2026",
+      "browserTransport": "relay",
+      "maxResponseBytes": 16777216,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "defaultForCity": true,
+      "capabilities": {
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "scope": "Partial Otsu: only official 2026 sheet 25201-1600-401, 191 parcel records in the observed envelope 135.86216–135.86469 E, 35.00708–35.00958 N. Other 419 sheets are outside the enabled scope. No coverage at the WUP locator or citywide completeness is claimed. Registry map dates and accuracy vary.",
+      "attribution": "登記所備付地図データ 大津市（法務省）, 2026 edition; G-spatial Information Center. Used 2026-10-26; adapted from Map XML to WGS84. https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-1204",
+      "licenceUrl": "https://www.geospatial.jp/ckan/dataset/fc3b0593-ce9e-40d1-aa33-94382d5f0da1/resource/47871bf1-4c85-48f7-a8fe-b27c6643c1c5/download/license.pdf",
+      "licenceNote": "MOJ custom terms permit reuse/adaptation and commercial use with attribution and adaptation disclosure. No personal data collection or individual identification through linkage. Source accuracy/currentness are not guaranteed.",
+      "projection": {
+        "nativeWireAxes": "XML X=northing, Y=easting; proj4 input [Y,X]",
+        "operation": "Inverse Japan Plane Rectangular CS VI Transverse Mercator, latitude origin 36, longitude origin 136, scale 0.9999, GRS80; JGD2011-based geographic coordinates displayed as WGS84 without a fitted shift or grid.",
+        "datumClassification": "Root 測地系判別=測量. This is not a datum realization; JGD2000/JGD2011/epoch and any TKY2JGD conversion details remain second-pass uncertainties.",
+        "fittedOffsetApplied": false
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "JP",
+          "basis": "Official MOJ CKAN identifies 大津市 registry maps under Real Property Registration Act Article 14(1)/(4); selected native XML identifies municipality 25201 and public coordinate zone 6.",
+          "evidence": [
+            "https://www.geospatial.jp/ckan/api/3/action/package_show?id=houmusyouchizu-2026-1-1204",
+            "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-1204"
+          ]
+        },
+        "evidenceUrls": [
+          "https://www.geospatial.jp/ckan/api/3/action/package_show?id=houmusyouchizu-2026-1-1204",
+          "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-1204"
+        ],
+        "coverage": "selected-sheet-only"
+      }
+    }
+  ]
+}
