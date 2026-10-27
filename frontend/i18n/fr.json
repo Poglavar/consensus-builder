@@ -1166,7 +1166,7 @@
             "picker": {
                 "done": "Terminé",
                 "title": "Prisme de ce projet",
-                "subtitle": "Choisissez les membres du prisme dont ce projet acceptera les attestations de propriété. Le prisme est figé lors de la création du jeton.",
+                "subtitle": "Choisissez les membres de confiance de votre prisme. Les modifications deviennent votre choix par défaut ; les accords enregistrés conservent leur propre prisme.",
                 "loading": "Chargement des membres du prisme…",
                 "loadFailed": "Impossible de charger l’annuaire des membres du prisme : {{error}}",
                 "emptyDirectory": "Aucun membre du prisme n’est encore connu. Collez une clé de membre ci-dessous.",

@@ -252,8 +252,8 @@
     }
 
     function refreshLensPatternPreviews() {
-        const patternUrl = getLensPatternDataUrl(getLensEntriesForActivePath());
         document.querySelectorAll('[data-lens-pattern]').forEach(el => {
+            const patternUrl = getLensPatternDataUrl(el.dataset.lensEntries ? JSON.parse(el.dataset.lensEntries) : getLensEntriesForActivePath());
             if (el.tagName === 'IMG') {
                 el.src = patternUrl;
             } else {
@@ -275,6 +275,8 @@
     function renderLensList(container, entries = getActiveLensEntries(), options = {}) {
         if (!container) return;
         const readOnly = options.readOnly === true;
+        const current = options.getEntries || getActiveLensEntries;
+        const commit = options.setEntries || updateLensEntries;
         // Preserve empty entries for editing - don't filter them out
         const list = (entries || []).map(item => {
             if (typeof item === 'string') {
@@ -319,16 +321,14 @@
                 addressInput.readOnly = true;
             } else {
                 addressInput.addEventListener('input', event => {
-                    const nextEntries = getActiveLensEntries();
+                    const nextEntries = current();
                     // Ensure we have enough entries (in case idx is out of bounds)
                     while (nextEntries.length <= idx) {
                         nextEntries.push({ address: '', name: '' });
                     }
                     nextEntries[idx].address = event.target.value.trim();
                     // Update directly to preserve empty entries during editing
-                    lensEntries = nextEntries;
-                    writeToStorage(lensEntries);
-                    refreshLensPatternPreviews();
+                    commit(nextEntries);
                 });
             }
 
@@ -344,16 +344,14 @@
                 nameInput.readOnly = true;
             } else {
                 nameInput.addEventListener('input', event => {
-                    const nextEntries = getActiveLensEntries();
+                    const nextEntries = current();
                     // Ensure we have enough entries (in case idx is out of bounds)
                     while (nextEntries.length <= idx) {
                         nextEntries.push({ address: '', name: '' });
                     }
                     nextEntries[idx].name = event.target.value.trim();
                     // Update directly to preserve empty entries during editing
-                    lensEntries = nextEntries;
-                    writeToStorage(lensEntries);
-                    refreshLensPatternPreviews();
+                    commit(nextEntries);
                 });
             }
 
@@ -367,10 +365,10 @@
             removeBtn.setAttribute('data-i18n-attr', 'title,aria-label');
             if (!readOnly) {
                 removeBtn.addEventListener('click', () => {
-                    const nextEntries = getActiveLensEntries();
+                    const nextEntries = current();
                     nextEntries.splice(idx, 1);
-                    updateLensEntries(nextEntries);
-                    renderLensList(container, getActiveLensEntries(), options);
+                    commit(nextEntries);
+                    renderLensList(container, current(), options);
                 });
             }
 
@@ -447,10 +445,20 @@
         const opts = options && typeof options === 'object' && !Array.isArray(options) ? options : {};
         const readOnly = opts.readOnly === true;
         if (!readOnly && isSolanaLensPath()) {
-            window.LensPicker.show();
-            return;
+            return window.LensPicker.show(opts);
         }
         const sourceEntries = Array.isArray(opts.entries) ? sanitizeEntries(opts.entries) : getActiveLensEntries();
+        let workingEntries = sourceEntries.map(entry => ({ ...entry }));
+        const selection = { readOnly, getEntries: () => workingEntries.map(entry => ({ ...entry })),
+            setEntries: next => {
+                workingEntries = next.map(entry => ({ ...entry }));
+                lensEntries = selection.getEntries(); writeToStorage(lensEntries);
+                const chip = lensDialog?.overlay.querySelector('[data-lens-pattern]');
+                if (chip) chip.dataset.lensEntries = JSON.stringify(workingEntries);
+                refreshLensPatternPreviews();
+                opts.onChange?.(sanitizeEntries(workingEntries));
+            }
+        };
 
         const title = (typeof opts.title === 'string' && opts.title.trim())
             ? opts.title
@@ -476,6 +484,7 @@
         let dialogApi = null;
         dialogApi = window.CbDialog.open({
             title,
+            parent: opts.parent,
             size: 'lg',
             top: true,
             className: 'lens-modal' + (readOnly ? ' lens-modal--readonly' : ''),
@@ -497,7 +506,8 @@
                 </div>`,
             onClose: () => {
                 if (lensDialog === dialogApi) lensDialog = null;
-                removeEmptyLensEntries();
+                if (!readOnly) removeEmptyLensEntries();
+                opts.onClose?.(sanitizeEntries(workingEntries));
             }
         });
         if (!dialogApi) return;
@@ -508,10 +518,11 @@
         applyLensTranslations(dialogApi.body);
 
         const listContainer = overlay.querySelector('#lens-list');
-        renderLensList(listContainer, sourceEntries, { readOnly });
+        renderLensList(listContainer, sourceEntries, selection);
 
         const patternChip = overlay.querySelector('[data-lens-pattern]');
         if (patternChip) {
+            patternChip.dataset.lensEntries = JSON.stringify(sourceEntries);
             try {
                 const patternUrl = getLensPatternDataUrl(sourceEntries);
                 patternChip.style.backgroundImage = `url("${patternUrl}")`;
@@ -540,14 +551,13 @@
                 addBtn.setAttribute('aria-disabled', 'true');
             } else {
                 addBtn.addEventListener('click', () => {
-                    const nextEntries = getActiveLensEntries();
+                    const nextEntries = selection.getEntries();
                     // Add a new empty entry
                     nextEntries.push({ address: '', name: '' });
                     // Update lensEntries directly to preserve empty entries
-                    lensEntries = nextEntries;
-                    writeToStorage(lensEntries);
+                    selection.setEntries(nextEntries);
                     // Render with the updated entries (including empty ones)
-                    renderLensList(listContainer, lensEntries, { readOnly });
+                    renderLensList(listContainer, selection.getEntries(), selection);
                     refreshLensPatternPreviews();
                     // Focus the last input field (the newly added one)
                     const inputs = listContainer ? listContainer.querySelectorAll('.lens-address-input') : [];
@@ -557,6 +567,7 @@
                 });
             }
         }
+        return dialogApi;
     }
 
     // Empty rows exist only while editing; they are dropped when the dialog closes.

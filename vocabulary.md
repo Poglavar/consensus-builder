@@ -572,6 +572,10 @@ The area-weighted support defined by an approval rule and rights shares. Overlap
 
 The selected verification trust set for an agreement or assertion. A lens identifies whose attestations the relevant rule accepts, independently of the owners' own decisions.
 
+### Lens preference
+
+A person's editable, chain-specific default trust set, persisted in the browser and shared by agent details and agreement authoring. Editing either shared lens dialog updates this default for future use. A new agreement copies its keys; an existing agreement keeps its own lens snapshot. Merely opening an existing agreement's lens does not replace the default. Changing the default never rewrites saved agreements.
+
 ### Lens member
 
 An attester belonging to a lens, identified by its chain-qualified authority key and associated service or coverage information. Directory membership is not an owner's vote.

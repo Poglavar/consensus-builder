@@ -71,6 +71,83 @@ test('bulk proposer acquisition disables parcel selectors and saves explicit rec
   await expect(mode).toHaveValue('proposer'); await expect(parcels.first()).toBeDisabled();
 });
 
+test('agreement authoring blocks the map and page controls, contains focus and restores interaction on cancel and create', async ({ mockApi: page }, testInfo) => {
+  const { layoutId } = await applyLayout(page);
+  await page.evaluate(() => {
+    const w = window as any; w.agreementOutsideClicks = { map: 0, controls: 0 };
+    w.map.on('click', () => w.agreementOutsideClicks.map++);
+    document.getElementById('layers-button')!.addEventListener('click', () => w.agreementOutsideClicks.controls++);
+  });
+  const editor = await create(page, layoutId);
+  await expect(page.locator('.agreement-editor-modal')).toHaveJSProperty('open', true);
+  await expect(editorSave(editor)).toHaveText('Create agreement');
+  const cancel = editor.locator('.panel-footer [data-agreement-action="cancel"]');
+  const footerWidths = await editor.locator('.panel-footer > button').evaluateAll(buttons => buttons.map(b => b.getBoundingClientRect().width));
+  expect(Math.abs(footerWidths[0] - footerWidths[1])).toBeLessThan(1);
+  const camera = await page.evaluate(() => { const m = (window as any).map; return [m.getCenter().lat, m.getCenter().lng, m.getZoom()]; });
+  await page.mouse.click(150, 200);
+  await page.mouse.move(150, 200); await page.mouse.wheel(0, -500);
+  const layers = await page.locator('#layers-button').boundingBox();
+  await page.mouse.click(layers!.x + layers!.width / 2, layers!.y + layers!.height / 2);
+  expect(await page.evaluate(() => (window as any).agreementOutsideClicks)).toEqual({ map: 0, controls: 0 });
+  expect(await page.evaluate(() => { const m = (window as any).map; return [m.getCenter().lat, m.getCenter().lng, m.getZoom()]; })).toEqual(camera);
+  await expect(editor).toBeVisible();
+  await page.keyboard.press('Control+k'); await expect(page.locator('.command-palette')).not.toBeVisible();
+  await editorSave(editor).focus(); await page.keyboard.press('Tab'); await page.keyboard.press('Tab');
+  expect(await page.evaluate(() => !!document.activeElement?.closest('.agreement-editor-modal'))).toBe(true);
+  for (const name of ['Input parcels', 'Output parcels', 'Persons', 'Rules']) {
+    await editor.getByRole('tab', { name, exact: true }).click();
+    const screenshot = testInfo.outputPath(`${name.replace(/ /g, '-').toLowerCase()}.png`);
+    await editor.screenshot({ path: screenshot });
+    await testInfo.attach(name, { path: screenshot, contentType: 'image/png' });
+  }
+  await cancel.click(); await expect(editor).toBeHidden(); await expect(page.locator('.agreement-editor-modal')).toHaveCount(0);
+  await page.mouse.click(150, 200);
+  expect(await page.evaluate(() => (window as any).agreementOutsideClicks.map)).toBe(1);
+  await page.locator('#layers-button').click();
+  expect(await page.evaluate(() => (window as any).agreementOutsideClicks.controls)).toBe(1);
+  await page.evaluate(() => (window as any).MapShell.closeSheets());
+  await create(page, layoutId); await editorSave(editor).click(); await expect(editor).toBeHidden();
+  await expect(page.locator('.agreement-editor-modal')).toHaveCount(0);
+  await page.locator('#layers-button').click();
+  expect(await page.evaluate(() => (window as any).agreementOutsideClicks.controls)).toBe(2);
+});
+
+test('shared striped lens edits persist as defaults while saved agreement lenses keep their own snapshot', async ({ mockApi: page }) => {
+  const { layoutId } = await applyLayout(page);
+  const initial = await page.evaluate(() => (window as any).getLensEntries().map((e: any) => e.address));
+  const editor = await create(page, layoutId);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  const trigger = editor.locator('[data-agreement-action="lens"]');
+  await expect(trigger).toHaveClass(/lens-pattern-button/);
+  await expect(editor.locator('.agreement-lens h4')).toHaveText('Lens');
+  const row = await editor.locator('.agreement-lens__row').boundingBox(), button = await trigger.boundingBox();
+  expect(Math.abs(button!.x + button!.width / 2 - row!.x - row!.width / 2)).toBeLessThan(1);
+  expect(await trigger.evaluate(e => getComputedStyle(e).backgroundImage)).toContain('data:image/svg+xml');
+  await trigger.click();
+  const lens = page.locator('.lens-modal');
+  await expect(lens.locator('.cb-dialog__title')).toHaveText('The lens through which I see the world');
+  await expect(lens.locator('.lens-address-input')).toHaveCount(initial.length);
+  const member = '0x1111111111111111111111111111111111111111';
+  await lens.locator('.lens-address-input').first().fill(member);
+  await lens.locator('.lens-close-btn').click();
+  await editorSave(editor).click(); await expect(editor).toBeHidden();
+  const [saved] = await storedAgreements(page); expect(saved.rule.lens[0]).toBe(member);
+  await page.evaluate(() => { void (window as any).showLensModal(); });
+  await expect(lens.locator('.lens-address-input').first()).toHaveValue(member);
+  const other = '0x2222222222222222222222222222222222222222';
+  await lens.locator('.lens-address-input').first().fill(other); await lens.locator('.lens-close-btn').click();
+  await page.evaluate(id => { void (window as any).AgreementDialog.open({ agreementId: id }); }, saved.id);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click(); await trigger.click();
+  await expect(lens.locator('.lens-address-input').first()).toHaveValue(member);
+  expect(await page.evaluate(() => (window as any).getLensEntries()[0].address)).toBe(other);
+  await lens.locator('.lens-close-btn').click();
+  await editor.locator('.panel-footer [data-agreement-action="cancel"]').click();
+  await create(page, layoutId); await editorSave(editor).click();
+  const all = await storedAgreements(page); expect(all.find((r: any) => r.id !== saved.id).rule.lens[0]).toBe(other);
+  expect(all.find((r: any) => r.id === saved.id).rule.lens[0]).toBe(member);
+});
+
 test('public allocation updates compensation, rate and sponsor tally without editable person cash', async ({ mockApi: page }) => {
   const { layoutId, ownerKey } = await applyLayout(page);
   const editor = await create(page, layoutId);
@@ -106,7 +183,12 @@ test('unnamed parcel owners work and ownership/lens settings open separate dialo
   await rights.getByRole('button', { name: 'Close', exact: true }).last().click();
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await editor.locator('[data-agreement-action="lens"]').click();
-  await expect(page.locator('.cb-dialog [data-approval-lens]')).toBeVisible();
+  await expect(page.locator('.lens-modal')).toBeVisible();
+  await expect(page.locator('.lens-modal .cb-dialog__title')).toHaveText('The lens through which I see the world');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.lens-modal')).toHaveCount(0); await expect(editor).toBeVisible();
+  await editor.locator('#agreement-editor-title').focus(); await page.keyboard.press('Escape');
+  await expect(editor).toBeHidden(); await expect(page.locator('.agreement-editor-modal')).toHaveCount(0);
 });
 
 test('a saved private plan can apply its unpublished members before agreement authoring', async ({ mockApi: page }) => {
@@ -127,7 +209,7 @@ test('a saved private plan can apply its unpublished members before agreement au
   expect(await agreementEditor(page).locator('[data-agreement-plan]').inputValue()).toBe(planCid);
 });
 
-test('phone layout shows tabs without horizontal overflow and requires a saved plan', async ({ mockApi: page }) => {
+test('phone layout shows tabs without horizontal overflow and requires a saved plan', async ({ mockApi: page }, testInfo) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await applyLayout(page);
   await page.evaluate(() => { void (window as any).AgreementDialog.open(); });
@@ -139,6 +221,11 @@ test('phone layout shows tabs without horizontal overflow and requires a saved p
   expect(await editor.evaluate(e => e.scrollWidth <= e.clientWidth)).toBe(true);
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await expect(editor.locator('[data-agreement-compensation]')).toBeVisible();
+  const widths = await editor.locator('.panel-footer > button').evaluateAll(buttons => buttons.map(b => b.getBoundingClientRect().width));
+  expect(Math.abs(widths[0] - widths[1])).toBeLessThan(1);
+  const screenshot = testInfo.outputPath('phone-rules.png');
+  await editor.screenshot({ path: screenshot });
+  await testInfo.attach('phone rules', { path: screenshot, contentType: 'image/png' });
 });
 
 
@@ -163,7 +250,7 @@ test('input parcels and designs share inspection rows with temporary hover and p
   await expect(hover.first()).toBeVisible();
   await parcel.click();
   await expect(parcel).toHaveAttribute('aria-pressed', 'true');
-  await page.locator('#mode-2d-toggle').hover();
+  await editor.locator('.panel-header').hover();
   await expect(hover).toHaveCount(0);
   await expect(pinned.first()).toBeVisible();
   const drawn = await page.evaluate(() => {
@@ -201,6 +288,8 @@ test('agreement rules show one yellow experimental pill without research or lega
   await expect(pill).toHaveCount(1); await expect(pill).toHaveText('Experimental');
   await expect(pill).toHaveClass(/cb-badge--warning/);
   await expect(editor.locator('.approval-setup__regime .cb-link').first()).toBeVisible();
+  await expect(editor).not.toContainText('Agreement rules');
+  await expect(editor.locator('[data-approval-rules-card] h4')).toHaveCount(0);
   await expect(editor).not.toContainText('Research template'); await expect(editor).not.toContainText('not legal advice');
   await page.evaluate(async () => { await (window as any).i18n.setLanguage('hr'); });
   await editor.locator('[data-approval-regime]').selectOption('de-umlegung-developed');

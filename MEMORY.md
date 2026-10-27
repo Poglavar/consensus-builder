@@ -968,3 +968,5 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-27: Plan creation is local composition; Share design and Share plan publish exact separate revisions, Add to plan reviews a new snapshot, and agreements are created from a saved plan in their own flow.
 
 - 2026-10-27: Output parcels supports proposer acquisition without prior input ownership, with all-Proposer/all-Public bulk allocation or individual recipients; scheme-derived compensation is funded through the balancing sponsor.
+
+- 2026-10-27: Agreement authoring blocks map and unrelated controls until Create/Cancel; its shared striped Lens button edits the same persistent preference as agent details, while agreements retain individual lens snapshots.

@@ -1166,7 +1166,7 @@
             "picker": {
                 "done": "Concluído",
                 "title": "Lente para este projeto",
-                "subtitle": "Escolha os membros da lente cujas atestações de propriedade este projeto aceitará. A lente fica fixada na emissão.",
+                "subtitle": "Escolha os membros de confiança da sua lente. As alterações tornam-se a predefinição; os acordos guardados mantêm a sua própria lente.",
                 "loading": "A carregar os membros da lente…",
                 "loadFailed": "Não foi possível carregar o diretório de membros da lente: {{error}}",
                 "emptyDirectory": "Ainda não são conhecidos membros da lente. Cole abaixo a chave de um membro.",

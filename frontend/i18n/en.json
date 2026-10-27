@@ -2212,7 +2212,7 @@
             "readOnlyNote": "This lens is baked into the design and cannot be edited.",
             "picker": {
                 "title": "Lens for this design",
-                "subtitle": "Pick the lens members whose ownership attestations this design will accept. The lens is fixed at mint.",
+                "subtitle": "Choose the trusted members of your lens. Changes become your default; saved agreements keep their own lens.",
                 "loading": "Loading lens members…",
                 "loadFailed": "Could not load the lens member directory: {{error}}",
                 "emptyDirectory": "No lens members are known yet. Paste a member key below.",

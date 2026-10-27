@@ -2234,7 +2234,7 @@
             "readOnlyNote": "Ova leća je ugrađena u dizajn i ne može se uređivati.",
             "picker": {
                 "title": "Leća ovog dizajna",
-                "subtitle": "Odaberite članove leće čije će potvrde vlasništva ovaj dizajn prihvaćati. Leća se fiksira pri mintanju.",
+                "subtitle": "Odaberite pouzdane članove svoje leće. Promjene postaju zadane; spremljeni sporazumi zadržavaju vlastitu leću.",
                 "loading": "Učitavanje članova leće…",
                 "loadFailed": "Imenik članova leće nije se mogao učitati: {{error}}",
                 "emptyDirectory": "Još nema poznatih članova leće. Zalijepite ključ člana ispod.",

@@ -25,6 +25,15 @@ test.describe('Lens settings @features', () => {
     await page.locator('#username-display').click();
     const profile = page.locator('.agent-dialog-modal');
     await expect(profile).toBeVisible();
+    const viewport = page.viewportSize()!;
+    for (const size of [viewport, { width: 375, height: 812 }]) {
+      await page.setViewportSize(size);
+      const avatar = await profile.locator('.agent-avatar-large').boundingBox();
+      const button = await profile.locator('.lens-pattern-button').boundingBox();
+      expect(Math.abs(avatar!.width - button!.width)).toBeLessThan(1);
+      expect(Math.abs(avatar!.x - button!.x)).toBeLessThan(1);
+    }
+    await page.setViewportSize(viewport);
     // The profile's language row is one cb-segmented picker (no toggle): exactly the chosen one is pressed.
     // Options carry the full locale; the app language is its language part.
     for (const locale of ['es-ES', 'sr-Latn-RS', 'hr-HR', 'en-GB']) {
@@ -142,5 +151,17 @@ test.describe('Lens settings @features', () => {
     // The chosen members stay the profile's lens after the picker closes.
     await expect.poll(() => page.evaluate(() => (window as any).LensPicker.getEntries().map((entry: any) => entry.address)))
       .toEqual([MEMBER]);
+    // A saved agreement's scoped selection can differ without overwriting defaults just by opening.
+    await page.evaluate(key => { (window as any).showLensModal({ entries: [{ address: key, name: 'Saved agreement member' }],
+      onChange: (entries: any[]) => { (window as any).agreementLensEdit = entries; } }); }, PASTED_MEMBER);
+    await expect(lens.locator('.cb-dialog__title')).toHaveText('The lens through which I see the world');
+    await expect(lens.locator(`[data-lens-remove="${PASTED_MEMBER}"]`)).toBeVisible();
+    expect(await page.evaluate(() => (window as any).LensPicker.getEntries().map((entry: any) => entry.address))).toEqual([MEMBER]);
+    await lens.locator(`[data-lens-remove="${PASTED_MEMBER}"]`).click();
+    expect(await page.evaluate(() => (window as any).agreementLensEdit)).toEqual([]);
+    expect(await page.evaluate(() => (window as any).LensPicker.getEntries())).toEqual([]);
+    await lens.locator(`[data-lens-member="${MEMBER}"]`).check();
+    expect(await page.evaluate(() => (window as any).agreementLensEdit.map((entry: any) => entry.address))).toEqual([MEMBER]);
+    await lens.locator('[data-lens-picker-done]').click();
   });
 });

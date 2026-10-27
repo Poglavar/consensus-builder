@@ -2239,7 +2239,7 @@
             "readOnlyNote": "Esta lente viene incluida en el diseño y no se puede editar.",
             "picker": {
                 "title": "Lente de este diseño",
-                "subtitle": "Elige los miembros de la lente cuyas atestaciones de propiedad aceptará este diseño. La lente queda fijada al acuñar.",
+                "subtitle": "Elige los miembros de confianza de tu lente. Los cambios serán tu opción predeterminada; los acuerdos guardados conservan su propia lente.",
                 "loading": "Cargando miembros de la lente…",
                 "loadFailed": "No se pudo cargar el directorio de miembros de la lente: {{error}}",
                 "emptyDirectory": "Aún no se conoce ningún miembro de la lente. Pega abajo la clave de un miembro.",

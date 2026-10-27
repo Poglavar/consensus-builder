@@ -1,30 +1,140 @@
 /* Four-tab agreement editor on the shared right dock (a bottom sheet on phones). Rules own
    compensation controls; output parcels own recipient choices; persons are a read-only tally. */
 
-/* ---- The panel: under the top-right buttons, as tall as the dock runs ---- */
-.agreement-section[hidden],
-[data-agreement-binding-control][hidden] { display: none; }
+/* The native modal owns input and focus; its transparent full-screen host keeps the map visible
+   behind the dock and gives the shared ownership/lens dialogs the same top layer. */
+.agreement-editor-modal {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--cb-text);
+    overflow: hidden;
+}
+.agreement-editor-modal::backdrop { background: var(--cb-backdrop); }
 
+.agreement-section[hidden],
+[data-agreement-binding-control][hidden],
 .agreement-editor [role="tabpanel"][hidden] { display: none; }
-.agreement-editor [role="tabpanel"] { display: grid; gap: var(--cb-space-3); min-width: 0; }
-.agreement-editor__tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--cb-space-1); overflow: visible; position: sticky; top: 0; z-index: 1; background: var(--cb-surface); }
-.agreement-editor__tabs button { min-height: var(--cb-control-height); padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); background: var(--cb-surface); color: var(--cb-text); cursor: pointer; }
-.agreement-editor__tabs button[aria-selected="true"] { background: var(--cb-primary-soft); border-color: var(--cb-primary); color: var(--cb-text-strong); }
-.agreement-persons-table { width: 100%; border-collapse: collapse; font-size: var(--cb-text-sm); }
-.agreement-persons-table th, .agreement-persons-table td { padding: var(--cb-space-2) var(--cb-space-1); border-bottom: 1px solid var(--cb-line); overflow-wrap: anywhere; text-align: left; vertical-align: top; }
+
+.agreement-editor [role="tabpanel"] {
+    display: grid;
+    gap: var(--cb-space-4);
+    min-width: 0;
+}
+.agreement-editor__tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--cb-space-1);
+    padding: var(--cb-space-1);
+    overflow: visible;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-2);
+}
+.agreement-editor__tabs button {
+    min-height: var(--cb-control-height);
+    padding: var(--cb-space-2);
+    border: 1px solid transparent;
+    border-radius: var(--cb-radius-sm);
+    background: transparent;
+    color: var(--cb-text-muted);
+    font: inherit;
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-medium);
+    cursor: pointer;
+}
+.agreement-editor__tabs button[aria-selected="true"] {
+    background: var(--cb-surface);
+    border-color: var(--cb-line);
+    color: var(--cb-text-strong);
+    box-shadow: var(--cb-shadow-sm);
+}
+.agreement-editor .proposal-editor-field { gap: var(--cb-space-2); min-width: 0; }
+.agreement-editor .proposal-editor-field > span,
+.agreement-editor .agreement-fieldset legend { font-size: var(--cb-text-md); }
+.agreement-editor .proposal-editor-check { font-size: var(--cb-text-md); line-height: var(--cb-leading); }
+.agreement-editor .proposal-editor-card {
+    display: grid;
+    gap: var(--cb-space-3);
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+.agreement-editor .proposal-editor-card p { margin: 0; }
+.agreement-editor .approval-setup__regime {
+    gap: var(--cb-space-2);
+    margin: 0;
+    padding: var(--cb-space-3);
+    border: 0;
+    background: var(--cb-surface-2);
+}
+.agreement-rule-form,
+.agreement-lens,
+.agreement-editor [data-agreement-settlement]:not(:empty) {
+    display: grid;
+    gap: var(--cb-space-3);
+    border-top: 1px solid var(--cb-line);
+    padding-top: var(--cb-space-4);
+}
+.agreement-rule-form:empty { display: none; }
+.agreement-editor [data-agreement-land],
+.agreement-editor [data-agreement-plan-designs],
+.agreement-editor [data-agreement-allocations],
+.agreement-editor [data-agreement-persons] { display: grid; gap: var(--cb-space-3); min-width: 0; }
+.agreement-lens__row { display: flex; justify-content: center; }
+.agreement-lens .agreement-object-heading { margin: 0; }
+
+.agreement-persons-table { width: 100%; border-collapse: collapse; font-size: var(--cb-text-md); }
+.agreement-persons-table th, .agreement-persons-table td {
+    padding: var(--cb-space-3) var(--cb-space-2);
+    border-bottom: 1px solid var(--cb-line);
+    overflow-wrap: anywhere;
+    text-align: start;
+    vertical-align: top;
+}
+.agreement-persons-table thead { background: var(--cb-surface-2); font-size: var(--cb-text-sm); }
 .agreement-persons-table td { font-variant-numeric: tabular-nums; }
 .agreement-persons-table th:first-child { width: 40%; }
-.agreement-persons-table .agreement-persons-cash { display: inline-block; white-space: nowrap; font-size: var(--cb-text-xs); }
-.agreement-allocation-row select:disabled { opacity: 0.55; cursor: not-allowed; background: var(--cb-surface); }
-.agreement-editor input[type="range"] { width: 100%; }
+.agreement-persons-table .agreement-persons-cash { display: inline-block; font-size: var(--cb-text-sm); }
+.agreement-allocation-row select:disabled { opacity: 0.55; cursor: not-allowed; background: var(--cb-surface-2); }
+.agreement-editor input[type="range"] { width: 100%; margin: 0; }
 
-/* Input parcels and plan designs use the same inspection-list component. */
-.agreement-object-heading { margin: 0 0 var(--cb-space-2); font-size: var(--cb-text-md); font-weight: var(--cb-weight-semibold); }
+/* Parcel, design and allocation rows share one spacing and type scale. */
+.agreement-object-heading { margin: 0; font-size: var(--cb-text-md); font-weight: var(--cb-weight-semibold); }
 .agreement-object-list { display: grid; gap: var(--cb-space-2); margin: 0; padding: 0; list-style: none; }
-.agreement-object-row { display: grid; grid-template-columns: minmax(0, 1fr); justify-content: stretch; justify-items: stretch; align-items: start; gap: var(--cb-space-1); width: 100%; min-width: 0; padding: var(--cb-space-2) var(--cb-space-3); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); font-size: var(--cb-text-sm); line-height: var(--cb-leading); text-align: start; white-space: normal; }
+.agreement-object-row, .agreement-allocation-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
+    justify-items: stretch;
+    align-items: start;
+    gap: var(--cb-space-2);
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+    font-size: var(--cb-text-md);
+    line-height: var(--cb-leading);
+    text-align: start;
+    white-space: normal;
+}
 .agreement-object-row:hover, .agreement-object-row:focus-visible, .agreement-object-row[aria-pressed="true"] { background: var(--cb-primary-soft); border-color: var(--cb-primary); }
-.agreement-object-row__title { font-weight: var(--cb-weight-medium); color: var(--cb-text-strong); overflow-wrap: anywhere; }
-.agreement-object-row__facts { color: var(--cb-text-muted); overflow-wrap: anywhere; }
+.agreement-object-row__title, .agreement-allocation-row__piece { font-weight: var(--cb-weight-medium); color: var(--cb-text-strong); overflow-wrap: anywhere; }
+.agreement-object-row__facts { color: var(--cb-text-muted); font-size: var(--cb-text-sm); overflow-wrap: anywhere; }
 
 #agreement-editor {
     position: absolute;
@@ -32,6 +142,9 @@
     right: var(--right-dock-gap);
     bottom: var(--right-dock-bottom);
     padding: 0;
+    border: 1px solid var(--cb-line-glass);
+    font-size: var(--cb-text-base);
+    line-height: var(--cb-leading);
     overflow: hidden;
     z-index: var(--cb-z-panel);
 }
@@ -46,7 +159,7 @@
     flex-shrink: 0;
     align-items: center;
     gap: var(--cb-space-2);
-    padding: var(--cb-space-2) var(--cb-space-3);
+    padding: var(--cb-space-3) var(--cb-space-4);
     border-bottom: 1px solid var(--cb-line);
 }
 
@@ -54,7 +167,7 @@
     flex: 1;
     min-width: 0;
     margin: 0;
-    font-size: var(--cb-text-xl);
+    font-size: var(--cb-text-lg);
     line-height: 1.3;
     overflow-wrap: anywhere;
 }
@@ -75,24 +188,18 @@
     align-content: start;
     gap: var(--cb-space-4);
     min-height: 0;
-    padding: var(--cb-space-3) var(--cb-space-4);
+    padding: var(--cb-space-4);
+    overscroll-behavior: contain;
     overflow-y: auto;
 }
 
 .agreement-editor .panel-footer {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     flex-shrink: 0;
-    justify-content: flex-end;
     gap: var(--cb-space-2);
-    padding: var(--cb-space-2) var(--cb-space-4);
+    padding: var(--cb-space-3) var(--cb-space-4);
     border-top: 1px solid var(--cb-line);
-}
-
-/* While the editor picks designs on the map (js/map-pick.js), the rest of the map dims less than it
-   does for a shared plan (css/proposals.css): the other applied designs are what the next click
-   adds, so they stay readable. */
-body[data-map-pick="agreement"] {
-    --map-pick-dim: 0.5;
 }
 
 .agreement-intro {
@@ -101,6 +208,8 @@ body[data-map-pick="agreement"] {
     font-size: var(--cb-text-md);
     line-height: var(--cb-leading);
 }
+
+.agreement-editor .panel-footer > .btn { width: 100%; min-width: 0; }
 
 /* Errors and warnings at the top of the body; an empty list takes no room. */
 .agreement-issues {
@@ -135,7 +244,7 @@ body[data-map-pick="agreement"] {
 
 .agreement-section__title {
     margin: 0;
-    font-size: var(--cb-text-lg);
+    font-size: var(--cb-text-md);
     font-weight: var(--cb-weight-semibold);
     color: var(--cb-text-strong);
 }
@@ -317,12 +426,6 @@ body[data-map-pick="agreement"] {
     display: grid;
     gap: var(--cb-space-2);
     min-width: 0;
-}
-
-.agreement-allocation-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--cb-space-1);
 }
 
 .agreement-column-head,

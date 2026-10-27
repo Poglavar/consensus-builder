@@ -803,6 +803,12 @@ body.site-intro-open { overflow: hidden; }
 /* The lens button: btn btn-icon btn-sm lens-pattern-button, the active lens's colour stripes painted
    inline by js/lens.js (data, not a look). First in a dialog footer it sits left of the actions; in
    the agent dialog it is centred under the avatar. */
+.btn.btn-icon.lens-pattern-button {
+    width: var(--agent-avatar-outer, 70px);
+    min-width: var(--agent-avatar-outer, 70px);
+    height: var(--cb-control-height);
+}
+
 .cb-dialog__footer > .lens-pattern-button {
     align-self: center;
     margin-right: auto;

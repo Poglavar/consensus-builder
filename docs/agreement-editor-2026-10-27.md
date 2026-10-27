@@ -74,3 +74,19 @@ Verification (targeted runs only, none stopped):
 | Headed Playwright: bulk proposer case in background Chrome | 1 passed; rendered screenshot confirms bulk selector and grey per-parcel selectors |
 
 Across the seven unit files, all 223 distinct cases have a passing result. The new accounting case verifies HTTP validation of a published proposer allocation. Browser checks cover public/proposer bulk switching, disabled selectors, selective allocation, derived compensation, saving and reopening.
+
+
+## Focused agreement authoring and shared lens follow-up
+
+Agreement authoring now uses a native modal host around the existing dock. The map and all unrelated controls are inert, keyboard focus stays in the flow, and map highlighting still works from the input/design rows. Background clicks do not dismiss it. Ownership and shared lens dialogs are hosted in the same top layer. Create/Cancel restores the panel's original parent and normal page interaction; Escape remains owned by the modal router, and typing does not accidentally cancel the agreement.
+
+The editor uses one spacing/type scale, a single tab treatment, shared parcel/design/allocation row padding, restrained section dividers and consistent field backgrounds. The redundant Agreement rules heading is removed. Footer buttons split the row equally: Cancel/Create agreement for a new record, Cancel/Save agreement for an existing one.
+
+Lens is a small section with the same striped glasses button as agent details, centered in its own row. Profile buttons match the avatar's outer width, including on phones. Agreement authoring opens the same shared lens dialog and preserves its chain-specific EVM/Solana editor. Edits update the persisted default; future agreements copy it. An existing agreement's snapshot can be edited independently, and opening it does not silently replace the default. Saved agreement snapshots remain unchanged when the profile/default changes.
+
+MCP parity: the authored field remains `rule.lens`, with no new serialized lens preference or record format. Existing `ugt_draft_agreement`/`ugt_edit_agreement` full rule editing accepts the same explicit member keys and preserves revisions; `ugt_inspect_agreement` and returned canonical agreement content expose that snapshot. Browser persistence is the existing local lens preference; MCP callers supply the desired explicit lens. The existing MCP rule/lens runtime tests passed in the targeted unit run. Modality, visual styling and button labels add no authored fields or MCP operations.
+
+Verification: seven targeted headless unit files passed (91 tests). Six targeted headless Playwright agreement cases passed, covering blocked map/page input, focus containment, Create/Cancel restoration, footer equality, shared lens defaults and saved snapshots, ownership dialogs, phone layout, map-list inspection and removed rule heading. Two additional targeted headless Playwright profile/lens cases passed, verifying avatar-width alignment at desktop/phone sizes and default/scoped edits on both EVM and Solana paths. No tests were stopped.
+
+
+Two targeted headed Playwright layout cases passed, followed by three targeted headed cases after saving screenshot artifacts and adding Escape assertions. The latter checks that Escape first closes the lens dialog and then the agreement, with full interaction restored. Desktop screenshots of all four tabs and a phone Rules screenshot were visually inspected. The real preview additionally confirmed equal 179px footer buttons, the 70px centered lens button and native modal blocking. Its explicit local API returned one real cadastral parcel and a complete one-parcel design binding (both HTTP 200); frontend and API listening process working directories matched this checkout.

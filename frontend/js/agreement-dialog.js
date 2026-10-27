@@ -487,7 +487,7 @@
     function bodyHtml(view) {
         const values = view.values || {};
         const panels = {
-            rules: ruleHtml(values) + '<div data-agreement-settlement></div><div class="cb-actions"><button type="button" class="btn" data-agreement-action="lens">' + esc(t('agreement.workflow.lens', 'Lens operations')) + '</button></div>'
+            rules: ruleHtml(values) + '<div data-agreement-settlement></div><section class="agreement-lens" aria-labelledby="agreement-lens-title"><h4 id="agreement-lens-title" class="agreement-object-heading">' + esc(t('agreement.chain.facts.lens', 'Lens')) + '</h4><div class="agreement-lens__row"><button type="button" class="btn btn-icon btn-sm lens-pattern-button" data-lens-pattern data-agreement-action="lens" title="' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '" aria-label="' + esc(t('modal.lens.triggerDescription', 'Lens for viewing the world')) + '"><i class="fa-solid fa-glasses" aria-hidden="true"></i></button></div></section>'
                 + sectionHtml('consultation', t('agreement.sections.consultation', 'Nonbinding agreement'), consultationHtml(values), values.electorate !== 'community')
                 + detailsHtml({ title: values.title, deadline: values.deadline, today: view.today }),
             inputs: planSelectorHtml(view.plans || [], view.plan) + '<div class="cb-actions"><button type="button" class="btn" data-agreement-action="rights">' + esc(t('agreement.workflow.rights', 'Parcel ownership rights')) + '</button></div><div data-agreement-land></div><div data-agreement-plan-designs></div>',
@@ -576,7 +576,8 @@
             plans, plan: initialPlan, designs: [], fingerprints: new Map(), land: emptyLand(),
             allocationMode: allocationMode(termsOf(existing).allocations),
             currency: existing?.money.currency || root.CityMoney.currentCurrency(),
-            approvalConfig: existing?.rule.approvalConfig || null, lens: existing?.rule.lens || [],
+            approvalConfig: existing?.rule.approvalConfig || null,
+            lens: existing ? [...existing.rule.lens] : setup().lensKeys(root.getLensEntries()),
             values: { ...termsOf(existing), electorate: existing?.rule.electorate || electorate,
                 binding: existing?.rule.binding === true, title: existing?.title || '',
                 settlement: { ...(existing?.rule.settlement || api.DEFAULT_SETTLEMENT) },
@@ -590,12 +591,19 @@
         makeWay(doc);
         const panel = ensurePanel(doc), body = panel.querySelector('[data-agreement-editor-body]');
         const form = panel.querySelector('form'), saveButton = panel.querySelector('[data-agreement-action="save"]');
+        // Native modality makes the background inert without changing map handlers or control state.
+        // Auxiliary dialogs belong inside this top layer so they stay interactive too.
+        const parent = panel.parentElement;
+        const modal = doc.createElement('dialog');
+        modal.className = 'agreement-editor-modal';
+        modal.setAttribute('aria-labelledby', 'agreement-editor-title');
+        modal.appendChild(panel); doc.body.appendChild(modal);
         panel.querySelector('#agreement-editor-title').textContent = t(existing ? 'agreement.dialog.titleEdit' : 'agreement.dialog.titleCreate', existing ? 'Edit agreement' : 'Create agreement');
         panel.querySelectorAll('[data-agreement-action="cancel"]').forEach(button => {
             button.setAttribute('aria-label', t('common.cancel', 'Cancel'));
             if (button.closest('.panel-footer')) button.textContent = t('common.cancel', 'Cancel');
         });
-        saveButton.textContent = t('agreement.dialog.save', 'Save agreement');
+        saveButton.textContent = t(existing ? 'agreement.dialog.save' : 'agreement.dialog.titleCreate', existing ? 'Save agreement' : 'Create agreement');
         body.innerHTML = bodyHtml({ ...state, today: dateFromDeadline(new Date().toISOString()) });
         const part = selector => body.querySelector(selector);
         const listeners = new AbortController(), { signal } = listeners;
@@ -609,6 +617,8 @@
             state.closed = true; clearInspection(); listeners.abort(); auxiliary?.close(); unregisterEscape?.();
             if (session === current) session = null;
             panel.classList.remove('visible'); body.replaceChildren(); doc.body.classList.remove('agreement-editor-open');
+            if (modal.open) modal.close();
+            parent.appendChild(panel); modal.remove();
             const reopen = result?.id || replaced;
             if (reopen) Promise.resolve(panels.open(reopen)).catch(report);
             resolveClosed(result || null);
@@ -652,6 +662,10 @@
             const container = part('[data-agreement-rule-form]');
             if (state.values.electorate === 'owners' && container.firstElementChild) state.approvalConfig = setup().withPolicyFromForm(container, state.approvalConfig);
         }
+        function renderLens() {
+            part('[data-agreement-action="lens"]').dataset.lensEntries = JSON.stringify(state.lens.map(address => ({ address })));
+            root.refreshLensPatternPreviews();
+        }
         function renderRule() {
             const owners = state.values.electorate === 'owners';
             const source = doc.createElement('div');
@@ -659,6 +673,7 @@
             const container = part('[data-agreement-rule-form]'); container.replaceChildren(); container.hidden = !owners;
             const rules = source.querySelector('[data-approval-rules-card]'); if (owners && rules) container.appendChild(rules);
             part('[data-agreement-settlement]').innerHTML = owners ? settlementHtml() : '';
+            renderLens();
             part('[data-agreement-binding-control]').hidden = !owners;
             part('[data-agreement-binding]').disabled = !owners;
             part('[data-agreement-section="consultation"]').hidden = owners;
@@ -724,9 +739,11 @@
             readRule();
             const container = doc.createElement('div');
             if (kind === 'lens') {
-                container.innerHTML = `<label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.lensMembers', 'Lens member keys'))}</span><textarea data-approval-lens>${esc(state.lens.join('\n'))}</textarea></label>`;
-                auxiliary = root.CbDialog.open({ title: t('agreement.workflow.lens', 'Lens operations'), body: container,
-                    actions: [{ label: t('agreement.dialog.save', 'Save agreement'), onClick: () => { state.lens = setup().lensFromForm(container); issues(); } }] });
+                const names = new Map(root.getLensEntries().map(entry => [entry.address, entry.name]));
+                auxiliary = root.showLensModal({ parent: modal,
+                    entries: state.lens.map(address => ({ address, name: names.get(address) || '' })),
+                    onChange: entries => { state.lens = setup().lensKeys(entries); renderLens(); issues(); }
+                });
                 return;
             }
             const render = error => {
@@ -734,7 +751,7 @@
                 container.querySelector('[data-approval-rules-card]')?.remove(); container.querySelector('[data-approval-lens]')?.closest('label')?.remove();
             };
             render();
-            auxiliary = root.CbDialog.open({ title: t('agreement.workflow.rights', 'Parcel ownership rights'), body: container, actions: [{ label: t('common.close', 'Close') }] });
+            auxiliary = root.CbDialog.open({ parent: modal, title: t('agreement.workflow.rights', 'Parcel ownership rights'), body: container, actions: [{ label: t('common.close', 'Close') }] });
             container.addEventListener('change', event => { if (event.target.matches('[data-approval-source]')) setup().syncSourceControls(container); });
             container.addEventListener('click', async event => {
                 const button = event.target.closest('[data-editor-action]'); if (!button || root.BusyControl.isBusy(button)) return;
@@ -870,8 +887,13 @@
             renderPersons(); issues();
         }, { signal });
         unregisterEscape = root.ModalEscape?.register(panel, event => { if (typingIn(event.target)) return false; finish(null); return true; });
+        modal.addEventListener('cancel', event => event.preventDefault(), { signal });
+        // Local controls receive their keys; page-level drawing and navigation shortcuts do not.
+        modal.addEventListener('keydown', event => event.stopPropagation(), { signal });
         panel.classList.add('visible'); doc.body.classList.add('agreement-editor-open');
-        renderRule(); await deriveLand();
+        modal.showModal(); panel.querySelector('#agreement-editor-title').focus({ preventScroll: true });
+        try { renderRule(); await deriveLand(); }
+        catch (error) { finish(null); throw error; }
         log(`opened ${state.id} for plan ${state.plan?.cid || '(choose plan)'}`);
         return closed;
     }

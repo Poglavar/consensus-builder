@@ -257,7 +257,6 @@
                 + (authorityIds.length ? authorityField(0, authorityIds[0]) : '');
         }
         return `<div class="proposal-editor-card" data-approval-rules-card>
-            <h4>${esc(t('proposalDrafts.approval.policyTitle', 'Agreement rules'))}</h4>
             <label class="proposal-editor-field"><span class="approval-setup__rules-label"><span>${esc(t('proposalDrafts.approval.policyType', 'Rules'))}</span><span class="cb-badge cb-badge--warning" data-approval-experimental>${esc(t('proposalDrafts.approval.experimental', 'Experimental'))}</span></span><select data-approval-rule data-approval-regime>
                 ${option('unanimous', t('proposalDrafts.approval.unanimous', 'Every owner must agree'), choice)}${option('custom', t('proposalDrafts.approval.threshold', 'Custom rules'), choice)}${groups}
             </select></label>

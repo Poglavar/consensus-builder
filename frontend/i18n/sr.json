@@ -2234,7 +2234,7 @@
             "readOnlyNote": "Ovo sočivo je ugrađeno u dizajn i ne može se uređivati.",
             "picker": {
                 "title": "Sočivo ovog dizajna",
-                "subtitle": "Izaberite članove sočiva čije će potvrde vlasništva ovaj dizajn prihvatati. Sočivo se fiksira pri mintovanju.",
+                "subtitle": "Izaberite pouzdane članove svog sočiva. Promene postaju podrazumevane; sačuvani sporazumi zadržavaju svoje sočivo.",
                 "loading": "Učitavanje članova sočiva…",
                 "loadFailed": "Imenik članova sočiva nije mogao da se učita: {{error}}",
                 "emptyDirectory": "Još nema poznatih članova sočiva. Nalepite ključ člana ispod.",

@@ -80,7 +80,7 @@
      * actions ([{ id, label, role, onClick(api), keepOpen, disabled, autofocus }]), message (bool:
      * no header, the body is the message), role ('dialog'|'alertdialog'), top (bool: over another
      * dialog), confirm (bool: the confirm rung, over everything), closeOnBackdrop, closeOnEscape,
-     * showClose, closeLabel, autoCloseActions, onClose(result), stackActions (bool), fixedHeight
+     * showClose, closeLabel, autoCloseActions, onClose(result), parent (owning modal), stackActions (bool), fixedHeight
      * (bool: content that changes while open keeps one box, the body scrolls; see dialogClassName).
      */
     function open(options = {}) {
@@ -166,7 +166,7 @@
         }
 
         overlay.appendChild(dialog);
-        d.body.appendChild(overlay);
+        (options.parent || d.body).appendChild(overlay);
 
         let closed = false;
         let resolveClosed = null;
