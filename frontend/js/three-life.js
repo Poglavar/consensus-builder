@@ -59,9 +59,24 @@
         return parts;
     }
 
-    // Person part placement for a figure of height h with a given limb swing (radians).
-    function personParts(h, swing) {
+    // Person part placement for a figure of height h with a given limb swing (radians). A child is
+    // not a scaled adult: for its height it has a bigger head, a shorter leg and a deeper body.
+    function personParts(h, swing, child = false) {
         const g = h / 1.75;
+        if (child) {
+            return {
+                body: { ox: 0, oy: 0, oz: 0.70 * g, a: 0, sx: 0.15 * g, sy: 0.20 * g, sz: 0.70 * g },
+                head: { ox: 0, oy: 0, oz: 1.58 * g, a: 0, sx: 0.15 * g, sy: 0.15 * g, sz: 0.165 * g },
+                legs: [
+                    { ox: 0, oy: 0.10 * g, oz: 0.70 * g, a: swing, sx: 0.075 * g, sy: 0.075 * g, sz: 0.70 * g },
+                    { ox: 0, oy: -0.10 * g, oz: 0.70 * g, a: -swing, sx: 0.075 * g, sy: 0.075 * g, sz: 0.70 * g }
+                ],
+                arms: [
+                    { ox: 0, oy: 0.25 * g, oz: 1.33 * g, a: -swing * 0.8, sx: 0.05 * g, sy: 0.05 * g, sz: 0.52 * g },
+                    { ox: 0, oy: -0.25 * g, oz: 1.33 * g, a: swing * 0.8, sx: 0.05 * g, sy: 0.05 * g, sz: 0.52 * g }
+                ]
+            };
+        }
         return {
             body: { ox: 0, oy: 0, oz: 0.80 * g, a: 0, sx: 0.14 * g, sy: 0.19 * g, sz: 0.68 * g },
             head: { ox: 0, oy: 0, oz: 1.62 * g, a: 0, sx: 0.11 * g, sy: 0.11 * g, sz: 0.12 * g },
@@ -229,8 +244,8 @@
                 if (parts.rider) { writeFigure(riderIndex, v.x, v.y, v.z, v.heading, rider); riderIndex++; }
             });
             sim.people.forEach((p, i) => {
-                const swing = Math.sin(p.stride) * LIMB_SWING_RAD * (p.amp == null ? 1 : p.amp);
-                writeFigure(i, p.x, p.y, p.z, p.heading, personParts(p.height, swing));
+                const swing = Math.sin(p.stride) * LIMB_SWING_RAD * (p.amp == null ? 1 : p.amp) * (p.swing == null ? 1 : p.swing);
+                writeFigure(i, p.x, p.y, p.z, p.heading, personParts(p.height, swing, !!p.child));
             });
             Object.values(m).forEach(mesh => { mesh.instanceMatrix.needsUpdate = true; });
         }

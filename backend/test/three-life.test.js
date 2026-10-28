@@ -184,6 +184,18 @@ describe('personParts', () => {
         child.legs.forEach(leg => expect(apply(partMatrix(leg), [0, 0, -1])[2]).toBeCloseTo(0, 9));
     });
 
+    it('gives a child a bigger head and shorter legs for its height, standing on the ground under its own head top', () => {
+        const h = 1.2, child = personParts(h, 0, true), scaled = personParts(h, 0);
+        expect(child.head.sx / h).toBeGreaterThan(scaled.head.sx / h * 1.3);
+        expect(child.legs[0].sz / h).toBeLessThan(scaled.legs[0].sz / h);
+        child.legs.forEach(leg => expect(apply(partMatrix(leg), [0, 0, -1])[2]).toBeCloseTo(0, 9));
+        expect(child.head.oz + child.head.sz).toBeCloseTo(h, 2);
+        const neck = apply(partMatrix(child.body), [0, 0, 1])[2];
+        expect(child.head.oz - child.head.sz - neck).toBeGreaterThanOrEqual(0);
+        expect(child.head.oz - child.head.sz - neck).toBeLessThan(0.05);
+        expect(personParts(h, 0.3, true).legs[1].a).toBe(-0.3);
+    });
+
     it('swings the legs in opposition and counter-swings the arms', () => {
         const swing = 0.3;
         const figure = personParts(1.75, swing);

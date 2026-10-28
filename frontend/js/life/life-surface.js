@@ -184,6 +184,7 @@
         return {
             classAt, zAt, legOk, randomTarget, randomSpawn,
             isWalkable: (x, y) => walkable(classAt(x, y)),
+            isBlocked: (x, y) => classAt(x, y) === CLASS.BLOCKED,
             cell, width: w, height: h, bounds: [minX, minY, maxX, maxY],
             stats: {
                 cellM: cell, cells: cls.length, preferred: preferred.length, open, carriageway, blocked,

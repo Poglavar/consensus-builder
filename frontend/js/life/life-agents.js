@@ -21,6 +21,10 @@
     const MAX_STEP_S = 0.1;       // one step never integrates more than this
     const WANDER_RADIUS_M = 40;   // how far a person looks for the next destination
     const PERSON_PER_M2 = 1 / 250; // crowd density over preferred walking space
+    const CHILD_SHARE = 0.06;     // walkers on their own who are children
+    const PAIR_SHARE = 0.3;       // walkers who set out as a pair (a companion beside them)
+    const PAIR_CHILD_SHARE = 0.5; // companions who are a child walking with an adult
+    const PAIR_GAP_M = 0.7;       // shoulder to shoulder in a pair
 
     // To-scale schematic vehicle classes (metres). `clearance` is the body's height above the road;
     // `frontAxle`/`rearAxle` are the axles' distances ahead of and behind the body centre (a city bus
@@ -302,15 +306,44 @@
         }
 
         // ---- people ---------------------------------------------------------------------------
-        function makePerson(index) {
-            const child = rng() < 0.08;
-            const height = child ? 1.15 + rng() * 0.25 : 1.55 + rng() * 0.35;
+        // A walker: a child is 1.1–1.4 m with its own proportions (three-life.js personParts); everyone
+        // has their own walk-cycle phase, cadence (`gait`) and limb swing (`swing`), so two people
+        // side by side never march in step. A companion (`partner`: the id of the person it walks
+        // with) keeps to one side of them and takes their pace instead of wandering on its own.
+        function makePerson(index, { child = rng() < CHILD_SHARE, partner = null, pace = null } = {}) {
+            const height = child ? 1.1 + rng() * 0.3 : 1.55 + rng() * 0.35;
+            const own = child ? 0.9 + rng() * 0.4 : 1.0 + rng() * 0.5;
             return {
                 id: index, x: 0, y: 0, z: 0, heading: rng() * Math.PI * 2, target: null, wait: 0,
-                stride: rng() * Math.PI * 2, amp: 1,
-                speed: (child ? 0.9 + rng() * 0.4 : 1.0 + rng() * 0.5), height,
+                stride: rng() * Math.PI * 2, amp: 1, gait: 0.85 + rng() * 0.3, swing: 0.75 + rng() * 0.35,
+                speed: pace == null ? own : pace * 1.35, height, child,
+                partner, side: rng() < 0.5 ? 1 : -1,
                 colors: { skin: pick(rng, SKIN_COLORS), shirt: pick(rng, SHIRT_COLORS), legs: pick(rng, LEG_COLORS) }
             };
+        }
+
+        // The point beside `leader` where its companion walks (its own side), or behind it where
+        // the sidewalk is too narrow for two abreast.
+        function besidePoint(leader, side) {
+            const x = leader.x - Math.sin(leader.heading) * side * PAIR_GAP_M, y = leader.y + Math.cos(leader.heading) * side * PAIR_GAP_M;
+            if (!walk.isBlocked(x, y)) return [x, y];
+            return [leader.x - Math.cos(leader.heading) * 0.8, leader.y - Math.sin(leader.heading) * 0.8];
+        }
+
+        // One more walker, and with PAIR_SHARE odds a companion beside them when the budget allows.
+        function addPerson(wanted) {
+            const p = makePerson(people.length);
+            if (!placePerson(p)) return false;
+            people.push(p);
+            if (people.length < wanted && rng() < PAIR_SHARE) {
+                const c = makePerson(people.length, { child: rng() < PAIR_CHILD_SHARE, partner: p.id, pace: p.speed });
+                // Beside its partner when that ground is the same kind (a sidewalk stays a sidewalk), else on the same spot.
+                const at = besidePoint(p, c.side), beside = walk.classAt(at[0], at[1]) === walk.classAt(p.x, p.y);
+                c.x = beside ? at[0] : p.x; c.y = beside ? at[1] : p.y;
+                c.z = walk.zAt(c.x, c.y); c.heading = p.heading; c.wait = p.wait;
+                people.push(c);
+            }
+            return true;
         }
 
         function placePerson(p) {
@@ -336,11 +369,31 @@
 
         function spawnPeople() {
             const wanted = wantedPeople();
-            for (let i = 0; i < wanted; i++) {
-                const p = makePerson(people.length);
-                if (!placePerson(p)) break;
-                people.push(p);
+            while (people.length < wanted && addPerson(wanted)) { /* until the crowd is full */ }
+        }
+
+        // A companion walks to the point beside its partner at its own pace (above the partner's, so
+        // a gap closes), onto walkable ground only, and stands while the partner stands.
+        function stepCompanion(p, leader, dt) {
+            const at = besidePoint(leader, p.side);
+            const dx = at[0] - p.x, dy = at[1] - p.y, d = Math.hypot(dx, dy);
+            if (leader.wait > 0 && d < 0.5) { p.amp = Math.max(0, p.amp - dt * 3); return; }
+            const step = Math.min(p.speed * dt, d);
+            let moved = 0;
+            if (step > 1e-6) {
+                // Its partner's legs were checked, so it crosses the street with them; only a footprint stops it.
+                const nx = p.x + dx / d * step, ny = p.y + dy / d * step;
+                if (!walk.isBlocked(nx, ny)) { p.x = nx; p.y = ny; moved = step; }
+                else {
+                    const lx = leader.x - p.x, ly = leader.y - p.y, ld = Math.hypot(lx, ly);
+                    const toward = Math.min(step, Math.max(0, ld - 0.4));
+                    if (toward > 1e-6 && !walk.isBlocked(p.x + lx / ld * toward, p.y + ly / ld * toward)) { p.x += lx / ld * toward; p.y += ly / ld * toward; moved = toward; }
+                }
+                p.z = walk.zAt(p.x, p.y);
             }
+            p.heading = d < 0.3 ? leader.heading : Math.atan2(dy, dx);
+            p.stride += moved * STRIDE_RAD_PER_M * p.gait;
+            p.amp = moved > 0.2 * p.speed * dt ? Math.min(1, p.amp + dt * 3) : Math.max(0, p.amp - dt * 3);
         }
 
         function stepPeople(dt) {
@@ -351,6 +404,7 @@
                     p.amp = Math.max(0, p.amp - dt * 3);
                     continue;
                 }
+                if (p.partner != null) { stepCompanion(p, people[p.partner], dt); continue; }
                 if (!p.target) {
                     p.target = walk.randomTarget(p.x, p.y, WANDER_RADIUS_M, rng);
                     if (!p.target) { p.wait = 1 + rng() * 2; continue; }
@@ -363,11 +417,13 @@
                     continue;
                 }
                 const step = Math.min(p.speed * dt, d);
+                // legOk samples a leg at intervals: a footprint corner between two samples stops the walker here.
+                if (walk.isBlocked(p.x + dx / d * step, p.y + dy / d * step)) { p.target = null; continue; }
                 p.x += dx / d * step;
                 p.y += dy / d * step;
                 p.z = walk.zAt(p.x, p.y);
                 p.heading = Math.atan2(dy, dx);
-                p.stride += step * STRIDE_RAD_PER_M;
+                p.stride += step * STRIDE_RAD_PER_M * p.gait;
                 p.amp = Math.min(1, p.amp + dt * 3);
             }
         }
@@ -378,16 +434,16 @@
             walk = next || null;
             if (!walk) return;
             for (const p of people) {
-                if (!walk.isWalkable(p.x, p.y)) { placePerson(p); continue; }
+                if (!walk.isWalkable(p.x, p.y)) {
+                    // A companion rejoins its partner rather than moving away on its own.
+                    if (p.partner != null) { const l = people[p.partner]; p.x = l.x; p.y = l.y; }
+                    else placePerson(p);
+                }
                 if (p.target && !walk.legOk(p.x, p.y, p.target[0], p.target[1])) p.target = null;
                 p.z = walk.zAt(p.x, p.y);
             }
             const wanted = wantedPeople();
-            while (people.length < wanted) {
-                const p = makePerson(people.length);
-                if (!placePerson(p)) break;
-                people.push(p);
-            }
+            while (people.length < wanted && addPerson(wanted)) { /* until the crowd is full */ }
         }
 
         // ---- public -----------------------------------------------------------------------------
@@ -416,5 +472,5 @@
         };
     }
 
-    return { createSimulation, mulberry32, VEHICLE_KINDS, GAP_MIN_M, HEADWAY_S, STRIDE_RAD_PER_M, WANDER_RADIUS_M, PERSON_PER_M2 };
+    return { createSimulation, mulberry32, VEHICLE_KINDS, GAP_MIN_M, HEADWAY_S, STRIDE_RAD_PER_M, WANDER_RADIUS_M, PERSON_PER_M2, PAIR_SHARE, PAIR_GAP_M };
 });
