@@ -1,16 +1,28 @@
 <!-- Current implementation and verification of camera flights and shared apartment interiors. -->
 # Camera flights
 
-The model-view camera button opens the flight editor. Its initial point captures the current
-camera. Move with WASD, rise/lower with R/F, roll with Q/E, and aim with the arrow keys or pointer
-drag. Alt-drag rolls. Touch controls offer the same movement and aiming actions. Flight motion
-passes through obstacles. Level horizon is an explicit action.
+The model-view camera button opens the flight editor in **orbit mode**: the ordinary map controls
+move the camera, and **Add view** records the camera exactly as it is, position and direction.
+Views are numbered. The camera flies a smooth curve between views at the flight's **cruise speed**;
+a view can override its travel time, hold for a while, and turn a whole number of times about the
+vertical (or pitch/roll about itself) during that hold. **Use current view** replaces the selected
+view with the camera as it is now. Flight motion passes through obstacles.
 
-Add view captures position and orientation. Numbered points support selection, update, height,
-travel/hold time, reorder and removal. Overview shows the path and draggable nodes while keeping
-the recorded camera separate. Look directions contains independent look keys and timed spins.
-A full turn inserts intermediate quaternion keys so matching endpoints retain the turn.
-View changes adds timed x-ray, generated-layout and floor-cutaway cues.
+One **flight timeline** strip shows every numbered view at its arrival time, holds as bars (dashed
+when they turn), looks between views as diamonds, view changes as ticks, and the playhead. Clicking
+a view marker or a route-list entry selects that view and seeks to it. The range slider scrubs.
+
+**Free camera** switches to the fly mode: drag to look, WASD/R/F/Q/E to move and roll, Shift for
+speed; **Fine camera controls** holds step buttons, numeric yaw/pitch/roll and the free-camera
+speed for phones. **Show whole route** frames the path from above in orbit mode. **Level horizon**
+removes roll. Entering an apartment or applying a numeric aim leaves orbit mode, because orbit
+controls would otherwise re-aim the camera at their target.
+
+**Looks between views** are optional: scrub to a moment strictly between two views, aim, **Add look
+here**. A look is anchored to the segment that departs a view, at a fraction of that segment, so it
+moves with its views when the route is edited or retimed and disappears with its view. **Save x-ray
+change at this view** records the current x-ray / generated-layout / cutaway settings as a cue that
+applies from the selected view's arrival; one cue per view.
 
 Play, pause, stop and scrub use one absolute-time evaluator. Undo/redo covers authored changes;
 the title and local draft are saved on this device. Share flight requires every applied design
@@ -18,31 +30,45 @@ to be published already, then verifies publication and a durable readback before
 The read-only player restores exact design membership, settings and interior snapshots, with no
 autoplay. Edit a copy opens a private editable version.
 
-Find interiors uses visible registered floor geometry. Select an apartment and Enter apartment
-to place the camera inside it; capture that position as any route point to start or finish there.
-Explore apartment loads walking on demand. Back to flight restores the captured flight camera.
-The player offers exploration only when its camera is inside a retained unit and the current eye
-position is walkable. Missing unit boundaries expose a floor entry, without inventing apartment
+Find interiors uses visible registered floor geometry. Select an apartment and Enter to place the
+camera inside it; Add view then also saves an x-ray cue at that view, so a flight can start or finish
+indoors. Explore apartment loads walking on demand. Back to flight restores the captured flight
+camera. The player offers exploration only when its camera is inside a retained unit and the current
+eye position is walkable. Missing unit boundaries expose a floor entry, without inventing apartment
 identity. A unit with invalid placement or no walkable entry reports the problem.
 
 ## Record and ownership
 
-`frontend/js/camera-flight.js` is the DOM-free `camera-flight/v1` validator and evaluator.
-Its strict schema includes sorted design CIDs, initial model view, frame, route, look keys,
-interior snapshots and view cues. Limits are 256 route points, 4096 look keys, 256 cues,
-64 interiors and 600 seconds. The horizontal frame is the existing local transverse Mercator
-anchor in east/north metres, bounded to a 60 km radius. Z is true metres above flat model ground;
-it is not sea-level elevation. FOV is fixed per flight between 20 and 100 degrees.
+`frontend/js/camera-flight.js` is the DOM-free `camera-flight/v2` validator and evaluator. Its
+strict schema includes sorted design CIDs, initial model view, frame, FOV, cruise speed, route,
+looks, interior snapshots and cues. Limits are 256 route points, 4096 looks, 256 cues, 64 interiors
+and 600 seconds; cruise speed is 0.1–200 m/s and a derived travel time is at least 0.5 s. The
+horizontal frame is the existing local transverse Mercator anchor in east/north metres, bounded to
+a 60 km radius. Z is true metres above flat model ground; it is not sea-level elevation. FOV is
+fixed per flight between 20 and 100 degrees.
+
+A route point is `{id, position, quaternion, travelSeconds: null | s, holdSeconds, turn: null |
+{axis, turns}}`. `CameraFlight.timeline(record)` resolves everything to absolute seconds: arrival and
+departure per view, travel per segment (arc length over cruise speed unless overridden), the derived
+orientation keys (each view's quaternion at arrival, a repeat at departure for a still hold, evenly
+spaced intermediate keys for a turn so a full rotation is never shortcut, and each look at its
+fraction of its segment) and each cue at its view's arrival. Validation runs the timeline, so a
+curve leaving the frame or an over-long flight is a validation error, not only a compile error.
 
 Position follows centripetal Catmull–Rom interpolation with a per-segment arc-length table.
-Compilation rejects curved paths leaving the frame bound, including overshoot between points.
-Orientation interpolation is independent. Repeated seeks are independent of frame cadence.
-The scene adapter converts projected horizontal axes and full quaternion orientation, retaining
-true vertical metres and suitable near/far planes.
+Orientation interpolation is independent of position. Repeated seeks are independent of frame
+cadence. The scene adapter converts projected horizontal axes and full quaternion orientation,
+retaining true vertical metres and suitable near/far planes.
+
+The pre-release `camera-flight/v1` shape (absolute-time look keys, mandatory per-point travel,
+spin-as-keys) was replaced on 2026-10-28 before any flight had been published. There is no v1
+reader; `consensus.camera_flight` checks for the v2 schema and old local drafts fail validation and
+are ignored.
 
 The host grants one explicit camera lease. Ordinary orbit, auto-rotation, clipping updates and
-map picking yield to the lease. Playback, free-camera editing and walking share the existing
-renderer and frame hooks. Pause/idle unregisters unnecessary work; hiding the page pauses
+map picking yield to the lease; in orbit mode the session re-enables the orbit controls itself,
+targeting the ground under the camera's aim. Playback, free-camera editing and walking share the
+existing renderer and frame hooks. Pause/idle unregisters unnecessary work; hiding the page pauses
 playback. Disposal removes hooks, listeners, owned route/snapshot resources and returns camera,
 controls and view settings. Asynchronous loads and view cues have cancellation/version guards.
 
@@ -71,52 +97,49 @@ Standalone attachment owns and disposes its renderer, controls and one demand fr
 `POST /flights` accepts `{content: record}`; `GET /flights/:cid` returns `{cid, content}`.
 The backend validates schema, floor models and compilation before pinning, verifies canonical
 content addresses, requires all referenced designs to exist, and verifies stored readback.
-The 10 MiB publication limit includes interior snapshots. Invalid records return 400, unknown
-flights 404, missing designs or exhausted pinning quota 409, and unavailable storage 503.
-No credentials or upstream request bodies are returned in storage errors.
+The 10 MiB publication limit includes interior snapshots. Invalid records return 400 with the
+validator's message, unknown flights 404, missing designs or exhausted pinning quota 409, and
+unavailable storage 503. No credentials or upstream request bodies are returned in storage errors.
 
 `backend/db/camera-flight.sql` creates `consensus.camera_flight`; deployment runs this additive
 DDL before API restart. `/flights/<cid>` is a frontend entry route. Existing generic nginx SPA
 fallback already serves it. Backend selection is transport configuration and is excluded from
-flight content. Existing experimental drafts are validated against the single current contract;
-there is no compatibility reader or data migration.
+flight content. Drafts are validated against the single current contract; there is no
+compatibility reader or data migration.
 
 ## Verification
 
-- Ten new targeted headless unit files: 177 passing before the real-data crop regression; the
-  affected crop file then passed all 14 tests, giving 178 new passing cases in total.
-- Six targeted headless Playwright scenarios passed: lazy loading, two captured views, phone
-  edits/undo/reorder, independent spins/cues, playback/scrub/control restoration, durable sharing
-  into a fresh browser, and apartment walking/return. Publication uses a spec-local durable API
-  fixture; no production flight was published.
-- Nine affected companion headless unit files passed, 118 tests, including artifact integrity,
-  HTTP delivery, architectural geometry and walking/presentation behavior.
-- Existing affected headless unit files for map sharing, named plans, route parsing, floor plans
-  and x-ray wiring passed. Two existing world-entry assertions fail identically at the base
-  revision: the old expected building source and retired Activity action names. They are outside
-  the flight implementation.
-- Three further targeted headless unit files passed, 25 tests, for generated layouts, duplicate
-  classic globals and home-path guarding. The frontend route file passed all 41 tests after
-  adding valid/malformed flight-link cases.
-- A dedicated headed browser verified the real 17-design Digbeth composition through the local
-  API, with 214 real source buildings returned in the tested bbox. The browser resolved the
-  intended backend. Flights completed both outside-to-apartment and apartment-to-outside;
-  sampled host-frame poses moved along the route and ended at the saved positions. Walking
-  returned exactly to the saved player pose; close restored ordinary controls. Dark-theme
-  contrast was inspected and corrected. This is visual/state verification, not a performance
-  benchmark. The local composition uses previously published local design revisions.
+Verification record for the 2026-10-28 rework (orbit-first editing, point-owned orientation,
+cruise speed, timeline strip); the original delivery's checks are in the git history of this file.
+
+- Eight targeted headless unit files (`backend/test/camera-flight*.test.js`, run from `backend/`
+  with `npx vitest run <files>`): 169 tests passed. `camera-flight.test.js` and
+  `camera-flight-edit.test.js` were rewritten for the v2 model; the session and API fixtures were
+  converted to the v2 shape (cues anchored to inserted views at the same absolute times).
+- Eight guard files (i18n coverage/locale/style, duplicate/undeclared/self-wrapping globals, home
+  paths, CSS structure/conflicts): the failures that remain are pre-existing on this branch and
+  unrelated to flights — `feedback.*` keys missing from the locales, a `#three-click-stack`
+  selector conflict, and the i18n style ratchets (Title Case 33, case conflicts 61, duplicate
+  groups 315 against baselines 30/57/289), all at identical counts on the committed HEAD. The one
+  duplicate this change had added ("Timeline") was renamed to "Flight timeline".
+- The targeted headless Playwright file `e2e/tests/camera-flight.spec.ts` (run from `e2e/`, one
+  worker, six scenarios): all six passed — the look/turn/cue scenario was rewritten for anchored
+  looks, turns during holds and per-view cues, and the play/scrub scenario now checks that a
+  seeked pose stays exact while orbit controls arm until the first canvas drag. Earlier iterations
+  of the same file failed on three of my own assertions (turn-angle sum, slider step quantising
+  the playhead, mode after explicit poses) and once lost its static server mid-run; one spec run
+  launched from the repo root ran zero tests (the config lives in `e2e/`). No run was stopped.
+- Headed Chrome (agent-browser over CDP, closed afterwards) against this worktree's own backend
+  (`dev.sh`, local database) on the Birmingham model view: the editor opened in orbit mode with
+  the orbit controls enabled; two orbit moves plus Add view produced three distinct views with
+  `travelSeconds: null`, unit quaternions and speed-derived arrivals (0 / 15.0 / 23.2 s); the
+  timeline strip showed three numbered markers and two thumbnails; selecting view 3 from its
+  marker seeked to 23.2 s; choosing a yaw turn gave it a 6 s hold, a dashed hold bar and the
+  caption "hold 6 s · 1 × Left / right"; scrubbing to the middle of segment 1 enabled Add look
+  here, which stored `{after: route-1, fraction: 0.5}` and one look marker; Save x-ray change
+  stored one cue at view 3 with a flag marker above the view; Play advanced the clock in real
+  time with the orbit controls disabled and Pause stopped it; reloading and Restore draft brought
+  back the same three views, look and cue with no page errors. Verified by reading state after
+  each action, not by watching motion; smoothness of the actual flight is not asserted here.
 
 No full unit or browser suite, production publication, push or deployment was performed.
-
-During targeted iteration, initial failures exposed a restoration clamp and the real irregular
-unit crop; both have regression coverage and passing checks. Other failed/stopped browser
-iterations corrected spec setup (collapsed disclosures, ordinary orbit input and a localStorage
-seed on about:blank) or a diagnostic static server dropping asset connections. Runs used one
-browser worker and stopped at the first failure while debugging. Two existing world-entry
-assertions were separately reproduced at the base revision. No full suite ran.
-
-The companion's real apartment page was also inspected in the same dedicated headed browser:
-its shared geometry adapter, apartment rendering, localized walking/return controls and versioned
-artifact URL worked without page errors. The local catalogue API returned seven projects and
-110 apartments. Both consumers' full artifact bytes and the companion receipt match. The
-verification browser was closed afterward.

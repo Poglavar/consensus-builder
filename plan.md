@@ -298,7 +298,12 @@ source-data capabilities for this flow. Include a verified backend override if n
 
 - Canonical source is `packages/interior-viewer`; pinned esbuild produces scoped browser artifacts.
 - Flight XY uses the existing local metric frame and Z is true metres above model ground.
-- `camera-flight/v1` is published through `/flights` with canonical CID verification and durable readback.
+- `camera-flight/v2` is published through `/flights` with canonical CID verification and durable readback.
+- 2026-10-28 rework (before any flight was published, so v1 has no reader): route points own their
+  orientation; holds carry whole turns; looks between views are anchored to a view and a segment
+  fraction; cues are anchored to a view; travel time derives from one cruise speed unless a point
+  overrides it; the editor starts in orbit mode and shows one timeline strip of views, holds, looks,
+  cues and the playhead.
 - Both consumers use the same full viewer artifact; the companion records its SHA-256 receipt.
 - Playback and editor have separate lazy entry points; walking is a further optional load.
 - Music, narration, video export and photorealistic tile flights remain outside this release.

@@ -5,14 +5,16 @@
     if (root) root.CameraFlightSession = api;
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
-    function create(win, initial, callbacks = {}) {
+    // `options.orbit` starts in orbit mode: the familiar map controls move the camera, and every
+    // authored view is captured from wherever they left it. Fly mode is the free camera.
+    function create(win, initial, callbacks = {}, options = {}) {
         const THREE = win.THREE, internals = win.getThreeModeInternals();
         if (!internals) throw new Error('The model view is not ready.');
         const adapter = win.CameraFlightCamera.createAdapter({ THREE, internals, frame: initial.frame, metricFrame: win.__metricFrame });
         const canvas = internals.renderer.domElement, doc = win.document;
         let record = initial, compiled = win.CameraFlight.compile(record), time = 0, playing = false, disposed = false;
         let lease = null, poseVersion = 0, playVersion = 0, settingsVersion = 0, settingsQueue = Promise.resolve(true), snapshotSignature = null;
-        let previousNow = null, activeHook = false, inspection = false, pointer = null, speed = 15, pendingSettings = false;
+        let previousNow = null, activeHook = false, inspection = !!options.orbit, pointer = null, speed = 15, pendingSettings = false;
         const originalSettings = win.ThreeViewState.normalize(win.getThreeInteriorView());
         let freePose = adapter.capture(), lastSettings = JSON.stringify(originalSettings), pausedForVisibility = false;
         let applyingSettings = null, cleanupPromise = null;
@@ -120,27 +122,57 @@
                 if (version === settingsVersion) { pendingSettings = false; previousNow = null; }
             });
         }
-        function apply(pose) {
+        function applyPose(pose) {
             if (disposed) return;
             adapter.apply(pose); freePose = adapter.capture(); win.invalidateThreeView();
+        }
+        // An explicit pose from outside (apartment entry, numeric aim) is a free-camera pose:
+        // orbit controls would otherwise re-aim the camera at their target on the next update.
+        function apply(pose) { if (disposed) return; applyPose(pose); if (inspection) setMode('fly'); }
+        // Orbit around what the camera looks at: the ground under its aim, or a point ahead when
+        // it looks up. Orbit mode is upright, so a rolled flight pose levels when orbiting starts.
+        function retarget() {
+            const camera = internals.camera, forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+            const distance = forward.z < -1e-6 ? Math.max(1, Math.min(5000, -camera.position.z / forward.z)) : 20;
+            internals.controls.target.copy(camera.position).addScaledVector(forward, distance);
+        }
+        // Orbit controls re-shape a pose on update (upright, clamped polar angle), so a seeked flight
+        // pose stays exact and the controls only arm; the first drag or wheel on the canvas takes over.
+        let orbitArmed = false;
+        function enableOrbit() {
+            orbitArmed = false; internals.controls.enabled = true; internals.camera.up.set(0, 0, 1);
+            retarget(); internals.controls.update(); wake();
+        }
+        function syncMode({ exact = false } = {}) {
+            const orbit = inspection && !playing && !cleanupWalk && !disposed;
+            if (!orbit) { orbitArmed = false; internals.controls.enabled = false; return; }
+            if (exact) { internals.controls.enabled = false; orbitArmed = true; } else enableOrbit();
+        }
+        const armedWheel = () => { if (orbitArmed && !playing && !cleanupWalk) enableOrbit(); };
+        function setMode(mode) {
+            if (disposed) return;
+            if (!['orbit', 'fly'].includes(mode)) throw new Error('Unknown camera mode.');
+            inspection = mode === 'orbit';
+            if (!inspection) { freePose = adapter.capture(); if (!held.size) sleep(); }
+            syncMode(); notify(); win.invalidateThreeView();
         }
         async function seek(value) {
             if (!Number.isFinite(value)) throw new TypeError('Flight time must be finite.');
             if (disposed) return false;
             pause(); held.clear(); sleep();
             const version = ++poseVersion, target = Math.max(0, Math.min(compiled.duration, value));
-            const pose = compiled.evaluate(target); inspection = false; internals.controls.enabled = false;
+            const pose = compiled.evaluate(target); internals.controls.enabled = false;
             const ready = await applySettings(pose.settings);
             if (disposed || version !== poseVersion || !ready) return false;
-            time = target; apply(pose); notify(); return true;
+            time = target; applyPose(pose); syncMode({ exact: true }); notify(); return true;
         }
-        function pause() { if (disposed) return; playVersion++; playing = false; previousNow = null; pathRoot.visible = !cleanupWalk; if (!held.size && !inspection) sleep(); notify(); }
+        function pause() { if (disposed) return; playVersion++; playing = false; previousNow = null; pathRoot.visible = !cleanupWalk; syncMode({ exact: true }); if (!held.size && !inspection) sleep(); notify(); }
         async function play() {
             if (disposed) return;
-            exitWalking(); inspection = false; held.clear();
+            exitWalking(); held.clear();
             const ready = seek(time >= compiled.duration ? 0 : time), version = playVersion;
             if (!await ready || disposed || version !== playVersion || compiled.duration <= 0) return;
-            playing = true; pathRoot.visible = false; wake(); notify();
+            playing = true; internals.controls.enabled = false; pathRoot.visible = false; wake(); notify();
         }
         function move(dt) {
             const scalar = speed * dt * (held.has('ShiftLeft') || held.has('ShiftRight') ? 4 : 1);
@@ -158,10 +190,10 @@
             if (yaw) q.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), yaw * dt));
             if (pitch) q.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch * dt));
             if (roll) q.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, -1), roll * dt));
-            freePose.quaternion = q.normalize().toArray(); apply(freePose);
+            freePose.quaternion = q.normalize().toArray(); applyPose(freePose);
         }
         function advance(target, pose) {
-            time = target; apply(pose); notify();
+            time = target; applyPose(pose); notify();
             if (time >= compiled.duration) { pause(); callbacks.onEnd?.(); }
         }
         function frame(now) {
@@ -190,7 +222,9 @@
             return new THREE.Vector2((event.clientX - box.left) / box.width * 2 - 1, -(event.clientY - box.top) / box.height * 2 + 1);
         }
         function down(event) {
-            if (cleanupWalk || playing || event.button !== 0) return;
+            if (cleanupWalk || playing) return;
+            if (orbitArmed) enableOrbit();
+            if (event.button !== 0) return;
             const ray = new THREE.Raycaster(); ray.setFromCamera(eventPoint(event), internals.camera);
             const hit = pathRoot.visible && pointMesh ? ray.intersectObject(pointMesh)[0] : null;
             if (hit && hit.instanceId !== undefined) {
@@ -244,25 +278,28 @@
         function keyUp(event) { held.delete(event.code); if (!held.size && !playing && !inspection) sleep(); }
         function blur() { held.clear(); if (!playing) sleep(); }
         function visibility() { if (doc.hidden) { pausedForVisibility = playing; pause(); held.clear(); } else if (pausedForVisibility) { pausedForVisibility = false; notify(); } }
-        function inspect(on) {
+        function inspect(on) { pause(); exitWalking(); setMode(on ? 'orbit' : 'fly'); }
+        // Orbit mode framing the whole route from above, for checking the path as a shape.
+        function frameRoute() {
             if (disposed) return;
-            pause(); exitWalking(); inspection = on; internals.controls.enabled = on;
-            if (on) {
-                const box = new THREE.Box3(); record.route.forEach(p => box.expandByPoint(adapter.toScene(p.position)));
-                const center = box.getCenter(new THREE.Vector3()), radius = Math.max(20, box.getSize(new THREE.Vector3()).length());
-                internals.camera.up.set(0, 0, 1); internals.controls.target.copy(center);
-                internals.camera.position.copy(center).add(new THREE.Vector3(radius, -radius, radius)); internals.controls.update();
-                wake();
-            } else { apply(freePose); if (!held.size) sleep(); }
+            pause(); exitWalking(); inspection = true;
+            const box = new THREE.Box3(); record.route.forEach(p => box.expandByPoint(adapter.toScene(p.position)));
+            const center = box.getCenter(new THREE.Vector3()), radius = Math.max(20, box.getSize(new THREE.Vector3()).length());
+            internals.camera.up.set(0, 0, 1); internals.controls.target.copy(center);
+            internals.camera.position.copy(center).add(new THREE.Vector3(radius, -radius, radius));
+            internals.controls.enabled = true; internals.controls.update(); wake();
             pathRoot.visible = true; notify(); win.invalidateThreeView();
         }
         const orbitStart = () => { if (inspection) wake(); };
         function exitWalking() {
             if (!cleanupWalk) return;
             const cleanup = cleanupWalk; cleanupWalk = null; cleanup();
-            internals.controls.enabled = false; freePose = adapter.capture(); pathRoot.visible = !playing; notify();
+            internals.controls.enabled = false; freePose = adapter.capture(); pathRoot.visible = !playing; syncMode({ exact: true }); notify();
         }
-        function setWalking(cleanup) { if (disposed) { cleanup?.(); return; } pause(); exitWalking(); cleanupWalk = cleanup; pathRoot.visible = false; notify(); }
+        function setWalking(cleanup) {
+            if (disposed) { cleanup?.(); return; }
+            pause(); exitWalking(); cleanupWalk = cleanup; internals.controls.enabled = false; pathRoot.visible = false; notify();
+        }
         function setRecord(next) {
             if (disposed) return;
             if (JSON.stringify(next.frame) !== JSON.stringify(initial.frame)) throw new Error('A session cannot change its metric frame.');
@@ -300,6 +337,7 @@
                 if (pointer && canvas.hasPointerCapture?.(pointer.id)) canvas.releasePointerCapture(pointer.id); pointer = null;
                 canvas.removeEventListener('pointerdown', down, true); canvas.removeEventListener('pointermove', pointerMove, true);
                 canvas.removeEventListener('pointerup', up, true); canvas.removeEventListener('pointercancel', up, true);
+                canvas.removeEventListener('wheel', armedWheel, true);
                 win.removeEventListener('keydown', keyDown, true); win.removeEventListener('keyup', keyUp, true); win.removeEventListener('blur', blur);
                 doc.removeEventListener('visibilitychange', visibility); win.removeEventListener('threecameradispose', disposeEvent);
                 win.removeEventListener('threeinteriorviewchange', viewChanged);
@@ -332,24 +370,29 @@
             installSnapshots(); drawRoute();
             canvas.addEventListener('pointerdown', down, true); canvas.addEventListener('pointermove', pointerMove, true);
             canvas.addEventListener('pointerup', up, true); canvas.addEventListener('pointercancel', up, true);
+            canvas.addEventListener('wheel', armedWheel, { capture: true, passive: true });
             win.addEventListener('keydown', keyDown, true); win.addEventListener('keyup', keyUp, true); win.addEventListener('blur', blur);
             doc.addEventListener('visibilitychange', visibility); win.addEventListener('threecameradispose', disposeEvent);
             win.addEventListener('threeinteriorviewchange', viewChanged);
             internals.controls.addEventListener('start', orbitStart);
+            syncMode();
         } catch (error) { dispose(); throw error; }
+        // Fine camera steps leave orbit mode: they start from the camera as it is now.
+        const fly = () => { pause(); setMode('fly'); };
         return {
-            ...adapter, apply, seek, play, pause, inspect, setRecord, snapshotFeatures, setWalking, exitWalking, setView: applySettings,
+            ...adapter, apply, seek, play, pause, inspect, setMode, frameRoute, setRecord, snapshotFeatures, setWalking, exitWalking, setView: applySettings,
             get time() { return time; }, get playing() { return playing; }, get inspection() { return inspection; },
+            get mode() { return inspection ? 'orbit' : 'fly'; },
             get internals() { return internals; },
             setSpeed(value) { if (Number.isFinite(value) && value > 0 && value <= 200) speed = value; },
-            nudge(axis, amount) { if (disposed) return; pause(); inspection = false; internals.controls.enabled = false;
+            nudge(axis, amount) { if (disposed) return; fly();
                 const direction = new THREE.Vector3().fromArray(axis).applyQuaternion(new THREE.Quaternion().fromArray(freePose.quaternion));
                 freePose.position = new THREE.Vector3().fromArray(freePose.position).addScaledVector(direction, amount).toArray(); apply(freePose); },
-            rotate(axis, radians) { if (disposed) return; pause(); inspection = false; internals.controls.enabled = false;
+            rotate(axis, radians) { if (disposed) return; fly();
                 const q = new THREE.Quaternion().fromArray(freePose.quaternion), turn = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3().fromArray(axis), radians);
                 q.multiply(turn); freePose.quaternion = q.normalize().toArray(); apply(freePose); },
             level() {
-                if (disposed) return;
+                if (disposed) return; fly();
                 const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(new THREE.Quaternion().fromArray(freePose.quaternion));
                 const yaw = Math.atan2(forward.y, forward.x), q = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(
                     new THREE.Vector3(), new THREE.Vector3(Math.cos(yaw), Math.sin(yaw), 0), new THREE.Vector3(0, 0, 1)));

@@ -248,19 +248,31 @@ The model view's x-ray visibility, generated-layout visibility for proposed and 
 
 ### Camera flight
 
-An immutable `camera-flight/v1` presentation containing a title, published design CIDs, initial model view, metric frame, route, independent look keys, optional interior snapshots and timed interior-view cues. Its canonical content has its own CID and `/flights/<cid>` link. Editing and publishing creates a new version; a local draft is private browser state. Opening a flight restores its exact design membership and waits for an explicit Play action.
+An immutable `camera-flight/v2` presentation containing a title, published design CIDs, initial model view, metric frame, cruise speed, route, looks between views, optional interior snapshots and view cues. Its canonical content has its own CID and `/flights/<cid>` link. Editing and publishing creates a new version; a local draft is private browser state. Opening a flight restores its exact design membership and waits for an explicit Play action. The pre-release `camera-flight/v1` shape (absolute-time look keys, per-point travel times) was replaced before any flight was published; no reader for it exists.
 
 ### Flight metric frame
 
 A geographic anchor defining local horizontal east/north positions in metres using the application's transverse Mercator frame. Flight Z is metres above the model's flat ground datum (`model-ground`), not surveyed elevation or sea level. Scene projection scale affects horizontal placement separately from true vertical metres.
 
-### Route point
+### Route point (view)
 
-A stable-ID camera position with travel time from the preceding route point and a hold duration, measured in seconds. The first point has zero travel time. The camera follows the distance-sampled smooth route; obstacles do not constrain flight motion.
+A stable-ID camera position with its own orientation quaternion, an optional travel-time override, a hold duration in seconds and an optional turn. The first point has no travel. Without an override, travel time is the segment's arc length divided by the flight's cruise speed, with a minimum of half a second. The camera follows the distance-sampled smooth route; obstacles do not constrain flight motion.
 
-### Look key
+### Hold and turn
 
-A stable-ID quaternion orientation at an absolute flight time in seconds, independent of route positions. Full turns retain intermediate orientations; equal endpoint orientations alone do not encode a full turn.
+A hold keeps the camera at a view for its duration with the view's orientation. A turn is a whole number of complete rotations (yaw about the world vertical, or pitch or roll about the camera's own axes) spread evenly over the hold, encoded as intermediate orientation keys at playback so a full rotation is never shortcut. A turn needs a hold; a hold of zero has no turn.
+
+### Look (between views)
+
+A stable-ID orientation anchored to the segment that departs a given route point, at a fraction strictly between 0 and 1 of that segment's travel. It changes only where the camera points, never the route, and moves with its anchoring view when the route is edited or retimed. A look cannot follow the last view.
+
+### View cue
+
+Interior-view settings (x-ray, generated layouts, cutaway) applied from the arrival at a given route point onward; at most one per view.
+
+### Camera mode
+
+Orbit mode uses the ordinary map controls to position the camera while editing; fly mode is the free camera with unrestricted pitch, yaw and roll. Adding a view captures the camera as it is in either mode. Playback, free-camera editing and walking share one host camera lease.
 
 ### Flight interior snapshot
 

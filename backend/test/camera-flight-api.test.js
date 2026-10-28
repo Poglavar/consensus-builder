@@ -10,13 +10,12 @@ const require = createRequire(import.meta.url), CameraFlight = require('../../fr
 
 const a = cidOf(Buffer.from('design a')), b = cidOf(Buffer.from('design b'));
 const content = {
-    schema: 'camera-flight/v1', title: 'Courtyard flight', designCids: [a, b].sort(),
+    schema: 'camera-flight/v2', title: 'Courtyard flight', designCids: [a, b].sort(),
     view: { at: '52.47935,-1.87943,18', mode: 'model', city: 'birmingham', language: 'en', settings: {} },
-    frame: { lat: 52.47935, lng: -1.87943, datum: 'model-ground' }, fov: 45,
-    route: [{ id: 'start', position: [0, 2, 0], travelSeconds: 0, holdSeconds: 1 },
-        { id: 'end', position: [20, 4, 10], travelSeconds: 5, holdSeconds: 0 }],
-    looks: [{ id: 'look-start', time: 0, quaternion: [0, 0, 0, 1] },
-        { id: 'look-end', time: 6, quaternion: [0, 1, 0, 0] }], interiors: [], cues: []
+    frame: { lat: 52.47935, lng: -1.87943, datum: 'model-ground' }, fov: 45, speedMps: 15,
+    route: [{ id: 'start', position: [0, 2, 0], quaternion: [0, 0, 0, 1], travelSeconds: null, holdSeconds: 1, turn: null },
+        { id: 'end', position: [20, 4, 10], quaternion: [0, 1, 0, 0], travelSeconds: 5, holdSeconds: 0, turn: null }],
+    looks: [{ id: 'look-mid', after: 'start', fraction: 0.5, quaternion: [0, 0, 1, 0] }], interiors: [], cues: []
 };
 const cid = cidOf(canonicalBytes(content));
 const floorPlans = () => ({
@@ -89,12 +88,12 @@ describe('durable camera flight API', () => {
     it('rejects curve overshoot outside the metric domain even when every authored node is valid', async () => {
         const bad = structuredClone(content);
         bad.route = [[0, 0, 0], [59900, -500, 0], [59900, 500, 0], [0, 1000, 0]].map((position, index) => ({
-            id: `point-${index}`, position, travelSeconds: index ? 10 : 0, holdSeconds: 0
-        }));
-        expect(CameraFlight.validate(bad)).toBeNull();
+            id: `point-${index}`, position, quaternion: [0, 0, 0, 1], travelSeconds: index ? 10 : null, holdSeconds: 0, turn: null
+        })); bad.looks = [];
+        expect(CameraFlight.validate(bad)).toMatch(/60 km metric frame/);
         expect(() => CameraFlight.compile(bad)).toThrow(/60 km metric frame/);
         const api = server(), response = await request(api.app).post('/flights').send({ content: bad });
-        expect(response.status).toBe(400); expect(response.body.error).toMatch(/camera flight/i);
+        expect(response.status).toBe(400); expect(response.body.error).toMatch(/60 km metric frame/);
         expect(api.pool.query).not.toHaveBeenCalled(); expect(api.pin).not.toHaveBeenCalled(); expect(api.records.size).toBe(0);
     });
     it.each([

@@ -46,6 +46,20 @@
 .flight-field { display: flex; flex: 1 1 95px; flex-direction: column; gap: 4px; min-width: 0; margin-bottom: 5px; }
 .flight-input { box-sizing: border-box; width: 100%; min-width: 0; border: 1px solid var(--cb-flight-border); border-radius: 6px; background: var(--cb-flight-surface); color: var(--cb-flight-text); padding: 6px 8px; font: inherit; }
 .flight-input[type=number] { min-width: 78px; }
+/* Timeline strip: markers and hold bars position themselves by data-driven --at/--from/--to percentages. */
+.flight-timeline { margin: 10px 0 2px; padding: 14px 10px 4px; }
+.flight-timeline-track { position: relative; height: 22px; border-radius: 11px; background: color-mix(in srgb, var(--cb-flight-border) 55%, var(--cb-flight-surface)); }
+.flight-hold { position: absolute; top: 6px; height: 10px; left: var(--from); width: calc(var(--to) - var(--from)); border-radius: 5px; background: color-mix(in srgb, var(--cb-flight-accent) 35%, var(--cb-flight-surface)); }
+.flight-hold--turn { background: repeating-linear-gradient(90deg, var(--cb-flight-accent) 0 4px, transparent 4px 8px); opacity: .6; }
+.flight-marker { position: absolute; top: 50%; left: var(--at); transform: translate(-50%, -50%); padding: 0; border: 0; font: inherit; color: var(--cb-flight-text); cursor: pointer; }
+.flight-marker--view { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--cb-flight-node); background: var(--cb-flight-surface); font-size: 11px; font-weight: 700; line-height: 18px; z-index: 2; }
+.flight-marker--view[data-selected=true] { background: var(--cb-flight-node); color: white; }
+.flight-marker--look { width: 10px; height: 10px; background: var(--cb-flight-path); transform: translate(-50%, -50%) rotate(45deg); z-index: 1; }
+/* A view change shares its view's time, so it flags above the track instead of hiding under the marker. */
+.flight-marker--cue { width: 8px; height: 10px; top: -10px; transform: translate(-50%, 0); border-radius: 3px 3px 0 0; background: var(--cb-flight-accent); z-index: 1; }
+.flight-playhead { position: absolute; top: -6px; bottom: -6px; left: var(--at); width: 2px; margin-left: -1px; background: var(--cb-flight-error); z-index: 3; pointer-events: none; }
+.flight-route-caption { display: flex; flex-direction: column; min-width: 0; }
+.flight-route-detail { font-size: 12px; color: var(--cb-flight-muted); }
 .flight-scrub { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .flight-scrub .flight-field { flex: 0 1 96px; }
 .flight-time { margin-left: auto; font-variant-numeric: tabular-nums; }

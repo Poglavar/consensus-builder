@@ -117,8 +117,11 @@ test.describe('camera flights in the actual model scene', () => {
     await prepare(page);expect(await optionalRequests(page)).toEqual([]);
     await expect(page.locator('#three-container canvas')).toHaveCount(0);
     await enterModel(page);expect(await optionalRequests(page)).toEqual([]);
-    await openEditor(page);const start = await addViews(page), flight = await record(page);
-    expect(flight.route).toHaveLength(3);
+    await openEditor(page);await expect(panel(page)).toHaveAttribute('data-flight-mode', 'orbit');
+    const start = await addViews(page), flight = await record(page);
+    expect(flight.route).toHaveLength(3);expect(flight.route[1].travelSeconds).toBeNull();
+    expect(flight.route.every((point: any) => Math.abs(Math.hypot(...point.quaternion) - 1) < 1e-6)).toBe(true);
+    await expect(panel(page).locator('[data-flight-marker="view"]')).toHaveCount(3);
     expect(flight.route[1].position[0] - start.position[0]).toBeCloseTo(8, 4);
     expect(flight.route[2].position[2] - start.position[2]).toBeCloseTo(5, 4);
     expect((await optionalRequests(page)).some(path => path.endsWith('/camera-flight.js'))).toBe(true);
@@ -140,24 +143,41 @@ test.describe('camera flights in the actual model scene', () => {
     expect(await panel(page).evaluate(element => element.getBoundingClientRect().width)).toBeLessThanOrEqual(375);
   });
 
-  test('look keys and a complete spin remain independent of route positions and cue the view', async ({ mockApi: page }) => {
+  test('a turn during a hold, a look between views and a view change stay anchored to their views', async ({ mockApi: page }) => {
     await prepare(page);await enterModel(page);await openEditor(page);await addViews(page);
-    const before = await record(page);await seek(page, 1);
-    const eye = await capture(page);await page.evaluate(pose => (window as any).CameraFlightEditor.active.session.apply(pose), { ...eye, quaternion: [0, Math.SQRT1_2, 0, Math.SQRT1_2] });
-    await action(page, 'add-look').click();expect((await record(page)).route).toEqual(before.route);
-    await panel(page).locator('details').filter({ has: page.locator('[data-flight-action=spin]') }).locator('summary').click();
-    await seek(page, 2);await action(page, 'spin').click();const spun = await record(page);
-    expect(spun.route).toEqual(before.route);expect(spun.looks.length).toBeGreaterThanOrEqual(9);
-    const angularTravel = spun.looks.slice(1).reduce((sum: number, look: any, i: number) => {
-      const dot = look.quaternion.reduce((value: number, component: number, axis: number) => value + component * spun.looks[i].quaternion[axis], 0);
+    const before = await record(page), lastId = before.route[2].id;
+    await expect(panel(page).locator('[data-flight-marker="view"]')).toHaveCount(3);
+    await field(page, 'turn-axis').selectOption('yaw');
+    await expect.poll(async () => (await record(page)).route[2]).toMatchObject({ holdSeconds: 6, turn: { axis: 'yaw', turns: 1 } });
+    await expect(panel(page).locator('.flight-hold--turn')).toHaveCount(1);
+    const spun = await record(page);expect(spun.route.map((point: any) => point.position)).toEqual(before.route.map((point: any) => point.position));
+    const keys = await page.evaluate(({ record, id }) => (window as any).CameraFlight.timeline(record).looks.filter((key: any) => key.point === id && ['view', 'turn'].includes(key.kind)), { record: spun, id: lastId });
+    expect(keys.length).toBeGreaterThanOrEqual(9);
+    const angularTravel = keys.slice(1).reduce((sum: number, look: any, i: number) => {
+      const dot = look.quaternion.reduce((value: number, component: number, axis: number) => value + component * keys[i].quaternion[axis], 0);
       return sum + 2 * Math.acos(Math.min(1, Math.abs(dot)));
     }, 0);
     expect(angularTravel).toBeGreaterThanOrEqual(2 * Math.PI - 1e-6);
+    // A look between views: scrub inside the first segment, aim, add; the route stays as authored.
+    const arrivals = await page.evaluate(record => (window as any).CameraFlight.arrivals(record), spun);
+    await seek(page, arrivals[1] / 2);await expect(action(page, 'add-look')).toBeEnabled();
+    const eye = await capture(page);await page.evaluate(pose => (window as any).CameraFlightEditor.active.session.apply(pose), { ...eye, quaternion: [0, Math.SQRT1_2, 0, Math.SQRT1_2] });
+    await panel(page).locator('details').filter({ has: page.locator('[data-flight-action=add-look]') }).locator('summary').click();
+    await action(page, 'add-look').click();const looked = await record(page);
+    expect(looked.route).toEqual(spun.route);expect(looked.looks).toHaveLength(1);expect(looked.looks[0].after).toBe(spun.route[0].id);
+    expect(looked.looks[0].fraction).toBeGreaterThan(0);expect(looked.looks[0].fraction).toBeLessThan(1);
+    await expect(panel(page).locator('[data-flight-look]')).toHaveCount(1);await expect(panel(page).locator('[data-flight-marker="look"]')).toHaveCount(1);
+    // Exactly at a view (its marker seeks there) there is no segment to anchor a look to.
+    await panel(page).locator(`[data-flight-marker="view"][data-flight-marker-id="${lastId}"]`).click();
+    await expect.poll(() => page.evaluate(() => (window as any).CameraFlightEditor.active.session.time)).toBeCloseTo(arrivals[2], 6);
+    await expect(action(page, 'add-look')).toBeDisabled();
+    // A view change saved at the selected (last) view.
     await page.evaluate(() => (window as any).applyThreeInteriorView({ xray: '1', suggested: '1', suggestedExisting: '0', cutaway: '0' }));
-    await panel(page).locator('details').filter({ has: page.locator('[data-flight-action=cue]') }).locator('summary').click();
     await action(page, 'cue').click();const final = await record(page);
-    expect(final.cues).toContainEqual(expect.objectContaining({ settings: expect.objectContaining({ xray: '1', suggested: '1', cutaway: '0' }) }));
-    await expect(panel(page).locator('[data-flight-look]')).toHaveCount(final.looks.length);
+    expect(final.cues).toEqual([expect.objectContaining({ at: lastId, settings: expect.objectContaining({ xray: '1', suggested: '1', cutaway: '0' }) })]);
+    await expect(panel(page).locator('[data-flight-marker="cue"]')).toHaveCount(1);
+    await action(page, 'remove-cue').click();expect((await record(page)).cues).toEqual([]);
+    await action(page, 'undo').click();expect((await record(page)).cues).toHaveLength(1);
   });
 
   test('play/pause and scrub apply exact poses, and closing restores ordinary orbit controls', async ({ mockApi: page }) => {
@@ -167,9 +187,25 @@ test.describe('camera flights in the actual model scene', () => {
     await expect(panel(page)).toHaveAttribute('data-flight-state', 'playing');await action(page, 'pause').click();
     await expect(panel(page)).toHaveAttribute('data-flight-state', 'paused');
     const flight = await record(page), end = await page.evaluate(record => (window as any).CameraFlight.duration(record), flight);
-    await seek(page, end);const expected = await page.evaluate(({ record, time }) => (window as any).CameraFlight.compile(record).evaluate(time), { record: flight, time: end });
+    // The range input quantises to its step, so compare against the playhead the scrub produced.
+    await seek(page, end);const scrubbed = await page.evaluate(() => (window as any).CameraFlightEditor.active.session.time);
+    expect(Math.abs(scrubbed - end)).toBeLessThan(0.01);
+    const expected = await page.evaluate(({ record, time }) => (window as any).CameraFlight.compile(record).evaluate(time), { record: flight, time: scrubbed });
     expectPose(await capture(page), expected);
-    await action(page, 'overview').click();await expect.poll(() => page.evaluate(() => (window as any).getThreeModeInternals().controls.enabled)).toBe(true);
+    // addViews applied explicit poses, which leaves the free camera on; the toggle returns to orbit at once.
+    const orbitEnabled = () => page.evaluate(() => (window as any).getThreeModeInternals().controls.enabled);
+    await expect(panel(page)).toHaveAttribute('data-flight-mode', 'fly');expect(await orbitEnabled()).toBe(false);
+    await action(page, 'fly').click();await expect(panel(page)).toHaveAttribute('data-flight-mode', 'orbit');
+    await expect.poll(orbitEnabled).toBe(true);
+    // A seeked pose is exact: orbit controls only arm, and the first canvas drag takes over.
+    await seek(page, 0);await expect.poll(orbitEnabled).toBe(false);
+    const armed = page.locator('#three-container canvas'), armedBox = (await armed.boundingBox())!;
+    await page.mouse.move(armedBox.x + armedBox.width * .5, armedBox.y + armedBox.height * .5);await page.mouse.down();
+    await page.mouse.move(armedBox.x + armedBox.width * .5 + 40, armedBox.y + armedBox.height * .5, { steps: 4 });await page.mouse.up();
+    await expect.poll(orbitEnabled).toBe(true);
+    await action(page, 'fly').click();await expect(panel(page)).toHaveAttribute('data-flight-mode', 'fly');
+    expect(await orbitEnabled()).toBe(false);
+    await action(page, 'fly').click();await expect(panel(page)).toHaveAttribute('data-flight-mode', 'orbit');
     await action(page, 'stop').click();await action(page, 'close').click();await expect(panel(page)).toBeHidden();
     await expect.poll(() => page.evaluate(() => (window as any).getThreeModeInternals().controls.enabled)).toBe(enabledBefore);
     const orbitPosition = await page.evaluate(() => (window as any).getThreeModeInternals().camera.position.toArray());

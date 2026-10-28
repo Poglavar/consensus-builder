@@ -12,7 +12,15 @@ function deferred() { let resolve, reject; const promise = new Promise((yes, no)
 function flight() {
     const record = Flight.create({ view: { at: '45,16,18', mode: 'model', settings: { ...View.defaults } },
         frame: { lat: 45, lng: 16, datum: 'model-ground' }, pose: { position: [0, 0, 2], quaternion: [0, 0, 0, 1], fov: 45 } });
-    record.route.push({ id: 'end', position: [10, 2, 4], travelSeconds: 10, holdSeconds: 0 });return record;
+    record.route.push({ id: 'end', position: [10, 2, 4], quaternion: [0, 0, 0, 1], travelSeconds: 10, holdSeconds: 0, turn: null });return record;
+}
+// Cues anchor to views: insert a view at `time` on the straight route with explicit timing.
+function cueAt(record, time, settings, id = 'cue-' + time) {
+    const route = record.route, times = Flight.arrivals(record);
+    let i = 0;while (i + 1 < route.length && times[i + 1] <= time) i++;
+    const a = route[i], b = route[i + 1], fraction = (time - times[i]) / (times[i + 1] - times[i]);
+    const point = { id: 'view-' + id, position: a.position.map((x, k) => x + (b.position[k] - x) * fraction), quaternion: [0, 0, 0, 1], travelSeconds: time - times[i], holdSeconds: 0, turn: null };
+    b.travelSeconds = times[i + 1] - time;route.splice(i + 1, 0, point);record.cues.push({ id, at: point.id, settings });
 }
 function interior(id = 'inside') { return { id, feature: { type: 'Feature', properties: { floorPlans: { marker: id } },
     geometry: { type: 'Polygon', coordinates: [[[16,45],[16.001,45],[16.001,45.001],[16,45]]] } } }; }
@@ -75,7 +83,7 @@ describe('camera flight session lifecycle and deterministic clock', () => {
         session.pause();gate.resolve();await playing;expect(session.playing).toBe(false);expect(env.hooks.size).toBe(0);session.dispose();
     });
     it('freezes both pose and clock at an asynchronous cue and resumes without wall-clock catchup', async () => {
-        const env = environment(), record = flight(), gate = deferred();record.cues = [{ id: 'xray', time: .15, settings: { xray: '1' } }];
+        const env = environment(), record = flight(), gate = deferred();cueAt(record, .15, { xray: '1' }, 'xray');
         const session = Session.create(env.win, record);await session.play();env.tick(0);env.tick(100);const before = session.capture();
         env.win.applyThreeInteriorView.mockImplementation(async next => { await gate.promise;env.settings(next); });
         env.tick(200);await flush();expect(session.time).toBeCloseTo(.1);expect(session.capture()).toEqual(before);expect(env.hooks.size).toBe(0);
@@ -83,7 +91,7 @@ describe('camera flight session lifecycle and deterministic clock', () => {
         env.tick(60000);expect(session.time).toBeCloseTo(.2);env.tick(60100);expect(session.time).toBeCloseTo(.3);session.dispose();
     });
     it('serializes concurrent state changes and only applies the latest seek pose', async () => {
-        const env = environment(), record = flight(), gate = deferred();record.cues = [{ id: 'on', time: .25, settings: { xray: '1' } }, { id: 'off', time: 1, settings: { xray: '0' } }];
+        const env = environment(), record = flight(), gate = deferred();cueAt(record, .25, { xray: '1' }, 'on');cueAt(record, 1, { xray: '0' }, 'off');
         let active = 0, maximum = 0;
         env.win.applyThreeInteriorView.mockImplementation(async next => { active++;maximum = Math.max(maximum, active);if (next.xray === '1') await gate.promise;env.settings(next);active--; });
         const session = Session.create(env.win, record), first = session.seek(.5);await flush();const last = session.seek(2);await flush();
@@ -91,7 +99,7 @@ describe('camera flight session lifecycle and deterministic clock', () => {
         expect(maximum).toBe(1);expect(session.time).toBe(2);expect(env.win.getThreeInteriorView().xray).toBe('0');expect(env.adapter.apply).toHaveBeenCalledTimes(1);session.dispose();
     });
     it('pauses and reports a failed asynchronous cue, leaving no clock hook or new camera pose', async () => {
-        const env = environment(), record = flight(), onError = vi.fn();record.cues = [{ id: 'cue', time: .05, settings: { xray: '1' } }];
+        const env = environment(), record = flight(), onError = vi.fn();cueAt(record, .05, { xray: '1' });
         const session = Session.create(env.win, record, { onError });await session.play();env.tick(0);const calls = env.adapter.apply.mock.calls.length;
         env.win.applyThreeInteriorView.mockRejectedValue(new Error('Geometry unavailable'));env.tick(100);await flush();
         expect(session.time).toBe(0);expect(session.playing).toBe(false);expect(env.hooks.size).toBe(0);expect(env.adapter.apply).toHaveBeenCalledTimes(calls);expect(onError).toHaveBeenCalledOnce();session.dispose();
@@ -185,7 +193,7 @@ describe('camera flight session lifecycle and deterministic clock', () => {
     });
     it('restores original display immediately on close and after late cue work before another session opens', async () => {
         const env = environment(), original = { ...View.defaults, suggested: '1', cutaway: '3' }, record = flight(), gate = deferred();
-        env.settings(original); record.cues = [{ id: 'cue', time: .5, settings: { xray: '1', cutaway: '-1' } }];
+        env.settings(original); cueAt(record, .5, { xray: '1', cutaway: '-1' });
         let first = true;
         env.win.applyThreeInteriorView.mockImplementation(async next => {
             env.settings(next);
@@ -219,7 +227,7 @@ describe('camera flight session lifecycle and deterministic clock', () => {
 
     it('lets an external display toggle supersede a pending cue without stale pose or frozen input', async () => {
         const env = environment(), record = flight(), gate = deferred(); record.interiors = [interior()];
-        record.cues = [{ id: 'on', time: .5, settings: { xray: '1' } }];
+        cueAt(record, .5, { xray: '1' }, 'on');
         env.win.applyThreeInteriorView.mockImplementation(async next => {
             env.settings(next); env.win.emit('threeinteriorviewchange', { detail: next });
             if (next.xray === '1') await gate.promise;
