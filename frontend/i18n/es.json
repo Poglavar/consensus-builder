@@ -880,6 +880,9 @@
         "done": "Listo"
     },
     "proposals": {
+        "thumbnail": {
+            "alt": "Vista previa del diseño: {{label}}"
+        },
         "autoName": {
             "parcel": "parcela {{id}}",
             "parcels": {
@@ -6303,6 +6306,48 @@
             "belowHorizon": "Noche: el sol está bajo el horizonte."
         }
     },
+    "geometryEditor": {
+        "position": "Posición",
+        "latitude": "Latitud",
+        "longitude": "Longitud",
+        "invalidCoordinates": "Introduce una latitud entre −90 y 90 y una longitud entre −180 y 180.",
+        "rejected": "Este cambio no se ajusta al límite o la forma permitidos.",
+        "positionUpdated": "Posición actualizada.",
+        "applyCoordinates": "Aplicar coordenadas",
+        "nudgeDistance": "Distancia de desplazamiento (m)",
+        "north": "Norte",
+        "west": "Oeste",
+        "east": "Este",
+        "south": "Sur",
+        "editVertices": "Editar vértices",
+        "vertex": "Vértice",
+        "insertVertex": "Añadir punto después",
+        "pointAdded": "Punto añadido.",
+        "removeVertex": "Eliminar punto",
+        "pointRemoved": "Punto eliminado.",
+        "vertexNumber": "Vértice {{number}}",
+        "objects": "Objetos",
+        "searchObjects": "Buscar objetos",
+        "selectObject": "Seleccionar objeto",
+        "treeProperties": "Propiedades del árbol",
+        "treeKind": "Tipo de árbol",
+        "broadleaf": "Frondoso",
+        "conifer": "Conífera",
+        "columnar": "Columnar",
+        "ornamental": "Ornamental",
+        "treeHeight": "Altura (m)",
+        "applyProperties": "Aplicar propiedades",
+        "propertiesUpdated": "Propiedades actualizadas.",
+        "removeObject": "Eliminar objeto",
+        "objectRemoved": "Objeto eliminado.",
+        "objectCount": "{{count}} objetos",
+        "noObjects": "No hay objetos coincidentes.",
+        "addPathPoint": "Añadir punto al sendero",
+        "addItem": "Añadir elemento",
+        "positionUpdatedAt": "Posición actualizada: latitud {{latitude}}, longitud {{longitude}}.",
+        "outlineVertices": "Vértices del contorno {{number}}",
+        "holeVertices": "Vértices del hueco {{hole}} del contorno {{number}}"
+    },
     "structureEditor": {
         "furniture": {
             "title": "Modelos de mobiliario",
@@ -6351,7 +6396,8 @@
             "statue": "Estatua",
             "erase": "Eliminar",
             "move": "Mover",
-            "boundary": "Límite"
+            "boundary": "Límite",
+            "select": "Seleccionar"
         },
         "finishPath": "Terminar sendero",
         "undo": "Deshacer",

@@ -150,6 +150,38 @@ describe('OnMapEditor shared floating-panel lifecycle', () => {
         expect(env.__mapEditLock.release).toHaveBeenCalledExactlyOnceWith('building');
     });
 
+    it('toggles controls through the native button on a mobile sheet', () => {
+        const { editor, env } = runtime();
+        env.matchMedia = () => ({ matches: true });
+        const session = editor.open({ owner: 'shape', title: 'Shape editor' });
+        const toggle = session.panel.children[0].children[1];
+        const onClick = toggle.addEventListener.mock.calls.find(call => call[0] === 'click')[1];
+        const stopPropagation = vi.fn();
+        onClick({ stopPropagation });
+        expect(stopPropagation).toHaveBeenCalledOnce();
+        expect(session.body.hidden).toBe(true);
+        expect(toggle.attributes['aria-expanded']).toBe('false');
+        onClick({ stopPropagation });
+        expect(session.body.hidden).toBe(false);
+        session.close();
+    });
+
+    it('focuses the named heading on entry and exposes editing announcements without moving focus', () => {
+        const { editor } = runtime();
+        const session = editor.open({ owner: 'shape', title: 'Shape editor' });
+        const heading = session.panel.children[0].children[0].children[1];
+        expect(heading.tabIndex).toBe(-1);
+        expect(heading.focus).toHaveBeenCalledWith({ preventScroll: true });
+        expect(editor.getControlsContainer()).toBe(session.body);
+        session.announce('Vertex moved.');
+        const status = session.root.children.find(child => child.attributes.role === 'status');
+        expect(status.textContent).toBe('Vertex moved.');
+        expect(status.attributes['aria-live']).toBe('polite');
+        expect(heading.focus).toHaveBeenCalledTimes(1);
+        session.close();
+        expect(editor.getControlsContainer()).toBeNull();
+    });
+
     it('uses the global view buttons and keeps mode hints and guards in sync', () => {
         const { editor, env, buttons, envListeners } = runtime();
         const session = editor.open({

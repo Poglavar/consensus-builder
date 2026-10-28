@@ -442,3 +442,38 @@ describe('shared Leaflet interaction model', () => {
         editor.destroy();
     });
 });
+
+
+describe('coordinate controls share the polygon commit and undo path', () => {
+    it('moves a vertex without a pointer gesture and undoes the exact previous ring', () => {
+        const commits = [];
+        const editor = create({ map: fakeMap(), leaflet: fakeLeaflet(), document: fakeDocument(), turf,
+            ring: square, history: History, showUndoButton: false, onCommit: event => commits.push(event) });
+        expect(editor.moveVertex(1, [.8, .1])).toBe(true);
+        expect(editor.ring[1]).toEqual([.8, .1]);
+        expect(commits.at(-1)).toMatchObject({ reason: 'move', vertexIndex: 1 });
+        expect(editor.history.undo()).toBe(true);
+        expect(editor.ring).toEqual(openRing(square));
+        expect(editor.moveVertex(1, [])).toBe(false);
+        expect(editor.moveVertex(1, [181, 0])).toBe(false);
+        editor.destroy();
+    });
+    it('uses exact entered coordinates even when pointer snapping is enabled', () => {
+        const editor = create({ map: fakeMap(), leaflet: fakeLeaflet(), document: fakeDocument(), turf,
+            ring: square, snapCoordinate: () => [.9, .1], onCommit: () => true });
+        expect(editor.moveVertex(1, [.8, .2])).toBe(true);
+        expect(editor.ring[1]).toEqual([.8, .2]);
+        editor.destroy();
+    });
+    it('keeps geometry and undo unchanged when the host refuses a move, insertion or deletion', () => {
+        const editor = create({ map: fakeMap(), leaflet: fakeLeaflet(), document: fakeDocument(), turf,
+            ring: square, history: History, showUndoButton: false, onCommit: () => false });
+        expect(editor.moveVertex(1, [.8, .1])).toBe(false);
+        expect(editor.insertVertex(0, [.5, 0])).toBe(false);
+        editor.selectVertex(1);
+        expect(editor.removeSelectedVertex()).toBe(false);
+        expect(editor.ring).toEqual(openRing(square));
+        expect(editor.history.undo()).toBe(false);
+        editor.destroy();
+    });
+});

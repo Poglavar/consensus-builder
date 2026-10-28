@@ -261,6 +261,7 @@ function makeEditorHarness(decorations, options = {}) {
         document, map, L, GeometryEditHistory: historyFactory,
         CbDialog: { confirm: vi.fn(async () => true) },
         SingleBuildingGeometry,
+        StructureEditorObjects: require('../../frontend/js/structure-editor-objects.js'),
         ProposalApplyStructures,
         __parkPlanting: require('../../frontend/js/park-planting.js'),
         FurnitureModels: require('../../frontend/js/furniture-models.js'),
@@ -276,7 +277,7 @@ function makeEditorHarness(decorations, options = {}) {
             },
             point: coordinates => ({ type: 'Point', coordinates }),
             polygon: coordinates => ({ type: 'Feature', geometry: { type: 'Polygon', coordinates } }),
-            booleanWithin: () => true,
+            booleanWithin: options.pathWithin || (() => true),
             booleanEqual: () => false,
             lineString: coordinates => ({ type: 'Feature', geometry: { type: 'LineString', coordinates } })
         },
@@ -866,6 +867,29 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.finishButton.hidden).toBe(false);
         expect(harness.finishButton.disabled).toBe(true);
         expect(harness.save().paths).toEqual([[[0.2, 0.2], [0.4, 0.4]]]);
+    });
+
+    it('retains a rejected path when saving or switching tools so it can be corrected', () => {
+        let validPath = false;
+        const harness = makeEditorHarness({ paths: [] }, {
+            kind: 'park', pathWithin: () => validPath
+        });
+        expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'path' });
+        harness.fireMap('click', { latlng: { lng: 0.2, lat: 0.2 } });
+        harness.fireMap('click', { latlng: { lng: 0.4, lat: 0.4 } });
+
+        expect(harness.save()).toBeNull();
+        expect(harness.finishedDrafts).toEqual([]);
+        harness.panel.fireClick({ tool: 'tree' });
+        expect(harness.finishButton.hidden).toBe(false);
+        expect(harness.finishButton.disabled).toBe(false);
+
+        harness.undoButton.fire();
+        validPath = true;
+        harness.fireMap('click', { latlng: { lng: 0.2, lat: 0.4 } });
+        harness.panel.fireClick({ action: 'finish-path' });
+        expect(harness.save().paths).toEqual([[[0.2, 0.2], [0.2, 0.4]]]);
     });
 
     it('undoes individual path points and restores unfinished points after Finish path', () => {

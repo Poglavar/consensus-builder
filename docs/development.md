@@ -138,6 +138,25 @@ low-value devnet transaction lifecycle verified apart from the mocked browser sp
 prerequisites for skipped cases; and browser-global calculations that are still tested through DOM
 or script globals rather than as pure modules.
 
+### Accessible map editing
+
+Shared map editors use native fields, actions and disclosures, with presentation in
+`frontend/css/geometry-controls.css` and the existing semantic theme tokens. The shared polygon
+editor exposes numbered vertices, coordinate fields, metre-based moves and add/remove actions.
+Park, square and building-surroundings editors expose an **Objects** list with search, position,
+tree properties and removal; area editors also expose **Move area** and coordinate placement.
+Changes use the existing geometry commit, validation and Undo paths. Coordinate moves use the
+entered position directly; pointer snapping remains a pointer interaction.
+
+Keep native controls mounted during geometry redraws so focus, typed values and expanded sections
+survive. Use the shared map editor's `announce` method for results and progress, preserve focus on
+entry and return, and retain an operable collapse button on narrow screens. Image descriptions
+identify the authored design; enlarged duplicates remain decorative.
+
+See [accessible map editing](accessible-map-editing.md) for controls, targeted coverage, MCP parity
+and remaining limitations. No stored record or identity contract changes
+are needed for these controls.
+
 ### MCP parity check
 
 Every change to human editing includes this check, even when no MCP code change is needed:

@@ -2417,6 +2417,48 @@
             "siblingsDropped": "As restantes casas não foram convertidas porque não foi possível guardar a primeira."
         }
     },
+    "geometryEditor": {
+        "position": "Posição",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "invalidCoordinates": "Introduza uma latitude entre −90 e 90 e uma longitude entre −180 e 180.",
+        "rejected": "Esta alteração não respeita o limite ou a forma permitidos.",
+        "positionUpdated": "Posição atualizada.",
+        "applyCoordinates": "Aplicar coordenadas",
+        "nudgeDistance": "Distância do deslocamento (m)",
+        "north": "Norte",
+        "west": "Oeste",
+        "east": "Este",
+        "south": "Sul",
+        "editVertices": "Editar vértices",
+        "vertex": "Vértice",
+        "insertVertex": "Adicionar ponto depois",
+        "pointAdded": "Ponto adicionado.",
+        "removeVertex": "Remover ponto",
+        "pointRemoved": "Ponto removido.",
+        "vertexNumber": "Vértice {{number}}",
+        "objects": "Objetos",
+        "searchObjects": "Pesquisar objetos",
+        "selectObject": "Selecionar objeto",
+        "treeProperties": "Propriedades da árvore",
+        "treeKind": "Tipo de árvore",
+        "broadleaf": "Folhosa",
+        "conifer": "Conífera",
+        "columnar": "Colunar",
+        "ornamental": "Ornamental",
+        "treeHeight": "Altura (m)",
+        "applyProperties": "Aplicar propriedades",
+        "propertiesUpdated": "Propriedades atualizadas.",
+        "removeObject": "Remover objeto",
+        "objectRemoved": "Objeto removido.",
+        "objectCount": "{{count}} objetos",
+        "noObjects": "Nenhum objeto correspondente.",
+        "addPathPoint": "Adicionar ponto ao caminho",
+        "addItem": "Adicionar item",
+        "positionUpdatedAt": "Posição atualizada: latitude {{latitude}}, longitude {{longitude}}.",
+        "outlineVertices": "Vértices do contorno {{number}}",
+        "holeVertices": "Vértices da abertura {{hole}} do contorno {{number}}"
+    },
     "structureEditor": {
         "furniture": {
             "title": "Modelos de mobiliário",
@@ -2438,6 +2480,13 @@
         "importDisconnected": "O ficheiro contém áreas separadas. Um limite tem de ser uma única área contínua.",
         "importInvalid": "Este ficheiro não é um polígono GeoJSON em longitude/latitude.",
         "undo": "Anular",
+        "fitLocked": "Desbloqueie o local inicial para ajustar estas parcelas.",
+        "fitUnavailable": "Não foi possível carregar as parcelas. Tente novamente.",
+        "fitNoParcels": "Nenhuma parcela cadastral se sobrepõe a este contorno.",
+        "fitAll": "Todas as parcelas tocadas",
+        "fitLargest": "A maior",
+        "fitChoice": "Ajustar à maior parcela cadastral tocada ou a todas as parcelas tocadas?",
+        "fitParcels": "Ajustar às parcelas",
         "done": "Concluído",
         "closeLabel": "Fechar",
         "hintSurroundings": "Edite a envolvente e regresse ao edifício com Concluído. Guarde o edifício para manter todas as alterações.",
@@ -2466,7 +2515,8 @@
             "statue": "Estátua",
             "erase": "Remover",
             "move": "Mover",
-            "boundary": "Limite"
+            "boundary": "Limite",
+            "select": "Selecionar"
         },
         "finishPath": "Concluir caminho",
         "hintErase": "Clique num elemento para o remover.",
@@ -3907,6 +3957,9 @@
                 "omitted": "O plano partilhado foi aberto, ignorando {{count}} projetos em conflito.",
                 "failed": "Não foi possível abrir os projetos partilhados."
             }
+        },
+        "thumbnail": {
+            "alt": "Pré-visualização do projeto: {{label}}"
         },
         "autoName": {
             "parcel": "parcela {{id}}",

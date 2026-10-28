@@ -171,12 +171,12 @@ function savedStructureForTranslation(structure: any, kind: 'park' | 'square'): 
 }
 
 test.describe('Whole-site placement editing @features', () => {
-  test('tree clicks resize the 2D glyph with the stored height and keep the size after saving', async ({ mockApi: page }) => {
+  test('tree selection and New look resize the 2D glyph with the stored height and keep the size after saving', async ({ mockApi: page }) => {
     await openCity(page);
     const { proposalId } = await addEditableStructure(page, 'park', 'tree-size');
     const editor = page.locator('#structure-geometry-editor');
     await editor.locator('[data-tool="tree"]').click();
-    // Drive the real reroll with deterministic random draws: tallest then shortest columnar tree.
+    // Select the tree, then use the current explicit New look action for deterministic rerolls.
     await page.evaluate(() => {
       const planting = (window as any).__parkPlanting;
       const reroll = planting.rerollTree;
@@ -189,9 +189,12 @@ test.describe('Whole-site placement editing @features', () => {
     });
     const tree = page.locator('.structure-geometry-icon.is-tree').first();
     await tree.click();
+    const newLook = editor.getByRole('button', { name: 'New look', exact: true });
+    await expect(newLook).toBeVisible();
+    await newLook.click();
     await expect(tree.locator('.park-tree-glyph')).toHaveCSS('font-size', '38px');
     await expect(tree).toHaveCSS('width', '38px');
-    await tree.click();
+    await newLook.click();
     await expect(tree.locator('.park-tree-glyph')).toHaveCSS('font-size', '23px');
     await expect(tree).toHaveCSS('width', '23px');
     await editor.locator('[data-action="save"]').click();

@@ -314,6 +314,8 @@
                 if (this.ownUndoButton) this.history.bindButton(this.ownUndoButton);
             }
 
+            const controls = typeof window !== 'undefined' ? window.PolygonVertexControls : null;
+            this.accessibleControls = options.showCoordinateControls === false ? null : controls?.create(this);
             if (this.document) this.document.addEventListener('keydown', this.boundKeydown);
             if (typeof this.map.on === 'function') this.map.on('click', this.boundMapClick);
             if (typeof this.map.on === 'function') this.map.on('movestart', this.boundMapMove);
@@ -409,6 +411,7 @@
             this.vertexMarkers.forEach((marker, index) => {
                 const element = typeof marker.getElement === 'function' ? marker.getElement() : marker._icon;
                 if (element && element.classList) element.classList.toggle('is-selected', index === this.selectedVertexIndex);
+                element?.setAttribute('aria-pressed', String(index === this.selectedVertexIndex));
             });
         }
 
@@ -418,6 +421,7 @@
             if (options.clearSelection) {
                 this.selectedVertexIndex = null;
                 this.refreshVertexSelectionStyles();
+                this.accessibleControls?.update();
             }
         }
 
@@ -515,7 +519,8 @@
                     pane: this.options.pane || 'markerPane',
                     draggable: true,
                     keyboard: true,
-                    title: this.options.vertexTitle || 'Drag to reshape',
+                    title: this.vertexLabel(vertexIndex),
+                    alt: this.vertexLabel(vertexIndex),
                     icon: this.createVertexIcon(vertexIndex),
                     bubblingMouseEvents: false,
                     autoPan: true
@@ -527,12 +532,31 @@
                 marker.on('dragstart', event => this.handleVertexDragStart(vertexIndex, event));
                 marker.on('drag', event => this.handleVertexDrag(vertexIndex, event));
                 marker.on('dragend', event => this.handleVertexDragEnd(vertexIndex, event));
+                const element = typeof marker.getElement === 'function' ? marker.getElement() : marker._icon;
+                if (element) {
+                    element.setAttribute('role', 'button');
+                    element.setAttribute('aria-label', this.vertexLabel(vertexIndex));
+                    element.setAttribute('aria-pressed', String(vertexIndex === this.selectedVertexIndex));
+                    element.addEventListener('keydown', event => {
+                        if (event.key !== ' ') return;
+                        event.preventDefault();
+                        event.stopPropagation();
+                        this.selectVertex(vertexIndex);
+                    });
+                }
                 this.vertexMarkers.push(marker);
             });
 
             if (this.deleteActionVisible) this.showDeleteAction();
             try { this.layerGroup.bringToFront(); } catch (_) { }
+            this.accessibleControls?.update();
             return this;
+        }
+
+        vertexLabel(index) {
+            const ui = typeof window !== 'undefined' ? window.GeometryCoordinateControls : null;
+            const label = ui?.text('vertexNumber', 'Vertex {{number}}', { number: index + 1 }) || `Vertex ${index + 1}`;
+            return this.options.controlsLabel ? `${this.options.controlsLabel}: ${label}` : label;
         }
 
         stopLeafletEvent(event) {
@@ -582,6 +606,7 @@
             } else {
                 this.showDeleteAction();
             }
+            this.accessibleControls?.update();
         }
 
         drawLiveOutline() {
@@ -629,8 +654,22 @@
             const rawCoordinate = latLng
                 ? [latLng.lng, latLng.lat]
                 : this.ring[vertexIndex];
+            return this.completeVertexMove(vertexIndex, rawCoordinate, event);
+        }
+
+        moveVertex(vertexIndex, coordinate) {
+            if (this.destroyed || !Number.isInteger(vertexIndex) || !this.ring[vertexIndex]
+                || !Array.isArray(coordinate) || coordinate.length !== 2 || !coordinate.every(Number.isFinite)
+                || Math.abs(coordinate[0]) > 180 || Math.abs(coordinate[1]) > 90) return false;
+            if (coordinatesEqual(this.ring[vertexIndex], coordinate)) return true;
+            this.handleVertexDragStart(vertexIndex);
+            this.ring[vertexIndex] = coordinate.slice(0, 2);
+            return this.completeVertexMove(vertexIndex, coordinate, null, { snap: false });
+        }
+
+        completeVertexMove(vertexIndex, rawCoordinate, event, { snap = true } = {}) {
             // A caller-supplied snap (the site tool snaps to parcel edges) replaces the boundary one.
-            const coordinate = typeof this.options.snapCoordinate === 'function'
+            const coordinate = !snap ? rawCoordinate : typeof this.options.snapCoordinate === 'function'
                 ? (this.options.snapCoordinate(rawCoordinate, event) || rawCoordinate)
                 : snapCoordinateToBoundary(rawCoordinate, this.options.boundary, this.turf);
             if (coordinate) this.ring[vertexIndex] = coordinate;
@@ -645,10 +684,16 @@
             this.liveLayer = null;
             const dragChanged = this.dragStartRing && !ringsEqual(this.dragStartRing, this.ring);
             if (!dragChanged && this.dragHistoryRecorded) this.history?.discardLast?.();
+            const before = this.dragStartRing;
+            const recorded = this.dragHistoryRecorded;
             this.dragStartRing = null;
             this.dragHistoryRecorded = false;
             const releasedVertexIndex = nearestVertexIndex(this.ring, coordinate) ?? vertexIndex;
-            this.emit('onCommit', 'move', releasedVertexIndex);
+            const accepted = this.emit('onCommit', 'move', releasedVertexIndex) !== false;
+            if (!accepted) {
+                if (before) this.ring = before;
+                if (recorded && dragChanged) this.history?.discardLast?.();
+            }
             if (!this.destroyed) {
                 this.selectedVertexIndex = Number.isInteger(releasedVertexIndex)
                     && releasedVertexIndex >= 0
@@ -656,8 +701,9 @@
                     ? releasedVertexIndex
                     : null;
                 this.deleteActionVisible = this.selectedVertexIndex !== null;
-                this.render({ refreshRing: false });
+                this.render({ refreshRing: !accepted });
             }
+            return accepted;
         }
 
         handleEdgeClick(edgeIndex, event) {
@@ -665,28 +711,37 @@
             const latLng = event && event.latlng;
             if (!latLng || !Number.isFinite(latLng.lng) || !Number.isFinite(latLng.lat)) return;
             const coordinate = coordinateOnEdge(this.ring, edgeIndex, [latLng.lng, latLng.lat], this.turf);
+            return this.insertVertex(edgeIndex, coordinate);
+        }
+
+        insertVertex(edgeIndex, coordinate) {
             const inserted = insertVertexAfterEdge(this.ring, edgeIndex, coordinate);
-            if (!inserted) return;   // nothing changed, so no undo step is taken below
-            if (this.history) this.history.record();
+            if (!inserted) return false;   // nothing changed, so no undo step is taken below
+            const before = openRing(this.ring);
+            const recorded = this.history?.record();
             const insertedIndex = edgeIndex + 1;
             this.ring = inserted;
             this.hideDeleteAction({ clearSelection: true });
-            this.emit('onCommit', 'insert', insertedIndex);
-            if (!this.destroyed) this.render({ refreshRing: false });
+            const accepted = this.emit('onCommit', 'insert', insertedIndex) !== false;
+            if (!accepted) { this.ring = before; if (recorded) this.history?.discardLast?.(); }
+            if (!this.destroyed) this.render({ refreshRing: !accepted });
+            return accepted;
         }
 
         removeSelectedVertex() {
             const removed = removeVertexAt(this.ring, this.selectedVertexIndex);
             if (!removed) return false;
-            if (this.history) this.history.record();
+            const before = openRing(this.ring);
+            const recorded = this.history?.record();
             const removedIndex = this.selectedVertexIndex;
             this.ring = removed;
             const constrainedRing = constrainRingToBoundary(this.ring, this.options.boundary, this.turf);
             if (constrainedRing) this.ring = constrainedRing;
             this.hideDeleteAction({ clearSelection: true });
-            this.emit('onCommit', 'remove', removedIndex);
-            if (!this.destroyed) this.render({ refreshRing: false });
-            return true;
+            const accepted = this.emit('onCommit', 'remove', removedIndex) !== false;
+            if (!accepted) { this.ring = before; if (recorded) this.history?.discardLast?.(); }
+            if (!this.destroyed) this.render({ refreshRing: !accepted });
+            return accepted;
         }
 
         handleKeydown(event) {
@@ -703,6 +758,8 @@
             this.dragStartRing = null;
             this.dragHistoryRecorded = false;
             this.clearLayers();
+            this.accessibleControls?.destroy();
+            this.accessibleControls = null;
             // Release the undo binding with the editor, or its shortcut outlives the tool.
             if (this.history) { this.history.destroy(); this.history = null; }
             if (this.ownUndoButton) {

@@ -1007,3 +1007,9 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-28: the model view compares two states side by side (Compare tab of Buildings and massing, `three-compare.js`): any of Built today, Permitted, Proposed, one design or one plan per side. Photo mode parked.
 - 2026-10-28: Every repo-level document lives in `docs/` (56 root `.md` files moved there; only `readme.md`, `AGENTS.md`, `MEMORY.md` and `tables-used.md` stay in the root because tooling reads them there (`sync-tables` looks for `tables-used.md` at the git root)). The corridor levels plan is `docs/corridor-levels-plan.md`, next to its design of record `docs/corridor-elevation.md`.
 - 2026-10-28: `buildings.source: 'overture-tiles'` is retired (the API has refused it since the 2026-10-23 backend-OSM default); 230 cities still named it and got no buildings, so they and the admission template now say `'osm'`.
+
+- 2026-10-28: Student AI assistance starts with one real agent operating the existing browser tab;
+  retain hosted MCP for independent authoring and preview/import, and defer shared-draft synchronization
+  until an observed user need justifies it. Preserve ordinary editing and the single-tab workspace lock.
+- 2026-10-28: Accessible map editing uses labelled native controls, searchable object lists, coordinate
+  and metre-based moves, focus retention and status announcements for people and browser agents.

@@ -1212,6 +1212,7 @@ function computeProposalMetrics(proposal) {
 
 function buildProposalThumbHtml(proposal) {
     if (!proposal) return '';
+    const t = getProposalI18nHelper();
     if (typeof shouldSkipProposalScreenshot === 'function' && shouldSkipProposalScreenshot(proposal)) return '';
     const proposalId = (typeof getProposalKey === 'function') ? getProposalKey(proposal) : (proposal.proposalId || '');
     if (!proposalId) return '';
@@ -1242,15 +1243,23 @@ function buildProposalThumbHtml(proposal) {
             || local.screenshotDataUrl))
         || '';
     const safeProposalId = escapeHtml(String(proposalId));
+    const goalKey = window.ProposalDesignGoals?.keyOf(proposal) || '';
+    const goalBadge = (typeof getProposalGoalBadge === 'function') ? getProposalGoalBadge(goalKey) : null;
+    const goalLabel = (goalKey && typeof getProposalGoalLabel === 'function')
+        ? getProposalGoalLabel(goalKey)
+        : (goalBadge && goalBadge.label) || '';
+    const authoredTitle = String(proposal.title || proposal.name || '').trim();
+    const altLabel = authoredTitle || goalLabel || t('modal.roadWidth.proposalList.untitled', 'Untitled design');
+    const previewAlt = t('proposals.thumbnail.alt', 'Design preview: {{label}}', { label: altLabel });
 
     if (url) {
         // A stored thumbnail is a served path; the backend this page talks to serves it.
         const resolvedUrl = (typeof resolveBackendAssetUrl === 'function') ? (resolveBackendAssetUrl(url) || url) : url;
         const safeUrl = escapeHtml(resolvedUrl);
         return `
-            <div class="proposal-thumb proposal-thumb-has-image" data-proposal-id="${safeProposalId}">
-                <img class="proposal-thumb-img" src="${safeUrl}" alt="" loading="lazy">
-                <div class="proposal-thumb-large"><img src="${safeUrl}" alt=""></div>
+            <div class="proposal-thumb proposal-thumb-has-image" data-proposal-id="${safeProposalId}" data-preview-alt="${escapeHtml(previewAlt)}">
+                <img class="proposal-thumb-img" src="${safeUrl}" alt="${escapeHtml(previewAlt)}" loading="lazy">
+                <div class="proposal-thumb-large" aria-hidden="true"><img src="${safeUrl}" alt=""></div>
             </div>
         `;
     }
@@ -1258,11 +1267,10 @@ function buildProposalThumbHtml(proposal) {
     // No image: show the goal badge and nothing else. Thumbnails are rendered server-side when a
     // proposal is uploaded, so there is no "generate" action left for the user to take here — a
     // proposal without one is either purely local or one the backfill has yet to reach.
-    const goalKey = window.ProposalDesignGoals?.keyOf(proposal) || '';
-    const badge = (typeof getProposalGoalBadge === 'function') ? getProposalGoalBadge(goalKey) : null;
+    const badge = goalBadge;
     const icon = badge ? badge.text : '🖼';
     return `
-        <div class="proposal-thumb proposal-thumb-empty" data-proposal-id="${safeProposalId}"
+        <div class="proposal-thumb proposal-thumb-empty" data-proposal-id="${safeProposalId}" data-preview-alt="${escapeHtml(previewAlt)}"
              ${badge ? `title="${escapeHtml(badge.label)}"` : ''}>
             <span class="proposal-thumb-icon" aria-hidden="true">${escapeHtml(icon)}</span>
         </div>

@@ -30,6 +30,16 @@ Authored plans and UI copy use plain names and descriptions. Do not add study/co
 illustrative, not-adopted or planning-permission disclaimers: the tool is already for studies
 and concepts, as the user explicitly requested.
 
+## Accessible editing
+
+Use native buttons, disclosures and explicitly labelled form controls. Accessible names must
+include the visible labels so keyboard, voice and browser agents can identify the same controls.
+Provide searchable object lists and coordinate or distance controls for geometry operations that
+otherwise require dragging. Preserve focus through redraws; announce outcomes, progress and errors.
+Describe meaningful preview images and exclude duplicate or decorative images from assistive output.
+Verify changed flows with keyboard actions, saved state and a narrow viewport; record the limits of
+that verification instead of claiming assistive-technology conformance from attributes alone.
+
 ## MCP editing parity
 
 Every change to human editing must include an MCP parity check: anything a person can edit on

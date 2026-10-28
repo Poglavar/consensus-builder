@@ -115,6 +115,24 @@ describe('granular authored editing', () => {
             expect(validateDesignContent(next).ok).toBe(true);
         }
     });
+    it('matches coordinate editing of space vertices and object properties through granular patches', () => {
+        for (const spaceKind of ['park', 'square', 'lake']) {
+            const design = make('space', { spaceKind, treeCount: 0 }), before = structuredClone(design);
+            const next = edit(design, [{ op: 'replace', path: '/structureProposal/geometry/coordinates/0/1', value: [-.0982,51.5] }]);
+            expect(next.structureProposal.geometry.coordinates[0][1]).toEqual([-.0982,51.5]);
+            expect(next.site).toEqual(next.structureProposal.geometry);
+            expect(() => edit(design, [{ op: 'replace', path: '/structureProposal/geometry/coordinates/0/1', value: [null,51.5] }])).toThrow();
+            expect(design).toEqual(before);
+        }
+        const design = make('space', { spaceKind: 'park', treeCount: 1 }), before = structuredClone(design);
+        const next = edit(design, [
+            { op: 'replace', path: '/structureProposal/decorationDesign/trees/0/coordinate', value: [-.099,51.501] },
+            { op: 'replace', path: '/structureProposal/decorationDesign/trees/0/kind', value: 'columnar' },
+            { op: 'replace', path: '/structureProposal/decorationDesign/trees/0/heightM', value: 12 }
+        ]);
+        expect(next.structureProposal.decorationDesign.trees[0]).toEqual({ coordinate: [-.099,51.501], kind: 'columnar', heightM: 12 });
+        expect(design).toEqual(before);
+    });
     it('rejects stale revisions, failed tests, invalid pointers and prototype pollution atomically', () => {
         const design=make('building',{floors:4}), before=structuredClone(design);
         expect(()=>editedDesign(design,cidOfObject({wrong:true}),[{op:'replace',path:'/title',value:'Changed'}])).toThrow(/revision/);

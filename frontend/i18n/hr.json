@@ -881,6 +881,9 @@
         "done": "Gotovo"
     },
     "proposals": {
+        "thumbnail": {
+            "alt": "Pregled dizajna: {{label}}"
+        },
         "autoName": {
             "parcel": "čestica {{id}}",
             "parcels": {
@@ -6310,6 +6313,48 @@
             "belowHorizon": "Noć: sunce je ispod obzora."
         }
     },
+    "geometryEditor": {
+        "position": "Položaj",
+        "latitude": "Geografska širina",
+        "longitude": "Geografska dužina",
+        "invalidCoordinates": "Unesite geografsku širinu od −90 do 90 i geografsku dužinu od −180 do 180.",
+        "rejected": "Ova promjena ne odgovara dopuštenoj granici ili obliku.",
+        "positionUpdated": "Položaj je ažuriran.",
+        "applyCoordinates": "Primijeni koordinate",
+        "nudgeDistance": "Udaljenost pomaka (m)",
+        "north": "Sjever",
+        "west": "Zapad",
+        "east": "Istok",
+        "south": "Jug",
+        "editVertices": "Uredi vršne točke",
+        "vertex": "Vršna točka",
+        "insertVertex": "Dodaj točku iza",
+        "pointAdded": "Točka je dodana.",
+        "removeVertex": "Ukloni točku",
+        "pointRemoved": "Točka je uklonjena.",
+        "vertexNumber": "Vršna točka {{number}}",
+        "objects": "Objekti",
+        "searchObjects": "Pretraži objekte",
+        "selectObject": "Odaberi objekt",
+        "treeProperties": "Svojstva stabla",
+        "treeKind": "Vrsta stabla",
+        "broadleaf": "Listopadno",
+        "conifer": "Četinjača",
+        "columnar": "Stupasto",
+        "ornamental": "Ukrasno",
+        "treeHeight": "Visina (m)",
+        "applyProperties": "Primijeni svojstva",
+        "propertiesUpdated": "Svojstva su ažurirana.",
+        "removeObject": "Ukloni objekt",
+        "objectRemoved": "Objekt je uklonjen.",
+        "objectCount": "Broj objekata: {{count}}",
+        "noObjects": "Nema odgovarajućih objekata.",
+        "addPathPoint": "Dodaj točku staze",
+        "addItem": "Dodaj objekt",
+        "positionUpdatedAt": "Položaj ažuriran: geografska širina {{latitude}}, geografska dužina {{longitude}}.",
+        "outlineVertices": "Vrhovi obrisa {{number}}",
+        "holeVertices": "Vrhovi otvora {{hole}} u obrisu {{number}}"
+    },
     "structureEditor": {
         "furniture": {
             "title": "Modeli opreme",
@@ -6358,7 +6403,8 @@
             "statue": "Kip",
             "erase": "Ukloni",
             "move": "Premjesti",
-            "boundary": "Granica"
+            "boundary": "Granica",
+            "select": "Odaberi"
         },
         "finishPath": "Završi stazu",
         "undo": "Poništi",

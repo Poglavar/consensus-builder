@@ -880,6 +880,9 @@
         "done": "Done"
     },
     "proposals": {
+        "thumbnail": {
+            "alt": "Design preview: {{label}}"
+        },
         "autoName": {
             "parcel": "parcel {{id}}",
             "parcels": {
@@ -6276,6 +6279,48 @@
             "belowHorizon": "Night: the sun is below the horizon."
         }
     },
+    "geometryEditor": {
+        "position": "Position",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "invalidCoordinates": "Enter a latitude from −90 to 90 and a longitude from −180 to 180.",
+        "rejected": "This change does not fit the allowed boundary or shape.",
+        "positionUpdated": "Position updated.",
+        "applyCoordinates": "Apply coordinates",
+        "nudgeDistance": "Move distance (m)",
+        "north": "North",
+        "west": "West",
+        "east": "East",
+        "south": "South",
+        "editVertices": "Edit vertices",
+        "vertex": "Vertex",
+        "insertVertex": "Add point after",
+        "pointAdded": "Point added.",
+        "removeVertex": "Remove point",
+        "pointRemoved": "Point removed.",
+        "vertexNumber": "Vertex {{number}}",
+        "objects": "Objects",
+        "searchObjects": "Search objects",
+        "selectObject": "Select object",
+        "treeProperties": "Tree properties",
+        "treeKind": "Tree kind",
+        "broadleaf": "Broadleaf",
+        "conifer": "Conifer",
+        "columnar": "Columnar",
+        "ornamental": "Ornamental",
+        "treeHeight": "Height (m)",
+        "applyProperties": "Apply properties",
+        "propertiesUpdated": "Properties updated.",
+        "removeObject": "Remove object",
+        "objectRemoved": "Object removed.",
+        "objectCount": "{{count}} objects",
+        "noObjects": "No matching objects.",
+        "addPathPoint": "Add path point",
+        "addItem": "Add item",
+        "positionUpdatedAt": "Position updated: latitude {{latitude}}, longitude {{longitude}}.",
+        "outlineVertices": "Outline {{number}} vertices",
+        "holeVertices": "Outline {{number}}, hole {{hole}} vertices"
+    },
     "structureEditor": {
         "furniture": {
             "title": "Furniture models",
@@ -6324,7 +6369,8 @@
             "statue": "Statue",
             "erase": "Remove",
             "move": "Move",
-            "boundary": "Boundary"
+            "boundary": "Boundary",
+            "select": "Select"
         },
         "finishPath": "Finish path",
         "undo": "Undo",

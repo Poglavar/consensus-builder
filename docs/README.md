@@ -42,7 +42,7 @@ Each document describes a current contract, an open plan or research. Verificati
 - [Design language](design-language.md): components, tokens, messages and element names. [Click stack](click-stack.md), [dividers](dividers.md), [language expansion](language-expansion.md).
 - Roads and rail: [road editor](road-editor.md), [corridor elevation](corridor-elevation.md) and its [levels plan](corridor-levels-plan.md), [schelling plans](schelling-parcels.md).
 - Buildings: [urban rules and massing](urban-rule-massing.md), [freeform buildings](freeform-building.md), [floor plans](floor-plans.md), [building floor models](building-floor-models.md), [planning rule audit](planning-rule-audit.md).
-- [Agreement editor](agreement-editor.md).
+- [Agreement editor](agreement-editor.md), [accessible map editing](accessible-map-editing.md).
 
 **Sources and cities**
 
@@ -62,6 +62,7 @@ Each document describes a current contract, an open plan or research. Verificati
 
 **Agents and MCP**
 
+- [Student AI assistance trial](student-ai.md).
 - [MCP design of record](mcp.md), [workflow](mcp-workflow.md), [editing contract](mcp-editing.md), [directory listings](mcp-directory-submissions.md).
 
 **Hackathon and plans**

@@ -2523,6 +2523,48 @@
             "siblingsDropped": "لم تحول المنازل الأخرى لتعذر حفظ المنزل الأول."
         }
     },
+    "geometryEditor": {
+        "position": "الموضع",
+        "latitude": "خط العرض",
+        "longitude": "خط الطول",
+        "invalidCoordinates": "أدخل خط عرض بين −90 و90 وخط طول بين −180 و180.",
+        "rejected": "هذا التغيير لا يطابق الحدود أو الشكل المسموح به.",
+        "positionUpdated": "تم تحديث الموضع.",
+        "applyCoordinates": "تطبيق الإحداثيات",
+        "nudgeDistance": "مسافة التحريك (م)",
+        "north": "الشمال",
+        "west": "الغرب",
+        "east": "الشرق",
+        "south": "الجنوب",
+        "editVertices": "تحرير الرؤوس",
+        "vertex": "الرأس",
+        "insertVertex": "إضافة نقطة بعد",
+        "pointAdded": "تمت إضافة النقطة.",
+        "removeVertex": "إزالة النقطة",
+        "pointRemoved": "تمت إزالة النقطة.",
+        "vertexNumber": "الرأس {{number}}",
+        "objects": "العناصر",
+        "searchObjects": "البحث عن العناصر",
+        "selectObject": "اختيار عنصر",
+        "treeProperties": "خصائص الشجرة",
+        "treeKind": "نوع الشجرة",
+        "broadleaf": "عريضة الأوراق",
+        "conifer": "صنوبرية",
+        "columnar": "عمودية",
+        "ornamental": "زينة",
+        "treeHeight": "الارتفاع (م)",
+        "applyProperties": "تطبيق الخصائص",
+        "propertiesUpdated": "تم تحديث الخصائص.",
+        "removeObject": "إزالة العنصر",
+        "objectRemoved": "تمت إزالة العنصر.",
+        "objectCount": "عدد العناصر: {{count}}",
+        "noObjects": "لا توجد عناصر مطابقة.",
+        "addPathPoint": "إضافة نقطة للمسار",
+        "addItem": "إضافة عنصر",
+        "positionUpdatedAt": "تم تحديث الموضع: خط العرض {{latitude}}، خط الطول {{longitude}}.",
+        "outlineVertices": "رؤوس المخطط {{number}}",
+        "holeVertices": "رؤوس الفتحة {{hole}} في المخطط {{number}}"
+    },
     "structureEditor": {
         "furniture": {
             "title": "نماذج الأثاث",
@@ -2544,6 +2586,13 @@
         "importDisconnected": "يحتوي الملف على مساحات منفصلة. يجب أن يكون الحد مساحة واحدة متصلة.",
         "importInvalid": "هذا الملف ليس مضلع GeoJSON بإحداثيات الطول/العرض.",
         "undo": "تراجع",
+        "fitLocked": "أزل قفل الموقع الأولي لملاءمة هذه القطع.",
+        "fitUnavailable": "تعذر تحميل القطع. حاول مرة أخرى.",
+        "fitNoParcels": "لا تتداخل أي قطعة مساحية مع هذا المخطط.",
+        "fitAll": "كل القطع الملامسة",
+        "fitLargest": "الأكبر",
+        "fitChoice": "هل تريد الملاءمة مع أكبر قطعة مساحية يلامسها المخطط أم مع كل القطع التي يلامسها؟",
+        "fitParcels": "ملاءمة القطعة/القطع",
         "done": "تم",
         "closeLabel": "إغلاق",
         "hintSurroundings": "حرر المحيط، ثم عد إلى المبنى باختيار «تم». احفظ المبنى للاحتفاظ بجميع التغييرات.",
@@ -2572,7 +2621,8 @@
             "statue": "تمثال",
             "erase": "إزالة",
             "move": "نقل",
-            "boundary": "الحدود"
+            "boundary": "الحدود",
+            "select": "تحديد"
         },
         "finishPath": "إنهاء المسار",
         "hintErase": "انقر على عنصر لإزالته.",
@@ -4060,6 +4110,9 @@
                 "omitted": "تم فتح المخطط المشترك مع تخطي {{count}} من التصاميم المتعارضة.",
                 "failed": "تعذر فتح التصاميم المشتركة."
             }
+        },
+        "thumbnail": {
+            "alt": "معاينة التصميم: {{label}}"
         },
         "autoName": {
             "parcel": "القطعة العقارية {{id}}",
