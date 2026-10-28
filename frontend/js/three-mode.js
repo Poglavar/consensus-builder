@@ -2544,12 +2544,15 @@
         const waterMat = new THREE.MeshPhongMaterial({ color: 0x2b6cb0, specular: 0x1f3a60, shininess: 40, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
         const pathLineMat = new THREE.LineBasicMaterial({ color: 0xdfe8d6, depthTest: true, depthWrite: false });
 
+        const isCurrentModel = startStructureModels(decoTarget);
         parks.forEach(p => {
             try {
                 if (!p || !p.geometry) return;
-                // Ground at slight z offset
-                const groundMeshes = polygonFeatureToMeshes(p, grassMat, 0.06, 0);
-                groundMeshes.forEach(m => { markOwnedMaterial(m, grassMat); m.userData.isParkGround = true; flatTarget.add(m); });
+                // Ground at slight z offset (an uploaded model replaces it)
+                placeStructureModel(p, decoTarget, isCurrentModel, () => {
+                    const groundMeshes = polygonFeatureToMeshes(p, grassMat, 0.06, 0);
+                    groundMeshes.forEach(m => { markOwnedMaterial(m, grassMat); m.userData.isParkGround = true; flatTarget.add(m); });
+                });
 
                 // Draw ponds (slightly above ground)
                 const deco = (p.properties && p.properties.decorations) ? p.properties.decorations : null;
@@ -2894,17 +2897,20 @@
         const rimMat = squareMats.rim;
         const waterMat = squareMats.water;
 
+        const isCurrentModel = startStructureModels(decoTarget);
         squares.forEach(sq => {
             try {
                 if (!sq || !sq.geometry) return;
-                // Ground slightly above base to avoid z-fighting
-                const groundMeshes = polygonFeatureToMeshes(sq, stoneMat, 0.06, 0);
-                groundMeshes.forEach(m => {
-                    if (surfaceMaterial) markOwnedMaterial(m, surfaceMaterial);
-                    m.userData.isSquareGround = true; flatTarget.add(m);
+                // Ground slightly above base to avoid z-fighting (an uploaded model replaces it)
+                placeStructureModel(sq, decoTarget, isCurrentModel, () => {
+                    const groundMeshes = polygonFeatureToMeshes(sq, stoneMat, 0.06, 0);
+                    groundMeshes.forEach(m => {
+                        if (surfaceMaterial) markOwnedMaterial(m, surfaceMaterial);
+                        m.userData.isSquareGround = true; flatTarget.add(m);
+                    });
+                    const borderLines = polygonFeatureToBorderLines(sq, squareMats.border, 0.075);
+                    borderLines.forEach(line => { line.userData.isSquarePavingBorder = true; flatTarget.add(line); });
                 });
-                const borderLines = polygonFeatureToBorderLines(sq, squareMats.border, 0.075);
-                borderLines.forEach(line => { line.userData.isSquarePavingBorder = true; flatTarget.add(line); });
 
                 const dec = sq.properties && sq.properties.decorations;
                 if (!dec) return;
@@ -3047,72 +3053,77 @@
         const waterMat = new THREE.MeshPhongMaterial({ color: 0x3fa7f5, specular: 0x1b6fa8, shininess: 50, transparent: true, opacity: 0.88 });
         const fishMat = new THREE.MeshLambertMaterial({ color: 0xffa500 });
 
+        const isCurrentModel = startStructureModels(decoTarget);
         lakes.forEach(lake => {
             try {
                 if (!lake || !lake.geometry) return;
 
-                // Ensure lake graphics are generated
-                try {
-                    if (typeof ensureLakeGraphics === 'function') ensureLakeGraphics(lake);
-                } catch (_) { }
-
-                const graphics = lake.properties && lake.properties.lakeGraphics;
-                let basin;
-                try {
-                    basin = window.__threeLakeBasin.partitionLakeBasin(lake.geometry, graphics,
-                        (operation, a, b) => window.__parcelArrangement.clip(operation, a, b,
-                            { site: 'three-mode.lakeBasin', proposalId: lake.properties?.proposalId }));
-                } catch (error) {
-                    reportThreeClip('difference', error, 'three-mode.lakeBasin', [lake]);
-                    return;
-                }
-                const shoreGeom = basin.shore;
-                const waterGeom = basin.water;
-                const transitionGeom = basin.transition;
-
-                // RECESSED basin: the parcel ground has the lake footprint cut out (see
-                // buildParcels3D), so the lake digs below grade instead of floating above it.
-                const SHELF_Z = -0.7;   // shallow shelf
-                const WATER_Z = -1.4;   // water surface depth
-                // Sandy beach stays at grade, as a solid going down to the water depth so its
-                // outer face closes the pit wall where it meets the surrounding ground.
-                if (shoreGeom) {
-                    const shoreFeature = { type: 'Feature', geometry: shoreGeom, properties: {} };
-                    const shoreMeshes = polygonFeatureToMeshes(shoreFeature, shoreMat, WATER_Z - 0.2, 0.26 - (WATER_Z - 0.2));
-                    shoreMeshes.forEach(m => { markOwnedMaterial(m, shoreMat); m.userData.isLakeShore = true; flatTarget.add(m); });
-                }
-
-                // Shallow shelf: a solid band from the deep floor up to the shelf level — its
-                // sides close the step down to the open water.
-                if (transitionGeom) {
-                    const transitionFeature = { type: 'Feature', geometry: transitionGeom, properties: {} };
-                    const transitionMeshes = polygonFeatureToMeshes(transitionFeature, transitionMat, WATER_Z - 0.2, (SHELF_Z - (WATER_Z - 0.2)));
-                    transitionMeshes.forEach(m => { markOwnedMaterial(m, transitionMat); flatTarget.add(m); });
-                }
-
-                // Open water surface, below grade, over a dark lake bed (the water is slightly
-                // transparent, so the bed is what reads as depth).
-                const bedMat = new THREE.MeshLambertMaterial({ color: 0x14324a });
-                const waterFeature = { type: 'Feature', geometry: waterGeom, properties: {} };
-                polygonFeatureToMeshes(waterFeature, bedMat, WATER_Z - 0.2, 0).forEach(m => { markOwnedMaterial(m, bedMat); flatTarget.add(m); });
-                const waterMeshes = polygonFeatureToMeshes(waterFeature, waterMat, WATER_Z, 0);
-                waterMeshes.forEach(m => { markOwnedMaterial(m, waterMat); flatTarget.add(m); });
-
-                // Render fish as small decorative elements
-                const fishCoords = (graphics && Array.isArray(graphics.fish)) ? graphics.fish : [];
-                fishCoords.forEach(([lng, lat]) => {
+                // An uploaded model replaces the basin (shore, shelf, water and fish).
+                const buildBasin = () => {
+                    // Ensure lake graphics are generated
                     try {
-                        const [x, y] = latLngToXY(lat, lng);
-                        // Simple fish: small ellipsoid
-                        const fishGeo = new THREE.SphereGeometry(0.15, 8, 8);
-                        const fish = new THREE.Mesh(fishGeo, fishMat);
-                        markOwnedGeometry(fish, fishGeo);
-                        markOwnedMaterial(fish, fishMat);
-                        fish.scale.set(1.5, 0.6, 0.4); // Make it fish-shaped
-                        fish.position.set(x, y, -1.32); // just above the recessed water surface
-                        decoTarget.add(fish);
+                        if (typeof ensureLakeGraphics === 'function') ensureLakeGraphics(lake);
                     } catch (_) { }
-                });
+
+                    const graphics = lake.properties && lake.properties.lakeGraphics;
+                    let basin;
+                    try {
+                        basin = window.__threeLakeBasin.partitionLakeBasin(lake.geometry, graphics,
+                            (operation, a, b) => window.__parcelArrangement.clip(operation, a, b,
+                                { site: 'three-mode.lakeBasin', proposalId: lake.properties?.proposalId }));
+                    } catch (error) {
+                        reportThreeClip('difference', error, 'three-mode.lakeBasin', [lake]);
+                        return;
+                    }
+                    const shoreGeom = basin.shore;
+                    const waterGeom = basin.water;
+                    const transitionGeom = basin.transition;
+
+                    // RECESSED basin: the parcel ground has the lake footprint cut out (see
+                    // buildParcels3D), so the lake digs below grade instead of floating above it.
+                    const SHELF_Z = -0.7;   // shallow shelf
+                    const WATER_Z = -1.4;   // water surface depth
+                    // Sandy beach stays at grade, as a solid going down to the water depth so its
+                    // outer face closes the pit wall where it meets the surrounding ground.
+                    if (shoreGeom) {
+                        const shoreFeature = { type: 'Feature', geometry: shoreGeom, properties: {} };
+                        const shoreMeshes = polygonFeatureToMeshes(shoreFeature, shoreMat, WATER_Z - 0.2, 0.26 - (WATER_Z - 0.2));
+                        shoreMeshes.forEach(m => { markOwnedMaterial(m, shoreMat); m.userData.isLakeShore = true; flatTarget.add(m); });
+                    }
+
+                    // Shallow shelf: a solid band from the deep floor up to the shelf level — its
+                    // sides close the step down to the open water.
+                    if (transitionGeom) {
+                        const transitionFeature = { type: 'Feature', geometry: transitionGeom, properties: {} };
+                        const transitionMeshes = polygonFeatureToMeshes(transitionFeature, transitionMat, WATER_Z - 0.2, (SHELF_Z - (WATER_Z - 0.2)));
+                        transitionMeshes.forEach(m => { markOwnedMaterial(m, transitionMat); flatTarget.add(m); });
+                    }
+
+                    // Open water surface, below grade, over a dark lake bed (the water is slightly
+                    // transparent, so the bed is what reads as depth).
+                    const bedMat = new THREE.MeshLambertMaterial({ color: 0x14324a });
+                    const waterFeature = { type: 'Feature', geometry: waterGeom, properties: {} };
+                    polygonFeatureToMeshes(waterFeature, bedMat, WATER_Z - 0.2, 0).forEach(m => { markOwnedMaterial(m, bedMat); flatTarget.add(m); });
+                    const waterMeshes = polygonFeatureToMeshes(waterFeature, waterMat, WATER_Z, 0);
+                    waterMeshes.forEach(m => { markOwnedMaterial(m, waterMat); flatTarget.add(m); });
+
+                    // Render fish as small decorative elements
+                    const fishCoords = (graphics && Array.isArray(graphics.fish)) ? graphics.fish : [];
+                    fishCoords.forEach(([lng, lat]) => {
+                        try {
+                            const [x, y] = latLngToXY(lat, lng);
+                            // Simple fish: small ellipsoid
+                            const fishGeo = new THREE.SphereGeometry(0.15, 8, 8);
+                            const fish = new THREE.Mesh(fishGeo, fishMat);
+                            markOwnedGeometry(fish, fishGeo);
+                            markOwnedMaterial(fish, fishMat);
+                            fish.scale.set(1.5, 0.6, 0.4); // Make it fish-shaped
+                            fish.position.set(x, y, -1.32); // just above the recessed water surface
+                            decoTarget.add(fish);
+                        } catch (_) { }
+                    });
+                };
+                placeStructureModel(lake, decoTarget, isCurrentModel, buildBasin);
             } catch (error) {
                 console.error('[three-mode] failed to build a lake basin', error);
             }
@@ -6685,8 +6696,16 @@
             targetGroup.add(wrapper);
             invalidateThreeView();
         }).catch((err) => {
-            // Fall back to the extruded box so the building is still visible.
             if (stale()) return;
+            // A caller with its own fallback (a structure's procedural ground) draws that instead.
+            if (typeof options.onLoadError === 'function') {
+                try { options.onLoadError(err); } catch (fallbackError) {
+                    console.warn('Model fallback failed:', url, fallbackError);
+                }
+                if (typeof console !== 'undefined') console.warn('Model load failed, used procedural fallback:', url, err);
+                return;
+            }
+            // Fall back to the extruded box so the building is still visible.
             try {
                 const height = estimateBuildingHeightMeters(feat);
                 const fallbackMaterial = isProposedBuilding ? buildingMaterial : cloneBuildingMaterial(buildingMaterial);
@@ -6700,6 +6719,27 @@
             }
             if (!stale()) invalidateThreeView();
         });
+    }
+
+    // A park, square or lake with an uploaded model (feature.properties.structureModel, from
+    // ProposalApplyStructures.structureModelFeature) shows the model fitted to its authored
+    // footprint instead of its procedural ground; its furniture still renders. buildGround draws
+    // that procedural ground: at once without a model, or when the model fails to load.
+    const structureModelGenerations = new WeakMap();
+    function startStructureModels(decoTarget) {
+        const generation = (structureModelGenerations.get(decoTarget) || 0) + 1;
+        structureModelGenerations.set(decoTarget, generation);
+        return () => structureModelGenerations.get(decoTarget) === generation;
+    }
+
+    function placeStructureModel(feature, decoTarget, isCurrent, buildGround) {
+        const model = feature?.properties?.structureModel;
+        if (!model?.geometry || typeof model.properties?.modelUrl !== 'string') {
+            buildGround();
+            return false;
+        }
+        placeUploadedModel(model, decoTarget, buildingMaterials.solid, { isCurrent, onLoadError: buildGround });
+        return true;
     }
 
     function stringToColor(str) {

@@ -2,6 +2,7 @@
 // preview it in a three.js scene, and turn its footprint + height into a single-building
 // placement (via window.createSingleBuildingFromUpload). Review the asset here, then place
 // its editable footprint on the main map; the saved model reference supplies its 3D mesh.
+// A park, square or lake uses the same pipeline (context.kind) with model wording, through onUse.
 
 (function () {
     let modalEl = null;
@@ -33,6 +34,12 @@
     let loadedName = null;
     let loadedFile = null;
     let loadVersion = 0;
+
+    const STRUCTURE_KINDS = ['park', 'square', 'lake'];
+    // A structure's model is not a building: its kind-specific copy says "model".
+    function isStructureUpload() {
+        return STRUCTURE_KINDS.includes(currentContext?.kind);
+    }
 
     function t(key, fallback, params = {}) {
         const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
@@ -68,15 +75,20 @@
     }
 
     function buildModal() {
+        const structure = isStructureUpload();
         const text = {
-            title: t('modal.buildingUpload.title', 'Upload a building model'),
+            title: structure
+                ? t('modal.buildingUpload.structureTitle', 'Upload a model')
+                : t('modal.buildingUpload.title', 'Upload a building model'),
             closeLabel: t('modal.buildingUpload.closeLabel', 'Close upload modal'),
             previewLabel: t('modal.buildingUpload.previewLabel', '3D Preview'),
             chooseFile: t('modal.buildingUpload.chooseFile', 'Choose a model file'),
             hint: t('modal.buildingUpload.hint', 'Supported: glTF 2.0 (.glb or .gltf).'),
             noFile: t('modal.buildingUpload.noFile', 'No model loaded yet.'),
             cancel: t('modal.buildingUpload.cancel', 'Cancel'),
-            confirm: t('modal.buildingUpload.confirm', 'Use this building')
+            confirm: structure
+                ? t('modal.buildingUpload.structureConfirm', 'Use this model')
+                : t('modal.buildingUpload.confirm', 'Use this building')
         };
 
         const modal = document.createElement('div');
@@ -113,7 +125,11 @@
 
         modal.querySelector('#building-upload-close').addEventListener('click', close);
         modal.querySelector('#building-upload-cancel').addEventListener('click', close);
-        modal.querySelector('#building-upload-confirm').addEventListener('click', confirmUpload);
+        modal.querySelector('#building-upload-confirm').addEventListener('click', event => {
+            const button = event.currentTarget;
+            if (!window.BusyControl || window.BusyControl.isBusy(button)) return;
+            window.BusyControl.track(button, confirmUpload);
+        });
         modal.querySelector('#building-upload-file').addEventListener('change', onFileChosen);
         modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
 
@@ -266,8 +282,9 @@
         disposeScene();
         if (!preview.container) return;
         preview.container.dataset.state = 'unavailable';
-        preview.container.textContent = t('modal.buildingUpload.previewUnavailable',
-            '3D preview unavailable. You can still use this building.');
+        preview.container.textContent = isStructureUpload()
+            ? t('modal.buildingUpload.structurePreviewUnavailable', '3D preview unavailable. You can still use this model.')
+            : t('modal.buildingUpload.previewUnavailable', '3D preview unavailable. You can still use this building.');
     }
 
     async function onFileChosen(event) {
@@ -321,14 +338,18 @@
                     return;
                 }
                 let footprint;
-                setStatus(t('modal.buildingUpload.outlining', 'Calculating building outline…'));
+                setStatus(isStructureUpload()
+                    ? t('modal.buildingUpload.structureOutlining', 'Calculating model outline…')
+                    : t('modal.buildingUpload.outlining', 'Calculating building outline…'));
                 try {
                     footprint = await extractFootprint(root, measurement.center);
                 } catch (error) {
                     disposeModel(root);
                     if (!isCurrent()) return;
                     const messages = {
-                        disconnected: ['modal.buildingUpload.errorDisconnected', 'This model contains separate parts. Import one connected building at a time.'],
+                        disconnected: isStructureUpload()
+                            ? ['modal.buildingUpload.structureErrorDisconnected', 'This model contains separate parts. Include a ground surface that joins them and try again.']
+                            : ['modal.buildingUpload.errorDisconnected', 'This model contains separate parts. Import one connected building at a time.'],
                         complex: ['modal.buildingUpload.errorComplex', 'This model is too detailed to calculate its outline. Export a simpler building mesh and try again.'],
                         empty: ['modal.buildingUpload.errorEmpty', 'The model contains no visible geometry.']
                     };
@@ -434,13 +455,17 @@
         if (version !== loadVersion || !modalEl) return;
         let created;
         try {
-            created = use({ ...input, modelUrl });
+            // A structure's onUse may finish asynchronously; the confirm spinner covers it.
+            created = await use({ ...input, modelUrl });
         } catch (error) {
             console.warn('Building model placement failed', error);
         }
+        if (version !== loadVersion || !modalEl) return;
         if (!created) {
-            setStatus(t('modal.buildingUpload.placementFailed',
-                'Could not open the building editor. Your file is still selected; try again.'), true);
+            setStatus(isStructureUpload()
+                ? t('modal.buildingUpload.structurePlacementFailed', 'Could not place this model. Your file is still selected; try again.')
+                : t('modal.buildingUpload.placementFailed',
+                    'Could not open the building editor. Your file is still selected; try again.'), true);
             setConfirmEnabled(true);
             return;
         }
@@ -480,7 +505,8 @@
         loadedFile = null;
     }
 
-    // context: { parcelIds: string[], site?: Polygon | MultiPolygon, blockName: string }
+    // context: { parcelIds: string[], site?: Polygon | MultiPolygon, blockName: string,
+    //           kind?: 'park' | 'square' | 'lake' (a structure's model; pass options.onUse) }
     function open(context, options = {}) {
         if (modalEl) close();
         currentContext = context || {};

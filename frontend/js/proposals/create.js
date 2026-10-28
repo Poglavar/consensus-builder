@@ -457,10 +457,13 @@ async function createProposal() {
         if (proposalMainType === 'Purchase' && (selectedTool === 'park' || selectedTool === 'square' || selectedTool === 'lake')) {
             const kind = selectedTool;
             let structureGeometry = null;
+            // An uploaded model travels with the draft's structure (vocabulary.md "Structure design").
+            const publishingDraft = publishingDraftId ? window.proposalDraftStore?.getDraft?.(publishingDraftId) : null;
+            const structureModel = window.ProposalApplyStructures?.structureModelFields?.(publishingDraft?.editorPayload?.structureProposal) || null;
             try {
                 if (siteContext) {
                     // A site-first structure is its authored geometry (the draft), else its site.
-                    const draft = publishingDraftId ? window.proposalDraftStore?.getDraft?.(publishingDraftId) : null;
+                    const draft = publishingDraft;
                     const authored = draft?.editorPayload?.structureProposal?.geometry || draft?.editorPayload?.geometry || null;
                     structureGeometry = authored || (siteContext.site.coordinates.length === 1
                         ? { type: 'Polygon', coordinates: siteContext.site.coordinates[0] } : siteContext.site);
@@ -474,7 +477,8 @@ async function createProposal() {
             proposal.structureProposal = {
                 kind,
                 geometry: structureGeometry || null,
-                blockName: formatParcelSelectionLabel(selectedLiveParcelIds)
+                blockName: formatParcelSelectionLabel(selectedLiveParcelIds),
+                ...(structureModel || {})
             };
         }
 

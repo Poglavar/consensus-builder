@@ -126,6 +126,23 @@ Every change to human editing includes this check, even when no MCP code change 
 
 See [MCP editing](mcp-editing.md) for supported primitives and authored-field boundaries.
 
+### Space models and GeoJSON corridor import: MCP parity (2026-10-28)
+
+Parks, squares and lakes can carry an uploaded GLB (`/structureProposal/modelUrl`, `modelName`,
+`rotation`, `source: 'upload'`), and roads/tracks import GeoJSON centrelines. MCP parity:
+`ugt_import_model` gained `kind` (`building`, `park`, `square`, `lake`); a space is drafted by
+`ugt_draft_space`'s builder from the model's placed projected footprint, and the model fields are
+set on its structure. `ugt_import_design` now declares the `kind`/`spaceKind`, `description`,
+`author`, `authoredAt` and `toleranceM` fields its implementation already read, so GeoJSON polygons
+can become a park, square or lake; GeoJSON LineString/MultiLineString centrelines go through the
+site's own `parseGeoJson` and the OSM import's `recordsFromImport`, so site and MCP road imports are
+identical by construction (properties such as `name`, `width`, `highway`, `lanes` and `railway` are
+OSM way tags). `ugt_inspect_design` and `ugt_edit_design` read and patch the model
+fields without an allow-list change. Output contract, discovery features and
+[MCP editing](mcp-editing.md) were updated. Verified by headless unit tests
+`backend/test/mcp-assets.test.js` (park model import, inspect and patch; space and corridor GeoJSON
+import, byte-compared with the site's GeoJSON road records; strict schema kinds), with `mcp-discovery`, `mcp-server` and `mcp-agent-boundary` tests passing.
+
 ## Lists and authoring boundaries
 
 The **Lists panel** contains **Designs**, **Plans**, and **Agreements** tabs. One **Source and filters**

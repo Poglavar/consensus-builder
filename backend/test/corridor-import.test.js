@@ -86,9 +86,9 @@ describe('recordsFromImport', () => {
 
     it('knows OpenDRIVE by its extension and nothing else', () => {
         expect(imports.extensionOf('plan.XODR')).toBe('xodr');
-        // the chooser names six formats; two have an adapter, the rest are greyed and asked for
+        // the chooser names six formats; three have an adapter, the rest are greyed and asked for
         expect(imports.FORMATS.map(format => format.id)).toEqual(['osm', 'opendrive', 'landxml', 'streetmix', 'geojson', 'shapefile']);
-        expect(imports.FORMATS.filter(format => format.parse).map(format => format.id)).toEqual(['osm', 'opendrive']);
+        expect(imports.FORMATS.filter(format => format.parse).map(format => format.id)).toEqual(['osm', 'opendrive', 'geojson']);
         expect(imports.formatFor('plan.XODR').id).toBe('opendrive');
         expect(imports.formatFor('streets.osm').id).toBe('osm');
         expect(imports.formatFor('overpass.json').id).toBe('osm');

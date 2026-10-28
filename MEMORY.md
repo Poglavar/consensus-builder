@@ -992,3 +992,6 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-27: Settings keeps the logo, app name and AI-friendly badge in one fixed top row, with direct Appearance, Data & assumptions and Help & about sections, one collapsed Advanced group and a persistent build/update footer.
 
 - 2026-10-27: User preview links keep normal motion; do not add `reduceMotion` unless explicitly requested. Test-only animation overrides must not leak into shared links because reduced motion also hides 3D people and traffic.
+
+- 2026-10-28: 3D immersion decisions: add a real sky; lit windows at night and vehicle headlights yes; no seasons for now; street lamps are placed street furniture, never auto-scattered. Walk/fly cameras are approved in principle: measured at eye level they draw 3–10× fewer calls than the orbit view, with three guards required (shadow box fixed around the camera with hysteresis, movement bounded to the loaded disc with fog at its edge, batching of per-building meshes first).
+- 2026-10-28: Parks, squares and lakes may carry an uploaded GLB (`structureProposal.modelUrl/modelName/rotation/source`), stretched onto the site polygon like building models; roads import GeoJSON centrelines; MCP import tools gain `kind` so spaces can be created from models and polygons.

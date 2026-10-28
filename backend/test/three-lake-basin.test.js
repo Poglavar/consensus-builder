@@ -88,6 +88,7 @@ describe('recessed lake solids', () => {
         };
         vm.createContext(context);
         vm.runInContext(extract('    function arrayOfLngLatRingsToShape(', '    function polygonFeatureToBorderLines(')
+            + extract('    const structureModelGenerations', '    function stringToColor(')
             + extract('    function buildLakes3D(', '    // Shared procedural station models'), context);
         const ground = new THREE.Group();
         context.buildLakes3D(ground, new THREE.Group());

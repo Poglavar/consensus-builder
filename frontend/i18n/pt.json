@@ -437,6 +437,12 @@
             "inactiveOption": "Manter o agente inativo"
         },
         "buildingUpload": {
+            "structureTitle": "Carregar um modelo",
+            "structureConfirm": "Usar este modelo",
+            "structurePreviewUnavailable": "Pré-visualização 3D indisponível. Ainda pode usar este modelo.",
+            "structureOutlining": "A calcular o contorno do modelo…",
+            "structureErrorDisconnected": "Este modelo contém partes separadas. Inclua uma superfície de chão que as una e tente novamente.",
+            "structurePlacementFailed": "Não foi possível colocar este modelo. O ficheiro continua selecionado; tente novamente.",
             "cancel": "Cancelar",
             "previewLabel": "Pré-visualização 3D",
             "title": "Carregar um modelo de edifício",
@@ -866,6 +872,8 @@
             "proposalTypeLabel": "Tipo de projeto",
             "descriptionLabel": "Descrição",
             "geometry": {
+                "uploadUnavailable": "A ferramenta de carregamento não está disponível.",
+                "selectBeforeUpload": "Selecione parcelas ou desenhe uma área de intervenção antes de carregar um modelo.",
                 "label": "Geometria",
                 "buttons": {
                     "edit": "Editar",
@@ -1534,6 +1542,7 @@
     },
     "siteTool": {
         "actions": {
+            "importGeoJSON": "Importar GeoJSON",
             "cancel": "Cancelar",
             "finish": "Concluir área de intervenção",
             "undoCorner": "Remover último vértice",
@@ -1606,6 +1615,8 @@
             "subdivideUnknownCadastre": "A subdivisão exige um cadastro disponível no servidor: o servidor não conhece nenhum para este local."
         },
         "errors": {
+            "importDisconnected": "O ficheiro contém áreas separadas. A área de intervenção tem de ser uma única área contínua.",
+            "importInvalid": "Este ficheiro não é um polígono GeoJSON em longitude/latitude.",
             "tooFew": "Uma área de intervenção precisa de pelo menos três vértices.",
             "tooMany": "Uma área de intervenção pode ter no máximo 500 vértices.",
             "selfIntersecting": "O contorno cruza-se consigo próprio; mova um vértice para evitar o cruzamento.",
@@ -2328,6 +2339,13 @@
         }
     },
     "structureEditor": {
+        "uploadModel": "Carregar modelo (.glb)",
+        "importBoundary": "Importar limite (GeoJSON)",
+        "importInvalidShape": "O novo limite não é uma área única válida.",
+        "importOutsideSite": "O novo limite não cabe na área de intervenção bloqueada. Desbloqueie-a e tente novamente.",
+        "uploadUnavailable": "O carregamento de modelos não está disponível.",
+        "importDisconnected": "O ficheiro contém áreas separadas. Um limite tem de ser uma única área contínua.",
+        "importInvalid": "Este ficheiro não é um polígono GeoJSON em longitude/latitude.",
         "undo": "Anular",
         "done": "Concluído",
         "closeLabel": "Fechar",
@@ -3201,8 +3219,9 @@
             "importStatus": "Importadas {{count}} de {{total}} estradas de {{file}} ({{format}}).",
             "importPlacedAtCentre": "O ficheiro não tem georreferenciação, pelo que as estradas foram colocadas no centro do mapa.",
             "importFailed": "Não foi possível importar {{file}}: {{reason}}",
-            "importUnsupported": "Tipo de ficheiro não suportado: {{ext}}. Suportados: OpenStreetMap (.osm, .json) e OpenDRIVE (.xodr).",
+            "importUnsupported": "Tipo de ficheiro não suportado: {{ext}}. Suportados: OpenStreetMap (.osm, .json), GeoJSON (.geojson) e OpenDRIVE (.xodr).",
             "importNone": "{{file}} não contém nenhuma estrada que esta aplicação consiga desenhar.",
+            "importSkippedFeatures": "{{count}} elemento(s) que não são linhas (pontos, polígonos) foram omitidos.",
             "importChooseTitle": "Importar estradas",
             "importChooseIntro": "Escolha o formato do ficheiro. Os formatos a cinzento são reconhecidos, mas ainda não são suportados; peça um e será adicionado o respetivo adaptador.",
             "importNotYet": "Ainda não suportado. Peça-o e será adicionado o adaptador.",

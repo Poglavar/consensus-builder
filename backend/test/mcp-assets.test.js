@@ -10,6 +10,7 @@ import { createMcpDraftTools } from '../agents/mcp-drafts.js';
 import { cidOfObject, canonicalBytes } from '../cid.js';
 import { designObject } from '../agents/agreement-objects.js';
 import { appTurf as turf, corridorRuntime } from '../agents/mcp-geometry.js';
+import { registerMcpCompanion } from '../agents/mcp-companion.mjs';
 const require = createRequire(import.meta.url);
 const imports = require('../../frontend/js/corridor-import.js');
 const PlanRecord = require('../../frontend/js/plan-record.js');
@@ -113,12 +114,78 @@ describe('MCP imports and ephemeral visual previews', () => {
         await expect(tools.importModel({ modelData: data(), center: [1, 48] })).rejects.toMatchObject({ code: 'model-upload-confirmation-required' });
         expect(calls).toEqual([]);
         const result = await tools.importModel({ modelData: data(), center: [1, 48], parcelSourceId: 'ground', fileName: 'building.gltf', confirmAssetUpload: true });
-        expect(result.asset).toEqual({ modelUrl: 'https://api.example/uploads/models/imported.glb', public: true, durable: true, footprint: 'projected-model-triangles' });
+        expect(result.asset).toEqual({ modelUrl: 'https://api.example/uploads/models/imported.glb', public: true, durable: true, footprint: 'projected-model-triangles', kind: 'building' });
         expect(result.design.geometry.buildings[0].geometry.coordinates[0].length).toBeGreaterThan(5);
         expect(turf.area(turf.feature(result.design.geometry.buildings[0].geometry))).toBeCloseTo(12, 1);
         expect(result.design.geometry.buildings[0].properties).toMatchObject({ source: 'upload', height: 3, modelUrl: result.asset.modelUrl });
         expect(result.cid).toBe(cidOfObject(result.draftArtifact.design));
         expect(calls.map(call => call.path)).toEqual(['/designs/binding', '/models']);
+    });
+    it('attaches an uploaded model to a park whose structure polygon is the placed model footprint, editable through JSON Patch', async () => {
+        const { tools, drafts, calls } = setup();
+        const args = { modelData: modelData(), center: [1, 48], rotation: 30, parcelSourceId: 'ground', fileName: `${'p'.repeat(130)}.glb`, confirmAssetUpload: true, authoredAt: '2026-01-01T00:00:00.000Z' };
+        const park = await tools.importModel({ ...args, kind: 'park' });
+        const building = await tools.importModel(args);
+        expect(park.design).toMatchObject({ goal: 'park', structureProposal: { kind: 'park', source: 'upload', modelUrl: park.asset.modelUrl, rotation: 30 } });
+        expect(park.design.structureProposal.modelName).toBe('p'.repeat(120));
+        expect(park.design.structureProposal.geometry).toEqual(building.design.geometry.buildings[0].geometry);
+        expect(park.design.site).toEqual(park.design.structureProposal.geometry);
+        expect(park.design.geometry).toBeNull();
+        expect(park.asset).toMatchObject({ kind: 'park', footprint: 'projected-model-triangles' });
+        expect(park.cid).toBe(cidOfObject(park.design));
+        expect(calls.filter(call => call.path === '/models')).toHaveLength(2);
+        await expect(tools.importModel({ ...args, kind: 'tower' })).rejects.toMatchObject({ code: 'model-kind-invalid' });
+        const inspected = await drafts.inspectDesign({ design: park.design, paths: ['/structureProposal/modelUrl', '/structureProposal/modelName', '/structureProposal/rotation', '/structureProposal/source'] });
+        expect(inspected.values.map(value => value.untrustedValue)).toEqual([park.asset.modelUrl, 'p'.repeat(120), 30, 'upload']);
+        const edited = await drafts.editDesign({ design: park.design, expectedCid: park.cid, edits: [
+            { op: 'replace', path: '/structureProposal/rotation', value: 45 }, { op: 'replace', path: '/structureProposal/modelName', value: 'Fountain' }] });
+        expect(edited.design.structureProposal).toMatchObject({ rotation: 45, modelName: 'Fountain', modelUrl: park.asset.modelUrl, source: 'upload' });
+    });
+    it('imports GeoJSON polygons as a chosen space kind and corridor properties as OSM tags', async () => {
+        const { tools, drafts } = setup();
+        const args = { format: 'geojson', city: 'place', parcelSourceId: 'ground', authoredAt: '2026-01-01T00:00:00.000Z' };
+        const square = await tools.importDesign({ ...args, kind: 'space', spaceKind: 'square', toleranceM: 0.5, data: { type: 'Feature', geometry: outline, properties: { name: 'Market' } } });
+        const direct = await drafts.draftSpace({ ...args, spaceKind: 'square', toleranceM: 0.5, title: 'Market', outline });
+        expect(canonicalBytes(square.designs[0].design)).toEqual(canonicalBytes(direct.design));
+        expect(square.designs[0].design).toMatchObject({ goal: 'square', toleranceM: 0.5 });
+        await expect(tools.importDesign({ ...args, kind: 'space', data: { type: 'Feature', geometry: outline, properties: {} } })).rejects.toMatchObject({ code: 'space-kind-required' });
+        const line = (coordinates, properties) => ({ type: 'Feature', geometry: { type: 'LineString', coordinates }, properties });
+        const lines = [line([[1, 48], [1.001, 48]], { name: 'Main', highway: 'primary', lanes: 4, width: 20 }),
+            { type: 'Feature', geometry: { type: 'MultiLineString', coordinates: [[[1, 48.002], [1.001, 48.002]], [[1, 48.003], [1.001, 48.003]]] }, properties: { railway: 'tram', name: 'Tram' } },
+            line([[1, 48.004], [1.001, 48.004]], {})];
+        const imported = await tools.importDesign({ ...args, author: 'import', data: { type: 'FeatureCollection', features: [
+            ...lines, { type: 'Feature', geometry: outline, properties: { name: 'Building' } }] }, height: 12 });
+        // Polygons first, then every centreline exactly as the site's GeoJSON road import records it.
+        expect(imported.designs).toHaveLength(5);
+        expect(imported.designs[0].design.buildingProposal).toBeTruthy();
+        const parsed = imports.parseGeoJson(JSON.stringify({ type: 'FeatureCollection', features: lines }));
+        const records = imports.recordsFromImport(parsed, { author: 'import', createdAt: args.authoredAt, source: 'geojson', fallbackTitle: 'Imported road' });
+        expect(records).toHaveLength(4);
+        records.forEach((record, index) => {
+            record.site = corridorRuntime.footprint.materialize(record.roadProposal.definition).polygon;
+            record.city = args.city; record.roadProposal.definition = corridorRuntime.osm.toRecord(record.roadProposal.definition);
+            expect(canonicalBytes(imported.designs[index + 1].design)).toEqual(canonicalBytes(designObject(record).content));
+        });
+        const tags = row => row.design.roadProposal.definition.osm.elements.find(element => element.type === 'way').tags;
+        expect(imported.designs[1].design.title).toBe('Main');
+        expect(tags(imported.designs[1])).toMatchObject({ width: '20', lanes: '4', 'lanes:forward': '2', 'lanes:backward': '2' });
+        expect(imported.designs.slice(2, 4).map(row => tags(row).railway)).toEqual(['rail', 'rail']);
+        expect(imported.import).toMatchObject({ format: 'geojson', count: 5 });
+    });
+    it('declares the import kinds and authored fields in the strict tool schemas', () => {
+        const schemas = new Map();
+        const server = { registerTool: (name, config) => schemas.set(name, config.inputSchema), registerResource() {}, registerPrompt() {} };
+        registerMcpCompanion(server, { actions: {}, handler: fn => fn, readOnly: {}, discovery: {} });
+        const model = { city: 'place', modelData: modelData(), center: [1, 48], confirmAssetUpload: true };
+        expect(schemas.get('ugt_import_model').parse(model).kind).toBe('building');
+        expect(schemas.get('ugt_import_model').parse({ ...model, kind: 'lake' }).kind).toBe('lake');
+        expect(schemas.get('ugt_import_model').safeParse({ ...model, kind: 'tower' }).success).toBe(false);
+        const design = { city: 'place', format: 'geojson', data: {} };
+        expect(schemas.get('ugt_import_design').safeParse({ ...design, kind: 'space', spaceKind: 'park', description: 'Imported', author: 'agent',
+            authoredAt: '2026-01-01T00:00:00.000Z', toleranceM: 0.5 }).success).toBe(true);
+        for (const extra of [{ kind: 'park' }, { spaceKind: 'forest' }, { toleranceM: 5 }, { authoredAt: 'yesterday' }]) {
+            expect(schemas.get('ugt_import_design').safeParse({ ...design, ...extra }).success).toBe(false);
+        }
     });
     it('uses shared visible-triangle extraction with instance transforms', () => {
         const scene = new THREE.Scene(), mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(2, 3, 4), new THREE.MeshBasicMaterial(), 1);

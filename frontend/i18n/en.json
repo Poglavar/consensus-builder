@@ -1880,8 +1880,9 @@
             "importStatus": "Imported {{count}} of {{total}} roads from {{file}} ({{format}}).",
             "importPlacedAtCentre": "The file has no georeference, so the roads were placed at the map centre.",
             "importFailed": "Could not import {{file}}: {{reason}}",
-            "importUnsupported": "Unsupported file type: {{ext}}. Supported: OpenStreetMap (.osm, .json) and OpenDRIVE (.xodr).",
+            "importUnsupported": "Unsupported file type: {{ext}}. Supported: OpenStreetMap (.osm, .json), GeoJSON (.geojson) and OpenDRIVE (.xodr).",
             "importNone": "{{file}} holds no road this app can draw.",
+            "importSkippedFeatures": "{{count}} feature(s) that are not lines (points, polygons) were left out.",
             "importChooseTitle": "Import roads",
             "importChooseIntro": "Choose the file format. Greyed formats are recognised but not supported yet; ask for one and its adapter is added.",
             "importNotYet": "Not supported yet. Ask for it and the adapter will be added.",
@@ -2159,6 +2160,12 @@
             "uploadInvalid": "The uploaded geometry is invalid or outside the locked site."
         },
         "buildingUpload": {
+            "structureTitle": "Upload a model",
+            "structureConfirm": "Use this model",
+            "structurePreviewUnavailable": "3D preview unavailable. You can still use this model.",
+            "structureOutlining": "Calculating model outline…",
+            "structureErrorDisconnected": "This model contains separate parts. Include a ground surface that joins them and try again.",
+            "structurePlacementFailed": "Could not place this model. Your file is still selected; try again.",
             "title": "Upload a building model",
             "closeLabel": "Close upload modal",
             "previewLabel": "3D preview",
@@ -2874,6 +2881,8 @@
                 "multiple": "Multiple owners"
             },
             "geometry": {
+                "uploadUnavailable": "Upload tool is unavailable.",
+                "selectBeforeUpload": "Select parcels or draw a site before uploading a model.",
                 "label": "Geometry",
                 "buttons": {
                     "algorithmic": "Algorithmic",
@@ -6214,6 +6223,13 @@
         }
     },
     "structureEditor": {
+        "uploadModel": "Upload model (.glb)",
+        "importBoundary": "Import boundary (GeoJSON)",
+        "importInvalidShape": "The new boundary is not a valid single area.",
+        "importOutsideSite": "The new boundary does not fit the locked site. Unlock the site and try again.",
+        "uploadUnavailable": "Model upload is unavailable.",
+        "importDisconnected": "The file holds separate areas. A boundary must be one connected area.",
+        "importInvalid": "This file is not a GeoJSON polygon in longitude/latitude.",
         "done": "Done",
         "hintSurroundings": "Edit the surroundings, then return to the building with Done. Save the building to keep all changes.",
         "titleLake": "Lake boundary editor",
@@ -6723,6 +6739,7 @@
             "plots": "Plots are cut along the frontage edge (by default the one facing a street, else the longest). Click another edge of the site to use it instead."
         },
         "actions": {
+            "importGeoJSON": "Import GeoJSON",
             "finish": "Finish site",
             "undoCorner": "Remove last corner",
             "redraw": "Redraw",
@@ -6777,6 +6794,8 @@
             "frontagePick": "Click to use this edge as the frontage"
         },
         "errors": {
+            "importDisconnected": "The file holds separate areas. A site must be one connected area.",
+            "importInvalid": "This file is not a GeoJSON polygon in longitude/latitude.",
             "tooFew": "A site needs at least three corners.",
             "tooMany": "A site can have at most 500 corners.",
             "selfIntersecting": "The outline crosses itself; move a corner so it does not.",

@@ -16,6 +16,7 @@ const modelGeometry = require('../../frontend/js/building-model-geometry.js');
 const singleGeometry = require('../../frontend/js/single-building-geometry.js');
 const MAX_BYTES = 10 * 1024 * 1024;
 const fail = (code, message) => { throw Object.assign(new Error(message), { code }); };
+const SPACE_KINDS = ['park', 'square', 'lake'];
 
 // GLTFLoader is the exact app version. CPU footprint extraction skips texture decoding only.
 async function parseModelBytes(bytes, args) {
@@ -104,10 +105,12 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
     async function importDesign(args) {
         const bytes = await dataOf(args), text = bytes.toString('utf8'), format = args.format;
         const createdAt = args.authoredAt || new Date().toISOString();
+        if (args.kind === 'space' && !SPACE_KINDS.includes(args.spaceKind)) fail('space-kind-required', 'A space import needs spaceKind park, square or lake.');
         const designs = []; let warnings = [], placement = 'georeference';
-        if (['osm', 'opendrive'].includes(format)) {
-            const parsed = imports.FORMATS.find(entry => entry.id === format).parse(text, { anchor: args.anchor });
-            const records = imports.recordsFromImport(parsed, { author: args.author, createdAt, source: format, fallbackTitle: args.title || 'Imported road' });
+        // Road files, and GeoJSON centrelines, go through the site's own corridor import: the format's
+        // parser makes the OSM form and recordsFromImport makes one record per road.
+        async function corridorDesigns(parsed, source) {
+            const records = imports.recordsFromImport(parsed, { author: args.author, description: args.description, createdAt, source, fallbackTitle: args.title || 'Imported road' });
             if (!records.length) fail('import-empty', 'The file contains no road supported by the app importer.');
             for (const record of records) {
                 const definition = record.roadProposal.definition;
@@ -119,27 +122,40 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
                 const content = designObject(record).content;
                 designs.push(await privateResult(content, args.parcelSourceId));
             }
+        }
+        if (['osm', 'opendrive'].includes(format)) {
+            const parsed = imports.FORMATS.find(entry => entry.id === format).parse(text, { anchor: args.anchor });
+            await corridorDesigns(parsed, format);
             warnings = parsed.warnings || []; placement = parsed.placement;
         } else if (format === 'geojson') {
             let input;
             try { input = JSON.parse(text); } catch { fail('import-invalid-json', 'GeoJSON must be valid JSON.'); }
             const features = input.type === 'FeatureCollection' ? input.features : [input.type === 'Feature' ? input : { type: 'Feature', geometry: input, properties: {} }];
             if (!Array.isArray(features) || !features.length || features.length > 100) fail('import-feature-limit', 'Import between 1 and 100 GeoJSON features.');
-            // GeoJSON is an input to the existing intent builders, not a second construction engine.
+            // GeoJSON polygons are inputs to the existing intent builders, not a second construction
+            // engine; its centrelines are read by the site's GeoJSON road parser after them.
+            const lines = [];
             for (const feature of features) {
                 const geometry = feature?.geometry, properties = feature?.properties || {};
                 const common = { ...args, authoredAt: createdAt, title: args.title || properties.name, description: args.description };
-                if (geometry?.type === 'LineString') designs.push(await drafts.draftRoad({ ...common, points: geometry.coordinates }));
+                if (['LineString', 'MultiLineString'].includes(geometry?.type)) lines.push(feature);
                 else if (['Polygon', 'MultiPolygon'].includes(geometry?.type)) {
                     if (args.kind === 'space') designs.push(await drafts.draftSpace({ ...common, outline: geometry }));
                     else designs.push(await drafts.draftBuilding({ ...common, outline: geometry, footprint: geometry,
                         height: args.height ?? properties.height, floors: args.floors ?? properties.floors }));
-                } else fail('import-geometry-unsupported', 'GeoJSON import accepts LineString, Polygon or MultiPolygon features.');
+                } else fail('import-geometry-unsupported', 'GeoJSON import accepts LineString, MultiLineString, Polygon or MultiPolygon features.');
+            }
+            if (lines.length) {
+                const parsed = imports.parseGeoJson(JSON.stringify({ type: 'FeatureCollection', features: lines }));
+                await corridorDesigns(parsed, format);
+                warnings = parsed.warnings || [];
             }
         } else fail('import-format-unsupported', 'Use geojson, osm or opendrive.');
-        return { designs, publication: 'private', warnings, import: { format, placement, count: designs.length, parser: format === 'geojson' ? 'app-intent-builders' : 'app-corridor-import' } };
+        return { designs, publication: 'private', warnings, import: { format, placement, count: designs.length, parser: format === 'geojson' ? 'app-intent-builders+app-corridor-import' : 'app-corridor-import' } };
     }
     async function importModel(args) {
+        const kind = args.kind ?? 'building';
+        if (kind !== 'building' && !SPACE_KINDS.includes(kind)) fail('model-kind-invalid', 'A model is attached to a building, park, square or lake.');
         if (args.confirmAssetUpload !== true) fail('model-upload-confirmation-required', 'Set confirmAssetUpload only after the user agrees to upload a durable, publicly served model asset. The resulting design remains private.');
         if (args.modelData != null && (args.data != null || args.url)) fail('import-input-required', 'Supply exactly one of modelData, data or a public HTTPS URL.');
         if (typeof args.modelData === 'string' && args.modelData.length > 14_000_000) fail('model-size-invalid', 'The model data URL exceeds the upload size limit.');
@@ -153,15 +169,27 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
         const parsed = await parseModel(bytes, args);
         const { footprint, height } = parsed;
         if (!footprint || !Number.isFinite(height) || height <= 0) fail('model-geometry-unavailable', 'The model has no measurable building footprint and height.');
-        const result = await drafts.draftBuilding({ ...args, outline: footprint, footprint, height, authoredAt: args.authoredAt || new Date().toISOString() });
+        const authoredAt = args.authoredAt || new Date().toISOString();
+        // A park, square or lake takes the same placed footprint as its structure polygon; the model is
+        // drawn stretched onto that polygon's bounds in its rotation frame at the model's own height.
+        const result = kind === 'building' ? await drafts.draftBuilding({ ...args, outline: footprint, footprint, height, authoredAt })
+            : await drafts.draftSpace({ ...args, spaceKind: kind, outline: footprint, authoredAt });
         const uploaded = await read.request('/models', {}, { fileName: args.fileName || 'model.glb', modelData: `data:model/gltf-binary;base64,${bytes.toString('base64')}` });
         if (typeof uploaded.modelUrl !== 'string' || !uploaded.modelUrl) fail('model-upload-invalid-response', 'The model endpoint returned no served asset URL.');
         const url = new URL(uploaded.modelUrl, apiBase || appOrigin);
         if (url.origin !== new URL(apiBase || appOrigin).origin) fail('model-upload-invalid-response', 'The model endpoint returned an asset outside the configured API origin.');
         const content = structuredClone(result.design);
-        for (const building of content.geometry.buildings) Object.assign(building.properties, { source: 'upload', modelUrl: url.href, modelName: args.fileName || 'Imported model', rotation: args.rotation ?? 0 });
+        const model = { source: 'upload', modelUrl: url.href, modelName: args.fileName || 'Imported model', rotation: args.rotation ?? 0 };
+        if (kind === 'building') for (const building of content.geometry.buildings) Object.assign(building.properties, model);
+        else {
+            // Same as the site's upload: a park or square starts with an explicit empty furniture design so no
+            // generated layout is laid over the model (frontend/js/proposals/apply/structures.js). Lakes have none.
+            const empty = kind === 'park' ? { trees: [], flowerbeds: [], ponds: [], paths: [], benches: [], version: 3 }
+                : (kind === 'square' ? { fountains: [], trees: [], benches: [], stalls: [], statues: [], version: 2 } : null);
+            Object.assign(content.structureProposal, { ...model, modelName: model.modelName.slice(0, 120) }, empty ? { decorationDesign: empty } : {});
+        }
         return { ...result, design: content, cid: cidOfObject(content), publication: 'private',
-            ...await previewArtifact({ design: content, parcelSourceId: result.parcelSourceId }), asset: { modelUrl: url.href, public: true, durable: true, footprint: 'projected-model-triangles' } };
+            ...await previewArtifact({ design: content, parcelSourceId: result.parcelSourceId }), asset: { modelUrl: url.href, public: true, durable: true, footprint: 'projected-model-triangles', kind } };
     }
     async function renderDefault(rows) {
         let rendered;

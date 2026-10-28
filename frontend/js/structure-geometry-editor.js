@@ -21,7 +21,9 @@
         lakeError: null,
         initialSite: null,
         subeditor: null,
-        initialSignature: null
+        initialSignature: null,
+        // The structure's uploaded model fields (ProposalApplyStructures.structureModelFields), or null.
+        model: null
     };
 
     // Everything the editor draws lives in its own pane ABOVE the structure panes (squares
@@ -534,12 +536,14 @@
             capture: () => ({
                 boundary: clone(state.boundary),
                 decorations: clone(state.decorations),
-                pathPoints: clone(state.pathPoints)
+                pathPoints: clone(state.pathPoints),
+                model: clone(state.model)
             }),
             restore: (snapshot) => {
                 state.boundary = clone(snapshot.boundary);
                 state.decorations = clone(snapshot.decorations);
                 state.pathPoints = clone(snapshot.pathPoints);
+                state.model = clone(snapshot.model);
                 state.pathCursor = null;
                 state.session?.placement?.update?.(state.boundary);
                 render();
@@ -773,11 +777,22 @@
         return `<button type="button" class="btn btn-sm" data-tool="${tool}" aria-pressed="false"><i class="fa-solid ${icon}" aria-hidden="true"></i>${label}</button>`;
     }
 
+    // Replace the boundary from a file: an uploaded model's outline (the model then renders in 3D)
+    // or a GeoJSON polygon. Only the top-level editor owns a boundary.
+    function importsMarkup() {
+        if (state.subeditor) return '';
+        return `
+            <div class="structure-geometry-tools">
+                <button type="button" class="btn btn-sm" data-action="upload-model"><i class="fa-solid fa-cube" aria-hidden="true"></i>${t('uploadModel', 'Upload model (.glb)')}</button>
+                <label class="btn btn-sm" data-role="boundary-import"><i class="fa-solid fa-file-import" aria-hidden="true"></i>${t('importBoundary', 'Import boundary (GeoJSON)')}<input type="file" data-role="boundary-file" accept=".geojson,.json,application/geo+json,application/json" hidden></label>
+            </div>`;
+    }
+
     function panelMarkup() {
         if (state.kind === 'lake') {
             return `
                 <p class="structure-geometry-options">${t('lakeBoundaryHint', 'The lake shape and its generated shore and water graphics will be saved together.')}</p>
-
+                ${importsMarkup()}
                 `;
         }
         const tools = state.kind === 'park'
@@ -797,7 +812,7 @@
             ].join('');
         const boundaryTool = state.subeditor ? '' : toolButton('boundary', 'fa-draw-polygon', t('tools.boundary', 'Boundary'));
         return `
-            <div class="structure-geometry-tools">${boundaryTool}${tools}${toolButton('erase', 'fa-eraser', t('tools.erase', 'Remove'))}</div>`;
+            <div class="structure-geometry-tools">${boundaryTool}${tools}${toolButton('erase', 'fa-eraser', t('tools.erase', 'Remove'))}</div>${importsMarkup()}`;
     }
 
     function footerMarkup() {
@@ -867,9 +882,93 @@
         const toolButton = event.target?.closest?.('.structure-geometry-tools [data-tool]');
         const tool = toolButton?.dataset.tool;
         if (tool) return setTool(tool);
-        const action = event.target?.closest?.('[data-action]')?.dataset.action;
+        const actionButton = event.target?.closest?.('[data-action]');
+        const action = actionButton?.dataset.action;
         if (action === 'finish-path') finishPath();
         else if (action === 'save') saveEditor();
+        else if (action === 'upload-model' && !global.BusyControl?.isBusy?.(actionButton)) {
+            global.BusyControl.track(actionButton, openModelUpload);
+        }
+    }
+
+    function handlePanelChange(event) {
+        const input = event.target?.closest?.('[data-role="boundary-file"]');
+        const file = input?.files?.[0];
+        if (!file) return;
+        input.value = '';
+        const label = input.closest('[data-role="boundary-import"]');
+        global.BusyControl.track(label, () => importBoundaryFile(file));
+    }
+
+    function reportImport(message) {
+        if (typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(message, 7000, 'error');
+        if (typeof global.updateStatus === 'function') global.updateStatus(message);
+    }
+
+    // A new boundary from a file. Decorations keep what still lies on the new ground; undo
+    // returns the previous boundary (and model).
+    function replaceBoundary(geometry, model) {
+        const candidate = boundaryFeature(geometry);
+        const geometryApi = global.SingleBuildingGeometry;
+        if (!candidate || !oneConnectedBoundaryGeometry(candidate.geometry)
+            || !geometryApi?.validFootprint?.(candidate, global.turf)) {
+            reportImport(t('importInvalidShape', 'The new boundary is not a valid single area.'));
+            return false;
+        }
+        if (state.session?.placement?.accepts && !state.session.placement.accepts(candidate)) {
+            reportImport(t('importOutsideSite', 'The new boundary does not fit the locked site. Unlock the site and try again.'));
+            return false;
+        }
+        recordHistory();
+        state.boundary = candidate;
+        if (model !== undefined) state.model = clone(model);
+        if (state.decorations) state.decorations = global.ProposalApplyStructures.decorationsOnGround(
+            state.decorations, candidate.geometry, global.turf);
+        state.pathPoints = [];
+        state.pathCursor = null;
+        state.session?.placement?.update?.(state.boundary);
+        render();
+        state.polygonEditor?.render?.({ refreshRing: true });
+        if (!global.isThreeModeActive?.()) state.session?.fitFeature?.(state.boundary, { maxZoom: 20 });
+        return true;
+    }
+
+    // The upload dialog's model replaces the boundary with its outline, placed at a point on the
+    // current boundary; Done saves the model fields with the structure.
+    async function openModelUpload() {
+        const draftId = state.draftId;
+        if (typeof global.BuildingUpload?.open !== 'function') {
+            reportImport(t('uploadUnavailable', 'Model upload is unavailable.'));
+            return;
+        }
+        await global.BuildingUpload.open({ kind: state.kind }, {
+            onUse: upload => state.draftId === draftId && useUploadedModel(upload)
+        });
+    }
+
+    function useUploadedModel(upload) {
+        const api = global.ProposalApplyStructures;
+        const geometry = api.structureModelGeometry(upload?.footprint, state.boundary, {
+            turf: global.turf,
+            placeModelFootprint: global.SingleBuildingGeometry?.placeModelFootprint
+        });
+        const model = api.structureModelFields({ ...upload, rotation: 0 });
+        if (!geometry || !model) return false;
+        return replaceBoundary(geometry, model);
+    }
+
+    async function importBoundaryFile(file) {
+        let geometry;
+        try {
+            geometry = global.PolygonGeometryEditor.areaGeometryFromGeoJSON(JSON.parse(await file.text()), global.turf);
+        } catch (error) {
+            console.warn('[structure-geometry-editor] boundary import failed', error);
+            reportImport(error?.code === 'disconnected'
+                ? t('importDisconnected', 'The file holds separate areas. A boundary must be one connected area.')
+                : t('importInvalid', 'This file is not a GeoJSON polygon in longitude/latitude.'));
+            return false;
+        }
+        return replaceBoundary(geometry);
     }
 
     function onMapClick(event) {
@@ -886,7 +985,7 @@
     }
 
     function designSignature() {
-        return JSON.stringify([state.boundary, state.decorations, state.pathPoints]);
+        return JSON.stringify([state.boundary, state.decorations, state.pathPoints, state.model]);
     }
 
     async function requestCloseEditor() {
@@ -926,6 +1025,7 @@
         }
         global.document?.removeEventListener('keydown', onKeyDown, true);
         state.panel?.removeEventListener?.('click', handlePanelClick);
+        state.panel?.removeEventListener?.('change', handlePanelChange);
         const session = state.session;
         state.session = null;
         state.panel = null;
@@ -936,6 +1036,7 @@
         state.decorations = null;
         state.subeditor = null;
         state.initialSignature = null;
+        state.model = null;
         if (historyCtl) { historyCtl.destroy(); historyCtl = null; }
         state.tool = null;
         state.pathPoints = [];
@@ -995,6 +1096,7 @@
         const current = clone(draft.editorPayload?.structureProposal || {});
         current.kind = state.kind;
         current.geometry = clone(state.boundary.geometry);
+        if (state.model) Object.assign(current, clone(state.model));
         if (state.kind === 'lake') {
             const graphics = global.buildLakeGraphicsFromGeometry?.(current.geometry);
             state.lakeError = lakeBoundaryFailure(graphics);
@@ -1045,6 +1147,7 @@
         state.boundary = boundary;
         state.initialSite = clone(boundary);
         state.decorations = kind === 'lake' ? null : normalizeDecorations(kind, sourceDecorations(draft));
+        state.model = global.ProposalApplyStructures?.structureModelFields?.(draft.editorPayload?.structureProposal) || null;
         state.lakeError = null;
         state.tool = state.subeditor ? null : 'boundary';
         state.pathPoints = [];
@@ -1081,6 +1184,7 @@
             state.boundary = null;
             state.initialSite = null;
             state.decorations = null;
+            state.model = null;
             state.reselectKey = null;
             return false;
         }
@@ -1089,6 +1193,7 @@
         state.draftId = draft.id;
         state.panel = session.root;
         state.panel.addEventListener('click', handlePanelClick);
+        state.panel.addEventListener('change', handlePanelChange);
         state.layer = global.L.layerGroup().addTo(global.map);
         // Hide the applied structure's own decoration rendering for the duration — the editor
         // shows the live editable copy, and static duplicates read as "objects I cannot drag".

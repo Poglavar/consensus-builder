@@ -1893,8 +1893,9 @@
             "importStatus": "Uvezeno {{count}} od {{total}} ulica iz {{file}} ({{format}}).",
             "importPlacedAtCentre": "Datoteka nema georeferencu, pa su ulice postavljene u centar mape.",
             "importFailed": "Uvoz {{file}} nije uspeo: {{reason}}",
-            "importUnsupported": "Nepodržana vrsta datoteke: {{ext}}. Podržano: OpenStreetMap (.osm, .json) i OpenDRIVE (.xodr).",
+            "importUnsupported": "Nepodržana vrsta datoteke: {{ext}}. Podržano: OpenStreetMap (.osm, .json), GeoJSON (.geojson) i OpenDRIVE (.xodr).",
             "importNone": "{{file}} ne sadrži ulicu koju ova aplikacija može da nacrta.",
+            "importSkippedFeatures": "Izostavljeno je {{count}} objekata koji nisu linije (tačke, poligoni).",
             "importChooseTitle": "Uvoz ulica",
             "importChooseIntro": "Izaberite format datoteke. Zasivljeni formati su prepoznati, ali još nisu podržani; zatražite ga i dodaćemo adapter.",
             "importNotYet": "Još nije podržano. Zatražite i adapter će biti dodat.",
@@ -2181,6 +2182,12 @@
             "uploadInvalid": "Otpremljena geometrija nije ispravna ili je izvan zaključane lokacije."
         },
         "buildingUpload": {
+            "structureTitle": "Učitaj model",
+            "structureConfirm": "Koristi ovaj model",
+            "structurePreviewUnavailable": "3D pregled nije dostupan. Model i dalje možete koristiti.",
+            "structureOutlining": "Izračunavanje obrisa modela…",
+            "structureErrorDisconnected": "Model sadrži odvojene delove. Dodajte podlogu koja ih spaja i pokušajte ponovo.",
+            "structurePlacementFailed": "Model nije moguće postaviti. Datoteka je i dalje izabrana; pokušajte ponovo.",
             "title": "Učitaj 3D model zgrade",
             "closeLabel": "Zatvori prozor za učitavanje",
             "previewLabel": "3D pregled",
@@ -2902,6 +2909,8 @@
                 "multiple": "Više vlasnika"
             },
             "geometry": {
+                "uploadUnavailable": "Alat za učitavanje nije dostupan.",
+                "selectBeforeUpload": "Izaberite parcele ili nacrtajte lokaciju pre učitavanja modela.",
                 "label": "Geometrija",
                 "buttons": {
                     "algorithmic": "Algoritamski",
@@ -6248,6 +6257,13 @@
         }
     },
     "structureEditor": {
+        "uploadModel": "Učitaj model (.glb)",
+        "importBoundary": "Uvezi granicu (GeoJSON)",
+        "importInvalidShape": "Nova granica nije važeća jedinstvena površina.",
+        "importOutsideSite": "Nova granica ne staje u zaključanu lokaciju. Otključajte lokaciju i pokušajte ponovo.",
+        "uploadUnavailable": "Učitavanje modela nije dostupno.",
+        "importDisconnected": "Datoteka sadrži odvojene površine. Granica mora biti jedna povezana površina.",
+        "importInvalid": "Datoteka nije GeoJSON poligon u geografskoj dužini/širini.",
         "done": "Gotovo",
         "hintSurroundings": "Uredi okolinu pa se vrati na zgradu dugmetom Gotovo. Sačuvaj zgradu da zadržiš sve izmene.",
         "titleLake": "Uređivanje granice jezera",
@@ -6759,6 +6775,7 @@
             "plots": "Placevi se seku duž ivice fronta (podrazumevano one okrenute ka ulici, inače najduže). Kliknite drugu ivicu lokacije da je upotrebite."
         },
         "actions": {
+            "importGeoJSON": "Uvezi GeoJSON",
             "finish": "Završi lokaciju",
             "undoCorner": "Ukloni poslednji ugao",
             "redraw": "Nacrtaj ponovo",
@@ -6813,6 +6830,8 @@
             "frontagePick": "Kliknite da ova ivica bude front"
         },
         "errors": {
+            "importDisconnected": "Datoteka sadrži odvojene površine. Lokacija mora biti jedna povezana površina.",
+            "importInvalid": "Datoteka nije GeoJSON poligon u geografskoj dužini/širini.",
             "tooFew": "Lokacija treba bar tri ugla.",
             "tooMany": "Lokacija može imati najviše 500 uglova.",
             "selfIntersecting": "Obris seče sam sebe; pomerite ugao da ga ne seče.",

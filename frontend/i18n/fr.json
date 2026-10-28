@@ -437,6 +437,12 @@
             "inactiveOption": "Rendre l’agent inactif"
         },
         "buildingUpload": {
+            "structureTitle": "Importer un modèle",
+            "structureConfirm": "Utiliser ce modèle",
+            "structurePreviewUnavailable": "Aperçu 3D indisponible. Vous pouvez tout de même utiliser ce modèle.",
+            "structureOutlining": "Calcul du contour du modèle…",
+            "structureErrorDisconnected": "Ce modèle contient des parties séparées. Ajoutez une surface au sol qui les relie et réessayez.",
+            "structurePlacementFailed": "Impossible de placer ce modèle. Votre fichier reste sélectionné ; réessayez.",
             "cancel": "Annuler",
             "previewLabel": "Aperçu 3D",
             "title": "Importer un modèle de bâtiment",
@@ -866,6 +872,8 @@
             "proposalTypeLabel": "Type de projet",
             "descriptionLabel": "Description",
             "geometry": {
+                "uploadUnavailable": "L’outil d’import est indisponible.",
+                "selectBeforeUpload": "Sélectionnez des parcelles ou dessinez un site avant d’importer un modèle.",
                 "label": "Géométrie",
                 "buttons": {
                     "edit": "Modifier",
@@ -1534,6 +1542,7 @@
     },
     "siteTool": {
         "actions": {
+            "importGeoJSON": "Importer GeoJSON",
             "cancel": "Annuler",
             "finish": "Terminer le site",
             "undoCorner": "Supprimer le dernier sommet",
@@ -1606,6 +1615,8 @@
             "subdivideUnknownCadastre": "La subdivision nécessite un cadastre disponible sur le serveur : aucun n’est connu pour ce lieu."
         },
         "errors": {
+            "importDisconnected": "Le fichier contient des zones séparées. Un site doit être une seule zone connexe.",
+            "importInvalid": "Ce fichier n’est pas un polygone GeoJSON en longitude/latitude.",
             "tooFew": "Un site doit avoir au moins trois sommets.",
             "tooMany": "Un site peut avoir au maximum 500 sommets.",
             "selfIntersecting": "Le contour se croise ; déplacez un sommet pour supprimer ce croisement.",
@@ -2328,6 +2339,13 @@
         }
     },
     "structureEditor": {
+        "uploadModel": "Importer un modèle (.glb)",
+        "importBoundary": "Importer la limite (GeoJSON)",
+        "importInvalidShape": "La nouvelle limite n’est pas une surface unique valide.",
+        "importOutsideSite": "La nouvelle limite ne tient pas dans le site verrouillé. Déverrouillez le site et réessayez.",
+        "uploadUnavailable": "L’import de modèle est indisponible.",
+        "importDisconnected": "Le fichier contient des zones séparées. Une limite doit être une seule zone connexe.",
+        "importInvalid": "Ce fichier n’est pas un polygone GeoJSON en longitude/latitude.",
         "undo": "Annuler",
         "done": "Terminé",
         "closeLabel": "Fermer",
@@ -3201,8 +3219,9 @@
             "importStatus": "{{count}} routes sur {{total}} importées depuis {{file}} ({{format}}).",
             "importPlacedAtCentre": "Le fichier n’est pas géoréférencé ; les routes ont donc été placées au centre de la carte.",
             "importFailed": "Impossible d’importer {{file}} : {{reason}}",
-            "importUnsupported": "Type de fichier non pris en charge : {{ext}}. Formats pris en charge : OpenStreetMap (.osm, .json) et OpenDRIVE (.xodr).",
+            "importUnsupported": "Type de fichier non pris en charge : {{ext}}. Formats pris en charge : OpenStreetMap (.osm, .json), GeoJSON (.geojson) et OpenDRIVE (.xodr).",
             "importNone": "{{file}} ne contient aucune route que cette application puisse dessiner.",
+            "importSkippedFeatures": "{{count}} entité(s) qui ne sont pas des lignes (points, polygones) ont été ignorées.",
             "importChooseTitle": "Importer des routes",
             "importChooseIntro": "Choisissez le format du fichier. Les formats grisés sont reconnus mais pas encore pris en charge ; demandez-en un pour que son adaptateur soit ajouté.",
             "importNotYet": "Pas encore pris en charge. Demandez-le pour que l’adaptateur soit ajouté.",

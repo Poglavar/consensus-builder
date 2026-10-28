@@ -1212,9 +1212,12 @@
     }
 
     // A park, square or lake IS its site: no design tool, the object appears, on cadastral
-    // parcels and on open ground alike (PARCEL-OPTIONAL.md phase 3).
-    async function instantCreateStructureFromSite(kind, siteContext) {
+    // parcels and on open ground alike (PARCEL-OPTIONAL.md phase 3). options.structure adds
+    // record fields (an uploaded model's) to the structure; its geometry stays the site's.
+    async function instantCreateStructureFromSite(kind, siteContext, options = {}) {
         if (!STRUCTURE_KIND_LABELS[kind] || !siteContext || !siteContext.site) return null;
+        const extraFields = options.structure ? JSON.parse(JSON.stringify(options.structure)) : {};
+        delete extraFields.geometry;
         let structureGeometry = polygonOfSite(siteContext.site);
         if (!structureGeometryIsOneArea(structureGeometry)) {
             reportDisconnectedStructureSelection();
@@ -1242,7 +1245,10 @@
                 // A drawn site needs the same authoritative binding on first placement as on
                 // later moves. A preview with unknown coverage must not become applied ground.
                 placement: { free: true, site: JSON.parse(JSON.stringify(siteContext.site)), bindingStatus: 'pending' },
-                structureProposal: { kind, applied: false, geometry: structureGeometry, blockName: null, lakeGraphics: lakeGraphics || null }
+                structureProposal: {
+                    ...extraFields,
+                    kind, applied: false, geometry: structureGeometry, blockName: null, lakeGraphics: lakeGraphics || null
+                }
             },
             previewGeometry: structureGeometry
         });
@@ -1251,6 +1257,23 @@
             return null;
         }
         return instantCreateProposalFromDraft(draft.id);
+    }
+
+    // A park, square or lake from an uploaded model (the create dialog's Upload): the model's
+    // projected outline, placed at a point on the anchor (the dialog's site or selection), is a
+    // drawn site, so it binds like any site-first structure. Returns null at once when the model
+    // cannot be placed, else the pending creation.
+    function instantCreateStructureFromModel(kind, anchor, upload) {
+        const api = global.ProposalApplyStructures;
+        if (!STRUCTURE_KIND_LABELS[kind] || !api || !global.turf || !global.SingleBuildingGeometry) return null;
+        const geometry = api.structureModelGeometry(upload?.footprint, anchor, {
+            turf: global.turf,
+            placeModelFootprint: global.SingleBuildingGeometry.placeModelFootprint
+        });
+        const structure = geometry ? api.structureFromModelUpload(kind, geometry, upload) : null;
+        if (!structure) return null;
+        const site = { type: 'MultiPolygon', coordinates: [geometry.coordinates] };
+        return instantCreateStructureFromSite(kind, { site, toleranceM: 0, binding: null }, { structure });
     }
 
     function reportSiteDesignStartIssue(key, fallback, params = {}) {
@@ -2329,6 +2352,7 @@
     global.stageProposalDraftForPublishing = stageProposalDraftForPublishing;
     global.instantCreateProposalFromDraft = instantCreateProposalFromDraft;
     global.instantCreateStructureFromSite = instantCreateStructureFromSite;
+    global.instantCreateStructureFromModel = instantCreateStructureFromModel;
     global.startInstantSiteDesign = startInstantSiteDesign;
     global.startSiteSubdivision = startSiteSubdivision;
     global.syncActiveProposalDraftFromEditor = syncActiveProposalDraftFromEditor;

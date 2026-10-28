@@ -1893,8 +1893,9 @@
             "importStatus": "Uvezeno {{count}} od {{total}} cesta iz {{file}} ({{format}}).",
             "importPlacedAtCentre": "Datoteka nema georeferencu, pa su ceste postavljene u središte karte.",
             "importFailed": "Uvoz {{file}} nije uspio: {{reason}}",
-            "importUnsupported": "Nepodržana vrsta datoteke: {{ext}}. Podržano: OpenStreetMap (.osm, .json) i OpenDRIVE (.xodr).",
+            "importUnsupported": "Nepodržana vrsta datoteke: {{ext}}. Podržano: OpenStreetMap (.osm, .json), GeoJSON (.geojson) i OpenDRIVE (.xodr).",
             "importNone": "{{file}} ne sadrži cestu koju ova aplikacija može nacrtati.",
+            "importSkippedFeatures": "Izostavljeno je {{count}} objekata koji nisu linije (točke, poligoni).",
             "importChooseTitle": "Uvoz cesta",
             "importChooseIntro": "Odaberite format datoteke. Zasivljeni formati su prepoznati, ali još nisu podržani; zatražite ga i dodat ćemo adapter.",
             "importNotYet": "Još nije podržano. Zatražite i adapter će biti dodan.",
@@ -2181,6 +2182,12 @@
             "uploadInvalid": "Učitana geometrija nije valjana ili se nalazi izvan zaključane lokacije."
         },
         "buildingUpload": {
+            "structureTitle": "Učitaj model",
+            "structureConfirm": "Upotrijebi ovaj model",
+            "structurePreviewUnavailable": "3D pretpregled nije dostupan. Model i dalje možete upotrijebiti.",
+            "structureOutlining": "Izračun obrisa modela…",
+            "structureErrorDisconnected": "Model sadrži odvojene dijelove. Dodajte podlogu koja ih spaja i pokušajte ponovno.",
+            "structurePlacementFailed": "Model nije moguće postaviti. Datoteka je još odabrana; pokušajte ponovno.",
             "title": "Učitaj 3D model zgrade",
             "closeLabel": "Zatvori prozor za učitavanje",
             "previewLabel": "3D pregled",
@@ -2902,6 +2909,8 @@
                 "multiple": "Više vlasnika"
             },
             "geometry": {
+                "uploadUnavailable": "Alat za učitavanje nije dostupan.",
+                "selectBeforeUpload": "Odaberite čestice ili nacrtajte lokaciju prije učitavanja modela.",
                 "label": "Geometrija",
                 "buttons": {
                     "algorithmic": "Algoritamski",
@@ -6248,6 +6257,13 @@
         }
     },
     "structureEditor": {
+        "uploadModel": "Učitaj model (.glb)",
+        "importBoundary": "Uvezi granicu (GeoJSON)",
+        "importInvalidShape": "Nova granica nije valjana jedinstvena površina.",
+        "importOutsideSite": "Nova granica ne pristaje u zaključanu lokaciju. Otključajte lokaciju i pokušajte ponovno.",
+        "uploadUnavailable": "Učitavanje modela nije dostupno.",
+        "importDisconnected": "Datoteka sadrži odvojene površine. Granica mora biti jedna povezana površina.",
+        "importInvalid": "Datoteka nije GeoJSON poligon u zemljopisnoj dužini/širini.",
         "done": "Gotovo",
         "hintSurroundings": "Uredi okolinu pa se vrati na zgradu tipkom Gotovo. Spremi zgradu kako bi zadržao sve izmjene.",
         "titleLake": "Uređivanje granice jezera",
@@ -6759,6 +6775,7 @@
             "plots": "Čestice se režu uz rub pročelja (zadano onaj okrenut prema ulici, inače najdulji). Kliknite drugi rub lokacije da ga upotrijebite."
         },
         "actions": {
+            "importGeoJSON": "Uvezi GeoJSON",
             "finish": "Završi lokaciju",
             "undoCorner": "Ukloni zadnji kut",
             "redraw": "Nacrtaj ponovno",
@@ -6813,6 +6830,8 @@
             "frontagePick": "Kliknite da ovaj rub bude pročelje"
         },
         "errors": {
+            "importDisconnected": "Datoteka sadrži odvojene površine. Lokacija mora biti jedna povezana površina.",
+            "importInvalid": "Datoteka nije GeoJSON poligon u zemljopisnoj dužini/širini.",
             "tooFew": "Lokacija treba barem tri kuta.",
             "tooMany": "Lokacija može imati najviše 500 kutova.",
             "selfIntersecting": "Obris siječe sam sebe; pomaknite kut da ga ne siječe.",

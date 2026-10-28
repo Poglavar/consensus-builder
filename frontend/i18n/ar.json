@@ -453,6 +453,12 @@
             "inactiveOption": "ينبغي أن يكون الوكيل غير نشط"
         },
         "buildingUpload": {
+            "structureTitle": "ارفع نموذجًا",
+            "structureConfirm": "استخدام هذا النموذج",
+            "structurePreviewUnavailable": "المعاينة ثلاثية الأبعاد غير متاحة. لا يزال بإمكانك استخدام هذا النموذج.",
+            "structureOutlining": "جارٍ حساب مخطط النموذج…",
+            "structureErrorDisconnected": "يحتوي هذا النموذج على أجزاء منفصلة. أضف سطح أرض يربطها ثم أعد المحاولة.",
+            "structurePlacementFailed": "تعذر وضع هذا النموذج. ملفك ما زال محددًا؛ أعد المحاولة.",
             "cancel": "إلغاء",
             "previewLabel": "معاينة ثلاثية الأبعاد",
             "title": "ارفع نموذجا لمبنى",
@@ -914,6 +920,8 @@
             "proposalTypeLabel": "نوع التصميم",
             "descriptionLabel": "الوصف",
             "geometry": {
+                "uploadUnavailable": "أداة الرفع غير متاحة.",
+                "selectBeforeUpload": "اختر قطع الأراضي أو ارسم موقعًا قبل رفع نموذج.",
                 "label": "الهندسة",
                 "buttons": {
                     "edit": "تحرير",
@@ -1618,6 +1626,7 @@
     },
     "siteTool": {
         "actions": {
+            "importGeoJSON": "استيراد GeoJSON",
             "cancel": "إلغاء",
             "finish": "إنهاء الموقع",
             "undoCorner": "إزالة الزاوية الأخيرة",
@@ -1694,6 +1703,8 @@
             "subdivideUnknownCadastre": "يتطلب التقسيم سجلا مساحيا لدى الخادم، ولا يعرف الخادم أي سجل لهذا المكان."
         },
         "errors": {
+            "importDisconnected": "يحتوي الملف على مساحات منفصلة. يجب أن يكون الموقع مساحة واحدة متصلة.",
+            "importInvalid": "هذا الملف ليس مضلع GeoJSON بإحداثيات الطول/العرض.",
             "tooFew": "يحتاج الموقع إلى ثلاث زوايا على الأقل.",
             "tooMany": "يمكن أن يحتوي الموقع على 500 زاوية كحد أقصى.",
             "selfIntersecting": "تتقاطع الحدود مع نفسها؛ حرك إحدى الزوايا لمنع ذلك.",
@@ -2434,6 +2445,13 @@
         }
     },
     "structureEditor": {
+        "uploadModel": "ارفع نموذجًا (.glb)",
+        "importBoundary": "استيراد الحد (GeoJSON)",
+        "importInvalidShape": "الحد الجديد ليس مساحة واحدة صالحة.",
+        "importOutsideSite": "الحد الجديد لا يتسع في الموقع المقفل. افتح قفل الموقع ثم أعد المحاولة.",
+        "uploadUnavailable": "رفع النموذج غير متاح.",
+        "importDisconnected": "يحتوي الملف على مساحات منفصلة. يجب أن يكون الحد مساحة واحدة متصلة.",
+        "importInvalid": "هذا الملف ليس مضلع GeoJSON بإحداثيات الطول/العرض.",
         "undo": "تراجع",
         "done": "تم",
         "closeLabel": "إغلاق",
@@ -3321,8 +3339,9 @@
             "importStatus": "تم استيراد {{count}} من أصل {{total}} من الطرق من {{file}} ({{format}}).",
             "importPlacedAtCentre": "لا يحتوي الملف على إسناد جغرافي، لذا وضعت الطرق في مركز الخريطة.",
             "importFailed": "تعذر استيراد {{file}}: {{reason}}",
-            "importUnsupported": "نوع ملف غير مدعوم: {{ext}}. الأنواع المدعومة: OpenStreetMap (.osm, .json) وOpenDRIVE (.xodr).",
+            "importUnsupported": "نوع ملف غير مدعوم: {{ext}}. الأنواع المدعومة: OpenStreetMap (.osm, .json), GeoJSON (.geojson) وOpenDRIVE (.xodr).",
             "importNone": "لا يحتوي {{file}} على طريق يستطيع هذا التطبيق رسمه.",
+            "importSkippedFeatures": "تم استبعاد {{count}} من العناصر التي ليست خطوطًا (نقاط، مضلعات).",
             "importChooseTitle": "استيراد طرق",
             "importChooseIntro": "اختر تنسيق الملف. التنسيقات باللون الرمادي معروفة لكنها غير مدعومة بعد؛ اطلب أحدها ليضاف محول له.",
             "importNotYet": "غير مدعوم بعد. اطلبه ليضاف المحول.",

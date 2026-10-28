@@ -679,6 +679,7 @@
             </div>
             <div class="site-panel__actions" data-site-region="actions"></div>`;
         panel.addEventListener('click', onPanelClick);
+        panel.addEventListener('change', onPanelChange);
         host.appendChild(panel);
         state.panel = panel;
         return panel;
@@ -861,6 +862,9 @@
         } else if (state.phase === 'editing') {
             actions.push(`<button type="button" class="btn btn-primary" data-site-action="propose" ${state.site ? '' : 'disabled'} aria-expanded="${state.proposeOpen}">${escapeHtml(t('parcelMenu.actions.propose', 'Propose here'))}</button>`);
             actions.push(`<button type="button" class="btn" data-site-action="redraw">${escapeHtml(t('siteTool.actions.redraw', 'Redraw'))}</button>`);
+        }
+        if (state.phase === 'drawing' || state.phase === 'editing') {
+            actions.push(`<label class="btn" data-site-import>${escapeHtml(t('siteTool.actions.importGeoJSON', 'Import GeoJSON'))}<input type="file" data-site-import-file accept=".geojson,.json,application/geo+json,application/json" hidden></label>`);
         }
         actions.push(`<button type="button" class="btn" data-site-action="cancel">${escapeHtml(t('siteTool.actions.cancel', 'Cancel'))}</button>`);
         return actions.join('');
@@ -1055,6 +1059,34 @@
         else if (action === 'cancel') cancel();
         else if (action === 'plots-continue') continueWithPlots();
         else if (action === 'plots-back') leavePlots();
+    }
+
+    // A site from a GeoJSON polygon file (WGS84): its one connected area's outer outline starts an
+    // editable site, the same plug-in point a parcel selection uses.
+    function onPanelChange(event) {
+        const input = event.target.closest('[data-site-import-file]');
+        const file = input && input.files && input.files[0];
+        if (!file) return;
+        input.value = '';
+        const label = input.closest('[data-site-import]');
+        if (win.BusyControl) win.BusyControl.track(label, () => importSiteFile(file));
+        else importSiteFile(file);
+    }
+
+    async function importSiteFile(file) {
+        let geometry;
+        try {
+            geometry = win.PolygonGeometryEditor.areaGeometryFromGeoJSON(JSON.parse(await file.text()), win.turf);
+        } catch (error) {
+            log('GeoJSON import failed', error);
+            notify(error && error.code === 'disconnected'
+                ? t('siteTool.errors.importDisconnected', 'The file holds separate areas. A site must be one connected area.')
+                : t('siteTool.errors.importInvalid', 'This file is not a GeoJSON polygon in longitude/latitude.'), 'error');
+            return false;
+        }
+        if (geometry.coordinates.length > 1) log('the imported polygon has holes; the site keeps its outer outline only');
+        try { map().fitBounds(win.L.geoJSON(geometry).getBounds(), { maxZoom: 19 }); } catch (_) { }
+        return start({ ring: geometry.coordinates[0] });
     }
 
     // ---- building on the site ----

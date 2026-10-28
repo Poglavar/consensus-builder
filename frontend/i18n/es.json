@@ -1903,8 +1903,9 @@
             "importStatus": "Se importaron {{count}} de {{total}} calles desde {{file}} ({{format}}).",
             "importPlacedAtCentre": "El archivo no tiene georreferencia, así que las calles se colocaron en el centro del mapa.",
             "importFailed": "No se pudo importar {{file}}: {{reason}}",
-            "importUnsupported": "Tipo de archivo no admitido: {{ext}}. Admitido: OpenStreetMap (.osm, .json) y OpenDRIVE (.xodr).",
+            "importUnsupported": "Tipo de archivo no admitido: {{ext}}. Admitido: OpenStreetMap (.osm, .json), GeoJSON (.geojson) y OpenDRIVE (.xodr).",
             "importNone": "{{file}} no contiene ninguna calle que esta aplicación pueda dibujar.",
+            "importSkippedFeatures": "Se omitieron {{count}} elementos que no son líneas (puntos, polígonos).",
             "importChooseTitle": "Importar calles",
             "importChooseIntro": "Elige el formato del archivo. Los formatos en gris se reconocen pero aún no se admiten; pídelo y añadiremos el adaptador.",
             "importNotYet": "Aún no se admite. Pídelo y se añadirá el adaptador.",
@@ -2186,6 +2187,12 @@
             "uploadInvalid": "La geometría subida no es válida o está fuera de la ubicación fijada."
         },
         "buildingUpload": {
+            "structureTitle": "Subir un modelo",
+            "structureConfirm": "Usar este modelo",
+            "structurePreviewUnavailable": "La vista previa 3D no está disponible. Aún puedes usar este modelo.",
+            "structureOutlining": "Calculando el contorno del modelo…",
+            "structureErrorDisconnected": "Este modelo contiene partes separadas. Incluye una superficie de suelo que las una e inténtalo de nuevo.",
+            "structurePlacementFailed": "No se pudo colocar este modelo. Tu archivo sigue seleccionado; inténtalo de nuevo.",
             "title": "Subir un modelo de edificio",
             "closeLabel": "Cerrar ventana de subida",
             "previewLabel": "Vista 3D",
@@ -2901,6 +2908,8 @@
                 "multiple": "Varios propietarios"
             },
             "geometry": {
+                "uploadUnavailable": "La herramienta de subida no está disponible.",
+                "selectBeforeUpload": "Selecciona parcelas o dibuja un sitio antes de subir un modelo.",
                 "label": "Geometría",
                 "buttons": {
                     "algorithmic": "Algorítmico",
@@ -6241,6 +6250,13 @@
         }
     },
     "structureEditor": {
+        "uploadModel": "Subir modelo (.glb)",
+        "importBoundary": "Importar límite (GeoJSON)",
+        "importInvalidShape": "El nuevo límite no es un área única válida.",
+        "importOutsideSite": "El nuevo límite no cabe en el sitio bloqueado. Desbloquea el sitio e inténtalo de nuevo.",
+        "uploadUnavailable": "La subida de modelos no está disponible.",
+        "importDisconnected": "El archivo contiene áreas separadas. Un límite debe ser un área conectada.",
+        "importInvalid": "Este archivo no es un polígono GeoJSON en longitud/latitud.",
         "done": "Listo",
         "hintSurroundings": "Edita el entorno y vuelve al edificio con Listo. Guarda el edificio para conservar todos los cambios.",
         "titleLake": "Editor del límite del lago",
@@ -6750,6 +6766,7 @@
             "plots": "Los lotes se cortan a lo largo del borde de fachada (por defecto el que da a una calle; si no, el más largo). Haz clic en otro borde del sitio para usarlo."
         },
         "actions": {
+            "importGeoJSON": "Importar GeoJSON",
             "finish": "Terminar sitio",
             "undoCorner": "Quitar el último vértice",
             "redraw": "Volver a dibujar",
@@ -6804,6 +6821,8 @@
             "frontagePick": "Haz clic para usar este borde como fachada"
         },
         "errors": {
+            "importDisconnected": "El archivo contiene áreas separadas. Un sitio debe ser un área conectada.",
+            "importInvalid": "Este archivo no es un polígono GeoJSON en longitud/latitud.",
             "tooFew": "Un sitio necesita al menos tres vértices.",
             "tooMany": "Un sitio puede tener como máximo 500 vértices.",
             "selfIntersecting": "El contorno se cruza consigo mismo; mueve un vértice para evitarlo.",

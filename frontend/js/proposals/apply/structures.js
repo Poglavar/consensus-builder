@@ -128,9 +128,63 @@
         };
     }
 
+    // A park, square or lake may carry an uploaded glTF model (vocabulary.md "Structure design").
+    // The structure's geometry stays its site polygon; these are the model's own record fields.
+    const STRUCTURE_MODEL_NAME_MAX = 120;
+    function structureModelFields(input) {
+        const modelUrl = typeof input?.modelUrl === 'string' ? input.modelUrl.trim() : '';
+        if (!modelUrl) return null;
+        const rotation = Number(input.rotation);
+        return {
+            modelUrl,
+            modelName: String(input.modelName || '').slice(0, STRUCTURE_MODEL_NAME_MAX),
+            rotation: Number.isFinite(rotation) ? rotation : 0,
+            source: 'upload'
+        };
+    }
+
+    // The geometry an upload gives a structure: the model's projected outline (local metres, from
+    // the upload dialog) placed unrotated at a point on the anchor site, as a freeform building is.
+    function structureModelGeometry(footprint, anchor, { turf: turfApi, placeModelFootprint }) {
+        const anchorGeometry = anchor?.type === 'Feature' ? anchor.geometry : anchor;
+        if (!anchorGeometry || !['Polygon', 'MultiPolygon'].includes(anchorGeometry.type)) return null;
+        const point = turfApi.pointOnFeature({ type: 'Feature', properties: {}, geometry: anchorGeometry });
+        const [lng, lat] = point?.geometry?.coordinates || [];
+        if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
+        return placeModelFootprint(footprint, { lng, lat }, 0)?.geometry || null;
+    }
+
+    // An upload is the structure's design: parks and squares start with an explicit empty furniture
+    // design, so no generated layout is laid over the model. Lakes have no furniture.
+    function structureFromModelUpload(kind, geometry, upload) {
+        const model = structureModelFields({ ...upload, rotation: 0 });
+        if (!model || !geometry) return null;
+        const empty = kind === 'park'
+            ? { trees: [], flowerbeds: [], ponds: [], paths: [], benches: [], version: 3 }
+            : (kind === 'square' ? { fountains: [], trees: [], benches: [], stalls: [], statues: [], version: 2 } : null);
+        return { geometry: JSON.parse(JSON.stringify(geometry)), ...model, ...(empty ? { decorationDesign: empty } : {}) };
+    }
+
+    // The Feature the 3D placeUploadedModel fits: the structure's authored geometry with the model
+    // fields and no height, so the model keeps its native height.
+    function structureModelFeature(structureProposal) {
+        const model = structureModelFields(structureProposal);
+        const geometry = structureProposal?.geometry;
+        if (!model || !geometry || !['Polygon', 'MultiPolygon'].includes(geometry.type)) return null;
+        return {
+            type: 'Feature',
+            geometry: JSON.parse(JSON.stringify(geometry)),
+            properties: { modelUrl: model.modelUrl, modelName: model.modelName, rotation: model.rotation }
+        };
+    }
+
     return {
     decorationsOnGround,
     structureFeatureOnGround,
+    structureModelFields,
+    structureModelGeometry,
+    structureFromModelUpload,
+    structureModelFeature,
     _reconcileStructurePresentation(records, options = {}) {
         const mutation = options._parcelMutation;
         const ids = new Set(Array.from(records || [], record => String(record?.proposalId || '')).filter(Boolean));
@@ -320,6 +374,8 @@
                     platformHeightM: Number.isFinite(Number(sp.platformHeightM)) ? Number(sp.platformHeightM) : undefined,
                     attachment: sp.attachment ? JSON.parse(JSON.stringify(sp.attachment)) : undefined,
                     modelVersion: sp.modelVersion || undefined,
+                    // An uploaded model, fitted to the authored footprint (not a corridor-carved body).
+                    structureModel: structureModelFeature({ ...sp, geometry: authoredGeometry }) || undefined,
                     name: proposalData.title || proposalData.name || undefined
                 },
                 // Decorations are generated on (and copied back for) the authored body; the

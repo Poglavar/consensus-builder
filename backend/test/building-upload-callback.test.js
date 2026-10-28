@@ -13,7 +13,8 @@ function pendingUpload() {
         loadedDims: { width: 16, length: 20, height: 16 }, loadedName: 'model.glb',
         currentContext: { parcelIds: ['source-ground'] }, onConfirmCb: null, onUseCb: custom,
         window: { createSingleBuildingFromUpload: fallback }, setStatus: vi.fn(), t: (_key, value) => value,
-        setConfirmEnabled: vi.fn(), uploadModel: () => response, close: vi.fn() };
+        setConfirmEnabled: vi.fn(), uploadModel: () => response, close: vi.fn(),
+        isStructureUpload: () => ['park', 'square', 'lake'].includes(env.currentContext?.kind) };
     vm.runInNewContext(confirm, env);
     return { env, custom, fallback, finish };
 }
@@ -81,5 +82,20 @@ describe('model import consumers', () => {
         expect(r.env.loadedFile).toMatchObject({ name: 'model.glb' });
         expect(r.env.currentContext).toMatchObject({ parcelIds: ['source-ground'] });
         expect(r.env.modalEl).toBeTruthy();
+    });
+
+    it('waits for a structure model consumer that finishes asynchronously, with model wording on failure', async () => {
+        const r = pendingUpload();
+        r.env.currentContext = { kind: 'park' };
+        let place;
+        r.custom.mockImplementation(() => new Promise(resolve => { place = resolve; }));
+        const done = r.env.confirmUpload();
+        r.finish('/models/park.glb');
+        await vi.waitFor(() => expect(r.custom).toHaveBeenCalledOnce());
+        expect(r.env.close).not.toHaveBeenCalled();
+        place(false);
+        await done;
+        expect(r.env.close).not.toHaveBeenCalled();
+        expect(r.env.setStatus).toHaveBeenLastCalledWith('Could not place this model. Your file is still selected; try again.', true);
     });
 });
