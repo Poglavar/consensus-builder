@@ -30,30 +30,21 @@ test.describe('City switching @core', () => {
   // A five-way `typeof mgr.x === 'function'` roll-call used to sit here. Every method it named is
   // called for real by the tests below, so its only unique contribution was a browser boot.
 
-  test('setCurrentCityId updates internal city and dispatches event', async ({ mockApi: page }) => {
+  // A page holds only its own city's configuration, so a stored city takes effect on the next load.
+  test('a stored city keeps this page in its city and opens on the next load', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
 
-    const result = await page.evaluate(() => {
+    const cityId = await page.evaluate(() => {
       const w = window as any;
-      let eventFired = false;
-      let eventCityId = '';
-      window.addEventListener('cityChanged', (e: any) => {
-        eventFired = true;
-        eventCityId = e.detail?.cityId ?? '';
-      }, { once: true });
-
-      w.CityConfigManager.setCurrentCityId('colorado');
-      return {
-        newCityId: w.CityConfigManager.getCurrentCityId(),
-        eventFired,
-        eventCityId,
-      };
+      w.CityConfigManager.setStoredCityId('colorado');
+      return w.CityConfigManager.getCurrentCityId();
     });
+    expect(cityId).toBe('new_york');
 
-    expect(result.newCityId).toBe('colorado');
-    expect(result.eventFired).toBe(true);
-    expect(result.eventCityId).toBe('colorado');
+    await page.goto('/');
+    await waitForMapReady(page);
+    expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('colorado');
   });
 
   test('city config contains expected properties', async ({ mockApi: page }) => {
@@ -79,7 +70,7 @@ test.describe('City switching @core', () => {
 
     await page.evaluate(() => {
       const w = window as any;
-      w.CityConfigManager.setCurrentCityId('belgrade');
+      w.CityConfigManager.setStoredCityId('belgrade');
     });
 
     const stored = await page.evaluate(() => {

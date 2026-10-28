@@ -381,21 +381,19 @@
 
 
 
+    // Stores the city the next page load opens. The running page stays in its own city: it holds
+    // only that city's full configuration, so a switch is always a reload (switchCity).
     function setStoredCityId(id) {
-        currentCityId = hasCity(id) && id !== EXPLORE_CITY_ID ? id : DEFAULT_CITY_ID;
+        const nextId = hasCity(id) && id !== EXPLORE_CITY_ID ? id : DEFAULT_CITY_ID;
         try {
             if (typeof localStorage !== 'undefined' && localStorage) {
-                localStorage.setItem(STORAGE_KEY, currentCityId);
+                localStorage.setItem(STORAGE_KEY, nextId);
             }
         } catch (_) { /* ignore */ }
         try {
             if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.setItem === 'function') {
-                PersistentStorage.setItem(STORAGE_KEY, currentCityId);
+                PersistentStorage.setItem(STORAGE_KEY, nextId);
             }
-        } catch (_) { /* ignore */ }
-        applyCityLanguagePreference(configOf(currentCityId));
-        try {
-            window.dispatchEvent(new CustomEvent('cityChanged', { detail: { cityId: currentCityId } }));
         } catch (_) { /* ignore */ }
     }
 
@@ -1036,7 +1034,7 @@
         // A deep link needs the difference: following the link's city over an untouched default is
         // doing what the reader asked, while overriding a city they picked themselves is not.
         hasStoredCityId: () => !!getStoredCityId(),
-        setCurrentCityId: setStoredCityId,
+        setStoredCityId,
         switchCity,
         navigateToCity,
         getCityLabel,
