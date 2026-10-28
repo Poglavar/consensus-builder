@@ -6633,7 +6633,8 @@
                 "donate": "Donación realizada",
                 "pledge": "Compromiso realizado",
                 "fulfillPledge": "Compromiso cumplido",
-                "claim": "Ganancias reclamadas"
+                "claim": "Ganancias reclamadas",
+                "sell": "Apuesta vendida"
             },
             "bet": {
                 "yes": "Apuesta de {{amount}} a sí",
@@ -7475,6 +7476,13 @@
         }
     },
     "agreement": {
+        "outcomes": {
+            "owners": "Propietarios de las parcelas de entrada",
+            "none": "Propietarios sin porción",
+            "several": "Propietarios con varias porciones",
+            "noneList": "Sin porción:",
+            "severalList": "Varias porciones:"
+        },
         "dialog": {
             "titleCreate": "Crear acuerdo",
             "titleEdit": "Editar acuerdo",
@@ -7484,6 +7492,7 @@
             "save": "Guardar acuerdo"
         },
         "sections": {
+            "pieces": "Suelo resultante",
             "consultation": "Acuerdo no vinculante",
             "land": "Suelo",
             "allocation": "Asignación",
@@ -7594,6 +7603,7 @@
             "openGround": "Parte del suelo es terreno abierto sin propietario registrado."
         },
         "panel": {
+            "plan": "Plan del acuerdo",
             "title": "Acuerdo",
             "untitled": "Acuerdo del {{date}}",
             "status": {
@@ -7625,7 +7635,7 @@
             "collapse": "Cerrar acuerdo",
             "removeLocalConfirm": "¿Quitar este acuerdo de este dispositivo? Sus diseños permanecen en el mapa. El acuerdo publicado sigue disponible a través de su enlace.",
             "compareUnavailable": "Antes / después está disponible cuando el acuerdo coincide con los diseños aplicados en el mapa.",
-            "designs": "Diseños de este plan"
+            "designs": "Diseños del plan"
         },
         "list": {
             "create": "Crear acuerdo",
@@ -8219,6 +8229,9 @@
         "chooseSharePlan": "¿Qué plan quieres compartir?"
     },
     "clickStackRelations": {
+        "designParcels": "Parcelas",
+        "formedParcelsTab": "Parcelas resultantes",
+        "affectsParcelsTab": "Parcelas de entrada",
         "affectedBy": "Afectado por el diseño:",
         "memberPlans": "Incluido en planes:",
         "includedDesigns": "Diseños:",

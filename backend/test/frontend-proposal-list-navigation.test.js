@@ -160,7 +160,6 @@ describe('proposal list navigation', () => {
                 markProposalCountAreaOpened: vi.fn(),
                 resetParcelSelectionForProposalListInteraction: vi.fn(),
                 clearProposalInfoHoverOverlay: vi.fn(),
-                shouldAutofocusProposalListSearch: vi.fn(() => false),
                 renderProposalListModal: render
             }
         });
@@ -291,13 +290,13 @@ describe('proposal list titles and descriptions', () => {
 
     it('names a record by its own text, else by its CID or local key, never by a chain token or its metadata', () => {
         expect(context.getProposalDisplayTitle({ title: 'Pocket park', ...chainLeftovers })).toBe('Pocket park');
-        expect(context.getProposalDisplayTitle({ proposalId: 'p-1gtz1npm44n', ...chainLeftovers })).toBe('Proposal p-1gtz1npm44n');
-        expect(context.getProposalDisplayTitle({ proposalId: `design-${CID}`, published: { cid: CID }, ...chainLeftovers })).toBe(`Proposal ${CID}`);
-        expect(context.getProposalDisplayTitle({ cid: CID, ...chainLeftovers })).toBe(`Proposal ${CID}`);
+        expect(context.getProposalDisplayTitle({ proposalId: 'p-1gtz1npm44n', ...chainLeftovers })).toBe('Design p-1gtz1npm44n');
+        expect(context.getProposalDisplayTitle({ proposalId: `design-${CID}`, published: { cid: CID }, ...chainLeftovers })).toBe(`Design ${CID}`);
+        expect(context.getProposalDisplayTitle({ cid: CID, ...chainLeftovers })).toBe(`Design ${CID}`);
         // "Minted proposal from …" was the generic title of a chain import; nothing imports one any more,
         // so such a title is an ordinary one.
         expect(context.getProposalDisplayTitle({ title: 'Minted proposal from Solana' })).toBe('Minted proposal from Solana');
-        expect(context.getProposalDisplayTitle({ title: 'Proposal #12', proposalId: 'p-1' })).toBe('Proposal p-1');
+        expect(context.getProposalDisplayTitle({ title: 'Proposal #12', proposalId: 'p-1' })).toBe('Design p-1');
     });
 
     it('describes a record by its own description only', () => {

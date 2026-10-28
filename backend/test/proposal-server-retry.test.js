@@ -17,12 +17,15 @@ function harness(fetch) {
     const context = vm.createContext({
         document: {}, console: { log() {}, info() {}, warn() {}, error() {} }, URLSearchParams, Cid,
         serverProposalCache: cache, SERVER_PROPOSAL_SUMMARY_LIMIT: 250,
-        normalizeCityCodeForApi: city => city, resolveBackendBaseUrl: () => 'http://backend', fetch
+        normalizeCityCodeForApi: city => city, resolveBackendBaseUrl: () => 'http://backend', fetch,
+        // The list shows the diagnostics' own message; the request's error goes to the report only.
+        AppDiagnostics: { report: vi.fn(() => ({ message: 'Designs could not be loaded (ref 1).' })) }
     });
     context.window = context;
     vm.runInContext(source, context);
     context.renderProposalListModal = vi.fn(() => context.ensureServerProposals('zagreb'));
-    return { ensure: context.ensureServerProposals, fetch: context.fetchServerProposalSummaries, cache, render: context.renderProposalListModal };
+    return { ensure: context.ensureServerProposals, fetch: context.fetchServerProposalSummaries, cache, render: context.renderProposalListModal,
+        reported: () => context.AppDiagnostics.report.mock.calls.map(([error, options]) => [error.message, options.code]) };
 }
 
 const success = () => ({ ok: true, status: 200, json: async () => ({ designs: [] }) });
@@ -32,9 +35,10 @@ describe('explicit server proposal retry', () => {
         const fetch = vi.fn()
             .mockResolvedValueOnce({ ok: false, status: 503, json: async () => ({ error: 'Temporary outage' }) })
             .mockResolvedValueOnce(success());
-        const { ensure, fetch: fetchSummaries, cache, render } = harness(fetch);
+        const { ensure, fetch: fetchSummaries, cache, render, reported } = harness(fetch);
         await fetchSummaries('zagreb');
-        expect(cache.error).toBe('Temporary outage');
+        expect(reported()).toEqual([['Temporary outage', 'design-load-failed']]);
+        expect(cache.error).toBe('Designs could not be loaded (ref 1).');
         expect(cache.lastFetchedAt).toBeGreaterThan(0);
         expect(render).toHaveBeenCalled();
         ensure('zagreb');
@@ -76,9 +80,10 @@ describe('explicit server proposal retry', () => {
 
     it('takes an answer that is not a list of designs for a failure, not for an empty list', async () => {
         const fetch = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ proposals: [] }) });
-        const { fetch: fetchSummaries, cache } = harness(fetch);
+        const { fetch: fetchSummaries, cache, reported } = harness(fetch);
         await fetchSummaries('zagreb');
-        expect(cache.error).toBe('HTTP 200');
+        expect(reported()).toEqual([['HTTP 200', 'design-load-failed']]);
+        expect(cache.error).toBe('Designs could not be loaded (ref 1).');
         expect(cache.count).toBeNull();
     });
 });

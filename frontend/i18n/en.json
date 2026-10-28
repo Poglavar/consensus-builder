@@ -6606,7 +6606,8 @@
                 "donate": "Donation made",
                 "pledge": "Pledge made",
                 "fulfillPledge": "Pledge fulfilled",
-                "claim": "Winnings claimed"
+                "claim": "Winnings claimed",
+                "sell": "Bet sold"
             },
             "bet": {
                 "yes": "Bet {{amount}} on yes",
@@ -7448,6 +7449,13 @@
         }
     },
     "agreement": {
+        "outcomes": {
+            "owners": "Owners of input parcels",
+            "none": "Owners with no piece",
+            "several": "Owners with several pieces",
+            "noneList": "No piece:",
+            "severalList": "Several pieces:"
+        },
         "dialog": {
             "titleCreate": "Create agreement",
             "titleEdit": "Edit agreement",
@@ -7457,6 +7465,7 @@
             "save": "Save agreement"
         },
         "sections": {
+            "pieces": "Resulting land",
             "consultation": "Nonbinding agreement",
             "land": "Land",
             "allocation": "Allocation",
@@ -7567,6 +7576,7 @@
             "openGround": "Part of the land is open ground with no recorded owner."
         },
         "panel": {
+            "plan": "Agreement plan",
             "title": "Agreement",
             "untitled": "Agreement of {{date}}",
             "status": {
@@ -7598,7 +7608,7 @@
             "collapse": "Close agreement",
             "removeLocalConfirm": "Remove this agreement from this device? Its designs stay on the map. Any published agreement remains available through its link.",
             "compareUnavailable": "Before / after is available when this agreement matches the designs applied on the map.",
-            "designs": "Designs in this plan"
+            "designs": "Designs in the plan"
         },
         "list": {
             "create": "Create agreement",
@@ -8191,6 +8201,9 @@
         "chooseSharePlan": "Which plan do you want to share?"
     },
     "clickStackRelations": {
+        "designParcels": "Parcels",
+        "formedParcelsTab": "Output parcels",
+        "affectsParcelsTab": "Input parcels",
         "affectedBy": "Affected by design:",
         "memberPlans": "Included in plans:",
         "includedDesigns": "Designs:",

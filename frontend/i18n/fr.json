@@ -1684,6 +1684,13 @@
         }
     },
     "agreement": {
+        "outcomes": {
+            "owners": "Propriétaires des parcelles d’entrée",
+            "none": "Propriétaires sans portion",
+            "several": "Propriétaires avec plusieurs portions",
+            "noneList": "Sans portion :",
+            "severalList": "Plusieurs portions :"
+        },
         "chain": {
             "actions": {
                 "cancel": "Annuler",
@@ -1806,6 +1813,7 @@
             "empty": "Les projets sélectionnés n’occupent aucun terrain cadastré."
         },
         "sections": {
+            "pieces": "Foncier résultant",
             "details": "Détails",
             "rule": "Règle de décision",
             "consultation": "Accord non contraignant",
@@ -1867,6 +1875,7 @@
             }
         },
         "panel": {
+            "plan": "Plan de l’accord",
             "actions": {
                 "edit": "Modifier",
                 "bet": "Pari",
@@ -1898,7 +1907,7 @@
             "collapse": "Fermer l’accord",
             "removeLocalConfirm": "Retirer cet accord de cet appareil ? Ses projets restent sur la carte. Tout accord publié reste accessible via son lien.",
             "compareUnavailable": "La comparaison avant / après est disponible lorsque cet accord correspond aux projets appliqués sur la carte.",
-            "designs": "Projets de ce plan"
+            "designs": "Projets du plan"
         },
         "addTo": {
             "title": "Ajouter à un accord",
@@ -5105,7 +5114,8 @@
                 "donate": "Don effectué",
                 "pledge": "Promesse de don faite",
                 "fulfillPledge": "Promesse de don tenue",
-                "claim": "Gains réclamés"
+                "claim": "Gains réclamés",
+                "sell": "Pari vendu"
             },
             "title": "Activité récente",
             "zoningType": "Zonage",
@@ -5414,6 +5424,9 @@
         "designActions": "Actions sur le projet"
     },
     "clickStackRelations": {
+        "designParcels": "Parcelles",
+        "formedParcelsTab": "Parcelles créées",
+        "affectsParcelsTab": "Parcelles d’origine",
         "affectedBy": "Concerné par le projet :",
         "includedDesigns": "Projets :",
         "memberPlans": "Inclus dans les plans :",

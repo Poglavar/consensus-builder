@@ -1,5 +1,5 @@
 // Headless checks for two frontend audit fixes: an explicit ?lang= survives the profile modal, and
-// the phone proposal list folds its filters (and never autofocuses search on touch). The third, a
+// the lists panel folds its filters and never autofocuses search. The third, a
 // disabled Canton making no requests, went with the Canton mode itself (plan-design-agreement.md, M3).
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
@@ -71,37 +71,11 @@ describe('?lang= wins for the session', () => {
 });
 
 describe('phone proposal list', () => {
-    const { countActiveProposalListFilters, shouldAutofocusProposalListSearch } = require('../../frontend/js/proposals/dialog-share.js');
-
-    it('counts only goal, publication and search filters that narrow the list (not sort)', () => {
-        const base = { filterType: 'all', publicationFilter: 'all', searchText: '', sortKey: 'title-asc' };
-        expect(countActiveProposalListFilters(base)).toBe(0);
-        expect(countActiveProposalListFilters({ ...base, filterType: 'road', publicationFilter: 'draft', searchText: ' park ' })).toBe(3);
-        expect(countActiveProposalListFilters({ ...base, searchText: '   ' })).toBe(0);
-    });
-
-    it('autofocuses search only on wide, non-touch screens', () => {
-        const withMedia = (matches) => ({ matchMedia: vi.fn(() => ({ matches })) });
-        expect(shouldAutofocusProposalListSearch(withMedia(false))).toBe(true);
-        expect(shouldAutofocusProposalListSearch(withMedia(true))).toBe(false);
-        expect(shouldAutofocusProposalListSearch({})).toBe(false);
-    });
-
-    it('the list collapses filters by default and wires the helpers', () => {
-        const src = read('../../frontend/js/proposals/dialog-share.js');
-        expect(src).toContain("proposal-list-controls${filtersOpen ? '' : ' is-collapsed'}");
-        // the list is opened from list-ui.js since the Proposals sheet mounts it itself
-        expect(read('../../frontend/js/proposals/list-ui.js')).toContain('proposalListState.autofocusSearch = shouldAutofocusProposalListSearch(window)');
-        const css = read('../../frontend/css/proposals.css');
-        expect(css).toMatch(/@media \(max-width: 767\.98px\)\s*{\s*\.proposal-filters-toggle-row\s*{\s*display: flex/);
-        expect(css).toMatch(/\.proposal-list-controls\.is-collapsed\s*{\s*display: none;/);
-    });
-
-    it('short desktop windows fold the filters too, so the capped sheet keeps room for the list', () => {
-        const css = read('../../frontend/css/proposals.css');
-        const block = css.match(/@media \(min-width: 768px\) and \(max-height: 900px\)\s*{([\s\S]*?)\n}/);
-        expect(block).not.toBeNull();
-        expect(block[1]).toMatch(/\.proposal-filters-toggle-row\s*{\s*display: flex/);
-        expect(block[1]).toMatch(/\.proposal-list-controls\.is-collapsed\s*{\s*display: none;/);
+    // The lists panel (js/lists-panel.js) replaced the proposal list's own filter row on 2026-10-27.
+    it('opens the lists panel with its filters folded and without focusing search', () => {
+        const src = read('../../frontend/js/lists-panel.js');
+        expect(src).toMatch(/filtersOpen: false/);
+        expect(src).toContain("node('details', 'lists-filter-details'); filters.open = state.filtersOpen;");
+        expect(src).not.toMatch(/search\.focus\(/);
     });
 });

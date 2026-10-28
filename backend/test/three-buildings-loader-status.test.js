@@ -7,7 +7,8 @@ import { describe, expect, it, vi } from 'vitest';
 
 const source = fs.readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');
 const start = source.indexOf('function updateBuildingsLoader()');
-const end = source.indexOf('function stopIntroAutoRotate()', start);
+// It ends where the next function of the same scope begins.
+const end = source.indexOf('\n    function ', start + 1);
 if (start < 0 || end <= start) throw new Error('Could not find updateBuildingsLoader in three-mode.js');
 
 function harness() {

@@ -32,7 +32,8 @@ describe('abstract 3D display controls', () => {
     it('builds labeled planning selectors from shared choices and forwards changes to the store', () => {
         expect(planningViewsSource).toContain("const details = { existing: 'existingScope', permitted: 'permittedMap', proposed: 'proposedForm' };");
         expect(planningViewsSource).toContain('for (const role of core.roles)');
-        expect(planningViewsSource).toContain('row.append(name, control(role), control(details[role]));');
+        expect(planningViewsSource).toContain('content.append(control(details[role]));');
+        expect(planningViewsSource).toContain('row.append(name, control(role), content, actions);');
         expect(planningViewsSource).toContain("select.setAttribute('aria-label', t('displayLabel', { role: t(role) }));");
         expect(planningViewsSource).toContain(".setAttribute('aria-label', t(key));");
 
@@ -65,8 +66,8 @@ describe('abstract 3D display controls', () => {
         expect(representation.options).toEqual(PlanningScene.choices.proposedForm.map(value => ({ text: `label:${value}`, value })));
     });
 
-    it('keeps both selectors at one readable desktop width and lets them fill narrow screens', () => {
-        expect(mapCssSource).toMatch(/#model-layer-controls \.three-mode-display-select\s*\{[\s\S]*?width: 168px;/);
+    it('starts both selectors from one readable desktop width and lets them fill narrow screens', () => {
+        expect(mapCssSource).toMatch(/#model-layer-controls \.three-mode-display-select\s*\{\s*flex: 1 1 168px;\s*width: auto;/);
         expect(mapCssSource).toMatch(/@media \(max-width: 480px\)[\s\S]*?#model-layer-controls \.three-mode-display-select\s*\{[\s\S]*?width: auto;/);
     });
 });

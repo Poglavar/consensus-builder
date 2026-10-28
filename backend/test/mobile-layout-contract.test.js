@@ -165,7 +165,7 @@ describe('the left-edge mode strip is never covered on phones', () => {
     it('gives the 3D click stack the 2D stack frame instead of a floating 3D parcel panel', () => {
         expect(ruleBody(mapCss, '#click-stack,\\s*#three-click-stack')).toMatch(/pointer-events:\s*none/);
         const stackJs = read('js/three-click-stack.js');
-        expect(stackJs).toContain("el.className = 'click-stack right-dock-panel'");
+        expect(stackJs).toContain("el.className = 'click-stack right-dock-panel right-screen-panel';");
         expect(stackJs).not.toContain("'click-stack__head'");
         expect(mapCss).not.toMatch(/\.three-mode-parcel-panel\s*\{[^}]*position:\s*absolute/);
     });
@@ -192,8 +192,8 @@ describe('proposal details and compact card on phones', () => {
     // The outer 2D/3D click stack and unhosted proposal reader use the shared phone sheet controller;
     // panels hosted inside a stack stay part of its card and must not get a nested handle.
     it('gives outer click stacks and unhosted proposal readers the shared phone sheet sizing', () => {
-        expect(clickStackPanel).toContain("el.className = 'click-stack right-dock-panel';");
-        expect(read('js/three-click-stack.js')).toContain("el.className = 'click-stack right-dock-panel';");
+        expect(clickStackPanel).toContain("el.className = 'click-stack right-dock-panel right-screen-panel';");
+        expect(read('js/three-click-stack.js')).toContain("el.className = 'click-stack right-dock-panel right-screen-panel';");
         expect(dockSheet).toContain("const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(.is-hosted)';");
         expect(dockSheet).toContain(".map-sheet, .cb-dialog:not(.cb-dialog--message)");
         expect(dockSheet).toContain('#click-stack, #three-click-stack');
@@ -254,15 +254,16 @@ describe('3D and photo view', () => {
         expect(ruleBody(phone, '\\.map-shell-cluster--bottom-right')).toMatch(/background:\s*var\(--cb-glass-veil\)/);
         expect(ruleBody(phone, '\\.map-shell-cluster--bottom-right \\.map-shell-button--labelled')).toMatch(/background:\s*transparent/);
         expect(ruleBody(mapShellCss, '\\.map-shell-cluster--bottom-right')).not.toMatch(/background/);
-        // Centred on the map, or on the map left of the dock while a docked panel runs down to the
-        // bottom-right corner (the status line takes the same centre).
-        expect(ruleBody(mapShellCss, '\\.map-shell-cluster--bottom-right')).toMatch(/left:\s*var\(--map-shell-centre, 50%\)/);
-        expect(ruleBody(utilitiesCss, '\\.map-feedback-stack')).toMatch(/left:\s*var\(--map-shell-centre, 50%\)/);
-        const [wide] = mediaBlocksContaining(mapShellCss, '(min-width: 900px)', '--map-shell-centre:');
-        expect(wide).toMatch(/body:has\(#road-info-panel\.visible\)/);
-        expect(wide).toMatch(/--map-shell-centre:\s*calc\(\(100% - var\(--right-dock-width\) - 2 \* var\(--right-dock-gap\)\) \/ 2\)/);
-        const [dock] = mediaBlocksContaining(panelsCss, '(min-width: 900px)', '--right-dock-bottom:');
-        expect(dock).toMatch(/--right-dock-bottom:\s*var\(--right-dock-gap\)/);
+        // Navigation and the status line stay centred on the viewport; a docked panel never moves
+        // them (js/ui/dock-clearance.js shortens the panel instead).
+        for (const body of [ruleBody(mapShellCss, '\\.map-shell-cluster--bottom-right'), ruleBody(utilitiesCss, '\\.map-feedback-stack')]) {
+            expect(body).toMatch(/left:\s*50%/);
+            expect(body).toMatch(/transform:\s*translateX\(-50%\)/);
+        }
+        expect(mapShellCss + utilitiesCss).not.toContain('--map-shell-centre');
+        // From tablet width the docked panels stop at the clearance DockClearance measures.
+        const [dock] = mediaBlocksContaining(panelsCss, '(min-width: 768px)', '--right-dock-bottom:');
+        expect(dock).toMatch(/--right-dock-bottom:\s*var\(--right-dock-clearance, var\(--map-shell-bottom-clearance\)\)/);
         expect(ruleBody(panelsCss, '#parcel-info-panel')).toMatch(/bottom:\s*var\(--right-dock-bottom\)/);
         expect(ruleBody(panelsCss, '(?:^|\\n)#road-info-panel')).toMatch(/bottom:\s*var\(--right-dock-bottom\)/);
         expect(ruleBody(mapShellCss, '\\.map-shell-cluster--bottom-right \\.map-shell-button--labelled')).toMatch(/border-radius:\s*var\(--cb-radius-pill\)/);

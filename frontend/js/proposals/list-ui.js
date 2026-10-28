@@ -863,7 +863,6 @@ async function mountProposalList() {
         if (!focusedId) resetParcelSelectionForProposalListInteraction();
         try { clearProposalInfoHoverOverlay(); } catch (_) { }
         proposalListState.selectedId = focusedId;
-        proposalListState.autofocusSearch = shouldAutofocusProposalListSearch(window);
         window.proposalListBrowseMode = true;
         host.setAttribute('aria-busy', 'true');
         if (!host.querySelector('.proposal-list-modal')) {

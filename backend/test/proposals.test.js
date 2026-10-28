@@ -470,7 +470,7 @@ describe('GET /proposals/count', () => {
         pool.setResult({ rows: [{ count: '42' }] });
 
         const res = await request(app)
-            .get('/proposals/count?city=zg&lifecycle=Active');
+            .get('/proposals/count?city=Zagreb&lifecycle=Active');
 
         expect(res.status).toBe(200);
         expect(res.body.count).toBe(42);
@@ -519,7 +519,7 @@ describe('GET /proposals/count', () => {
     it('keeps city filtering when a viewport bbox accompanies a known city', async () => {
         pool.setResult({ rows: [{ count: '2' }] });
 
-        const res = await request(app).get('/proposals/count?city=zg&bbox=15,45,16,46');
+        const res = await request(app).get('/proposals/count?city=Zagreb&bbox=15,45,16,46');
 
         expect(res.status).toBe(200);
         expect(res.body.city).toBe('zagreb');
@@ -562,7 +562,7 @@ describe('GET /proposals/count', () => {
     it('defaults invalid pagination filter inputs', async () => {
         pool.setResult({ rows: [{ count: '7' }] });
 
-        const res = await request(app).get('/proposals/count?city=bg&limit=bad&offset=-2');
+        const res = await request(app).get('/proposals/count?city=Belgrade&limit=bad&offset=-2');
 
         expect(res.status).toBe(200);
         expect(res.body.city).toBe('belgrade');
@@ -573,7 +573,7 @@ describe('GET /proposals/count', () => {
             throw new Error('count failed');
         };
 
-        const res = await request(app).get('/proposals/count?city=zg');
+        const res = await request(app).get('/proposals/count?city=Zagreb');
 
         expect(res.status).toBe(500);
         expect(res.body.error).toMatch(/Internal server error/);
@@ -589,7 +589,7 @@ describe('GET /proposals/counts', () => {
             ],
         });
 
-        const res = await request(app).get('/proposals/counts?parcel_ids=HR-1-100,HR-1-101,HR-1-102&city=zg');
+        const res = await request(app).get('/proposals/counts?parcel_ids=HR-1-100,HR-1-101,HR-1-102&city=Zagreb');
 
         expect(res.status).toBe(200);
         expect(res.body.counts).toEqual({ 'HR-1-100': 2, 'HR-1-101': 1 }); // 102 absent → 0
@@ -597,7 +597,7 @@ describe('GET /proposals/counts', () => {
         expect(call.sql).toMatch(/cadastre_parcel_ids \?\| \$1/);
         expect(call.sql).not.toContain('descendant_parcel_ids');
         expect(call.params[0]).toEqual(['HR-1-100', 'HR-1-101', 'HR-1-102']);
-        expect(call.params).toContain('zagreb'); // normalized city
+        expect(call.params).toContain('zagreb'); // trimmed and lower-cased, no alias lookup
     });
 
     it('dedupes the requested ids', async () => {
@@ -782,7 +782,7 @@ describe('GET /proposals/summary', () => {
     it('applies normalized city filters and default pagination', async () => {
         pool.setResult({ rows: [] });
 
-        const res = await request(app).get('/proposals/summary?city=zg&type=parcel&author=alice');
+        const res = await request(app).get('/proposals/summary?city=Zagreb&type=parcel&author=alice');
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ proposals: [], count: 0, limit: 100, offset: 0 });
@@ -792,7 +792,7 @@ describe('GET /proposals/summary', () => {
     it('filters summary rows to those declaring any of the given parcels (a Proposals tab)', async () => {
         pool.setResult({ rows: [] });
 
-        const res = await request(app).get('/proposals/summary?city=zg&parcel_ids=HR-1, HR-2,,HR-1');
+        const res = await request(app).get('/proposals/summary?city=Zagreb&parcel_ids=HR-1, HR-2,,HR-1');
 
         expect(res.status).toBe(200);
         const call = pool.getCalls()[0];
@@ -803,7 +803,7 @@ describe('GET /proposals/summary', () => {
     it('filters summary rows by bbox while retaining city, sorting, and pagination', async () => {
         pool.setResult({ rows: [] });
 
-        const res = await request(app).get('/proposals/summary?city=zg&bbox=15.8,45.7,16.1,46&sort=created-asc&limit=20&offset=5');
+        const res = await request(app).get('/proposals/summary?city=Zagreb&bbox=15.8,45.7,16.1,46&sort=created-asc&limit=20&offset=5');
 
         expect(res.status).toBe(200);
         const call = pool.getCalls()[0];
@@ -949,7 +949,7 @@ describe('GET /proposals/summary', () => {
             throw new Error('summary failed');
         };
 
-        const res = await request(app).get('/proposals/summary?city=zg');
+        const res = await request(app).get('/proposals/summary?city=Zagreb');
 
         expect(res.status).toBe(500);
         expect(res.body.error).toMatch(/Internal server error/);
@@ -960,7 +960,7 @@ describe('GET /proposals?parcel_id=', () => {
     it('applies explicit limit and offset with normalized city filters', async () => {
         pool.setResult({ rows: [] });
 
-        const res = await request(app).get('/proposals?parcel_id=HR-1234-5678&city=bg&limit=5&offset=2');
+        const res = await request(app).get('/proposals?parcel_id=HR-1234-5678&city=Belgrade&limit=5&offset=2');
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({
@@ -987,7 +987,7 @@ describe('GET /proposals?parcel_id=', () => {
     it('defaults negative limit and offset values', async () => {
         pool.setResult({ rows: [] });
 
-        const res = await request(app).get('/proposals?parcel_id=HR-1234-5678&city=bg&limit=-5&offset=-2');
+        const res = await request(app).get('/proposals?parcel_id=HR-1234-5678&city=Belgrade&limit=-5&offset=-2');
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({
@@ -1009,7 +1009,7 @@ describe('GET /proposals?parcel_id=', () => {
             }]
         });
 
-        const res = await request(app).get('/proposals?parcel_id=HR-1234-5678&city=ba');
+        const res = await request(app).get('/proposals?parcel_id=HR-1234-5678&city=BUENOS_AIRES');
 
         expect(res.status).toBe(200);
         expect(res.body.proposals[0].custom).toBe(true);

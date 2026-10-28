@@ -6641,7 +6641,8 @@
                 "donate": "Donacija uplaćena",
                 "pledge": "Obećanje dato",
                 "fulfillPledge": "Obećanje ispunjeno",
-                "claim": "Dobitak preuzet"
+                "claim": "Dobitak preuzet",
+                "sell": "Opklada prodata"
             },
             "bet": {
                 "yes": "Opklada {{amount}} na da",
@@ -7489,6 +7490,13 @@
         }
     },
     "agreement": {
+        "outcomes": {
+            "owners": "Vlasnici ulaznih parcela",
+            "none": "Vlasnici bez dela",
+            "several": "Vlasnici sa više delova",
+            "noneList": "Bez dela:",
+            "severalList": "Više delova:"
+        },
         "dialog": {
             "titleCreate": "Napravi sporazum",
             "titleEdit": "Uredi sporazum",
@@ -7498,6 +7506,7 @@
             "save": "Sačuvaj sporazum"
         },
         "sections": {
+            "pieces": "Nastalo zemljište",
             "consultation": "Neobavezujući sporazum",
             "land": "Zemljište",
             "allocation": "Raspodela",
@@ -7608,6 +7617,7 @@
             "openGround": "Deo zemljišta je otvoreno tlo bez upisanog vlasnika."
         },
         "panel": {
+            "plan": "Plan sporazuma",
             "title": "Sporazum",
             "untitled": "Sporazum od {{date}}",
             "status": {
@@ -7639,7 +7649,7 @@
             "collapse": "Zatvori sporazum",
             "removeLocalConfirm": "Ukloniti ovaj sporazum sa ovog uređaja? Njegova dizajni ostaju na mapi. Objavljeni sporazum ostaje dostupan putem veze.",
             "compareUnavailable": "Pre / posle je dostupno kada sporazum odgovara rešenjima primenjenim na mapi.",
-            "designs": "Dizajni u ovom planu"
+            "designs": "Dizajni u planu"
         },
         "list": {
             "create": "Napravi sporazum",
@@ -8243,6 +8253,9 @@
         "chooseSharePlan": "Koji plan želite da podelite?"
     },
     "clickStackRelations": {
+        "designParcels": "Parcele",
+        "formedParcelsTab": "Nove parcele",
+        "affectsParcelsTab": "Ulazne parcele",
         "affectedBy": "Obuhvaćeno dizajnom:",
         "memberPlans": "Uvršteno u planove:",
         "includedDesigns": "Dizajni:",

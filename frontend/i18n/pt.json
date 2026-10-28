@@ -1684,6 +1684,13 @@
         }
     },
     "agreement": {
+        "outcomes": {
+            "owners": "Proprietários das parcelas de entrada",
+            "none": "Proprietários sem porção",
+            "several": "Proprietários com várias porções",
+            "noneList": "Sem porção:",
+            "severalList": "Várias porções:"
+        },
         "chain": {
             "actions": {
                 "cancel": "Cancelar",
@@ -1806,6 +1813,7 @@
             "empty": "Os projetos selecionados não ocupam terrenos cadastrais."
         },
         "sections": {
+            "pieces": "Terreno resultante",
             "details": "Detalhes",
             "rule": "Regra de decisão",
             "consultation": "Acordo não vinculativo",
@@ -1867,6 +1875,7 @@
             }
         },
         "panel": {
+            "plan": "Plano do acordo",
             "actions": {
                 "edit": "Editar",
                 "bet": "Apostou",
@@ -1898,7 +1907,7 @@
             "collapse": "Fechar acordo",
             "removeLocalConfirm": "Remover este acordo deste dispositivo? Os respetivos projetos permanecem no mapa. Qualquer acordo publicado continua disponível através da sua ligação.",
             "compareUnavailable": "A comparação antes/depois está disponível quando este acordo corresponde aos projetos aplicados no mapa.",
-            "designs": "Projetos deste plano"
+            "designs": "Projetos do plano"
         },
         "addTo": {
             "title": "Adicionar ao acordo",
@@ -5105,7 +5114,8 @@
                 "donate": "Donativo efetuado",
                 "pledge": "Compromisso assumido",
                 "fulfillPledge": "Compromisso cumprido",
-                "claim": "Ganhos reclamados"
+                "claim": "Ganhos reclamados",
+                "sell": "Aposta vendida"
             },
             "title": "Atividade mais recente",
             "zoningType": "Zonamento",
@@ -5414,6 +5424,9 @@
         "designActions": "Ações do projeto"
     },
     "clickStackRelations": {
+        "designParcels": "Lotes",
+        "formedParcelsTab": "Lotes resultantes",
+        "affectsParcelsTab": "Lotes de origem",
         "affectedBy": "Afetado pelo desenho:",
         "includedDesigns": "Projetos:",
         "memberPlans": "Incluído nos planos:",
