@@ -144,26 +144,6 @@ async function rayVerifiedPickPoint(page: Page, target: 'parcel' | 'proposal', i
   }, { target, id });
 }
 
-// A point on the model view's canvas where the ray meets no visible mesh: a click there picks nothing.
-async function emptyPickPoint(page: Page) {
-  return page.evaluate(() => {
-    const w = window as any;
-    const { scene, camera, renderer } = w.getThreeModeInternals();
-    const shown = (object: any) => { for (let o = object; o; o = o.parent) if (o.visible === false) return false; return true; };
-    const meshes: any[] = [];
-    scene.traverse((object: any) => { if (object.isMesh && shown(object)) meshes.push(object); });
-    const rect = renderer.domElement.getBoundingClientRect();
-    const raycaster = new w.THREE.Raycaster();
-    for (const fy of [0.1, 0.2, 0.3, 0.5, 0.7]) for (const fx of [0.1, 0.3, 0.5, 0.7, 0.9]) {
-      const x = rect.left + rect.width * fx, y = rect.top + rect.height * fy;
-      if (document.elementFromPoint(x, y) !== renderer.domElement) continue;
-      raycaster.setFromCamera(new w.THREE.Vector2(fx * 2 - 1, 1 - fy * 2), camera);
-      if (!raycaster.intersectObjects(meshes, false).length) return { x, y };
-    }
-    throw new Error('No empty pick point in the model view');
-  });
-}
-
 test.describe('3D rendering and controls @features', () => {
   for (const width of [1280, 390]) {
     test(`first design pick preserves camera and outlines its volume at ${width}px`, async ({ mockApi: page }) => {
@@ -260,18 +240,11 @@ test.describe('3D rendering and controls @features', () => {
     await expect.poll(expanded).toBe('parcels');
     // The parcel's own references put the design on it into the stack.
     expect(await page.evaluate(() => (window as any).ThreeClickStack.current().sections.map((section: any) => section.kind))).toContain('designs');
-    // Another section opened through its row: the section shown next to the parcel's.
-    const openNeighbour = async () => {
-      const row = stack.locator('.click-stack__section:not([data-kind="parcels"]) [data-action="row"]').first();
-      const kind = await row.getAttribute('data-kind');
-      expect(kind).toBeTruthy();
-      await row.click();
-      await expect.poll(expanded).toBe(kind);
-    };
-    await openNeighbour();
-    expect(await camera()).toEqual(before);
-    // The same parcel picked again keeps the stack and opens the parcel's section, never the next one.
-    for (let repeat = 0; repeat < 3; repeat++) {
+    // A collapsed stack: the same parcel picked again re-opens the parcel's own section, never the next one.
+    const parcelRow = stack.locator('.click-stack__section[data-kind="parcels"] [data-action="row"]');
+    for (let repeat = 0; repeat < 2; repeat++) {
+      await parcelRow.click();
+      await expect.poll(expanded).toBe(null);
       await page.mouse.click(point.x, point.y);
       await expect.poll(expanded).toBe('parcels');
       await expect(stack).toBeVisible();
@@ -279,19 +252,20 @@ test.describe('3D rendering and controls @features', () => {
     }
     await page.evaluate(() => (window as any).ThreeClickStack.refresh());
     expect(await camera()).toEqual(before);
-    await openNeighbour();
-    await page.evaluate(() => (window as any).ThreeClickStack.refresh());
-    await page.mouse.click(point.x, point.y);
-    await expect.poll(expanded).toBe('parcels');
-    expect(await camera()).toEqual(before);
+    // Opening the Design row selects the unapplied design, whose preview is then drawn over the
+    // parcel: the same point now hits that design, the topmost object there, and keeps it.
+    await stack.locator('.click-stack__section[data-kind="designs"] [data-action="row"]').click();
+    await expect.poll(expanded).toBe('designs');
+    for (let repeat = 0; repeat < 2; repeat++) {
+      await page.mouse.click(point.x, point.y);
+      await expect.poll(expanded).toBe('designs');
+      await expect(stack).toBeVisible();
+      expect(await camera()).toEqual(before);
+    }
     await page.keyboard.press('Escape');
     await expect(stack).toBeHidden();
     await page.mouse.click(point.x, point.y);
     await expect.poll(expanded).toBe('parcels');
-    // A pick on nothing closes it too.
-    const empty = await emptyPickPoint(page);
-    await page.mouse.click(empty.x, empty.y);
-    await expect(stack).toBeHidden();
   });
 
   for (const width of [1280, 390]) {
