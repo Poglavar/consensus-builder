@@ -269,7 +269,7 @@ Flight motion continues to ignore obstacles; existing walk navigation remains a 
 ## Verification
 
 Planning task: read back this document, check whitespace and personal-identity rules, verify
-branch/worktree/base and commit only `plan.md`. No application test run is needed for this document.
+branch/worktree/base and commit only `docs/flying-camera-plan.md`. No application test run is needed for this document.
 
 Future implementation uses focused headless unit tests for:
 
