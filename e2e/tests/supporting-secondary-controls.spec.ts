@@ -217,12 +217,16 @@ test.describe('Supporting secondary controls @core', () => {
       run: { id: 'scope-run-42', persona: 'Map Steward', status: 'done', picks: [], costs: [] },
     }));
     await openCity(page);
-    // This device proposed the scoped agreement, so its row opens the local copy's panel.
+    // This device proposed the scoped agreement, so its row opens the local copy's panel. An agreement
+    // stands on a saved plan of its designs (plan-first agreements; the click stack opens it on that plan).
     const localId = await page.evaluate(cid => {
       const w = window as any;
+      const designCid = w.Cid.cidOfObject({ schema: 'design/v1', goal: 'park', title: 'Scoped park' });
+      const planContent = w.PlanRecord.create('Scoped park agreement', [designCid], w.MapShare.capture(w));
       return String(w.AgreementStore.save({
         schema: 'agreement/v1', id: w.AgreementRecord.newId(), title: 'Scoped park agreement', city: 'zagreb',
-        createdAt: '2026-10-01T11:00:00.000Z', designs: [{ proposalId: 'scoped-park', title: 'Scoped park', goal: 'park', cid: null }],
+        createdAt: '2026-10-01T11:00:00.000Z', plan: { cid: w.Cid.cidOfObject(planContent), content: planContent },
+        designs: [{ proposalId: 'scoped-park', title: 'Scoped park', goal: 'park', cid: designCid }],
         inputs: { parcels: [], openGroundM2: 0 }, outputs: [], rule: { electorate: 'community', binding: false },
         published: { cid, publishedAt: '2026-10-01T11:00:00.000Z', apiBase: w.DesignSync.apiBase(), sponsor: null },
       }).id);

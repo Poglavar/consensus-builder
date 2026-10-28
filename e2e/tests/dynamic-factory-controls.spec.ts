@@ -187,6 +187,8 @@ test.describe('shared dynamic button factories @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-transport-btn--road').click();
+    // The tool opens after loading building footprints: clicks before that reach no drawing.
+    await expect.poll(() => page.evaluate(() => (window as any).roadDrawingMode)).toBe(true);
     await clickMapPoint(page, 15.98195, 45.8001);
     await clickMapPoint(page, 15.98215, 45.8001);
     await expect(page.locator('#road-length')).not.toHaveText('0 m');

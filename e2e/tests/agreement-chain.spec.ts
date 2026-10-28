@@ -31,13 +31,17 @@ const short = (key: string) => `${key.slice(0, 4)}…${key.slice(-4)}`;
 const SOL = 1_000_000_000n;
 
 // A new agreement over a saved plan of the applied layout: owners or a community vote, a title, and
-// for owners the lens member the rule names (the member a mint names), saved; its panel current.
+// for owners an explicit Binding tick (a new agreement is a non-binding vote, 58ede10da) and the lens
+// member the rule names (the member a mint names), saved; its panel current.
 async function saveAgreement(page: Page, layoutId: string, { community = false, walletConnected = false } = {}): Promise<Locator> {
   const editor = await createFromPlan(page, layoutId);
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await editor.locator('[data-agreement-title]').fill(TITLE);
   if (community) await editor.locator('input[name="agreement-electorate"][value="community"]').check();
   else {
+    const binding = editor.locator('[data-agreement-binding]');
+    await expect(binding).not.toBeChecked();
+    await binding.check();
     // The rule's lens is edited in the lens dialog; the agreement keeps its own snapshot of it. With
     // a Solana wallet connected the dialog lists the lens directory's members to tick; without one
     // it takes typed addresses.

@@ -187,11 +187,14 @@ test.describe('Whole-site placement editing @features', () => {
         return reroll(tree, () => values[index++ % values.length]);
       };
     });
+    // A tree click opens its card; New look re-rolls it (aece604c6).
     const tree = page.locator('.structure-geometry-icon.is-tree').first();
     await tree.click();
+    const reroll = editor.locator('[data-role="tree-card"] [data-action="tree-reroll"]');
+    await reroll.click();
     await expect(tree.locator('.park-tree-glyph')).toHaveCSS('font-size', '38px');
     await expect(tree).toHaveCSS('width', '38px');
-    await tree.click();
+    await reroll.click();
     await expect(tree.locator('.park-tree-glyph')).toHaveCSS('font-size', '23px');
     await expect(tree).toHaveCSS('width', '23px');
     await editor.locator('[data-action="save"]').click();

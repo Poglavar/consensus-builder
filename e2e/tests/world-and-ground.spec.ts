@@ -40,22 +40,21 @@ async function openWorldFromCity(page: Page): Promise<void> {
 }
 
 test.describe('World navigation and open ground @features', () => {
-  test('city arrival loads the proposal pill count before opening the list and stops its pulse on first opening', async ({ mockApi: page }) => {
-    // The count is the city's published designs the index lists (DesignSync: the index has no count route).
+  test('city arrival shows the Lists pill without a design count; its Published scope lists the city', async ({ mockApi: page }) => {
+    // Lists holds designs, plans and agreements, so its pill carries no design-only count (01268caee).
     publishParks(page, 7);
     await page.goto('/?city=zg&lang=en'); await waitForMapReady(page);
-    const count = page.locator('#proposals-button-count');
-    await expect(count).toHaveText('7'); await expect(count).toBeVisible();
-    await expect(count).toHaveClass(/is-unopened/);
-    await expect(page.locator('#proposals-button')).toHaveAttribute('aria-label', 'Designs (7)');
-    // The Proposals sheet mounts the list itself (fbe3758d), so opening the sheet is the first opening.
+    await expect(page.locator('#proposals-button-count')).toBeHidden();
+    await expect(page.locator('#proposals-button')).toHaveAccessibleName('Lists');
     await page.locator('#proposals-button').click();
-    await expect(page.locator('#proposals-sheet .proposal-list-modal')).toBeVisible();
-    await expect(count).not.toHaveClass(/is-unopened/);
+    const sheet = page.locator('#proposals-sheet');
+    await sheet.locator('[data-list-source="published"]').click();
+    await expect(sheet.locator('#proposal-list-host .lists-item')).toHaveCount(7);
+    await expect(sheet.locator('#lists-status')).toHaveText('7 of 7 loaded items');
   });
 
-  test('Explore arrival counts and lists server proposals using the same visible area', async ({ mockApi: page }) => {
-    // One listing answers both: GET /designs by the visible area, whose rows are the count.
+  test('Explore Lists Published lists server designs in the visible area', async ({ mockApi: page }) => {
+    // Explore has no city: the Published scope asks GET /designs for the visible area.
     const listQueries: string[] = [];
     const rows = publishParks(page, 7).map(cid => pageIndex(page).designs.get(cid));
     await page.route(url => url.pathname.endsWith('/designs'), route => {
@@ -65,14 +64,18 @@ test.describe('World navigation and open ground @features', () => {
     });
     // Dhaka: no configured city covers it, so the address alone opens explore there
     await page.goto('/?at=23.7104,90.4074,16&lang=en&reduceMotion=1'); await waitForMapReady(page);
-    await expect(page.locator('#proposals-button-count')).toHaveText('7');
-    const first = new URL(listQueries.at(-1)!);
-    expect(first.searchParams.has('bbox')).toBe(true);
-    expect(first.searchParams.has('city')).toBe(false);
     await page.locator('#proposals-button').click();
-    await expect(page.locator('#proposals-sheet .proposal-list-modal')).toBeVisible();
-    await expect.poll(() => listQueries.length).toBeGreaterThan(0);
-    expect(new URL(listQueries.at(-1)!).searchParams.get('bbox')).toBe(first.searchParams.get('bbox'));
+    const sheet = page.locator('#proposals-sheet');
+    listQueries.length = 0;
+    await sheet.locator('[data-list-source="published"]').click();
+    await expect(sheet.locator('#proposal-list-host .lists-item')).toHaveCount(7);
+    expect(listQueries.length).toBeGreaterThan(0);
+    const bbox = await page.evaluate(() => (window as any).getProposalCountAreaContext().bbox.join(','));
+    for (const url of listQueries) {
+      const query = new URL(url).searchParams;
+      expect(query.has('city')).toBe(false);
+      expect(query.get('bbox')).toBe(bbox);
+    }
   });
   test('the world globe searches a live city and opens its configured map', async ({ mockApi: page }) => {
     test.setTimeout(90_000);
@@ -395,9 +398,10 @@ test.describe('World navigation and open ground @features', () => {
       const boxes = await ground.locator('.click-stack__actions > button').evaluateAll(buttons => buttons.map(button => {
         const { x, y, width } = button.getBoundingClientRect(); return { x, y, width };
       }));
-      expect(boxes).toHaveLength(7);
+      // Draw a parcel, then Road/Track and Road station/Track station in pairs (1f2fae6e1).
+      expect(boxes).toHaveLength(5);
       expect(boxes[0].width).toBeGreaterThan(boxes[1].width * 1.9);
-      for (const i of [1, 3, 5]) {
+      for (const i of [1, 3]) {
         expect(Math.abs(boxes[i].width - boxes[i + 1].width)).toBeLessThan(1);
         expect(Math.abs(boxes[i].y - boxes[i + 1].y)).toBeLessThan(1);
         expect(boxes[i + 1].x).toBeGreaterThan(boxes[i].x);
@@ -422,8 +426,9 @@ test.describe('World navigation and open ground @features', () => {
     const panel = page.locator('#grain-score-panel');
     await expect(panel).toBeVisible();
     await expect(panel.locator('[data-grain-role="result"]')).toBeVisible({ timeout: 20000 });
-    await expect(panel.locator('[data-grain-role="planName"]')).toHaveText('Applied composition');
-    await expect(panel.locator('[data-grain-role="route"]')).toHaveText('Local composition · score stays in this browser');
+    // The rooster scores a saved plan (09fbbd2aa): it names the plan openPlanActions saved.
+    await expect(panel.locator('[data-grain-role="planName"]')).toHaveText('Inspection plan');
+    await expect(panel.locator('[data-grain-role="route"]')).toHaveText('Plan score · stays in this browser');
     await test.info().attach('local-composition-score', { body: await panel.screenshot(), contentType: 'image/png' });
     const score = Number(await panel.locator('[data-grain-role="totalScore"]').innerText());
     expect(score).toBeGreaterThanOrEqual(0);

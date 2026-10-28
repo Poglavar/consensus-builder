@@ -68,7 +68,7 @@ function indexPublishedPark(page: import('@playwright/test').Page, title: string
 }
 
 test.describe('proposal button controls sixth pass @features', () => {
-  test('server design Download imports the selected record into this browser', async ({ mockApi: page }) => {
+  test('opening a published design from Lists imports the selected record into this browser', async ({ mockApi: page }) => {
     const cid = indexPublishedPark(page, 'Downloadable design');
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
@@ -83,17 +83,17 @@ test.describe('proposal button controls sixth pass @features', () => {
           published: { cid, publishedAt: '2026-10-12T10:00:00.000Z', apiBase: w.DesignSync.apiBase() } }),
       ];
     }, { parcelId: PARCEL_ID, cid });
+    // Lists (01268caee): a published row's title imports the design (ListsPanel designOf) and opens it.
     await page.locator('#proposals-button').click();
-    const list = page.locator('#proposals-sheet .proposal-list-modal');
-    await expect(list.locator(`.proposal-list-item[data-proposal-id="${cid}"]`)).toContainText('Draft');
-    await expect(list.locator('.proposal-list-item[data-proposal-id="p-stale-mark"]')).toContainText('Draft');
-    await list.locator('.proposal-source-btn[data-source="server"]').click();
-    const row = list.locator('.proposal-list-item').filter({ hasText: 'Downloadable design' });
+    const list = page.locator('#proposals-sheet');
+    await expect(list.locator(`#proposal-list-host .lists-item[data-list-id="${cid}"]`)).toContainText('Draft');
+    await expect(list.locator('#proposal-list-host .lists-item[data-list-id="p-stale-mark"]')).toContainText('Draft');
+    await list.locator('[data-list-source="published"]').click();
+    const row = list.locator('#proposal-list-host .lists-item').filter({ hasText: 'Downloadable design' });
     await expect(row).toBeVisible();
-    await expect(row).toHaveAttribute('data-cid', cid);
-    await expect(row.locator('.proposal-download-btn')).toBeEnabled();
-    await row.locator('.proposal-download-btn').click();
-    await expect(row.locator('.proposal-download-btn')).toBeDisabled();
+    await expect(row).toHaveAttribute('data-list-id', cid);
+    await expect(row.getByRole('button', { name: 'Remove from browser', exact: true })).toHaveCount(0);
+    await row.getByRole('button', { name: 'Downloadable design', exact: true }).click();
     const importedId = `design-${cid}`;
     await expect.poll(() => page.evaluate(id => {
       const w = window as any;
@@ -101,7 +101,6 @@ test.describe('proposal button controls sixth pass @features', () => {
       return record ? { title: record.title, cid: w.DesignSync.publishedCid(record), applied: !!w.isApplied(record) } : null;
     }, importedId)).toEqual({ title: 'Downloadable design', cid, applied: false });
     expect(pageIndex(page).requests.some(request => request.method === 'GET' && request.path === `/designs/${cid}`)).toBe(true);
-    await row.getByRole('button', { name: 'Details', exact: true }).click();
     await showProposal(page, importedId);
     await expect(page.locator('#proposal-details-panel')).toContainText('Downloadable design');
     expect(await page.evaluate(ids => ids.map(id => (window as any).proposalStorage.getProposal(id).title), localIds))

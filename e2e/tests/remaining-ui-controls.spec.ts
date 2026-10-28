@@ -153,9 +153,10 @@ test.describe('Remaining UI controls @features', () => {
   test('parcel coverage header close returns to Settings', async ({ mockApi: page }) => {
     await openCity(page);
     await page.locator('#settings-button').click();
-    const data = page.locator('#settings-sheet details.accordion-section[data-section="data"]');
-    if (!(await data.evaluate((details: HTMLDetailsElement) => details.open))) await data.locator(':scope > summary').click();
-    await page.locator('#showParcelCoverageButton').click();
+    // Local (browser) data sits inside the Advanced accordion.
+    const advanced = page.locator('#settings-sheet details.accordion-section[data-section="advanced"]');
+    if (!(await advanced.evaluate((details: HTMLDetailsElement) => details.open))) await advanced.locator(':scope > summary').click();
+    await page.locator('#settings-sheet section[data-section="data"] #showParcelCoverageButton').click();
     const modal = page.locator('#parcel-coverage-modal');
     await expect(modal).toBeVisible();
     await modal.locator('[data-parcel-coverage-close]').click();
@@ -167,8 +168,10 @@ test.describe('Remaining UI controls @features', () => {
     await openCity(page);
     await page.evaluate(() => (window as any).updateStatus('Status close control fixture'));
     await page.locator('#settings-button').click();
-    const diagnostics = page.locator('#settings-sheet details.accordion-section[data-section="diagnostics"]');
-    if (!(await diagnostics.evaluate((details: HTMLDetailsElement) => details.open))) await diagnostics.locator(':scope > summary').click();
+    // Diagnostics sits inside the Advanced accordion.
+    const advanced = page.locator('#settings-sheet details.accordion-section[data-section="advanced"]');
+    if (!(await advanced.evaluate((details: HTMLDetailsElement) => details.open))) await advanced.locator(':scope > summary').click();
+    const diagnostics = page.locator('#settings-sheet section[data-section="diagnostics"]');
     await diagnostics.locator('.status-bar').click();
     await expect(diagnostics.locator('#status-log-expanded')).toBeVisible();
     await diagnostics.locator('[data-status-open-log]').click();

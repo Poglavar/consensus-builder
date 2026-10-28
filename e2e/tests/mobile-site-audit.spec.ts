@@ -104,12 +104,19 @@ test('map agreement details resize without losing the saved agreement or applied
   const editor = await createFromPlan(page, layoutId);
   await editorSave(editor).click();
   const panel = await openStackAgreement(page);
-  const initial = (await panel.boundingBox())!.height;
-  await dragHandle(page, panel, -150);
-  expect((await panel.boundingBox())!.height).toBeGreaterThan(initial + 100);
-  await panel.locator(':scope > .mobile-dock-sheet-handle').focus();
+  // The agreement panel is hosted in the click stack, and the stack is the phone sheet: a hosted
+  // panel has no handle of its own (mobile-dock-sheet.js, cf72195aa).
+  const sheet = page.locator('#click-stack');
+  await expect(panel.locator(':scope > .mobile-dock-sheet-handle')).toHaveCount(0);
+  // The stack fits its cards, so dragging it up grows it until the whole stack shows, no further.
+  const initial = (await sheet.boundingBox())!.height;
+  await dragHandle(page, sheet, -150);
+  expect((await sheet.boundingBox())!.height).toBeGreaterThan(initial + 20);
+  expect(await sheet.locator('.click-stack__sections').evaluate(el => el.scrollHeight - el.clientHeight)).toBeLessThanOrEqual(1);
+  await sheet.locator(':scope > .mobile-dock-sheet-handle').focus();
   await page.keyboard.press('Home');
-  await dragHandle(page, panel, 140);
+  await dragHandle(page, sheet, 140);
+  await expect(sheet).toBeHidden();
   await expect(panel).toBeHidden();
   expect(await page.evaluate(id => {
     const w = window as any;

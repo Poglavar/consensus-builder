@@ -57,8 +57,10 @@ test.describe('Bets shared button variants @features', () => {
   test('Try again reloads a failed Bets request and renders the recovered contest', async ({ mockApi: page }) => {
     fileMinted(page);
     let attempts = 0;
-    // The first read fails; the next ones reach the index.
+    // The first read of the city's bets fails; the next ones reach the index. The World tab's read of
+    // other cities' bets (scope=other, 65a6c2d31), made once the city's bets loaded, is not counted.
     await page.route('**/markets?*', route => {
+      if (new URL(route.request().url()).searchParams.has('scope')) return route.fallback();
       attempts += 1;
       return attempts === 1
         ? route.fulfill({ status: 503, contentType: 'application/json', body: '{"error":"temporary"}' })

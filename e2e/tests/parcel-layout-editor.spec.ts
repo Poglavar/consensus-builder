@@ -2,9 +2,9 @@
 // layouts and hand edits shape the plots, and Done applies them as a parcel layout whose live pieces
 // keep their plot references and are held by the owners of the ground under them.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, openParcel, showProposal, PARCEL_ID, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
+import { clickMapPoint, openCity, openParcel, showProposal, PARCEL_ID, closeParcel, showSelectionDesignTab, stackSection } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
-import { editorOpen, editorClosed, editorCancel } from '../helpers/agreements';
+import { createFromPlan, editorClosed, editorCancel } from '../helpers/agreements';
 import type { Locator, Page } from '@playwright/test';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -557,14 +557,11 @@ test('a parcel layout\'s details offer no sharing or duplicate: it is published 
   expect(layout.footerBottom).toBeLessThanOrEqual(layout.panelBottom);
   // Nobody decides on or bets on a design by itself (M3): only an agreement over it is minted and bet on.
   await expect(panel.getByRole('button', { name: /\bbet\b/i })).toHaveCount(0);
-  // What it offers instead: Add to agreement, the layout's main action, which opens the agreement
-  // editor over it.
-  const add = panel.locator('.btn-create-agreement');
-  await expect(add).toHaveClass(/\bbtn-primary\b/);
-  await expect(add).toHaveText('Add to agreement');
-  await add.click();
-  const agreementEditor = await editorOpen(page, 'Create agreement');
-  await expect(agreementEditor.locator(`input[data-agreement-design="${proposalId}"]`)).toBeChecked();
+  // What it offers instead: Add to plan, which heads its design card in the click stack. An agreement
+  // is created from a saved plan, whose membership is fixed (e6fabf0b4 retired Add to agreement).
+  await expect(panel.locator('.btn-create-agreement')).toHaveCount(0);
+  await expect(stackSection(page, 'designs').locator('.click-stack__actions--design .btn-add-to-plan')).toBeVisible();
+  const agreementEditor = await createFromPlan(page, proposalId);
   await editorCancel(agreementEditor).click();
   await editorClosed(page);
 });

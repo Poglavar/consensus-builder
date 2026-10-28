@@ -12,13 +12,13 @@ test('slow selected locale never reveals translation keys or English labels befo
  });
  await page.goto('/?city=new_york&lang=es&reduceMotion=1',{waitUntil:'domcontentloaded'});
  const label=page.locator('#proposals-button .map-shell-button-label');
- await expect(label).toHaveText('Designs');
+ await expect(label).toHaveText('Lists');
  await expect(label).toBeHidden();
  expect(requests).not.toContain('hr.json');
  expect(requests).not.toContain('sr.json');
  release();
  await expect(label).toBeVisible();
- await expect(label).toHaveText('Diseños');
+ await expect(label).toHaveText('Listas');
  await expect(page.locator('body')).not.toHaveClass(/i18n-loading/);
 });
 
@@ -27,6 +27,6 @@ test('failed selected locale uses readable English instead of translation keys',
  await page.goto('/?city=new_york&lang=es&reduceMotion=1');
  const label=page.locator('#proposals-button .map-shell-button-label');
  await expect(label).toBeVisible();
- await expect(label).toHaveText('Designs');
- await expect(label).not.toContainText('mapShell.');
+ await expect(label).toHaveText('Lists');
+ await expect(label).not.toContainText('lists.');
 });

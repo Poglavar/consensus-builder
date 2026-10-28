@@ -223,6 +223,12 @@ test.describe('Before / after on a phone @features', () => {
     const cdp = await page.context().newCDPSession(page);
     await expect(page.locator('#click-stack > .mobile-dock-sheet-handle')).toBeHidden();
     const mapBox = (await page.locator('#map').boundingBox())!;
+    // Opening the design frames it with an animated pan (reduced motion stops only zoom animation):
+    // the centre the touches must preserve is the one the map settles on.
+    await expect.poll(() => page.evaluate(() => new Promise(resolve => {
+      const map = (window as any).map, center = map.getCenter();
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve(map.getCenter().equals(center))));
+    }))).toBe(true);
     const originalCenter = await page.evaluate(() => (window as any).map.getCenter());
     const gripControl = divider(page).locator('.map-compare__grip');
     await expect.poll(() => gripControl.evaluate(el => {
@@ -250,10 +256,22 @@ test.describe('Before / after on a phone @features', () => {
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     await expect.poll(async () => Number(await divider(page).getAttribute('aria-valuenow'))).toBeCloseTo(25, 1);
     const outside = await page.evaluate(() => {
-      // Tap the exposed northern part of the neighbour, above the folded phone panel.
-      const w = window as any, p = w.map.latLngToContainerPoint([45.80045, 15.9829]);
+      // Tap an exposed part of the neighbour 1235. Opening the design frames it above the phone
+      // sheet, and the folded stack's rows then sit at the top, so the point is searched for
+      // instead of fixed: inside the parcel, on the map, under no panel and off the divider.
+      const w = window as any, feature = w.LiveParcelFabric.get('HR-335754-1235');
+      const [west, south, east, north] = w.turf.bbox(feature);
       const box = w.map.getContainer().getBoundingClientRect();
-      return { x: box.left + p.x, y: box.top + p.y };
+      for (let i = 1; i < 10; i += 1) {
+        for (let j = 1; j < 10; j += 1) {
+          const lng = west + (east - west) * j / 10, lat = north - (north - south) * i / 10;
+          if (!w.turf.booleanPointInPolygon([lng, lat], feature)) continue;
+          const p = w.map.latLngToContainerPoint([lat, lng]), x = box.left + p.x, y = box.top + p.y;
+          const hit = document.elementFromPoint(x, y);
+          if (hit && hit.closest('#map') && !hit.closest('.map-compare__handle, #click-stack')) return { x, y };
+        }
+      }
+      throw new Error('No exposed point of parcel 1235 to tap');
     });
     await page.touchscreen.tap(outside.x, outside.y);
     await expect(page.locator('#click-stack')).toBeVisible();

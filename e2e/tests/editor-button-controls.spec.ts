@@ -471,7 +471,7 @@ test.describe('Editor button effects @features', () => {
     await openCity(page);
     await drawCorridor(page, 'road');
     await openParcelTabAt(page, 15.9822, 45.80045, 'propose-tab');
-    await page.locator('#parcel-info-panel .parcel-transport-btn--bus').click();
+    await page.locator('#parcel-info-panel .parcel-transport-btn--roadStation').click();
     await clickMapPoint(page, 15.9822, 45.80025);
     const stationId = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.structureProposal?.stationType === 'bus')?.proposalId);
     expect(stationId).toBeTruthy();
