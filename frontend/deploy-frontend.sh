@@ -107,14 +107,12 @@ node "$REMOTE_REPO/frontend/build-static.cjs" "$STAGING_DIR" "$REMOTE_REPO/front
 
 # Keep exactly one backup: the deployment that is live right now. Copy it, then delete every
 # older backup. Unbounded backups once filled the disk (222 copies, 4.4 GB by 2026-08-15).
-# data/hmlr/ is left out: the HMLR routing releases (~800 MB) are published by their own job,
-# deploys never touch them, and rollback-frontend.sh leaves them in place.
 if [ -d "$DOCROOT" ] && [ -n "$(ls -A "$DOCROOT" 2>/dev/null)" ]; then
     # Match only our own timestamped backups, never $DOCROOT itself.
     OLD_BACKUPS=$(ls -d "${DOCROOT}"_backup_* 2>/dev/null \
         | grep -E "^${DOCROOT}_backup_[0-9]{8}_[0-9]{6}$" || true)
     BACKUP="${DOCROOT}_backup_$(date +%Y%m%d_%H%M%S)"
-    rsync -a --exclude='/data/hmlr/' "$DOCROOT/" "$BACKUP/"
+    rsync -a "$DOCROOT/" "$BACKUP/"
     echo "💾 Backup: $BACKUP ($(du -sh "$BACKUP" | cut -f1))"
     OLD_BACKUPS=$(echo "$OLD_BACKUPS" | grep -v -x -F "$BACKUP" || true)
     if [ -n "$OLD_BACKUPS" ]; then
@@ -124,7 +122,6 @@ if [ -d "$DOCROOT" ] && [ -n "$(ls -A "$DOCROOT" 2>/dev/null)" ]; then
 fi
 
 # Sync frontend/ -> docroot (server-local rsync). Keep dev/deploy artefacts out of the docroot.
-# HMLR routing releases are published by the separate metadata job and must survive frontend deploys.
 mkdir -p "$DOCROOT"
 # Two passes so HTML lands last. nginx serves ?build=deploy-N assets as immutable for a year
 # (backend/nginx/urbangametheory.xyz.nginx.conf); if the new index.html went live before the new
@@ -134,13 +131,11 @@ mkdir -p "$DOCROOT"
 rsync -a \
     --exclude='*.html' \
     --exclude='.git' --exclude='.gitignore' --exclude='node_modules' --exclude='.DS_Store' \
-    --exclude='/data/hmlr/' \
     --exclude='deploy-frontend.sh' --exclude='rollback-frontend.sh' \
     --exclude='Dockerfile' --exclude='.env' --exclude='.deploy-build-counter' \
     "$STAGING_DIR/" "$DOCROOT/"
 rsync -a --delete \
     --exclude='.git' --exclude='.gitignore' --exclude='node_modules' --exclude='.DS_Store' \
-    --exclude='/data/hmlr/' \
     --exclude='deploy-frontend.sh' --exclude='rollback-frontend.sh' \
     --exclude='Dockerfile' --exclude='.env' --exclude='.deploy-build-counter' \
     "$STAGING_DIR/" "$DOCROOT/"

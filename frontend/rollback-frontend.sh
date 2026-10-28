@@ -3,7 +3,6 @@
 # Frontend rollback script for consensus-builder.
 # Restores the single backup that deploy-frontend.sh keeps (the deployment before the current one).
 # The live docroot then becomes the one backup, so running this twice undoes the rollback.
-# data/hmlr/ is never backed up or restored: the HMLR routing releases are published separately.
 
 set -euo pipefail
 
@@ -30,11 +29,11 @@ ssh_server "DOCROOT='$DOCROOT' RESTORE='$BACKUP' bash -s" <<'REMOTE'
 set -euo pipefail
 # Back up the live deployment first, so the rollback itself can be undone.
 CURRENT="${DOCROOT}_backup_$(date +%Y%m%d_%H%M%S)"
-rsync -a --exclude='/data/hmlr/' "$DOCROOT/" "$CURRENT/"
+rsync -a "$DOCROOT/" "$CURRENT/"
 echo "💾 Backup of the live deployment: $CURRENT"
 
 # --checksum: a same-size file changed within the same second would otherwise be skipped.
-rsync -a --delete --checksum --exclude='/data/hmlr/' "$RESTORE/" "$DOCROOT/"
+rsync -a --delete --checksum "$RESTORE/" "$DOCROOT/"
 chown -R www-data:www-data "$DOCROOT"; chmod -R 755 "$DOCROOT"
 [ -f "$DOCROOT/index.html" ] || { echo "❌ index.html missing after restore"; exit 1; }
 echo "✅ Restored $RESTORE"
