@@ -4388,27 +4388,6 @@
       ]
     },
     {
-      "id": "control-64262b34995f97-1",
-      "source": "js/memory-monitor.js",
-      "markup": "<button type=\"button\" class=\"btn btn-quiet btn-sm btn-icon memory-monitor-toggle\" aria-label=\"Toggle memory monitor\">",
-      "exempt": "The memory-monitor script is commented out in index.html and has no runtime loader.",
-      "mustRemainInactive": true,
-      "guards": [
-        {
-          "source": "js/memory-monitor.js",
-          "pattern": "<button\\s+type=\"button\"\\s+class=\"btn\\s+btn-quiet\\s+btn-sm\\s+btn-icon\\s+memory-monitor-toggle\"\\s+aria-label=\"Toggle\\s+memory\\s+monitor\">",
-          "occurrences": 1
-        },
-        {
-          "source": "js/memory-monitor.js",
-          "pattern": "<button\\s+type=\"button\"\\s+class=\"btn\\s+btn-quiet\\s+btn-sm\\s+btn-icon\\s+memory-monitor-toggle\"\\s+aria-label=\"Toggle\\s+memory\\s+monitor\">",
-          "occurrences": 1
-        }
-      ],
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
       "id": "control-fbd7ca887d9b49-1",
       "source": "js/mobile-dock-sheet.js",
       "markup": "win.document.createElement('button')",

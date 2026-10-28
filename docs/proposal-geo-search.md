@@ -39,7 +39,7 @@ key every list filtered on. Its problems:
 ### The geographic search against the labels
 
 Searched around each city's centre from `frontend/data/world-coverage.json` (the same centres as
-`city-config.js` `map.defaultCenter`), with the exact SQL `proposals/geo-search.js` builds:
+`data/city-configs.js` `map.defaultCenter`), with the exact SQL `proposals/geo-search.js` builds:
 
 | search | proposals | labelled with that city | labelled otherwise |
 |---|---|---|---|

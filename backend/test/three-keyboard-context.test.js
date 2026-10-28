@@ -51,7 +51,7 @@ describe('3D keyboard context', () => {
     });
 
     it('loads the policy through the model loader before 3D and installs a capture-phase boundary', () => {
-        expect(indexSource).toContain("'js/map-mode-loader.js'");
+        expect(indexSource).toMatch(/'js\/map-mode-loader\.js(\?[^']*)?'/);
         expect(modelScripts.indexOf('js/three-keyboard-context.js')).toBeGreaterThan(-1);
         expect(modelScripts.indexOf('js/three-keyboard-context.js'))
             .toBeLessThan(modelScripts.indexOf('js/three-mode.js'));

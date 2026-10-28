@@ -1,12 +1,12 @@
 import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 import { describe, it, expect, vi } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { runInNewContext } from 'node:vm';
 import { parcelSourceCatalog, clearParcelSourceRuntimeCache } from '../parcels/sources.js';
 import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
 import { computeBinding } from '../proposals/binding.js';
 const context = { URLSearchParams, console }; context.window = context;
-runInNewContext(readFileSync(new URL('../../frontend/js/city-config.js', import.meta.url),'utf8'),context);
+runInNewContext(cityConfigSource(),context);
 const manager = context.CityConfigManager;
 const box=(x,y)=>({type:'Polygon',coordinates:[[[x,y],[x+.0001,y],[x+.0001,y+.0001],[x,y+.0001],[x,y]]]});
 

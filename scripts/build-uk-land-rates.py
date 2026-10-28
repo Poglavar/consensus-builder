@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build frontend/js/uk-land-rates.js: a sterling land rate per m² for every UK city in city-config.js.
+"""Build frontend/js/uk-land-rates.js: a sterling land rate per m² for every UK city in data/city-configs.js.
 
 Source: MHCLG "Land value estimates for policy appraisal 2023" (published March 2026), sheet
 "Residential", medium site density at the median house price, in £/ha, per English local authority.
@@ -27,7 +27,7 @@ import urllib.parse
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CITY_CONFIG = os.path.join(ROOT, 'frontend', 'js', 'city-config.js')
+CITY_CONFIG = os.path.join(ROOT, 'frontend', 'data', 'city-configs.js')
 OUTPUT = os.path.join(ROOT, 'frontend', 'js', 'uk-land-rates.js')
 XLSX_URL = 'https://assets.publishing.service.gov.uk/media/69b2d95f912f3f96bf687b1c/Land_value_estimates_for_policy_appraisal_2023.xlsx'
 ONS_QUERY = ('https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/'
@@ -110,7 +110,7 @@ def main():
     points_path = os.path.join(args.cache, 'ons-points.json')
     points = json.load(open(points_path)) if os.path.exists(points_path) else {}
     cities = uk_cities()
-    log(f'{len(cities)} UK cities in city-config.js; {sum(1 for c in cities if c["id"] in points)} already looked up')
+    log(f'{len(cities)} UK cities in city-configs.js; {sum(1 for c in cities if c["id"] in points)} already looked up')
     table = {}
     for index, city in enumerate(cities, 1):
         if city['id'] not in points:

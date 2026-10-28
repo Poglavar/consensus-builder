@@ -10,7 +10,9 @@ The frontend owns city settings and selects every source it requests. Backend se
 resources and validated adapters. They do not select a source from a city, a parcel-ID prefix or
 geographic coverage. A city on a saved record is caller metadata, not a backend routing instruction.
 
-`frontend/js/city-config.js` owns each city's parcel, building, planning and floor-evidence choices.
+`frontend/data/city-configs.js` owns each city's parcel, building, planning and floor-evidence choices.
+The browser loads `data/city-index.js` (every city, light) plus `data/cities/<id>.js` (the current city,
+full), generated from it: regenerate the browser files with `node scripts/build-city-files.mjs --run` after editing it.
 `CityConfigManager.getDataContext(geometry, cityId)` resolves the frontend context for a location;
 `getParcelContext` returns just the publication metadata and parcel source. Source choices made by
 the visitor are applied there too.

@@ -1,8 +1,16 @@
 // Loads model, photo and AI capabilities separately, and gives every entry point one mode owner.
 (function (root) {
     'use strict';
+    // The floor-plan contract, generator and context: the model view's X-ray and the 2D "Suggested
+    // layouts" layer (suggested-layouts-2d.js) read them; they are not in the boot list.
+    const floorPlans = ['js/building-floor-plans.js', 'js/default-floor-plan-rooms.js',
+        'js/default-floor-plans.js', 'js/default-floor-plan-context.js'];
     const groups = {
+        floorPlans,
+        // Photo always enters through the model view (map-mode-transition.js), so the terrain-following
+        // road formation that photoreal-mode.js also reads loads here only.
         model: [
+            ...floorPlans, 'js/corridor-terrain-formation.js',
             'js/building-height.js', 'js/proposals/gain.js', 'js/three-mesh-sanitize.js',
             'js/three-screen-door.js', 'js/three-smooth-transparency.js', 'js/three-building-display.js',
             'js/three-floor-plans.js', 'js/three-building-facades.js', 'js/three-resources.js',
@@ -61,6 +69,7 @@
         return true;
     };
     root.__ensurePhotorealMode = () => loadGroup('photo');
+    root.__ensureFloorPlanModules = () => loadGroup('floorPlans');
     function paint(state) {
         root.__mapModeState = state;
         root.dispatchEvent(new CustomEvent('mapmodechange', { detail: state }));

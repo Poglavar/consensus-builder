@@ -135,7 +135,7 @@ describe('ranking', () => {
 
     it('has a translated name for every configured city in every locale', () => {
         // map-search.js shows city.labels.<id>; a missing key falls back to the English label.
-        const source = fs.readFileSync(path.join(FRONTEND, 'js/city-config.js'), 'utf8');
+        const source = fs.readFileSync(path.join(FRONTEND, 'data/city-configs.js'), 'utf8');
         const block = source.slice(source.indexOf('const CITY_CONFIGS'), source.indexOf('\n    };', source.indexOf('const CITY_CONFIGS')));
         const ids = [...block.matchAll(/^ {8}([a-z_]+): \{\n {12}id: '([a-z_]+)'/gm)].map(m => m[2]).filter(id => id !== 'explore');
         expect(ids).toEqual(expect.arrayContaining(['zagreb', 'split', 'sibenik', 'belgrade', 'ljubljana', 'buenos_aires', 'colorado', 'new_york']));

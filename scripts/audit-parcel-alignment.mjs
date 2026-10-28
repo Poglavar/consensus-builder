@@ -12,7 +12,7 @@ import { createParcelSource } from '../backend/parcels/sources.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DEFAULT_CATALOG = path.join(ROOT, 'frontend/data/source-catalog.json');
-const CITY_CONFIG = path.join(ROOT, 'frontend/js/city-config.js');
+const CITY_CONFIG = path.join(ROOT, 'frontend/data/city-configs.js');
 const FORMAT = 'parcel-alignment-audit-v1';
 const REQUEST_TIMEOUT_MS = 15_000;
 const MAX_REQUESTS = 3_000;

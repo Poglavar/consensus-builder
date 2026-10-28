@@ -1,7 +1,8 @@
 // Entering the app through the world view: the pure decisions (frontend/js/world/world-entry-model.js),
-// the explore city in the REAL city-config.js, the parcel fetch guard for a city without cadastre,
+// the explore city in the REAL data/city-configs.js, the parcel fetch guard for a city without cadastre,
 // and the optional site intro waiting for a first-visit globe only when requested.
 import { describe, it, expect, vi, beforeAll, afterEach } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -312,7 +313,7 @@ function loadCityConfig(search, stored = {}) {
         },
         dispatchEvent: () => true
     };
-    const fn = new Function('window', 'localStorage', 'PersistentStorage', 'URL', 'URLSearchParams', read('frontend/js/city-config.js'));
+    const fn = new Function('window', 'localStorage', 'PersistentStorage', 'URL', 'URLSearchParams', cityConfigSource());
     fn(win, win.localStorage, win.PersistentStorage, URL, URLSearchParams);
     return { manager: win.CityConfigManager, win, writes, scopes, store };
 }

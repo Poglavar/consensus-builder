@@ -1,9 +1,10 @@
 // A city's money for server-side code (the agents' planner, the agreements they publish): the
 // browser's own CityMoney over the browser's own city configs, so a bot counts London in GBP and
-// Zagreb in EUR exactly as the app does. frontend/js/city-config.js is evaluated once, in a vm.
+// Zagreb in EUR exactly as the app does. frontend/data/city-configs.js (every city's configuration)
+// and frontend/js/city-config.js (the manager) are evaluated once, in one vm context.
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { runInNewContext } from 'node:vm';
+import { createContext, runInContext } from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const CityMoney = require('../../../frontend/js/city-money.js');
@@ -13,7 +14,10 @@ function cityConfigs() {
     if (!manager) {
         const context = { console, URL, URLSearchParams };
         context.window = context;
-        runInNewContext(readFileSync(new URL('../../../frontend/js/city-config.js', import.meta.url), 'utf8'), context);
+        createContext(context);
+        for (const file of ['../../../frontend/data/city-configs.js', '../../../frontend/js/city-config.js']) {
+            runInContext(readFileSync(new URL(file, import.meta.url), 'utf8'), context);
+        }
         manager = context.CityConfigManager;
     }
     return manager;

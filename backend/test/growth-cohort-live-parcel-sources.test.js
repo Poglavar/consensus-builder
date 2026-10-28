@@ -3,6 +3,7 @@ import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import proj4 from 'proj4';
 import { clearParcelSourceRuntimeCache } from '../parcels/sources.js';
 import { parcelSourceForCity, parcelSourceForIds } from './helpers/frontend-source-selection.js';
@@ -32,7 +33,7 @@ describe('growth-cohort live parcel source contracts', () => {
 
         const context = { console, URL, URLSearchParams }; context.window = context;
         // CityConfigManager is a classic script, so evaluate it in an isolated browser-like context.
-        runInNewContext(read('frontend/js/city-config.js'), context);
+        runInNewContext(cityConfigSource(), context);
         const city = context.CityConfigManager.getCityConfig(sample.city);
         expect(city.parcels).toMatchObject({ sourceId: sample.source, idPrefix: sample.prefix, ownership: false });
         expect(city.projection.metricCrs).toBeUndefined();

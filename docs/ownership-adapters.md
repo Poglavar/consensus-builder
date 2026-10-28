@@ -37,7 +37,8 @@ The frontend (frontend/js/parcels/ownership.js, `parcelSourceIdFor`) takes the s
 city config: `parcels.source` for a city served from the app database (`oss-wfs`, `parcel-ba`, ...),
 `parcels.sourceId` for a catalog source, or the `historicalSources` entry whose `idPrefix` matches.
 A city whose config says `parcels.ownership: false` asks nothing and shows "Unknown owner": remove
-that flag from the city in frontend/js/city-config.js when you add ownership for it.
+that flag from the city in frontend/data/city-configs.js when you add ownership for it, then
+regenerate the browser files with `node scripts/build-city-files.mjs --run`.
 
 ## The contract: `parcel-ownership/1`
 

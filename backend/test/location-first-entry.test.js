@@ -2,6 +2,7 @@
 // same coverage the globe and the server use, ?city= is an alias for its centre, record links keep
 // their city, and the boot subset of the coverage answers exactly like the full JSON.
 import { describe, expect, it } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
@@ -176,7 +177,7 @@ describe('city-config boot', () => {
             WorldEntryModel, WorldCoverage, BOOT_COVERAGE: bootCoverage(fullJson)
         };
         context.window = context;
-        runInContext(read('../../frontend/js/city-config.js'), createContext(context));
+        runInContext(cityConfigSource(), createContext(context));
         return { manager: context.CityConfigManager, storage, logs };
     }
 
@@ -226,7 +227,7 @@ describe('city-config boot', () => {
             WorldEntryModel, WorldCoverage
         };
         context.window = context;
-        runInContext(read('../../frontend/js/city-config.js'), createContext(context));
+        runInContext(cityConfigSource(), createContext(context));
         expect(context.CityConfigManager.getCurrentCityId()).toBe('split');
         expect(errors.some(line => /boot coverage missing/.test(line))).toBe(true);
     });

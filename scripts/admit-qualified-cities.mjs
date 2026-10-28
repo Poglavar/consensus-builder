@@ -23,6 +23,7 @@ import zlib from 'node:zlib';
 import { createHash } from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { alignmentContractHash } from './lib/parcel-alignment.mjs';
+import { writeCityFiles } from './build-city-files.mjs';
 import { initialQualificationReview, qualificationPolicy, REQUIRED_CHECKS, hasUsableGeographicPolygons } from './lib/parcel-qualification-policy.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -389,7 +390,7 @@ function parcelsLine(descriptor) {
 // Replaces the one-line parcels setting of an existing city entry; nothing else in it changes.
 function switchParcelsLine(configText, appCityId, descriptor) {
     const start = configText.indexOf(`\n        ${appCityId}: {\n`);
-    if (start < 0) throw new Error(`city-config.js has no entry ${appCityId}`);
+    if (start < 0) throw new Error(`city-configs.js has no entry ${appCityId}`);
     const end = configText.indexOf('\n        },', start);
     const block = configText.slice(start, end);
     const lines = block.split('\n').filter(line => /^ {12}parcels: \{.*\},$/.test(line));
@@ -421,7 +422,7 @@ async function main() {
     const registry = readJson('world-parcels/registry.json');
     const demographics = readJson('world-parcels/report/city-demographics.json');
     const i18n = Object.fromEntries(LOCALES.map(l => [l, readJson(`frontend/i18n/${l}.json`)]));
-    const configText = read('frontend/js/city-config.js');
+    const configText = read('frontend/data/city-configs.js');
     const configs = parseCityConfigs(configText);
     const configIds = new Set([...configText.matchAll(/^ {8}([a-z0-9_]+): \{$/gm)].map(m => m[1]));
 
@@ -723,7 +724,8 @@ async function main() {
         const before = nextConfigText.slice(0, close).replace(/\}\s*$/, match => (match.trimEnd().endsWith(',') ? match : match.replace('}', '},')));
         nextConfigText = `${before}\n${added.map(cityConfigEntry).join('\n')}${nextConfigText.slice(close)}`;
     }
-    fs.writeFileSync(path.join(REPO, 'frontend/js/city-config.js'), nextConfigText);
+    fs.writeFileSync(path.join(REPO, 'frontend/data/city-configs.js'), nextConfigText);
+    writeCityFiles(REPO);
 
     writeJson(`world-parcels/research/qualification-admission-${args.release}.json`, {
         schemaVersion: 1, verifiedAt: args.release.slice(0, 10), cityCount: manifestCities.length,

@@ -83,7 +83,7 @@ a DOMContentLoaded handler (auto-collapse <768px, forces showProposedBuildings o
   (click .status-bar → toggleStatusExpanded; Copy all / Open log → #status-log-modal).
 - #toggle-sidebar-desktop (outside #sidebar) → toggleSidebar(); left 10px/330px.
 
-Per-city `sidebar.disabledSections` (city-config.js): zagreb none; split, sibenik, belgrade,
+Per-city `sidebar.disabledSections` (data/city-configs.js): zagreb none; split, sibenik, belgrade,
 buenos_aires, colorado, new_york ['parcelBlocks','buildings','roads','areaMonitor']; ljubljana
 ['buildings','roads','areaMonitor']. applySidebarConfiguration() runs from initializeSidebar and on
 every sidebar expand: parcelBlocks unchecks+disables #parcelBlocksCheckbox and hides the blocks section;

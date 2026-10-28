@@ -158,7 +158,8 @@ are assigned deterministically per point (the source carries no tree height).
    ```
 3. Add an entry to `backend/buildings/overture-cities.js` naming that `region`, plus
    `floorHeightM` / `defaultHeightM`.
-4. Set `buildings.source: 'overture'` in that city's `frontend/js/city-config.js` block.
+4. Set `buildings.source: 'overture'` in that city's `frontend/data/city-configs.js` block, then
+   regenerate the browser files with `node scripts/build-city-files.mjs --run`.
 
 No new provider code, route changes, or renderer changes — the trees toggle and providers are
 city-generic.

@@ -89,10 +89,10 @@ class CityStorageTests(unittest.TestCase):
         self.assertLess(len(json.dumps(self.row)), 500)
 
     def test_success_can_rebuild_from_settings_after_evidence_deleted(self):
-        for directory in ("scripts/lib", "frontend/js", "backend/parcels", "world-parcels/report"):
+        for directory in ("scripts/lib", "frontend/js", "frontend/data", "backend/parcels", "world-parcels/report"):
             (self.root / directory).mkdir(parents=True, exist_ok=True)
-        shutil.copy2(LIB / "parcel-city-settings.mjs", self.root / "scripts/lib/parcel-city-settings.mjs")
-        (self.root / "frontend/js/city-config.js").write_text("const CITY_CONFIGS = {\n        test: {id:'test',wupCityCode:'123',parcels:{source:'parcel-source',sourceId:'official'}}\n    };")
+        self._copy_settings_cli()
+        (self.root / "frontend/data/city-configs.js").write_text("const CITY_CONFIGS = {\n        test: {id:'test',wupCityCode:'123',map:{defaultCenter:[1,2]},parcels:{source:'parcel-source',sourceId:'official'}}\n    };")
         (self.root / "frontend/data/source-catalog.json").parent.mkdir(parents=True, exist_ok=True)
         (self.root / "frontend/data/source-catalog.json").write_text(json.dumps({"sources": [{"id": "official", "adapter": "arcgis", "endpoint": "https://official.test/parcels", "cityIds": ["test"], "evidenceFile": "research/retired.json"}]}))
         (self.root / "world-parcels/report/city-demographics.json").write_text('{"cities": []}')
@@ -129,11 +129,20 @@ class CityStorageTests(unittest.TestCase):
         self.assertFalse(self.packet.exists())
         self.assertFalse(self.receipt.exists())
 
+    def _copy_settings_cli(self):
+        # The settings CLI and what it imports: applying settings regenerates the browser city files,
+        # so the builder and its row format come along.
+        for directory in ("scripts/lib", "frontend/js"):
+            (self.root / directory).mkdir(parents=True, exist_ok=True)
+        for name in ("parcel-city-settings.mjs", "city-configs.mjs"):
+            shutil.copy2(LIB / name, self.root / "scripts/lib" / name)
+        shutil.copy2(LIB.parent / "build-city-files.mjs", self.root / "scripts/build-city-files.mjs")
+        shutil.copy2(LIB.parents[1] / "frontend/js/city-light-config.js", self.root / "frontend/js/city-light-config.js")
+
     def _qualified_artifact(self, *, complete=True):
         # Exercise the real recovery CLI and its hash/check guards in an isolated project root.
         (self.root / "package.json").write_text('{"type":"module"}')
-        (self.root / "scripts/lib").mkdir(parents=True, exist_ok=True)
-        shutil.copy2(LIB / "parcel-city-settings.mjs", self.root / "scripts/lib/parcel-city-settings.mjs")
+        self._copy_settings_cli()
         (self.root / "backend").mkdir(exist_ok=True)
         (self.root / "backend/parcels").symlink_to(Path(__file__).resolve().parents[2] / "backend/parcels")
         artifact = self.root / "tmp/state/qualification/cities/123/attempt-01"

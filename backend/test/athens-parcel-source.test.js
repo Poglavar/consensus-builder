@@ -1,14 +1,13 @@
 // Keeps Athens' live ArcGIS city entry aligned with its bounded sample and native Greek KAEK IDs.
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { createContext, runInContext } from 'node:vm';
 import { createParcelSource, parcelSourceCatalog } from '../parcels/sources.js';
 import { parcelSourceForCity, parcelSourceForIds } from './helpers/frontend-source-selection.js';
 
-const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const cityContext = { URLSearchParams, console };
 cityContext.window = cityContext;
-runInContext(read('../../frontend/js/city-config.js'), createContext(cityContext));
+runInContext(cityConfigSource(), createContext(cityContext));
 
 const sourceId = 'gr-ktimatologio-active-parcels-arcgis';
 const cityId = 'athens';

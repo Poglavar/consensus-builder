@@ -1,6 +1,6 @@
 // Source choices belong to frontend configuration, including choices made away from the current map.
 import {describe,it,expect} from 'vitest';
-import {readFileSync} from 'node:fs';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import {runInNewContext} from 'node:vm';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
@@ -8,7 +8,7 @@ const WorldCoverage=require('../../frontend/js/world/world-coverage.js');
 const BOOT_COVERAGE=require('../../frontend/data/world-coverage.json');
 function frontend() {
     const context={URLSearchParams,console,WorldCoverage,BOOT_COVERAGE}; context.window=context;
-    runInNewContext(readFileSync(new URL('../../frontend/js/city-config.js',import.meta.url),'utf8'),context);
+    runInNewContext(cityConfigSource(),context);
     return context.CityConfigManager;
 }
 describe('frontend data context',()=>{

@@ -116,7 +116,8 @@ an absolute unit cost and a whole-property sale is not a land-only sale.
 
 ## Place defaults and visitor preferences
 
-`frontend/js/city-config.js` is the per-city registry. It currently combines place identity, source
+`frontend/data/city-configs.js` is the per-city registry (the browser loads it split into
+`data/city-index.js` and `data/cities/<id>.js`; regenerate the browser files with `node scripts/build-city-files.mjs --run`). It currently combines place identity, source
 choices, availability constraints and display defaults. User customization should be a validated
 override over place defaults, not an editor for that entire object.
 

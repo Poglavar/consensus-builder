@@ -212,7 +212,6 @@
     --cb-z-map-chrome: 1000;        /* floating buttons, search, tray */
     --cb-z-popover: 1050;           /* parcel menu, dropdowns over the map */
     --cb-z-map-raised: 1100;        /* over a map's own chrome: the expanded status log, a screenshot's goal badge */
-    --cb-z-dev-overlay: 1400;       /* developer readouts (the memory monitor), under the docked panels */
     --cb-z-panel: 1500;             /* right-dock panels (parcel, proposal, road) */
     --cb-z-sheet: 1600;             /* sheets go over the docked panels: the person just asked for one */
     --cb-z-editor: 1650;            /* docked editors (proposal editor shell, cross-section, geometry): over sheets */

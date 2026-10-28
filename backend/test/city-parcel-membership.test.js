@@ -11,6 +11,7 @@
 // proposal applied in them silently did nothing.
 
 import { describe, it, expect } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createContext, runInContext } from 'node:vm';
@@ -22,10 +23,10 @@ const sha = require('../../frontend/js/bets/sha256.js');
 
 const read = relative => readFileSync(fileURLToPath(new URL(relative, import.meta.url)), 'utf8');
 const storageSource = read('../../frontend/js/proposals/storage.js');
-const cityConfigSource = read('../../frontend/js/city-config.js');
+const cityConfigsText = read('../../frontend/data/city-configs.js');
 const cityContext = { URLSearchParams, console };
 cityContext.window = cityContext;
-runInContext(cityConfigSource, createContext(cityContext));
+runInContext(cityConfigSource(), createContext(cityContext));
 const cityManager = cityContext.CityConfigManager;
 
 // The cities the app actually offers, taken from the config rather than restated here — restating
@@ -35,7 +36,7 @@ function configuredCityIds() {
     // `explore: true` marks the explore city (no cadastre, so no parcel-id space): not a city here.
     const pattern = /^\s{12}id:\s*'([a-z_]+)',?\n(\s{12}explore:\s*true)?/gm;
     let match;
-    while ((match = pattern.exec(cityConfigSource)) !== null) if (!match[2]) ids.add(match[1]);
+    while ((match = pattern.exec(cityConfigsText)) !== null) if (!match[2]) ids.add(match[1]);
     return [...ids];
 }
 

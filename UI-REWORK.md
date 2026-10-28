@@ -220,7 +220,7 @@ and open `/world-preview.html` (logs every callback; `?lang=hr`, `?reduceMotion=
 
 - Data: `node scripts/build-world-coverage.mjs --run` → `frontend/data/world-coverage.json` (~180 KB,
   deterministic; the tier mapping is documented in the script header). **Re-run it whenever
-  `world-parcels/registry.json` or a city's `defaultCenter` in `city-config.js` changes** —
+  `world-parcels/registry.json` or a city's `defaultCenter` in `data/city-configs.js` changes** —
   `backend/test/world-coverage-build.test.js` fails until the committed file matches.
 - Modules (`frontend/js/world/`): `globe-math.js` and `world-coverage.js` (pure, UMD), `globe.js`
   (`window.WorldView`), `handoff.js` (`window.WorldHandoff`); styles in `frontend/css/world.css`.

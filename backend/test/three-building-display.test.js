@@ -21,7 +21,7 @@ describe('3D building display policy', () => {
     });
 
     it('loads the policy through the model loader before the 3D view that consumes it', () => {
-        expect(frontendIndex).toContain("'js/map-mode-loader.js'");
+        expect(frontendIndex).toMatch(/'js\/map-mode-loader\.js(\?[^']*)?'/);
         expect(modelScripts.indexOf('js/three-building-display.js')).toBeGreaterThan(-1);
         expect(modelScripts.indexOf('js/three-building-display.js'))
             .toBeLessThan(modelScripts.indexOf('js/three-mode.js'));

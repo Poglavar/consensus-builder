@@ -13,7 +13,7 @@ plane, converts to lat/lng, and opens an *external* site in a new tab:
 
 See `frontend/js/three-mode.js:2945-3176` (`buildWalkUrl`, `openWalkAt`, `startWalkPick`). No OSM world
 exists inside consensus-builder. The button is hidden for every city that has no `walk.url`, and only
-Zagreb has one (`frontend/js/city-config.js:125`).
+Zagreb has one (its entry in `frontend/data/city-configs.js`).
 
 **The two apps are already integrated**, via a URL and the public API.
 `zagreb-isochrone-main/website/station-3d/world/proposals.js` (1374 lines) fetches proposals from

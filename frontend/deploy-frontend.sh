@@ -99,6 +99,17 @@ for p in paths:
 PY
 echo "🆕 Cache-bust token: $BUILD_ID"
 
+# build-static.cjs minifies every bundle with esbuild, a backend devDependency it resolves from
+# backend/ upwards, and stops when it is missing. This deploy-only clone has no backend install (a full
+# one is ~600 MB), so install just the version backend/package-lock.json locks into the clone's own
+# node_modules (gitignored, so reset --hard keeps it), and only when the installed one differs.
+ESBUILD_LOCKED=$(node -p "require('$REMOTE_REPO/backend/package-lock.json').packages['node_modules/esbuild'].version")
+ESBUILD_INSTALLED=$(node -p "try { require('$REMOTE_REPO/node_modules/esbuild/package.json').version } catch (error) { '' }")
+if [ "$ESBUILD_INSTALLED" != "$ESBUILD_LOCKED" ]; then
+    echo "📦 Installing esbuild $ESBUILD_LOCKED for bundle minification (found: ${ESBUILD_INSTALLED:-none})"
+    npm install --prefix "$REMOTE_REPO" --no-save --no-package-lock --no-audit --no-fund "esbuild@$ESBUILD_LOCKED"
+fi
+
 # Build immutable production-only classic-script bundles from the freshly reset, metadata-stamped
 # source tree. The builder writes a staged copy and never mutates the checked-out frontend.
 STAGING_DIR=$(mktemp -d "${TMPDIR:-/tmp}/cb-frontend-static.XXXXXX")

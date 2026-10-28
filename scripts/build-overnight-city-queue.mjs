@@ -158,7 +158,7 @@ function capitalRosterEvidence(candidates) {
 }
 
 function runtimeConfigEvidence(candidates) {
-    const source = readFileSync(path.join(ROOT, 'frontend/js/city-config.js'), 'utf8');
+    const source = readFileSync(path.join(ROOT, 'frontend/data/city-configs.js'), 'utf8');
     const starts = [...source.matchAll(/^\s{8}([a-z0-9_-]+):\s*\{/gim)];
     const entries = starts.map((match, index) => {
         const start = match.index + match[0].length;

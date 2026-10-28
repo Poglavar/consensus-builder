@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 import { createRequire } from 'node:module';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import * as parcelSources from '../parcels/sources.js';
 import { clearParcelSourceRuntimeCache, createParcelSource, parcelSourceCatalog } from '../parcels/sources.js';
 import { parcelSourceForIds } from './helpers/frontend-source-selection.js';
@@ -21,7 +22,7 @@ const samples = [
 ];
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const context = { URL, URLSearchParams, console }; context.window = context;
-runInContext(read('../../frontend/js/city-config.js'), createContext(context));
+runInContext(cityConfigSource(), createContext(context));
 const cities = context.CityConfigManager;
 const require = createRequire(import.meta.url);
 const route = require('../../frontend/js/parcels/route.js');

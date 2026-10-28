@@ -80,8 +80,7 @@ class AdmissionBridgeTests(unittest.TestCase):
             (self.root / "frontend/data/source-catalog.json").parent.mkdir(parents=True, exist_ok=True)
             (self.root / "frontend/data/source-catalog.json").write_text(json.dumps({"sources": [
                 {"id": "test-source", "cityIds": ["testville"]}]}))
-            (self.root / "frontend/js").mkdir(parents=True, exist_ok=True)
-            (self.root / "frontend/js/city-config.js").write_text("// configured")
+            (self.root / "frontend/data/city-configs.js").write_text("// configured")
             (self.root / "world-parcels").mkdir(parents=True, exist_ok=True)
             (self.root / "world-parcels/registry.json").write_text(json.dumps({"cities": [], "sources": []}))
             manifest = {"cities": [{"cityCode": "1", "sourceId": "test-source", "appCityId": "testville",

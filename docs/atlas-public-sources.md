@@ -4,7 +4,7 @@ Verified 2026-10-26. Public editions come from the [Mercatus state and regional 
 
 ## Registration and loading
 
-`frontend/data/planning-sources.json` owns the provider definitions. Each city selects its source through `planning.sourceIds` in `frontend/js/city-config.js` and pins the parcel provider in `parcelSourceId`. Backend source listing is consumer-neutral; bounds do not automatically enable a source for a city. The former `PLANNING_ATLAS_SOURCES` environment variable and inferred city parcel fallback are no longer the configuration contract.
+`frontend/data/planning-sources.json` owns the provider definitions. Each city selects its source through `planning.sourceIds` in `frontend/data/city-configs.js` (then `node scripts/build-city-files.mjs --run`) and pins the parcel provider in `parcelSourceId`. Backend source listing is consumer-neutral; bounds do not automatically enable a source for a city. The former `PLANNING_ATLAS_SOURCES` environment variable and inferred city parcel fallback are no longer the configuration contract.
 
 The shared `atlas-url` adapter accepts Slices GeoJSON by default. `product: "districts"` accepts public district GeoJSON or an archive profile with an exact GeoJSON member and, when needed, an exact CSV/XLSX rule member, worksheet names and join columns. The discovery schema in `frontend/js/source-contracts.js` describes these inputs.
 

@@ -189,7 +189,12 @@
 
     <!-- Reduced-motion support: must run after Leaflet, before any map is constructed -->
     <script>
-        window.writeVersionedLocalScripts(['js/ui/theme.js', 'js/reduced-motion.js']);
+        window.writeVersionedLocalScripts([
+            // bundle:start theme-motion
+            'js/ui/theme.js',
+            'js/reduced-motion.js'
+            // bundle:end theme-motion
+        ]);
     </script>
 
     <!-- Proj4js for coordinate transformations.
@@ -1154,7 +1159,7 @@
             <div class="map-sheet-header settings-header">
                 <h2 id="settings-sheet-title" class="map-shell-sr-only" data-i18n-key="mapShell.settings">Settings</h2>
                 <div class="settings-brand">
-                    <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo" class="settings-brand-logo">
+                    <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo" class="settings-brand-logo" loading="lazy">
                     <span class="settings-brand-title" data-i18n-key="sidebar.header.title">Consensus Builder</span>
                     <span class="cb-badge cb-badge--info" data-i18n-key="sidebar.header.aiBadgeTooltip"
                         data-i18n-attr="title,aria-label"
@@ -1764,8 +1769,8 @@
         window.writeVersionedLocalScripts([
             'js/optional-tools-loader.js?v=20261027-stack-properties',
             'js/shared-utils.js',
-            'js/ui/banner-stack.js',
             // bundle:start foundation
+            'js/ui/banner-stack.js',
             'js/ui/modal-escape.js',
             'js/ui/dialogs.js?v=20261027-agreement-focus',
             'js/browser-workspace.js',
@@ -1802,8 +1807,12 @@
             'js/metric-frame.js',
             'js/imagery-source.js',
             'js/parcel-source-settings.js',
+            // The index of every city (light configurations) and its row format, read by city-config.js,
+            // which then writes the current city's full configuration (data/cities/<id>.js) into the page.
+            'js/city-light-config.js',
+            'data/city-index.js',
             // bundle:end environment-before-city
-            'js/city-config.js?v=20261020-ljubljana-gurs',
+            'js/city-config.js?v=20261028-city-index',
             // bundle:start environment-after-city
             'js/parcel-source-notice.js',
             'js/ui/world-entry.js?v=20261026-globe-failure',
@@ -1855,12 +1864,16 @@
     </script>
     <script>
         window.writeVersionedLocalScripts([
+            // bundle:start proposal-evidence-routing
             'js/proposals/lifecycle-evidence.js?v=20261020-observation',
             'js/solana/rpc-routing.js',
+            // bundle:end proposal-evidence-routing
             'js/proposals/status.js?v=20261019-local-consent',
+            // bundle:start proposal-display-state
             'js/proposals/display-state.js?v=20261020-recorded-execution',
             'js/proposals/epoch.js?v=20261020-explicit-publication',
             'js/proposals/counts.js',
+            // bundle:end proposal-display-state
             'js/proposal-parcel-identity.js',
             // bundle:start chain-clients
             'js/wallet-connection.js',
@@ -1893,12 +1906,12 @@
             'js/parcels/utils/fetch-config.js',
             'js/parcels/controller.js',
             'js/parcels/activity-listener.js',
-            // bundle:end parcel-data-clients
             // Existing buildings: shared height/extrusion rules, the provider core,
             // and the client routing every building read through the backend.
             'js/building-extrusion.js',
             'js/footprint-provider.js',
             'js/building-source-client.js',
+            // bundle:end parcel-data-clients
             'js/map-core.js?v=20261009-map-credits',
             'js/user-management.js?v=20261020-modeled-totals',
             'js/site-intro.js',
@@ -2019,8 +2032,8 @@
             // road is decoded through them at load. corridor-profile.js is a bare classic script, so
             // it stays outside the bundles.
             'js/corridor-profile.js',
-            'js/corridor-osm-form.js',
             // bundle:start proposal-geometry
+            'js/corridor-osm-form.js',
             'js/proposals/footprint-parts.js',
             'js/proposals/plan-order.js',
             'js/proposals/site-binding.js',
@@ -2087,25 +2100,32 @@
             'js/freeform-land-take-review.js?v=20261027-source-occupancy',
             'js/building-surroundings-editor.js',
             'js/proposal-own-parcel.js',
-            // bundle:end proposal-geometry
             'js/proposals/area.js?v=20261020-complete-area',
+            // bundle:end proposal-geometry
             'js/proposals/geometry.js?v=20261020-consent-evidence',
             'js/proposals/roads.js',
             'js/proposals/reparcel.js',
             'js/proposals/storage.js?v=20261020-estimated-city',
+            // bundle:start proposal-sync
             'js/proposals/agent-provenance.js',
             'js/proposals/design-sync.js',
+            // bundle:end proposal-sync
             'js/proposals/urban-rules.js',
+            // bundle:start proposal-panel-text
             'js/proposals/display-text.js',
             'js/proposals/panel-presentation.js?v=20261020-complete-area',
+            // bundle:end proposal-panel-text
             'js/proposals/list-ui.js?v=20261020-row-lookup',
+            // bundle:start proposal-map-actions
             'js/proposals/map-action.js',
             'js/proposals/before-after.js',
             'js/proposals/road-actions-model.js',
             'js/proposals/road-actions.js',
             'js/proposals/ground-rebase.js',
+            // bundle:end proposal-map-actions
             'js/proposals/execution.js?v=20261020-consent-evidence',
             'js/proposals/layer-render.js',
+            // bundle:start proposal-inspection
             'js/proposals/drill-ui.js',
             'js/click-stack/click-stack-model.js?v=20261027-observed-context',
             'js/click-stack/click-stack-relations.js?v=20261027-observed-context',
@@ -2115,22 +2135,30 @@
             'js/proposals/parcel-set-relations.js?v=20261020-reference-relations',
             'js/proposals/approval-panel.js?v=20261027-experimental',
             'js/proposals/parcel-history-card.js?v=20261020-anchor-observation',
+            // bundle:end proposal-inspection
             'js/proposals/details-panel.js?v=20261027-agreement-tabs',
+            // bundle:start parcel-compare
             'js/proposals/parcel-compare.js?v=20261020-comparison-status',
             'js/proposals/parcel-compare-ui.js?v=20261020-comparison-status',
+            // bundle:end parcel-compare
             'js/proposals/create.js?v=20261020-mint-identifiers',
+            // bundle:start proposal-drafts
             'js/proposal-drafts.js?v=20261019-local-purchase',
             'js/corridor-draft.js',
+            // bundle:end proposal-drafts
             'js/proposals/copy.js',
+            // bundle:start proposal-editor
             'js/proposal-editor-adapters.js?v=20261027-surroundings',
             'js/proposal-editor-shell.js?v=20261027-station-inspection',
             'js/road-editing-zoom.js',
             'js/building-layers-dialog.js',
             'js/road-node-edit.js',
+            // bundle:end proposal-editor
             'js/proposals/dialog-create.js?v=20261019-unknown-ownership',
             'js/proposals/ready-signal.js',
             'js/proposals/create-preview.js',
             'js/proposals/dialog-share.js?v=20261027-agreement-tabs',
+            // bundle:start plans-agreements
             'js/design-record.js',
             'js/plan-file.js',
             'js/plan-file-ui.js?v=20261027-agreement-tabs',
@@ -2147,17 +2175,15 @@
             'js/agreement-panel.js?v=20261027-agreement-tabs',
             'js/agreement-list.js?v=20261027-agreement-tabs',
             'js/agreement-sync.js?v=20261027-stack-properties',
-            'js/building-floor-plans.js',
-            'js/default-floor-plan-rooms.js',
-            'js/default-floor-plans.js',
-            'js/default-floor-plan-context.js',
-            'js/suggested-layouts-2d.js',
+            'js/suggested-layouts-2d.js?v=20261028-lazy-floor-plans',
             'js/proposals/replay-status.js',
+            // bundle:end plans-agreements
             'js/proposals/sharing-routes.js?v=20261020-publication-copies',
             'js/proposals/grain-score-rules.js',
             'js/proposals/core.js?v=20261022-agreement-chain',
             'js/proposals/data.js?v=20261020-chain-title',
             'js/proposals/bootstrap.js?v=20261019-local-purchase',
+            // bundle:start plan-analysis
             'js/proposals/plan-yield.js',
             'js/proposals/site-stats.js',
             'js/proposals/maintenance.js',
@@ -2168,7 +2194,9 @@
             'js/proposals/plan-stats.js',
             'js/parcel-coverage-debug.js',
             'js/ui/notice-queue.js',
+            // bundle:end plan-analysis
             'js/ui-helpers.js',
+            // bundle:start lens-corridor-apply
             'js/lens.js?v=20261027-agreement-focus',
             'js/lens-picker.js?v=20261027-agreement-focus',
             'js/road-supersession.js',
@@ -2183,14 +2211,18 @@
             'js/publish-gap-debug.js',
             'js/proposals/apply/route.js',
             'js/proposals/apply/validate.js',
+            // bundle:end lens-corridor-apply
             'js/proposals/apply/finalize.js',
             'js/proposals/apply/transaction.js',
             'js/proposal-road-geometry.js',
+            // bundle:start proposal-apply
             'js/proposals/apply/road.js',
             'js/proposals/apply/buildings.js',
             'js/proposals/apply/structures.js',
             'js/proposals/apply/parcels.js?v=20261019-plot-provenance',
+            // bundle:end proposal-apply
             'js/proposal-manager.js',
+            // bundle:start reparcellization
             'js/reparcellization-shares.js',
             'js/reparcellization-slice.js',
             'js/reparcellization-ui-state.js',
@@ -2199,24 +2231,29 @@
             'js/ui/map-before-after.js',
             'js/parcel-layout-validation.js',
             'js/parcel-layout-layouts.js',
-            'js/parcel-layout.js?v=20261021-layout',
             'js/road-ownership-model.js?v=20261020-evidence',
+            // bundle:end reparcellization
             'js/financials.js?v=20261020-modeled-totals',
+            // bundle:start agent-tools
             'js/agent-action-engine.js',
             'js/actor-explorer.js',
             'js/agent-wallet-scope.js?v=20261020-wallet-observations',
             'js/agent-proposal-links.js?v=20261020-qualified-profile-links',
+            // bundle:end agent-tools
             'js/agents.js?v=20261020-profile-offers',
             'js/agent-bubbles.js',
             'js/game.js',
+            // bundle:start activity-structures-transit
             'js/ui/activity-panel-model.js',
             'js/ui/activity-panel.js',
             'js/park-planting.js',
+            'js/furniture-models.js',
             'js/structures.js',
             'js/structure-geometry-editor.js?v=20261027-boundary-editing',
             'js/vendor/transit-station-models.js',
             'js/transit-alignments.js',
             'js/transit-stations.js?v=20261027-station-inspection'
+            // bundle:end activity-structures-transit
         ]);
     </script>
 
@@ -2264,6 +2301,7 @@
     <!-- External JavaScript modules -->
     <script>
         window.writeVersionedLocalScripts([
+            // bundle:start corridor-core
             'js/road-parcels.js',
             'js/legacy-road-centerlines.js',
             'js/corridor-lane-topology.js',
@@ -2274,19 +2312,21 @@
             'js/corridor-import-osm.js',
             'js/corridor-import.js',
             'js/corridor-footprint.js',
-            'js/corridor-terrain-formation.js',
             'js/corridor-clearance.js',
             'js/corridor-edge-fill.js',
             'js/corridor-edge-fill-scene.js',
+            // bundle:end corridor-core
             'js/corridor-carve.js',
             'js/corridor-render.js',
             'js/corridor-editor.js',
+            // bundle:start corridor-structures
             'js/corridor-tunnel.js',
             'js/corridor-grade-separation.js',
             'js/proposals/plot-crossings.js',
             'js/corridor-structures.js',
             'js/road-stroke-state.js',
             'js/road-finalization-state.js',
+            // bundle:end corridor-structures
             'js/road-drawing-loader.js',
             'js/measurement-tool.js',
             'js/pinpoint-tool.js',
@@ -2349,11 +2389,13 @@
         // building-blocks and government-roads are hard dependencies of parcel
         // selection, proposal apply and the area monitor.
         window.writeVersionedLocalScripts([
+            // bundle:start local-frame-context
             'js/local-frame.js',
             'js/urban-rule-variation.js',
-            'js/three-edit-scene.js',
             'js/three-context-buildings.js',
+            // bundle:end local-frame-context
             'js/parcel-blocks.js',
+            // bundle:start site-drawing
             'js/proposal-warnings.js',
             'js/polygon-geometry-editor.js',
             'js/street-frontage.js',
@@ -2362,28 +2404,34 @@
             'js/blockify-map-fit.js',
             'js/design-change-tracker.js',
             'js/ineligible-block-parts.js',
+            // bundle:end site-drawing
             'js/building-blocks.js',
+            // bundle:start view-limits-roads
             'js/view-bbox-limit.js',
             'js/government-roads.js?v=20260404b'
+            // bundle:end view-limits-roads
         ]);
     </script>
     <script>
         window.writeVersionedLocalScripts([
+            // bundle:start map-mode
             'js/map-mode-transition.js',
-            'js/map-mode-loader.js?v=20261027-stack-properties'
+            'js/map-mode-loader.js?v=20261028-lazy-floor-plans'
+            // bundle:end map-mode
         ]);
     </script>
-    <!-- <script src="js/memory-monitor.js"></script> -->
 
     <!-- Area Monitor -->
     <script>
         window.writeVersionedLocalScripts([
+            // bundle:start area-monitor
             'js/area-monitor/draw.js?v=20260404a',
             'js/area-monitor/map.js',
             'js/area-monitor/paint.js?v=20260404i',
             'js/area-monitor/ui.js?v=20260428a',
             'js/area-monitor/routing.js?v=20260404a',
             'js/app-routes.js',
+            // bundle:end area-monitor
             'js/boot-ready.js'
         ]);
     </script>
@@ -2418,7 +2466,7 @@
                 </div>
             </article>
             <article class="site-intro-slide" data-site-intro-slide="propose" hidden>
-                <div class="site-intro-visual" aria-hidden="true"><img src="images/site-intro-parcels.webp" alt="" width="1400" height="700"><div class="site-intro-visual-labels"><span data-i18n-key="modal.siteIntro.before">Existing parcels</span><span data-i18n-key="modal.siteIntro.after">Proposed block</span></div></div>
+                <div class="site-intro-visual" aria-hidden="true"><img src="images/site-intro-parcels.webp" alt="" width="1400" height="700" loading="lazy"><div class="site-intro-visual-labels"><span data-i18n-key="modal.siteIntro.before">Existing parcels</span><span data-i18n-key="modal.siteIntro.after">Proposed block</span></div></div>
                 <div class="site-intro-copy">
                     <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.tour.propose.eyebrow">From idea to design</p>
                     <h2 id="site-intro-title-propose" data-i18n-key="modal.siteIntro.tour.propose.title">Make change visible</h2>
@@ -2541,7 +2589,7 @@
                                  toggles below it (user-management.js showAvatarOptions). -->
                             <button type="button" id="selected-avatar" class="cb-option selected-avatar"
                                 aria-controls="avatar-options" aria-expanded="false" onclick="showAvatarOptions()">
-                                <img id="selected-avatar-img" src="avatars/avatar1.png" alt="Avatar"
+                                <img id="selected-avatar-img" src="avatars/avatar1.png" alt="Avatar" loading="lazy"
                                     data-i18n-key="modal.welcome.avatarAlt" data-i18n-attr="alt">
                                 <span class="avatar-selection-hint" data-i18n-key="modal.welcome.avatarHint">Click to
                                     choose</span>

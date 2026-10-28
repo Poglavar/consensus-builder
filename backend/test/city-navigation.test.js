@@ -4,12 +4,13 @@
 // a place that cannot open; staying keeps the stayed-in city in the address. Real city-config.js and
 // city-switch-prompt.js, with a fake location and history.
 import { describe, it, expect, vi, beforeAll } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import vm from 'node:vm';
 
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
-const cityConfigSource = read('../../frontend/js/city-config.js');
+const cityConfigText = cityConfigSource();
 const promptSource = read('../../frontend/js/city-switch-prompt.js');
 const Cid = createRequire(import.meta.url)('../../frontend/js/cid.js');
 // Design and agreement links name published objects by CID (plan-design-agreement.md, M2).
@@ -46,7 +47,7 @@ function boot(href) {
     context.window = context;
     context.globalThis = context;
     vm.createContext(context);
-    vm.runInContext(cityConfigSource, context, { filename: 'city-config.js' });
+    vm.runInContext(cityConfigText, context, { filename: 'city-config.js' });
     vm.runInContext(promptSource, context, { filename: 'city-switch-prompt.js' });
     return { context, manager: context.CityConfigManager, visits: fake.visits, history: fake.history };
 }
@@ -168,7 +169,7 @@ describe('the city\'s default language', () => {
         context.window = context;
         context.globalThis = context;
         vm.createContext(context);
-        vm.runInContext(cityConfigSource, context, { filename: 'city-config.js' });
+        vm.runInContext(cityConfigText, context, { filename: 'city-config.js' });
         return { setLanguage, load: async () => { loaded = true; release(); await ready; await Promise.resolve(); } };
     }
 

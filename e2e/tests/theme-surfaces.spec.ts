@@ -19,7 +19,6 @@ for (const width of [1280, 390]) {
           ['urban-block-panel', ''], ['planning-inspector', ''], ['parcel-estimate-panel', ''],
           ['cb-dialog plan-dialog', ''], ['grain-score-panel', ''], ['command-palette', ''],
           ['on-map-editor__tools reparcel-tools-map', ''], ['ai-scene-follow-card', ''],
-          ['memory-monitor-panel', ''],
         ];
         const reference = document.createElement('div');
         reference.style.background = 'var(--cb-glass-sheet)';

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { createRequire } from 'node:module';
-import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 import { area, bboxPolygon } from '@turf/turf';
 import { encodeCustomSource, decodeCustomSource } from '../parcels/custom-source-config.js';
@@ -22,7 +22,7 @@ function bootCity(city, global) {
     const window = { ...global, ParcelSourceSettings: settings, PersistentStorage: persistent, dispatchEvent() {} };
     window.location = { ...global.location, search: '?city=' + city + (global.location.search ? '&' + global.location.search.slice(1) : '') };
     const context = createContext({ window, localStorage: window.localStorage, PersistentStorage: persistent, URL, URLSearchParams });
-    runInContext(readFileSync(new URL('../../frontend/js/city-config.js', import.meta.url), 'utf8'), context);
+    runInContext(cityConfigSource(), context);
     return { manager: window.CityConfigManager, scopes };
 }
 

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { zipSync, strToU8 } from 'fflate';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
@@ -179,7 +180,7 @@ it('enables the public Atlas cities with explicitly selected planning and parcel
     const configured = JSON.parse(readFileSync(new URL('../../frontend/data/planning-sources.json', import.meta.url), 'utf8'));
     const sources = parseAtlasSources(JSON.stringify(configured.sources));
     const context = { URLSearchParams, console }; context.window = context;
-    runInContext(readFileSync(new URL('../../frontend/js/city-config.js', import.meta.url), 'utf8'), createContext(context));
+    runInContext(cityConfigSource(), createContext(context));
     expect(sources.map(source => source.city).sort()).toEqual(['arlington', 'arlington_va', 'concord', 'dale_city', 'fall_river',
         'helena', 'honolulu', 'lawrence', 'lindberg', 'lowell', 'lynn', 'manassas_park', 'nashville', 'norfolk', 'south_central',
         'sugarland_run', 'worcester'].sort());

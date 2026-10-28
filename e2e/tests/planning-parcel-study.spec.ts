@@ -71,9 +71,9 @@ test('Permitted keeps its envelope controls and ignores retired parcel-study lin
         summaries:[],unavailable:[],coverage:'source-results',nextCursor:null,omitted:0}});
   });
   // Source selection is a frontend city setting; the backend catalog does not choose a default.
-  await page.route(/\/js\/city-config\.js(?:\?|$)/, async route => {
+  await page.route(/\/data\/cities\/colorado\.js(?:\?|$)/, async route => {
     const response = await route.fetch();
-    const body = (await response.text()).replace('colorado: {', `colorado: { planning: { sourceIds: [${JSON.stringify(source.id)}] },`);
+    const body = (await response.text()).replace('{"id":"colorado",', `{"id":"colorado","planning":{"sourceIds":[${JSON.stringify(source.id)}]},`);
     await route.fulfill({ response, body });
   });
   await page.goto(url.replace('planningScenario=family1','planningScenario=all') + '&planningStudyScenario=family1'); await waitForMapReady(page);
