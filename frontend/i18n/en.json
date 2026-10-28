@@ -6223,6 +6223,18 @@
         }
     },
     "structureEditor": {
+        "furniture": {
+            "title": "Furniture models",
+            "upload": "Upload",
+            "default": "Default",
+            "uploaded": "Uploaded model",
+            "errorTriangles": "This model has {{triangles}} triangles. A furniture model may have at most {{max}}.",
+            "errorTexture": "A texture is {{width}} × {{height}} px. Furniture textures may be at most {{max}} px on each side.",
+            "errorBytes": "This file is {{size}} MB. A furniture model may be at most {{max}} MB.",
+            "errorEmpty": "This model has no visible geometry.",
+            "errorParse": "Could not read this file as glTF/GLB. Use a self-contained .glb or .gltf export.",
+            "errorUpload": "The furniture model could not be uploaded. Check the connection and try again."
+        },
         "uploadModel": "Upload model (.glb)",
         "importBoundary": "Import boundary (GeoJSON)",
         "importInvalidShape": "The new boundary is not a valid single area.",
@@ -6246,13 +6258,14 @@
         "instructions": "Choose an item, then click inside the boundary. Drag any item to move it.",
         "closeLabel": "Close",
         "tools": {
+            "lamp": "Lamp",
             "tree": "Tree",
             "flowerbed": "Flowerbed",
             "pond": "Pond",
             "path": "Footpath",
             "bench": "Bench",
             "fountain": "Fountain",
-            "stall": "Table",
+            "stall": "Market stall",
             "statue": "Statue",
             "erase": "Remove",
             "move": "Move",

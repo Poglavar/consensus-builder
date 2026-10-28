@@ -97,7 +97,7 @@ describe('hosted MCP agent acceptance boundary', () => {
             ugt_inspect_design: ['cid', 'values'], ugt_get_plan: ['cid', 'untrusted', 'designs', 'publication'],
             ugt_inspect_plan: ['cid', 'items', 'total', 'offset', 'truncated'],
             ugt_render_preview: ['ready', 'provenance', 'metrics'], ugt_export_draft: ['cid', 'artifact', 'publication'],
-            ugt_import_design: ['designs', 'publication', 'import'], ugt_import_model: ['cid', 'untrusted', 'asset'],
+            ugt_import_design: ['designs', 'publication', 'import'], ugt_import_model: ['asset'],
             ugt_list_sources: ['items', 'total', 'offset', 'truncated'], ugt_capabilities: ['version', 'mode', 'workflow', 'tools']
         };
         for (const [name, fields] of Object.entries(required)) {

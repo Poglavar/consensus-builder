@@ -90,6 +90,30 @@ and height together when the old height is outside the new range. Paths are coor
 ponds and flowerbeds are closed coordinate rings; benches have `coordinate` and `bearing` in
 degrees. These are the same records read by the site's map and model renderer.
 
+Parks and squares also carry lamps and per-kind furniture models in `decorationDesign`. Lamps are
+`lamps: [{coordinate:[longitude,latitude], bearing}]`; the bearing is degrees from north, stored in
+[0, 360). `models` maps a furniture kind to one uploaded GLB used for every placement of that kind:
+`models: {bench: {url, name}}`. Market stalls are `stalls: [{coordinate:[longitude,latitude], bearing,
+color}]` on parks and squares; `color` is an optional six-digit hex canopy colour such as `#2f9e6b`
+(stored lower-case; an invalid colour is dropped and the stall takes the site's palette colour by
+position). A park offers `bench`, `stall`, `tree` and `lamp`; a square offers `bench`, `statue`,
+`fountain`, `stall`, `tree` and `lamp`; a lake has none of them. Edits are normalized with the
+site's own rules (`frontend/js/furniture-models.js`): names are trimmed to 120 characters, an empty
+`models` object is removed, and a kind the structure does not offer fails with
+`furniture-kind-not-allowed`. A model entry without a `url`, or a lamp or stall without a valid
+coordinate, fails with `invalid-decoration`. Upload the asset with `ugt_import_model` `kind: 'furniture'`
+(at most 5000 triangles, textures at most 1024 px a side, 4 MiB; failures are `furniture-triangles`,
+`furniture-texture`, `furniture-bytes` or `furniture-empty`). It returns only
+`asset: {modelUrl, name, public, durable, kind: 'furniture', limits}`; then patch the design:
+
+```json
+[{ "op": "add", "path": "/structureProposal/decorationDesign/models", "value": { "bench": { "url": "<asset.modelUrl>", "name": "Oak bench" } } },
+ { "op": "add", "path": "/structureProposal/decorationDesign/lamps", "value": [{ "coordinate": [15.9772, 45.8131], "bearing": 90 }] }]
+```
+
+Use `add` with a path below `models` (`/structureProposal/decorationDesign/models/statue`) when
+the object already exists, and `remove` to drop one kind's model.
+
 ## Site editor parity and coupled fields
 
 `ugt_draft_agreement` requires an existing named plan and preserves its exact membership. It does
@@ -122,7 +146,7 @@ state are not authored fields. They are not edited by JSON Patch. Schema, revisi
 are maintained by the tool. A new feature is added by appending its ordinary authored record; a
 whole new design is created through a draft tool or supplied as canonical content to plan `add`.
 
-The interface covers saved authored records; it does not read a person's open browser or unsaved local composition. `ugt_import_design` accepts GeoJSON, OSM XML and OpenDRIVE through the app parsers. `ugt_import_model` accepts a self-contained GLB/glTF payload or supported public URL; `confirmAssetUpload: true` authorizes a durable public asset upload, while its resulting design remains private. Its `kind` is `building` (default) or `park`, `square` or `lake`: the model's projected footprint, placed at `center` with `rotation`, becomes the building footprint or the structure polygon. A building keeps the model in its feature properties; a space keeps `modelUrl`, `modelName` (at most 120 characters), `rotation` and `source: 'upload'` on `/structureProposal`. GeoJSON LineString and MultiLineString centrelines go through the site's own GeoJSON road import (`parseGeoJson`, then the same records as an OSM import): one road per line or part, every scalar property an OSM way tag (`name`, `width`, `highway`, `lanes`, `railway`; `mode: 'rail'` means `railway=rail`, and a line with neither class tag is `highway=road`). GeoJSON polygons become buildings, or with `kind: 'space'` and `spaceKind` a park, square or lake; the result lists polygon designs first, then roads. A model URL or uploaded filename alone is not proof of a matching geographic footprint.
+The interface covers saved authored records; it does not read a person's open browser or unsaved local composition. `ugt_import_design` accepts GeoJSON, OSM XML and OpenDRIVE through the app parsers. `ugt_import_model` accepts a self-contained GLB/glTF payload or supported public URL; `confirmAssetUpload: true` authorizes a durable public asset upload, while its resulting design remains private. Its `kind` is `building` (default) or `park`, `square` or `lake`: the model's projected footprint, placed at `center` with `rotation`, becomes the building footprint or the structure polygon. `kind: 'furniture'` uploads a furniture asset within the furniture limits and returns no design (no `city`, `center` or `rotation` needed); see the furniture models above. A building keeps the model in its feature properties; a space keeps `modelUrl`, `modelName` (at most 120 characters), `rotation` and `source: 'upload'` on `/structureProposal`. GeoJSON LineString and MultiLineString centrelines go through the site's own GeoJSON road import (`parseGeoJson`, then the same records as an OSM import): one road per line or part, every scalar property an OSM way tag (`name`, `width`, `highway`, `lanes`, `railway`; `mode: 'rail'` means `railway=rail`, and a line with neither class tag is `highway=road`). GeoJSON polygons become buildings, or with `kind: 'space'` and `spaceKind` a park, square or lake; the result lists polygon designs first, then roads. A model URL or uploaded filename alone is not proof of a matching geographic footprint.
 
 Typed constructors cover freeform, block, row and detached building forms, road, track, bus/tram/underground/elevated stations, park, square, lake and parcel layout. Use `ugt_help` with the exact tool name for current parameter constraints. Row creation requires two distinct selected parcels; for an outline it uses the shared site plot cutter and requires at least two plots. Row dimensions omitted by the caller use the shared site-fitting defaults. Blocks expose shared `gapPositions`, `gapWidthM`, `wingPositions`, `wingLengthM` and `chamferM` geometry rather than retaining those fields as unrendered intent. Track edits retain speed/gauge/radius evidence and recheck authored curvature. Station construction resolves compatible corridor references rather than inventing an attachment.
 

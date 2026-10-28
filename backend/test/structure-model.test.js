@@ -48,7 +48,7 @@ describe('structure model record fields', () => {
         const geometry = Structures.structureModelGeometry(footprint, site, deps);
         const park = Structures.structureFromModelUpload('park', geometry, upload);
         expect(park).toMatchObject({ geometry, modelUrl: '/models/park.glb', rotation: 0, source: 'upload' });
-        expect(park.decorationDesign).toEqual({ trees: [], flowerbeds: [], ponds: [], paths: [], benches: [], version: 3 });
+        expect(park.decorationDesign).toEqual({ trees: [], flowerbeds: [], ponds: [], paths: [], benches: [], stalls: [], lamps: [], version: 3 });
         expect(Structures.structureFromModelUpload('square', geometry, upload).decorationDesign.version).toBe(2);
         expect(Structures.structureFromModelUpload('lake', geometry, upload)).not.toHaveProperty('decorationDesign');
         expect(Structures.structureFromModelUpload('park', geometry, { footprint })).toBeNull();

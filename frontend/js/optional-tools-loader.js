@@ -11,7 +11,9 @@
         designMemberships: ['js/design-memberships.js?v=20261027-stack-semantics'],
         rowHouse: ['js/row-house.js'],
         parcelBased: ['js/parcel-based.js'],
-        buildingUpload: ['js/single-building.js', 'js/building-model-geometry.js', 'js/building-upload.js']
+        buildingUpload: ['js/single-building.js', 'js/building-model-geometry.js', 'js/building-upload.js'],
+        // Parsing, summarizing and uploading a glTF: the upload dialog and the structure editor's furniture models.
+        modelUpload: ['js/model-upload.js']
     };
     const loaded = new Set();
     const inFlight = new Map();

@@ -2339,6 +2339,18 @@
         }
     },
     "structureEditor": {
+        "furniture": {
+            "title": "Modelos de mobiliário",
+            "upload": "Carregar",
+            "default": "Predefinido",
+            "uploaded": "Modelo carregado",
+            "errorTriangles": "Este modelo tem {{triangles}} triângulos. Um modelo de mobiliário pode ter no máximo {{max}}.",
+            "errorTexture": "Uma textura mede {{width}} × {{height}} px. As texturas de mobiliário podem medir no máximo {{max}} px por lado.",
+            "errorBytes": "Este ficheiro tem {{size}} MB. Um modelo de mobiliário pode ter no máximo {{max}} MB.",
+            "errorEmpty": "Este modelo não tem geometria visível.",
+            "errorParse": "Não foi possível ler este ficheiro como glTF/GLB. Use uma exportação .glb ou .gltf autónoma.",
+            "errorUpload": "Não foi possível carregar o modelo de mobiliário. Verifique a ligação e tente novamente."
+        },
         "uploadModel": "Carregar modelo (.glb)",
         "importBoundary": "Importar limite (GeoJSON)",
         "importInvalidShape": "O novo limite não é uma área única válida.",
@@ -2363,13 +2375,14 @@
         "titleSquare": "Editor de praças",
         "instructions": "Escolha um elemento e clique dentro do limite. Arraste qualquer elemento para o mover.",
         "tools": {
+            "lamp": "Candeeiro",
             "tree": "Árvore",
             "flowerbed": "Canteiro de flores",
             "pond": "Lago ornamental",
             "path": "Caminho pedonal",
             "bench": "Banco",
             "fountain": "Fonte",
-            "stall": "Mesa",
+            "stall": "Banca de mercado",
             "statue": "Estátua",
             "erase": "Remover",
             "move": "Mover",

@@ -11,10 +11,13 @@ import { cidOfObject, canonicalBytes } from '../cid.js';
 import { designObject } from '../agents/agreement-objects.js';
 import { appTurf as turf, corridorRuntime } from '../agents/mcp-geometry.js';
 import { registerMcpCompanion } from '../agents/mcp-companion.mjs';
+import { resultSchemaFor } from '../agents/mcp-contracts.js';
+import { markUntrusted } from '../agents/mcp-results.js';
 const require = createRequire(import.meta.url);
 const imports = require('../../frontend/js/corridor-import.js');
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const modelGeometry = require('../../frontend/js/building-model-geometry.js');
+const FurnitureModels = require('../../frontend/js/furniture-models.js');
 const outline = { type: 'Polygon', coordinates: [[[1, 48], [1.0002, 48], [1.0002, 48.0002], [1, 48.0002], [1, 48]]] };
 const osm = JSON.stringify({ elements: [{ type: 'node', id: 1, lat: 48, lon: 1 }, { type: 'node', id: 2, lat: 48, lon: 1.001 },
     { type: 'way', id: 10, nodes: [1, 2], tags: { highway: 'residential', lanes: '2', name: 'Imported street' } }] });
@@ -51,6 +54,38 @@ function glbData() {
     bytes.writeUInt32LE(jsonBytes.length, 12); bytes.writeUInt32LE(0x4e4f534a, 16); jsonBytes.copy(bytes, 20);
     bytes.writeUInt32LE(binary.length, 20 + jsonBytes.length); bytes.writeUInt32LE(0x004e4942, 24 + jsonBytes.length); binary.copy(bytes, 28 + jsonBytes.length);
     return `data:model/gltf-binary;base64,${bytes.toString('base64')}`;
+}
+
+// A GLB furniture piece: `triangles` small triangles and, optionally, one image embedded in the binary
+// chunk through a buffer view (a PNG or JPEG header is all the size check reads).
+function furnitureGlb({ triangles = 12, image = null } = {}) {
+    const positions = new Float32Array(triangles * 9);
+    for (let t = 0; t < triangles; t++) positions.set([t * 0.01, 0, 0, t * 0.01 + 0.01, 0, 0, t * 0.01, 0.5, 0.01], t * 9);
+    const mesh = Buffer.from(positions.buffer), pad = buffer => Buffer.concat([buffer, Buffer.alloc((4 - buffer.length % 4) % 4)]);
+    const binary = pad(Buffer.concat([mesh, ...(image ? [image] : [])]));
+    const json = { asset: { version: '2.0' }, scene: 0, scenes: [{ nodes: [0] }], nodes: [{ mesh: 0 }], meshes: [{ primitives: [{ attributes: { POSITION: 0 } }] }],
+        buffers: [{ byteLength: binary.length }], bufferViews: [{ buffer: 0, byteOffset: 0, byteLength: mesh.length }, ...(image ? [{ buffer: 0, byteOffset: mesh.length, byteLength: image.length }] : [])],
+        accessors: [{ bufferView: 0, componentType: 5126, count: triangles * 3, type: 'VEC3', min: [0, 0, 0], max: [triangles * 0.01 + 0.01, 0.5, 0.01] }],
+        ...(image ? { images: [{ bufferView: 1, mimeType: 'image/png' }] } : {}) };
+    const jsonBytes = pad(Buffer.from(JSON.stringify(json)));
+    for (let i = jsonBytes.length - 1; i >= 0 && jsonBytes[i] === 0; i--) jsonBytes[i] = 0x20;
+    const bytes = Buffer.concat([Buffer.alloc(20), jsonBytes, Buffer.alloc(8), binary]);
+    bytes.writeUInt32LE(0x46546c67, 0); bytes.writeUInt32LE(2, 4); bytes.writeUInt32LE(bytes.length, 8);
+    bytes.writeUInt32LE(jsonBytes.length, 12); bytes.writeUInt32LE(0x4e4f534a, 16);
+    bytes.writeUInt32LE(binary.length, 20 + jsonBytes.length); bytes.writeUInt32LE(0x004e4942, 24 + jsonBytes.length);
+    return `data:model/gltf-binary;base64,${bytes.toString('base64')}`;
+}
+function pngHeader(width, height) {
+    const bytes = Buffer.alloc(33);
+    Buffer.from('89504e470d0a1a0a0000000d49484452', 'hex').copy(bytes);
+    bytes.writeUInt32BE(width, 16); bytes.writeUInt32BE(height, 20);
+    return bytes;
+}
+function jpegHeader(width, height) {
+    // SOI, an APP0 segment to skip, then SOF2 (progressive) with height before width.
+    const bytes = Buffer.from('ffd8ffe000104a46494600010100000100010000ffc2001108000000000301220002110103110100', 'hex');
+    bytes.writeUInt16BE(height, 25); bytes.writeUInt16BE(width, 27);
+    return bytes;
 }
 
 describe('MCP imports and ephemeral visual previews', () => {
@@ -172,6 +207,44 @@ describe('MCP imports and ephemeral visual previews', () => {
         expect(imported.designs.slice(2, 4).map(row => tags(row).railway)).toEqual(['rail', 'rail']);
         expect(imported.import).toMatchObject({ format: 'geojson', count: 5 });
     });
+    it('uploads a furniture asset within the shared limits and returns only the asset, which a park then references', async () => {
+        const { tools, drafts, calls } = setup();
+        const result = await tools.importModel({ kind: 'furniture', modelData: furnitureGlb({ image: pngHeader(512, 256) }), fileName: 'bench.glb', confirmAssetUpload: true });
+        expect(result.asset).toEqual({ modelUrl: 'https://api.example/uploads/models/imported.glb', name: 'bench.glb', public: true, durable: true, kind: 'furniture', limits: FurnitureModels.LIMITS });
+        expect(result).not.toHaveProperty('design'); expect(result).not.toHaveProperty('cid');
+        expect(result.next.tool).toBe('ugt_edit_design');
+        expect(calls.map(call => call.path)).toEqual(['/models']);
+        const contract = resultSchemaFor('ugt_import_model');
+        expect(contract.safeParse(markUntrusted(result)).success).toBe(true);
+        expect(contract.safeParse(markUntrusted({ ...result, asset: { ...result.asset, kind: 'park' } })).success).toBe(false);
+        expect(contract.safeParse(markUntrusted({ ...result, asset: { ...result.asset, limits: undefined } })).success).toBe(false);
+        const park = await drafts.draftSpace({ spaceKind: 'park', outline, parcelSourceId: 'ground', authoredAt: '2026-01-01T00:00:00.000Z' });
+        const edited = await drafts.editDesign({ design: park.design, expectedCid: park.cid, edits: [
+            { op: 'add', path: '/structureProposal/decorationDesign/models', value: { bench: { url: result.asset.modelUrl, name: ` ${result.asset.name} ` } } },
+            { op: 'add', path: '/structureProposal/decorationDesign/lamps', value: [{ coordinate: [1.0001, 48.0001], bearing: -90 }] }] });
+        expect(edited.design.structureProposal.decorationDesign).toMatchObject({ models: { bench: { url: result.asset.modelUrl, name: 'bench.glb' } },
+            lamps: [{ coordinate: [1.0001, 48.0001], bearing: 270 }] });
+        await expect(drafts.editDesign({ design: park.design, expectedCid: park.cid, edits: [
+            { op: 'add', path: '/structureProposal/decorationDesign/models', value: { statue: { url: result.asset.modelUrl } } }] })).rejects.toMatchObject({ code: 'furniture-kind-not-allowed' });
+    });
+    it.each([
+        ['triangles', { triangles: FurnitureModels.LIMITS.maxTriangles + 1 }, 'furniture-triangles'],
+        ['PNG texture', { image: pngHeader(2048, 16) }, 'furniture-texture'],
+        ['JPEG texture', { image: jpegHeader(16, 1025) }, 'furniture-texture'],
+        ['unreadable texture', { image: Buffer.alloc(40) }, 'furniture-texture'],
+        ['empty mesh', { triangles: 0 }, 'furniture-empty']
+    ])('refuses furniture over the shared limits (%s) before any upload', async (_case, model, code) => {
+        const { tools, calls } = setup();
+        await expect(tools.importModel({ kind: 'furniture', modelData: furnitureGlb(model), confirmAssetUpload: true })).rejects.toMatchObject({ code });
+        expect(calls).toEqual([]);
+    });
+    it('refuses furniture over the byte limit with the shared code', async () => {
+        const parseModel = vi.fn(async () => ({ triangles: 10, textures: [], bytes: FurnitureModels.LIMITS.maxBytes + 1 }));
+        const { tools, calls } = setup({ parseModel });
+        await expect(tools.importModel({ kind: 'furniture', modelData: furnitureGlb(), confirmAssetUpload: true })).rejects.toMatchObject({ code: 'furniture-bytes', constraints: { max: FurnitureModels.LIMITS.maxBytes } });
+        expect(parseModel.mock.lastCall[1].kind).toBe('furniture');
+        expect(calls).toEqual([]);
+    });
     it('declares the import kinds and authored fields in the strict tool schemas', () => {
         const schemas = new Map();
         const server = { registerTool: (name, config) => schemas.set(name, config.inputSchema), registerResource() {}, registerPrompt() {} };
@@ -180,6 +253,9 @@ describe('MCP imports and ephemeral visual previews', () => {
         expect(schemas.get('ugt_import_model').parse(model).kind).toBe('building');
         expect(schemas.get('ugt_import_model').parse({ ...model, kind: 'lake' }).kind).toBe('lake');
         expect(schemas.get('ugt_import_model').safeParse({ ...model, kind: 'tower' }).success).toBe(false);
+        // Furniture is placed later per decoration: no city or center; every other kind still needs both.
+        expect(schemas.get('ugt_import_model').safeParse({ modelData: model.modelData, kind: 'furniture', confirmAssetUpload: true }).success).toBe(true);
+        expect(schemas.get('ugt_import_model').safeParse({ modelData: model.modelData, confirmAssetUpload: true }).error.issues.map(issue => issue.path.join('.'))).toEqual(['city', 'center']);
         const design = { city: 'place', format: 'geojson', data: {} };
         expect(schemas.get('ugt_import_design').safeParse({ ...design, kind: 'space', spaceKind: 'park', description: 'Imported', author: 'agent',
             authoredAt: '2026-01-01T00:00:00.000Z', toleranceM: 0.5 }).success).toBe(true);

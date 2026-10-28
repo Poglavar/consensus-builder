@@ -2613,16 +2613,14 @@
                     });
                 }
 
-                // Benches: user-placed first-class objects (same as trees).
+                // Benches: user-placed first-class objects (same as trees); an uploaded bench model
+                // replaces the default bench for all of them.
+                const models = deco?.models || null;
                 if (deco && Array.isArray(deco.benches)) {
-                    deco.benches.forEach(bench => {
-                        try {
-                            const coord = Array.isArray(bench?.coordinate) ? bench.coordinate : bench;
-                            if (!Array.isArray(coord) || coord.length < 2) return;
-                            addBench3D(decoTarget, coord[0], coord[1], Number(bench?.bearing) || 0);
-                        } catch (_) { }
-                    });
+                    placeFurniture3D('bench', deco.benches, models, decoTarget, isCurrentModel, spots => addProceduralBenches3D(decoTarget, spots));
                 }
+                if (deco) placeFurniture3D('stall', deco.stalls, models, decoTarget, isCurrentModel, spots => addMarketStalls3D(decoTarget, spots));
+                placeLamps3D(deco?.lamps, models, decoTarget, isCurrentModel);
 
                 const addTreeAt = (lng, lat) => addTree3D(decoTarget, [lng, lat]);
 
@@ -2636,7 +2634,9 @@
                     try { return turf.booleanPointInPolygon(turf.point(coord), p); } catch (_) { return true; }
                 }) : [];
                 if (storedTrees.length) {
-                    storedTrees.forEach(entry => addTree3D(decoTarget, entry));
+                    placeFurniture3D('tree', storedTrees, models, decoTarget, isCurrentModel, spots => spots.forEach(spot => {
+                        try { addTree3D(decoTarget, spot.item); } catch (_) { }
+                    }));
                 } else {
                     let area = 0; try { area = turf.area(p); } catch (_) { }
                     const count = Math.max(3, Math.min(60, Math.round(area / 2000)));
@@ -2809,49 +2809,85 @@
         }
     }
 
-    // A bench: seat slab + backrest + legs, rotated to `bearing` (degrees from north).
-    function addBench3D(target, lng, lat, bearingDeg = 0) {
-        const [x, y] = latLngToXY(lat, lng);
-        const wood = furnitureMaterials().wood;
-        const group = new THREE.Group();
-        const seatGeo = new THREE.BoxGeometry(1.7, 0.55, 0.1);
-        seatGeo.translate(0, 0, 0.45);
-        const seat = new THREE.Mesh(seatGeo, wood);
-        markOwnedGeometry(seat, seatGeo);
-        group.add(seat);
-        const backGeo = new THREE.BoxGeometry(1.7, 0.08, 0.5);
-        backGeo.translate(0, -0.28, 0.75);
-        const back = new THREE.Mesh(backGeo, wood);
-        markOwnedGeometry(back, backGeo);
-        group.add(back);
-        [-0.7, 0.7].forEach(offset => {
-            const legGeo = new THREE.BoxGeometry(0.08, 0.45, 0.45);
-            legGeo.translate(offset, 0, 0.22);
-            const leg = new THREE.Mesh(legGeo, wood);
-            markOwnedGeometry(leg, legGeo);
-            group.add(leg);
-        group.position.set(x, y, 0.06);
-        group.rotation.z = ((90 - (Number(bearingDeg) || 0)) * Math.PI) / 180;
-        target.add(group);
+    // The default bench: seat slab + backrest + legs, each part one InstancedMesh for all benches of
+    // a structure, every bench turned to its bearing (degrees from north; furniturePlacements).
+    let benchParts = null;
+    function addProceduralBenches3D(target, spots) {
+        if (!benchParts) {
+            // Shared, never disposed, like the flowerbed and lamp assets.
+            const part = (w, d, h, x, y, z) => { const geometry = new THREE.BoxGeometry(w, d, h); geometry.translate(x, y, z); return geometry; };
+            benchParts = [
+                part(1.7, 0.55, 0.1, 0, 0, 0.45),
+                part(1.7, 0.08, 0.5, 0, -0.28, 0.75),
+                part(0.08, 0.45, 0.45, -0.7, 0, 0.22),
+                part(0.08, 0.45, 0.45, 0.7, 0, 0.22)
+            ];
+        }
+        const placements = furniturePlacements(spots);
+        benchParts.forEach(geometry => {
+            const mesh = ownInstances(new THREE.InstancedMesh(geometry, furnitureMaterials().wood, placements.length));
+            placements.forEach((matrix, index) => mesh.setMatrixAt(index, matrix));
+            mesh.instanceMatrix.needsUpdate = true;
+            target.add(mesh);
         });
     }
 
-    // A restaurant/terrace table (the 2D "plate" stall): round top on a centre leg.
-    function addTable3D(target, lng, lat) {
-        const [x, y] = latLngToXY(lat, lng);
-        const mats = furnitureMaterials();
-        const legGeo = new THREE.CylinderGeometry(0.07, 0.07, 0.72, 8);
-        legGeo.rotateX(Math.PI / 2);
-        legGeo.translate(x, y, 0.06 + 0.36);
-        const leg = new THREE.Mesh(legGeo, mats.stone);
-        markOwnedGeometry(leg, legGeo);
-        target.add(leg);
-        const topGeo = new THREE.CylinderGeometry(0.75, 0.75, 0.06, 20);
-        topGeo.rotateX(Math.PI / 2);
-        topGeo.translate(x, y, 0.06 + 0.75);
-        const top = new THREE.Mesh(topGeo, mats.table);
-        markOwnedGeometry(top, topGeo);
-        target.add(top);
+    // The default market stall (furniture-models.js): four posts, a counter on the side its bearing
+    // faces (the model's +X) and a striped canopy. Per structure that is one InstancedMesh each for the
+    // posts, the counters and the canopies; each canopy takes its stall's colour (stallColor) as an
+    // instance colour multiplied over one shared white/grey stripe texture, so every colour is one draw.
+    let marketStallAssets = null;
+    const MARKET_STALL_POSTS = [[-0.75, -1.15], [-0.75, 1.15], [0.75, -1.15], [0.75, 1.15]];
+    function ensureMarketStallAssets() {
+        if (marketStallAssets) return marketStallAssets;
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 8;
+        const context = canvas.getContext('2d');
+        for (let stripe = 0; stripe < 8; stripe++) {
+            context.fillStyle = stripe % 2 ? '#d9d9d9' : '#ffffff';
+            context.fillRect(stripe * 8, 0, 8, 8);
+        }
+        const stripes = new THREE.CanvasTexture(canvas);
+        stripes.colorSpace = THREE.SRGBColorSpace;
+        stripes.magFilter = THREE.NearestFilter;
+        const post = new THREE.BoxGeometry(0.07, 0.07, 2.4);
+        post.translate(0, 0, 1.2);
+        const counter = new THREE.BoxGeometry(0.6, 2.4, 0.95);
+        counter.translate(0.5, 0, 0.475);
+        // The canopy slopes down toward the counter side.
+        const canopy = new THREE.BoxGeometry(1.95, 2.6, 0.05);
+        canopy.rotateY(0.2);
+        canopy.translate(0, 0, 2.45);
+        marketStallAssets = {
+            post, counter, canopy,
+            postMat: new THREE.MeshLambertMaterial({ color: 0x5b4636 }),
+            counterMat: new THREE.MeshLambertMaterial({ color: 0xb08a5c }),
+            canopyMat: new THREE.MeshLambertMaterial({ color: 0xffffff, map: stripes, side: THREE.DoubleSide })
+        };
+        return marketStallAssets;
+    }
+
+    function addMarketStalls3D(target, spots) {
+        const assets = ensureMarketStallAssets();
+        const placements = furniturePlacements(spots);
+        const posts = ownInstances(new THREE.InstancedMesh(assets.post, assets.postMat, placements.length * MARKET_STALL_POSTS.length));
+        const counters = ownInstances(new THREE.InstancedMesh(assets.counter, assets.counterMat, placements.length));
+        const canopies = ownInstances(new THREE.InstancedMesh(assets.canopy, assets.canopyMat, placements.length));
+        const offset = new THREE.Matrix4();
+        const matrix = new THREE.Matrix4();
+        const color = new THREE.Color();
+        placements.forEach((placement, index) => {
+            MARKET_STALL_POSTS.forEach(([x, y], post) => {
+                posts.setMatrixAt(index * MARKET_STALL_POSTS.length + post, matrix.multiplyMatrices(placement, offset.makeTranslation(x, y, 0)));
+            });
+            counters.setMatrixAt(index, placement);
+            canopies.setMatrixAt(index, placement);
+            canopies.setColorAt(index, color.set(furnitureApi().stallColor(spots[index].item, index)));
+        });
+        [posts, counters, canopies].forEach(mesh => { mesh.instanceMatrix.needsUpdate = true; });
+        if (canopies.instanceColor) canopies.instanceColor.needsUpdate = true;
+        target.add(posts, counters, canopies);
     }
 
     // A statue: stone pedestal + simple standing figure.
@@ -2928,30 +2964,25 @@
                 const dec = sq.properties && sq.properties.decorations;
                 if (!dec) return;
 
-                // Furniture from the geometry editor (all first-class objects there).
-                (Array.isArray(dec.trees) ? dec.trees : []).forEach(entry => {
-                    try { addTree3D(decoTarget, entry); } catch (_) { }
-                });
-                (Array.isArray(dec.benches) ? dec.benches : []).forEach(bench => {
-                    try {
-                        const coord = Array.isArray(bench?.coordinate) ? bench.coordinate : bench;
-                        if (Array.isArray(coord)) addBench3D(decoTarget, coord[0], coord[1], Number(bench?.bearing) || 0);
-                    } catch (_) { }
-                });
-                (Array.isArray(dec.stalls) ? dec.stalls : []).forEach(coord => {
-                    try { if (Array.isArray(coord)) addTable3D(decoTarget, coord[0], coord[1]); } catch (_) { }
-                });
-                (Array.isArray(dec.statues) ? dec.statues : []).forEach(coord => {
-                    try { if (Array.isArray(coord)) addStatue3D(decoTarget, coord[0], coord[1]); } catch (_) { }
-                });
+                // Furniture from the geometry editor (all first-class objects there). A kind with an
+                // uploaded model (decorations.models) draws that model for every item instead.
+                const models = dec.models || null;
+                placeFurniture3D('tree', dec.trees, models, decoTarget, isCurrentModel, spots => spots.forEach(spot => {
+                    try { addTree3D(decoTarget, spot.item); } catch (_) { }
+                }));
+                placeFurniture3D('bench', dec.benches, models, decoTarget, isCurrentModel, spots => addProceduralBenches3D(decoTarget, spots));
+                placeFurniture3D('stall', dec.stalls, models, decoTarget, isCurrentModel, spots => addMarketStalls3D(decoTarget, spots));
+                placeFurniture3D('statue', dec.statues, models, decoTarget, isCurrentModel, spots => spots.forEach(spot => {
+                    try { addStatue3D(decoTarget, spot.lng, spot.lat); } catch (_) { }
+                }));
+                placeLamps3D(dec.lamps, models, decoTarget, isCurrentModel);
 
                 // Fountains: edited squares store an ARRAY; legacy squares a single `fountain`.
                 const fountains = (Array.isArray(dec.fountains) && dec.fountains.length)
                     ? dec.fountains
                     : (Array.isArray(dec.fountain) ? [dec.fountain] : []);
-                fountains.forEach(fountainCoord => {
-                if (!Array.isArray(fountainCoord) || fountainCoord.length < 2) return;
-                const [lng, lat] = fountainCoord;
+                placeFurniture3D('fountain', fountains, models, decoTarget, isCurrentModel, spots => spots.forEach(spot => {
+                const { lng, lat } = spot;
                 const [x, y] = latLngToXY(lat, lng);
 
                 // Simple fountain: pedestal + basin + water disk + small spout
@@ -3000,9 +3031,255 @@
                 group.add(spout);
 
                 decoTarget.add(group);
-                });
+                }));
             } catch (_) { }
         });
+    }
+
+    // ---- Furniture models and lamps (furniture-models.js) ----
+    // A park or square may give one uploaded model to every item of a furniture kind. The model is
+    // loaded once (loadGltfScene's cache) and drawn as one InstancedMesh per mesh inside it, so a
+    // kind costs as many draw calls as its model has meshes, however many items there are.
+    const FURNITURE_GROUND_Z = 0.06;      // the park/square surface the furniture stands on
+    const LAMP_HEIGHT_M = 4;              // the default lamp's pole
+    const LAMP_HEAD_Z = LAMP_HEIGHT_M + 0.12;
+    const LAMP_POOL_RADIUS_M = 5;         // the pool of light on the ground under a lit lamp
+
+    function furnitureApi() {
+        const api = window.FurnitureModels;
+        if (!api) throw new Error('furniture-models.js is not loaded');
+        return api;
+    }
+
+    // Where each item stands: { lng, lat, bearing, item }; items without a valid point are skipped.
+    function furnitureSpots(kind, items) {
+        return (Array.isArray(items) ? items : []).map(item => {
+            const coord = kind === 'tree' ? parkPlanting().treeCoordinate(item)
+                : (Array.isArray(item?.coordinate) ? item.coordinate : item);
+            if (!Array.isArray(coord) || coord.length < 2) return null;
+            const lng = Number(coord[0]), lat = Number(coord[1]);
+            if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
+            return { lng, lat, bearing: Number(item?.bearing) || 0, item };
+        }).filter(Boolean);
+    }
+
+    // One matrix per spot: position, bearing (the model's +X faces it) and the Mercator (k, k, 1)
+    // scale that turns a model in metres into scene units (FurnitureModels.instanceTransform).
+    function furniturePlacements(spots) {
+        const k = lifeMercatorK();
+        const dummy = new THREE.Object3D();
+        return spots.map(spot => {
+            const [x, y] = latLngToXY(spot.lat, spot.lng);
+            const transform = furnitureApi().instanceTransform({ x, y, z: FURNITURE_GROUND_Z, bearingDeg: spot.bearing, k });
+            dummy.position.set(...transform.position);
+            dummy.rotation.set(0, 0, transform.rotationZ);
+            dummy.scale.set(...transform.scale);
+            dummy.updateMatrix();
+            return dummy.matrix.clone();
+        });
+    }
+
+    // An InstancedMesh owns its per-instance buffers; dispose them with the structure's rebuild.
+    function ownInstances(mesh) {
+        threeResources.markOwned(mesh, 'geometries', { dispose: () => mesh.dispose() });
+        return mesh;
+    }
+
+    // Each mesh of a loaded model with its matrix inside the model after the glTF Y-up -> scene Z-up
+    // turn, centred on its footprint and standing on z = 0. Cached per source scene.
+    const furnitureModelLayouts = new WeakMap();
+    function furnitureModelLayout(source) {
+        if (furnitureModelLayouts.has(source)) return furnitureModelLayouts.get(source);
+        source.updateMatrixWorld(true);
+        const upright = new THREE.Matrix4().makeRotationX(Math.PI / 2);
+        const box = new THREE.Box3();
+        const meshes = [];
+        source.traverse(node => {
+            if (!node.isMesh || !node.geometry?.attributes?.position || !node.material) return;
+            const local = new THREE.Matrix4().multiplyMatrices(upright, node.matrixWorld);
+            if (!node.geometry.boundingBox) node.geometry.computeBoundingBox();
+            box.union(node.geometry.boundingBox.clone().applyMatrix4(local));
+            meshes.push({ node, local });
+        });
+        let layout = null;
+        if (meshes.length && !box.isEmpty()) {
+            const center = box.getCenter(new THREE.Vector3());
+            const ground = new THREE.Matrix4().makeTranslation(-center.x, -center.y, -box.min.z);
+            meshes.forEach(entry => entry.local.premultiply(ground));
+            layout = { meshes, height: box.max.z - box.min.z };
+        }
+        furnitureModelLayouts.set(source, layout);
+        return layout;
+    }
+
+    // Draws every spot of one kind with the model at modelUrl. Resolves with the model's layout, or
+    // null when the structure was rebuilt meanwhile; rejects when the model cannot be drawn.
+    function placeFurnitureInstances(kind, spots, modelUrl, decoTarget, isCurrent) {
+        const url = (typeof resolveBackendAssetUrl === 'function' && resolveBackendAssetUrl(modelUrl)) || modelUrl;
+        return loadGltfScene(url).then(source => {
+            if (!isActive || !isCurrent()) return null;
+            const layout = source ? furnitureModelLayout(source) : null;
+            if (!layout) throw new Error('The furniture model has no meshes');
+            const placements = furniturePlacements(spots);
+            const group = new THREE.Group();
+            group.userData.furnitureKind = kind;
+            const matrix = new THREE.Matrix4();
+            layout.meshes.forEach(({ node, local }) => {
+                // Clones keep the model's textures; the source materials stay with the cache.
+                const materials = (Array.isArray(node.material) ? node.material : [node.material]).map(material => material.clone());
+                const material = Array.isArray(node.material) ? materials : materials[0];
+                const mesh = ownInstances(new THREE.InstancedMesh(node.geometry, material, placements.length));
+                placements.forEach((placement, index) => mesh.setMatrixAt(index, matrix.multiplyMatrices(placement, local)));
+                mesh.instanceMatrix.needsUpdate = true;
+                markOwnedMaterial(mesh, material);
+                group.add(mesh);
+            });
+            decoTarget.add(group);
+            sunLayer?.syncObjects(group);
+            invalidateThreeView();
+            return layout;
+        });
+    }
+
+    // One furniture kind of one structure: its uploaded model when it has one, otherwise (or when the
+    // model fails to load) `procedural(spots)`, the default look. `onModel(spots, layout)` adds what goes
+    // with a drawn model (a lamp's glow at the model's height).
+    function placeFurniture3D(kind, items, models, decoTarget, isCurrent, procedural, onModel = null) {
+        const spots = furnitureSpots(kind, items);
+        if (!spots.length) return;
+        const url = typeof models?.[kind]?.url === 'string' ? models[kind].url : '';
+        if (!url) { procedural(spots); return; }
+        placeFurnitureInstances(kind, spots, url, decoTarget, isCurrent).then(layout => {
+            if (layout && onModel) onModel(spots, layout);
+        }, error => {
+            if (!isActive || !isCurrent()) return;
+            console.warn('[3D] furniture model failed to load; drawing the default', kind, url, error);
+            procedural(spots);
+            invalidateThreeView();
+        });
+    }
+
+    // Shared, never disposed: the default lamp and the glow every lamp shares. The structure display
+    // mode draws each object with its own scoped copy of a material (three-structure-refresh.js), so
+    // night and day are applied to the drawn objects' materials, listed in lampGlowObjects.
+    let lampAssets = null;
+    const lampGlowObjects = new Set();   // pools, halos and default lamp heads in the scene
+    function ensureLampAssets() {
+        if (lampAssets) return lampAssets;
+        const pole = new THREE.CylinderGeometry(0.06, 0.09, LAMP_HEIGHT_M, 8);
+        pole.rotateX(Math.PI / 2);
+        pole.translate(0, 0, LAMP_HEIGHT_M / 2);
+        const head = new THREE.SphereGeometry(0.22, 12, 8);
+        head.translate(0, 0, LAMP_HEAD_Z - FURNITURE_GROUND_Z);
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 64;
+        const context = canvas.getContext('2d');
+        const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(0.35, 'rgba(255, 255, 255, 0.45)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, 64, 64);
+        const glow = new THREE.CanvasTexture(canvas);
+        glow.colorSpace = THREE.SRGBColorSpace;
+        lampAssets = {
+            pole, head,
+            poleMat: new THREE.MeshLambertMaterial({ color: 0x33383d }),
+            headMat: new THREE.MeshLambertMaterial({ color: 0xf2ead8, emissive: 0xffd28a, emissiveIntensity: 0 }),
+            pool: new THREE.CircleGeometry(1, 32),
+            poolMat: new THREE.MeshBasicMaterial({
+                map: glow, color: 0xffc46b, transparent: true, opacity: 0, visible: false, depthWrite: false,
+                blending: THREE.AdditiveBlending, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4
+            }),
+            haloMat: new THREE.PointsMaterial({
+                map: glow, color: 0xffd9a0, size: 2.4, sizeAttenuation: true, transparent: true, opacity: 0,
+                visible: false, depthWrite: false, blending: THREE.AdditiveBlending
+            })
+        };
+        return lampAssets;
+    }
+
+    // The default lamp: a pole and a head, each one InstancedMesh for all lamps of a structure.
+    function addProceduralLamps3D(decoTarget, spots) {
+        const assets = ensureLampAssets();
+        const poles = ownInstances(new THREE.InstancedMesh(assets.pole, assets.poleMat, spots.length));
+        const heads = ownInstances(new THREE.InstancedMesh(assets.head, assets.headMat, spots.length));
+        furniturePlacements(spots).forEach((matrix, index) => {
+            poles.setMatrixAt(index, matrix);
+            heads.setMatrixAt(index, matrix);
+        });
+        poles.instanceMatrix.needsUpdate = true;
+        heads.instanceMatrix.needsUpdate = true;
+        heads.userData.lampGlow = 'head';
+        lampGlowObjects.add(heads);
+        decoTarget.add(poles, heads);
+    }
+
+    // The night glow of a structure's lamps: one Points for every head (a halo) and one InstancedMesh
+    // of flat discs for the light pools on the ground. No lights; additive, never written to depth,
+    // never picked.
+    function addLampGlow3D(decoTarget, spots, headHeightM) {
+        const assets = ensureLampAssets();
+        const k = lifeMercatorK();
+        const positions = new Float32Array(spots.length * 3);
+        const pools = ownInstances(new THREE.InstancedMesh(assets.pool, assets.poolMat, spots.length));
+        const dummy = new THREE.Object3D();
+        spots.forEach((spot, index) => {
+            const [x, y] = latLngToXY(spot.lat, spot.lng);
+            positions[index * 3] = x;
+            positions[index * 3 + 1] = y;
+            positions[index * 3 + 2] = FURNITURE_GROUND_Z + headHeightM;
+            dummy.position.set(x, y, FURNITURE_GROUND_Z + 0.02);
+            dummy.scale.set(LAMP_POOL_RADIUS_M * k, LAMP_POOL_RADIUS_M * k, 1);
+            dummy.updateMatrix();
+            pools.setMatrixAt(index, dummy.matrix);
+        });
+        pools.instanceMatrix.needsUpdate = true;
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const halos = new THREE.Points(geometry, assets.haloMat);
+        markOwnedGeometry(halos, geometry);
+        pools.userData.lampGlow = 'pool';
+        halos.userData.lampGlow = 'halo';
+        [pools, halos].forEach(object => {
+            object.raycast = () => { };
+            lampGlowObjects.add(object);
+        });
+        pools.renderOrder = 9400;
+        halos.renderOrder = 9500;
+        decoTarget.add(pools, halos);
+    }
+
+    function placeLamps3D(items, models, decoTarget, isCurrent) {
+        placeFurniture3D('lamp', items, models, decoTarget, isCurrent, spots => {
+            addProceduralLamps3D(decoTarget, spots);
+            addLampGlow3D(decoTarget, spots, LAMP_HEAD_Z - FURNITURE_GROUND_Z);
+        }, (spots, layout) => addLampGlow3D(decoTarget, spots, layout.height * 0.92));
+    }
+
+    // Before each render: lamps glow with the night (FurnitureModels.lampGlowStrength of the sun's
+    // altitude; none while the sun layer is off). A material is written only when its value differs,
+    // and this never schedules a frame of its own: the sun's own changes already invalidate the view.
+    // Objects a rebuild removed (no parent) leave the list here.
+    function updateLampGlow() {
+        if (!lampGlowObjects.size) return;
+        const altitude = window.__threeSun?.currentAltitudeDeg?.();
+        const strength = furnitureApi().lampGlowStrength(typeof altitude === 'number' ? altitude : null);
+        const level = Math.round(strength * 50) / 50;
+        for (const object of lampGlowObjects) {
+            if (!object.parent) { lampGlowObjects.delete(object); continue; }
+            const role = object.userData.lampGlow;
+            (Array.isArray(object.material) ? object.material : [object.material]).forEach(material => {
+                if (!material) return;
+                if (role === 'head') {
+                    if (material.emissiveIntensity !== 1.2 * level) material.emissiveIntensity = 1.2 * level;
+                    return;
+                }
+                const opacity = (role === 'pool' ? 0.55 : 0.9) * level;
+                if (material.opacity !== opacity) material.opacity = opacity;
+                if (material.visible !== level > 0) material.visible = level > 0;
+            });
+        }
     }
 
     function buildingSidewalkMaterial() {
@@ -7632,6 +7909,7 @@
         // selection), which is when the shadow map is re-rendered; a frame that only orbits the camera
         // or animates a hook keeps it.
         sunLayer?.beforeRender({ fullFrame, sceneChanged: renderedSceneVisualRevision !== sceneVisualRevision });
+        updateLampGlow();
         floorPlanRenderer.renderCutaway(renderer, scene, camera, floorPlanGroup,
             xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
@@ -8559,6 +8837,7 @@
     }
 
     function disposeScene() {
+        lampGlowObjects.clear();
         clearTimeout(warmSceneTimer);
         warmSceneTimer = null;
         warmSceneKey = null;

@@ -2339,6 +2339,18 @@
         }
     },
     "structureEditor": {
+        "furniture": {
+            "title": "Modèles de mobilier",
+            "upload": "Importer",
+            "default": "Par défaut",
+            "uploaded": "Modèle importé",
+            "errorTriangles": "Ce modèle compte {{triangles}} triangles. Un modèle de mobilier peut en compter au plus {{max}}.",
+            "errorTexture": "Une texture mesure {{width}} × {{height}} px. Les textures de mobilier peuvent mesurer au plus {{max}} px de côté.",
+            "errorBytes": "Ce fichier pèse {{size}} Mo. Un modèle de mobilier peut peser au plus {{max}} Mo.",
+            "errorEmpty": "Ce modèle n’a aucune géométrie visible.",
+            "errorParse": "Impossible de lire ce fichier en glTF/GLB. Utilisez un export .glb ou .gltf autonome.",
+            "errorUpload": "Le modèle de mobilier n’a pas pu être importé. Vérifiez la connexion et réessayez."
+        },
         "uploadModel": "Importer un modèle (.glb)",
         "importBoundary": "Importer la limite (GeoJSON)",
         "importInvalidShape": "La nouvelle limite n’est pas une surface unique valide.",
@@ -2363,13 +2375,14 @@
         "titleSquare": "Éditeur de place",
         "instructions": "Choisissez un élément, puis cliquez à l’intérieur du périmètre. Faites glisser un élément pour le déplacer.",
         "tools": {
+            "lamp": "Lampadaire",
             "tree": "Arbre",
             "flowerbed": "Massif de fleurs",
             "pond": "Bassin",
             "path": "Chemin piéton",
             "bench": "Banc",
             "fountain": "Fontaine",
-            "stall": "Table",
+            "stall": "Étal de marché",
             "statue": "Statue",
             "erase": "Supprimer",
             "move": "Déplacer",

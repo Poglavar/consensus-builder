@@ -6257,6 +6257,18 @@
         }
     },
     "structureEditor": {
+        "furniture": {
+            "title": "Modeli opreme",
+            "upload": "Učitaj",
+            "default": "Zadano",
+            "uploaded": "Učitani model",
+            "errorTriangles": "Ovaj model ima {{triangles}} trokuta. Model opreme smije imati najviše {{max}}.",
+            "errorTexture": "Tekstura je {{width}} × {{height}} px. Teksture opreme smiju imati najviše {{max}} px po stranici.",
+            "errorBytes": "Datoteka ima {{size}} MB. Model opreme smije imati najviše {{max}} MB.",
+            "errorEmpty": "Ovaj model nema vidljive geometrije.",
+            "errorParse": "Ova datoteka nije čitljiva kao glTF/GLB. Upotrijebite samostalni izvoz .glb ili .gltf.",
+            "errorUpload": "Model opreme nije učitan. Provjerite vezu i pokušajte ponovno."
+        },
         "uploadModel": "Učitaj model (.glb)",
         "importBoundary": "Uvezi granicu (GeoJSON)",
         "importInvalidShape": "Nova granica nije valjana jedinstvena površina.",
@@ -6280,13 +6292,14 @@
         "instructions": "Odaberi element, zatim klikni unutar granice. Povuci bilo koji element da ga pomakneš.",
         "closeLabel": "Zatvori",
         "tools": {
+            "lamp": "Svjetiljka",
             "tree": "Stablo",
             "flowerbed": "Cvjetnjak",
             "pond": "Jezerce",
             "path": "Staza",
             "bench": "Klupa",
             "fountain": "Fontana",
-            "stall": "Stol",
+            "stall": "Štand",
             "statue": "Kip",
             "erase": "Ukloni",
             "move": "Premjesti",

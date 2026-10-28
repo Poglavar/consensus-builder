@@ -160,8 +160,8 @@
         const model = structureModelFields({ ...upload, rotation: 0 });
         if (!model || !geometry) return null;
         const empty = kind === 'park'
-            ? { trees: [], flowerbeds: [], ponds: [], paths: [], benches: [], version: 3 }
-            : (kind === 'square' ? { fountains: [], trees: [], benches: [], stalls: [], statues: [], version: 2 } : null);
+            ? { trees: [], flowerbeds: [], ponds: [], paths: [], benches: [], stalls: [], lamps: [], version: 3 }
+            : (kind === 'square' ? { fountains: [], trees: [], benches: [], stalls: [], statues: [], lamps: [], version: 2 } : null);
         return { geometry: JSON.parse(JSON.stringify(geometry)), ...model, ...(empty ? { decorationDesign: empty } : {}) };
     }
 

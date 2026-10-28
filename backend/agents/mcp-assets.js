@@ -10,22 +10,26 @@ import { createMcpNamedPlanTools } from './mcp-named-plans.js';
 import { createPublicSourceFetch, validatePublicSourceUrl } from '../parcels/public-source-fetch.js';
 import { renderMapPreview, PREVIEW_WIDTH, PREVIEW_HEIGHT } from '../thumbnails/map-preview.js';
 import { renderProposalThumbnailSet } from '../thumbnails/tile-stitch.js';
+import { trustedMetadata } from './mcp-results.js';
 const require = createRequire(import.meta.url);
 const imports = require('../../frontend/js/corridor-import.js');
 const modelGeometry = require('../../frontend/js/building-model-geometry.js');
 const singleGeometry = require('../../frontend/js/single-building-geometry.js');
+const FurnitureModels = require('../../frontend/js/furniture-models.js');
 const MAX_BYTES = 10 * 1024 * 1024;
 const fail = (code, message) => { throw Object.assign(new Error(message), { code }); };
 const SPACE_KINDS = ['park', 'square', 'lake'];
 
-// GLTFLoader is the exact app version. CPU footprint extraction skips texture decoding only.
-async function parseModelBytes(bytes, args) {
-    let json;
+// Reads and bounds a glTF 2.0 GLB or self-contained glTF: its JSON and, for a GLB, its binary chunk.
+function readGltf(bytes) {
+    let json, bin = null;
     try {
         if (bytes.toString('ascii', 0, 4) === 'glTF') {
             if (bytes.length < 20 || bytes.readUInt32LE(4) !== 2 || bytes.readUInt32LE(8) !== bytes.length
                 || bytes.readUInt32LE(16) !== 0x4e4f534a || bytes.readUInt32LE(12) > bytes.length - 20) throw new Error();
             json = JSON.parse(bytes.subarray(20, 20 + bytes.readUInt32LE(12)).toString('utf8'));
+            const end = 20 + bytes.readUInt32LE(12);
+            if (bytes.length >= end + 8 && bytes.readUInt32LE(end + 4) === 0x004e4942) bin = bytes.subarray(end + 8, end + 8 + bytes.readUInt32LE(end));
         } else json = JSON.parse(bytes.toString('utf8').replace(/^\uFEFF/, ''));
     } catch { fail('model-data-invalid', 'Use a valid glTF 2.0 GLB or self-contained glTF model.'); }
     if (json?.asset?.version !== '2.0') fail('model-data-invalid', 'Only glTF 2.0 models are supported.');
@@ -42,9 +46,11 @@ async function parseModelBytes(bytes, args) {
         || (json.accessors || []).some(accessor => !Number.isSafeInteger(accessor.count) || accessor.count < 0 || accessor.count > modelGeometry.MAX_FOOTPRINT_TRIANGLES * 3)
         || (json.buffers || []).some(buffer => !Number.isSafeInteger(buffer.byteLength) || buffer.byteLength < 0 || buffer.byteLength > MAX_BYTES))
         fail('model-complexity-limit', 'The model exceeds the supported CPU mesh or buffer limits. Export one simpler building.');
-    const center = Array.isArray(args.center) ? { lng: args.center[0], lat: args.center[1] } : args.anchor;
-    if (!center || !Number.isFinite(center.lng) || !Number.isFinite(center.lat) || Math.abs(center.lng) > 180 || Math.abs(center.lat) > 85)
-        fail('model-center-required', 'Supply a WGS84 center [longitude, latitude] or anchor {lng,lat}.');
+    return { json, bin };
+}
+
+// GLTFLoader is the exact app version. CPU footprint extraction skips texture decoding only.
+async function loadScene(bytes) {
     const loader = new GLTFLoader();
     loader.register(parser => {
         // Decode embedded buffers directly, avoiding browser-only progress events and all network IO.
@@ -57,9 +63,58 @@ async function parseModelBytes(bytes, args) {
         };
         return { name: 'UGT_CPU_FOOTPRINT', loadTexture: () => Promise.resolve(null) };
     });
-    let parsed;
-    try { parsed = await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), ''); }
+    try { return await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), ''); }
     catch { fail('model-parse-failed', 'The shared glTF parser could not load this model. Compressed meshes need an uncompressed export.'); }
+}
+function disposeScene(parsed) {
+    parsed.scene.traverse(node => { node.geometry?.dispose(); const materials = Array.isArray(node.material) ? node.material : [node.material]; for (const material of materials) material?.dispose(); });
+}
+
+// Embedded texture bytes: a data URI, or a buffer view of a data-URI buffer or the GLB binary chunk.
+function imageBytes(json, image, bin) {
+    const decode = uri => Buffer.from(uri.slice(uri.indexOf(',') + 1), 'base64');
+    if (typeof image?.uri === 'string') return decode(image.uri);
+    const view = json.bufferViews?.[image?.bufferView], buffer = json.buffers?.[view?.buffer];
+    const data = typeof buffer?.uri === 'string' ? decode(buffer.uri) : buffer ? bin : null;
+    return data && view ? data.subarray(view.byteOffset || 0, (view.byteOffset || 0) + view.byteLength) : null;
+}
+// Texture size from the image header alone: PNG IHDR (width/height at bytes 16-24) or a JPEG
+// start-of-frame segment (SOF0-SOF15 except DHT/JPG/DAC). Anything else is unreadable: null.
+function textureSize(data) {
+    if (!data || data.length < 24) return null;
+    if (data.readUInt32BE(0) === 0x89504e47 && data.readUInt32BE(4) === 0x0d0a1a0a) return { width: data.readUInt32BE(16), height: data.readUInt32BE(20) };
+    if (data[0] !== 0xff || data[1] !== 0xd8) return null;
+    for (let at = 2; at + 9 < data.length;) {
+        if (data[at] !== 0xff) return null;
+        const marker = data[at + 1];
+        if (marker === 0xff) { at += 1; continue; }
+        if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd8)) { at += 2; continue; }
+        if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker)) return { width: data.readUInt16BE(at + 7), height: data.readUInt16BE(at + 5) };
+        at += 2 + data.readUInt16BE(at + 2);
+    }
+    return null;
+}
+
+// A furniture asset is instanced once per placement: summarize what FurnitureModels.validateModelSummary
+// checks. Triangles use the same visible-triangle walk as the building footprint.
+async function furnitureSummary(bytes, json, bin) {
+    const textures = (json.images || []).map(image => textureSize(imageBytes(json, image, bin)));
+    if (textures.some(size => !size)) fail('furniture-texture', 'Embed furniture textures as PNG or JPEG so their size can be checked.');
+    const parsed = await loadScene(bytes);
+    let triangles;
+    try { triangles = modelGeometry.modelTriangles(parsed.scene, new THREE.Vector3(), THREE).length / 6; }
+    catch (error) { if (error?.code !== 'complex') throw error; triangles = Infinity; }
+    finally { disposeScene(parsed); }
+    return { triangles, textures, bytes: bytes.length };
+}
+
+async function parseModelBytes(bytes, args) {
+    const { json, bin } = readGltf(bytes);
+    if (args.kind === 'furniture') return furnitureSummary(bytes, json, bin);
+    const center = Array.isArray(args.center) ? { lng: args.center[0], lat: args.center[1] } : args.anchor;
+    if (!center || !Number.isFinite(center.lng) || !Number.isFinite(center.lat) || Math.abs(center.lng) > 180 || Math.abs(center.lat) > 85)
+        fail('model-center-required', 'Supply a WGS84 center [longitude, latitude] or anchor {lng,lat}.');
+    const parsed = await loadScene(bytes);
     try {
         const box = new THREE.Box3().setFromObject(parsed.scene);
         const dimensions = modelGeometry.dimensionsFromBounds(box);
@@ -69,9 +124,7 @@ async function parseModelBytes(bytes, args) {
         const placed = singleGeometry.placeModelFootprint(footprint, center, args.rotation ?? 0);
         if (!placed) fail('model-placement-invalid', 'The model footprint could not be placed.');
         return { footprint: placed.geometry, ...dimensions };
-    } finally {
-        parsed.scene.traverse(node => { node.geometry?.dispose(); const materials = Array.isArray(node.material) ? node.material : [node.material]; for (const material of materials) material?.dispose(); });
-    }
+    } finally { disposeScene(parsed); }
 }
 
 export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftReference, plans, apiBase,
@@ -153,9 +206,31 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
         } else fail('import-format-unsupported', 'Use geojson, osm or opendrive.');
         return { designs, publication: 'private', warnings, import: { format, placement, count: designs.length, parser: format === 'geojson' ? 'app-intent-builders+app-corridor-import' : 'app-corridor-import' } };
     }
+    async function upload(bytes, args) {
+        const uploaded = await read.request('/models', {}, { fileName: args.fileName || 'model.glb', modelData: `data:model/gltf-binary;base64,${bytes.toString('base64')}` });
+        if (typeof uploaded.modelUrl !== 'string' || !uploaded.modelUrl) fail('model-upload-invalid-response', 'The model endpoint returned no served asset URL.');
+        const url = new URL(uploaded.modelUrl, apiBase || appOrigin);
+        if (url.origin !== new URL(apiBase || appOrigin).origin) fail('model-upload-invalid-response', 'The model endpoint returned an asset outside the configured API origin.');
+        return url;
+    }
+    // A furniture asset has no design of its own: it is checked against the shared furniture limits,
+    // uploaded, and returned for a park or square to reference under decorationDesign.models.
+    async function furnitureAsset(bytes, summary, args) {
+        const checked = FurnitureModels.validateModelSummary(summary);
+        if (!checked.ok) throw Object.assign(new Error({
+            empty: 'The furniture model contains no triangles.',
+            triangles: `A furniture model may have at most ${FurnitureModels.LIMITS.maxTriangles} triangles.`,
+            bytes: `A furniture model may be at most ${FurnitureModels.LIMITS.maxBytes} bytes.`,
+            texture: `Furniture textures may be at most ${FurnitureModels.LIMITS.maxTextureSize} px on each side.`
+        }[checked.code]), { code: `furniture-${checked.code}`, constraints: checked.detail });
+        const url = await upload(bytes, args);
+        const name = String(args.title || args.fileName || 'Furniture model').trim().slice(0, FurnitureModels.LIMITS.maxNameLength);
+        return { asset: { modelUrl: url.href, name, public: true, durable: true, kind: 'furniture', limits: { ...FurnitureModels.LIMITS } },
+            next: trustedMetadata({ tool: 'ugt_edit_design', action: `Assign it on a park (${FurnitureModels.kindsFor('park').join(', ')}) or square (${FurnitureModels.kindsFor('square').join(', ')}): patch /structureProposal/decorationDesign/models/<kind> with {url: modelUrl, name}.` }) };
+    }
     async function importModel(args) {
         const kind = args.kind ?? 'building';
-        if (kind !== 'building' && !SPACE_KINDS.includes(kind)) fail('model-kind-invalid', 'A model is attached to a building, park, square or lake.');
+        if (kind !== 'building' && kind !== 'furniture' && !SPACE_KINDS.includes(kind)) fail('model-kind-invalid', 'A model is attached to a building, park, square or lake, or uploaded as furniture.');
         if (args.confirmAssetUpload !== true) fail('model-upload-confirmation-required', 'Set confirmAssetUpload only after the user agrees to upload a durable, publicly served model asset. The resulting design remains private.');
         if (args.modelData != null && (args.data != null || args.url)) fail('import-input-required', 'Supply exactly one of modelData, data or a public HTTPS URL.');
         if (typeof args.modelData === 'string' && args.modelData.length > 14_000_000) fail('model-size-invalid', 'The model data URL exceeds the upload size limit.');
@@ -166,7 +241,8 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
             return Buffer.from(match[1], 'base64');
         })() : await dataOf(args);
         if (!bytes.length || bytes.length > MAX_BYTES) fail('model-size-invalid', 'A model must contain 1 byte to 10 MiB.');
-        const parsed = await parseModel(bytes, args);
+        const parsed = await parseModel(bytes, { ...args, kind });
+        if (kind === 'furniture') return furnitureAsset(bytes, parsed, args);
         const { footprint, height } = parsed;
         if (!footprint || !Number.isFinite(height) || height <= 0) fail('model-geometry-unavailable', 'The model has no measurable building footprint and height.');
         const authoredAt = args.authoredAt || new Date().toISOString();
@@ -174,10 +250,7 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
         // drawn stretched onto that polygon's bounds in its rotation frame at the model's own height.
         const result = kind === 'building' ? await drafts.draftBuilding({ ...args, outline: footprint, footprint, height, authoredAt })
             : await drafts.draftSpace({ ...args, spaceKind: kind, outline: footprint, authoredAt });
-        const uploaded = await read.request('/models', {}, { fileName: args.fileName || 'model.glb', modelData: `data:model/gltf-binary;base64,${bytes.toString('base64')}` });
-        if (typeof uploaded.modelUrl !== 'string' || !uploaded.modelUrl) fail('model-upload-invalid-response', 'The model endpoint returned no served asset URL.');
-        const url = new URL(uploaded.modelUrl, apiBase || appOrigin);
-        if (url.origin !== new URL(apiBase || appOrigin).origin) fail('model-upload-invalid-response', 'The model endpoint returned an asset outside the configured API origin.');
+        const url = await upload(bytes, args);
         const content = structuredClone(result.design);
         const model = { source: 'upload', modelUrl: url.href, modelName: args.fileName || 'Imported model', rotation: args.rotation ?? 0 };
         if (kind === 'building') for (const building of content.geometry.buildings) Object.assign(building.properties, model);

@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { trustedMetadata, trustedSchemaDocument } from './mcp-results.js';
 import { MCP_HOSTED_TOOLS, MCP_LOCAL_TOOLS } from './mcp-catalog.js';
 import { createRequire } from 'node:module';
+const FurnitureModels = createRequire(import.meta.url)('../../frontend/js/furniture-models.js');
 const PlanRecord = createRequire(import.meta.url)('../../frontend/js/plan-record.js');
 
 const steps = [
@@ -24,7 +25,9 @@ export const MCP_FEATURES = Object.freeze([
     { feature: 'source-discovery', inspect: 'ugt_list_sources', instructions: 'ugt_help' },
     { feature: 'private-draft-recovery', export: 'ugt_export_draft' },
     { feature: 'buildings', create: 'ugt_draft_building', typologies: ['freeform', 'block', 'row', 'detached'] },
-    { feature: 'public-spaces', create: 'ugt_draft_space', kinds: ['park', 'square', 'lake'], model: 'ugt_import_model' },
+    { feature: 'public-spaces', create: 'ugt_draft_space', kinds: ['park', 'square', 'lake'], model: 'ugt_import_model', edit: 'ugt_edit_design',
+        furniture: 'Park/square decorationDesign: lamps [{coordinate, bearing}], stalls [{coordinate, bearing, color?}] and models {kind: {url, name}} per furniture kind (upload with ugt_import_model kind furniture).',
+        furnitureKinds: FurnitureModels.KINDS_BY_STRUCTURE },
     { feature: 'parcel-layout', create: 'ugt_draft_parcel_layout', algorithms: ['equal', 'schelling'] },
     { feature: 'corridors', create: ['ugt_draft_road', 'ugt_draft_track'] },
     { feature: 'stations', create: 'ugt_draft_station', kinds: ['bus', 'tram', 'underground', 'elevated'],
@@ -32,7 +35,8 @@ export const MCP_FEATURES = Object.freeze([
         trackPlacement: { ground: 'tram', elevated: 'elevated', underground: 'underground' } },
     { feature: 'urban-rules', create: 'ugt_draft_urban_rule' },
     { feature: 'imports', create: ['ugt_import_design', 'ugt_import_model'], formats: ['geojson', 'osm', 'opendrive', 'glb', 'gltf'],
-        modelKinds: ['building', 'park', 'square', 'lake'], geojsonCorridorProperties: ['name', 'width', 'highway', 'lanes', 'railway'] },
+        modelKinds: ['building', 'park', 'square', 'lake', 'furniture'], geojsonCorridorProperties: ['name', 'width', 'highway', 'lanes', 'railway'],
+        furnitureKinds: FurnitureModels.KINDS, furnitureLimits: FurnitureModels.LIMITS },
     { feature: 'review', validate: 'ugt_validate_plan', compare: 'ugt_compare', render: 'ugt_render_preview', imageViews: ['2d'] }
 ]);
 const recipe = () => JSON.parse(readFileSync(new URL('../routes/agent-recipe-schema.json', import.meta.url), 'utf8'));

@@ -128,3 +128,73 @@
     filter: drop-shadow(0 1px 1px var(--cb-surface));
     font-size: 21px;
 }
+
+.structure-geometry-icon.is-lamp i {
+    color: var(--cb-warning);
+    filter: drop-shadow(0 1px 1px var(--cb-surface));
+    font-size: var(--cb-text-lg);
+}
+
+/* Furniture models: one row per kind with its model name, Upload and Remove. */
+.structure-geometry-models {
+    display: grid;
+    gap: var(--cb-space-2);
+    padding-block: var(--cb-space-2);
+}
+
+.structure-geometry-models-title {
+    margin: 0;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.structure-geometry-model-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: var(--cb-space-1) var(--cb-space-2);
+    min-width: 0;
+}
+
+.structure-geometry-model-kind {
+    grid-column: 1;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-medium);
+}
+
+.structure-geometry-model-name {
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-xs);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.structure-geometry-model-row > .btn {
+    grid-row: 1 / span 2;
+}
+
+/* A market stall shows its canopy colour; --stall-color is the stall's own colour (furniture-models.js). */
+.structure-geometry-icon.is-stall i,
+.structure-furniture-glyph.is-stall i {
+    color: var(--stall-color, var(--cb-warning));
+    filter: drop-shadow(0 1px 1px var(--cb-surface));
+    font-size: var(--cb-text-lg);
+}
+
+/* Lamps and market stalls of a saved park or square on the 2D map (structures.js). */
+.structure-furniture-glyph {
+    display: grid;
+    place-items: center;
+    background: transparent;
+    border: 0;
+}
+
+.structure-furniture-glyph.is-lamp i {
+    color: var(--cb-warning);
+    filter: drop-shadow(0 1px 1px var(--cb-surface));
+    font-size: var(--cb-text-sm);
+}

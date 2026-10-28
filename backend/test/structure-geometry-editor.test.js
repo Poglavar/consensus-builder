@@ -43,14 +43,43 @@ describe('structure geometry editor data normalization', () => {
         ]);
     });
 
-    it('normalizes square stalls and statues as plain coordinate lists', () => {
+    it('normalizes square statues as plain coordinates and stalls as bearing records', () => {
         const normalized = normalizeDecorations('square', {
-            stalls: [[15.9, 45.8], ['bad', 45.8]],
+            stalls: [[15.9, 45.8], ['bad', 45.8], { coordinate: [15.91, 45.81], bearing: -45, color: '#2D7DD2' }],
             statues: [[15.92, 45.82], null]
         });
 
-        expect(normalized.stalls).toEqual([[15.9, 45.8]]);
+        // A generated square's bare stall position becomes a record facing north.
+        expect(normalized.stalls).toEqual([{ coordinate: [15.9, 45.8], bearing: 0 }, { coordinate: [15.91, 45.81], bearing: 315, color: '#2d7dd2' }]);
         expect(normalized.statues).toEqual([[15.92, 45.82]]);
+    });
+
+    it('gives parks market stalls too', () => {
+        expect(normalizeDecorations('park', { stalls: [{ coordinate: [15.9, 45.8], bearing: 90, color: 'red' }] }).stalls)
+            .toEqual([{ coordinate: [15.9, 45.8], bearing: 90 }]);
+        expect(normalizeDecorations('park', {}).stalls).toEqual([]);
+    });
+
+    it('normalizes lamps and furniture models with the shared FurnitureModels rules', () => {
+        const park = normalizeDecorations('park', {
+            lamps: [{ coordinate: [15.9, 45.8], bearing: -90 }, { coordinate: ['bad', 45.8] }, [15.91, 45.81]],
+            models: { bench: { url: ' /models/b.glb ', name: '  Oak bench  ' }, statue: { url: '/models/s.glb' }, lamp: { url: '' } }
+        });
+        expect(park.lamps).toEqual([{ coordinate: [15.9, 45.8], bearing: 270 }, { coordinate: [15.91, 45.81], bearing: 0 }]);
+        // A park has no statues; an empty url is no model.
+        expect(park.models).toEqual({ bench: { url: '/models/b.glb', name: 'Oak bench' } });
+
+        const square = normalizeDecorations('square', { models: { statue: { url: '/models/s.glb' }, rocket: { url: '/x.glb' } } });
+        expect(square.models).toEqual({ statue: { url: '/models/s.glb' } });
+        expect(square.lamps).toEqual([]);
+        // No models: the key is absent rather than an empty object.
+        expect(normalizeDecorations('square', { models: { bench: { url: ' ' } } })).not.toHaveProperty('models');
+        expect(normalizeDecorations('park', {})).not.toHaveProperty('models');
+    });
+
+    it('counts lamps and models as an explicit saved design', () => {
+        expect(hasExplicitDecorationDesign('park', { lamps: [] })).toBe(true);
+        expect(hasExplicitDecorationDesign('square', { models: {} })).toBe(true);
     });
 
     it('accepts polygon features and rejects point geometry as boundaries', () => {

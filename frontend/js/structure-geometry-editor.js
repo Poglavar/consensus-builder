@@ -62,8 +62,16 @@
         return api;
     }
 
-    // Records that carry metadata beside their point: a bench's bearing, a tree's look.
-    const POINT_RECORD_TYPES = ['benches', 'trees'];
+    // Furniture kinds, models and lamp records (furniture-models.js), shared with the 3D view.
+    function furnitureModels() {
+        const api = global.FurnitureModels || (typeof require === 'function' ? require('./furniture-models.js') : null);
+        if (!api) throw new Error('furniture-models.js is not loaded');
+        return api;
+    }
+
+    // Records that carry metadata beside their point: a bench's, lamp's or stall's bearing (and a
+    // stall's canopy colour), a tree's look.
+    const POINT_RECORD_TYPES = ['benches', 'trees', 'lamps', 'stalls'];
 
     function translateCoordinateCollection(value, deltaLng, deltaLat) {
         if (!Array.isArray(value)) return value;
@@ -82,7 +90,7 @@
                 moved[key] = moveCoordinates(coordinates, from, to);
             }
         }
-        // Bench and tree records carry metadata beside their point, so move the nested coordinate
+        // Bench, lamp, stall and tree records carry metadata beside their point, so move the nested coordinate
         // explicitly and preserve each bearing and look without mutating the drag's starting snapshot.
         POINT_RECORD_TYPES.forEach(key => {
             if (!Array.isArray(value[key])) return;
@@ -107,6 +115,9 @@
                     const point = coordinate(bench?.coordinate || bench?.position || bench);
                     return point ? { coordinate: point, bearing: ((Number(bench?.bearing) || 0) % 360 + 360) % 360 } : null;
                 }).filter(Boolean),
+                stalls: furnitureModels().normalizeStalls(value.stalls, coordinate),
+                lamps: furnitureModels().normalizeLamps(value.lamps, coordinate),
+                ...withModels(kind, value.models),
                 version: 3
             };
         }
@@ -120,10 +131,18 @@
                 const point = coordinate(bench?.coordinate || bench?.position || bench);
                 return point ? { coordinate: point, bearing: ((Number(bench?.bearing) || 0) % 360 + 360) % 360 } : null;
             }).filter(Boolean),
-            stalls: (Array.isArray(value.stalls) ? value.stalls : []).map(coordinate).filter(Boolean),
+            stalls: furnitureModels().normalizeStalls(value.stalls, coordinate),
             statues: (Array.isArray(value.statues) ? value.statues : []).map(coordinate).filter(Boolean),
+            lamps: furnitureModels().normalizeLamps(value.lamps, coordinate),
+            ...withModels(kind, value.models),
             version: 2
         };
+    }
+
+    // decorationDesign.models is absent when no kind has a model.
+    function withModels(kind, models) {
+        const normalized = furnitureModels().normalizeModels(models, kind);
+        return normalized ? { models: normalized } : {};
     }
 
     function boundaryFeature(raw) {
@@ -157,8 +176,8 @@
     function hasExplicitDecorationDesign(kind, decorations) {
         if (!decorations || typeof decorations !== 'object') return false;
         const decorationKeys = kind === 'park'
-            ? ['trees', 'flowerbeds', 'ponds', 'paths', 'benches']
-            : ['fountains', 'fountain', 'trees', 'benches', 'stalls', 'statues'];
+            ? ['trees', 'flowerbeds', 'ponds', 'paths', 'benches', 'stalls', 'lamps', 'models']
+            : ['fountains', 'fountain', 'trees', 'benches', 'stalls', 'statues', 'lamps', 'models'];
         return Number.isFinite(Number(decorations.version))
             || decorationKeys.some(key => Object.prototype.hasOwnProperty.call(decorations, key));
     }
@@ -481,6 +500,8 @@
         }).addTo(group), 'flowerbeds', index));
         state.decorations.trees.forEach((tree, index) => addPointMarker(group, 'trees', tree.coordinate, index, makeTreeIcon(tree)));
         (state.decorations.benches || []).forEach((bench, index) => addPointMarker(group, 'benches', bench.coordinate, index, makeIcon('is-bench', '▰')));
+        renderStalls(group);
+        renderLamps(group);
         if (state.pathPoints.length) {
             global.L.polyline(state.pathPoints.map(([lng, lat]) => [lat, lng]), {
                 color: '#f59e0b', weight: 4, dashArray: '5 5', pane: EDITOR_PANE,
@@ -521,8 +542,23 @@
             const icon = makeIcon('is-bench', `<span style="transform:rotate(${bench.bearing || 0}deg)">▰</span>`);
             addPointMarker(group, 'benches', bench.coordinate, index, icon);
         });
-        (state.decorations.stalls || []).forEach((coord, index) => addPointMarker(group, 'stalls', coord, index, makeIcon('is-stall', '🍽️')));
+        renderStalls(group);
         (state.decorations.statues || []).forEach((coord, index) => addPointMarker(group, 'statues', coord, index, makeIcon('is-statue', '🗿')));
+        renderLamps(group);
+    }
+
+    // A market stall's marker shows its canopy colour (--stall-color, css/structure-geometry-editor.css).
+    function renderStalls(group) {
+        (state.decorations.stalls || []).forEach((stall, index) => {
+            const color = furnitureModels().stallColor(stall, index);
+            addPointMarker(group, 'stalls', stall.coordinate, index,
+                makeIcon('is-stall', `<i class="fa-solid fa-store" style="--stall-color:${color}" aria-hidden="true"></i>`));
+        });
+    }
+
+    function renderLamps(group) {
+        (state.decorations.lamps || []).forEach((lamp, index) => addPointMarker(group, 'lamps', lamp.coordinate, index,
+            makeIcon('is-lamp', '<i class="fa-solid fa-lightbulb" aria-hidden="true"></i>')));
     }
 
     // Undo for furniture edits, on the shared stack every geometry editor uses.
@@ -684,6 +720,12 @@
             } else if (state.tool === 'bench') {
                 recordHistory();
                 state.decorations.benches.push({ coordinate: coord, bearing: 0 });
+            } else if (state.tool === 'stall') {
+                recordHistory();
+                state.decorations.stalls.push({ coordinate: coord, bearing: 0 });
+            } else if (state.tool === 'lamp') {
+                recordHistory();
+                state.decorations.lamps.push({ coordinate: coord, bearing: 0 });
             }
         } else {
             if (state.tool === 'fountain') {
@@ -700,11 +742,15 @@
             }
             else if (state.tool === 'stall') {
                 recordHistory();
-                state.decorations.stalls.push(coord);
+                state.decorations.stalls.push({ coordinate: coord, bearing: 0 });
             }
             else if (state.tool === 'statue') {
                 recordHistory();
                 state.decorations.statues.push(coord);
+            }
+            else if (state.tool === 'lamp') {
+                recordHistory();
+                state.decorations.lamps.push({ coordinate: coord, bearing: 0 });
             }
         }
         render();
@@ -801,18 +847,44 @@
                 toolButton('flowerbed', 'fa-seedling', t('tools.flowerbed', 'Flowerbed')),
                 toolButton('pond', 'fa-water', t('tools.pond', 'Pond')),
                 toolButton('path', 'fa-shoe-prints', t('tools.path', 'Footpath')),
-                toolButton('bench', 'fa-chair', t('tools.bench', 'Bench'))
+                toolButton('bench', 'fa-chair', t('tools.bench', 'Bench')),
+                toolButton('stall', 'fa-store', t('tools.stall', 'Market stall')),
+                toolButton('lamp', 'fa-lightbulb', t('tools.lamp', 'Lamp'))
             ].join('')
             : [
                 toolButton('fountain', 'fa-droplet', t('tools.fountain', 'Fountain')),
                 toolButton('tree', 'fa-tree', t('tools.tree', 'Tree')),
                 toolButton('bench', 'fa-chair', t('tools.bench', 'Bench')),
-                toolButton('stall', 'fa-utensils', t('tools.stall', 'Table')),
-                toolButton('statue', 'fa-monument', t('tools.statue', 'Statue'))
+                toolButton('stall', 'fa-store', t('tools.stall', 'Market stall')),
+                toolButton('statue', 'fa-monument', t('tools.statue', 'Statue')),
+                toolButton('lamp', 'fa-lightbulb', t('tools.lamp', 'Lamp'))
             ].join('');
         const boundaryTool = state.subeditor ? '' : toolButton('boundary', 'fa-draw-polygon', t('tools.boundary', 'Boundary'));
         return `
-            <div class="structure-geometry-tools">${boundaryTool}${tools}${toolButton('erase', 'fa-eraser', t('tools.erase', 'Remove'))}</div>${importsMarkup()}`;
+            <div class="structure-geometry-tools">${boundaryTool}${tools}${toolButton('erase', 'fa-eraser', t('tools.erase', 'Remove'))}</div>${importsMarkup()}${furnitureModelsMarkup()}`;
+    }
+
+    function furnitureKindLabel(kind) {
+        return {
+            bench: t('tools.bench', 'Bench'), statue: t('tools.statue', 'Statue'), fountain: t('tools.fountain', 'Fountain'),
+            stall: t('tools.stall', 'Market stall'), tree: t('tools.tree', 'Tree'), lamp: t('tools.lamp', 'Lamp')
+        }[kind] || kind;
+    }
+
+    // One row per furniture kind: the model every item of that kind uses (or the default look),
+    // an Upload control and Remove. updatePanelState fills in the names.
+    function furnitureModelsMarkup() {
+        const rows = furnitureModels().kindsFor(state.kind).map(kind => `
+                <div class="structure-geometry-model-row" data-furniture-kind="${kind}">
+                    <span class="structure-geometry-model-kind">${furnitureKindLabel(kind)}</span>
+                    <span class="structure-geometry-model-name" data-role="furniture-model-name"></span>
+                    <label class="btn btn-sm" data-role="furniture-model-upload"><i class="fa-solid fa-upload" aria-hidden="true"></i>${t('furniture.upload', 'Upload')}<input type="file" data-role="furniture-model-file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json" hidden></label>
+                    <button type="button" class="btn btn-sm" data-action="remove-furniture-model">${t('tools.erase', 'Remove')}</button>
+                </div>`).join('');
+        return rows ? `
+            <section class="structure-geometry-models" aria-label="${t('furniture.title', 'Furniture models')}">
+                <h3 class="structure-geometry-models-title">${t('furniture.title', 'Furniture models')}</h3>${rows}
+            </section>` : '';
     }
 
     function footerMarkup() {
@@ -835,6 +907,13 @@
             const active = button.dataset.tool === state.tool;
             button.setAttribute('aria-pressed', active ? 'true' : 'false');
         });
+        panel.querySelectorAll?.('[data-furniture-kind]').forEach(row => {
+            const model = state.decorations?.models?.[row.dataset.furnitureKind];
+            const name = row.querySelector('[data-role="furniture-model-name"]');
+            if (name) name.textContent = model ? (model.name || t('furniture.uploaded', 'Uploaded model')) : t('furniture.default', 'Default');
+            const remove = row.querySelector('[data-action="remove-furniture-model"]');
+            if (remove) remove.disabled = !model;
+        });
         const finish = panel.querySelector('[data-action="finish-path"]');
         if (finish) {
             finish.hidden = state.kind !== 'park' || state.tool !== 'path';
@@ -854,8 +933,8 @@
                     tree: t('tools.tree', 'Tree'), flowerbed: t('tools.flowerbed', 'Flowerbed'),
                     pond: t('tools.pond', 'Pond'), path: t('tools.path', 'Footpath'),
                     bench: t('tools.bench', 'Bench'), fountain: t('tools.fountain', 'Fountain'),
-                    stall: t('tools.stall', 'Table'), statue: t('tools.statue', 'Statue'),
-                    erase: t('tools.erase', 'Remove')
+                    stall: t('tools.stall', 'Market stall'), statue: t('tools.statue', 'Statue'),
+                    lamp: t('tools.lamp', 'Lamp'), erase: t('tools.erase', 'Remove')
                 };
                 const instruction = state.tool === 'erase'
                     ? t('hintErase', 'Click an item to remove it.')
@@ -889,9 +968,23 @@
         else if (action === 'upload-model' && !global.BusyControl?.isBusy?.(actionButton)) {
             global.BusyControl.track(actionButton, openModelUpload);
         }
+        else if (action === 'remove-furniture-model') {
+            removeFurnitureModel(actionButton.closest('[data-furniture-kind]')?.dataset.furnitureKind);
+        }
     }
 
     function handlePanelChange(event) {
+        const modelInput = event.target?.closest?.('[data-role="furniture-model-file"]');
+        if (modelInput) {
+            const modelFile = modelInput.files?.[0];
+            modelInput.value = '';
+            const kind = modelInput.closest('[data-furniture-kind]')?.dataset.furnitureKind;
+            const upload = modelInput.closest('[data-role="furniture-model-upload"]');
+            if (modelFile && kind && !global.BusyControl?.isBusy?.(upload)) {
+                global.BusyControl.track(upload, () => uploadFurnitureModel(kind, modelFile));
+            }
+            return;
+        }
         const input = event.target?.closest?.('[data-role="boundary-file"]');
         const file = input?.files?.[0];
         if (!file) return;
@@ -969,6 +1062,76 @@
             return false;
         }
         return replaceBoundary(geometry);
+    }
+
+    // The messages for FurnitureModels.validateModelSummary's codes, with the limit that was missed.
+    function furnitureModelError(code, detail = {}) {
+        const mb = value => (Number(value) / (1024 * 1024)).toFixed(1);
+        if (code === 'triangles') return t('furniture.errorTriangles', `This model has ${detail.triangles} triangles. A furniture model may have at most ${detail.max}.`, { triangles: detail.triangles, max: detail.max });
+        if (code === 'texture') return t('furniture.errorTexture', `A texture is ${detail.width} × ${detail.height} px. Furniture textures may be at most ${detail.max} px on each side.`, { width: detail.width, height: detail.height, max: detail.max });
+        if (code === 'bytes') return t('furniture.errorBytes', `This file is ${mb(detail.bytes)} MB. A furniture model may be at most ${mb(detail.max)} MB.`, { size: mb(detail.bytes), max: mb(detail.max) });
+        if (code === 'empty') return t('furniture.errorEmpty', 'The model contains no visible geometry.');
+        if (code === 'parse') return t('furniture.errorParse', 'Could not read this file as glTF/GLB. Use a self-contained .glb or .gltf export.');
+        if (code === 'upload') return t('furniture.errorUpload', 'The model could not be uploaded. Check the connection and try again.');
+        return t('uploadUnavailable', 'Model upload is unavailable.');
+    }
+
+    // Parse, check against the furniture limits, upload, and use the model for every item of `kind`.
+    async function uploadFurnitureModel(kind, file) {
+        const draftId = state.draftId;
+        const api = furnitureModels();
+        if (!api.kindsFor(state.kind).includes(kind)) return false;
+        let modelUpload;
+        try {
+            await global.ensureOptionalTool('modelUpload');
+            modelUpload = global.ModelUpload;
+        } catch (error) {
+            console.warn('[structure-geometry-editor] model upload unavailable', error);
+            reportImport(furnitureModelError('unavailable'));
+            return false;
+        }
+        const sizeCheck = api.validateModelSummary({ triangles: 1, textures: [], bytes: file.size });
+        if (!sizeCheck.ok) { reportImport(furnitureModelError(sizeCheck.code, sizeCheck.detail)); return false; }
+        let summary;
+        try {
+            const scene = await modelUpload.parseModelFile(file);
+            summary = modelUpload.modelSummary(scene, file.size);
+            modelUpload.disposeScene(scene);
+        } catch (error) {
+            console.warn('[structure-geometry-editor] furniture model parse failed', error);
+            reportImport(furnitureModelError(error?.code === 'engine' ? 'unavailable' : 'parse'));
+            return false;
+        }
+        const check = api.validateModelSummary(summary);
+        if (!check.ok) { reportImport(furnitureModelError(check.code, check.detail)); return false; }
+        let url;
+        try {
+            url = await modelUpload.uploadModel(file);
+        } catch (error) {
+            console.warn('[structure-geometry-editor] furniture model upload failed', error);
+            reportImport(furnitureModelError('upload'));
+            return false;
+        }
+        if (state.draftId !== draftId || !state.decorations) return false;
+        return setFurnitureModel(kind, { url, name: file.name });
+    }
+
+    function setFurnitureModel(kind, entry) {
+        const models = { ...(state.decorations.models || {}) };
+        if (entry) models[kind] = entry;
+        else delete models[kind];
+        const normalized = furnitureModels().normalizeModels(models, state.kind);
+        if (JSON.stringify(normalized) === JSON.stringify(state.decorations.models || null)) return false;
+        recordHistory();
+        if (normalized) state.decorations.models = normalized;
+        else delete state.decorations.models;
+        render();
+        return true;
+    }
+
+    function removeFurnitureModel(kind) {
+        if (!kind || !state.decorations?.models?.[kind]) return false;
+        return setFurnitureModel(kind, null);
     }
 
     function onMapClick(event) {

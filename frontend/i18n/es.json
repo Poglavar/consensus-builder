@@ -6250,6 +6250,18 @@
         }
     },
     "structureEditor": {
+        "furniture": {
+            "title": "Modelos de mobiliario",
+            "upload": "Subir",
+            "default": "Predeterminado",
+            "uploaded": "Modelo subido",
+            "errorTriangles": "Este modelo tiene {{triangles}} triángulos. Un modelo de mobiliario puede tener como máximo {{max}}.",
+            "errorTexture": "Una textura mide {{width}} × {{height}} px. Las texturas de mobiliario pueden medir como máximo {{max}} px por lado.",
+            "errorBytes": "Este archivo ocupa {{size}} MB. Un modelo de mobiliario puede ocupar como máximo {{max}} MB.",
+            "errorEmpty": "Este modelo no tiene geometría visible.",
+            "errorParse": "No se pudo leer este archivo como glTF/GLB. Usa una exportación .glb o .gltf autocontenida.",
+            "errorUpload": "No se pudo subir el modelo de mobiliario. Comprueba la conexión e inténtalo de nuevo."
+        },
         "uploadModel": "Subir modelo (.glb)",
         "importBoundary": "Importar límite (GeoJSON)",
         "importInvalidShape": "El nuevo límite no es un área única válida.",
@@ -6273,13 +6285,14 @@
         "instructions": "Elige un elemento y luego haz clic dentro del límite. Arrastra cualquier elemento para moverlo.",
         "closeLabel": "Cerrar",
         "tools": {
+            "lamp": "Farola",
             "tree": "Árbol",
             "flowerbed": "Parterre",
             "pond": "Estanque",
             "path": "Sendero",
             "bench": "Banco",
             "fountain": "Fuente",
-            "stall": "Mesa",
+            "stall": "Puesto de mercado",
             "statue": "Estatua",
             "erase": "Eliminar",
             "move": "Mover",

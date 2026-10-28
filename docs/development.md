@@ -143,6 +143,24 @@ fields without an allow-list change. Output contract, discovery features and
 `backend/test/mcp-assets.test.js` (park model import, inspect and patch; space and corridor GeoJSON
 import, byte-compared with the site's GeoJSON road records; strict schema kinds), with `mcp-discovery`, `mcp-server` and `mcp-agent-boundary` tests passing.
 
+### Furniture models and lamps: MCP parity (2026-10-28)
+
+Parks and squares can assign one uploaded GLB per furniture kind
+(`/structureProposal/decorationDesign/models/<kind>` = `{url, name}`) and carry `lamps`
+(`[{coordinate, bearing}]`). MCP parity: `ugt_import_model` gained `kind: 'furniture'`, which checks
+the asset with the site's `FurnitureModels.validateModelSummary` (triangles from the shared
+visible-triangle walk, texture sizes from embedded PNG/JPEG headers, decoded bytes), uploads it
+through `/models` and returns only the asset; codes are `furniture-triangles`, `furniture-texture`,
+`furniture-bytes` and `furniture-empty`. `ugt_edit_design` (and `ugt_edit_plan` edits, which share
+`editedDesign`) normalize `models`, `lamps` and `stalls` (`{coordinate, bearing, color?}`, on parks
+and squares) with `FurnitureModels.normalizeModels`, `normalizeLamps` and `normalizeStalls` and refuse a kind the structure does not offer (`furniture-kind-not-allowed`).
+`ugt_draft_space` takes no furniture input, so furniture is authored by patch. Input/output schemas,
+discovery (`imports.furnitureKinds`/`furnitureLimits`, `public-spaces.furnitureKinds`) and
+[MCP editing](mcp-editing.md) were updated. Verified by headless unit tests
+`backend/test/mcp-assets.test.js` (upload, limits, upload-then-patch of a drafted park) and
+`backend/test/mcp-edit.test.js` (normalization and refused kinds), each confirmed red with its
+check removed, with `mcp-discovery` and `mcp-agent-boundary` passing.
+
 ## Lists and authoring boundaries
 
 The **Lists panel** contains **Designs**, **Plans**, and **Agreements** tabs. One **Source and filters**

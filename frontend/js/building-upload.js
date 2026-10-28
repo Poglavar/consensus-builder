@@ -393,33 +393,11 @@
         else reader.readAsArrayBuffer(file);
     }
 
-    function fileToDataUrl(file) {
-        return new Promise((resolve, reject) => {
-            const r = new FileReader();
-            r.onerror = () => reject(r.error || new Error('read failed'));
-            r.onload = () => resolve(r.result);
-            r.readAsDataURL(file);
-        });
-    }
-
-    // Uploads the raw model bytes to the backend; returns the served modelUrl.
+    // Uploads the raw model bytes to the backend; returns the served modelUrl (model-upload.js,
+    // shared with the structure editor's furniture models).
     async function uploadModel(file) {
-        const base = (typeof window.getBackendBase === 'function')
-            ? window.getBackendBase() : 'http://localhost:3000';
-        const dataUrl = await fileToDataUrl(file);
-        const resp = await fetch(base.replace(/\/$/, '') + '/models', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ modelData: dataUrl, fileName: file.name })
-        });
-        if (!resp.ok) {
-            const error = new Error('models endpoint returned ' + resp.status);
-            error.status = resp.status;
-            throw error;
-        }
-        const json = await resp.json();
-        if (!json || !json.modelUrl) throw new Error('models endpoint returned no modelUrl');
-        return json.modelUrl;
+        await window.ensureOptionalTool('modelUpload');
+        return window.ModelUpload.uploadModel(file);
     }
 
     // Named so it does not shadow the browser's own confirm().

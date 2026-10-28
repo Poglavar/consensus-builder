@@ -364,6 +364,39 @@
                 }).addTo(group);
             });
         } catch (_) { }
+        try { drawFurnitureGlyphs(group, parkFeature, decorations, pane); } catch (_) { }
+    }
+
+    // A furniture record's point: a bare [lng, lat] (generated stalls) or { coordinate } (editor records).
+    function furniturePoint(entry) {
+        const coord = Array.isArray(entry) ? entry : entry?.coordinate;
+        return Array.isArray(coord) && coord.length >= 2 && Number.isFinite(Number(coord[0])) && Number.isFinite(Number(coord[1]))
+            ? [Number(coord[0]), Number(coord[1])] : null;
+    }
+
+    // Market stalls (in their canopy colour, furniture-models.js stallColor) and lamps of a park or
+    // square on the 2D map, static like the benches; skipped where a road cuts through the structure.
+    function drawFurnitureGlyphs(group, feature, decorations, pane) {
+        const glyph = (coord, className, icon, size, style = '') => L.marker([coord[1], coord[0]], {
+            icon: L.divIcon({
+                className: `structure-furniture-glyph ${className}`,
+                html: `<i class="fa-solid ${icon}"${style} aria-hidden="true"></i>`,
+                iconSize: [size, size],
+                iconAnchor: [size / 2, size / 2]
+            }),
+            pane,
+            zIndexOffset: 1000,
+            interactive: false
+        }).addTo(group);
+        (Array.isArray(decorations.stalls) ? decorations.stalls : []).forEach((stall, index) => {
+            const coord = furniturePoint(stall);
+            if (!coord || !pointInFeature(turf.point(coord), feature)) return;
+            glyph(coord, 'is-stall', 'fa-store', 18, ` style="--stall-color:${window.FurnitureModels.stallColor(stall, index)}"`);
+        });
+        (Array.isArray(decorations.lamps) ? decorations.lamps : []).forEach(lamp => {
+            const coord = furniturePoint(lamp);
+            if (coord && pointInFeature(turf.point(coord), feature)) glyph(coord, 'is-lamp', 'fa-lightbulb', 14);
+        });
     }
 
     function ensureParkDecorations(parkFeature) {
@@ -875,22 +908,8 @@
                 interactive: false
             }).addTo(group);
         });
-        // Stalls / terraces (skipped when they fall on a road cut through the square)
-        const stalls = (Array.isArray(dec.stalls) ? dec.stalls : [])
-            .filter(coord => pointInFeature(turf.point(coord), squareFeature));
-        stalls.forEach(([lng, lat]) => {
-            L.marker([lat, lng], {
-                icon: L.divIcon({
-                    className: 'square-stall-emoji',
-                    html: '<div style="font-size:18px;line-height:18px;">🍽️</div>',
-                    iconSize: [18, 18],
-                    iconAnchor: [9, 9]
-                }),
-                pane,
-                zIndexOffset: 1000,
-                interactive: false
-            }).addTo(group);
-        });
+        // Market stalls and lamps (skipped when they fall on a road cut through the square)
+        drawFurnitureGlyphs(group, squareFeature, dec, pane);
         // Statues (one auto-placed per square; more placeable in the geometry editor)
         (Array.isArray(dec.statues) ? dec.statues : [])
             .filter(coord => Array.isArray(coord) && pointInFeature(turf.point(coord), squareFeature))

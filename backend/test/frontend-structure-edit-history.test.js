@@ -77,15 +77,31 @@ function makeEditorHarness(decorations, options = {}) {
             if (selector === '[data-action="undo"]') return undoButton;
             return /finish-path/.test(selector) ? finishButton : (/data-role/.test(selector) ? element : null);
         },
-        fireClick({ tool, action }) {
+        fireClick({ tool, action, furnitureKind }) {
             const target = {
                 closest(selector) {
                     if (tool && selector === '.structure-geometry-tools [data-tool]') return { dataset: { tool } };
-                    if (action && selector === '[data-action]') return { dataset: { action } };
+                    if (action && selector === '[data-action]') {
+                        return { dataset: { action }, closest: () => (furnitureKind ? { dataset: { furnitureKind } } : null) };
+                    }
                     return null;
                 }
             };
             this.listeners.click({ target });
+        },
+        // A file chosen in a furniture row's Upload control.
+        chooseFurnitureFile(furnitureKind, file) {
+            const input = {
+                files: [file], value: 'C:\\fakepath\\' + file.name,
+                closest(selector) {
+                    if (selector === '[data-furniture-kind]') return { dataset: { furnitureKind } };
+                    if (selector === '[data-role="furniture-model-upload"]') return { role: 'upload-label' };
+                    return null;
+                }
+            };
+            const target = { closest: selector => (selector === '[data-role="furniture-model-file"]' ? input : null) };
+            this.listeners.change({ target });
+            return input;
         }
     };
 
@@ -229,6 +245,10 @@ function makeEditorHarness(decorations, options = {}) {
         SingleBuildingGeometry,
         ProposalApplyStructures,
         __parkPlanting: require('../../frontend/js/park-planting.js'),
+        FurnitureModels: require('../../frontend/js/furniture-models.js'),
+        BusyControl: { isBusy: () => false, track: (_control, work) => Promise.resolve().then(work) },
+        ensureOptionalTool: vi.fn(async () => true),
+        ModelUpload: options.modelUpload || null,
         turf: {
             ...realTurf,
             booleanPointInPolygon(point) {
@@ -517,9 +537,11 @@ describe('structure geometry editor history wiring', () => {
         ['park', {
             trees: [tree(15.0002, 45.8003)], flowerbeds: [[[15.00015, 45.80015], [15.00025, 45.80015], [15.00025, 45.80025], [15.00015, 45.80015]]],
             ponds: [[[15.00055, 45.80015], [15.00065, 45.80015], [15.00065, 45.80025], [15.00055, 45.80015]]],
-            paths: [[[15.0002, 45.8002], [15.0004, 45.8004]]], benches: [{ coordinate: [15.00045, 45.80025], bearing: 35 }]
+            paths: [[[15.0002, 45.8002], [15.0004, 45.8004]]], benches: [{ coordinate: [15.00045, 45.80025], bearing: 35 }],
+            lamps: [{ coordinate: [15.00035, 45.80065], bearing: 90 }],
+            stalls: [{ coordinate: [15.00075, 45.80075], bearing: 180, color: '#2f9e6b' }]
         }],
-        ['square', { fountains: [[15.0003, 45.8003]], trees: [tree(15.0006, 45.8006)], benches: [{ coordinate: [15.0004, 45.8004], bearing: 15 }], stalls: [[15.0002, 45.8006]], statues: [[15.0007, 45.8003]] }]
+        ['square', { fountains: [[15.0003, 45.8003]], trees: [tree(15.0006, 45.8006)], benches: [{ coordinate: [15.0004, 45.8004], bearing: 15 }], stalls: [{ coordinate: [15.0002, 45.8006], bearing: 0 }], statues: [[15.0007, 45.8003]], lamps: [{ coordinate: [15.0005, 45.8007], bearing: 0 }] }]
     ])('moves the whole %s design in metric space as one undoable boundary gesture', (kind, decorations) => {
         const geometry = { type: 'Polygon', coordinates: [[[15, 45.8], [15.001, 45.8], [15.001, 45.801], [15, 45.801], [15, 45.8]]] };
         const originalDecorations = JSON.parse(JSON.stringify(decorations));
@@ -530,11 +552,11 @@ describe('structure geometry editor history wiring', () => {
         const expectedGeometry = SingleBuildingGeometry.moveGeometry(geometry, from, to);
         const expectedDecorations = JSON.parse(JSON.stringify(originalDecorations));
         for (const [key, coordinates] of Object.entries(originalDecorations)) {
-            if (!['benches', 'trees'].includes(key) && Array.isArray(coordinates)) {
+            if (!['benches', 'trees', 'lamps', 'stalls'].includes(key) && Array.isArray(coordinates)) {
                 expectedDecorations[key] = SingleBuildingGeometry.moveCoordinateCollection(coordinates, from, to);
             }
         }
-        for (const key of ['benches', 'trees']) {
+        for (const key of ['benches', 'trees', 'lamps', 'stalls']) {
             expectedDecorations[key] = originalDecorations[key].map(record => ({
                 ...record,
                 coordinate: SingleBuildingGeometry.moveCoordinateCollection(record.coordinate, from, to)
@@ -542,9 +564,11 @@ describe('structure geometry editor history wiring', () => {
         }
         expectedDecorations.version = kind === 'park' ? 3 : 2;
         const originalPoints = [
-            ...(decorations.fountains || []), ...(decorations.stalls || []), ...(decorations.statues || []),
+            ...(decorations.fountains || []), ...(decorations.statues || []),
+            ...(decorations.stalls || []).map(stall => stall.coordinate),
             ...(decorations.trees || []).map(record => record.coordinate),
-            ...(decorations.benches || []).map(bench => bench.coordinate)
+            ...(decorations.benches || []).map(bench => bench.coordinate),
+            ...(decorations.lamps || []).map(lamp => lamp.coordinate)
         ].map(point => [point[0], point[1]]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
 
         expect(harness.open()).toBe(true);
@@ -672,7 +696,7 @@ describe('structure geometry editor history wiring', () => {
         harness.fireMap('mouseup');
         expect(harness.boundaryLayer().feature.geometry).toEqual(geometry);
         expect(harness.undoButton.disabled).toBe(true);
-        expect(harness.save()).toEqual({ trees: [tree(15.0004, 45.8004)], flowerbeds: [], ponds: [], paths: [], benches: [], version: 3 });
+        expect(harness.save()).toEqual({ trees: [tree(15.0004, 45.8004)], flowerbeds: [], ponds: [], paths: [], benches: [], stalls: [], lamps: [], version: 3 });
         expect(harness.syncOptions.placement).toEqual({ site: geometry, free: true });
     });
 
@@ -987,5 +1011,114 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.isMapDraggingEnabled()).toBe(false);
         expect(harness.listenerCount('map', 'touchmove')).toBe(0);
         expect(harness.listenerCount('document', 'touchend')).toBe(0);
+    });
+    it.each(['park', 'square'])('places, saves and undoes %s lamps like benches', kind => {
+        const harness = makeEditorHarness(kind === 'park' ? { trees: [], version: 3 } : { fountains: [], version: 2 }, { kind });
+        expect(harness.open()).toBe(true);
+        expect(harness.panel.innerHTML).toContain('data-tool="lamp"');
+        harness.panel.fireClick({ tool: 'lamp' });
+        harness.fireMap('click', { latlng: { lng: 0.2, lat: 0.3 } });
+        harness.fireMap('click', { latlng: { lng: 0.4, lat: 0.5 } });
+        const markers = currentMarkers(harness);
+        expect(markers).toHaveLength(2);
+        expect(markers[0].options.icon.className).toContain('is-lamp');
+
+        markers[1].fire('dragstart');
+        markers[1].setLatLng([0.6, 0.7]);
+        markers[1].fire('dragend');
+        harness.undo();
+        harness.undoButton.fire();
+        expect(currentMarkers(harness)).toHaveLength(1);
+        expect(harness.save().lamps).toEqual([{ coordinate: [0.2, 0.3], bearing: 0 }]);
+    });
+
+    it.each(['park', 'square'])('places %s market stalls as bearing records with a coloured marker', kind => {
+        const harness = makeEditorHarness(kind === 'park' ? { trees: [], version: 3 } : { fountains: [], stalls: [[0.1, 0.1]], version: 2 }, { kind });
+        expect(harness.open()).toBe(true);
+        expect(harness.panel.innerHTML).toContain('data-tool="stall"');
+        harness.panel.fireClick({ tool: 'stall' });
+        harness.fireMap('click', { latlng: { lng: 0.2, lat: 0.3 } });
+        const markers = currentMarkers(harness);
+        const placed = markers.at(-1);
+        expect(placed.options.icon.className).toContain('is-stall');
+        expect(placed.options.icon.html).toMatch(/--stall-color:#[0-9a-f]{6}/);
+        const stalls = harness.save().stalls;
+        expect(stalls.at(-1)).toEqual({ coordinate: [0.2, 0.3], bearing: 0 });
+        if (kind === 'square') expect(stalls[0]).toEqual({ coordinate: [0.1, 0.1], bearing: 0 });
+    });
+
+    it('offers a model row for each furniture kind the structure has', () => {
+        const park = makeEditorHarness({ trees: [], version: 3 }, { kind: 'park' });
+        expect(park.open()).toBe(true);
+        expect([...park.panel.innerHTML.matchAll(/data-furniture-kind="([^"]+)"/g)].map(match => match[1])).toEqual(['bench', 'stall', 'tree', 'lamp']);
+        const square = makeEditorHarness({ fountains: [], version: 2 }, { kind: 'square' });
+        expect(square.open()).toBe(true);
+        expect([...square.panel.innerHTML.matchAll(/data-furniture-kind="([^"]+)"/g)].map(match => match[1]))
+            .toEqual(['bench', 'statue', 'fountain', 'stall', 'tree', 'lamp']);
+        const lake = makeEditorHarness(null, { kind: 'lake' });
+        expect(lake.open()).toBe(true);
+        expect(lake.panel.innerHTML).not.toContain('data-furniture-kind');
+    });
+
+    it('uploads a furniture model within the limits, saves it under models, and undoes or removes it', async () => {
+        const modelUpload = {
+            parseModelFile: vi.fn(async () => ({ scene: true })),
+            modelSummary: vi.fn((_scene, bytes) => ({ triangles: 1200, textures: [{ width: 512, height: 512 }], bytes })),
+            disposeScene: vi.fn(),
+            uploadModel: vi.fn(async () => '/models/bench.glb')
+        };
+        const harness = makeEditorHarness({ fountains: [], version: 2 }, { kind: 'square', modelUpload });
+        expect(harness.open()).toBe(true);
+        const file = { name: 'Bench.glb', size: 40000 };
+        const input = harness.panel.chooseFurnitureFile('bench', file);
+        expect(input.value).toBe('');
+        await vi.waitFor(() => expect(modelUpload.uploadModel).toHaveBeenCalledWith(file));
+        await vi.waitFor(() => expect(harness.undoButton.disabled).toBe(false));
+        expect(harness.context.ensureOptionalTool).toHaveBeenCalledWith('modelUpload');
+        expect(modelUpload.disposeScene).toHaveBeenCalledOnce();
+
+        // Undo takes the model back off; redoing the upload and removing it leaves no models key.
+        harness.undoButton.fire();
+        expect(harness.save()).not.toHaveProperty('models');
+
+        const again = makeEditorHarness({ fountains: [], version: 2 }, { kind: 'square', modelUpload });
+        expect(again.open()).toBe(true);
+        again.panel.chooseFurnitureFile('bench', file);
+        await vi.waitFor(() => expect(again.undoButton.disabled).toBe(false));
+        again.panel.fireClick({ action: 'remove-furniture-model', furnitureKind: 'bench' });
+        expect(again.save()).not.toHaveProperty('models');
+
+        const kept = makeEditorHarness({ fountains: [], version: 2 }, { kind: 'square', modelUpload });
+        expect(kept.open()).toBe(true);
+        kept.panel.chooseFurnitureFile('bench', file);
+        await vi.waitFor(() => expect(kept.undoButton.disabled).toBe(false));
+        expect(kept.save().models).toEqual({ bench: { url: '/models/bench.glb', name: 'Bench.glb' } });
+    });
+
+    it.each([
+        ['too many triangles', { triangles: 9000, textures: [] }, 'This model has 9000 triangles. A furniture model may have at most 5000.'],
+        ['an oversized texture', { triangles: 100, textures: [{ width: 2048, height: 512 }] }, 'A texture is 2048 × 512 px. Furniture textures may be at most 1024 px on each side.']
+    ])('refuses a furniture model with %s and uploads nothing', async (_label, summary, message) => {
+        const modelUpload = {
+            parseModelFile: vi.fn(async () => ({})),
+            modelSummary: vi.fn((_scene, bytes) => ({ ...summary, bytes })),
+            disposeScene: vi.fn(),
+            uploadModel: vi.fn(async () => '/models/x.glb')
+        };
+        const harness = makeEditorHarness({ trees: [], version: 3 }, { kind: 'park', modelUpload });
+        expect(harness.open()).toBe(true);
+        harness.panel.chooseFurnitureFile('lamp', { name: 'lamp.glb', size: 1000 });
+        await vi.waitFor(() => expect(harness.statusMessages).toContain(message));
+        expect(modelUpload.uploadModel).not.toHaveBeenCalled();
+        expect(harness.save()).not.toHaveProperty('models');
+    });
+
+    it('refuses a furniture file over 4 MiB before parsing it', async () => {
+        const modelUpload = { parseModelFile: vi.fn(), modelSummary: vi.fn(), disposeScene: vi.fn(), uploadModel: vi.fn() };
+        const harness = makeEditorHarness({ trees: [], version: 3 }, { kind: 'park', modelUpload });
+        expect(harness.open()).toBe(true);
+        harness.panel.chooseFurnitureFile('bench', { name: 'big.glb', size: 5 * 1024 * 1024 });
+        await vi.waitFor(() => expect(harness.statusMessages).toContain('This file is 5.0 MB. A furniture model may be at most 4.0 MB.'));
+        expect(modelUpload.parseModelFile).not.toHaveBeenCalled();
     });
 });

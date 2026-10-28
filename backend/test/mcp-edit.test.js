@@ -153,6 +153,31 @@ describe('granular authored editing', () => {
         expect(next.structureProposal.decorationDesign.paths).toHaveLength(1);
         expect(()=>edit(design,[{op:'add',path:'/structureProposal/decorations',value:{trees:[]}}])).toThrow(/runtime|noncanonical/);
     });
+    it('normalizes square/park furniture models and lamps like the site and refuses kinds the structure lacks', () => {
+        const square=make('space',{spaceKind:'square'}), url='https://api.example/uploads/models/statue.glb';
+        const next=edit(square,[{op:'add',path:'/structureProposal/decorationDesign',value:{version:2,benches:[],
+            lamps:[{coordinate:[-.0995,51.5005],bearing:370},{coordinate:[-.0985,51.5015]}],
+            models:{statue:{url,name:`  ${'s'.repeat(130)}  `},fountain:{url}}}}]);
+        expect(next.structureProposal.decorationDesign.lamps).toEqual([{coordinate:[-.0995,51.5005],bearing:10},{coordinate:[-.0985,51.5015],bearing:0}]);
+        expect(next.structureProposal.decorationDesign.models).toEqual({statue:{url,name:'s'.repeat(120)},fountain:{url}});
+        expect(validateDesignContent(next).ok).toBe(true);
+        expect(edit(next,[{op:'replace',path:'/structureProposal/decorationDesign/models',value:{}}]).structureProposal.decorationDesign).not.toHaveProperty('models');
+        const park=make('space',{spaceKind:'park',treeCount:0}), lake=make('space',{spaceKind:'lake'});
+        expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/models',value:{statue:{url}}}])).toThrow(expect.objectContaining({code:'furniture-kind-not-allowed'}));
+        // Market stalls are park furniture too: a stall model, coloured canopies, and bare coordinates.
+        const stalls=edit(park,[{op:'add',path:'/structureProposal/decorationDesign/models',value:{stall:{url}}},
+            {op:'add',path:'/structureProposal/decorationDesign/stalls',value:[{coordinate:[-.0995,51.5005],bearing:-45,color:' #D64545 '},
+                {coordinate:[-.0994,51.5005],color:'red'},[-.0993,51.5005]]}]).structureProposal.decorationDesign;
+        expect(stalls.models).toEqual({stall:{url}});
+        expect(stalls.stalls).toEqual([{coordinate:[-.0995,51.5005],bearing:315,color:'#d64545'},{coordinate:[-.0994,51.5005],bearing:0},{coordinate:[-.0993,51.5005],bearing:0}]);
+        expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/stalls',value:[{coordinate:[-.0995,951.5],bearing:0}]}])).toThrow(expect.objectContaining({code:'invalid-decoration'}));
+        expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/stalls',value:[{bearing:0}]}])).toThrow(expect.objectContaining({code:'invalid-decoration'}));
+        expect(()=>edit(lake,[{op:'add',path:'/structureProposal/decorationDesign',value:{stalls:[[-.0995,51.5005]]}}])).toThrow(expect.objectContaining({code:'furniture-kind-not-allowed'}));
+        expect(()=>edit(lake,[{op:'add',path:'/structureProposal/decorationDesign',value:{lamps:[{coordinate:[-.0995,51.5005],bearing:0}]}}])).toThrow(expect.objectContaining({code:'furniture-kind-not-allowed'}));
+        expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/models',value:{bench:{name:'No asset'}}}])).toThrow(expect.objectContaining({code:'invalid-decoration'}));
+        expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/lamps',value:[{bearing:0}]}])).toThrow(expect.objectContaining({code:'invalid-decoration'}));
+        expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/lamps',value:{coordinate:[-.0995,51.5005]}}])).toThrow(expect.objectContaining({code:'invalid-decoration'}));
+    });
     it('moves a shared plot boundary with granular vertex edits and rejects gaps or overlap', () => {
         const design=make('parcel-layout',{algorithm:'equal',count:2});
         const shifted=structuredClone(design.parcelLayout.plots);
