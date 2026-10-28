@@ -25,18 +25,8 @@
             return;
         }
 
-        // Handle buildings update
-        try {
-            var showBuildings = document.getElementById('showBuildings');
-            if (showBuildings && showBuildings.checked && typeof global.fetchBuildings === 'function') {
-                if (typeof global.buildingsTimeout !== 'undefined') {
-                    clearTimeout(global.buildingsTimeout);
-                }
-                global.buildingsTimeout = setTimeout(function () {
-                    if (isTwoDimensionalViewportActive()) global.fetchBuildings();
-                }, 1000);
-            }
-        } catch (_) { /* ignore */ }
+        // Buildings follow the map from map-core.js's moveend handler (one debounced fetch per pan
+        // for every survey switched on); this controller handles parcels only.
 
         // No cadastre here (the explore city): only a chosen session plan needs viewport updates.
         if (global.CityConfigManager && typeof global.CityConfigManager.hasParcelData === 'function'

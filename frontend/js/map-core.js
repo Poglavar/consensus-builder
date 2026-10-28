@@ -991,9 +991,16 @@ function setupMapEventHandlers() {
         // panning with GDI or DGU ticked showed whatever had been fetched when the box was ticked
         // and nothing more — a toggle that looked broken because its layer never grew. Each fetch is
         // zoom-gated and cached (per bbox for GDI/DGU, per grid cell for OSM), so a pan is cheap and
-        // a repeat view is free.
+        // a repeat view is free. The existing-buildings pool records the areas it holds completely
+        // (buildingFetchCoverage), so a view inside one is not asked for again.
+        const fetchBuildingsUnlessCovered = typeof fetchBuildings === 'function' ? () => {
+            let view = null;
+            try { view = map.getBounds(); } catch (_) { view = null; }
+            if (view && boundsCoveredByBuildingFetch(view)) return;
+            fetchBuildings();
+        } : null;
         const followMap = [
-            ['showBuildings', typeof fetchBuildings === 'function' ? fetchBuildings : null],
+            ['showBuildings', fetchBuildingsUnlessCovered],
             ['showBuildingsDgu', typeof fetchDguBuildings === 'function' ? fetchDguBuildings : null],
             ['showBuildingsOsm', typeof fetchOsmBuildings === 'function' ? fetchOsmBuildings : null]
         ];

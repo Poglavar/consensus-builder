@@ -15,6 +15,7 @@ import vm from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const counts = require('../../frontend/js/proposals/counts.js');
+const PlanningScene = require('../../frontend/js/planning/scene.js');
 const Cid = require('../../frontend/js/cid.js');
 
 const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
@@ -36,7 +37,8 @@ function serverList({ fetch, cache = freshCache(), area = () => null } = {}) {
         document: {}, console: { log() {}, info() {}, warn: vi.fn(), error() {} }, URLSearchParams, Cid,
         serverProposalCache: cache, SERVER_PROPOSAL_SUMMARY_LIMIT: 250,
         normalizeCityCodeForApi: city => city, resolveBackendBaseUrl: () => 'http://backend',
-        getProposalCountAreaContext: () => area(), renderProposalListModal: vi.fn(), updateShowProposalsButton: vi.fn(), fetch
+        getProposalCountAreaContext: () => area(), renderProposalListModal: vi.fn(), updateShowProposalsButton: vi.fn(), fetch,
+        PlanningScene, __proposalCounts: counts, AbortController
     });
     context.window = context;
     vm.runInContext(designSyncSource, context);
@@ -163,11 +165,11 @@ describe('osvježavanje serverskog broja', () => {
         expect(fetch).toHaveBeenCalledTimes(1);
     });
 
-    it('requests the active Explore viewport bounds instead of a city total', async () => {
+    it('requests the active Explore viewport, snapped to the viewport grid, instead of a city total', async () => {
         const fetch = vi.fn(async () => answer([]));
         const list = serverList({ fetch, area: () => ({ explore: true, city: null, bbox: [15.9, 45.7, 16.1, 45.9], key: 'explore:15.9,45.7,16.1,45.9' }) });
         await list.refreshServerProposalCount();
-        expect(fetch.mock.calls[0][0]).toBe('http://backend/designs?limit=250&bbox=15.9%2C45.7%2C16.1%2C45.9');
+        expect(fetch.mock.calls[0][0]).toBe('http://backend/designs?limit=250&bbox=15.872%2C45.696%2C16.128%2C45.92');
     });
 
     it('drops an answer for the previous Explore viewport once the next refresh has moved the area', async () => {

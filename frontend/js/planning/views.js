@@ -9,11 +9,13 @@
         massing: 'threeMode.controls.representationMassing', buildout: 'threeMode.controls.representationBuildOut',
         both: 'threeMode.controls.representationBoth', all: 'activityFeed.all', retry: 'bets.retry', close: 'common.close' };
     const t = (key, params = {}) => root.i18n.t(sharedLabels[key] || `planningViews.${key}`, params);
-    let store, items = [], payload = null, status = 'loading', layer, controller, request = 0;
+    let store, items = [], payload = null, status = 'loading', layer, request = 0;
     let panel, inspector, lastSettings = null, lastSelectedId = null, ready = false, selectionLayer;
     let progress = null;
     // The massing shapes drawn on the map, for "what is under this point" (click-stack.md).
     let hitShapes = [];
+    // What drawMap last drew per item id: { item, signature, group, hits }.
+    const drawnItems = new Map();
     let sourceOptions = [], sourceId = '', scenarioId = '', focusedRecord = null, sourceGeneration = 0, referenceStatus = null;
     let restoreId = new URLSearchParams(location.search).get('planningSelection'), restoring = false, catalogReady = false, parcelPanel = null;
     // Per-item configuration pins chosen in the inspector; cleared with the source, housing type or city.
@@ -156,55 +158,83 @@
             root.L.geoJSON(selection.site, { pane: 'planningSources', interactive: false,
                 style: root.MapHighlight.style({ fill: false }) }).addTo(selectionLayer);
         }
-        layer.clearLayers();
+        // Each item is drawn into its own group, remembered with what it was drawn from. A redraw
+        // replaces only the items whose record or appearance changed and removes the ones gone, so
+        // a pan that brings a few parcels does not rebuild every massing on the map.
+        const state = store.get();
+        const colors = Object.fromEntries(core.roles.map(role => [role, color(role)]));
+        const shown = new Set();
         hitShapes = [];
         for (const item of sceneItems()) {
             const display = appearance(item);
-            if (display === 'off') continue;
-            let features;
-            try { features = envelopes.mapFeatures(item, { detail: store.get().permittedMap, ...realization(item) }); }
-            catch (error) { console.error('[planning] Could not project massing', item.id, error); continue; }
-            const hasBody = features.some(feature => feature.properties.geometryRole !== 'bound');
-            for (const feature of features) {
-                const active = item.id === store.get().selectedId;
-                // The outer bound behind a shown configuration is a hull: outline plus a faint fill.
-                const hull = feature.properties.geometryRole === 'bound' && hasBody;
-                // The hull is not a second click target: the configuration inside carries the interaction.
-                const shape = root.L.geoJSON(feature, { pane: 'planningSources', className: hull ? 'planning-bound-outline' : undefined, interactive: !hull,
-                    style: { color: active ? root.MapHighlight.color : color(item.role), weight: active ? 4 : hull ? 1 : 1.5, dashArray: hull ? '4 4' : null,
-                        fillColor: color(item.role), fillOpacity: hull ? 0.06 : display === 'solid' ? 1 : 0.18,
-                        opacity: hull ? 0.8 : 1 } });
-                const label = item.source.parcel || item.title;
-                shape.addTo(layer);
-                // The assumed street side of the shown configuration, so a roll reads as a choice, not a glitch.
-                if (feature.properties.frontEdge != null && item.derivation?.parcel) {
-                    const ring = item.derivation.parcel.coordinates[0], edge = feature.properties.frontEdge;
-                    root.L.polyline([ring[edge], ring[edge + 1]].map(p => [p[1], p[0]]), { pane: 'planningSources', interactive: false,
-                        color: color(item.role), weight: 4, opacity: 0.9 }).addTo(layer);
-                }
-                if (hull) continue;
-                const inspect = () => { if (!root.__mapEditLock?.isHeld()) select(item.id); };
-                // A massing click is a map click: the click stack shows it with everything else
-                // under the point (click-stack.md) and selects it when its section expands.
-                shape.on('click', event => {
-                    // Editing and measurement need this event to reach the map. A passive massing
-                    // overlay must not consume it before the active tool can place its geometry.
-                    if (root.__mapEditLock?.blocksSelection({ allowUrbanBlocks: true })) return;
-                    root.L.DomEvent.stopPropagation(event);
-                    if (!root.__mapEditLock?.isHeld()) root.ClickStack.handleClick(event.latlng, { allowUrbanBlocks: true });
-                });
-                hitShapes.push({ item, feature });
-                shape.eachLayer(part => {
-                    const node = part.getElement?.();
-                    if (!node) return;
-                    node.setAttribute('tabindex', '0'); node.setAttribute('role', 'button');
-                    node.setAttribute('aria-label', t(item.areas?.length ? 'inspectArea' : 'inspectMassing', { parcel: label }));
-                    node.addEventListener('keydown', event => {
-                        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.stopPropagation(); inspect(); }
-                    });
-                });
+            if (display === 'off' || shown.has(item.id)) continue;
+            shown.add(item.id);
+            const signature = JSON.stringify([display, state.permittedMap, state.permittedForm, state.permittedVariation,
+                scenarioId, pins[item.id] || null, item.id === state.selectedId, colors[item.role]]);
+            const previous = drawnItems.get(item.id);
+            if (previous && previous.item === item && previous.signature === signature) {
+                hitShapes.push(...previous.hits);
+                continue;
             }
+            if (previous) layer.removeLayer(previous.group);
+            const group = root.L.featureGroup().addTo(layer);
+            const hits = drawItem(item, display, group);
+            drawnItems.set(item.id, { item, signature, group, hits });
+            hitShapes.push(...hits);
         }
+        for (const [id, entry] of drawnItems) {
+            if (shown.has(id)) continue;
+            layer.removeLayer(entry.group);
+            drawnItems.delete(id);
+        }
+    }
+    // One item's massing shapes, added to `group`; returns its click-stack hit shapes.
+    function drawItem(item, display, group) {
+        const hits = [];
+        let features;
+        try { features = envelopes.mapFeatures(item, { detail: store.get().permittedMap, ...realization(item) }); }
+        catch (error) { console.error('[planning] Could not project massing', item.id, error); return hits; }
+        const hasBody = features.some(feature => feature.properties.geometryRole !== 'bound');
+        for (const feature of features) {
+            const active = item.id === store.get().selectedId;
+            // The outer bound behind a shown configuration is a hull: outline plus a faint fill.
+            const hull = feature.properties.geometryRole === 'bound' && hasBody;
+            // The hull is not a second click target: the configuration inside carries the interaction.
+            const shape = root.L.geoJSON(feature, { pane: 'planningSources', className: hull ? 'planning-bound-outline' : undefined, interactive: !hull,
+                style: { color: active ? root.MapHighlight.color : color(item.role), weight: active ? 4 : hull ? 1 : 1.5, dashArray: hull ? '4 4' : null,
+                    fillColor: color(item.role), fillOpacity: hull ? 0.06 : display === 'solid' ? 1 : 0.18,
+                    opacity: hull ? 0.8 : 1 } });
+            const label = item.source.parcel || item.title;
+            shape.addTo(group);
+            // The assumed street side of the shown configuration, so a roll reads as a choice, not a glitch.
+            if (feature.properties.frontEdge != null && item.derivation?.parcel) {
+                const ring = item.derivation.parcel.coordinates[0], edge = feature.properties.frontEdge;
+                root.L.polyline([ring[edge], ring[edge + 1]].map(p => [p[1], p[0]]), { pane: 'planningSources', interactive: false,
+                    color: color(item.role), weight: 4, opacity: 0.9 }).addTo(group);
+            }
+            if (hull) continue;
+            const inspect = () => { if (!root.__mapEditLock?.isHeld()) select(item.id); };
+            // A massing click is a map click: the click stack shows it with everything else
+            // under the point (click-stack.md) and selects it when its section expands.
+            shape.on('click', event => {
+                // Editing and measurement need this event to reach the map. A passive massing
+                // overlay must not consume it before the active tool can place its geometry.
+                if (root.__mapEditLock?.blocksSelection({ allowUrbanBlocks: true })) return;
+                root.L.DomEvent.stopPropagation(event);
+                if (!root.__mapEditLock?.isHeld()) root.ClickStack.handleClick(event.latlng, { allowUrbanBlocks: true });
+            });
+            hits.push({ item, feature });
+            shape.eachLayer(part => {
+                const node = part.getElement?.();
+                if (!node) return;
+                node.setAttribute('tabindex', '0'); node.setAttribute('role', 'button');
+                node.setAttribute('aria-label', t(item.areas?.length ? 'inspectArea' : 'inspectMassing', { parcel: label }));
+                node.addEventListener('keydown', event => {
+                    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.stopPropagation(); inspect(); }
+                });
+            });
+        }
+        return hits;
     }
     function isPhoto() { return root.__mapModeState?.desired === 'photo'; }
     function stateText() {
@@ -492,67 +522,50 @@
         }
         if (settingsChanged && (view.permitted !== 'off' || state.zoningAreas !== 'off')) refresh();
     }
-    // Two viewport caches: envelopes do not depend on the housing type (every configuration ships
+    // Two viewport answers: envelopes do not depend on the housing type (every configuration ships
     // with the item), zoning areas do. A housing-type change therefore redraws the envelopes at
-    // once and re-reads only the areas, when they are shown.
+    // once and re-reads only the areas, when they are shown. Each answer comes from `viewCache`,
+    // which keeps recent areas asked for (snapped to the viewport grid), so a pan inside an
+    // answered area or back to one asks for nothing; Retry and a source re-read clear it.
+    const viewCache = core.createViewportCache({ limit: 64, maxAgeMs: 10 * 60 * 1000 });
+    // The API's area limits (backend/routes/planning.js validateBounds): a larger view is answered
+    // 400, shown as "zoom in". Snapping never pushes a view over them; a view already over one asks
+    // for nothing, since the answer is known.
+    const MAX_AREA_KM2 = { envelopes: 0.5, areas: 4 };
+    const MOVE_REFRESH_DELAY_MS = 300;
     let areaCache = { key: '', answer: null }, envelopeCache = { key: '', answer: null }, assembled = '';
     function invalidate() { areaCache = { key: '', answer: null }; envelopeCache = { key: '', answer: null }; assembled = ''; }
+    // The area to ask for: the view snapped to whole cells, or the view itself where snapping would
+    // cross the endpoint's area limit.
+    function requestBox(kind, bbox) {
+        const snapped = core.snapBbox(bbox);
+        return core.bboxAreaKm2(snapped) <= MAX_AREA_KM2[kind] ? snapped : bbox;
+    }
+    function tooLarge(error) { return Object.assign(new Error('Planning view area is too large'), { status: 400, cause: error }); }
     async function refresh({ force = false } = {}) {
         if (!ready || !catalogReady || policy().permitted === 'off' && store.get().zoningAreas === 'off') return;
         if (root.map.getZoom() < 16) {
-            controller?.abort(); request++; invalidate(); items = []; status = 'zoom'; payload = null;
+            viewCache.abortExcept([]); request++; invalidate(); items = []; status = 'zoom'; payload = null;
             if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry(); return;
         }
         const city = root.CityConfigManager.getCurrentCityId();
         const bounds = root.map.getBounds();
         const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+        if (force) viewCache.clear();
         // Bounds-registered sources come and go with the viewport; re-list them when it moves.
         if (!(await ensureSources(city, bbox))) return;
         const descriptor = sourceOptions.find(source => source.id === sourceId);
-        const viewport = core.queryKey(city, bbox);
-        const envelopeKey = descriptor?.parcelStudy && policy().permitted !== 'off' ? `${sourceId}:${viewport}` : '';
-        const areaKey = descriptor && (!descriptor.capabilities.areas || store.get().zoningAreas !== 'off') ? `${sourceId}:${scenarioId}:${viewport}` : '';
+        const envelopeScope = descriptor?.parcelStudy && policy().permitted !== 'off' ? `envelopes:${city}:${sourceId}` : '';
+        const areaScope = descriptor && (!descriptor.capabilities.areas || store.get().zoningAreas !== 'off') ? `areas:${city}:${sourceId}:${scenarioId}` : '';
         if (force) invalidate();
-        if (!envelopeKey) envelopeCache = { key: '', answer: null };
-        if (!areaKey) areaCache = { key: '', answer: null };
-        const pending = [];
-        if (envelopeKey && envelopeKey !== envelopeCache.key) pending.push('envelopes');
-        if (areaKey && areaKey !== areaCache.key) pending.push('areas');
-        const composition = `${envelopeKey}|${areaKey}`;
-        const assemble = () => {
-            const answers = [areaCache.answer, envelopeCache.answer].filter(Boolean);
-            const answer = envelopeCache.answer || areaCache.answer || { sources: descriptor ? [descriptor] : [], summaries: [], unavailable: [], omitted: 0, items: [] };
-            payload = { ...answer, items: answers.flatMap(entry => entry.items) }; items = payload.items; status = 'ready'; assembled = composition;
-            if (!selected()) store.select(null);
-            drawMap(); render(); notifyGeometry();
-        };
-        if (!pending.length) { if (assembled !== composition) assemble(); return; }
-        controller?.abort(); controller = new AbortController();
+        if (!envelopeScope) envelopeCache = { key: '', answer: null };
+        if (!areaScope) areaCache = { key: '', answer: null };
+        const wanted = [];
+        if (envelopeScope) wanted.push({ kind: 'envelopes', scope: envelopeScope });
+        if (areaScope) wanted.push({ kind: 'areas', scope: areaScope });
         const generation = ++request;
-        status = 'loading'; progress = null; render();
-        try {
-            const url = new URL(`${root.getBackendBase()}/planning/representations`);
-            url.searchParams.set('city', city); url.searchParams.set('bbox', bbox.join(','));
-            if (sourceId) url.searchParams.set('source', sourceId);
-            const options = { city, signal: controller.signal,
-                onProgress(value) { if (generation === request) { progress = value; render(); } } };
-            const requests = [];
-            if (pending.includes('areas')) {
-                const areaUrl = new URL(url);
-                if (scenarioParam()) areaUrl.searchParams.set('scenario', scenarioParam());
-                requests.push(root.PlanningFeed.loadViewport(areaUrl, options).then(answer => { areaCache = { key: areaKey, answer }; }));
-            }
-            if (pending.includes('envelopes')) {
-                const envelopeUrl = new URL(url); envelopeUrl.pathname = '/planning/envelopes';
-                requests.push(root.PlanningFeed.loadViewport(envelopeUrl, options)
-                    .then(answer => { envelopeCache = { key: envelopeKey, answer: { ...answer, envelopes: true } }; }));
-            }
-            await Promise.all(requests);
-            if (generation !== request) return;
-            assemble();
-            restoreSelection();
-        } catch (error) {
+        const fail = error => {
             if (generation !== request || error.name === 'AbortError') return;
             if (error.status === 400) {
                 invalidate(); items = []; payload = null; status = 'zoom';
@@ -563,7 +576,58 @@
             invalidate(); items = []; payload = null; status = 'error';
             if (!selected()) store.select(null);
             drawMap(); render(); notifyGeometry();
-        }
+        };
+        const oversized = wanted.find(({ kind }) => core.bboxAreaKm2(bbox) > MAX_AREA_KM2[kind]);
+        if (oversized) { viewCache.abortExcept([]); fail(tooLarge()); return; }
+        const show = (kind, entry) => {
+            if (kind === 'areas') areaCache = { key: entry.key, answer: entry.value };
+            else envelopeCache = { key: entry.key, answer: entry.value };
+        };
+        const pending = wanted.filter(want => {
+            const hit = viewCache.find(want.scope, bbox);
+            if (hit) show(want.kind, hit);
+            return !hit;
+        });
+        const composition = () => `${envelopeScope ? envelopeCache.key : ''}|${areaScope ? areaCache.key : ''}`;
+        const assemble = () => {
+            const answers = [areaCache.answer, envelopeCache.answer].filter(Boolean);
+            const answer = envelopeCache.answer || areaCache.answer || { sources: descriptor ? [descriptor] : [], summaries: [], unavailable: [], omitted: 0, items: [] };
+            payload = { ...answer, items: answers.flatMap(entry => entry.items) }; items = payload.items; status = 'ready'; assembled = composition();
+            if (!selected()) store.select(null);
+            drawMap(); render(); notifyGeometry();
+        };
+        if (!pending.length) { viewCache.abortExcept([]); if (assembled !== composition()) assemble(); return; }
+        const url = new URL(`${root.getBackendBase()}/planning/representations`);
+        url.searchParams.set('city', city);
+        if (sourceId) url.searchParams.set('source', sourceId);
+        const scenario = scenarioParam();
+        const fetchArea = (kind, box) => signal => {
+            const target = new URL(url); target.searchParams.set('bbox', box.join(','));
+            if (kind === 'envelopes') target.pathname = '/planning/envelopes';
+            else if (scenario) target.searchParams.set('scenario', scenario);
+            return root.PlanningFeed.loadViewport(target, { city, signal,
+                onProgress(value) { if (generation === request) { progress = value; render(); } } })
+                .then(answer => (kind === 'envelopes' ? { ...answer, envelopes: true } : answer));
+        };
+        // A snapped area the source refuses (too many parcels in it) is asked again as the view
+        // itself, which is what was asked before snapping; that answer is kept for that view only.
+        const loadKind = async ({ kind, scope }) => {
+            const box = requestBox(kind, bbox);
+            try { return await viewCache.load(scope, box, fetchArea(kind, box)); }
+            catch (error) {
+                if (error.status !== 400 || box === bbox) throw error;
+                return viewCache.load(scope, bbox, fetchArea(kind, bbox));
+            }
+        };
+        // Only the requests this view still wants keep running; an older view's others stop.
+        viewCache.abortExcept(pending.map(({ kind, scope }) => viewCache.keyOf(scope, requestBox(kind, bbox))));
+        status = 'loading'; progress = null; render();
+        try {
+            await Promise.all(pending.map(want => loadKind(want).then(entry => { if (generation === request) show(want.kind, entry); })));
+            if (generation !== request) return;
+            assemble();
+            restoreSelection();
+        } catch (error) { fail(error); }
     }
     async function restoreSelection() {
         if (!restoreId || restoring) return;
@@ -616,12 +680,15 @@
     }
     // Re-list sources for a moved viewport (about one kilometre of movement). Returns false when a
     // newer listing superseded this one; the listing itself is a cheap in-memory lookup server-side.
+    // Listings are kept per rounded area, so panning back across a rounding edge re-lists nothing.
+    const sourceListings = core.createViewportCache({ limit: 64, maxAgeMs: 10 * 60 * 1000 });
     async function ensureSources(city, bbox) {
-        const key = core.queryKey(city, bbox.map(value => Math.round(value * 100) / 100));
+        const rounded = bbox.map(value => Math.round(value * 100) / 100);
+        const key = core.queryKey(city, rounded);
         if (key === sourcesKey) return true;
         const generation = ++sourceGeneration;
         try {
-            const sources = await listSources(city, bbox);
+            const sources = (await sourceListings.load(city, rounded, () => listSources(city, bbox))).value;
             if (generation !== sourceGeneration) return false;
             sourcesKey = key;
             const previousSource = sourceId, previousScenario = scenarioId;
@@ -639,9 +706,11 @@
         const city = root.CityConfigManager.getCurrentCityId();
         const bbox = viewportBbox();
         try {
-            const sources = await listSources(city, bbox);
+            // Kept like the moved-viewport listings, so returning to this area later re-lists nothing.
+            const rounded = bbox ? bbox.map(value => Math.round(value * 100) / 100) : null;
+            const sources = rounded ? (await sourceListings.load(city, rounded, () => listSources(city, bbox))).value : await listSources(city, bbox);
             if (generation !== sourceGeneration) return;
-            sourcesKey = bbox ? core.queryKey(city, bbox.map(value => Math.round(value * 100) / 100)) : '';
+            sourcesKey = rounded ? core.queryKey(city, rounded) : '';
             catalogReady = true;
             scenarioId = '';
             applySources(sources, new URLSearchParams(location.search).get('planningSource'));
@@ -692,7 +761,7 @@
         });
         sourceInput.addEventListener('change', () => {
             const clearSourceSelection = selected()?.role === 'permitted';
-            sourceId = sourceInput.value; pins = {}; scenarioId = ''; controller?.abort(); request++; invalidate(); items = []; payload = null;
+            sourceId = sourceInput.value; pins = {}; scenarioId = ''; viewCache.abortExcept([]); request++; invalidate(); items = []; payload = null;
             populateScenarios();
             if (clearSourceSelection) { focusedRecord = null; store.select(null); }
             const url = new URL(location.href); url.searchParams.set('planningSource', sourceId);
@@ -746,10 +815,19 @@
         ready = true;
         document.getElementById('planning-views-button').hidden = false;
         store.subscribe(syncView);
-        root.map.on('moveend', () => refresh());
+        // A pan is a burst of moveends: re-read once the map has settled, and not at all when it
+        // moves again first. A request already in flight is cancelled by the next refresh that no
+        // longer wants it.
+        let moveTimer = null;
+        const cancelMoveRefresh = () => { if (moveTimer) clearTimeout(moveTimer); moveTimer = null; };
+        root.map.on('movestart', cancelMoveRefresh);
+        root.map.on('moveend', () => {
+            cancelMoveRefresh();
+            moveTimer = setTimeout(() => { moveTimer = null; refresh(); }, MOVE_REFRESH_DELAY_MS);
+        });
         root.map.on('click', () => select(null));
         root.addEventListener('cityChanged', () => {
-            controller?.abort(); request++; invalidate(); items = []; payload = null; status = 'loading';
+            viewCache.clear(); sourceListings.clear(); request++; invalidate(); items = []; payload = null; status = 'loading';
             sourceOptions = []; sourceId = ''; scenarioId = ''; pins = {}; sourcesKey = ''; focusedRecord = null; restoreId = null; catalogReady = false; parcelPanel = null;
             store.select(null); drawMap(); render(); notifyGeometry(); loadSources();
         });

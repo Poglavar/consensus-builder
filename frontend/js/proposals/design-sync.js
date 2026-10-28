@@ -576,6 +576,55 @@
             return { area, city, key: (area && area.key) || city };
         }
 
+        // Explore asks for its view snapped outward to the viewport grid (planning/scene.js) and keeps
+        // each complete answer (fewer rows than the list size) for the count's 15 s window. A pan that
+        // stays inside an answered area, or returns to one, filters that answer to the view instead of
+        // asking again. An answer the list size cut short cannot stand for a smaller view, so such a
+        // view is asked for exactly, as before.
+        const DESIGN_AREA_MAX_AGE_MS = 15000;
+        let designAreas = null;
+        const designAreaCache = () => designAreas
+            || (designAreas = win.PlanningScene.createViewportCache({ limit: 64, maxAgeMs: DESIGN_AREA_MAX_AGE_MS }));
+        // Whether a row of the index meets the view the way the index matches it (its site
+        // intersects the box). A row whose site cannot be measured here is kept: the index matched it.
+        function designMeetsView(row, view) {
+            const site = row && row.content && row.content.site;
+            const extent = site && win.__proposalCounts ? win.__proposalCounts.proposalBounds({ site }) : null;
+            if (!extent) return true;
+            if (!win.PlanningScene.bboxIntersects(extent, view)) return false;
+            if (!win.turf || typeof win.turf.booleanIntersects !== 'function') return true;
+            try { return win.turf.booleanIntersects(site, win.turf.bboxPolygon(view)); } catch (_) { return true; }
+        }
+        async function exploreDesigns(view, params) {
+            const cache = designAreaCache();
+            const ask = box => {
+                const query = new URLSearchParams(params);
+                query.set('bbox', box.join(','));
+                return request('GET', `/designs?${query}`);
+            };
+            const inView = rows => ({ ok: true, status: 200, body: { designs: rows.filter(row => designMeetsView(row, view)) } });
+            const hit = cache.find('designs', view);
+            if (hit) return inView(hit.value);
+            const snapped = win.PlanningScene.snapBbox(view);
+            try {
+                const entry = await cache.load('designs', snapped, async () => {
+                    const response = await ask(snapped);
+                    if (!response.ok || !response.body || !Array.isArray(response.body.designs)) {
+                        throw Object.assign(new Error('Design index request failed'), { response });
+                    }
+                    if (response.body.designs.length >= listLimit()) {
+                        throw Object.assign(new Error('Design area answer was cut short'), { cutShort: true });
+                    }
+                    return response.body.designs;
+                });
+                return inView(entry.value);
+            } catch (error) {
+                if (error.response) return error.response;
+                if (error.cutShort) return ask(view);
+                throw error;
+            }
+        }
+
         // GET /designs for the list's area: the city, or the view in explore. Newest first, as many as
         // the list shows (SERVER_PROPOSAL_SUMMARY_LIMIT); the count is the rows that came back (the
         // index has no count route).
@@ -590,9 +639,10 @@
             if (typeof win.renderProposalListModal === 'function') win.renderProposalListModal();
             const params = new URLSearchParams({ limit: String(listLimit()) });
             if (city) params.set('city', city);
-            if (area && area.explore && area.bbox) params.set('bbox', area.bbox.join(','));
             try {
-                const response = await request('GET', `/designs?${params}`);
+                const response = area && area.explore && area.bbox
+                    ? await exploreDesigns(area.bbox, params)
+                    : await request('GET', `/designs?${params}`);
                 if (!response.ok || !response.body || !Array.isArray(response.body.designs)) {
                     throw new Error((response.body && response.body.error) || `HTTP ${response.status}`);
                 }

@@ -9,25 +9,28 @@ describe('planning 2D map hover behavior', () => {
         const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
         const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
         const drawMap = body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'drawMap');
+        const drawItem = body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'drawItem');
         const feature = { properties: { geometryRole: 'body', topM: 10.7 }, geometry: { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] } };
         const item = { id: 'permitted:1', role: 'permitted', title: 'Permitted envelope', parcelEnvelope: true, source: { parcel: '1-2' },
             assessment: { meaning: 'outer-bound' } };
         const state = { selectedId: null, permittedMap: null };
         const shape = { bindTooltip: vi.fn(), addTo: vi.fn(function () { return this; }), on: vi.fn(),
             eachLayer: vi.fn(), getBounds: vi.fn() };
-        const layer = { clearLayers: vi.fn() };
+        const layer = { clearLayers: vi.fn(), removeLayer: vi.fn() };
+        const group = { addTo: vi.fn(function () { return this; }) };
         const select = vi.fn();
         const marker = vi.fn();
-        const root = { L: { geoJSON: vi.fn(() => shape), marker, DomEvent: { stopPropagation: vi.fn() } }, map: { getZoom: () => 19 }, MapHighlight: { color: '#000', style: () => ({}) },
+        const root = { L: { geoJSON: vi.fn(() => shape), featureGroup: vi.fn(() => group), marker, DomEvent: { stopPropagation: vi.fn() } }, map: { getZoom: () => 19 }, MapHighlight: { color: '#000', style: () => ({}) },
             __mapEditLock: null, ClickStack: { handleClick: vi.fn() }, i18n: { t: key => key },
             dispatchEvent() {} };
         const context = vm.createContext({ root, ready: true, selectionLayer: { clearLayers: vi.fn() }, layer,
             hitShapes: [], store: { get: () => state }, selected: () => null, sceneItems: () => [item],
             appearance: () => 'solid', envelopes: { mapFeatures: vi.fn(() => [feature]) }, realization: () => ({}),
             color: () => '#fff', select, t: key => key, lotNote: () => '', scenarioLabel: () => '',
-            rootMap: root.map, console });
+            rootMap: root.map, console, core: { roles: ['existing', 'permitted', 'proposed'] }, drawnItems: new Map(),
+            scenarioId: '', pins: {} });
 
-        vm.runInContext(`(${source.slice(drawMap.start, drawMap.end)})()`, context);
+        vm.runInContext(`${source.slice(drawItem.start, drawItem.end)}\n(${source.slice(drawMap.start, drawMap.end)})()`, context);
 
         expect(context.envelopes.mapFeatures).toHaveBeenCalledWith(item, expect.any(Object));
         expect(root.L.geoJSON).toHaveBeenCalledWith(feature, expect.objectContaining({ interactive: true }));
