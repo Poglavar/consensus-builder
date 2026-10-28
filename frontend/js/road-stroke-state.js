@@ -21,12 +21,12 @@
     // to where the pen went down), which threw away work with no undo; a lifted pen keeps it, and a
     // later click on a node continues from there. Only a stroke of fewer than 2 points — a lone
     // click, no line — is dropped, with its id. The pen goes up (activeIndex -1, hasStarted false).
-    // Returns { removedEdges, activeIndex, hasStarted, strokeBaseCount, lifted, dropped }; a dropped
+    // Returns { removedEdges, activeIndex, hasStarted, lifted, dropped }; a dropped
     // stub has no edge, so removedEdges is always empty — kept for the same shape as applyRoadUndo.
     function applyPenLift(state) {
         const { segments, segmentIds, activeIndex, hasStarted } = state;
         const done = (lifted, dropped) => ({
-            removedEdges: [], activeIndex: -1, hasStarted: false, strokeBaseCount: 0, lifted, dropped
+            removedEdges: [], activeIndex: -1, hasStarted: false, lifted, dropped
         });
 
         if (!hasStarted || !Array.isArray(segments) || activeIndex < 0 || activeIndex >= segments.length) {
@@ -44,13 +44,13 @@
 
     // Undo one vertex. If the pen is up, resume the last segment first. Pop its last point; if that
     // empties the segment, drop it and put the pen up — so the first (even the only) point of a
-    // stroke is undoable too, leaving an empty drawing that is still in draw mode. Returns { removedEdges, activeIndex, hasStarted, strokeBaseCount,
-    // undone }. activeIndex/hasStarted/strokeBaseCount describe the state AFTER the undo.
+    // stroke is undoable too, leaving an empty drawing that is still in draw mode. Returns { removedEdges, activeIndex, hasStarted,
+    // undone }. activeIndex/hasStarted describe the state AFTER the undo.
     function applyRoadUndo(state) {
         const { segments, segmentIds } = state;
-        let { activeIndex, hasStarted, strokeBaseCount } = state;
+        let { activeIndex, hasStarted } = state;
         const removedEdges = [];
-        const result = (undone) => ({ removedEdges, activeIndex, hasStarted, strokeBaseCount, undone });
+        const result = (undone) => ({ removedEdges, activeIndex, hasStarted, undone });
 
         if (!Array.isArray(segments)) return result(false);
 
@@ -62,7 +62,6 @@
             }
             activeIndex = segments.length - 1;
             hasStarted = true;
-            strokeBaseCount = segments[activeIndex].length;
         }
 
         const active = (activeIndex >= 0 && activeIndex < segments.length) ? segments[activeIndex] : null;

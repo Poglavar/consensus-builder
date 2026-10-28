@@ -3351,6 +3351,7 @@
             "parcelsAffected": "{{count}} parcelles concernées",
             "parcelsNone": "Aucune",
             "builtStatus": "Brouillon local de route créé — disponible uniquement sur cet appareil jusqu’à son partage. Cliquez dessus pour le modifier ou le proposer.",
+            "finishFailed": "Impossible de construire cette route ({{reason}}). Le dessin reste ouvert : modifiez-le et terminez à nouveau.",
             "builtStatusTrack": "Brouillon local de voie ferrée créé — disponible uniquement sur cet appareil jusqu’à son partage. Cliquez dessus pour le modifier ou le proposer.",
             "nodeHint": "Faites glisser pour déplacer · ⌥-clic pour supprimer ce nœud",
             "edgeActionsHint": "＋ Ajouter un nœud · × Supprimer ce tronçon",
@@ -4288,6 +4289,7 @@
         "rederived": "Le cadastre a changé sous ce brouillon : ses parcelles correspondent désormais à sa géométrie ({{count}})."
     },
     "proposalApplyStatus": {
+        "junctionRevisions": "Enregistré comme nouvelle version, car le projet publié reste inchangé : {{names}}",
         "waitingForReplay": "En attente de la fin de la reconstruction de la composition appliquée…"
     },
     "proposalApplyFailures": {

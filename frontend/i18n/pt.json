@@ -3351,6 +3351,7 @@
             "parcelsAffected": "{{count}} parcelas afetadas",
             "parcelsNone": "Nenhuma",
             "builtStatus": "Rascunho local de estrada criado — apenas neste dispositivo até o partilhar. Clique nele para editar ou propor.",
+            "finishFailed": "Não foi possível construir esta estrada ({{reason}}). O desenho continua aberto: altere-o e termine novamente.",
             "builtStatusTrack": "Rascunho local de via férrea criado — apenas neste dispositivo até o partilhar. Clique nele para editar ou propor.",
             "nodeHint": "Arraste para mover · ⌥-clique para remover este nó",
             "edgeActionsHint": "＋ Adicionar um nó · × Demolir este troço",
@@ -4288,6 +4289,7 @@
         "rederived": "O cadastro mudou sob este rascunho: as suas parcelas seguem agora a sua geometria ({{count}})."
     },
     "proposalApplyStatus": {
+        "junctionRevisions": "Guardado como nova versão, porque o projeto publicado não muda: {{names}}",
         "waitingForReplay": "A aguardar a conclusão da reconstrução da composição aplicada…"
     },
     "proposalApplyFailures": {

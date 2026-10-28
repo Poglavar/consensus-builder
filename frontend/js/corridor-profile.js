@@ -266,6 +266,20 @@ function corridorProfileWidth(profile) {
     return normalized.strips.reduce((total, strip) => total + strip.width, 0);
 }
 
+// The same cross-section seen from the other end: the strips in reverse order and every one-way lane's
+// direction swapped. Lanes are laid out left to right of the direction the centre line runs, and
+// `forward`/`backward` are relative to it too, so a centre line that is reversed carries this profile.
+function reversedCorridorProfile(profile) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized) return null;
+    const swapped = { forward: 'backward', backward: 'forward' };
+    return {
+        strips: normalized.strips.slice().reverse().map(strip => (swapped[strip.direction]
+            ? { ...strip, direction: swapped[strip.direction] }
+            : { ...strip }))
+    };
+}
+
 // Round to millimetres: the presets are exact, but rebalancing divides.
 function roundStripWidth(width) {
     return Math.round(width * 1000) / 1000;
@@ -1482,13 +1496,7 @@ function corridorJunctionPriority(profile, corridorId, segmentId) {
         const outerRight = reversed ? edges.outerLeft : edges.outerRight;
         const inbound = reversed ? edges.inbound.end : edges.inbound.start;
         const inboundOutward = inbound && reversed ? [-inbound[1], -inbound[0]] : inbound;
-        const strips = (reversed ? normalized.strips.slice().reverse() : normalized.strips)
-            .map(strip => {
-                const oriented = { ...strip };
-                if (reversed && oriented.direction === 'forward') oriented.direction = 'backward';
-                else if (reversed && oriented.direction === 'backward') oriented.direction = 'forward';
-                return stableStrip(oriented);
-            });
+        const strips = (reversed ? reversedCorridorProfile(normalized) : normalized).strips.map(stableStrip);
         // This signature is a deterministic tie policy, not a claim about which duplicate source
         // is authoritative. Width remains the primary choice; canonical oriented content and then
         // stable source IDs only decide otherwise equal candidates.
@@ -2477,6 +2485,7 @@ if (typeof module !== 'undefined' && module.exports) {
         CORRIDOR_PROFILE_PRESETS,
         normalizeCorridorProfile,
         corridorProfileWidth,
+        reversedCorridorProfile,
         corridorProfileFromLegacy,
         corridorDefaultTrackProfile,
         corridorProfileOf,

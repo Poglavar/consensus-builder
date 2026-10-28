@@ -484,6 +484,7 @@
         "rederived": "Katastar se promijenio ispod ovog nacrta: njegove čestice sada slijede njegovu geometriju ({{count}})."
     },
     "proposalApplyStatus": {
+        "junctionRevisions": "Spremljeno kao nova verzija jer objavljeni dizajn ostaje nepromijenjen: {{names}}",
         "waitingForReplay": "Čekam da završi ponovno sastavljanje primijenjene kompozicije…"
     },
     "proposalApplyFailures": {
@@ -2002,6 +2003,7 @@
             "openGroundValue": "{{count}} · {{area}}",
             "parcelCountLabel": "Broj čestica:",
             "builtStatus": "Stvoren lokalni nacrt ceste — samo na ovom uređaju dok ga ne podijelite. Kliknite ga za uređivanje ili dizajn.",
+            "finishFailed": "Ova cesta nije mogla biti izgrađena ({{reason}}). Crtež je i dalje otvoren: izmijenite ga i ponovno završite.",
             "builtStatusTrack": "Stvoren lokalni nacrt pruge — samo na ovom uređaju dok ga ne podijelite. Kliknite ga za uređivanje ili dizajn.",
             "nodeHint": "Povucite za pomicanje · ⌥-klik uklanja ovaj čvor",
             "edgeActionsHint": "＋ Dodaj čvor · × Sruši ovu dionicu",

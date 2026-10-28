@@ -484,6 +484,7 @@
         "rederived": "El catastro cambió bajo este borrador: sus parcelas ahora siguen su geometría ({{count}})."
     },
     "proposalApplyStatus": {
+        "junctionRevisions": "Guardado como una nueva versión, porque el diseño publicado no cambia: {{names}}",
         "waitingForReplay": "Esperando a que termine la reconstrucción de la composición aplicada…"
     },
     "proposalApplyFailures": {
@@ -2012,6 +2013,7 @@
             "openGroundValue": "{{count}} · {{area}}",
             "parcelCountLabel": "Número de parcelas:",
             "builtStatus": "Borrador local de carretera creado: solo en este dispositivo hasta que lo compartas. Haz clic para editarlo o proponerlo.",
+            "finishFailed": "No se pudo construir esta carretera ({{reason}}). El dibujo sigue abierto: modifícalo y vuelve a terminar.",
             "builtStatusTrack": "Borrador local de vía creado: solo en este dispositivo hasta que lo compartas. Haz clic para editarlo o proponerlo.",
             "nodeHint": "Arrastra para mover · ⌥-clic elimina este nodo",
             "edgeActionsHint": "＋ Añadir un nodo · × Demoler este tramo",

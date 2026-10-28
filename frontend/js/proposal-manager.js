@@ -908,6 +908,7 @@ const ProposalManager = {
             result.topology.changedProposalIds.forEach(id => {
                 try { this._refreshUIAfterProposalChange?.(_getProposalRecord(id)); } catch (_) { }
             });
+            this._reportJunctionRevisions(result.topology.revisedProposalIds.map(id => _getProposalRecord(id)));
             try { this._refreshUIAfterProposalChange?.(_getProposalRecord(result.proposalId)); } catch (_) { }
             try { browserRoot.refreshRoadNodeHandles?.(); } catch (_) { }
         }
@@ -959,22 +960,32 @@ const ProposalManager = {
 
         const recordsStarted = _now();
         const changedRecords = [];
+        // Published roads the junction gave a new version (see reviseRoadForJunction).
+        const revisedRecords = [];
         const changedAt = new Date().toISOString();
+        const lineage = browserRoot.ProposalLineage || require('./proposals/lineage.js');
         for (const change of plan.existingChanges) {
             const target = _getProposalRecord(change.proposalId, options);
             if (!target?.roadProposal?.definition) {
                 fail(`A road needed by this junction disappeared (${change.proposalId}).`);
             }
-            authoring.writeDefinition(target, change.definition);
             // The joined road's LAND changes with the junction (the corner land its kerb returns
             // need, a zone widening back to the new road — corridor-footprint.js reads the
-            // junction the plan just wrote into the definition): rebuild it and declare the
-            // parcels it now reaches, or the record keeps the land it had before the junction.
-            const joined = target.roadProposal.definition;
+            // junction the plan wrote into the definition): rebuild it and declare the parcels it
+            // now reaches, or the record keeps the land it had before the junction.
+            const joined = authoring.cloneValue(change.definition);
             if (typeof rebuildRoadDefinitionFootprint === 'function') rebuildRoadDefinitionFootprint(joined);
+            // A published road is immutable: the junction becomes its new version, which takes its
+            // place on the map. One's own unpublished road is edited in place.
+            if (lineage.isPublished(target)) {
+                if (typeof reviseRoadForJunction !== 'function') fail('Saving a new version of a published road is unavailable.');
+                const revision = reviseRoadForJunction(store, target, joined);
+                changedRecords.push(target, revision);
+                revisedRecords.push(revision);
+                continue;
+            }
             authoring.writeDefinition(target, joined);
             if (typeof declareParcelsUnderRoadLand === 'function') declareParcelsUnderRoadLand(target, joined.polygon);
-            authoring.detachPublishedIdentity(target);
             target.updatedAt = changedAt;
             store._indexProposal?.(target);
             changedRecords.push(target);
@@ -1068,7 +1079,8 @@ const ProposalManager = {
             applied: true,
             topology: {
                 junctionRecords: plan.junctionRecords,
-                changedProposalIds: changedRecords.map(record => String(record.proposalId))
+                changedProposalIds: changedRecords.map(record => String(record.proposalId)),
+                revisedProposalIds: revisedRecords.map(record => String(record.proposalId))
             },
             timings: {
                 topologyMs,
@@ -3232,6 +3244,27 @@ const ProposalManager = {
             store?._indexProposal?.(rival);
         });
         return rivals;
+    },
+
+    // Says which published roads a junction gave a new version: the change the user made reaches a
+    // road they did not select, so it is named rather than left to be discovered.
+    _reportJunctionRevisions(records) {
+        const names = (Array.isArray(records) ? records : []).filter(Boolean)
+            .map(record => record.title || record.name || String(record.proposalId));
+        if (!names.length) return;
+        const root = typeof window !== 'undefined' ? window : globalThis;
+        const key = 'proposalApplyStatus.junctionRevisions';
+        const params = { count: names.length, names: names.join('; ') };
+        let message = '';
+        try { message = root.i18n?.t?.(key, params) || ''; } catch (_) { }
+        if (!message || message === key) {
+            message = 'Saved as a new version, because the published design stays as it is: {{names}}'
+                .replace('{{names}}', params.names);
+        }
+        try {
+            if (typeof root.showEphemeralMessage === 'function') root.showEphemeralMessage(message, 10000, 'info');
+            else if (typeof root.updateStatus === 'function') root.updateStatus(message);
+        } catch (_) { }
     },
 
     // Says which records came off the map because the applied one stands on their ground.

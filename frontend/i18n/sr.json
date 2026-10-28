@@ -484,6 +484,7 @@
         "rederived": "Katastar se promenio ispod ovog nacrta: njegove parcele sada prate njegovu geometriju ({{count}})."
     },
     "proposalApplyStatus": {
+        "junctionRevisions": "Sačuvano kao nova verzija, jer objavljeni dizajn ostaje nepromenjen: {{names}}",
         "waitingForReplay": "Čekam da se završi ponovno sastavljanje primenjene kompozicije…"
     },
     "proposalApplyFailures": {
@@ -2002,6 +2003,7 @@
             "openGroundValue": "{{count}} · {{area}}",
             "parcelCountLabel": "Broj parcela:",
             "builtStatus": "Napravljen lokalni nacrt puta — samo na ovom uređaju dok ga ne podelite. Kliknite ga za uređivanje ili dizajn.",
+            "finishFailed": "Ovaj put nije mogao biti izgrađen ({{reason}}). Crtež je i dalje otvoren: izmenite ga i ponovo završite.",
             "builtStatusTrack": "Napravljen lokalni nacrt pruge — samo na ovom uređaju dok ga ne podelite. Kliknite ga za uređivanje ili dizajn.",
             "nodeHint": "Prevucite za pomeranje · ⌥-klik uklanja ovaj čvor",
             "edgeActionsHint": "＋ Dodaj čvor · × Sruši ovu deonicu",

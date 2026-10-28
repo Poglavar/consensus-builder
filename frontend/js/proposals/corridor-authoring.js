@@ -173,17 +173,6 @@
         return true;
     }
 
-    function detachPublishedIdentity(record) {
-        const removed = {};
-        if (!record) return removed;
-        PUBLISHED_IDENTITY_KEYS.forEach(key => {
-            if (!Object.prototype.hasOwnProperty.call(record, key)) return;
-            removed[key] = record[key];
-            delete record[key];
-        });
-        return removed;
-    }
-
 
     // ---- junctions between records -------------------------------------------------------------
     //
@@ -474,7 +463,6 @@
         planCorridorAuthoring,
         planCorridorEdit,
         planCorridorComposition,
-        writeDefinition,
-        detachPublishedIdentity
+        writeDefinition
     };
 });

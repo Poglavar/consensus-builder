@@ -53,4 +53,52 @@ describe('track curvature drawing review', () => {
         expect(draft.editorPayload.definition.metadata.trackSpeed).toBe(250);
         expect(draft.editorPayload.definition.metadata.trackMinRadius).toBe(5000);
     });
+
+    async function drawRightAngle(profile) {
+        await env.api.requestCorridorDrawingTool('road');
+        env.api.setRoadDrawingProfile(profile);
+        await env.click(at(0, 0), { altKey: true });
+        await env.click(at(100, 0), { altKey: true });
+        await env.click(at(100, 100), { altKey: true });
+    }
+
+    it('rails in a street follow the street: a tram lane among traffic lanes is not held to the target', async () => {
+        const confirm = vi.fn(async () => false);
+        env = loadRoadDrawing({ globals: { CbDialog: { confirm } } });
+        await drawRightAngle({ strips: [
+            { type: 'driving', width: 3.5, direction: 'backward' },
+            { type: 'rail', gauge: 1000, width: 2.75 },
+            { type: 'driving', width: 3.5, direction: 'forward' }
+        ] });
+        env.session.trackSpeed = 120;
+        env.session.trackMinCurvatureRadius = 1000;
+        await env.api.finishRoadDrawingOnce();
+        expect(confirm).not.toHaveBeenCalled();
+        expect(globalThis.instantCreateProposalFromDraft.calls).toHaveLength(1);
+    });
+
+    it('without a picked target there is nothing to review and no target is stamped', async () => {
+        const confirm = vi.fn(async () => false);
+        env = loadRoadDrawing({ globals: { CbDialog: { confirm } } });
+        // The Road button opened the tool: no speed was picked, then the lanes became rails.
+        await drawRightAngle({ strips: [{ type: 'rail', gauge: 1435, width: 3.5 }] });
+        expect(env.session.trackMinCurvatureRadius).toBeNull();
+        await env.api.finishRoadDrawingOnce();
+        expect(confirm).not.toHaveBeenCalled();
+        const metadata = env.draftStore.listDrafts()[0].editorPayload.definition.metadata;
+        expect(metadata.isTrack).toBe(true);
+        // No target was ever chosen, so none is recorded (it used to say 120 km/h / 1000 m).
+        expect(metadata.trackSpeed ?? null).toBeNull();
+        expect(metadata.trackMinRadius ?? null).toBeNull();
+    });
+
+    it('a picked target lasts one session', async () => {
+        env = loadRoadDrawing();
+        await env.api.requestCorridorDrawingTool('road');
+        env.session.trackSpeed = 250;
+        env.session.trackMinCurvatureRadius = 5000;
+        env.api.exitRoadDrawingMode();
+        expect(env.session.trackSpeed).toBeNull();
+        expect(env.session.trackMinCurvatureRadius).toBeNull();
+    });
 });

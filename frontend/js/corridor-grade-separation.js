@@ -206,10 +206,14 @@
         return !!a && !!b && Math.abs(a.lat - b.lat) < 1e-7 && Math.abs(a.lng - b.lng) < 1e-7;
     }
 
+    // The span runs between the ramp ends in either order: a segment continued from its first vertex
+    // has been reversed since the record was made.
     function refreshGradeSeparationEdgeKeys(record, points) {
         if (!record || !Array.isArray(points) || points.length < 2) return record;
-        const start = points.findIndex(point => near(point, record.from));
-        const end = points.findIndex((point, index) => index > start && near(point, record.to));
+        const fromIndex = points.findIndex(point => near(point, record.from));
+        const toIndex = points.findIndex(point => near(point, record.to));
+        const start = Math.min(fromIndex, toIndex);
+        const end = Math.max(fromIndex, toIndex);
         if (start < 0 || end <= start) {
             record.edgeKeys = [];
             return record;

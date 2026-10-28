@@ -484,6 +484,7 @@
         "rederived": "The cadastre changed under this draft: its parcels now follow its geometry ({{count}})."
     },
     "proposalApplyStatus": {
+        "junctionRevisions": "Saved as a new version, because the published design stays as it is: {{names}}",
         "waitingForReplay": "Waiting for the applied composition to finish rebuilding…"
     },
     "proposalApplyFailures": {
@@ -1989,6 +1990,7 @@
             "parcelsAffected": "{{count}} parcels affected",
             "parcelsNone": "None",
             "builtStatus": "Local road draft created — only on this device until you share it. Click it to edit or propose.",
+            "finishFailed": "Could not build this road ({{reason}}). The drawing is still open: change it and finish again.",
             "builtStatusTrack": "Local track draft created — only on this device until you share it. Click it to edit or propose.",
             "nodeHint": "Drag to move · ⌥-click to remove this node",
             "edgeActionsHint": "＋ Add a node · × Bulldoze this stretch",
