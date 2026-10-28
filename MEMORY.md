@@ -380,7 +380,7 @@
   complete plan results combine inherited solutions with evaluated changes.
 - 2026-09-16: **"Agents functionality for UGT"** (branch/worktree `colosseum-worlds-fair`, Colosseum
   Crypto World's Fair, Solana track). Design and workstream interfaces in
-  `agents-functionality-for-ugt.md`. Decisions: prediction markets have NO deadline (resolve only on
+  `agents-functionality-for-ugt.md` (retired 2026-10-28; `docs/architecture.md` describes the current runtime). Decisions: prediction markets have NO deadline (resolve only on
   on-chain Executed/Cancelled); x402 fee and market stakes in devnet USDC; agent model spend capped at
   $1,000/day in a ledger; x402 prices are config, kept low; paid routes are new `/agent/*` paths so
   the free `/proposals` routes the app uses stay untouched.
@@ -1006,3 +1006,4 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-28: the click stack (2D and 3D) is built from the selected object outward through its own references (`click-stack-neighbours.js`); clicks never cycle sections, a click selects the topmost object under it. Why: the user found cycling confusing and plan-opened stacks never reached parcels.
 - 2026-10-28: the model view compares two states side by side (Compare tab of Buildings and massing, `three-compare.js`): any of Built today, Permitted, Proposed, one design or one plan per side. Photo mode parked.
 - 2026-10-28: Every repo-level document lives in `docs/` (56 root `.md` files moved there; only `readme.md`, `AGENTS.md`, `MEMORY.md` and `tables-used.md` stay in the root because tooling reads them there (`sync-tables` looks for `tables-used.md` at the git root)). The corridor levels plan is `docs/corridor-levels-plan.md`, next to its design of record `docs/corridor-elevation.md`.
+- 2026-10-28: `buildings.source: 'overture-tiles'` is retired (the API has refused it since the 2026-10-23 backend-OSM default); 230 cities still named it and got no buildings, so they and the admission template now say `'osm'`.

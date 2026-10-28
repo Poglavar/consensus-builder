@@ -51,7 +51,7 @@
                 attribution: 'Department of Municipalities and Transport (DMT), Abu Dhabi; MyLand/Onwani PLOT layer. Bounded Abu Dhabi availability verified; completeness, historical/current semantics and survey accuracy unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -99,7 +99,7 @@
                 attribution: 'Ministerio de Vivienda y Urbanismo (MINVU), GeoIDE · PREDIOS_VALPARAISO. Indicative parcel geometry; reuse licence and currentness unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -147,7 +147,7 @@
                 attribution: 'ISRYCEM / Geoportal Catastral y Registral del Estado de Morelos · Cuernavaca Predios'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -195,7 +195,7 @@
                 attribution: 'Prefeitura Municipal de Campo Grande / PLANURB, SISGRAN; sisgran.vw_infra_imoveis.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -243,7 +243,7 @@
                 attribution: 'ASIG / State Cadastre Agency (ASHK), National Geoportal, ALBSCAD Cadastral Parcels.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -291,7 +291,7 @@
                 attribution: 'Perak Forestry GIS / JUPEM · Lot Kadaster'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -339,7 +339,7 @@
                 attribution: 'Prefeitura Municipal de Cuiabá / SIG Cuiabá; SmartGIS/Tecnomapas, GeoCloud service hosting.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -387,7 +387,7 @@
                 attribution: 'Kadastr.com.ua · independent public cadastral map. Underlying registry provenance, currentness and survey alignment unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -435,7 +435,7 @@
                 attribution: '平顶山市不动产登记以图查房系统 · 地表宗地 · pdsbdcdj.cn'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -483,7 +483,7 @@
                 attribution: 'IMPLAN Municipio de Chihuahua / Geo IMPLAN · Predio Urbano'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -531,7 +531,7 @@
                 attribution: 'Tepebaşı Belediyesi Kent Rehberi · smpns:MISMAP_NUM_KADASTRO_PARSEL'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -579,7 +579,7 @@
                 attribution: 'Mersin Yenişehir Belediyesi · Netcad e-İmar · kentrehberi_parsel'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -627,7 +627,7 @@
                 attribution: 'ARBA · Departamento Cartográfico / Subgerencia de Tecnología Geoespacial'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -675,7 +675,7 @@
                 attribution: 'Şanlıurfa Büyükşehir Belediyesi Kent Rehberi · NetGIS REHBER6 · kentrehberi_parsel'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -723,7 +723,7 @@
                 attribution: 'Municipio de Saltillo · Visor Saltillo · municipal predios'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -771,7 +771,7 @@
                 attribution: 'Al-Ahsa Municipality · General Directorate of Geographic Information Systems and Urban Observatory'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -819,7 +819,7 @@
                 attribution: 'Instituto Catastral del Estado de Sinaloa (ICES) · Visor Territorial · PredioCuliacan'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -867,7 +867,7 @@
                 attribution: 'Registro Agrario Nacional (RAN) / SEDATU IDE · PIT12 Parcelas Guerrero 2020. Historical social-property parcel coverage.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -915,7 +915,7 @@
                 attribution: 'Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -963,7 +963,7 @@
                 attribution: 'Cheongju City · MapMoa / 청주시 지도모아 · reference only, no surveying or legal effect'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1011,7 +1011,7 @@
                 attribution: 'Prefeitura Municipal de Sorocaba (donor, 2020-04-20); AddressForAll / Digital Guard (preservation and distribution).'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1059,7 +1059,7 @@
                 attribution: 'Geoinformation Kanton Zürich / GIS-ZH — Amtliche Vermessung, Liegenschaften — https://geolion.zh.ch/geodatensatz/3137'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1107,7 +1107,7 @@
                 attribution: 'Dirección General del Catastro Nacional / DivisionCartografia; Mapa de Santiago, ArcGIS item a8d91258763842f28da45a10e55ca062'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1155,7 +1155,7 @@
                 attribution: 'INEGI / PROCEDE cadastral cartography for social property, as described by the SIGSA Tierras Parceladas_Veracruz service. Publisher: SIGSA. Currentness and reuse terms unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1203,7 +1203,7 @@
                 attribution: 'Diyarbakır Büyükşehir Belediyesi DBB E-İmar · kentrehberi_parsel'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1251,7 +1251,7 @@
                 attribution: 'H. Ayuntamiento de Morelia / IMPLAN Morelia · Geoportal Morelia, Predios Catastro'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1299,7 +1299,7 @@
                 attribution: 'Jeonju City 생활지리정보 · LP_PA_CBND continuous cadastral map'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1347,7 +1347,7 @@
                 attribution: 'COFOPRI / Organismo de Formalización de la Propiedad Informal; SERFOR Geoservicios, Int_IDE_COFOPRI / LOTES.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1395,7 +1395,7 @@
                 attribution: 'Registro Agrario Nacional (RAN) / SEDATU IDE, PIT28 Parcelas Tamaulipas 2020. Historical partial social/agrarian parcel coverage; source geometry unchanged.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1443,7 +1443,7 @@
                 attribution: 'Prefeitura Municipal de Ribeirão Preto / CODERP · Geoportal Cadastro Urbano · Lote'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1491,7 +1491,7 @@
                 attribution: 'ARBA · Departamento Cartográfico / Subgerencia de Tecnología Geoespacial'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1539,7 +1539,7 @@
                 attribution: 'IDEMSA / Municipalidad de Salta; underlying fc_parcelas_v20 parcel lineage: Dirección General de Inmuebles, Provincia de Salta (lineage attribution pending confirmation).'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1587,7 +1587,7 @@
                 attribution: 'City of Ottawa GeoOttawa; parcel geometry supplied by Teranet Enterprises Inc.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1635,7 +1635,7 @@
                 attribution: 'Municipio de Pereira / SIGPER; Área Metropolitana Centro Occidente (AMCO), cadastral terrain supplied 2025-05-09. Indicative geometry; coverage and currentness unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1683,7 +1683,7 @@
                 attribution: 'GeoMOLG / Palestinian Ministry of Local Government, registered cadastral parcels. Native OBJECTID references; bounded Gaza availability only. Completeness, currentness, survey alignment and reuse terms remain unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1731,7 +1731,7 @@
                 attribution: 'Huaibei Municipal Natural Resources and Planning Bureau · public cadastral-map query service'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1779,7 +1779,7 @@
                 attribution: 'İlkadım Belediyesi Kent Rehberi · NetGIS REHBER7'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1827,7 +1827,7 @@
                 attribution: 'Seyhan Belediyesi Kent Rehberi · PARSEL'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1875,7 +1875,7 @@
                 attribution: 'İpekyolu Belediyesi E-İmar / Kent Rehberi · kentrehberi_parsel'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1923,7 +1923,7 @@
                 attribution: 'Registro Agrario Nacional (RAN) / SEDATU IDE/PNIRC, PIT7 Parcelas Chiapas 2020, CC BY 4.0. Historical partial social-property coverage. Canonical IDs adapted; source geometry unchanged.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -1971,7 +1971,7 @@
                 attribution: 'TianDiTu Guangxi / Guangxi Natural Resources Department · 宗地 (parcel polygons)'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2019,7 +2019,7 @@
                 attribution: 'Municipality of Valledupar / Tuterritorio S.A.S. — Catastro en Línea / CatastroPro, urban cadastral TERRENO (13 October 2026 snapshot).'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2067,7 +2067,7 @@
                 attribution: 'Serviço Florestal Brasileiro / SICAR — Cadastro Ambiental Rural'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2115,7 +2115,7 @@
                 attribution: 'Kahramanmaraş Büyükşehir Belediyesi Kent Rehberi / Coğrafi Bilgi Sistemleri'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2163,7 +2163,7 @@
                 attribution: 'Denizli Büyükşehir Belediyesi · adres PARSEL'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2211,7 +2211,7 @@
                 attribution: '登記所備付地図データ 大津市（法務省）, 2026 edition; G-spatial Information Center. Used 2026-10-26; adapted from Map XML to WGS84. https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-1204'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2259,7 +2259,7 @@
                 attribution: 'Melaka state geospatial portal / AGENSI/JUPEM; Jabatan Ukur dan Pemetaan Malaysia (JUPEM).'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2307,7 +2307,7 @@
                 attribution: 'Кадастровая-карта.com; one historic public cadastral report; projection unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2355,7 +2355,7 @@
                 attribution: 'Registro Agrario Nacional (RAN) / SEDATU IDE, PIT10 Parcelas Durango 2020. Historical partial ejido/community parcel coverage; source geometry unchanged.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2403,7 +2403,7 @@
                 attribution: 'Registro Agrario Nacional (RAN) / SEDATU IDE, PIT28 Parcelas Tamaulipas 2020. Historical partial social/agrarian parcel coverage; source geometry unchanged.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2451,7 +2451,7 @@
                 attribution: '「登記所備付地図データ 金沢市」（法務省） https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-855 (used 2026-10-26); adapted from Map XML to WGS84, selected sheet 436 only.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2499,7 +2499,7 @@
                 attribution: 'Antakya Belediyesi Kent Rehberi · NetGIS REHBER6 · kentrehberi_parsel'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2547,7 +2547,7 @@
                 attribution: 'Registro Agrario Nacional (RAN) / SEDATU IDE, PIT20 Parcelas Oaxaca 2020 · CC BY 4.0 · https://ide.sedatu.gob.mx/showmetadata/xsl/1661 · partial agrarian coverage; geometry unchanged.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2595,7 +2595,7 @@
                 attribution: 'Кадастровые инженеры Новосибирска / reestr54.ru; three observed EGRN parcels only; wider city coverage unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2643,7 +2643,7 @@
                 attribution: 'Geoportal of the Republic of Tatarstan / karta.tatar.ru — historic March 2011 layer; two observed parcels only.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2691,7 +2691,7 @@
                 attribution: 'GEOSA · National Geospatial Platform NDM Land Parcels'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2739,7 +2739,7 @@
                 attribution: 'GISAR · State Cadastre of the Kyrgyz Republic'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2787,7 +2787,7 @@
                 attribution: 'Alcaldía de Ibagué · Observatorio Catastral MIVUC · Area_Terrenos'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2835,7 +2835,7 @@
                 attribution: 'Japan Ministry of Justice 登記所備付地図 data; AIGID / Geospatial Information Center conversion and distribution; Himeji City (28201) public-coordinate package, 2026 resource. Display conversion from JGD2011 Japan Plane Rectangular CS V.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2883,7 +2883,7 @@
                 attribution: 'SERFOR / MIDAGRI — OCAPAS_MIDAGRI, Predios Rurales - Cusco (layer 8).'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2931,7 +2931,7 @@
                 attribution: 'Provo City; Utah County Recorders, Assessor and Information System Departments. Real-property parcels; source geometry preserved.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -2979,7 +2979,7 @@
                 attribution: 'Trinidad and Tobago Surveys and Mapping Division · CMIS public parcel map'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3027,7 +3027,7 @@
                 attribution: 'Кадастровые инженеры Новосибирска / reestr54.ru; Rosreestr/EGRN context; three observed Tomsk parcels only; wider city coverage unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3075,7 +3075,7 @@
                 attribution: 'Paranacidade / Paraná Interativo / Governo do Estado do Paraná'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3123,7 +3123,7 @@
                 attribution: 'Serviço Florestal Brasileiro / SICAR — Cadastro Ambiental Rural'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3171,7 +3171,7 @@
                 attribution: 'Changhua County Government urban-GIS cadastral lookup'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3219,7 +3219,7 @@
                 attribution: 'Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3267,7 +3267,7 @@
                 attribution: 'Registro Agrario Nacional (RAN) / SEDATU IDE, PIT11 Parcelas Guanajuato 2020, CC BY 4.0 per catalog metadata. Historical partial social-property parcels; canonical IDs adapted, source geometry unchanged.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3315,7 +3315,7 @@
                 attribution: 'Кадастровые инженеры Новосибирска / reestr54.ru; three observed Cheboksary EGRN parcels only; wider city coverage unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3363,7 +3363,7 @@
                 attribution: 'Alcaldía de Manizales · Predios con Efecto de Plusvalía · partial cadastral coverage'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3411,7 +3411,7 @@
                 attribution: 'IGAC · Base Catastral Pública del Gestor IGAC 08 2026 · CC BY-SA 4.0'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3459,7 +3459,7 @@
                 attribution: 'Кадастровые инженеры Новосибирска / reestr54.ru; Rosreestr/EGRN context; three observed Kaliningrad parcels only; wider city coverage unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3507,7 +3507,7 @@
                 attribution: 'LIMI · 嘉義市地籍112_from嘉市府_97 (title credits Chiayi City Government)'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3555,7 +3555,7 @@
                 attribution: 'Macomb County Planning and Economic Development, Mapping and Data Services; Macomb County Parcels Web.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3603,7 +3603,7 @@
                 attribution: 'PLANMalaysia iPLAN; Lot Negeri Sembilan'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3651,7 +3651,7 @@
                 attribution: 'Regione Toscana · Geoscopio / SIPT · Agenzia delle Entrate Catasto Terreni'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3699,7 +3699,7 @@
                 attribution: 'MAFRA · Korea Rural Community Corporation · continuous cadastral map (2026-05)'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3747,7 +3747,7 @@
                 attribution: 'Кадастровые инженеры г. Оренбург / reestr54.ru; independent public cadastral viewer; three observed land parcels only; citywide coverage unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3795,7 +3795,7 @@
                 attribution: 'Landesamt GeoInformation Bremen · CC BY 4.0'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3843,7 +3843,7 @@
                 attribution: 'Niigata City · にいがたeマップ · fixed-asset-tax reference parcels, 2025-01-01'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3891,7 +3891,7 @@
                 attribution: 'Arizona Department of Water Resources; Pima County Assessor / Pima County GIS'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3939,7 +3939,7 @@
                 attribution: 'Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -3987,7 +3987,7 @@
                 attribution: 'INCRA / SIGEF GEO · SERPRO GeoNode · rural cadastral parcels'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4035,7 +4035,7 @@
                 attribution: 'RGIS Aktobe / Aqtobe regional services portal · GZK cadastral parcels · bounded coverage; currentness and reuse terms unverified · adapted'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4083,7 +4083,7 @@
                 attribution: 'CATI / Governo do Estado de São Paulo · INCRA SIGEF · rural georeferenced parcels; indicative boundaries.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4131,7 +4131,7 @@
                 attribution: 'NMTRD, Bernalillo County; Bernalillo County Parcels 2025.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4179,7 +4179,7 @@
                 attribution: 'Instituto Catastral del Estado de Sinaloa (ICES) · Visor Territorial · PredioMazatlan'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4227,7 +4227,7 @@
                 attribution: 'SIT Chaco · Gobierno de la Provincia del Chaco · Parcelario Urbano 2021'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4275,7 +4275,7 @@
                 attribution: 'GeoMOLG / Palestinian Ministry of Local Government, registered cadastral parcels. Native OBJECTID references; bounded Gaza availability only. Completeness, currentness, survey alignment and reuse terms remain unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4323,7 +4323,7 @@
                 attribution: 'Tarrant County GIS; Tarrant Appraisal District. Public reference parcel mapping; not a legal survey or title determination.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4371,7 +4371,7 @@
                 attribution: 'Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4419,7 +4419,7 @@
                 attribution: 'MyLand / Jabatan Ukur dan Pemetaan Malaysia (JUPEM) / Jabatan Tanah dan Ukur Sabah (JTU)'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4467,7 +4467,7 @@
                 attribution: 'Кадастровые инженеры Москвы / reestr54.ru; Rosreestr/EGRN context; three observed parcel records only; wider Podolsk coverage unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4515,7 +4515,7 @@
                 attribution: 'TianDiTu Guangxi / Guangxi Natural Resources Department · 宗地 (parcel polygons)'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4563,7 +4563,7 @@
                 attribution: 'Comune di Bergamo — AtlanteBG Catasto'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4611,7 +4611,7 @@
                 attribution: 'El Paso County Assessor / El Paso County, Colorado; Spatialest public property-search service.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4659,7 +4659,7 @@
                 attribution: '济源示范区自然资源和规划局 / 济源市不动产登记中心; 不动产登记以图查房系统'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4707,7 +4707,7 @@
                 attribution: 'Municipalidad de la Ciudad de Corrientes / Dirección General de Sistemas de Información Geográfica / IDEMCC — Parcelario Catastral'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4755,7 +4755,7 @@
                 attribution: 'reestr54.ru independent cadastral viewer; EGRN context; one observed Ulyanovsk parcel; wider city coverage unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4803,7 +4803,7 @@
                 attribution: 'Alcaldía de Villavicencio / Secretaría de Catastro y Espacio Público · U_TERRENO'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4851,7 +4851,7 @@
                 attribution: 'Pohang-si Spatial Information Portal · 연속지적도 (LP_PA_CBND)'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4899,7 +4899,7 @@
                 attribution: 'National Cadastral Agency of Belarus / State Property Committee'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4947,7 +4947,7 @@
                 attribution: 'สำนักงานการปฏิรูปที่ดินเพื่อเกษตรกรรม (ALRO) / Agricultural Land Reform Office, Ministry of Agriculture and Cooperatives'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -4995,7 +4995,7 @@
                 attribution: 'American University of Beirut, Inclusive Cloud Innovation Lab; Tripoli Fair spatial archive (Rice Spatial Studies Lab / UNESCO cooperation). Historical parcels; not a current LRC registry.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5043,7 +5043,7 @@
                 attribution: 'Кадастровые инженеры Новосибирска / reestr54.ru; independent public cadastral viewer; three observed Stavropol land parcels only; wider coverage unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5091,7 +5091,7 @@
                 attribution: 'MyLand / Jabatan Ukur dan Pemetaan Malaysia (JUPEM) / Jabatan Tanah dan Ukur Sabah (JTU)'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5139,7 +5139,7 @@
                 attribution: 'Service public de Wallonie / Géoportail de la Wallonie · FPS Finance AGDP (CADGIS) · cadastral parcels; public-domain omissions.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5187,7 +5187,7 @@
                 attribution: 'National Cadastral Agency of Belarus / State Property Committee'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5235,7 +5235,7 @@
                 attribution: 'Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5283,7 +5283,7 @@
                 attribution: 'Planning Authority Malta / Land Registry Malta; Malta Data Portal (CC BY 4.0)'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5331,7 +5331,7 @@
                 attribution: 'PLANMalaysia iPLAN; JUPEM cadastral lots'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5379,7 +5379,7 @@
                 attribution: 'H. Ayuntamiento de La Paz, Baja California Sur · Visor Urbano · Dirección General de Gobierno Digital'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5427,7 +5427,7 @@
                 attribution: '出典：「登記所備付地図（2022年度公開）」（法務省）; NARO FlatGeobuf mirror.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5475,7 +5475,7 @@
                 attribution: 'National Cadastral Agency of Belarus / State Property Committee'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5523,7 +5523,7 @@
                 attribution: 'Serviço Florestal Brasileiro / SICAR, Consulta Pública — declared rural-property environmental cadastral polygons.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5571,7 +5571,7 @@
                 attribution: 'Sivas Belediyesi E-İmar · PARSEL'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5619,7 +5619,7 @@
                 attribution: '新疆维吾尔自治区自然资源厅 / 新疆维吾尔自治区地理信息公共服务平台 · 建设用地宗地'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5667,7 +5667,7 @@
                 attribution: 'Collin Central Appraisal District / https://collincad.org. Informational appraisal parcel mapping; not a legal survey.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5715,7 +5715,7 @@
                 attribution: 'Кадастровые инженеры Новосибирска / reestr54.ru; independent cadastral viewer; three observed Tver land parcels only; wider coverage unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5763,7 +5763,7 @@
                 attribution: 'Prefeitura Municipal da Serra/ES · GCTM/SEFA · GeoSerra'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5811,7 +5811,7 @@
                 attribution: 'Кадастровые инженеры Новосибирска / reestr54.ru independent public cadastral viewer; EGRN context; one observed Belgorod parcel only; wider city coverage unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5859,7 +5859,7 @@
                 attribution: 'Corporation of the City of London, Development Services and Geomatics. General parcel representations, not a legal survey. <a href="https://london.maps.arcgis.com/sharing/rest/content/items/e31458fd0c7e41dd9f93144a9550781d/data">City Open Data Terms of Use</a>.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5907,7 +5907,7 @@
                 attribution: 'National Cadastral Agency of Belarus / State Property Committee'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -5955,7 +5955,7 @@
                 attribution: 'Prefeitura de Boa Vista (Roraima - Brasil) · urbiGIS · Lotes PMBV_01 · CCL-BY 4.0 (publisher share label).'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6003,7 +6003,7 @@
                 attribution: 'Prefeitura Municipal de Piracicaba; AddressForAll / Digital Guard, package pk0041; June 2023 snapshot'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6051,7 +6051,7 @@
                 attribution: 'Government of India Department of Land Resources · NAKSHA · Mizoram urban survey parcels (draft pilot)'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6099,7 +6099,7 @@
                 attribution: 'City of Memphis GIS · CERT TAX PARCELS (Shelby County). WGS84 output supplied by provider.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6147,7 +6147,7 @@
                 attribution: 'Кадастровые инженеры Новосибирска / reestr54.ru; independent public cadastral viewer; three observed Tula EGRN parcels only; wider coverage unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6195,7 +6195,7 @@
                 attribution: 'City of McAllen GIS Division / HCAD Parcels. Source-returned WGS84 parcel reference geometry.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6243,7 +6243,7 @@
                 attribution: 'Punjab PULSE / Punjab Land Records Authority · cadastral-reference polygons · adapted'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6291,7 +6291,7 @@
                 attribution: 'Utsunomiya City / Asset Tax Division, 地籍図 (2026-01-01), CC BY; municipal tax-map reference, not certified boundaries or title.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6339,7 +6339,7 @@
                 attribution: 'Municipalidad de Temuco · Departamento de Estudios e Información Territorial · Predios. Municipal reuse restrictions apply.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6387,7 +6387,7 @@
                 attribution: 'Prefeitura de Praia Grande / SEPLAN — Planta Cadastral / GEOPG. Consultative use; no legal or building-alignment precision.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6435,7 +6435,7 @@
                 attribution: 'Prefeitura Municipal de Bauru / GeoPixel — Lotes'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6483,7 +6483,7 @@
                 attribution: 'Sakarya Büyükşehir Belediyesi · SBB Public API / Kent Rehberi'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6531,7 +6531,7 @@
                 attribution: 'INRA / SINACAR — agrarian cadastral properties'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6579,7 +6579,7 @@
                 attribution: 'City of Kitchener; Teranet Inc. and its suppliers. Not a plan of survey.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6627,7 +6627,7 @@
                 attribution: 'Direction générale des Impôts du Burkina Faso — eCadastre'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6675,7 +6675,7 @@
                 attribution: 'Jinan Natural Resources and Planning Bureau / Jinan Real Estate Registration Center · public cadastral-map viewer'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6723,7 +6723,7 @@
                 attribution: 'Prefeitura Municipal de Fortaleza / SEFIN; Fortaleza em Mapas / IPPLAN.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6771,7 +6771,7 @@
                 attribution: 'United Republic of Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD) / e-Ardhi'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6819,7 +6819,7 @@
                 attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO cadastral spatial units'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6867,7 +6867,7 @@
                 attribution: 'Taichung City Government GIS / Land Administration services'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6915,7 +6915,7 @@
                 attribution: 'Adama City Administration e-Land / Land Office, registered cadastral parcels'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -6963,7 +6963,7 @@
                 attribution: 'Tanzania Ministry of Lands, Housing and Human Settlements Development / e-Ardhi; taspro surveyed spatial units'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7011,7 +7011,7 @@
                 attribution: 'Municipalidad de Asunción · Datos Catastrales'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7059,7 +7059,7 @@
                 attribution: '登記所備付地図データ 仙台市宮城野区（法務省）; G-spatial Information Center, 2025 edition (used 2026-10-24). Adapted from Map XML to WGS84. https://www.geospatial.jp/ckan/dataset/908edd07-4618-4631-a69d-c70dc6fbf520'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7107,7 +7107,7 @@
                 attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO qualified spatial units'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7155,7 +7155,7 @@
                 attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO qualified spatial units'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7203,7 +7203,7 @@
                 attribution: 'Tanzania Ministry of Lands, Housing and Human Settlements Development / e-Ardhi; taspro surveyed spatial units'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7251,7 +7251,7 @@
                 attribution: 'Western Cape Government Spatial Data Warehouse; Surveyor General'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7299,7 +7299,7 @@
                 attribution: 'Uganda Ministry of Lands, Housing & Urban Development — Uganda National Land Information System / NaLISEP'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7347,7 +7347,7 @@
                 attribution: 'Chief Surveyor-General · Property Viewer Erven · adapted'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7395,7 +7395,7 @@
                 attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO cadastral spatial units'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7443,7 +7443,7 @@
                 attribution: 'Uganda Ministry of Lands, Housing & Urban Development — Uganda National Land Information System / NaLISEP'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7491,7 +7491,7 @@
                 attribution: 'Western Cape Government Spatial Data Warehouse; Surveyor General'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7539,7 +7539,7 @@
                 attribution: 'Wajir County Government / Wajir County Integrated GIS System, gis.wajir.go.ke'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7587,7 +7587,7 @@
                 attribution: 'United Republic of Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD) / e-Ardhi'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7635,7 +7635,7 @@
                 attribution: 'Zambia Ministry of Local Government Land Portal / MLG GeoServer. Informational parcel map; not legal title or survey accuracy.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7683,7 +7683,7 @@
                 attribution: 'Chief Surveyor-General · Property Viewer Erven · adapted'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7731,7 +7731,7 @@
                 attribution: 'United Republic of Tanzania Ministry of Lands, Housing and Human Settlements Development (MLHHSD) / e-Ardhi'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7779,7 +7779,7 @@
                 attribution: 'ANDF (Agence Nationale du Domaine et du Foncier), e-Foncier cadastral parcels; adapted to WGS84. Verified Cotonou samples only.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7827,7 +7827,7 @@
                 attribution: 'Chief Surveyor-General · Property Viewer Erven · adapted'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7875,7 +7875,7 @@
                 attribution: 'Rwanda NAEB GIS, Musanze_Parcels.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7923,7 +7923,7 @@
                 attribution: 'Ogun State Spatial Data Infrastructure / Bureau of Lands and Survey (BLS). Source catalogue declares public_domain and No Constraints. Full geographic response polygons retained unchanged.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -7971,7 +7971,7 @@
                 attribution: 'Chief Surveyor-General · DFFE hosted Erven · adapted'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8019,7 +8019,7 @@
                 attribution: 'Mahikeng Local Municipality GIS / Land Information System; Chief Surveyor-General cadastral provenance'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8067,7 +8067,7 @@
                 attribution: 'Commune d\'Abengourou / E-Commune; CNTIG platform.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8115,7 +8115,7 @@
                 attribution: 'Uganda Ministry of Lands, Housing & Urban Development — Uganda National Land Information System / NaLISEP'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8163,7 +8163,7 @@
                 attribution: 'Chief Surveyor-General · Property Viewer Erven · adapted'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8211,7 +8211,7 @@
                 attribution: 'KwaZulu-Natal COGTA · ILIS Land tenure component · Surveyor General cadastral (March 2026)'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8259,7 +8259,7 @@
                 attribution: 'Thika_RIM, published by KiplimoC on the gegis-jkuat ArcGIS organization; original RIM authority unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8307,7 +8307,7 @@
                 attribution: 'ANGOLA_GGPEN — Lunda_Norte_AGT_gdb / Lunda_Norte_AGT layer 0; AGT property-registration context. Exact IGCA/AGT/GGPEN maintenance responsibilities are unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8355,7 +8355,7 @@
                 attribution: 'Zambia NSDI / Smart Zambia Institute; MLNR Land Cadastre.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8403,7 +8403,7 @@
                 attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO qualified spatial units'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8451,7 +8451,7 @@
                 attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO qualified spatial units'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8499,7 +8499,7 @@
                 attribution: 'Ogun State Spatial Data Infrastructure / Bureau of Lands and Survey (BLS). Source catalogue declares public_domain and No Constraints. Full geographic response polygons retained unchanged.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8547,7 +8547,7 @@
                 attribution: 'Tanzania MLHHSD e-Ardhi / TASPRO qualified spatial units'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8595,7 +8595,7 @@
                 attribution: 'ANDF (Agence Nationale du Domaine et du Foncier), e-Foncier cadastral parcels; adapted to WGS84. Verified Cotonou samples only.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8643,7 +8643,7 @@
                 attribution: 'Chief Surveyor-General · DFFE hosted Erven · adapted'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8691,7 +8691,7 @@
                 attribution: 'Commune de Danané / E-Commune; CNTIG platform.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8739,7 +8739,7 @@
                 attribution: 'ANDF (Agence Nationale du Domaine et du Foncier), e-Foncier cadastral parcels; adapted to WGS84. Verified Cotonou samples only.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8787,7 +8787,7 @@
                 attribution: 'ANGOLA_GGPEN — Cunene_AGT_gdb / Cunene_AGT layer 0; AGT property-registration workflow. IGCA/AGT/GGPEN maintenance responsibilities are unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8835,7 +8835,7 @@
                 attribution: 'Kakamega Parcels / Kakamega Land Information, ArcGIS Online publisher Ombuitau. Official county custody unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8883,7 +8883,7 @@
                 attribution: 'ANGOLA_GGPEN — Lunda_Norte_AGT_gdb / Lunda_Norte_AGT layer 0; AGT property-registration context. Exact IGCA/AGT/GGPEN maintenance responsibilities are unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8931,7 +8931,7 @@
                 attribution: 'Daejeon Metropolitan City Spatial Information Portal / 대전광역시 공간정보포털 · LSMD_CONT_LDREG_2024'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -8979,7 +8979,7 @@
                 attribution: 'Registro Agrario Nacional (RAN) / SEDATU SITU, PIT15 Parcelas México 2020, CC BY 4.0. Social-property parcels; historical and indicative coverage.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9027,7 +9027,7 @@
                 attribution: 'IDECOR / Dirección General de Catastro de la Provincia de Córdoba, Gobierno de la Provincia de Córdoba · parcelas · CC BY-SA / source terms'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9075,7 +9075,7 @@
                 attribution: 'Jeonnam-Gwangju integrated spatial-information portal / 전남광주통합특별시 · 국토지리정보원'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9123,7 +9123,7 @@
                 attribution: 'FPS Finance — GAPD, CadGIS cadastral plan · CC BY 4.0 · WGS84 service output'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9171,7 +9171,7 @@
                 attribution: 'Multnomah County DART · taxlot parcels · reference use only'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9219,7 +9219,7 @@
                 attribution: 'Municipio de León / IMPLAN León · Predios_Piloto · bounded northern cadastral pilot · municipal platform citation required'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9267,7 +9267,7 @@
                 attribution: 'INRA / SINACAR — agrarian cadastral properties'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9315,7 +9315,7 @@
                 attribution: 'GISAR · State Cadastre of the Kyrgyz Republic'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9363,7 +9363,7 @@
                 attribution: 'Kantor Pertanahan Kota Samarinda / ATR-BPN; GEOTAS; Komputerisasi Kegiatan Pertanahan (downloaded 13 August 2025).'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9411,7 +9411,7 @@
                 attribution: 'INETER · Dirección General de Catastro Físico. Public cadastral consultation; publisher conditions apply.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9459,7 +9459,7 @@
                 attribution: 'Kharkiv City Council / Kharkiv municipal geo-portal · municipal address-register land plots'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9507,7 +9507,7 @@
                 attribution: 'INCRA / SIGEF GEO · SERPRO GeoNode · rural cadastral parcels'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9555,7 +9555,7 @@
                 attribution: 'Dirección Nacional de Catastro (MEF), Uruguay · SNIG (MGAP) cadastral map'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9603,7 +9603,7 @@
                 attribution: 'Registro Agrario Nacional (RAN), SEDATU; PIT5 Parcelas Coahuila de Zaragoza 2020. Historical social-property parcels; indicative partial coverage.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9651,7 +9651,7 @@
                 attribution: 'City of Prague / Prague Geoportal · Základní mapa · Parcely'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9699,7 +9699,7 @@
                 attribution: 'Japan Ministry of Justice registry-office map data; AIGID / Geospatial Information Center conversion and distribution. Hiroshima Asaminami Ward public-coordinate sheets; 2026 distribution (collection label 2025).'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9747,7 +9747,7 @@
                 attribution: '<a href="https://geo-shym.kz/">Shymkent RGIS / AISGZK cadastral parcels</a> · bounded coverage verified; currentness unestablished'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9795,7 +9795,7 @@
                 attribution: 'Comune di Torino Geoportale · CC BY 4.0'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9843,7 +9843,7 @@
                 attribution: 'City of Baltimore · Real Property Information · CC BY 3.0. Source geometry served in WGS84; indicative parcel cartography.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9891,7 +9891,7 @@
                 attribution: 'Palestinian Ministry of Local Government / GeoMOLG, registered cadastral parcels. Native OBJECTID references; bounded availability only. Wider coverage, currentness, survey alignment and reuse terms remain unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9939,7 +9939,7 @@
                 attribution: '淮南市地籍图查询系统 / MapShine; 主办单位: 淮南市自然资源和规划局'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -9987,7 +9987,7 @@
                 attribution: 'Yerevan Municipality Geoportal / Yerevan City Management Technologies'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10035,7 +10035,7 @@
                 attribution: 'Western Australian Land Information Authority (Landgate), SLIP LGATE-001. Simplified cadastral boundaries; Other (Non-Commercial), Landgate Personal Use Licence unless separately authorised.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10083,7 +10083,7 @@
                 attribution: '<a href="https://www.geospatialbangladesh.info/">Geospatial Bangladesh | Khulna Development Authority</a> · non-commercial use only · KDA-area parcel observations; citywide completeness unverified'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10131,7 +10131,7 @@
                 attribution: '© State of Queensland (Department of Resources) 2024 · Digital Cadastral Database / Land Parcel Property Framework, Base Parcels Only. Provider WGS84 output; indicative boundaries.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10179,7 +10179,7 @@
                 attribution: 'GIS-Sofia EOOD / SOFCAR · Sofia Municipality'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10227,7 +10227,7 @@
                 attribution: 'GeoMOLG / Palestinian Ministry of Local Government, registered cadastral parcels. Native OBJECTID references; bounded Gaza availability only. Completeness, currentness, survey alignment and reuse terms remain unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10275,7 +10275,7 @@
                 attribution: 'Municipalidad de la Ciudad de Mendoza, Catastro público, Parcelario catastral.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10323,7 +10323,7 @@
                 attribution: 'Prefeitura Municipal de Santos · Mapa de Lotes 2026 · SIRGAS 2000 / UTM 23S converted to WGS84'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10371,7 +10371,7 @@
                 attribution: 'GLIS / LandInfo. Balochistan BLRMIS project scope corroborated by Board of Revenue; API operator affiliation unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10419,7 +10419,7 @@
                 attribution: 'Department of Municipalities and Transport (DMT), Abu Dhabi; MyLand/Onwani PLOT layer. Bounded Abu Dhabi availability verified; completeness, historical/current semantics and survey accuracy unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10467,7 +10467,7 @@
                 attribution: 'Data and maps (c) City of Helsinki, City Survey Services'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10515,7 +10515,7 @@
                 attribution: 'Registro Agrario Nacional (RAN) / SEDATU SITU, PIT24 Parcelas San Luis Potosí 2020, CC BY 4.0. Historical partial agrarian parcel coverage.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10563,7 +10563,7 @@
                 attribution: 'City of Edmonton GIS — Title Parcels. Parcel mapping distribution context: Alberta Data Partnerships / AltaLIS. Reuse permission unresolved.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10611,7 +10611,7 @@
                 attribution: 'Tainan City Government Land Administration Bureau; cadastral reference only'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10659,7 +10659,7 @@
                 attribution: 'GISOGD Omsk Oblast / Omsk GISOGD; active EGRN land parcels.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10707,7 +10707,7 @@
                 attribution: 'Dirección General de Catastro de Tucumán; Gobierno de la Provincia de Tucumán'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10755,7 +10755,7 @@
                 attribution: 'INTERPI / Terras.PI · SIGEF–INCRA · rural certification parcels'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10803,7 +10803,7 @@
                 attribution: '许昌市不动产登记交易中心 · xcbdc.org.cn · cadastral parcels'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10851,7 +10851,7 @@
                 attribution: 'Government of South Australia / Location SA Parcel Cadastre; Land Services SA. Indicative boundaries; legal title and survey accuracy unverified.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10899,7 +10899,7 @@
                 attribution: 'Kartverket — Matrikkelen Eiendomskart Teig · CC BY 4.0'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10947,7 +10947,7 @@
                 attribution: 'Registro Agrario Nacional (RAN) / SEDATU SITU, PIT1 Parcelas Aguascalientes 2020, CC BY 4.0. Historical partial agrarian parcel coverage. Canonical IDs adapted; source geometry unchanged.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -10995,7 +10995,7 @@
                 attribution: 'Gobernación de Norte de Santander / SIT; Instituto Geográfico Agustín Codazzi (IGAC)'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
@@ -11043,7 +11043,7 @@
                 attribution: 'Japan Ministry of Justice registry-office map data; AIGID / G-spatial Information Center conversion, Okayama City public-coordinate sheets, 2026 distribution.'
             },
             buildings: {
-                source: 'overture-tiles'
+                source: 'osm'
             },
             sidebar: {
                 disabledSections: ['parcelBlocks', 'roads', 'areaMonitor']
