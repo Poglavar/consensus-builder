@@ -60,23 +60,26 @@ test('an agreement over an applied parcel layout is created from its plan, compa
   // Cash follows from the rules and the allocations; nobody types it per person.
   await expect(editor.locator('[data-agreement-cash]')).toHaveCount(0);
 
-  // The rule: the owners under the approval form, binding unless unticked; a community vote never binds.
+  // The rule: the owners under the approval form, a non-binding vote until the author ticks Binding;
+  // a community vote never binds.
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   const owners = editor.locator('input[name="agreement-electorate"][value="owners"]');
   const community = editor.locator('input[name="agreement-electorate"][value="community"]');
   const binding = editor.locator('[data-agreement-binding]');
   const ruleForm = editor.locator('[data-agreement-rule-form]');
   await expect(owners).toBeChecked();
-  await expect(binding).toBeChecked();
+  await expect(binding).not.toBeChecked();
   await expect(ruleForm.locator('select[data-approval-regime]')).toBeVisible();
-  await binding.uncheck();
+  await binding.check();
   await community.check();
   await expect(binding).toBeDisabled();
   await expect(binding).not.toBeChecked();
   await expect(ruleForm).toBeHidden();
-  // Back to the owners: their rules return, and their decision binds again.
+  // Back to the owners: their rules return, and binding them again takes a new explicit tick.
   await owners.check();
   await expect(binding).toBeEnabled();
+  await expect(binding).not.toBeChecked();
+  await binding.check();
   await expect(binding).toBeChecked();
   await expect(ruleForm.locator('select[data-approval-regime]')).toBeVisible();
   await community.check();

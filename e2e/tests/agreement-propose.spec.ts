@@ -145,11 +145,12 @@ test('a proposed owners’ agreement shows the owners’ decisions card, reads i
   const { layoutId } = await applyLayout(page);
   const index = pageIndex(page);
 
-  // The owners decide by default, and their decision binds.
+  // The owners decide by default, in a non-binding vote; the author ticks Binding to make it bind.
   const editor = await createFromPlan(page, layoutId);
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await expect(editor.locator('input[name="agreement-electorate"][value="owners"]')).toBeChecked();
-  await expect(editor.locator('[data-agreement-binding]')).toBeChecked();
+  await expect(editor.locator('[data-agreement-binding]')).not.toBeChecked();
+  await editor.locator('[data-agreement-binding]').check();
   await editor.locator('[data-agreement-title]').fill('Owners decide');
   await editorSave(editor).click();
   await editorClosed(page);
