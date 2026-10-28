@@ -2111,9 +2111,16 @@ const ProposalManager = {
 
         const fabric = _fabricDraft(opts);
         if (!fabric) throw new Error('Cadastral integration requires a parcel mutation draft.');
-        fabric.seedCadastre(list);
+        // The caller chose these parcels as absent from the fabric before this mutation was
+        // queued; one queued behind the boot replay can find a design standing on them by now (a
+        // layout plot across two parcels), and re-deriving one of the two was refused as "scope
+        // is not closed". Only ground still absent in this draft is integrated.
+        const stillAbsent = new Set(fabric.absentCadastreIds(list.map(_getParcelIdFromFeature).filter(Boolean), { includeCorridors: true }));
+        const arriving = list.filter(feature => stillAbsent.has(String(_getParcelIdFromFeature(feature) ?? '').trim()));
+        if (!arriving.length) return { ok: true, parcels: 0, fabric: null };
+        fabric.seedCadastre(arriving);
 
-        const ids = list.map(_getParcelIdFromFeature).filter(Boolean).map(String);
+        const ids = arriving.map(_getParcelIdFromFeature).filter(Boolean).map(String);
         const takes = this._appliedCorridorTakes(_peekProposals(_proposalStore(opts)));
         let derived = { added: 0, removed: 0, unchanged: 0, parcels: ids.length, parcelIds: ids, failed: [] };
         if (takes.length) {

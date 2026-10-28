@@ -174,6 +174,10 @@ describe('parcel source health requester', () => {
         expect(health.describeFailure(new Error('x'), { offline: true })).toContain('You appear to be offline');
         expect(health.describeFailure({ code: 'parcel-source-rate-limited', retryAfterSeconds: 8 })).toContain('Retry in 8 seconds');
         expect(health.describeFailure({ code: 'parcel-source-blocked', upstreamStatus: 403 })).toContain('restrict IP addresses or require authentication');
+        // The map refusing parcels that did arrive is not the source being unavailable.
+        const refused = health.describeFailure({ code: 'live-fabric-scope-not-closed', message: 'Cadastral replacement scope is not closed: A#p-1 also occupies B' });
+        expect(refused).toContain('The parcels arrived but could not be added to the map.');
+        expect(refused).not.toContain('temporarily unavailable');
         expect(health.describeFailure({ status: 504 })).toContain('timed out');
         expect(health.describeFailure({ code: 'parcel-source-unavailable' })).toContain('temporarily unavailable');
         for (const failure of [
