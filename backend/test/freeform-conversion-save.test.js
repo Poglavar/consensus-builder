@@ -187,7 +187,9 @@ describe('convertProposalToFreeform', () => {
         // applied records on its ground come off the map instead of staying under it.
         expect(ProposalManager.applyProposal).toHaveBeenCalledExactlyOnceWith('fork-1');
         expect(source).toEqual(before);
-        expect(globalThis.CbDialog.confirm.mock.calls[0][0]).toContain('counterproposal');
+        // Copy says design, not counterproposal, since 96b951b1f.
+        expect(globalThis.CbDialog.confirm.mock.calls[0][0]).toContain('a Freeform design is created');
+        expect(globalThis.CbDialog.confirm.mock.calls[0][0]).toContain('The published design stays as it is.');
     });
 
     it('refuses a Block whose buildings do not touch, before asking or saving anything', async () => {

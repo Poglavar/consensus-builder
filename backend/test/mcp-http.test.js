@@ -19,7 +19,7 @@ afterEach(async () => { await Promise.all(clients.splice(0).map(client => client
 async function host(options = {}) {
     const storeDirectory = mkdtempSync(join(tmpdir(), 'mcp-http-')); directories.push(storeDirectory);
     const service = createMcpHttpService({ storeDirectory, env: {}, fetchImpl: async () => new Response(JSON.stringify({ sources: [] })), ...options });
-    services.push(service); service.http.listen(0, '127.0.0.1'); await once(service.http, 'listening');
+    services.push(service); service.http.listen(0); await once(service.http, 'listening');
     return `http://127.0.0.1:${service.http.address().port}`;
 }
 describe('hosted MCP HTTP', () => {

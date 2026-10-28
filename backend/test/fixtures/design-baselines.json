@@ -25,6 +25,11 @@
       "zIndexLiterals": 0,
       "important": 0
     },
+    "css/app-updates.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
     "css/area-monitor-list.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
@@ -45,12 +50,22 @@
       "zIndexLiterals": 0,
       "important": 0
     },
+    "css/community-voting.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
     "css/corridor-editor.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
     "css/corridor-render.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/feedback.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
@@ -95,6 +110,11 @@
       "zIndexLiterals": 0,
       "important": 0
     },
+    "css/lists.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
     "css/map-credits.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
@@ -114,6 +134,16 @@
       "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 18
+    },
+    "css/mcp-privacy.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/mobile-sheets.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
     },
     "css/modals.css": {
       "colourLiterals": 0,
@@ -170,6 +200,16 @@
       "zIndexLiterals": 0,
       "important": 0
     },
+    "css/plan-dialog.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/plan-files.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
     "css/planning-views.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
@@ -200,6 +240,11 @@
       "zIndexLiterals": 0,
       "important": 6
     },
+    "css/right-screen-panel.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
     "css/road-analysis.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
@@ -215,12 +260,17 @@
       "zIndexLiterals": 0,
       "important": 0
     },
-    "css/selection-tray.css": {
+    "css/settings-panel.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
     },
     "css/site-tool.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/source-explorer.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
@@ -231,6 +281,11 @@
       "important": 0
     },
     "css/structure-geometry-editor.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/three-click-stack.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
       "important": 0
@@ -270,6 +325,11 @@
       "zIndexLiterals": 0,
       "important": 10
     },
+    "css/workspace.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
     "css/world.css": {
       "colourLiterals": 0,
       "zIndexLiterals": 0,
@@ -281,11 +341,10 @@
     "titleCaseLabels": 24,
     "caseConflicts": 16,
     "threeDots": 0,
-    "duplicateGroups": 227
+    "duplicateGroups": 226
   },
   "js": {
     "js/corridor-editor.js": 1,
-    "js/data-source.js": 1,
     "js/legacy-road-centerlines.js": 1,
     "js/map-core.js": 4,
     "js/measurement-tool.js": 5,
@@ -295,7 +354,7 @@
     "js/parcels/ui/locate.js": 1,
     "js/parcels/ui/visibility.js": 1,
     "js/proposals/apply/structures.js": 1,
-    "js/proposals/create.js": 2,
+    "js/proposals/create.js": 1,
     "js/proposals/geometry.js": 2,
     "js/proposals/list-ui.js": 4,
     "js/proposals/urban-rules.js": 2,

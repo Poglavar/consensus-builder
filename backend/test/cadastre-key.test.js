@@ -77,7 +77,8 @@ describe('the search box moves in place only onto the same parcel data', () => {
         }
         expect(asked).toBeGreaterThan(0);
         expect(wrong).toEqual([]);
-    }, 20000);
+    // 1991 cities ask about 128k pairs that share place data (2026-10-28): 12-15 s alone at load 19.
+    }, 60000);
 
     it('could fail: the provider kind every catalogue city shares calls San Francisco and Oakland one cadastre', () => {
         const byProvider = cities.map(city => ({ ...city, parcelSource: manager.getCityConfig(city.id).parcels.source }));

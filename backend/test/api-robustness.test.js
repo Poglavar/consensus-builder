@@ -248,8 +248,9 @@ describe('the Origin gate lets read-only POSTs through and still stops writes', 
     });
 });
 
-// M2 (plan-design-agreement.md) removed every write into the proposal table and the named plans: the
-// routes are not registered at all, so each answers the app's 404, even with an allowed Origin.
+// M2 (plan-design-agreement.md) removed every write into the proposal table and the slug-named plans: the
+// routes are not registered at all, so each answers the app's 404, even with an allowed Origin. Plans
+// came back as immutable CID-addressed plan/v1 records (7e9803af8, routes/plans.js; named-plans.test.js).
 describe('removed publication routes', () => {
     it.each([
         ['post', '/proposals'], ['post', '/proposals/mirror'], ['post', '/proposals/prepare'], ['post', '/proposals/binding'],
@@ -257,11 +258,18 @@ describe('removed publication routes', () => {
         ['patch', '/proposals/41/screenshot'], ['patch', '/proposals/41/epoch'], ['patch', '/proposals/epochs'], ['patch', '/proposals/41/name'],
         ['get', '/proposals/41/binding-drift'], ['get', '/proposals/41/owner-decisions'], ['post', '/proposals/41/owner-decisions'],
         ['post', '/proposals/41/owner-decisions/bundle'],
-        ['get', '/plans'], ['get', '/plans/borovje'], ['post', '/plans'], ['post', '/walrus/upload'], ['post', '/reparcellization/validate']
+        ['post', '/walrus/upload'], ['post', '/reparcellization/validate']
     ])('%s %s is gone', async (method, path) => {
         const pool = recordingPool();
         const res = await request(app(pool))[method](path).set('Origin', 'http://localhost:5173').send({});
         expect(res.status).toBe(404);
+        expect(pool.calls).toHaveLength(0);
+    });
+
+    it('refuses an old slug-named plan as an invalid plan link before querying', async () => {
+        const pool = recordingPool();
+        const res = await request(app(pool)).get('/plans/borovje').set('Origin', 'http://localhost:5173');
+        expect(res.status).toBe(400);
         expect(pool.calls).toHaveLength(0);
     });
 

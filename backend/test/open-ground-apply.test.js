@@ -1004,14 +1004,29 @@ describe('a road built through an applied park', () => {
         expect(pieces.reduce((sum, feature) => sum + turf.area(feature), 0)).toBeCloseTo(turf.area(P), -1);
     });
 
-    it('still refuses a newer park laid over an applied road', async () => {
+    it('still refuses a newer park laid over an applied road when nothing chose between them', async () => {
+        // A replay chooses no alternatives, so the earlier road keeps its ground and the park is refused.
         const older = road('road-first', { createdAt: '2026-09-30T00:00:00.000Z' });
         const park = structureRecord('park-later', 'park', PARK, { binding: { parcels: [], coverage: 'none' } });
         const { manager, fabric } = await harness({ records: [older, park] });
         await expect(manager.applyProposal('road-first')).resolves.toBe(true);
-        await expect(manager.applyProposal('park-later')).resolves.toBe(false);
+        await expect(manager.applyProposal('park-later', { replay: true })).resolves.toBe(false);
         expect(manager.getLastApplyFailure('park-later')).toMatch(/stand on .* of the applied road/);
         expect(fabric.list().some(feature => feature.properties.structureType === 'park')).toBe(false);
+    });
+
+    it('an explicit Apply of a newer park over an applied road takes the road off the map', async () => {
+        // Direct Apply chooses occupied corridor ground like a confirmed plan replacement
+        // (docs/plan-application-tab-workspace-audit-2026-10-25.md): the park stands whole.
+        const older = road('road-first', { createdAt: '2026-09-30T00:00:00.000Z' });
+        const park = structureRecord('park-later', 'park', PARK, { binding: { parcels: [], coverage: 'none' } });
+        const { manager, fabric } = await harness({ records: [older, park] });
+        await expect(manager.applyProposal('road-first')).resolves.toBe(true);
+        await expect(manager.applyProposal('park-later')).resolves.toBe(true);
+        expect(globalThis.proposalStorage.getProposal('road-first').applied).toBe(false);
+        const parkPieces = fabric.list().filter(feature => feature.properties.structureType === 'park');
+        expect(parkPieces).toHaveLength(1);
+        expect(turf.area(parkPieces[0])).toBeCloseTo(areaOf(PARK), -1);
     });
 
     it('keeps stored decorations to the carved ground', () => {
@@ -1111,7 +1126,7 @@ describe('proposal ground refusal diagnostics', () => {
         });
         const { manager } = await harness({ records: [lake] });
         expect(manager.getProposalGroundFailure(lake)).toMatchObject({
-            code: 'proposal-footprint-outside-site', message: expect.stringContaining('beyond its site')
+            code: 'proposal-footprint-outside-site', message: expect.stringContaining('beyond its saved land boundary')
         });
         await expect(manager.applyProposal(lake.proposalId)).resolves.toBe(false);
         expect(manager.getLastApplyFailureInfo(lake.proposalId)?.code).toBe('proposal-footprint-outside-site');

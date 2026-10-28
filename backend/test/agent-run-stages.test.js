@@ -307,6 +307,8 @@ describe('the runner as a command', () => {
     const RUNNER = fileURLToPath(new URL('../agents/run.mjs', import.meta.url));
     // From a neutral directory, so no .env is read; these paths exit before any database or chain use.
     const cli = (...args) => spawnSync(process.execPath, [RUNNER, ...args], { cwd: tmpdir(), encoding: 'utf8', env: { PATH: process.env.PATH }, timeout: 60000 });
+    // Each case starts the runner several times (about 0.8 s each when idle), so a busy machine needs more than the default 5 s.
+    const CLI_TEST_TIMEOUT_MS = 60000;
 
     it('prints its usage without parameters or with --help, and runs nothing', () => {
         for (const args of [[], ['--help']]) {
@@ -315,14 +317,14 @@ describe('the runner as a command', () => {
             expect(result.stdout).toContain('--until STAGE        Stop after STAGE: planned | chosen | designed | proposed | minted | recorded | staked');
             expect(result.stdout).toContain('--seed-owners');
         }
-    });
+    }, CLI_TEST_TIMEOUT_MS);
 
     it('refuses to be both a dry run and a live run, and an unknown stage or controller', () => {
         expect(cli('--live', '--dry-run').stderr).toContain('choose exactly one of --dry-run or --live');
         for (const args of [['--live', '--dry-run'], ['--dry-run', '--until', 'executed'], ['--dry-run', '--controller', 'oracle'], ['--dry-run', '--candidates', '0']]) {
             expect(cli(...args).status, args.join(' ')).toBe(2);
         }
-    });
+    }, CLI_TEST_TIMEOUT_MS);
 });
 
 describe('run.mjs helpers', () => {

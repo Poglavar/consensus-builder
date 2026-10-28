@@ -102,13 +102,14 @@ describe('one parcel recovery dialog after the introduction', () => {
         const error = Object.assign(new Error('Provider denied access'), { status: 502, upstreamStatus: 403 });
         window.ParcelGroundFallback.onGroundUnavailable({ city: 'sample', error, message: 'Provider denied access.' });
         const choices = () => document.body.querySelectorAll('button').filter(node => node.dataset.option).map(node => node.dataset.option);
-        expect(choices()).toEqual(['without-parcels', 'url', 'ocr', 'schelling']);
+        // A refused register (403) is retryable since 86dd49eff: one recovery dialog keeps Retry (MEMORY.md 2026-10-23).
+        expect(choices()).toEqual(['retry', 'without-parcels', 'url', 'ocr', 'schelling']);
         document.body.querySelector('.ground-fallback-close').listeners.click();
         expect(window.ParcelGroundFallback.isOpen()).toBe(false);
         expect(document.body.classList.contains('ground-fallback-open')).toBe(false);
         window.ParcelGroundFallback.openOptions();
         expect(document.body.querySelector('.ground-fallback-status').textContent).toBe('Provider denied access.');
-        expect(choices()).toEqual(['without-parcels', 'url', 'ocr', 'schelling']);
+        expect(choices()).toEqual(['retry', 'without-parcels', 'url', 'ocr', 'schelling']);
     });
 
     it('continues without parcels only after the choice and keeps the plan route on reload', () => {

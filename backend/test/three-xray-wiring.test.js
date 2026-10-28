@@ -19,10 +19,10 @@ function collectFunctions(node) {
 }
 collectFunctions(ast);
 
-function extracted(name, variables = '', stubs = {}) {
+function extracted(name, variables = '', stubs = {}, helpers = []) {
     const calls = [];
     const context = { console, ...stubs, calls };
-    const code = `${variables}\n${Array.from(Object.entries(stubs)).map(([key]) => `const ${key}=this.${key};`).join('\n')}\n${declarations.get(name)}\nthis.fn=${name};`;
+    const code = `${variables}\n${Array.from(Object.entries(stubs)).map(([key]) => `const ${key}=this.${key};`).join('\n')}\n${[name, ...helpers].map(helper => declarations.get(helper)).join('\n')}\nthis.fn=${name};`;
     vm.runInNewContext(code, context);
     return [context.fn, context];
 }
@@ -60,8 +60,8 @@ describe('three-mode Xray wiring', () => {
     });
 
     function rebuildHarness(enabled, built = 'ghost', planned = 'solid', isolated = null) {
-        const existingBuildingsGroup = { children: [] };
-        const proposedBuildingsGroup = { children: [{ id: 'proposal-survives' }] };
+        const existingBuildingsGroup = { children: [], userData: {} };
+        const proposedBuildingsGroup = { children: [{ id: 'proposal-survives' }], userData: {} };
         const ineligibleBuildingsGroup = { children: [{ id: 'ineligible-survives' }] };
         const stubs = {
             window: {},
@@ -73,10 +73,14 @@ describe('three-mode Xray wiring', () => {
             buildIneligibleParcels3D: vi.fn(), ensureNearbyProposalBuildings: vi.fn(),
             ensureNearbyTrees: vi.fn(), rebuildTreesOnly: vi.fn(), ensureNearbyWater: vi.fn(), rebuildWaterOnly: vi.fn(),
             applyParcelEmphasis: vi.fn(), isolateProposal: vi.fn(), updateXrayControls: vi.fn(), refreshClickStackFigures: vi.fn(),
-            invalidateThreeView: vi.fn()
+            invalidateThreeView: vi.fn(), ensureNearbyGreen: vi.fn(),
+            // Replacements are built off-scene and swapped into the scene group (7ed6200e9).
+            THREE: { Group: class { constructor() { this.children = []; this.userData = {}; } } },
+            sceneWork
         };
         const [rebuild, context] = extracted('rebuild3DBuildingsOnly', `
-            let isActive=true, buildingGroup={};
+            let isActive=true, buildingGroup={ add() {}, remove() {} }, sunLayer=null;
+            const buildingRefreshQueue = this.sceneWork.createRefreshQueue(family => build3DBuildingFamilies(family));
             let buildingBuildPending=false, buildingDisplaySnapshot=null, buildingsWorkGeneration=0, pendingModelLoads=0;
             let nearbyBuildingsRevision=0;
             let buildingsRenderGeneration=0, sceneAbort=null;
@@ -85,7 +89,7 @@ describe('three-mode Xray wiring', () => {
             let xrayEnabled=this.enabled, builtDisplay=this.built, plannedDisplay=this.planned;
             let realisticLayerActive=false, existingTransitAlignmentGroup={ visible: true }, showIneligibleParcels=false;
             let isolatedParcelId=this.isolated, isolatedProposalId=null;
-        `, stubs);
+        `, stubs, ['build3DBuildingFamilies']);
         return [rebuild, context];
     }
 

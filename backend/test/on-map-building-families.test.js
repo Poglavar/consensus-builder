@@ -4,6 +4,7 @@ import { runInNewContext } from 'node:vm';
 
 const rowHouse = readFileSync(new URL('../../frontend/js/row-house.js', import.meta.url), 'utf8');
 const parcelBased = readFileSync(new URL('../../frontend/js/parcel-based.js', import.meta.url), 'utf8');
+const ruleGeometry = readFileSync(new URL('../../frontend/js/building-rule-geometry.js', import.meta.url), 'utf8');
 
 function editorOpenOptions(source, owner, id) {
     const start = Math.max(source.indexOf('window.OnMapEditor.open({'), source.indexOf('window.OnMapEditor?.open({'));
@@ -71,8 +72,11 @@ describe('floating building-family editors', () => {
     it('uses an authored site as the editor boundary while retaining per-parcel inputs', () => {
         expect(rowHouse).toContain('initialFeature = null, site = null');
         expect(rowHouse).toContain('site: authoredSite');
-        expect(rowHouse).toContain('function rowHouseGeneratorSite(block)');
-        expect(rowHouse.match(/let superparcel = rowHouseGeneratorSite\(block\) \|\| robustUnionLocal\(parcelFeatures\);/g)).toHaveLength(2);
+        // The row generator moved into building-rule-geometry.js (b47ba8d8b): the footprint fit
+        // and the maximum dimensions both start from the authored site, the parcels otherwise.
+        expect(ruleGeometry).toContain('let superparcel = (block.site?.geometry ? turf.cleanCoords(JSON.parse(JSON.stringify(block.site))) : null) || helpers.robustUnion(parcelFeatures);');
+        expect(ruleGeometry).toContain('const rowHouseGeneratorSite = block => block?.site?.geometry ? turf.cleanCoords(');
+        expect(ruleGeometry).toContain('let superparcel = rowHouseGeneratorSite(block) || robustUnionLocal(parcelFeatures);');
         expect(rowHouse).not.toContain('placementBaseSite');
         expect(rowHouse).toContain('fitFeature(block.site?.geometry ? block.site : featureCollection');
 

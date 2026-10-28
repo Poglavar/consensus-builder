@@ -51,18 +51,21 @@ export const approvalConfig = {
 
 // The design the agreement links (a parcel layout over the three parcels), by its CID.
 export const DESIGN_CID = Cid.cidOfObject({ schema: 'design/v1', goal: 'parcel-layout', title: 'Lay out the block' });
+// The named plan/v1 the agreement references by CID: the one design above.
+export const PLAN = { schema: 'plan/v1', title: 'Lay out the block', designCids: [DESIGN_CID], view: { at: '45.8,15.97,17', mode: '2d' } };
+export const PLAN_CID = Cid.cidOfObject(PLAN);
 const shareOf = text => {
     const [numerator, denominator] = text.split('/').map(Number);
     return numerator / denominator;
 };
 
-// The published agreement/v1 object (AgreementRecord.published): the designs, the input land with its
+// The published agreement/v1 object (AgreementRecord.published): its plan CID, the input land with its
 // holders, and the owners' rule with the lens. What the index stores as the row's content.
 export function agreementContent(overrides = {}) {
     return JSON.parse(JSON.stringify({
         schema: 'agreement/v1', title: 'Block readjustment', author: 'Test author', sponsor: null, city: 'test-city',
         createdAt: '2026-10-21T10:00:00.000Z',
-        designs: [{ cid: DESIGN_CID, goal: 'parcel-layout', title: 'Lay out the block' }],
+        planCid: PLAN_CID,
         inputs: {
             parcels: parcels.map(parcel => ({
                 parcelId: parcel.parcelId, areaM2: parcel.areaM2,

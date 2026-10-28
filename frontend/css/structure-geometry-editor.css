@@ -242,22 +242,22 @@
     position: absolute;
     left: 50%;
     bottom: 0;
-    z-index: -1;
+    z-index: var(--cb-z-world-scrim);
     width: 0.6em;
     height: 0.6em;
-    border: 1px solid #8f8b80;
+    border: 1px solid var(--cb-tree-pit-rim);
     border-radius: 2px;
     transform: translate(-50%, 25%);
 }
 
 .park-tree-glyph.is-pit-grille::before {
-    background: repeating-linear-gradient(90deg, #3d3f42 0 2px, #6b5a48 2px 4px);
+    background: repeating-linear-gradient(90deg, var(--cb-tree-pit-grille) 0 2px, var(--cb-tree-pit-grille-gap) 2px 4px);
 }
 
 .park-tree-glyph.is-pit-grass::before {
-    background: #6f9a3e;
+    background: var(--cb-tree-pit-grass);
 }
 
 .park-tree-glyph.is-pit-soil::before {
-    background: #6b4f3a;
+    background: var(--cb-tree-pit-soil);
 }

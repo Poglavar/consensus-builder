@@ -13,7 +13,7 @@ import { createUrbanGameTheoryMcpServer } from '../agents/mcp-server.mjs';
 import { acceptanceFixtures } from '../scripts/mcp-acceptance-fixtures.mjs';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { createTestPreviewLinks } from './helpers/mcp-preview-store.js';
-import { agreementObject, communityRule, noMoney, parcelOutputs } from '../agents/agreement-objects.js';
+import { agreementObject, communityRule, mapViewFromGeometry, noMoney, parcelOutputs, planForDesigns } from '../agents/agreement-objects.js';
 import { assertContractResult } from '../scripts/mcp-check-contracts.mjs';
 import { cidOfObject } from '../cid.js';
 const require = createRequire(import.meta.url);
@@ -110,7 +110,7 @@ describe('MCP agent evaluation artifacts', () => {
         const site={type:'Polygon',coordinates:[[[15,45],[15.002,45],[15.002,45.002],[15,45.002],[15,45]]]};
         const sourceId='eval-parcels',parcel={type:'Feature',id:'A',properties:{parcelId:'A'},geometry:site};
         const existingDesign=builder.build({kind:'space',spaceKind:'park',site,city:'london',authoredAt:'2026-10-25T00:00:00.000Z'},{turf});
-        const agreement=agreementObject({title:'Existing',city:'london',createdAt:'2026-10-25T00:00:00.000Z',designs:[{cid:cidOfObject(existingDesign),goal:'park'}],
+        const agreement=agreementObject({title:'Existing',city:'london',createdAt:'2026-10-25T00:00:00.000Z',plan:planForDesigns('Existing',[{cid:cidOfObject(existingDesign)}],mapViewFromGeometry([site],'london')),designs:[{cid:cidOfObject(existingDesign),goal:'park'}],
             parcels:[{parcelId:'A',parcelSourceId:sourceId,areaM2:turf.area(parcel),holders:[]}],outputs:parcelOutputs([{parcelId:'A',geometry:site,areaM2:turf.area(parcel)}]),rule:communityRule([]),money:noMoney('GBP')});
         const paths=[];
         const fetchImpl=async(url,init={})=>{
@@ -153,7 +153,7 @@ describe('paid evaluation orchestration without a paid API', () => {
         const service = createMcpHttpService({ env: {}, storeDirectory: join(directory, 'drafts'), factory: () => createUrbanGameTheoryMcpServer({ mode: 'hosted', env: {}, tools: {
             draftRoad: () => ({ design, cid: cidOfObject(design), takes: ['A'], previewUrl: 'https://app.example/designs?draft=https%3A%2F%2Fmcp.example%2Fmcp%2Fpreviews%2Faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', previewStatus: 'private-link' })
         } }) });
-        service.http.listen(0, '127.0.0.1'); await once(service.http, 'listening');
+        service.http.listen(0); await once(service.http, 'listening');
         const requests = [];
         const anthropic = { messages: { batches: {
             create: vi.fn(async request => { requests.push(request); return { id: `batch-${requests.length}` }; }),

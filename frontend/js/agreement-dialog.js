@@ -567,7 +567,7 @@
     const TABS = ['rules', 'inputs', 'outputs', 'persons'];
     // counts: { inputs, outputs, persons } shown in brackets, since inputs and outputs differ in number.
     function tabLabel(tab, counts = {}) {
-        const labels = { rules: ['agreement.workflow.rules', 'Rules'], inputs: ['agreement.workflow.inputs', 'Input parcels'], outputs: ['agreement.workflow.outputs', 'Output parcels'], persons: ['agreement.workflow.persons', 'Persons'] };
+        const labels = { rules: ['proposalDrafts.approval.policyType', 'Rules'], inputs: ['agreement.workflow.inputs', 'Input parcels'], outputs: ['agreement.workflow.outputs', 'Output parcels'], persons: ['agreement.workflow.persons', 'Persons'] };
         return t(...labels[tab]) + (Number.isInteger(counts[tab]) ? ` (${counts[tab]})` : '');
     }
     function tabCounts(land) {

@@ -94,6 +94,13 @@
     --cb-planning-proposed: #c26336;
     --cb-planning-control-width: 440px;
 
+    /* A pavement tree's pit on the map (css/structure-geometry-editor.css): rim, grille bars and gaps, grass, soil. */
+    --cb-tree-pit-rim: #8f8b80;
+    --cb-tree-pit-grille: #3d3f42;
+    --cb-tree-pit-grille-gap: #6b5a48;
+    --cb-tree-pit-grass: #6f9a3e;
+    --cb-tree-pit-soil: #6b4f3a;
+
     /* The night-sky artwork stays dark; its controls use the shared dark theme below. */
     --cb-scene-sky: #87ceeb;
     --cb-world-space: #030712;

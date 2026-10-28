@@ -41,8 +41,8 @@ describe('agent dialog proposal title', () => {
 
     it('names a design by its own title, never by a chain token\'s metadata (designs are not minted, M3)', () => {
         expect(titleOf(park())).toBe('Pocket park');
-        expect(titleOf({ goal: 'park', onchain: { metadata: { name: 'Minted name', title: 'Minted title' } } }, 'p-1')).toBe('Proposal p-1');
-        expect(titleOf({ goal: 'park', metadata: { name: 'NFT name', title: 'NFT title' } }, 'p-1')).toBe('Proposal p-1');
+        expect(titleOf({ goal: 'park', onchain: { metadata: { name: 'Minted name', title: 'Minted title' } } }, 'p-1')).toBe('Design p-1');
+        expect(titleOf({ goal: 'park', metadata: { name: 'NFT name', title: 'NFT title' } }, 'p-1')).toBe('Design p-1');
     });
 });
 

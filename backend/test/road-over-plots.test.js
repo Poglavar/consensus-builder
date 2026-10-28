@@ -269,16 +269,30 @@ describe('a road built through subdivision plots on open ground', () => {
         expect(total(fabric.list())).toBeCloseTo(area(BARE_SITE), 0);
     });
 
-    it('keeps refusing a newer subdivision laid over an earlier road', async () => {
+    it('keeps refusing a newer subdivision laid over an earlier road when nothing chose between them', async () => {
+        // A replay chooses no alternatives, so the earlier road keeps its ground.
         const road = roadRecord('road-first', CROSS_ROAD, { createdAt: '2026-09-30T00:00:00.000Z' });
         const record = subdivisionRecord('sub-later', BARE_SITE, { binding: { parcels: [], coverage: 'none', source: 'server' } });
         const { manager, fabric } = await harness({ records: [road, record] });
         await expect(manager.applyProposal('road-first')).resolves.toBe(true);
-        await expect(manager.applyProposal('sub-later')).resolves.toBe(false);
+        await expect(manager.applyProposal('sub-later', { replay: true })).resolves.toBe(false);
         const failure = manager.getLastApplyFailureInfo('sub-later');
         expect(failure.code).toBe('readjustment-over-road');
         expect(failure.message).toMatch(/stand on \d+ m² of the applied road "road-first"/);
         expect(fabric.list()).toEqual([]);
+    });
+
+    it('an explicit Apply of a newer subdivision over an earlier road takes the road off the map', async () => {
+        // Direct Apply chooses occupied corridor ground like a confirmed plan replacement
+        // (docs/plan-application-tab-workspace-audit-2026-10-25.md).
+        const road = roadRecord('road-first', CROSS_ROAD, { createdAt: '2026-09-30T00:00:00.000Z' });
+        const record = subdivisionRecord('sub-later', BARE_SITE, { binding: { parcels: [], coverage: 'none', source: 'server' } });
+        const { manager, fabric } = await harness({ records: [road, record] });
+        await expect(manager.applyProposal('road-first')).resolves.toBe(true);
+        await expect(manager.applyProposal('sub-later')).resolves.toBe(true);
+        expect(globalThis.proposalStorage.getProposal('road-first').applied).toBe(false);
+        expect(fabric.list().filter(piece => piece.properties.producedByProposalId === 'sub-later'))
+            .toHaveLength(record.parcelLayout.plots.length);
     });
 
     it('refuses a road through a building standing on a plot, and cuts the plot beside it', async () => {

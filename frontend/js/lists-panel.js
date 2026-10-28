@@ -130,7 +130,7 @@
             if (state.tab === 'designs') {
                 if (state.selecting !== 'designs') actions.append(button(t('planDialog.createPlan'), startSelecting, 'btn-primary', 'cb-icon-plan'));
                 else {
-                    const next = button(t('lists.continue'), async () => {
+                    const next = button(t('modal.track.curvature.continue'), async () => {
                         const members = [...state.selected.values()];
                         win.MapShell.closeSheets(); stopSelecting();
                         await win.PlanDialog.create({ members });
@@ -197,7 +197,7 @@
                 const badges = node('div', 'lists-item__badges');
                 if (kind === 'designs' && row.local) badges.innerHTML = win.proposalLadderBadgesHtml(row.local);
                 else badges.append(node('span', `cb-badge cb-badge--${row.published ? 'published' : 'draft'}`, t(row.published ? 'common.lifecycle.published' : 'common.lifecycle.draft')));
-                if (row.local) badges.append(node('span', 'cb-badge', t('lists.thisBrowser')));
+                if (row.local) badges.append(node('span', 'cb-badge', t('modal.roadWidth.proposalList.sources.local')));
                 if (kind === 'agreements' && (row.record.onchain || row.record.status)) {
                     const status = row.record.onchain?.status || row.record.status;
                     badges.append(node('span', 'cb-badge', win.AgreementPanel.chainStatusText(status)));
@@ -211,7 +211,7 @@
                 if (kind === 'agreements' && !row.published) shareButton.title = t('lists.proposeFirst');
                 actions.append(shareButton);
                 if (kind === 'plans') {
-                    actions.append(button(t('sidebar.proposals.planStats.buttonLabel'), async () => {
+                    actions.append(button(t('sidebar.proposals.planStats.modalTitle'), async () => {
                         await win.showPlanStatsModal(await planOf(row));
                     }, '', 'chart-pie'));
                     const rooster = button(t('sidebar.proposals.grainScore.buttonLabel'), async () => {
@@ -240,7 +240,7 @@
             const box = doc.getElementById('lists-controls'); box.replaceChildren();
             const scopes = node('div', 'cb-segmented cb-segmented--fill'); scopes.setAttribute('role', 'group');
             scopes.setAttribute('aria-label', t('lists.source'));
-            for (const [value, key] of [['local', 'lists.thisBrowser'], ['published', 'common.lifecycle.published']]) {
+            for (const [value, key] of [['local', 'modal.roadWidth.proposalList.sources.local'], ['published', 'common.lifecycle.published']]) {
                 const el = button(t(key), async () => {
                     state.source = value;
                     for (const toggle of box.querySelectorAll('[data-list-source]')) toggle.setAttribute('aria-pressed', String(toggle.dataset.listSource === value));

@@ -631,7 +631,7 @@
     // counts: { inputs, outputs, persons } shown in brackets, since inputs and outputs differ in number.
     function tabbedHtml(panels, selected, tr = t, counts = {}) {
         const labels = { overview: tr('panel.proposal.tabs.overview', 'Overview'), inputs: tr('agreement.workflow.inputs', 'Input parcels'),
-            outputs: tr('agreement.workflow.outputs', 'Output parcels'), persons: tr('agreement.workflow.persons', 'Persons'), rules: tr('agreement.workflow.rules', 'Rules') };
+            outputs: tr('agreement.workflow.outputs', 'Output parcels'), persons: tr('agreement.workflow.persons', 'Persons'), rules: tr('proposalDrafts.approval.policyType', 'Rules') };
         const label = kind => labels[kind] + (Number.isInteger(counts[kind]) ? ` (${counts[kind]})` : '');
         const kinds = Object.keys(panels);
         return `<div class="cb-tabs cb-tabs--fill agreement-properties-tabs" role="tablist" aria-label="${esc(tr('agreement.panel.title', 'Agreement'))}">`

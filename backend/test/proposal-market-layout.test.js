@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { agreementRustLayout, readSolana, rustFnBody } from './helpers/agreement-layout.js';
+import { agreementRustLayout, readSolana, rustFnBody, rustUsizeConst } from './helpers/agreement-layout.js';
 import { AGREEMENT_PROGRAM_ID, agreementAccountBytes } from './fixtures/agreement-account.js';
 
 const require = createRequire(import.meta.url);
@@ -50,13 +50,19 @@ describe('the Agreement account the market and pledge programs read', () => {
         expect(status).toBe(136);
     });
 
-    it('reads authority, lens and status at offsets its own constants derive from the struct', () => {
+    it('reads authority, lens, status and execution time at offsets its own constants derive from the struct', () => {
         expect(layout.offsets.authority).toBe(8);
         expect(layout.LENS_OFFSET).toBe(layout.offsets.lens);
         expect(layout.STATUS_OFFSET).toBe(layout.offsets.status);
+        // The LMSR market enforces its execution deadline with executed_at (4867e4c19).
+        // The constant is written as STATUS_OFFSET + …; substitute the value rustUsizeConst cannot resolve.
+        const EXECUTED_AT_OFFSET = rustUsizeConst(layout.source.replace('EXECUTED_AT_OFFSET: usize = STATUS_OFFSET +',
+            `EXECUTED_AT_OFFSET: usize = ${layout.STATUS_OFFSET} +`), 'EXECUTED_AT_OFFSET');
+        expect(EXECUTED_AT_OFFSET).toBe(layout.offsets.executed_at);
         const reader = rustFnBody(layout.source, 'read_agreement_view');
         expect(reader).toContain('*account.owner != crate::ID');
-        expect(reader).toContain('data.len() <= STATUS_OFFSET');
+        expect(reader).toContain('data.len() < EXECUTED_AT_OFFSET + 8');
+        expect(reader).toContain('data.get(EXECUTED_AT_OFFSET..EXECUTED_AT_OFFSET + 8)');
         expect(reader).toContain('data[..8] != Agreement::DISCRIMINATOR');
         expect(reader).toContain('authority: key_at(8)?');
         expect(reader).toContain('lens: key_at(LENS_OFFSET)?');

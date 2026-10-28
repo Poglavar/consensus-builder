@@ -11,7 +11,7 @@ import { Keypair } from '@solana/web3.js';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import {
-    agreementObject, communityRule, designObject, holdersFromRights, noMoney, ownersRule, parcelOutputs, registryRights
+    agreementObject, communityRule, designObject, holdersFromRights, noMoney, ownersRule, parcelOutputs, planForDesigns, registryRights
 } from '../agents/agreement-objects.js';
 import { agreementAccountOf, AGREEMENT_PROGRAM_ID } from '../agents/agreement-minter.js';
 import { canonicalBytes, cidOfObject } from '../cid.js';
@@ -43,6 +43,7 @@ function agreementOf({ sponsor = AGENT, rule = null, title = 'Six storeys on the
     const rights = registryRights([{ parcelId: PARCEL, owners: [{ owner: AGENT, ownerCount: 1 }] }]);
     return agreementObject({
         title, author: 'agent-01', sponsor, city: 'zagreb', createdAt: '2026-10-22T09:05:00.000Z',
+        plan: planForDesigns(title, [design], { at: '45.8132,15.97725,17', mode: '2d', city: 'zagreb' }),
         designs: [{ cid: design.cid, goal: design.content.goal, title: design.content.title }],
         parcels: [{ parcelId: PARCEL, areaM2: 612.4, holders: holdersFromRights(rights, PARCEL) }],
         outputs: parcelOutputs([{ parcelId: PARCEL, geometry: box(15.977, 45.813, 15.9775, 45.8133), areaM2: 612.4 }]),
@@ -209,9 +210,9 @@ describe('publishing designs and agreements', () => {
             cid: agreement.cid, created: true, carried: [design.cid], sponsor: AGENT, account: agreementAccountOf(agreement.cid, AGENT)
         });
         expect(api.posts().map(call => [call.path, call.body.kind ?? null, call.body.cid])).toEqual([
-            ['/pins', 'design', design.cid], ['/pins', 'agreement', agreement.cid], ['/agreements', null, agreement.cid]
+            ['/pins', 'design', design.cid], ['/pins', 'plan', agreement.plan.cid], ['/pins', 'agreement', agreement.cid], ['/agreements', null, agreement.cid]
         ]);
-        expect(api.posts()[2].body).toEqual({ cid: agreement.cid, content: agreement.content, plan: agreement.plan, designs: [{ cid: design.cid, content: design.content }] });
+        expect(api.posts()[3].body).toEqual({ cid: agreement.cid, content: agreement.content, plan: agreement.plan, designs: [{ cid: design.cid, content: design.content }] });
         // A poll without a sponsor has no account.
         expect(await tools.proposeAgreement({ agreement: poll.content, confirm: true })).toMatchObject({ cid: poll.cid, sponsor: null, account: null, carried: [] });
     });

@@ -508,9 +508,9 @@ describe('published', () => {
         raw.inputs.parcels[0].parcelSourceId = 'zagreb-dgu';
         const object = record.published(raw);
         expect(Object.keys(object).sort()).toEqual(['allocations', 'author', 'city', 'consultation', 'createdAt', 'deadline', 'inputs',
-            'money', 'outputs', 'planCid', 'rule', 'schema', 'sponsor', 'title']);
+            'money', 'outputs', 'planCid', 'rule', 'schema', 'sponsor', 'title', 'valuation']);
         expect(object).toMatchObject({ schema: 'agreement/v1', title: 'Block seven', author: 'Ana', sponsor: SPONSOR, city: 'test-city',
-            createdAt: '2026-10-21T10:00:00.000Z', deadline: null });
+            createdAt: '2026-10-21T10:00:00.000Z', deadline: null, valuation: null });
         expect(object.planCid).toBe(PLAN.cid);
         expect(object).not.toHaveProperty('designs');
         expect(object.inputs).toEqual({

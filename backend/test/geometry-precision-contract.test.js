@@ -24,7 +24,6 @@ const DOMAIN_GEOMETRY_READERS = [
     'frontend/js/government-roads.js',
     'frontend/js/parcels/ui/claim.js',
     'frontend/js/proposals/layer-render.js',
-    'frontend/js/proposals/plan-stats.js',
     'frontend/js/proposals/cadastre-ancestry.js',
     'frontend/js/proposals/claims-ui.js',
     'frontend/js/proposal-manager.js'
@@ -39,5 +38,16 @@ describe('map geometry is read at full precision', () => {
             expect(source).not.toContain('.toGeoJSON(');
             expect(source).toMatch(/LiveParcelFabric|CadastralParcelRepository/);
         });
+    });
+
+    // Plan stats measure a saved plan off the map (09fbbd2aa): PlanAnalysis reads the parcels from
+    // the parcel sources, so neither file may fall back to reading geometry out of Leaflet.
+    it('plan stats read source parcels through PlanAnalysis, never Leaflet', () => {
+        const stats = read('frontend/js/proposals/plan-stats.js');
+        const analysis = read('frontend/js/plan-analysis.js');
+        expect(stats).not.toContain('.toGeoJSON(');
+        expect(analysis).not.toContain('.toGeoJSON(');
+        expect(stats).toMatch(/window\.PlanAnalysis\.prepare\(/);
+        expect(analysis).toMatch(/BrowserParcelSources\.queryIds\(/);
     });
 });

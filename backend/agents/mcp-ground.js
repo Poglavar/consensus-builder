@@ -4,7 +4,7 @@ import { abstractHolder, agreementObject, cidOfObject, communityRule, defaultAll
 import { previewArtifact } from './mcp-preview.js';
 import { deriveWithApp } from './mcp-ground-runtime.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
-import { describeRoadCuts } from './mcp-ground-effects.js';
+import { describeRoadCuts, roadCutWarning } from './mcp-ground-effects.js';
 const fail = (code, message) => Object.assign(new Error(message), { code, next: { action: 'Review these designs and their ground in the app before proposing an agreement.' } });
 export const deriveAgreementGround = deriveWithApp;
 
@@ -77,6 +77,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
                 parcels, openGroundM2: land.inputs.openGroundM2, outputs: land.outputs, allocations: finalAllocations,
                 money: { currency, lines: [] }, valuation: rule.electorate === 'community' ? null : valuation, rule, deadline, consultation });
             return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], groundEffects, ...(includeGround ? { ground: land } : {}), warnings: ['This agreement references the existing named plan. Review its derived ground and terms before publishing.',
+                ...(roadCutWarning(groundEffects) ? [roadCutWarning(groundEffects)] : []),
                 ...(!effectiveRights && rule.electorate !== 'community' ? ['Parcel parties are abstract placeholders because no rights snapshot was supplied.'] : [])],
                 ...await previewArtifact({ origin: appOrigin, agreement: published.content, plan, designs: designs.map(d => d.content), parcelSourceId: source.parcelSourceId }),
                 plan, designs: designs.map(d => ({ cid: d.cid, content: d.content })) };

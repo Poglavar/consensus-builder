@@ -306,7 +306,9 @@ describe('planAgreement', () => {
         const verifiedPlan = planForDesigns(plan.title, objects);
         expect(content.planCid).toBe(verifiedPlan.cid);
         expect(verifiedPlan.content.designCids).toEqual(objects.map(object => object.cid).sort());
-        expect(content.inputs.parcels).toEqual(ground.inputs.map(parcel => ({ parcelId: parcel.parcelId, parcelSourceId: 'hr-cadastre', areaM2: parcel.areaM2, holders: [] })));
+        // Owners are unknown to a restatement, so each parcel stands for its abstract owner party.
+        expect(content.inputs.parcels).toEqual(ground.inputs.map(parcel => ({ parcelId: parcel.parcelId, parcelSourceId: 'hr-cadastre', areaM2: parcel.areaM2,
+            holders: [{ ownerKey: `parcel-owner:${parcel.parcelId}`, displayName: `Owner(s) of parcel ${parcel.parcelId}`, share: 1 }] })));
         expect(content.outputs.map(output => [output.hash, output.producedBy])).toEqual(ground.outputs.map(output => [output.hash, output.producedBy]));
         expect(cid).toBe(cidOf(canonicalBytes(content)));
         expect(bytes).toBe(canonicalBytes(content).length);
@@ -770,7 +772,10 @@ describe('--agreement', () => {
     it('refuses inputs that are not exactly what the designs bind, before writing anything', async () => {
         const plan = makePlan();
         const objects = lib.planObjects(plan);
-        writeGround(plan, groundOver(plan, objects, { inputs: [{ parcelId: 'A', areaM2: 100 }, { parcelId: 'B', areaM2: 50 }, { parcelId: 'Z', areaM2: 1 }] }));
+        // The land still balances (151 m² in and out), so only the binding check can refuse it.
+        const ground = groundOver(plan, objects, { inputs: [{ parcelId: 'A', areaM2: 100 }, { parcelId: 'B', areaM2: 50 }, { parcelId: 'Z', areaM2: 1 }] });
+        ground.outputs[2].areaM2 = 11;
+        writeGround(plan, ground);
         const index = fakeIndex({ held: [rowOf(objects[0]), rowOf(objects[1])] });
         const run = await cli(['--agreement', '--api', API, '--apply'], { plans: [plan], index });
         expect(run.exitCode).toBe(1);
@@ -781,7 +786,10 @@ describe('--agreement', () => {
     it('does not judge extra inputs where a design\'s coverage is unknown', async () => {
         const plan = makePlan();
         const objects = lib.planObjects(plan);
-        writeGround(plan, groundOver(plan, objects, { inputs: [{ parcelId: 'A', areaM2: 100 }, { parcelId: 'B', areaM2: 50 }, { parcelId: 'C', areaM2: 25 }, { parcelId: 'Z', areaM2: 1 }] }));
+        // The land still balances (176 m² in and out).
+        const ground = groundOver(plan, objects, { inputs: [{ parcelId: 'A', areaM2: 100 }, { parcelId: 'B', areaM2: 50 }, { parcelId: 'C', areaM2: 25 }, { parcelId: 'Z', areaM2: 1 }] });
+        ground.outputs[2].areaM2 = 36;
+        writeGround(plan, ground);
         const unknown = { ...rowOf(objects[0]), binding: bindingOf(['A'], 'unknown') };
         const index = fakeIndex({ held: [unknown, rowOf(objects[1])] });
         const run = await cli(['--agreement', '--api', API, '--apply'], { plans: [plan], index });

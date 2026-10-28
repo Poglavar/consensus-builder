@@ -161,7 +161,8 @@ describe('boot coverage subset', () => {
         const mismatches = points.filter(p => JSON.stringify(boot.liveCitiesAt(p.lat, p.lon)) !== JSON.stringify(full.liveCitiesAt(p.lat, p.lon)));
         expect(points.length).toBeGreaterThan(3000);
         expect(mismatches).toEqual([]);
-    });
+    // Two points per live city: about 1.8 s alone on 2026-10-28 (load 19), past the 5 s default under a busy suite.
+    }, 20000);
 });
 
 describe('city-config boot', () => {

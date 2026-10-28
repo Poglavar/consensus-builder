@@ -1,13 +1,17 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
+
+// The shared map-interaction palette (shared-utils.js) loads before layer-render.js in the page.
+const { MapHighlight } = createRequire(import.meta.url)('../../frontend/js/shared-utils.js');
 
 const source = readFileSync(new URL('../../frontend/js/proposals/layer-render.js', import.meta.url), 'utf8');
 function setup(applied) {
     const layers = [];
     const group = { clearLayers() {}, bringToFront() {}, __paneName: 'proposalHighlightPane' };
     const env = {
-        console, performance, document: { getElementById: () => null }, setProposalDetailsPanelMinimized: vi.fn(), proposalHighlightStyleOverride: { restoreAll() {} },
+        console, performance, MapHighlight, document: { getElementById: () => null }, setProposalDetailsPanelMinimized: vi.fn(), proposalHighlightStyleOverride: { restoreAll() {} },
         collectProposalFeatureSets: () => ({ primaryFeatures: [{ type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } }] }),
         resolveProposalGoalKey: () => 'park', isApplied: () => applied,
         collectProposalSelectionParcelIds: () => new Set(), forEachProposalParcelInViewport() {},
