@@ -1199,9 +1199,15 @@ function showBlockInfo(blockName, deferStats = false) {
     const infoPanel = document.getElementById('block-info-panel');
     if (!infoPanel) return;
 
-    // Both inspectors occupy the right dock. The parcel panel would cover the block's lower
-    // actions after detecting a block from a selected parcel.
+    // Every inspector occupies the right dock. The parcel panel would cover the block's lower
+    // actions after detecting a block from a selected parcel, and a design's own details panel
+    // (an ownership design's, say) would sit over the block and take its clicks. A panel the click
+    // stack hosts is part of the stack, not a docked panel, and stays.
     window.hideParcelInfoPanel?.();
+    const designPanel = document.getElementById('proposal-details-panel');
+    if (designPanel?.classList.contains('visible') && !designPanel.classList.contains('is-hosted')) {
+        window.hideProposalDetailsPanel?.(true);
+    }
     setActiveBlockTab('block-info-tab');
 
     const infoContent = document.getElementById('block-info-content');

@@ -372,6 +372,38 @@ test('a line cuts the plots it crosses, a GeoJSON file replaces the layout, and 
   expect(layout.parcelLayout.plots.map((plot: any) => plot.source)).toEqual(['geojson', 'geojson']);
 });
 
+// The import limit is 1,000 polygons (parcel-layout-validation.js MAX_PLOTS); exactly that many,
+// a 40 × 25 grid over parcel 1234, used to stall the editor (N1, 2026-10-28 retest).
+function gridPlots(cols: number, rows: number) {
+  const [west, south, east, north] = [15.9819, 45.8, 15.9825, 45.8005];
+  const dx = (east - west) / cols, dy = (north - south) / rows;
+  const features = [];
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+    const x = west + c * dx, y = south + r * dy;
+    features.push({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[x, y], [x + dx, y], [x + dx, y + dy], [x, y + dy], [x, y]]] } });
+  }
+  return { type: 'FeatureCollection', features };
+}
+
+test('a file of exactly 1,000 plots imports, and Done applies all of them', async ({ mockApi: page }) => {
+  test.setTimeout(180_000);
+  const editor = await openLayoutEditor(page);
+  const started = Date.now();
+  await editor.locator('[data-reparcel-upload]').setInputFiles({
+    name: 'grid-1000.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(gridPlots(40, 25))),
+  });
+  await expect(editor.locator('[data-reparcel-status]')).toHaveText('Loaded 1000 polygons from file.', { timeout: 60_000 });
+  const importMs = Date.now() - started;
+  await expect(editor.locator('[data-reparcel-newplots-table] tbody tr')).toHaveCount(1000);
+  test.info().annotations.push({ type: 'import-ms', description: String(importMs) });
+  const committed = Date.now();
+  await editor.locator('[data-reparcel-commit]').click();
+  await expect(editor).toHaveCount(0, { timeout: 90_000 });
+  const layout = await appliedLayout(page);
+  expect(layout.parcelLayout.plots).toHaveLength(1000);
+  test.info().annotations.push({ type: 'apply-ms', description: String(Date.now() - committed) });
+});
+
 test('Done applies the plots, and every live piece keeps its authored plot reference through a reload', async ({ mockApi: page }) => {
   const editor = await openLayoutEditor(page);
   await editor.locator('[data-reparcel-commit]').click();

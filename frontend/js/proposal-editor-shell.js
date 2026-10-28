@@ -803,6 +803,12 @@
     // anything thrown inside (createDraftFromProposal rejects a proposal with no stable ID) became
     // an unhandled rejection and the click simply did nothing, with no way to tell which gate
     // refused. Report the reason instead — a dead button must always say why.
+    // An editor that will not open says why by throwing an 'editor-refused' error (parcel-layout.js
+    // refuseOpen); only an editor that gave no reason gets the generic "unavailable" message.
+    function refusalOf(error) {
+        return error && error.code === 'editor-refused' && error.message ? error.message : null;
+    }
+
     function reportGeometryEditFailure(reason, detail) {
         console.warn('[ProposalEditor] Geometry editor did not open:', reason, detail || '');
         if (typeof global.showStyledAlert === 'function') global.showStyledAlert(reason);
@@ -1173,16 +1179,19 @@
         geometryEditCommitDraftId = draft.id;
         try { global.document?.getElementById('parcel-info-panel')?.classList.remove('visible'); } catch (_) { }
         let opened = false;
+        let refusal = null;
         try {
             opened = await global.openProposalDraftDesign?.(draft.id);
         } catch (error) {
             opened = false;
+            refusal = refusalOf(error);
             console.warn('[ProposalEditor] Build tool failed to open', error);
         }
         if (opened === false) {
             geometryEditCommitDraftId = null;
             global.proposalDraftStore.deleteDraft(draft.id);
-            if (typeof global.updateStatus === 'function') {
+            if (refusal) reportGeometryEditFailure(refusal);
+            else if (typeof global.updateStatus === 'function') {
                 global.updateStatus(tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.'));
             }
         }
@@ -1354,8 +1363,10 @@
                 && GEOMETRY_EDITABLE_ADAPTERS.has(adapterKey)) {
                 geometryEditCommitDraftId = String(draftId);
             }
-        }).catch(() => {
-            reportReopenFailure();
+        }).catch(error => {
+            const refusal = refusalOf(error);
+            if (refusal) reportGeometryEditFailure(refusal, error);
+            else reportReopenFailure();
         }).finally(() => failedDraftReopenInFlight.delete(id));
         return true;
     }

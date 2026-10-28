@@ -43,7 +43,15 @@
                 if (turfApi.area(feature(part)) > 0) next.push({ ...clone(template), geometry: clone(part) });
             }
         };
+        // A plot whose box misses the carved piece keeps its shape: only the plots it can touch are
+        // differenced. Without this a 1,000-plot import ran a million differences (N1, 2026-10-28).
+        const [cw, cs, ce, cn] = turfApi.bbox(clipped);
         for (const slice of slices) {
+            const [w, s, e, n] = turfApi.bbox(feature(slice.geometry));
+            if (w > ce || e < cw || s > cn || n < cs) {
+                next.push(clone(slice));
+                continue;
+            }
             const remainder = turfApi.difference(feature(slice.geometry), clipped);
             if (remainder?.geometry) append(remainder.geometry, slice);
         }

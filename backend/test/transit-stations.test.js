@@ -578,6 +578,15 @@ describe('station geometry editing', () => {
         }
     });
 
+    it('asks to discard a station edit only when the station changed', () => {
+        const initial = { center: [15.98, 45.81], bearing: 20, platformHeightM: 14 };
+        expect(stations.stationDiffers(initial, { ...initial, center: initial.center.slice() })).toBe(false);
+        expect(stations.stationDiffers(initial, { ...initial, bearing: 45 })).toBe(true);
+        expect(stations.stationDiffers(initial, { ...initial, platformHeightM: 12 })).toBe(true);
+        expect(stations.stationDiffers(initial, { ...initial, center: [15.9801, 45.81] })).toBe(true);
+        expect(stations.stationDiffers(null, initial)).toBe(true);
+    });
+
     it.each([
         ['returns null', () => null],
         ['throws', () => { throw new Error('draft sync failed'); }]

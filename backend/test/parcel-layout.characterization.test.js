@@ -45,11 +45,13 @@ describe('opening', () => {
 
     it('refuses ground another design holds (a road\'s corridor piece)', async () => {
         const w = world({ parcels: [PARCELS[0], { ...PARCELS[1], properties: { isCorridor: true } }] });
-        expect(await w.editor.openParcelLayoutEditor()).toBe(false);
-        expect(globalThis.showEphemeralMessage.calls[0]).toEqual([
-            'A parcel layout cannot redraw ground another design already holds. Deselect it, or unapply that design first.', 8000, 'warning'
-        ]);
+        // The reason travels to the design shell, which shows it instead of "editor is unavailable".
+        await expect(w.editor.openParcelLayoutEditor()).rejects.toMatchObject({ code: 'editor-refused',
+            message: 'A parcel layout cannot redraw ground another design already holds. Deselect it, or unapply that design first.' });
         expect(globalThis.OnMapEditor.open.calls).toHaveLength(0);
+        // The one-editor latch is released after a refusal: a second request is refused for its
+        // reason again, not ignored as "already open" (which would answer false).
+        await expect(w.editor.openParcelLayoutEditor()).rejects.toMatchObject({ code: 'editor-refused' });
     });
 
     it('is one editor at a time, even for two requests in the same tick', async () => {

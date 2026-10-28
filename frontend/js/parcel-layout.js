@@ -1223,6 +1223,8 @@
     // plot, then add it as a new plot. Returns 'carved', 'outside' (it does not reach the pool) or
     // 'refused' (the result would not tile the pool; the status says why). The layout is only
     // replaced on 'carved'.
+    // flags.checkTiling false: the caller checks the finished result once (an import of many
+    // polygons, which checked the whole layout after every one and stalled at 1,000).
     function carvePlotIntoPlan(polygonFeature, source, flags = {}) {
         if (typeof turf === 'undefined' || !state.superParcel) return 'refused';
         const next = window.ReparcellizationPlanUtils.carveLayout({
@@ -1230,7 +1232,7 @@
             source, derivation: flags.derivation
         }, turf);
         if (!next) return 'outside';
-        const problem = tilingProblem(null, next.map(slice => slice.geometry), { pool: state.superParcel });
+        const problem = flags.checkTiling === false ? null : tilingProblem(null, next.map(slice => slice.geometry), { pool: state.superParcel });
         if (problem) {
             setStatus(refusalText(problem), 'error');
             return 'refused';
@@ -2058,11 +2060,21 @@
         const previous = state.slices;
         state.slices = [makePlot(state.superParcel.geometry, 'base')];
         let added = 0;
+        const started = Date.now();
         features.forEach(feature => {
             const geomType = feature && feature.geometry && feature.geometry.type;
             if (geomType !== 'Polygon' && geomType !== 'MultiPolygon') return;
-            if (carvePlotIntoPlan(feature, 'geojson') === 'carved') added++;
+            if (carvePlotIntoPlan(feature, 'geojson', { checkTiling: false }) === 'carved') added++;
         });
+        // The whole import is one edit: it tiles the pool, or the layout stays as it was.
+        const problem = added ? tilingProblem(null, state.slices.map(slice => slice.geometry), { pool: state.superParcel }) : null;
+        log('debug', 'import carved', { polygons: added, plots: state.slices.length, ms: Date.now() - started });
+        if (problem) {
+            state.slices = previous;
+            discardLastHistory();
+            setStatus(refusalText(problem), 'error');
+            return;
+        }
         if (!added) {
             state.slices = previous;
             discardLastHistory();
@@ -3467,11 +3479,10 @@
         };
     }
 
-    // Tell the user why the editor did not open: in the status bar and as a notice.
+    // The editor will not open, and why: thrown as an 'editor-refused' error whose message the
+    // design shell shows instead of its generic "editor is unavailable" (proposal-editor-shell.js).
     function refuseOpen(message) {
-        if (typeof updateStatus === 'function') updateStatus(message);
-        try { if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(message, 8000, 'warning'); } catch (_) { }
-        return false;
+        throw Object.assign(new Error(message), { code: 'editor-refused' });
     }
 
     async function buildEditor(options = {}) {
@@ -3535,7 +3546,6 @@
             const inputPool = resolved.features.length && !resolved.missing.length
                 ? poolOrRefuse(resolved.features)
                 : null;
-            if (inputPool === false) return false;
             if (explicitPool) {
                 log('debug', 'pooled from the layout\'s saved pool', { inputs: planIds.length, plots: savedPlots.length });
                 planPool = explicitPool;
@@ -3549,7 +3559,6 @@
                 log('warn', 'could not resolve every input parcel — pooling from the layout geometry instead',
                     { declared: planIds.length, resolved: resolved.features.length, missing: resolved.missing });
                 planPool = poolOrRefuse(savedPlots);
-                if (planPool === false) return false;
                 state.poolFromOutputs = true;
             }
             if (planPool) selection = { ids: planIds.slice(), source: 'cadastre' };

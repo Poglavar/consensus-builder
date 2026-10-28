@@ -294,6 +294,28 @@ segments retain their hover highlight. Screens without hover keep visible handle
 presentation change: authored geometry, editing gestures and validation are unchanged, so the
 existing MCP `ugt_edit_design` geometry operations provide parity without a tool or schema change.
 
+### Retest fixes (2026-10-28)
+
+From the proposal creation and editing retest of `5b608d071`:
+- **Refusals keep their reason.** An editor that will not open throws an `editor-refused` error
+  (`parcel-layout.js` `refuseOpen`); the design shell shows its message, and only an editor that
+  gives no reason gets "This design editor is unavailable." A layout over ground a Park holds now
+  names the Park.
+- **1,000-plot imports finish.** `carveLayout` differences only the plots whose box meets the carved
+  piece, and a GeoJSON import checks the tiling once for the whole file instead of after every
+  polygon. Headless: 1,000 grid plots carve in about 1.2 s instead of 6 s, and the import no longer
+  multiplies a 0.1 s check by 1,000.
+- **Drawing a site goes through map shapes.** While the site tool draws, `site-tool.css` turns off
+  pointer events on every interactive map shape outside the tool's own pane, so a selected block's
+  polygon no longer swallows its corners.
+- **Block info takes the dock** from a standalone design details panel, as it does from the parcel
+  panel; a panel the click stack hosts stays.
+- **An untouched station editor closes without asking** (`stationDiffers` in
+  `transit-stations.js`).
+
+MCP parity: no change. These are editor presentation and performance fixes; the authored records
+and their validation are unchanged.
+
 ## Public guides and videos
 
 English `frontend/how-to-use*.html` and Croatian `frontend/kako-koristiti*.html` share `frontend/css/howto.css`. Keep the language pairs, navigation anchors and procedures aligned. The hub links to each relevant walkthrough. Keep domain wording aligned with the [code-grounded vocabulary](../vocabulary.md): distinguish source parcels, formed ground and authored plots; local application from named-plan membership; and observed evidence from legal or physical completion. State units, currencies and valuation bases wherever a money amount appears.

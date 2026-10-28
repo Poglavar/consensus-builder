@@ -1068,12 +1068,22 @@
         return previous;
     }
 
+    // Whether the station differs from what the editor opened with: an untouched editor closes
+    // without asking to discard (2026-10-28 retest).
+    function stationDiffers(initial, current) {
+        if (!initial || !current) return true;
+        return current.bearing !== initial.bearing
+            || current.platformHeightM !== initial.platformHeightM
+            || current.center[0] !== initial.center[0] || current.center[1] !== initial.center[1];
+    }
+    const stationEditorChanged = () => stationDiffers(stationEditor?.initial, stationEditor);
+
     async function cancelStationGeometryEditor() {
         if (!stationEditor) return false;
         const draftId = stationEditor.draftId;
         const isCommit = global.isProposalDesignCommitSession?.() === true;
         if (isCommit) {
-            const proceed = await global.confirmDiscardProposalDesignSession?.({ hasDesign: true });
+            const proceed = await global.confirmDiscardProposalDesignSession?.({ hasDesign: stationEditorChanged() });
             if (proceed === false) return false;
             global.discardProposalDraftDesignSession?.();
         }
@@ -1123,6 +1133,7 @@
             bearing: Math.round(normalizeBearing(structure.bearing)),
             platformHeightM: normalizePlatformHeight(structure.platformHeightM, type),
             sourceLocalProposalId,
+            initial: null,
             reselectKey: global.ProposalSelection?.getKey?.() || null,
             panel: null,
             layer: null,
@@ -1133,6 +1144,7 @@
             onClick: null,
             onKey: null
         };
+        stationEditor.initial = { center: stationEditor.center.slice(), bearing: stationEditor.bearing, platformHeightM: stationEditor.platformHeightM };
         const session = global.OnMapEditor.open({
             owner: 'station-geometry-editor', id: 'station-geometry-editor',
             title: stationEditorText('title', 'Edit station geometry'),
@@ -1631,6 +1643,7 @@
         cancelTransitStationPlacement,
         openStationGeometryEditor,
         cancelStationGeometryEditor,
+        stationDiffers,
         saveStationGeometryEditor,
         isTransitStationPlacementActive
     });
