@@ -243,9 +243,9 @@ describe('stara putanja je maknuta', () => {
         expect(read('../../frontend/js/proposals/details-panel.js')).not.toContain('__proposalEpoch');
     });
 
-    it('lista i dalje crta vremensku crtu, bez trake skupne dodjele', () => {
+    // The list timeline left with the old list modal; docs/buildout-timeline.md replaces it with plan dates.
+    it('lista nema traku skupne dodjele', () => {
         const share = read('../../frontend/js/proposals/dialog-share.js');
-        expect(share).toContain('injectTimeline(modal)');
         expect(share).not.toContain('refreshBulkBar');
     });
 

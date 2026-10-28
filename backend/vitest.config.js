@@ -27,6 +27,8 @@ export default defineConfig({
         // executes their callbacks outside Vitest and leaves an empty Vitest suite.
         exclude: [...configDefaults.exclude, 'test/**/*.node.test.js'],
         maxWorkers,
+        // supertest requests reach the server they started, not whatever else holds 127.0.0.1 on that port.
+        setupFiles: ['test/helpers/supertest-bound-address.js'],
         coverage: {
             provider: 'v8',
             reporter: ['text', 'html', 'json-summary'],

@@ -2,6 +2,8 @@
 // with an ephemeral port and then connects to 127.0.0.1, and macOS lets another process bind
 // 127.0.0.1 on that same port while [::] holds it: under the parallel suite a lens test's server
 // took a bets request and answered 401. With every server on [::] the OS never hands a port out twice.
+// Processes outside the suite (Codex app servers) also hold 127.0.0.1 ports, so supertest itself connects
+// to the family its server bound (helpers/supertest-bound-address.js).
 import { describe, it, expect } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -21,6 +23,8 @@ describe('test servers', () => {
     it('never bind 127.0.0.1 explicitly', () => {
         const offenders = testFiles(TEST_DIR)
             .filter(file => file !== fileURLToPath(import.meta.url))
+            // That test binds a 127.0.0.1 decoy on purpose, to prove supertest no longer reaches it.
+            .filter(file => path.basename(file) !== 'supertest-bound-address.test.js')
             .flatMap(file => readFileSync(file, 'utf8').split('\n')
                 .map((line, index) => ({ line, index }))
                 .filter(({ line }) => /\.listen\([^)]*['"](127\.0\.0\.1|localhost)['"]/.test(line) || /['"]--host['"],\s*['"]127\.0\.0\.1['"]/.test(line))

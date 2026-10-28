@@ -271,11 +271,14 @@ it('repaints existing life simulation from changed building footprints on active
     const replaced = [];
     const eventHandlers = new Map();
     let surfaceInput = null;
+    let graphOptions = null;
     const window = {
         proposedBuildings: [], parks: [], squares: [], lakes: [],
         addEventListener: (name, callback) => eventHandlers.set(name, callback),
+        CityConfigManager: { getDrivingSide: () => 'left' },
         __lifeGraph: {
-            createGraphBuilder() {
+            createGraphBuilder(options) {
+                graphOptions = options;
                 const blocked = [];
                 return {
                     addBlockedFeature(feature) { blocked.push(feature); },
@@ -306,6 +309,8 @@ it('repaints existing life simulation from changed building footprints on active
     context.refreshLifeSurface();
     expect(replaced).toHaveLength(1);
     expect(surfaceInput.blocked).toEqual([]);
+    // Traffic keeps to the city's side of the road.
+    expect(graphOptions).toEqual({ drivingSide: 'left' });
 
     context.rebuild3DBuildingsOnly = () => {};
     context.rebuildProposalInteraction3D = () => {};
