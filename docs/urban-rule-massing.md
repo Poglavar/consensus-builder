@@ -181,6 +181,24 @@ to open.
 
 Validation of imported massing is a prerequisite — see BACKLOG.
 
+## Balconies and slanted roof
+
+All three typologies can permit **balconies** that stand out of the envelope by `balconyDepthM`
+(the editors default to 2 m, capped at 5 m) and a **slanted roof** (`roof: "pitched"`). Both are
+stored on the normalized rule only when used, so earlier rules keep their exact shape.
+
+The roof starts where the top floor ends. Its ridge runs along the facade holding the most exterior
+wall length; walls shared with another building of the same design (party walls) do not count, so a
+terrace house turns its ridge to the street even when it is deeper than wide. The attic has walls
+only where the roof rises above the eave line (the gables), and windows only in gables that are not
+party walls. Balconies line the exterior facades parallel to the ridge, one row per storey above the
+ground floor. A footprint with a courtyard hole gets balconies but stays flat.
+
+These are drawn on the build-out and on a massing shown as the primary volume; the see-through
+envelope behind a build-out stays a plain box. Floor area, gain and stats still read the envelope:
+neither the attic nor the balconies add to them. Geometry: `frontend/js/rule-building-details.js`
+(pure, tested); meshes: `frontend/js/three-rule-roofs.js`.
+
 ## Minimum parcel size
 
 All three typologies carry a **minimum building-plot size**, as GUP does (najmanja površina

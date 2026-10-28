@@ -77,6 +77,7 @@ let blockRuleKind = DEFAULT_BLOCK_RULE_KIND;
 let blockMinHeightM = 0;
 let blockMinDepthM = 0;          // obvezni građevni pravac: compelled depth from the street
 let blockMinPlotAreaM2 = DEFAULT_BLOCK_MIN_PLOT_AREA_M2;
+let blockRuleExtras = {};         // balconies and slanted roof (UrbanRuleVariation.normalizeRuleExtras)
 let blockVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
 let blockMassingPieces = [];      // per-parcel economic pieces; the proposal also saves the full authored massing
 let blockBuildOut = [];           // one example built under it — presentation only
@@ -261,7 +262,7 @@ function blockifyGeometrySnapshot() {
             gaps: blockifyClone(gapPositions), wings: blockifyClone(wingPositions),
             gapWidth: currentGapWidth, wingLength: currentWingLength,
             ruleKind: blockRuleKind, minHeight: blockMinHeightM, minDepth: blockMinDepthM,
-            minPlotArea: blockMinPlotAreaM2, seed: blockVariationSeed
+            minPlotArea: blockMinPlotAreaM2, extras: blockifyClone(blockRuleExtras), seed: blockVariationSeed
         }
     };
 }
@@ -287,6 +288,7 @@ function restoreBlockifyGeometrySnapshot(snapshot) {
     blockMinHeightM = params.minHeight ?? 0;
     blockMinDepthM = params.minDepth ?? 0;
     blockMinPlotAreaM2 = params.minPlotArea ?? DEFAULT_BLOCK_MIN_PLOT_AREA_M2;
+    blockRuleExtras = blockifyClone(params.extras) || {};
     blockVariationSeed = params.seed ?? blockVariationSeed;
     syncBlockifyControlsFromState();
     setFootprintSlidersEnabled(blockifyMode !== 'manual');
@@ -1485,6 +1487,7 @@ function showBlockifyModal() {
                     </label>
                     <input type="range" id="blockify-minplot-slider" min="0" max="10000" value="${DEFAULT_BLOCK_MIN_PLOT_AREA_M2}" step="10">
                 </div>
+                <div class="blockify-freeform-only">${window.UrbanRuleVariation.extrasControlsMarkup('blockify')}</div>
                 <div class="parameter-group blockify-freeform-only">
                     <label for="gaps-slider">
                         <span data-i18n-key="blockify.modal.labels.gaps" data-i18n-attr="text">Number of gaps:</span>
@@ -1709,6 +1712,13 @@ function showBlockifyModal() {
             });
         }
 
+        window.UrbanRuleVariation.bindExtrasControls(document, 'blockify', extras => {
+            blockifyHistory?.record();
+            blockRuleExtras = extras;
+            refreshBlockPieceHeights();
+            if (generatedBuildingFeature) displayBuildingInModal(generatedBuildingFeature);
+        });
+
         // Enable gap sliders
         const gapsSlider = document.getElementById('gaps-slider');
         const gapWidthSlider = document.getElementById('gap-width-slider');
@@ -1834,6 +1844,7 @@ function showBlockifyModal() {
     blockMinHeightM = 0;
     blockMinDepthM = 0;
     blockMinPlotAreaM2 = DEFAULT_BLOCK_MIN_PLOT_AREA_M2;
+    blockRuleExtras = {};
     blockVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
     blockMassingPieces = [];
     blockBuildOut = [];
@@ -1918,6 +1929,7 @@ function applyBlockifySeedState(seed) {
         if (minDepth !== null) blockMinDepthM = minDepth;
         const minPlot = num(savedRule.minPlotAreaM2);
         if (minPlot !== null) blockMinPlotAreaM2 = minPlot;
+        blockRuleExtras = window.UrbanRuleVariation.normalizeRuleExtras(savedRule);
     }
     const savedSeed = num(seed.seed);
     if (savedSeed !== null) blockVariationSeed = savedSeed >>> 0;
@@ -1977,6 +1989,7 @@ function syncBlockifyControlsFromState() {
     const ruleTypeSelect = document.getElementById('blockify-ruletype-select');
     if (ruleTypeSelect) ruleTypeSelect.value = blockRuleKind;
     setSlider('blockify-minplot-slider', 'blockify-minplot-value', blockMinPlotAreaM2, 0);
+    window.UrbanRuleVariation.syncExtrasControls(document, 'blockify', blockRuleExtras);
     syncBlockMinHeightSlider();
 }
 
@@ -2569,7 +2582,8 @@ function currentBlockRule() {
         minHeightM: blockMinHeightM,
         minDepthM: blockMinDepthM,
         floorHeightM: DEFAULT_FLOOR_HEIGHT_M,
-        minPlotAreaM2: blockMinPlotAreaM2
+        minPlotAreaM2: blockMinPlotAreaM2,
+        ...blockRuleExtras
     };
     return window.UrbanRuleVariation.normalizeBlockRule(params);
 }

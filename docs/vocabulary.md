@@ -456,6 +456,8 @@ The connected horizontal projection of a GLB model's visible mesh triangles, inc
 
 An authored rule governing possible building form on land, such as Block, Row or Detached. The design's permitted envelopes express that rule; an example build-out illustrates one realization.
 
+Any of the three may also permit **balconies** (`balconyDepthM`: how far, in metres, they may stand out of the envelope; absent means none) and a **slanted roof** (`roof: "pitched"`: a roof with its attic set on the top floor, ridge parallel to the street side; absent means flat). Both ride on the rule each building carries.
+
 ### Block rule
 
 An urban-rule design generating perimeter building form and courtyard space from its land and stated dimensions. Its record stores one building per parcel, cut from the block massing and carrying the rule and its own variation seed, beside the complete authored block massing (`geometry.ruleMassing`); parcels the rule leaves out are recorded separately as ineligible.

@@ -30,6 +30,9 @@
     // How often a plot builds only as deep as the street line compels, when a rule compels one.
     const SHALLOW_BUILD_CHANCE = 0.35;
     const RULE_KINDS = ['max', 'range', 'exact']; // A / B / C in urban-rule-massing.md
+    const DEFAULT_BALCONY_DEPTH_M = 2;
+    const MAX_BALCONY_DEPTH_M = 5;
+    const ROOF_KINDS = ['flat', 'pitched'];
 
     // --- deterministic randomness ---------------------------------------------------------
 
@@ -87,6 +90,18 @@
         return Math.max(0, num(value, fallback));
     }
 
+    // Balconies and the roof are the same for all three typologies. Balconies may stand out of the
+    // envelope by balconyDepthM; a pitched roof (with its attic) sits on top of the top floor. Both
+    // are written only when used, so a rule without them keeps exactly the shape it always had.
+    function normalizeRuleExtras(params) {
+        const source = (params && typeof params === 'object') ? params : {};
+        const extras = {};
+        const balconyDepthM = Math.min(MAX_BALCONY_DEPTH_M, nonNegative(source.balconyDepthM, 0));
+        if (balconyDepthM > 0) extras.balconyDepthM = balconyDepthM;
+        if (source.roof === 'pitched') extras.roof = 'pitched';
+        return extras;
+    }
+
     // What the proposal asserts. `kind` is the A/B/C axis: 'max' permits up to the envelope,
     // 'range' also compels a minimum, 'exact' compels the envelope itself (so there is nothing to
     // vary and the build-out equals the massing).
@@ -113,7 +128,8 @@
             // start excluding parcels the rule does not actually exclude.
             minFootprintAreaM2: kind === 'range' ? minFootprint : 0,
             floorHeightM,
-            minPlotAreaM2: nonNegative(source.minPlotAreaM2, 0)
+            minPlotAreaM2: nonNegative(source.minPlotAreaM2, 0),
+            ...normalizeRuleExtras(source)
         };
     }
 
@@ -156,7 +172,8 @@
             minDepthM: (kind === 'range' && typology === 'block') ? nonNegative(source.minDepthM, 0) : 0,
             floorHeightM,
             minPlotAreaM2: nonNegative(source.minPlotAreaM2, 0),
-            minPieceAreaM2: nonNegative(source.minPieceAreaM2, DEFAULT_MIN_PIECE_AREA_M2)
+            minPieceAreaM2: nonNegative(source.minPieceAreaM2, DEFAULT_MIN_PIECE_AREA_M2),
+            ...normalizeRuleExtras(source)
         };
     }
 
@@ -650,11 +667,68 @@
         };
     }
 
+    // --- the balconies and roof controls -----------------------------------------------------
+    // The Block, Row and Detached editors share these. They touch only the container an editor
+    // passes in; everything above stays DOM-free.
+
+    function extrasControlsMarkup(prefix) {
+        return `
+            <div class="parameter-group urban-rule-extras">
+                <label class="checkbox-label urban-rule-extras__toggle" for="${prefix}-balconies">
+                    <input type="checkbox" id="${prefix}-balconies">
+                    <span data-i18n-key="urbanRule.balconies" data-i18n-attr="text">Balconies</span>
+                </label>
+                <label class="urban-rule-extras__depth" for="${prefix}-balcony-depth" hidden>
+                    <span data-i18n-key="urbanRule.balconyDepth" data-i18n-attr="text">May stand out of the envelope by (m):</span>
+                    <input type="number" id="${prefix}-balcony-depth" min="0.5" max="${MAX_BALCONY_DEPTH_M}" step="0.1" value="${DEFAULT_BALCONY_DEPTH_M}">
+                </label>
+                <label class="checkbox-label urban-rule-extras__toggle" for="${prefix}-slanted-roof">
+                    <input type="checkbox" id="${prefix}-slanted-roof">
+                    <span data-i18n-key="urbanRule.slantedRoof" data-i18n-attr="text">Slanted roof with attic</span>
+                </label>
+            </div>`;
+    }
+
+    function extrasControls(container, prefix) {
+        const find = suffix => container && container.querySelector(`#${prefix}-${suffix}`);
+        return { balconies: find('balconies'), depth: find('balcony-depth'), roof: find('slanted-roof') };
+    }
+
+    function syncExtrasControls(container, prefix, extras) {
+        const c = extrasControls(container, prefix);
+        if (!c.balconies || !c.depth || !c.roof) return;
+        const depth = num(extras && extras.balconyDepthM, 0);
+        c.balconies.checked = depth > 0;
+        if (depth > 0) c.depth.value = String(depth);
+        c.depth.closest('label').hidden = !(depth > 0);
+        c.roof.checked = !!(extras && extras.roof === 'pitched');
+    }
+
+    // `onChange(extras)` receives the normalized fields after every edit of the three controls.
+    function bindExtrasControls(container, prefix, onChange) {
+        const c = extrasControls(container, prefix);
+        if (!c.balconies || !c.depth || !c.roof) return;
+        const read = () => normalizeRuleExtras({
+            balconyDepthM: c.balconies.checked ? num(c.depth.value, DEFAULT_BALCONY_DEPTH_M) : 0,
+            roof: c.roof.checked ? 'pitched' : 'flat'
+        });
+        const changed = () => {
+            c.depth.closest('label').hidden = !c.balconies.checked;
+            onChange(read());
+        };
+        c.balconies.addEventListener('change', changed);
+        c.roof.addEventListener('change', changed);
+        c.depth.addEventListener('change', changed);
+    }
+
     const api = {
         DEFAULT_FLOOR_HEIGHT_M,
         DEFAULT_MAX_FLOORS,
         DEFAULT_MIN_DISTANCE_M,
         RULE_KINDS,
+        DEFAULT_BALCONY_DEPTH_M,
+        MAX_BALCONY_DEPTH_M,
+        ROOF_KINDS,
         hashSeed,
         mulberry32,
         rngFor,
@@ -662,6 +736,10 @@
         shadeForKey,
         normalizeParcelRule,
         normalizeBlockRule,
+        normalizeRuleExtras,
+        extrasControlsMarkup,
+        syncExtrasControls,
+        bindExtrasControls,
         evaluateParcel,
         parcelEnvelope,
         buildToMinimum,

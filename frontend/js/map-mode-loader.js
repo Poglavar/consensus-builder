@@ -13,7 +13,7 @@
             ...floorPlans, 'js/corridor-terrain-formation.js',
             'js/building-height.js', 'js/proposals/gain.js', 'js/three-mesh-sanitize.js',
             'js/three-screen-door.js', 'js/three-smooth-transparency.js', 'js/three-building-display.js',
-            'js/three-floor-plans.js', 'js/three-building-facades.js', 'js/three-resources.js',
+            'js/three-floor-plans.js', 'js/three-building-facades.js', 'js/rule-building-details.js', 'js/three-rule-roofs.js', 'js/three-resources.js',
             'js/three-scene-work.js', 'js/three-scene-readiness.js', 'js/three-structure-refresh.js', 'js/three-square-paving.js', 'js/three-lake-basin.js',
             'js/three-snapshot-navigation.js', 'js/three-keyboard-context.js', 'js/three-parcel-emphasis.js',
             'js/elevated-rail-3d.js', 'js/three-focus-plan.js', 'js/three-click-plan.js', 'js/three-click-stack.js?v=20261028-stack-focus',

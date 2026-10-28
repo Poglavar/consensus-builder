@@ -77,6 +77,8 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
             offsetEastM: z.number().min(-1000).max(1000).optional(), offsetNorthM: z.number().min(-1000).max(1000).optional(), rotationDegrees: z.number().min(-360).max(360).optional(),
             ruleKind: z.enum(['max', 'range', 'exact']).optional(), minHeightM: z.number().positive().max(800).optional(), minDepthM: z.number().positive().max(1000).optional(),
             minFloors: z.number().int().min(1).max(200).optional(), minPlotAreaM2: z.number().min(0).optional(), minFootprintAreaM2: z.number().min(1).optional(),
+            balconyDepthM: z.number().min(0).max(5).optional().describe('Block, row and detached: balconies on the long facades may stand out of the envelope by this many metres; 0 or omitted means none.'),
+            roof: z.enum(['flat', 'pitched']).optional().describe('Block, row and detached: pitched adds a slanted roof with its attic on top of the last floor, ridge along the street side.'),
             seed: z.number().int().min(0).max(4294967295).optional(), permitted: z.boolean().optional(), planningSource: z.string().max(100).optional() }, 'draftBuilding');
     add('ugt_draft_track', 'Draft a rail corridor with an explicit gauge and speed target using the app geometry. Curvature is checked against the required radius; subsequent edits retain the constraints.',
         { ...site, points: z.array(point).min(2).max(200), gauge: z.union([z.literal(1000), z.literal(1435)]).default(1435),
