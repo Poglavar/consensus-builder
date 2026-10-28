@@ -231,6 +231,10 @@ describe('the Origin gate lets read-only POSTs through and still stops writes', 
         // Green areas are fetched again on every pan in model mode; counted as writes they ran out
         // the budget and the green stopped following the view.
         expect(READ_ONLY_POST_PATHS).toContain('/decor/green');
+        // A read whose input fits a URL is a GET, not a POST on this list: the source checks.
+        for (const path of ['/parcel-sources/discover', '/building-sources/discover', '/imagery-sources/discover']) {
+            expect(READ_ONLY_POST_PATHS.has(path), path).toBe(false);
+        }
         for (const path of READ_ONLY_POST_PATHS) {
             const res = await request(server).post(path).send({});
             expect(res.status, path).toBe(400);

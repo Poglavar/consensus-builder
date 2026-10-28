@@ -13,13 +13,16 @@ const parcel = { type: 'Feature', properties: { PARCEL_ID: 12, OBJECTID: 3 },
     geometry: { type: 'Polygon', coordinates: [[[-79.38, 43.65], [-79.379, 43.65], [-79.379, 43.651], [-79.38, 43.65]]] } };
 const okFetch = () => vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ type: 'FeatureCollection', features: [parcel], exceededTransferLimit: false }) }));
 function app(options = {}) { const app = express(); app.use(express.json()); setupParcelSourcesRoute(app, { sources: [], ...options }); return app; }
+// A discover check is a GET: its fields as a query string, lists comma-joined as the client sends them.
+const asQuery = body => Object.fromEntries(Object.entries(body).filter(([, value]) => value !== undefined)
+    .map(([key, value]) => [key, Array.isArray(value) ? value.join(',') : value]));
 
 describe('custom parcel source gateway', () => {
     it('checks the final source identity before returning a portable configuration', async () => {
         const publicFetch = okFetch();
         const discover = vi.fn(async () => ({ descriptor, attempts: [{ adapter: 'arcgis', status: 'verified' }] }));
-        const response = await request(app({ publicFetch, discover })).post('/parcel-sources/discover')
-            .send({ url: descriptor.endpoint, city: 'toronto', bbox });
+        const response = await request(app({ publicFetch, discover })).get('/parcel-sources/discover')
+            .query(asQuery({ url: descriptor.endpoint, city: 'toronto', bbox }));
         expect(response.status).toBe(200);
         expect(response.body.source.id).toMatch(/^custom\./);
         expect(response.body.source).toEqual(decodeCustomSource(response.body.source.id));
@@ -35,7 +38,7 @@ describe('custom parcel source gateway', () => {
         const attempts = [{ adapter: 'arcgis', status: 'failed' }];
         for (const [code, upstreamStatus, status] of [['no-available-adapter', undefined, 422], ['parcel-source-blocked', 403, 502], ['parcel-source-rate-limited', 429, 502]]) {
             const discover = async () => { throw Object.assign(new Error('Check failed.'), { code, upstreamStatus, status, retryAfterSeconds: 42, attempts }); };
-            const response = await request(app({ discover })).post('/parcel-sources/discover').send({ url: descriptor.endpoint, city: 'toronto', bbox });
+            const response = await request(app({ discover })).get('/parcel-sources/discover').query(asQuery({ url: descriptor.endpoint, city: 'toronto', bbox }));
             expect(response.status).toBe(status);
             expect(response.body).toMatchObject({ code, attempts, retryAfterSeconds: 42 });
             expect(response.headers['retry-after']).toBe('42');
@@ -50,7 +53,7 @@ describe('custom parcel source gateway', () => {
         { url: descriptor.endpoint, city: 'toronto', bbox: [-79, 43, -78, 44] }
     ])('rejects an unsafe setup before contacting providers (%j)', async body => {
         const discover = vi.fn();
-        const response = await request(app({ discover })).post('/parcel-sources/discover').send(body);
+        const response = await request(app({ discover })).get('/parcel-sources/discover').query(asQuery(body));
         expect(response.status).toBe(400); expect(discover).not.toHaveBeenCalled();
     });
     it.each([403, 429, 503])('passes provider HTTP %s failure details through the normal gateway', async upstreamStatus => {

@@ -1,4 +1,4 @@
-// A user-chosen building source (a `building.<base64url>` id from POST /building-sources/discover):
+// A user-chosen building source (a `building.<base64url>` id from GET /building-sources/discover):
 // the same ArcGIS / WFS / OGC API / Socrata / GeoJSON transports as custom parcel sources, behind
 // the same public-URL guard and cooldown, read as building footprints. Heights come from the
 // source's own height field (metres, or feet), else its storey field, else the shared seeded
