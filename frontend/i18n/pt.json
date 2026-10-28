@@ -3116,7 +3116,6 @@
                 "convertToFreeformHint": "Mantenha a volumetria da regra à altura máxima permitida, como um único edifício que pode editar diretamente. Os parâmetros da regra deixam de se aplicar depois."
             },
             "tabs": {
-                "details": "Detalhes",
                 "overview": "Visão geral"
             },
             "title": "Detalhes do projeto",

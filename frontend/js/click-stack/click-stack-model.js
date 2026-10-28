@@ -233,14 +233,14 @@
         } else if (kind === 'designs') {
             add('above', 'plans', 'memberPlans', (hits.plans || []).filter(item => includesDesign(item, instance)));
             // A design that forms parcels (a parcel layout, a road) lists the ground it takes and
-            // the parcels it forms as two tabs of one group, the formed ones first.
+            // the parcels it forms as two tabs of one group, the ground it takes first.
             const pieces = formed.filter(item => String(item.designId) === id);
             const inputs = parcels.filter(item => designUsesParcel(instance, item));
             if (pieces.length && inputs.length) {
                 const tabs = [];
                 const tab = (target, property, items) => { const before = groups.length; add('below', target, property, items); tabs.push(...groups.splice(before)); };
-                tab('formed', 'formedParcels', pieces);
                 tab('parcels', 'affectsParcels', inputs);
+                tab('formed', 'formedParcels', pieces);
                 groups.push({ position: 'below', kind: 'formed', relation: 'designParcels', tabs, instances: tabs.flatMap(item => item.instances),
                     count: tabs.reduce((sum, item) => sum + item.count, 0) });
             } else if (pieces.length) add('below', 'formed', 'formedParcels', pieces);

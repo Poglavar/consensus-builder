@@ -15,13 +15,10 @@ const divider = (page: Page) => page.locator('#map .map-compare__handle');
 const dragging = (page: Page) => page.evaluate(() => (window as any).map.dragging.enabled());
 const beforeLayers = async (page: Page) => JSON.parse((await beforeMap(page).getAttribute('data-layers')) || '{}');
 
-// The full reader, with its parcels section open (the per-parcel chips live there).
+// The full reader on its Input parcels tab (the per-parcel chips live there).
 async function openParcelsSection(page: Page): Promise<void> {
   await page.evaluate(() => (window as any).toggleProposalDetailsPanelMinimized(false));
-  await showProposalTab(page, 'details');
-  const summary = page.locator('#proposal-details-panel details.proposal-detail-section summary').filter({ hasText: 'Land & ownership' });
-  await expect(summary).toBeVisible();
-  if (!(await summary.evaluate(el => (el.parentElement as HTMLDetailsElement).open))) await summary.click();
+  await showProposalTab(page, 'inputs');
 }
 
 // A minted agreement with an open pool, as the page's index lists it (GET /markets), with its rendered

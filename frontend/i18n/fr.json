@@ -3116,7 +3116,6 @@
                 "convertToFreeformHint": "Conservez la volumétrie de la règle à la hauteur maximale autorisée, sous la forme d’un seul bâtiment que vous modifiez directement. Les paramètres de la règle ne s’appliquent plus ensuite."
             },
             "tabs": {
-                "details": "Détails",
                 "overview": "Vue d’ensemble"
             },
             "title": "Détails du projet",

@@ -1890,8 +1890,7 @@
             },
             "forkedFrom": "Izvedeno iz {{cid}}",
             "tabs": {
-                "overview": "Pregled",
-                "details": "Detalji"
+                "overview": "Pregled"
             }
         },
         "block": {

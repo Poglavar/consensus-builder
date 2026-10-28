@@ -1138,7 +1138,7 @@ body.three-mode-active #agent-bubbles-container {
     pointer-events: auto;
 }
 
-/* A design's formed and input parcels: .cb-tabs over one strip each, the other strip hidden. */
+/* A design's input and output parcels (model view): .cb-tabs over one strip each, the other strip hidden. */
 .click-stack__choices[hidden] {
     display: none;
 }

@@ -355,7 +355,7 @@ test.describe('Click stack @core', () => {
     });
   }
 
-  test('design Details scrolls inside the click stack and its actions remain reachable',async({mockApi:page},testInfo)=>{
+  test('design Overview scrolls inside the click stack and its actions remain reachable',async({mockApi:page},testInfo)=>{
     await openCity(page);
     const id=await createSpace(page,'park');
     await page.evaluate(parcelId=>{
@@ -367,7 +367,6 @@ test.describe('Click stack @core', () => {
       await page.keyboard.press('Escape');
       await clickDesignOnMap(page,id);
       const panel=page.locator('#click-stack #proposal-details-panel.is-hosted');
-      await panel.getByRole('tab',{name:'Details',exact:true}).click();
       const land=panel.locator('details[data-proposal-section="land"]');
       if(!await land.evaluate(el=>(el as HTMLDetailsElement).open)) await land.locator(':scope > summary').click();
       const scroller=width>=768?panel.locator('.panel-body'):page.locator('#click-stack .click-stack__sections');

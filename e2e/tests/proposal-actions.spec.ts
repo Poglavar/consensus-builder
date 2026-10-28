@@ -16,7 +16,7 @@ async function expandProposalDetails(page: import('@playwright/test').Page): Pro
 }
 
 async function openProposalSection(page: import('@playwright/test').Page, section: 'land'): Promise<void> {
-  await showProposalTab(page, 'details');
+  await showProposalTab(page, 'overview');
   const details = page.locator(`#proposal-details-panel details[data-proposal-section="${section}"]`);
   await details.locator(':scope > summary').click();
   await expect(details).toHaveJSProperty('open', true);

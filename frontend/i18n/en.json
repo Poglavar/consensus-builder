@@ -1877,8 +1877,7 @@
             },
             "forkedFrom": "Forked from {{cid}}",
             "tabs": {
-                "overview": "Overview",
-                "details": "Details"
+                "overview": "Overview"
             }
         },
         "block": {

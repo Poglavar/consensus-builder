@@ -304,9 +304,9 @@ export async function proposalState(page: Page, id: string): Promise<any> {
   return page.evaluate(id => JSON.parse(JSON.stringify((window as any).getProposalByIdOrHash(id))), id);
 }
 
-// The proposal panel's tabs: Overview (name, rung, type, author, size) and Details (land and
-// ownership, verification, the record). The actions stay in the footer under both.
-export async function showProposalTab(page: Page, tab: 'overview' | 'details'): Promise<void> {
+// The proposal panel's tabs: Overview (name, rung, type, author, size, then land and ownership,
+// verification and the record), Input parcels and Output parcels. The actions stay in the footer under all three.
+export async function showProposalTab(page: Page, tab: 'overview' | 'inputs' | 'outputs'): Promise<void> {
   const button = page.locator(`#proposal-details-panel [data-proposal-tab="${tab}"]`);
   if (await button.getAttribute('aria-selected') !== 'true') await button.click();
   await expect(page.locator(`#proposal-details-panel [data-proposal-tabpanel="${tab}"]`)).toBeVisible();

@@ -23,8 +23,8 @@ test('consumed ground remains reachable through proposal breadcrumbs and the cad
   await showProposal(page, id);
   const expand = page.locator('#proposal-details-panel').getByRole('button', { name: 'Expand', exact: true });
   if (await expand.isVisible()) await expand.click();
-  // The breadcrumb is intentionally inside the collapsed Land & ownership disclosure, under Details.
-  await showProposalTab(page, 'details');
+  // The breadcrumb is intentionally inside the collapsed Land & ownership disclosure, on Overview.
+  await showProposalTab(page, 'overview');
   const landSection = page.locator('#proposal-details-panel details[data-proposal-section="land"]');
   await landSection.locator('summary').click();
   const breadcrumb = page.locator(`.claim-breadcrumb-link[title="${PARCEL_ID}"]`);

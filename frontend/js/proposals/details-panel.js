@@ -1,6 +1,6 @@
 // proposals/details-panel.js — extracted from proposals.js (behavior-preserving relocation).
 
-// The details panel's open tab (Overview or Details); a different proposal starts on Overview.
+// The details panel's open tab (Overview, Input parcels or Output parcels); a different proposal starts on Overview.
 let proposalDetailsTab = 'overview';
 
 function safeAgentText(value) {
@@ -749,8 +749,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         <summary><span class="proposal-detail-section-label"><span>${safeAgentText(title)}</span><small>${safeAgentText(hint)}</small></span><i class="fas fa-chevron-down" aria-hidden="true"></i></summary>
         <div class="proposal-detail-section-content">`;
     const sectionEnd = '</div></details>';
-    // Two tabs (Overview and Details): the overview is the name, its rung, type, author and size; the
-    // records behind it are under Details. The actions stay in the footer under both.
+    // Three tabs: Overview (the name, its rung, type, author and size, then the records behind it),
+    // Input parcels (the cadastral parcels it takes) and Output parcels (the parcels it forms).
+    // The actions stay in the footer under all three.
     if (document.getElementById('proposal-details-content')?.dataset.proposalId !== String(proposalKey)) proposalDetailsTab = 'overview';
     const tabButton = (id, label) => `<button type="button" class="cb-tab proposal-details-tab" role="tab" data-proposal-tab="${id}"
         aria-selected="${proposalDetailsTab === id}">${safeAgentText(label)}</button>`;
@@ -758,7 +759,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         <div class="proposal-info">
             <div class="cb-tabs cb-tabs--fill proposal-details-tabs" role="tablist">
                 ${tabButton('overview', tProposal('panel.proposal.tabs.overview', 'Overview'))}
-                ${tabButton('details', tProposal('panel.proposal.tabs.details', 'Details'))}
+                ${tabButton('inputs', `${tProposal('agreement.workflow.inputs', 'Input parcels')} (${cadastreParcelIds.length})`)}
+                ${tabButton('outputs', `${tProposal('agreement.workflow.outputs', 'Output parcels')} (${descendantKeys.length})`)}
             </div>
             <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="overview"${proposalDetailsTab === 'overview' ? '' : ' hidden'}>
             <div class="proposal-badges-row">
@@ -817,8 +819,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <span class="metric-label">${tProposal('panel.proposal.metrics.area', 'Area:')}</span><span class="metric-value">—</span>
             </div>` : ''}
             </div>
-            </div>
-            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="details"${proposalDetailsTab === 'details' ? '' : ' hidden'}>
             ${sectionStart('land', tProposal('panel.proposal.detailsSections.land', 'Land & ownership'), tProposal('panel.proposal.detailsSections.landHintDesign', 'Declared references: {{count}} · designs on the same parcels', { count: cadastreParcelIds.length }))}
             ${parcelSetRelationsHtml}
             ${areaSummary.declaredCount ? `<div class="metric-group" data-proposal-area-basis="source-parcels" data-area-complete="${areaSummary.sourceComplete}">
@@ -829,47 +829,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             </div><p class="proposal-area-coverage"><small>${tProposal('panel.proposal.metrics.areaCoverage', 'Areas available for {{known}} of {{total}} declared references.', {
                 known: areaSummary.sourceCount, total: areaSummary.declaredCount
             })}</small></p>` : ''}
-            ${cadastreParcelIds.length > 0 ? `
-            <div class="metric-group">
-                <div class="metric-label-count-container">
-                    <span class="metric-label">${tProposal('panel.proposal.sections.cadastralParcels', 'Cadastral parcels:')}</span> <span class="metric-value">${cadastreParcelIds.length}</span>
-                </div>
-                <div class="proposal-parcels-list proposal-parcel-list-scroll" id="proposal-parent-parcels-list">
-                    ${parentParcelItemsInitial}
-                </div>
-            </div>
-            ` : `
-            <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.sections.cadastralParcels', 'Cadastral parcels:')}</span> <span class="metric-value">0</span>
-            </div>
-            `}
-            
-            <!-- Generated parcel output -->
-            ${(() => {
-            if (typeof ProposalManager !== 'undefined') {
-                if (descendantKeys.length > 0) {
-                    return `
-            <div class="metric-group">
-                <div class="metric-label-count-container">
-                    <span class="metric-label">${tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:')}</span> <span class="metric-value">${descendantKeys.length}</span>
-                </div>
-                <div class="proposal-descendants-list proposal-parcel-list-scroll" id="proposal-descendants-list">
-                    ${descendantItemsInitial}
-                </div>
-            </div>`;
-                } else {
-                    return `
-            <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:')}</span> <span class="metric-value">0</span>
-            </div>`;
-                }
-            }
-            return `
-            <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:')}</span> <span class="metric-value">0</span>
-            </div>`;
-        })()}
-            
             <!-- Ownership & Acquisition Stats Section -->
             ${(() => {
             // Check if proposal has ownershipAndAcquisitionStats
@@ -980,6 +939,49 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                     <button type="button" class="btn btn-quiet proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy local ID')}</button>
                 </div>` : ''}
             ${sectionEnd}
+            </div>
+            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="inputs"${proposalDetailsTab === 'inputs' ? '' : ' hidden'}>
+            ${cadastreParcelIds.length > 0 ? `
+            <div class="metric-group">
+                <div class="metric-label-count-container">
+                    <span class="metric-label">${tProposal('panel.proposal.sections.cadastralParcels', 'Cadastral parcels:')}</span> <span class="metric-value">${cadastreParcelIds.length}</span>
+                </div>
+                <div class="proposal-parcels-list proposal-parcel-list-scroll" id="proposal-parent-parcels-list">
+                    ${parentParcelItemsInitial}
+                </div>
+            </div>
+            ` : `
+            <div class="metric-group">
+                <span class="metric-label">${tProposal('panel.proposal.sections.cadastralParcels', 'Cadastral parcels:')}</span> <span class="metric-value">0</span>
+            </div>
+            `}
+            </div>
+            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="outputs"${proposalDetailsTab === 'outputs' ? '' : ' hidden'}>
+            <!-- Generated parcel output -->
+            ${(() => {
+            if (typeof ProposalManager !== 'undefined') {
+                if (descendantKeys.length > 0) {
+                    return `
+            <div class="metric-group">
+                <div class="metric-label-count-container">
+                    <span class="metric-label">${tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:')}</span> <span class="metric-value">${descendantKeys.length}</span>
+                </div>
+                <div class="proposal-descendants-list proposal-parcel-list-scroll" id="proposal-descendants-list">
+                    ${descendantItemsInitial}
+                </div>
+            </div>`;
+                } else {
+                    return `
+            <div class="metric-group">
+                <span class="metric-label">${tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:')}</span> <span class="metric-value">0</span>
+            </div>`;
+                }
+            }
+            return `
+            <div class="metric-group">
+                <span class="metric-label">${tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:')}</span> <span class="metric-value">0</span>
+            </div>`;
+        })()}
             </div>
         </div>
     `;

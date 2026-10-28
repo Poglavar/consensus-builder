@@ -356,3 +356,6 @@
     margin-top: var(--cb-space-4);
     color: var(--cb-text-muted);
 }
+
+/* Overview · Input parcels · Output parcels: at phone width the labels wrap instead of scrolling the strip. */
+.proposal-details-tabs > .cb-tab { min-width: 0; white-space: normal; padding-inline: var(--cb-space-1); }

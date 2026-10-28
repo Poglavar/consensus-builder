@@ -22,9 +22,14 @@
     // Right-dock panels the stack never hosts: when one opens, the stack steps aside.
     const DOCKED_ELSEWHERE = ['block-info-panel', 'road-info-panel', 'road-analysis-panel'];
     // Sections whose object has a shape on the map, so the Focus button can bring it into view.
+    // A design's panel has Input parcels and Output parcels tabs of its own, so its section skips them.
+    const PANEL_RELATIONS = new Set(['designParcels', 'formedParcels', 'affectsParcels']);
     const FRAMEABLE = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'selection']);
     const ICONS = Object.freeze({ agreements: 'fas cb-icon-agreement', plans: 'fas cb-icon-plan', designs: 'fas cb-icon-design', built: 'fas fa-building',
         permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
+
+    const relationsFor = (kind, instance) => model.visibleContextFor(kind, instance, state.hits)
+        .filter(group => kind !== 'designs' || !PANEL_RELATIONS.has(group.relation));
 
     const state = { el: null, stack: null, frameRequest: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null , baseHits: null, derived: {} };
 
@@ -496,8 +501,7 @@
                 else actions?.remove();
             }
             if (kind !== 'plans') {
-                const relations = model.visibleContextFor(kind, instance, state.hits);
-                for (const group of relations) body.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
+                for (const group of relationsFor(kind, instance)) body.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
             }
             if (!instance.serverId) highlightSection(kind, instance);
         } catch (error) {
@@ -857,7 +861,7 @@
             render({ keepBody });
             if (keepBody) {
                 [...keepBody.children].filter(child => child.classList.contains('click-stack__choices')).forEach(child => child.remove());
-                for (const group of model.visibleContextFor(previous.expanded, model.selectedInstance(state.stack, previous.expanded), state.hits)) {
+                for (const group of relationsFor(previous.expanded, model.selectedInstance(state.stack, previous.expanded))) {
                     keepBody.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
                 }
             } else if (state.stack.expanded) activate(state.stack.expanded);

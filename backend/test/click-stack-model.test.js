@@ -13,10 +13,10 @@ it('navigates parcel → design → plan relationships without exposing agreemen
     const hits = { agreements: [{ id: 'a1' }], plans: [plan], designs, formed: [formed], parcels: [parcel] };
     const links = (kind, item) => model.contextFor(kind, item, hits).map(group => [group.position, group.kind, group.instances.map(item => item.id)]);
     expect(links('plans', plan)).toEqual([['below', 'designs', ['d1', 'd2']]]);
-    expect(links('designs', designs[0])).toEqual([['above', 'plans', ['pl1']], ['below', 'formed', ['piece', 'p1']]]);
-    // A design that both takes and forms parcels lists them as two tabs: what it forms, then what it takes.
+    expect(links('designs', designs[0])).toEqual([['above', 'plans', ['pl1']], ['below', 'formed', ['p1', 'piece']]]);
+    // A design that both takes and forms parcels lists them as two tabs: what it takes, then what it forms.
     expect(model.contextFor('designs', designs[0], hits)[1].tabs.map(tab => [tab.relation, tab.kind, tab.instances.map(item => item.id)]))
-        .toEqual([['formedParcels', 'formed', ['piece']], ['affectsParcels', 'parcels', ['p1']]]);
+        .toEqual([['affectsParcels', 'parcels', ['p1']], ['formedParcels', 'formed', ['piece']]]);
     expect(links('formed', formed)).toEqual([['above', 'designs', ['d1']], ['below', 'parcels', ['p1']]]);
     expect(links('parcels', parcel)).toEqual([['above', 'formed', ['piece']], ['above', 'designs', ['d1']]]);
     expect(model.contextFor('formed', formed, { ...hits, designs: [] })[0].instances).toEqual([{ id: 'd1', label: 'Street' }]);
