@@ -1,7 +1,7 @@
 // Check agreement badges and available actions against deterministic index and chain states.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, stubBasemapTiles } from '../helpers/runtime';
-import { proposeOverPark, MINTED_SPONSOR } from '../helpers/agreements';
+import { closeAgreementPanel, proposeOverPark, MINTED_SPONSOR } from '../helpers/agreements';
 import { pageIndex, E2E_LENS_MEMBER_KEY } from '../helpers/mocks/shared-server';
 import { agreementAccountAddress, encodeAgreementAccount, serveAgreementAccounts, STATUS, DECISION } from '../helpers/agreement-chain';
 
@@ -24,7 +24,7 @@ test('agreement summary follows terminal index and account states without offeri
     await expect(panel.locator('[data-agreement-chain-status]')).toHaveText(status[0].toUpperCase() + status.slice(1));
     await expect(panel.locator('[data-agreement-remote-status]')).toHaveText(status[0].toUpperCase() + status.slice(1));
     if (status !== 'active') await expect(panel.locator('[data-agreement-action="bet"], [data-approval-action="verify"]')).toHaveCount(0);
-    await panel.locator('[data-agreement-action="close"]').click();
+    await closeAgreementPanel(page);
   }
   // The account is newer than the index: Active in the cached row cannot mask Executed.
   row.onchain.status = 'active';

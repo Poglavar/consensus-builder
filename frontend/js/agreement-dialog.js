@@ -728,8 +728,9 @@
             currency: base?.money.currency || root.CityMoney.currentCurrency(),
             approvalConfig: scheme ? setup().withScheme(baseConfig, scheme) : baseConfig,
             lens: base ? [...base.rule.lens] : setup().lensKeys(root.getLensEntries()),
+            // Owners decide bindingly unless the author unticks it; a community vote never binds.
             values: { ...termsOf(base), electorate: base?.rule.electorate || electorate,
-                binding: base?.rule.binding === true,
+                binding: base ? base.rule.binding === true : electorate === 'owners',
                 title: existing?.title || (source ? t('agreement.dialog.counterTitle', 'Counter to {{title}}', { title: source.title || t('agreement.panel.title', 'Agreement') }) : ''),
                 settlement: { ...(base?.rule.settlement || api.DEFAULT_SETTLEMENT) },
                 deadline: dateFromDeadline(base?.deadline), organiser: base?.consultation?.organiser || '',
@@ -866,6 +867,7 @@
             renderLens();
             part('[data-agreement-binding-control]').hidden = !owners;
             part('[data-agreement-binding]').disabled = !owners;
+            part('[data-agreement-binding]').checked = owners && state.values.binding === true;
             part('[data-agreement-section="consultation"]').hidden = owners;
         }
         const byValue = () => state.values.electorate === 'owners' && state.values.settlement.method === 'value';
@@ -1092,7 +1094,7 @@
                 }
                 if (target.matches('[data-agreement-binding]')) state.values.binding = target.checked;
                 if (target.matches('[data-agreement-electorate]')) {
-                    readRule(); state.values.electorate = target.value; state.values.binding = false; renderRule(); renderLand();
+                    readRule(); state.values.electorate = target.value; state.values.binding = target.value === 'owners'; renderRule(); renderLand();
                 }
                 if (target.matches('[data-agreement-compensation]')) {
                     const terms = state.values.settlement;

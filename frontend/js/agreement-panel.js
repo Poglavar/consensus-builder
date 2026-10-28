@@ -1087,9 +1087,11 @@
         // Propose (agreement-sync.js): publishes the designs and the agreement, then copies the link.
         async function propose() {
             const id = state.id;
+            let proposed = false;
             try {
                 const { cid, link } = await win.AgreementSync.publishAgreement(id);
                 log(`${id} proposed as ${cid}`);
+                proposed = true;
                 state.remote = null;
                 if (await win.DesignSync.copyLink(link)) {
                     win.showEphemeralMessage(t('agreement.publish.linkCopied', 'Agreement proposed. Its link is copied.'), 5000, 'success');
@@ -1101,6 +1103,9 @@
                 report(`proposing ${id} failed`, error);
             }
             if (state.id === id && isOpen()) refresh();
+            // Stamping the author gives its designs, and so its plan, new revisions: the click stack
+            // built on the old plan lets the panel go. Open the proposed agreement on its own plan.
+            else if (proposed && !isOpen()) await open(id).catch(error => report(`opening ${id} after proposing failed`, error));
         }
 
         async function copyLink() {

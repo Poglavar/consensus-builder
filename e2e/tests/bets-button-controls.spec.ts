@@ -6,7 +6,7 @@ import type { Page } from '@playwright/test';
 import { openCity } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { pageIndex, MarketFixture } from '../helpers/mocks/shared-server';
-import { fileIndexedAgreement, proposeOverPark, storedAgreements, MINTED_ACCOUNT, OPEN_POOL, selectDevnetUsdc } from '../helpers/agreements';
+import { closeAgreementPanel, fileIndexedAgreement, proposeOverPark, storedAgreements, MINTED_ACCOUNT, OPEN_POOL, selectDevnetUsdc } from '../helpers/agreements';
 
 const ACCOUNT = MINTED_ACCOUNT;
 const WALLET = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
@@ -122,8 +122,8 @@ test.describe('Bets shared button variants @features', () => {
     await expect(dialog.locator('.cb-dialog__title')).toContainText(`Will ${title} execute by`);
     await dialog.locator('.close-circle-btn').click();
     await expect(dialog).toHaveCount(0);
-    await panel.locator('[data-agreement-action="close"]').click();
-    await expect(panel).toBeHidden();
+    // Hosted in the click stack the panel has no close button of its own (bfc91e9bf); Escape closes the spot.
+    await closeAgreementPanel(page);
 
     // Without a copy here, the agreement is read from the index and kept, and its panel opens.
     await page.evaluate(id => (window as any).AgreementStore.remove(id), id);

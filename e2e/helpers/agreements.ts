@@ -1,11 +1,11 @@
 // Agreements from the screen, shared by the agreement specs: a parcel layout applied over one owned
-// parcel (the design an agreement settles), the agreement editor docked on the right of the map
-// (Create / Edit agreement, which picks designs on the map), the docked agreement panel and the
-// Agreements list (frontend/js/agreement-dialog.js, agreement-panel.js, agreement-list.js). Also the
+// parcel (the design an agreement settles), the agreement editor (Create / Edit agreement over a
+// saved plan), the agreement panel in the click stack and the Lists panel's Agreements tab
+// (frontend/js/agreement-dialog.js, agreement-panel.js, lists-panel.js). Also the
 // agreements other specs start from: one filed in the index as another device proposed it (minted,
 // with its pool, when asked), and one proposed from this device over a park applied here.
 import { expect, Locator, Page } from '@playwright/test';
-import { createSpace, openCity, openParcel, showProposal, PARCEL_ID } from './runtime';
+import { createSpace, expandStackSection, openCity, openParcel, PARCEL_ID } from './runtime';
 import { fileAgreement, fileDesign, filePlan, pageIndex, MarketFixture, SharedIndex } from './mocks/shared-server';
 
 export const OWNER = 'Ana Owner';
@@ -76,7 +76,7 @@ export function fileIndexedAgreement(index: SharedIndex, options: FiledAgreement
   const onchain = minted ? onchainRecord(minted) : null;
   const cid = fileAgreement(index, {
     schema: 'agreement/v1', title, author, sponsor: onchain ? onchain.sponsor : null, city: 'zagreb', createdAt, planCid,
-    inputs: { parcels: [{ parcelId: FILED_PARCEL, areaM2, holders: [] }], openGroundM2: 0 },
+    inputs: { parcels: [{ parcelId: FILED_PARCEL, areaM2 }], openGroundM2: 0 },
     outputs: [], allocations: [], money: { currency: 'EUR', lines: [] },
     rule: community
       ? { electorate: 'community', binding: false, approvalConfig: null, lens: [] }
@@ -115,7 +115,7 @@ export async function proposeOverPark(page: Page, { title, author = 'Fixture aut
     const originals = (await w.CadastralParcelRepository.ensureIds(ids, { retainOnly: true })).features || [];
     const land = ground.derive({
       designs: [design], fabric, originals: w.AgreementDialog.originalsById(originals, fabric.featureId),
-      ownerOf: ground.localHolders({ storage: w.PersistentStorage, agents: w.agentStorage }), area: (feature: any) => w.turf.area(feature),
+      area: (feature: any) => w.turf.area(feature),
     });
     const record = {
       schema: 'agreement/v1', id: w.AgreementRecord.newId(), title, city: w.CityConfigManager.getCurrentCityId(), createdAt,
@@ -143,7 +143,9 @@ export async function proposeOverPark(page: Page, { title, author = 'Fixture aut
 
 // Parcel 1234 held by one local owner, laid out into two equal plots and applied: the design an
 // agreement settles. The owner record is written first, so the layout carries it over to the plots.
-export async function applyLayout(page: Page): Promise<{ layoutId: string; ownerKey: string }> {
+// `ownerKey` is that local owner (a person in the rights snapshot); `partyKey` is the parcel's
+// abstract party, parcel-owner:<id>, which agreements allocate to and pay (AgreementRecord.partyKey).
+export async function applyLayout(page: Page): Promise<{ layoutId: string; ownerKey: string; partyKey: string }> {
   await openCity(page);
   const ownerKey = await page.evaluate(async ({ parcelId, name }) => {
     const w = window as any;
@@ -155,7 +157,8 @@ export async function applyLayout(page: Page): Promise<{ layoutId: string; owner
     return String(agent.id);
   }, { parcelId: PARCEL_ID, name: OWNER });
   const layoutId = await layOutParcel(page, PARCEL_ID);
-  return { layoutId, ownerKey };
+  const partyKey = await page.evaluate(id => String((window as any).AgreementRecord.partyKey(id)), PARCEL_ID);
+  return { layoutId, ownerKey, partyKey };
 }
 
 // "Lay out parcels" on one more parcel from its Propose here menu, Done on the default equal plots;
@@ -187,20 +190,13 @@ export const editorSave = (editor: Locator) => editor.locator('[data-agreement-a
 export const editorCancel = (editor: Locator) => editor.locator('.agreement-editor__footer [data-agreement-action="cancel"]');
 export const editorClose = (editor: Locator) => editor.locator('.panel-header [data-agreement-action="cancel"]');
 
-// The land under the chosen designs, once it is read: input parcels and the pieces standing on them.
-export async function landLoaded(editor: Locator): Promise<void> {
-  await expect(editor.locator('[data-agreement-inputs] [data-agreement-input]').first()).toBeVisible({ timeout: 30_000 });
-  await expect(editor.locator('[data-agreement-land-loading]')).toHaveCount(0);
-  await expect(editor.locator('table[data-agreement-outputs] tr[data-agreement-output]').first()).toBeVisible();
-}
-
-// The editor docked and picking on the map, with `title` in its header.
+// The editor open with `title` in its header. Its designs are the saved plan's, so it picks nothing
+// on the map.
 export async function editorOpen(page: Page, title: 'Create agreement' | 'Edit agreement'): Promise<Locator> {
   const editor = agreementEditor(page);
   await expect(editor).toBeVisible();
   await expect(editor.locator('#agreement-editor-title')).toHaveText(title);
   await expect(page.locator('body')).toHaveClass(/\bagreement-editor-open\b/);
-  await expect.poll(() => page.evaluate(() => (window as any).MapPick.active())).toBe('agreement');
   return editor;
 }
 
@@ -212,42 +208,50 @@ export async function editorClosed(page: Page): Promise<void> {
   expect(await page.evaluate(() => (window as any).MapPick.active())).toBeNull();
 }
 
-// The details panel's Add to agreement, with no agreement waiting to be proposed: the editor opens on
-// a new agreement over that one design.
-export async function createFromDetails(page: Page, layoutId: string): Promise<Locator> {
-  await showProposal(page, layoutId);
-  const add = page.locator('#proposal-details-panel .btn-create-agreement');
-  await expect(add).toHaveText('Add to agreement');
-  await add.click();
+// Agreement creation belongs to a saved plan: the design is saved into a new plan, and the plan's
+// Create agreement in the click stack opens the editor on a new agreement over that plan's land.
+export async function createFromPlan(page: Page, layoutId: string, planTitle = 'Agreement plan'): Promise<Locator> {
+  await page.evaluate(id => { const w = window as any; void w.PlanDialog.create({ members: [w.proposalStorage.getProposal(id)] }); }, layoutId);
+  const composer = page.locator('.plan-dialog');
+  await composer.locator('input[type="text"]').fill(planTitle);
+  await composer.getByRole('button', { name: 'Create plan', exact: true }).click();
+  await page.locator('#click-stack .click-stack__section[data-kind="plans"]').getByRole('button', { name: 'Create agreement', exact: true }).click();
   const editor = await editorOpen(page, 'Create agreement');
-  await expect(editor.locator(`input[data-agreement-design="${layoutId}"]`)).toBeChecked();
-  await landLoaded(editor);
+  await expect(editor.locator('[data-agreement-input]')).toHaveCount(1, { timeout: 30_000 });
   return editor;
 }
 
-// Agreements opens from the Designs header; Minted agreements is a secondary action in that list.
-async function openDesigns(page: Page): Promise<void> {
+// The Lists panel on its Agreements tab, listing the agreements on this device (or, with
+// `published`, the city's agreements in the index, with their chain status).
+export async function openAgreementsList(page: Page, { published = false } = {}): Promise<Locator> {
   const sheet = page.locator('#proposals-sheet');
   if (!(await sheet.isVisible())) await page.locator('#proposals-button').click();
   await expect(sheet).toBeVisible();
-  await expect(page.locator('#proposal-list-actions')).toBeVisible();
-}
-
-export async function openAgreementsList(page: Page): Promise<Locator> {
-  await openDesigns(page);
-  await page.locator('#designs-agreements-button').click();
-  const list = page.locator('.agreement-list-dialog');
+  await sheet.getByRole('tab', { name: 'Agreements', exact: true }).click();
+  await sheet.locator(`[data-list-source="${published ? 'published' : 'local'}"]`).click();
+  const list = sheet.locator('#designs-agreements');
   await expect(list).toBeVisible();
   return list;
 }
 
-export async function openMintedAgreements(page: Page): Promise<Locator> {
-  const agreements = await openAgreementsList(page);
-  await agreements.locator('[data-agreement-action="minted"]').click();
-  const list = page.locator('.agreement-minted-dialog');
-  await expect(list).toBeVisible();
-  return list;
+// Saving a new agreement from a plan keeps the plan the open section of the click stack; the new
+// agreement waits in the stack's Agreements section, whose row opens its panel, current.
+export async function openStackAgreement(page: Page): Promise<Locator> {
+  await expandStackSection(page, 'agreements');
+  await panelStatus(page, 'current');
+  return agreementPanel(page);
 }
+
+// The agreement panel lives in the click stack, which has no × of its own: Escape closes the spot.
+export async function closeAgreementPanel(page: Page): Promise<void> {
+  await page.locator('body').press('Escape');
+  await expect(agreementPanel(page)).toBeHidden();
+}
+
+// A row of the Agreements list: an agreement here by its id, one in the index by its CID.
+export const agreementListItem = (list: Locator, key: string) => list.locator(`.lists-item[data-list-id="${key}"]`);
+// Inspect a listed agreement: its title button opens its panel and closes the Lists panel.
+export const openListedAgreement = (list: Locator, key: string) => agreementListItem(list, key).locator('.lists-item__title').click();
 
 // The panel on the right dock once its check against the map reached `status`. A matching agreement
 // shows no status at all; one that does not match shows the warning, which is returned.

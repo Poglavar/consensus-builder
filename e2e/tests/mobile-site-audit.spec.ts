@@ -1,6 +1,6 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, stubBasemapTiles, openParcel, createSpace, runParcelCommand } from '../helpers/runtime';
-import { applyLayout, createFromDetails, editorSave, agreementPanel, panelStatus } from '../helpers/agreements';
+import { applyLayout, createFromPlan, editorSave, openStackAgreement } from '../helpers/agreements';
 import { installAreaMonitorSpaFallback } from '../helpers/mocks/area-monitor-server';
 import { waitForMapReady } from '../helpers/app';
 import { openWalletModal } from '../helpers/blockchain';
@@ -101,10 +101,9 @@ test('source and approval forms expand, keep actions reachable and cancel throug
 test('map agreement details resize without losing the saved agreement or applied layout', async ({ mockApi: page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const { layoutId } = await applyLayout(page);
-  const editor = await createFromDetails(page, layoutId);
+  const editor = await createFromPlan(page, layoutId);
   await editorSave(editor).click();
-  await panelStatus(page, 'current');
-  const panel = agreementPanel(page);
+  const panel = await openStackAgreement(page);
   const initial = (await panel.boundingBox())!.height;
   await dragHandle(page, panel, -150);
   expect((await panel.boundingBox())!.height).toBeGreaterThan(initial + 100);

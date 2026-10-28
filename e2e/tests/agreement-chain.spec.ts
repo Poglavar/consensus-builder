@@ -4,7 +4,7 @@
 // asked and checked; the placeholder program is not on devnet, so nothing is recorded). Once the index
 // records its account the panel reads the account itself: status, decision and escrow, the sponsor's
 // Fund and Cancel, Record decision once its lens lists the decision, Execute when satisfied and funded,
-// Expire after the deadline, open the dated-betting inspector, and the Minted agreements list. A vote is never minted.
+// Expire after the deadline, open the dated-betting inspector, and the Lists panel's published agreements. A vote is never minted.
 // Wallet transactions themselves are out of scope: the chain is the mocked RPC of helpers/agreement-chain.ts.
 import type { Browser, BrowserContext, Locator, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
@@ -15,7 +15,8 @@ import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 import { attachSharedIndex, E2E_LENS_MEMBER_KEY, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 import { agreementAccountAddress, encodeAgreementAccount, serveAgreementAccounts, DECISION, AgreementAccount } from '../helpers/agreement-chain';
 import {
-  applyLayout, agreementPanel, storedAgreements, createFromDetails, openAgreementsList, openMintedAgreements, panelStatus, editorSave, editorClosed,
+  applyLayout, agreementPanel, storedAgreements, createFromPlan, openStackAgreement, openAgreementsList, agreementListItem, openListedAgreement, closeAgreementPanel,
+  panelStatus, editorSave, editorClosed,
 } from '../helpers/agreements';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -29,17 +30,35 @@ const AUTHOR = 'Chain author';
 const short = (key: string) => `${key.slice(0, 4)}…${key.slice(-4)}`;
 const SOL = 1_000_000_000n;
 
-// A new agreement over the applied layout, from its details: owners or a community vote, a title, and
+// A new agreement over a saved plan of the applied layout: owners or a community vote, a title, and
 // for owners the lens member the rule names (the member a mint names), saved; its panel current.
-async function saveAgreement(page: Page, layoutId: string, { community = false } = {}): Promise<Locator> {
-  const editor = await createFromDetails(page, layoutId);
+async function saveAgreement(page: Page, layoutId: string, { community = false, walletConnected = false } = {}): Promise<Locator> {
+  const editor = await createFromPlan(page, layoutId);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await editor.locator('[data-agreement-title]').fill(TITLE);
   if (community) await editor.locator('input[name="agreement-electorate"][value="community"]').check();
-  else await editor.locator('[data-agreement-rule-form] [data-approval-lens]').fill(E2E_LENS_MEMBER_KEY);
+  else {
+    // The rule's lens is edited in the lens dialog; the agreement keeps its own snapshot of it. With
+    // a Solana wallet connected the dialog lists the lens directory's members to tick; without one
+    // it takes typed addresses.
+    await editor.locator('[data-agreement-action="lens"]').click();
+    const lens = page.locator('.lens-modal');
+    if (walletConnected) await lens.getByRole('checkbox', { name: new RegExp(E2E_LENS_MEMBER_KEY) }).check();
+    else {
+      // The member is the lens's only entry: the default entries go.
+      const addresses = lens.locator('.lens-address-input');
+      await addresses.first().fill(E2E_LENS_MEMBER_KEY);
+      for (let count = await addresses.count(); count > 1; count -= 1) {
+        await lens.locator('.lens-remove-btn').last().click();
+        await expect(addresses).toHaveCount(count - 1);
+      }
+    }
+    await lens.locator('.lens-close-btn').click();
+    await expect(lens).toHaveCount(0);
+  }
   await editorSave(editor).click();
   await editorClosed(page);
-  await panelStatus(page, 'current');
-  return agreementPanel(page);
+  return openStackAgreement(page);
 }
 
 // Propose on the panel, a guest naming a profile first; resolves once the panel shows the CID.
@@ -53,10 +72,9 @@ async function propose(page: Page, panel: Locator): Promise<void> {
 // Close the panel and open the agreement again from the Agreements list: it reads the index and the
 // chain afresh.
 async function reopen(page: Page, id: string): Promise<void> {
-  await agreementPanel(page).locator('[data-agreement-action="close"]').click();
-  await expect(agreementPanel(page)).toBeHidden();
+  await closeAgreementPanel(page);
   const list = await openAgreementsList(page);
-  await list.locator(`.agreement-item[data-agreement-id="${id}"]`).click();
+  await openListedAgreement(list, id);
   await panelStatus(page, 'current');
 }
 
@@ -178,19 +196,16 @@ test.describe('Agreements on chain @core', () => {
     await expect(panel.locator('[data-agreement-chain="unminted"], [data-agreement-chain="minted"]')).toHaveCount(0);
     await expect(panel.locator(['mint', 'repropose', 'fund', 'attest', 'execute', 'cancel', 'expire', 'bet']
       .map(action => `[data-agreement-action="${action}"]`).join(', '))).toHaveCount(0);
-    // And the city's minted agreements do not include it.
-    const list = await openMintedAgreements(page);
-    await expect(list.locator('[data-agreement-list-rows]')).toHaveText('No agreement of this city is minted yet.');
   });
 
-  test('a minted agreement reads its account: status, decision and escrow, the sponsor’s actions, its lens’s decision, Bet and the Minted agreements list', async ({ mockApi: page, browser, baseURL }) => {
+  test('a minted agreement reads its account: status, decision and escrow, the sponsor’s actions, its lens’s decision, Bet and the published agreements list', async ({ mockApi: page, browser, baseURL }) => {
     test.setTimeout(300_000);
     await injectMockSolanaWallet(page, { publicKey: SPONSOR, providerName: 'phantom' });
     const accounts = new Map<string, Buffer>();
     await serveAgreementAccounts(page, accounts);
     const { layoutId } = await applyLayout(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
-    const panel = await saveAgreement(page, layoutId);
+    const panel = await saveAgreement(page, layoutId, { walletConnected: true });
     await propose(page, panel);
     const index = pageIndex(page);
     const [cid] = [...index.agreements.keys()];
@@ -278,15 +293,16 @@ test.describe('Agreements on chain @core', () => {
     await bet.locator('.close-circle-btn').click();
     await expect(bet).toHaveCount(0);
 
-    // The Minted agreements list: the city's minted agreements from the index, each opening its panel.
-    await agreementPanel(page).locator('[data-agreement-action="close"]').click();
-    const list = await openMintedAgreements(page);
-    const row = list.locator(`.agreement-item[data-agreement-cid="${cid}"]`);
+    // The Lists panel's published agreements: the city's agreements from the index, the minted one
+    // with its chain status, opening its panel.
+    await closeAgreementPanel(page);
+    const list = await openAgreementsList(page, { published: true });
+    const row = agreementListItem(list, cid);
     await expect(row).toContainText(TITLE);
-    await expect(row).toContainText(`1 design · Active · ${short(account)}`);
-    expect(index.requests.some(request => request.method === 'GET' && /^\/agreements\?.*minted=1/.test(request.path))).toBe(true);
-    await row.click();
-    await expect(list).toHaveCount(0);
+    await expect(row.locator('.cb-badge', { hasText: 'Active' })).toBeVisible();
+    expect(index.requests.some(request => request.method === 'GET' && /^\/agreements\?.*city=/.test(request.path))).toBe(true);
+    await openListedAgreement(list, cid);
+    await expect(list).toBeHidden();
     await panelStatus(page, 'current');
     await expect(page.locator('#agreement-panel-title')).toHaveText(TITLE);
 
