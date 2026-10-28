@@ -7612,14 +7612,15 @@
             "title": "Sporazum",
             "untitled": "Sporazum od {{date}}",
             "status": {
-                "current": "Odgovara karti",
-                "stale": "Više ne odgovara karti",
+                "stale": "Ne odgovara karti: {{reasons}}. Za Prije / Poslije mora odgovarati.",
+                "staleDraft": "Ne odgovara karti: {{reasons}}. Za Predloži i Prije / Poslije mora odgovarati.",
                 "error": "Sporazum nije bilo moguće provjeriti prema karti: {{reason}}",
                 "reasons": {
                     "designMissing": "dizajn je izbrisan",
-                    "designNotApplied": "dizajn više nije primijenjen",
+                    "designNotApplied": "dizajn nije primijenjen",
                     "designChanged": "dizajn se promijenio",
-                    "groundChanged": "tlo se promijenilo"
+                    "groundChanged": "tlo se promijenilo",
+                    "unknown": "karta se promijenila"
                 }
             },
             "ledgerHeading": "Bilanca",
@@ -7639,7 +7640,6 @@
             },
             "collapse": "Zatvori sporazum",
             "removeLocalConfirm": "Ukloniti ovaj sporazum s ovog uređaja? Njegova dizajni ostaju na karti. Objavljeni sporazum ostaje dostupan putem poveznice.",
-            "compareUnavailable": "Prije / poslije dostupno je kada sporazum odgovara rješenjima primijenjenima na karti.",
             "designs": "Dizajni u planu"
         },
         "list": {

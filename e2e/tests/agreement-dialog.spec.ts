@@ -200,7 +200,7 @@ test('an agreement over an applied parcel layout is created from its details, co
   await expect(list).toHaveCount(0);
 });
 
-test('an agreement whose design is taken off the map no longer matches it, and cannot be compared', async ({ mockApi: page }) => {
+test('an agreement whose design is taken off the map warns that it does not match, and Apply plan designs restores it', async ({ mockApi: page }) => {
   test.setTimeout(150_000);
   const { layoutId } = await applyLayout(page);
   const editor = await createFromDetails(page, layoutId);
@@ -231,8 +231,8 @@ test('an agreement whose design is taken off the map no longer matches it, and c
   const list = await openAgreementsList(page);
   await list.locator('.agreement-item').click();
   const stale = await panelStatus(page, 'stale');
-  await expect(stale).toContainText('No longer matches the map');
-  await expect(stale).toContainText(`a design is no longer applied (${layoutTitle})`);
+  await expect(stale).toHaveText(`Does not match the map: a design is not applied (${layoutTitle}). Propose and Before / after need it to match.`);
+  await expect(agreementPanel(page).locator('[data-agreement-compare-unavailable]')).toHaveCount(0);
   await expect(agreementPanel(page).locator('[data-agreement-action="compare"]')).toBeDisabled();
   expect(await storedAgreements(page)).toHaveLength(1);
 
@@ -247,6 +247,12 @@ test('an agreement whose design is taken off the map no longer matches it, and c
   await editorCancel(editor).click();
   await editorClosed(page);
   await panelStatus(page, 'stale');
+
+  // The warning's Apply plan designs puts the design back; the warning goes and Before / after returns.
+  await agreementPanel(page).locator('[data-agreement-action="apply-designs"]').click();
+  await expect.poll(() => isLayoutApplied(page, layoutId), { timeout: 30_000 }).toBe(true);
+  await panelStatus(page, 'current');
+  await expect(agreementPanel(page).locator('[data-agreement-action="compare"]')).toBeEnabled();
 });
 
 test('Create agreement with no applied design names what is missing and saves nothing', async ({ mockApi: page }) => {

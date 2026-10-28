@@ -7571,14 +7571,15 @@
             "title": "Agreement",
             "untitled": "Agreement of {{date}}",
             "status": {
-                "current": "Matches the map",
-                "stale": "No longer matches the map",
+                "stale": "Does not match the map: {{reasons}}. Before / after needs it to match.",
+                "staleDraft": "Does not match the map: {{reasons}}. Propose and Before / after need it to match.",
                 "error": "The agreement could not be checked against the map: {{reason}}",
                 "reasons": {
                     "designMissing": "a design was deleted",
-                    "designNotApplied": "a design is no longer applied",
+                    "designNotApplied": "a design is not applied",
                     "designChanged": "a design changed",
-                    "groundChanged": "the ground changed"
+                    "groundChanged": "the ground changed",
+                    "unknown": "the map changed"
                 }
             },
             "ledgerHeading": "Ledger",
@@ -7598,7 +7599,6 @@
             },
             "collapse": "Close agreement",
             "removeLocalConfirm": "Remove this agreement from this device? Its designs stay on the map. Any published agreement remains available through its link.",
-            "compareUnavailable": "Before / after is available when this agreement matches the designs applied on the map.",
             "designs": "Designs in the plan"
         },
         "list": {

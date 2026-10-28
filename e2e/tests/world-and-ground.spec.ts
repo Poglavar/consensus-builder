@@ -266,7 +266,8 @@ test.describe('World navigation and open ground @features', () => {
       await expect(panel.locator('code.agreement-panel-cid')).toHaveAttribute('title', cid);
       // Its design stands on the map, and the agreement matches what it shapes there.
       await expect.poll(isApplied, { timeout: 30_000 }).toBe(true);
-      await expect(panel.locator('[data-agreement-status="current"]')).toBeVisible({ timeout: 30_000 });
+      await expect(panel).toHaveAttribute('data-agreement-check', 'current', { timeout: 30_000 });
+      await expect(panel.locator('[data-agreement-status]')).toHaveCount(0);
       // The global Activity control stays reachable over the agreement.
       const activitySheet = page.locator('#activity-sheet');
       await expect(activitySheet).toBeHidden();

@@ -249,10 +249,14 @@ export async function openMintedAgreements(page: Page): Promise<Locator> {
   return list;
 }
 
-// The panel on the right dock and the status it reached against the map.
+// The panel on the right dock once its check against the map reached `status`. A matching agreement
+// shows no status at all; one that does not match shows the warning, which is returned.
 export async function panelStatus(page: Page, status: 'current' | 'stale'): Promise<Locator> {
-  await expect(agreementPanel(page)).toBeVisible();
-  const badge = agreementPanel(page).locator(`[data-agreement-status="${status}"]`);
-  await expect(badge).toBeVisible({ timeout: 30_000 });
-  return badge;
+  const panel = agreementPanel(page);
+  await expect(panel).toBeVisible();
+  await expect(panel).toHaveAttribute('data-agreement-check', status, { timeout: 30_000 });
+  const warning = panel.locator('[data-agreement-status]');
+  if (status === 'stale') await expect(warning).toBeVisible();
+  else await expect(warning).toHaveCount(0);
+  return warning;
 }

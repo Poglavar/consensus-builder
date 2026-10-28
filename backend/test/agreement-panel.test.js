@@ -96,8 +96,15 @@ describe('statusOf', () => {
         expect(panel.inspectionFeatures(value, 'output', 'missing', context)).toEqual([]);
         expect(JSON.stringify(value)).toBe(before);
     });
-    it('says the agreement matches the map when the check is current', () => {
-        expect(panel.statusOf({ current: true, reasons: [] })).toEqual({ current: true, tone: 'success', label: 'Matches the map', reasons: [] });
+    it('has nothing to say while the agreement matches the map', () => {
+        expect(panel.statusOf({ current: true, reasons: [] })).toEqual({ current: true, reasons: [], applicable: false });
+        expect(panel.statusHtml({ status: panel.statusOf({ current: true, reasons: [] }) })).toBe('');
+    });
+
+    it('offers to apply the designs only when unapplied designs are the whole reason', () => {
+        expect(panel.statusOf({ current: false, reasons: [{ code: 'design-not-applied', proposalId: 'p-1' }, { code: 'design-not-applied', proposalId: 'p-2' }] }).applicable).toBe(true);
+        expect(panel.statusOf({ current: false, reasons: [{ code: 'design-not-applied', proposalId: 'p-1' }, { code: 'design-changed', proposalId: 'p-2' }] }).applicable).toBe(false);
+        expect(panel.statusOf({ current: false, reasons: [] }).reasons).toEqual([{ code: 'unknown', proposalId: null, text: 'the map changed' }]);
     });
 
     it('says why it no longer matches, each reason once, and leaves out codes it does not know', () => {
@@ -108,7 +115,7 @@ describe('statusOf', () => {
                 { code: 'design-changed', proposalId: 'p-2' }, { code: 'ground-changed' }, { code: 'something-new' }
             ]
         });
-        expect(status).toMatchObject({ current: false, tone: 'warning', label: 'No longer matches the map' });
+        expect(status).toMatchObject({ current: false, applicable: false });
         expect(status.reasons).toEqual([
             { code: 'design-changed', proposalId: 'p-1', text: 'a design changed' },
             { code: 'design-changed', proposalId: 'p-2', text: 'a design changed' },
@@ -267,14 +274,18 @@ describe('the rule, the title and the designs', () => {
 });
 
 describe('panel HTML', () => {
-    it('shows the status with the reasons and the design they name, or that it is still reading', () => {
+    it('warns with the reasons and the design they name, or says that it is still reading', () => {
         const stale = panel.statusHtml({
             status: panel.statusOf({ current: false, reasons: [{ code: 'design-changed', proposalId: 'layout-1' }, { code: 'ground-changed' }] }),
             designTitles: new Map([['layout-1', 'Courtyard <layout>']])
         });
         expect(stale).toContain('data-agreement-status="stale"');
-        expect(stale).toContain('cb-badge--warning');
-        expect(stale).toContain('a design changed (Courtyard &lt;layout&gt;); the ground changed');
+        expect(stale).toContain('agreement-panel-note--warning');
+        expect(stale).toContain('Does not match the map: a design changed (Courtyard &lt;layout&gt;); the ground changed. Propose and Before / after need it to match.');
+        expect(stale).not.toContain('data-agreement-action="apply-designs"');
+        const proposed = panel.statusHtml({ published: true, status: panel.statusOf({ current: false, reasons: [{ code: 'design-not-applied', proposalId: 'layout-1' }] }) });
+        expect(proposed).toContain('Does not match the map: a design is not applied. Before / after needs it to match.');
+        expect(proposed).toContain('data-agreement-action="apply-designs"');
         expect(panel.statusHtml({ checking: true })).toContain('Reading the land under the designs…');
         expect(panel.statusHtml({ error: 'offline' })).toContain('The agreement could not be checked against the map: offline');
     });

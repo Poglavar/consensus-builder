@@ -114,7 +114,7 @@ The wallet named in a published agreement that creates its chain account and con
 
 ### Agreement currentness
 
-Whether a local agreement still matches its referenced designs, their application, and the derived input and output land. A stale agreement retains its published identity but no longer describes the current working composition.
+Whether a local agreement still matches its referenced designs, their application, and the derived input and output land. A stale agreement retains its published identity but no longer describes the current working composition. The agreement panel warns only about a stale agreement, and Propose and Before / after need a current one.
 
 ### Local key
 

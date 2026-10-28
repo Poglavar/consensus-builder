@@ -382,8 +382,9 @@ the `proposal:<id>` rows. It never takes part in `ParcelMutation`: an agreement 
   `ReparcellizationDeal.schedule`; joint shares parse with `ReparcellizationAllocation.parsePercentShares`.
 - **Current or stale**: the panel re-derives inputs and outputs from the fabric and compares them
   with the record (`AgreementGround.check`): a missing, unapplied or changed design, or different
-  input ids or output hashes, mark the agreement stale and disable Compare. Nothing is auto-updated;
-  Edit recomputes.
+  input ids or output hashes, mark the agreement stale and disable Compare and Propose. A current
+  agreement shows no status; a stale one shows one warning naming why, with Apply plan designs when
+  unapplied designs are the only reason. Nothing is auto-updated; Edit recomputes.
 - Flattened (not carried over): deposit, decay, conditional and disbursement terms (chain funding
   mechanics, revisited in M3); per-input child agreements; the LR deal payload and its fingerprint
   (the agreement's CID replaces it in M2); `reparcellizationAgreement` on records.

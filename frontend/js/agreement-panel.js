@@ -63,13 +63,15 @@
     // One literal key per reason code of AgreementGround.check, so the locale coverage test sees them.
     const REASON_TEXT = {
         'design-missing': tr => tr('agreement.panel.status.reasons.designMissing', 'a design was deleted'),
-        'design-not-applied': tr => tr('agreement.panel.status.reasons.designNotApplied', 'a design is no longer applied'),
+        'design-not-applied': tr => tr('agreement.panel.status.reasons.designNotApplied', 'a design is not applied'),
         'design-changed': tr => tr('agreement.panel.status.reasons.designChanged', 'a design changed'),
-        'ground-changed': tr => tr('agreement.panel.status.reasons.groundChanged', 'the ground changed')
+        'ground-changed': tr => tr('agreement.panel.status.reasons.groundChanged', 'the ground changed'),
+        unknown: tr => tr('agreement.panel.status.reasons.unknown', 'the map changed')
     };
 
-    // "Matches the map", or "No longer matches the map" and why (AgreementGround.check). Each reason
-    // is said once; a reason about one design names it by proposalId.
+    // Why the agreement does not match the map (AgreementGround.check); a matching one has nothing to
+    // say. Each reason is said once; a reason about one design names it by proposalId. When every
+    // reason is an unapplied design, applying them is the fix (`applicable`).
     function statusOf(check, tr = t) {
         const current = !!check && check.current === true;
         const seen = new Set();
@@ -84,14 +86,9 @@
                 reasons.push({ code, proposalId, text: text(tr) });
             });
         }
-        return {
-            current,
-            tone: current ? 'success' : 'warning',
-            label: current
-                ? tr('agreement.panel.status.current', 'Matches the map')
-                : tr('agreement.panel.status.stale', 'No longer matches the map'),
-            reasons
-        };
+        if (!current && !reasons.length) reasons.push({ code: 'unknown', proposalId: null, text: REASON_TEXT.unknown(tr) });
+        const applicable = !current && reasons.every(reason => reason.code === 'design-not-applied');
+        return { current, reasons, applicable };
     }
 
     // The land in numbers: input parcels, their recorded area (null when any of it is unknown: a
@@ -292,7 +289,8 @@
 
     const sectionHtml = (title, content) => `<section class="agreement-panel-section"><h3 class="agreement-panel-heading">${esc(title)}</h3>${content}</section>`;
 
-    function statusHtml({ checking, error, status, designTitles, readOnly = false }, tr = t) {
+    // Nothing while the agreement matches the map; otherwise one warning saying why and what waits on it.
+    function statusHtml({ checking, error, status, designTitles, readOnly = false, published = false }, tr = t) {
         if (readOnly) return `<p class="agreement-panel-note" data-agreement-read-only-status>${esc(tr('agreement.publish.readOnlyStatus', 'Read-only view. Local map status is not evaluated.'))}</p>`;
         if (error) {
             return `<p class="agreement-panel-note agreement-panel-note--danger" role="alert">${esc(tr('agreement.panel.status.error', 'The agreement could not be checked against the map: {{reason}}', { reason: error }))}</p>`;
@@ -301,9 +299,13 @@
         const titles = designTitles instanceof Map ? designTitles : new Map();
         const reasons = status.reasons.map(reason => (reason.proposalId && titles.get(reason.proposalId)
             ? `${reason.text} (${titles.get(reason.proposalId)})` : reason.text)).join('; ');
-        return `<div class="agreement-panel-status" role="status" data-agreement-status="${status.current ? 'current' : 'stale'}">`
-            + `<span class="cb-badge cb-badge--${status.tone}">${esc(status.label)}</span>`
-            + (reasons ? `<p class="agreement-panel-reasons">${esc(reasons)}</p>` : '')
+        if (status.current) return '';
+        const text = published
+            ? tr('agreement.panel.status.stale', 'Does not match the map: {{reasons}}. Before / after needs it to match.', { reasons })
+            : tr('agreement.panel.status.staleDraft', 'Does not match the map: {{reasons}}. Propose and Before / after need it to match.', { reasons });
+        return '<div class="agreement-panel-note agreement-panel-note--warning agreement-panel-status" role="status" data-agreement-status="stale">'
+            + `<p class="agreement-panel-status-text">${esc(text)}</p>`
+            + (status.applicable ? `<button type="button" class="btn btn-sm" data-agreement-action="apply-designs">${esc(tr('agreement.workflow.applyPlan', 'Apply plan designs'))}</button>` : '')
             + '</div>';
     }
 
@@ -731,7 +733,7 @@
             const agreement = state.agreement;
             const readOnly = !!state.readOnlyAgreement;
             const status = statusHtml({
-                checking: state.checking, error: state.error, readOnly,
+                checking: state.checking, error: state.error, readOnly, published: !!(agreement && agreement.published),
                 status: state.check ? statusOf(state.check) : null,
                 designTitles: new Map(((agreement && agreement.designs) || []).map(design => [idOf(design.proposalId), design.title || '']))
             });
@@ -775,7 +777,6 @@
             if (!(state.tab in panels)) state.tab = 'overview';
             return status
                 + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement), readOnly })
-                + (!current && !readOnly ? `<p class="agreement-panel-hint" data-agreement-compare-unavailable>${esc(t('agreement.panel.compareUnavailable', 'Before / after is available when this agreement matches the designs applied on the map.'))}</p>` : '')
                 + tabbedHtml(panels, state.tab, t, counts);
         }
 
@@ -789,6 +790,9 @@
             close.setAttribute('aria-label', closeLabel);
             close.title = closeLabel;
             panel.querySelector('[data-agreement-region="body"]').innerHTML = bodyHtml();
+            // The check's outcome for tests and styling; a matching agreement shows no status of its own.
+            panel.setAttribute('data-agreement-check', state.readOnlyAgreement ? 'read-only' : state.error ? 'error'
+                : state.checking || !state.check ? 'checking' : state.check.current ? 'current' : 'stale');
             if (state.inspectedKey) panel.querySelectorAll('[data-agreement-inspect]').forEach(button => {
                 button.setAttribute('aria-pressed', String(`${button.dataset.agreementInspect}:${button.dataset.agreementObjectId}` === state.inspectedKey));
             });
@@ -1063,6 +1067,19 @@
                 return;
             }
             if (saved?.id) await win.ClickStack.showAgreement(store().get(saved.id) || saved);
+        }
+
+        // Applies the agreement's designs as one plan; the fabric commit re-checks the panel (onFabricChange).
+        async function applyDesigns() {
+            const ids = (state.agreement?.designs || []).map(design => idOf(design.proposalId)).filter(Boolean);
+            log(`applying the ${ids.length} design(s) of ${state.id}`);
+            const result = await win.ProposalManager.applyProposalPlan(ids);
+            win.updateProposalLayer?.();
+            win.updateShowProposalsButton?.();
+            if (result && result.ok === true) return;
+            const failures = win.ProposalManager._lastFailedPlanApplySummary?.failed || [];
+            throw new Error(failures.map(failure => failure.reason || failure.message).filter(Boolean).join('; ')
+                || t('proposals.share.errors.applyFailed', 'The design could not be applied to the ground here.'));
         }
 
         // Propose (agreement-sync.js): publishes the designs and the agreement, then copies the link.
@@ -1389,6 +1406,7 @@
                 case 'close': close(); break;
                 case 'plan': win.BusyControl.track(action, () => win.ClickStack.showPlan(state.agreement.plan, { designs: state.agreement.designs, draft: !state.agreement.published })).catch(error => win.showStyledAlert(error.message)); break;
                 case 'compare': win.BusyControl.track(action, () => win.toggleAgreementBeforeAfter(state.id)); break;
+                case 'apply-designs': win.BusyControl.track(action, () => applyDesigns()).catch(error => win.showStyledAlert(error.message)); break;
                 case 'propose': win.BusyControl.track(action, () => propose()); break;
                 case 'link': copyLink(); break;
                 case 'mint': mint(); break;

@@ -1880,14 +1880,15 @@
             "title": "Accord",
             "untitled": "Accord du {{date}}",
             "status": {
-                "current": "Correspond à la carte",
-                "stale": "Ne correspond plus à la carte",
+                "stale": "Ne correspond pas à la carte : {{reasons}}. Avant / après exige qu’il corresponde.",
+                "staleDraft": "Ne correspond pas à la carte : {{reasons}}. Proposer et Avant / après exigent qu’il corresponde.",
                 "error": "La correspondance de l’accord avec la carte n’a pas pu être vérifiée : {{reason}}",
                 "reasons": {
                     "designMissing": "un projet a été supprimé",
-                    "designNotApplied": "un projet n’est plus appliqué",
+                    "designNotApplied": "un projet n’est pas appliqué",
                     "designChanged": "un projet a changé",
-                    "groundChanged": "le terrain a changé"
+                    "groundChanged": "le terrain a changé",
+                    "unknown": "la carte a changé"
                 }
             },
             "ledgerHeading": "Registre",
@@ -1900,7 +1901,6 @@
             "deadline": "Date limite : {{date}}",
             "collapse": "Fermer l’accord",
             "removeLocalConfirm": "Retirer cet accord de cet appareil ? Ses projets restent sur la carte. Tout accord publié reste accessible via son lien.",
-            "compareUnavailable": "La comparaison avant / après est disponible lorsque cet accord correspond aux projets appliqués sur la carte.",
             "designs": "Projets du plan"
         },
         "addTo": {

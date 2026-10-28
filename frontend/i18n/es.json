@@ -7598,14 +7598,15 @@
             "title": "Acuerdo",
             "untitled": "Acuerdo del {{date}}",
             "status": {
-                "current": "Coincide con el mapa",
-                "stale": "Ya no coincide con el mapa",
+                "stale": "No coincide con el mapa: {{reasons}}. Antes / Después necesita que coincida.",
+                "staleDraft": "No coincide con el mapa: {{reasons}}. Proponer y Antes / Después necesitan que coincida.",
                 "error": "No se pudo comprobar el acuerdo con el mapa: {{reason}}",
                 "reasons": {
                     "designMissing": "se eliminó un diseño",
-                    "designNotApplied": "un diseño ya no está aplicado",
+                    "designNotApplied": "un diseño no está aplicado",
                     "designChanged": "un diseño cambió",
-                    "groundChanged": "el terreno cambió"
+                    "groundChanged": "el terreno cambió",
+                    "unknown": "el mapa cambió"
                 }
             },
             "ledgerHeading": "Balance",
@@ -7625,7 +7626,6 @@
             },
             "collapse": "Cerrar acuerdo",
             "removeLocalConfirm": "¿Quitar este acuerdo de este dispositivo? Sus diseños permanecen en el mapa. El acuerdo publicado sigue disponible a través de su enlace.",
-            "compareUnavailable": "Antes / después está disponible cuando el acuerdo coincide con los diseños aplicados en el mapa.",
             "designs": "Diseños del plan"
         },
         "list": {

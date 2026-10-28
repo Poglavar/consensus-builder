@@ -1880,14 +1880,15 @@
             "title": "Acordo",
             "untitled": "Acordo de {{date}}",
             "status": {
-                "current": "Corresponde ao mapa",
-                "stale": "Já não corresponde ao mapa",
+                "stale": "Não corresponde ao mapa: {{reasons}}. Antes / depois exige que corresponda.",
+                "staleDraft": "Não corresponde ao mapa: {{reasons}}. Propor e Antes / depois exigem que corresponda.",
                 "error": "Não foi possível verificar o acordo face ao mapa: {{reason}}",
                 "reasons": {
                     "designMissing": "um projeto foi eliminado",
-                    "designNotApplied": "um projeto já não está aplicado",
+                    "designNotApplied": "um projeto não está aplicado",
                     "designChanged": "um projeto foi alterado",
-                    "groundChanged": "o terreno foi alterado"
+                    "groundChanged": "o terreno foi alterado",
+                    "unknown": "o mapa mudou"
                 }
             },
             "ledgerHeading": "Registo de movimentos",
@@ -1900,7 +1901,6 @@
             "deadline": "Prazo: {{date}}",
             "collapse": "Fechar acordo",
             "removeLocalConfirm": "Remover este acordo deste dispositivo? Os respetivos projetos permanecem no mapa. Qualquer acordo publicado continua disponível através da sua ligação.",
-            "compareUnavailable": "A comparação antes/depois está disponível quando este acordo corresponde aos projetos aplicados no mapa.",
             "designs": "Projetos do plano"
         },
         "addTo": {

@@ -7612,14 +7612,15 @@
             "title": "Sporazum",
             "untitled": "Sporazum od {{date}}",
             "status": {
-                "current": "Odgovara mapi",
-                "stale": "Više ne odgovara mapi",
+                "stale": "Ne odgovara mapi: {{reasons}}. Za Pre / Posle mora da odgovara.",
+                "staleDraft": "Ne odgovara mapi: {{reasons}}. Za Predloži i Pre / Posle mora da odgovara.",
                 "error": "Sporazum nije mogao da se proveri prema mapi: {{reason}}",
                 "reasons": {
                     "designMissing": "dizajn je izbrisan",
-                    "designNotApplied": "dizajn više nije primenjen",
+                    "designNotApplied": "dizajn nije primenjen",
                     "designChanged": "dizajn se promenio",
-                    "groundChanged": "tlo se promenilo"
+                    "groundChanged": "tlo se promenilo",
+                    "unknown": "mapa se promenila"
                 }
             },
             "ledgerHeading": "Bilans",
@@ -7639,7 +7640,6 @@
             },
             "collapse": "Zatvori sporazum",
             "removeLocalConfirm": "Ukloniti ovaj sporazum sa ovog uređaja? Njegova dizajni ostaju na mapi. Objavljeni sporazum ostaje dostupan putem veze.",
-            "compareUnavailable": "Pre / posle je dostupno kada sporazum odgovara rešenjima primenjenim na mapi.",
             "designs": "Dizajni u planu"
         },
         "list": {
