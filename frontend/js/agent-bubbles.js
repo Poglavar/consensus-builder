@@ -8,30 +8,6 @@ class AgentBubbleManager {
         this.bubbleContainer = null;
         this.map = null;
         this.initialized = false;
-        // Hold strong references to preloaded avatar Images so the browser
-        // keeps them in its memory cache for the session. Without preloading
-        // each bubble starts a fresh HTTP fetch + decode and shows a blank
-        // disc for a beat before painting — noticeable even on localhost.
-        this._preloadedAvatars = [];
-        this.preloadAvatars();
-    }
-
-    /**
-     * Eagerly fetch and decode every avatar so the first bubble for each
-     * avatar paints immediately instead of after the network/decode round-trip.
-     */
-    preloadAvatars() {
-        const MAX = 17; // mirrors MAX_AGENTS in agents.js
-        for (let i = 0; i < MAX; i++) {
-            const img = new Image();
-            img.src = (typeof getAvatarImagePath === 'function')
-                ? getAvatarImagePath(i)
-                : `avatars/avatar${i}.png`;
-            if (typeof img.decode === 'function') {
-                img.decode().catch(() => { /* ignore decode errors */ });
-            }
-            this._preloadedAvatars.push(img);
-        }
     }
 
     /**
@@ -135,13 +111,21 @@ class AgentBubbleManager {
 
         // Create bubble element
         bubbleData.element = this.createBubbleElement(bubbleData);
-        this.bubbleContainer.appendChild(bubbleData.element);
 
         // Store bubble data
         this.bubbles.set(bubbleId, bubbleData);
 
-        // Position the bubble
-        this.updateBubblePosition(bubbleData);
+        // Avatars load when a bubble first needs one (not at boot: bubbles are rare). The bubble
+        // joins the map once its image is decoded, so it never paints as a blank disc; a failed
+        // image still shows the bubble. A bubble removed meanwhile stays out.
+        const show = () => {
+            if (this.bubbles.get(bubbleId) !== bubbleData) return;
+            this.bubbleContainer.appendChild(bubbleData.element);
+            this.updateBubblePosition(bubbleData);
+        };
+        const avatar = bubbleData.element.querySelector('img');
+        if (avatar && typeof avatar.decode === 'function') avatar.decode().then(show, show);
+        else show();
 
         // Note: Bubbles will only be removed on click or when game state updates
     }
