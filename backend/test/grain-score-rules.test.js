@@ -10,8 +10,43 @@ const {
     startingParcelIds,
     scoreParcelCount,
     scorePlan,
-    roosterPose
+    roosterPose,
+    appliedPlanGround
 } = require('../../frontend/js/proposals/grain-score-rules.js');
+
+// The rooster reads an applied plan from the live map: the members' own anchors plus the ground
+// their pieces stand on, the live entries over that ground, and the original parcels. A member
+// that is not applied, or not on this device, leaves nothing to inspect.
+describe('the applied plan on the map', () => {
+    const records = [
+        { proposalId: 'p-road', applied: true, cadastreParcelIds: ['A', 'B'] },
+        { proposalId: 'p-layout', applied: true, cadastreParcelIds: ['B'] },
+        { proposalId: 'p-park', applied: false, cadastreParcelIds: ['C'] }
+    ];
+    const ports = {
+        records,
+        cidOf: record => `cid:${record.proposalId}`,
+        isApplied: record => record.applied === true,
+        producedBy: id => (id === 'p-layout' ? [{ properties: { cadastreParcelIds: ['B', 'D'] } }] : []),
+        entriesForCadastre: (ids, options) => ids.map(id => ({ properties: { parcelId: `${id}#live`, cadastreParcelIds: [id] }, options })),
+        originalOf: id => (id === 'D' ? null : { properties: { parcelId: id } })
+    };
+    it('reads the members’ ground and pieces from the live fabric', () => {
+        const ground = appliedPlanGround({ ...ports, members: [{ cid: 'cid:p-road' }, { cid: 'cid:p-layout' }] });
+        expect(ground.ok).toBe(true);
+        expect(ground.proposals.map(record => record.proposalId)).toEqual(['p-road', 'p-layout']);
+        // A, B from the anchors; D from a piece the layout produced beyond its own anchors.
+        expect(ground.cadastreIds).toEqual(['A', 'B', 'D']);
+        expect(ground.materializedFeatures.map(feature => feature.properties.parcelId)).toEqual(['A#live', 'B#live', 'D#live']);
+        expect(ground.materializedFeatures[0].options).toEqual({ includeCorridors: false });
+        expect(ground.cadastralFeatures.map(feature => feature.properties.parcelId)).toEqual(['A', 'B']);
+    });
+    it('refuses a plan with an unapplied or missing member', () => {
+        expect(appliedPlanGround({ ...ports, members: [{ cid: 'cid:p-road' }, { cid: 'cid:p-park' }] })).toMatchObject({ ok: false, missing: ['cid:p-park'], proposals: [] });
+        expect(appliedPlanGround({ ...ports, members: [{ cid: 'cid:elsewhere' }] })).toMatchObject({ ok: false, missing: ['cid:elsewhere'] });
+        expect(appliedPlanGround({ ...ports, members: [] })).toMatchObject({ ok: true, cadastreIds: [], materializedFeatures: [], cadastralFeatures: [] });
+    });
+});
 
 const R = 6378137;
 

@@ -27,6 +27,12 @@ describe('grain score wiring', () => {
         expect(index).toContain("'js/proposals/grain-score.js'");
     });
 
+    it('scores the applied plan from the live map, never a headless replay of its bindings', () => {
+        expect(scoreSource).not.toContain('PlanAnalysis');
+        expect(scoreSource).toContain('global.PlanWorkspace.resolve(plan)');
+        expect(scoreSource).toContain('rules.appliedPlanGround(');
+        expect(scoreSource).toContain("t('agreement.workflow.planNotApplied'");
+    });
     it('ships only the two approved parcel cues, with no completion effect', () => {
         expect(scoreSource).toContain('rooster-check-fail.wav');
         expect(scoreSource).toContain('rooster-check-success.wav');

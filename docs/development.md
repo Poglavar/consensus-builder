@@ -180,10 +180,14 @@ and saved view and writes only local storage. **Add to plan** opens a new compos
 revision. A plan row offers **Create agreement** with that exact plan as its subject. Draft agreements
 are reviewed and proposed in agreement details before their public link can be shared.
 
-**Plan stats** and **Urban rooster** belong to each saved plan row. `PlanAnalysis` resolves exact
-members, obtains their source bindings and source parcels, and calls `AgreementHeadless.materialize`
-with private fabric, ownership and storage ports. It does not read or change the displayed composition.
-Unapplied members count; unrelated applied designs do not. The rooster retains its colored portrait.
+**Plan stats** and **Urban rooster** belong to each saved plan row. For Plan stats, `PlanAnalysis`
+resolves exact members, obtains their source bindings and source parcels, and calls
+`AgreementHeadless.materialize` with private fabric, ownership and storage ports; it does not read
+or change the displayed composition, unapplied members count, unrelated applied designs do not.
+The rooster scores the plan as it stands on the map (user ruling 2026-10-28): every member must be
+applied, and `GrainScoreRules.appliedPlanGround` reads the members' pieces and ground from the
+live fabric and the cadastral repository, with no binding and no headless replay. An unapplied
+member is refused with the "apply every design" message. The rooster retains its colored portrait.
 The old map-wide statistics button and `?planStats=1` applied-composition follower are removed.
 No authored contract changes or new MCP editing operations are needed; MCP ground inspection uses
 `AgreementHeadless.derive` over the same formation handlers. Targeted tests check the shared host,

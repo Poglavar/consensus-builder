@@ -1,5 +1,6 @@
-// Parcel inspection for one exact saved plan. The private ground snapshot supplies
-// the measured shapes; the map presents the rooster’s visit and scorecard.
+// Parcel inspection for one exact saved plan as it stands on the map: every member applied, its
+// pieces read from the live fabric (no binding, no headless replay). The map presents the rooster’s
+// visit and scorecard; an unapplied member leaves nothing to inspect.
 (function (global) {
     'use strict';
 
@@ -391,9 +392,21 @@
 
     async function prepareExperience(plan) {
         state.prepared = null;
-        const snapshot = await global.PlanAnalysis.prepare(plan);
-        const proposals = snapshot.records;
-        const { materializedFeatures, cadastralFeatures } = snapshot;
+        const snapshot = await global.PlanWorkspace.resolve(plan);
+        const ground = rules.appliedPlanGround({
+            members: snapshot.designs,
+            records: global.proposalStorage.getAllProposals(),
+            cidOf: record => global.DesignRecord.cidOf(record),
+            isApplied: record => global.isApplied(record),
+            producedBy: id => global.LiveParcelFabric.producedBy(id),
+            entriesForCadastre: (ids, options) => global.LiveParcelFabric.entriesForCadastre(ids, options),
+            originalOf: id => global.CadastralParcelRepository.get(id)
+        });
+        if (!ground.ok) {
+            renderError(t('agreement.workflow.planNotApplied', 'Apply every design of this saved plan before reading its land.'));
+            return null;
+        }
+        const { proposals, materializedFeatures, cadastralFeatures } = ground;
         const fabric = yieldApi.resultingParcels(proposals, {
             appliedOnly: true,
             materializedFeatures
