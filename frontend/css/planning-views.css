@@ -5,6 +5,14 @@
 }
 #planning-views-button { flex: 0 0 var(--map-shell-button-size); padding: 0; }
 #planning-views-button[hidden], body.map-search-expanded #planning-views-button { display: none; }
+/* The button's three cubes, one per layer: neutral while the layer is off, its swatch colour while it shows. */
+.planning-cubes { width: 18px; height: 18px; }
+.planning-cube { fill: var(--cb-text); }
+.planning-cube-left { fill-opacity: 0.72; }
+.planning-cube-right { fill-opacity: 0.48; }
+body:is([data-planning-existing="solid"], [data-planning-existing="ghost"]) .planning-cube--existing { fill: var(--cb-planning-existing); }
+body:is([data-planning-permitted="solid"], [data-planning-permitted="ghost"]) .planning-cube--permitted { fill: var(--cb-planning-permitted); }
+body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .planning-cube--proposed { fill: var(--cb-planning-proposed); }
 .planning-eyebrow {
     margin: 0 0 var(--cb-space-2);
     color: var(--cb-text-muted);

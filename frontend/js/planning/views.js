@@ -489,6 +489,7 @@
         const view = policy();
         document.body.dataset.planningProposed = view.proposed;
         document.body.dataset.planningExisting = view.existing;
+        document.body.dataset.planningPermitted = view.permitted;
         document.body.dataset.planningExistingScope = state.existingScope;
         const signature = JSON.stringify({ ...core.settings(state), proposedVariation: state.proposedVariation, permittedVariation: state.permittedVariation });
         const settingsChanged = lastSettings !== signature;
