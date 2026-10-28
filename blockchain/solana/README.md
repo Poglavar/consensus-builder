@@ -28,7 +28,7 @@ Solana equivalents of the EVM ParcelNFT and ProposalNFT contracts.
 
 ## Lens model v2 — deployed to devnet; verified 2026-10-02
 
-Design of record: [`lens-model.md`](../../lens-model.md). The checked-in IDLs describe the deployed
+Design of record: [`lens-model.md`](../../docs/lens-model.md). The checked-in IDLs describe the deployed
 source: ParcelNFT v2, ProposalMarket v2 and ProposalNFT v3 (v3 includes the v2 lens acceptance and
 verdict behavior), except `idl/proposal_market.json` and `idl/proposal_pledge.json`, which since
 2026-10-22 come from the agreement-reading source: their existing instructions, accounts, arguments
@@ -145,8 +145,8 @@ passed on the validator clock, so the pledge suite's only genesis fixture is the
 
 ## proposal_nft v3, parcel-optional proposals — deployed to devnet; verified 2026-10-02
 
-Design: [`PARCEL-OPTIONAL.md`](../../PARCEL-OPTIONAL.md) (Chain, phase 5) and
-[`lens-model.md`](../../lens-model.md) ("proposal_nft v3"). A proposal is about a site; its parcel
+Design: [`PARCEL-OPTIONAL.md`](../../docs/PARCEL-OPTIONAL.md) (Chain, phase 5) and
+[`lens-model.md`](../../docs/lens-model.md) ("proposal_nft v3"). A proposal is about a site; its parcel
 list is the site's cadastral binding and may be empty. `idl/proposal_nft.json` is v3;
 `idl/legacy/proposal_nft.v2.json` is the v2 interface it replaces (the tx decoder tries v3, v2, v1).
 
@@ -241,7 +241,7 @@ mirrored prefix struct until 2026-10-22; its source now reads `agreement` accoun
 the legacy account layout untouched and verifies court-oracle SAS accounts owned by
 `22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG`. That compatible upgrade went live on 2026-09-21;
 the first two-sided court-resolved market and its transaction proof are linked from
-[`HACKATHON.md`](../../HACKATHON.md#live-external-market-proof).
+[`HACKATHON.md`](../../docs/HACKATHON.md#live-external-market-proof).
 
 Run `scripts/external-market-lifecycle.mjs` without arguments for a redacted, read-only validation
 of the live SAS evidence. Pass `--live` only when intentionally creating another devnet market and

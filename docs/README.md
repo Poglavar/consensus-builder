@@ -13,11 +13,11 @@
 - [Views, comparisons and counterproposals](https://urbangametheory.xyz/how-to-use-views.html).
 - [Croatian guides](https://urbangametheory.xyz/kako-koristiti.html) and [roadmap](https://urbangametheory.xyz/roadmap.html).
 
-The videos recorded on 26 October 2026 include English narration, captions and transcripts. Each is embedded beside the relevant written procedure. Local application, publication, a shared composition, named-plan membership, owner acceptance and execution evidence are distinct states. An execution status or source event does not prove payment, legal registration or physical construction; see the [domain vocabulary](../vocabulary.md) for the current boundaries.
+The videos recorded on 26 October 2026 include English narration, captions and transcripts. Each is embedded beside the relevant written procedure. Local application, publication, a shared composition, named-plan membership, owner acceptance and execution evidence are distinct states. An execution status or source event does not prove payment, legal registration or physical construction; see the [domain vocabulary](vocabulary.md) for the current boundaries.
 
 ## Develop and integrate
 
-- [Local development](development.md) and [test scope](../TEST.md).
+- [Local development](development.md) and [test scope](TEST.md).
 - [API and agent quickstart](https://api.urbangametheory.xyz/docs/agents).
 - [Agent runtime](../backend/agents/README.md).
 - [Restatements of existing situations and plans](../restatements/README.md).
@@ -26,4 +26,4 @@ The protocol build is maintained on `colosseum-worlds-fair`. Its [architecture](
 
 ## Specialist and historical references
 
-[ENS](../feature-ens-readme.md) and [Canton/DAML](../feature-daml-readme.md) preserve implementation notes for those integrations. Use their dated deployment statements as historical evidence, and verify current configuration before running a chain-specific operation. They are not the current map walkthrough.
+[ENS](feature-ens-readme.md) and [Canton/DAML](feature-daml-readme.md) preserve implementation notes for those integrations. Use their dated deployment statements as historical evidence, and verify current configuration before running a chain-specific operation. They are not the current map walkthrough.

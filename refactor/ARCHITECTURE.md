@@ -1,7 +1,7 @@
 # proposals.js — target architecture (for sign-off)
 
 > Historical module-split design. The authoritative parcel, proposal, persistence, and presentation
-> boundaries are documented in [`rethink-proposals.md`](../rethink-proposals.md#0-current-architecture-two-durable-facts-one-mutation-path).
+> boundaries are documented in [`rethink-proposals.md`](../docs/rethink-proposals.md#0-current-architecture-two-durable-facts-one-mutation-path).
 
 ## The one constraint that dictates everything: it's a classic global-scope script
 

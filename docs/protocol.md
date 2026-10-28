@@ -206,7 +206,7 @@ markets. Both match the fixed parser in `ExternalMarket`; dynamic adapter loadin
 
 ## Lens model and the trust boundary
 
-Design of record: [`lens-model.md`](../lens-model.md). Program detail:
+Design of record: [`lens-model.md`](lens-model.md). Program detail:
 [`blockchain/solana/README.md`](../blockchain/solana/README.md#lens-model-v2--deployed-to-devnet-verified-2026-10-02).
 
 ### Deployed versus built

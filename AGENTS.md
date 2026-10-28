@@ -1,6 +1,6 @@
 Unless overriden here, follow instructions from ../AGENTS.md (the workspace-wide file one level up)
 
-Domain terminology is maintained in [vocabulary.md](vocabulary.md). Read it when changing domain
+Domain terminology is maintained in [vocabulary.md](docs/vocabulary.md). Read it when changing domain
 records or behavior, and update it in the same change when a definition, relationship, identity,
 state, unit, or source of truth changes. Keep it a glossary of current definitions and essential
 relationships. Implementation notes, roadmaps, test results and change history belong in separate

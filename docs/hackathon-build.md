@@ -14,7 +14,7 @@ cd consensus-builder
 git diff --stat 3ee1855...HEAD
 ```
 
-`3ee1855` is the disclosed pre-hackathon baseline. [`HACKATHON.md`](../HACKATHON.md) lists the
+`3ee1855` is the disclosed pre-hackathon baseline. [`HACKATHON.md`](HACKATHON.md) lists the
 features and public proof links added after it.
 
 ## 2. Install and run the fast tests
@@ -28,8 +28,8 @@ npm test
 The backend suite uses Vitest. Network, signing, database, and live-ledger behavior is mocked unless
 a test explicitly documents an opt-in environment flag.
 
-Historical test counts are recorded in [`TEST.md`](../TEST.md); they are not a verification of a newer checkout. Run the affected headless unit tests first.
-See [`TEST.md`](../TEST.md) for coverage scope and limitations. To run the browser suite visibly:
+Historical test counts are recorded in [`TEST.md`](TEST.md); they are not a verification of a newer checkout. Run the affected headless unit tests first.
+See [`TEST.md`](TEST.md) for coverage scope and limitations. To run the browser suite visibly:
 
 ```sh
 cd e2e

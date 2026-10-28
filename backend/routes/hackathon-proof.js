@@ -40,7 +40,7 @@ export function buildHackathonProofManifest({ apiBase, env = process.env, deploy
             baselineCommit: '3ee1855',
             releaseCommit: env.RELEASE_SHA || env.GIT_COMMIT || null,
             repository: `${repository}/tree/colosseum-worlds-fair`,
-            scopeDocument: `${repository}/blob/colosseum-worlds-fair/HACKATHON.md`
+            scopeDocument: `${repository}/blob/colosseum-worlds-fair/docs/HACKATHON.md`
         },
         releaseArtifacts: {
             backend: {

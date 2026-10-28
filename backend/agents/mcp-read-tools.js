@@ -11,7 +11,7 @@ const footprintParts = require('../../frontend/js/proposals/footprint-parts.js')
 const search = require('../../frontend/js/ui/search-model.js');
 const browserSources = require('../../frontend/js/browser-source-readers.js');
 const databaseSources = JSON.parse(readFileSync(new URL('../../frontend/data/source-catalog.json', import.meta.url), 'utf8')).databaseSources;
-const vocabulary = () => readFileSync(new URL('../../vocabulary.md', import.meta.url), 'utf8');
+const vocabulary = () => readFileSync(new URL('../../docs/vocabulary.md', import.meta.url), 'utf8');
 const failure = (code, message, next) => Object.assign(new Error(message), { code, next });
 // Indexed designs retain the source on their binding. The Croatian PostGIS binding names its
 // cadastral namespace; the public read/binding gateway for that same stock is oss-wfs.

@@ -74,7 +74,7 @@ Every inventory field maps to exactly one row below. D/S are counts in the Distr
 | `accessory_size` / 2–4 | An accessory shape can be drawn/measured. | Need maximum area and percent-of-primary limits with the correct denominator, use and unit-count relationship. Z01/Z02. |
 | `mobile_home` / 1–1 | A typology/label can illustrate a manufactured/mobile home. | No standardized use eligibility within planned residential developments; a visual object type is insufficient. Z07. |
 
-Code evidence: [parcel/block rule normalization, evaluation and variation](../frontend/js/urban-rule-variation.js), [agent planner and scalar capping](../backend/agents/planner.js), [source rule reduction](../backend/agents/parcel-source.js), [proposal decision kinds](../frontend/js/proposals/proposal-kind.js), [building/floor geometry](../frontend/js/building-extrusion.js), [floor model vocabulary](../vocabulary.md), [source geometry collection](../frontend/js/proposals/geometry.js). V references are the existing [vocabulary audit findings](vocabulary-audit-2026-10-23.md#audit-register--findings-and-resolutions).
+Code evidence: [parcel/block rule normalization, evaluation and variation](../frontend/js/urban-rule-variation.js), [agent planner and scalar capping](../backend/agents/planner.js), [source rule reduction](../backend/agents/parcel-source.js), [proposal decision kinds](../frontend/js/proposals/proposal-kind.js), [building/floor geometry](../frontend/js/building-extrusion.js), [floor model vocabulary](vocabulary.md), [source geometry collection](../frontend/js/proposals/geometry.js). V references are the existing [vocabulary audit findings](vocabulary-audit-2026-10-23.md#audit-register--findings-and-resolutions).
 
 ## Comparison with the requested Zagreb session
 
