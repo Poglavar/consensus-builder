@@ -246,6 +246,7 @@
                 "buttonLabel": "Estatísticas do plano",
                 "calculating": "A calcular…",
                 "modalTitle": "Estatísticas do plano",
+                "planArea": "Área do plano (m²)",
                 "resultingParcels": "Parcelas resultantes (média em m²)",
                 "floorArea": "Área bruta de construção (m²)",
                 "salesSuffix": "{{currency}} por m²",
@@ -1926,7 +1927,10 @@
             "proposer": "Proponente",
             "publicLand": "Terreno público",
             "individual": "Definir individualmente",
-            "allOutputs": "Atribuir parcelas resultantes"
+            "allOutputs": "Atribuir parcelas resultantes",
+            "random": "Aleatoriamente",
+            "withoutParcel": "Pessoas sem parcela: {{count}}",
+            "severalParcels": "Pessoas com mais de uma parcela: {{count}}"
         },
         "money": {
             "hint": "Montante por parte, em {{currency}}: positivo recebe, negativo paga. O promotor cobre a diferença.",
@@ -3059,6 +3063,8 @@
                 "delete": "Eliminar",
                 "deleteHint": "Elimina completamente o objeto e a sua ideia.",
                 "editGeometry": "Editar geometria",
+                "courtyardParcel": "Pátio como lote",
+                "courtyardParcelHint": "Os lotes mantêm o seu próprio terreno vedado. Defina o pátio como um lote próprio para o partilhar.",
                 "editGeometryUnavailable": "Não é possível alterar a forma deste tipo de projeto (ou já foi criado como NFT e é imutável).",
                 "duplicateDesign": "Duplicar",
                 "duplicateDesignHint": "Mova uma cópia com o ponteiro e clique para colocar um novo projeto.",
@@ -4932,6 +4938,7 @@
                 "manualHint": "Desenhe lotes no mapa ou divida o terreno agrupado com a ferramenta de linha.",
                 "amendHint": "As parcelas existentes são os lotes. Destaque um pátio ou edite os limites.",
                 "courtyardCarved": "Pátio destacado como lote autónomo.",
+                "courtyardNeedsBorders": "Um pátio só pode ser recortado mantendo os limites existentes.",
                 "schellingLaidOut": "Lotes do plano de Schelling {{code}}. As faixas de rua entre eles também são lotes.",
                 "schellingFailed": "Não foi possível dispor aqui os lotes de Schelling: {{reason}}",
                 "nodeOnPool": "Esse nó está no contorno do terreno agrupado: pertence aos vizinhos, não a esta disposição.",
@@ -8477,5 +8484,12 @@
     "advanced": "Avançado",
     "resetBrowserData": "Repor dados do navegador",
     "resetDescription": "Elimina desenhos, planos, acordos, dados em cache e definições guardados neste navegador."
+  },
+  "planCompare": {
+    "title": "Comparar planos",
+    "compare": "Comparar",
+    "swap": "Trocar linhas e colunas",
+    "failed": "Não medido: {{reason}}",
+    "assumptions": "Com os pressupostos predefinidos e {{price}} por m². As estatísticas de um plano permitem alterá-los."
   }
 }

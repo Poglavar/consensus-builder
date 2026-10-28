@@ -1288,6 +1288,7 @@
                 "buttonLabel": "Estadísticas del plan",
                 "calculating": "Calculando…",
                 "modalTitle": "Estadísticas del plan",
+                "planArea": "Superficie del plan (m²)",
                 "resultingParcels": "Parcelas resultantes (media m²)",
                 "floorArea": "Superficie construida bruta (m²)",
                 "salesSuffix": "{{currency}} por m²",
@@ -1715,6 +1716,8 @@
                 "delete": "Eliminar",
                 "deleteHint": "Elimina el objeto y su idea por completo.",
                 "editGeometry": "Editar geometría",
+                "courtyardParcel": "Patio como parcela",
+                "courtyardParcelHint": "Las parcelas conservan su propio terreno vallado. Configura el patio como una parcela propia para compartirlo.",
                 "editGeometryUnavailable": "Este tipo de diseño no se puede remodelar (o está minteada y es inmutable).",
                 "details": "Detalles del diseño",
                 "propose": "Proponer",
@@ -3307,6 +3310,7 @@
                 "manualHint": "Dibuja parcelas en el mapa o divide el terreno con la herramienta de línea.",
                 "amendHint": "Las parcelas existentes son las del trazado. Recorta un patio o edita los límites.",
                 "courtyardCarved": "Patio recortado como parcela propia.",
+                "courtyardNeedsBorders": "Un patio solo puede recortarse manteniendo los límites existentes.",
                 "schellingLaidOut": "Parcelas del plan de Schelling {{code}}. Las franjas de calle entre ellas también son parcelas.",
                 "schellingFailed": "Aquí no se pudieron trazar parcelas de Schelling: {{reason}}",
                 "nodeOnPool": "Ese nodo está en el contorno agrupado: pertenece a los vecinos, no a este trazado.",
@@ -7477,7 +7481,10 @@
             "proposer": "Proponente",
             "publicLand": "Suelo público",
             "individual": "Asignar individualmente",
-            "allOutputs": "Asignar parcelas resultantes"
+            "allOutputs": "Asignar parcelas resultantes",
+            "random": "Al azar",
+            "withoutParcel": "Personas sin parcela: {{count}}",
+            "severalParcels": "Personas con más de una parcela: {{count}}"
         },
         "money": {
             "hint": "Dinero por parte, en {{currency}}: positivo recibe, negativo paga. El promotor cubre la diferencia.",
@@ -8505,5 +8512,12 @@
     "advanced": "Avanzado",
     "resetBrowserData": "Restablecer datos del navegador",
     "resetDescription": "Elimina diseños, planes, acuerdos, datos en caché y ajustes guardados en este navegador."
+  },
+  "planCompare": {
+    "title": "Comparar planes",
+    "compare": "Comparar",
+    "swap": "Intercambiar filas y columnas",
+    "failed": "Sin medir: {{reason}}",
+    "assumptions": "Con los supuestos predeterminados y {{price}} por m². Las estadísticas de un plan permiten cambiarlos."
   }
 }

@@ -1108,6 +1108,7 @@
                 "buttonLabel": "Plan stats",
                 "calculating": "Calculating…",
                 "modalTitle": "Plan stats",
+                "planArea": "Plan area (m²)",
                 "resultingParcels": "Resulting parcels (avg m²)",
                 "floorArea": "Gross floor area (m²)",
                 "salesSuffix": "{{currency}} per m²",
@@ -1692,6 +1693,8 @@
                 "delete": "Delete",
                 "deleteHint": "Deletes the object and its idea entirely.",
                 "editGeometry": "Edit geometry",
+                "courtyardParcel": "Courtyard as a parcel",
+                "courtyardParcelHint": "Parcels keep their own fenced ground. Lay out the courtyard as a parcel of its own to share it.",
                 "editGeometryUnavailable": "This design type cannot be reshaped (or it is minted and immutable).",
                 "details": "Design details",
                 "propose": "Propose",
@@ -3280,6 +3283,7 @@
                 "manualHint": "Draw plots on the map, or cut the pool with the line tool.",
                 "amendHint": "The existing parcels are the plots. Carve a courtyard or edit the boundaries.",
                 "courtyardCarved": "Courtyard carved out as a plot of its own.",
+                "courtyardNeedsBorders": "A courtyard can be carved only while keeping the existing borders.",
                 "schellingLaidOut": "Plots of Schelling plan {{code}}. The street strips between them are plots too.",
                 "schellingFailed": "Schelling plots could not be laid out here: {{reason}}",
                 "nodeOnPool": "That node sits on the pool outline: it belongs to the neighbours, not to this layout.",
@@ -7450,7 +7454,10 @@
             "proposer": "Proposer",
             "publicLand": "Public land",
             "individual": "Set individually",
-            "allOutputs": "Allocate output parcels"
+            "allOutputs": "Allocate output parcels",
+            "random": "Randomize",
+            "withoutParcel": "Persons without a parcel: {{count}}",
+            "severalParcels": "Persons with more than one parcel: {{count}}"
         },
         "money": {
             "hint": "Cash per party, in {{currency}}: positive receives, negative pays. The sponsor covers the difference.",
@@ -8477,5 +8484,12 @@
     "advanced": "Advanced",
     "resetBrowserData": "Reset browser data",
     "resetDescription": "Deletes designs, plans, agreements, cached data and settings stored in this browser."
+  },
+  "planCompare": {
+    "title": "Compare plans",
+    "compare": "Compare",
+    "swap": "Swap rows and columns",
+    "failed": "Not measured: {{reason}}",
+    "assumptions": "At the default assumptions and {{price}} per m². Plan stats on one plan lets you change them."
   }
 }

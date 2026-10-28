@@ -34,9 +34,13 @@
     }
 
     // Metric height and post spacing, even when the map's horizontal units are Mercator-scaled.
+    // A polygon is fenced around its rings; a (multi)line string, such as the parcel boundaries
+    // across a design's open ground, along its lines.
     function fencePositions(geometry, project, metresPerUnit = 1) {
         const positions = [];
-        const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+        const polygons = geometry.type === 'Polygon' ? [geometry.coordinates]
+            : geometry.type === 'MultiLineString' ? [geometry.coordinates]
+                : geometry.type === 'LineString' ? [[geometry.coordinates]] : geometry.coordinates;
         const line = (a, b, za, zb = za) => positions.push(a[0], a[1], za, b[0], b[1], zb);
         polygons.forEach(rings => rings.forEach(ring => {
             for (let i = 1; i < ring.length; i++) {
@@ -75,15 +79,46 @@
                 mesh.userData.isVacantPlot = true;
                 target.add(mesh);
             });
-            const geometry = new THREE.BufferGeometry();
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(fencePositions(feature.geometry, project, metresPerUnit), 3));
-            const material = new THREE.LineBasicMaterial({ color: 0x626650 });
-            const fence = new THREE.LineSegments(geometry, material);
-            ownGeometry(fence, geometry); ownMaterial(fence, material);
+            const fence = buildFence({ THREE, geometry: feature.geometry, project, metresPerUnit, ownMaterial, ownGeometry });
             fence.userData.isVacantPlotFence = true;
             target.add(fence);
         });
     }
 
-    return { contextTreesOutsideCorridors, sidewalkMaterial, fencePositions, buildVacantPlots };
+    function buildFence({ THREE, geometry, project, metresPerUnit, ownMaterial, ownGeometry }) {
+        const buffer = new THREE.BufferGeometry();
+        buffer.setAttribute('position', new THREE.Float32BufferAttribute(fencePositions(geometry, project, metresPerUnit), 3));
+        const material = new THREE.LineBasicMaterial({ color: 0x626650 });
+        const fence = new THREE.LineSegments(buffer, material);
+        ownGeometry(fence, buffer); ownMaterial(fence, material);
+        return fence;
+    }
+
+    // The occupied ground of the scene's own existing buildings, for the vacant-plot rule. A nearby
+    // building is a raw mesh without a footprint field, so each face is projected onto the ground:
+    // roof and floor faces give the exact outline, walls collapse to nothing and are dropped.
+    // `carveFor(building)` is the demolition verdict the meshes use: null keeps the building, a
+    // remainder replaces it, razed removes it.
+    function standingBuildingFootprints(buildings, carveFor, turfApi) {
+        const features = [];
+        for (const building of Array.isArray(buildings) ? buildings : []) {
+            const carve = carveFor(building);
+            if (carve) {
+                if (carve.remainder) features.push({ type: 'Feature', properties: {}, geometry: carve.remainder });
+                continue;
+            }
+            for (const face of Array.isArray(building?.faces) ? building.faces : []) {
+                if (!face || face.type !== 'Polygon' || !Array.isArray(face.coordinates)) continue;
+                const rings = face.coordinates.map(ring => (Array.isArray(ring) ? ring : []).map(c => [c[0], c[1]]));
+                if (!rings.length || rings.some(ring => ring.length < 4)) continue;
+                const flat = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: rings } };
+                let area = 0;
+                try { area = turfApi.area(flat); } catch (_) { continue; }
+                if (area > 0.1) features.push(flat);
+            }
+        }
+        return features;
+    }
+
+    return { contextTreesOutsideCorridors, sidewalkMaterial, fencePositions, buildFence, buildVacantPlots, standingBuildingFootprints };
 });

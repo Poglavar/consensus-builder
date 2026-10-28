@@ -3298,7 +3298,8 @@
     // Merely choosing a treatment never generates a furniture layout. See building-ground.js.
     function buildProposalGrounds3D(flatTarget) {
         window.__threeSiteGround.buildVacantPlots({
-            THREE, features: window.vacantLayoutPlots(), target: flatTarget,
+            THREE, target: flatTarget,
+            features: window.vacantLayoutPlots({ features: sceneParcelSnapshot, existingBuildings: standingBuildingFootprints3D() }),
             polygonMeshes: polygonFeatureToMeshes, project: coordsToXY, metresPerUnit: 1 / lifeMercatorK(),
             ownMaterial: markOwnedMaterial, ownGeometry: markOwnedGeometry
         });
@@ -3322,6 +3323,14 @@
         surfaces.forEach(surface => {
             try {
                 const feature = { type: 'Feature', properties: {}, geometry: surface.geometry };
+                // Parcels are private: their boundaries across the open ground are fenced.
+                const fences = window.buildingGroundFences?.(surface) || [];
+                if (fences.length) {
+                    const fence = window.__threeSiteGround.buildFence({ THREE, geometry: { type: 'MultiLineString', coordinates: fences },
+                        project: coordsToXY, metresPerUnit: 1 / lifeMercatorK(), ownMaterial: markOwnedMaterial, ownGeometry: markOwnedGeometry });
+                    fence.userData.isProposalGroundFence = true;
+                    flatTarget.add(fence);
+                }
                 if (surface.decorationDesign) {
                     feature.properties.decorations = window.ProposalApplyStructures.decorationsOnGround(surface.decorationDesign, surface.geometry, turf);
                     if (surface.treatment === 'green') buildParks3D(flatTarget, flatTarget, [feature]);
@@ -3338,6 +3347,34 @@
                 console.error('[three-mode] failed to build a proposal ground surface', surface.proposalId, error);
             }
         });
+    }
+
+    // The existing buildings this scene draws, as ground footprints for the vacant-plot rule: the
+    // same /buildings/near band and the same demolition verdicts as the meshes, never the 2D pool,
+    // which holds only what earlier 2D viewports happened to fetch.
+    function standingBuildingFootprints3D() {
+        const carveRecords = window.collectCarveRecords(
+            (typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals()) || [],
+            {
+                consolidateCorridorRecords: (records, region) =>
+                    window.consolidateCorridorDemolitionRecords(records, region, window.turf),
+                consolidateBuildingRecords: records =>
+                    window.consolidateBuildingDemolitionRecords(records, window.turf)
+            }
+        );
+        const structureRegions = collectAppliedStructureClearanceRegions();
+        return window.__threeSiteGround.standingBuildingFootprints(nearbyProposalBuildings,
+            bld => window.carveBuildingByObjectId(bld.object_id, carveRecords) || structureClearanceCarve(bld, structureRegions), turf);
+    }
+
+    // The vacant-plot ground depends on which existing buildings stand in the band, so it follows
+    // the nearby-buildings response. Before the scene is ready, initScene's own build sees the data.
+    function rebuildProposalGrounds3D() {
+        if (!isActive || !sceneReady || !proposalGroundGroup) return;
+        clearGroupChildren(proposalGroundGroup);
+        try { buildProposalGrounds3D(proposalGroundGroup); } catch (error) { console.error('[three-mode] proposal grounds rebuild failed', error); }
+        applyModeVisibility();
+        invalidateThreeView();
     }
 
     // Build Lakes (shore + water + fish)
@@ -5961,6 +5998,7 @@
                 const dupCount = rawBuildings.length - nearbyProposalBuildings.length;
                 console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${sceneLoadGeometrySource}+${buffer}m${dupCount > 0 ? `, dropped ${dupCount} coincident duplicate${dupCount === 1 ? '' : 's'}` : ''})`);
                 if (isActive) rebuild3DBuildingsOnly({ family: 'existing' });
+                rebuildProposalGrounds3D();
                 refreshLifeSurface();
                 updateBuildingsLoader();
                 ensureNearbyWater();

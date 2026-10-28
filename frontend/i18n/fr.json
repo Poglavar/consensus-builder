@@ -246,6 +246,7 @@
                 "buttonLabel": "Statistiques du plan",
                 "calculating": "Calcul…",
                 "modalTitle": "Statistiques du plan",
+                "planArea": "Surface du plan (m²)",
                 "resultingParcels": "Parcelles résultantes (m² en moyenne)",
                 "floorArea": "Surface de plancher brute (m²)",
                 "salesSuffix": "{{currency}} par m²",
@@ -1926,7 +1927,10 @@
             "proposer": "Porteur du projet",
             "publicLand": "Terrain public",
             "individual": "Attribuer individuellement",
-            "allOutputs": "Attribuer les parcelles de sortie"
+            "allOutputs": "Attribuer les parcelles de sortie",
+            "random": "Au hasard",
+            "withoutParcel": "Personnes sans parcelle : {{count}}",
+            "severalParcels": "Personnes avec plus d’une parcelle : {{count}}"
         },
         "money": {
             "hint": "Montant par partie, en {{currency}} : un montant positif est reçu, un montant négatif est payé. Le porteur couvre la différence.",
@@ -3059,6 +3063,8 @@
                 "delete": "Supprimer",
                 "deleteHint": "Supprime entièrement l’objet et l’idée associée.",
                 "editGeometry": "Modifier la géométrie",
+                "courtyardParcel": "Cour comme parcelle",
+                "courtyardParcelHint": "Les parcelles gardent leur propre terrain clôturé. Faites de la cour une parcelle à part entière pour la partager.",
                 "editGeometryUnavailable": "La forme de ce type de projet ne peut pas être modifiée (ou son NFT a été créé et il est immuable).",
                 "duplicateDesign": "Dupliquer",
                 "duplicateDesignHint": "Déplacez une copie avec le pointeur et cliquez pour placer un nouveau projet.",
@@ -4932,6 +4938,7 @@
                 "manualHint": "Dessinez des lots sur la carte ou divisez le regroupement avec l’outil ligne.",
                 "amendHint": "Les parcelles existantes constituent les lots. Découpez une cour ou modifiez les limites.",
                 "courtyardCarved": "La cour a été découpée en un lot distinct.",
+                "courtyardNeedsBorders": "Une cour ne peut être découpée qu'en conservant les limites existantes.",
                 "schellingLaidOut": "Lots du plan de Schelling {{code}}. Les bandes de voirie entre eux sont également des lots.",
                 "schellingFailed": "Impossible de disposer les lots de Schelling ici : {{reason}}",
                 "nodeOnPool": "Ce nœud se trouve sur le contour du regroupement : il appartient aux voisins, pas à ce découpage.",
@@ -8477,5 +8484,12 @@
     "advanced": "Avancé",
     "resetBrowserData": "Réinitialiser les données du navigateur",
     "resetDescription": "Supprime les projets, plans, accords, données en cache et préférences enregistrés dans ce navigateur."
+  },
+  "planCompare": {
+    "title": "Comparer les plans",
+    "compare": "Comparer",
+    "swap": "Permuter lignes et colonnes",
+    "failed": "Non mesuré : {{reason}}",
+    "assumptions": "Avec les hypothèses par défaut et {{price}} par m². Les statistiques d’un plan permettent de les modifier."
   }
 }

@@ -46,3 +46,44 @@ test('empty layout plots have wild ground and fences, replaced when a park occup
   await page.locator('#mode-3d-toggle').click();
   await expect.poll(fences).toBe(1);
 });
+
+// The 3D ground covers the scene's frozen parcel band, which is wider than the 2D view. The painted
+// set must come from that band, not from wherever the hidden Leaflet map happened to be: leaving 3D
+// recentres the map, so a view-dependent set changed on every 2D/3D round trip.
+test('plots outside the 2D view but inside the 3D band stay painted across 2D/3D round trips', async ({ mockApi: page }) => {
+  test.setTimeout(60_000);
+  await stubBasemapTiles(page);
+  await openCity(page);
+  await openParcel(page, 'proposals');
+  await page.locator('.parcel-build-btn--parcel-layout').click();
+  const editor = page.locator('.on-map-reparcellization');
+  await expect(editor.locator('[data-reparcel-commit]')).toBeEnabled();
+  await editor.locator('[data-reparcel-commit]').click();
+  await expect(editor).toHaveCount(0);
+  await expect(page.locator('.vacant-layout-plot')).toHaveCount(2);
+  await page.keyboard.press('Escape');
+
+  // Pan so both plots end 60 px beyond the west edge: outside the 2D view, inside its 20 % padding.
+  await page.evaluate(() => {
+    const w = window as any;
+    const bbox = w.turf.bbox(w.turf.featureCollection(w.vacantLayoutPlots()));
+    const east = w.map.latLngToContainerPoint([bbox[3], bbox[2]]);
+    w.map.panBy([east.x + 60, 0], { animate: false });
+  });
+  await expect(page.locator('.vacant-layout-plot')).toHaveCount(0);
+
+  const vacantMeshes = () => page.evaluate(() => {
+    let count = 0;
+    (window as any).getThreeModeInternals?.()?.scene?.traverse((object: any) => {
+      if (object.userData?.isVacantPlot) count++;
+    });
+    return count;
+  });
+  for (let round = 0; round < 2; round++) {
+    await page.locator('#mode-3d-toggle').click();
+    await expect(page.locator('#three-container canvas')).toBeVisible();
+    await expect.poll(vacantMeshes).toBe(2);
+    await page.locator('#mode-2d-toggle').click();
+    await expect(page.locator('#three-container canvas')).toBeHidden();
+  }
+});

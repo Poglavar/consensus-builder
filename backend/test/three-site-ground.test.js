@@ -81,3 +81,37 @@ describe('site ground', () => {
         expect(positions.length).toBe(2 * fencePositions({ type: 'Polygon', coordinates: [ring] }, point => point).length);
     });
 });
+
+describe('standing building footprints for the vacant-plot rule', () => {
+    const { standingBuildingFootprints } = require('../../frontend/js/three-site-ground.js');
+    // A 10 m box: floor and roof carry the outline, the four walls project to zero-area strips.
+    const box = (west, south, east, north, height) => {
+        const ring = z => [[west, south, z], [east, south, z], [east, north, z], [west, north, z], [west, south, z]];
+        const wall = (a, b) => ({ type: 'Polygon', coordinates: [[[...a, 0], [...b, 0], [...b, height], [...a, height], [...a, 0]]] });
+        return { object_id: 'b1', faces: [
+            { type: 'Polygon', coordinates: [ring(0)] }, { type: 'Polygon', coordinates: [ring(height)] },
+            wall([west, south], [east, south]), wall([east, south], [east, north]),
+            wall([east, north], [west, north]), wall([west, north], [west, south])
+        ] };
+    };
+    const building = box(15.97, 45.81, 15.97013, 45.81009, 12);
+
+    it('projects roof and floor faces to 2D ground and drops the walls', () => {
+        const footprints = standingBuildingFootprints([building], () => null, turf);
+        expect(footprints).toHaveLength(2);
+        footprints.forEach(feature => {
+            expect(turf.area(feature)).toBeGreaterThan(90);
+            expect(feature.geometry.coordinates[0].every(c => c.length === 2)).toBe(true);
+        });
+    });
+    it('follows the demolition verdict: a razed building occupies nothing, a cut one only its remainder', () => {
+        expect(standingBuildingFootprints([building], () => ({ remainder: null, demolished: {} }), turf)).toEqual([]);
+        const remainder = turf.bboxPolygon([15.97, 45.81, 15.97005, 45.81009]).geometry;
+        const cut = standingBuildingFootprints([building], () => ({ remainder, demolished: {} }), turf);
+        expect(cut).toHaveLength(1);
+        expect(cut[0].geometry).toEqual(remainder);
+    });
+    it('ignores malformed meshes instead of failing the ground build', () => {
+        expect(standingBuildingFootprints([null, { faces: 'x' }, { faces: [{ type: 'Polygon', coordinates: [[[0, 0]]] }] }], () => null, turf)).toEqual([]);
+    });
+});

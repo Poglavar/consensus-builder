@@ -1403,21 +1403,53 @@
     }
     window.drawBuildingGroundSurface = drawBuildingGroundSurface;
 
-    function vacantLayoutPlots() {
+    // The plots an applied layout left empty. By default the Leaflet view decides which plots are
+    // asked for and the viewport-fetched building pool says what stands on them: right for the 2D
+    // layer, which is redrawn on every move. The 3D scene passes its own frozen parcel band and the
+    // buildings it drew, so its painted set cannot depend on where the hidden Leaflet map was left.
+    function vacantLayoutPlots({ features = null, existingBuildings = null } = {}) {
         const fabric = window.LiveParcelFabric;
         if (!fabric || !window.BuildingGround || !window.proposalStorage) return [];
         const proposals = window.proposalStorage.getAllProposals();
         if (!proposals.some(proposal => proposal.parcelLayout && isApplied(proposal))) return [];
-        const bounds = map.getBounds();
-        const features = fabric.queryBounds([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]);
-        const demolished = new Map((window.collectDemolishedBuildingRecords?.() || []).map(record => [String(record.id), record]));
-        const existing = (window.buildingFeaturePool || []).map(feature => {
-            const record = demolished.get(String(window.corridorBuildingKey(feature)));
-            return record ? (record.remainder ? { ...feature, geometry: record.remainder } : null) : feature;
-        }).filter(Boolean);
-        return window.BuildingGround.vacantPlots(features, proposals, isApplied, turf, existing);
+        let parcels = features;
+        if (!parcels) {
+            const bounds = map.getBounds();
+            parcels = fabric.queryBounds([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]);
+        }
+        let existing = existingBuildings;
+        if (!existing) {
+            const demolished = new Map((window.collectDemolishedBuildingRecords?.() || []).map(record => [String(record.id), record]));
+            existing = (window.buildingFeaturePool || []).map(feature => {
+                const record = demolished.get(String(window.corridorBuildingKey(feature)));
+                return record ? (record.remainder ? { ...feature, geometry: record.remainder } : null) : feature;
+            }).filter(Boolean);
+        }
+        return window.BuildingGround.vacantPlots(parcels, proposals, isApplied, turf, existing);
     }
     window.vacantLayoutPlots = vacantLayoutPlots;
+
+    // The fences of a building design's open ground (BuildingGround.fenceLines): the parcel boundaries
+    // that cross it, as [[lng, lat], ...] lines. One answer per surface and parcel-fabric revision,
+    // shared by the 2D layer, the model view and the photo view.
+    const groundFenceCache = new Map();
+    function buildingGroundFences(surface) {
+        const fabric = window.LiveParcelFabric;
+        if (!fabric || !window.BuildingGround || !surface?.geometry) return [];
+        const key = JSON.stringify([surface.proposalId, fabric.revision(), surface.geometry]);
+        if (groundFenceCache.has(key)) return groundFenceCache.get(key);
+        let lines = [];
+        try {
+            const [west, south, east, north] = turf.bbox(surface.geometry);
+            lines = window.BuildingGround.fenceLines(surface.geometry, fabric.peekBounds([west, south, east, north]), surface.buildings, turf);
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] [structures] fences of building ground ${surface.proposalId} could not be derived`, error);
+        }
+        if (groundFenceCache.size > 200) groundFenceCache.clear();
+        groundFenceCache.set(key, lines);
+        return lines;
+    }
+    window.buildingGroundFences = buildingGroundFences;
 
     function updateBuildingGroundLayer() {
         if (typeof map === 'undefined') return;
@@ -1427,7 +1459,8 @@
         const surfaces = appliedBuildingGroundSurfaces();
         const vacant = vacantLayoutPlots();
         let signature = '';
-        try { signature = JSON.stringify([surfaces.map(s => [s.proposalId, s.treatment, s.geometry, s.decorationDesign]), vacant]); } catch (_) { signature = String(surfaces.length); }
+        // The fabric revision is in it because fences follow the parcel layout under the ground.
+        try { signature = JSON.stringify([surfaces.map(s => [s.proposalId, s.treatment, s.geometry, s.decorationDesign]), vacant, window.LiveParcelFabric?.revision?.()]); } catch (_) { signature = String(surfaces.length); }
         vacant.forEach(feature => L.geoJSON(feature, {
             pane: PARKS_PANE, interactive: false,
             style: { color: '#6d705b', weight: 1.5, dashArray: '4,3', fillColor: '#adae75', fillOpacity: 0.9, className: 'vacant-layout-plot' }
@@ -1438,6 +1471,11 @@
                 const pane = paved ? SQUARES_PANE : PARKS_PANE;
                 // Ground is an overlay on top of parcels; keep parcel clicks working.
                 drawBuildingGroundSurface(group, { ...surface, polygon: surface.geometry }, pane);
+                const fences = buildingGroundFences(surface);
+                if (fences.length) L.geoJSON({ type: 'MultiLineString', coordinates: fences }, {
+                    pane, interactive: false,
+                    style: { color: '#4b4f3f', weight: 1.5, dashArray: '1,3', className: 'building-ground-fence' }
+                }).addTo(group);
             } catch (error) {
                 console.error('[structures] failed to render a building ground surface', surface.proposalId, error);
             }

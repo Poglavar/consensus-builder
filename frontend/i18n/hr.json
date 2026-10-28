@@ -1096,6 +1096,7 @@
                 "salesSuffix": "{{currency}} po m²",
                 "housingShareSuffix": "% udjela stanovanja",
                 "closeAria": "Zatvori statistiku plana",
+                "planArea": "Površina plana (m²)",
                 "resultingParcels": "Nastale čestice (prosjek m²)",
                 "buildings": "Zgrade (tlocrt m²)",
                 "openSpace": "Otvoreni prostor — parkovi, trgovi, voda (m²)",
@@ -1705,6 +1706,8 @@
                 "delete": "Izbriši",
                 "deleteHint": "Briše objekt i njegovu ideju u potpunosti.",
                 "editGeometry": "Uredi geometriju",
+                "courtyardParcel": "Dvorište kao čestica",
+                "courtyardParcelHint": "Čestice zadržavaju vlastito ograđeno zemljište. Oblikujte dvorište kao zasebnu česticu da bi bilo zajedničko.",
                 "editGeometryUnavailable": "Ovaj tip dizajna ne može se preoblikovati (ili je mintan i nepromjenjiv).",
                 "details": "Detalji dizajna",
                 "propose": "Predloži",
@@ -3312,6 +3315,7 @@
                 "manualHint": "Nacrtaj čestice na karti ili podijeli obuhvat alatom za liniju.",
                 "amendHint": "Postojeće čestice su čestice rasporeda. Izdvoji dvorište ili uredi granice.",
                 "courtyardCarved": "Dvorište je izdvojeno kao zasebna čestica.",
+                "courtyardNeedsBorders": "Dvorište se može izdvojiti samo uz zadržavanje postojećih granica.",
                 "schellingLaidOut": "Čestice Schellingova plana {{code}}. Ulični pojasevi između njih također su čestice.",
                 "schellingFailed": "Schellingove čestice ovdje se nisu mogle rasporediti: {{reason}}",
                 "nodeOnPool": "Taj je čvor na obodu obuhvata: pripada susjedima, ne ovom rasporedu.",
@@ -7491,7 +7495,10 @@
             "proposer": "Predlagatelj",
             "publicLand": "Javno zemljište",
             "individual": "Postavi pojedinačno",
-            "allOutputs": "Dodjela izlaznih čestica"
+            "allOutputs": "Dodjela izlaznih čestica",
+            "random": "Nasumično",
+            "withoutParcel": "Osobe bez čestice: {{count}}",
+            "severalParcels": "Osobe s više od jedne čestice: {{count}}"
         },
         "money": {
             "hint": "Novac po strani, u valuti {{currency}}: pozitivan iznos strana prima, negativan plaća. Razliku pokriva investitor.",
@@ -8529,5 +8536,12 @@
     "advanced": "Napredno",
     "resetBrowserData": "Izbriši podatke preglednika",
     "resetDescription": "Briše dizajne, planove, sporazume, predmemorirane podatke i postavke spremljene u ovom pregledniku."
+  },
+  "planCompare": {
+    "title": "Usporedi planove",
+    "compare": "Usporedi",
+    "swap": "Zamijeni retke i stupce",
+    "failed": "Nije izmjereno: {{reason}}",
+    "assumptions": "Uz zadane pretpostavke i {{price}} po m². U statistici jednog plana možete ih promijeniti."
   }
 }
