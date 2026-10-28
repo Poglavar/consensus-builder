@@ -29,7 +29,7 @@ async function mockNewYorkParcels(page: import('@playwright/test').Page): Promis
 
 /**
  * Basemap selector and layer toggling — tile source switching, building layer visibility, city and
- * data-source choice. Since the sidebar became the map shell (UI-REWORK.md) the data-source
+ * data-source choice. Since the sidebar became the map shell (design-language.md) the data-source
  * selects live in the Settings sheet (Data & maintenance), the base-map select and the buildings
  * toggle in the Layers sheet (base map moved there in fbe3758d), and the city select was replaced by the search box's city results; the UI tests
  * below go through those sheets the way a visitor does.

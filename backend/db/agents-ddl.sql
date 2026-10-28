@@ -1,4 +1,4 @@
--- Ledger tables for the server-side agent runner (design: agents-functionality-for-ugt.md §WS3/WS7).
+-- Ledger tables for the server-side agent runner (design: docs/architecture.md).
 -- agent_run: one row per persona per run (checkpoint + verdict); agent_cost: one row per model call
 -- with its exact cost, so the daily spend cap and the per-item cost display read the same numbers.
 --

@@ -419,7 +419,7 @@ class AgentBubbleManager {
      * @param {Object} bubbleData - Bubble data
      */
     showBubbleErrorNotification(bubbleData) {
-        // An error notice like every other (ephemerals.md): the parcel data behind the bubble's
+        // An error notice like every other (design-language.md, Messages): the parcel data behind the bubble's
         // location is not loaded yet, which happens right after a reload.
         const key = 'ephemeral.messages.agent_location_unavailable';
         const params = { agent: bubbleData.agentName, action: bubbleData.action };

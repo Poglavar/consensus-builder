@@ -4,8 +4,17 @@ Domain terminology is maintained in [vocabulary.md](docs/vocabulary.md). Read it
 records or behavior, and update it in the same change when a definition, relationship, identity,
 state, unit, or source of truth changes. Keep it a glossary of current definitions and essential
 relationships. Implementation notes, roadmaps, test results and change history belong in separate
-documents. Keep observed behavior separate from proposed terminology; preserve unresolved findings
-in the linked audit record until an explicit decision and implementation resolve them.
+documents. Keep observed behavior separate from proposed terminology; an unresolved finding stays
+in the document that raised it until an explicit decision and implementation resolve it.
+
+## Documentation
+
+All documents live in `docs/` (`docs/README.md` is the index; only `readme.md`, `AGENTS.md`,
+`MEMORY.md` and `tables-used.md` stay in the root because tooling reads them there). A document
+describes a current contract, a plan that is still open, or research; it carries no chronology,
+rejected options or verification logs. Verification evidence for a change goes in the commit
+message and the tests, not in a new dated note. When a change supersedes a document, update or
+remove that document in the same change and repoint its references; do not add a parallel one.
 
 This project is experimental. Prefer one coherent current contract over preserving existing data.
 Make changes in small, verified steps; do not add legacy/new flow branches, compatibility readers,

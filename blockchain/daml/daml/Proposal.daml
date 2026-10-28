@@ -1,11 +1,11 @@
 -- Minimal single-parcel purchase model for the Canton/DAML chain option.
 -- A buyer-chosen "lens" attests ownership, a buyer proposes a purchase,
 -- and the owner accepts. No money yet (M1): this only proves the
--- consensus/authorization mechanics. See feature-daml.md §10.
+-- consensus/authorization mechanics. See docs/feature-daml-readme.md.
 --
 -- The lens is whoever the buyer trusts to identify the owner (a notary, a
--- lawyer, or even the buyer themselves). MVP uses exactly one lens. See the
--- spec for the future multi-lens ("any one of them") generalization.
+-- lawyer, or even the buyer themselves). MVP uses exactly one lens; the unbuilt
+-- multi-lens ("any one of them") generalization is noted in docs/feature-daml-readme.md.
 module Proposal where
 
 -- The lens vouches that `owner` owns `parcelId`. Signed by the lens first;
@@ -73,7 +73,7 @@ template PurchaseProposal
 -- proposal contract-id — no price, no parties' terms. Observed by a designated
 -- public registry party so the app can show "this parcel has N Canton proposals"
 -- without disclosing the proposal itself (selective disclosure). Created with each
--- PurchaseProposal and archived when it is accepted/withdrawn. See feature-daml.md §13.
+-- PurchaseProposal and archived when it is accepted/withdrawn. See docs/feature-daml-readme.md.
 template ProposalMarker
   with
     buyer : Party

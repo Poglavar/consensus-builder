@@ -1,8 +1,8 @@
 # Urban rules: permitted massing vs. example build-out
 
-Design agreed 2026-08-08. Companion to `URBAN-RULE-BLOCKS-ROADMAP.md` (which covers making the
-*block form* more expressive); this one covers the separation between **what a rule permits** and
-**what a plausible result of that rule looks like**, for all three urban-rule typologies.
+Design agreed 2026-08-08. This covers the separation between **what a rule permits** and **what a
+plausible result of that rule looks like**, for all three urban-rule typologies.
+[Block-form flexibility](#block-form-flexibility) covers making the *block form* more expressive.
 
 ## The problem
 
@@ -319,6 +319,28 @@ The height controls of all three rules count whole floors; Block and Row store t
 Illustrate advances the seed; a slider does not, so raising the height limit no longer reshuffles
 every footprint on the street. `three-mode.js` gains the **Planned as** row and the 🎲, whose salt
 is session-only — it never writes to a proposal.
+
+## Block-form flexibility
+
+`generateBuildingInModal()` in `frontend/js/building-blocks.js` is parametric: it discards the old
+geometry and rebuilds the footprint from the sliders every time (superparcel, simplify, setback,
+inset, ring with hole, gaps, wings, chamfer), so a block is always regenerable and shareable. The
+Simplify (m) slider runs Douglas–Peucker on the merged outline before the setback, so blocks stop
+inheriting parcel jaggies; 0 follows the parcels exactly. Gaps and wings are fractions along the
+outer ring: the count sliders add or remove them and dragging a handle fine-tunes one position.
+
+Manual mode (Edit shape manually) is the one-way escape hatch. Outer-ring vertices become
+draggable, the footprint sliders are inert and height stays live; returning to generated geometry
+regenerates from the sliders and discards the manual edits. Import Freeform GeoJSON supplies the
+same arbitrary footprint. Sharing stores both the parameters and the
+final footprint, so a manual or imported footprint re-applies as geometry. Chamfer is parametric only.
+
+Open:
+
+- Alternative base shapes (convex hull, oriented bounding box) as selectable base geometry.
+- A rotate handle for gaps and wings, as an angle offset from perpendicular.
+- Block typologies (fully closed, one side open, circular, Buenos Aires) behind the disabled
+  Algorithm select.
 
 ## Risks
 

@@ -338,7 +338,7 @@
         if (!slot || !slot.parentNode) return;
         if (!state.banner) {
             state.banner = el('div', 'explore-banner cb-banner cb-banner--warning', { id: 'explore-banner', role: 'status' });
-            // The shared banner card (js/ui/banner-stack.js; ephemerals.md), else under the search.
+            // The shared banner card (js/ui/banner-stack.js; design-language.md, Messages), else under the search.
             const stackApi = global.__BannerStack;
             if (!(stackApi && typeof stackApi.mount === 'function' && stackApi.mount(state.banner))) {
                 slot.parentNode.insertBefore(state.banner, slot.nextSibling);

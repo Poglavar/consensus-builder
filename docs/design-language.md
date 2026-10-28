@@ -171,15 +171,24 @@ meaningful colours when they are not selected.
 
 ## Messages
 
-- Three families, one typography (`ephemerals.md`; `.cb-toast` in css/primitives.css): a
-  **notice** announces an outcome, top centre under the top row, dark pill with `success` /
-  `warning` / `error` colours, one at a time (`showEphemeralMessage(message, duration, type)`); the
-  **status line** says what the app is doing now, above the dock, light pill with a spinner while
-  anything is busy, fading out when idle (`updateStatus`, `beginStatusActivity`); a **banner** is a
-  persistent notice with an action, a section of the one card under the top row
-  (`js/ui/banner-stack.js`, `.cb-banner`). Every floating message is `--cb-text-md`, wraps to at
-  most three lines and never exceeds 480px (560px for the banner card). Nothing else floats a
-  message of its own.
+- Three families share one typography, `.cb-toast` in css/primitives.css: every floating message is
+  `--cb-text-md`, wraps to at most three lines and never exceeds 480px (560px for the banner card).
+  Nothing else floats a message of its own.
+- A **notice** announces an outcome (`showEphemeralMessage(message, duration, type)` in
+  js/ui-helpers.js): top centre under the top row and the banner card, a dark pill with `success` /
+  `warning` / `error` colours, `aria-live` polite. `js/ui/notice-queue.js` keeps one on screen: a new
+  notice replaces the current one after at least 1.2 s, and a repeat of the notice showing or
+  waiting is dropped. A notice is written to the Activity log, never to the status line.
+- The **status line** (`#floating-status`, `updateStatus`) says what the app is doing now: above the
+  dock, a light pill (`cb-toast--status`), replaced and never stacked, click-through. Holders of
+  `beginStatusActivity` are counted; while any is open the line is `is-busy` with a spinner, and
+  8 s after its last line with nothing busy it turns `is-idle` and fades. Loaders draw no pill of
+  their own: 3D start-up, building loading, photo tile streaming and a slow road apply write the
+  status line.
+- A **banner** is a persistent notice with an action. Parcel, imagery and building source failures
+  (one section per kind), the other-tab lock and the explore banner mount as sections of one card
+  under the top row (`js/ui/banner-stack.js`, `.cb-banner-stack` / `.cb-banner`), which sets
+  `--cb-banner-stack-height` so notices sit below it.
 
 ## Phone layout
 
@@ -225,6 +234,48 @@ meaningful colours when they are not selected.
   finish/apply and cancel controls. Reuse the editor's actions; do not add a second generic Done or
   duplicate finish/cancel commands. A 3D preview keeps the current draft so returning to 2D resumes
   the same edit.
+
+## Right-screen panels
+
+Right-side map surfaces form one column with the click stack: 400px wide on desktop with a 10px
+right gap, sized by `--right-dock-width` and `--right-dock-gap` in panels.css. The semantic
+`right-screen-panel` class (right-screen-panel.css) supplies their typography, glass, border,
+radius, shadow and header and body spacing; the same surface rule paints the click-stack cards,
+which keep the stack's transparent gaps and the selected object's yellow focus ring.
+`right-dock-panel` is the inspector hook for phone-sheet behaviour. A panel declares no width of
+its own, and hosted content fits its parent stack card.
+
+The class covers both click stacks; the parcel, design, road and source inspectors; block details
+and the urban-block browser; road analysis; agreement creation and properties; custom-site panels;
+map geometry editors and the design draft editor; watched-area details; the Schelling layer panel;
+and the plan critic's result card. Lists, Layers and Settings share the column's right edge and top
+clearance. Bets and Activity keep their wider frame centred on the dock. Wide comparisons and
+tables belong in a centred or full-screen dialog, never in a wider right column; left-anchored
+utilities and centred dialogs are separate presentation types. On a phone these surfaces keep the
+shared resize handle and viewport limits.
+
+## Element names
+
+The names to use for the shell's elements in follow-up discussion.
+
+| Name | What and where |
+|---|---|
+| **search box** | top-left omnibox (`#map-search-slot`): cities, parcels, places and commands |
+| **Buildings and massing** button and sheet | beside the search box (`#planning-views-button`, `#planning-views`) |
+| **user bubble** | top-right `#username-display`: profile name or Guest |
+| **Layers** button and sheet | top-right; the controls for the current view (see Map shell structure) |
+| **Settings** button and sheet | top-right; Appearance, Data & assumptions, Help & about, and Advanced (Local (browser) data, Simulation, Diagnostics, Reset browser data) |
+| **view strip** | left edge: 2D map, 3D models, 3D aerial imagery (`map-mode-tile`), with the Measure (2D) and Sun and shadows (3D) utilities beside it |
+| **bottom dock** | the Lists, Bets and Activity buttons (`#proposals-button`, `#bets-button`, `#activity-button`); the sheets they open are the **dock sheets** |
+| **running dot** | the pulsing dot on the Activity button while the simulation runs |
+| **status line**, **notice**, **banner card** | the three message families (see Messages) |
+| **click stack** | the right-screen panel (`#click-stack`) listing what lies under a click |
+| **parcel menu** and **ground menu** | anchored menus at a click on a parcel or on open ground |
+| **parcel panel** | the right-screen `#parcel-info-panel` |
+| **site panel** and **site proposal panel** | drawing a proposal's site (`#site-panel`) and its right-screen twin (`#site-info-panel`) |
+| **command palette** | Ctrl/Cmd-K, or the map search |
+| **world view** (globe) | the full-screen globe coloured by parcel-data coverage |
+| **explore city** and **explore banner** | `?city=explore`: the map without parcels, with its banner in the banner card |
 
 ## Status (2026-10-13, branch `ui-vocabulary`)
 

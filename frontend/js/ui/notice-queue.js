@@ -1,4 +1,4 @@
-// The order of notices (ephemerals.md): one on screen at a time, never a stack. A new notice
+// The order of notices (design-language.md, Messages): one on screen at a time, never a stack. A new notice
 // replaces the current one once that has been readable for a minimum time, else waits its turn;
 // a notice that repeats the one showing or waiting is dropped. Pure state and timers; the DOM
 // work (make the pill, remove it) is the host's `show` and `hide`.

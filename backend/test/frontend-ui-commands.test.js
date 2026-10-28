@@ -1,5 +1,5 @@
 // The UI command registry (frontend/js/ui/commands.js) and the floating shell that replaced the left
-// sidebar (frontend/js/ui/map-shell.js, UI-REWORK.md). The registry names every capability the map
+// sidebar (frontend/js/ui/map-shell.js, design-language.md). The registry names every capability the map
 // UI offers; these tests fail when a capability has nowhere to appear, when a control the old sidebar
 // held (and existing code still finds by id) goes missing from index.html, when an inline handler in
 // the sheets has no command, when a label is untranslated, and when the sidebar comes back.

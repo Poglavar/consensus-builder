@@ -485,7 +485,7 @@ textarea {
 }
 
 /* ---- Toast ----
-   One typography for every floating message (ephemerals.md): a centred pill that wraps to at
+   One typography for every floating message (design-language.md, Messages): a centred pill that wraps to at
    most three lines and never grows past 480px, on every width. The families differ in colour and
    place only: a notice (an outcome, top centre, auto-dismiss; js/ui-helpers.js
    showEphemeralMessage) is the dark pill with success / warning / error variants; the status
@@ -590,7 +590,7 @@ textarea {
 }
 
 /* ---- Banner ----
-   Persistent notices that need an action (ephemerals.md): source failures, the other-tab lock, the
+   Persistent notices that need an action (design-language.md, Messages): source failures, the other-tab lock, the
    explore banner. They mount in one stack (js/ui/banner-stack.js) that reads as ONE card under the
    top row of controls, each banner a section divided from the next: a 560px card centred on a wide
    map, the width minus the gutters on a phone. Notices sit below it (--cb-banner-stack-height). */

@@ -53,7 +53,7 @@ The frontend uses JavaScript, Leaflet and Three.js. The API uses Node.js, Expres
 | [`restatements/`](restatements/) | Existing situations and plans restated in the app, with sources |
 | [`world-parcels/`](world-parcels/) | Parcel-source research and coverage evidence |
 
-Start with the [development guide](docs/development.md), check [test scope](docs/TEST.md), and open a focused issue or pull request with a reproducible example. For a planning workshop, a city integration or a research collaboration, [contact the project on Telegram](https://t.me/urbangametheory).
+Start with the [development guide](docs/development.md), check [test scope](docs/development.md#verify-a-change), and open a focused issue or pull request with a reproducible example. For a planning workshop, a city integration or a research collaboration, [contact the project on Telegram](https://t.me/urbangametheory).
 
 [Follow @UrbanGameTheory](https://x.com/UrbanGameTheory) · [Telegram community](https://t.me/urbangametheory)
 

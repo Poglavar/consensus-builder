@@ -513,7 +513,7 @@ function beginApplyIndicator(labelText) {
     const label = labelText || ((typeof translateRoadText === 'function')
         ? translateRoadText('panel.road.applyingEdit', 'Applying…')
         : 'Applying…');
-    // Only a genuinely slow apply reaches the status line (ephemerals.md): a quick edit ends
+    // Only a genuinely slow apply reaches the status line (design-language.md, Messages): a quick edit ends
     // before the delay runs out.
     corridorApplyIndicatorTimer = setTimeout(() => {
         corridorApplyIndicatorTimer = null;

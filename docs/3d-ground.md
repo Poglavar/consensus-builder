@@ -1,7 +1,7 @@
 # 3D ground: streets and pavement in model mode
 
-Living plan for branch `3d-ground` (worktree `consensus-builder-3d-ground`, off `colosseum-worlds-fair`
-f45d064b, 2026-10-21). Update the status marks as steps land.
+Built on branch `3d-ground` (2026-10-21) and merged into `colosseum-worlds-fair` and deployed on
+2026-10-22. The status marks below record what shipped; P7 is still open.
 
 ## Goal
 

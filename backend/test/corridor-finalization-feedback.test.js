@@ -284,7 +284,7 @@ describe('the spinner covers the whole run', () => {
 describe('the indicator itself', () => {
     let release;
 
-    // The apply is said by the status line (ephemerals.md): the label once the short delay has run
+    // The apply is said by the status line (design-language.md, Messages): the label once the short delay has run
     // out, and a status activity held for as long as the apply lasts.
     // The tool is loaded first, so the globals it restores on dispose are the real timers.
     beforeEach(() => {

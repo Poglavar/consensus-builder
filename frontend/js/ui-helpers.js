@@ -311,7 +311,7 @@ if (typeof window !== 'undefined') window.yieldToBrowser = yieldToBrowser;
 // busy" without knowing whether anything else is.
 let statusActivityHolders = 0;
 
-// The floating status line (ephemerals.md): the latest line, a spinner while anything is busy, and
+// The floating status line (design-language.md, Messages): the latest line, a spinner while anything is busy, and
 // gone on its own once nothing has been said for a while and nothing is running.
 const STATUS_IDLE_MS = 8000;
 let statusIdleTimer = null;
@@ -458,7 +458,7 @@ function applyStatusBarHighlight() {
     }
 }
 
-// ---- Notices (ephemerals.md) ----
+// ---- Notices (design-language.md, Messages) ----
 // A notice announces an outcome and goes away: one pill at a time, top centre, the look of
 // .cb-toast with a variant per type. It is also written to the status LOG (not the status line):
 // "4 proposals removed: …" names records that are no longer on the map, and if you looked away you

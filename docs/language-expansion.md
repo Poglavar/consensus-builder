@@ -22,6 +22,17 @@ may use a repeated parameter fewer times when its grammar uses a pronoun; the co
 parameters remains required. No legacy reader, migration or parallel translation loader was added.
 Standalone pages version the changed locale runtime and styles to refresh previously cached assets.
 
+## Loading contract
+
+[Languages and translation loading](development.md#languages-and-translation-loading) holds the
+full rules. Translated copy lives only in `frontend/i18n/<language>.json`; features, including
+feedback, privacy and the parcel report, consume those dictionaries through the shared loader and
+never fetch or register their own copy. Startup loads English as the fallback plus the selected
+language. A switch loads only the new language through the shared request cache, and a region-only
+change reuses the loaded language. A failed request can be retried; a stale completion cannot
+repaint a later selection. Plural lookup exhausts the selected language's forms before English.
+The formatter consults the locale registry for languages outside its standalone defaults.
+
 ## Saved plans and MCP parity
 
 `PlanRecord` accepts all seven UI languages in a saved map view. Both its JSON Schema and the MCP
@@ -116,8 +127,8 @@ with exit code zero, and the dedicated browser was closed after verification.
 
 ## Follow-up: style and mobile failures resolved
 
-The follow-up fixes the CSS/mobile and shared-header failures recorded here and in the
-[loading audit](i18n-loading-audit-2026-10-26.md). Phone sheet geometry now belongs to the shared
+The follow-up fixes the CSS/mobile failures recorded here and the shared-header failures (mobile
+stylesheet order, missing back-link icons) found during the translation-loading cleanup. Phone sheet geometry now belongs to the shared
 controller once attached; older panel geometry stops competing with it. The shared stylesheet has
 zero `!important` declarations and zero IDs in `:is()`. The 3D stack uses the shared frame position
 rather than overriding its bottom edge. Activity tabs use the existing local stacking token.

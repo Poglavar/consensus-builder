@@ -1,7 +1,7 @@
 <!-- Practical entry point for local development and documentation/media maintenance. -->
 # Local development
 
-[Overview](../readme.md) · [Documentation index](README.md) · [Test scope](TEST.md)
+[Overview](../readme.md) · [Documentation index](README.md) · [Test scope](#verify-a-change)
 
 ## Choose the code you need
 
@@ -105,7 +105,38 @@ cd backend
 npx vitest run test/product-guides.test.js
 ```
 
-See [TEST.md](TEST.md) for browser fixtures, database-backed checks and their limitations. An entire suite is a separate, potentially expensive run; choose it deliberately rather than treating it as a quick smoke check. Browser fixtures with mocked APIs do not verify production data or live wallet transactions.
+Name the test files by hand and run backend tests from `backend/`. An entire suite is a separate,
+potentially expensive run; choose it deliberately rather than treating it as a quick smoke check.
+
+### Test layers
+
+| Layer | Tooling and location | Targeted run | Whole suite |
+| --- | --- | --- | --- |
+| Backend API and frontend characterization | Vitest and Supertest in `backend/test/`; Node test runner for `*.node.test.js` | `cd backend && npx vitest run test/<file>.test.js` | `cd backend && npm test` |
+| Browser | Playwright in `e2e/tests/`, local frontend with fixture-backed API responses | `cd e2e && npx playwright test tests/<file>.spec.ts` | `cd e2e && npm test` (headless) or `npm run test:headed`; tagged subsets `test:smoke`, `test:core`, `test:features` |
+| Feature and control inventories | `e2e/feature-inventory.json`, `e2e/control-contract.json` | `cd e2e && npm run check:features`, `npm run check:controls` | |
+| EVM contracts | Foundry in `blockchain/forge-test/` (Hardhat tooling remains but holds no regression coverage) | | `cd blockchain && forge test` |
+| Solana programs | Anchor and TypeScript in `blockchain/solana/tests/`, against a local validator | | `cd blockchain/solana && yarn test` |
+| Production parcel smoke | `backend/scripts/smoke-production-bbox.mjs`, read-only | `cd backend && npm run smoke:prod:parcels` | |
+
+### What the tests do not establish
+
+- Browser specs check user actions and observable UI, map-layer, storage, geometry and request
+  effects. Their API responses are fixtures and their wallet providers and RPC are mocked, so they
+  do not verify production data, real wallet signing, RPC availability or devnet transactions.
+  Real chain behaviour uses the local validator or the explicitly opt-in devnet path in the
+  [hackathon build guide](hackathon-build.md).
+- The feature inventory check confirms that the command registry and its index agree. Only a
+  behavioral assertion in a passing run shows that a command works.
+- The production parcel smoke checks `/health` and `/parcels?bbox=...` (response shape, CORS header,
+  timings and a small concurrent burst). It does not establish broad production API parity.
+- Visual regression and load testing are deliberately out of scope; accessibility testing is not
+  set up yet.
+
+Known gaps: read-only live checks for critical endpoints beyond the parcel bbox; one real,
+low-value devnet transaction lifecycle verified apart from the mocked browser specs; documented
+prerequisites for skipped cases; and browser-global calculations that are still tested through DOM
+or script globals rather than as pure modules.
 
 ### MCP parity check
 
@@ -329,6 +360,20 @@ The deployed guide sources and [current packaged media](https://github.com/Pogla
 Use the intended branch’s `frontend/deploy-frontend.sh` after committing and pushing the reviewed changes. The protocol branch supports a `BRANCH` override; inspect the entrypoint before running it. A normal frontend deploy builds and mirrors a complete release. A documentation-only publication must include its CSS and media before swapping HTML, and the committed files must also reach the production branch so a later release preserves them.
 
 Verify the served HTML, captions, media content types and byte-range playback after publication. A successful upload alone does not establish that the CDN serves the new files.
+
+### Newer-deployment check
+
+Settings → Information shows the running build, which is the deployment-stamped `__BUILD_INFO`, and
+a Check for updates button. `frontend/js/ui/app-updates.js` reads the same-origin `release.json`
+with a fresh query parameter, `no-store` and a 15-second timeout, and validates its component,
+schema, deployment counter, build ID and date. A larger deployment counter is an update, including
+a redeployed rollback; an invalid or older response is a failed check and never reports the tab as
+current. Deployed tabs check at startup, every five minutes while visible and on returning to the
+tab, and overlapping checks share one request. An update shows a notice in the feedback stack.
+Reloading is always explicit, uses the ordinary browser reload and is refused while an editor, road
+drawing, blocking dialog or busy control is active. Local development builds are labelled
+Development build and do not poll. `AppUpdates.check()` and `snapshot()` give browser agents the
+same read-only state; no authored record or MCP operation is involved.
 
 
 ## Verified local preview links

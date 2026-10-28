@@ -45,8 +45,7 @@ reader or automatic conversion of signed or published records. Plan and Design r
 
 Named snapshots were added on 2026-10-24. “Name this plan” in Designs → Share saves the selected
 published designs and view, with a permanent `/plans/<cid>` link. Changing its title, selection or
-view creates a new snapshot; existing links retain their content. See
-[named-plan validation and release notes](named-plans-validation.md).
+view creates a new snapshot; existing links retain their content.
 
 The notes below preserve historical reasoning, implementation milestones and unresolved findings.
 The current glossary is [vocabulary.md](vocabulary.md); the contract above supersedes the former
@@ -110,7 +109,7 @@ above supersedes historical statements where indicated.
   inside the app, so there is nothing to sign and nothing for a market to settle on.
 - Markets, ENS names and mints attach to agreements only. A design on its own is shareable; nobody
   decides on it and it is not bettable until an agreement includes it.
-- **Decision rule** replaces the publish-time **decision kind** of `proposal-kinds.md`: owner deal,
+- **Decision rule** replaces the publish-time **decision kind** of the retired proposal-kinds model: owner deal,
   owner vote and community vote become rules an agreement can have. Decision 7 there (every
   published record carries a kind) is reversed: a bare design carries none. "Kind" is left to mean
   the design type.
@@ -185,7 +184,7 @@ above supersedes historical statements where indicated.
 - Named plans as records (`plans.md`). Their machinery (member hashes, aggregate hash, site-only
   mint, ENS name, one market) is re-pointed at agreements, with the terms moved from the members
   onto the bundle. "Which plan gets built" becomes "which agreement executes".
-- Decision kinds (`proposal-kinds.md`): moved onto the agreement as its decision rule.
+- Decision kinds (the retired proposal-kinds model): moved onto the agreement as its decision rule.
 - The land-readjustment record that bundles layout, allocations, cash and approval in one proposal
   (`land-readjustmend.md`): split into a parcel-layout design and an agreement. The approval engine
   of its §23 becomes the agreement's decision-rule engine.

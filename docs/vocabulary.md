@@ -2,7 +2,7 @@
 
 The canonical definitions of concepts in Consensus Builder. Names in backticks identify their record or field representations.
 
-[The model specification](plan-design-agreement.md) describes the protocols. [The historical semantic audit](vocabulary-audit-2026-10-23.md) retains implementation history, research, superseded contracts and unresolved findings; it is not the current glossary.
+[The model specification](plan-design-agreement.md) describes the protocols.
 
 ### Autonomous proposed-design selection
 
@@ -279,13 +279,13 @@ The set of designs currently applied in a saved workspace and the land fabric th
 
 ### Saved workspace
 
-The durable local working state for this site in one browser profile, containing designs, agreements, application state, editor drafts and modeling inputs, partitioned by geographic context. Its identity and saved work survive closing or reopening a tab. Only one map tab may edit it at a time; another tab waits until the editor closes and the person retries. Opening a tab does not create a copy. Account connections and display preferences can remain shared. See the [single-editor workspace audit](saved-workspace-single-editor-2026-10-25.md) and the [application audit](plan-application-tab-workspace-audit-2026-10-25.md) for verified boundaries and unresolved link-loading semantics.
+The durable local working state for this site in one browser profile, containing designs, agreements, application state, editor drafts and modeling inputs, partitioned by geographic context. Its identity and saved work survive closing or reopening a tab. Only one map tab may edit it at a time; another tab waits until the editor closes and the person retries. Opening a tab does not create a copy. Account connections and display preferences can remain shared. See the [saved workspace](saved-workspace.md) record for the verified boundaries.
 
 ### Road junction
 
 A shared same-level centerline node and its incident street arms, with the cross-sections and corner land needed to connect them. Each participating road design records its split stretches and the neighbouring arms needed to rebuild its own footprint. A crossing at different levels or through a protected bridge/tunnel span is not a road junction.
 
-A level is a discrete topology label, with omitted levels treated as ground level zero; it is not an elevation in metres. Editing a participating road refreshes the affected neighbouring arm definitions. Drawing a road that joins an existing one, or editing a participating road, updates a neighbour that is still the author's own unpublished design in place; a published neighbour is immutable, so its updated junction is saved as a new revision that names it by CID and replaces it on the map, and the person is told which roads were revised. The junction owns its shared visible surface, including during drawing previews, so participating road strips do not paint over that surface. See the [junction audit](junction-creation-audit-2026-10-26.md).
+A level is a discrete topology label, with omitted levels treated as ground level zero; it is not an elevation in metres. Editing a participating road refreshes the affected neighbouring arm definitions. Drawing a road that joins an existing one, or editing a participating road, updates a neighbour that is still the author's own unpublished design in place; a published neighbour is immutable, so its updated junction is saved as a new revision that names it by CID and replaces it on the map, and the person is told which roads were revised. The junction owns its shared visible surface, including during drawing previews, so participating road strips do not paint over that surface.
 
 MCP agreement drafting and revision author the included roads as a complete network before parcel binding and agreement output calculation. Changed junctions produce revised road designs and CIDs. Reading, applying or comparing published records does not rewrite their topology.
 
@@ -661,6 +661,10 @@ The modeled rights source used by the development lens member to associate parce
 
 A declaration of the land a design intends to cede and its destination class or mapping. It describes intended effects, independently of current holders and completed transfers.
 
+### Area monitor
+
+A named, server-stored list of up to 400 Croatian cadastral parcels (`HR-<cadastral municipality>-<parcel number>`) with an optional drawn Polygon or MultiPolygon, used to track a project's public land acquisition ([routes](../backend/routes/area-monitors.js), [table](../backend/routes/area-monitor-ddl.sql)). Reading a monitor joins current ownership and counts parcels owned by the City of Zagreb against those remaining; when the ownership lookup fails, parcels are returned with unknown ownership rather than failing the read. The overlay clips current parcels to the stored polygon. `city_id` is a caller-supplied namespace (`global` when omitted), not a resolved app city. Optional EOJN and SkyscraperCity links name the procurement notice and the forum thread. Creation is limited to 20 monitors per IP address; the API has no edit or delete. Monitors appear in Activity under Watched areas.
+
 ## Lifecycle and settlement
 
 ### Agreement lifecycle
@@ -893,6 +897,30 @@ Whether a query has supplied all records promised for its stated source and boun
 
 A bounded observation used to check a city's cadastral source and its integration, consisting of safe request/result metadata and unchanged sample polygons. Downloaded datasets and extracted archives are disposable inputs, fetched only for a current check and deleted afterward. Source proof is temporary until the city's result is accepted; working source configuration and adapter code preserve a successful integration, and the city's failed-URL list preserves unsuccessful source attempts.
 
+### City integration task
+
+The work of bringing one city's discovered parcel source into the app: verifying the source, writing its source and city configuration, implementing the backend and browser adapters, admitting the city and checking it in the app. It completes only when the app reads live polygons, fetches repeatable exact-ID geometry, renders parcels and selects them; technical source qualification alone does not complete it. A city worker gets at most three implementation turns. A remaining implementation problem is an `integration-blocked` outcome with its reason; only an evidenced publisher limitation is `blocked-source`. A city whose qualification inputs are missing or invalid stays `pending-inputs` until they validate, without consuming model calls or source-failure retries. An implementation failure never adds the endpoint to the city's failed URLs.
+
+### City knowledge record
+
+What the parcel pipeline keeps about a city in `world-parcels/cities/<WUP code>/`: `settings.json` (working parcel-source descriptors, adapter configuration and explicit app-city bindings) and `failed-urls.json` (a deduplicated list of unsuccessful source URLs with optional reasons). An unsuccessful attempt never proves that a city has no cadastre. An enabled city source establishes usable observed parcel geometry within its stated scope, not citywide completeness, title, ownership or survey accuracy. Research packets, qualification inputs, logs and checks belong to a temporary pipeline task, whose result is reduced to city knowledge and queue progress before its worktree and evidence are deleted.
+
+### Coverage-report city row
+
+A row of the parcel coverage report ([report builder](../scripts/build-parcel-coverage-report.mjs)). Its research identity stays separate from an app-city identity: a reviewed city-to-app crosswalk takes precedence over a source-level inference, and either requires the enabled source and runtime provider to agree. An enabled app city without a reviewed crosswalk appears as an `app:<cityId>` row with no invented registry identity, demographics or investigation date. Conflicting links stay unbound.
+
+### City knowledge record
+
+What the parcel pipeline keeps about a city in `world-parcels/cities/<WUP code>/`: `settings.json` (working parcel-source descriptors, adapter configuration and explicit app-city bindings) and `failed-urls.json` (a deduplicated list of unsuccessful source URLs with optional reasons). An unsuccessful attempt never proves that a city has no cadastre. An enabled city source establishes usable observed parcel geometry within its stated scope, not citywide completeness, title, ownership or survey accuracy. Research packets, qualification inputs, logs and checks belong to a temporary pipeline task, whose result is reduced to city knowledge and queue progress before its worktree and evidence are deleted.
+
+### Coverage-report city row
+
+A row of the parcel coverage report ([report builder](../scripts/build-parcel-coverage-report.mjs)). Its research identity stays separate from an app-city identity: a reviewed city-to-app crosswalk takes precedence over a source-level inference, and either requires the enabled source and runtime provider to agree. An enabled app city without a reviewed crosswalk appears as an `app:<cityId>` row with no invented registry identity, demographics or investigation date. Conflicting links stay unbound.
+
+### Coverage-report city row
+
+A row of the parcel coverage report ([report builder](../scripts/build-parcel-coverage-report.mjs)). Its research identity stays separate from an app-city identity: a reviewed city-to-app crosswalk takes precedence over a source-level inference, and either requires the enabled source and runtime provider to agree. An enabled app city without a reviewed crosswalk appears as an `app:<cityId>` row with no invented registry identity, demographics or investigation date. Conflicting links stay unbound.
+
 ### Imagery source
 
 A visual map background supplied by an imagery provider. Selecting imagery changes the view, independently of parcel identities, rights and building geometry.
@@ -924,6 +952,10 @@ A profile's association with land through a modeled assignment or an observed pa
 ### Agent run
 
 A recorded execution of an automated workflow, with its inputs, outcomes and any accounted costs. It does not itself establish publication, a settled payment or signing authority.
+
+### Bot test-token funding
+
+Wallet maintenance on Solana devnet that tops up a configured bot wallet with test USDC before it transfers tokens (`backend/agents/funding.js`, enabled by `AGENT_USDC_FUNDING_ENABLED=1`). It is separate from betting and donation spend limits. The main bot wallet funds the shortfall up to 0.5 test USDC while retaining 1 test USDC; a database lock serializes balance checks, transfer and readback, and confirmed receipts are recorded in the agent-run ledger. It never funds unknown wallets or another network.
 
 ### Draft artifact
 

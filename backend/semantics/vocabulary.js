@@ -14,8 +14,9 @@ export const CONTEXT = Object.freeze({
     xsd: 'http://www.w3.org/2001/XMLSchema#'
 });
 
-// The decision rules an agreement can have (plan-design-agreement.md: they replace the decision
-// kinds of proposal-kinds.md): who decides, and whether the decision binds.
+// The decision rules an agreement can have (plan-design-agreement.md: they replace the former
+// proposal decision kinds; vocabulary.md defines them and community-consultations.md covers the
+// community vote): who decides, and whether the decision binds.
 export const DECISION_RULES = Object.freeze([
     ['owner-deal', 'Owner deal', 'The owners of the input land decide, and the decision binds: the agreement may execute once its rule is satisfied. The classification does not prove title or consent.', 'owners', true],
     ['owner-vote', 'Owner vote', 'Nonbinding vote of the owners of the input land; no execution.', 'owners', false],

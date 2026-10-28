@@ -28,8 +28,8 @@ npm test
 The backend suite uses Vitest. Network, signing, database, and live-ledger behavior is mocked unless
 a test explicitly documents an opt-in environment flag.
 
-Historical test counts are recorded in [`TEST.md`](TEST.md); they are not a verification of a newer checkout. Run the affected headless unit tests first.
-See [`TEST.md`](TEST.md) for coverage scope and limitations. To run the browser suite visibly:
+Run the affected headless unit tests first. See [test scope](development.md#verify-a-change) for the
+test layers and their limits. To run the browser suite visibly:
 
 ```sh
 cd e2e

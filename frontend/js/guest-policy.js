@@ -1,5 +1,5 @@
 // Guest rules: what a visitor without a profile name may do. One table, consulted by every gate
-// (publish, share link); see next-steps.md.
+// (publish, share link).
 //
 //   none            Stays on this device: create, edit, fork, apply, compare.
 //   name            Leaves the device and carries an author: publish/upload, share link. A guest

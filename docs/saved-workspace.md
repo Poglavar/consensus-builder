@@ -1,6 +1,6 @@
 # Saved workspace with one editor
 
-User decision: keep one saved map workspace per browser profile for this site, with one editable map tab. Do not create automatic copies or offer an independent-copy action. This supersedes the per-tab copying policy recorded in the [earlier application audit](plan-application-tab-workspace-audit-2026-10-25.md).
+User decision: keep one saved map workspace per browser profile for this site, with one editable map tab. Do not create automatic copies or offer an independent-copy action. This supersedes the earlier per-tab copying policy.
 
 ## Current contract
 

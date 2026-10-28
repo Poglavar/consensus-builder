@@ -107,7 +107,7 @@ let blockifyShapeHistoryRecorded = false;
 // Manual (freeform) footprint mode: a one-way branch from the parametric sliders. In manual mode the
 // outer ring's vertices are draggable, the shape-producing sliders are inert, and the courtyard is
 // re-inset by no footprint controls in manual mode; only height stays live. "Back to sliders" regenerates
-// parametrically and discards manual edits. See the roadmap in URBAN-RULE-BLOCKS-ROADMAP.md.
+// parametrically and discards manual edits. See docs/urban-rule-massing.md, block-form flexibility.
 let blockifyMode = 'parametric';  // 'parametric' | 'manual' | 'existing'
 let manualOuterRing = [];         // editable outer-ring vertices ([lng,lat], open — no closing dup)
 let manualBuildSucceeded = false; // has any manual build produced a shape? gates the trapped-state recovery

@@ -1,6 +1,6 @@
 /* ========== Floating map shell ==========
    The floating buttons and the sheets that replaced the left sidebar
-   (js/ui/map-shell.js; layout table in UI-REWORK.md), plus the styles of the controls rehoused into
+   (js/ui/map-shell.js; element names in design-language.md), plus the styles of the controls rehoused into
    those sheets. A sheet is a popover anchored to its button on desktop (map-shell.js sets the
    --sheet-* offsets) and a bottom sheet under 768px. */
 

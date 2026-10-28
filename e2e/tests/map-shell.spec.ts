@@ -2,7 +2,7 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, clickMapAt } from '../helpers/app';
 import { selectors } from '../helpers/selectors';
 
-// The map shell replaced the left sidebar (UI-REWORK.md): Layers/Settings buttons top-right, the
+// The map shell replaced the left sidebar (design-language.md): Layers/Settings buttons top-right, the
 // Measure ruler beside the map-mode buttons, Proposals/Bets/Activity bottom-right each toggle a sheet
 // (frontend/js/ui/map-shell.js). This file took over sidebar.spec.ts, which clicked the sidebar
 // toggle and asserted the `collapsed` class flipped; the equivalent here is that each button really

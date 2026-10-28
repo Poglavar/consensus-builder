@@ -311,7 +311,7 @@ button.status-log-message {
     display: none;
 }
 
-/* Status line (ephemerals.md): what the app is doing now, replaced never stacked, gone when idle.
+/* Status line (design-language.md, Messages): what the app is doing now, replaced never stacked, gone when idle.
    Its visual treatment is .cb-toast--status (css/primitives.css); Activity holds the full log. */
 .floating-status {
     position: static;
@@ -1035,7 +1035,7 @@ input.proposal-author-name {
     text-align: center;
 }
 
-/* Notices (ephemerals.md): an outcome, one pill at a time (js/ui/notice-queue.js), top centre
+/* Notices (design-language.md, Messages): an outcome, one pill at a time (js/ui/notice-queue.js), top centre
    under the top row of controls, above anything the notice may answer. The look is .cb-toast
    (css/primitives.css); only the entrance and exit live here. */
 #ephemeral-message-container {

@@ -7,7 +7,7 @@
 -- killed halfway only loses the signatures it had not fetched yet.
 --
 -- Applied the same way as the other routes/*-ddl.sql files in this repo — by hand with psql, there
--- is no auto-apply step (see feature-ens.md for the same pattern):
+-- is no auto-apply step (see feature-ens-readme.md, Configuration, for the same pattern):
 --
 --   local:  psql "$DATABASE_URL" -f backend/routes/transactions-ddl.sql   (DATABASE_URL from backend/.env)
 --   docker: docker exec -i consensus-builder-db-1 psql -U zagreb_user -d geodata < backend/routes/transactions-ddl.sql

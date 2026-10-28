@@ -276,7 +276,7 @@
         global.document.body.append(dialog); dialog.showModal(); input.focus();
         return dialog;
     }
-    // The failure banners, one per kind, are sections of the shared banner card (ephemerals.md): both
+    // The failure banners, one per kind, are sections of the shared banner card (design-language.md, Messages): both
     // failing at once reads as one card with one line per source. Parcel choices live in the ground
     // fallback dialog; building failures retain their own retry/source actions.
     const BANNERS = {

@@ -21,7 +21,7 @@ body.realistic-mode-active #mode-walk-toggle {
 }
 
 /* The ?fps debug readout (photoreal-mode.js); loading state and failures go through the status
-   line and the notices (ephemerals.md). */
+   line and the notices (design-language.md, Messages). */
 #map-container .photoreal-status {
     position: absolute;
     left: 50%;

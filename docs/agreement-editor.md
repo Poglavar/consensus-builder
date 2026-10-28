@@ -161,6 +161,38 @@ Targeted verification runs:
 
 The read-only fixture now uses canonical PlanRecord creation. The 3D checks exercise stack DOM/CSS without starting the scene renderer. Browser source verification used the explicitly selected local API: one real cadastral parcel and complete design binding returned HTTP 200, and both listening processes belonged to this checkout. Dedicated verification Chrome was closed. Mixed files containing concurrent semantic, voting and layout changes remain uncommitted; their edits are preserved.
 
+## Properties tabs
+
+Agreement properties live in the expanded stack section, with status and primary actions above the
+tabs. Overview holds the plan, designs, publication, applicable voting and chain controls; Input
+parcels, Output parcels, Persons and Rules have their own tabs, with counts for inputs, outputs and
+persons. Community agreements omit the allocation and person tabs. The tabs share the panel width
+equally with wrapped labels, the selected tab survives refresh, and arrow keys, Home and End move
+between tabs.
+
+Design, input, output and person rows preview their geometry on hover or focus; a click frames and
+highlights the object while the agreement stays open. Inputs show original cadastral geometry,
+outputs the agreement's exact geometry, designs their displayed revision, and persons their
+contributed parcels and explicitly allocated outputs. Published read-only records allow the same
+spatial inspection without authoring actions. Hash-only outputs get no fabricated geometry. A
+design's Overview metric is Source parcels; its Formed parcels list excludes remainder land, using
+the shared formation helper's structure, building, corridor and layout-plot roles.
+
+## Source parcel geometry in the commitment
+
+A published agreement commits to each source parcel's own representation. An unchanged whole parcel
+keeps its source MultiPolygon, even a one-component one the live fabric displays as a Polygon, after
+a coordinate check; changed geometry still fails the current-ground check. There is no alternate
+hash reader: agreements committed from flattened parcels must be recreated. Import rebuilds local
+geometry and piece identifiers while keeping published output areas, provenance and roles, and
+unchanged whole parcels carry their published input holders into the ledger. The approval card
+warns about missing areas only for a rule that counts area and never edits the rights snapshot.
+Binding execution is on-chain settlement; legal registration and construction are separate.
+
+Agreements published before the optional `consultation` field keep their stored CID as the identity
+for reads and decisions. Reserializing one with the current publisher adds that field, and no
+compatibility serializer handles the difference.
+
 ## Plan creation opens the stack
 
 Creating a plan or saving a revision now opens that exact saved snapshot in the current view's

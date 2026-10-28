@@ -1,4 +1,4 @@
-// The 3D buildings loader writes the status line (ephemerals.md): "Loading buildings…" under a
+// The 3D buildings loader writes the status line (design-language.md, Messages): "Loading buildings…" under a
 // hold while the nearby fetch and the glTF models are in flight, then a completion word when the
 // hold ends, so the loading text never stays behind without its spinner. Exercises the real
 // updateBuildingsLoader from three-mode.js with its closure state stubbed.

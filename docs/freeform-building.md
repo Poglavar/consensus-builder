@@ -1,4 +1,4 @@
-<!-- Behavior decisions and targeted verification for Freeform placement and taken surroundings. -->
+<!-- Behavior decisions and targeted verification for Freeform placement, land take, surroundings, upload and Duplicate. -->
 # Freeform building interaction — 27 October 2026
 
 Choosing Freeform now starts placement. A dashed outline follows the desktop pointer;
@@ -11,6 +11,22 @@ Saved designs and imported geometry reopen at their authored positions.
 The permanent building-name label inside the editor footprint has been removed,
 including the unresolved generated “Building {{n}}” text. Explicit imported names
 remain authored feature metadata.
+
+## Land take review
+
+Each current live parcel a Freeform building touches gets its own Land take choice: Footprint only
+(the default) or Whole parcel, which adds that parcel's entire current outline; All footprint and
+All whole set every row. The building itself stays narrow. The exact `geometry.landTake`
+(`frontend/js/freeform-land-take.js`) is shared by binding, parcel formation, owner remainders,
+demolition prefetch and replay, and agreement derivation.
+
+The review (`frontend/js/freeform-land-take-review.js`) highlights taken land, retained ground and
+building removals, separates full removals from partial cuts and names overlapping applied designs.
+Done refreshes the source answer and requires the land-take acceptance checkbox for unchanged
+consequences. A missing, unsupported, truncated or absent building answer never passes as empty
+ground; Retry review asks again. The model preview receives the same take boundary and excluded
+buildings. This is local design acceptance, separate from agreements. Apply refuses a record that
+carries only the retired `takeWholeParcels: true` without `geometry.landTake`; reopen and review it.
 
 ## Land and surroundings
 
@@ -34,6 +50,20 @@ This intentionally changes the earlier experimental behavior that allowed a
 footprint-only take to carry paving over the starting parcel. No migration or
 parallel reader is added. Editing such a record uses the current ground rule;
 published source records remain immutable.
+
+## Upload and Duplicate
+
+Freeform offers Upload .glb beside Upload GeoJSON. The model importer replaces the selected
+building in the active editor and keeps its siblings, surroundings and undo history. Escape closes
+the importer without closing Freeform, and a closed importer ignores a late upload response.
+
+Duplicate (`frontend/js/design-duplication.js`) copies the authored geometry of Freeform, park,
+square and lake designs (`ProposalDesignGoals.canDuplicate`). The preview follows the pointer; a
+click, not a drag, creates a fresh local design through the ordinary binding and application
+pipeline, and Escape cancels without leaving a draft. The source and its agreements stay unchanged.
+Imported mesh references and local model settings carry over; geographic geometry and decorations
+move, model-local coordinates do not. Site-bound rules, layouts, corridors, attached stations and
+rights acts cannot be duplicated. The editor shell has no Fork action.
 
 ## Map hover
 

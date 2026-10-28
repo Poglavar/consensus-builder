@@ -1,6 +1,6 @@
 // Client-side ENS name helpers: derive a parcel's ENS name (mirrors backend/ens/slug.js) and
 // render a compact, copy-on-click line for the panels. Names resolve via
-// parcels.urbangametheory.eth (see feature-ens.md).
+// parcels.urbangametheory.eth (see feature-ens-readme.md).
 (function (global) {
     'use strict';
 

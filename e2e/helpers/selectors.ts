@@ -11,7 +11,7 @@ export const selectors = {
   leafletZoomOut: '.leaflet-control-zoom-out', // Note: may be disabled (zoomControl: false)
   parcelLayer: '.leaflet-overlay-pane svg, .leaflet-overlay-pane canvas',
 
-  // Map shell (replaced the left sidebar; see UI-REWORK.md). Each button toggles the sheet named in
+  // Map shell (replaced the left sidebar; see design-language.md, Element names). Each button toggles the sheet named in
   // its data-sheet-target; the controls inside the sheets kept their old sidebar ids.
   mapShellButton: '[data-sheet-target]',
   openSheet: '.map-sheet:not([hidden])',

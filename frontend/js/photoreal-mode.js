@@ -132,7 +132,7 @@
     let sinceAnyLoadS = 0;
     let profT = null; // transition profile timestamps (activate -> lib -> setup -> stream -> seat)
     let statusRemovalTimer = null;
-    let streamingRelease = null; // the status line's hold while tiles stream (ephemerals.md)
+    let streamingRelease = null; // the status line's hold while tiles stream (design-language.md, Messages)
     let streamingText = '';
     let fpsEl = null;
     let seatDebugEl = null;
@@ -182,7 +182,7 @@
         return fallback;
     }
 
-    // A photo view that could not compose is an outcome: an error notice (ephemerals.md).
+    // A photo view that could not compose is an outcome: an error notice (design-language.md, Messages).
     function setStatus(msg) {
         if (!msg) return;
         if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(msg, 8000, 'error');
