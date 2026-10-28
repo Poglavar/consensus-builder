@@ -312,8 +312,11 @@ Wiring: `parcel-based.js` saves envelopes in `geometry.buildings` and shows the 
 dashed envelope; its metrics are now *Permitted* footprint and volume plus *Example floors (avg)*.
 `building-blocks.js` saves the per-parcel pieces in `geometry.buildings` (each with its own seed,
 so the applied 3D street has the varied heights the editor showed) and the complete authored ring
-in `geometry.blockMassing`, the same shape the MCP Block constructor writes.
-Regenerate advances the seed; a slider does not, so raising the height limit no longer reshuffles
+in `geometry.ruleMassing`, the same shape the MCP Block constructor writes. `row-house.js` saves
+a terrace the same way; both go through `UrbanRuleVariation.ruleDesignGeometry`. An agent draft
+without an explicit seed takes a stable seed from its site, so drafts do not share one variation.
+The height controls of all three rules count whole floors; Block and Row store the metres.
+Illustrate advances the seed; a slider does not, so raising the height limit no longer reshuffles
 every footprint on the street. `three-mode.js` gains the **Planned as** row and the 🎲, whose salt
 is session-only — it never writes to a proposal.
 

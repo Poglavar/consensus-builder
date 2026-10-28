@@ -15,10 +15,10 @@
         if (!items?.length) fail('building-required', 'This design has no authored buildings to edit.');
         const index = change.buildingIndex;
         const dimensional = ['set_floors', 'set_height', 'set_use'].includes(change.type);
-        // A Block's buildings are cut from one authored massing (geometry.blockMassing). Their
+        // A Block's buildings are cut from one authored massing (geometry.ruleMassing). Their
         // height, floors and use move together, as the editor's slider moves them, and the massing
         // is re-stamped below; a footprint, removal or single-building edit would part them from it.
-        if (record.geometry.blockMassing && (!dimensional || index != null)) fail('coupled-building-geometry', 'This design also has a separate block massing. Edit the height, floors or use of all its buildings together, or edit or replace the whole design in its geometry editor.');
+        if (record.geometry.ruleMassing && (!dimensional || index != null)) fail('coupled-building-geometry', 'This design also has a separate block massing. Edit the height, floors or use of all its buildings together, or edit or replace the whole design in its geometry editor.');
         if (index != null && (!Number.isInteger(index) || index < 0 || index >= items.length)) fail('building-not-found', 'Inspect this design revision and choose an existing building index.');
         const selected = index == null ? items : [items[index]];
         const shape = load('SingleBuildingGeometry', './single-building-geometry.js');
@@ -45,14 +45,14 @@
                     }
                 }
             }
-            const massing = record.geometry.blockMassing;
+            const massing = record.geometry.ruleMassing;
             if (massing) {
                 const lead = items[0].properties;
                 if (change.type === 'set_use') massing.properties.use = change.value;
                 else if (massing.properties?.urbanRule && lead.urbanRule) {
                     const rules = load('UrbanRuleVariation', './urban-rule-variation.js');
-                    record.geometry.blockMassing = rules.massingWithRule(massing, lead.urbanRule, massing.properties.variationSeed, { turf });
-                    record.geometry.blockMassing.properties.floors = lead.floors;
+                    record.geometry.ruleMassing = rules.massingWithRule(massing, lead.urbanRule, massing.properties.variationSeed, { turf });
+                    record.geometry.ruleMassing.properties.floors = lead.floors;
                 }
             }
         } else if (change.type === 'remove_building') {
@@ -146,7 +146,10 @@
         const bar = turf.intersect(inside, turf.polygon([coords]));
         if (!bar || bar.geometry.type !== 'Polygon' || turf.area(bar) < 20) fail('row-no-room', 'No connected row fits this plot; choose an explicit footprint in the app.');
         bar.properties = { type: 'proposedRowHouse', floors, height: floors * floorHeightM, use: rule.use || 'residential' };
-        return load('UrbanRuleVariation', './urban-rule-variation.js').massingWithRule(bar, { typology: 'row', kind: rule.kind || 'exact', maxHeightM: floors * floorHeightM, floorHeightM }, 0, { turf });
+        const rules = load('UrbanRuleVariation', './urban-rule-variation.js');
+        // A stable per-site seed unless the agent names one, so drafted rows do not all share one variation.
+        const seed = Number.isInteger(rule.seed) && rule.seed >= 0 ? rule.seed >>> 0 : rules.hashSeed(JSON.stringify(site));
+        return rules.massingWithRule(bar, { typology: 'row', kind: rule.kind || 'exact', maxHeightM: floors * floorHeightM, floorHeightM }, seed, { turf });
     }
     function transform(value, edit) {
         const out = structuredClone(value), geometry = out?.type === 'Feature' ? out.geometry : out;
@@ -239,7 +242,7 @@
             const parameters = record.buildingProposal.parameters ||= {}, oldParameters = original.buildingProposal?.parameters || {};
             const rules = load('UrbanRuleVariation', './urban-rule-variation.js');
             const changedShape = !same(items.map(b => b.geometry), oldItems.map(b => b.geometry));
-            if (changedShape && original.geometry?.blockMassing && !touched('/geometry/blockMassing')) fail('coupled-building-geometry', 'This edit must explicitly update the separately authored geometry.blockMassing too.');
+            if (changedShape && original.geometry?.ruleMassing && !touched('/geometry/ruleMassing')) fail('coupled-building-geometry', 'This edit must explicitly update the separately authored geometry.ruleMassing too.');
             for (const key of ['width','length','rotation','offsetX','offsetY','setback','setbackM','coverage']) if (!same(parameters[key], oldParameters[key]) && !changedShape) fail('geometry-regeneration-required', `Changing ${key} also requires edited geometry; parameters alone do not move the drawing.`);
             for (let i=0; i<items.length; i++) {
                 const p = items[i].properties ||= {}, old = oldItems[i]?.properties || {};
@@ -263,7 +266,7 @@
                     p.floors = normalized.typology === 'parcelBased' ? normalized.maxFloors : Math.max(1, Math.floor(p.height / normalized.floorHeightM));
                     delete p.minFootprint;
                     if (normalized.kind === 'range' && normalized.minDepthM > 0) {
-                        const compelled = rules.buildToMinimum(record.geometry.blockMassing || items[i], normalized.minDepthM, { turf });
+                        const compelled = rules.buildToMinimum(record.geometry.ruleMassing || items[i], normalized.minDepthM, { turf });
                         const clipped = compelled && turf.intersect(compelled, items[i]);
                         if (clipped) p.minFootprint = clipped.geometry;
                     }
@@ -297,10 +300,10 @@
             }
             if (items.length && items[0].properties?.urbanRule && items.every(b => same(b.properties?.urbanRule, items[0].properties.urbanRule))) parameters.rule = structuredClone(items[0].properties.urbanRule);
             else if (items.length) delete parameters.rule;
-            const massing = record.geometry?.blockMassing;
-            if (massing?.properties?.urbanRule && !same(parameters.rule, oldParameters.rule) && parameters.rule && !touched('/geometry/blockMassing')) {
-                record.geometry.blockMassing = rules.massingWithRule(massing, parameters.rule, massing.properties.variationSeed, { turf });
-                record.geometry.blockMassing.properties.floors = parameters.floors;
+            const massing = record.geometry?.ruleMassing;
+            if (massing?.properties?.urbanRule && !same(parameters.rule, oldParameters.rule) && parameters.rule && !touched('/geometry/ruleMassing')) {
+                record.geometry.ruleMassing = rules.massingWithRule(massing, parameters.rule, massing.properties.variationSeed, { turf });
+                record.geometry.ruleMassing.properties.floors = parameters.floors;
             }
             if (changedShape && record.geometry.groundSurface && !touched('/geometry/groundSurface')) {
                 const surface = record.geometry.groundSurface;

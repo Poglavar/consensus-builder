@@ -803,6 +803,8 @@
         "pt": "Português"
     },
     "common": {
+        "maxFloors": "Máximo de plantas:",
+        "minFloors": "Pisos mínimos:",
         "copied": "Copiado",
         "lifecycle": {
             "draft": "Borrador",
@@ -3050,7 +3052,6 @@
                 "chamfer": "Chaflán (m):",
                 "simplify": "Simplificar (m):",
                 "width": "Ancho del edificio (m):",
-                "height": "Altura del edificio (m):",
                 "gaps": "Número de huecos:",
                 "gapWidth": "Ancho de hueco (m):",
                 "wings": "Número de alas:",
@@ -3059,7 +3060,6 @@
                 "ruleTypeExact": "Exactamente esta altura",
                 "ruleTypeMax": "Como máximo esta altura",
                 "ruleTypeRange": "Entre un mínimo y esta altura",
-                "minHeight": "Altura mínima del edificio (m):",
                 "minPlotArea": "Superficie mínima de parcela (m²):",
                 "minDepth": "Profundidad obligatoria desde la calle (m):"
             },
@@ -3135,7 +3135,7 @@
                 "uploadNoPolygon": "No se pudo importar el archivo. Usa huellas de edificios Polygon o MultiPolygon válidas.",
                 "uploadError": "No se pudo leer el archivo."
             },
-            "regenerate": "Regenerar"
+            "regenerate": "Ilustrar"
         }
     },
     "rowHouses": {
@@ -3147,7 +3147,6 @@
             "labels": {
                 "length": "Largo (m):",
                 "width": "Ancho (m):",
-                "height": "Altura (m):",
                 "chamfer": "Chaflán (m):",
                 "rotation": "Girar huella",
                 "circumference": "Perímetro (m):",
@@ -3157,7 +3156,6 @@
                 "ruleTypeExact": "Exactamente esta altura",
                 "ruleTypeMax": "Como máximo esta altura",
                 "ruleTypeRange": "Entre un mínimo y esta altura",
-                "minHeight": "Altura mínima (m):",
                 "minPlotArea": "Superficie mínima de parcela (m²):"
             },
             "helper": {
@@ -3190,7 +3188,7 @@
                 "proceed": "Continuar de todos modos",
                 "cancel": "Volver"
             },
-            "regenerate": "Regenerar",
+            "regenerate": "Ilustrar",
             "editShape": "Editar la huella manualmente",
             "returnGenerated": "Descartar los cambios manuales y volver a la forma generada",
             "confirmReturnGenerated": "¿Volver a la forma generada y descartar los cambios manuales?"
@@ -3204,7 +3202,6 @@
             "done": "Listo",
             "regenerate": "Ilustrar",
             "labels": {
-                "maxFloors": "Máximo de plantas:",
                 "minDistance": "Distancia mín. de los bordes (m):",
                 "buildingCount": "Envolventes según la regla:",
                 "totalArea": "Huella según la regla (m²):",
@@ -3214,7 +3211,6 @@
                 "ruleTypeMax": "Como máximo esto",
                 "ruleTypeRange": "Entre un mínimo y esto",
                 "ruleTypeExact": "Exactamente esto",
-                "minFloors": "Pisos mínimos:",
                 "minFootprint": "Planta baja mínima (m²):",
                 "minPlotArea": "Superficie mínima de parcela (m²):"
             },

@@ -47,7 +47,9 @@
     // Default parameter values
     const DEFAULT_BUILDING_LENGTH = 40; // meters (length along longest side, will be auto-calculated)
     const DEFAULT_BUILDING_WIDTH = 10; // meters (depth/width of row, perpendicular to longest side)
-    const DEFAULT_BUILDING_HEIGHT = 12; // meters
+    const DEFAULT_BUILDING_HEIGHT = 12; // meters (4 floors x 3 m)
+    const ROW_FLOOR_HEIGHT_M = 3;       // one storey, as the MCP Row constructor uses
+    const ROW_MAX_FLOORS = 25;          // the height control's ceiling
     const DEFAULT_CHAMFER = 0; // meters (corner cut length)
     let currentBuildingLength = DEFAULT_BUILDING_LENGTH;
     let currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
@@ -86,7 +88,10 @@
     function formatRowHouseText(template, params = {}) {
         if (!template) return '';
         return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
-            return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+            if (!Object.prototype.hasOwnProperty.call(params, key)) return match;
+            const value = params[key];
+            // An i18n reference ({ key, count }) without i18n loaded: its count is the best fallback.
+            return value && typeof value === 'object' && 'count' in value ? value.count : value;
         });
     }
 
@@ -261,7 +266,7 @@
             ['rowhouse-length-slider', currentBuildingLength],
             ['rowhouse-width-slider', currentBuildingWidth],
             ['rowhouse-chamfer-slider', currentChamfer],
-            ['rowhouse-height-slider', currentBuildingHeight]
+            ['rowhouse-height-slider', rowFloors(currentBuildingHeight)]
         ];
         controls.forEach(([id, value]) => {
             const element = document.getElementById(id);
@@ -269,12 +274,14 @@
         });
         const labels = [
             ['rowhouse-length-value', currentBuildingLength, 1], ['rowhouse-width-value', currentBuildingWidth, 1],
-            ['rowhouse-height-value', currentBuildingHeight, 0], ['rowhouse-chamfer-value', currentChamfer, 1]
+            ['rowhouse-chamfer-value', currentChamfer, 1]
         ];
         labels.forEach(([id, value, digits]) => {
             const element = document.getElementById(id);
             if (element) element.textContent = CbFormat.formatNumber(Number(value), { maxFractionDigits: digits, minFractionDigits: digits });
         });
+        const heightLabel = document.getElementById('rowhouse-height-value');
+        if (heightLabel) heightLabel.textContent = rowFloorsLabel(currentBuildingHeight);
         ['rowhouse-length-slider', 'rowhouse-width-slider', 'rowhouse-chamfer-slider'].forEach(id => {
             const element = document.getElementById(id);
             if (element) element.disabled = rowHouseManualMode;
@@ -860,6 +867,7 @@
             kind: rowRuleKind,
             maxHeightM: Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT,
             minHeightM: rowMinHeightM,
+            floorHeightM: ROW_FLOOR_HEIGHT_M,
             minPlotAreaM2: rowMinPlotAreaM2
         });
     }
@@ -893,18 +901,7 @@
         } catch (_) { fitsParcelUnion = false; }
         // A design on a site without parcels (PARCEL-OPTIONAL.md) has no parcels to split by.
         if (rowHouseBlock?.syntheticSite || !fitsParcelUnion) {
-            const rule = currentRowRule();
-            const massing = cloneRowHouseFeature(barFeature);
-            massing.properties = {
-                ...(massing.properties || {}),
-                massing: true,
-                urbanRule: rule,
-                variationSeed: rowVariationSeed
-            };
-            const compelled = rule.kind === 'range' && rule.minDepthM > 0
-                ? window.UrbanRuleVariation.buildToMinimum(massing, rule.minDepthM, deps)
-                : null;
-            if (compelled?.geometry) massing.properties.minFootprint = compelled.geometry;
+            const massing = window.UrbanRuleVariation.massingWithRule(barFeature, currentRowRule(), rowVariationSeed, deps);
             rowUnits = [massing];
             rowExcluded = [];
             rowBuildOut = [window.UrbanRuleVariation.realizeFeature(massing, deps)];
@@ -927,11 +924,48 @@
         const slider = document.getElementById('rowhouse-minheight-slider');
         if (!slider) return;
         const ceiling = Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT;
-        slider.max = String(ceiling);
+        slider.max = String(rowFloors(ceiling));
         if (rowMinHeightM > ceiling) rowMinHeightM = ceiling;
-        slider.value = String(rowMinHeightM);
+        slider.value = String(rowFloors(rowMinHeightM));
         const label = document.getElementById('rowhouse-minheight-value');
-        if (label) label.textContent = CbFormat.formatNumber(rowMinHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
+        if (label) label.textContent = rowFloorsLabel(rowMinHeightM);
+    }
+
+    // The rule is stored in metres (UrbanRuleVariation.normalizeBlockRule); the controls count whole
+    // storeys of ROW_FLOOR_HEIGHT_M, as plans state heights, and show the metres beside them.
+    function rowFloors(heightM) {
+        return Math.max(0, Math.round((Number(heightM) || 0) / ROW_FLOOR_HEIGHT_M));
+    }
+
+    function rowFloorsLabel(heightM) {
+        const metres = Number(heightM) || 0;
+        return metres > 0 ? `${rowFloors(metres)} (${CbFormat.formatLength(metres)})` : '0';
+    }
+
+    // Like a Block, a rule that leaves no plot buildable has nothing to save: Done waits, and the
+    // panel says why. The message reuses the Block's wording for the same situation.
+    function syncRowDoneState({ clearInfo = false } = {}) {
+        const doneButton = document.getElementById('btn-rowhouse-done');
+        if (doneButton) doneButton.disabled = rowUnits.length === 0;
+        const info = document.getElementById('rowhouse-info');
+        if (!rowUnits.length) {
+            setRowHouseInfo('blockify.modal.messages.rangeNoneExcluded', 'No buildings \u00b7 {{excluded}}',
+                { excluded: { key: 'blockify.modal.messages.parcelsLeftOut', count: rowExcluded.length } });
+        } else if (clearInfo || info?.getAttribute('data-i18n-key') === 'blockify.modal.messages.rangeNoneExcluded') {
+            setRowHouseInfo('', '');
+        }
+    }
+
+    // Geometry statistics for the rule's envelopes (the permitted houses, not one example of them).
+    function refreshRowDensityStats() {
+        const api = window.BuildingDensityStats;
+        if (!api) return;
+        const floorHeightM = currentRowRule().floorHeightM;
+        api.refreshCard(document, 'rowhouse', { parcelFeature: rowHouseSiteBoundary(), buildings: rowUnits, turf, floorHeightM }, {
+            format: CbFormat,
+            hint: translateRowHouseText('densityStats.floorHeightHint', 'Calculated from the drawn footprints and height \u00f7 {{height}} m per storey.',
+                { height: CbFormat.formatNumber(floorHeightM, { maxFractionDigits: 1, minFractionDigits: 1 }) })
+        });
     }
 
     function rowExclusionReason(status) {
@@ -960,6 +994,8 @@
         if (!feature || !feature.geometry) return;
 
         rebuildRowUnits(feature);
+        refreshRowDensityStats();
+        syncRowDoneState();
 
         // Houses go down first so the bar stays on top and keeps its drag and vertex handles; the
         // bar's fill is nearly clear so the shades read through it.
@@ -1011,6 +1047,8 @@
         rowHouseModal?.setPreview({
             groundSurface: rowHouseSurroundings?.refresh() || null,
             draftPreview: { kind: 'buildings', features: rowBuildOut },
+            // The whole terrace the houses are cut from, present even when no plot can hold one.
+            massing: feature,
             boundary: rowHouseBlock?.site || cachedSuperparcel,
             envelopes: rowRuleKind === 'exact' ? [] : rowUnits,
             excluded: rowExcluded.filter(entry => entry?.feature?.geometry).map(entry => entry.feature)
@@ -1078,7 +1116,9 @@
             parcelIds.push(id);
             parentDetails.push({ id, number: String(props?.BROJ_CESTICE || id) });
         });
-        const feature = window.UrbanRuleVariation.massingWithRule(generatedRowHouseFeature, currentRowRule(), rowVariationSeed, { turf });
+        const { buildings, ruleMassing } = window.UrbanRuleVariation.ruleDesignGeometry(
+            generatedRowHouseFeature, rowUnits, currentRowRule(), rowVariationSeed, { turf });
+        if (!buildings.length) return;
         window.syncActiveProposalDraftFromEditor('building', {
             parcelIds,
             parentDetails,
@@ -1096,8 +1136,9 @@
                 seed: rowVariationSeed,
                 manualMode: rowHouseManualMode
             },
-            buildingFeature: feature,
-            buildings: [feature],
+            buildingFeature: ruleMassing,
+            buildings,
+            ruleMassing,
             groundSurface: rowHouseSurroundings?.surface() || null,
             // A Row stays on its parcels (proposals/freeform-conversion.js): never a free placement.
             placement: { free: false, site: cloneRowHouseFeature(rowHouseSiteBoundary()) }
@@ -1125,12 +1166,7 @@
             generatedRowHouseFeature = buildingFeature;
             displayRowHouseBuildingInModal(buildingFeature);
             autosaveRowHouseDraft();
-
-            const doneButton = document.getElementById('btn-rowhouse-done');
-            if (doneButton) doneButton.disabled = false;
-
-            // Clear info text on successful generation
-            setRowHouseInfo('', '');
+            syncRowDoneState({ clearInfo: true });
 
         } catch (error) {
             generatedRowHouseFeature = null;
@@ -1183,10 +1219,10 @@
                     </div>
                     <div class="parameter-group" id="rowhouse-minheight-group" style="display: none;">
                         <label for="rowhouse-minheight-slider">
-                            <span data-i18n-key="rowHouses.modal.labels.minHeight" data-i18n-attr="text">Min Height (m):</span>
-                            <span id="rowhouse-minheight-value">0.0</span>
+                            <span data-i18n-key="common.minFloors" data-i18n-attr="text">Min floors:</span>
+                            <span id="rowhouse-minheight-value">0</span>
                         </label>
-                        <input type="range" id="rowhouse-minheight-slider" min="0" max="80" value="0" step="0.5">
+                        <input type="range" id="rowhouse-minheight-slider" min="0" max="${ROW_MAX_FLOORS}" value="0" step="1">
                     </div>
                     <div class="parameter-group">
                         <label for="rowhouse-minplot-slider">
@@ -1214,10 +1250,10 @@
                     </div>
                     <div class="parameter-group">
                         <label for="rowhouse-height-slider">
-                            <span data-i18n-key="rowHouses.modal.labels.height" data-i18n-attr="text">Height (m):</span>
-                            <span id="rowhouse-height-value">${CbFormat.formatNumber(DEFAULT_BUILDING_HEIGHT, { maxFractionDigits: 0, minFractionDigits: 0 })}</span>
+                            <span data-i18n-key="common.maxFloors" data-i18n-attr="text">Max floors:</span>
+                            <span id="rowhouse-height-value">${rowFloorsLabel(DEFAULT_BUILDING_HEIGHT)}</span>
                         </label>
-                        <input type="range" id="rowhouse-height-slider" min="3" max="80" value="${DEFAULT_BUILDING_HEIGHT}" step="1">
+                        <input type="range" id="rowhouse-height-slider" min="1" max="${ROW_MAX_FLOORS}" value="${rowFloors(DEFAULT_BUILDING_HEIGHT)}" step="1">
                     </div>
                     <div class="parameter-group">
                         <label data-i18n-key="rowHouses.modal.labels.rotation" data-i18n-attr="text">Rotate footprint</label>
@@ -1254,11 +1290,12 @@
                             </div>
                         </div>
                     </details>
+                    ${window.BuildingDensityStats.cardMarkup('rowhouse')}
                 </div>
                 <div id="rowhouse-controls" class="cb-dialog__footer">
                     <div id="rowhouse-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
                     <div id="rowhouse-buttons">
-                        <button type="button" class="btn" id="btn-rowhouse-regenerate" hidden data-i18n-key="rowHouses.modal.regenerate" data-i18n-attr="text">Regenerate</button>
+                        <button type="button" class="btn" id="btn-rowhouse-regenerate" hidden data-i18n-key="rowHouses.modal.regenerate" data-i18n-attr="text">Illustrate</button>
                         <button type="button" class="btn" id="btn-rowhouse-freeform" data-i18n-key="proposalDrafts.freeform.title" data-i18n-attr="text">Convert to freeform building</button>
                         <button type="button" class="btn btn-primary" id="btn-rowhouse-done" data-i18n-key="rowHouses.modal.done" data-i18n-attr="text">Done</button>
                     </div>
@@ -1292,7 +1329,9 @@
             rowHouseSurroundings = window.BuildingSurroundingsEditor.mount({
                 session: rowHouseModal, id: 'rowhouse-ground-treatment', initialTreatment: rowHouseInitialGroundTreatment, initialDecorationDesign: rowHouseInitialDecorationDesign,
                 boundary: rowHouseSiteBoundary,
-                buildings: () => [generatedRowHouseFeature].filter(Boolean),
+                // The green reaches the example houses, so plots left unbuilt (below the minimum
+                // size, or only a sliver of the row) stay part of the surroundings.
+                buildings: () => (rowBuildOut.length ? rowBuildOut : [generatedRowHouseFeature]).filter(Boolean),
                 onChange: () => autosaveRowHouseDraft()
             });
             ensureRowHouseHistory();
@@ -1346,8 +1385,8 @@
 
             document.getElementById('rowhouse-height-slider').addEventListener('input', function (e) {
                 rowHouseHistory?.record?.();
-                currentBuildingHeight = parseFloat(e.target.value);
-                document.getElementById('rowhouse-height-value').textContent = CbFormat.formatNumber(currentBuildingHeight, { maxFractionDigits: 0, minFractionDigits: 0 });
+                currentBuildingHeight = parseInt(e.target.value, 10) * ROW_FLOOR_HEIGHT_M;
+                document.getElementById('rowhouse-height-value').textContent = rowFloorsLabel(currentBuildingHeight);
                 // Height affects the model preview and volume metric
                 if (generatedRowHouseFeature) {
                     generatedRowHouseFeature.properties.height = Math.round(currentBuildingHeight);
@@ -1364,15 +1403,17 @@
                     rowRuleKind = e.target.value;
                     syncRowRuleControls();
                     if (generatedRowHouseFeature) displayRowHouseBuildingInModal(generatedRowHouseFeature);
+                    autosaveRowHouseDraft();
                 });
             }
 
             const rowMinHeightSlider = document.getElementById('rowhouse-minheight-slider');
             if (rowMinHeightSlider) {
                 rowMinHeightSlider.addEventListener('input', function (e) {
-                    rowMinHeightM = parseFloat(e.target.value);
-                    document.getElementById('rowhouse-minheight-value').textContent = CbFormat.formatNumber(rowMinHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
+                    rowMinHeightM = parseInt(e.target.value, 10) * ROW_FLOOR_HEIGHT_M;
+                    document.getElementById('rowhouse-minheight-value').textContent = rowFloorsLabel(rowMinHeightM);
                     if (generatedRowHouseFeature) displayRowHouseBuildingInModal(generatedRowHouseFeature);
+                    autosaveRowHouseDraft();
                 });
             }
 
@@ -1382,6 +1423,7 @@
                     rowMinPlotAreaM2 = parseFloat(e.target.value);
                     document.getElementById('rowhouse-minplot-value').textContent = rowMinPlotAreaM2.toString();
                     if (generatedRowHouseFeature) displayRowHouseBuildingInModal(generatedRowHouseFeature);
+                    autosaveRowHouseDraft();
                 });
             }
 
@@ -1393,6 +1435,7 @@
                 rowRegenerate.addEventListener('click', function () {
                     rowVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
                     if (generatedRowHouseFeature) displayRowHouseBuildingInModal(generatedRowHouseFeature);
+                    autosaveRowHouseDraft();
                 });
             }
 
@@ -1491,8 +1534,8 @@
             document.getElementById('rowhouse-width-value').textContent = CbFormat.formatNumber(currentBuildingWidth, { maxFractionDigits: 1, minFractionDigits: 1 });
         }
         if (heightSlider) {
-            heightSlider.value = currentBuildingHeight;
-            document.getElementById('rowhouse-height-value').textContent = CbFormat.formatNumber(currentBuildingHeight, { maxFractionDigits: 0, minFractionDigits: 0 });
+            heightSlider.value = rowFloors(currentBuildingHeight);
+            document.getElementById('rowhouse-height-value').textContent = rowFloorsLabel(currentBuildingHeight);
         }
         if (chamferSlider) {
             chamferSlider.value = currentChamfer;
@@ -1522,9 +1565,7 @@
                 generatedRowHouseFeature = seedFeature;
                 displayRowHouseBuildingInModal(seedFeature);
                 autosaveRowHouseDraft();
-                const doneButton = document.getElementById('btn-rowhouse-done');
-                if (doneButton) doneButton.disabled = false;
-                setRowHouseInfo('', '');
+                syncRowDoneState({ clearInfo: true });
             } else {
                 generateRowHouseInModal();
             }
@@ -1753,8 +1794,15 @@
             return;
         }
 
-        const clonedFeature = window.UrbanRuleVariation.massingWithRule(generatedRowHouseFeature, currentRowRule(), rowVariationSeed, { turf });
-        const clonedUnits = [cloneRowHouseFeature(clonedFeature)];
+        // One house per parcel as the editor drew them, each with its own seed, plus the whole
+        // terrace they were cut from (UrbanRuleVariation.ruleDesignGeometry). A rule that leaves no
+        // plot buildable has nothing to save.
+        const { buildings: clonedUnits, ruleMassing: clonedFeature } = window.UrbanRuleVariation.ruleDesignGeometry(
+            generatedRowHouseFeature, rowUnits, currentRowRule(), rowVariationSeed, { turf });
+        if (!clonedUnits.length) {
+            setRowHouseInfo('rowHouses.modal.messages.generateBeforeFinishing', 'Generate row houses before finishing.');
+            return;
+        }
         const context = {
             parcelIds: normalizedParcelIds.slice(),
             parentDetails: parentDetails.slice(),
@@ -1776,6 +1824,7 @@
             },
             buildingFeature: clonedFeature,
             buildings: clonedUnits,
+            ruleMassing: clonedFeature,
             groundSurface: rowHouseSurroundings?.surface() || null,
             placement: { free: false, site: cloneRowHouseFeature(rowHouseSiteBoundary()) }
         };

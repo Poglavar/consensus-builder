@@ -62,8 +62,8 @@
             if (!proposal.buildingProposal) continue;
             // Block massing retains the complete ring even when its rendered buildings are split
             // into per-parcel pieces. Other authored building groups can enclose a courtyard too.
-            const footprints = proposal.geometry?.blockMassing?.geometry
-                ? [proposal.geometry.blockMassing]
+            const footprints = proposal.geometry?.ruleMassing?.geometry
+                ? [proposal.geometry.ruleMassing]
                 : (proposal.geometry?.buildings || []).filter(value => value?.geometry);
             let footprintUnion = null;
             for (const footprint of footprints) {

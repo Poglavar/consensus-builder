@@ -944,7 +944,7 @@
         if (!proposal || !conversion?.convertsToFreeform(proposal)) return null;
         const typology = conversion.ruleTypologyOf(proposal);
         // A Block stores its buildings cut per parcel; the authored massing is the one shape to keep.
-        const merged = mergeRuleBuildings(proposal.geometry?.blockMassing ? [proposal.geometry.blockMassing] : proposal.geometry?.buildings);
+        const merged = mergeRuleBuildings(proposal.geometry?.ruleMassing ? [proposal.geometry.ruleMassing] : proposal.geometry?.buildings);
         if (!merged.ok) {
             reportGeometryEditFailure(merged.reason, proposal.proposalId);
             return null;

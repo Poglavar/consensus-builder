@@ -100,7 +100,7 @@ export function generateLargeBlockFixture() {
         const design = {
             schema: 'design/v1', goal: 'buildings', title: 'QA Large Block', description: null,
             author: null, city: null, site: null, toleranceM: null,
-            geometry: { buildings: [clone(massing)], blockMassing: clone(massing) },
+            geometry: { buildings: [clone(massing)], ruleMassing: clone(massing) },
             origin: null, authoredAt: '2026-10-23T00:00:00.000Z',
             buildingProposal: {
                 blockName: 'QA Large Block',

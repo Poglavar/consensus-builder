@@ -113,7 +113,7 @@
             if (intent.rule.typology === 'row') {
                 const building = load('IntentEditing', './intent-editing.js').rowEnvelope(site, intent.rule, d.turf);
                 record.goal = 'row';
-                record.buildingProposal = { typologyType: 'row', parameters: { ...copy(intent.rule), height: building.properties.height, rule: building.properties.urbanRule, manualMode: true } };
+                record.buildingProposal = { typologyType: 'row', parameters: { ...copy(intent.rule), height: building.properties.height, rule: building.properties.urbanRule, seed: building.properties.variationSeed, manualMode: true } };
                 record.geometry = { buildings: [building] };
             }
         } else fail('Unknown design kind');

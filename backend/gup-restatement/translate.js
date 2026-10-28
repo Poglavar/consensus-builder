@@ -198,7 +198,7 @@ export function translateParcel(row, options = {}) {
         author: 'GUP 2025 · prostorni prijepis', type: 'building', goal: 'buildings', primaryType: 'Urban Rule',
         typologyType: 'block', lifecycleStatus: 'draft', tags: ['buildings', 'gup-2025', 'spatial-restatement'],
         cadastreParcelIds: [row.parcel_id], acceptedParcelIds: [],
-        geometry: { superParcel: site, buildings: [building], blockMassing: building },
+        geometry: { superParcel: site, buildings: [building], ruleMassing: building },
         buildingProposal: { typologyType: 'block', createdFrom: 'gup-spatial-restatement',
             parameters: { typology: 'block', mode: 'manual', height: row.total_height_m,
                 width: turf.distance(turf.point(turf.bbox(site).slice(0, 2)), turf.point(turf.bbox(site).slice(2)), { units: 'meters' }) + 1,

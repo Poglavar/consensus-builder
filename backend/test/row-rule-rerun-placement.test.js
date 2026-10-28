@@ -66,6 +66,7 @@ function harness(parcel) {
         const applyChamferToPolygon = feature => feature;
         const setRowHouseInfo = () => {};
         const displayRowHouseBuildingInModal = () => {};
+        const syncRowDoneState = () => {};
         const displayBlockOnRowHouseMap = () => {};
         const autosaveRowHouseDraft = () => {};
         const syncRowHouseGeometryControls = () => {};

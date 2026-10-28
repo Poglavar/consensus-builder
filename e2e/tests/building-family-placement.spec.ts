@@ -135,7 +135,7 @@ async function previewGeometry(page: Page): Promise<string> {
     const windowRef = window as any;
     const preview = windowRef.OnMapEditor?.getPreview()?.draftPreview?.features || [];
     const context = windowRef.getActiveProposalDesignDraft?.()?.editorPayload?.context || {};
-    const canonical = context.buildingFeature || context.blockMassing || context.buildings?.[0] || null;
+    const canonical = context.buildingFeature || context.ruleMassing || context.buildings?.[0] || null;
     return JSON.stringify({ preview, canonical: canonical?.geometry || null });
   });
 }
@@ -494,27 +494,31 @@ test.describe('Building-family placement @features', () => {
     await selectParcelsByHand(page, [FIRST_PLOT, NEXT_PLOT, FOURTH_PLOT]);
     await page.locator('.parcel-build-btn--row').click();
     const done = page.locator('#btn-rowhouse-done');
-    await expect(done).toBeEnabled({ timeout: 20_000 });
+    const info = page.locator('#rowhouse-info');
+    // The terrace that fits this L is too small for a house on any of its plots: like a Block,
+    // the editor says so and Done waits, since a rule with no buildable plot has nothing to save.
+    await expect(info).toHaveText('No buildings · 3 parcels left out', { timeout: 20_000 });
+    await expect(done).toBeDisabled();
     const within = () => page.evaluate(ids => {
       const w = window as any;
-      const geometry = w.getActiveProposalDesignDraft().editorPayload.context.buildingFeature.geometry;
+      const massing = w.OnMapEditor.getPreview().massing;
       const site = ids.map((id: string) => w.LiveParcelFabric.get(id)).reduce((a: any, b: any) => w.turf.union(a, b));
-      return w.SingleBuildingGeometry.footprintWithinBoundary({ type: 'Feature', properties: {}, geometry }, site, w.turf);
+      return w.SingleBuildingGeometry.footprintWithinBoundary(massing, site, w.turf);
     }, [FIRST_PLOT, NEXT_PLOT, FOURTH_PLOT]);
+    const massing = () => page.evaluate(() => JSON.stringify((window as any).OnMapEditor.getPreview().massing.geometry));
     expect(await within()).toBe(true);
     const width = page.locator('#rowhouse-width-slider');
     const beforeWidth = await width.inputValue();
-    const beforeGeometry = await previewGeometry(page);
+    const beforeMassing = await massing();
     await width.focus();
     await width.press('End');
     // Unfit requests restore the prior dimensions and footprint instead of allowing an overhang.
     expect(await within()).toBe(true);
     await expect(width).toHaveValue(beforeWidth);
-    expect(await previewGeometry(page)).toBe(beforeGeometry);
-    await expect(done).toBeEnabled();
+    expect(await massing()).toBe(beforeMassing);
     await width.press('Home');
-    await expect(done).toBeEnabled();
     expect(await within()).toBe(true);
+    await expect(done).toBeDisabled();
   });
 
   test('row-house rotation stays generated, and a row dragged off its parcels converts to one Freeform building kept where it was dropped', async ({ mockApi: page }) => {

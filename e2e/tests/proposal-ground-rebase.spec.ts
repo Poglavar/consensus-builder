@@ -21,7 +21,7 @@ const record = (proposalId: string, extra: Record<string, unknown> = {}) => ({
   proposalId, title: proposalId, description: 'Ground rebase fixture',
   city: 'zg', goal: 'buildings', lifecycleStatus: 'Active', applied: false,
   cadastreParcelIds: ['HR-335754-1236'],
-  geometry: { buildings: [massing], blockMassing: massing },
+  geometry: { buildings: [massing], ruleMassing: massing },
   buildingProposal: { typologyType: 'block', parameters: { rule: { kind: 'max', maxHeightM: 15 } } },
   ...extra
 });

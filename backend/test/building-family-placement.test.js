@@ -104,7 +104,7 @@ function rowHarness() {
         getRowHouseDisplayName: () => 'row test',
         displayRowHouseBuildingInModal: vi.fn(), autosaveRowHouseDraft: vi.fn(), updateBuildingMetrics: vi.fn(),
         setRowHouseInfo() {},
-        CbFormat: { formatNumber: value => String(value) },
+        CbFormat: { formatNumber: value => String(value), formatLength: value => `${value} m` },
         rowHousePlacementUpdates: movedFeatures,
         turf,
         console
@@ -121,8 +121,10 @@ function rowHarness() {
         let cachedMetersPerDegLng=this.cachedMetersPerDegLng, cachedMetersPerDegLat=this.cachedMetersPerDegLat;
         let dragStartLatLng=null, dragEndLatLng=null, dragStartOffset=null, dragStartFeature=null, dragLastValidFeature=null, isDragging=false;
         const DEFAULT_BUILDING_LENGTH=40, DEFAULT_BUILDING_WIDTH=10, DEFAULT_BUILDING_HEIGHT=12;
-        const DEFAULT_CHAMFER=0;
+        const DEFAULT_CHAMFER=0, ROW_FLOOR_HEIGHT_M=3;
         const cloneRowHouseFeature=${functions.get('cloneRowHouseFeature')};
+        const rowFloors=${functions.get('rowFloors')};
+        const rowFloorsLabel=${functions.get('rowFloorsLabel')};
         const rowHouseOuterRing=${functions.get('rowHouseOuterRing')};
         const rowHouseFeatureWithRing=${functions.get('rowHouseFeatureWithRing')};
         const rowHouseFeatureValid=${functions.get('rowHouseFeatureValid')};
@@ -318,7 +320,11 @@ describe('building-family rules stay on their parcels', () => {
             window: {
                 getActiveProposalDesignDraft: () => ({ adapterKey: 'row' }),
                 syncActiveProposalDraftFromEditor: sync,
-                UrbanRuleVariation: { massingWithRule: (value, urbanRule, seed) => ({ ...value, properties: { ...(value.properties || {}), massing: true, urbanRule, variationSeed: seed } }) }
+                UrbanRuleVariation: {
+                    ruleDesignGeometry: (value, pieces, urbanRule, seed) => ({
+                        buildings: pieces, ruleMassing: { ...value, properties: { ...(value.properties || {}), massing: true, urbanRule, variationSeed: seed } }
+                    })
+                }
             },
             turf,
             feature, block: { parcels: [{ feature: site }], syntheticSite: true, site }
@@ -327,7 +333,7 @@ describe('building-family rules stay on their parcels', () => {
             let window=this.window, turf=this.turf, generatedRowHouseFeature=this.feature, rowHouseBlock=this.block;
             let currentBuildingLength=16, currentBuildingWidth=13, currentBuildingHeight=12, currentChamfer=0;
             let currentOffsetX=31, currentOffsetY=4, currentRotation=0, rowVariationSeed=9, rowHouseManualMode=false;
-            let cachedSuperparcel=null, rowHouseSurroundings=null;
+            let cachedSuperparcel=null, rowHouseSurroundings=null, rowUnits=[this.feature];
             const getActiveRowHouseBlock=()=>rowHouseBlock, getRowHouseDisplayName=()=> 'test row';
             const currentRowRule=()=>({kind:'exact'});
             const cloneRowHouseFeature=${functions.get('cloneRowHouseFeature')};

@@ -747,7 +747,7 @@ describe('saved single-building geometry edits', () => {
         const adapter = buildBuildingAdapter('buildings');
         const draft = draftFor(adapter, {
             proposalId: 'parametric-after-undo', goal: 'buildings', title: 'Block', cadastreParcelIds: ['parcel-a'],
-            geometry: { buildings: [oldFeature], blockMassing: oldFeature },
+            geometry: { buildings: [oldFeature], ruleMassing: oldFeature },
             buildingProposal: { typologyType: 'block', parameters: { mode: 'manual', typology: 'block', manualOuterRing: [[0, 0], [1, 0], [1, 1]] } }
         });
         draft.id = 'parametric-after-undo-draft';

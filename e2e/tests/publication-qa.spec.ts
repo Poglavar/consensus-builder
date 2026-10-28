@@ -102,7 +102,7 @@ async function publishBuildingCollection(page: import('@playwright/test').Page, 
     count + building.geometry.coordinates.reduce((ringCount: number, ring: any[]) => ringCount + ring.length, 0), 0);
   if (options.size === 'compact') expect(positions).toBeLessThan(1_000);
   else expect(positions).toBeGreaterThan(10_000);
-  expect(content.geometry).not.toHaveProperty('blockMassing');
+  expect(content.geometry).not.toHaveProperty('ruleMassing');
   expect(await page.evaluate(content => (window as any).DesignRecord.validate(content), content)).toEqual({ valid: true, errors: [] });
 
   const saved = await page.evaluate(id => {

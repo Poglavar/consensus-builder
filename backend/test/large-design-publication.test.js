@@ -43,7 +43,7 @@ describe('generated building design publication', () => {
             expect(bytes.length).toBeGreaterThan(256 * 1024);
         }
         expect(content.geometry.buildings).toHaveLength(count);
-        expect(content.geometry.blockMassing).toBeUndefined();
+        expect(content.geometry.ruleMassing).toBeUndefined();
         expect(content.geometry.buildings[0].geometry.coordinates).toHaveLength(2);
         expect(BrowserCid.cidOfObject(content)).toBe(cid);
         expect(BrowserCid.parse(cid).codec).toBe(count === 1 ? 0x55 : 0x70);

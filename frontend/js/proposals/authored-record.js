@@ -98,10 +98,10 @@
         if (!geometry || typeof geometry !== 'object' || Array.isArray(geometry)
             || !Array.isArray(geometry.buildings) || geometry.buildings.length !== 1
             || !geometry.buildings[0] || !geometry.buildings[0].geometry
-            || !geometry.blockMassing
-            || !deeplyEqual(geometry.buildings[0], geometry.blockMassing)) return geometry;
+            || !geometry.ruleMassing
+            || !deeplyEqual(geometry.buildings[0], geometry.ruleMassing)) return geometry;
         const compacted = { ...geometry };
-        delete compacted.blockMassing;
+        delete compacted.ruleMassing;
         return compacted;
     }
 
@@ -160,7 +160,7 @@
         }
 
         if (out.geometry && typeof out.geometry === 'object' && !Array.isArray(out.geometry)) {
-            ['blockMassing', 'groundSurface', 'parkGraphics', 'squareGraphics', 'lakeGraphics', 'stationGraphics']
+            ['ruleMassing', 'groundSurface', 'parkGraphics', 'squareGraphics', 'lakeGraphics', 'stationGraphics']
                 .forEach(key => {
                     if (out.geometry[key]?.type === 'Feature') {
                         out.geometry[key] = cleanFeature(out.geometry[key]);

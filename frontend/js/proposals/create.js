@@ -714,11 +714,11 @@ async function createProposal() {
                 && typeof window.__cadastreAncestry?.declarationCoveringFootprint === 'function') {
                 proposal.cadastreParcelIds = window.__cadastreAncestry.declarationCoveringFootprint(proposal);
             }
-            const blockMassing = resolvedTypology === 'block'
-                ? safeClone(pendingBuildingContext.blockMassing)
+            const ruleMassing = (resolvedTypology === 'block' || resolvedTypology === 'row')
+                ? safeClone(pendingBuildingContext.ruleMassing)
                 : null;
-            if (blockMassing?.geometry) proposal.geometry.blockMassing = blockMassing;
-            else delete proposal.geometry.blockMassing;
+            if (ruleMassing?.geometry) proposal.geometry.ruleMassing = ruleMassing;
+            else delete proposal.geometry.ruleMassing;
             // Building surroundings belong to the same authored design for every typology.
             const groundSurface = safeClone(pendingBuildingContext.groundSurface);
             if (groundSurface) proposal.geometry.groundSurface = groundSurface;

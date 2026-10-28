@@ -118,7 +118,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
                 ref: `building:${cid}:${index}`, kind: 'building', designCid: cid, designRef: ref,
                 buildingIndex: index, path: `/geometry/buildings/${index}`, title: building.properties?.name || content.title,
                 goal: content.goal, floors: building.properties?.floors ?? null, heightM: building.properties?.height ?? null,
-                use: building.properties?.use ?? null, coupledMassing: Boolean(content.geometry.blockMassing)
+                use: building.properties?.use ?? null, coupledMassing: Boolean(content.geometry.ruleMassing)
             }, building.geometry));
         }
         return items;

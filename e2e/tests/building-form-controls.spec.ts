@@ -133,7 +133,8 @@ test.describe('Building editor complete form controls @features', () => {
       .find((proposal: any) => proposal.applied && proposal.buildingProposal?.parameters?.typology === 'block'));
     const parameters = saved.buildingProposal.parameters;
     expect(parameters).toMatchObject({ setback, chamfer, simplify });
-    expect(parameters.rule).toMatchObject({ kind: 'range', minHeightM: minHeight, minDepthM: minDepth });
+    // The height controls count floors; the rule stores metres at 3.5 m per Block storey.
+    expect(parameters.rule).toMatchObject({ kind: 'range', minHeightM: minHeight * 3.5, minDepthM: minDepth });
     expect(parameters.gaps).toEqual([gapPosition]);
     expect(parameters.wings).toEqual([wingPosition]);
     expect(saved.geometry.buildings.length).toBeGreaterThan(0);
@@ -207,7 +208,8 @@ test.describe('Building editor complete form controls @features', () => {
     const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
       .find((proposal: any) => proposal.applied && proposal.buildingProposal?.parameters?.typology === 'row'));
     expect(saved.buildingProposal.parameters.chamfer).toBe(chamfer);
-    expect(saved.buildingProposal.parameters).toMatchObject({ length, height });
+    // The height control counts floors; the saved height is metres at 3 m per Row storey.
+    expect(saved.buildingProposal.parameters).toMatchObject({ length, height: height * 3 });
     expect(saved.buildingProposal.parameters.rule.minPlotAreaM2).toBe(minPlot);
     expect(saved.geometry.buildings.length).toBeGreaterThan(0);
   });

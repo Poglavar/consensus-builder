@@ -58,7 +58,7 @@
 
     // The variation seed for this design. Every house is derived from it, so the same seed always
     // redraws the same street — on reload, in a shared link, and in a server-rendered thumbnail.
-    // Only Regenerate advances it; moving a slider re-derives from the same seed, so an edit
+    // Only Illustrate advances it; moving a slider re-derives from the same seed, so an edit
     // disturbs only what it touches instead of reshuffling the whole block.
     let currentVariationSeed = newVariationSeed();
 
@@ -417,6 +417,7 @@
         });
 
         updateBuildingMetrics(envelopes, houses);
+        refreshParcelBasedDensityStats(envelopes);
 
         parcelBasedModal?.setPreview({
             groundSurface: parcelBasedSurroundings?.refresh() || null,
@@ -430,6 +431,18 @@
     // Footprint and volume are the PERMITTED figures, read off the envelopes — they are what the
     // rule asserts and what the € gain uses, so re-rolling the build-out must never move them. Only
     // the average floor count describes the example, and it is labelled as such.
+    // Geometry statistics for the rule's envelopes (the permitted houses, not one example of them).
+    function refreshParcelBasedDensityStats(envelopes) {
+        const api = window.BuildingDensityStats;
+        if (!api) return;
+        const floorHeightM = currentParcelRule().floorHeightM;
+        api.refreshCard(document, 'parcelbased', { parcelFeature: parcelBasedBoundary, buildings: envelopes || [], turf, floorHeightM }, {
+            format: CbFormat,
+            hint: translateParcelBasedText('densityStats.floorHeightHint', 'Calculated from the drawn footprints and height \u00f7 {{height}} m per storey.',
+                { height: CbFormat.formatNumber(floorHeightM, { maxFractionDigits: 1, minFractionDigits: 1 }) })
+        });
+    }
+
     function updateBuildingMetrics(envelopes, buildOut) {
         const buildingCountEl = document.getElementById('parcelbased-building-count-value');
         const totalAreaEl = document.getElementById('parcelbased-total-area-value');
@@ -734,7 +747,7 @@
                     </div>
                     <div class="parameter-group">
                         <label for="parcelbased-maxfloors-slider">
-                            <span data-i18n-key="parcelBased.modal.labels.maxFloors" data-i18n-attr="text">Max Floors:</span>
+                            <span data-i18n-key="common.maxFloors" data-i18n-attr="text">Max floors:</span>
                             <span id="parcelbased-maxfloors-value">${DEFAULT_MAX_FLOORS}</span>
                         </label>
                         <input type="range" id="parcelbased-maxfloors-slider" min="1" max="20" value="${DEFAULT_MAX_FLOORS}" step="1">
@@ -749,7 +762,7 @@
                     <div id="parcelbased-minimums" style="display: none;">
                         <div class="parameter-group">
                             <label for="parcelbased-minfloors-slider">
-                                <span data-i18n-key="parcelBased.modal.labels.minFloors" data-i18n-attr="text">Min Floors:</span>
+                                <span data-i18n-key="common.minFloors" data-i18n-attr="text">Min floors:</span>
                                 <span id="parcelbased-minfloors-value">${DEFAULT_MIN_FLOORS}</span>
                             </label>
                             <input type="range" id="parcelbased-minfloors-slider" min="1" max="${DEFAULT_MAX_FLOORS}" value="${DEFAULT_MIN_FLOORS}" step="1">
@@ -795,6 +808,7 @@
                             </p>
                         </div>
                     </details>
+                    ${window.BuildingDensityStats.cardMarkup('parcelbased')}
                 </div>
                 <div id="parcelbased-controls" class="cb-dialog__footer">
                     <div id="parcelbased-info" data-i18n-attr="text" role="status" aria-live="polite"></div>

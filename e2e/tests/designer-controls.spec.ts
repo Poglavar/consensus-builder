@@ -152,19 +152,20 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect(visibleExcludedPlots).toHaveCount(3);
     await expect(visibleExcludedPlots.first()).toBeVisible();
     await expect.poll(() => page.evaluate(() => !!(window as any).getActiveProposalDesignDraft?.()
-      ?.editorPayload?.context?.buildingFeature?.geometry)).toBe(true);
+      ?.editorPayload?.context?.ruleMassing?.geometry)).toBe(true);
     const authoredGeometry = await page.evaluate(() => JSON.parse(JSON.stringify(
-      (window as any).getActiveProposalDesignDraft().editorPayload.context.buildingFeature.geometry
+      (window as any).getActiveProposalDesignDraft().editorPayload.context.ruleMassing.geometry
     )));
     await page.locator('#btn-blockify-done').click();
 
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((proposal: any) => proposal.applied && proposal.geometry?.buildings?.length))).toBe(true);
     const proposal = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((entry: any) => entry.applied && entry.geometry?.buildings?.length));
     expect(proposal.cadastreParcelIds).toEqual(expect.arrayContaining(BLOCK_PARCEL_IDS));
-    expect(proposal.geometry.buildings).toHaveLength(1);
-    // Authored records compact an identical blockMassing into the one saved building feature.
-    expect(proposal.geometry.blockMassing).toBeUndefined();
-    expect(proposal.geometry.buildings[0].geometry).toEqual(authoredGeometry);
+    // One building per plot the rule keeps (the two the editor drew), each with its own seed,
+    // beside the complete authored massing they were cut from.
+    expect(proposal.geometry.buildings).toHaveLength(2);
+    expect(new Set(proposal.geometry.buildings.map((building: any) => building.properties.variationSeed)).size).toBe(2);
+    expect(proposal.geometry.ruleMassing.geometry).toEqual(authoredGeometry);
     expect(proposal.buildingProposal.ineligibleParcels).toHaveLength(3);
     const relevantParcelIds = await page.evaluate(([site, ids]) => {
       const turf = (window as any).turf;
@@ -213,7 +214,7 @@ test.describe('Designer controls persist their edits @features', () => {
         lifecycleStatus: 'Active',
         applied: true,
         cadastreParcelIds: ['HR-335754-1234'],
-        geometry: { buildings: [massing], blockMassing: massing },
+        geometry: { buildings: [massing], ruleMassing: massing },
         buildingProposal: {
           typologyType: 'block',
           parameters: { rule: { kind: 'max', maxHeightM: 18 } },
@@ -381,7 +382,10 @@ test.describe('Designer controls persist their edits @features', () => {
     expect(context.parcelIds.length).toBeGreaterThan(1);
     expect(context.parameters.typology).toBe('row');
     expect(context.parameters.rule.kind).toBe('range');
-    expect(context.parameters.rule.minHeightM).toBe(minimumHeight);
+    // The minimum is set in floors; the rule stores metres at 3 m per Row storey.
+    expect(context.parameters.rule.minHeightM).toBe(minimumHeight * 3);
+    // One house per plot, each with its own seed, beside the whole terrace.
+    expect(context.ruleMassing?.geometry?.type).toBe('Polygon');
     expect(Number(context.parameters.rotation)).toBeCloseTo(rotationBefore - 5 * Math.PI / 180, 5);
     expect(context.buildings.length).toBeGreaterThan(0);
     expect(context.buildings.every((feature: any) => feature.geometry?.type === 'Polygon')).toBe(true);

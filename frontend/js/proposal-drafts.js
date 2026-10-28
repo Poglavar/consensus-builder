@@ -246,7 +246,7 @@
                     parameters: cloneDraftValue(buildingProposal.parameters || {}),
                     buildingFeature: cloneDraftValue(buildingProposal.buildingFeature || buildings[0] || null),
                     buildings: cloneDraftValue(buildings),
-                    blockMassing: cloneDraftValue(proposal?.geometry?.blockMassing || null),
+                    ruleMassing: cloneDraftValue(proposal?.geometry?.ruleMassing || null),
                     ineligibleParcels: cloneDraftValue(buildingProposal.ineligibleParcels || [])
                 }
             };

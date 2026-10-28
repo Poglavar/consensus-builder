@@ -34,7 +34,7 @@ export function createMcpValidationTools({ plans }) {
                     if (design.site && !constructorRuntime.singleBuilding.footprintWithinBoundary(building, turf.feature(design.site), turf)) {
                         issue('building-outside-site', buildingRef, 'The authored building extends outside its authored site.');
                     }
-                    const massing = design.geometry.blockMassing;
+                    const massing = design.geometry.ruleMassing;
                     if (massing && !constructorRuntime.singleBuilding.footprintWithinBoundary(building, massing, turf)) {
                         issue('building-outside-massing', buildingRef, 'The building geometry extends outside its coupled authored massing.');
                     }

@@ -333,7 +333,7 @@
             parameters: clone(bp.parameters || {}),
             buildingFeature: clone(primary),
             buildings: clone(buildings.length ? buildings : (primary ? [primary] : [])),
-            blockMassing: clone(proposal?.geometry?.blockMassing || null),
+            ruleMassing: clone(proposal?.geometry?.ruleMassing || null),
             ineligibleParcels: clone(bp.ineligibleParcels || []),
             // Freeform proposals may pave or green the parcel area around their buildings.
             groundSurface: clone(proposal?.geometry?.groundSurface || null),
@@ -1184,7 +1184,8 @@
                         initialParameters: context.parameters || null,
                         initialGroundTreatment: context.groundSurface?.treatment || null, initialDecorationDesign: context.groundSurface?.decorationDesign || null,
                         site: authoredSite,
-                        initialFeature: features[0] || null
+                        // The saved buildings are per-parcel pieces; the editor reopens on the whole terrace.
+                        initialFeature: context.ruleMassing || features[0] || null
                     });
                     return opened !== false;
                 }
@@ -1223,11 +1224,11 @@
                 output.primaryType = 'Urban Rule';
                 output.typologyType = typology;
                 output.geometry = { ...(output.geometry || {}), buildings: clone(features) };
-                const blockMassing = typology === 'block' && featureGeometryValid(context.blockMassing)
-                        ? clone(context.blockMassing)
+                const ruleMassing = (typology === 'block' || typology === 'row') && featureGeometryValid(context.ruleMassing)
+                        ? clone(context.ruleMassing)
                         : null;
-                if (blockMassing) output.geometry.blockMassing = blockMassing;
-                else delete output.geometry.blockMassing;
+                if (ruleMassing) output.geometry.ruleMassing = ruleMassing;
+                else delete output.geometry.ruleMassing;
                 // Every building typology owns its authored surroundings within this same design.
                 const groundSurface = clone(context.groundSurface || null);
                 if (groundSurface) output.geometry.groundSurface = groundSurface;

@@ -37,6 +37,8 @@
         }
     },
     "common": {
+        "maxFloors": "Máximo de pisos:",
+        "minFloors": "Mínimo de pisos:",
         "cancel": "Cancelar",
         "unknown": "Desconhecido",
         "copied": "Copiado",
@@ -3895,7 +3897,6 @@
                 "chamfer": "Chanfro (m):",
                 "simplify": "Simplificar (m):",
                 "width": "Largura do edifício (m):",
-                "height": "Altura do edifício (m):",
                 "gaps": "Número de aberturas:",
                 "gapWidth": "Largura das aberturas (m):",
                 "wings": "Número de alas:",
@@ -3904,7 +3905,6 @@
                 "ruleTypeExact": "Exatamente esta altura",
                 "ruleTypeMax": "No máximo esta altura",
                 "ruleTypeRange": "Entre um mínimo e esta altura",
-                "minHeight": "Altura mínima do edifício (m):",
                 "minPlotArea": "Área mínima do lote (m²):",
                 "minDepth": "Profundidade obrigatória a partir da rua (m):"
             },
@@ -3937,7 +3937,7 @@
                 "proceed": "Continuar mesmo assim",
                 "cancel": "Voltar"
             },
-            "regenerate": "Gerar novamente"
+            "regenerate": "Ilustrar"
         }
     },
     "rowHouses": {
@@ -3959,7 +3959,6 @@
             },
             "title": "Moradias em banda",
             "labels": {
-                "height": "Altura (m):",
                 "rotation": "Rodar a implantação",
                 "chamfer": "Chanfro (m):",
                 "ruleType": "O que a regra impõe:",
@@ -3971,8 +3970,7 @@
                 "width": "Largura (m):",
                 "circumference": "Perímetro (m):",
                 "area": "Área (m²):",
-                "volume": "Volume (m³):",
-                "minHeight": "Altura mínima (m):"
+                "volume": "Volume (m³):"
             },
             "rotateCounterclockwise": "Rodar 5 graus no sentido contrário ao dos ponteiros do relógio",
             "rotateClockwise": "Rodar 5 graus no sentido dos ponteiros do relógio",
@@ -3986,7 +3984,7 @@
                 "dissimilarParcels": "É possível definir moradias em banda em quaisquer parcelas, mas as {{count}} parcelas selecionadas variam muito em dimensão e forma. Ainda assim, funcionará — as moradias em banda ocupam normalmente parcelas de dimensão e forma semelhantes. Pretende continuar?"
             },
             "uploadGeojson": "Importar GeoJSON de forma livre",
-            "regenerate": "Gerar novamente",
+            "regenerate": "Ilustrar",
             "closeAria": "Fechar diálogo de moradias em banda",
             "generating": "A gerar moradias em banda…",
             "helper": {
@@ -4019,7 +4017,6 @@
                 "ruleType": "O que a regra impõe:",
                 "ruleTypeRange": "Entre um mínimo e esta altura",
                 "minPlotArea": "Área mínima do lote (m²):",
-                "maxFloors": "Máximo de pisos:",
                 "minDistance": "Distância mínima aos limites (m):",
                 "buildingCount": "Envolventes da regra:",
                 "totalArea": "Área de implantação da regra (m²):",
@@ -4027,7 +4024,6 @@
                 "avgFloors": "Pisos de exemplo (média):",
                 "ruleTypeMax": "No máximo este valor",
                 "ruleTypeExact": "Exatamente este valor",
-                "minFloors": "Mínimo de pisos:",
                 "minFootprint": "Área mínima do piso térreo (m²):"
             },
             "regenerate": "Ilustrar",

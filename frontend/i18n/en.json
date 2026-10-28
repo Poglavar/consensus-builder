@@ -803,6 +803,8 @@
         "pt": "Português"
     },
     "common": {
+        "maxFloors": "Max floors:",
+        "minFloors": "Min floors:",
         "copied": "Copied",
         "lifecycle": {
             "draft": "Draft",
@@ -3023,7 +3025,6 @@
                 "chamfer": "Chamfer (m):",
                 "simplify": "Simplify (m):",
                 "width": "Building width (m):",
-                "height": "Building height (m):",
                 "gaps": "Number of gaps:",
                 "gapWidth": "Gap width (m):",
                 "wings": "Number of wings:",
@@ -3032,7 +3033,6 @@
                 "ruleTypeExact": "Exactly this height",
                 "ruleTypeMax": "At most this height",
                 "ruleTypeRange": "Between a minimum and this",
-                "minHeight": "Min building height (m):",
                 "minPlotArea": "Min plot size (m²):",
                 "minDepth": "Must build from street (m):"
             },
@@ -3108,7 +3108,7 @@
                 "uploadNoPolygon": "Could not import the file. Use valid Polygon or MultiPolygon building footprints.",
                 "uploadError": "Could not read that file."
             },
-            "regenerate": "Regenerate"
+            "regenerate": "Illustrate"
         }
     },
     "rowHouses": {
@@ -3120,7 +3120,6 @@
             "labels": {
                 "length": "Length (m):",
                 "width": "Width (m):",
-                "height": "Height (m):",
                 "chamfer": "Chamfer (m):",
                 "rotation": "Rotate footprint",
                 "circumference": "Circumference (m):",
@@ -3130,7 +3129,6 @@
                 "ruleTypeExact": "Exactly this height",
                 "ruleTypeMax": "At most this height",
                 "ruleTypeRange": "Between a minimum and this",
-                "minHeight": "Min height (m):",
                 "minPlotArea": "Min plot size (m²):"
             },
             "helper": {
@@ -3163,7 +3161,7 @@
                 "proceed": "Proceed anyway",
                 "cancel": "Go back"
             },
-            "regenerate": "Regenerate",
+            "regenerate": "Illustrate",
             "editShape": "Edit footprint manually",
             "returnGenerated": "Discard manual edits and return to the generated shape",
             "confirmReturnGenerated": "Return to the generated shape and discard manual edits?"
@@ -3177,7 +3175,6 @@
             "done": "Done",
             "regenerate": "Illustrate",
             "labels": {
-                "maxFloors": "Max floors:",
                 "minDistance": "Min distance from borders (m):",
                 "buildingCount": "Rule envelopes:",
                 "totalArea": "Rule footprint (m²):",
@@ -3187,7 +3184,6 @@
                 "ruleTypeMax": "At most this",
                 "ruleTypeRange": "Between a minimum and this",
                 "ruleTypeExact": "Exactly this",
-                "minFloors": "Min floors:",
                 "minFootprint": "Min ground floor (m²):",
                 "minPlotArea": "Min plot size (m²):"
             },

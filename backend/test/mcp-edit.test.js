@@ -195,8 +195,8 @@ describe('granular authored editing', () => {
         expect(()=>edit(design,[{op:'replace',path:'/geometry/buildings/0/geometry/coordinates/0/1',value:[NaN,51]}])).toThrow();
         expect(()=>edit(design,[{op:'add',path:'/geometry/buildings/0/properties/minFootprint',value:{type:'Polygon',coordinates:[]}}])).toThrow();
         expect(()=>edit(design,[{op:'add',path:'/buildingProposal/parameters/width',value:30}])).toThrow(/geometry/);
-        design.geometry.blockMassing={...structuredClone(design.geometry.buildings[0]),properties:{massing:true}};
-        expect(()=>edit(design,[{op:'transform',path:'/geometry/buildings/0/geometry',degrees:10}])).toThrow(/blockMassing/);
+        design.geometry.ruleMassing={...structuredClone(design.geometry.buildings[0]),properties:{massing:true}};
+        expect(()=>edit(design,[{op:'transform',path:'/geometry/buildings/0/geometry',degrees:10}])).toThrow(/ruleMassing/);
     });
     it('cuts and buffers polygons using existing geometry rather than invented coordinates', () => {
         const design=make('building',{floors:4,coverage:.1});

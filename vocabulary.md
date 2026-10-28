@@ -428,11 +428,11 @@ An authored rule governing possible building form on land, such as Block, Row or
 
 ### Block rule
 
-An urban-rule design generating perimeter building form and courtyard space from its land and stated dimensions. Its record stores one building per parcel, cut from the block massing and carrying the rule and its own variation seed, beside the complete authored block massing; parcels the rule leaves out are recorded separately as ineligible.
+An urban-rule design generating perimeter building form and courtyard space from its land and stated dimensions. Its record stores one building per parcel, cut from the block massing and carrying the rule and its own variation seed, beside the complete authored block massing (`geometry.ruleMassing`); parcels the rule leaves out are recorded separately as ineligible.
 
 ### Row rule
 
-An urban-rule design generating a row arrangement of buildings from its land and stated dimensions. Creation uses at least two distinct selected parcels, or at least two frontage plots cut from an authored site. Its complete footprint must remain within the selected land, including its disconnected boundaries and excluding gaps and holes. An unplaceable footprint cannot be finished as a Row design.
+An urban-rule design generating a row arrangement of buildings from its land and stated dimensions. Creation uses at least two distinct selected parcels, or at least two frontage plots cut from an authored site. Its complete footprint must remain within the selected land, including its disconnected boundaries and excluding gaps and holes. An unplaceable footprint cannot be finished as a Row design. Like a Block, its record stores one building per parcel, cut from the row massing and carrying the rule and its own variation seed, beside the complete row massing.
 
 ### Detached rule
 

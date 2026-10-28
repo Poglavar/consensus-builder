@@ -126,6 +126,7 @@ let blockifyInitialDecorationDesign = null;
 // the city's data knows them) come from POST /buildings/footprints — an optional per-city backend
 // capability, so cities without a footprint source simply report unsupported and the toggle reverts.
 const DEFAULT_FLOOR_HEIGHT_M = 3.5;     // one storey, matches DEFAULT_BUILDING_HEIGHT (5 floors x 3.5 m)
+const BLOCK_MAX_FLOORS = 22;            // the height control's ceiling, about 77 m
 const DEFAULT_PROPOSED_HEIGHT_FLOORS = 6;
 const DEFAULT_ADDITIONAL_FLOORS = 1;
 let existingRule = 'exact';             // 'exact' (proposed height) | 'additional' (added floors)
@@ -165,44 +166,16 @@ function translateBuildingText(key, fallback, params = {}) {
 
 function refreshBlockifyDensityStats(buildings = null) {
     const api = (typeof window !== 'undefined') ? window.BuildingDensityStats : null;
-    const container = document.getElementById('blockify-density-stats');
-    if (!api || !container || typeof turf === 'undefined') return;
-
+    if (!api || typeof turf === 'undefined') return;
     const candidates = Array.isArray(buildings)
         ? buildings
         : (blockMassingPieces.length ? blockMassingPieces : (generatedBuildingFeature ? [generatedBuildingFeature] : []));
     const floorHeightM = blockifyMode === 'existing' ? currentFloorHeightM : DEFAULT_FLOOR_HEIGHT_M;
-    let stats = null;
-    try {
-        stats = api.summarizeDensity({
-            parcelFeature: blockifyDesignBoundary(),
-            buildings: candidates,
-            turf,
-            floorHeightM,
-            preferHeight: true
-        });
-    } catch (_) { }
-
-    const setValue = (suffix, value) => {
-        const element = document.getElementById(`blockify-density-${suffix}`);
-        if (element) element.textContent = value;
-    };
-    const area = value => stats && Number.isFinite(value) ? CbFormat.formatArea(value) : '\u2014';
-    setValue('parcel', stats?.parcelAreaM2 > 0 ? area(stats.parcelAreaM2) : '\u2014');
-    setValue('footprint', stats ? area(stats.footprintAreaM2) : '\u2014');
-    setValue('coverage', stats?.parcelAreaM2 > 0 ? CbFormat.formatPercent(stats.siteCoveragePercent, { ofHundred: true, maxFractionDigits: 1, missing: '\u2014' }) : '\u2014');
-    setValue('gbp', stats ? area(stats.aboveGroundGbpM2) : '\u2014');
-    setValue('kin', stats?.parcelAreaM2 > 0 ? CbFormat.formatNumber(stats.kin, { maxFractionDigits: 3, missing: '\u2014' }) : '\u2014');
-
-    const hint = document.getElementById('blockify-density-hint');
-    if (hint) {
-        const height = CbFormat.formatNumber(floorHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
-        hint.textContent = translateBuildingText(
-            'densityStats.floorHeightHint',
-            'Calculated from the drawn footprints and height \u00f7 {{height}} m per storey.',
-            { height }
-        );
-    }
+    api.refreshCard(document, 'blockify', { parcelFeature: blockifyDesignBoundary(), buildings: candidates, turf, floorHeightM }, {
+        format: CbFormat,
+        hint: translateBuildingText('densityStats.floorHeightHint', 'Calculated from the drawn footprints and height \u00f7 {{height}} m per storey.',
+            { height: CbFormat.formatNumber(floorHeightM, { maxFractionDigits: 1, minFractionDigits: 1 }) })
+    });
 }
 
 function showBuildingAlert(key, fallback, params = {}) {
@@ -1418,16 +1391,7 @@ function showBlockifyModal() {
                         <span data-i18n-key="${defaultDescKey}">${defaultDesc}</span>
                     </div>
                 </div>
-                <section id="blockify-density-stats" class="building-density-card" aria-live="polite">
-                    <dl class="building-density-grid">
-                        <div><dt data-i18n-key="densityStats.parcelArea" data-i18n-attr="text">Parcel area</dt><dd id="blockify-density-parcel">\u2014</dd></div>
-                        <div><dt data-i18n-key="densityStats.footprint" data-i18n-attr="text">Building footprint</dt><dd id="blockify-density-footprint">\u2014</dd></div>
-                        <div><dt data-i18n-key="densityStats.siteCoverage" data-i18n-attr="text">Site coverage</dt><dd id="blockify-density-coverage">\u2014</dd></div>
-                        <div><dt data-i18n-key="densityStats.gbp" data-i18n-attr="text">Above-ground floor area</dt><dd id="blockify-density-gbp">\u2014</dd></div>
-                        <div><dt data-i18n-key="densityStats.kin" data-i18n-attr="text">Floor area ratio (above ground)</dt><dd id="blockify-density-kin">\u2014</dd></div>
-                    </dl>
-                    <p id="blockify-density-hint" class="building-density-hint"></p>
-                </section>
+                ${window.BuildingDensityStats.cardMarkup('blockify')}
                 <div class="parameter-group">
                     <label class="blockify-existing-toggle" for="blockify-existing-toggle">
                         <input type="checkbox" id="blockify-existing-toggle">
@@ -1487,10 +1451,10 @@ function showBlockifyModal() {
                 </div>
                 <div class="parameter-group blockify-freeform-only">
                     <label for="height-slider">
-                        <span data-i18n-key="blockify.modal.labels.height" data-i18n-attr="text">Building Height (m):</span>
-                        <span id="height-value">${CbFormat.formatNumber(DEFAULT_BUILDING_HEIGHT, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
+                        <span data-i18n-key="common.maxFloors" data-i18n-attr="text">Max floors:</span>
+                        <span id="height-value">${blockFloorsLabel(DEFAULT_BUILDING_HEIGHT)}</span>
                     </label>
-                    <input type="range" id="height-slider" min="3" max="80" value="${DEFAULT_BUILDING_HEIGHT}" step="0.5">
+                    <input type="range" id="height-slider" min="1" max="${BLOCK_MAX_FLOORS}" value="${blockFloors(DEFAULT_BUILDING_HEIGHT)}" step="1">
                 </div>
                 <div class="parameter-group blockify-freeform-only">
                     <label for="blockify-ruletype-select" data-i18n-key="blockify.modal.labels.ruleType" data-i18n-attr="text">What the rule compels:</label>
@@ -1502,10 +1466,10 @@ function showBlockifyModal() {
                 </div>
                 <div class="parameter-group blockify-freeform-only" id="blockify-minheight-group" style="display: none;">
                     <label for="blockify-minheight-slider">
-                        <span data-i18n-key="blockify.modal.labels.minHeight" data-i18n-attr="text">Min Building Height (m):</span>
-                        <span id="blockify-minheight-value">0.0</span>
+                        <span data-i18n-key="common.minFloors" data-i18n-attr="text">Min floors:</span>
+                        <span id="blockify-minheight-value">0</span>
                     </label>
-                    <input type="range" id="blockify-minheight-slider" min="0" max="80" value="0" step="0.5">
+                    <input type="range" id="blockify-minheight-slider" min="0" max="${BLOCK_MAX_FLOORS}" value="0" step="1">
                 </div>
                 <div class="parameter-group blockify-freeform-only" id="blockify-mindepth-group" style="display: none;">
                     <label for="blockify-mindepth-slider">
@@ -1563,7 +1527,7 @@ function showBlockifyModal() {
                 data-i18n-key="blockify.modal.messages.siteTooSmall">${translateBuildingText('blockify.modal.messages.siteTooSmall', 'This land is too small for the requested block settings. Detect the whole block or add parcels, or reduce the setback, building depth or minimum plot size.')}</p>
             <div id="blockify-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
             <div id="blockify-buttons">
-                <button type="button" class="btn" id="btn-blockify-regenerate" hidden data-i18n-key="blockify.modal.regenerate" data-i18n-attr="text">Regenerate</button>
+                <button type="button" class="btn" id="btn-blockify-regenerate" hidden data-i18n-key="blockify.modal.regenerate" data-i18n-attr="text">Illustrate</button>
                 <button type="button" class="btn" id="btn-blockify-freeform" data-i18n-key="proposalDrafts.freeform.title" data-i18n-attr="text">Convert to freeform building</button>
                 <button type="button" class="btn btn-primary" id="btn-blockify-done" data-i18n-key="blockify.modal.done" data-i18n-attr="text">Done</button>
             </div>
@@ -1593,15 +1557,9 @@ function showBlockifyModal() {
         secondaryGroups.forEach(group => moreOptions.appendChild(group));
         content.appendChild(moreOptions);
 
-        const densityStats = content.querySelector('#blockify-density-stats');
-        if (densityStats) {
-            const details = document.createElement('details');
-            const summary = document.createElement('summary');
-            summary.textContent = translateBuildingText('densityStats.title', 'Geometry statistics');
-            details.appendChild(summary);
-            details.appendChild(densityStats);
-            content.appendChild(details);
-        }
+        // Geometry statistics close the panel, after the options that shape the geometry.
+        const densityStats = content.querySelector('#blockify-density-stats')?.closest('details');
+        if (densityStats) content.appendChild(densityStats);
         blockifyModal = window.OnMapEditor?.open({
             owner: 'urban-rule',
             id: 'blockify-modal',
@@ -1675,8 +1633,8 @@ function showBlockifyModal() {
         const heightSlider = document.getElementById('height-slider');
         if (heightSlider) {
             blockifyHistory.bindInput(heightSlider, function (e) {
-                currentBuildingHeight = parseFloat(e.target.value);
-                document.getElementById('height-value').textContent = CbFormat.formatNumber(currentBuildingHeight, { maxFractionDigits: 1, minFractionDigits: 1 });
+                currentBuildingHeight = parseInt(e.target.value, 10) * DEFAULT_FLOOR_HEIGHT_M;
+                document.getElementById('height-value').textContent = blockFloorsLabel(currentBuildingHeight);
                 // Only affects 3D extrusion; regenerate 3D using the current geometry
                 if (generatedBuildingFeature) {
                     // Keep the feature's own height in step with the slider. The footprint doesn't
@@ -1726,8 +1684,8 @@ function showBlockifyModal() {
         const blockMinHeightSlider = document.getElementById('blockify-minheight-slider');
         if (blockMinHeightSlider) {
             blockifyHistory.bindInput(blockMinHeightSlider, function (e) {
-                blockMinHeightM = parseFloat(e.target.value);
-                document.getElementById('blockify-minheight-value').textContent = CbFormat.formatNumber(blockMinHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
+                blockMinHeightM = parseInt(e.target.value, 10) * DEFAULT_FLOOR_HEIGHT_M;
+                document.getElementById('blockify-minheight-value').textContent = blockFloorsLabel(blockMinHeightM);
                 refreshBlockPieceHeights();
                 if (generatedBuildingFeature) displayBuildingInModal(generatedBuildingFeature);
             });
@@ -1998,7 +1956,10 @@ function syncBlockifyControlsFromState() {
     setSlider('chamfer-slider', 'chamfer-value', currentChamferM);
     setSlider('simplify-slider', 'simplify-value', currentSimplifyM);
     setSlider('width-slider', 'width-value', currentBuildingWidth);
-    setSlider('height-slider', 'height-value', currentBuildingHeight);
+    const heightSlider = document.getElementById('height-slider');
+    if (heightSlider) heightSlider.value = blockFloors(currentBuildingHeight);
+    const heightValue = document.getElementById('height-value');
+    if (heightValue) heightValue.textContent = blockFloorsLabel(currentBuildingHeight);
     setSlider('gaps-slider', 'gaps-value', Array.isArray(gapPositions) ? gapPositions.length : 0, 0);
     setSlider('wings-slider', 'wings-value', Array.isArray(wingPositions) ? wingPositions.length : 0, 0);
     setSlider('gap-width-slider', 'gap-width-value', currentGapWidth, 0);
@@ -2539,9 +2500,9 @@ function autosaveBlockifyDraft(featuresOverride = null) {
         ? (Array.isArray(featuresOverride) ? featuresOverride.filter(Boolean)
             : (featuresOverride ? [featuresOverride] : (generatedBuildingFeatures?.length ? generatedBuildingFeatures : [])))
         : (Array.isArray(featuresOverride) ? featuresOverride.filter(Boolean) : blockMassingPieces);
-    const blockMassing = blockifyMode !== 'existing' && generatedBuildingFeature?.geometry
-        ? window.UrbanRuleVariation.massingWithRule(generatedBuildingFeature, currentBlockRule(), blockVariationSeed, { turf })
-        : null;
+    const { buildings, ruleMassing } = blockifyMode !== 'existing' && generatedBuildingFeature?.geometry
+        ? window.UrbanRuleVariation.ruleDesignGeometry(generatedBuildingFeature, features, currentBlockRule(), blockVariationSeed, { turf })
+        : { buildings: JSON.parse(JSON.stringify(features)), ruleMassing: null };
     if (!activeDraft || !['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)
         || !features.length || !block?.parcels?.length
         || typeof window.syncActiveProposalDraftFromEditor !== 'function') return;
@@ -2556,7 +2517,6 @@ function autosaveBlockifyDraft(featuresOverride = null) {
         parcelIds.push(id);
         parentDetails.push({ id, number: String(props?.BROJ_CESTICE || id) });
     });
-    const buildings = JSON.parse(JSON.stringify(features));
     const algorithmSelect = document.getElementById('algorithm-select');
     const parameters = blockifyMode === 'existing'
         ? {
@@ -2591,7 +2551,7 @@ function autosaveBlockifyDraft(featuresOverride = null) {
         parameters,
         buildingFeature: buildings[0] || null,
         buildings,
-        ...(blockMassing ? { blockMassing } : {}),
+        ...(ruleMassing ? { ruleMassing } : {}),
         groundSurface: blockifySurroundings?.surface() || null,
         // A Block stays on its parcels (proposals/freeform-conversion.js): never a free placement.
         placement: { free: false, site: blockifyClone(blockifyDesignBoundary()) }
@@ -2796,11 +2756,22 @@ function syncBlockMinHeightSlider() {
     const slider = document.getElementById('blockify-minheight-slider');
     if (!slider) return;
     const ceiling = Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT;
-    slider.max = String(ceiling);
+    slider.max = String(blockFloors(ceiling));
     if (blockMinHeightM > ceiling) blockMinHeightM = ceiling;
-    slider.value = String(blockMinHeightM);
+    slider.value = String(blockFloors(blockMinHeightM));
     const label = document.getElementById('blockify-minheight-value');
-    if (label) label.textContent = CbFormat.formatNumber(blockMinHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
+    if (label) label.textContent = blockFloorsLabel(blockMinHeightM);
+}
+
+// The rule is stored in metres (UrbanRuleVariation.normalizeBlockRule); the controls count whole
+// storeys of DEFAULT_FLOOR_HEIGHT_M, as plans state heights, and show the metres beside them.
+function blockFloors(heightM) {
+    return Math.max(0, Math.round((Number(heightM) || 0) / DEFAULT_FLOOR_HEIGHT_M));
+}
+
+function blockFloorsLabel(heightM) {
+    const metres = Number(heightM) || 0;
+    return metres > 0 ? `${blockFloors(metres)} (${CbFormat.formatLength(metres)})` : '0';
 }
 
 function blockExclusionReason(status) {
@@ -3452,7 +3423,7 @@ async function saveBlockifyDesignForProposal() {
     // carries the rule and its own variation seed, so every view realizes the same street of varied
     // heights (urban-rule-massing.md; the MCP Block constructor saves the same shape). Saving the
     // whole ring as one building gave the 3D view one seed, hence one height for the whole block.
-    // The cut pieces remain the economic and ownership units, while `blockMassing` below preserves
+    // The cut pieces remain the economic and ownership units, while `ruleMassing` below preserves
     // the authored block-wide shape (including courtyard holes) as design geometry. Conflating those
     // two shapes is what made both selected edge plots and the common courtyard disappear after
     // apply/reload.
@@ -3523,11 +3494,10 @@ async function saveBlockifyDesignForProposal() {
     }
     // createProposal() consumes `buildings` (array) with `buildingFeature` as the single/primary
     // fallback.
-    const clonedBuildings = JSON.parse(JSON.stringify(existingModeFeatures || blockMassingPieces));
+    const { buildings: clonedBuildings, ruleMassing } = existingModeFeatures
+        ? { buildings: JSON.parse(JSON.stringify(existingModeFeatures)), ruleMassing: null }
+        : window.UrbanRuleVariation.ruleDesignGeometry(generatedBuildingFeature, blockMassingPieces, currentBlockRule(), blockVariationSeed, { turf });
     const clonedFeature = clonedBuildings[0];
-    const blockMassing = existingModeFeatures
-        ? null
-        : window.UrbanRuleVariation.massingWithRule(generatedBuildingFeature, currentBlockRule(), blockVariationSeed, { turf });
 
     // Save enough to rebuild this exact design later (see applyBlockifySeedState). Width/height/
     // setback/chamfer/algorithm alone are lossy: a manual outline isn't slider-derived at all, and
@@ -3584,7 +3554,7 @@ async function saveBlockifyDesignForProposal() {
         groundSurface: blockifySurroundings?.surface() || null,
         ineligibleParcels,
         buildingFeature: clonedFeature,
-        ...(blockMassing ? { blockMassing } : {}),
+        ...(ruleMassing ? { ruleMassing } : {}),
         placement: { free: false, site: blockifyClone(blockifyDesignBoundary()) }
     };
     context.buildings = clonedBuildings;

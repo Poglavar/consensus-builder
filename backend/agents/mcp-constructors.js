@@ -55,7 +55,10 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
     if (intent.kind === 'track') return intentDesign.build(intent, { turf });
     const typology = intent.typology || 'freeform';
     if (!['freeform', 'block', 'row', 'detached'].includes(typology)) fail('invalid-typology', 'Choose a supported building typology.', 'typology', { enum: ['freeform', 'block', 'row', 'detached'] });
-    const site = siteOf(intent, entries), seed = number(intent.seed, 0, 'seed', 0, 0xffffffff, true);
+    const site = siteOf(intent, entries);
+    // Without an explicit seed each site gets its own stable variation, as the editor rolls a fresh one;
+    // a constant default would give every agent-drafted rule the same example heights.
+    const seed = number(intent.seed, runtime.rules.hashSeed(JSON.stringify(site)), 'seed', 0, 0xffffffff, true);
     const floorHeightM = number(intent.floorHeightM, typology === 'block' ? 3.5 : 3, 'floorHeightM', 0.5, 20);
     const defaultHeight = typology === 'block' ? 17.5 : typology === 'row' ? 12 : typology === 'detached' ? 15 : 10;
     const height = number(intent.height, intent.floors != null ? intent.floors * floorHeightM : defaultHeight, 'height', 0.5, 800);
@@ -153,7 +156,7 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
         : runtime.rules.splitMassingByParcels(massing, entries, rule, seed, { turf, largestPolygon: runtime.footprints.toSingleLargestPolygon });
     if (!split.pieces.length) fail('building-rule-no-room', 'No source parcel can satisfy this building rule.', 'parcelIds', { excluded: split.excluded });
     return publish(intent, { goal: typology === 'row' ? 'row' : 'buildings', site, buildingProposal: { typologyType: typology === 'row' ? 'row' : 'block', parameters },
-        geometry: { buildings: split.pieces, blockMassing: massing } });
+        geometry: { buildings: split.pieces, ruleMassing: massing } });
 }
 
 // Granular edits must retain authored track targets and re-check the actual edited stretches.

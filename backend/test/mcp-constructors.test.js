@@ -41,12 +41,12 @@ describe('MCP shared construction generators', () => {
     it('uses the shared Block ring and Row chamfer generators without alternate massing', () => {
         const block = buildTypedDesign({ ...common, typology: 'block', setbackM: 4, depthM: 9 }, options);
         const ring = constructorRuntime.buildingRules.blockRingOutline(parcel, parcel, { setback: 4, width: 9, simplifyM: 0 });
-        expect(block.geometry.blockMassing.geometry.coordinates[0]).toEqual(ring.outer.geometry.coordinates[0]);
-        expect(block.geometry.blockMassing.geometry.coordinates).toHaveLength(2);
+        expect(block.geometry.ruleMassing.geometry.coordinates[0]).toEqual(ring.outer.geometry.coordinates[0]);
+        expect(block.geometry.ruleMassing.geometry.coordinates).toHaveLength(2);
         const row = buildTypedDesign({ ...common, typology: 'row', lengthM: 45, depthM: 14, chamferM: 2, rotationDegrees: 12 }, rowOptions);
         const generated = constructorRuntime.buildingRules.rowFootprint({ site: parcel, parcels: rowParcels.map(feature => ({feature})) }, { lengthM:45,depthM:14,chamferM:2,rotationRadians:12*Math.PI/180,height:12 });
-        expect(row.geometry.blockMassing.geometry).toEqual(generated.feature.geometry);
-        expect(row.geometry.blockMassing.geometry.coordinates[0]).toHaveLength(9);
+        expect(row.geometry.ruleMassing.geometry).toEqual(generated.feature.geometry);
+        expect(row.geometry.ruleMassing.geometry.coordinates[0]).toHaveLength(9);
     });
     it('auto-fits Rows inside irregular and small sites using the editor search while preserving explicit dimensions', () => {
         const origin = [15,45], mx = 1/(111320*Math.cos(Math.PI/4)), my = 1/110540;
@@ -55,7 +55,7 @@ describe('MCP shared construction generators', () => {
             const source = { ...parcel, geometry }, params = {kind:'building',typology:'row',site:geometry,minPlotAreaM2:0};
             const plots = constructorRuntime.sitePlots.cutPlots(geometry, {plotWidthM:7,turf});
             const generated = buildTypedDesign(params);
-            expect(constructorRuntime.singleBuilding.footprintWithinBoundary(generated.geometry.blockMassing || generated.geometry.buildings[0],source,turf)).toBe(true);
+            expect(constructorRuntime.singleBuilding.footprintWithinBoundary(generated.geometry.ruleMassing || generated.geometry.buildings[0],source,turf)).toBe(true);
             expect(generated.buildingProposal.parameters.length).toBeGreaterThan(4);
             const runtime = constructorRuntime.buildingRules.createRowPlacement();
             const dimensions = runtime.calculate({site:source,parcels:plots.map(feature => ({feature}))});
@@ -78,12 +78,12 @@ describe('MCP shared construction generators', () => {
         const gap=buildTypedDesign({...args,gapPositions:[0.15],gapWidthM:7},options);
         const wing=buildTypedDesign({...args,wingPositions:[0.15],wingLengthM:20},options);
         const combined=buildTypedDesign({...args,gapPositions:[0.15],gapWidthM:7,wingPositions:[0.65],wingLengthM:20,chamferM:1},options);
-        expect(turf.area(gap.geometry.blockMassing)).toBeLessThan(turf.area(baseline.geometry.blockMassing));
-        expect(turf.area(wing.geometry.blockMassing)).toBeGreaterThan(turf.area(baseline.geometry.blockMassing));
+        expect(turf.area(gap.geometry.ruleMassing)).toBeLessThan(turf.area(baseline.geometry.ruleMassing));
+        expect(turf.area(wing.geometry.ruleMassing)).toBeGreaterThan(turf.area(baseline.geometry.ruleMassing));
         expect(combined.buildingProposal.parameters).toMatchObject({gaps:[0.15],gapWidth:7,wings:[0.65],wingLength:20,chamfer:1});
         const ring=constructorRuntime.buildingRules.blockRingOutline(parcel,parcel,{setback:2,width:15,simplifyM:0});
         const shared=constructorRuntime.buildingRules.blockMassingFromRing(ring,parcel,{width:ring.widthAchieved,setback:2,height:17.5,gapPositions:[0.15],gapWidthM:7,wingPositions:[0.65],wingLengthM:20,chamferM:1});
-        expect(combined.geometry.blockMassing.geometry).toEqual(shared.geometry);
+        expect(combined.geometry.ruleMassing.geometry).toEqual(shared.geometry);
         expect(() => buildTypedDesign({...args,gapPositions:[1.5]},options)).toThrow(/fractions/);
     });
     it('uses exact source identities and keeps detached exclusions visible in errors', () => {
@@ -133,7 +133,7 @@ describe('Block pieces and their coupled massing', () => {
         const design = block();
         expect(design.geometry.buildings.map(b => b.properties.parcelId)).toEqual(['A', 'B']);
         expect(new Set(design.geometry.buildings.map(b => b.properties.variationSeed)).size).toBe(2);
-        expect(design.geometry.blockMassing.properties).toMatchObject({ massing: true, height: design.geometry.buildings[0].properties.height });
+        expect(design.geometry.ruleMassing.properties).toMatchObject({ massing: true, height: design.geometry.buildings[0].properties.height });
     });
 
     it('a height set on all buildings re-stamps the massing to the same rule maximum', () => {
@@ -143,9 +143,9 @@ describe('Block pieces and their coupled massing', () => {
             expect(building.properties).toMatchObject({ height: 10.5, floors: 3 });
             expect(building.properties.urbanRule.maxHeightM).toBe(10.5);
         }
-        expect(next.geometry.blockMassing.properties).toMatchObject({ height: 10.5, floors: 3, massing: true });
-        expect(next.geometry.blockMassing.properties.urbanRule).toEqual(next.geometry.buildings[0].properties.urbanRule);
-        expect(next.geometry.blockMassing.geometry).toEqual(design.geometry.blockMassing.geometry);
+        expect(next.geometry.ruleMassing.properties).toMatchObject({ height: 10.5, floors: 3, massing: true });
+        expect(next.geometry.ruleMassing.properties.urbanRule).toEqual(next.geometry.buildings[0].properties.urbanRule);
+        expect(next.geometry.ruleMassing.geometry).toEqual(design.geometry.ruleMassing.geometry);
         expect(next.buildingProposal.parameters.rule).toEqual(next.geometry.buildings[0].properties.urbanRule);
     });
 
@@ -155,5 +155,24 @@ describe('Block pieces and their coupled massing', () => {
         expect(() => intentDesign.modify(design, [{ type: 'move', eastM: 5, northM: 0 }], { turf })).toThrow(/massing/);
         expect(() => intentDesign.modify(design, [{ type: 'remove_building', buildingIndex: 0 }], { turf })).toThrow(/massing/);
         expect(intentEditing).toBeTruthy();
+    });
+});
+describe('Agent-drafted rule seeds', () => {
+    const shifted = { type: 'Polygon', coordinates: [[[15.01,45],[15.012,45],[15.012,45.002],[15.01,45.002],[15.01,45]]] };
+    it('gives each site its own stable variation unless the agent names a seed', () => {
+        const here = buildTypedDesign({ ...common, typology: 'block', ruleKind: 'max' }, options);
+        const there = buildTypedDesign({ ...common, typology: 'block', ruleKind: 'max', site: shifted }, { parcels: [{ ...parcel, geometry: shifted }] });
+        expect(here.buildingProposal.parameters.seed).toBe(constructorRuntime.rules.hashSeed(JSON.stringify(site)));
+        expect(there.buildingProposal.parameters.seed).not.toBe(here.buildingProposal.parameters.seed);
+        expect(here.geometry.ruleMassing.properties.variationSeed).toBe(here.buildingProposal.parameters.seed);
+        expect(buildTypedDesign({ ...common, typology: 'block', ruleKind: 'max', seed: 7 }, options).buildingProposal.parameters.seed).toBe(7);
+    });
+    it('seeds an urban-rule Row draft from its site and records the seed', () => {
+        const design = intentDesign.build({ kind: 'urban-rule', site, rule: { typology: 'row', kind: 'max', floors: 3, depthM: 10 } }, { turf });
+        const seed = constructorRuntime.rules.hashSeed(JSON.stringify(site));
+        expect(design.geometry.buildings[0].properties.variationSeed).toBe(seed);
+        expect(design.buildingProposal.parameters.seed).toBe(seed);
+        const named = intentDesign.build({ kind: 'urban-rule', site, rule: { typology: 'row', kind: 'max', floors: 3, depthM: 10, seed: 42 } }, { turf });
+        expect(named.geometry.buildings[0].properties.variationSeed).toBe(42);
     });
 });

@@ -66,7 +66,7 @@
         };
         add('site', design.site);
         add('geometry', design.geometry);
-        for (const key of ['landTake', 'blockMassing', 'groundSurface', 'parkGraphics', 'squareGraphics', 'lakeGraphics', 'stationGraphics']) add(key, design.geometry?.[key]);
+        for (const key of ['landTake', 'ruleMassing', 'groundSurface', 'parkGraphics', 'squareGraphics', 'lakeGraphics', 'stationGraphics']) add(key, design.geometry?.[key]);
         (design.geometry?.buildings || []).forEach((f, i) => add(`building/${i}`, f));
         const road = design.roadProposal?.definition;
         add('corridor', road?.polygon);

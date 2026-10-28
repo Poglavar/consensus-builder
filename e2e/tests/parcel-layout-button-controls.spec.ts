@@ -484,7 +484,7 @@ test.describe('parcel-layout button controls @core', () => {
         (window as any).proposalStorage.addProposal({
           title, goal: 'buildings', primaryType: 'Building', cadastreParcelIds: [parcelId], applied: false,
           buildingProposal: { parameters: { mode: 'block' } },
-          geometry: { blockMassing: { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring, hole.slice().reverse()] } } },
+          geometry: { ruleMassing: { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring, hole.slice().reverse()] } } },
         });
       }
     }, PARCEL_ID);

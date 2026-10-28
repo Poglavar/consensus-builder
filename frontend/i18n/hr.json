@@ -804,6 +804,8 @@
         "pt": "Português"
     },
     "common": {
+        "maxFloors": "Maks. katova:",
+        "minFloors": "Min. katova:",
         "copied": "Kopirano",
         "lifecycle": {
             "draft": "Nacrt",
@@ -3051,7 +3053,6 @@
                 "chamfer": "Skošenje (m):",
                 "simplify": "Pojednostavi (m):",
                 "width": "Širina zgrade (m):",
-                "height": "Visina zgrade (m):",
                 "gaps": "Broj otvora:",
                 "gapWidth": "Širina otvora (m):",
                 "wings": "Broj krila:",
@@ -3060,7 +3061,6 @@
                 "ruleTypeExact": "Točno ovu visinu",
                 "ruleTypeMax": "Najviše ovu visinu",
                 "ruleTypeRange": "Između minimuma i ove visine",
-                "minHeight": "Min. visina zgrade (m):",
                 "minPlotArea": "Najmanja površina čestice (m²):",
                 "minDepth": "Obvezna dubina od ulice (m):"
             },
@@ -3140,7 +3140,7 @@
                 "uploadNoPolygon": "Datoteku nije moguće uvesti. Upotrijebite valjane tlocrte zgrada tipa Polygon ili MultiPolygon.",
                 "uploadError": "Nije moguće pročitati datoteku."
             },
-            "regenerate": "Regeneriraj"
+            "regenerate": "Ilustriraj"
         }
     },
     "rowHouses": {
@@ -3152,7 +3152,6 @@
             "labels": {
                 "length": "Duljina (m):",
                 "width": "Širina (m):",
-                "height": "Visina (m):",
                 "chamfer": "Skošenje (m):",
                 "rotation": "Zakreni tlocrt",
                 "circumference": "Opseg (m):",
@@ -3162,7 +3161,6 @@
                 "ruleTypeExact": "Točno ovu visinu",
                 "ruleTypeMax": "Najviše ovu visinu",
                 "ruleTypeRange": "Između minimuma i ove visine",
-                "minHeight": "Min. visina (m):",
                 "minPlotArea": "Najmanja površina čestice (m²):"
             },
             "helper": {
@@ -3195,7 +3193,7 @@
                 "proceed": "Ipak nastavi",
                 "cancel": "Natrag"
             },
-            "regenerate": "Regeneriraj",
+            "regenerate": "Ilustriraj",
             "editShape": "Ručno uredi tlocrt",
             "returnGenerated": "Odbaci ručne izmjene i vrati se na generirani oblik",
             "confirmReturnGenerated": "Vratiti se na generirani oblik i odbaciti ručne izmjene?"
@@ -3209,7 +3207,6 @@
             "done": "Gotovo",
             "regenerate": "Ilustriraj",
             "labels": {
-                "maxFloors": "Maks. katova:",
                 "minDistance": "Min. udaljenost od granica (m):",
                 "buildingCount": "Gabariti prema pravilu:",
                 "totalArea": "Tlocrtna površina prema pravilu (m²):",
@@ -3219,7 +3216,6 @@
                 "ruleTypeMax": "Najviše ovoliko",
                 "ruleTypeRange": "Između minimuma i ovoga",
                 "ruleTypeExact": "Točno ovoliko",
-                "minFloors": "Min. katova:",
                 "minFootprint": "Min. tlocrtna površina (m²):",
                 "minPlotArea": "Najmanja površina čestice (m²):"
             },

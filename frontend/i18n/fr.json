@@ -37,6 +37,8 @@
         }
     },
     "common": {
+        "maxFloors": "Nombre maximal de niveaux :",
+        "minFloors": "Nombre minimal de niveaux :",
         "cancel": "Annuler",
         "unknown": "Inconnu",
         "copied": "Copié",
@@ -3895,7 +3897,6 @@
                 "chamfer": "Chanfrein (m) :",
                 "simplify": "Simplification (m) :",
                 "width": "Largeur du bâtiment (m) :",
-                "height": "Hauteur du bâtiment (m) :",
                 "gaps": "Nombre d’ouvertures :",
                 "gapWidth": "Largeur des ouvertures (m) :",
                 "wings": "Nombre d’ailes :",
@@ -3904,7 +3905,6 @@
                 "ruleTypeExact": "Exactement cette hauteur",
                 "ruleTypeMax": "Au maximum cette hauteur",
                 "ruleTypeRange": "Entre un minimum et cette hauteur",
-                "minHeight": "Hauteur minimale du bâtiment (m) :",
                 "minPlotArea": "Surface minimale du lot (m²) :",
                 "minDepth": "Profondeur bâtie obligatoire depuis la rue (m) :"
             },
@@ -3937,7 +3937,7 @@
                 "proceed": "Continuer quand même",
                 "cancel": "Revenir en arrière"
             },
-            "regenerate": "Régénérer"
+            "regenerate": "Illustrer"
         }
     },
     "rowHouses": {
@@ -3959,7 +3959,6 @@
             },
             "title": "Maisons en bande",
             "labels": {
-                "height": "Hauteur (m) :",
                 "rotation": "Faire pivoter l’emprise au sol",
                 "chamfer": "Chanfrein (m) :",
                 "ruleType": "Ce qu’impose la règle :",
@@ -3971,8 +3970,7 @@
                 "width": "Largeur (m) :",
                 "circumference": "Périmètre (m) :",
                 "area": "Surface (m²) :",
-                "volume": "Volume (m³) :",
-                "minHeight": "Hauteur minimale (m) :"
+                "volume": "Volume (m³) :"
             },
             "rotateCounterclockwise": "Faire pivoter de 5 degrés dans le sens antihoraire",
             "rotateClockwise": "Faire pivoter de 5 degrés dans le sens horaire",
@@ -3986,7 +3984,7 @@
                 "dissimilarParcels": "Les maisons en bande peuvent être définies sur toutes les parcelles, mais les {{count}} parcelles sélectionnées ont des tailles et des formes très variées. Cela fonctionnera tout de même ; les maisons en bande occupent généralement des parcelles de tailles et de formes similaires. Voulez-vous continuer ?"
             },
             "uploadGeojson": "Importer une forme libre GeoJSON",
-            "regenerate": "Régénérer",
+            "regenerate": "Illustrer",
             "closeAria": "Fermer la fenêtre des maisons en bande",
             "generating": "Génération des maisons en bande…",
             "helper": {
@@ -4019,7 +4017,6 @@
                 "ruleType": "Ce qu’impose la règle :",
                 "ruleTypeRange": "Entre un minimum et cette hauteur",
                 "minPlotArea": "Surface minimale du lot (m²) :",
-                "maxFloors": "Nombre maximal de niveaux :",
                 "minDistance": "Distance minimale aux limites (m) :",
                 "buildingCount": "Enveloppes autorisées par la règle :",
                 "totalArea": "Emprise au sol imposée par la règle (m²) :",
@@ -4027,7 +4024,6 @@
                 "avgFloors": "Nombre de niveaux de l’exemple (moyenne) :",
                 "ruleTypeMax": "Au maximum cette valeur",
                 "ruleTypeExact": "Exactement cette valeur",
-                "minFloors": "Nombre minimal de niveaux :",
                 "minFootprint": "Surface minimale du rez-de-chaussée (m²) :"
             },
             "regenerate": "Illustrer",

@@ -561,7 +561,7 @@ describe('other starting layouts and pools', () => {
         const ring = (w, s, e, n) => [lngLat(w, s), lngLat(e, s), lngLat(e, n), lngLat(w, n), lngLat(w, s)];
         // A block wrapping the two parcels' common corner: its hole is the courtyard.
         const block = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring(20, 5, 70, 45), ring(30, 15, 60, 35).reverse()] } };
-        const proposals = [{ proposalId: 'b-1', title: 'Courtyard block', buildingProposal: {}, geometry: { blockMassing: block } }];
+        const proposals = [{ proposalId: 'b-1', title: 'Courtyard block', buildingProposal: {}, geometry: { ruleMassing: block } }];
         const w = world({ proposals });
         await w.editor.openParcelLayoutEditor({ algorithm: 'amend' });
         w.$('[data-reparcel-courtyard-building]').click();
