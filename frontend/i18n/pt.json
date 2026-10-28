@@ -1983,7 +1983,13 @@
             "inputShares": "As quotas de propriedade de entrada têm de totalizar 100 %.",
             "allocationRequired": "Atribua cada parcela resultante.",
             "settlementInvalid": "Reveja os montantes da liquidação em dinheiro.",
-            "moneyUnbalanced": "Os pagamentos em dinheiro têm de estar equilibrados."
+            "moneyUnbalanced": "Os pagamentos em dinheiro têm de estar equilibrados.",
+            "valuationMissing": "A liquidação por valor precisa de um valor por m² para cada parcela de entrada e cada porção resultante.",
+            "valuationInvalid": "Um valor por m² tem de ser um montante de, pelo menos, 0.",
+            "valuationUnknown": "Um valor por m² indica uma parcela ou porção que não faz parte deste acordo.",
+            "valuationZero": "Para liquidar por valor, o terreno de entrada tem de ter um valor superior a zero.",
+            "valuationUnused": "Os valores do terreno aplicam-se apenas à liquidação por valor.",
+            "schemeRule": "{{reason}}"
         },
         "warnings": {
             "ruleNotReady": "Ainda não é possível avaliar a regra: {{reason}}",
@@ -2018,7 +2024,18 @@
             "noCash": "Sem compensação monetária",
             "rate": "Compensação por m² ({{currency}})",
             "contribution": "Contribuição de terreno (%)",
-            "contributionHint": "A compensação cobre as diferenças do direito restante ao terreno após esta contribuição."
+            "contributionHint": "A compensação cobre as diferenças do direito restante ao terreno após esta contribuição.",
+            "byValue": "Equilibrar diferenças de valor do terreno em dinheiro",
+            "valueHint": "Cada pessoa tem direito à parte do valor do terreno resultante que corresponde ao valor com que contribui; as diferenças são liquidadas em dinheiro. Introduza um valor por m² para cada parcela de entrada e cada porção resultante.",
+            "valueGainHint": "{{scheme}}: liquida-se em dinheiro {{percent}}% da mais-valia de cada pessoa.",
+            "unitValue": "Valor por m² ({{currency}})",
+            "unitValueAllInputs": "Valor por m² para todas as parcelas de entrada ({{currency}})",
+            "unitValueAllOutputs": "Valor por m² para todas as porções resultantes ({{currency}})",
+            "valuationInputs": "Valores do terreno das parcelas de entrada",
+            "valuationOutputs": "Valores do terreno das porções resultantes",
+            "valueReadOnly": "Compensação pelo valor do terreno: cada pessoa tem direito à parte do valor do terreno resultante que corresponde ao valor com que contribui. Altere-a em Regras.",
+            "valueTotals": "Valor de entrada: {{input}} · valor resultante: {{output}}",
+            "entitled": "com direito a {{value}}"
         }
     },
     "workspace": {
@@ -2197,7 +2214,42 @@
             "providerUnavailable": "Esta fonte de dados de propriedade está indisponível.",
             "policyContextUnanimous": "Todos os proprietários declarados têm de aprovar.",
             "policyContextThreshold": "A aprovação usa os limiares de número de proprietários {{owners}} e de área {{area}}.",
-            "invalidFraction": "Introduza uma fração, como 1/2."
+            "invalidFraction": "Introduza uma fração, como 1/2.",
+            "schemeNotMet": "não cumprido por este plano",
+            "schemeCheckTitle": "Este plano face ao regime",
+            "guide": {
+                "open": "Como funciona este regime…",
+                "checked": "Regras verificadas em {{date}}",
+                "distribution": "Como é distribuído o terreno",
+                "before": "Terreno de entrada",
+                "after": "Terreno após o reparcelamento",
+                "schematicOwnerCap": "Cada proprietário cede, sem compensação, no máximo {{percent}}% do seu terreno para uso público e recebe de volta um lote; qualquer diferença adicional é liquidada em dinheiro.",
+                "schematicPoolCap": "Até {{percent}}% do conjunto destina-se, sem compensação, a equipamentos públicos e custos; as partes repartem o resto, e as diferenças são liquidadas em dinheiro.",
+                "schematicValue": "Cada proprietário recebe de volta uma parte do novo terreno com o valor com que contribuiu; o terreno público reduz essa parte por igual para todos, e as diferenças são liquidadas em dinheiro.",
+                "schematicNone": "As partes acordam o que cada uma recebe de volta; o regime não fixa limite ao terreno público, e as diferenças são liquidadas em dinheiro.",
+                "example": "Três proprietários de exemplo; com um plano aberto, as barras mostram as suas partes.",
+                "against": "Este acordo face ao regime",
+                "getsBack": "Recebe de volta",
+                "givesUp": "Cede",
+                "fixes": "O que permitiria cumpri-lo",
+                "fixBasisValue": "Em Regras, defina Compensação como «Equilibrar diferenças de valor do terreno em dinheiro» e, depois, atribua um valor por m² a cada parcela de entrada e a cada porção resultante.",
+                "fixBasisArea": "Em Regras, defina Compensação como «Equilibrar diferenças de terreno em dinheiro».",
+                "fixParties": "Partes que contribuem com terreno: {{actual}}; este regime exige {{required}}. Escolha um plano que abranja mais parcelas ou outro regime.",
+                "fixProposer": "Em Parcelas resultantes, atribua as porções do proponente a um proprietário ou a Terreno público.",
+                "fixCapOwner": "Em Parcelas resultantes, devolva a {{owner}} pelo menos mais {{area}} de terreno, ou reduza a Contribuição de terreno; um regime com um limite mais alto é outra opção.",
+                "fixCapOwnerPlain": "Em Parcelas resultantes, devolva mais terreno a {{owner}}.",
+                "fixCapPool": "Em Parcelas resultantes, devolva aos proprietários pelo menos {{percent}}% do conjunto.",
+                "setup": "Configurá-lo aqui",
+                "stepCompensationValue": "Regras › Compensação: «Equilibrar diferenças de valor do terreno em dinheiro» e, depois, um valor por m² para cada parcela de entrada e cada porção resultante (pré-preenchido com o preço do terreno da cidade).",
+                "stepCompensationArea": "Regras › Compensação: «Equilibrar diferenças de terreno em dinheiro», com a compensação por m².",
+                "stepCompensationEither": "Regras › Compensação: por área (uma compensação por m²) ou por valor (um valor por m² para cada parcela e porção); o regime permite ambas as opções.",
+                "stepContribution": "Regras › Contribuição de terreno: o controlo de deslize para em {{percent}}%, o terreno que cada proprietário cede sem compensação para uso público; o terreno cedido além desse valor é compensado, mas continua a contar para o limite.",
+                "stepOutputsNoProposer": "Parcelas resultantes: Terreno público para ruas e espaços públicos, cada uma das outras porções ao proprietário a quem regressa; Proponente não está disponível neste regime.",
+                "stepOutputs": "Parcelas resultantes: Terreno público para ruas e espaços públicos, as restantes porções aos proprietários ou ao Proponente.",
+                "stepRights": "Direitos de propriedade das parcelas: importe um ficheiro de direitos (parcel-rights/v2) que liste {{what}}.",
+                "stepAuthority": "Regras › Autoridade: um id para {{authority}}; um membro da lente confirma quem atua em seu nome e regista a sua decisão ao lado das dos proprietários.",
+                "stepPersons": "Pessoas: o que cada pessoa contribui e recebe de volta, em terreno e em dinheiro; o cartão do regime em Regras mostra este plano face ao regime à medida que avança."
+            }
         },
         "fields": {
             "name": "Nome",
@@ -3532,8 +3584,16 @@
                 "capOwnerOver": "{{owner}} cede {{given}} do seu terreno; o limite é {{limit}}.",
                 "capPoolUnknown": "A área do conjunto é desconhecida, pelo que não é possível verificar o limite de {{limit}}.",
                 "capPoolOk": "{{given}} do conjunto não é devolvido aos proprietários; o limite é {{limit}}.",
-                "capPoolOver": "{{given}} do conjunto não é devolvido aos proprietários, ultrapassando o limite de {{limit}}."
-            }
+                "capPoolOver": "{{given}} do conjunto não é devolvido aos proprietários, ultrapassando o limite de {{limit}}.",
+                "partiesOk": "{{actual}} partes contribuem com terreno; o regime exige pelo menos {{required}}.",
+                "partiesFew": "Partes que contribuem com terreno: apenas {{actual}}; o regime exige pelo menos {{required}}.",
+                "proposerNone": "Nenhum terreno é atribuído a um proponente.",
+                "proposerOver": "{{area}} m² seriam atribuídos a um proponente; neste regime, o terreno é devolvido aos seus proprietários ou destinado a uso público."
+            },
+            "valueGainAll": "Na distribuição por valor, cada proprietário recupera integralmente o valor com que contribuiu; toda a mais-valia é liquidada em dinheiro.",
+            "valueGainShare": "Na distribuição por valor, liquida-se em dinheiro {{percent}}% da mais-valia de cada proprietário.",
+            "minParties": "Pelo menos {{count}} partes contribuem com terreno.",
+            "noProposer": "O terreno é devolvido aos seus proprietários ou destinado a uso público; um proponente não o pode adquirir."
         },
         "authority": {
             "approved": "aprovado: {{role}}",
@@ -3589,12 +3649,12 @@
             "de-umlegung-new": {
                 "name": "Alemanha — Umlegung, terrenos urbanizados pela primeira vez",
                 "authority": "a adoção do plano de reparcelamento pela autoridade responsável pela Umlegung",
-                "note": "Não há votação dos proprietários: a autoridade ordena e decide, e os proprietários são ouvidos. Na distribuição por área, nenhum proprietário cede mais de 30% do seu terreno para equipamentos públicos (§58); na distribuição por valor, a mais-valia é liquidada em dinheiro."
+                "note": "Não há votação dos proprietários: a autoridade ordena e decide, e os proprietários são ouvidos. Na distribuição por área, nenhum proprietário cede mais de 30% do seu terreno para equipamentos públicos (§58); na distribuição por valor, cada proprietário recupera integralmente o valor com que contribuiu e toda a mais-valia é liquidada em dinheiro (§57)."
             },
             "de-umlegung-developed": {
                 "name": "Alemanha — Umlegung, terrenos já urbanizados",
                 "authority": "a decisão da autoridade responsável pela Umlegung sobre o plano de reparcelamento",
-                "note": "Não há votação dos proprietários: a autoridade ordena e decide, e os proprietários são ouvidos. Na distribuição por área, nenhum proprietário cede mais de 10% do seu terreno (§58)."
+                "note": "Não há votação dos proprietários: a autoridade ordena e decide, e os proprietários são ouvidos. Na distribuição por área, nenhum proprietário cede mais de 10% do seu terreno (§58); na distribuição por valor, cada proprietário recupera integralmente o valor com que contribuiu e toda a mais-valia é liquidada em dinheiro (§57)."
             },
             "tr-article-18": {
                 "name": "Turquia — reparcelamento ao abrigo do artigo 18",
@@ -3604,7 +3664,7 @@
             "in-gj-tps": {
                 "name": "Índia, Gujarat — regime de planeamento urbano",
                 "authority": "a aprovação do regime pelo governo do Estado",
-                "note": "A autoridade prepara o regime e ouve as objeções por escrito; os lotes finais são reconstituídos com base na avaliação."
+                "note": "A autoridade prepara o regime e ouve as objeções por escrito; os lotes finais são reconstituídos com base na avaliação, e cada proprietário contribui com metade da sua mais-valia para os custos do regime (§§78–79)."
             }
         },
         "deals": {

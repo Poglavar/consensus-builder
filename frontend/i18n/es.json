@@ -303,8 +303,16 @@
                 "capOwnerOver": "{{owner}} cede el {{given}} de su suelo; el límite es {{limit}}.",
                 "capPoolUnknown": "Se desconoce la superficie del conjunto, así que no se puede comprobar el límite del {{limit}}.",
                 "capPoolOk": "El {{given}} del conjunto no vuelve a los propietarios; el límite es {{limit}}.",
-                "capPoolOver": "El {{given}} del conjunto no vuelve a los propietarios, por encima del límite del {{limit}}."
-            }
+                "capPoolOver": "El {{given}} del conjunto no vuelve a los propietarios, por encima del límite del {{limit}}.",
+                "partiesOk": "{{actual}} partes aportan suelo; el esquema exige al menos {{required}}.",
+                "partiesFew": "Partes que aportan suelo: solo {{actual}}; el esquema exige al menos {{required}}.",
+                "proposerNone": "No se asigna suelo a ningún proponente.",
+                "proposerOver": "{{area}} m² irían a un proponente; con este esquema, el suelo vuelve a sus propietarios o se destina a uso público."
+            },
+            "valueGainAll": "Si se reparte por valor, cada propietario recupera íntegramente el valor que aporta; toda la plusvalía se liquida en dinero.",
+            "valueGainShare": "Si se reparte por valor, se liquida en dinero el {{percent}} % de la plusvalía de cada propietario.",
+            "minParties": "Al menos {{count}} partes aportan suelo.",
+            "noProposer": "El suelo vuelve a sus propietarios o se destina a uso público; un proponente no puede adquirirlo."
         },
         "authority": {
             "approved": "aprobado: {{role}}",
@@ -360,12 +368,12 @@
             "de-umlegung-new": {
                 "name": "Alemania — Umlegung, suelo que se urbaniza por primera vez",
                 "authority": "la adopción del plan de reajuste por la autoridad de Umlegung",
-                "note": "Sin votación de propietarios: la autoridad ordena y decide, y los propietarios son oídos. Si se reparte por superficie, ningún propietario cede más del 30 % de su suelo para equipamientos públicos (§58); si se reparte por valor, la ganancia se liquida en dinero."
+                "note": "Sin votación de propietarios: la autoridad ordena y decide, y los propietarios son oídos. Si se reparte por superficie, ningún propietario cede más del 30 % de su suelo para equipamientos públicos (§58); si se reparte por valor, cada propietario recupera íntegramente el valor que aporta y toda la plusvalía se liquida en dinero (§57)."
             },
             "de-umlegung-developed": {
                 "name": "Alemania — Umlegung, suelo ya urbanizado",
                 "authority": "la decisión de la autoridad de Umlegung sobre el plan de reajuste",
-                "note": "Sin votación de propietarios: la autoridad ordena y decide, y los propietarios son oídos. Si se reparte por superficie, ningún propietario cede más del 10 % de su suelo (§58)."
+                "note": "Sin votación de propietarios: la autoridad ordena y decide, y los propietarios son oídos. Si se reparte por superficie, ningún propietario cede más del 10 % de su suelo (§58); si se reparte por valor, cada propietario recupera íntegramente el valor que aporta y toda la plusvalía se liquida en dinero (§57)."
             },
             "tr-article-18": {
                 "name": "Turquía — reajuste del artículo 18",
@@ -375,7 +383,7 @@
             "in-gj-tps": {
                 "name": "India, Guyarat — plan de urbanismo (town planning scheme)",
                 "authority": "la aprobación del plan por el gobierno del Estado",
-                "note": "La autoridad prepara el plan y atiende objeciones escritas; las parcelas finales se reconstituyen por valoración."
+                "note": "La autoridad prepara el plan y atiende objeciones escritas; las parcelas finales se reconstituyen por valoración, y cada propietario aporta la mitad de su plusvalía a los costes del plan (§§78–79)."
             }
         },
         "deals": {
@@ -613,7 +621,42 @@
             "providerUnavailable": "Esta fuente de propiedad no está disponible.",
             "policyContextUnanimous": "Todos los propietarios declarados deben aprobar.",
             "policyContextThreshold": "La aprobación usa los umbrales de cantidad de propietarios {{owners}} y superficie {{area}}.",
-            "invalidFraction": "Introduce una fracción como 1/2."
+            "invalidFraction": "Introduce una fracción como 1/2.",
+            "schemeNotMet": "este plan no lo cumple",
+            "schemeCheckTitle": "Este plan frente al esquema",
+            "guide": {
+                "open": "Cómo funciona este esquema…",
+                "checked": "Reglas revisadas el {{date}}",
+                "distribution": "Cómo se reparte el suelo",
+                "before": "Suelo aportado",
+                "after": "Suelo tras el reajuste",
+                "schematicOwnerCap": "Cada propietario cede como máximo el {{percent}} % de su suelo para uso público sin compensación y recupera una parcela; cualquier diferencia adicional se liquida en dinero.",
+                "schematicPoolCap": "Hasta el {{percent}} % del conjunto se destina a equipamientos públicos y costes sin compensación; las partes se reparten el resto, y las diferencias se liquidan en dinero.",
+                "schematicValue": "Cada propietario recupera una parte del nuevo suelo que vale lo que aportó; el suelo público reduce esa parte por igual para todos, y las diferencias se liquidan en dinero.",
+                "schematicNone": "Las partes acuerdan qué recupera cada una; el esquema no fija ningún límite al suelo público, y las diferencias se liquidan en dinero.",
+                "example": "Tres propietarios de ejemplo; con un plan abierto, las barras muestran sus partes.",
+                "against": "Este acuerdo frente al esquema",
+                "getsBack": "Recupera",
+                "givesUp": "Cede",
+                "fixes": "Qué haría falta para cumplirlo",
+                "fixBasisValue": "En Reglas, elige «Equilibrar diferencias de valor del suelo con dinero» en Compensación y luego introduce un valor por m² para cada parcela de entrada y cada porción resultante.",
+                "fixBasisArea": "En Reglas, elige «Equilibrar diferencias de terreno con dinero» en Compensación.",
+                "fixParties": "Partes que aportan suelo: {{actual}}; este esquema exige {{required}}. Elige un plan que abarque más parcelas u otro esquema.",
+                "fixProposer": "En Parcelas resultantes, asigna las porciones del proponente a un propietario o a Suelo público.",
+                "fixCapOwner": "En Parcelas resultantes, devuelve a {{owner}} al menos {{area}} más de suelo, o reduce la Contribución de terreno; otra opción es un esquema con un límite más alto.",
+                "fixCapOwnerPlain": "En Parcelas resultantes, devuelve más suelo a {{owner}}.",
+                "fixCapPool": "En Parcelas resultantes, devuelve a los propietarios al menos el {{percent}} % del conjunto.",
+                "setup": "Configúralo aquí",
+                "stepCompensationValue": "Reglas › Compensación: «Equilibrar diferencias de valor del suelo con dinero» y luego un valor por m² para cada parcela de entrada y cada porción resultante (precargado con el precio del suelo de la ciudad).",
+                "stepCompensationArea": "Reglas › Compensación: «Equilibrar diferencias de terreno con dinero», con la compensación por m².",
+                "stepCompensationEither": "Reglas › Compensación: por superficie (una compensación por m²) o por valor (un valor por m² para cada parcela y porción); el esquema admite ambas opciones.",
+                "stepContribution": "Reglas › Contribución de terreno: el control deslizante se detiene en el {{percent}} %, el suelo que cada propietario cede sin compensación para uso público; el suelo cedido por encima se compensa, pero sigue contando para el límite.",
+                "stepOutputsNoProposer": "Parcelas resultantes: Suelo público para calles y espacios públicos, y cada una de las demás porciones al propietario al que vuelve; la opción Proponente no está disponible con este esquema.",
+                "stepOutputs": "Parcelas resultantes: Suelo público para calles y espacios públicos, y las demás porciones a los propietarios o al Proponente.",
+                "stepRights": "Derechos de propiedad de parcelas: importa un archivo de derechos (parcel-rights/v2) que indique {{what}}.",
+                "stepAuthority": "Reglas › Autoridad: un ID para {{authority}}; un miembro de la lente confirma quién actúa por ella y registra su decisión junto a las de los propietarios.",
+                "stepPersons": "Personas: lo que cada persona aporta y recupera, en suelo y en dinero; la tarjeta del esquema en Reglas muestra este plan frente al esquema a medida que avanzas."
+            }
         },
         "fields": {
             "name": "Nombre",
@@ -7491,7 +7534,13 @@
             "inputShares": "Las participaciones de propiedad de entrada deben sumar el 100 %.",
             "allocationRequired": "Asigna cada parcela resultante.",
             "settlementInvalid": "Revisa los importes de la liquidación en efectivo.",
-            "moneyUnbalanced": "Los pagos en efectivo deben cuadrar."
+            "moneyUnbalanced": "Los pagos en efectivo deben cuadrar.",
+            "valuationMissing": "La liquidación por valor necesita un valor por m² para cada parcela de entrada y cada porción resultante.",
+            "valuationInvalid": "Un valor por m² debe ser un importe de al menos 0.",
+            "valuationUnknown": "Un valor por m² nombra una parcela o porción que no está en este acuerdo.",
+            "valuationZero": "El suelo aportado necesita un valor superior a cero para liquidar por valor.",
+            "valuationUnused": "Los valores del suelo solo se aplican a la liquidación por valor.",
+            "schemeRule": "{{reason}}"
         },
         "warnings": {
             "ruleNotReady": "Todavía no se puede evaluar la regla: {{reason}}",
@@ -7732,7 +7781,18 @@
             "noCash": "Sin compensación en efectivo",
             "rate": "Compensación por m² ({{currency}})",
             "contribution": "Contribución de terreno (%)",
-            "contributionHint": "La compensación cubre las diferencias del derecho restante sobre el terreno tras esta contribución."
+            "contributionHint": "La compensación cubre las diferencias del derecho restante sobre el terreno tras esta contribución.",
+            "byValue": "Equilibrar diferencias de valor del suelo con dinero",
+            "valueHint": "Cada persona tiene derecho a la parte del valor del suelo resultante que corresponde al valor que aporta; las diferencias se liquidan en dinero. Introduce un valor por m² para cada parcela de entrada y cada porción resultante.",
+            "valueGainHint": "{{scheme}}: se liquida en dinero el {{percent}} % de la plusvalía de cada persona.",
+            "unitValue": "Valor por m² ({{currency}})",
+            "unitValueAllInputs": "Valor por m² para todas las parcelas de entrada ({{currency}})",
+            "unitValueAllOutputs": "Valor por m² para todas las porciones resultantes ({{currency}})",
+            "valuationInputs": "Valores del suelo de las parcelas de entrada",
+            "valuationOutputs": "Valores del suelo de las porciones resultantes",
+            "valueReadOnly": "Compensación por valor del suelo: cada persona tiene derecho a la parte del valor del suelo resultante que corresponde al valor que aporta. Cámbiala en Reglas.",
+            "valueTotals": "Valor aportado: {{input}} · valor resultante: {{output}}",
+            "entitled": "con derecho a {{value}}"
         }
     },
     "planningViews": {

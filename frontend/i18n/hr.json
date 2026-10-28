@@ -303,8 +303,16 @@
                 "capOwnerOver": "{{owner}} daje {{given}} svog zemljišta; granica je {{limit}}.",
                 "capPoolUnknown": "Površina fonda nije poznata, pa se granica od {{limit}} ne može provjeriti.",
                 "capPoolOk": "{{given}} fonda ne vraća se vlasnicima; granica je {{limit}}.",
-                "capPoolOver": "{{given}} fonda ne vraća se vlasnicima, iznad granice od {{limit}}."
-            }
+                "capPoolOver": "{{given}} fonda ne vraća se vlasnicima, iznad granice od {{limit}}.",
+                "partiesOk": "Broj strana koje unose zemljište: {{actual}}; shema traži najmanje {{required}}.",
+                "partiesFew": "Broj strana koje unose zemljište samo je {{actual}}; shema traži najmanje {{required}}.",
+                "proposerNone": "Predlagatelj ne dobiva zemljište.",
+                "proposerOver": "Predlagatelj bi dobio {{area}} m²; prema ovoj shemi zemljište se vraća vlasnicima ili ide za javne namjene."
+            },
+            "valueGainAll": "Pri raspodjeli prema vrijednosti svaki vlasnik dobiva natrag punu vrijednost koju je unio; cijelo povećanje vrijednosti namiruje se novcem.",
+            "valueGainShare": "Pri raspodjeli prema vrijednosti novcem se namiruje {{percent}} % povećanja vrijednosti koje ostvari svaki vlasnik.",
+            "minParties": "Broj strana koje unose zemljište: najmanje {{count}}.",
+            "noProposer": "Zemljište se vraća vlasnicima ili ide za javne namjene; predlagatelj ga ne može steći."
         },
         "authority": {
             "approved": "odobreno: {{role}}",
@@ -360,12 +368,12 @@
             "de-umlegung-new": {
                 "name": "Njemačka — Umlegung, zemljište koje se prvi put uređuje",
                 "authority": "donošenje plana preraspodjele od tijela za Umlegung",
-                "note": "Nema glasanja vlasnika: tijelo nalaže i odlučuje, a vlasnici se saslušavaju. Pri raspodjeli prema površini nijedan vlasnik ne daje više od 30 % svog zemljišta za javne sadržaje (§58); pri raspodjeli prema vrijednosti dobitak se namiruje novcem."
+                "note": "Nema glasanja vlasnika: tijelo nalaže i odlučuje, a vlasnici se saslušavaju. Pri raspodjeli prema površini nijedan vlasnik ne daje više od 30 % svog zemljišta za javne sadržaje (§58); pri raspodjeli prema vrijednosti svaki vlasnik dobiva natrag punu vrijednost koju je unio, a cijelo se povećanje vrijednosti namiruje novcem (§57)."
             },
             "de-umlegung-developed": {
                 "name": "Njemačka — Umlegung, već uređeno zemljište",
                 "authority": "odluka tijela za Umlegung o planu preraspodjele",
-                "note": "Nema glasanja vlasnika: tijelo nalaže i odlučuje, a vlasnici se saslušavaju. Pri raspodjeli prema površini nijedan vlasnik ne daje više od 10 % svog zemljišta (§58)."
+                "note": "Nema glasanja vlasnika: tijelo nalaže i odlučuje, a vlasnici se saslušavaju. Pri raspodjeli prema površini nijedan vlasnik ne daje više od 10 % svog zemljišta (§58); pri raspodjeli prema vrijednosti svaki vlasnik dobiva natrag punu vrijednost koju je unio, a cijelo se povećanje vrijednosti namiruje novcem (§57)."
             },
             "tr-article-18": {
                 "name": "Turska — preraspodjela prema članku 18.",
@@ -375,7 +383,7 @@
             "in-gj-tps": {
                 "name": "Indija, Gujarat — shema urbanističkog planiranja",
                 "authority": "odobrenje sheme od vlade savezne države",
-                "note": "Tijelo priprema shemu i razmatra pisane prigovore; konačne čestice oblikuju se prema procjeni vrijednosti."
+                "note": "Tijelo priprema shemu i razmatra pisane prigovore; konačne čestice oblikuju se prema procjeni vrijednosti, a svaki vlasnik pridonosi polovicu povećanja vrijednosti svog zemljišta za troškove sheme (§§78–79)."
             }
         },
         "deals": {
@@ -613,7 +621,42 @@
             "providerUnavailable": "Ovaj izvor vlasništva nije dostupan.",
             "policyContextUnanimous": "Svi prijavljeni vlasnici moraju odobriti dizajn.",
             "policyContextThreshold": "Odobravanje koristi prag broja vlasnika {{owners}} i površine {{area}}.",
-            "invalidFraction": "Unesite razlomak poput 1/2."
+            "invalidFraction": "Unesite razlomak poput 1/2.",
+            "schemeNotMet": "ovaj plan ne ispunjava uvjete",
+            "schemeCheckTitle": "Usklađenost ovog plana sa shemom",
+            "guide": {
+                "open": "Kako funkcionira ova shema…",
+                "checked": "Pravila provjerena {{date}}",
+                "distribution": "Kako se raspodjeljuje zemljište",
+                "before": "Uneseno zemljište",
+                "after": "Zemljište nakon preraspodjele",
+                "schematicOwnerCap": "Svaki vlasnik bez naknade daje najviše {{percent}} % svog zemljišta za javne namjene i dobiva natrag česticu; svaka daljnja razlika izravnava se novcem.",
+                "schematicPoolCap": "Najviše {{percent}} % fonda bez naknade odlazi na javne sadržaje i troškove; strane dijele ostatak, a razlike se izravnavaju novcem.",
+                "schematicValue": "Svaki vlasnik dobiva natrag udio u novom zemljištu koji vrijedi onoliko koliko je unio; javno zemljište svima jednako smanjuje taj udio, a razlike se izravnavaju novcem.",
+                "schematicNone": "Strane dogovaraju što svaka dobiva natrag; shema ne postavlja granicu za javno zemljište, a razlike se izravnavaju novcem.",
+                "example": "Tri vlasnika kao primjer; kad je plan otvoren, trake prikazuju njegove strane.",
+                "against": "Usklađenost ovog sporazuma sa shemom",
+                "getsBack": "Dobiva natrag",
+                "givesUp": "Daje",
+                "fixes": "Što bi ispunilo uvjete",
+                "fixBasisValue": "Na kartici Pravila u polju Naknada odaberite „Novčano izravnanje razlika u vrijednosti zemljišta”, a zatim unesite vrijednost po m² za svaku ulaznu česticu i svaki nastali dio.",
+                "fixBasisArea": "Na kartici Pravila u polju Naknada odaberite „Novčano izravnanje razlika u zemljištu”.",
+                "fixParties": "Broj strana koje unose zemljište je {{actual}}, a ova shema traži {{required}}; odaberite plan koji obuhvaća više čestica ili drugu shemu.",
+                "fixProposer": "Na kartici Izlazne čestice dodijelite dijelove predlagatelja nekom vlasniku ili ih označite kao Javno zemljište.",
+                "fixCapOwner": "Na kartici Izlazne čestice vratite vlasniku {{owner}} još barem {{area}} zemljišta ili smanjite Doprinos zemljišta; druga je mogućnost shema s višom granicom.",
+                "fixCapOwnerPlain": "Na kartici Izlazne čestice vratite vlasniku {{owner}} više zemljišta.",
+                "fixCapPool": "Na kartici Izlazne čestice vratite vlasnicima barem {{percent}} % fonda.",
+                "setup": "Postavite je ovdje",
+                "stepCompensationValue": "Pravila › Naknada: „Novčano izravnanje razlika u vrijednosti zemljišta”, zatim vrijednost po m² za svaku ulaznu česticu i svaki nastali dio (unaprijed popunjeno cijenom zemljišta u gradu).",
+                "stepCompensationArea": "Pravila › Naknada: „Novčano izravnanje razlika u zemljištu”, uz naknadu po m².",
+                "stepCompensationEither": "Pravila › Naknada: prema površini (naknada po m²) ili prema vrijednosti (vrijednost po m² za svaku česticu i svaki dio); shema dopušta oboje.",
+                "stepContribution": "Pravila › Doprinos zemljišta: klizač se zaustavlja na {{percent}} %, a to je zemljište koje svaki vlasnik bez naknade daje za javne namjene; za zemljište dano iznad toga plaća se naknada, ali se ono i dalje uračunava u granicu.",
+                "stepOutputsNoProposer": "Izlazne čestice: Javno zemljište za ceste i javne površine, a svaki drugi dio vlasniku kojemu se vraća; opcija Predlagatelj u ovoj shemi nije dostupna.",
+                "stepOutputs": "Izlazne čestice: Javno zemljište za ceste i javne površine, a ostali dijelovi vlasnicima ili opciji Predlagatelj.",
+                "stepRights": "Prava vlasništva nad česticama: uvezite datoteku prava (parcel-rights/v2) koja navodi {{what}}.",
+                "stepAuthority": "Pravila › Nadležno tijelo: ID tijela koje odlučuje ({{authority}}); član leće potvrđuje tko djeluje za njega i bilježi njegovu odluku uz odluke vlasnika.",
+                "stepPersons": "Osobe: što svaka osoba unosi i dobiva natrag, u zemljištu i novcu; okvir sheme na kartici Pravila usput prikazuje usklađenost ovog plana sa shemom."
+            }
         },
         "fields": {
             "name": "Naziv",
@@ -7505,7 +7548,13 @@
             "inputShares": "Vlasnički udjeli na ulazu moraju ukupno iznositi 100 %.",
             "allocationRequired": "Dodijelite svaku rezultirajuću česticu.",
             "settlementInvalid": "Provjerite iznose novčanog poravnanja.",
-            "moneyUnbalanced": "Novčana plaćanja moraju biti uravnotežena."
+            "moneyUnbalanced": "Novčana plaćanja moraju biti uravnotežena.",
+            "valuationMissing": "Za poravnanje prema vrijednosti potrebna je vrijednost po m² za svaku ulaznu česticu i svaki nastali dio.",
+            "valuationInvalid": "Vrijednost po m² mora biti iznos od najmanje 0.",
+            "valuationUnknown": "Vrijednost po m² navodi česticu ili dio koji nije u ovom sporazumu.",
+            "valuationZero": "Za poravnanje prema vrijednosti ulazno zemljište mora imati vrijednost veću od nule.",
+            "valuationUnused": "Vrijednosti zemljišta primjenjuju se samo na poravnanje prema vrijednosti.",
+            "schemeRule": "{{reason}}"
         },
         "warnings": {
             "ruleNotReady": "Pravilo se još ne može procijeniti: {{reason}}",
@@ -7750,7 +7799,18 @@
             "noCash": "Bez novčane naknade",
             "rate": "Naknada po m² ({{currency}})",
             "contribution": "Doprinos zemljišta (%)",
-            "contributionHint": "Naknada pokriva razlike u preostalom pravu na zemljište nakon ovog doprinosa."
+            "contributionHint": "Naknada pokriva razlike u preostalom pravu na zemljište nakon ovog doprinosa.",
+            "byValue": "Novčano izravnanje razlika u vrijednosti zemljišta",
+            "valueHint": "Svaka osoba ima pravo na udio u vrijednosti nastalog zemljišta koji odgovara vrijednosti koju je unijela; razlike se izravnavaju novcem. Unesite vrijednost po m² za svaku ulaznu česticu i svaki nastali dio.",
+            "valueGainHint": "{{scheme}}: novcem se namiruje {{percent}} % povećanja vrijednosti koje ostvari svaka osoba.",
+            "unitValue": "Vrijednost po m² ({{currency}})",
+            "unitValueAllInputs": "Vrijednost po m² za sve ulazne čestice ({{currency}})",
+            "unitValueAllOutputs": "Vrijednost po m² za sve nastale dijelove ({{currency}})",
+            "valuationInputs": "Vrijednosti zemljišta ulaznih čestica",
+            "valuationOutputs": "Vrijednosti zemljišta nastalih dijelova",
+            "valueReadOnly": "Naknada prema vrijednosti zemljišta: svaka osoba ima pravo na udio u vrijednosti nastalog zemljišta koji odgovara vrijednosti koju je unijela. Promijenite je u pravilima.",
+            "valueTotals": "Ulazna vrijednost: {{input}} · izlazna vrijednost: {{output}}",
+            "entitled": "ima pravo na {{value}}"
         }
     },
     "planningViews": {

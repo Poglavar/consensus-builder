@@ -701,11 +701,19 @@ The land, value or funds supplied by a party to a stated arrangement. Land contr
 
 ### Entitlement
 
-The area or modeled value a party is due under the readjustment's stated contribution basis and ratio. It is distinct from the land or cash actually allocated to that party.
+What a party is due from the readjustment before cash balances it. By area: the land it put in after the stated contribution ratio. By value: the share of the value of the land distributed to parties and the proposer that matches the value the party put in. It is distinct from the land or cash actually allocated to that party.
+
+### Land valuation
+
+An agreement's `valuation`: one whole-cent value per m² for every input parcel (before the designs) and every output piece (after them), in the agreement's currency. Present only when the agreement settles by value; a missing or unknown value blocks saving and publication. A value is the author's stated assumption, not an appraisal the record verifies.
+
+### Scheme distribution rules
+
+The land rules a pinned scheme (`rule.approvalConfig.regime`) adds to its decision tests: a cap on the land an owner or the pool gives up, the area or value basis of distribution, the share of each owner's value gain settled in money, the fewest parties, and, under an authority-led scheme, no proposer acquisition. The record, the HTTP index and MCP check them with one shared function; the editor marks schemes the plan does not meet before they are chosen.
 
 ### Readjustment cash
 
-Incoming or outgoing balancing money in the agreement’s explicit fiat currency, represented canonically in integer cents. With area compensation, each party receives or pays the difference between its remaining land entitlement and allocated land multiplied by the stated currency-per-m² rate; positive cash is received and negative cash is paid. A scheme may permit a capped proportional land contribution before compensation. The sponsor pays or receives the balancing cash. A no-cash rule produces no money lines. Cash is calculated from the rules and allocations, not entered per person.
+Incoming or outgoing balancing money in the agreement’s explicit fiat currency, represented canonically in integer cents. With area compensation, each party receives or pays the difference between its remaining land entitlement and allocated land multiplied by the stated currency-per-m² rate; positive cash is received and negative cash is paid. A scheme may permit a capped proportional land contribution before compensation. With value compensation, each party receives its value entitlement minus the value of the land it got, and pays the scheme's share of its value gain (the entitlement minus the value it put in). The sponsor pays or receives the balancing cash. A no-cash rule produces no money lines. Cash is calculated from the rules, land values and allocations, not entered per person.
 
 ### Token balance
 

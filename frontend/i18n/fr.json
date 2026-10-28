@@ -1983,7 +1983,13 @@
             "inputShares": "Les parts de propriété à l’entrée doivent totaliser 100 %.",
             "allocationRequired": "Attribuez chaque parcelle résultante.",
             "settlementInvalid": "Vérifiez les montants du règlement en espèces.",
-            "moneyUnbalanced": "Les paiements en espèces doivent être équilibrés."
+            "moneyUnbalanced": "Les paiements en espèces doivent être équilibrés.",
+            "valuationMissing": "Le règlement selon la valeur exige une valeur par m² pour chaque parcelle d’entrée et chaque portion résultante.",
+            "valuationInvalid": "Une valeur par m² doit être un montant d’au moins 0.",
+            "valuationUnknown": "Une valeur par m² désigne une parcelle ou une portion qui ne fait pas partie de cet accord.",
+            "valuationZero": "Le terrain apporté doit avoir une valeur supérieure à zéro pour un règlement selon la valeur.",
+            "valuationUnused": "Les valeurs foncières ne s’appliquent qu’au règlement selon la valeur.",
+            "schemeRule": "{{reason}}"
         },
         "warnings": {
             "ruleNotReady": "La règle ne peut pas encore être évaluée : {{reason}}",
@@ -2018,7 +2024,18 @@
             "noCash": "Aucune compensation en espèces",
             "rate": "Indemnité par m² ({{currency}})",
             "contribution": "Contribution foncière (%)",
-            "contributionHint": "L’indemnité couvre les différences de droit foncier restant après cette contribution."
+            "contributionHint": "L’indemnité couvre les différences de droit foncier restant après cette contribution.",
+            "byValue": "Compenser les différences de valeur foncière en argent",
+            "valueHint": "Chaque personne a droit à la part de la valeur du terrain résultant qui correspond à la valeur qu’elle apporte ; les différences sont réglées en argent. Saisissez une valeur par m² pour chaque parcelle d’entrée et chaque portion résultante.",
+            "valueGainHint": "{{scheme}} : la plus-value de chaque personne est réglée en argent à hauteur de {{percent}}%.",
+            "unitValue": "Valeur par m² ({{currency}})",
+            "unitValueAllInputs": "Valeur par m² pour toutes les parcelles d’entrée ({{currency}})",
+            "unitValueAllOutputs": "Valeur par m² pour toutes les portions résultantes ({{currency}})",
+            "valuationInputs": "Valeurs foncières des parcelles d’entrée",
+            "valuationOutputs": "Valeurs foncières des portions résultantes",
+            "valueReadOnly": "Indemnité selon la valeur foncière : chaque personne a droit à la part de la valeur du terrain résultant qui correspond à la valeur qu’elle apporte. Modifiez-la dans Règles.",
+            "valueTotals": "Valeur apportée : {{input}} · valeur résultante : {{output}}",
+            "entitled": "a droit à {{value}}"
         }
     },
     "workspace": {
@@ -2197,7 +2214,42 @@
             "providerUnavailable": "Cette source de données de propriété est indisponible.",
             "policyContextUnanimous": "Chaque propriétaire déclaré doit approuver.",
             "policyContextThreshold": "L’approbation repose sur les seuils de nombre de propriétaires {{owners}} et de superficie {{area}}.",
-            "invalidFraction": "Saisissez une fraction telle que 1/2."
+            "invalidFraction": "Saisissez une fraction telle que 1/2.",
+            "schemeNotMet": "non respecté par ce plan",
+            "schemeCheckTitle": "Ce plan au regard du dispositif",
+            "guide": {
+                "open": "Comment fonctionne ce dispositif…",
+                "checked": "Règles vérifiées le {{date}}",
+                "distribution": "Comment les terrains sont répartis",
+                "before": "Terrains apportés",
+                "after": "Terrains après le remembrement",
+                "schematicOwnerCap": "Chaque propriétaire cède sans indemnité au maximum {{percent}}% de ses terrains pour un usage public et récupère un lot ; toute différence supplémentaire est réglée en argent.",
+                "schematicPoolCap": "Jusqu’à {{percent}}% des terrains regroupés sont affectés sans indemnité aux équipements publics et aux coûts ; les parties se partagent le reste, et les différences sont réglées en argent.",
+                "schematicValue": "Chaque propriétaire récupère une part des nouveaux terrains d’une valeur égale à ce qu’il a apporté ; les terrains publics réduisent cette part de la même façon pour tous, et les différences sont réglées en argent.",
+                "schematicNone": "Les parties conviennent de ce que chacune récupère ; le dispositif ne fixe aucun plafond pour les terrains publics, et les différences sont réglées en argent.",
+                "example": "Trois propriétaires fictifs ; lorsqu’un plan est ouvert, les barres montrent ses parties.",
+                "against": "Cet accord au regard du dispositif",
+                "getsBack": "Récupère",
+                "givesUp": "Cède",
+                "fixes": "Ce qui permettrait de le respecter",
+                "fixBasisValue": "Dans Règles, choisissez « Compenser les différences de valeur foncière en argent » pour Indemnité, puis saisissez une valeur par m² pour chaque parcelle d’entrée et chaque portion résultante.",
+                "fixBasisArea": "Dans Règles, choisissez « Compenser les différences de terrain en argent » pour Indemnité.",
+                "fixParties": "Parties apportant des terrains : {{actual}}, alors que ce dispositif en exige {{required}} ; choisissez un plan couvrant davantage de parcelles, ou un autre dispositif.",
+                "fixProposer": "Dans Parcelles résultantes, attribuez les portions du porteur du projet à un propriétaire ou à Terrain public.",
+                "fixCapOwner": "Dans Parcelles résultantes, restituez à {{owner}} au moins {{area}} de terrain en plus, ou réduisez la Contribution foncière ; un dispositif au plafond plus élevé est une autre solution.",
+                "fixCapOwnerPlain": "Dans Parcelles résultantes, restituez davantage de terrain à {{owner}}.",
+                "fixCapPool": "Dans Parcelles résultantes, restituez aux propriétaires au moins {{percent}}% des terrains regroupés.",
+                "setup": "Le configurer ici",
+                "stepCompensationValue": "Règles › Indemnité : « Compenser les différences de valeur foncière en argent », puis une valeur par m² pour chaque parcelle d’entrée et chaque portion résultante (préremplie avec le prix foncier de la ville).",
+                "stepCompensationArea": "Règles › Indemnité : « Compenser les différences de terrain en argent », avec l’indemnité par m².",
+                "stepCompensationEither": "Règles › Indemnité : selon la superficie (une indemnité par m²) ou selon la valeur (une valeur par m² pour chaque parcelle et chaque portion) ; le dispositif permet les deux.",
+                "stepContribution": "Règles › Contribution foncière : le curseur s’arrête à {{percent}}%, soit les terrains que chaque propriétaire cède sans indemnité pour un usage public ; les terrains cédés au-delà sont indemnisés, mais comptent toujours dans le plafond.",
+                "stepOutputsNoProposer": "Parcelles résultantes : Terrain public pour les voies et espaces publics, chaque autre portion au propriétaire auquel elle revient ; Porteur du projet n’est pas disponible dans ce dispositif.",
+                "stepOutputs": "Parcelles résultantes : Terrain public pour les voies et espaces publics, les autres portions aux propriétaires ou au Porteur du projet.",
+                "stepRights": "Droits de propriété des parcelles : importez un fichier des droits (parcel-rights/v2) qui répertorie {{what}}.",
+                "stepAuthority": "Règles › Autorité : un identifiant pour {{authority}} ; un membre du groupe de contrôle confirme qui agit en son nom et enregistre sa décision à côté de celles des propriétaires.",
+                "stepPersons": "Personnes : ce que chaque personne apporte et récupère, en terrains et en argent ; la carte du dispositif dans Règles montre au fur et à mesure ce plan au regard du dispositif."
+            }
         },
         "fields": {
             "name": "Nom",
@@ -3532,8 +3584,16 @@
                 "capOwnerOver": "{{owner}} cède {{given}} de ses terrains ; le plafond est de {{limit}}.",
                 "capPoolUnknown": "La superficie des terrains regroupés est inconnue ; le plafond de {{limit}} ne peut donc pas être vérifié.",
                 "capPoolOk": "{{given}} des terrains regroupés ne sont pas restitués aux propriétaires ; le plafond est de {{limit}}.",
-                "capPoolOver": "{{given}} des terrains regroupés ne sont pas restitués aux propriétaires, au-delà du plafond de {{limit}}."
-            }
+                "capPoolOver": "{{given}} des terrains regroupés ne sont pas restitués aux propriétaires, au-delà du plafond de {{limit}}.",
+                "partiesOk": "{{actual}} parties apportent des terrains ; le dispositif en exige au moins {{required}}.",
+                "partiesFew": "Parties apportant des terrains : {{actual}} seulement ; le dispositif en exige au moins {{required}}.",
+                "proposerNone": "Aucun terrain n’est attribué à un porteur de projet.",
+                "proposerOver": "{{area}} m² iraient à un porteur de projet ; dans ce dispositif, les terrains reviennent à leurs propriétaires ou sont affectés à un usage public."
+            },
+            "valueGainAll": "Avec une répartition selon la valeur, chaque propriétaire retrouve l’intégralité de la valeur qu’il apporte ; toute la plus-value est réglée en argent.",
+            "valueGainShare": "Avec une répartition selon la valeur, la plus-value de chaque propriétaire est réglée en argent à hauteur de {{percent}}%.",
+            "minParties": "Au moins {{count}} parties apportent des terrains.",
+            "noProposer": "Les terrains reviennent à leurs propriétaires ou sont affectés à un usage public ; un porteur de projet ne peut pas les acquérir."
         },
         "authority": {
             "approved": "approbation accordée : {{role}}",
@@ -3589,12 +3649,12 @@
             "de-umlegung-new": {
                 "name": "Allemagne — Umlegung, terrains aménagés pour la première fois",
                 "authority": "l’adoption du plan de remembrement par l’autorité chargée de l’Umlegung",
-                "note": "Aucun vote des propriétaires : l’autorité ordonne et décide, et les propriétaires sont consultés. Avec une répartition selon la superficie, aucun propriétaire ne cède plus de 30% de ses terrains pour les équipements publics (§58) ; avec une répartition selon la valeur, le gain est réglé en argent."
+                "note": "Aucun vote des propriétaires : l’autorité ordonne et décide, et les propriétaires sont consultés. Avec une répartition selon la superficie, aucun propriétaire ne cède plus de 30% de ses terrains pour les équipements publics (§58) ; avec une répartition selon la valeur, chaque propriétaire retrouve l’intégralité de la valeur qu’il apporte et toute la plus-value est réglée en argent (§57)."
             },
             "de-umlegung-developed": {
                 "name": "Allemagne — Umlegung, terrains déjà aménagés",
                 "authority": "la décision de l’autorité chargée de l’Umlegung sur le plan de remembrement",
-                "note": "Aucun vote des propriétaires : l’autorité ordonne et décide, et les propriétaires sont consultés. Avec une répartition selon la superficie, aucun propriétaire ne cède plus de 10% de ses terrains (§58)."
+                "note": "Aucun vote des propriétaires : l’autorité ordonne et décide, et les propriétaires sont consultés. Avec une répartition selon la superficie, aucun propriétaire ne cède plus de 10% de ses terrains (§58) ; avec une répartition selon la valeur, chaque propriétaire retrouve l’intégralité de la valeur qu’il apporte et toute la plus-value est réglée en argent (§57)."
             },
             "tr-article-18": {
                 "name": "Turquie — remembrement au titre de l’article 18",
@@ -3604,7 +3664,7 @@
             "in-gj-tps": {
                 "name": "Inde, Gujarat — dispositif d’aménagement urbain",
                 "authority": "la validation du dispositif par le gouvernement de l’État",
-                "note": "L’autorité prépare le dispositif et recueille les objections écrites ; les lots définitifs sont reconstitués selon leur évaluation foncière."
+                "note": "L’autorité prépare le dispositif et recueille les objections écrites ; les lots définitifs sont reconstitués selon leur évaluation foncière, et chaque propriétaire contribue aux coûts du dispositif à hauteur de la moitié de sa plus-value (§§78–79)."
             }
         },
         "deals": {

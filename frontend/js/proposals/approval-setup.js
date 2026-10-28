@@ -268,7 +268,7 @@
             after += slice(afterX, w * (1 - taken), bottom, `scheme-guide__slice scheme-guide__slice--owner-${(index % 5) + 1}`, row.label);
             x += w; afterX += w * (1 - taken);
         });
-        const publicSlice = taken > 0 ? slice(0, taken * width, bottom, 'scheme-guide__slice scheme-guide__slice--public', t('proposalDrafts.approval.guide.public', 'Public')) : '';
+        const publicSlice = taken > 0 ? slice(0, taken * width, bottom, 'scheme-guide__slice scheme-guide__slice--public', t('agreement.allocation.public', 'Public')) : '';
         return `<svg class="scheme-guide__svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(schematicCaption(template))}">
             <text class="scheme-guide__bar-label" x="0" y="12">${esc(t('proposalDrafts.approval.guide.before', 'Land put in'))}</text>${before}
             <text class="scheme-guide__bar-label" x="0" y="${bottom - 6}">${esc(t('proposalDrafts.approval.guide.after', 'Land after the readjustment'))}</text>${publicSlice}${after}
@@ -341,7 +341,7 @@
             .map(party => ({ ...party, label: party.displayName })) : null;
         const byValue = !!(ledger && ledger.valued);
         const partyRows = parties && parties.length ? `<div class="agreement-table-scroll"><table class="scheme-guide__table"><thead><tr>
-            <th scope="col">${esc(t('proposalDrafts.approval.guide.person', 'Person'))}</th><th scope="col">${esc(t('proposalDrafts.approval.guide.putsIn', 'Puts in'))}</th>
+            <th scope="col">${esc(t('agreement.workflow.person', 'Person'))}</th><th scope="col">${esc(t('agreement.workflow.putsIn', 'Puts in'))}</th>
             <th scope="col">${esc(t('proposalDrafts.approval.guide.getsBack', 'Gets back'))}</th><th scope="col">${esc(t('proposalDrafts.approval.guide.givesUp', 'Gives up'))}</th></tr></thead>
             <tbody>${parties.map(party => `<tr><th scope="row">${esc(party.displayName)}</th>
                 <td>${esc(areaText(party.contributedM2))}${byValue ? `<br><small>${esc(moneyText(party.contributedValueCents, currency))}</small>` : ''}</td>
@@ -357,7 +357,7 @@
         return `<div class="scheme-guide" data-scheme-guide="${esc(template.id)}">
             <p class="scheme-guide__meta">${esc(words().familyText(template, t))} · ${esc(words().stageText(template, t))} · ${esc(t('proposalDrafts.approval.guide.checked', 'Rules checked {{date}}', { date: template.version }))}</p>
             <section class="scheme-guide__section">
-                <h3>${esc(t('proposalDrafts.approval.guide.whoDecides', 'Who decides'))}</h3>
+                <h3>${esc(t('agreement.rule.who', 'Who decides'))}</h3>
                 <p>${esc(words().rulesText(policy, t, pin))}</p>
                 ${tests ? `<ul>${tests}</ul>` : `<p>${esc(t('proposalApproval.rules.ownersHeard', 'Owners are heard; the authority decides.'))}</p>`}
             </section>
@@ -374,7 +374,7 @@
                 <ol>${setupSteps(template).map(step => `<li>${esc(step)}</li>`).join('')}</ol>
             </section>
             <section class="scheme-guide__section">
-                <h3>${esc(t('proposalDrafts.approval.guide.sources', 'Sources'))}</h3>
+                <h3>${esc(t('parcelReport.sources', 'Sources'))}</h3>
                 <ul class="scheme-guide__sources">${sources}</ul>
             </section>
         </div>`;

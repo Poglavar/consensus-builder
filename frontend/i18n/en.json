@@ -303,8 +303,16 @@
                 "capOwnerOver": "{{owner}} gives up {{given}} of their land; the cap is {{limit}}.",
                 "capPoolUnknown": "The pool area is unknown, so the {{limit}} cap cannot be checked.",
                 "capPoolOk": "{{given}} of the pool is not returned to owners; the cap is {{limit}}.",
-                "capPoolOver": "{{given}} of the pool is not returned to owners, over the {{limit}} cap."
-            }
+                "capPoolOver": "{{given}} of the pool is not returned to owners, over the {{limit}} cap.",
+                "partiesOk": "{{actual}} parties bring land in; the scheme needs at least {{required}}.",
+                "partiesFew": "Only {{actual}} bring land in; the scheme needs at least {{required}} parties.",
+                "proposerNone": "No land goes to a proposer.",
+                "proposerOver": "{{area}} m² would go to a proposer; under this scheme land returns to its owners or goes to public use."
+            },
+            "valueGainAll": "Distributed by value, each owner is made whole to the value they put in; the whole value gain is settled in money.",
+            "valueGainShare": "Distributed by value, {{percent}}% of each owner’s value gain is settled in money.",
+            "minParties": "At least {{count}} parties bring land in.",
+            "noProposer": "Land returns to its owners or goes to public use; a proposer cannot acquire it."
         },
         "authority": {
             "approved": "approved: {{role}}",
@@ -360,12 +368,12 @@
             "de-umlegung-new": {
                 "name": "Germany — Umlegung, land developed for the first time",
                 "authority": "the Umlegung authority’s adoption of the readjustment plan",
-                "note": "No owner vote: the authority orders and decides, and owners are heard. Distributed by area, no owner gives up more than 30% of their land for public facilities (§58); by value, the gain is settled in money."
+                "note": "No owner vote: the authority orders and decides, and owners are heard. Distributed by area, no owner gives up more than 30% of their land for public facilities (§58); by value, each owner is made whole to the value they put in and the whole gain is settled in money (§57)."
             },
             "de-umlegung-developed": {
                 "name": "Germany — Umlegung, already developed land",
                 "authority": "the Umlegung authority’s decision on the readjustment plan",
-                "note": "No owner vote: the authority orders and decides, and owners are heard. Distributed by area, no owner gives up more than 10% of their land (§58)."
+                "note": "No owner vote: the authority orders and decides, and owners are heard. Distributed by area, no owner gives up more than 10% of their land (§58); by value, each owner is made whole to the value they put in and the whole gain is settled in money (§57)."
             },
             "tr-article-18": {
                 "name": "Turkey — article 18 readjustment",
@@ -375,7 +383,7 @@
             "in-gj-tps": {
                 "name": "India, Gujarat — town planning scheme",
                 "authority": "the State government’s sanction of the scheme",
-                "note": "The authority prepares the scheme and hears written objections; final plots are reconstituted by valuation."
+                "note": "The authority prepares the scheme and hears written objections; final plots are reconstituted by valuation, and each owner contributes half of their value increment towards the scheme’s costs (§§78–79)."
             }
         },
         "deals": {
@@ -613,7 +621,42 @@
             "providerUnavailable": "This ownership source is unavailable.",
             "policyContextUnanimous": "Every declared owner must approve.",
             "policyContextThreshold": "Approval uses owner-count {{owners}} and area {{area}} thresholds.",
-            "invalidFraction": "Enter a fraction such as 1/2."
+            "invalidFraction": "Enter a fraction such as 1/2.",
+            "schemeNotMet": "not met by this plan",
+            "schemeCheckTitle": "This plan against the scheme",
+            "guide": {
+                "open": "How this scheme works…",
+                "checked": "Rules checked {{date}}",
+                "distribution": "How land is distributed",
+                "before": "Land put in",
+                "after": "Land after the readjustment",
+                "schematicOwnerCap": "Each owner gives up at most {{percent}}% of their land for public use without compensation and gets a plot back; any further difference is settled in money.",
+                "schematicPoolCap": "Up to {{percent}}% of the pool goes to public facilities and costs without compensation; the parties share the rest, and differences are settled in money.",
+                "schematicValue": "Every owner gets back a share of the new land worth what they put in; public land reduces that share for everyone alike, and differences are settled in money.",
+                "schematicNone": "The parties agree what each gets back; the scheme sets no cap on public land, and differences are settled in money.",
+                "example": "Three example owners; with a plan open, the bars show its parties.",
+                "against": "This agreement against the scheme",
+                "getsBack": "Gets back",
+                "givesUp": "Gives up",
+                "fixes": "What would meet it",
+                "fixBasisValue": "In Rules, set Compensation to “Balance land value differences in money”, then give every input parcel and resulting piece a value per m².",
+                "fixBasisArea": "In Rules, set Compensation to “Balance land differences in money”.",
+                "fixParties": "{{actual}} parties bring land in and this scheme needs {{required}}: choose a plan over more parcels, or another scheme.",
+                "fixProposer": "In Output parcels, assign the proposer’s pieces to an owner or to Public land.",
+                "fixCapOwner": "In Output parcels, give {{owner}} at least {{area}} more land back, or lower the Land contribution; a scheme with a higher cap is another way.",
+                "fixCapOwnerPlain": "In Output parcels, give {{owner}} more land back.",
+                "fixCapPool": "In Output parcels, return at least {{percent}}% of the pool to the owners.",
+                "setup": "Set it up here",
+                "stepCompensationValue": "Rules › Compensation: “Balance land value differences in money”, then a value per m² for every input parcel and resulting piece (prefilled with the city’s land price).",
+                "stepCompensationArea": "Rules › Compensation: “Balance land differences in money”, with the rate per m².",
+                "stepCompensationEither": "Rules › Compensation: by area (a rate per m²) or by value (a value per m² for every parcel and piece); the scheme allows both.",
+                "stepContribution": "Rules › Land contribution: the slider stops at {{percent}}%, the land each owner gives up for public use without compensation; land given up beyond it is compensated, but still counts against the cap.",
+                "stepOutputsNoProposer": "Output parcels: Public land for roads and public spaces, every other piece to the owner it returns to; Proposer is not available under this scheme.",
+                "stepOutputs": "Output parcels: Public land for roads and public spaces, the other pieces to the owners or to the Proposer.",
+                "stepRights": "Parcel ownership rights: import a rights file (parcel-rights/v2) that lists {{what}}.",
+                "stepAuthority": "Rules › Authority: an id for {{authority}}; a lens member confirms who acts for it and records its decision beside the owners’.",
+                "stepPersons": "Persons: what each person puts in and gets back, land and money; the scheme card in Rules shows this plan against the scheme as you go."
+            }
         },
         "fields": {
             "name": "Name",
@@ -7464,7 +7507,13 @@
             "inputShares": "Input ownership shares must total 100 %.",
             "allocationRequired": "Allocate every resulting piece.",
             "settlementInvalid": "Review the cash settlement amounts.",
-            "moneyUnbalanced": "Cash payments must balance."
+            "moneyUnbalanced": "Cash payments must balance.",
+            "valuationMissing": "Settlement by value needs a value per m² for every input parcel and every resulting piece.",
+            "valuationInvalid": "A value per m² must be an amount of at least 0.",
+            "valuationUnknown": "A value per m² names a parcel or piece that is not in this agreement.",
+            "valuationZero": "The input land needs a value above zero to settle by value.",
+            "valuationUnused": "Land values apply to settlement by value only.",
+            "schemeRule": "{{reason}}"
         },
         "warnings": {
             "ruleNotReady": "The rule cannot be evaluated yet: {{reason}}",
@@ -7704,7 +7753,18 @@
             "noCash": "No cash compensation",
             "rate": "Compensation per m² ({{currency}})",
             "contribution": "Land contribution (%)",
-            "contributionHint": "Compensation covers differences from the remaining land entitlement after this contribution."
+            "contributionHint": "Compensation covers differences from the remaining land entitlement after this contribution.",
+            "byValue": "Balance land value differences in money",
+            "valueHint": "Each person is entitled to the share of the resulting land’s value that matches the value they put in; differences are settled in money. Enter a value per m² for every input parcel and resulting piece.",
+            "valueGainHint": "{{scheme}} settles {{percent}}% of each person’s value gain in money.",
+            "unitValue": "Value per m² ({{currency}})",
+            "unitValueAllInputs": "Value per m² for all input parcels ({{currency}})",
+            "unitValueAllOutputs": "Value per m² for all resulting pieces ({{currency}})",
+            "valuationInputs": "Land values of the input parcels",
+            "valuationOutputs": "Land values of the resulting pieces",
+            "valueReadOnly": "Compensation by land value: each person is entitled to the share of the resulting land’s value that matches the value they put in. Change it in Rules.",
+            "valueTotals": "Value in: {{input}} · value out: {{output}}",
+            "entitled": "entitled to {{value}}"
         }
     },
     "planningViews": {

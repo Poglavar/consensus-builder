@@ -61,3 +61,23 @@ describe('tool-only MCP discovery', () => {
         await expect(tools.listSources({ abstraction: 'invented' })).rejects.toMatchObject({ code: 'source-abstraction-unknown', constraints: { allowedValues: ['parcels'] } });
     });
 });
+
+describe('the scheme catalogue', () => {
+    it('lists every scheme a rule can pin, with its rules and sources, as a help topic', () => {
+        const result = fixture().help({ topic: 'schemes' });
+        expect(result.topic).toBe('schemes');
+        const ids = result.schemes.map(scheme => scheme.id);
+        expect(new Set(ids).size).toBe(ids.length);
+        expect(ids).toEqual(expect.arrayContaining(['nl-kavelruil', 'jp-association', 'de-umlegung-new', 'in-gj-tps']));
+        const germany = result.schemes.find(scheme => scheme.id === 'de-umlegung-developed');
+        expect(germany).toMatchObject({ version: '2026-10-28', family: 'authority-led', country: 'DE', authorities: 1, tests: [],
+            allocation: { basis: 'either', cap: { numerator: 1, denominator: 10, per: 'owner', basis: 'area' }, valueGain: { numerator: 1, denominator: 1 } } });
+        expect(germany.distribution).toEqual([
+            'Distributed by area, no owner gives up more than 10% of their land.',
+            'Distributed by value, each owner is made whole to the value they put in; the whole value gain is settled in money.',
+            'Land returns to its owners or goes to public use; a proposer cannot acquire it.'
+        ]);
+        expect(germany.sources[0].url).toMatch(/gesetze-im-internet/);
+        expect(result.instructions).toMatch(/rule\.approvalConfig\.regime/);
+    });
+});

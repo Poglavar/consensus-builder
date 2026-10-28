@@ -112,11 +112,18 @@ describe('agreement MCP editing surface', () => {
             regime: { id: germanRegime.id, version: germanRegime.version } });
         const firstRule = { electorate: 'owners', binding: true, approvalConfig: germanConfig,
             lens: ['11111111111111111111111111111111'], settlement: { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 1000 } };
-        const allocations = original.agreement.outputs.map(output => ({ output: output.hash, to: { kind: 'public' } }));
+        // Giving all the land to public breaks the scheme's 30% cap: the edit is refused with the owner and the cap.
+        await expect(tools.editAgreement({ plan: original.draftArtifact, expectedCid: original.cid,
+            terms: { rule: firstRule, rights, allocations: original.agreement.outputs.map(output => ({ output: output.hash, to: { kind: 'public' } })) } }))
+            .rejects.toThrow(/party-de gives up 100% of their land; Germany — Umlegung, land developed for the first time allows at most 30%/);
+        const allocations = original.agreement.outputs.map(output => ({ output: output.hash, to: { kind: 'party', ownerKey: 'party-de' } }));
         const german = await tools.editAgreement({ plan: original.draftArtifact, expectedCid: original.cid,
             terms: { rule: firstRule, rights, allocations } });
         expect(german.agreement.rule.approvalConfig.regime).toEqual({ id: germanRegime.id, version: germanRegime.version });
         expect(german.agreement.inputs.parcels[0].holders).toEqual([{ ownerKey: 'party-de', displayName: 'party-de', share: 1 }]);
+        const inspected = await tools.inspectAgreement({ plan: german.draftArtifact });
+        expect(inspected.scheme).toMatchObject({ id: 'de-umlegung-new', version: germanRegime.version, ok: true });
+        expect(inspected.scheme.rules.map(rule => rule.kind)).toEqual(['cap', 'proposer']);
 
         const customConfig = Approval.normalizeConfig({ schema: 'proposal-approval/v1', rights,
             policy: { type: 'rules', tests: [], authorities: [{ authorityId: 'planning-board' }] } });
@@ -128,6 +135,44 @@ describe('agreement MCP editing surface', () => {
         expect(custom.agreement.rule.approvalConfig).not.toHaveProperty('regime');
         expect(custom.agreement.rule.lens).toEqual(['11111111111111111111111111111112']);
         expect(german.agreement.rule.lens).toEqual(firstRule.lens);
+    });
+
+    it('settles by value through MCP, reports the valuation and the scheme check, and refuses an area deal under a value scheme', async () => {
+        const { tools, namedPlan } = await runtime();
+        const first = await tools.draftAgreement({ plan: namedPlan.draftArtifact, rulePreset: 'community-vote' });
+        const outputs = first.agreement.outputs;
+        const valuation = { inputs: [{ parcelId: 'A', unitValueCents: 10000 }], outputs: outputs.map(output => ({ output: output.hash, unitValueCents: 25000 })) };
+        const settlement = { method: 'value', rateCentsPerM2: 0, contributionBasisPoints: 0 };
+        const allocations = outputs.map(output => ({ output: output.hash, to: { kind: 'party', ownerKey: 'parcel-owner:A' } }));
+        const drafted = await tools.draftAgreement({ plan: namedPlan.draftArtifact, rulePreset: 'owner-vote', settlement, valuation, allocations });
+        expect(drafted.agreement.rule.settlement).toEqual(settlement);
+        expect(drafted.agreement.valuation).toEqual(valuation);
+        // One owner keeps all the land: entitled to all of its value, no cash moves.
+        expect(drafted.agreement.money.lines).toEqual([]);
+        const inspected = await tools.inspectAgreement({ plan: drafted.draftArtifact });
+        expect(inspected.valuation).toEqual(valuation);
+        expect(inspected).toMatchObject({ valued: true, scheme: null });
+        expect(inspected.distributableValueCents).toBe(inspected.parties[0].entitlementValueCents);
+        expect(inspected.parties[0].contributedValueCents).toBeLessThan(inspected.parties[0].assignedValueCents);
+        // A value is required for every piece: a draft that leaves one out is refused.
+        await expect(tools.draftAgreement({ plan: namedPlan.draftArtifact, rulePreset: 'owner-vote', settlement, allocations, valuation: { inputs: valuation.inputs, outputs: [] } }))
+            .rejects.toThrow(/value per m²/);
+        // Gujarat distributes by value and charges half of the increment: the same deal under it pays half of the gain.
+        const gujarat = ApprovalRegimes.latest('in-gj-tps');
+        const rights = { schema: 'parcel-rights/v1', source: { provider: 'agent-test' }, parcels: [{ parcelId: 'A', complete: true, areaM2: null, owners: [{ ownerId: 'party-in', share: '1/1' }] }] };
+        const config = Approval.normalizeConfig({ schema: 'proposal-approval/v1', rights, policy: ApprovalRegimes.policyOf(gujarat, ['authority:state']), regime: { id: gujarat.id, version: gujarat.version } });
+        const rule = { electorate: 'owners', binding: true, approvalConfig: config, lens: ['11111111111111111111111111111111'], settlement };
+        const edited = await tools.editAgreement({ plan: drafted.draftArtifact, expectedCid: drafted.cid, terms: { rule, rights,
+            allocations: outputs.map(output => ({ output: output.hash, to: { kind: 'party', ownerKey: 'party-in' } })) } });
+        const owner = (await tools.inspectAgreement({ plan: edited.draftArtifact })).parties[0];
+        expect(edited.agreement.money.lines).toEqual([{ ownerKey: 'party-in', amountCents: -Math.round((owner.entitlementValueCents - owner.contributedValueCents) / 2) }]);
+        expect((await tools.inspectAgreement({ plan: edited.draftArtifact })).scheme).toMatchObject({ id: 'in-gj-tps', ok: true });
+        await expect(tools.editAgreement({ plan: edited.draftArtifact, expectedCid: edited.cid, terms: { settlement: { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 0 }, valuation: null } }))
+            .rejects.toThrow(/distributes by land value; this agreement settles by surface area/);
+        // The schema accepts the value method and the valuation (mcp-discovery.test.js reads the scheme catalogue).
+        const draft = schemas().get('ugt_draft_agreement');
+        expect(draft.parse({ plan: namedPlan.plan, settlement, valuation }).valuation).toEqual(valuation);
+        expect(draft.safeParse({ plan: namedPlan.plan, settlement: { method: 'worth', rateCentsPerM2: 0, contributionBasisPoints: 0 } }).success).toBe(false);
     });
 
     it('preserves explicit currency when terms select another existing named plan', async () => {

@@ -127,10 +127,21 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
                 return includeGeometry ? { ...value, geometry } : value;
             }),
             parties: ledger.parties, publicM2: ledger.publicM2, proposerM2: ledger.proposerM2, settlement: plan.agreement.rule.settlement,
+            valuation: plan.agreement.valuation ?? null, valued: ledger.valued, contributedValueCents: ledger.contributedValueCents,
+            distributableValueCents: ledger.distributableValueCents, publicValueCents: ledger.publicValueCents, proposerValueCents: ledger.proposerValueCents,
+            scheme: schemeReport(plan.agreement),
             cashSchedule: ledger.money,
             total: matched.length, offset, truncated: offset + limit < matched.length,
             selectionBasis: 'References belong to this immutable plan CID. Compass selection requires the whole object bbox beyond the reference bbox; crossing objects are excluded.',
             next: trustedMetadata({ tool: 'ugt_edit_agreement', action: 'Use expectedCid and explicit terms; revise membership in the named plan first.' }) };
+    }
+
+    // The distribution rules of the scheme the agreement's rule names, checked against its land
+    // (AgreementRecord.schemeCheck); null for custom and unanimous rules.
+    function schemeReport(agreement) {
+        const result = AgreementRecord.schemeCheck(agreement);
+        if (!result) return null;
+        return { id: result.template.id, version: result.template.version, name: result.template.text.name, ok: result.check.ok, rules: result.check.rules };
     }
 
     async function editAgreement({ plan: value, expectedCid, operations = [], terms = {} }) {
@@ -145,7 +156,7 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             const revised = await agreements.draftAgreement({ plan: terms.plan, rulePreset: terms.rulePreset || 'owner-vote', rule,
                 rights, currency: previous.money.currency,
                 lens: previous.rule.lens?.[0], allocations: terms.allocations,
-                settlement: terms.settlement ?? previous.rule.settlement,
+                settlement: terms.settlement ?? previous.rule.settlement, valuation: terms.valuation ?? null,
                 title: terms.title ?? previous.title, author: terms.author ?? previous.author,
                 sponsor: terms.sponsor ?? previous.sponsor, deadline: terms.deadline ?? previous.deadline,
                 consultation: rule.electorate === 'community' ? terms.consultation ?? previous.consultation : null });
@@ -165,6 +176,7 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         const checked = agreementObject({ ...previous, plan: original.plan, designs: original.designs.map(row => ({ cid: row.cid, title: row.content.title, goal: row.content.goal })),
             parcels, openGroundM2: previous.inputs.openGroundM2, outputs,
             allocations: terms.allocations ?? previous.allocations, money: previous.money, rule,
+            valuation: Object.hasOwn(terms, 'valuation') ? terms.valuation : previous.valuation ?? null,
             ...Object.fromEntries(['title', 'author', 'sponsor', 'deadline', 'consultation'].filter(key => Object.hasOwn(terms, key)).map(key => [key, terms[key]])),
             consultation: rule.electorate === 'community' ? terms.consultation ?? previous.consultation : null, createdAt: new Date().toISOString() });
         return { agreement: checked.content, cid: checked.cid, previousCid: original.cid, plan: original.plan,
