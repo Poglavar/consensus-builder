@@ -315,11 +315,31 @@ When shared designs conflict with the current map, the person chooses whether to
 
 An immutable `plan/v1` snapshot containing a title, a selected set of published design CIDs and a map view. Its canonical content has its own CID and permanent `/plans/<cid>` link. Changing the title, membership or saved view creates a new snapshot and link; existing links keep their original content. It references existing designs without changing their authorship, geometry or publication. It carries no land allocations, money or decision rules; those belong to an agreement. The backend address used to access a plan is transport configuration, not part of its content.
 
-Plan stats and the urban rooster evaluate one exact saved plan revision, including unapplied members. Parcel figures derive from its members and source cadastral ground in isolation; unrelated map designs and the current map extent do not affect them. Evaluation does not apply the plan.
+Plan stats and Compare plans evaluate one exact saved plan revision, including unapplied members. Parcel figures derive from its members and source cadastral ground in isolation; unrelated map designs and the current map extent do not affect them. Evaluation does not apply the plan. The urban rooster scores a plan only when every member is applied, from the live map.
 
 A private named-plan draft can reference unpublished design revisions carried with it. Publishing that draft first publishes its missing designs, then the named snapshot, and verifies the same content identifiers. Drafting and editing a named plan do not derive agreement ground or reconnect roads.
 
 A plan contains one or more designs and can exist without an agreement. Each agreement references one exact plan revision; any number of agreements may reference that revision. Editing a plan never changes an existing agreement’s subject. Plans and agreements have separate share links. The map click stack orders Agreements above Plans, scoped to the selected exact plan revision, followed by Designs and source objects; it displays the selected level and its nearest available neighbours. Agreements inherit their plan’s extent for inspection; they are not independent spatial picks. Multiple agreements share a selector. The expanded Agreement section contains the full scrollable properties and actions. Its Plan button selects that exact plan in the current view without navigation, importing or applying its designs.
+
+### Plan area
+
+The land a plan covers: every cadastral parcel its members stand on, counted once, plus their open ground (site area on no parcel), in m².
+
+### Public land
+
+Land in public use: road parcels (the road classification, or parcels marked as roads), land covered by OpenStreetMap parks and squares (`leisure=park`, `place=square`, pedestrian areas), and the pieces a plan's designs make into a road corridor, park, square or lake. Ownership does not decide it. Semi-private land is not yet defined.
+
+### Private land
+
+A plan's parcel land that is not public land, in m²; open ground is in neither.
+
+### Present state
+
+What stands today on the land of a chosen saved plan (or of all compared plans), read as a plan of its own: every existing building from the city's building source, clipped to the parcels and measured as a freeform building by plan-yield's rules, today's public land, and no designs. It is the baseline column of Compare plans.
+
+### Remaining building
+
+An existing building a plan's designs do not clear. A plan's standing buildings are its new buildings plus its remaining ones; apartments, people and jobs derive from their summed floor area. A design clears its demolition ground (its parcels or footprints, a structure, a road corridor) with the demolition scan's thresholds: under 2 m² of overlap the building is untouched, and when under 10 m² or 15 % of its footprint is left it is gone.
 
 ### Private draft reference
 

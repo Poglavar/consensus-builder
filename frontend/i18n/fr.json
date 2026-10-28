@@ -247,12 +247,17 @@
                 "calculating": "Calcul…",
                 "modalTitle": "Statistiques du plan",
                 "planArea": "Surface du plan (m²)",
+                "publicLand": "Terrain public — routes, parcs, places (m²)",
+                "privateLand": "Terrain privé (m²)",
+                "groundFailed": "Les bâtiments existants et le terrain public n’ont pas pu être lus : {{reason}}",
                 "resultingParcels": "Parcelles résultantes (m² en moyenne)",
                 "floorArea": "Surface de plancher brute (m²)",
                 "salesSuffix": "{{currency}} par m²",
                 "housingShareSuffix": "% de logements",
                 "closeAria": "Fermer les statistiques du plan",
                 "buildings": "Bâtiments (emprise au sol en m²)",
+                "buildingsRemaining": "dont existants conservés (surface de plancher m²)",
+                "buildingsNew": "dont nouveaux (surface de plancher m²)",
                 "openSpace": "Espaces ouverts — parcs, places, eau (m²)",
                 "apartments": "Logements",
                 "people": "Personnes",
@@ -8490,6 +8495,12 @@
     "compare": "Comparer",
     "swap": "Permuter lignes et colonnes",
     "failed": "Non mesuré : {{reason}}",
-    "assumptions": "Avec les hypothèses par défaut et {{price}} par m². Les statistiques d’un plan permettent de les modifier."
+    "assumptions": "Avec les hypothèses par défaut et {{price}} par m². Les statistiques d’un plan permettent de les modifier.",
+    "presentState": "État actuel",
+    "basis": "État actuel sur le terrain de",
+    "basisCompared": "Tous les plans comparés",
+    "measuring": "Mesure en cours…",
+    "landDefinition": "Le terrain public comprend les routes ainsi que les parcs et places d’OpenStreetMap ; le terrain privé est le reste des parcelles. L’état actuel compte chaque bâtiment existant sur ce terrain ; un plan compte, à côté de ses nouveaux bâtiments, les bâtiments existants que ses projets ne suppriment pas.",
+    "noBasis": "Aucun plan enregistré dont prendre le terrain."
   }
 }

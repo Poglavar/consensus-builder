@@ -361,6 +361,18 @@
         };
     }
 
+    /**
+     * One total over several totals (a plan's new buildings and the existing ones that remain):
+     * the measured sums added, then apartments, people and jobs derived once from the summed floor
+     * area, as planYield derives them. Missing totals are skipped.
+     */
+    function combinedTotal(totals, assumptions) {
+        const opts = { ...DEFAULTS, ...(assumptions || {}) };
+        const sum = emptyBucket(null);
+        (Array.isArray(totals) ? totals : []).forEach(total => { if (total && typeof total === 'object') addInto(sum, total); });
+        return deriveBucket(sum, opts);
+    }
+
     // ── The parcels a plan leaves standing ──────────────────────────────────────────────────────
     //
     // A proposal is an authored instruction. It knows its immutable cadastral scope, but it does
@@ -476,6 +488,7 @@
         epochYearOf,
         planYield,
         rederive,
+        combinedTotal,
         cadastreIdsOf,
         resultingParcels
     };

@@ -193,6 +193,15 @@ the default assumptions (`comparePlanStats` in `plan-stats.js`) and shows one ta
 rows and columns** turns between plans as columns and plans as rows. A plan that cannot be measured
 keeps its place with the reason. The figures are Plan stats' own (`summaryTexts`), including
 **Plan area**: every parcel the plan stands on, once, plus its open ground.
+`proposals/present-state.js` (user decisions 2026-10-28) adds the ground: **Public land** is road
+parcels, OpenStreetMap parks and squares (asked of public Overpass from the browser, no server
+relay) and design pieces that are corridors, parks, squares or lakes; **Private land** is the rest
+of the parcels. Each plan counts the existing buildings its designs do not clear (`/buildings/under`
+over its parcels, demolition ground from `__demolitionPrefetch.collectDemolitionRegions` plus its
+corridor pieces) beside its new ones, as **of which existing that remain** and **of which new**.
+The first column, **Present state**, measures what stands today on the land chosen in **Present
+state over the land of** (all compared plans, one of them, or another saved plan). Plan stats
+shows the same land and building figures once they are read, after its other figures.
 The rooster scores the plan as it stands on the map (user ruling 2026-10-28): every member must be
 applied, and `GrainScoreRules.appliedPlanGround` reads the members' pieces and ground from the
 live fabric and the cadastral repository, with no binding and no headless replay. An unapplied

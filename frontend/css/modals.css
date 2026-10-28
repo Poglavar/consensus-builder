@@ -439,6 +439,30 @@ body.site-intro-open { overflow: hidden; }
     text-align: end;
 }
 
+.plan-compare__basis {
+    max-width: 28rem;
+}
+
+/* The present state is the baseline the plans are read against. */
+.plan-compare__table th.plan-compare__plan--present {
+    color: var(--cb-text-muted);
+    font-style: italic;
+}
+
+/* "of which existing that remain" and "of which new" are parts of the Buildings row above them. */
+.plan-compare__table th[data-plan-compare-row="buildings-remaining"],
+.plan-compare__table th[data-plan-compare-row="buildings-new"] {
+    padding-inline-start: var(--cb-space-5);
+    font-weight: normal;
+}
+
+.plan-compare__status {
+    display: block;
+    font-weight: normal;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
 .plan-compare__error {
     display: block;
     font-weight: normal;

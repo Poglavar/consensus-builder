@@ -247,12 +247,17 @@
                 "calculating": "A calcular…",
                 "modalTitle": "Estatísticas do plano",
                 "planArea": "Área do plano (m²)",
+                "publicLand": "Terreno público — ruas, parques, praças (m²)",
+                "privateLand": "Terreno privado (m²)",
+                "groundFailed": "Não foi possível ler os edifícios existentes nem o terreno público: {{reason}}",
                 "resultingParcels": "Parcelas resultantes (média em m²)",
                 "floorArea": "Área bruta de construção (m²)",
                 "salesSuffix": "{{currency}} por m²",
                 "housingShareSuffix": "% de habitação",
                 "closeAria": "Fechar estatísticas do plano",
                 "buildings": "Edifícios (área de implantação em m²)",
+                "buildingsRemaining": "dos quais existentes que permanecem (área construída m²)",
+                "buildingsNew": "dos quais novos (área construída m²)",
                 "openSpace": "Espaço aberto — parques, praças, água (m²)",
                 "apartments": "Apartamentos",
                 "people": "Pessoas",
@@ -8490,6 +8495,12 @@
     "compare": "Comparar",
     "swap": "Trocar linhas e colunas",
     "failed": "Não medido: {{reason}}",
-    "assumptions": "Com os pressupostos predefinidos e {{price}} por m². As estatísticas de um plano permitem alterá-los."
+    "assumptions": "Com os pressupostos predefinidos e {{price}} por m². As estatísticas de um plano permitem alterá-los.",
+    "presentState": "Estado atual",
+    "basis": "Estado atual sobre o terreno de",
+    "basisCompared": "Todos os planos comparados",
+    "measuring": "A medir…",
+    "landDefinition": "O terreno público são as ruas e os parques e praças do OpenStreetMap; o privado é o resto das parcelas. O estado atual conta cada edifício existente nesse terreno; um plano conta, ao lado dos novos, os existentes que os seus projetos não removem.",
+    "noBasis": "Não há nenhum plano guardado de onde tirar o terreno."
   }
 }

@@ -1097,8 +1097,13 @@
                 "housingShareSuffix": "% udeo stanovanja",
                 "closeAria": "Zatvori statistiku plana",
                 "planArea": "Površina plana (m²)",
+                "publicLand": "Javna površina — putevi, parkovi, trgovi (m²)",
+                "privateLand": "Privatna površina (m²)",
+                "groundFailed": "Postojeće zgrade i javna površina nisu mogle da se očitaju: {{reason}}",
                 "resultingParcels": "Nastale parcele (prosek m²)",
                 "buildings": "Zgrade (osnova m²)",
+                "buildingsRemaining": "od toga postojeće koje ostaju (bruto površina m²)",
+                "buildingsNew": "od toga nove (bruto površina m²)",
                 "openSpace": "Otvoreni prostor — parkovi, trgovi, voda (m²)",
                 "apartments": "Stanovi",
                 "people": "Stanovnici",
@@ -8542,6 +8547,12 @@
     "compare": "Uporedi",
     "swap": "Zameni redove i kolone",
     "failed": "Nije izmereno: {{reason}}",
-    "assumptions": "Uz podrazumevane pretpostavke i {{price}} po m². U statistici jednog plana možete ih promeniti."
+    "assumptions": "Uz podrazumevane pretpostavke i {{price}} po m². U statistici jednog plana možete ih promeniti.",
+    "presentState": "Postojeće stanje",
+    "basis": "Postojeće stanje na zemljištu plana",
+    "basisCompared": "Svi upoređeni planovi",
+    "measuring": "Merenje…",
+    "landDefinition": "Javna površina su putevi te parkovi i trgovi iz OpenStreetMap-a; privatna je ostatak parcela. Postojeće stanje broji svaku postojeću zgradu na tom zemljištu; plan uz svoje nove zgrade broji postojeće koje njegovi dizajni ne uklanjaju.",
+    "noBasis": "Nema sačuvanog plana sa čijeg bi se zemljišta uzelo stanje."
   }
 }

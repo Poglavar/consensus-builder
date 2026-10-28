@@ -91,6 +91,24 @@ function makeWindow(proposals, { city = null } = {}) {
             return { plan, records: (plan.records || proposals).map(p => ({ ...p, applied: true })), materializedFeatures: [], cadastralFeatures: [] };
         } },
         CbDialog: { open: options => { window.openedDialog = options; return options; } },
+        // Land split and present state: real arithmetic is in present-state.test.js; here the figures
+        // only have to reach the right boxes.
+        PresentState: {
+            // A plan marked withExisting keeps one existing building beside its designs.
+            groundOf: async snapshot => {
+                if (snapshot.plan?.landFailure) throw new Error(snapshot.plan.landFailure);
+                return { land: { publicLandM2: 1200, privateLandM2: 3400 },
+                    remaining: snapshot.plan?.withExisting ? [{ ...block(null), proposalId: 'built:w1' }] : [] };
+            },
+            measure: async ({ title, basis }) => ({ unavailable: false, planTitle: title, proposalsTotal: 0, proposalsCounted: 0,
+                yield: planYield.planYield([], { appliedOnly: true }),
+                remainingYield: planYield.planYield([block(null), block(null), block(null)], { appliedOnly: true }),
+                parcelCount: basis.length, parcelMeasuredCount: basis.length, parcelMeasuredArea: 900, openGroundM2: null,
+                planAreaM2: 900, publicLandM2: 300, privateLandM2: 600 })
+        },
+        NamedPlans: { list: () => [{ cid: 'other', content: { title: 'Saved elsewhere', view: { city: 'zagreb' } } }] },
+        normalizeCityCodeForApi: code => code,
+        resolveCurrentCityCode: () => 'zagreb',
         proposalStorage: { getAllProposals: () => { throw new Error('Must not read map designs'); } }
     };
     window.window = window;
@@ -322,27 +340,65 @@ describe('comparing plans', () => {
     it('shows every plan’s figures in its own column, and swaps to plans as rows', async () => {
         const window = openDialog(plan);
         await window.comparePlanStats([
-            { content: { title: 'Two blocks' }, records: [block(2035), block(2045)] },
-            { content: { title: 'One block' }, records: [block(2035)] },
+            { content: { title: 'Two blocks' }, records: [block(2035), block(2045)], withExisting: true },
+            { content: { title: 'One block' }, records: [block(2035)], withExisting: true },
             { content: { title: 'Broken' }, failure: 'Parcel coverage is unavailable.' }
         ]);
+        // The present state is measured after the dialog opens; let its promise settle.
+        await new Promise(resolve => setImmediate(resolve));
+        const basis = (function find(node) { if (node.dataset && 'planCompareBasis' in node.dataset) return node; for (const child of node.children) { const hit = find(child); if (hit) return hit; } return null; })(window.openedDialog.body);
+        expect(basis.children.map(option => [option.value, option.textContent])).toEqual([
+            ['compared', 'All compared plans'], ['plan:0', 'Two blocks'], ['plan:1', 'One block'], ['saved:other', 'Saved elsewhere']]);
         expect(window.openedDialog.title).toBe('Compare plans');
         let rows = rowsOf(tableOf(window));
-        expect(rows[0]).toEqual(['', 'Two blocks', 'One block', 'BrokenNot measured: Parcel coverage is unavailable.']);
+        expect(rows[0]).toEqual(['', 'Present state', 'Two blocks', 'One block', 'BrokenNot measured: Parcel coverage is unavailable.']);
         const buildings = rows.find(row => row[0].startsWith('Buildings'));
-        expect(digits(buildings[1])).toBe(2);
-        expect(digits(buildings[2])).toBe(1);
-        expect(buildings[3]).toBe('—');
-        expect(rows).toHaveLength(1 + 9);
+        // Standing buildings: the present state's three existing ones; each plan's new ones plus the
+        // one existing building it leaves.
+        expect(digits(buildings[1])).toBe(3);
+        expect(digits(buildings[2])).toBe(3);
+        expect(digits(buildings[3])).toBe(2);
+        expect(buildings[4]).toBe('—');
+        const remaining = rows.find(row => row[0].startsWith('of which existing'));
+        const added = rows.find(row => row[0].startsWith('of which new'));
+        expect([remaining[1], remaining[2]].map(digits)).toEqual([3, 1]);
+        expect([added[1], added[2], added[3]].map(digits)).toEqual([0, 2, 1]);
+        expect(rows).toHaveLength(1 + 13);
+        expect(rows.find(row => row[0].startsWith('Public land')).slice(1, 3)).toEqual(['300', '1,200']);
+        expect(rows.find(row => row[0].startsWith('Private land')).slice(1, 3)).toEqual(['600', '3,400']);
 
         const swap = (function find(node) { if (node.dataset && 'planCompareSwap' in node.dataset) return node; for (const child of node.children) { const hit = find(child); if (hit) return hit; } return null; })(window.openedDialog.body);
         swap.listeners.click.forEach(fn => fn());
         expect(swap.getAttribute('aria-pressed')).toBe('true');
         rows = rowsOf(tableOf(window));
-        expect(rows).toHaveLength(1 + 3);
+        expect(rows).toHaveLength(1 + 4);
+        expect(rows[0]).toHaveLength(1 + 13);
         expect(rows[0][0]).toBe('Plan');
-        expect(rows[1][0]).toBe('Two blocks');
+        expect(rows[1][0]).toBe('Present state');
+        expect(rows[2][0]).toBe('Two blocks');
         expect(rows[0].findIndex(label => label.startsWith('Buildings'))).toBeGreaterThan(0);
         swap.listeners.click.forEach(fn => fn());
+    });
+});
+
+describe('public and private land in Plan stats', () => {
+    it('fills the land figures once the parks and squares are read', async () => {
+        const window = openDialog(plan);
+        await window.showPlanStatsModal({ content: { title: 'Garden plan' }, withExisting: true });
+        expect(slot(window, 'public-land')).toBe('1,200');
+        expect(slot(window, 'private-land')).toBe('3,400');
+        // Three blocks and the one existing building that remains stand after the plan.
+        expect(digits(slot(window, 'buildings'))).toBe(4);
+        expect(digits(slot(window, 'buildings-remaining'))).toBe(1);
+        expect(digits(slot(window, 'buildings-new'))).toBe(3);
+    });
+
+    it('says why when they cannot be read, and keeps every other figure', async () => {
+        const window = openDialog(plan);
+        await window.showPlanStatsModal({ content: { title: 'Garden plan' }, landFailure: 'Overpass is busy' });
+        expect(slot(window, 'public-land')).toBe('—');
+        expect(slot(window, 'notes')).toContain('Existing buildings and public land could not be read: Overpass is busy');
+        expect(slot(window, 'buildings-remaining')).toBe('—');
+        expect(digits(slot(window, 'buildings'))).toBeGreaterThan(0);
     });
 });

@@ -87,7 +87,10 @@ export function createZagrebProvider(pool) {
                     ST_SetSRID(ST_GeomFromGeoJSON(r.geometry::text), 4326), 3765)), 3) AS geom
                 FROM jsonb_to_recordset($1::jsonb) AS r(key text, geometry jsonb)
             )
-            SELECT r.key, f.object_id AS id, g.height_m,
+            -- The same height rule as footprints above: a plausible survey height, as a number
+            -- (numeric comes back from pg as a string, which every consumer reads as no height).
+            SELECT r.key, f.object_id AS id,
+                   CASE WHEN g.height_m BETWEEN 2 AND 250 THEN g.height_m::float END AS height_m,
                    ST_AsGeoJSON(ST_Transform(v.geom, 4326), 7)::json AS geometry
             FROM regions r
             JOIN gdi_building_footprint f ON f.geom && r.geom

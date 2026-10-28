@@ -1289,12 +1289,17 @@
                 "calculating": "Calculando…",
                 "modalTitle": "Estadísticas del plan",
                 "planArea": "Superficie del plan (m²)",
+                "publicLand": "Suelo público — calles, parques, plazas (m²)",
+                "privateLand": "Suelo privado (m²)",
+                "groundFailed": "No se pudieron leer los edificios existentes ni el suelo público: {{reason}}",
                 "resultingParcels": "Parcelas resultantes (media m²)",
                 "floorArea": "Superficie construida bruta (m²)",
                 "salesSuffix": "{{currency}} por m²",
                 "housingShareSuffix": "% de vivienda",
                 "closeAria": "Cerrar estadísticas del plan",
                 "buildings": "Edificios (huella m²)",
+                "buildingsRemaining": "de ellos, existentes que permanecen (superficie construida m²)",
+                "buildingsNew": "de ellos, nuevos (superficie construida m²)",
                 "openSpace": "Espacio libre — parques, plazas, agua (m²)",
                 "apartments": "Viviendas",
                 "people": "Habitantes",
@@ -8518,6 +8523,12 @@
     "compare": "Comparar",
     "swap": "Intercambiar filas y columnas",
     "failed": "Sin medir: {{reason}}",
-    "assumptions": "Con los supuestos predeterminados y {{price}} por m². Las estadísticas de un plan permiten cambiarlos."
+    "assumptions": "Con los supuestos predeterminados y {{price}} por m². Las estadísticas de un plan permiten cambiarlos.",
+    "presentState": "Estado actual",
+    "basis": "Estado actual sobre el suelo de",
+    "basisCompared": "Todos los planes comparados",
+    "measuring": "Midiendo…",
+    "landDefinition": "El suelo público son las calles y los parques y plazas de OpenStreetMap; el privado es el resto de las parcelas. El estado actual cuenta cada edificio existente en ese suelo; un plan cuenta, junto a los nuevos, los existentes que sus diseños no eliminan.",
+    "noBasis": "No hay ningún plan guardado del que tomar el suelo."
   }
 }

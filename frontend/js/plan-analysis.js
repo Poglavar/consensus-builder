@@ -34,8 +34,12 @@
         }
         const result = await materialize({ designs, parcels: cadastralFeatures });
         const ids = [...sources.values()].flatMap(ids => [...ids]);
-        return { plan: snapshot, records: result.records, cadastralFeatures,
-            materializedFeatures: result.fabric.entriesForCadastre(ids, { includeCorridors: false }) };
+        const materializedFeatures = result.fabric.entriesForCadastre(ids, { includeCorridors: false });
+        // Road corridor pieces apart: they are land too (public land in Compare plans), but not parcels.
+        const pieceIds = new Set(materializedFeatures.map(f => String(f.properties?.parcelId ?? f.id)));
+        const corridorFeatures = result.fabric.entriesForCadastre(ids, { includeCorridors: true })
+            .filter(f => !pieceIds.has(String(f.properties?.parcelId ?? f.id)));
+        return { plan: snapshot, records: result.records, cadastralFeatures, materializedFeatures, corridorFeatures };
     }
     function browser(win) {
         async function request(path, body) {

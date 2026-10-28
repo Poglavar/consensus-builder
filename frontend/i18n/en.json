@@ -1109,12 +1109,17 @@
                 "calculating": "Calculating…",
                 "modalTitle": "Plan stats",
                 "planArea": "Plan area (m²)",
+                "publicLand": "Public land — roads, parks, squares (m²)",
+                "privateLand": "Private land (m²)",
+                "groundFailed": "Existing buildings and public land could not be read: {{reason}}",
                 "resultingParcels": "Resulting parcels (avg m²)",
                 "floorArea": "Gross floor area (m²)",
                 "salesSuffix": "{{currency}} per m²",
                 "housingShareSuffix": "% housing share",
                 "closeAria": "Close plan stats",
                 "buildings": "Buildings (footprint m²)",
+                "buildingsRemaining": "of which existing that remain (floor area m²)",
+                "buildingsNew": "of which new (floor area m²)",
                 "openSpace": "Open space — parks, squares, water (m²)",
                 "apartments": "Apartments",
                 "people": "People",
@@ -8490,6 +8495,12 @@
     "compare": "Compare",
     "swap": "Swap rows and columns",
     "failed": "Not measured: {{reason}}",
-    "assumptions": "At the default assumptions and {{price}} per m². Plan stats on one plan lets you change them."
+    "assumptions": "At the default assumptions and {{price}} per m². Plan stats on one plan lets you change them.",
+    "presentState": "Present state",
+    "basis": "Present state over the land of",
+    "basisCompared": "All compared plans",
+    "measuring": "Measuring…",
+    "landDefinition": "Public land is roads and OpenStreetMap parks and squares; private land is the rest of the parcels. The present state counts every existing building on that land; a plan counts the existing buildings its designs do not clear beside its new ones.",
+    "noBasis": "No saved plan to take the land from."
   }
 }

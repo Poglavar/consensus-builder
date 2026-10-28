@@ -74,6 +74,13 @@ test.describe('Plan arithmetic @features', () => {
     await openPlanActions(page, 'Houses only', [building]);
     await page.locator('#proposals-button').click();
     await openPlanActions(page, 'Houses and park', [building, park]);
+    // From here on the parcel carries one existing two-storey building covering it: both plans clear
+    // it (the block takes its parcel, the park its ground), the present state keeps it.
+    await page.route('**/buildings/under', route => {
+      const regions = route.request().postDataJSON()?.regions || [];
+      return route.fulfill({ json: { supported: true, truncated: false, source: 'gdi',
+        regions: Object.fromEntries(regions.map((region: any) => [region.key, [{ id: 'existing-1', geometry: region.geometry, height_m: null, floors: 2 }]])) } });
+    });
     const applied = () => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.applied).map((p: any) => p.proposalId));
     const before = await applied();
     await page.getByRole('button', { name: 'Compare plans', exact: true }).click();
@@ -88,17 +95,29 @@ test.describe('Plan arithmetic @features', () => {
     await expect(dialog.getByRole('heading', { name: 'Compare plans' })).toBeVisible();
     const table = dialog.locator('[data-plan-compare]');
     await expect(table).toHaveAttribute('data-plan-compare', 'plans-as-columns');
-    await expect(table.locator('th.plan-compare__plan')).toHaveText(['Houses only', 'Houses and park']);
+    await expect(dialog.locator('.plan-compare__status')).toHaveCount(0);
+    await expect(table.locator('th.plan-compare__plan')).toHaveText(['Present state', 'Houses only', 'Houses and park']);
+    await expect(dialog.locator('[data-plan-compare-basis]')).toHaveValue('compared');
     const row = (label: RegExp) => table.locator('tr').filter({ has: page.locator('th[scope="row"]', { hasText: label }) }).locator('td');
-    await expect(row(/^Buildings/)).toHaveCount(2);
+    await expect(row(/^Buildings/)).toHaveCount(3);
+    const buildings = await row(/^Buildings/).allInnerTexts();
+    const remaining = await row(/^of which existing/).allInnerTexts();
+    const added = await row(/^of which new/).allInnerTexts();
+    // The present state is the existing building; each plan clears it and stands with its own.
+    expect([buildings[0], remaining[0], added[0]].map(text => text.split(' ')[0])).toEqual(['1', '1', '0']);
+    expect(remaining.slice(1).map(text => text.split(' ')[0])).toEqual(['0', '0']);
+    expect(added.slice(1).map(text => text.split(' ')[0])).toEqual(['1', '1']);
     const openSpace = await row(/^Open space/).allInnerTexts();
-    expect(openSpace.filter(text => text === '0')).toHaveLength(1);
+    expect(openSpace.filter(text => text === '0')).toHaveLength(2);
+    const publicLand = await row(/^Public land/).allInnerTexts();
+    expect(publicLand[0]).toBe('0');
+    expect(Number(publicLand[2].replace(/[^\d]/g, ''))).toBeGreaterThan(0);
     expect(await applied()).toEqual(before);
     await dialog.screenshot({ path: test.info().outputPath('plan-compare-columns.png') });
     await test.info().attach('plan-compare-columns', { path: test.info().outputPath('plan-compare-columns.png'), contentType: 'image/png' });
     await dialog.getByRole('button', { name: 'Swap rows and columns' }).click();
     await expect(table).toHaveAttribute('data-plan-compare', 'plans-as-rows');
-    await expect(table.locator('th[scope="row"]')).toHaveCount(2);
+    await expect(table.locator('th[scope="row"]')).toHaveCount(3);
     await dialog.screenshot({ path: test.info().outputPath('plan-compare-rows.png') });
     await test.info().attach('plan-compare-rows', { path: test.info().outputPath('plan-compare-rows.png'), contentType: 'image/png' });
   });
