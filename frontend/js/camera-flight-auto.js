@@ -13,7 +13,12 @@
         pathClearanceM: 6,      // horizontal margin the planned path keeps (planned, wider than checked)
         streetPreferenceM: 16,  // within this distance of an obstacle the path pays extra: it keeps to streets
         cruiseAltitudeM: 15,    // about one and a half street-tree heights
-        perTurn: 16, spacingM: 30, aheadM: 25, targetSeconds: 50, minSpeedMps: 4, maxSpeedMps: 30, maxPoints: 240
+        cornerRadiusM: 25,      // a street corner becomes a curve this far either side of it
+        maxTurnDegPerS: 15,     // the camera never turns faster than this: orbits slow the flight, the path eases its looks
+        maxTravelTurnDegPerS: 30, // the flight slows for curves it would otherwise round faster than this
+        accelerationMps2: 1.5, slowestMps: 2, // speed changes no faster than this, and slows to no less than this
+        tourTurns: .75,         // orbit at each end of a plan tour
+        perTurn: 16, spacingM: 30, aheadM: 25, targetSeconds: 50, minSpeedMps: 4, maxSpeedMps: 16, maxPoints: 240
     });
     const TAU = Math.PI * 2;
     const finite = x => typeof x === 'number' && Number.isFinite(x);
@@ -67,19 +72,19 @@
             point(i) { return [origin[0] + (i % cols + .5) * cell, origin[1] + (Math.floor(i / cols) + .5) * cell]; } });
     }
 
-    // Square max filter: a point within radiusM of an obstacle reads that obstacle's height.
+    // Disc max filter: a point within radiusM of an obstacle reads that obstacle's height. A disc, not a
+    // square, so it agrees with the distances the path is planned with (openness) at street corners too.
     function dilate(g, radiusM) {
-        const r = Math.ceil(radiusM / g.cell);
+        const reach = radiusM / g.cell, r = Math.floor(reach);
         if (r < 1) return g;
-        const { cols, rows } = g, across = new Float32Array(cols * rows), out = new Float32Array(cols * rows);
+        const { cols, rows } = g, out = new Float32Array(cols * rows), offsets = [];
+        for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (Math.hypot(dx, dy) <= reach) offsets.push([dx, dy]);
         for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
             let top = 0;
-            for (let k = Math.max(0, x - r); k <= Math.min(cols - 1, x + r); k++) top = Math.max(top, g.heights[y * cols + k]);
-            across[y * cols + x] = top;
-        }
-        for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
-            let top = 0;
-            for (let k = Math.max(0, y - r); k <= Math.min(rows - 1, y + r); k++) top = Math.max(top, across[k * cols + x]);
+            for (const [dx, dy] of offsets) {
+                const nx = x + dx, ny = y + dy;
+                if (nx >= 0 && ny >= 0 && nx < cols && ny < rows) top = Math.max(top, g.heights[ny * cols + nx]);
+            }
             out[y * cols + x] = top;
         }
         return grid({ ...g, heights: out });
@@ -179,8 +184,10 @@
         return cells.reverse();
     }
 
-    // Keep only the cells where the path has to bend, then fill long straights back in from the path.
-    function waypoints(g, open, cells, options = OPTIONS) {
+    // Keep only the cells where the path has to bend (and every `stays` cell: the designs it passes),
+    // round each bend into a curve whose chord stays clear, and fill long straights in.
+    // Returns { xy, k }: k is the path cell the point stands for.
+    function waypoints(g, open, cells, options = OPTIONS, stays = new Set()) {
         const points = cells.map(i => g.point(i)), minimum = options.sideClearanceM + g.cell;
         const clear = (a, b) => {
             const steps = Math.max(1, Math.ceil(distance2(a, b) / (g.cell / 2)));
@@ -194,16 +201,43 @@
         let i = 0;
         while (i < points.length - 1) {
             let j = i + 1;
-            while (j + 1 < points.length && clear(points[i], points[j + 1])) j++;
+            while (j + 1 < points.length && !stays.has(j) && clear(points[i], points[j + 1])) j++;
             kept.push(j); i = j;
         }
-        const filled = [kept[0]];
-        for (let k = 1; k < kept.length; k++) {
-            const a = kept[k - 1], b = kept[k], parts = Math.ceil(distance2(points[a], points[b]) / options.spacingM);
-            for (let s = 1; s < parts; s++) filled.push(Math.round(a + (b - a) * s / parts));
-            filled.push(b);
+        const out = [{ xy: points[0], k: 0 }];
+        let from = { xy: points[0], k: 0 };
+        const straight = (to, k) => {
+            const parts = Math.ceil(distance2(from.xy, to) / options.spacingM);
+            for (let s = 1; s < parts; s++) {
+                out.push({ xy: [from.xy[0] + (to[0] - from.xy[0]) * s / parts, from.xy[1] + (to[1] - from.xy[1]) * s / parts],
+                    k: Math.round(from.k + (k - from.k) * s / parts) });
+            }
+            out.push({ xy: to, k }); from = { xy: to, k };
+        };
+        for (let c = 1; c + 1 < kept.length; c++) {
+            const here = points[kept[c]], before = points[kept[c - 1]], after = points[kept[c + 1]], k = kept[c];
+            const inLength = distance2(before, here), outLength = distance2(here, after);
+            const u1 = [(here[0] - before[0]) / inLength, (here[1] - before[1]) / inLength], u2 = [(after[0] - here[0]) / outLength, (after[1] - here[1]) / outLength];
+            // Each side takes under half its leg, so neighbouring curves never overlap.
+            let r = Math.min(options.cornerRadiusM, inLength * .45, outLength * .45), a = null, b = null;
+            for (; r >= 2; r /= 2) {
+                a = [here[0] - u1[0] * r, here[1] - u1[1] * r]; b = [here[0] + u2[0] * r, here[1] + u2[1] * r];
+                if (clear(a, b)) break;
+            }
+            if (r < 2) { straight(here, k); continue; }
+            straight(a, k);
+            // A quadratic curve with the corner as its control point leaves and joins the legs along them.
+            // At most one view every 4 m: a tight curve is flown slowly, and views closer than that add only jitter.
+            const bend = Math.acos(Math.max(-1, Math.min(1, u1[0] * u2[0] + u1[1] * u2[1])));
+            const count = Math.max(2, Math.min(Math.ceil(bend / (Math.PI / 8)), Math.floor(2 * r / 4)));
+            for (let s = 1; s < count; s++) {
+                const t = s / count, w0 = (1 - t) ** 2, w1 = 2 * (1 - t) * t, w2 = t * t;
+                out.push({ xy: [w0 * a[0] + w1 * here[0] + w2 * b[0], w0 * a[1] + w1 * here[1] + w2 * b[1]], k });
+            }
+            out.push({ xy: b, k }); from = { xy: b, k };
         }
-        return [...new Set(filled)];
+        if (kept.length > 1) straight(points[kept[kept.length - 1]], kept[kept.length - 1]);
+        return out.filter((point, index) => !index || distance2(point.xy, out[index - 1].xy) > 1e-6);
     }
 
     // One complete turn per `turns`, climbing or descending evenly, every view aimed at the target.
@@ -256,8 +290,10 @@
         const f = framing(subjectBox(subject));
         const start = seeded ? rng() * TAU : Math.PI * 1.25, direction = seeded && rng() < .5 ? -1 : 1;
         const out = Math.max(f.radius * 3, f.radius + 150);
-        const own = subjectBox(subject);
-        return [{ position: [f.centre[0] + out * Math.cos(start), f.centre[1] + out * Math.sin(start), f.high * 1.15], target: f.target, own, section: 'approach' },
+        const own = subjectBox(subject), heading = start + direction * Math.PI / 2;
+        // The approach arrives along the orbit's own direction, so the flight curves into it without a corner.
+        const entry = [f.centre[0] + f.radius * Math.cos(start), f.centre[1] + f.radius * Math.sin(start)];
+        return [{ position: [entry[0] - out * Math.cos(heading), entry[1] - out * Math.sin(heading), f.high * 1.15], target: f.target, own, section: 'approach' },
             ...orbit({ centre: f.centre, radius: f.radius, from: f.high, to: f.low, start, turns: 1.25, direction, target: f.target, own, perTurn: OPTIONS.perTurn })];
     }
 
@@ -293,10 +329,14 @@
     function planNodes(subjects, field, rng, seeded) {
         const [first, last] = stops(subjects, rng, seeded), a = framing(first.box), b = framing(last.box);
         const outward = Math.atan2(b.centre[1] - a.centre[1], b.centre[0] - a.centre[0]);
-        const inward = Math.atan2(a.centre[1] - b.centre[1], a.centre[0] - b.centre[0]);
-        const direction = seeded && rng() < .5 ? -1 : 1;
-        const intro = orbit({ centre: a.centre, radius: a.radius, from: a.high, to: a.low, start: outward - direction * TAU, turns: 1, direction, target: a.target, own: first.box, perTurn: OPTIONS.perTurn });
-        const finale = orbit({ centre: b.centre, radius: b.radius, from: b.low, to: b.high, start: inward, turns: 1, direction, target: b.target, own: last.box, perTurn: OPTIONS.perTurn });
+        const direction = seeded && rng() < .5 ? -1 : 1, turns = OPTIONS.tourTurns;
+        // An orbit point at angle θ moves along θ + direction·90°: the intro ends, and the finale begins,
+        // where that is the direction of the tour, so the path leaves and joins them without a corner.
+        const side = outward - direction * Math.PI / 2;
+        const intro = orbit({ centre: a.centre, radius: a.radius, from: a.high, to: a.low, start: side - direction * TAU * turns, turns, direction, target: a.target, own: first.box, perTurn: OPTIONS.perTurn });
+        const finale = orbit({ centre: b.centre, radius: b.radius, from: b.low, to: b.high, start: side, turns, direction, target: b.target, own: last.box, perTurn: OPTIONS.perTurn });
+        // The orbit views next to the street path may give way where the path turns back on them (despike).
+        intro.slice(-2).forEach(node => { node.tail = true; }); finale.slice(0, 2).forEach(node => { node.tail = true; });
         // The tour passes the plan's other designs in order along the way from first to last.
         const axis = [b.centre[0] - a.centre[0], b.centre[1] - a.centre[1]], span = Math.max(1e-9, axis[0] ** 2 + axis[1] ** 2);
         const vias = subjects.filter(s => s.id !== first.design && s.id !== last.design).map(subjectBox).filter(Boolean).map(centreOf)
@@ -315,27 +355,34 @@
                 const cells = findPath(field, open, from, via);
                 if (cells) { legs.push(cells); from = field.point(cells[cells.length - 1]); }
             }
-            const cells = findPath(field, open, from, entry);
-            if (!cells) continue;
-            legs.push(cells);
-            const path = [];
-            legs.forEach((cells, leg) => {
-                for (const k of waypoints(field, open, cells)) {
-                    const [x, y] = field.point(cells[k]);
-                    if (path.length && distance2(path[path.length - 1].position, [x, y]) < 1e-6) continue;
-                    path.push({ position: [x, y, altitude], section: 'path', leg, k, cells });
-                }
-            });
-            // Orbit ends already stand where the path starts and finishes.
+            const last = findPath(field, open, from, entry);
+            if (!last) continue;
+            legs.push(last);
+            // One path through every leg, so the corners where legs meet are rounded like any other.
+            const cells = [], stays = new Set();
+            for (const leg of legs) {
+                if (cells.length) stays.add(cells.length - 1);
+                cells.push(...(cells.length && cells[cells.length - 1] === leg[0] ? leg.slice(1) : leg));
+            }
+            const path = waypoints(field, open, cells, OPTIONS, stays).map(({ xy: [x, y], k }) => ({ position: [x, y, altitude], section: 'path', leg: 0, k, cells }));
+            // Orbit ends already stand where the path starts and finishes. A path that starts behind the
+            // intro's end (its nearest street lies back the way the orbit came) or runs on past the finale's
+            // start would make the camera double back there: those street views go too.
+            const ahead = [Math.cos(outward), Math.sin(outward)];
+            const along = (node, end) => (node.position[0] - end.position[0]) * ahead[0] + (node.position[1] - end.position[1]) * ahead[1];
             const near = (node, end) => distance2(node.position, end.position) < 12;
-            while (path.length && near(path[0], intro[intro.length - 1])) path.shift();
-            while (path.length && near(path[path.length - 1], finale[0])) path.pop();
+            const exitNode = intro[intro.length - 1], entryNode = finale[0];
+            while (path.length && (near(path[0], exitNode) || (along(path[0], exitNode) < 0 && distance2(path[0].position, exitNode.position) < 60))) path.shift();
+            while (path.length && (near(path[path.length - 1], entryNode) || (along(path[path.length - 1], entryNode) > 0 && distance2(path[path.length - 1].position, entryNode.position) < 60))) path.pop();
             return [...intro, ...path, ...finale];
         }
         throw new Error('No clear path between the first and last building.');
     }
 
-    function aim(nodes) {
+    // Every view looks at its target or along the path ahead. Views on the path then turn by at most
+    // perMetre radians per metre flown (heading and pitch, both ways along the route), so the look
+    // eases between an orbited building and the way ahead instead of snapping.
+    function aim(nodes, perMetre = Infinity) {
         const at = (i, ahead) => {
             let left = ahead, here = nodes[i].position;
             for (let k = i + 1; k < nodes.length; k++) {
@@ -345,15 +392,51 @@
             }
             return here;
         };
-        return nodes.map((node, i) => {
-            if (node.target) return lookAt(node.position, node.target);
+        const looks = nodes.map((node, i) => {
+            if (node.target) return sub(node.target, node.position);
             const ahead = at(i, OPTIONS.aheadM);
-            return lookAt(node.position, [ahead[0], ahead[1], ahead[2] - 5]);
+            return sub([ahead[0], ahead[1], ahead[2] - 5], node.position);
+        });
+        const heading = [], pitch = [];
+        looks.forEach((d, i) => {
+            const h = Math.atan2(d[1], d[0]), p = Math.atan2(d[2], Math.hypot(d[0], d[1]));
+            heading.push(i ? heading[i - 1] + Math.atan2(Math.sin(h - heading[i - 1]), Math.cos(h - heading[i - 1])) : h);
+            pitch.push(p);
+        });
+        if (Number.isFinite(perMetre)) {
+            const step = i => Math.hypot(...sub(nodes[i].position, nodes[i - 1].position)) * perMetre;
+            const limit = (values, i, j) => {
+                if (nodes[i].target) return;
+                const most = step(Math.max(i, j));
+                values[i] = Math.min(values[j] + most, Math.max(values[j] - most, values[i]));
+            };
+            for (const values of [heading, pitch]) {
+                for (let i = 1; i < nodes.length; i++) limit(values, i, i - 1);
+                for (let i = nodes.length - 2; i >= 0; i--) limit(values, i, i + 1);
+            }
+        }
+        return nodes.map((node, i) => {
+            if (node.target && !Number.isFinite(perMetre)) return lookAt(node.position, node.target);
+            const c = Math.cos(pitch[i]);
+            return lookAt(node.position, [node.position[0] + c * Math.cos(heading[i]), node.position[1] + c * Math.sin(heading[i]), node.position[2] + Math.sin(pitch[i])]);
         });
     }
 
-    function toRoute(nodes) {
-        const quaternions = aim(nodes);
+    // Radians the look turns per metre on the views that aim at a subject (orbits), whose looks are fixed.
+    function fixedTurnPerMetre(nodes) {
+        let most = 0;
+        for (let i = 1; i < nodes.length; i++) {
+            const a = nodes[i - 1], b = nodes[i];
+            if (!a.target || !b.target) continue;
+            const da = sub(a.target, a.position), db = sub(b.target, b.position), length = Math.hypot(...sub(b.position, a.position));
+            const turn = Math.abs(Math.atan2(Math.sin(Math.atan2(db[1], db[0]) - Math.atan2(da[1], da[0])), Math.cos(Math.atan2(db[1], db[0]) - Math.atan2(da[1], da[0]))));
+            if (length > 1e-6) most = Math.max(most, turn / length);
+        }
+        return most;
+    }
+
+    function toRoute(nodes, perMetre = Infinity) {
+        const quaternions = aim(nodes, perMetre);
         return nodes.map((node, i) => ({ id: 'auto-' + (i + 1), position: node.position.map(x => Math.round(x * 1000) / 1000),
             quaternion: quaternions[i], travelSeconds: null, holdSeconds: i === 0 ? 1 : i === nodes.length - 1 ? 2 : 0, turn: null }));
     }
@@ -387,9 +470,37 @@
         return true;
     }
 
+    // Drops views where the route turns back on itself within a short stretch (a design reached up a
+    // dead end, a loop round a design it passes, a street starting behind an orbit's end): flown, those
+    // are a jerk, not a turn. Only path views and an orbit's last or first two views next to the path
+    // go; the stretch is replaced by a straight line, and the clearance repair runs afterwards.
+    function despike(nodes, maxTurn = Math.PI * 5 / 9, shortM = 25) {
+        const removable = node => node.section === 'path' || node.tail;
+        const signed = (a, b, c) => {
+            const u = [b[0] - a[0], b[1] - a[1]], v = [c[0] - b[0], c[1] - b[1]];
+            return Math.atan2(u[0] * v[1] - u[1] * v[0], u[0] * v[0] + u[1] * v[1]);
+        };
+        for (let changed = true; changed;) {
+            changed = false;
+            for (let i = 0; i + 2 < nodes.length && !changed; i++) {
+                let length = distance2(nodes[i].position, nodes[i + 1].position), turned = 0;
+                for (let j = i + 2; j < nodes.length && removable(nodes[j - 1]); j++) {
+                    const step = distance2(nodes[j - 1].position, nodes[j].position);
+                    if (step < 1 || distance2(nodes[j - 2].position, nodes[j - 1].position) < 1) { nodes.splice(j - 1, 1); changed = true; break; }
+                    turned += signed(nodes[j - 2].position, nodes[j - 1].position, nodes[j].position);
+                    length += step;
+                    if (length > shortM && j > i + 2) break;
+                    if (Math.abs(turned) > maxTurn) { nodes.splice(i + 1, j - i - 1); changed = true; break; }
+                }
+            }
+        }
+        return nodes;
+    }
+
     // Lift every view clear of what is below it and, when it looks at a subject, high enough to see
-    // it over its neighbours. Then fix the curve between views: a path segment takes back the
-    // planned cells it skipped; anything else climbs until it is clear.
+    // it over its neighbours. Then fix the curve between views: where the straight line between two
+    // views is clear and the curve only bulges off it, a midpoint on that line pins the curve; otherwise
+    // a path segment takes back the planned cells it skipped, and anything else climbs until it is clear.
     function clear(nodes, field) {
         const side = dilate(field, OPTIONS.sideClearanceM);
         let highest = 0;
@@ -399,14 +510,25 @@
             if (!node.target) continue;
             while (node.position[2] < highest + 60 && !sees(field, node.position, node.target, node.own)) node.position[2] += 4;
         }
+        const chordClear = (a, b) => {
+            const steps = Math.max(2, Math.ceil(distance2(a, b)));
+            for (let s = 0; s <= steps; s++) {
+                const p = a.map((x, i) => x + (b[i] - x) * s / steps);
+                if (side.at(p[0], p[1]) + OPTIONS.clearanceM > p[2]) return false;
+            }
+            return true;
+        };
         for (let round = 0; round < 24; round++) {
             const found = obstructions(toRoute(nodes), field, OPTIONS, side);
             if (!found.length) return nodes;
             // Raises first, then insertions from the end, so every index still names its segment.
             for (const issue of found.filter(f => !f.fraction)) nodes[issue.segment].position[2] += issue.deficit + 1;
             for (const issue of found.filter(f => f.fraction).sort((x, y) => y.segment - x.segment)) {
-                const i = issue.segment, a = nodes[i - 1], b = nodes[i];
-                if (a.section === 'path' && b.section === 'path' && a.leg === b.leg && b.k - a.k > 1) {
+                const i = issue.segment, a = nodes[i - 1], b = nodes[i], onPath = a.section === 'path' || b.section === 'path';
+                const pathNode = a.section === 'path' ? a : b;
+                if (onPath && Math.hypot(...sub(b.position, a.position)) > 4 && chordClear(a.position, b.position)) {
+                    nodes.splice(i, 0, { ...pathNode, position: a.position.map((x, k) => (x + b.position[k]) / 2), section: 'path' });
+                } else if (a.section === 'path' && b.section === 'path' && a.leg === b.leg && b.k - a.k > 1) {
                     const k = (a.k + b.k) >> 1, [x, y] = field.point(a.cells[k]);
                     nodes.splice(i, 0, { position: [x, y, Math.max(a.position[2], b.position[2])], section: 'path', leg: a.leg, k, cells: a.cells });
                 } else {
@@ -417,19 +539,47 @@
         throw new Error('No clear flight path around these buildings.');
     }
 
+    // Travel times that slow the flight where its path curves tightly, and ease it into and out of those
+    // curves with limited acceleration. A segment is flown at the mean of its two ends' speeds (playback
+    // is uniform within a segment); one already flown at cruise speed keeps no override.
+    function pace(route, speedMps) {
+        const lengths = Flight.timeline({ route, speedMps, looks: [], cues: [] }).segments.map(segment => (segment ? segment.length : 0));
+        const heading = (a, b) => Math.atan2(b[1] - a[1], b[0] - a[0]), turnCap = OPTIONS.maxTravelTurnDegPerS * Math.PI / 180;
+        const speeds = route.map((point, k) => {
+            if (!k || k === route.length - 1) return speedMps;
+            const a = route[k - 1].position, b = point.position, c = route[k + 1].position;
+            if (distance2(a, b) < 1e-6 || distance2(b, c) < 1e-6) return speedMps;
+            const turn = Math.abs(Math.atan2(Math.sin(heading(b, c) - heading(a, b)), Math.cos(heading(b, c) - heading(a, b))));
+            return turn < 1e-6 ? speedMps : Math.min(speedMps, Math.max(OPTIONS.slowestMps, turnCap * (lengths[k] + lengths[k + 1]) / 2 / turn));
+        });
+        const a2 = 2 * OPTIONS.accelerationMps2;
+        for (let k = 1; k < speeds.length; k++) speeds[k] = Math.min(speeds[k], Math.sqrt(speeds[k - 1] ** 2 + a2 * lengths[k]));
+        for (let k = speeds.length - 2; k >= 0; k--) speeds[k] = Math.min(speeds[k], Math.sqrt(speeds[k + 1] ** 2 + a2 * lengths[k + 1]));
+        return route.map((point, k) => {
+            if (!k || lengths[k] < 1e-9) return point;
+            const seconds = 2 * lengths[k] / (speeds[k - 1] + speeds[k]), cruise = Math.max(Flight.LIMITS.minTravelSeconds, lengths[k] / speedMps);
+            return Math.abs(seconds - cruise) / cruise < .01 ? point : { ...point, travelSeconds: Math.round(seconds * 100) / 100 };
+        });
+    }
+
     // generate({ subjects, field, seed }) → { kind, route, speedMps }. Subjects carry metric building
     // boxes { min, max, top } and outline points; the field is a grid() of rendered top heights.
     function generate({ subjects, field, seed = 0 }) {
         checkSubjects(subjects);
         if (!field || typeof field.at !== 'function') throw new TypeError('Invalid flight height grid.');
         const seeded = !!seed, rng = random(seed), kind = subjects.length === 1 ? 'design' : 'plan';
-        const nodes = clear(kind === 'design' ? designNodes(subjects[0], rng, seeded) : planNodes(subjects, field, rng, seeded), field);
+        // The clearance repair can leave a hook where it adds or lifts views: smooth again, then repair once more.
+        const nodes = kind === 'design' ? clear(designNodes(subjects[0], rng, seeded), field)
+            : clear(despike(clear(despike(planNodes(subjects, field, rng, seeded)), field)), field);
         if (nodes.length > OPTIONS.maxPoints) throw new Error('This plan is too large for one generated flight.');
-        const route = toRoute(nodes);
-        const length = Flight.timeline({ route, speedMps: 1, looks: [], cues: [] }).segments.reduce((sum, s) => sum + (s ? s.length : 0), 0);
+        const length = Flight.timeline({ route: toRoute(nodes), speedMps: 1, looks: [], cues: [] }).segments.reduce((sum, s) => sum + (s ? s.length : 0), 0);
+        // Fast enough for the target duration, slow enough that an orbit never turns the camera past the cap.
+        const cap = OPTIONS.maxTurnDegPerS * Math.PI / 180, orbitTurn = fixedTurnPerMetre(nodes);
         let speedMps = Math.min(OPTIONS.maxSpeedMps, Math.max(OPTIONS.minSpeedMps, length / OPTIONS.targetSeconds));
+        if (orbitTurn > 0) speedMps = Math.max(OPTIONS.minSpeedMps, Math.min(speedMps, cap / orbitTurn));
         if (length / speedMps > Flight.LIMITS.seconds - 10) speedMps = Math.min(Flight.LIMITS.maxSpeedMps, length / (Flight.LIMITS.seconds - 10));
-        return { kind, route, speedMps: Math.round(speedMps * 10) / 10 };
+        speedMps = Math.round(speedMps * 10) / 10;
+        return { kind, route: pace(toRoute(nodes, cap / speedMps), speedMps), speedMps };
     }
 
     return Object.freeze({ OPTIONS, lookAt, grid, dilate, openness, findPath, bounds, obstructions, sees, generate });

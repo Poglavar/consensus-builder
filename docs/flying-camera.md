@@ -34,12 +34,13 @@ autoplay. Edit a copy opens a private editable version.
 design view, when there is one) or the whole plan. **Generate flight** replaces the route, looks and
 view changes as one undoable edit; **Try another** reruns with a random seed.
 
-- One design: the camera starts well outside and flies in, then orbits 1¼ times from about
+- One design: the camera starts well outside and flies in along the orbit's own direction, then orbits 1¼ times from about
   2.2× its height down to about half its height, every view aimed at the design's mid-height. A
   design without buildings is orbited around its outline.
 - A plan: the first and last stops are the two buildings farthest apart (a random pair for Try
-  another). The camera orbits the first descending, follows a path to the last that passes the
-  plan's other designs in order, and orbits the last climbing. With fewer than two buildings,
+  another). The camera orbits the first descending (¾ turn), follows a path to the last that passes the
+  plan's other designs in order, and orbits the last climbing (¾ turn). The orbits leave and join
+  the path heading along the tour. With fewer than two buildings,
   designs stand in with their outline centres, and with none at all two points of the outline are
   used.
 - Obstacles are whatever the scene draws, not a particular building source. The model scene is
@@ -47,11 +48,21 @@ view changes as one undoable edit; **Try another** reruns with a random seed.
   to the top height per 2 m metric cell (`camera-flight-scene.js`). The path is A* over that grid
   at a cruise altitude of 15 m, keeping 6 m from anything taller and paying extra within 16 m, so
   it keeps to streets. If no path exists it climbs (25, 40, 60, 90, 130 m, then over everything).
+- Street corners are rounded: each bend of the string-pulled path becomes a quadratic curve up to
+  25 m either side, tightened until its chord clears. The legs between the designs a tour passes are
+  one path, so those turns are rounded too. Views where the route turns back within 25 m (a design
+  up a dead end, a street starting behind an orbit's end) are dropped.
 - The playback curve itself is checked, not only the views: every metre of every segment must clear
-  the 3 m-dilated heights by 2 m. A failing path segment takes back the grid cells it skipped;
-  anything else climbs. An orbit view also climbs until no neighbour hides its target.
-- Cruise speed is set so the flight lasts about 50 s (4–30 m/s). Generation leaves design view
-  first, because the player shows every applied design.
+  the heights widened by a 3 m disc by 2 m. A failing segment whose straight line is clear gets a
+  midpoint on that line; otherwise a path segment takes back the grid cells it skipped, and anything
+  else climbs. An orbit view also climbs until no neighbour hides its target.
+- The camera turns at most 15°/s. Orbit views aim at their building, so cruise speed is capped where
+  an orbit would turn faster; path views ease their heading and pitch between an orbit's look and the
+  way ahead. Tight curves are flown slower (path turning at most 30°/s, speed changes at most
+  1.5 m/s², never below 2 m/s), through per-view travel times.
+- Cruise speed is set so the flight lasts about 50 s (4–16 m/s), lower when an orbit needs it, so
+  plan tours usually run 80–120 s. Generation leaves design view first, because the player shows
+  every applied design.
 
 The generator is DOM-free (`camera-flight-auto.js`); only the height render and building boxes
 read the live scene.

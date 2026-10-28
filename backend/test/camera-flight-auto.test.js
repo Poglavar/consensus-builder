@@ -40,6 +40,25 @@ function insideBuildings(result, boxes) {
     return hits;
 }
 
+// Peak camera turn (degrees per second over half-second windows) and the sharpest corner between views.
+function motion(result) {
+    const flight = Flight.compile(record(result)), w = .5;
+    let look = 0, corner = 0;
+    for (let t = 0; t + w <= flight.duration; t += .1) {
+        look = Math.max(look, angle(rotate(flight.evaluate(t).quaternion, [0, 0, -1]), rotate(flight.evaluate(t + w).quaternion, [0, 0, -1])) / w);
+    }
+    const p = result.route.map(x => x.position), flat = (a, b) => { const d = [b[0] - a[0], b[1] - a[1], 0], n = Math.hypot(...d); return d.map(x => x / n); };
+    for (let i = 1; i + 1 < p.length; i++) corner = Math.max(corner, angle(flat(p[i - 1], p[i]), flat(p[i], p[i + 1])));
+    return { look, corner };
+}
+// A grid of 60 m blocks of 25 m buildings with 20 m streets, and a plan at two opposite corners of it.
+function streetGrid() {
+    const blocks = [];
+    for (let i = -3; i <= 3; i++) for (let j = -3; j <= 3; j++) if (!(Math.abs(i) === 3 && Math.abs(j) === 3)) blocks.push(building(i * 80, j * 80, 60, 60, 25));
+    const subjects = [{ id: 'g1', buildings: [building(-240, -240, 30, 30, 18)], outline: [] }, { id: 'g2', buildings: [building(240, 240, 30, 30, 22)], outline: [] }];
+    return { subjects, blocks, ground: field(subjects, blocks) };
+}
+
 describe('generated camera flights', () => {
     it('aims a level camera at the target', () => {
         const eye = [10, -40, 30], target = [0, 0, 5], q = Auto.lookAt(eye, target);
@@ -120,6 +139,33 @@ describe('generated camera flights', () => {
         // One design with only an outline is orbited like any other design.
         const lone = Auto.generate({ subjects: subjects.slice(0, 1), field: field(subjects.slice(0, 1)) });
         expect(lone.kind).toBe('design'); expect(Flight.validate(record(lone))).toBeNull();
+    });
+
+    it('rounds street corners and never turns the camera faster than the cap, also through a street grid', () => {
+        const cap = Auto.OPTIONS.maxTurnDegPerS;
+        const { subjects, blocks, ground } = streetGrid();
+        for (const seed of [0, 1]) {
+            const result = Auto.generate({ subjects, field: ground, seed }), { look, corner } = motion(result);
+            expect(Flight.validate(record(result))).toBeNull();
+            // Half-second windows straddle a view, where the slerp changes pace: a little over the cap.
+            expect(look).toBeLessThan(cap * 1.2);
+            expect(corner).toBeLessThan(45);
+            expect(insideBuildings(result, [...subjects.flatMap(s => s.buildings), ...blocks])).toEqual([]);
+            expect(Auto.obstructions(result.route, ground)).toEqual([]);
+            expect(result.speedMps).toBeLessThanOrEqual(Auto.OPTIONS.maxSpeedMps);
+        }
+        // The tour that passes a middle design: the turn at that design is rounded too.
+        const west = building(-220, 0, 20, 20, 20), middle = building(-40, 60, 14, 14, 12), east = building(220, 0, 20, 20, 24);
+        const plan = [{ id: 'a', buildings: [west], outline: [] }, { id: 'b', buildings: [middle], outline: [] }, { id: 'c', buildings: [east], outline: [] }];
+        const tour = Auto.generate({ subjects: plan, field: field(plan, [building(0, 40, 30, 300, 80), building(0, -235, 30, 170, 80)]) });
+        expect(motion(tour).look).toBeLessThan(cap * 1.2); expect(motion(tour).corner).toBeLessThan(45);
+        expect(tour.route.some(p => Math.hypot(p.position[0] + 40, p.position[1] - 60) < 40)).toBe(true);
+    });
+
+    it('flies into a design orbit along the orbit, not across it', () => {
+        const subjects = [{ id: 'd1', buildings: [building(0, 0, 20, 16, 30)], outline: [] }];
+        const result = Auto.generate({ subjects, field: field(subjects) });
+        expect(motion(result).corner).toBeLessThan(30); expect(motion(result).look).toBeLessThan(Auto.OPTIONS.maxTurnDegPerS * 1.2);
     });
 
     it('reports a straight route through a building as obstructed', () => {
