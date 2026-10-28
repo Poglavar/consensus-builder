@@ -8,8 +8,9 @@ date. This replaces the retired list timeline (`epochYear` on a design).
 ## Decisions
 
 - **Dates belong to the plan, not the design.** The same design can be built faster or slower in
-  another plan. An agreement shows the schedule of the plan revision it references and has no
-  schedule of its own; its deadline stays the decision deadline, unrelated to construction.
+  another plan. The timeline reads only plan dates; agreements, their deadlines and their views play
+  no part in it.
+- **A window is just its months.** No stated basis (estimate, contract, permit) is recorded.
 - **Month precision.** A window is a start month and an end month, both inclusive (`YYYY-MM`).
 - **The time control only displays.** Moving it never applies, unapplies or replays anything; replay
   order stays the formation and dependency order (see Replay in the [vocabulary](vocabulary.md)).
@@ -58,10 +59,10 @@ A new pure module, `frontend/js/plans/buildout-schedule.js` (UMD, DOM-free, head
 **Plan components (the plan's design list in Lists → Plans).** Each row gets an optional
 "Construction" month range (two `<input type="month">` fields). A Gantt strip above the list shows
 every window on one axis and opens the row on click. Saving goes through the existing plan revision
-flow. The agreement view shows the same strip read-only.
+flow.
 
 **Time control on the map.** A clock button in the map controls opens a slider over the shown plan's
-range (or its agreement's plan), month steps, with play and step buttons and the current month as a
+range, month steps, with play and step buttons and the current month as a
 label. The selected month is in the URL as `when=YYYY-MM`, so a shared link opens at that moment.
 Without a schedule in view the button is absent. Closing the control returns to "now" (everything
 built).
@@ -111,8 +112,3 @@ the year buckets in `proposals/plan-yield.js` (replaced by schedule months), the
    drawn from a yearly start rate, duration from built floor area; `buildout=<seed>` in the URL; the
    same clock and rendering, labelled as a simulation.
 
-## Open questions
-
-- Whether a published plan's schedule needs a stated basis (estimate, contract, permit) beside the
-  months.
-- Whether the clock should also show the agreement's decision deadline as a marker on the slider.
