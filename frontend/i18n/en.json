@@ -7220,6 +7220,13 @@
     },
     "bets": {
         "tagline": "Bet on cities",
+        "pitchLink": "Read the Hyperstition pitch",
+        "scope": {
+            "city": "This city",
+            "worldPending": "World bets",
+            "world": "World bets ({{count}})",
+            "worldEmpty": "No bets in other cities yet."
+        },
         "intro": "Bet with points without a wallet, or with devnet USDC through a connected wallet. Both are play money with no cash value.",
         "loading": "Loading bets…",
         "emptyAgreements": "No markets in this city yet. Mint an agreement with a deadline to open the first one.",

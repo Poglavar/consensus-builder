@@ -7247,6 +7247,13 @@
     },
     "bets": {
         "tagline": "Apuesta por las ciudades",
+        "pitchLink": "Lee la presentación de Hyperstition",
+        "scope": {
+            "city": "Esta ciudad",
+            "worldPending": "Apuestas del mundo",
+            "world": "Apuestas del mundo ({{count}})",
+            "worldEmpty": "Aún no hay apuestas en otras ciudades."
+        },
         "intro": "Apuesta con puntos sin cartera o con USDC de devnet conectando una cartera. Ambos son dinero de juego sin valor en efectivo.",
         "loading": "Cargando apuestas…",
         "emptyAgreements": "Aún no hay mercados en esta ciudad. Acuña un acuerdo con fecha límite para abrir el primero.",

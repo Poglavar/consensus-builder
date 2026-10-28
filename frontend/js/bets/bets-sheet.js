@@ -12,13 +12,17 @@
     const SHEET_ID = 'bets-sheet';
     const CONTENT_ID = 'bets-sheet-content';
     const FILTER_ID = 'bets-sheet-filter';
+    const SCOPE_ID = 'bets-sheet-scope';
     const SEEN_KEY = 'cb.bets.seen';           // per-viewer: the "New" word goes once the sheet was opened
     const FRESH_MS = 20_000;                    // matches the backend's per-city cache
     // positions: the connected wallet's bets per agreement account (solana/market-bridge.js
     // readPositions); changed: the account a confirmed transaction just touched, marked on its row
     // after the next render; scrollTo: the contest a dialog sent the person back to;
     // filter: all | open | settled | mine (js/bets/bets-model.js filterRows).
-    const state = { city: null, loadedAt: 0, payload: null, loading: null, positions: {}, changed: null, scrollTo: null, filter: 'all', discoveryPending: false, positionTracked: new Set() };
+    // scope: city | world. The world tab lists every other city's bets (GET /markets?scope=other),
+    // read-only here: a row opens its bet in its own city. world/worldPositions mirror payload/positions.
+    const state = { city: null, loadedAt: 0, payload: null, loading: null, positions: {}, changed: null, scrollTo: null, filter: 'all', discoveryPending: false, positionTracked: new Set(),
+        scope: 'city', world: null, worldCity: null, worldLoadedAt: 0, worldLoading: null, worldPositions: {} };
 
     function trackBet(name, row = null, properties = {}) {
         try {
@@ -133,8 +137,8 @@
     const sideWord = side => (side === 'yes' ? t('bets.row.yes', 'Yes') : t('bets.row.no', 'No')).toLowerCase();
 
     // "Your bets: yes 0.05 USDC" for a row, from the wallet's decoded positions; empty without any.
-    function mineText(row) {
-        const positions = state.positions[row.account];
+    function mineText(row, byAccount = state.positions) {
+        const positions = byAccount[row.account];
         if (!positions || !root.BetsModel) return '';
         const lines = ['yes', 'no']
             .filter(side => positions[side] && root.BetsModel.formatAtomic(positions[side].amount) !== '0')
@@ -180,23 +184,26 @@
     // The wallet's positions for every row with a pool, one RPC round trip, then written into the
     // rows already on screen (no re-render, so a press in progress is not lost); the "Mine" filter
     // is the one view that needs the rows drawn again.
-    async function loadPositions(payload) {
+    async function positionsOf(payload) {
         const bridge = root.BetsTrading;
-        if (!bridge || typeof bridge.readPositions !== 'function') return;
         const accounts = (payload && payload.contests ? payload.contests : [])
             .flatMap(contest => contest.agreements || [])
             .filter(entry => entry.account && entry.market)
             .map(entry => ({ account: entry.account, sponsor: entry.sponsor, marketAddress: entry.market.address }));
-        if ((bridge.needsWallet() && !walletConnected()) || !accounts.length) { state.positions = {}; }
-        else {
-            try {
-                state.positions = await bridge.readPositions(accounts);
-            } catch (error) {
-                console.warn(`[${new Date().toISOString()}] [bets] positions unreadable`, error);
-                state.positions = {};
-            }
+        if ((bridge.needsWallet() && !walletConnected()) || !accounts.length) return {};
+        try {
+            return await bridge.readPositions(accounts);
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [bets] positions unreadable`, error);
+            return {};
         }
-        if (state.payload !== payload) return;
+    }
+
+    async function loadPositions(payload) {
+        const bridge = root.BetsTrading;
+        if (!bridge || typeof bridge.readPositions !== 'function') return;
+        state.positions = await positionsOf(payload);
+        if (state.payload !== payload || state.scope !== 'city') return;
         const container = doc.getElementById(CONTENT_ID);
         if (!container) return;
         if (state.filter === 'mine') { render(container, payload); return; }
@@ -501,6 +508,45 @@
         return li;
     }
 
+    // A row of another city's bet: what it asks, its chance and deadline, and the way to it. Betting
+    // happens in the bet's own city, so the title is a link that opens it there.
+    function renderWorldRow(row, city) {
+        const li = el('li', `bets-row is-${row.state}`);
+        if (row.account) li.dataset.account = row.account;
+        const head = el('div', 'bets-row__head');
+        const params = new URL(root.location.href).searchParams;
+        const title = el('a', 'cb-link bets-row__title', labelText(row));
+        if (row.account && root.BetsLink) {
+            title.href = root.BetsLink.appHref({ city, account: row.account, lang: params.get('lang'),
+                asset: root.BetsTrading.asset(), backend: params.get('backend'), betTest: root.BetsTrading.simulationRun() });
+        }
+        head.append(title, el('span', 'bets-row__chance', chanceLabel(row)));
+        li.append(head);
+        if (row.state === 'open' && row.chanceYes !== null && row.chanceYes !== undefined) {
+            const bar = el('div', 'bets-row__bar');
+            const fill = el('span');
+            fill.style.width = `${Math.max(0, Math.min(100, row.chanceYes))}%`;
+            bar.append(fill);
+            li.append(bar);
+        }
+        const who = [root.BetsModel.authorLabel(row.author), row.createdAt ? dateText(row.createdAt, true) : null].filter(Boolean).join(' · ');
+        if (who) li.append(el('p', 'bets-row__who', who));
+        if (row.closesAt) {
+            const meta = el('div', 'bets-row__meta');
+            meta.append(el('span', null, t('bets.row.deadline', 'Deadline {{date}}', { date: root.BetsUI.deadline(row.closesAt) })));
+            li.append(meta);
+        }
+        const mine = mineText(row, state.worldPositions);
+        if (mine) li.append(el('p', 'bets-row__mine', mine));
+        return li;
+    }
+
+    function cityName(code) {
+        const manager = root.CityConfigManager;
+        const id = manager && typeof manager.resolveCityId === 'function' ? manager.resolveCityId(code) || code : code;
+        return manager && typeof manager.getCityLabel === 'function' ? manager.getCityLabel(id) : code;
+    }
+
     // Where the contest's land is: the first input parcel and how many more, or open ground.
     function landText(contest) {
         if (!contest.land.first) return t('bets.contest.openGround', 'Open ground');
@@ -526,9 +572,9 @@
 
     // A contest under the current filter: the rows with a pool, and the rest folded under a count.
     // Null when the filter leaves nothing of it.
-    function renderContest(contest) {
+    function renderContest(contest, world = false) {
         const model = root.BetsModel;
-        const rows = model.filterRows(contest.rows, state.filter, state.positions);
+        const rows = model.filterRows(contest.rows, state.filter, world ? state.worldPositions : state.positions);
         const { shown, hidden } = model.splitRows(rows);
         if (!shown.length && !hidden.length) return null;
         const article = el('article', 'bets-contest');
@@ -538,6 +584,7 @@
         const land = el('p', 'bets-contest__land');
         land.title = contest.parcelIds.join(', ');
         land.textContent = [
+            ...(world && contest.city ? [cityName(contest.city)] : []),
             landText(contest),
             ...entriesText(contest)
         ].join(' · ');
@@ -546,14 +593,14 @@
         if (contest.agreementCount > 1) article.append(el('p', 'bets-contest__independent', t('bets.trade.independent', 'Each agreement has its own YES/NO bet. Both, one or neither can execute.')));
         if (shown.length) {
             const list = el('ul', 'bets-rows');
-            shown.forEach(row => list.append(renderRow(row)));
+            shown.forEach(row => list.append(world ? renderWorldRow(row, contest.city) : renderRow(row)));
             article.append(list);
         }
         if (hidden.length) {
             const more = el('details', 'bets-more');
             more.append(el('summary', null, t('bets.contest.withoutPool', 'Without a market: {{count}}', { count: hidden.length })));
             const list = el('ul', 'bets-rows');
-            hidden.forEach(row => list.append(renderRow(row)));
+            hidden.forEach(row => list.append(world ? renderWorldRow(row, contest.city) : renderRow(row)));
             more.append(list);
             article.append(more);
         }
@@ -592,12 +639,94 @@
         bar.querySelectorAll('.bets-filter__btn').forEach(button => button.setAttribute('aria-pressed', button.dataset.filter === state.filter ? 'true' : 'false'));
     }
 
-    function renderAccount() {
+    // This city | World bets (N): tabs above the filter, drawn once; the count arrives with the world list.
+    function renderScope(container) {
+        let bar = doc.getElementById(SCOPE_ID);
+        if (!bar) {
+            bar = el('div', 'cb-tabs cb-tabs--fill bets-scope');
+            bar.id = SCOPE_ID;
+            bar.setAttribute('role', 'tablist');
+            ['city', 'world'].forEach(scope => {
+                const button = el('button', 'cb-tab bets-scope__tab');
+                button.type = 'button';
+                button.setAttribute('role', 'tab');
+                button.dataset.scope = scope;
+                button.addEventListener('click', () => {
+                    if (state.scope === scope) return;
+                    state.scope = scope;
+                    if (state.payload) render(container, state.payload);
+                });
+                bar.append(button);
+            });
+            container.before(bar);
+        }
+        const count = state.world ? state.world.summary?.agreements ?? 0 : null;
+        bar.querySelectorAll('.bets-scope__tab').forEach(button => {
+            const world = button.dataset.scope === 'world';
+            button.textContent = !world ? t('bets.scope.city', 'This city')
+                : count === null ? t('bets.scope.worldPending', 'World bets') : t('bets.scope.world', 'World bets ({{count}})', { count });
+            button.setAttribute('aria-selected', String(button.dataset.scope === state.scope));
+        });
+    }
+
+    // Every other city's bets, from cache while fresh; redraws the tab count and, on the world tab, the list.
+    async function loadWorld(options = {}) {
+        const city = cityCode();
+        const selected = root.BetsTrading.asset();
+        if (!options.force && state.world && state.world.asset === selected && state.worldCity === city && Date.now() - state.worldLoadedAt < FRESH_MS) return state.world;
+        if (state.worldLoading) return state.worldLoading;
+        state.worldLoading = (async () => {
+            const container = doc.getElementById(CONTENT_ID);
+            try {
+                const world = await root.BetsTrading.loadCity(city, { scope: 'other', fresh: options.fresh });
+                if (selected !== root.BetsTrading.asset() || city !== cityCode()) return null;
+                state.world = world; state.worldCity = city; state.worldLoadedAt = Date.now(); state.worldPositions = {};
+                const draw = () => { if (container) { if (state.scope === 'world' && state.payload) render(container, state.payload); else renderScope(container); } };
+                draw();
+                // The person's own bets come after the list; the rows are drawn again only when there are any.
+                const positions = root.BetsTrading.readPositions ? await positionsOf(world) : {};
+                if (state.world !== world || !Object.keys(positions).length) return world;
+                state.worldPositions = positions;
+                draw();
+                return world;
+            } catch (error) {
+                console.error(`[${new Date().toISOString()}] [bets] world bets failed`, error);
+                if (container && state.scope === 'world') renderStatus(container, t('bets.error.load', 'Bets could not be loaded.'), 'error');
+                return null;
+            } finally {
+                state.worldLoading = null;
+            }
+        })();
+        return state.worldLoading;
+    }
+
+    function renderWorld(container) {
+        if (!state.world) { renderStatus(container, t('bets.loading', 'Loading bets…')); loadWorld(); return; }
+        const ordered = root.BetsModel.orderContests(contests(state.world));
+        const articles = ordered.map(contest => renderContest(contest, true)).filter(Boolean);
+        container.replaceChildren();
+        if (!articles.length) {
+            renderStatus(container, !ordered.length ? t('bets.scope.worldEmpty', 'No bets in other cities yet.')
+                : state.filter === 'mine' && root.BetsTrading.needsWallet() && !walletConnected()
+                    ? t('panel.proposal.market.connectPosition', 'Connect a Solana wallet to see your bets.')
+                    : t('bets.filter.empty', 'No bets match this filter.'));
+            return;
+        }
+        articles.forEach(article => container.append(article));
+    }
+
+    // The account box is rebuilt for new data or another asset only: a filter press keeps it, so its
+    // balance is not read again and the rows below it stay where they are.
+    function renderAccount(refresh) {
         const container = doc.getElementById(CONTENT_ID);
         if (!container) return;
         let account = doc.getElementById('bets-account-controls');
         if (!account) { account = el('div'); account.id = 'bets-account-controls'; container.before(account); }
-        account.replaceChildren(root.BetsUI.assetControl());
+        const asset = root.BetsTrading.asset();
+        if (refresh || account.dataset.asset !== asset || !account.firstChild) {
+            account.dataset.asset = asset;
+            account.replaceChildren(root.BetsUI.assetControl());
+        }
         let standings = doc.getElementById('bets-standings');
         if (!standings) {
             standings = el('details', 'bets-standings'); standings.id = 'bets-standings';
@@ -643,11 +772,13 @@
         standings.hidden = root.BetsTrading.asset() !== 'points';
     }
 
-    function render(container, payload) {
+    function render(container, payload, options = {}) {
         if (!container || !root.BetsModel) return;
-        const ordered = root.BetsModel.orderContests(contests(payload));
-        renderAccount();
+        renderAccount(options.refreshAccount);
+        renderScope(container);
         renderFilter(container);
+        if (state.scope === 'world') { renderWorld(container); finishDiscovery('succeeded'); return; }
+        const ordered = root.BetsModel.orderContests(contests(payload));
         container.replaceChildren();
         if (!ordered.length) {
             renderStatus(container, t('bets.emptyAgreements', 'No bets in this city yet. Mint an agreement with a deadline to start.'));
@@ -675,7 +806,7 @@
         const city = cityCode();
         const selected = root.BetsTrading.asset();
         const fresh = state.payload && state.payload.asset === selected && state.city === city && Date.now() - state.loadedAt < FRESH_MS;
-        if (!options.force && fresh) { render(container, state.payload); loadPositions(state.payload); return state.payload; }
+        if (!options.force && fresh) { render(container, state.payload); loadPositions(state.payload); loadWorld(); return state.payload; }
         if (state.fresh) { options = { ...options, fresh: true }; state.fresh = false; }
         if (state.loading) {
             await state.loading;
@@ -690,8 +821,9 @@
                 state.payload = payload;
                 state.city = city;
                 state.loadedAt = Date.now();
-                render(container, payload);
+                render(container, payload, { refreshAccount: true });
                 state.positionsLoading = loadPositions(payload).finally(() => { state.positionsLoading = null; });
+                loadWorld({ force: options.force, fresh: options.fresh });
                 return payload;
             } catch (error) {
                 console.error(`[${new Date().toISOString()}] [bets] load failed`, error);
@@ -733,6 +865,7 @@
         // just opened or bet on shows up at once.
         doc.addEventListener('bets:asset', async () => {
             state.payload = null; state.positions = {}; state.loadedAt = 0;
+            state.world = null; state.worldPositions = {};
             await state.loading;
             if (isOpen()) load({ force: true, fresh: true });
         });
@@ -750,6 +883,7 @@
         root.addEventListener('cityChanged', () => {
             state.payload = null;
             state.city = null;
+            state.world = null; state.scope = 'city';
             if (isOpen()) load({ force: true });
         });
     }

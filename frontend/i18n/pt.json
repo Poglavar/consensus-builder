@@ -4711,6 +4711,13 @@
             }
         },
         "tagline": "Aposte nas cidades",
+        "pitchLink": "Leia a apresentação do Hyperstition",
+        "scope": {
+            "city": "Esta cidade",
+            "worldPending": "Apostas do mundo",
+            "world": "Apostas do mundo ({{count}})",
+            "worldEmpty": "Ainda não há apostas noutras cidades."
+        },
         "intro": "Aposte com pontos sem carteira ou com USDC da devnet através de uma carteira ligada. Ambas as opções usam dinheiro fictício sem valor monetário real.",
         "loading": "A carregar apostas…",
         "emptyAgreements": "Ainda não há mercados nesta cidade. Emita um acordo on-chain com uma data-limite para abrir o primeiro.",

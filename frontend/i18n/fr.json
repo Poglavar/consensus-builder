@@ -4711,6 +4711,13 @@
             }
         },
         "tagline": "Pariez sur les villes",
+        "pitchLink": "Lire la présentation Hyperstition",
+        "scope": {
+            "city": "Cette ville",
+            "worldPending": "Paris du monde",
+            "world": "Paris du monde ({{count}})",
+            "worldEmpty": "Pas encore de paris dans d’autres villes."
+        },
         "intro": "Pariez avec des points sans portefeuille, ou avec des USDC du devnet via un portefeuille connecté. Dans les deux cas, il s’agit d’argent fictif sans valeur monétaire.",
         "loading": "Chargement des paris…",
         "emptyAgreements": "Aucun marché dans cette ville pour le moment. Créez un accord sur la blockchain avec une échéance pour ouvrir le premier.",

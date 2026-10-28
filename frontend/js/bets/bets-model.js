@@ -266,6 +266,7 @@
             .map(item => row(item, { ...options, contest: entry.id })).sort(compareRows);
         return {
             id: entry.id,
+            city: entry.city || null,                 // set on GET /markets?scope=other contests
             parcelIds: entry.parcelIds || [],
             land: landLabel(entry.parcelIds),
             agreementCount: rows.length,

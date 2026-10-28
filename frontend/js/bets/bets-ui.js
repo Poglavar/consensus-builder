@@ -73,7 +73,8 @@
         if (trading.simulationRun()) section.append(el('p', 'bets-account__simulation', t('bets.trade.simulated', 'Simulated test activity · excluded from public standings')));
         const balance = el('p', 'bets-account__balance');
         balance.setAttribute('aria-live', 'polite'); section.append(balance);
-        trading.readStakeBalance().then(value => {
+        // The line holds a spinner while the balance is read, so the controls below do not move when it lands.
+        root.BusyControl.track(balance, trading.readStakeBalance()).then(value => {
             if (!section.isConnected || selected !== trading.asset()) return;
             balance.textContent = value === null ? t('bets.trade.connectWallet', 'Connect a wallet to use devnet USDC.')
                 : t('bets.trade.balance', 'Available: {{amount}}', { amount: money(root.BetsModel.formatAtomic(value), selected) });

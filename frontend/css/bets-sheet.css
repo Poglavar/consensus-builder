@@ -9,6 +9,9 @@
     gap: var(--cb-space-3);
 }
 
+/* This city | World bets: a scroll container (cb-tabs), which a column flex box would squash. */
+.bets-scope { flex-shrink: 0; }
+
 .bets-tagline {
     margin: 0;
     font-size: var(--cb-text-base);

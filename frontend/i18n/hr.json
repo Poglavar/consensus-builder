@@ -7260,6 +7260,13 @@
     },
     "bets": {
         "tagline": "Kladi se na gradove",
+        "pitchLink": "Pročitaj prezentaciju Hyperstition",
+        "scope": {
+            "city": "Ovaj grad",
+            "worldPending": "Oklade u svijetu",
+            "world": "Oklade u svijetu ({{count}})",
+            "worldEmpty": "Još nema oklada u drugim gradovima."
+        },
         "intro": "Ulažite bodovima bez novčanika ili devnet USDC-om uz povezani novčanik. Oboje je igraći novac bez novčane vrijednosti.",
         "loading": "Učitavanje oklada…",
         "emptyAgreements": "U ovom gradu još nema tržišta. Iskovajte sporazum s rokom da biste otvorili prvo.",

@@ -130,6 +130,27 @@ describe('GET /markets', () => {
         expect(readMarkets).not.toHaveBeenCalled();
     });
 
+    it('scope=other lists every other city, each city\'s contests built apart and named by city', async () => {
+        const otherCid = cidOfObject({ schema: 'agreement/v1', title: 'Harbour park' });
+        const otherAccount = agreementAccountOf(otherCid, SPONSOR);
+        const [minted] = rows();
+        // The same parcel number in two cities: two contests, never one.
+        const pool = poolFor([{ ...minted, city: 'split' }, { ...minted, cid: otherCid, city: 'rijeka', title: 'Harbour park',
+            onchain: onchain({ account: otherAccount }), created_at: new Date('2026-10-03T10:00:00Z') }, { ...minted, city: 'zagreb' }]);
+        const app = appFor({ pool, readMarkets: async () => openPool() });
+        const res = await request(app).get('/markets?city=zagreb&scope=other');
+        expect(res.status).toBe(200);
+        expect(pool.query.mock.calls[0][0]).toMatch(/WHERE a\.city <> \$1/);
+        expect(pool.query.mock.calls[0][1]).toEqual(['zagreb', 2000]);
+        expect(res.body).toMatchObject({ city: 'zagreb', scope: 'other', summary: { contests: 2, agreements: 2 } });
+        expect(res.body.contests.map(contest => contest.city).sort()).toEqual(['rijeka', 'split']);
+        expect(res.body.contests.flatMap(contest => contest.agreements.map(entry => entry.cid)).sort()).toEqual([CID, otherCid].sort());
+        // Its own cache entry: the city list is read separately.
+        await request(app).get('/markets?city=zagreb');
+        expect(pool.query).toHaveBeenCalledTimes(2);
+        expect(pool.query.mock.calls[1][0]).toMatch(/WHERE a\.city = \$1/);
+    });
+
     it('answers 502 when the chain read fails instead of serving half a payload', async () => {
         const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
         const res = await request(appFor({ readMarkets: async () => { throw new Error('rpc down'); } })).get('/markets?city=zagreb');
