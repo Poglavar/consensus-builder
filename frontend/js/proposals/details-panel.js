@@ -1196,10 +1196,19 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         proposalParcelItems.forEach(item => {
             const hoveredParcelId = item.getAttribute('data-parcel-id');
             if (!hoveredParcelId) return;
+            // A source a formation replaced lights up its old outline, or nothing when none is
+            // known: resolving it live would light the pieces now covering it, which are outputs.
+            const replaced = item.getAttribute('data-parcel-replaced') === 'true';
             item.addEventListener('mouseenter', () => {
                 try {
-                    showProposalInfoHoverOverlay(hoveredParcelId);
-                } catch (_) { }
+                    if (!replaced) showProposalInfoHoverOverlay(hoveredParcelId);
+                    else {
+                        const source = removedParcelSourceFeature(hoveredParcelId, item);
+                        if (source) highlightFeaturesForHover([source], { color: window.MapHighlight.color, weight: 6, dashArray: '10 8', showLabels: false });
+                    }
+                } catch (error) {
+                    console.warn(`[${new Date().toISOString()}] [showProposalInfo] parcel ${hoveredParcelId} hover failed`, error);
+                }
             });
             item.addEventListener('mouseleave', () => {
                 try {

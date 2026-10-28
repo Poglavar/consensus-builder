@@ -1008,40 +1008,25 @@ async function removeProposalFromMap(proposalId, options = {}) {
     }
 }
 
+// The outline a parcel had before a formation replaced it in the map model: the row's own copy, or
+// the immutable cadastral repository. Null when neither has it, so there is nothing to show.
+function removedParcelSourceFeature(parcelId, parcelItem) {
+    if (!parcelId) return null;
+    try {
+        const geometry = JSON.parse(parcelItem?.getAttribute?.('data-parcel-geometry') || 'null');
+        if (geometry?.type && Array.isArray(geometry.coordinates)) {
+            return { type: 'Feature', properties: { parcelId: String(parcelId) }, geometry };
+        }
+    } catch (_) { }
+    // Generated identities have no durable geometry and must carry it in the row if they need it.
+    const stored = window.CadastralParcelRepository?.get?.(parcelId) || null;
+    return stored?.geometry ? stored : null;
+}
+
 function focusOnRemovedParcelLocation(parcelId, parcelItem) {
     if (!parcelId || typeof map === 'undefined' || !map) return;
 
-    let geometry = null;
-    let feature = null;
-
-    // Try to get geometry from data attribute first
-    if (parcelItem) {
-        try {
-            const geometryAttr = parcelItem.getAttribute('data-parcel-geometry');
-            if (geometryAttr) {
-                geometry = JSON.parse(geometryAttr);
-                if (geometry?.type && Array.isArray(geometry.coordinates)) {
-                    feature = {
-                        type: 'Feature',
-                        properties: { parcelId: String(parcelId) },
-                        geometry
-                    };
-                }
-            }
-        } catch (_) { }
-    }
-
-    // A removed cadastral row can be located from the immutable repository. Generated identities
-    // have no durable geometry and must carry it in the row's data attribute if they need focus.
-    if (!geometry && !feature) {
-        try {
-            const stored = window.CadastralParcelRepository?.get?.(parcelId) || null;
-            if (stored?.geometry) {
-                feature = stored;
-                geometry = stored.geometry;
-            }
-        } catch (_) { }
-    }
+    const feature = removedParcelSourceFeature(parcelId, parcelItem);
 
     // Create bounds from geometry and focus map
     if (feature && feature.geometry && typeof L !== 'undefined') {
@@ -1056,23 +1041,6 @@ function focusOnRemovedParcelLocation(parcelId, parcelItem) {
             }
         } catch (error) {
             console.warn('focusOnRemovedParcelLocation: failed to focus on removed parcel', parcelId, error);
-        }
-    } else if (geometry && Array.isArray(geometry) && geometry.length > 0 && typeof L !== 'undefined') {
-        // Try to create bounds from raw geometry coordinates
-        try {
-            // Geometry is expected to be an array of [lng, lat] pairs
-            const coords = geometry;
-            if (coords.length > 0) {
-                const latlngs = coords.map(coord => [coord[1], coord[0]]); // Convert [lng, lat] to [lat, lng]
-                const polygon = L.polygon(latlngs);
-                const bounds = polygon.getBounds();
-                if (bounds && bounds.isValid()) {
-                    map.fitBounds(bounds, { padding: [50, 50] });
-                    return;
-                }
-            }
-        } catch (error) {
-            console.warn('focusOnRemovedParcelLocation: failed to focus on removed parcel from geometry', parcelId, error);
         }
     }
 }
