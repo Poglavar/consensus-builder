@@ -22,14 +22,14 @@
     // Right-dock panels the stack never hosts: when one opens, the stack steps aside.
     const DOCKED_ELSEWHERE = ['block-info-panel', 'road-info-panel', 'road-analysis-panel'];
     // Sections whose object has a shape on the map, so the Focus button can bring it into view.
-    // A design's panel has Input parcels and Output parcels tabs of its own, so its section skips them.
+    // A parcel layout's panel has Input parcels and Output parcels tabs of its own, so its section skips them.
     const PANEL_RELATIONS = new Set(['designParcels', 'formedParcels', 'affectsParcels']);
     const FRAMEABLE = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'selection']);
     const ICONS = Object.freeze({ agreements: 'fas cb-icon-agreement', plans: 'fas cb-icon-plan', designs: 'fas cb-icon-design', built: 'fas fa-building',
         permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
     const relationsFor = (kind, instance) => model.visibleContextFor(kind, instance, state.hits)
-        .filter(group => kind !== 'designs' || !PANEL_RELATIONS.has(group.relation));
+        .filter(group => kind !== 'designs' || instance?.proposal?.goal !== 'parcel-layout' || !PANEL_RELATIONS.has(group.relation));
 
     const state = { el: null, stack: null, frameRequest: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null , baseHits: null, derived: {} };
 

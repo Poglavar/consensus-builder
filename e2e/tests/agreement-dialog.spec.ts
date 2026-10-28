@@ -27,12 +27,12 @@ test('an agreement over an applied parcel layout is created from its plan, compa
   test.setTimeout(180_000);
   const { layoutId, partyKey } = await applyLayout(page);
 
-  // A parcel layout leaves the device only with its agreement: its Share is disabled and says so, and
+  // A parcel layout leaves the device only with its agreement: it has no Share of its own, and
   // its details offer no agreement of their own, since an agreement starts from a saved plan.
   await showProposal(page, layoutId);
   const primary = page.locator('#proposal-details-panel .proposal-primary-actions');
-  await expect(primary.locator('.btn-share-proposal')).toBeDisabled();
-  await expect(page.locator('#proposal-publish-later-note')).toHaveText('A parcel layout is published with its agreement. Propose an agreement that includes it.');
+  await expect(primary.locator('.btn-share-proposal')).toHaveCount(0);
+  await expect(page.locator('#proposal-publish-later-note')).toHaveCount(0);
   await expect(primary.locator('.btn-create-agreement')).toHaveCount(0);
   const editor = await createFromPlan(page, layoutId, 'Block 1234 plan');
   // The plan fixes the designs: the editor lists them and offers no design to choose.

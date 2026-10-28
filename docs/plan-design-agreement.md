@@ -430,7 +430,7 @@ the `proposal:<id>` rows. It never takes part in `ParcelMutation`: an agreement 
   agreements (`.agreement-item[data-agreement-id]`) with "Create agreement" (`[data-agreement-action=create]`).
 - Entry points: the sidebar button `#agreementsButton` ("Agreements", command `proposals.agreements`)
   and the details panel's "Create agreement" (`.btn-create-agreement`, shown for an applied design;
-  for a layout it is the main action next to the disabled Share).
+  for a layout it is the main action; a layout has no Share, since its agreement publishes it).
 - CSS: `frontend/css/agreement-dialog.css` (the dialog) and `frontend/css/agreement.css` (panel, list, sidebar button) on the tokens; i18n namespace `agreement.*`
   plus `sidebar.proposals.agreementsButton` and `panel.proposal.actions.createAgreement`, in en, es,
   hr and sr.

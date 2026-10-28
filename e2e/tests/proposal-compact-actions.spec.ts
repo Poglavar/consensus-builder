@@ -72,7 +72,7 @@ test.describe('compact proposal card actions @features', () => {
     await expect(footer.locator('.btn-edit-geometry')).toBeVisible();
     await expect(footer.locator('.btn-share-proposal')).toBeVisible();
     await expect(panel.locator('[data-proposal-tab="overview"]')).toHaveAttribute('aria-selected', 'true');
-    await expect(panel.getByRole('tab')).toHaveText(['Overview', /^Input parcels \(\d+\)$/, /^Output parcels \(\d+\)$/]);
+    await expect(panel.locator('[data-proposal-tab="details"]')).toBeVisible();
     const mapButton = footer.locator(`#proposal-action-btn-${proposalId}`);
     await expect(mapButton).toBeVisible();
 
@@ -104,7 +104,7 @@ test.describe('compact proposal card actions @features', () => {
     await expect(reopenedFooter.locator(`#proposal-action-btn-${proposalId}`)).toContainText(/Remove|Unapply/i);
   });
 
-  test('the panel tabs and mobile 320px footer keep Share and Copy usable', async ({ mockApi: page }) => {
+  test('the Details tab and mobile 320px footer keep Share and Copy usable', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 320, height: 780 });
     await openCity(page);
     await page.evaluate(() => (window as any).i18n.setLanguage('en'));
@@ -116,7 +116,7 @@ test.describe('compact proposal card actions @features', () => {
     const panel = page.locator('#proposal-details-panel');
     const footer = panel.locator('#proposal-details-footer');
     const share = footer.locator('.btn-share-proposal');
-    const detailsTab = panel.locator('[data-proposal-tab="outputs"]');
+    const detailsTab = panel.locator('[data-proposal-tab="details"]');
     await share.scrollIntoViewIfNeeded();
     await expect(share).toBeInViewport({ ratio: 1 });
     await detailsTab.scrollIntoViewIfNeeded();
@@ -131,9 +131,8 @@ test.describe('compact proposal card actions @features', () => {
     await share.click();
     await expectSharedAsDesign(page, proposalId);
 
-    await showProposalTab(page, 'outputs');
+    await showProposalTab(page, 'details');
     await expect(detailsTab).toHaveAttribute('aria-selected', 'true');
-    await showProposalTab(page, 'overview');
     const record = panel.locator('#proposal-details-content details[data-proposal-section="record"]');
     await record.scrollIntoViewIfNeeded();
     if (!(await record.evaluate(element => (element as HTMLDetailsElement).open))) {

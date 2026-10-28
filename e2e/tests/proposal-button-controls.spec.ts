@@ -18,7 +18,7 @@ async function showExpandedProposal(page: import('@playwright/test').Page, propo
 }
 
 async function openLandSection(page: import('@playwright/test').Page): Promise<void> {
-  await showProposalTab(page, 'overview');
+  await showProposalTab(page, 'details');
   const section = page.locator('#proposal-details-content details[data-proposal-section="land"]');
   if (!(await section.evaluate(element => (element as HTMLDetailsElement).open))) {
     await section.locator(':scope > summary').click();

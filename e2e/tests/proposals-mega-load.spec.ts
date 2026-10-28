@@ -133,7 +133,8 @@ test.describe('Mega proposal loading @features', () => {
       await minimizeButton.click();
     }
     await expect(panel.locator('.panel-body')).toBeVisible();
-    await showProposalTab(page, 'inputs');
+    await showProposalTab(page, 'details');
+    await panel.locator('summary').filter({ hasText: 'Land & ownership' }).click();
     const ancestorsList = page.locator('#proposal-parent-parcels-list');
     await expect(ancestorsList).toBeVisible();
     const firstAncestor = ancestorsList.locator('[data-parcel-id]').first();

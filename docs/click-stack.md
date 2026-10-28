@@ -130,13 +130,16 @@ replace one with its own (the model view reads buildings from its scene).
     allocation and person tabs. Tabs retain their selection through refresh. Hover/focus previews
     spatial rows, and clicking frames and highlights them without leaving the agreement. Person
     rows inspect their contributed and allocated land. Hash-only outputs remain non-spatial.
-  - Design: the proposal's actions panel itself (2026-10-23), without its own − and ×, with three
-    tabs and the actions under all of them: Overview (name, rung badges, type, author, parcel count
-    and one area, then land and ownership, verification and the record), Input parcels (the
-    cadastral parcels it takes) and Output parcels (the parcels it forms); plus the member plans
-    and agreements inside the card body. The 2D section shows no parcel links of its own, since
-    the panel's tabs list them; the model view's Design section, which has no panel, lists them
-    as Input parcels and Output parcels tabs, in that order. **Add to plan** heads the card, under the
+  - Design: the proposal's actions panel itself (2026-10-23), without its own − and ×: an
+    Overview tab (name, rung badges, type, author, parcel count and one area) and a Details tab
+    (land and ownership, verification, the record), with the actions under both; plus the
+    member plans and agreements inside the card body. A parcel layout's panel has Overview (name,
+    badges, author, site area), Input parcels (the cadastral parcels it takes) and Output parcels
+    (the plots it forms) instead, and no Share: its agreement publishes it. Its 2D section adds no
+    parcel links of its own, since those tabs list them. Other designs, and every design in the
+    model view's section (which has no panel), list the parcels as Input parcels and Output
+    parcels tabs, in that order. The panel re-renders when the design's formed parcels change, so
+    a layout opened before it has replayed onto the map does not keep a count of 0. **Add to plan** heads the card, under the
     design selector and above the panel, in the map and the model view (2026-10-28); the hosted
     panel's footer does not repeat it. Starting Before / after from it folds the stack to its
     rows (the card stays hosted, so the comparison keeps running); a row click unfolds it.

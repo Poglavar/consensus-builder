@@ -1,6 +1,6 @@
 // proposals/details-panel.js — extracted from proposals.js (behavior-preserving relocation).
 
-// The details panel's open tab (Overview, Input parcels or Output parcels); a different proposal starts on Overview.
+// The details panel's open tab (Overview or Details; Input or Output parcels on a parcel layout); a different proposal starts on Overview.
 let proposalDetailsTab = 'overview';
 
 function safeAgentText(value) {
@@ -428,8 +428,10 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const publishRefusal = window.DesignSync.publishedCid(fullProposal || proposal)
         ? null : window.ProposalPublishTerms.publishRefusal(fullProposal || proposal);
     const agreementOnlyPublication = publishRefusal?.code === 'layout-needs-agreement';
-    // Share publishes this exact design; adding it to a plan is a separate action.
-    const shareButtonHtml = publishRefusal
+    // Share publishes this exact design; adding it to a plan is a separate action. A parcel layout has
+    // no Share at all: its agreement publishes it, so there is no button to disable and explain.
+    const shareRefusalNote = publishRefusal && !agreementOnlyPublication ? publishRefusal.message : '';
+    const shareButtonHtml = agreementOnlyPublication ? '' : publishRefusal
         ? `
         <button type="button" class="btn btn-share-proposal" disabled aria-disabled="true" aria-describedby="proposal-publish-later-note">
             <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share')}
@@ -568,7 +570,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}
             </button>
             ${additionalActionsHtml}
-            ${publishRefusal ? `<p class="proposal-publish-later" id="proposal-publish-later-note">${safeAgentText(publishRefusal.message)}</p>` : ''}
+            ${shareRefusalNote ? `<p class="proposal-publish-later" id="proposal-publish-later-note">${safeAgentText(shareRefusalNote)}</p>` : ''}
         </div>
         ${mapActionFailureHtml}
     `;
@@ -749,76 +751,30 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         <summary><span class="proposal-detail-section-label"><span>${safeAgentText(title)}</span><small>${safeAgentText(hint)}</small></span><i class="fas fa-chevron-down" aria-hidden="true"></i></summary>
         <div class="proposal-detail-section-content">`;
     const sectionEnd = '</div></details>';
-    // Three tabs: Overview (the name, its rung, type, author and size, then the records behind it),
-    // Input parcels (the cadastral parcels it takes) and Output parcels (the parcels it forms).
-    // The actions stay in the footer under all three.
-    if (document.getElementById('proposal-details-content')?.dataset.proposalId !== String(proposalKey)) proposalDetailsTab = 'overview';
-    const tabButton = (id, label) => `<button type="button" class="cb-tab proposal-details-tab" role="tab" data-proposal-tab="${id}"
-        aria-selected="${proposalDetailsTab === id}">${safeAgentText(label)}</button>`;
-    const content = `
-        <div class="proposal-info">
-            <div class="cb-tabs cb-tabs--fill proposal-details-tabs" role="tablist">
-                ${tabButton('overview', tProposal('panel.proposal.tabs.overview', 'Overview'))}
-                ${tabButton('inputs', `${tProposal('agreement.workflow.inputs', 'Input parcels')} (${cadastreParcelIds.length})`)}
-                ${tabButton('outputs', `${tProposal('agreement.workflow.outputs', 'Output parcels')} (${descendantKeys.length})`)}
-            </div>
-            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="overview"${proposalDetailsTab === 'overview' ? '' : ' hidden'}>
-            <div class="proposal-badges-row">
-                ${(() => {
-            // One badge from the ladder (docs/design-language.md), the same as the list rows: Draft
-            // or Published; "Applied" when it is on this map (proposals/display-state.js).
-            const ladder = displayState.rung;
-            const ladderLabel = window.__proposalDisplayState.rungLabel(ladder, tProposal);
-            const ladderTitle = escapeHtml(window.__proposalDisplayState.rungHint(ladder, tProposal));
-            const ladderIcon = ladder === 'published' ? 'fa-globe' : 'fa-file-pen';
-            const ladderBadge = `<span class="cb-badge cb-badge--${ladder} proposal-ladder-badge" title="${ladderTitle}"><i class="fas ${ladderIcon}" aria-hidden="true"></i> ${ladderLabel}</span>`;
-            const applied = appliedState
-                ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${mapStatusBadgeLabel}</span>`
-                : '';
-            return proposalTypePill + applied + ladderBadge;
-        })()}
-                ${agentBadgeHtml}
-            </div>
-            <div class="proposal-description-row">
-                ${escapedProposalDescription ? `<p class="proposal-description-text">${escapedProposalDescription}</p>` : ''}
-                ${copiedFromHtml}
-                ${forkedFromHtml}
-            </div>
-            <div class="proposal-author-row">
-                <div class="metric-label">${tProposal('panel.proposal.metrics.author', 'Author:')}</div>
-                <div class="metric-value author-with-avatar">
-                    ${(() => {
-            // Find the agent with matching name
-            if (typeof agentStorage !== 'undefined') {
-                const agents = agentStorage.getAllAgents();
-                const agent = agents.find(a => a.name === proposal.author);
-                if (agent && typeof getAvatarImagePath === 'function') {
-                    return `
-                                        <img src="${getAvatarImagePath(agent.avatarIndex)}" class="author-avatar proposal-author-avatar">
-                                        <button type="button" data-agent-id="${agent.id}" class="cb-link agent-link-clickable">${formatAuthorForDisplay(proposal.author)}</button>
-                                    `;
-                }
-            }
-            return formatAuthorForDisplay(proposal.author);
-        })()}
-                </div>
-            </div>
-            <div class="proposal-overview-facts">
+    // Two tabs (Overview and Details): the overview is the name, its rung, type, author and size; the
+    // records behind it are under Details. A parcel layout instead has Overview, Input parcels (the
+    // cadastral parcels it takes) and Output parcels (the plots it forms), which say what Details
+    // would. The actions stay in the footer under every tab.
+    // The parcel lists: the cadastral parcels a design takes and the parcels it forms. A parcel layout
+    // shows each on a tab of its own, counted in the tab, so without the heading.
+    const outputCount = descendantKeys.length;
+    const listBlock = (label, count, listClass, listId, items, heading) => count > 0 ? `
             <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.metrics.parcels', 'Source parcels:')}</span> <span class="metric-value">${parcelIds.length}</span>
-            </div>
-            ${areaSummary.hasSite ? `<div class="metric-group" data-proposal-area-basis="site">
-                <span class="metric-label">${tProposal('panel.proposal.metrics.siteArea', 'Site area:')}</span>
-                <span class="metric-value">${areaText(areaSummary.siteAreaM2)}</span>
-            </div>` : ''}
-            ${!areaSummary.hasSite && areaSummary.declaredCount ? `<div class="metric-group" data-proposal-area-basis="source-parcels-overview">
-                <span class="metric-label">${tProposal('panel.proposal.metrics.area', 'Area:')}</span>
-                <span class="metric-value">${areaText(areaSummary.sourceAreaM2)}</span>
-            </div>` : ''}
-            ${!areaSummary.hasSite && !areaSummary.declaredCount ? `<div class="metric-group" data-proposal-area-basis="unknown">
-                <span class="metric-label">${tProposal('panel.proposal.metrics.area', 'Area:')}</span><span class="metric-value">—</span>
-            </div>` : ''}
-            </div>
+                ${heading ? `<div class="metric-label-count-container">
+                    <span class="metric-label">${label}</span> <span class="metric-value">${count}</span>
+                </div>` : ''}
+                <div class="${listClass} proposal-parcel-list-scroll" id="${listId}">
+                    ${items}
+                </div>
+            </div>` : `
+            <div class="metric-group">
+                <span class="metric-label">${label}</span> <span class="metric-value">0</span>
+            </div>`;
+    const inputListHtml = heading => listBlock(tProposal('panel.proposal.sections.cadastralParcels', 'Cadastral parcels:'), cadastreParcelIds.length,
+        'proposal-parcels-list', 'proposal-parent-parcels-list', parentParcelItemsInitial, heading);
+    const outputListHtml = heading => listBlock(tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:'), outputCount,
+        'proposal-descendants-list', 'proposal-descendants-list', descendantItemsInitial, heading);
+    const landSectionHtml = `
             ${sectionStart('land', tProposal('panel.proposal.detailsSections.land', 'Land & ownership'), tProposal('panel.proposal.detailsSections.landHintDesign', 'Declared references: {{count}} · designs on the same parcels', { count: cadastreParcelIds.length }))}
             ${parcelSetRelationsHtml}
             ${areaSummary.declaredCount ? `<div class="metric-group" data-proposal-area-basis="source-parcels" data-area-complete="${areaSummary.sourceComplete}">
@@ -829,6 +785,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             </div><p class="proposal-area-coverage"><small>${tProposal('panel.proposal.metrics.areaCoverage', 'Areas available for {{known}} of {{total}} declared references.', {
                 known: areaSummary.sourceCount, total: areaSummary.declaredCount
             })}</small></p>` : ''}
+            ${inputListHtml(true)}
+            ${outputListHtml(true)}
             <!-- Ownership & Acquisition Stats Section -->
             ${(() => {
             // Check if proposal has ownershipAndAcquisitionStats
@@ -923,10 +881,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${statsItems.join('')}
             `;
         })()}
-            ${sectionEnd}
+            ${sectionEnd}`;
+    const verificationSectionHtml = `
             ${agentProvenanceHtml ? sectionStart('verification', tProposal('panel.proposal.detailsSections.verification', 'Verification & history'), tProposal('panel.proposal.detailsSections.verificationHint', 'Lens, evidence and activity')) : ''}
             ${agentProvenanceHtml}
-            ${agentProvenanceHtml ? sectionEnd : ''}
+            ${agentProvenanceHtml ? sectionEnd : ''}`;
+    const recordSectionHtml = `
             ${sectionStart('record', tProposal('panel.proposal.detailsSections.record', 'Proposal record'), tProposal('panel.proposal.detailsSections.recordHint', 'Created date, local ID and links'))}
             <div class="metric-group">
                 <span class="metric-label">${tProposal('panel.proposal.metrics.created', 'Created:')}</span> <span class="metric-value">${createdAtLabel}</span>
@@ -938,51 +898,93 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${escapedProposalDisplayId ? `<div class="proposal-id-row">
                     <button type="button" class="btn btn-quiet proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy local ID')}</button>
                 </div>` : ''}
-            ${sectionEnd}
+            ${sectionEnd}`;
+    const isParcelLayout = (fullProposal || proposal).goal === 'parcel-layout';
+    const detailsTabs = isParcelLayout ? ['overview', 'inputs', 'outputs'] : ['overview', 'details'];
+    if (document.getElementById('proposal-details-content')?.dataset.proposalId !== String(proposalKey)
+        || !detailsTabs.includes(proposalDetailsTab)) proposalDetailsTab = 'overview';
+    const tabButton = (id, label) => `<button type="button" class="cb-tab proposal-details-tab" role="tab" data-proposal-tab="${id}"
+        aria-selected="${proposalDetailsTab === id}">${safeAgentText(label)}</button>`;
+    const content = `
+        <div class="proposal-info">
+            <div class="cb-tabs cb-tabs--fill proposal-details-tabs" role="tablist">
+                ${tabButton('overview', tProposal('panel.proposal.tabs.overview', 'Overview'))}
+                ${isParcelLayout ? `${tabButton('inputs', `${tProposal('agreement.workflow.inputs', 'Input parcels')} (${cadastreParcelIds.length})`)}
+                ${tabButton('outputs', `${tProposal('agreement.workflow.outputs', 'Output parcels')} (${outputCount})`)}`
+                : tabButton('details', tProposal('proposalDrafts.tabs.details', 'Details'))}
             </div>
-            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="inputs"${proposalDetailsTab === 'inputs' ? '' : ' hidden'}>
-            ${cadastreParcelIds.length > 0 ? `
-            <div class="metric-group">
-                <div class="metric-label-count-container">
-                    <span class="metric-label">${tProposal('panel.proposal.sections.cadastralParcels', 'Cadastral parcels:')}</span> <span class="metric-value">${cadastreParcelIds.length}</span>
-                </div>
-                <div class="proposal-parcels-list proposal-parcel-list-scroll" id="proposal-parent-parcels-list">
-                    ${parentParcelItemsInitial}
-                </div>
+            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="overview"${proposalDetailsTab === 'overview' ? '' : ' hidden'}>
+            <div class="proposal-badges-row">
+                ${(() => {
+            // One badge from the ladder (docs/design-language.md), the same as the list rows: Draft
+            // or Published; "Applied" when it is on this map (proposals/display-state.js).
+            const ladder = displayState.rung;
+            const ladderLabel = window.__proposalDisplayState.rungLabel(ladder, tProposal);
+            const ladderTitle = escapeHtml(window.__proposalDisplayState.rungHint(ladder, tProposal));
+            const ladderIcon = ladder === 'published' ? 'fa-globe' : 'fa-file-pen';
+            const ladderBadge = `<span class="cb-badge cb-badge--${ladder} proposal-ladder-badge" title="${ladderTitle}"><i class="fas ${ladderIcon}" aria-hidden="true"></i> ${ladderLabel}</span>`;
+            const applied = appliedState
+                ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${mapStatusBadgeLabel}</span>`
+                : '';
+            // A parcel layout's title already names its type.
+            return (isParcelLayout ? '' : proposalTypePill) + applied + ladderBadge;
+        })()}
+                ${agentBadgeHtml}
             </div>
-            ` : `
-            <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.sections.cadastralParcels', 'Cadastral parcels:')}</span> <span class="metric-value">0</span>
+            <div class="proposal-description-row">
+                ${escapedProposalDescription ? `<p class="proposal-description-text">${escapedProposalDescription}</p>` : ''}
+                ${copiedFromHtml}
+                ${forkedFromHtml}
             </div>
-            `}
-            </div>
-            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="outputs"${proposalDetailsTab === 'outputs' ? '' : ' hidden'}>
-            <!-- Generated parcel output -->
-            ${(() => {
-            if (typeof ProposalManager !== 'undefined') {
-                if (descendantKeys.length > 0) {
+            <div class="proposal-author-row">
+                <div class="metric-label">${tProposal('panel.proposal.metrics.author', 'Author:')}</div>
+                <div class="metric-value author-with-avatar">
+                    ${(() => {
+            // Find the agent with matching name
+            if (typeof agentStorage !== 'undefined') {
+                const agents = agentStorage.getAllAgents();
+                const agent = agents.find(a => a.name === proposal.author);
+                if (agent && typeof getAvatarImagePath === 'function') {
                     return `
-            <div class="metric-group">
-                <div class="metric-label-count-container">
-                    <span class="metric-label">${tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:')}</span> <span class="metric-value">${descendantKeys.length}</span>
-                </div>
-                <div class="proposal-descendants-list proposal-parcel-list-scroll" id="proposal-descendants-list">
-                    ${descendantItemsInitial}
-                </div>
-            </div>`;
-                } else {
-                    return `
-            <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:')}</span> <span class="metric-value">0</span>
-            </div>`;
+                                        <img src="${getAvatarImagePath(agent.avatarIndex)}" class="author-avatar proposal-author-avatar">
+                                        <button type="button" data-agent-id="${agent.id}" class="cb-link agent-link-clickable">${formatAuthorForDisplay(proposal.author)}</button>
+                                    `;
                 }
             }
-            return `
-            <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:')}</span> <span class="metric-value">0</span>
-            </div>`;
+            return formatAuthorForDisplay(proposal.author);
         })()}
+                </div>
             </div>
+            <div class="proposal-overview-facts">
+            ${isParcelLayout ? '' : `<div class="metric-group">
+                <span class="metric-label">${tProposal('panel.proposal.metrics.parcels', 'Source parcels:')}</span> <span class="metric-value">${parcelIds.length}</span>
+            </div>`}
+            ${areaSummary.hasSite ? `<div class="metric-group" data-proposal-area-basis="site">
+                <span class="metric-label">${tProposal('panel.proposal.metrics.siteArea', 'Site area:')}</span>
+                <span class="metric-value">${areaText(areaSummary.siteAreaM2)}</span>
+            </div>` : ''}
+            ${!areaSummary.hasSite && areaSummary.declaredCount ? `<div class="metric-group" data-proposal-area-basis="source-parcels-overview">
+                <span class="metric-label">${tProposal('panel.proposal.metrics.area', 'Area:')}</span>
+                <span class="metric-value">${areaText(areaSummary.sourceAreaM2)}</span>
+            </div>` : ''}
+            ${!areaSummary.hasSite && !areaSummary.declaredCount ? `<div class="metric-group" data-proposal-area-basis="unknown">
+                <span class="metric-label">${tProposal('panel.proposal.metrics.area', 'Area:')}</span><span class="metric-value">—</span>
+            </div>` : ''}
+            </div>
+            ${isParcelLayout ? `${verificationSectionHtml}
+            </div>
+            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="inputs"${proposalDetailsTab === 'inputs' ? '' : ' hidden'}>
+            ${inputListHtml(false)}
+            </div>
+            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="outputs"${proposalDetailsTab === 'outputs' ? '' : ' hidden'}>
+            ${outputListHtml(false)}
+            </div>` : `
+            </div>
+            <div class="proposal-details-tabpanel" role="tabpanel" data-proposal-tabpanel="details"${proposalDetailsTab === 'details' ? '' : ' hidden'}>
+            ${landSectionHtml}
+            ${verificationSectionHtml}
+            ${recordSectionHtml}
+            </div>`}
         </div>
     `;
 
@@ -1014,7 +1016,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const openSections = new Set(sameProposal
         ? Array.from(detailsContent.querySelectorAll('details[data-proposal-section][open]'), section => section.dataset.proposalSection)
         : []);
-    if (detailsContent) detailsContent.dataset.proposalId = String(proposalKey);
+    if (detailsContent) {
+        detailsContent.dataset.proposalId = String(proposalKey);
+        detailsContent.dataset.outputCount = String(outputCount);
+    }
+    subscribeProposalDetailsToFabric();
     if (!sameProposal && preserveScrollPosition === null) preservedScrollTop = 0;
     const runPostRender = () => {
         detailsContent?.querySelectorAll('details[data-proposal-section]').forEach(section => {
@@ -1259,6 +1265,24 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     if (typeof setupGameLogClickListeners === 'function') {
         setupGameLogClickListeners();
     }
+}
+
+// A design's output parcels exist once its formation has replayed onto the map, which can finish
+// after the panel opened (a reload, a shared link, an apply): the open panel re-renders when the
+// number of parcels its design has formed changes, so its counts and lists are never left stale.
+let proposalDetailsFabricSubscribed = false;
+function subscribeProposalDetailsToFabric() {
+    if (proposalDetailsFabricSubscribed || typeof window.LiveParcelFabric?.subscribe !== 'function') return;
+    proposalDetailsFabricSubscribed = true;
+    window.LiveParcelFabric.subscribe(() => {
+        const panel = document.getElementById('proposal-details-panel');
+        const content = document.getElementById('proposal-details-content');
+        if (!panel?.classList.contains('visible') || !currentProposalDetailsContext || !content) return;
+        const formed = window.__claims?.materializedParcelIdsOf?.(currentProposalDetailsContext)?.length || 0;
+        if (String(formed) === content.dataset.outputCount) return;
+        const body = document.getElementById('proposal-details-body');
+        showProposalInfo(currentProposalDetailsContext, null, { scrollTop: body?.scrollTop || 0 });
+    });
 }
 
 // The panel's buttons and labels are rendered once through tProposal(); re-render the open panel

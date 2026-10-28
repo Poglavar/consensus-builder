@@ -201,7 +201,7 @@ describe('click stack selected objects and contextual navigation', () => {
         expect(parcelBody.querySelector('.click-stack__choices[data-kind="designs"]')).not.toBeNull();
     });
 
-    it('leaves a design\'s input and output parcels to the Input parcels and Output parcels tabs of its panel', () => {
+    it('leaves a parcel layout\'s input and output parcels to the Input parcels and Output parcels tabs of its panel', () => {
         const h = loadPanel();
         const hits = { designs: [{ id: 'd1', label: 'Layout', proposal: { proposalId: 'd1', goal: 'parcel-layout', cadastreParcelIds: ['p1'] } }],
             formed: [{ id: 'piece', designId: 'd1', label: 'Plot 1', feature: parcelFeature }],
@@ -212,6 +212,11 @@ describe('click stack selected objects and contextual navigation', () => {
         // The model still offers them, for the 3D stack, which has no design panel.
         expect(model.visibleContextFor('designs', hits.designs[0], hits).map(group => group.relation)).toEqual(['designParcels']);
         expect(h.section('designs').querySelector('.click-stack__body .click-stack__choices')).toBeNull();
+        h.api.close();
+        // Any other design keeps them in its section.
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ ...hits, designs: [{ ...hits.designs[0], proposal: { ...hits.designs[0].proposal, goal: 'road-track' } }] });
+        h.click(SPOT_A);
+        expect(h.section('designs').querySelector('.click-stack__body .click-stack__choices--tabs')).not.toBeNull();
     });
 
     it('adds loaded plans above the design without stealing focus, and keeps the multi-design selector working', async () => {
