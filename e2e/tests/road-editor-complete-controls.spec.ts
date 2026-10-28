@@ -350,4 +350,22 @@ test.describe('Road editor complete controls @features', () => {
     await page.waitForFunction(() => !!(window as any).proposalStorage);
     await expect.poll(() => page.evaluate((id: string) => (window as any).getProposalByIdOrHash(id)?.roadProposal?.definition?.metadata?.mode, imported.proposalId)).toBe('import');
   });
+
+  test('a road drawn in a city that keeps left is saved as a left-hand road and stays one after a reload', async ({ mockApi: page }) => {
+    await openCity(page);
+    // The fixture city keeps right; a city config that keeps left (London) is all the drawing reads.
+    await page.evaluate(() => { (window as any).CityConfigManager.getDrivingSide = () => 'left'; });
+    const id = await drawCorridor(page, 'road');
+    const side = () => page.evaluate((proposalId: string) => {
+      const definition = (window as any).getProposalByIdOrHash(proposalId).roadProposal.definition;
+      const record = (window as any).__corridorOsmForm.toRecord(definition);
+      return { view: definition.drivingSide, tags: record.osm.elements.filter((e: any) => e.type === 'way').map((e: any) => e.tags.driving_side) };
+    }, id);
+    expect(await side()).toEqual({ view: 'left', tags: ['left'] });
+
+    await page.reload();
+    await page.waitForFunction(() => !!(window as any).proposalStorage);
+    await expect.poll(() => page.evaluate((proposalId: string) => !!(window as any).getProposalByIdOrHash(proposalId), id)).toBe(true);
+    expect(await side()).toEqual({ view: 'left', tags: ['left'] });
+  });
 });

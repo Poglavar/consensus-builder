@@ -359,6 +359,26 @@ describe('corridor proposal adapter', () => {
         expect(replacement.proposalId).toBeUndefined();
     });
 
+    it('keeps the side of the road a drawing was made on, from the drawing seed to the record and back into the editor', () => {
+        const osmForm = require('../../frontend/js/corridor-osm-form.js');
+        const { centerline, segmentIds, profile, width } = { centerline: proposal.roadProposal.definition.points, ...proposal.roadProposal.definition };
+        // A new road has no source definition: the drawing's own side is all there is.
+        const { definition } = corridorAdapter.payloadFromDrawingSeed({ kind: 'road', centerline, segmentIds, profile, width, drivingSide: 'left' }, null);
+        expect(definition.drivingSide).toBe('left');
+        const record = osmForm.toRecord(definition);
+        expect(record.osm.elements.find(element => element.type === 'way').tags.driving_side).toBe('left');
+
+        const seeds = [];
+        globalThis.startSeededCorridorDrawing = (kind, seed) => { seeds.push(seed); return true; };
+        try {
+            const reopened = { ...proposal, roadProposal: { definition: { ...osmForm.toView(record), metadata: proposal.roadProposal.definition.metadata } } };
+            corridorAdapter.openDesignEditor(draftFor(corridorAdapter, reopened));
+        } finally {
+            delete globalThis.startSeededCorridorDrawing;
+        }
+        expect(seeds.map(seed => seed.drivingSide)).toEqual(['left']);
+    });
+
     it('updates an extended road site instead of retaining its source boundary and binding', () => {
         const oldSite = turf.bboxPolygon([15.9, 45.8, 15.91, 45.81]).geometry;
         const newSite = turf.bboxPolygon([15.9, 45.8, 15.92, 45.81]).geometry;

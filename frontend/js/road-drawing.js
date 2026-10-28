@@ -1627,6 +1627,7 @@ function saveCurrentCorridorDrawingDraft(kind = corridorDrawingKind()) {
         profile: getRoadDrawingProfile(),
         width: roadWidth,
         sidewalkWidth: roadSidewalkWidth,
+        drivingSide: roadDrivingSide,
         // The selected design targets ride along with any corridor that carries a track.
         trackSpeed,
         trackMinRadius: trackMinCurvatureRadius,
