@@ -26,7 +26,7 @@
     const ICONS = Object.freeze({ agreements: 'fas fa-file-signature', plans: 'fas fa-layer-group', designs: 'fas fa-drafting-compass', built: 'fas fa-building',
         permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
-    const state = { el: null, stack: null, frameRequest: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null };
+    const state = { el: null, stack: null, frameRequest: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null , baseHits: null, derived: {} };
 
     // A key with a dot is a full key shared with the rest of the app; a bare one is clickStack's own.
     function t(key, fallback, params = {}) {
@@ -562,8 +562,11 @@
         const next = model.buildClickStack(hits, { selected });
         const expanded = state.stack.expanded;
         state.hits = { ...hits };
+        state.baseHits = { ...hits };
+        state.derived = {};
         state.stack = expanded && next.sections.some(section => section.kind === expanded) ? model.expand(next, expanded)
             : { ...next, expanded: null, selectedKind: next.sections.some(section => section.kind === selectedKind) ? selectedKind : next.selectedKind };
+        if (state.stack.selectedKind) absorbNeighbours(state.stack.selectedKind);
         render();
         if (state.stack.expanded) activate(state.stack.expanded);
     }
@@ -619,16 +622,58 @@
         // Another section takes over: the old one's panel closes. Within one section (a strip
         // choice) the panel stays open and is hosted again for the new instance.
         if (state.hosted && state.stack.expanded !== kind) unhost();
-        if (kind === 'designs') {
-            const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
-            state.hits = { ...state.hits, ...global.ClickStackHits.designGround(model.selectedInstance(state.stack, kind)) };
-            state.stack = { ...model.buildClickStack(state.hits, { selected }), topRef: state.stack.topRef };
-        }
+        absorbNeighbours(kind);
         state.stack = model.expand(state.stack, kind);
         if (kind !== 'selection') remember(state.stack.expanded);
         render();
         activate(state.stack.expanded);
         if (kind === 'designs' || kind === 'built') syncMemberships();
+    }
+
+    // The stack is built from the selected object outward (click-stack.md "Neighbours"): whatever
+    // opened it, the selected object's own references add what stands above and below it, so a
+    // design reached through a plan still shows its land, and a parcel its designs and buildings.
+    function absorbNeighbours(kind, { force = false } = {}) {
+        const instance = state.stack && model.selectedInstance(state.stack, kind);
+        if (!instance) return;
+        const previous = state.derived[kind];
+        if (previous && previous.id === instance.id && !force) return;
+        let hits = state.hits;
+        if (previous) {
+            // Another instance of this kind: the old one's neighbours make way for the new one's.
+            delete state.derived[kind];
+            hits = global.ClickStackNeighbours.withoutInstances(hits, previous.added, protectedInstances());
+        }
+        const result = global.ClickStackHits.withNeighbours(hits, kind, instance, { onPublished: publishedArrived });
+        state.derived[kind] = { id: instance.id, added: result.added };
+        if (result.hits === state.hits) return;
+        state.hits = result.hits;
+        const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
+        const next = model.buildClickStack(state.hits, { selected });
+        state.stack = { ...next, expanded: state.stack.expanded, selectedKind: state.stack.selectedKind, topRef: state.stack.topRef };
+    }
+
+    // What a replaced selection never takes away: what the stack arrived with and what the other
+    // selections derived.
+    function protectedInstances() {
+        const protect = {};
+        const add = (kind, id) => { (protect[kind] ||= []).push(String(id)); };
+        for (const [kind, list] of Object.entries(state.baseHits || {})) {
+            if (Array.isArray(list)) list.forEach(item => { if (item?.id != null) add(kind, item.id); });
+        }
+        for (const entry of Object.values(state.derived)) {
+            for (const [kind, ids] of Object.entries(entry.added || {})) ids.forEach(id => add(kind, id));
+        }
+        return protect;
+    }
+
+    // A parcel's published proposals arrived after its neighbours were read.
+    function publishedArrived() {
+        if (!isOpen()) return;
+        if (state.latlng) { refreshSpot(state.latlng); return; }
+        const before = state.stack;
+        absorbNeighbours(state.stack.selectedKind, { force: true });
+        if (state.stack !== before) render({ keepBody: bodyOf(state.stack.expanded) });
     }
 
     // The expanded section's header clicked again: everything collapses to rows.
@@ -660,6 +705,9 @@
         state.stack = stack;
         state.latlng = latlng;
         state.hits = { ...hits };
+        state.baseHits = { ...hits };
+        state.derived = {};
+        if (stack.selectedKind) absorbNeighbours(stack.selectedKind);
 
         render();
         const el = ensureElement();
@@ -703,6 +751,8 @@
         state.stack = null;
         state.frameRequest = null;
         state.hits = null;
+        state.baseHits = null;
+        state.derived = {};
         state.latlng = null;
         state.el.hidden = true;
         state.el.textContent = '';
@@ -827,8 +877,7 @@
         const footprint = global.__planOrder?.footprintOf?.(proposal);
         const coordinates = footprint ? global.turf.pointOnFeature(footprint).geometry.coordinates : null;
         const latlng = coordinates ? global.L.latLng(coordinates[1], coordinates[0]) : null;
-        const hits = { ...(latlng ? global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) }) : { designs: [] }),
-            ...global.ClickStackHits.designGround({ id: designKey, proposal }) };
+        const hits = latlng ? global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) }) : { designs: [] };
         // The new design is the one shown, also where something else stands above it at that point.
         if (!hits.designs.some(design => String(design.id) === designKey)) {
             hits.designs.unshift({ id: designKey, label: String(proposal.title || proposal.name || designKey),
@@ -952,7 +1001,12 @@
         log(`click ${latlng.lat.toFixed(6)},${latlng.lng.toFixed(6)}: ${stack.sections.map(section => `${section.kind}×${section.count}`).join(' ') || 'nothing'} → ${action}`);
         if (action === 'close') close();
         else if (action === 'open') show(stack, latlng, hits);
-        else if (global.GroundMenu?.factsAt(latlng)?.kind === 'not-loaded') {
+        else if (action === 'retain') {
+            // A click always selects the topmost object under it: the retained stack opens that
+            // object's section again when another one had been expanded.
+            const topKind = stack.topRef ? stack.topRef.slice(0, stack.topRef.indexOf(':')) : null;
+            if (topKind && state.stack.expanded !== topKind) expand(topKind);
+        } else if (global.GroundMenu?.factsAt(latlng)?.kind === 'not-loaded') {
             global.updateStatus?.(global.i18n.t('groundMenu.notLoaded'));
         }
         return true;

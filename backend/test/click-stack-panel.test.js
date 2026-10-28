@@ -11,6 +11,7 @@ import { makeDocument } from './helpers/fake-dom.js';
 const require = createRequire(import.meta.url);
 const model = require('../../frontend/js/click-stack/click-stack-model.js');
 const relations = require('../../frontend/js/click-stack/click-stack-relations.js');
+const neighbours = require('../../frontend/js/click-stack/click-stack-neighbours.js');
 const panelSource = readFileSync(new URL('../../frontend/js/click-stack/click-stack-panel.js', import.meta.url), 'utf8');
 const editLockSource = readFileSync(new URL('../../frontend/js/map-edit-lock.js', import.meta.url), 'utf8');
 
@@ -83,7 +84,8 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
                 body.appendChild(relations.renderGroup(group, doc, win));
             }
         } },
-        ClickStackHits: { hitsAt: vi.fn(latlng => hitsBySpot.get(latlng.lat) || {}), designGround: vi.fn(() => ({})), featuresFor: vi.fn((_kind, item) => item.feature ? [item.feature] : []), buildingLabel: vi.fn(() => 'House') },
+        ClickStackNeighbours: neighbours,
+        ClickStackHits: { hitsAt: vi.fn(latlng => hitsBySpot.get(latlng.lat) || {}), withNeighbours: vi.fn(hits => ({ hits, added: {} })), featuresFor: vi.fn((_kind, item) => item.feature ? [item.feature] : []), buildingLabel: vi.fn(() => 'House') },
         __drillUi: { stackAt: vi.fn(() => [{ kind: 'parcel', id: 'p1', depth: 0 }, { kind: 'proposal', key: 'd1' }]) },
         MapPick: { active: () => false, pick: vi.fn() },
         highlightFeaturesForInspection: vi.fn(),
@@ -525,14 +527,26 @@ describe('click stack panel: a click opens, the same click closes', () => {
         expect(h.stackEl().classList.contains('is-folded')).toBe(false);
     });
 
-    it('retains the selected object when it is clicked again, including while collapsed', () => {
+    it('retains the selected object when it is clicked again, re-opening its section after a collapse', () => {
         const h = loadPanel();
         h.click(SPOT_A);
         h.api.collapse();
         h.click(SPOT_A);
         expect(h.api.isOpen()).toBe(true);
-        expect(h.api.current()).toMatchObject({ selectedKind: 'designs', expanded: null });
+        expect(h.api.current()).toMatchObject({ selectedKind: 'designs', expanded: 'designs' });
         expect(h.context.ProposalSelection.clear).not.toHaveBeenCalled();
+    });
+
+    it('re-expands the topmost section on a repeat click after another section was expanded', () => {
+        const h = loadPanel();
+        h.click(SPOT_A);
+        h.api.expand('parcels');
+        expect(h.api.current().expanded).toBe('parcels');
+        h.click(SPOT_A);
+        expect(h.api.isOpen()).toBe(true);
+        expect(h.api.current()).toMatchObject({ selectedKind: 'designs', expanded: 'designs' });
+        expect(h.section('designs').classList.contains('is-expanded')).toBe(true);
+        expect(h.proposalPanel.parentNode).toBe(h.section('designs').querySelector('.click-stack__body'));
     });
 
     it('treats one physical click reaching two layers as one click', () => {
@@ -713,21 +727,42 @@ describe('observed building context', () => {
 });
 
 describe('plan member ground context', () => {
-    it('adds a selected member’s formed parcels and changes them with the design selector', async () => {
-        const h = loadPanel();
+    // The real merge (click-stack-neighbours.js) over lookups for two plan members, each with its
+    // own formed piece and cadastral source.
+    const memberNeighbours = (hits, kind, instance) => neighbours.withNeighbours(hits, kind, instance, {
+        formedByDesign: proposal => [{ id: `piece-${proposal.proposalId}`, feature: parcelFeature }],
+        parcelFeature: () => parcelFeature,
+        isLive: () => false
+    });
+    const twoDesignPlan = async h => {
         h.context.map = { getCenter: () => SPOT_A };
-        h.context.DesignMemberships.inspect = vi.fn(async () => ({ members: HITS_A.designs, features: [] }));
-        h.context.ClickStackHits.designGround.mockImplementation(instance => ({
-            formed: [{ id: `piece-${instance.id}`, designId: instance.id, feature: parcelFeature }],
-            parcels: [{ id: `source-${instance.id}`, feature: parcelFeature, live: false }]
-        }));
+        h.context.DesignMemberships.inspect = vi.fn(async () => ({ members: HITS_A.designs.map(item => ({ ...item,
+            proposal: { ...item.proposal, cadastreParcelIds: [`source-${item.id}`] } })), features: [] }));
+        h.context.ClickStackHits.withNeighbours.mockImplementation(memberNeighbours);
         await h.api.showPlan({ cid: 'plan-one', content: { title: 'Two designs', designCids: [] } });
+    };
+
+    it('builds a plan member\'s land from the selected design outward', async () => {
+        const h = loadPanel();
+        await twoDesignPlan(h);
         expect(h.api.current().sections.map(section => section.kind)).toEqual(['plans', 'designs']);
         h.api.expand('designs');
+        expect(h.api.current().sections.map(section => section.kind)).toEqual(['plans', 'designs', 'formed', 'parcels']);
         expect(h.kinds()).toEqual(['plans', 'designs', 'formed']);
         expect(model.selectedInstance(h.api.current(), 'formed').id).toBe('piece-d1');
+        expect(model.selectedInstance(h.api.current(), 'parcels')).toMatchObject({ id: 'source-d1', live: false });
+        expect(h.context.ClickStackHits.withNeighbours).toHaveBeenCalledWith(expect.anything(), 'designs',
+            expect.objectContaining({ id: 'd1' }), expect.objectContaining({ onPublished: expect.any(Function) }));
+    });
+
+    // A selector swap within one section replaces that object's neighbours below it.
+    it('swaps the formed and cadastral sections when the design selector picks another member', async () => {
+        const h = loadPanel();
+        await twoDesignPlan(h);
+        h.api.expand('designs');
         const selector = h.section('designs').querySelector('.click-stack__selector');
         selector.value = 'd2'; selector.dispatchEvent({ type: 'change', target: selector });
+        expect(model.selectedInstance(h.api.current(), 'designs').id).toBe('d2');
         expect(model.selectedInstance(h.api.current(), 'formed').id).toBe('piece-d2');
         expect(model.selectedInstance(h.api.current(), 'parcels').id).toBe('source-d2');
         expect(model.selectedInstance(h.api.current(), 'plans').id).toBe('plan-one');

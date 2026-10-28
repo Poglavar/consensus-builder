@@ -1519,7 +1519,7 @@
                     window.ClickStack.showDesign(instance.id);
                 });
                 body.appendChild(actions);
-            } else if (kind === 'parcels') {
+            } else if (kind === 'parcels' || kind === 'formed') {
                 if (viewedParcelId !== instance.id) viewParcel(instance.id);
                 if (updateParcelInfoPanel(instance.id)) body.appendChild(parcelInfoPanelEl);
             } else if (kind === 'built') {
@@ -1558,6 +1558,13 @@
         },
         closed() {
             deselectScene();
+        },
+        // The neighbour rule reads buildings and designs the way this scene keys them.
+        lookups: {
+            builtOnParcel: feature => buildingsOnParcel(feature).map(builtInstance),
+            designsOnParcel: id => getProposalsForParcel(id).map(p => ({ id: String(proposalIdOf(p)), proposal: p })),
+            parcelLabel: id => window.ThreeClickStack.parcelLabel(id),
+            designLabel: proposal => proposalDisplayTitle(proposal)
         }
     };
 
@@ -1580,8 +1587,8 @@
 
     // The existing buildings standing on a parcel, by footprint centre (as isolation decides what
     // stays visible), each once: the Built section of a click on the parcel or a design on it.
-    function buildingsOnParcel(parcelId) {
-        const parcel = parcelId ? getParcelFeatureById(parcelId) : null;
+    function buildingsOnParcel(parcelOrId) {
+        const parcel = parcelOrId && typeof parcelOrId === 'object' ? parcelOrId : parcelOrId ? getParcelFeatureById(parcelOrId) : null;
         if (!parcel || !existingBuildingsGroup || typeof turf === 'undefined') return [];
         const found = new Map();
         if (realisticLayerActive) {
@@ -1613,12 +1620,27 @@
         return feature ? String((typeof buildingPoolFeatureKey === 'function' && buildingPoolFeatureKey(feature)) || feature.id || 'built') : null;
     }
 
+    // The ground a click reaches, as the stack lists it: formed land (a live piece a design made,
+    // or a piece cut from a cadastral parcel) under Formed, else the cadastral parcel under Parcel.
+    function groundInstance(parcelId) {
+        const stackApi = window.ThreeClickStack;
+        const feature = getParcelFeatureById(parcelId);
+        const props = feature?.properties || {};
+        const producerId = props.producedByProposalId != null && String(props.producedByProposalId) !== '' ? String(props.producedByProposalId) : null;
+        const sources = Array.isArray(props.cadastreParcelIds) ? props.cadastreParcelIds.map(String) : [];
+        const instance = { id: String(parcelId), label: stackApi.parcelLabel(parcelId), feature };
+        if (!producerId && !(sources.length && !sources.includes(String(parcelId)))) return { kind: 'parcels', instance };
+        const producer = producerId ? window.proposalStorage?.getProposal?.(producerId) : null;
+        return { kind: 'formed', instance: { ...instance, designId: producerId, designLabel: producer ? proposalDisplayTitle(producer) : producerId } };
+    }
+
     // After a click has done its scene work: the stack for what it stood on, the clicked thing open.
     function showClickStack(picked, plan, click = null, hits = null) {
         const stackApi = window.ThreeClickStack;
         if (!stackApi) return;
         const store = window.proposalStorage;
         const parcelId = plan.parcel?.id || null;
+        const ground = parcelId ? groundInstance(parcelId) : null;
         const designs = [];
         if (plan.proposal) { const clicked = store?.getProposal?.(plan.proposal.id); if (clicked) designs.push(clicked); }
         if (parcelId) designs.push(...getProposalsForParcel(parcelId));
@@ -1637,10 +1659,11 @@
             designs: designs.map(p => ({ id: String(proposalIdOf(p)), label: proposalDisplayTitle(p), proposal: p,
                 preserveView: plan.preserveView === true })),
             permitted: massingIds.map(id => ({ id, label: items.find(item => item.id === id)?.title || '' })),
-            parcels: [...(parcelId ? [{ id: parcelId, label: stackApi.parcelLabel(parcelId), feature: getParcelFeatureById(parcelId) }] : []),
-                ...(hits?.parcels || [])]
+            formed: ground?.kind === 'formed' ? [ground.instance] : [],
+            parcels: [...(ground?.kind === 'parcels' ? [ground.instance] : []), ...(hits?.parcels || [])]
         };
-        const focus = plan.proposal ? 'designs' : stackApi.focusOf(picked && picked.proposalId ? null : picked);
+        const focus = plan.proposal ? 'designs'
+            : stackApi.focusOf({ ...(picked && !picked.proposalId ? picked : {}), formed: ground?.kind === 'formed' });
         const selected = { ...(plan.proposal ? { designs: plan.proposal.id } : {}), ...(builtId ? { built: builtId } : {}) };
         stackApi.show(input, { focus, selected, click, container: document.getElementById('map-container') || document.body }, clickStackAdapter);
     }
@@ -1681,7 +1704,7 @@
     // The scene rebuilt under an open Design or Parcel section: its figures may have changed.
     function refreshClickStackFigures() {
         const expanded = window.ThreeClickStack?.expanded?.();
-        if (expanded === 'designs' || expanded === 'parcels') window.ThreeClickStack.refresh();
+        if (['designs', 'parcels', 'formed'].includes(expanded)) window.ThreeClickStack.refresh();
     }
 
     // Isolation is entered by a click, but exited by clicking "somewhere else" — which nothing on
@@ -9661,11 +9684,14 @@
             return;
         }
         const proposal = picked?.proposalId ? (window.proposalStorage?.getProposal?.(picked.proposalId) || null) : null;
+        const clickParcelId = proposal && picked.parcelId ? String(picked.parcelId) : groundParcelId || picked?.parcelId || null;
         const click = { key: window.__threeClickPlan.clickKey({ picked, groundParcelId,
             builtId: clickedBuildingId(picked?.builtFeature), proposalKnown: !!proposal }),
-            parcelId: proposal && picked.parcelId ? String(picked.parcelId) : groundParcelId || picked?.parcelId || null,
-            point: { x: evt.clientX, y: evt.clientY } };
-        if (window.ThreeClickStack?.cycleForClick(click)) return;
+            parcelId: clickParcelId, point: { x: evt.clientX, y: evt.clientY },
+            // The section the click means: a click always selects the topmost object under it.
+            focus: proposal ? 'designs' : window.ThreeClickStack?.focusOf({ ...(picked && !picked.proposalId ? picked : {}),
+                formed: !!groundParcelId && groundInstance(groundParcelId).kind === 'formed' }) };
+        if (window.ThreeClickStack?.retainClick(click)) return;
         // Every click is also a parcel click (three-click-plan.js): the parcel under the point comes
         // into view, and what the ray hit keeps its own meaning on top.
         const plan = window.__threeClickPlan.planThreeClick({

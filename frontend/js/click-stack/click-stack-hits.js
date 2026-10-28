@@ -134,22 +134,40 @@
         return hits;
     }
 
-    // Inspecting a plan member is not a map hit. Resolve the selected design's own current
-    // outputs and immutable source land, independently of where the stack was first opened.
-    function designGround(instance) {
-        const proposal = instance?.proposal || global.proposalStorage?.getProposal?.(instance?.id);
-        if (!proposal) return { formed: [], parcels: [] };
-        const id = String(proposal.proposalId || instance.id);
-        const formed = (global.LiveParcelFabric.producedBy(id) || [])
-            .filter(feature => global.__formationDepth.isBodyParcel(proposal, feature)).map(feature => {
-            const parcelId = String(global.LiveParcelFabric.featureId(feature));
-            return { id: parcelId, label: parcelLabel(parcelId, feature), feature, designId: id,
-                designLabel: designLabel(proposal, id) };
-        });
-        const ids = [...new Set((proposal.cadastreParcelIds || []).map(String))];
-        const parcels = ids.map(id => ({ id, label: parcelLabel(id, baseFeature(id)), feature: baseFeature(id),
-            live: !!global.LiveParcelFabric.get(id) }));
-        return { formed, parcels };
+    // The app's lookups behind the neighbour rule (click-stack-neighbours.js): a selected object's
+    // own references, read the same way in the map and the model view. `onPublished` runs once a
+    // parcel's published proposals arrive after the lookup answered; `overrides` replace lookups
+    // for a view that reads a kind from its own scene (the model view's buildings).
+    function neighbourLookups({ onPublished, overrides } = {}) {
+        const fabric = global.LiveParcelFabric;
+        const permittedParcelId = item => String(item?.sourceEvidence?.parcelReference?.parcelId || item?.source?.parcel || '') || null;
+        return {
+            proposalOf: id => global.proposalStorage?.getProposal?.(String(id)) || null,
+            parcelFeature: id => fabric?.get?.(String(id)) || baseFeature(id),
+            isLive: id => !!fabric?.get?.(String(id)),
+            formedByDesign: proposal => {
+                const id = String(proposal.proposalId);
+                return (fabric?.producedBy?.(id) || []).filter(feature => global.__formationDepth.isBodyParcel(proposal, feature))
+                    .map(feature => ({ id: String(fabric.featureId(feature)), feature }));
+            },
+            piecesOfParcel: id => (fabric?.entriesForCadastre?.([String(id)]) || [])
+                .map(feature => ({ id: String(fabric.featureId(feature)), feature, producerId: feature.properties?.producedByProposalId ?? null })),
+            designsOnParcel: id => global.ParcelSetProposals.lookup([String(id)], { onPublished }).entries.map(entry => ({
+                id: entry.serverId || global.getProposalKey?.(entry.proposal) || entry.proposal.proposalId, proposal: entry.proposal, serverId: entry.serverId || null })),
+            builtOnParcel: feature => global.buildingsOn?.(feature) || [],
+            permittedOnParcel: id => (global.PlanningViews?.isReady?.() ? global.PlanningViews.getItems() : [])
+                .filter(item => item.role === 'permitted' && permittedParcelId(item) === String(id))
+                .map(item => ({ id: item.id, label: item.source?.parcel || item.title || item.id, item })),
+            permittedParcel: instance => permittedParcelId(instance.item || global.PlanningViews?.getItems?.().find(item => item.id === instance.id)),
+            parcelLabel, designLabel, buildingLabel,
+            ...(overrides || {})
+        };
+    }
+
+    // { hits, added }: the hits with the selected object's neighbours merged in (the same object
+    // when nothing is new) and the ids this call appended per kind.
+    function withNeighbours(hits, kind, instance, options = {}) {
+        return global.ClickStackNeighbours.withNeighbours(hits, kind, instance, neighbourLookups(options));
     }
 
     // The selected object's own geometry, shared by the 2D and model-view focus outlines.
@@ -177,5 +195,5 @@
         return features.filter(feature => feature?.geometry && ['Polygon', 'MultiPolygon', 'LineString', 'MultiLineString'].includes(feature.geometry.type));
     }
 
-    global.ClickStackHits = Object.freeze({ hitsAt, designGround, parcelLabel, buildingLabel, featuresFor });
+    global.ClickStackHits = Object.freeze({ hitsAt, withNeighbours, neighbourLookups, parcelLabel, buildingLabel, featuresFor });
 })(window);

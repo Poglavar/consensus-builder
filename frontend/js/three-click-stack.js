@@ -15,8 +15,8 @@
     'use strict';
 
     const model = typeof module === 'object' && module.exports ? require('./click-stack/click-stack-model.js') : global.__clickStackModel;
-    const ORDER = Object.freeze(['built', 'agreements', 'plans', 'designs', 'permitted', 'parcels']);
-    const ICONS = Object.freeze({ agreements: 'fas cb-icon-agreement', plans: 'fas cb-icon-plan', built: 'fas fa-building', designs: 'fas cb-icon-design', permitted: 'fas fa-cube', parcels: 'fas fa-border-all' });
+    const ORDER = Object.freeze(['built', 'agreements', 'plans', 'designs', 'permitted', 'formed', 'parcels']);
+    const ICONS = Object.freeze({ agreements: 'fas cb-icon-agreement', plans: 'fas cb-icon-plan', built: 'fas fa-building', designs: 'fas cb-icon-design', permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all' });
 
     // ── pure rules ────────────────────────────────────────────────────────────────────────────
 
@@ -30,12 +30,13 @@
         return String(id).replace(/^HR-\d+-/, '');
     }
 
-    // What a click picked decides which section opens: the thing the ray hit, else the parcel.
+    // What a click picked decides which section opens: the thing the ray hit, else the ground,
+    // which is formed land (`formed: true`) or a cadastral parcel.
     function focusOf(picked) {
         if (picked && picked.planningId) return 'permitted';
         if (picked && picked.builtFeature) return 'built';
         if (picked && picked.proposalId) return 'designs';
-        return 'parcels';
+        return picked && picked.formed ? 'formed' : 'parcels';
     }
 
     // input: { built, designs, permitted, parcels } arrays of { id, label, ... }; focus: a kind;
@@ -64,13 +65,6 @@
         return stack.sections.some(section => section.kind === kind) ? { ...stack, expanded: kind, selectedKind: kind } : stack;
     }
 
-    // Reopen a folded selection first; otherwise advance in the visible top-to-bottom order.
-    function cycle(stack) {
-        if (!stack?.sections.length) return stack;
-        if (!stack.expanded) return expand(stack, stack.selectedKind || stack.sections[0].kind);
-        const index = stack.sections.findIndex(section => section.kind === stack.expanded);
-        return expand(stack, stack.sections[(index + 1) % stack.sections.length].kind);
-    }
 
     function sameClick(previous, next) {
         if (!previous?.key || !next?.key) return false;
@@ -97,13 +91,13 @@
         return section ? section.instances[section.selectedIndex] : null;
     }
 
-    const pure = { ORDER, buildingLabel, parcelLabel, focusOf, buildThreeStack, expand, cycle, sameClick, selectInstance, selectedInstance };
+    const pure = { ORDER, buildingLabel, parcelLabel, focusOf, buildThreeStack, expand, sameClick, selectInstance, selectedInstance };
     if (!global || !global.document) return Object.freeze(pure);
 
     // ── the panel ─────────────────────────────────────────────────────────────────────────────
 
     const doc = global.document;
-    const state = { el: null, stack: null, adapter: null, input: null, click: null, activationOptions: {}, memberships: null, membershipVersion: 0, membershipDesign: null };
+    const state = { el: null, stack: null, adapter: null, input: null, baseInput: null, derived: {}, click: null, activationOptions: {}, memberships: null, membershipVersion: 0, membershipDesign: null };
 
     function t(key, fallback, params = {}) {
         const value = global.i18n?.t?.(key, params);
@@ -118,13 +112,8 @@
             case 'built': return section.multi ? t('clickStack.builtMany', 'Built ({{count}})', { count: section.count }) : t('threeMode.controls.built', 'Built');
             case 'designs': return section.multi ? t('clickStack.designs', 'Designs ({{count}})', { count: section.count }) : t('proposalDrafts.tabs.design', 'Design');
             case 'permitted': return section.multi ? t('clickStack.permittedMany', 'Permitted ({{count}})', { count: section.count }) : t('planningViews.permitted', 'Permitted');
-            default: {
-                if (section.multi) return t('clickStack.parcels', 'Parcels ({{count}})', { count: section.count });
-                const parcel = section.instances[section.selectedIndex];
-                const identity = global.ParcelMenuModel?.parcelIdentityKind(parcel?.feature?.properties, parcel?.id);
-                return ['formed', 'plotPiece', 'remainder'].includes(identity)
-                    ? t('clickStack.formed', 'Formed parcel') : t('clickStack.parcel', 'Cadastral parcel');
-            }
+            case 'formed': return section.multi ? t('clickStack.formedMany', 'Formed parcels ({{count}})', { count: section.count }) : t('clickStack.formed', 'Formed parcel');
+            default: return section.multi ? t('clickStack.parcels', 'Parcels ({{count}})', { count: section.count }) : t('clickStack.parcel', 'Cadastral parcel');
         }
     }
 
@@ -308,11 +297,14 @@
         state.adapter?.release?.();
         state.adapter = adapter;
         state.input = { ...input };
+        state.baseInput = { ...input };
+        state.derived = {};
 
         state.click = options.click || null;
         state.activationOptions = {};
         state.stack = buildThreeStack(input, options);
         if (!state.stack.sections.length) { close({ silent: true }); return false; }
+        absorbNeighbours(state.stack.selectedKind);
         render();
         state.el.hidden = false;
         state.el.classList.add('visible');
@@ -327,15 +319,60 @@
         if (isOpen()) activate();
     }
 
-    function cycleForClick(click) {
+    // The stack is built from the selected object outward (click-stack.md "Neighbours"): the
+    // selected object's own references add what stands above and below it, whatever opened the stack.
+    function absorbNeighbours(kind, { force = false } = {}) {
+        const instance = kind && selectedInstance(state.stack, kind);
+        if (!instance || !global.ClickStackHits?.withNeighbours) return;
+        const previous = state.derived[kind];
+        if (previous && previous.id === instance.id && !force) return;
+        let input = state.input;
+        if (previous) {
+            // Another instance of this kind: the old one's neighbours make way for the new one's.
+            delete state.derived[kind];
+            input = global.ClickStackNeighbours.withoutInstances(input, previous.added, protectedInstances());
+        }
+        const result = global.ClickStackHits.withNeighbours(input, kind, instance, { onPublished: publishedArrived, overrides: state.adapter?.lookups });
+        state.derived[kind] = { id: instance.id, added: result.added };
+        if (result.hits === state.input) return;
+        state.input = result.hits;
+        const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
+        const next = buildThreeStack(state.input, { selected, focus: state.stack.selectedKind });
+        state.stack = { ...next, expanded: state.stack.expanded, selectedKind: state.stack.selectedKind };
+    }
+
+    // What a replaced selection never takes away: what the stack arrived with and what the other
+    // selections derived.
+    function protectedInstances() {
+        const protect = {};
+        const add = (kind, id) => { (protect[kind] ||= []).push(String(id)); };
+        for (const [kind, list] of Object.entries(state.baseInput || {})) {
+            if (Array.isArray(list)) list.forEach(item => { if (item?.id != null) add(kind, item.id); });
+        }
+        for (const entry of Object.values(state.derived)) {
+            for (const [kind, ids] of Object.entries(entry.added || {})) ids.forEach(id => add(kind, id));
+        }
+        return protect;
+    }
+
+    function publishedArrived() {
+        if (!isOpen()) return;
+        const before = state.stack;
+        absorbNeighbours(state.stack.selectedKind, { force: true });
+        if (state.stack !== before) render({ keepBody: state.el.querySelector(`.click-stack__section[data-kind="${state.stack.expanded}"] .click-stack__body`) });
+    }
+
+    // A repeat click on the same object keeps the stack and opens that object's section again
+    // when another one had been expanded; it never closes or steps through sections.
+    function retainClick(click) {
         if (!isOpen() || !sameClick(state.click, click)) return false;
-        const next = cycle(state.stack);
-        if (next.expanded !== state.stack.expanded) {
-            state.stack = next;
-            state.activationOptions = { fromCycle: true };
+        const kind = click.focus && state.stack.sections.some(section => section.kind === click.focus) ? click.focus : null;
+        if (kind && state.stack.expanded !== kind) {
+            state.stack = expand(state.stack, kind);
+            absorbNeighbours(kind);
             render();
             activate();
-            if (state.stack.selectedKind === 'built' || state.stack.selectedKind === 'designs') syncMemberships();
+            if (kind === 'built' || kind === 'designs') syncMemberships();
         }
         return true;
     }
@@ -354,6 +391,8 @@
         state.membershipVersion++;
         state.stack = null;
         state.click = null;
+        state.baseInput = null;
+        state.derived = {};
         state.el.hidden = true;
         state.el.classList.remove('visible');
         state.el.textContent = '';
@@ -389,6 +428,7 @@
                 activate();
             } else {
                 state.stack = expand(state.stack, kind);
+                absorbNeighbours(kind);
                 render();
                 activate();
             }
@@ -404,6 +444,7 @@
                 return;
             }
             state.stack = expand(selectInstance(state.stack, kind, id), kind);
+            absorbNeighbours(kind);
             render();
             activate();
         }
@@ -414,6 +455,7 @@
         const target = event.target;
         if (target.dataset.action !== 'instance') return;
         state.stack = expand(selectInstance(state.stack, target.dataset.kind, target.value), target.dataset.kind);
+        absorbNeighbours(target.dataset.kind);
         render();
         activate();
         if (target.dataset.kind === 'designs' || target.dataset.kind === 'built') syncMemberships();
@@ -464,7 +506,7 @@
         }).catch(error => console.error(`[${new Date().toISOString()}] [ThreeClickStack] memberships could not load`, error));
     }
 
-    return Object.freeze({ ...pure, show, refresh, close, collapse, isOpen, cycleForClick, ready: () => state.agreementReady,
+    return Object.freeze({ ...pure, show, refresh, close, collapse, isOpen, retainClick, ready: () => state.agreementReady,
         restoreFocus: () => { if (isOpen()) state.adapter.focus?.(state.stack.selectedKind, selectedInstance(state.stack, state.stack.selectedKind)); },
         expanded: () => state.stack?.expanded || null, current: () => state.stack });
 });

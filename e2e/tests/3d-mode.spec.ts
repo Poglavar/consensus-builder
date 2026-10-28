@@ -144,6 +144,26 @@ async function rayVerifiedPickPoint(page: Page, target: 'parcel' | 'proposal', i
   }, { target, id });
 }
 
+// A point on the model view's canvas where the ray meets no visible mesh: a click there picks nothing.
+async function emptyPickPoint(page: Page) {
+  return page.evaluate(() => {
+    const w = window as any;
+    const { scene, camera, renderer } = w.getThreeModeInternals();
+    const shown = (object: any) => { for (let o = object; o; o = o.parent) if (o.visible === false) return false; return true; };
+    const meshes: any[] = [];
+    scene.traverse((object: any) => { if (object.isMesh && shown(object)) meshes.push(object); });
+    const rect = renderer.domElement.getBoundingClientRect();
+    const raycaster = new w.THREE.Raycaster();
+    for (const fy of [0.1, 0.2, 0.3, 0.5, 0.7]) for (const fx of [0.1, 0.3, 0.5, 0.7, 0.9]) {
+      const x = rect.left + rect.width * fx, y = rect.top + rect.height * fy;
+      if (document.elementFromPoint(x, y) !== renderer.domElement) continue;
+      raycaster.setFromCamera(new w.THREE.Vector2(fx * 2 - 1, 1 - fy * 2), camera);
+      if (!raycaster.intersectObjects(meshes, false).length) return { x, y };
+    }
+    throw new Error('No empty pick point in the model view');
+  });
+}
+
 test.describe('3D rendering and controls @features', () => {
   for (const width of [1280, 390]) {
     test(`first design pick preserves camera and outlines its volume at ${width}px`, async ({ mockApi: page }) => {
@@ -214,7 +234,7 @@ test.describe('3D rendering and controls @features', () => {
     await expect.poll(selection).toBeNull();
   });
 
-  test('repeated scene picks cycle into Design without moving the camera, including after refresh', async ({ mockApi: page }) => {
+  test('a repeated scene pick keeps the stack and camera and re-opens its own section, including after refresh', async ({ mockApi: page }) => {
     await mockBuildingScene(page);
     await openCity(page);
     await page.evaluate(() => {
@@ -234,27 +254,44 @@ test.describe('3D rendering and controls @features', () => {
       return { position: camera.position.toArray().map((n: number) => +n.toFixed(6)), target: controls.target.toArray().map((n: number) => +n.toFixed(6)), zoom: camera.zoom };
     });
     const before = await camera();
+    const stack = page.locator('#three-click-stack');
     const expanded = () => page.evaluate(() => (window as any).ThreeClickStack.expanded());
     await page.mouse.click(point.x, point.y);
     await expect.poll(expanded).toBe('parcels');
-    await page.mouse.click(point.x, point.y);
-    await expect.poll(expanded).toBe('built');
-    await expect.poll(() => page.evaluate(() => (window as any).getThreeModeInternals().scene.getObjectByName('click-stack-focus')?.userData.representation)).toBe('volume');
-    await page.mouse.click(point.x, point.y);
-    await expect.poll(expanded).toBe('designs');
-    expect(await camera()).toEqual(before);
-    await page.evaluate(() => (window as any).ThreeClickStack.refresh());
-    expect(await camera()).toEqual(before);
-    const kinds = await page.locator('#three-click-stack .click-stack__section').evaluateAll(sections => sections.map(section => (section as HTMLElement).dataset.kind!));
-    for (const kind of kinds.slice(kinds.indexOf('designs') + 1)) {
-      await page.mouse.click(point.x, point.y);
+    // The parcel's own references put the design on it into the stack.
+    expect(await page.evaluate(() => (window as any).ThreeClickStack.current().sections.map((section: any) => section.kind))).toContain('designs');
+    // Another section opened through its row: the section shown next to the parcel's.
+    const openNeighbour = async () => {
+      const row = stack.locator('.click-stack__section:not([data-kind="parcels"]) [data-action="row"]').first();
+      const kind = await row.getAttribute('data-kind');
+      expect(kind).toBeTruthy();
+      await row.click();
       await expect.poll(expanded).toBe(kind);
+    };
+    await openNeighbour();
+    expect(await camera()).toEqual(before);
+    // The same parcel picked again keeps the stack and opens the parcel's section, never the next one.
+    for (let repeat = 0; repeat < 3; repeat++) {
+      await page.mouse.click(point.x, point.y);
+      await expect.poll(expanded).toBe('parcels');
+      await expect(stack).toBeVisible();
       expect(await camera()).toEqual(before);
     }
-    await page.keyboard.press('Escape');
-    await expect(page.locator('#three-click-stack')).toBeHidden();
+    await page.evaluate(() => (window as any).ThreeClickStack.refresh());
+    expect(await camera()).toEqual(before);
+    await openNeighbour();
+    await page.evaluate(() => (window as any).ThreeClickStack.refresh());
     await page.mouse.click(point.x, point.y);
     await expect.poll(expanded).toBe('parcels');
+    expect(await camera()).toEqual(before);
+    await page.keyboard.press('Escape');
+    await expect(stack).toBeHidden();
+    await page.mouse.click(point.x, point.y);
+    await expect.poll(expanded).toBe('parcels');
+    // A pick on nothing closes it too.
+    const empty = await emptyPickPoint(page);
+    await page.mouse.click(empty.x, empty.y);
+    await expect(stack).toBeHidden();
   });
 
   for (const width of [1280, 390]) {
@@ -337,11 +374,12 @@ test.describe('3D rendering and controls @features', () => {
     await expect.poll(async () => Number(await priceSlider.inputValue())).not.toBe(initialPrice);
     await expect.poll(async () => await valueReadout.textContent()).not.toBe(initialValueReadout);
     expect(await camera()).toEqual(before);
-    // Repeating the scene pick cycles through the section order, keeping the camera steady.
+    // Built is opened through its row; a repeat pick of the parcel then opens the parcel's own
+    // section again, keeping the camera steady.
     const stack = page.locator('#three-click-stack');
     const kinds = await stack.locator('.click-stack__section').evaluateAll(sections => sections.map(section => (section as HTMLElement).dataset.kind!));
     expect(kinds[0]).toBe('built');
-    await page.mouse.click(point.x, point.y);
+    await stack.locator('.click-stack__section[data-kind="built"] [data-action="row"]').click();
     await expect(page.locator('.three-mode-isolation-banner')).toBeHidden();
     await expect(page.locator('#three-click-stack')).toBeVisible();
     await expect(stack.locator('.click-stack__section[data-kind="built"].is-expanded')).toBeVisible();
@@ -353,11 +391,10 @@ test.describe('3D rendering and controls @features', () => {
     await expect(page.locator('#planning-inspector')).toHaveCount(1);
     expect((await builtCard.boundingBox())!.height).toBeLessThan(500);
     await expect(stack.locator('.click-stack__section[data-kind="parcels"] .click-stack__row')).toBeInViewport();
-    for (const kind of kinds.slice(1)) {
-      await page.mouse.click(point.x, point.y);
-      await expect(stack.locator(`.click-stack__section[data-kind="${kind}"].is-expanded`)).toBeVisible();
-      expect(await camera()).toEqual(before);
-    }
+    await page.mouse.click(point.x, point.y);
+    await expect(stack.locator('.click-stack__section[data-kind="parcels"].is-expanded')).toBeVisible();
+    await expect(stack.locator('.click-stack__section[data-kind="built"].is-expanded')).toHaveCount(0);
+    expect(await camera()).toEqual(before);
     await expect(parcelPanel).toBeVisible();
     expect(await camera()).toEqual(before);
     const buildings = await sceneBuildings(page);

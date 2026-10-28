@@ -1,7 +1,7 @@
 import { testI18n } from './helpers/i18n.js';
 // The 3D model view's click stack (frontend/js/three-click-stack.js): which sections a click in the
-// scene shows, in what order (Built → Design → Permitted → Parcel), which one opens, and which
-// instance a strip shows first. The panel is checked in the browser; these are its pure rules.
+// scene shows, in what order (Built → Design → Permitted → Formed parcel → Parcel), which one opens,
+// which instance a strip shows first, and how a repeat pick and the selected object's neighbours shape it.
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
@@ -12,6 +12,7 @@ const require = createRequire(import.meta.url);
 const stack = require('../../frontend/js/three-click-stack.js');
 const relations = require('../../frontend/js/click-stack/click-stack-relations.js');
 const model = require('../../frontend/js/click-stack/click-stack-model.js');
+const neighbours = require('../../frontend/js/click-stack/click-stack-neighbours.js');
 
 const feature = { type: 'Feature', properties: {}, geometry: null };
 
@@ -76,7 +77,7 @@ describe('3D click stack contextual selection', () => {
         expect(badge().dataset.designGoal).toBe('park');
     });
 
-    it('cycles repeated scene picks, retains the camera policy on refresh, and resets for a new or closed stack', () => {
+    it('retains the stack on a repeat pick of the same object, re-opening its section, and resets for a new or closed stack', () => {
         const document = makeDocument();
         const context = { document, console };
         context.__clickStackModel = model;
@@ -85,23 +86,51 @@ describe('3D click stack contextual selection', () => {
         vm.createContext(context);
         vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
         const api = context.ThreeClickStack, activated = [];
-        const adapter = { activate: (kind, _item, _body, options) => activated.push([kind, options.fromCycle === true]) };
+        const adapter = { activate: (kind, _item, _body, options) => activated.push([kind, options]) };
         const input = { built: [{ id: 'b1' }], designs: [{ id: 'd1' }], parcels: [{ id: 'p1' }] };
-        const click = { key: 'building-1' };
+        const click = { key: 'building-1', focus: 'built' };
         api.show(input, { focus: 'built', click }, adapter);
-        expect(api.cycleForClick({ key: 'building-2' })).toBe(false);
-        expect(api.cycleForClick(click)).toBe(true);
-        expect(api.expanded()).toBe('designs');
-        api.refresh();
-        api.cycleForClick(click);
-        expect(api.expanded()).toBe('parcels');
-        api.cycleForClick(click);
+        expect(activated).toEqual([['built', {}]]);
+        expect(api.retainClick({ key: 'building-2', focus: 'built' })).toBe(false);
+        // Already on the object's own section: kept as it is.
+        expect(api.retainClick(click)).toBe(true);
         expect(api.expanded()).toBe('built');
-        expect(activated).toEqual([['built', false], ['designs', true], ['designs', true], ['parcels', true], ['built', true]]);
+        expect(activated).toHaveLength(1);
+        document.querySelector('.click-stack__section[data-kind="parcels"] [data-action="row"]').click();
+        expect(api.expanded()).toBe('parcels');
+        // The same object picked again opens its own section, never the next one.
+        expect(api.retainClick(click)).toBe(true);
+        expect(api.expanded()).toBe('built');
+        expect(api.current().selectedKind).toBe('built');
+        expect(api.retainClick(click)).toBe(true);
+        expect(api.expanded()).toBe('built');
+        expect(activated.map(([kind]) => kind)).toEqual(['built', 'parcels', 'built']);
+        expect(activated.every(([, options]) => !('fromCycle' in options))).toBe(true);
         api.close({ silent: true });
-        expect(api.cycleForClick(click)).toBe(false);
+        expect(api.retainClick(click)).toBe(false);
         api.show(input, { focus: 'built' }, adapter);
-        expect(api.cycleForClick(click)).toBe(false);
+        expect(api.retainClick(click)).toBe(false);
+    });
+
+    it('builds the stack from the selected object outward, on open and on a row expand', () => {
+        const document = makeDocument();
+        const withNeighbours = vi.fn((input, kind) => kind === 'designs' ? { hits: { ...input, parcels: [{ id: 'p1', feature }] }, added: { parcels: ['p1'] } } : { hits: input, added: {} });
+        const context = { document, console, __clickStackModel: model, ClickStackRelations: relations, ClickStackHits: { withNeighbours }, ClickStackNeighbours: neighbours };
+        context.i18n ||= testI18n();
+        context.window = context;
+        vm.createContext(context);
+        vm.runInContext(readFileSync(new URL('../../frontend/js/three-click-stack.js', import.meta.url), 'utf8'), context);
+        const api = context.ThreeClickStack;
+        const lookups = { builtOnParcel: () => [] };
+        api.show({ plans: [{ id: 'pl1', cid: 'pl1' }], designs: [{ id: 'd1' }] }, { focus: 'plans' }, { activate: vi.fn(), lookups });
+        expect(api.current().sections.map(section => section.kind)).toEqual(['plans', 'designs']);
+        expect(withNeighbours).toHaveBeenLastCalledWith(expect.anything(), 'plans', expect.objectContaining({ id: 'pl1' }),
+            expect.objectContaining({ overrides: lookups, onPublished: expect.any(Function) }));
+        const row = document.querySelector('.click-stack__section[data-kind="designs"] [data-action="row"]');
+        row.dispatchEvent({ type: 'click', target: row, bubbles: true });
+        expect(api.current().sections.map(section => section.kind)).toEqual(['plans', 'designs', 'parcels']);
+        expect(api.expanded()).toBe('designs');
+        expect([...document.querySelectorAll('.click-stack__section')].map(el => el.dataset.kind)).toEqual(['plans', 'designs', 'parcels']);
     });
     it('retains shared-view selection policy through scene refresh and section reopening', () => {
         const document = makeDocument();
@@ -252,18 +281,7 @@ describe('3D click stack rules', () => {
         expect(stack.sameClick(click, { ...click, key: 'parcel-2', parcelId: 'p2' })).toBe(false);
         expect(stack.sameClick(null, click)).toBe(false);
     });
-    it('cycles through present sections, wraps, reopens collapsed content and retains instance choices', () => {
-        let current = stack.buildThreeStack({ built: [{ id: 'b1' }, { id: 'b2' }], parcels: [{ id: 'p1' }] }, { focus: 'built', selected: { built: 'b2' } });
-        current = stack.cycle(current);
-        expect(current.expanded).toBe('parcels');
-        current = stack.cycle(current);
-        expect(current.expanded).toBe('built');
-        expect(stack.selectedInstance(current, 'built').id).toBe('b2');
-        expect(stack.cycle({ ...current, expanded: null }).expanded).toBe('built');
-        expect(stack.cycle(stack.buildThreeStack({ parcels: [{ id: 'p1' }] })).expanded).toBe('parcels');
-        expect(stack.cycle(stack.buildThreeStack({})).expanded).toBeNull();
-    });
-    it('orders Built, Plans, Design, Permitted, Parcel and ignores agreement memberships', () => {
+    it('orders Built, Plans, Design, Permitted, Formed parcel, Parcel and ignores agreement memberships', () => {
         const built = stack.buildThreeStack({
             parcels: [{ id: 'HR-1-2', label: '2' }],
             designs: [{ id: 'd1', label: 'Park' }],
@@ -273,13 +291,21 @@ describe('3D click stack rules', () => {
         }, { focus: 'designs' });
         expect(built.sections.map(section => section.kind)).toEqual(['built', 'plans', 'designs', 'parcels']);
         expect(built.expanded).toBe('designs');
+        const ground = stack.buildThreeStack({
+            parcels: [{ id: 'HR-1-2' }], formed: [{ id: 'HR-1-2#piece' }], permitted: [{ id: 'm1' }], designs: [{ id: 'd1' }]
+        }, { focus: 'formed' });
+        expect(ground.sections.map(section => section.kind)).toEqual(['designs', 'permitted', 'formed', 'parcels']);
+        expect(ground.expanded).toBe('formed');
     });
 
-    it('opens what the click hit, else the parcel', () => {
+    it('opens what the click hit, else the formed or cadastral ground', () => {
         expect(stack.focusOf({ planningId: 'm1' })).toBe('permitted');
         expect(stack.focusOf({ builtFeature: feature, parcelId: 'HR-1' })).toBe('built');
         expect(stack.focusOf({ proposalId: 'd1', parcelId: 'HR-1' })).toBe('designs');
         expect(stack.focusOf({ parcelId: 'HR-1' })).toBe('parcels');
+        expect(stack.focusOf({ parcelId: 'x' })).toBe('parcels');
+        expect(stack.focusOf({ formed: true })).toBe('formed');
+        expect(stack.focusOf({ formed: true, parcelId: 'HR-1#piece' })).toBe('formed');
         expect(stack.focusOf(null)).toBe('parcels');
         // A focus with no section of its own falls to the bottom section, the parcel.
         expect(stack.buildThreeStack({ parcels: [{ id: 'HR-1' }] }, { focus: 'designs' }).expanded).toBe('parcels');

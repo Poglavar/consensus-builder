@@ -24,8 +24,11 @@ right-side panels that clicks used to open one at a time.
   background, heading, or close button; each section owns the shared translucent surface.
 - One section is always **selected** while the stack is open. Expansion only controls its
   details. Collapsing keeps its header selected and its object highlighted on the map.
-- Clicking the selected object again retains it. Escape deselects and closes the stack; a different
-  object replaces the selection. Clicking empty ground, or another surface taking the map, can
+- A click always selects the **topmost object** under it: designs above parcels. Plans and
+  agreements are never spatial picks; they arrive through lists, links and panels.
+- A repeat click on the same object keeps the stack and re-opens that object's section, also when
+  another section had been expanded or everything was collapsed. A different object replaces the
+  selection. Escape or a click on nothing closes the stack; another surface taking the map can
   also dismiss it.
 
 ## Sections, top to bottom (only those present at the point)
@@ -39,6 +42,28 @@ right-side panels that clicks used to open one at a time.
 6. **Formed parcel**: the live ground a design formed here, with its parcel actions.
 7. **Cadastral parcels** under the point (or under the selected design).
 8. Footer: the coordinates (copyable).
+
+## Neighbours
+
+The stack is built from the selected object outward, in both directions. Each kind has one
+lookup that reads the selected object's own references; it runs when the stack opens and on every
+selection change (a row, a related link, a selector). How the stack was reached (a map click, a
+list, a link, a plan or an agreement) only decides what is selected and expanded, so the same
+object always shows the same sections around it. What each kind contributes:
+
+- **Agreement**: its plan.
+- **Plan**: its member designs and the agreements of that revision.
+- **Design**: its plans, its formed pieces and its cadastral parcels.
+- **Formed parcel**: its producing design and its source parcels.
+- **Cadastral parcel**: the pieces cut from it, the designs on it, the buildings on it and its
+  permitted massing.
+- **Built building**: the design that affects it.
+- **Permitted massing**: its parcel.
+
+Neighbours join the instances already present without displacing them: what the click hit keeps
+its place and fields, and a neighbour only fills what is missing. `click-stack-neighbours.js`
+holds the rule; `ClickStackHits.neighbourLookups` supplies the app's lookups, and a view can
+replace one with its own (the model view reads buildings from its scene).
 
 ## Rows, relationships and expansion
 
@@ -91,7 +116,7 @@ right-side panels that clicks used to open one at a time.
   selecting one changes the inspected design.
 - The expanded section is the **action view**:
   - Selecting a Design from a Plan resolves that design's current live output parcels and original
-    cadastral inputs without requiring another map click. The design's body pieces or layout plots
+    cadastral inputs without requiring another map click: the neighbours rule at work. The design's body pieces or layout plots
     are shown, excluding remainder land that shares producer metadata. Its Source parcels metric
     counts cadastral inputs. Switching peer designs replaces this
     ground context while retaining the plan and design choices. Unapplied designs have no live
@@ -144,7 +169,9 @@ right-side panels that clicks used to open one at a time.
 - `frontend/js/click-stack/click-stack-model.js`: pure ordering, counts, default instance,
   remembered kind, close-or-switch decision (unit tested, no DOM).
 - `frontend/js/click-stack/click-stack-hits.js`: collects the hits at a point from the live
-  layers (drill stack for designs and parcels, building layers, planning items, agreements).
+  layers (drill stack for designs and parcels, building layers, planning items, agreements), and
+  supplies the neighbour lookups.
+- `frontend/js/click-stack/click-stack-neighbours.js`: the pure neighbours rule (unit tested).
 - `frontend/js/click-stack/click-stack-panel.js`: the panel; hosts the existing panels
   (planning inspector, proposal card, parcel info panel) inside the expanded section.
 - In Manual or Shift multi-selection, **Selected parcels (N)** replaces the point-specific
@@ -164,16 +191,20 @@ nothing, or another selection. It replaced the floating top-left parcel /
 
 - Sections, top to bottom: **Built** (the clicked building, and the existing buildings standing on
   the parcel), **Agreements**, **Plans**, **Design** (the clicked proposal, or the proposals on the
-  parcel), **Permitted** (the clicked massing, or the parcel's cached massing), **Parcel** (the one
-  parcel).
-- The clicked thing's section opens; one section is open at a time.
-- Repeated scene clicks on the same object or map spot advance through the available sections in
-  their displayed order, wrapping from Parcel to the first section. This works independently of
-  double-click speed. A different object starts with its own section; clicking elsewhere or Escape
-  dismisses the stack. A folded selection reopens before advancing. Header clicks still select a
-  section directly. Scene clicks, header switches and refreshes preserve the camera and keep the
-  scene in context. A stack opened from a list or link (Lists, a relationship link, a plan or agreement panel, an
-  editor finishing, a restored selection) starts a fresh scene-click sequence and frames its
+  parcel), **Permitted** (the clicked massing, or the parcel's cached massing), **Formed parcel**
+  (live ground a design formed or a road cut from a parcel), **Parcel** (the one parcel).
+- The clicked thing's section opens; one section is open at a time. Ground under a click is a
+  formed parcel when a design produced it or it is a piece cut from another parcel, else a
+  cadastral parcel.
+- The neighbours rule applies here too: the selected object's own references add the sections
+  above and below it, whether the stack was opened by a scene click, a list, a link or a plan.
+- A repeat scene click on the same object or map spot keeps the stack and re-opens that object's
+  own section when another one had been expanded; it never steps through sections. This works
+  independently of double-click speed. A different object starts with its own section; a click
+  on nothing or Escape closes the stack. Header clicks select a section directly. Scene clicks,
+  header switches and refreshes preserve the camera and keep the scene in context. A stack opened
+  from a list or link (Lists, a relationship link, a plan or agreement panel, an editor
+  finishing, a restored selection) starts a fresh scene-click sequence and frames its
   object when it is outside the map area the panels leave visible or too small to make out;
   an object already in view keeps the camera (`framingNeeded` in `click-stack-model.js`).
 - The expanded card's header has a **Focus** button (crosshairs, “Show on map”) for every
@@ -209,7 +240,7 @@ nothing, or another selection. It replaced the floating top-left parcel /
 ## Google 3D view
 
 Google and model 3D use the same click handler, stack, section bodies, relationship links,
-selection colour, collapse behaviour, repeated-click cycling and Escape dismissal. Selecting
+selection colour, collapse behaviour, repeat-click retention and Escape dismissal. Selecting
 an object retains the camera and surrounding composition in both views; only the Focus button
 moves it. Building/source
 inspectors and permitted representation choices are available in Google view too.
