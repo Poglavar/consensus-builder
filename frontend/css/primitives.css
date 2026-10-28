@@ -759,6 +759,10 @@ button.cb-link {
     padding: 0;
     border-bottom: 1px solid var(--cb-line);
     overflow-x: auto;
+    /* The tabs overlap the strip's rule by 1px (margin-bottom: -1px); with overflow-y left to
+       follow overflow-x that pixel made every strip a vertical scroller that swallowed wheel
+       and touch scrolling meant for the panel around it. */
+    overflow-y: hidden;
     scrollbar-width: none;
 }
 

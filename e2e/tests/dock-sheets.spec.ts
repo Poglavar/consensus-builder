@@ -53,13 +53,13 @@ test.describe('Dock sheets', () => {
     await page.evaluate(() => (window as any).hideProposalDetailsPanel?.(true));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator('#proposals-button').click();
-    const row = page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${parkId}"]`);
-    await row.locator('.proposal-list-title').click();
+    // Lists rows (lists-panel.js, 01268caee) are keyed by data-list-id; the title button inspects.
+    const row = page.locator(`#proposals-sheet .lists-item[data-list-id="${parkId}"]`);
+    await row.locator('.lists-item__title').click();
     await expect(page.locator('#proposals-sheet')).toBeHidden();
     const panel = page.locator('#click-stack');
     await expect(panel).toBeVisible();
     await expect(panel).toContainText(title);
-    await expect(row).not.toHaveClass(/is-previewing/);
     expect(await page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(parkId);
   });
 });

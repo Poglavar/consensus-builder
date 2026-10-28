@@ -52,13 +52,15 @@ test.describe('design list card layout @features', () => {
     await openDesignList(page);
     const sheet = page.locator('#proposals-sheet');
     const sheetBox = await sheet.boundingBox();
+    // Lists shares the right-dock column with the click stack (docs/click-stack.md): it starts a
+    // small gap below the top chrome and ends where the dock clears the visible bottom controls.
     const clearances = await page.evaluate(() => {
       const probe = document.createElement('div');
       Object.assign(probe.style, { position: 'absolute', visibility: 'hidden', width: '0', top: '0' });
       document.body.append(probe);
-      probe.style.height = 'var(--map-shell-top-clearance)';
+      probe.style.height = 'calc(var(--map-shell-top-clearance) + var(--cb-space-2))';
       const top = probe.getBoundingClientRect().height;
-      probe.style.height = 'var(--map-shell-bottom-clearance)';
+      probe.style.height = 'var(--right-dock-bottom)';
       const bottom = probe.getBoundingClientRect().height;
       probe.remove();
       return { top, bottom };

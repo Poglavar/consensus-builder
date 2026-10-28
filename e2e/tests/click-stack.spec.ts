@@ -173,7 +173,7 @@ test.describe('Click stack @core', () => {
       await testInfo.attach('Plan section', { path: screenshot, contentType: 'image/png' });
       const count = (await storedAgreements(page)).length;
       await trigger.click();
-      await agreementEditor(page).getByRole('tab', { name: 'Output parcels', exact: true }).click();
+      await agreementEditor(page).getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
       await agreementEditor(page).locator('[data-agreement-allocation-mode]').selectOption('proposer');
       await expect(editorSave(agreementEditor(page))).toBeEnabled();
       await editorSave(agreementEditor(page)).click(); await expect(agreementEditor(page)).toBeHidden();
@@ -207,7 +207,11 @@ test.describe('Click stack @core', () => {
       await page.evaluate(() => (window as any).map.fire('mouseout'));
       expect(await focus.evaluateAll(paths => paths.map(path => path.getAttribute('d')))).toEqual(paths);
     }
-    const connector = await stackSection(page, 'formed').evaluate(el => {
+    // The stack shows the selected level and its nearest neighbours (docs/click-stack.md, Rows):
+    // with the cadastral parcel selected, Formed heads the stack and the connector belongs to the
+    // parcel section below it.
+    await expect(stackSection(page, 'designs')).toHaveCount(0);
+    const connector = await stackSection(page, 'parcels').evaluate(el => {
       const style = getComputedStyle(el, '::before');
       const icon = el.querySelector('.click-stack__row > i')!.getBoundingClientRect();
       return { left: el.getBoundingClientRect().left + parseFloat(style.left) + parseFloat(style.borderLeftWidth) / 2,
@@ -225,6 +229,11 @@ test.describe('Click stack @core', () => {
     const stack = clickStack(page);
     await expect(stack.locator('.click-stack__choices')).toHaveCount(0);
     await expect(stack.locator('.click-stack__copy-reference')).toHaveCount(0);
+    // Selecting Formed brings its producing design back into the window as a collapsed header.
+    await stackSection(page, 'formed').locator('.click-stack__row').click();
+    await expect(stackSection(page, 'formed')).toHaveClass(/is-selected/);
+    await stackSection(page, 'formed').locator('.click-stack__row').click();
+    await expect(stackSection(page, 'formed').locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'false');
     for (const kind of ['designs', 'formed', 'parcels']) {
       const row = stackSection(page, kind).locator('.click-stack__row');
       expect((await row.boundingBox())!.height).toBeLessThanOrEqual(48);
@@ -376,8 +385,9 @@ test.describe('Click stack @core', () => {
       await page.mouse.wheel(0,600);
       await expect.poll(()=>scroller.evaluate(el=>el.scrollTop)).toBeGreaterThan(top);
       await page.screenshot({path:testInfo.outputPath(`design-details-scroll-${width}.png`)});
+      // Add to plan heads the design card, so the hosted footer has five actions (7cc412330).
       const actions=panel.locator('.proposal-primary-actions > button:visible');
-      await expect(actions).toHaveCount(6);
+      await expect(actions).toHaveCount(5);
       await actions.last().scrollIntoViewIfNeeded();
       await expect(actions.last()).toBeVisible();
     }
@@ -413,16 +423,21 @@ test.describe('Click stack @core', () => {
       return {author:font('.proposal-author-row .metric-label'),parcel:font('.proposal-overview-facts .metric-label')};
     });
     expect(fonts.author).toEqual(fonts.parcel);
+    // Add to plan heads the design card above the hosted panel; its footer does not repeat it
+    // (7cc412330, docs/click-stack.md).
+    await expect(designs.locator('.click-stack__actions--design .btn-add-to-plan')).toBeVisible();
     const actions=designs.locator('.proposal-primary-actions > button:visible');
-    await expect(actions).toHaveCount(6);
+    await expect(actions).toHaveCount(5);
     const boxes=await actions.evaluateAll(buttons=>buttons.map(button=>{
       const r=button.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};
     }));
     expect(Math.max(...boxes.map(b=>b.width))-Math.min(...boxes.map(b=>b.width))).toBeLessThanOrEqual(1);
     expect(Math.max(...boxes.map(b=>b.height))-Math.min(...boxes.map(b=>b.height))).toBeLessThanOrEqual(1);
-    for(let i=0;i<6;i+=2){
-      expect(Math.abs(boxes[i].y-boxes[i+1].y)).toBeLessThanOrEqual(1);
-      expect(boxes[i].x).toBeLessThan(boxes[i+1].x);
+    for(let i=0;i<boxes.length;i+=2){
+      if(i+1<boxes.length){
+        expect(Math.abs(boxes[i].y-boxes[i+1].y)).toBeLessThanOrEqual(1);
+        expect(boxes[i].x).toBeLessThan(boxes[i+1].x);
+      }
       if(i)expect(boxes[i].y).toBeGreaterThan(boxes[i-2].y);
     }
     // The formed parcel is live ground the design made: it opens like a parcel, and a new design

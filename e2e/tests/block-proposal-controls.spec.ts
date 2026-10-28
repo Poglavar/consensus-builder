@@ -64,7 +64,8 @@ for (const kind of ['road', 'building', 'park'] as const) {
     await page.evaluate(async ids => (window as any).CadastralParcelRepository.ensureIds(ids), ids);
     const id = await createBlockFixture(page, kind);
     await page.locator('#proposals-button').click();
-    await page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${id}"] .proposal-list-details-btn`).click();
+    // Lists rows (lists-panel.js, 01268caee) are keyed by data-list-id; the title button opens details.
+    await page.locator(`#proposals-sheet .lists-item[data-list-id="${id}"] .lists-item__title`).click();
     // The current list action opens the Planning inspector first; use its explicit action to
     // reach proposal map controls while preserving the list-navigation path under test.
     const inspector = page.locator('#planning-inspector');
@@ -104,9 +105,12 @@ for (const kind of ['road', 'building', 'park'] as const) {
     await row.locator('button[onclick*="removeProposalFromMap"]').click();
     await expect.poll(async () => (await proposalState(page, id)).applied).toBe(false);
     await expect(row.locator('button[onclick*="applyProposalToMap"]')).toBeVisible();
-    await row.getByTitle('Delete design', { exact: true }).click();
-    const confirmation = page.getByRole('alertdialog');
-    if (await confirmation.isVisible()) await confirmation.getByRole('button', { name: /Delete|Yes/i }).click();
+    // Record removal belongs only to Lists (01268caee, docs/development.md "Lists and authoring
+    // boundaries"); the block inspector row has no delete of its own.
+    await expect(row.locator('.proposal-delete-btn')).toHaveCount(0);
+    await page.locator('#proposals-button').click();
+    await page.locator(`#proposals-sheet .lists-item[data-list-id="${id}"]`).getByRole('button', { name: 'Remove from browser', exact: true }).click();
+    await page.locator('.cb-dialog').getByRole('button', { name: 'Remove from browser', exact: true }).click();
     await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage.getProposal(id), id)).toBe(false);
     await expect(row).toHaveCount(0);
   });
