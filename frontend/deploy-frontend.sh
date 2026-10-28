@@ -105,24 +105,21 @@ STAGING_DIR=$(mktemp -d "${TMPDIR:-/tmp}/cb-frontend-static.XXXXXX")
 trap 'rm -rf "$STAGING_DIR"' EXIT
 node "$REMOTE_REPO/frontend/build-static.cjs" "$STAGING_DIR" "$REMOTE_REPO/frontend"
 
-# Back up current docroot, then prune old ones. Without the prune this leaked a
-# full ~25 MB copy per deploy forever: by 2026-08-15 there were 222 backups
-# eating 4.4 GB on a disk that was 95% full.
-# The timestamp format sorts lexicographically, so newest-first + skipping the
-# first N leaves exactly the stale ones. `sort -r | tail -n +N` is POSIX;
-# `head -n -N` would be shorter but is GNU-only and fails on macOS.
-KEEP_BACKUPS="${KEEP_BACKUPS:-3}"
+# Keep exactly one backup: the deployment that is live right now. Copy it, then delete every
+# older backup. Unbounded backups once filled the disk (222 copies, 4.4 GB by 2026-08-15).
+# data/hmlr/ is left out: the HMLR routing releases (~800 MB) are published by their own job,
+# deploys never touch them, and rollback-frontend.sh leaves them in place.
 if [ -d "$DOCROOT" ] && [ -n "$(ls -A "$DOCROOT" 2>/dev/null)" ]; then
-    BACKUP="${DOCROOT}_backup_$(date +%Y%m%d_%H%M%S)"
-    cp -r "$DOCROOT" "$BACKUP"; echo "💾 Backup: $BACKUP"
-
     # Match only our own timestamped backups, never $DOCROOT itself.
-    STALE=$(ls -d "${DOCROOT}"_backup_* 2>/dev/null \
-        | grep -E "^${DOCROOT}_backup_[0-9]{8}_[0-9]{6}$" \
-        | sort -r | tail -n +"$((KEEP_BACKUPS + 1))")
-    if [ -n "$STALE" ]; then
-        echo "$STALE" | xargs rm -rf
-        echo "🧹 Pruned $(echo "$STALE" | wc -l | tr -d ' ') old backup(s), keeping the newest ${KEEP_BACKUPS}"
+    OLD_BACKUPS=$(ls -d "${DOCROOT}"_backup_* 2>/dev/null \
+        | grep -E "^${DOCROOT}_backup_[0-9]{8}_[0-9]{6}$" || true)
+    BACKUP="${DOCROOT}_backup_$(date +%Y%m%d_%H%M%S)"
+    rsync -a --exclude='/data/hmlr/' "$DOCROOT/" "$BACKUP/"
+    echo "💾 Backup: $BACKUP ($(du -sh "$BACKUP" | cut -f1))"
+    OLD_BACKUPS=$(echo "$OLD_BACKUPS" | grep -v -x -F "$BACKUP" || true)
+    if [ -n "$OLD_BACKUPS" ]; then
+        echo "$OLD_BACKUPS" | xargs rm -rf
+        echo "🧹 Deleted $(echo "$OLD_BACKUPS" | wc -l | tr -d ' ') older backup(s)"
     fi
 fi
 
