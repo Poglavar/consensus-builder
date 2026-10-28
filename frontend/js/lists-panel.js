@@ -12,6 +12,15 @@
             .sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title)
                 : String(b.createdAt || '').localeCompare(String(a.createdAt || '')) || a.title.localeCompare(b.title));
     }
+    // One page of the public index. Explore has no city: its designs are those whose site meets the
+    // visible area (area = getProposalCountAreaContext()), as the index matches a bbox.
+    function indexQuery(kind, { city, area = null, offset = 0 }) {
+        const params = new URLSearchParams({ limit: kind === 'designs' ? '1000' : '50' });
+        if (kind === 'designs' && area?.explore && area.bbox) params.set('bbox', area.bbox.join(','));
+        else params.set('city', city);
+        if (kind !== 'designs') params.set('offset', String(offset));
+        return params;
+    }
     function browser(win) {
         const doc = win.document;
         const state = { tab: 'designs', source: 'local', search: '', publication: 'all', sort: 'title',
@@ -36,7 +45,8 @@
             return el;
         }
         const city = () => win.normalizeCityCodeForApi(win.resolveCurrentCityCode());
-        const cacheKey = () => `${win.DesignSync.apiBase()}:${city()}:${state.tab}`;
+        const area = () => state.tab === 'designs' ? win.getProposalCountAreaContext() : null;
+        const cacheKey = () => { const view = area(); return `${win.DesignSync.apiBase()}:${view?.explore ? view.key : city()}:${state.tab}`; };
         const host = () => doc.getElementById({ designs: 'proposal-list-host', plans: 'plan-list-host', agreements: 'designs-agreements' }[state.tab]);
         const opened = () => win.MapShell?.isOpen('proposals-sheet');
         function localRows(kind) {
@@ -64,8 +74,7 @@
             const page = { rows: more ? previous.rows : [], next: more ? previous.next : 0, loading: true, error: null };
             state.remote.set(key, page); renderRows();
             try {
-                const params = new URLSearchParams({ city: city(), limit: kind === 'designs' ? '1000' : '50' });
-                if (kind !== 'designs') params.set('offset', String(page.next));
+                const params = indexQuery(kind, { city: city(), area: area(), offset: page.next });
                 const response = await win.fetch(`${win.DesignSync.apiBase()}/${kind}?${params}`, { cache: 'no-store', signal: AbortSignal.timeout(30000) });
                 const result = await response.json();
                 if (!response.ok || !Array.isArray(result[kind])) throw new Error(result.error || `HTTP ${response.status}`);
@@ -311,5 +320,5 @@
         function refresh() { if (ready && opened()) { renderActions(); renderRows(); } }
         return { open: async () => { await win.i18n.translationsReady; init(); controls(); return select(state.tab); }, select, refresh };
     }
-    return { filterRows, browser };
+    return { filterRows, indexQuery, browser };
 });

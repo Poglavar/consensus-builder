@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-const { filterRows } = require('../../frontend/js/lists-panel.js');
+const { filterRows, indexQuery } = require('../../frontend/js/lists-panel.js');
 const NamedPlans = require('../../frontend/js/named-plans.js');
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const Cid = require('../../frontend/js/cid.js');
@@ -21,6 +21,14 @@ describe('shared lists', () => {
         expect(filterRows(rows, { search: 'alpha', publication: 'draft' })).toEqual([]);
         expect(filterRows(rows, {})).toEqual([rows[1], rows[0]]);
         expect(rows[0].title).toBe('Zebra');
+    });
+    it('asks the index for a city, or in explore for the designs in the visible area', () => {
+        const explore = { explore: true, bbox: [90.39, 23.7, 90.42, 23.72] };
+        expect(Object.fromEntries(indexQuery('designs', { city: 'zg' }))).toEqual({ limit: '1000', city: 'zg' });
+        expect(Object.fromEntries(indexQuery('designs', { city: 'city', area: explore }))).toEqual({ limit: '1000', bbox: '90.39,23.7,90.42,23.72' });
+        expect(Object.fromEntries(indexQuery('designs', { city: 'zg', area: { explore: false, bbox: null } }))).toEqual({ limit: '1000', city: 'zg' });
+        // Plans and agreements page by offset and stay city-scoped.
+        expect(Object.fromEntries(indexQuery('plans', { city: 'zg', area: explore, offset: 50 }))).toEqual({ limit: '50', city: 'zg', offset: '50' });
     });
     it('orders loaded records by their authored date', () => {
         expect(filterRows(rows, { sort: 'newest' }).map(row => row.title)).toEqual(['Alpha', 'Zebra']);
