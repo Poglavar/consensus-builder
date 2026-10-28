@@ -9,6 +9,8 @@
         decorations: null,
         tool: null,
         pathPoints: [],
+        // Index of the tree whose card is open (Taller / Shorter / New look, and a square's pit), or null.
+        selectedTree: null,
         pathCursor: null,
         rubberBand: null,
         geometryDrag: null,
@@ -41,7 +43,7 @@
             const translated = api.t(fullKey, params);
             if (translated && translated !== fullKey) return translated;
         }
-        return fallback;
+        return String(fallback).replace(/\{\{(\w+)\}\}/g, (match, name) => (name in params ? params[name] : match));
     }
 
     function clone(value) {
@@ -106,7 +108,8 @@
         const value = clone(input || {});
         if (kind === 'park') {
             return {
-                trees: (Array.isArray(value.trees) ? value.trees : []).map(entry => parkPlanting().treeOf(entry)).filter(Boolean),
+                // A park stands on lawn: its trees have no pit in the paving.
+                trees: (Array.isArray(value.trees) ? value.trees : []).map(entry => parkPlanting().withPit(entry, null)).filter(Boolean),
                 flowerbeds: (Array.isArray(value.flowerbeds) ? value.flowerbeds : []).filter(Array.isArray),
                 ponds: (Array.isArray(value.ponds) ? value.ponds : []).filter(Array.isArray),
                 paths: (Array.isArray(value.paths) ? value.paths : []).map(path => (Array.isArray(path) ? path.map(coordinate).filter(Boolean) : [])).filter(path => path.length > 1),
@@ -222,9 +225,9 @@
         });
     }
 
-    function makeTreeIcon(tree) {
+    function makeTreeIcon(tree, selected = false) {
         return global.L.divIcon({
-            className: 'structure-geometry-icon is-tree',
+            className: `structure-geometry-icon is-tree${selected ? ' is-selected' : ''}`,
             ...parkPlanting().treeIcon(tree)
         });
     }
@@ -233,20 +236,36 @@
         if (typeof global.updateStatus === 'function') global.updateStatus(t('statusOutside', 'Place items inside the structure boundary.'));
     }
 
-    // Clicking a placed tree with the Tree tool gives it a new random kind and height.
-    function rerollTree(index) {
-        const trees = state.decorations?.trees;
-        if (!Array.isArray(trees) || !trees[index]) return;
-        recordHistory();
-        trees[index] = parkPlanting().rerollTree(trees[index]);
+    // Clicking a placed tree with a tree tool opens its card; clicking it again closes the card.
+    function selectTree(index) {
+        state.selectedTree = state.selectedTree === index ? null : index;
         render();
     }
+
+    function selectedTree() {
+        const trees = state.decorations?.trees;
+        return Array.isArray(trees) && Number.isInteger(state.selectedTree) ? trees[state.selectedTree] || null : null;
+    }
+
+    // One change to the selected tree from its card: a new random look, a height step, or its pit.
+    function changeSelectedTree(change) {
+        const tree = selectedTree();
+        if (!tree) return;
+        const next = change(tree);
+        if (!next || JSON.stringify(next) === JSON.stringify(tree)) return;
+        recordHistory();
+        state.decorations.trees[state.selectedTree] = next;
+        render();
+    }
+
+    const TREE_TOOLS = ['tree', 'pavementTree'];
 
     function removeDecoration(type, index) {
         const list = state.decorations?.[type];
         if (!Array.isArray(list) || index < 0 || index >= list.length) return;
         recordHistory();
         list.splice(index, 1);
+        if (type === 'trees') state.selectedTree = null;
         render();
     }
 
@@ -478,7 +497,7 @@
         marker.on('click', event => {
             global.L.DomEvent.stopPropagation(event);
             if (state.tool === 'erase') removeDecoration(type, index);
-            else if (state.tool === 'tree' && type === 'trees') rerollTree(index);
+            else if (TREE_TOOLS.includes(state.tool) && type === 'trees') selectTree(index);
         });
     }
 
@@ -498,7 +517,7 @@
             interactive: !boundaryEditing(),
             className: 'structure-geometry-draggable'
         }).addTo(group), 'flowerbeds', index));
-        state.decorations.trees.forEach((tree, index) => addPointMarker(group, 'trees', tree.coordinate, index, makeTreeIcon(tree)));
+        state.decorations.trees.forEach((tree, index) => addPointMarker(group, 'trees', tree.coordinate, index, makeTreeIcon(tree, index === state.selectedTree)));
         (state.decorations.benches || []).forEach((bench, index) => addPointMarker(group, 'benches', bench.coordinate, index, makeIcon('is-bench', '▰')));
         renderStalls(group);
         renderLamps(group);
@@ -537,7 +556,7 @@
 
     function renderSquare(group) {
         state.decorations.fountains.forEach((coord, index) => addPointMarker(group, 'fountains', coord, index, makeIcon('is-fountain', '⛲', 30)));
-        state.decorations.trees.forEach((tree, index) => addPointMarker(group, 'trees', tree.coordinate, index, makeTreeIcon(tree)));
+        state.decorations.trees.forEach((tree, index) => addPointMarker(group, 'trees', tree.coordinate, index, makeTreeIcon(tree, index === state.selectedTree)));
         state.decorations.benches.forEach((bench, index) => {
             const icon = makeIcon('is-bench', `<span style="transform:rotate(${bench.bearing || 0}deg)">▰</span>`);
             addPointMarker(group, 'benches', bench.coordinate, index, icon);
@@ -580,6 +599,7 @@
                 state.decorations = clone(snapshot.decorations);
                 state.pathPoints = clone(snapshot.pathPoints);
                 state.model = clone(snapshot.model);
+                state.selectedTree = null;
                 state.pathCursor = null;
                 state.session?.placement?.update?.(state.boundary);
                 render();
@@ -702,13 +722,18 @@
         return Math.max(2, Math.min(10, 7 - (zoom - 17) * 0.8));
     }
 
+    // A new tree takes the look its position hashes to; a pavement tree starts under a grille. The new
+    // tree's card opens, so its height or look can be changed at once.
+    function plantTree(coord, pit) {
+        recordHistory();
+        state.decorations.trees.push(parkPlanting().withPit(coord, pit));
+        state.selectedTree = state.decorations.trees.length - 1;
+    }
+
     function placeAt(coord) {
         if (!pointInside(coord)) return rejectOutside();
         if (state.kind === 'park') {
-            if (state.tool === 'tree') {
-                recordHistory();
-                state.decorations.trees.push(parkPlanting().treeOf(coord));
-            }
+            if (state.tool === 'tree') plantTree(coord, null);
             else if (state.tool === 'pond' || state.tool === 'flowerbed') {
                 const ring = circleRing(coord, footprintRadius());
                 if (!ringInside(ring)) return rejectOutside();
@@ -732,10 +757,8 @@
                 recordHistory();
                 state.decorations.fountains.push(coord);
             }
-            else if (state.tool === 'tree') {
-                recordHistory();
-                state.decorations.trees.push(parkPlanting().treeOf(coord));
-            }
+            else if (state.tool === 'tree') plantTree(coord, null);
+            else if (state.tool === 'pavementTree') plantTree(coord, 'grille');
             else if (state.tool === 'bench') {
                 recordHistory();
                 state.decorations.benches.push({ coordinate: coord, bearing: 0 });
@@ -810,6 +833,7 @@
         const nextTool = state.tool === tool && tool === 'boundary' ? null : tool;
         if (state.tool === 'path' && nextTool !== 'path') finishPath();
         state.tool = nextTool;
+        if (!TREE_TOOLS.includes(nextTool)) state.selectedTree = null;
         if (!state.subeditor && (!state.tool || state.tool === 'boundary')) createBoundaryPolygonEditor();
         else if (state.polygonEditor) {
             state.polygonEditor.destroy();
@@ -854,6 +878,7 @@
             : [
                 toolButton('fountain', 'fa-droplet', t('tools.fountain', 'Fountain')),
                 toolButton('tree', 'fa-tree', t('tools.tree', 'Tree')),
+                toolButton('pavementTree', 'fa-table-cells', t('tools.pavementTree', 'Pavement tree')),
                 toolButton('bench', 'fa-chair', t('tools.bench', 'Bench')),
                 toolButton('stall', 'fa-store', t('tools.stall', 'Market stall')),
                 toolButton('statue', 'fa-monument', t('tools.statue', 'Statue')),
@@ -861,7 +886,53 @@
             ].join('');
         const boundaryTool = state.subeditor ? '' : toolButton('boundary', 'fa-draw-polygon', t('tools.boundary', 'Boundary'));
         return `
-            <div class="structure-geometry-tools">${boundaryTool}${tools}${toolButton('erase', 'fa-eraser', t('tools.erase', 'Remove'))}</div>${importsMarkup()}${furnitureModelsMarkup()}`;
+            <div class="structure-geometry-tools">${boundaryTool}${tools}${toolButton('erase', 'fa-eraser', t('tools.erase', 'Remove'))}</div>${treeCardMarkup()}${importsMarkup()}${furnitureModelsMarkup()}`;
+    }
+
+    // The selected tree's card: its kind and height, Shorter / Taller / New look, and on a square the
+    // pit it stands in. updatePanelState shows it and fills it in.
+    function treeCardMarkup() {
+        const pits = state.kind === 'square' ? `
+                <div class="structure-geometry-tree-pits" role="group" aria-label="${t('tree.base', 'Base')}">
+                    <span class="structure-geometry-tree-label">${t('tree.base', 'Base')}</span>
+                    ${['none', ...parkPlanting().TREE_PITS].map(pit => `<button type="button" class="btn btn-sm" data-tree-pit="${pit}" aria-pressed="false">${pitLabel(pit)}</button>`).join('')}
+                </div>` : '';
+        return `
+            <section class="structure-geometry-tree-card" data-role="tree-card" aria-label="${t('tree.title', 'Selected tree')}" hidden>
+                <p class="structure-geometry-tree-summary" data-role="tree-summary"></p>
+                <div class="structure-geometry-tools">
+                    <button type="button" class="btn btn-sm" data-action="tree-shorter"><i class="fa-solid fa-minus" aria-hidden="true"></i>${t('tree.shorter', 'Shorter')}</button>
+                    <button type="button" class="btn btn-sm" data-action="tree-taller"><i class="fa-solid fa-plus" aria-hidden="true"></i>${t('tree.taller', 'Taller')}</button>
+                    <button type="button" class="btn btn-sm" data-action="tree-reroll"><i class="fa-solid fa-shuffle" aria-hidden="true"></i>${t('tree.reroll', 'New look')}</button>
+                </div>${pits}
+            </section>`;
+    }
+
+    function pitLabel(pit) {
+        return { none: t('tree.pitNone', 'Paving'), grille: t('tree.pitGrille', 'Grille'), grass: t('tree.pitGrass', 'Grass'), soil: t('tree.pitSoil', 'Soil') }[pit] || pit;
+    }
+
+    function treeKindLabel(kind) {
+        return { broadleaf: t('tree.kindBroadleaf', 'Broadleaf'), conifer: t('tree.kindConifer', 'Conifer'),
+            columnar: t('tree.kindColumnar', 'Columnar'), ornamental: t('tree.kindOrnamental', 'Ornamental') }[kind] || kind;
+    }
+
+    function updateTreeCard(panel) {
+        const card = panel.querySelector?.('[data-role="tree-card"]');
+        if (!card) return;
+        const tree = selectedTree();
+        card.hidden = !tree;
+        if (!tree) return;
+        const summary = card.querySelector('[data-role="tree-summary"]');
+        if (summary) summary.textContent = t('tree.summary', '{{kind}}, {{height}} m', { kind: treeKindLabel(tree.kind), height: tree.heightM.toFixed(1) });
+        const room = parkPlanting().heightRoom(tree);
+        const taller = card.querySelector('[data-action="tree-taller"]');
+        const shorter = card.querySelector('[data-action="tree-shorter"]');
+        if (taller) taller.disabled = !room.taller;
+        if (shorter) shorter.disabled = !room.shorter;
+        card.querySelectorAll('[data-tree-pit]').forEach(button => {
+            button.setAttribute('aria-pressed', button.dataset.treePit === (tree.pit || 'none') ? 'true' : 'false');
+        });
     }
 
     function furnitureKindLabel(kind) {
@@ -914,6 +985,7 @@
             const remove = row.querySelector('[data-action="remove-furniture-model"]');
             if (remove) remove.disabled = !model;
         });
+        updateTreeCard(panel);
         const finish = panel.querySelector('[data-action="finish-path"]');
         if (finish) {
             finish.hidden = state.kind !== 'park' || state.tool !== 'path';
@@ -930,7 +1002,7 @@
                     : t('hintSelect', 'Select an item to begin.'));
             } else {
                 const toolLabels = {
-                    tree: t('tools.tree', 'Tree'), flowerbed: t('tools.flowerbed', 'Flowerbed'),
+                    tree: t('tools.tree', 'Tree'), pavementTree: t('tools.pavementTree', 'Pavement tree'), flowerbed: t('tools.flowerbed', 'Flowerbed'),
                     pond: t('tools.pond', 'Pond'), path: t('tools.path', 'Footpath'),
                     bench: t('tools.bench', 'Bench'), fountain: t('tools.fountain', 'Fountain'),
                     stall: t('tools.stall', 'Market stall'), statue: t('tools.statue', 'Statue'),
@@ -941,8 +1013,10 @@
                     : (state.tool === 'path'
                         ? t('hintPath', 'Click to add path points, then choose Finish path.')
                         : (state.tool === 'tree'
-                            ? t('hintTree', 'Click the map to plant a tree. Click a planted tree to change its kind and height.')
-                            : t('hintPlace', 'Click the map to place the selected item.')));
+                            ? t('hintTree', 'Click the map to plant a tree. Click a planted tree to make it taller or shorter or give it a new look.')
+                            : (state.tool === 'pavementTree'
+                                ? t('hintPavementTree', 'Click the paving to plant a tree in a pit. Click a planted tree to change its height, look or base.')
+                                : t('hintPlace', 'Click the map to place the selected item.'))));
                 state.session.setHint(`${toolLabels[state.tool] || ''}: ${instruction}`);
             }
         }
@@ -970,6 +1044,13 @@
         }
         else if (action === 'remove-furniture-model') {
             removeFurnitureModel(actionButton.closest('[data-furniture-kind]')?.dataset.furnitureKind);
+        }
+        else if (action === 'tree-taller') changeSelectedTree(tree => parkPlanting().resizeTree(tree, 1));
+        else if (action === 'tree-shorter') changeSelectedTree(tree => parkPlanting().resizeTree(tree, -1));
+        else if (action === 'tree-reroll') changeSelectedTree(tree => parkPlanting().rerollTree(tree));
+        else {
+            const pit = event.target?.closest?.('[data-tree-pit]')?.dataset.treePit;
+            if (pit) changeSelectedTree(tree => parkPlanting().withPit(tree, pit === 'none' ? null : pit));
         }
     }
 
@@ -1202,6 +1283,7 @@
         state.model = null;
         if (historyCtl) { historyCtl.destroy(); historyCtl = null; }
         state.tool = null;
+        state.selectedTree = null;
         state.pathPoints = [];
         state.pathCursor = null;
         state.rubberBand = null;
@@ -1313,6 +1395,7 @@
         state.model = global.ProposalApplyStructures?.structureModelFields?.(draft.editorPayload?.structureProposal) || null;
         state.lakeError = null;
         state.tool = state.subeditor ? null : 'boundary';
+        state.selectedTree = null;
         state.pathPoints = [];
         state.pathCursor = null;
         state.rubberBand = null;

@@ -84,9 +84,12 @@ adding it, or inspect the returned revision before editing its new refs. Replaci
 patching its building array invalidates its old child refs. Remove a building with the plan's
 `remove` operation; the last building removes its design from the composition.
 
-Trees use `{coordinate:[longitude,latitude], kind, heightM}`. Supported kinds and height ranges
+Trees use `{coordinate:[longitude,latitude], kind, heightM, pit?}`. Supported kinds and height ranges
 are broadleaf (6–14 m), conifer (7–18 m), columnar (9–20 m) and ornamental (3.5–6 m). Change kind
-and height together when the old height is outside the new range. Paths are coordinate arrays;
+and height together when the old height is outside the new range; the editor's Taller and Shorter
+step `heightM` by 1 m. A square's tree may stand in a pit in the paving: `pit` is `grille`, `grass`
+or `soil` (a 1.4 m square, drawn square to the square's longest edge); omit it for a tree straight
+out of the paving. A park's trees take no `pit` (`invalid-tree`). Paths are coordinate arrays;
 ponds and flowerbeds are closed coordinate rings; benches have `coordinate` and `bearing` in
 degrees. These are the same records read by the site's map and model renderer.
 

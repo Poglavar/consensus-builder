@@ -57,6 +57,22 @@ function makeEditorHarness(decorations, options = {}) {
     };
     const groups = [];
     const previewLayers = [];
+    // The selected tree's card: its summary, the height buttons and a square's pit buttons.
+    const treeCard = {
+        hidden: true,
+        summary: { textContent: '' },
+        taller: { disabled: false },
+        shorter: { disabled: false },
+        pits: ['none', 'grille', 'grass', 'soil'].map(pit => ({ dataset: { treePit: pit }, attributes: {}, setAttribute(name, value) { this.attributes[name] = value; } })),
+        querySelector(selector) {
+            if (selector === '[data-role="tree-summary"]') return this.summary;
+            if (selector === '[data-action="tree-taller"]') return this.taller;
+            if (selector === '[data-action="tree-shorter"]') return this.shorter;
+            return null;
+        },
+        querySelectorAll(selector) { return selector === '[data-tree-pit]' ? this.pits : []; },
+        pressedPit() { return this.pits.find(button => button.attributes['aria-pressed'] === 'true')?.dataset.treePit || null; }
+    };
     const panel = {
         classList: makeClassList(),
         listeners: {},
@@ -75,12 +91,14 @@ function makeEditorHarness(decorations, options = {}) {
             if (selector === '[data-role="lake-error"]') return lakeError;
             if (selector === '[data-action="save"]') return lakeSave;
             if (selector === '[data-action="undo"]') return undoButton;
+            if (selector === '[data-role="tree-card"]') return treeCard;
             return /finish-path/.test(selector) ? finishButton : (/data-role/.test(selector) ? element : null);
         },
-        fireClick({ tool, action, furnitureKind }) {
+        fireClick({ tool, action, furnitureKind, pit }) {
             const target = {
                 closest(selector) {
                     if (tool && selector === '.structure-geometry-tools [data-tool]') return { dataset: { tool } };
+                    if (pit && selector === '[data-tree-pit]') return { dataset: { treePit: pit } };
                     if (action && selector === '[data-action]') {
                         return { dataset: { action }, closest: () => (furnitureKind ? { dataset: { furnitureKind } } : null) };
                     }
@@ -402,6 +420,7 @@ function makeEditorHarness(decorations, options = {}) {
                 editorPayload: { structureProposal: JSON.parse(JSON.stringify(draft.editorPayload.structureProposal)) }
             });
         },
+        treeCard,
         save() {
             panel.fireClick({ action: 'save' });
             return savedPayload?.structureProposal?.kind === 'lake'
@@ -742,9 +761,9 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.save().trees).toEqual([tree(0.2, 0.2)]);
     });
 
-    // Clicking a planted tree with the Tree tool re-rolls its look in place instead of planting a
-    // second tree on top of it; undo brings the old look back.
-    it.each([['park'], ['square']])('re-rolls a %s tree clicked with the Tree tool, undoably', kind => {
+    // Clicking a planted tree with the Tree tool opens its card instead of planting a second tree on
+    // top of it; New look re-rolls it in place and undo brings the old look back.
+    it.each([['park'], ['square']])('re-rolls a %s tree from its card, undoably', kind => {
         const decorations = kind === 'park'
             ? { trees: [tree(0.2, 0.2)], version: 3 }
             : { fountains: [], trees: [tree(0.2, 0.2)], benches: [], stalls: [], statues: [] };
@@ -754,6 +773,8 @@ describe('structure geometry editor history wiring', () => {
             harness.panel.fireClick({ tool: 'tree' });
             currentMarkers(harness)[0].fire('click', {});
             expect(currentMarkers(harness)).toHaveLength(1);
+            expect(harness.treeCard.hidden).toBe(false);
+            harness.panel.fireClick({ action: 'tree-reroll' });
             return harness;
         };
 
@@ -765,6 +786,48 @@ describe('structure geometry editor history wiring', () => {
         const undone = clickTree();
         undone.undoButton.fire();
         expect(undone.save().trees).toEqual([tree(0.2, 0.2)]);
+    });
+
+    it('makes the selected tree taller and shorter within its range, undoably', () => {
+        const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 });
+        expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'tree' });
+        currentMarkers(harness)[0].fire('click', {});
+        expect(harness.treeCard.summary.textContent).toBe('Broadleaf, 10.0 m');
+        harness.panel.fireClick({ action: 'tree-taller' });
+        expect(harness.treeCard.summary.textContent).toBe('Broadleaf, 11.0 m');
+        for (let i = 0; i < 5; i++) harness.panel.fireClick({ action: 'tree-taller' });
+        expect(harness.treeCard.taller.disabled).toBe(true);
+        expect(harness.treeCard.summary.textContent).toBe('Broadleaf, 14.0 m');
+        harness.undoButton.fire();
+        expect(harness.treeCard.hidden).toBe(true);
+        currentMarkers(harness)[0].fire('click', {});
+        harness.panel.fireClick({ action: 'tree-shorter' });
+        expect(harness.save().trees).toEqual([{ ...tree(0.2, 0.2), heightM: 12 }]);
+    });
+
+    it('plants a pavement tree under a grille on a square and changes its pit from the card', () => {
+        const harness = makeEditorHarness({ fountains: [], trees: [], benches: [], stalls: [], statues: [] }, { kind: 'square' });
+        expect(harness.open()).toBe(true);
+        expect(harness.panel.innerHTML).toContain('data-tool="pavementTree"');
+        harness.panel.fireClick({ tool: 'pavementTree' });
+        harness.fireMap('click', { latlng: { lng: 0.2, lat: 0.2 } });
+        expect(harness.treeCard.hidden).toBe(false);
+        expect(harness.treeCard.pressedPit()).toBe('grille');
+        harness.panel.fireClick({ pit: 'grass' });
+        expect(harness.treeCard.pressedPit()).toBe('grass');
+        harness.panel.fireClick({ pit: 'none' });
+        expect(harness.treeCard.pressedPit()).toBe('none');
+        harness.undoButton.fire();
+        expect(harness.save().trees).toEqual([expect.objectContaining({ coordinate: [0.2, 0.2], pit: 'grass' })]);
+    });
+
+    it('offers no pavement tree in a park and keeps park trees out of pits', () => {
+        const harness = makeEditorHarness({ trees: [{ ...tree(0.2, 0.2), pit: 'grille' }], version: 3 });
+        expect(harness.open()).toBe(true);
+        expect(harness.panel.innerHTML).not.toContain('data-tool="pavementTree"');
+        expect(harness.panel.innerHTML).not.toContain('data-tree-pit');
+        expect(harness.save().trees).toEqual([tree(0.2, 0.2)]);
     });
 
     it.each([

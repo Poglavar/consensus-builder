@@ -198,3 +198,64 @@
     filter: drop-shadow(0 1px 1px var(--cb-surface));
     font-size: var(--cb-text-sm);
 }
+
+/* The selected tree's card in the park and square editors (structure-geometry-editor.js). */
+.structure-geometry-tree-card {
+    display: grid;
+    gap: var(--cb-space-1);
+    padding: var(--cb-space-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+}
+
+.structure-geometry-tree-summary {
+    margin: 0;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.structure-geometry-tree-pits {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-1);
+}
+
+.structure-geometry-tree-label {
+    font-size: var(--cb-text-sm);
+    margin-inline-end: var(--cb-space-1);
+}
+
+/* A pavement tree's pit (park-planting.js treeIcon), drawn under its glyph: grille, grass or soil. */
+.park-tree-glyph.is-pit-grille,
+.park-tree-glyph.is-pit-grass,
+.park-tree-glyph.is-pit-soil {
+    position: relative;
+}
+
+.park-tree-glyph.is-pit-grille::before,
+.park-tree-glyph.is-pit-grass::before,
+.park-tree-glyph.is-pit-soil::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    z-index: -1;
+    width: 0.6em;
+    height: 0.6em;
+    border: 1px solid #8f8b80;
+    border-radius: 2px;
+    transform: translate(-50%, 25%);
+}
+
+.park-tree-glyph.is-pit-grille::before {
+    background: repeating-linear-gradient(90deg, #3d3f42 0 2px, #6b5a48 2px 4px);
+}
+
+.park-tree-glyph.is-pit-grass::before {
+    background: #6f9a3e;
+}
+
+.park-tree-glyph.is-pit-soil::before {
+    background: #6b4f3a;
+}

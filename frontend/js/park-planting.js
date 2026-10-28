@@ -20,6 +20,12 @@
     // A re-rolled tree differs from the one it replaces by at least this much when its kind repeats,
     // so a click always visibly changes it.
     const MIN_VISIBLE_HEIGHT_CHANGE_M = 2;
+    // Taller / Shorter in the editor change a tree's height by this much, within its kind's range.
+    const HEIGHT_STEP_M = 1;
+    // A pavement tree stands in a pit in the paving: under a metal grille, in a patch of grass or in
+    // bare soil. The pit is a square of this side, in metres. Squares only (parks stand on lawn).
+    const TREE_PITS = ['grille', 'grass', 'soil'];
+    const PIT_SIZE_M = 1.4;
 
     function position(value) {
         if (!Array.isArray(value) || value.length < 2) return null;
@@ -42,19 +48,69 @@
         return Math.round((range.minHeightM + unit * (range.maxHeightM - range.minHeightM)) * 10) / 10;
     }
 
-    // A stored tree: { coordinate: [lng, lat], kind, heightM }. A tree stored as a bare [lng, lat]
-    // (every park drawn before trees carried a look) takes the look its position hashes to.
+    // A stored tree: { coordinate: [lng, lat], kind, heightM, pit? }. A tree stored as a bare
+    // [lng, lat] (every park drawn before trees carried a look) takes the look its position hashes to.
+    // `pit` is kept only when it names one of TREE_PITS.
     function treeOf(entry) {
         const isRecord = entry && !Array.isArray(entry) && typeof entry === 'object';
         const point = position(isRecord ? entry.coordinate : entry);
         if (!point) return null;
-        const heightM = isRecord ? Number(entry.heightM) : NaN;
+        const pit = isRecord && TREE_PITS.includes(entry.pit) ? { pit: entry.pit } : {};
+        const heightM = isRecord && typeof entry.heightM === 'number' ? entry.heightM : NaN;
         if (isRecord && TREE_KINDS[entry.kind] && Number.isFinite(heightM)) {
             const range = TREE_KINDS[entry.kind];
-            return { coordinate: point, kind: entry.kind, heightM: Math.min(range.maxHeightM, Math.max(range.minHeightM, heightM)) };
+            return { coordinate: point, kind: entry.kind, heightM: Math.min(range.maxHeightM, Math.max(range.minHeightM, heightM)), ...pit };
         }
         const kind = KIND_NAMES[Math.floor(positionUnit(point, 1) * KIND_NAMES.length)];
-        return { coordinate: point, kind, heightM: heightIn(kind, positionUnit(point, 2)) };
+        return { coordinate: point, kind, heightM: heightIn(kind, positionUnit(point, 2)), ...pit };
+    }
+
+    // The same tree `steps` height steps taller (negative: shorter), held within its kind's range.
+    function resizeTree(entry, steps) {
+        const tree = treeOf(entry);
+        if (!tree) return null;
+        const range = TREE_KINDS[tree.kind];
+        const heightM = Math.round(Math.min(range.maxHeightM, Math.max(range.minHeightM, tree.heightM + steps * HEIGHT_STEP_M)) * 10) / 10;
+        return { ...tree, heightM };
+    }
+
+    // Whether the tree can still grow or shrink by a step.
+    function heightRoom(entry) {
+        const tree = treeOf(entry);
+        if (!tree) return { taller: false, shorter: false };
+        const range = TREE_KINDS[tree.kind];
+        return { taller: tree.heightM < range.maxHeightM, shorter: tree.heightM > range.minHeightM };
+    }
+
+    // The same tree in a pit of the paving (one of TREE_PITS), or out of it (null).
+    function withPit(entry, pit) {
+        const tree = treeOf(entry);
+        if (!tree) return null;
+        const { pit: _old, ...rest } = tree;
+        return TREE_PITS.includes(pit) ? { ...rest, pit } : rest;
+    }
+
+    // A pit's four corners in a planar frame (x east, y north): the square of half side `half` around
+    // (x, y), its sides along and across `bearingDeg` (degrees from north), counter-clockwise.
+    function pitCorners(x, y, half, bearingDeg) {
+        const a = bearingDeg * Math.PI / 180;
+        const u = [Math.sin(a) * half, Math.cos(a) * half];   // along the bearing
+        const v = [Math.cos(a) * half, -Math.sin(a) * half];  // across it, to the right
+        return [[x - u[0] - v[0], y - u[1] - v[1]], [x - u[0] + v[0], y - u[1] + v[1]], [x + u[0] + v[0], y + u[1] + v[1]], [x + u[0] - v[0], y + u[1] - v[1]]];
+    }
+
+    // The direction pits are laid square to: the bearing (degrees from north, [0, 180)) of the
+    // longest edge of a site's outer ring of [lng, lat], measured on a local flat frame.
+    function longestEdgeBearing(ring) {
+        if (!Array.isArray(ring) || ring.length < 2) return 0;
+        const lat0 = ring[0][1] * Math.PI / 180;
+        let best = -1, bearing = 0;
+        for (let i = 1; i < ring.length; i++) {
+            const dx = (ring[i][0] - ring[i - 1][0]) * Math.cos(lat0), dy = ring[i][1] - ring[i - 1][1];
+            const length = dx * dx + dy * dy;
+            if (length > best) { best = length; bearing = ((Math.atan2(dx, dy) * 180 / Math.PI) % 180 + 180) % 180; }
+        }
+        return bearing;
     }
 
     function treeCoordinate(entry) {
@@ -63,6 +119,7 @@
     }
 
     // A new look for the same tree: a random kind and height, visibly different from the current one.
+    // A pavement tree stays in its pit.
     function rerollTree(entry, random = Math.random) {
         const current = treeOf(entry);
         if (!current) return null;
@@ -70,11 +127,11 @@
             const kind = KIND_NAMES[Math.min(KIND_NAMES.length - 1, Math.floor(random() * KIND_NAMES.length))];
             const heightM = heightIn(kind, random());
             if (kind !== current.kind || Math.abs(heightM - current.heightM) >= MIN_VISIBLE_HEIGHT_CHANGE_M) {
-                return { coordinate: current.coordinate, kind, heightM };
+                return { coordinate: current.coordinate, kind, heightM, ...(current.pit ? { pit: current.pit } : {}) };
             }
         }
         const kind = KIND_NAMES[(KIND_NAMES.indexOf(current.kind) + 1) % KIND_NAMES.length];
-        return { coordinate: current.coordinate, kind, heightM: heightIn(kind, 0.5) };
+        return { coordinate: current.coordinate, kind, heightM: heightIn(kind, 0.5), ...(current.pit ? { pit: current.pit } : {}) };
     }
 
     // The parts of one tree, in metres above its foot: a trunk and one or more crown pieces, each
@@ -134,12 +191,14 @@
     }
 
     // A symbolic map size follows the authored height in metres; it does not claim a crown footprint.
-    // The CSS custom property is the narrow geometry interface shared by editor and saved-map icons.
+    // The CSS custom property is the narrow geometry interface shared by editor and saved-map icons;
+    // a pavement tree's glyph carries its pit as a variant class.
     function treeIcon(entry) {
         const tree = treeOf(entry);
         const size = tree ? Math.round(10 + tree.heightM * 1.4) : 24;
+        const pit = tree?.pit ? ` is-pit-${tree.pit}` : '';
         return {
-            html: `<span class="park-tree-glyph" style="--tree-icon-size: ${size}px">${treeGlyph(entry)}</span>`,
+            html: `<span class="park-tree-glyph${pit}" style="--tree-icon-size: ${size}px">${treeGlyph(entry)}</span>`,
             iconSize: [size, size],
             iconAnchor: [size / 2, size / 2]
         };
@@ -250,5 +309,5 @@
         return plants;
     }
 
-    return { TREE_KINDS, FLOWER_COLORS, treeOf, treeCoordinate, rerollTree, treeShape, treeGlyph, treeIcon, flowerbedPlanting, ringSeed };
+    return { TREE_KINDS, TREE_PITS, PIT_SIZE_M, HEIGHT_STEP_M, FLOWER_COLORS, treeOf, treeCoordinate, rerollTree, resizeTree, heightRoom, withPit, pitCorners, longestEdgeBearing, treeShape, treeGlyph, treeIcon, flowerbedPlanting, ringSeed };
 });

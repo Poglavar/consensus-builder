@@ -153,6 +153,20 @@ describe('granular authored editing', () => {
         expect(next.structureProposal.decorationDesign.paths).toHaveLength(1);
         expect(()=>edit(design,[{op:'add',path:'/structureProposal/decorations',value:{trees:[]}}])).toThrow(/runtime|noncanonical/);
     });
+    it('makes a tree taller and puts a square tree in a pit like the editor, refusing pits outside squares', () => {
+        const square=make('space',{spaceKind:'square'});
+        const tree={coordinate:[-.0995,51.5005],kind:'broadleaf',heightM:9,pit:'grille'};
+        const next=edit(square,[{op:'add',path:'/structureProposal/decorationDesign',value:{version:2,trees:[tree]}}]);
+        expect(next.structureProposal.decorationDesign.trees).toEqual([tree]);
+        const taller=edit(next,[{op:'replace',path:'/structureProposal/decorationDesign/trees/0/heightM',value:10},
+            {op:'replace',path:'/structureProposal/decorationDesign/trees/0/pit',value:'grass'}]);
+        expect(taller.structureProposal.decorationDesign.trees[0]).toEqual({...tree,heightM:10,pit:'grass'});
+        expect(validateDesignContent(taller).ok).toBe(true);
+        expect(()=>edit(next,[{op:'replace',path:'/structureProposal/decorationDesign/trees/0/pit',value:'cobbles'}])).toThrow(expect.objectContaining({code:'invalid-tree'}));
+        expect(()=>edit(next,[{op:'replace',path:'/structureProposal/decorationDesign/trees/0/heightM',value:15}])).toThrow(expect.objectContaining({code:'invalid-tree'}));
+        const park=make('space',{spaceKind:'park',treeCount:0});
+        expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/trees/-',value:tree}])).toThrow(expect.objectContaining({code:'invalid-tree'}));
+    });
     it('normalizes square/park furniture models and lamps like the site and refuses kinds the structure lacks', () => {
         const square=make('space',{spaceKind:'square'}), url='https://api.example/uploads/models/statue.glb';
         const next=edit(square,[{op:'add',path:'/structureProposal/decorationDesign',value:{version:2,benches:[],

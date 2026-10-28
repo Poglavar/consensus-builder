@@ -2779,6 +2779,94 @@
         Object.values(speciesTreeMeshes(looks)).forEach(mesh => target.add(ownInstances(mesh)));
     }
 
+    // Pavement trees' pits (park-planting.js TREE_PITS): per square, one merged mesh per pit kind,
+    // just above the paving and laid square to the square's longest edge. A grille is a cast-iron
+    // grate with soil showing through; grass and soil pits get a stone edge.
+    const TREE_PIT_Z = FURNITURE_GROUND_Z + 0.012;
+    const TREE_PIT_EDGE_M = 0.1;
+    let treePitAssets = null; // shared, never disposed: the grille, soil and edge materials
+    function ensureTreePitAssets() {
+        if (treePitAssets) return treePitAssets;
+        const size = 128, mid = size / 2;
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = size;
+        const c = canvas.getContext('2d');
+        c.fillStyle = '#4a3a2c';
+        c.fillRect(0, 0, size, size);
+        c.strokeStyle = '#34373b';
+        c.lineWidth = 10;
+        c.strokeRect(5, 5, size - 10, size - 10);
+        c.lineWidth = 4;
+        [24, 38, 52].forEach(r => c.strokeRect(mid - r, mid - r, r * 2, r * 2));
+        for (let i = 0; i < 8; i++) {
+            const a = i * Math.PI / 4;
+            c.beginPath();
+            c.moveTo(mid + Math.cos(a) * 16, mid + Math.sin(a) * 16);
+            c.lineTo(mid + Math.cos(a) * 60, mid + Math.sin(a) * 60);
+            c.stroke();
+        }
+        c.lineWidth = 5;
+        c.beginPath();
+        c.arc(mid, mid, 17, 0, Math.PI * 2);
+        c.stroke();
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.anisotropy = 4;
+        treePitAssets = {
+            grille: new THREE.MeshLambertMaterial({ map: texture }),
+            soil: new THREE.MeshLambertMaterial({ color: 0x5b4332 }),
+            edge: new THREE.MeshLambertMaterial({ color: 0x9c978b })
+        };
+        return treePitAssets;
+    }
+
+    function addTreePits3D(target, trees, site) {
+        const planting = parkPlanting();
+        const pits = (Array.isArray(trees) ? trees : []).map(entry => planting.treeOf(entry)).filter(tree => tree?.pit);
+        if (!pits.length) return;
+        const geometry = site?.geometry;
+        const ring = geometry?.type === 'Polygon' ? geometry.coordinates[0] : (geometry?.type === 'MultiPolygon' ? geometry.coordinates[0]?.[0] : null);
+        const bearing = planting.longestEdgeBearing(ring);
+        const k = lifeMercatorK();
+        const half = planting.PIT_SIZE_M / 2 * k;
+        const quads = { grille: [], grass: [], soil: [], edge: [] };
+        const square = (list, corners) => list.push(corners);
+        pits.forEach(tree => {
+            const [x, y] = latLngToXY(tree.coordinate[1], tree.coordinate[0]);
+            square(quads[tree.pit], planting.pitCorners(x, y, half, bearing));
+            if (tree.pit === 'grille') return;
+            // The stone edge: four strips just outside the pit.
+            const outer = planting.pitCorners(x, y, half + TREE_PIT_EDGE_M * k, bearing);
+            const inner = planting.pitCorners(x, y, half, bearing);
+            for (let i = 0; i < 4; i++) {
+                const j = (i + 1) % 4;
+                square(quads.edge, [outer[i], outer[j], inner[j], inner[i]]);
+            }
+        });
+        Object.entries(quads).forEach(([kind, list]) => {
+            if (!list.length) return;
+            const positions = new Float32Array(list.length * 12);
+            const uvs = new Float32Array(list.length * 8);
+            const indices = [];
+            list.forEach((corners, q) => {
+                corners.forEach(([x, y], i) => positions.set([x, y, TREE_PIT_Z], q * 12 + i * 3));
+                uvs.set([0, 0, 1, 0, 1, 1, 0, 1], q * 8);
+                indices.push(q * 4, q * 4 + 1, q * 4 + 2, q * 4, q * 4 + 2, q * 4 + 3);
+            });
+            const buffer = new THREE.BufferGeometry();
+            buffer.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            buffer.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+            buffer.setIndex(indices);
+            buffer.computeVertexNormals();
+            const material = kind === 'grass' ? lawnMaterial() : ensureTreePitAssets()[kind];
+            const mesh = new THREE.Mesh(buffer, material);
+            markOwnedGeometry(mesh, buffer);
+            if (kind === 'grass') markOwnedMaterial(mesh, material);
+            mesh.userData.treePit = kind;
+            target.add(mesh);
+        });
+    }
+
     // Shared, never disposed: unit shapes the flowerbed instances scale (like the OSM tree assets).
     let flowerbedAssets = null;
     function ensureFlowerbedAssets() {
@@ -3018,6 +3106,8 @@
                 // uploaded model (decorations.models) draws that model for every item instead.
                 const models = dec.models || null;
                 placeFurniture3D('tree', dec.trees, models, decoTarget, isCurrentModel, spots => addParkTrees3D(decoTarget, spots.map(spot => spot.item)));
+                // Pavement trees' pits draw under any tree, default or uploaded model.
+                addTreePits3D(decoTarget, dec.trees, sq);
                 placeFurniture3D('bench', dec.benches, models, decoTarget, isCurrentModel, spots => addProceduralBenches3D(decoTarget, spots));
                 placeFurniture3D('stall', dec.stalls, models, decoTarget, isCurrentModel, spots => addMarketStalls3D(decoTarget, spots));
                 placeFurniture3D('statue', dec.statues, models, decoTarget, isCurrentModel, spots => spots.forEach(spot => {

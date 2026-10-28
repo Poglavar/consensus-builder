@@ -216,6 +216,7 @@
             for (const tree of decorations?.trees || []) {
                 const normalized = planting.treeOf(tree);
                 if (!normalized || (!Array.isArray(tree) && (tree.kind !== normalized.kind || tree.heightM !== normalized.heightM))) fail('invalid-tree', 'Use a supported tree kind and a heightM within its range; inspect ugt://editing for the tree schema.');
+                if (!Array.isArray(tree) && tree.pit != null && tree.pit !== normalized.pit) fail('invalid-tree', `A pavement tree's pit is one of ${planting.TREE_PITS.join(', ')}; omit pit for a tree without one.`);
             }
             for (const path of decorations?.paths || []) if (!Array.isArray(path) || path.length < 2) fail('invalid-decoration', 'A path needs at least two coordinates.');
             for (const ring of [...(decorations?.ponds || []), ...(decorations?.flowerbeds || [])]) {
