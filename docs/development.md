@@ -217,6 +217,20 @@ discovery (`imports.furnitureKinds`/`furnitureLimits`, `public-spaces.furnitureK
 `backend/test/mcp-edit.test.js` (normalization and refused kinds), each confirmed red with its
 check removed, with `mcp-discovery` and `mcp-agent-boundary` passing.
 
+### Park enclosures and play equipment: MCP parity (2026-10-29)
+
+The park editor's Fenced area, Gate and Fence the whole park tools, the fenced area's card (fence
+style and use) and the Swing, Seesaw and Slide tools write `decorationDesign.enclosures` and
+`swings`/`seesaws`/`slides`, the records an agent patches with `ugt_edit_design`. No MCP tool was
+added. `intentEditing` checks each enclosure with the shared `ParkEnclosures.enclosureIssue` and
+keeps a ring inside the park (`enclosure-outside`); `normalizeSpaceFurniture` normalizes both with
+`ParkEnclosures` and refuses them on squares (`furniture-kind-not-allowed`); swing, seesaw and slide
+joined `FurnitureModels.KINDS_BY_STRUCTURE.park`, so `ugt_import_model` furniture uploads and
+discovery list them. Discovery's `public-spaces` entry names the fences and uses, and
+[MCP editing](mcp-editing.md) documents the records. Verified by headless unit tests
+`backend/test/mcp-edit.test.js` (patching fenced areas and equipment, and each refusal) and
+`backend/test/mcp-discovery.test.js`.
+
 ### Tree height steps and pavement trees: MCP parity (2026-10-28)
 
 The park and square editors' tree card (Shorter / Taller in 1 m steps within the kind's range, New

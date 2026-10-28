@@ -66,7 +66,9 @@ Four classic scripts, three of them pure and node-tested:
      footway/path/pedestrian/steps/cycleway/track/living_street as walking bands, closed
      `area=yes` pedestrian ways as walking polygons;
    - park lawns and plazas as walking polygons, park paths as bands, ponds and plaza furniture
-     (fountain, stalls, statues, benches, trees) as blocked; buildings, water and lakes as blocked.
+     (fountain, stalls, statues, benches, trees, swings, seesaws, slides) as blocked; park fences
+     as blocked lines with a 3 m opening at each gate (wider than the gate drawn, so the 1 m walking
+     grid keeps it passable); buildings, water and lakes as blocked.
    Tracks connect through node ids, so a driver reaching the end of one picks another outgoing
    track. Turns (2026-10-17): `junctionCurve` trims both lanes back by the tangent length of the
    vehicle's turn radius (car 7 m, bus 11 m, moto 6 m; hairpins and U-turns turn at the node) and

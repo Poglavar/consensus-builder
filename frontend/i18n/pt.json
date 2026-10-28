@@ -36,6 +36,11 @@
             "lockOutside": "Mova o projeto para dentro do terreno inicial antes de o bloquear."
         }
     },
+    "urbanRule": {
+        "balconies": "Varandas",
+        "balconyDepth": "Podem sair da envolvente até (m):",
+        "slantedRoof": "Telhado inclinado com sótão"
+    },
     "common": {
         "maxFloors": "Máximo de pisos:",
         "minFloors": "Mínimo de pisos:",
@@ -2416,6 +2421,30 @@
         }
     },
     "structureEditor": {
+        "hintEnclosure": "Clique para desenhar uma área vedada e depois clique no seu primeiro ponto ou escolha Terminar área. Clique numa vedação para escolher o tipo e o uso; arraste os pontos para mudar a forma.",
+        "hintGate": "Clique numa vedação para pôr um portão; clique num portão para o retirar.",
+        "statusLastGate": "Uma área vedada mantém pelo menos um portão.",
+        "statusGateOffFence": "Clique numa vedação para pôr um portão.",
+        "enclosure": {
+            "fencePark": "Vedar todo o parque",
+            "title": "Área vedada selecionada",
+            "fence": "Vedação",
+            "use": "Uso",
+            "remove": "Retirar área vedada",
+            "fenceRail": "Corrimão baixo",
+            "fenceMesh": "Rede",
+            "fenceIron": "Ferro forjado",
+            "fencePlinth": "Ferro sobre tijolo",
+            "useNone": "Aberta",
+            "useDog": "Área para cães",
+            "usePlay": "Parque infantil",
+            "summary": "{{area}}, portões: {{gates}}",
+            "drawn": "Área vedada",
+            "wholePark": "Vedação à volta de todo o parque",
+            "finish": "Terminar área",
+            "vertexTitle": "Arraste para mudar a forma da área vedada",
+            "deleteVertexTitle": "Apagar este ponto da vedação"
+        },
         "furniture": {
             "title": "Modelos de mobiliário",
             "upload": "Carregar",
@@ -2452,6 +2481,11 @@
         "titleSquare": "Editor de praças",
         "instructions": "Escolha um elemento e clique dentro do limite. Arraste qualquer elemento para o mover.",
         "tools": {
+            "swing": "Baloiço",
+            "seesaw": "Balancé",
+            "slide": "Escorrega",
+            "enclosure": "Área vedada",
+            "gate": "Portão",
             "lamp": "Candeeiro",
             "tree": "Árvore",
             "flowerbed": "Canteiro de flores",

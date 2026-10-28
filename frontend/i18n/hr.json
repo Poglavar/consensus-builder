@@ -850,6 +850,11 @@
         "fr": "Français",
         "pt": "Português"
     },
+    "urbanRule": {
+        "balconies": "Balkoni",
+        "balconyDepth": "Smiju izaći iz gabarita za (m):",
+        "slantedRoof": "Kosi krov s potkrovljem"
+    },
     "common": {
         "maxFloors": "Maks. katova:",
         "minFloors": "Min. katova:",
@@ -6305,6 +6310,30 @@
         }
     },
     "structureEditor": {
+        "hintEnclosure": "Kliknite za obris ograđenog prostora, zatim kliknite njegovu prvu točku ili odaberite Završi prostor. Kliknite ogradu za odabir vrste i namjene; povucite točke za promjenu oblika.",
+        "hintGate": "Kliknite ogradu za postavljanje vrata; kliknite vrata za uklanjanje.",
+        "statusLastGate": "Ograđeni prostor zadržava barem jedna vrata.",
+        "statusGateOffFence": "Kliknite ogradu za postavljanje vrata.",
+        "enclosure": {
+            "fencePark": "Ogradi cijeli park",
+            "title": "Odabrani ograđeni prostor",
+            "fence": "Ograda",
+            "use": "Namjena",
+            "remove": "Ukloni ograđeni prostor",
+            "fenceRail": "Niska ograda",
+            "fenceMesh": "Mreža",
+            "fenceIron": "Kovano željezo",
+            "fencePlinth": "Željezo na zidanom podnožju",
+            "useNone": "Otvoreno",
+            "useDog": "Prostor za pse",
+            "usePlay": "Igralište",
+            "summary": "{{area}}, vrata: {{gates}}",
+            "drawn": "Ograđeni prostor",
+            "wholePark": "Ograda oko cijelog parka",
+            "finish": "Završi prostor",
+            "vertexTitle": "Povucite za promjenu oblika ograđenog prostora",
+            "deleteVertexTitle": "Izbriši ovu točku ograde"
+        },
         "furniture": {
             "title": "Modeli opreme",
             "upload": "Učitaj",
@@ -6340,6 +6369,11 @@
         "instructions": "Odaberi element, zatim klikni unutar granice. Povuci bilo koji element da ga pomakneš.",
         "closeLabel": "Zatvori",
         "tools": {
+            "swing": "Ljuljačka",
+            "seesaw": "Klackalica",
+            "slide": "Tobogan",
+            "enclosure": "Ograđeni prostor",
+            "gate": "Vrata",
             "lamp": "Svjetiljka",
             "tree": "Stablo",
             "flowerbed": "Cvjetnjak",

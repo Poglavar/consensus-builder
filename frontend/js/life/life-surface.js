@@ -104,8 +104,11 @@
         (input.bands || []).forEach(b => stampPolyline(b.pts, b.halfWidth, CLASS.PREFERRED, b.zcode || 0, notBlocked, b.authored));
         (input.fills || []).forEach(f => fillPolygon(f.rings, CLASS.PREFERRED, f.zcode || 0, notBlocked, f.authored));
         (input.carriageways || []).forEach(c => stampPolyline(c.pts, c.halfWidth, CLASS.CARRIAGEWAY, c.zcode || 0, notBlocked));
+        // A blocked line (a fence) is stamped at least three quarters of a cell wide, so a leg sampled
+        // every half cell cannot slip between its cells.
         (input.blocked || []).forEach(b => {
             if (Array.isArray(b.rings)) fillPolygon(b.rings, CLASS.BLOCKED, 0, always);
+            else if (Array.isArray(b.pts)) stampPolyline(b.pts, Math.max(Number(b.halfWidth) || 0, cell * 0.75), CLASS.BLOCKED, 0, always);
             else if (Number.isFinite(b.r)) stampDisc(b.x, b.y, b.r, CLASS.BLOCKED, 0, always);
         });
 

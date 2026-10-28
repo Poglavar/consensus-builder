@@ -2688,6 +2688,13 @@
                 const models = deco?.models || null;
                 if (deco && Array.isArray(deco.benches)) {
                     placeFurniture3D('bench', deco.benches, models, decoTarget, isCurrentModel, spots => addProceduralBenches3D(decoTarget, spots));
+                // Fenced areas: a dog or play area's ground, and every fence with its gates.
+                if (deco && Array.isArray(deco.enclosures) && deco.enclosures.length) {
+                    try { addParkEnclosures3D(flatTarget, decoTarget, p, deco.enclosures); } catch (error) {
+                        console.error(`[${new Date().toISOString()}] [3D] fenced areas of park ${p.properties?.proposalId} failed; drawn without them`, error);
+                    }
+                }
+
                 }
                 if (deco) placeFurniture3D('stall', deco.stalls, models, decoTarget, isCurrentModel, spots => addMarketStalls3D(decoTarget, spots));
                 placeLamps3D(deco?.lamps, models, decoTarget, isCurrentModel);
@@ -2696,6 +2703,11 @@
                 // (the old random sampling ignored edits, so a repositioned tree never moved in
                 // 3D), each with its stored look. Random sampling remains only for legacy parks
                 // without tree data.
+                if (deco) {
+                    for (const [kind, key] of Object.entries(parkEnclosuresApi().EQUIPMENT)) {
+                        if (Array.isArray(deco[key]) && deco[key].length) placeFurniture3D(kind, deco[key], models, decoTarget, isCurrentModel, spots => addPlayEquipment3D(decoTarget, kind, spots));
+                    }
+                }
                 const storedTrees = (deco && Array.isArray(deco.trees)) ? deco.trees.filter(entry => {
                     const coord = parkPlanting().treeCoordinate(entry);
                     if (!coord) return false;
@@ -3028,6 +3040,88 @@
     // posts, the counters and the canopies; each canopy takes its stall's colour (stallColor) as an
     // instance colour multiplied over one shared white/grey stripe texture, so every colour is one draw.
     let marketStallAssets = null;
+    function parkEnclosuresApi() {
+        const api = window.ParkEnclosures;
+        if (!api) throw new Error('park-enclosures.js is not loaded');
+        return api;
+    }
+
+    // Fences, enclosure grounds and play equipment share these, never disposed, like the flowerbeds'.
+    let enclosureAssets = null;
+    function ensureEnclosureAssets() {
+        if (enclosureAssets) return enclosureAssets;
+        const lambert = color => new THREE.MeshLambertMaterial({ color });
+        const ground = color => new THREE.MeshLambertMaterial({ color, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 });
+        enclosureAssets = {
+            box: new THREE.BoxGeometry(1, 1, 1),
+            fence: {
+                timber: lambert(0x8a5a2b), metal: lambert(0x2f4f3a), iron: lambert(0x1c1c1c), brick: lambert(0x9a4b35), stone: lambert(0xc9c4b8),
+                // Mesh infill is see-through: what stands behind the fence stays visible.
+                mesh: new THREE.MeshLambertMaterial({ color: 0x2f4f3a, transparent: true, opacity: 0.35, depthWrite: false, side: THREE.DoubleSide })
+            },
+            surface: { gravel: ground(0xcdbf9f), rubber: ground(0xb8573f) },
+            play: { frame: lambert(0x1f6fb2), seat: lambert(0x262626), chain: lambert(0x9aa0a6), wood: lambert(0xa0703c), chute: lambert(0xf2b632) },
+            playParts: new Map()
+        };
+        return enclosureAssets;
+    }
+
+    // A park's fenced areas (park-enclosures.js): the gravel or rubber ground of a dog or play area,
+    // then every fence as boxes (posts, rails, bars, mesh, brick plinth) split at its gates, one
+    // InstancedMesh per material for the whole park. Box sizes along the ground are in scene units
+    // (true metres x k), heights in metres.
+    function addParkEnclosures3D(flatTarget, decoTarget, park, list) {
+        const api = parkEnclosuresApi(), assets = ensureEnclosureAssets(), k = lifeMercatorK();
+        const boxes = [];
+        list.forEach(enclosure => {
+            const ring = api.enclosureRing(enclosure, park.geometry);
+            if (!ring) return;
+            const surface = api.USE_SURFACE[enclosure.use];
+            if (surface) {
+                const feature = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: {} };
+                polygonFeatureToMeshes(feature, assets.surface[surface], 0.063, 0).forEach(mesh => flatTarget.add(mesh));
+            }
+            const runs = api.fenceRuns(ring, enclosure.gates).runs.map(run => run.map(([lng, lat]) => latLngToXY(lat, lng)));
+            boxes.push(...api.fenceParts(runs, enclosure.fence, k));
+        });
+        const byMaterial = new Map();
+        boxes.forEach(part => { if (!byMaterial.has(part.material)) byMaterial.set(part.material, []); byMaterial.get(part.material).push(part); });
+        const dummy = new THREE.Object3D();
+        byMaterial.forEach((parts, material) => {
+            const mesh = ownInstances(new THREE.InstancedMesh(assets.box, assets.fence[material], parts.length));
+            parts.forEach((part, index) => {
+                dummy.position.set(part.x, part.y, FURNITURE_GROUND_Z + part.z);
+                dummy.rotation.set(0, 0, part.angle);
+                dummy.scale.set(part.along, part.across, part.height);
+                dummy.updateMatrix();
+                mesh.setMatrixAt(index, dummy.matrix);
+            });
+            mesh.instanceMatrix.needsUpdate = true;
+            decoTarget.add(mesh);
+        });
+    }
+
+    // The default swing, seesaw and slide (park-enclosures.js EQUIPMENT_PARTS): each part one
+    // InstancedMesh for every item of that kind in the park, turned to its bearing like the benches.
+    function addPlayEquipment3D(target, kind, spots) {
+        const assets = ensureEnclosureAssets();
+        if (!assets.playParts.has(kind)) {
+            assets.playParts.set(kind, (parkEnclosuresApi().EQUIPMENT_PARTS[kind] || []).map(part => {
+                const geometry = new THREE.BoxGeometry(part.sx, part.sy, part.sz);
+                geometry.rotateY(part.ry || 0);
+                geometry.translate(part.x, part.y, part.z);
+                return { geometry, material: assets.play[part.material] };
+            }));
+        }
+        const placements = furniturePlacements(spots);
+        assets.playParts.get(kind).forEach(({ geometry, material }) => {
+            const mesh = ownInstances(new THREE.InstancedMesh(geometry, material, placements.length));
+            placements.forEach((matrix, index) => mesh.setMatrixAt(index, matrix));
+            mesh.instanceMatrix.needsUpdate = true;
+            target.add(mesh);
+        });
+    }
+
     const MARKET_STALL_POSTS = [[-0.75, -1.15], [-0.75, 1.15], [0.75, -1.15], [0.75, 1.15]];
     function ensureMarketStallAssets() {
         if (marketStallAssets) return marketStallAssets;

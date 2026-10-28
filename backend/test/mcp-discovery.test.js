@@ -27,8 +27,9 @@ describe('tool-only MCP discovery', () => {
         });
         expect(result.features.find(row => row.feature === 'review').validate).toBe('ugt_validate_plan');
         expect(result.features.find(row => row.feature === 'imports')).toMatchObject({ modelKinds: expect.arrayContaining(['furniture']),
-            furnitureKinds: ['bench', 'statue', 'fountain', 'stall', 'tree', 'lamp'], furnitureLimits: { maxTriangles: 5000, maxTextureSize: 1024, maxBytes: 4 * 1024 * 1024 } });
-        expect(result.features.find(row => row.feature === 'public-spaces')).toMatchObject({ furnitureKinds: { park: ['bench', 'stall', 'tree', 'lamp'] }, furniture: expect.stringMatching(/lamps.*stalls.*models/) });
+            furnitureKinds: ['bench', 'statue', 'fountain', 'stall', 'tree', 'lamp', 'swing', 'seesaw', 'slide'], furnitureLimits: { maxTriangles: 5000, maxTextureSize: 1024, maxBytes: 4 * 1024 * 1024 } });
+        expect(result.features.find(row => row.feature === 'public-spaces')).toMatchObject({ furnitureKinds: { park: ['bench', 'stall', 'tree', 'lamp', 'swing', 'seesaw', 'slide'] },
+            furniture: expect.stringMatching(/lamps.*stalls.*models.*enclosures/), enclosures: { fences: ['rail', 'mesh', 'iron', 'plinth'], uses: ['none', 'dog', 'play'] } });
         expect(result.next.tool).toBe('ugt_help');
         expect(JSON.stringify(result).length).toBeLessThan(16_000);
     });

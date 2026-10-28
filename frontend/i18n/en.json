@@ -849,6 +849,11 @@
         "fr": "Français",
         "pt": "Português"
     },
+    "urbanRule": {
+        "balconies": "Balconies",
+        "balconyDepth": "May stand out of the envelope by (m):",
+        "slantedRoof": "Slanted roof with attic"
+    },
     "common": {
         "maxFloors": "Max floors:",
         "minFloors": "Min floors:",
@@ -6271,6 +6276,30 @@
         }
     },
     "structureEditor": {
+        "hintEnclosure": "Click to outline a fenced area, then click its first point or choose Finish area. Click a fence to choose its style and use; drag its points to reshape it.",
+        "hintGate": "Click a fence to put a gate in it; click a gate to remove it.",
+        "statusLastGate": "A fenced area keeps at least one gate.",
+        "statusGateOffFence": "Click a fence to put a gate in it.",
+        "enclosure": {
+            "fencePark": "Fence the whole park",
+            "title": "Selected fenced area",
+            "fence": "Fence",
+            "use": "Use",
+            "remove": "Remove fenced area",
+            "fenceRail": "Low rail",
+            "fenceMesh": "Mesh",
+            "fenceIron": "Wrought iron",
+            "fencePlinth": "Iron on brick",
+            "useNone": "Open",
+            "useDog": "Dog area",
+            "usePlay": "Play area",
+            "summary": "{{area}}, gates: {{gates}}",
+            "drawn": "Fenced area",
+            "wholePark": "Fence around the whole park",
+            "finish": "Finish area",
+            "vertexTitle": "Drag to reshape the fenced area",
+            "deleteVertexTitle": "Delete this fence point"
+        },
         "furniture": {
             "title": "Furniture models",
             "upload": "Upload",
@@ -6306,6 +6335,11 @@
         "instructions": "Choose an item, then click inside the boundary. Drag any item to move it.",
         "closeLabel": "Close",
         "tools": {
+            "swing": "Swing",
+            "seesaw": "Seesaw",
+            "slide": "Slide",
+            "enclosure": "Fenced area",
+            "gate": "Gate",
             "lamp": "Lamp",
             "tree": "Tree",
             "flowerbed": "Flowerbed",

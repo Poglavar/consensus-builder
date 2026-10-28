@@ -9,9 +9,11 @@
 })(typeof self !== 'undefined' ? self : this, function () {
     // Furniture kind -> the decorationDesign array that holds its placements. Lamps are new: a point with
     // an optional bearing, lit at night. Trees keep their own record shape (park-planting.js treeOf).
-    const ARRAY_BY_KIND = Object.freeze({ bench: 'benches', statue: 'statues', fountain: 'fountains', stall: 'stalls', tree: 'trees', lamp: 'lamps' });
+    // Swings, seesaws and slides are play equipment in parks (park-enclosures.js draws their default look).
+    const ARRAY_BY_KIND = Object.freeze({ bench: 'benches', statue: 'statues', fountain: 'fountains', stall: 'stalls', tree: 'trees', lamp: 'lamps',
+        swing: 'swings', seesaw: 'seesaws', slide: 'slides' });
     const KINDS = Object.freeze(Object.keys(ARRAY_BY_KIND));
-    const KINDS_BY_STRUCTURE = Object.freeze({ park: ['bench', 'stall', 'tree', 'lamp'], square: ['bench', 'statue', 'fountain', 'stall', 'tree', 'lamp'] });
+    const KINDS_BY_STRUCTURE = Object.freeze({ park: ['bench', 'stall', 'tree', 'lamp', 'swing', 'seesaw', 'slide'], square: ['bench', 'statue', 'fountain', 'stall', 'tree', 'lamp'] });
     // Limits per asset. A furniture model is drawn once per placement, so 5k triangles x 200 benches is
     // already a million triangles; textures above 1024 px cost GPU memory for every structure that loads.
     const LIMITS = Object.freeze({ maxTriangles: 5000, maxTextureSize: 1024, maxBytes: 4 * 1024 * 1024, maxNameLength: 120 });

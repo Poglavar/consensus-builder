@@ -119,6 +119,25 @@ coordinate, fails with `invalid-decoration`. Upload the asset with `ugt_import_m
 Use `add` with a path below `models` (`/structureProposal/decorationDesign/models/statue`) when
 the object already exists, and `remove` to drop one kind's model.
 
+Parks also take play equipment and fenced areas. `swings`, `seesaws` and `slides` are
+`[{coordinate:[longitude,latitude], bearing}]` like lamps (`swing`, `seesaw` and `slide` are also
+furniture model kinds). `enclosures` are `[{fence, use, gates, ring?}]`: `fence` is `rail`, `mesh`,
+`iron` or `plinth`; `use` is `none`, `dog` or `play`; `gates` lists at least one
+`[longitude, latitude]` on the fence (within 2 m); `ring` is a closed ring inside the park, and
+leaving it out fences the whole park along its outline. Failures are `enclosure-fence`,
+`enclosure-use`, `enclosure-ring`, `enclosure-gate-missing`, `enclosure-gate-off-fence` and
+`enclosure-outside`; a square refuses both with `furniture-kind-not-allowed`. Reshaping a park can
+leave a whole-park fence's gate off the new outline, which fails `enclosure-gate-off-fence`: move the
+gate onto the fence in the same edit.
+
+```json
+[{ "op": "add", "path": "/structureProposal/decorationDesign/enclosures", "value": [
+   { "fence": "plinth", "use": "none", "gates": [[15.9770, 45.8129]] },
+   { "fence": "mesh", "use": "play", "gates": [[15.9773, 45.8130]],
+     "ring": [[15.9772, 45.8130], [15.9774, 45.8130], [15.9774, 45.8132], [15.9772, 45.8132], [15.9772, 45.8130]] }] },
+ { "op": "add", "path": "/structureProposal/decorationDesign/swings", "value": [{ "coordinate": [15.9773, 45.8131], "bearing": 90 }] }]
+```
+
 ## Site editor parity and coupled fields
 
 `ugt_draft_agreement` requires an existing named plan and preserves its exact membership. It does

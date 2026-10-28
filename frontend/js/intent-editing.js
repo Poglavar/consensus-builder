@@ -203,8 +203,9 @@
             }
         }
         // `paved`: the ground is paving (a square, paved building surroundings), the only ground a
-        // tree pit can be cut into; parks and green surroundings stand on lawn.
-        const validateDecorations = (decorations, { paved }) => {
+        // tree pit can be cut into; parks and green surroundings stand on lawn. `ground`: the polygon
+        // the decorations stand on, which a fenced area must stay inside.
+        const validateDecorations = (decorations, { paved, ground = null }) => {
             const checkPoint = point => {
                 if (!Array.isArray(point) || point.length < 2 || !point.every(finite) || Math.abs(point[0]) > 180 || Math.abs(point[1]) > 90) fail('invalid-decoration', 'Authored decoration coordinates must be finite WGS84 positions.');
             };
@@ -229,6 +230,17 @@
                 checkPoint(bench.coordinate);
                 if (!finite(bench.bearing)) fail('invalid-decoration', 'A bench needs a finite bearing in degrees.');
             }
+            if (decorations?.enclosures != null) {
+                if (!Array.isArray(decorations.enclosures)) fail('invalid-decoration', 'enclosures must be an array.');
+                const enclosures = load('ParkEnclosures', './park-enclosures.js');
+                for (const entry of decorations.enclosures) {
+                    const issue = enclosures.enclosureIssue(entry, ground);
+                    if (issue) fail(issue.code, issue.message);
+                    if (entry.ring && ground && !entry.ring.every(point => { try { return turf.booleanPointInPolygon(point, feature(ground)); } catch (_) { return false; } })) {
+                        fail('enclosure-outside', 'A fenced area must lie inside its park; leave out ring to fence the whole park.');
+                    }
+                }
+            }
         };
         if (record.structureProposal) {
             const space = record.structureProposal;
@@ -238,7 +250,7 @@
                 if (space.decorationDesign) space.decorationDesign = load('ProposalApplyStructures', './proposals/apply/structures.js')
                     .decorationsOnGround(space.decorationDesign, space.geometry, turf);
             }
-            validateDecorations(space.decorationDesign, { paved: space.kind === 'square' });
+            validateDecorations(space.decorationDesign, { paved: space.kind === 'square', ground: space.geometry });
         }
         if (record.buildingProposal) {
             const items = record.geometry?.buildings || [], oldItems = original.geometry?.buildings || [];
@@ -319,7 +331,7 @@
                 const ground = load('BuildingGround', './building-ground.js');
                 record.geometry.groundSurface = ground.clipSurfaceToLandTake(record.geometry.groundSurface, record.geometry.landTake, turf);
             }
-            validateDecorations(record.geometry?.groundSurface?.decorationDesign, { paved: record.geometry?.groundSurface?.treatment !== 'green' });
+            validateDecorations(record.geometry?.groundSurface?.decorationDesign, { paved: record.geometry?.groundSurface?.treatment !== 'green', ground: record.geometry?.groundSurface?.polygon || null });
         }
     }
     return { buildings, planting, rowEnvelope, transform, reconcile };

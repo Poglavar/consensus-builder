@@ -101,6 +101,15 @@
     --cb-tree-pit-grass: #6f9a3e;
     --cb-tree-pit-soil: #6b4f3a;
 
+    /* Park fences, enclosure grounds and play equipment on the map (css/structure-geometry-editor.css). */
+    --cb-park-fence-rail: #8a5a2b;
+    --cb-park-fence-mesh: #2f4f3a;
+    --cb-park-fence-iron: #1c1c1c;
+    --cb-park-fence-plinth: #9a4b35;
+    --cb-park-ground-gravel: #cdbf9f;
+    --cb-park-ground-rubber: #b8573f;
+    --cb-park-play-equipment: #1f6fb2;
+
     /* The night-sky artwork stays dark; its controls use the shared dark theme below. */
     --cb-scene-sky: #87ceeb;
     --cb-world-space: #030712;

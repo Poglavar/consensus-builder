@@ -36,6 +36,11 @@
             "lockOutside": "Déplacez le projet à l’intérieur du site initial avant de le verrouiller."
         }
     },
+    "urbanRule": {
+        "balconies": "Balcons",
+        "balconyDepth": "Peuvent dépasser de l'enveloppe de (m) :",
+        "slantedRoof": "Toit en pente avec combles"
+    },
     "common": {
         "maxFloors": "Nombre maximal de niveaux :",
         "minFloors": "Nombre minimal de niveaux :",
@@ -2416,6 +2421,30 @@
         }
     },
     "structureEditor": {
+        "hintEnclosure": "Cliquez pour tracer un espace clôturé, puis cliquez sur son premier point ou choisissez Terminer l’espace. Cliquez sur une clôture pour choisir son type et son usage ; faites glisser ses points pour en changer la forme.",
+        "hintGate": "Cliquez sur une clôture pour y placer un portillon ; cliquez sur un portillon pour le retirer.",
+        "statusLastGate": "Un espace clôturé garde au moins un portillon.",
+        "statusGateOffFence": "Cliquez sur une clôture pour y placer un portillon.",
+        "enclosure": {
+            "fencePark": "Clôturer tout le parc",
+            "title": "Espace clôturé sélectionné",
+            "fence": "Clôture",
+            "use": "Usage",
+            "remove": "Retirer l’espace clôturé",
+            "fenceRail": "Lisse basse",
+            "fenceMesh": "Grillage",
+            "fenceIron": "Fer forgé",
+            "fencePlinth": "Fer sur muret de brique",
+            "useNone": "Ouvert",
+            "useDog": "Espace canin",
+            "usePlay": "Aire de jeux",
+            "summary": "{{area}}, portillons : {{gates}}",
+            "drawn": "Espace clôturé",
+            "wholePark": "Clôture autour de tout le parc",
+            "finish": "Terminer l’espace",
+            "vertexTitle": "Faites glisser pour changer la forme de l’espace clôturé",
+            "deleteVertexTitle": "Supprimer ce point de la clôture"
+        },
         "furniture": {
             "title": "Modèles de mobilier",
             "upload": "Importer",
@@ -2452,6 +2481,11 @@
         "titleSquare": "Éditeur de place",
         "instructions": "Choisissez un élément, puis cliquez à l’intérieur du périmètre. Faites glisser un élément pour le déplacer.",
         "tools": {
+            "swing": "Balançoire",
+            "seesaw": "Tape-cul",
+            "slide": "Toboggan",
+            "enclosure": "Espace clôturé",
+            "gate": "Portillon",
             "lamp": "Lampadaire",
             "tree": "Arbre",
             "flowerbed": "Massif de fleurs",

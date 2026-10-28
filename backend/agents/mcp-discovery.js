@@ -5,6 +5,7 @@ import { MCP_HOSTED_TOOLS, MCP_LOCAL_TOOLS } from './mcp-catalog.js';
 import { createRequire } from 'node:module';
 const PlanRecord = createRequire(import.meta.url)('../../frontend/js/plan-record.js');
 const FurnitureModels = createRequire(import.meta.url)('../../frontend/js/furniture-models.js');
+const ParkEnclosures = createRequire(import.meta.url)('../../frontend/js/park-enclosures.js');
 const ApprovalRegimes = createRequire(import.meta.url)('../../frontend/js/proposals/approval-regimes.js');
 const ApprovalText = createRequire(import.meta.url)('../../frontend/js/proposals/approval-text.js');
 const plainText = (_key, fallback, params = {}) => String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (_, name) => params[name] ?? '');
@@ -41,7 +42,8 @@ export const MCP_FEATURES = Object.freeze([
     { feature: 'private-draft-recovery', export: 'ugt_export_draft' },
     { feature: 'buildings', create: 'ugt_draft_building', typologies: ['freeform', 'block', 'row', 'detached'] },
     { feature: 'public-spaces', create: 'ugt_draft_space', kinds: ['park', 'square', 'lake'], model: 'ugt_import_model', edit: 'ugt_edit_design',
-        furniture: 'Park/square decorationDesign: lamps [{coordinate, bearing}], stalls [{coordinate, bearing, color?}] and models {kind: {url, name}} per furniture kind (upload with ugt_import_model kind furniture).',
+        furniture: 'Park/square decorationDesign: lamps [{coordinate, bearing}], stalls [{coordinate, bearing, color?}] and models {kind: {url, name}} per furniture kind (upload with ugt_import_model kind furniture). Parks also take swings, seesaws and slides [{coordinate, bearing}] and enclosures [{fence, use, gates, ring?}]: fenced areas (no ring = around the whole park), fence one of rail, mesh, iron, plinth; use one of none, dog, play; at least one gate [lng, lat] on the fence.',
+        enclosures: { fences: ParkEnclosures.FENCE_KINDS, uses: ParkEnclosures.USES },
         furnitureKinds: FurnitureModels.KINDS_BY_STRUCTURE },
     { feature: 'parcel-layout', create: 'ugt_draft_parcel_layout', algorithms: ['equal', 'schelling'] },
     { feature: 'corridors', create: ['ugt_draft_road', 'ugt_draft_track'],

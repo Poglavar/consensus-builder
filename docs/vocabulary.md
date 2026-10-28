@@ -409,7 +409,7 @@ The application's area-feature design category, including parks, squares, lakes 
 
 A park, square or lake may carry an uploaded glTF model: `structureProposal.modelUrl` (the served model reference), `modelName` (at most 120 characters), `rotation` (degrees, default 0) and `source: 'upload'`. Its geometry stays the site polygon; an upload sets it to the model's projected footprint placed unrotated at a point on the site. In the 3D view the model replaces the generated ground (lawn, paving or lake basin), fitted to the geometry's bounding box in the rotation frame at its native height, while authored decorations still render; a model that fails to load falls back to the generated ground.
 
-A park or square's furniture may also use uploaded models, one per furniture kind: `decorationDesign.models` maps a kind (parks: bench, tree, lamp; squares: bench, statue, fountain, stall, tree, lamp) to `{ url, name? }`, and every item of that kind draws that model, instanced, with its +X facing the item's bearing; the key is absent when no kind has a model. A furniture model is limited to 5000 triangles, 1024 px textures and 4 MiB (`furniture-models.js`). Lamps are placed points, `decorationDesign.lamps = [{ coordinate, bearing }]`, that glow in the 3D view while the sun layer shows night.
+A park or square's furniture may also use uploaded models, one per furniture kind: `decorationDesign.models` maps a kind (parks: bench, stall, tree, lamp, swing, seesaw, slide; squares: bench, statue, fountain, stall, tree, lamp) to `{ url, name? }`, and every item of that kind draws that model, instanced, with its +X facing the item's bearing; the key is absent when no kind has a model. A furniture model is limited to 5000 triangles, 1024 px textures and 4 MiB (`furniture-models.js`). Lamps are placed points, `decorationDesign.lamps = [{ coordinate, bearing }]`, that glow in the 3D view while the sun layer shows night.
 
 A **pavement tree** is a tree on paving (a square, or paved building surroundings) standing in a pit in the paving rather than straight out of it: `decorationDesign.trees[i].pit` is `grille` (a cast-iron grate over the soil), `grass` or `soil`, a 1.4 m square edged in stone except under a grille, laid square to the square's longest edge. A tree's `heightM` stays within its kind's range (`park-planting.js`); trees on green ground (parks, green surroundings) stand on lawn and have no pit.
 
@@ -424,6 +424,10 @@ model, footprint and attachment. The current record identifiers are `bus` for ro
 ### Decoration design
 
 An explicitly authored arrangement of furniture, trees or similar surroundings. Authored layouts belong to the design commitment; generated decoration caches are local rendering data.
+
+### Enclosure
+
+A fenced area inside a park: `decorationDesign.enclosures = [{ fence, use, gates, ring? }]` (`park-enclosures.js`). Without `ring` the fence follows the park's own outline and moves with any reshape; with `ring` it encloses that closed ring, which must lie inside the park (a ring left outside by a reshape or a road is dropped from the ground it no longer stands on). `fence` is one of four styles, lightest first: `rail` (a 0.6 m timber rail), `mesh` (1.2 m), `iron` (1.8 m wrought iron) and `plinth` (2.2 m iron on a brick plinth with stone-capped pillars). `use` is `none`, `dog` (a dog area, gravel ground) or `play` (a play area, rubber safety surface); a new dog or play area takes a mesh fence, any other a wrought-iron one. `gates` are points on the fence, at least one, each within 2 m of it; a gate is a 1.2 m opening, and walkers in the model view cross a fence only at its gates. Swings, seesaws and slides are park furniture placed like benches (`swings`, `seesaws`, `slides`: `[{ coordinate, bearing }]`), inside an enclosure or anywhere in the park.
 
 ### Map claim
 

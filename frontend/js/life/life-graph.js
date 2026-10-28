@@ -12,6 +12,9 @@
     'use strict';
 
     const NODE_SNAP_M = 0.5;          // vertices closer than this are one node (Station3D uses the same)
+    // A gate in a park fence is opened this wide for walkers, so the walking grid (1 m cells or
+    // coarser) keeps it passable; the fence itself is drawn with the real gate width.
+    const WALK_GATE_M = 3;
     const LANE_WIDTH_M = 3.5;         // default OSM lane width
     const SIDEWALK_DEPTH_M = 4.5;     // walking band beyond the carriageway edge of a street
     const LOOSE_END_SNAP_M = 8;       // a corridor end this close to an OSM node joins the network
@@ -286,7 +289,15 @@
                 .map(rings => rings.map(ring => ring.map(c => project(c[0], c[1]))));
         }
 
-        // A park: its lawn is walking space, its footpaths preferred bands, its ponds are water.
+        // The park-enclosures.js rules, when the page has them (node tests require them).
+        function enclosureRules() {
+            if (typeof ParkEnclosures !== 'undefined') return ParkEnclosures;
+            if (typeof self !== 'undefined' && self.ParkEnclosures) return self.ParkEnclosures;
+            return typeof require === 'function' ? require('../park-enclosures.js') : null;
+        }
+
+        // A park: its lawn is walking space, its footpaths preferred bands, its ponds are water, and
+        // its fences walls that people pass only at the gates.
         function addPark(feature, project) {
             const deco = feature && feature.properties && feature.properties.decorations;
             (deco && Array.isArray(deco.paths) ? deco.paths : []).forEach(coords => {
@@ -301,6 +312,14 @@
                 addArea(rings, 'park');
             });
             obstaclesOf(deco, project).forEach(o => blocked.push(o));
+            const enclosures = deco && Array.isArray(deco.enclosures) && deco.enclosures.length ? enclosureRules() : null;
+            (enclosures ? deco.enclosures : []).forEach(enclosure => {
+                const ring = enclosures.enclosureRing(enclosure, feature.geometry);
+                if (!ring) return;
+                enclosures.fenceRuns(ring, enclosure.gates, { gateWidthM: WALK_GATE_M }).runs.forEach(run => {
+                    blocked.push({ pts: run.map(c => project(c[0], c[1])), halfWidth: 0.2 });
+                });
+            });
         }
 
         // A plaza: paved walking space; its fountain, stalls, statues, trees and benches are kept clear.
@@ -344,6 +363,7 @@
             (Array.isArray(deco.benches) ? deco.benches : []).forEach(b => push(Array.isArray(b && b.coordinate) ? b.coordinate : b, 1.0));
             (Array.isArray(deco.stalls) ? deco.stalls : []).forEach(s => push(Array.isArray(s && s.coordinate) ? s.coordinate : s, 2.0));
             (Array.isArray(deco.statues) ? deco.statues : []).forEach(s => push(Array.isArray(s && s.coordinate) ? s.coordinate : s, 1.5));
+            ['swings', 'seesaws', 'slides'].forEach(key => (Array.isArray(deco[key]) ? deco[key] : []).forEach(item => push(Array.isArray(item && item.coordinate) ? item.coordinate : item, 2.0)));
             if (deco.fountain) push(Array.isArray(deco.fountain.coordinate) ? deco.fountain.coordinate : deco.fountain, Number(deco.fountain.radius) || 2.5);
             return out;
         }

@@ -14,8 +14,9 @@ const coordinate = value => (Array.isArray(value) && Number.isFinite(Number(valu
     ? [Number(value[0]), Number(value[1])] : null);
 
 describe('furniture kinds', () => {
-    it('offers benches, market stalls, trees and lamps in parks and every kind in squares', () => {
-        expect(FurnitureModels.kindsFor('park')).toEqual(['bench', 'stall', 'tree', 'lamp']);
+    it('offers benches, market stalls, trees, lamps and play equipment in parks, and the rest in squares', () => {
+        expect(FurnitureModels.kindsFor('park')).toEqual(['bench', 'stall', 'tree', 'lamp', 'swing', 'seesaw', 'slide']);
+        expect(FurnitureModels.ARRAY_BY_KIND.swing).toBe('swings');
         expect(FurnitureModels.kindsFor('square')).toEqual(['bench', 'statue', 'fountain', 'stall', 'tree', 'lamp']);
         expect(FurnitureModels.kindsFor('lake')).toEqual([]);
         expect(FurnitureModels.ARRAY_BY_KIND.lamp).toBe('lamps');
@@ -166,6 +167,16 @@ describe('lamps on a carved structure', () => {
         expect(kept.lamps).toEqual([{ coordinate: [0.5, 0.5], bearing: 10 }]);
         expect(kept.stalls).toEqual([{ coordinate: [0.25, 0.75], bearing: 0, color: '#2f9e6b' }, [0.5, 0.25]]);
         expect(kept.models).toEqual({ lamp: { url: '/models/l.glb' } });
+    });
+
+    it('keeps a fenced area only when its ring is still on the ground, and a whole-park fence always', () => {
+        const ground = { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]] };
+        const inside = { fence: 'mesh', use: 'play', gates: [[0.2, 0.1]], ring: [[0.1, 0.1], [0.3, 0.1], [0.3, 0.3], [0.1, 0.1]] };
+        const across = { fence: 'mesh', use: 'dog', gates: [[0.9, 0.5]], ring: [[0.8, 0.4], [1.2, 0.4], [1.2, 0.6], [0.8, 0.4]] };
+        const whole = { fence: 'plinth', use: 'none', gates: [[0.5, 0]] };
+        const kept = ProposalApplyStructures.decorationsOnGround({ enclosures: [inside, across, whole], swings: [{ coordinate: [0.2, 0.2], bearing: 0 }, { coordinate: [2, 2], bearing: 0 }] }, ground, turf);
+        expect(kept.enclosures).toEqual([inside, whole]);
+        expect(kept.swings).toEqual([{ coordinate: [0.2, 0.2], bearing: 0 }]);
     });
 
     it('gives an uploaded park or square empty lamp and stall lists', () => {
