@@ -32,6 +32,7 @@ import { setupPlannedRoadRoute } from './routes/planned-roads.js';
 import { setupStreetsRoute } from './routes/streets.js';
 import { setupUrbanBlocksRoutes } from './routes/urban-blocks.js';
 import { setupOsmRoadRoute } from './routes/osm-road.js';
+import { setupOsmPublicSpacesRoute } from './routes/osm-public-spaces.js';
 import { setupEstimateContextRoute } from './parcels/estimate-context.js';
 import { setupUrbanRulesRoute } from './routes/urban-rules.js';
 import { setupLandUsesRoute } from './routes/land-uses.js';
@@ -460,6 +461,7 @@ export function createApp({
     setupUrbanBlocksRoutes(app);
     setupOsmRoadRoute(app, activePool);
     setupEstimateContextRoute(app);
+    setupOsmPublicSpacesRoute(app); // OSM parks and squares for Plan stats' public land (present-state.js)
     setupUrbanRulesRoute(app, activePool);
     setupLandUsesRoute(app, activePool);
     setupWellKnownRoutes(app, { env }); // /.well-known/x402, llms.txt, openapi.json, robots.txt; must precede docs (/agents.json aliases /docs/agents.json)

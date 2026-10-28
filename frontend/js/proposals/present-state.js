@@ -5,7 +5,8 @@
 // freeform building clipped to the land, measured by the same plan-yield rules as a design; a plan
 // keeps the existing buildings its designs do not clear (remaining) beside the ones they add (new).
 // Pure functions take their geometry operations as arguments; browser(win) wires turf, the road
-// classification, the building source and public Overpass (asked from the browser, no server relay).
+// classification, the building source and OpenStreetMap: our server's Overpass chain first
+// (/osm-public-spaces), public Overpass from the browser when our server cannot answer.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -291,7 +292,24 @@
             return [...regions.map(region => ({ type: 'Feature', properties: {}, geometry: region.geometry })), ...(snapshot.corridorFeatures || [])];
         }
 
-        // OpenStreetMap parks and squares over a box, from public Overpass, once per box.
+        // Our server's Overpass chain (GET /osm-public-spaces) first; null when it cannot answer
+        // completely, so the caller asks public Overpass instead (user decision 2026-10-28).
+        async function fromServer(box) {
+            const started = Date.now();
+            try {
+                const params = new URLSearchParams({ bbox: box.join(','), crs: 'EPSG:4326' });
+                const response = await win.fetch(`${win.getBackendBase()}/osm-public-spaces?${params}`, { cache: 'no-store', signal: AbortSignal.timeout(45000) });
+                const payload = await response.json();
+                if (!response.ok || !Array.isArray(payload.features)) throw new Error(payload.error || `HTTP ${response.status}`);
+                log(`our server answered ${payload.features.length} parks and squares in ${Date.now() - started} ms`);
+                return payload.features;
+            } catch (error) {
+                console.warn(`[${new Date().toISOString()}] [PresentState] our server could not read parks and squares (${error.message}); asking public Overpass`);
+                return null;
+            }
+        }
+
+        // OpenStreetMap parks and squares over a box, once per box: our server, else public Overpass.
         async function publicSpaces(box) {
             if (box[2] - box[0] > MAX_SPAN_DEG || box[3] - box[1] > MAX_SPAN_DEG) {
                 throw new Error('The land is too wide to read its parks and squares in one go.');
@@ -300,6 +318,8 @@
             if (spaceCache.has(key)) return spaceCache.get(key);
             const query = publicSpaceQuery(box);
             const request = (async () => {
+                const served = await fromServer(box);
+                if (served) return served;
                 let failure = null;
                 for (const url of OVERPASS_URLS) {
                     const started = Date.now();

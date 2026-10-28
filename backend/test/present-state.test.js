@@ -1,7 +1,7 @@
 // Public and private land of a plan, and the present state of its land as a plan of its own
 // (frontend/js/proposals/present-state.js): OpenStreetMap parks and squares, road parcels and
 // existing buildings, measured with real turf and plan-yield's areas.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 const require = createRequire(import.meta.url);
@@ -121,5 +121,26 @@ describe('existing buildings a plan leaves standing', () => {
         expect(total.buildings).toBe(2);
         expect(total.grossFloorAreaM2).toBeCloseTo(designs.total.grossFloorAreaM2 + remaining.total.grossFloorAreaM2, 6);
         expect(total.apartments).toBe(planYield.planYield([whole, halved], {}).total.apartments);
+    });
+});
+
+describe('where parks and squares are read', () => {
+    const park = { type: 'way', id: 1, tags: { leisure: 'park' }, geometry: [node(0, 0), node(1, 0), node(1, 1), node(0, 0)] };
+    const windowWith = fetch => ({ fetch, getBackendBase: () => 'https://api.example' });
+    const json = (status, body) => ({ ok: status < 400, status, json: async () => body });
+
+    it('asks our server first and public Overpass not at all when it answers', async () => {
+        const fetch = vi.fn(async () => json(200, { features: [{ id: 'w1' }] }));
+        const spaces = await State.browser(windowWith(fetch)).publicSpaces([15.9, 45.8, 15.91, 45.81]);
+        expect(spaces).toEqual([{ id: 'w1' }]);
+        expect(fetch).toHaveBeenCalledTimes(1);
+        expect(fetch.mock.calls[0][0]).toBe('https://api.example/osm-public-spaces?bbox=15.9%2C45.8%2C15.91%2C45.81&crs=EPSG%3A4326');
+    });
+
+    it('falls back to public Overpass when our server cannot answer', async () => {
+        const fetch = vi.fn(async url => (url.startsWith('https://api.example') ? json(503, { error: 'busy' }) : json(200, { elements: [park] })));
+        const spaces = await State.browser(windowWith(fetch)).publicSpaces([15.9, 45.8, 15.91, 45.811]);
+        expect(spaces.map(f => f.id)).toEqual(['w1']);
+        expect(fetch.mock.calls[1][0]).toMatch(/^https:\/\/overpass-api\.de\/api\/interpreter\?data=/);
     });
 });

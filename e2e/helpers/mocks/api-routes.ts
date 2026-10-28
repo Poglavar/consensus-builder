@@ -79,6 +79,11 @@ export async function mockAllApiRoutes(page: Page): Promise<void> {
     if (!isApiDataRequest(route.request().url(), route.request().resourceType(), 'road-parcels')) return route.continue();
     return route.fulfill({ json: { ids: [], truncated: false } });
   });
+  // Our server's OpenStreetMap parks and squares (present-state.js asks it before public Overpass).
+  await page.route('**/osm-public-spaces**', route => {
+    if (!isApiDataRequest(route.request().url(), route.request().resourceType(), 'osm-public-spaces')) return route.continue();
+    return route.fulfill({ json: { type: 'FeatureCollection', features: [], source: 'overpass' } });
+  });
   // Public Overpass, which the browser asks for parks and squares (present-state.js) and for the
   // model view's streets when our server cannot answer: no OpenStreetMap features, never the network.
   await page.route(/^https:\/\/(overpass-api\.de|overpass\.kumi\.systems|overpass\.private\.coffee)\/api\/interpreter/, route =>

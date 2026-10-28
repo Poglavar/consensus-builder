@@ -194,8 +194,9 @@ rows and columns** turns between plans as columns and plans as rows. A plan that
 keeps its place with the reason. The figures are Plan stats' own (`summaryTexts`), including
 **Plan area**: every parcel the plan stands on, once, plus its open ground.
 `proposals/present-state.js` (user decisions 2026-10-28) adds the ground: **Public land** is road
-parcels, OpenStreetMap parks and squares (asked of public Overpass from the browser, no server
-relay) and design pieces that are corridors, parks, squares or lakes; **Private land** is the rest
+parcels, OpenStreetMap parks and squares (our server's Overpass chain via
+`GET /osm-public-spaces` first, public Overpass from the browser when it cannot answer; user
+decision 2026-10-28) and design pieces that are corridors, parks, squares or lakes; **Private land** is the rest
 of the parcels. Each plan counts the existing buildings its designs do not clear (`/buildings/under`
 over its parcels, demolition ground from `__demolitionPrefetch.collectDemolitionRegions` plus its
 corridor pieces) beside its new ones, as **of which existing that remain** and **of which new**.
