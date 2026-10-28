@@ -4433,6 +4433,7 @@
             "ground": "Ruas e passeios",
             "groundTooltip": "Mostrar ou ocultar a faixa de rodagem em asfalto e os passeios derivados do OpenStreetMap sob a vista 3D",
             "water": "Água",
+            "green": "Espaços verdes",
             "facades": "Fachadas",
             "facadeStyle": "Estilo de fachada",
             "facadesTooltip": "Janelas e materiais ilustrativos nos edifícios propostos. Cada edifício mantém o seu projeto.",

@@ -1,8 +1,10 @@
 // Grass for the 3D model view: a procedural pattern in the ground material's shader, in true metres
 // of world position, instead of a flat green or a tiled image (which shows its repeat). Three scales
 // of value noise: patches of drier and lusher turf over metres, clumps around a metre, and a fine
-// grain that fades out once a pixel covers more ground than the grain (no shimmer from afar). Variants: 'lawn' (parks, green proposal ground) and 'wild' (vacant plots, with bare
-// soil showing through). No textures, no extra draw calls.
+// grain that fades out once a pixel covers more ground than the grain (no shimmer from afar).
+// Variants: 'lawn' (parks, green proposal ground, mapped lawns), 'wild' (vacant plots and mapped
+// meadows, with bare soil showing through) and 'forest' (a wood's floor: moss and leaf litter).
+// No textures, no extra draw calls.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -11,7 +13,7 @@
     'use strict';
 
     // Base colours the pattern modulates (sRGB, as the material colour).
-    const COLORS = Object.freeze({ lawn: 0x557f2f, wild: 0x9a9c62 });
+    const COLORS = Object.freeze({ lawn: 0x557f2f, wild: 0x9a9c62, forest: 0x4f5a2e });
 
     // Hash without sin(): stable at the large coordinates a city-sized scene reaches.
     const NOISE = `
@@ -45,7 +47,18 @@ diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.42, 0.33, 0.24), soil * 0.75);
 diffuseColor.rgb *= 0.88 + 0.2 * cbGrassNoise(gxy * 1.7 + 2.0);
 float grain = (cbGrassNoise(gxy * 8.0) - 0.5) * (1.0 - smoothstep(0.06, 0.25, footprint))
     + (cbGrassNoise(gxy * 23.0 + 9.0) - 0.5) * (1.0 - smoothstep(0.02, 0.09, footprint));
-diffuseColor.rgb *= 1.0 + 0.4 * grain;`
+diffuseColor.rgb *= 1.0 + 0.4 * grain;`,
+        forest: `
+vec2 gxy = vGrassXY;
+float footprint = length(fwidth(gxy));
+float patches = cbGrassNoise(gxy / 7.0) * 0.6 + cbGrassNoise(gxy / 2.6 + 23.0) * 0.4;
+diffuseColor.rgb *= mix(vec3(0.88, 0.96, 0.84), vec3(1.08, 0.99, 0.86), smoothstep(0.3, 0.8, patches));
+float litter = smoothstep(0.5, 0.85, cbGrassNoise(gxy / 3.5 + 57.0) * 0.7 + cbGrassNoise(gxy / 1.1 + 13.0) * 0.3);
+diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.40, 0.31, 0.20), litter * 0.35);
+diffuseColor.rgb *= 0.92 + 0.14 * cbGrassNoise(gxy * 2.1 + 4.0);
+float grain = (cbGrassNoise(gxy * 8.0) - 0.5) * (1.0 - smoothstep(0.06, 0.25, footprint))
+    + (cbGrassNoise(gxy * 21.0 + 7.0) - 0.5) * (1.0 - smoothstep(0.02, 0.09, footprint));
+diffuseColor.rgb *= 1.0 + 0.36 * grain;`
     };
 
     // Give a ground material the pattern. `metresPerUnit` converts the mesh's local XY to metres

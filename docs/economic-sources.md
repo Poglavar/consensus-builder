@@ -101,7 +101,7 @@ Authored cash offers and agreement allocations are not rewritten by a source pre
 | Economic unit rates | UK appraisal, assumptions, local imported rates | No general live market or assessment feed yet |
 | Roads/paths | Shared OSM reader and backend transport | No general road-dataset registry/visitor override |
 | Terrain/elevation | Specific terrain/profile providers | Fixed provider/datum contracts, no general selector |
-| Trees and water | Overture trees, OpenFreeMap water | Provider choices fixed |
+| Trees, water and green areas | Overture trees, OpenFreeMap water and landcover | Provider choices fixed |
 | Building details/interiors for x-ray | Published floor models and explicit evidence namespaces; recorded plans and generated suggestions remain distinct | No general visitor source selector/import for arbitrary detail providers |
 | Transit alignments | Configured GeoJSON track sources used for station snapping and 3D | No general visitor source chooser |
 | Search/geocoding | Shared Photon usage | Provider fixed |

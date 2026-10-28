@@ -4433,6 +4433,7 @@
             "ground": "Rues et trottoirs",
             "groundTooltip": "Afficher ou masquer la chaussée asphaltée et les trottoirs issus d’OpenStreetMap sous la vue 3D",
             "water": "Eau",
+            "green": "Espaces verts",
             "facades": "Façades",
             "facadeStyle": "Style des façades",
             "facadesTooltip": "Fenêtres et matériaux illustratifs sur les bâtiments proposés. Chaque bâtiment conserve son projet.",

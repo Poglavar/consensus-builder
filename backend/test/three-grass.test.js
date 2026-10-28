@@ -39,9 +39,18 @@ describe('grassTexture', () => {
         expect(grassTexture({}, NaN).userData.cbGrass.scale.value).toBe(1);
     });
 
-    it('uses natural lawn and dry-meadow base colours', () => {
+    it('uses natural lawn, dry-meadow and forest-floor base colours', () => {
         expect(COLORS.lawn).toBe(0x557f2f);
         expect(COLORS.wild).toBe(0x9a9c62);
+        expect(COLORS.forest).toBe(0x4f5a2e);
+    });
+
+    it('lays leaf litter on a forest floor', () => {
+        const forest = grassTexture({}, 1, 'forest');
+        const shader = shaderStub();
+        forest.onBeforeCompile(shader);
+        expect(shader.fragmentShader).toContain('litter');
+        expect(forest.customProgramCacheKey()).toBe('cb-grass-forest');
     });
 });
 

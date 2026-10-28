@@ -6092,6 +6092,7 @@
             "ground": "Streets and pavement",
             "groundTooltip": "Show or hide the asphalt roadbed and pavement derived from OpenStreetMap under the 3D view",
             "water": "Water",
+            "green": "Green areas",
             "facades": "Facades",
             "facadeStyle": "Facade style",
             "facadesTooltip": "Illustrative windows and materials on proposed buildings. Each building keeps its design.",

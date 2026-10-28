@@ -6126,6 +6126,7 @@
             "ground": "Ulice i trotoari",
             "groundTooltip": "Prikažite ili sakrijte kolovoze i trotoare izvedene iz OpenStreetMapa u 3D prikazu",
             "water": "Voda",
+            "green": "Zelene površine",
             "facades": "Fasade",
             "facadeStyle": "Stil fasade",
             "facadesTooltip": "Primeri prozora i materijala na planiranim zgradama. Svaka zgrada zadržava isti izgled.",

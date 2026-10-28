@@ -233,6 +233,7 @@
     let existingTransitAlignmentGroup = null; // immutable tram/heavy-rail snapshot (city-gated)
     let treesGroup = null; // real-world OSM trees (Overture base/land), toggleable scenery
     let waterGroup = null; // real-world sea, lakes and rivers (OpenFreeMap tiles), toggleable scenery
+    let greenGroup = null; // real-world lawns, parks, meadows and woods (OpenFreeMap tiles), toggleable scenery
     let proposalInteractionGroup = null; // selectable applied/unapplied proposal surfaces
     let proposalDraftGroup = null; // source-vs-draft comparison overlay; never mutates proposal state
     let latestProposalDraftPreviewDetail = null;
@@ -6135,6 +6136,7 @@
                 refreshLifeSurface();
                 updateBuildingsLoader();
                 ensureNearbyWater();
+                ensureNearbyGreen();
             })
             .catch(err => {
                 if (!current() || err.name === 'AbortError') return;
@@ -6144,6 +6146,7 @@
                 updateBuildingsLoader();
                 reportNearbyBuildingsUnavailable(null, err.status);
                 ensureNearbyWater();
+                ensureNearbyGreen();
             });
     }
 
@@ -6919,20 +6922,21 @@
         return Number.isFinite(w) && e > w && n > s ? [w, s, e, n] : null;
     }
 
+    // The area tile-based scenery (water, green areas) covers: the loaded buildings' box, or with no
+    // buildings (none here, or they failed) the radius around the scene anchor.
+    function sceneryQuery() {
+        const extent = loadedBuildingsExtent();
+        if (extent) {
+            const [w, s, e, n] = extent;
+            return { queryGeometry: { type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] }, buffer: 0 };
+        }
+        return { queryGeometry: sceneTreeLoadGeometry, buffer: buildingLoadRadiusM };
+    }
+
     function ensureNearbyWater() {
         // Wait for the buildings: their extent is the area to cover.
         if (!waterEnabled || nearbyWaterFetching || nearbyProposalBuildingsFetching) return;
-        const extent = loadedBuildingsExtent();
-        let queryGeometry, buffer;
-        if (extent) {
-            const [w, s, e, n] = extent;
-            queryGeometry = { type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] };
-            buffer = 0;
-        } else {
-            // No buildings (none here, or they failed): the radius around the scene anchor.
-            queryGeometry = sceneTreeLoadGeometry;
-            buffer = buildingLoadRadiusM;
-        }
+        const { queryGeometry, buffer } = sceneryQuery();
         if (!queryGeometry) return;
         const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
         if (key === nearbyWaterKey) return;
@@ -6975,13 +6979,143 @@
         invalidateThreeView();
     }
 
+    // --- Real-world green areas (lawns and parks, meadows and farmland, woods) ---
+    // Fetched via POST /decor/green for the same area as the water (OpenFreeMap landcover, every city)
+    // and merged into one mesh per look with the grass pattern (three-grass.js): three draw calls
+    // however many pieces. Just above the parcel slabs (0), below water (0.04), corridor strips (0.05)
+    // and planned parks and squares (0.06), which all cover it.
+    const GREEN_STORAGE_KEY = 'cb_3d_green_enabled';
+    const GREEN_Z = 0.03;
+    const GREEN_VARIANT = { lawn: 'lawn', meadow: 'wild', forest: 'forest' }; // look → grass pattern
+    let nearbyGreen = [];           // [{ geometry, kind }] from the backend
+    let nearbyGreenKey = null;
+    let nearbyGreenFetching = false;
+    let greenEnabled = true;
+
+    function loadGreenEnabledPref() {
+        try {
+            if (PersistentStorage.getItem(GREEN_STORAGE_KEY) === '0') return false;
+        } catch (_) { }
+        return true; // default ON
+    }
+
+    function disposeGreenGroup() {
+        if (!greenGroup) return;
+        for (let i = greenGroup.children.length - 1; i >= 0; i--) {
+            const child = greenGroup.children[i];
+            greenGroup.remove(child);
+            child.geometry?.dispose();
+            child.material?.dispose();
+        }
+    }
+
+    // Every polygon of `pieces` triangulated flat at `z`, as one indexed geometry.
+    function mergedFlatGeometry(pieces, z) {
+        const parts = [];
+        for (const piece of pieces) {
+            const polygons = piece.geometry.type === 'Polygon' ? [piece.geometry.coordinates] : piece.geometry.coordinates;
+            for (const rings of polygons) {
+                const shape = arrayOfLngLatRingsToShape(rings);
+                if (shape) parts.push(new THREE.ShapeGeometry(shape));
+            }
+        }
+        let vertices = 0, indices = 0;
+        parts.forEach(part => { vertices += part.attributes.position.count; indices += part.index.count; });
+        const position = new Float32Array(vertices * 3);
+        const index = vertices > 65535 ? new Uint32Array(indices) : new Uint16Array(indices);
+        let v = 0, i = 0;
+        parts.forEach(part => {
+            const source = part.attributes.position.array;
+            for (let k = 0; k < source.length; k += 3) position.set([source[k], source[k + 1], z], (v * 3) + k);
+            const partIndex = part.index.array;
+            for (let k = 0; k < partIndex.length; k++) index[i++] = partIndex[k] + v;
+            v += part.attributes.position.count;
+            part.dispose();
+        });
+        const normal = new Float32Array(vertices * 3);
+        for (let k = 2; k < normal.length; k += 3) normal[k] = 1;
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(position, 3));
+        geometry.setAttribute('normal', new THREE.BufferAttribute(normal, 3));
+        geometry.setIndex(new THREE.BufferAttribute(index, 1));
+        geometry.computeBoundingSphere();
+        return geometry;
+    }
+
+    function rebuildGreenOnly() {
+        if (!isActive || !greenGroup) return;
+        disposeGreenGroup();
+        if (!greenEnabled || !nearbyGreen.length || !origin3857) return;
+        const grass = window.__threeGrass;
+        for (const [kind, variant] of Object.entries(GREEN_VARIANT)) {
+            const pieces = nearbyGreen.filter(piece => piece.kind === kind);
+            if (!pieces.length) continue;
+            try {
+                const material = grass.grassTexture(new THREE.MeshLambertMaterial({ color: grass.COLORS[variant],
+                    polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }), 1 / lifeMercatorK(), variant);
+                const mesh = new THREE.Mesh(mergedFlatGeometry(pieces, GREEN_Z), material);
+                mesh.userData.green = kind;
+                greenGroup.add(mesh);
+            } catch (error) {
+                console.warn('[3D] green areas skipped', kind, error);
+            }
+        }
+        invalidateThreeView();
+    }
+
+    function ensureNearbyGreen() {
+        // Wait for the buildings, like the water: their extent is the area to cover.
+        if (!greenEnabled || nearbyGreenFetching || nearbyProposalBuildingsFetching) return;
+        const { queryGeometry, buffer } = sceneryQuery();
+        if (!queryGeometry) return;
+        const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
+        if (key === nearbyGreenKey) return;
+        nearbyGreenFetching = true;
+        const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+        const signal = sceneAbort?.signal;
+        const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
+        fetch(`${base}/decor/green`, {
+            signal,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ geometry: queryGeometry, buffer_meters: buffer })
+        })
+            .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+            .then(payload => {
+                if (!current()) return;
+                nearbyGreen = (payload && Array.isArray(payload.areas)) ? payload.areas : [];
+                nearbyGreenKey = key;
+                nearbyGreenFetching = false;
+                console.log(`[3D] Loaded ${nearbyGreen.length} nearby green areas (${sceneTreeLoadGeometrySource}+${buffer}m)`);
+                rebuildGreenOnly();
+            })
+            .catch(err => {
+                if (!current() || err.name === 'AbortError') return;
+                // Scenery: the scene stands without it, so this is a log line, not a banner.
+                console.warn('Failed to fetch nearby green areas:', err);
+                nearbyGreenFetching = false;
+            });
+    }
+
+    function setGreenEnabled(on) {
+        greenEnabled = !!on;
+        try { PersistentStorage.setItem(GREEN_STORAGE_KEY, greenEnabled ? '1' : '0'); } catch (_) { }
+        if (greenGroup) greenGroup.visible = greenEnabled && !realisticLayerActive;
+        if (greenEnabled) {
+            ensureNearbyGreen();
+            rebuildGreenOnly();
+        }
+        invalidateThreeView();
+    }
+
     // Registry of renderable scenery layers: maps an osm_decor `kind` to its panel label and
     // enable/disable hooks. The 3D panel renders a checkbox per layer that BOTH appears here AND is
     // reported available by GET /decor/layers for the current city. Add a layer's renderer + an entry
     // here and it shows up automatically wherever it's been ingested.
     const DECOR_LAYERS = {
         trees: { label: 'Trees', isEnabled: () => treesEnabled, setEnabled: (on) => setTreesEnabled(on) },
-        water: { label: 'Water', isEnabled: () => waterEnabled, setEnabled: (on) => setWaterEnabled(on) }
+        water: { label: 'Water', isEnabled: () => waterEnabled, setEnabled: (on) => setWaterEnabled(on) },
+        green: { label: 'Green areas', isEnabled: () => greenEnabled, setEnabled: (on) => setGreenEnabled(on) }
     };
 
     // Render one checkbox per available scenery layer (intersection of DECOR_LAYERS and `available`).
@@ -8428,6 +8562,7 @@
             ensureNearbyProposalBuildings();
             ensureNearbyTrees();
             ensureNearbyWater();
+            ensureNearbyGreen();
             if (isolatedParcelId !== null) applyParcelEmphasis();
             else if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
             refreshClickStackFigures();
@@ -8570,10 +8705,12 @@
         stationGroup = new THREE.Group();
         treesGroup = new THREE.Group();
         waterGroup = new THREE.Group();
+        greenGroup = new THREE.Group();
         proposalInteractionGroup = new THREE.Group();
         proposalDraftGroup = new THREE.Group();
         treesEnabled = loadTreesEnabledPref();
         waterEnabled = loadWaterEnabledPref();
+        greenEnabled = loadGreenEnabledPref();
         plannedRepresentation = window.PlanningViews.getState().proposedForm;
         buildOutDisplaySalt = window.PlanningViews.getState().proposedVariation;
         try {
@@ -8582,6 +8719,7 @@
         } catch (_) { }
         treesGroup.visible = treesEnabled && !realisticLayerActive;
         waterGroup.visible = waterEnabled && !realisticLayerActive;
+        greenGroup.visible = greenEnabled && !realisticLayerActive;
         scene.add(flatGroup);
         scene.add(corridorGroup);
         scene.add(plannedFlatGroup);
@@ -8593,6 +8731,7 @@
         scene.add(stationGroup);
         scene.add(treesGroup);
         scene.add(waterGroup);
+        scene.add(greenGroup);
         scene.add(proposalInteractionGroup);
         scene.add(proposalDraftGroup);
         existingTransitAlignmentGroup = null; // rebuilt from the cached city sources below
@@ -8614,6 +8753,7 @@
             nearbyBuildingsRevision++;
             nearbyTrees = []; nearbyTreesKey = null;
             nearbyWater = []; nearbyWaterKey = null;
+            nearbyGreen = []; nearbyGreenKey = null;
             nearbyDataScope = dataScope;
         }
         captureSceneLoadGeometry();
@@ -8673,6 +8813,7 @@
         buildingWorkIncomplete = false;
         rebuildTreesOnly();
         rebuildWaterOnly();
+        rebuildGreenOnly();
         try { rebuildLifeOnly(); } catch (error) { console.warn('[3D life] build failed', error); }
         rebuildProposalInteraction3D();
         rebuildProposalDraftPreview3D();
@@ -9242,10 +9383,12 @@
         sceneTreeLoadGeometry = null;
         sceneTreeLoadGeometrySource = 'camera';
         waterGroup = null;
+        greenGroup = null;
         treesGroup = null;
         existingTransitAlignmentGroup = null;
         sceneParcelSnapshot = [];
         nearbyWaterKey = null;
+        nearbyGreenKey = null;
         flatGroup = null;
         corridorGroup = null;
         terrainCorridorGroup = null;
@@ -9465,6 +9608,7 @@
             ensureNearbyProposalBuildings();
             ensureNearbyTrees();
             ensureNearbyWater();
+            ensureNearbyGreen();
         } else if (!await initScene()) return false;
         // initScene/reuse already applied the building policy. A late context refresh may still
         // be pending here; re-syncing it would enqueue another full proposal rebuild.
@@ -10157,6 +10301,7 @@
         if (flatGroup) flatGroup.visible = !realisticLayerActive;
         if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;
+        if (greenGroup) greenGroup.visible = greenEnabled && !realisticLayerActive;
         syncLifeVisibility();
         syncGroundVisibility();
         // Shared proposal controls remain available; flat context controls are model-only.

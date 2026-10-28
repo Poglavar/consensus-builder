@@ -56,7 +56,7 @@ function harness({ request = vi.fn(async () => ({ buildings: [] })), build = vi.
         buildNearbyProposalBuildings3D: build,
         buildProposedBuildings3D: vi.fn(async () => {}),
         appendSuggestedExistingFloorPlans: vi.fn(), buildIneligibleParcels3D: vi.fn(),
-        ensureNearbyTrees: vi.fn(), ensureNearbyWater: vi.fn(), refreshClickStackFigures: vi.fn(),
+        ensureNearbyTrees: vi.fn(), ensureNearbyWater: vi.fn(), ensureNearbyGreen: vi.fn(), refreshClickStackFigures: vi.fn(),
         updateXrayControls: vi.fn(), updateBuildingsLoader: vi.fn(), updateBuildingsSourceNote: vi.fn(),
         refreshLifeSurface: vi.fn(), reportNearbyBuildingsUnavailable: vi.fn(),
         dedupeCoincidentBuildings: buildings => buildings,

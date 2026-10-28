@@ -6119,6 +6119,7 @@
             "ground": "Calles y aceras",
             "groundTooltip": "Muestra u oculta la calzada y las aceras derivadas de OpenStreetMap en la vista 3D",
             "water": "Agua",
+            "green": "Zonas verdes",
             "facades": "Fachadas",
             "facadeStyle": "Estilo de fachada",
             "facadesTooltip": "Ejemplos de ventanas y materiales en los edificios propuestos. Cada edificio conserva su diseño.",
