@@ -1,8 +1,27 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import express from 'express';
 import request from 'supertest';
-import { createApp, startServer } from '../index.js';
+import { createRequire } from 'node:module';
+import { API_POOL_OPTIONS, createApiPool, createApp, startServer } from '../index.js';
 import { createMockPool } from './helpers/mock-pool.js';
+
+// db/connection.cjs loads `pg` with a native require; spy on that same module object.
+const pg = createRequire(import.meta.url)('pg');
+
+describe('createApiPool', () => {
+    afterEach(() => vi.restoreAllMocks());
+
+    it('gives the API pool its connection cap, connection wait and statement timeout', () => {
+        const Pool = vi.spyOn(pg, 'Pool').mockImplementation(function (config) { this.config = config; });
+        const pool = createApiPool({ DATABASE_URL: 'postgres://app:pw@db.example.org:5432/geodata' });
+        expect(Pool).toHaveBeenCalledTimes(1);
+        expect(pool.config).toEqual({
+            connectionString: 'postgres://app:pw@db.example.org:5432/geodata',
+            max: 20, connectionTimeoutMillis: 5000, statement_timeout: 20000
+        });
+        expect(API_POOL_OPTIONS).toEqual({ max: 20, connectionTimeoutMillis: 5000, statement_timeout: 20000 });
+    });
+});
 
 describe('createApp', () => {
     afterEach(() => {
@@ -15,6 +34,14 @@ describe('createApp', () => {
         expect(res.status).toBe(200);
         expect(res.type).toBe('application/json');
         expect(res.body).toMatchObject({ mode: 'visitor', label: 'Anonymous browser activity', funnel: [] });
+    });
+
+    // Clients fetch with cache: 'no-store'; hashing every multi-MB body for an ETag bought nothing.
+    it('sends no automatic ETag on JSON responses', async () => {
+        const { app } = createApp({ env: { USE_CORS_ALLOWLIST: 'false' }, pool: createMockPool() });
+        const res = await request(app).get('/health');
+        expect(res.status).toBe(200);
+        expect(res.headers.etag).toBeUndefined();
     });
 
     it('wires the health route through the full app factory', async () => {

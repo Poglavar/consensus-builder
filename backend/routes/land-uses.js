@@ -41,7 +41,8 @@ export function setupLandUsesRoute(app, pool) {
                         skupna_namjena, 
                         naziv_plana, 
                         godina_zadnje_izmjene, 
-                        ST_AsGeoJSON(geom)::json AS geometry
+                        -- GeoJSON precision: 2 decimals of EPSG:3765 metres is 1 cm; the default 9 only adds bytes.
+                        ST_AsGeoJSON(geom, 2)::json AS geometry
                     FROM planned_land_use 
                     WHERE 1=1
                     AND city_id = 1 -- Zagreb
@@ -57,7 +58,8 @@ export function setupLandUsesRoute(app, pool) {
                         skupna_namjena, 
                         naziv_plana, 
                         godina_zadnje_izmjene, 
-                        ST_AsGeoJSON(geom)::json AS geometry
+                        -- GeoJSON precision: 2 decimals of EPSG:3765 metres is 1 cm; the default 9 only adds bytes.
+                        ST_AsGeoJSON(geom, 2)::json AS geometry
                     FROM planned_land_use 
                     WHERE 1=1
                     AND city_id = 1 -- Zagreb

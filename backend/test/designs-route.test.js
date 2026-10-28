@@ -292,6 +292,15 @@ describe('GET /designs', () => {
         expect(call.params).toEqual([100]);
     });
 
+    // A listing reads up to 1000 rows; its readers render summaries and read a design whole by CID.
+    it('lists rows without content: the column is not selected and the key is absent', async () => {
+        const { res, call } = await listed('?limit=5');
+        expect(call.sql).not.toMatch(/\bcontent\b/);
+        expect(res.body.designs[0]).not.toHaveProperty('content');
+        expect(Object.keys(res.body.designs[0]).sort()).toEqual(['author', 'binding', 'cid', 'city', 'createdAt', 'goal', 'originCid',
+            'screenshotBeforeUrl', 'screenshotPairUrl', 'screenshotUrl', 'title']);
+    });
+
     it('filters by city, text and box, in that parameter order', async () => {
         const { call } = await listed('?city=ZAGREB&q=park&bbox=15.9,45.7,16.1,45.9&limit=5');
         expect(call.sql).toMatch(/WHERE city = \$1 AND \(title ILIKE \$2 OR author ILIKE \$2\) AND site && ST_MakeEnvelope\(\$3, \$4, \$5, \$6, 4326\) AND ST_Intersects\(site, ST_MakeEnvelope\(\$3, \$4, \$5, \$6, 4326\)\)/);

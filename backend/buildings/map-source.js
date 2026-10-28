@@ -20,7 +20,8 @@ export const PARCEL_BUILDINGS_SQL = `
         bf.object_id,
         bf.metadata,
         bf.source,
-        ST_AsGeoJSON(bf.geom)::json AS geometry,
+        -- GeoJSON precision: 2 decimals of EPSG:3765 metres is 1 cm; the default 9 only adds bytes.
+        ST_AsGeoJSON(bf.geom, 2)::json AS geometry,
         a.footprint_area,
         a.intersection_area,
         a.intersection_area / NULLIF(a.footprint_area, 0) AS containment_ratio,
@@ -102,7 +103,8 @@ async function lookup(pool, query) {
                 const sql = source === 'dgu'
                     ? `
                         SELECT
-                            ST_AsGeoJSON(b.geom)::json AS geometry,
+                            -- GeoJSON precision: 2 decimals of EPSG:3765 metres is 1 cm; the default 9 only adds bytes.
+                            ST_AsGeoJSON(b.geom, 2)::json AS geometry,
                             (to_jsonb(b) - 'geom' - 'bbox') AS properties
                         FROM dgu_building b
                         WHERE b.current
@@ -112,7 +114,8 @@ async function lookup(pool, query) {
                       `
                     : `
                         SELECT
-                            ST_AsGeoJSON(f.geom)::json AS geometry,
+                            -- GeoJSON precision: 2 decimals of EPSG:3765 metres is 1 cm; the default 9 only adds bytes.
+                            ST_AsGeoJSON(f.geom, 2)::json AS geometry,
                             jsonb_build_object(
                                 'object_id',     f.object_id,
                                 'area_m2',       g.area_m2,

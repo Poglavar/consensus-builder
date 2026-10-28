@@ -50,6 +50,9 @@ const agreementIx = (name, account, extra = {}) => {
 const marketIx = (action, accounts, args = {}) => ({ index: 0, inner: false, program: { name: 'proposal_market', address: MARKET_PROGRAM_ID }, action, args, accounts });
 const tx = (signature, instructions, extra = {}) => ({ signature, slot: 42, status: 'success', time: '2026-10-21T12:00:00Z', feePayer: { address: HUMAN, label: null }, instructions, ...extra });
 
+// The account-index statement's filter: agreements with a recorded or derivable chain account.
+const WITH_ACCOUNT_SQL = "a.onchain IS NOT NULL OR a.content->>'sponsor' IS NOT NULL";
+
 // A pool answering the feeds' statements by what they select.
 function poolFor({ proposed = ROWS, withAccount = ROWS, transactions = [], marketTransactions = [], runs = [], designs = [], costs = [] } = {}) {
     const calls = [];
@@ -62,7 +65,7 @@ function poolFor({ proposed = ROWS, withAccount = ROWS, transactions = [], marke
             if (sql.includes('touched_addresses')) return { rows: marketTransactions };
             if (sql.includes('consensus.solana_transaction')) return { rows: transactions };
             if (sql.includes('FROM consensus.design') && !sql.includes('consensus.agreement')) return { rows: designs };
-            if (sql.includes("a.onchain IS NOT NULL OR a.content->>'sponsor' IS NOT NULL")) return { rows: withAccount };
+            if (sql.includes(WITH_ACCOUNT_SQL)) return { rows: withAccount };
             if (sql.includes('FROM consensus.agreement a')) return { rows: proposed };
             if (sql.includes('GROUP BY city')) return { rows: [] };
             throw new Error(`unexpected statement ${sql}`);
@@ -172,7 +175,8 @@ describe('GET /activity/recent', () => {
         const response = await request(appFor(pool)).get('/activity/recent?limit=4');
 
         expect(response.status).toBe(200);
-        expect(response.headers['cache-control']).toContain('no-store');
+        // Identical for every visitor and memoized for 20 s, so a browser may reuse it briefly.
+        expect(response.headers['cache-control']).toBe('public, max-age=15');
         // fund is detail for the explorer; a failed cancel is no outcome.
         expect(response.body.events.map(event => event.action.type)).toEqual(['execute', 'stake', 'propose', 'propose']);
         expect(response.body.events[0]).toMatchObject({
@@ -190,11 +194,43 @@ describe('GET /activity/recent', () => {
         const pool = poolFor();
         await request(appFor(pool)).get('/activity/recent');
         await request(appFor(pool)).get('/activity/recent?limit=999');
-        expect(pool.calls.filter(call => call.sql.includes('ORDER BY a.created_at')).map(call => call.params)).toEqual([[12], [30]]);
+        const proposedCalls = pool.calls.filter(call => call.sql.includes('ORDER BY a.created_at') && !call.sql.includes(WITH_ACCOUNT_SQL));
+        expect(proposedCalls.map(call => call.params)).toEqual([[12], [30]]);
         const failing = { query: async () => { throw new Error('connection refused'); } };
         const response = await request(appFor(failing)).get('/activity/recent');
         expect(response.status).toBe(500);
+        expect(response.headers['cache-control']).toBe('no-store');
         expect(response.body).toEqual({ error: 'Failed to read recent activity', source: 'live' });
+    });
+
+    it('bounds the account index to the scan window, newest first', async () => {
+        const pool = poolFor();
+        await request(appFor(pool)).get('/activity/recent');
+        const index = pool.calls.find(call => call.sql.includes(WITH_ACCOUNT_SQL));
+        expect(index.sql).toMatch(new RegExp(`ORDER BY a\\.created_at DESC, a\\.cid LIMIT ${ACTIVITY_SCAN_WINDOW}\\s*$`));
+    });
+
+    it('reads once for concurrent and repeated requests with the same limit, again for another limit', async () => {
+        const pool = poolFor();
+        const app = appFor(pool);
+        const answers = await Promise.all([request(app).get('/activity/recent?limit=4'), request(app).get('/activity/recent?limit=4&junk=1')]);
+        await request(app).get('/activity/recent?limit=4');
+        expect(answers.map(answer => answer.status)).toEqual([200, 200]);
+        expect(answers[1].body).toEqual(answers[0].body);
+        const proposedReads = () => pool.calls.filter(call => call.sql.includes('ORDER BY a.created_at') && !call.sql.includes(WITH_ACCOUNT_SQL));
+        expect(proposedReads()).toHaveLength(1);
+        await request(app).get('/activity/recent?limit=5');
+        expect(proposedReads().map(call => call.params)).toEqual([[4], [5]]);
+    });
+
+    it('does not keep a failure: the next request reads again', async () => {
+        let fail = true;
+        const healthy = poolFor();
+        const pool = { query: async (...args) => { if (fail) throw new Error('connection refused'); return healthy.query(...args); } };
+        const app = appFor(pool);
+        expect((await request(app).get('/activity/recent')).status).toBe(500);
+        fail = false;
+        expect((await request(app).get('/activity/recent')).status).toBe(200);
     });
 });
 
@@ -368,6 +404,17 @@ describe('GET /agent/activity', () => {
         const all = await request(appFor(runPool())).get('/agent/activity');
         expect(all.body.events).toHaveLength(2);
         expect(all.body.events.find(event => event.runId === 'unlocated-account-run')).not.toHaveProperty('cityId');
+    });
+
+    it('shares one read per limit and filters, and reads again for another filter', async () => {
+        const memoPool = poolFor();
+        const app = appFor(memoPool);
+        await Promise.all([request(app).get('/agent/activity?limit=10'), request(app).get('/agent/activity?limit=10')]);
+        await request(app).get('/agent/activity?limit=10');
+        const runReads = () => memoPool.calls.filter(call => call.sql.includes('consensus.agent_run'));
+        expect(runReads()).toHaveLength(1);
+        await request(app).get('/agent/activity?limit=10&source=live');
+        expect(runReads().map(call => call.params)).toEqual([[10], [ACTIVITY_SCAN_WINDOW]]);
     });
 
     it('bounds the window to 250 without filters', async () => {

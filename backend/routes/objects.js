@@ -122,7 +122,8 @@ export function setupObjectRoute(app, pool) {
             const sql = `
                 SELECT DISTINCT
                     b3d.object_id,
-                    ST_AsGeoJSON(b3d.shape)::jsonb AS geometry,
+                    -- GeoJSON precision: 2 decimals of EPSG:3765 metres is 1 cm; the default 9 only adds bytes.
+                    ST_AsGeoJSON(b3d.shape, 2)::jsonb AS geometry,
                     bf.metadata::jsonb AS properties
                 FROM gdi_building_footprint bf
                 JOIN gdi_building_3d b3d ON bf.object_id = b3d.object_id

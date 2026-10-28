@@ -369,7 +369,7 @@ export function buildOpenApi(base, env) {
                         { name: 'q', in: 'query', required: false, schema: { type: 'string', maxLength: 200 }, description: 'Matches the title or the author.' },
                         { name: 'limit', in: 'query', required: false, schema: { type: 'integer', minimum: 1, maximum: 1000 } }
                     ],
-                    responses: { 200: { description: '{ designs: [design row], count }' }, 400: { description: 'Invalid filter.' } }
+                    responses: { 200: { description: '{ designs: [design row without content], count }; read the content by CID with GET /designs/{cid}.' }, 400: { description: 'Invalid filter.' } }
                 },
                 post: {
                     summary: 'Index a pinned design/v1 object: the server checks its CID and shape and derives its city and binding. A parcel layout is indexed only with its agreement. Needs an Origin header of the app',

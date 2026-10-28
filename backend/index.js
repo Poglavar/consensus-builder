@@ -74,8 +74,16 @@ import { setupAiSceneRoute } from './routes/ai-scene.js';
 import { forwardAsyncErrors } from './utils/async-routes.js';
 import { createPool as createDatabasePool } from './db/connection.cjs';
 
-function createPool(env = process.env) {
-    return createDatabasePool({}, env);
+// The API pool's own limits; batch scripts build their pools without these. 20 connections bound
+// what one API process can hold, a connection wait over 5 s fails the request instead of queueing
+// it, and a 20 s statement_timeout ends a runaway request query long before the role's default
+// 30 min statement_timeout — which stays the backstop for every other client. The slowest measured
+// route statement, /parcels/under, is counted first and capped at MAX_PARCELS_UNDER parcels, so it
+// answers in about 2 s (28.9 s for a 15-request replay); nothing a route runs needs 20 s.
+export const API_POOL_OPTIONS = Object.freeze({ max: 20, connectionTimeoutMillis: 5000, statement_timeout: 20000 });
+
+export function createApiPool(env = process.env) {
+    return createDatabasePool({ ...API_POOL_OPTIONS }, env);
 }
 
 const MAX_FORMATTED_VALUE_LENGTH = 256;
@@ -247,10 +255,14 @@ export function createApp({
     // Before ANY route or middleware is registered: every async handler's rejection goes to the
     // error handler below instead of becoming an unhandled rejection that exits the process.
     const app = forwardAsyncErrors(express());
+    // No automatic ETags: clients fetch with `cache: 'no-store'` and nothing sends If-None-Match, so
+    // the SHA-1 Express computed over every multi-MB JSON body was never used. Routes that want
+    // validators set them explicitly (HEAD /proposals/:id); express.static keeps its own.
+    app.set('etag', false);
     const requestContext = new AsyncLocalStorage();
     const isDevEnv = (env.ENVIRONMENT || '').toLowerCase() === 'dev';
     const activePool = attachSqlLogging(
-        providedPool || createPool(env),
+        providedPool || createApiPool(env),
         createQueryLogger({ requestContext, isDevEnv })
     );
 

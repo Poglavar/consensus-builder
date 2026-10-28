@@ -42,7 +42,8 @@ export function createRoadNetworkRegistry(pool, options = {}) {
             const hasBbox = Array.isArray(boxes);
             let sql = `
                 SELECT
-                    ST_AsGeoJSON(r.geom)::json AS geometry,
+                    -- GeoJSON precision: 7 decimals of WGS84 degrees is about 1 cm; the default 9 only adds bytes.
+                    ST_AsGeoJSON(r.geom, 7)::json AS geometry,
                     jsonb_build_object(
                         'osm_id', r.osm_id,
                         'highway_type', r.highway_type,
@@ -100,7 +101,8 @@ export function createStreetRegisterRegistry(pool) {
             const hasBbox = Array.isArray(bboxParts);
             let sql = `
                 SELECT
-                    ST_AsGeoJSON(ST_Transform(s.geom, 4326))::json AS geometry,
+                    -- GeoJSON precision: 7 decimals of WGS84 degrees is about 1 cm; the default 9 only adds bytes.
+                    ST_AsGeoJSON(ST_Transform(s.geom, 4326), 7)::json AS geometry,
                     (to_jsonb(s) - 'geom') AS properties
                 FROM street s
                 WHERE s.geom IS NOT NULL
@@ -223,7 +225,8 @@ export function createPlannedRoadRegistry() {
                         'category', category,
                         'target_m', target_m
                     ) AS props,
-                    ST_AsGeoJSON(geom)::json AS geometry
+                    -- GeoJSON precision: 2 decimals of EPSG:3765 metres is 1 cm; the default 9 only adds bytes.
+                    ST_AsGeoJSON(geom, 2)::json AS geometry
                 FROM filtered
                 LIMIT $6;
             `;

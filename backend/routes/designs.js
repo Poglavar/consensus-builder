@@ -4,10 +4,10 @@
 // makes), and stores it with what the server derives from it: the city its site lies in
 // supplied by the consumer, and its binding, the parcels its site takes, derived as
 // checkProposalBinding derives them for a new proposal, with nothing declared to compare. GET
-// /designs/:cid, GET /designs?city&bbox and POST /designs/batch read the index back. The content is
-// stored exactly as addressed; the other columns index it and never stand in for it. A parcel layout is
-// indexed only with the agreement that settles its land (routes/agreements.js, through prepareDesign
-// and insertDesign inside its own publish).
+// /designs/:cid, GET /designs?city&bbox (rows without content) and POST /designs/batch read the index
+// back. The content is stored exactly as addressed; the other columns index it and never stand in for
+// it. A parcel layout is indexed only with the agreement that settles its land (routes/agreements.js,
+// through prepareDesign and insertDesign inside its own publish).
 
 import { createRequire } from 'node:module';
 import { canonicalBytes, cidOf, isCid } from '../cid.js';
@@ -34,6 +34,11 @@ const MAX_SOURCE_ID_LENGTH = 3507;
 
 const COLUMNS = `cid, city, goal, title, author, origin_cid, binding, content,
     screenshot_url, screenshot_before_url, screenshot_pair_url, created_at`;
+// GET /designs lists up to 1000 rows and none of its readers (the proposal list's Server tab and
+// parcel panel through DesignSync.designSummary, the world arrival, the MCP list/find/context reads)
+// uses `content`; a design is read whole by CID (GET /designs/:cid, POST /designs/batch).
+const SUMMARY_COLUMNS = `cid, city, goal, title, author, origin_cid, binding,
+    screenshot_url, screenshot_before_url, screenshot_pair_url, created_at`;
 
 const log = message => console.log(`[${new Date().toISOString()}] [designs] ${message}`);
 const refusal = (status, code, error, extra = {}) => ({ refusal: { status, body: { error, code, ...extra } } });
@@ -55,6 +60,12 @@ export function serializeDesignRow(row) {
         screenshotPairUrl: row.screenshot_pair_url ?? null,
         createdAt: iso(row.created_at)
     };
+}
+
+/** A row of the GET /designs listing: the design row without its `content`. */
+export function serializeDesignSummaryRow(row) {
+    const { content, ...summary } = serializeDesignRow(row);
+    return summary;
 }
 
 export async function loadDesign(db, cid) {
@@ -415,11 +426,11 @@ export function setupDesignsRoute(app, deps) {
         params.push(parseListLimit(rawLimit));
         try {
             const { rows } = await pool.query(`
-                SELECT ${COLUMNS} FROM ${DESIGN_TABLE}
+                SELECT ${SUMMARY_COLUMNS} FROM ${DESIGN_TABLE}
                 ${clauses.length ? `WHERE ${clauses.join(' AND ')}` : ''}
                 ORDER BY created_at DESC, cid
                 LIMIT $${params.length}`, params);
-            return res.json({ designs: rows.map(serializeDesignRow), count: rows.length });
+            return res.json({ designs: rows.map(serializeDesignSummaryRow), count: rows.length });
         } catch (error) {
             console.error(`[${new Date().toISOString()}] Error in GET /designs:`, error);
             return res.status(500).json({ error: 'Internal server error' });
