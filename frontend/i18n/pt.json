@@ -3416,9 +3416,9 @@
         "title": "Estatísticas da geometria",
         "parcelArea": "Área da parcela",
         "footprint": "Área de implantação do edifício",
-        "siteCoverage": "Índice de ocupação do solo (kig)",
-        "gbp": "GBP acima do solo",
-        "kin": "kin",
+        "siteCoverage": "Ocupação do solo",
+        "gbp": "Área bruta de construção acima do solo",
+        "kin": "Índice de utilização (acima do solo)",
         "floorHeightHint": "Calculado a partir das implantações desenhadas e da altura ÷ {{height}} m por piso."
     },
     "multitab": {
@@ -3987,7 +3987,7 @@
                 "ruleType": "O que a regra impõe:",
                 "ruleTypeRange": "Entre um mínimo e esta altura",
                 "minPlotArea": "Área mínima do lote (m²):",
-                "maxFloors": "Máximo de pisos da regra:",
+                "maxFloors": "Máximo de pisos:",
                 "minDistance": "Distância mínima aos limites (m):",
                 "buildingCount": "Envolventes da regra:",
                 "totalArea": "Área de implantação da regra (m²):",
@@ -3998,12 +3998,11 @@
                 "minFloors": "Mínimo de pisos:",
                 "minFootprint": "Área mínima do piso térreo (m²):"
             },
-            "regenerate": "Gerar novamente",
+            "regenerate": "Ilustrar",
             "title": "Moradias isoladas",
             "closeAria": "Fechar diálogo de edificação por parcela",
             "generating": "A gerar edifícios…",
             "helper": {
-                "ruleType": "Estas são regras de edificação propostas; não foi verificada a conformidade com as regras de planeamento em vigor. Escolha um máximo, um intervalo ou uma forma exata.",
                 "minPlotArea": "Os lotes inferiores ao mínimo proposto estão assinalados com trama. Una-os ou altere a regra."
             }
         }

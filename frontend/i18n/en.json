@@ -221,9 +221,9 @@
         "title": "Geometry statistics",
         "parcelArea": "Parcel area",
         "footprint": "Building footprint",
-        "siteCoverage": "Site coverage (kig)",
-        "gbp": "Above-ground GBP",
-        "kin": "kin",
+        "siteCoverage": "Site coverage",
+        "gbp": "Above-ground floor area",
+        "kin": "Floor area ratio (above ground)",
         "floorHeightHint": "Calculated from the drawn footprints and height ÷ {{height}} m per storey."
     },
     "multitab": {
@@ -3166,9 +3166,9 @@
             "closeAria": "Close parcel-based modal",
             "generating": "Generating buildings…",
             "done": "Done",
-            "regenerate": "Regenerate",
+            "regenerate": "Illustrate",
             "labels": {
-                "maxFloors": "Rule max floors:",
+                "maxFloors": "Max floors:",
                 "minDistance": "Min distance from borders (m):",
                 "buildingCount": "Rule envelopes:",
                 "totalArea": "Rule footprint (m²):",
@@ -3183,7 +3183,6 @@
                 "minPlotArea": "Min plot size (m²):"
             },
             "helper": {
-                "ruleType": "These are proposed building rules; compliance with current planning rules has not been verified. Choose a maximum, a range, or an exact form.",
                 "minPlotArea": "Plots smaller than the proposed minimum are hatched. Merge them or change the rule."
             },
             "messages": {

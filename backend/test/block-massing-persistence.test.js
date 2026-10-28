@@ -1,6 +1,7 @@
-// The free-placement editors autosave while open and commit again on Done. Exercise those real
-// snapshots plus the shared massing stamp so a preview can never lose its rule or seed at either
-// boundary.
+// The rule editors autosave while open and commit again on Done. Exercise those real snapshots plus
+// the shared massing stamp so a preview can never lose its rule or seed at either boundary. A Block
+// saves its per-parcel pieces (each with its own seed, so every view realizes the street the editor
+// drew) beside the complete authored massing; a Row saves its complete massing.
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -58,35 +59,64 @@ function runFunction(source, name, bindings) {
     return context.__run();
 }
 
-function blockAutosave({ mode = 'manual', feature, generatedFeatures = [] }) {
-    const saved = [];
-    const site = rect(15.999, 44.999, 16.001, 45.001, { id: 'free-site' });
+const blockSite = () => rect(15.999, 44.999, 16.001, 45.001, { id: 'free-site' });
+const blockPieces = (feature, seed = 731) => UrbanRuleVariation.splitMassingByParcels(
+    feature, [{ feature: blockSite(), parcelId: '__placement-site__' }], rule('block', 'range'), seed, { turf }).pieces;
+
+function blockBindings({ mode = 'manual', feature, generatedFeatures = [], pieces = [] }, window, document) {
+    const site = blockSite();
     const block = { parcels: [{ id: '__placement-site__', feature: site }], syntheticSite: true };
-    const document = { getElementById: id => id === 'algorithm-select' ? { value: 'test' } : null };
-    const window = {
-        UrbanRuleVariation,
-        getActiveProposalDesignDraft: () => ({ adapterKey: 'buildings' }),
-        syncActiveProposalDraftFromEditor: (...args) => saved.push(clone(args))
-    };
-    const bindings = {
+    return {
         window, document, blockifyMode: mode, generatedBuildingFeature: feature,
-        generatedBuildingFeatures: generatedFeatures, getActiveBlockifyBlock: () => block,
+        generatedBuildingFeatures: generatedFeatures, blockMassingPieces: pieces, blockExcludedParcels: [],
+        getActiveBlockifyBlock: () => block,
         blockifyFeatureForParcel: parcel => parcel.feature, blockifyParcelId: parcel => parcel.id,
         blockifyClone: clone, getBlockifyDisplayName: () => 'test block',
         currentBlockRule: () => rule('block', 'range'), blockVariationSeed: 731,
         blockMinHeightM: 7, blockMinDepthM: 8, blockMinPlotAreaM2: 0,
         DEFAULT_BUILDING_HEIGHT: 17.5, currentBuildingHeight: 17.5, currentBuildingWidth: 20,
         currentSetback: 0, currentChamferM: 0, currentSimplifyM: 0,
-        gapPositions: [], wingPositions: [], manualOuterRing: null,
+        gapPositions: [], wingPositions: [], manualOuterRing: null, currentGapWidth: 5, currentWingLength: 10,
         blockifySurroundings: null,
         blockifyPlacementTransform: { translationMeters: [0, 0], rotationDegrees: 0 },
         blockifyGenerationSite: site, blockifyDesignBoundary: () => site,
         existingRule: {}, currentProposedHeightFloors: 1, currentAdditionalFloors: 0,
         currentFloorHeightM: 3, turf
     };
+}
+
+function blockAutosave({ mode = 'manual', feature, generatedFeatures = [], pieces = [] }) {
+    const saved = [];
+    const document = { getElementById: id => id === 'algorithm-select' ? { value: 'test' } : null };
+    const window = {
+        UrbanRuleVariation,
+        getActiveProposalDesignDraft: () => ({ adapterKey: 'buildings' }),
+        syncActiveProposalDraftFromEditor: (...args) => saved.push(clone(args))
+    };
+    const bindings = blockBindings({ mode, feature, generatedFeatures, pieces }, window, document);
     const source = functionSources('../../frontend/js/building-blocks.js').get('autosaveBlockifyDraft');
     runFunction(source, 'autosaveBlockifyDraft', bindings);
     return saved[0]?.[1] || null;
+}
+
+// Done, as the editor runs it: the context handed to proposal creation.
+async function blockDone({ mode = 'manual', feature, generatedFeatures = [], pieces = [] }) {
+    const contexts = [];
+    const infos = [];
+    const document = { getElementById: id => id === 'algorithm-select' ? { value: 'test' } : null };
+    const window = { UrbanRuleVariation };
+    const bindings = {
+        ...blockBindings({ mode, feature, generatedFeatures, pieces }, window, document),
+        confirmBlockSizeIfOversized: async () => true,
+        setBlockifyInfo: (key, fallback) => infos.push(key || fallback),
+        setPendingBuildingProposalContext: context => contexts.push(clone(context)),
+        closeBlockifyModal: () => {}, updateStatus: () => {}, translateBuildingText: (_key, fallback) => fallback
+    };
+    const source = functionSources('../../frontend/js/building-blocks.js').get('saveBlockifyDesignForProposal');
+    const context = vm.createContext(bindings);
+    vm.runInContext(`${source}\nthis.__run = saveBlockifyDesignForProposal;`, context);
+    await context.__run();
+    return { context: contexts[0] || null, infos };
 }
 
 function rowAutosave(feature) {
@@ -136,14 +166,19 @@ describe('block and row massing persistence', () => {
         expect(exact.properties).not.toHaveProperty('minFootprint');
     });
 
-    it('keeps block and row rule/seed on autosaved complete massings and still renders salted build-outs', () => {
+    it('autosaves a block as its per-parcel pieces beside the complete massing, a row as its complete massing, and both render salted build-outs', () => {
         const source = rect(16, 45, 16.001, 45.001, { label: 'whole authored footprint' });
-        const blockDraft = blockAutosave({ feature: source });
-        const blockMassing = blockDraft.buildingFeature;
+        const pieces = blockPieces(source);
+        expect(pieces.length).toBeGreaterThan(0);
+        const blockDraft = blockAutosave({ feature: source, pieces });
+        expect(blockDraft.buildings).toEqual(pieces);
+        expect(blockDraft.buildingFeature).toEqual(pieces[0]);
+        expect(pieces[0].properties).toMatchObject({ massing: true, height: 17.5, variationSeed: UrbanRuleVariation.hashSeed(731, '__placement-site__') });
+        const blockMassing = blockDraft.blockMassing;
         expect(blockMassing.geometry).toEqual(source.geometry);
         expect(blockMassing.properties).toMatchObject({ massing: true, height: 17.5, variationSeed: 731 });
         expect(blockMassing.properties.urbanRule).toEqual(rule('block', 'range'));
-        expect(blockDraft.buildings).toEqual([blockDraft.buildingFeature]);
+        expect(blockMassing).not.toEqual(pieces[0]);
 
         const rowDraft = rowAutosave(source);
         const rowMassing = rowDraft.buildingFeature;
@@ -152,7 +187,7 @@ describe('block and row massing persistence', () => {
         expect(rowMassing.properties.urbanRule).toEqual(rule('row', 'range'));
         expect(rowDraft.buildings).toEqual([rowDraft.buildingFeature]);
 
-        for (const massing of [blockMassing, rowMassing]) {
+        for (const massing of [blockMassing, pieces[0], rowMassing]) {
             const heights = new Set(Array.from({ length: 32 }, (_, salt) =>
                 UrbanRuleVariation.plannedDrawPlan(massing, 'buildout', { turf }, salt).buildOut.properties.height));
             expect(heights.size).toBeGreaterThan(1);
@@ -172,5 +207,29 @@ describe('block and row massing persistence', () => {
         expect(saved.placement.site.geometry.type).toBe('Polygon');
     });
 
+    it('Done saves the same per-parcel pieces and complete massing the editor drew, and refuses a block with no pieces', async () => {
+        const source = rect(16, 45, 16.001, 45.001, { label: 'whole authored footprint' });
+        const pieces = blockPieces(source);
+        const done = await blockDone({ feature: source, pieces });
+        expect(done.context.buildings).toEqual(pieces);
+        expect(done.context.buildingFeature).toEqual(pieces[0]);
+        expect(done.context.blockMassing.geometry).toEqual(source.geometry);
+        expect(done.context.blockMassing.properties).toMatchObject({ massing: true, height: 17.5, variationSeed: 731 });
+        expect(done.context.parameters).toMatchObject({ mode: 'manual', typology: 'block', seed: 731 });
+        // Each piece realizes its own height from its own seed: what Done saves is what 3D draws.
+        const realized = pieces.map(piece => UrbanRuleVariation.realizeFeature(piece, { turf }));
+        expect(realized.every(house => house.properties.height <= 17.5)).toBe(true);
 
+        const refused = await blockDone({ feature: source, pieces: [] });
+        expect(refused.context).toBeNull();
+        expect(refused.infos).toEqual(['blockify.modal.messages.generateBeforeFinishing']);
+    });
+
+    it('Done in existing-buildings mode saves the raised buildings raw, with no massing', async () => {
+        const first = rect(16, 45, 16.0002, 45.0002, { source: 'survey', height: 4, manual: true });
+        const done = await blockDone({ mode: 'existing', feature: null, generatedFeatures: [first] });
+        expect(done.context.buildings).toEqual([first]);
+        expect(done.context).not.toHaveProperty('blockMassing');
+        expect(done.context.parameters).toMatchObject({ mode: 'existing', typology: 'block' });
+    });
 });

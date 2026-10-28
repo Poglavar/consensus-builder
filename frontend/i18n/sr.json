@@ -221,9 +221,9 @@
         "title": "Pokazatelji geometrije",
         "parcelArea": "Površina parcele",
         "footprint": "Površina osnove zgrada",
-        "siteCoverage": "Izgrađenost (kig)",
-        "gbp": "GBP (nadzemno)",
-        "kin": "kin",
+        "siteCoverage": "Izgrađenost parcele",
+        "gbp": "Bruto površina nadzemnih etaža",
+        "kin": "Iskorišćenost parcele (nadzemno)",
         "floorHeightHint": "Proračun iz nacrtanih osnova i visine ÷ {{height}} m po etaži."
     },
     "multitab": {
@@ -3198,9 +3198,9 @@
             "closeAria": "Zatvori prozor pravila po parceli",
             "generating": "Generišem zgrade…",
             "done": "Gotovo",
-            "regenerate": "Regeneriši",
+            "regenerate": "Ilustruj",
             "labels": {
-                "maxFloors": "Maks. spratova prema pravilu:",
+                "maxFloors": "Maks. spratova:",
                 "minDistance": "Min. udaljenost od granica (m):",
                 "buildingCount": "Gabariti prema pravilu:",
                 "totalArea": "Površina osnove prema pravilu (m²):",
@@ -3215,7 +3215,6 @@
                 "minPlotArea": "Najmanja površina parcele (m²):"
             },
             "helper": {
-                "ruleType": "Ovo su predložena pravila gradnje; usklađenost sa važećim pravilima planiranja nije proverena. Izaberite maksimum, raspon ili tačan oblik.",
                 "minPlotArea": "Parcele manje od predloženog minimuma prikazane su šrafirano. Spojite ih ili promenite pravilo."
             },
             "messages": {

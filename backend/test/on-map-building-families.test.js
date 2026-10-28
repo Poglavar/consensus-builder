@@ -134,6 +134,8 @@ describe('floating building-family editors', () => {
             window: { UrbanRuleVariation: { massingWithRule: value => JSON.parse(JSON.stringify(value)) } },
             generatedBuildingFeature: feature,
             generatedBuildingFeatures: null,
+            blockMassingPieces: [{ ...feature, properties: { ...feature.properties, parcelId: 'plot-1' } }],
+            setBlockifyInfo() {},
             blockifyMode: 'parametric',
             blockifyVariationSeed: 7,
             currentBuildingWidth: 16,
@@ -146,6 +148,8 @@ describe('floating building-family editors', () => {
             currentFloorHeightM: 3,
             gapPositions: [],
             wingPositions: [],
+            currentGapWidth: 5,
+            currentWingLength: 10,
             manualOuterRing: null,
             blockExcludedParcels: [],
             blockVariationSeed: 7,
@@ -171,6 +175,7 @@ describe('floating building-family editors', () => {
         return sandbox.save().then(() => {
             expect(savedContext.buildings).toHaveLength(1);
             expect(savedContext.buildings[0].geometry).toEqual(feature.geometry);
+            expect(savedContext.buildings[0].properties.parcelId).toBe('plot-1');
             expect(savedContext.blockMassing.geometry).toEqual(feature.geometry);
             expect(savedContext.placement.site.geometry).toEqual(feature.geometry);
             expect(savedContext.placement.free).toBe(false);

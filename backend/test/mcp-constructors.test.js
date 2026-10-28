@@ -1,7 +1,7 @@
 // Check typed MCP construction against the shared app geometry and retained constraints.
 import { describe, expect, it } from 'vitest';
 import { buildTypedDesign, validateTrackDesign } from '../agents/mcp-constructors.js';
-import { appTurf as turf, constructorRuntime, intentDesign, corridorRuntime } from '../agents/mcp-geometry.js';
+import { appTurf as turf, constructorRuntime, intentDesign, intentEditing, corridorRuntime } from '../agents/mcp-geometry.js';
 import { cidOfObject } from '../cid.js';
 const site = { type: 'Polygon', coordinates: [[[15,45],[15.002,45],[15.002,45.002],[15,45.002],[15,45]]] };
 const parcel = { type: 'Feature', id: 'A', properties: { parcelId: 'A' }, geometry: site };
@@ -116,5 +116,44 @@ describe('MCP shared construction generators', () => {
     });
     it('refuses incompatible station transport rather than silently authoring an unattached station', () => {
         expect(() => buildTypedDesign({kind:'station',stationType:'bus',point:[15.001,45],corridors:[{cid:'track',content:track()}]})).toThrow(/compatible corridor/);
+    });
+});
+
+// The browser's Block editor saves the same shape as the constructor: per-parcel pieces beside the
+// complete authored massing. MCP parity for its height slider is a height intent on all pieces, which
+// re-stamps the massing; a single piece cannot be parted from the ring, nor can its footprint move.
+describe('Block pieces and their coupled massing', () => {
+    const twoParcels = [
+        { ...parcel, geometry: { type: 'Polygon', coordinates: [[[15,45],[15.001,45],[15.001,45.002],[15,45.002],[15,45]]] } },
+        { ...parcel, id: 'B', properties: { parcelId: 'B' }, geometry: { type: 'Polygon', coordinates: [[[15.001,45],[15.002,45],[15.002,45.002],[15.001,45.002],[15.001,45]]] } }
+    ];
+    const block = () => buildTypedDesign({ ...common, typology: 'block', ruleKind: 'max' }, { parcels: twoParcels });
+
+    it('builds one building per parcel, each with its own seed, inside one massing', () => {
+        const design = block();
+        expect(design.geometry.buildings.map(b => b.properties.parcelId)).toEqual(['A', 'B']);
+        expect(new Set(design.geometry.buildings.map(b => b.properties.variationSeed)).size).toBe(2);
+        expect(design.geometry.blockMassing.properties).toMatchObject({ massing: true, height: design.geometry.buildings[0].properties.height });
+    });
+
+    it('a height set on all buildings re-stamps the massing to the same rule maximum', () => {
+        const design = block();
+        const next = intentDesign.modify(design, [{ type: 'set_height', value: 10.5 }], { turf });
+        for (const building of next.geometry.buildings) {
+            expect(building.properties).toMatchObject({ height: 10.5, floors: 3 });
+            expect(building.properties.urbanRule.maxHeightM).toBe(10.5);
+        }
+        expect(next.geometry.blockMassing.properties).toMatchObject({ height: 10.5, floors: 3, massing: true });
+        expect(next.geometry.blockMassing.properties.urbanRule).toEqual(next.geometry.buildings[0].properties.urbanRule);
+        expect(next.geometry.blockMassing.geometry).toEqual(design.geometry.blockMassing.geometry);
+        expect(next.buildingProposal.parameters.rule).toEqual(next.geometry.buildings[0].properties.urbanRule);
+    });
+
+    it('refuses a single-piece or footprint edit that would part a piece from its massing', () => {
+        const design = block();
+        expect(() => intentDesign.modify(design, [{ type: 'set_height', value: 10.5, buildingIndex: 0 }], { turf })).toThrow(/massing/);
+        expect(() => intentDesign.modify(design, [{ type: 'move', eastM: 5, northM: 0 }], { turf })).toThrow(/massing/);
+        expect(() => intentDesign.modify(design, [{ type: 'remove_building', buildingIndex: 0 }], { turf })).toThrow(/massing/);
+        expect(intentEditing).toBeTruthy();
     });
 });

@@ -791,7 +791,6 @@
                         </div>
                         <div class="parameter-info">
                             <p>
-                                <span data-i18n-key="parcelBased.modal.helper.ruleType">What the rule compels: at most this (nobody has to build), between a minimum and this, or exactly this (everyone builds the full envelope).</span>
                                 <span data-i18n-key="parcelBased.modal.helper.minPlotArea">Min Plot Size: plots smaller than this cannot be built on under this rule, and are shown hatched. They have to be merged first.</span>
                             </p>
                         </div>
@@ -800,7 +799,7 @@
                 <div id="parcelbased-controls" class="cb-dialog__footer">
                     <div id="parcelbased-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
                     <div id="parcelbased-buttons">
-                        <button type="button" class="btn" id="btn-parcelbased-regenerate" data-i18n-key="parcelBased.modal.regenerate" data-i18n-attr="text">Regenerate</button>
+                        <button type="button" class="btn" id="btn-parcelbased-regenerate" data-i18n-key="parcelBased.modal.regenerate" data-i18n-attr="text">Illustrate</button>
                         <button type="button" class="btn" id="btn-parcelbased-freeform" hidden data-i18n-key="proposalDrafts.freeform.title" data-i18n-attr="text">Convert to freeform building</button>
                         <button type="button" class="btn btn-primary" id="btn-parcelbased-done" data-i18n-key="parcelBased.modal.done" data-i18n-attr="text">Done</button>
                     </div>
@@ -824,7 +823,9 @@
             parcelBasedSurroundings = window.BuildingSurroundingsEditor.mount({
                 session: parcelBasedModal, id: 'parcelbased-ground-treatment', initialTreatment: parcelBasedInitialGroundTreatment, initialDecorationDesign: parcelBasedInitialDecorationDesign,
                 boundary: () => parcelBasedBoundary,
-                buildings: () => generatedParcelBasedFeatures,
+                // Paving or green reaches the houses as drawn, not the dashed envelope around them: the
+                // surface is cut by the example build-out (the envelope itself under an exact rule).
+                buildings: () => (parcelBasedBuildOut.length ? parcelBasedBuildOut : generatedParcelBasedFeatures),
                 onChange: () => autosaveParcelBasedDraft()
             });
             setParcelBasedInfo('parcelBased.modal.generating', 'Generating buildings...');

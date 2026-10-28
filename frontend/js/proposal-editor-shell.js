@@ -943,7 +943,8 @@
         const proposal = proposalById(proposalIdOrHash);
         if (!proposal || !conversion?.convertsToFreeform(proposal)) return null;
         const typology = conversion.ruleTypologyOf(proposal);
-        const merged = mergeRuleBuildings(proposal.geometry?.buildings);
+        // A Block stores its buildings cut per parcel; the authored massing is the one shape to keep.
+        const merged = mergeRuleBuildings(proposal.geometry?.blockMassing ? [proposal.geometry.blockMassing] : proposal.geometry?.buildings);
         if (!merged.ok) {
             reportGeometryEditFailure(merged.reason, proposal.proposalId);
             return null;

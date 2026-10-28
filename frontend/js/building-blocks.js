@@ -1419,13 +1419,12 @@ function showBlockifyModal() {
                     </div>
                 </div>
                 <section id="blockify-density-stats" class="building-density-card" aria-live="polite">
-                    <h3 class="cb-kicker" data-i18n-key="densityStats.title" data-i18n-attr="text">Geometry statistics</h3>
                     <dl class="building-density-grid">
                         <div><dt data-i18n-key="densityStats.parcelArea" data-i18n-attr="text">Parcel area</dt><dd id="blockify-density-parcel">\u2014</dd></div>
                         <div><dt data-i18n-key="densityStats.footprint" data-i18n-attr="text">Building footprint</dt><dd id="blockify-density-footprint">\u2014</dd></div>
-                        <div><dt data-i18n-key="densityStats.siteCoverage" data-i18n-attr="text">Site coverage (kig)</dt><dd id="blockify-density-coverage">\u2014</dd></div>
-                        <div><dt data-i18n-key="densityStats.gbp" data-i18n-attr="text">Above-ground GBP</dt><dd id="blockify-density-gbp">\u2014</dd></div>
-                        <div><dt data-i18n-key="densityStats.kin" data-i18n-attr="text">kin</dt><dd id="blockify-density-kin">\u2014</dd></div>
+                        <div><dt data-i18n-key="densityStats.siteCoverage" data-i18n-attr="text">Site coverage</dt><dd id="blockify-density-coverage">\u2014</dd></div>
+                        <div><dt data-i18n-key="densityStats.gbp" data-i18n-attr="text">Above-ground floor area</dt><dd id="blockify-density-gbp">\u2014</dd></div>
+                        <div><dt data-i18n-key="densityStats.kin" data-i18n-attr="text">Floor area ratio (above ground)</dt><dd id="blockify-density-kin">\u2014</dd></div>
                     </dl>
                     <p id="blockify-density-hint" class="building-density-hint"></p>
                 </section>
@@ -2534,10 +2533,15 @@ function reportBlockifyGenerationError(error) {
 function autosaveBlockifyDraft(featuresOverride = null) {
     const activeDraft = typeof window !== 'undefined' ? window.getActiveProposalDesignDraft?.() : null;
     const block = getActiveBlockifyBlock();
+    // Same shape as Done (saveBlockifyDesignForProposal): the block cut into one building per
+    // parcel, with the authored block-wide massing alongside.
     const features = blockifyMode === 'existing'
         ? (Array.isArray(featuresOverride) ? featuresOverride.filter(Boolean)
             : (featuresOverride ? [featuresOverride] : (generatedBuildingFeatures?.length ? generatedBuildingFeatures : [])))
-        : [window.UrbanRuleVariation.massingWithRule(generatedBuildingFeature, currentBlockRule(), blockVariationSeed, { turf })].filter(Boolean);
+        : (Array.isArray(featuresOverride) ? featuresOverride.filter(Boolean) : blockMassingPieces);
+    const blockMassing = blockifyMode !== 'existing' && generatedBuildingFeature?.geometry
+        ? window.UrbanRuleVariation.massingWithRule(generatedBuildingFeature, currentBlockRule(), blockVariationSeed, { turf })
+        : null;
     if (!activeDraft || !['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)
         || !features.length || !block?.parcels?.length
         || typeof window.syncActiveProposalDraftFromEditor !== 'function') return;
@@ -2587,6 +2591,7 @@ function autosaveBlockifyDraft(featuresOverride = null) {
         parameters,
         buildingFeature: buildings[0] || null,
         buildings,
+        ...(blockMassing ? { blockMassing } : {}),
         groundSurface: blockifySurroundings?.surface() || null,
         // A Block stays on its parcels (proposals/freeform-conversion.js): never a free placement.
         placement: { free: false, site: blockifyClone(blockifyDesignBoundary()) }
@@ -2747,7 +2752,7 @@ function displayBuildingInModal(buildingFeature) {
         });
         reportBlockLeftOut();
         refreshBlockifyDensityStats(blockMassingPieces.length ? blockMassingPieces : [buildingFeature]);
-        autosaveBlockifyDraft(blockMassingPieces.length ? blockMassingPieces : buildingFeature);
+        autosaveBlockifyDraft();
     }
 
 // The footer says only what needs attention: the plots the rule leaves out (hatched on the map),
@@ -3443,10 +3448,14 @@ async function confirmBlockSizeIfOversized(block) {
 
 async function saveBlockifyDesignForProposal() {
     // Existing-buildings mode saves one feature per raised building; every other mode saves the
-    // block's massing cut into one building per parcel. The cut pieces remain the economic and
-    // ownership units, while `blockMassing` below preserves the authored block-wide shape (including
-    // courtyard holes) as design geometry. Conflating those two shapes is what made both selected
-    // edge plots and the common courtyard disappear after apply/reload.
+    // block's massing cut into one building per parcel, exactly what the editor drew: each piece
+    // carries the rule and its own variation seed, so every view realizes the same street of varied
+    // heights (urban-rule-massing.md; the MCP Block constructor saves the same shape). Saving the
+    // whole ring as one building gave the 3D view one seed, hence one height for the whole block.
+    // The cut pieces remain the economic and ownership units, while `blockMassing` below preserves
+    // the authored block-wide shape (including courtyard holes) as design geometry. Conflating those
+    // two shapes is what made both selected edge plots and the common courtyard disappear after
+    // apply/reload.
     const existingModeFeatures = blockifyMode === 'existing'
         ? ((Array.isArray(generatedBuildingFeatures) && generatedBuildingFeatures.length) ? generatedBuildingFeatures : null)
         : null;
@@ -3506,16 +3515,19 @@ async function saveBlockifyDesignForProposal() {
     }
 
     const algorithmSelect = document.getElementById('algorithm-select');
-    // Existing-buildings mode saves one feature per raised building (each with its own height);
-    // freeform/manual modes keep the single-feature shape. createProposal() consumes either via
-    // `buildings` (array) with `buildingFeature` as the single/primary fallback.
-    const clonedBuildings = existingModeFeatures
-        ? JSON.parse(JSON.stringify(existingModeFeatures))
-        : [window.UrbanRuleVariation.massingWithRule(generatedBuildingFeature, currentBlockRule(), blockVariationSeed, { turf })];
+    // A block whose rule leaves no parcel buildable has nothing to save; Done is disabled then, so
+    // this is the same guard for a stale click.
+    if (!existingModeFeatures && !blockMassingPieces.length) {
+        setBlockifyInfo('blockify.modal.messages.generateBeforeFinishing', 'Generate a building before finishing.');
+        return;
+    }
+    // createProposal() consumes `buildings` (array) with `buildingFeature` as the single/primary
+    // fallback.
+    const clonedBuildings = JSON.parse(JSON.stringify(existingModeFeatures || blockMassingPieces));
     const clonedFeature = clonedBuildings[0];
-    const blockMassing = blockifyMode !== 'existing' && generatedBuildingFeature?.geometry
-        ? blockifyClone(clonedFeature)
-        : null;
+    const blockMassing = existingModeFeatures
+        ? null
+        : window.UrbanRuleVariation.massingWithRule(generatedBuildingFeature, currentBlockRule(), blockVariationSeed, { turf });
 
     // Save enough to rebuild this exact design later (see applyBlockifySeedState). Width/height/
     // setback/chamfer/algorithm alone are lossy: a manual outline isn't slider-derived at all, and

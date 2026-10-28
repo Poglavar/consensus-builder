@@ -221,9 +221,9 @@
         "title": "Estadísticas geométricas",
         "parcelArea": "Superficie de la parcela",
         "footprint": "Huella de los edificios",
-        "siteCoverage": "Ocupación (kig)",
-        "gbp": "GBP sobre rasante",
-        "kin": "kin",
+        "siteCoverage": "Ocupación de la parcela",
+        "gbp": "Superficie construida sobre rasante",
+        "kin": "Edificabilidad (sobre rasante)",
         "floorHeightHint": "Calculado a partir de las huellas dibujadas y la altura ÷ {{height}} m por planta."
     },
     "multitab": {
@@ -3193,9 +3193,9 @@
             "closeAria": "Cerrar modal de reglas por parcela",
             "generating": "Generando edificios…",
             "done": "Listo",
-            "regenerate": "Regenerar",
+            "regenerate": "Ilustrar",
             "labels": {
-                "maxFloors": "Máximo de plantas según la regla:",
+                "maxFloors": "Máximo de plantas:",
                 "minDistance": "Distancia mín. de los bordes (m):",
                 "buildingCount": "Envolventes según la regla:",
                 "totalArea": "Huella según la regla (m²):",
@@ -3210,7 +3210,6 @@
                 "minPlotArea": "Superficie mínima de parcela (m²):"
             },
             "helper": {
-                "ruleType": "Estas son reglas de edificación diseños; no se ha verificado su cumplimiento con la normativa urbanística vigente. Elige un máximo, un rango o una forma exacta.",
                 "minPlotArea": "Las parcelas menores que el mínimo propuesto se muestran rayadas. Fusiónalas o cambia la regla."
             },
             "messages": {

@@ -221,9 +221,9 @@
         "title": "Pokazatelji geometrije",
         "parcelArea": "Površina čestice",
         "footprint": "Tlocrtna površina zgrada",
-        "siteCoverage": "Izgrađenost (kig)",
-        "gbp": "GBP (nadzemno)",
-        "kin": "kin",
+        "siteCoverage": "Izgrađenost čestice",
+        "gbp": "Bruto površina nadzemnih etaža",
+        "kin": "Iskoristivost čestice (nadzemno)",
         "floorHeightHint": "Izračun iz nacrtanih tlocrta i visine ÷ {{height}} m po etaži."
     },
     "multitab": {
@@ -3198,9 +3198,9 @@
             "closeAria": "Zatvori prozor pravila po čestici",
             "generating": "Generiram zgrade…",
             "done": "Gotovo",
-            "regenerate": "Regeneriraj",
+            "regenerate": "Ilustriraj",
             "labels": {
-                "maxFloors": "Maks. katova prema pravilu:",
+                "maxFloors": "Maks. katova:",
                 "minDistance": "Min. udaljenost od granica (m):",
                 "buildingCount": "Gabariti prema pravilu:",
                 "totalArea": "Tlocrtna površina prema pravilu (m²):",
@@ -3215,7 +3215,6 @@
                 "minPlotArea": "Najmanja površina čestice (m²):"
             },
             "helper": {
-                "ruleType": "Ovo su predložena pravila gradnje; usklađenost s važećim prostornim pravilima nije provjerena. Odaberite maksimum, raspon ili točan oblik.",
                 "minPlotArea": "Čestice manje od predloženog minimuma prikazane su šrafirano. Spojite ih ili promijenite pravilo."
             },
             "messages": {

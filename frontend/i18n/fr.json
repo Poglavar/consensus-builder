@@ -3416,9 +3416,9 @@
         "title": "Statistiques géométriques",
         "parcelArea": "Superficie des parcelles",
         "footprint": "Emprise au sol des bâtiments",
-        "siteCoverage": "Coefficient d’emprise au sol (kig)",
-        "gbp": "Surface brute de plancher hors sol (GBP)",
-        "kin": "kin",
+        "siteCoverage": "Emprise au sol",
+        "gbp": "Surface de plancher hors sol",
+        "kin": "Densité de plancher (hors sol)",
         "floorHeightHint": "Calculé à partir des emprises dessinées et de la hauteur ÷ {{height}} m par niveau."
     },
     "multitab": {
@@ -3987,7 +3987,7 @@
                 "ruleType": "Ce qu’impose la règle :",
                 "ruleTypeRange": "Entre un minimum et cette hauteur",
                 "minPlotArea": "Surface minimale du lot (m²) :",
-                "maxFloors": "Nombre maximal de niveaux imposé par la règle :",
+                "maxFloors": "Nombre maximal de niveaux :",
                 "minDistance": "Distance minimale aux limites (m) :",
                 "buildingCount": "Enveloppes autorisées par la règle :",
                 "totalArea": "Emprise au sol imposée par la règle (m²) :",
@@ -3998,12 +3998,11 @@
                 "minFloors": "Nombre minimal de niveaux :",
                 "minFootprint": "Surface minimale du rez-de-chaussée (m²) :"
             },
-            "regenerate": "Régénérer",
+            "regenerate": "Illustrer",
             "title": "Maisons individuelles",
             "closeAria": "Fermer la fenêtre de construction par parcelle",
             "generating": "Génération des bâtiments…",
             "helper": {
-                "ruleType": "Il s’agit de règles de construction proposées ; leur conformité aux règles d’urbanisme en vigueur n’a pas été vérifiée. Choisissez un maximum, une plage ou une forme exacte.",
                 "minPlotArea": "Les lots plus petits que le minimum proposé sont hachurés. Fusionnez-les ou modifiez la règle."
             }
         }

@@ -206,7 +206,8 @@ function outerRingOfFeature(feature) {
 function buildBlockifySeed(context) {
     if (!context || !context.parameters) return null;
     const seed = { ...context.parameters };
-    const feature = context.buildingFeature || (Array.isArray(context.buildings) ? context.buildings[0] : null);
+    // The authored block-wide outline; a block's buildings are its per-parcel pieces.
+    const feature = context.blockMassing || context.buildingFeature || (Array.isArray(context.buildings) ? context.buildings[0] : null);
     const looksManual = seed.mode === 'manual' || !!(feature && feature.properties && feature.properties.manual);
     if (looksManual) {
         const ring = (Array.isArray(seed.manualOuterRing) && seed.manualOuterRing.length >= 3)

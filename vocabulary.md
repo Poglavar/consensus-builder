@@ -424,7 +424,7 @@ An authored rule governing possible building form on land, such as Block, Row or
 
 ### Block rule
 
-An urban-rule design generating perimeter building form and courtyard space from its land and stated dimensions.
+An urban-rule design generating perimeter building form and courtyard space from its land and stated dimensions. Its record stores one building per parcel, cut from the block massing and carrying the rule and its own variation seed, beside the complete authored block massing; parcels the rule leaves out are recorded separately as ineligible.
 
 ### Row rule
 

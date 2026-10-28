@@ -13,13 +13,16 @@
     function buildings(record, change, turf) {
         const items = record.geometry?.buildings;
         if (!items?.length) fail('building-required', 'This design has no authored buildings to edit.');
-        if (record.geometry.blockMassing) fail('coupled-building-geometry', 'This design also has a separate block massing. Edit or replace the whole design in its geometry editor.');
         const index = change.buildingIndex;
+        const dimensional = ['set_floors', 'set_height', 'set_use'].includes(change.type);
+        // A Block's buildings are cut from one authored massing (geometry.blockMassing). Their
+        // height, floors and use move together, as the editor's slider moves them, and the massing
+        // is re-stamped below; a footprint, removal or single-building edit would part them from it.
+        if (record.geometry.blockMassing && (!dimensional || index != null)) fail('coupled-building-geometry', 'This design also has a separate block massing. Edit the height, floors or use of all its buildings together, or edit or replace the whole design in its geometry editor.');
         if (index != null && (!Number.isInteger(index) || index < 0 || index >= items.length)) fail('building-not-found', 'Inspect this design revision and choose an existing building index.');
         const selected = index == null ? items : [items[index]];
         const shape = load('SingleBuildingGeometry', './single-building-geometry.js');
         const before = structuredClone(items);
-        const dimensional = ['set_floors', 'set_height', 'set_use'].includes(change.type);
         if (dimensional) {
             if (change.type === 'set_floors' && (!Number.isInteger(change.value) || change.value < 1 || change.value > 200)) fail('invalid-intent', 'Floors must be an integer from 1 to 200.');
             if (change.type === 'set_height' && (!finite(change.value) || change.value <= 0 || change.value > 800)) fail('invalid-intent', 'Height must be positive and at most 800 metres.');
@@ -40,6 +43,16 @@
                             : { maxHeightM: p.height, minHeightM: p.urbanRule.kind === 'exact' ? p.height : Math.min(p.urbanRule.minHeightM || 0, p.height) }) };
                         if (p.ruleProvenance) p.ruleProvenance.definition = structuredClone(p.urbanRule);
                     }
+                }
+            }
+            const massing = record.geometry.blockMassing;
+            if (massing) {
+                const lead = items[0].properties;
+                if (change.type === 'set_use') massing.properties.use = change.value;
+                else if (massing.properties?.urbanRule && lead.urbanRule) {
+                    const rules = load('UrbanRuleVariation', './urban-rule-variation.js');
+                    record.geometry.blockMassing = rules.massingWithRule(massing, lead.urbanRule, massing.properties.variationSeed, { turf });
+                    record.geometry.blockMassing.properties.floors = lead.floors;
                 }
             }
         } else if (change.type === 'remove_building') {
@@ -67,7 +80,8 @@
                 if (items.every(b => b.properties?.[key] === items[0].properties?.[key])) parameters[key] = items[0].properties?.[key] ?? null;
                 else delete parameters[key];
             }
-            if (items.length === 1 && items[0].properties?.urbanRule) parameters.rule = structuredClone(items[0].properties.urbanRule);
+            const rule = items[0].properties?.urbanRule;
+            if (rule && items.every(b => JSON.stringify(b.properties?.urbanRule) === JSON.stringify(rule))) parameters.rule = structuredClone(rule);
         } else for (const key of ['floors', 'height', 'use']) {
             if (!items.every(b => b.properties?.[key] === items[0].properties?.[key])) delete parameters[key];
         }
