@@ -137,6 +137,36 @@ describe('landSummary', () => {
     });
 });
 
+describe('ownerOutcomes and piecesHtml', () => {
+    it('counts the pieces each input owner receives, and names who gets none or several', () => {
+        const value = agreement();
+        expect(panel.ownerOutcomes(value)).toEqual({ owners: 2, none: [],
+            several: [{ ownerKey: 'agent-ana', name: 'Ana', pieces: 2 }] });
+        // Boris's only piece goes public; a joint piece counts for each co-owner; kept holders count too.
+        value.allocations[1] = { output: value.outputs[1].hash, to: { kind: 'public' } };
+        expect(panel.ownerOutcomes(value).none).toEqual([{ ownerKey: 'agent-boris', name: 'Boris', pieces: 0 }]);
+        value.allocations[3] = { output: value.outputs[3].hash, to: { kind: 'joint', shares: [{ ownerKey: 'agent-ana', share: 0.5 }, { ownerKey: 'agent-boris', share: 0.5 }] } };
+        expect(panel.ownerOutcomes(value)).toMatchObject({ none: [], several: [{ ownerKey: 'agent-ana', pieces: 2 }] });
+        value.allocations = [];
+        expect(panel.ownerOutcomes(value)).toMatchObject({ none: [], several: [{ ownerKey: 'agent-ana', pieces: 2 }] });
+        expect(panel.ownerOutcomes(null)).toEqual({ owners: 0, none: [], several: [] });
+    });
+
+    it('puts the resulting pieces and the owner counts in the Output parcels summary, not the land', () => {
+        globalThis.CbFormat = format;
+        const value = agreement();
+        value.allocations[1] = { output: value.outputs[1].hash, to: { kind: 'public' } };
+        const html = panel.piecesHtml({ ...panel.landSummary(value), openGroundM2: 59.6 }, panel.ownerOutcomes(value));
+        expect(html).toContain('Resulting pieces');
+        expect(html).toContain('Open ground');
+        expect(html).toMatch(/data-agreement-owners="none">No piece: <button[^>]+data-agreement-object-id="agent-boris"[^>]*>Boris<\/button>/);
+        expect(html).toMatch(/data-agreement-owners="several">Several pieces: <button[^>]+>Ana \(2\)<\/button>/);
+        const land = panel.landHtml(panel.landSummary(value));
+        expect(land).not.toContain('Resulting pieces');
+        expect(panel.landHtml(panel.landSummary(value), undefined, { outputs: true })).toContain('Resulting pieces');
+    });
+});
+
 describe('allocationLines', () => {
     it('words the explicit recipient of each piece', () => {
         const lines = panel.allocationLines(agreement());
@@ -351,7 +381,8 @@ describe('panel HTML', () => {
         expect(panelBody.innerHTML).toContain('data-agreement-read-only');
         expect(panelBody.innerHTML).toContain('data-agreement-read-only-status');
         expect(panelBody.innerHTML).toContain('data-agreement-action="plan"');
-        expect(panelBody.innerHTML).toContain('Designs in this plan');
+        expect(panelBody.innerHTML).toContain('Designs in the plan');
+        expect(panelBody.innerHTML).toContain('Agreement plan');
         expect(panelBody.innerHTML).not.toContain('Reading the land under the designs');
         expect(panelBody.innerHTML).not.toContain('data-agreement-action="edit"');
         expect(panelBody.innerHTML).not.toContain('data-agreement-action="delete"');

@@ -167,6 +167,31 @@
         });
     }
 
+    // How many resulting pieces each owner of an input parcel receives: alone (party), as a co-owner
+    // (joint) or by keeping the carried-over holders. Public and proposer pieces go to no owner.
+    // { owners, none: [{ ownerKey, name, pieces }], several: [...] } — the owners left without land and
+    // the ones receiving more than one piece.
+    function ownerOutcomes(agreement) {
+        const owners = [];
+        ((agreement && agreement.inputs && agreement.inputs.parcels) || []).forEach(parcel => ((parcel && parcel.holders) || []).forEach(holder => {
+            const key = idOf(holder && holder.ownerKey);
+            if (key && !owners.includes(key)) owners.push(key);
+        }));
+        const counts = new Map(owners.map(key => [key, 0]));
+        const lines = new Map((agreement && Array.isArray(agreement.allocations) ? agreement.allocations : [])
+            .filter(line => line && idOf(line.output)).map(line => [idOf(line.output), line.to || null]));
+        ((agreement && agreement.outputs) || []).forEach(output => {
+            const to = lines.get(idOf(output && output.hash)) || { kind: 'holders' };
+            const receivers = to.kind === 'party' ? [to.ownerKey]
+                : to.kind === 'joint' ? (to.shares || []).map(share => share && share.ownerKey)
+                    : to.kind === 'public' || to.kind === 'proposer' ? [] : ((output && output.holders) || []).map(holder => holder && holder.ownerKey);
+            new Set(receivers.map(idOf).filter(key => counts.has(key))).forEach(key => counts.set(key, counts.get(key) + 1));
+        });
+        const names = partyNames(agreement);
+        const named = keys => keys.map(key => ({ ownerKey: key, name: names.get(key) || key, pieces: counts.get(key) }));
+        return { owners: owners.length, none: named(owners.filter(key => counts.get(key) === 0)), several: named(owners.filter(key => counts.get(key) > 1)) };
+    }
+
     function signedArea(m2) {
         if (!finite(m2)) return NO_VALUE;
         if (Math.abs(m2) < 0.05) return format().formatArea(0, { maxFractionDigits: 0 });
@@ -507,20 +532,40 @@
             + (row.type ? `<span class="agreement-panel-design__type">${esc(row.type)}</span>` : '') + '</span>'
             + (row.applied ? `<span class="cb-badge cb-badge--applied">${esc(tr('agreement.designs.onMap', 'Applied'))}</span>` : '')
             + '</button></li>').join('');
-        return sectionHtml(tr('agreement.panel.designs', 'Designs in this plan'), `<ul class="agreement-panel-designs">${items}</ul>`);
+        return sectionHtml(tr('agreement.panel.designs', 'Designs in the plan'), `<ul class="agreement-panel-designs">${items}</ul>`);
     }
 
-    function landHtml(summary, tr = t) {
+    // The input side (parcels and area); `outputs` adds the resulting pieces and open ground, for an
+    // agreement without an Output parcels tab to hold them.
+    function landHtml(summary, tr = t, { outputs = false } = {}) {
         const facts = [
             [tr('agreement.land.inputsHeading', 'Input parcels'), format().formatInteger(summary.parcels)],
-            [tr('agreement.land.area', 'Area'), format().formatArea(summary.areaM2, { missing: NO_VALUE })],
-            [tr('agreement.land.outputsHeading', 'Resulting pieces'), format().formatInteger(summary.pieces)]
+            [tr('agreement.land.area', 'Area'), format().formatArea(summary.areaM2, { missing: NO_VALUE })]
         ];
+        return sectionHtml(tr('agreement.sections.land', 'Land'),
+            `<dl class="agreement-panel-facts">${facts.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>`)
+            + (outputs ? piecesHtml(summary, null, tr) : '');
+    }
+
+    // The Output parcels tab's summary: how many pieces result, the open ground among them, and which
+    // owners of the input parcels end up with no piece or with several.
+    function piecesHtml(summary, outcomes, tr = t) {
+        const facts = [[tr('agreement.land.outputsHeading', 'Resulting pieces'), format().formatInteger(summary.pieces)]];
+        if (outcomes && outcomes.owners) {
+            facts.push([tr('agreement.outcomes.owners', 'Owners of input parcels'), format().formatInteger(outcomes.owners)],
+                [tr('agreement.outcomes.none', 'Owners with no piece'), format().formatInteger(outcomes.none.length)],
+                [tr('agreement.outcomes.several', 'Owners with several pieces'), format().formatInteger(outcomes.several.length)]);
+        }
         const openGround = finite(summary.openGroundM2) && summary.openGroundM2 > 0
             ? `<p class="agreement-panel-meta">${esc(tr('agreement.land.openGround', 'Open ground: {{area}}', { area: format().formatArea(summary.openGroundM2) }))}</p>`
             : '';
-        return sectionHtml(tr('agreement.sections.land', 'Land'),
-            `<dl class="agreement-panel-facts">${facts.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>${openGround}`);
+        // Each owner named is a button that shows their input parcels and pieces on the map.
+        const who = (label, list, count) => (list.length ? `<p class="agreement-panel-meta agreement-panel-owners" data-agreement-owners="${count}">${esc(label)} `
+            + list.map(owner => `<button type="button" class="cb-link" data-agreement-inspect="person" data-agreement-object-id="${esc(owner.ownerKey)}" aria-pressed="false">${esc(owner.name)}`
+                + (count === 'several' ? ` (${esc(format().formatInteger(owner.pieces))})` : '') + '</button>').join(', ') + '</p>' : '');
+        return sectionHtml(tr('agreement.sections.pieces', 'Resulting land'),
+            `<dl class="agreement-panel-facts">${facts.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl>${openGround}`
+            + (outcomes ? who(tr('agreement.outcomes.noneList', 'No piece:'), outcomes.none, 'none') + who(tr('agreement.outcomes.severalList', 'Several pieces:'), outcomes.several, 'several') : ''));
     }
 
     function allocationHtml(lines, tr = t) {
@@ -714,7 +759,7 @@
                     ? t('agreement.publish.readOnlyPieces', 'Its pieces are available by hash only in this read-only view.')
                     : t('agreement.publish.rederive', 'Its pieces are known here by their hashes only: apply its designs on the same ground to re-derive them and compare.'))}</p>`
                 : '';
-            const overview = (agreement.plan ? sectionHtml(t('plan.label', 'Plan'),
+            const overview = (agreement.plan ? sectionHtml(t('agreement.panel.plan', 'Agreement plan'),
                     `<button type="button" class="btn btn-sm" data-agreement-action="plan">${esc(agreement.plan.content.title)}</button>`) : '')
                 + publishedHtml({ published: agreement.published, remote: observedRemote(state.remote, chainView(agreement)?.chain), electorate: agreement.rule && agreement.rule.electorate, readOnly, consultation: community && agreement.consultation })
                 + (community && agreement.rule?.electorate === 'community' ? '<section class="agreement-panel-section" data-community-consultation></section>' : '')
@@ -722,8 +767,10 @@
                 + (community && agreement.rule?.electorate === 'community' ? win.CommunityConsultation.picturesHtml(state.remote) : '')
                 + (binding ? chainHtml({ ...chainView(agreement), readOnly }) : nonBindingChainHtml(agreement.published))
                 + designsHtml(designRows(agreement, { designOf, isApplied: win.isApplied, typeLabel }));
-            const panels = { overview, inputs: landHtml(landSummary(agreement)) + inputsHtml(agreement),
-                ...(agreement.rule?.electorate === 'community' ? {} : { outputs: byHashOnly + allocationHtml(allocationLines(agreement)), persons: ledgerHtml(ledger) }),
+            const separateOutputs = agreement.rule?.electorate !== 'community';
+            const land = landSummary(agreement);
+            const panels = { overview, inputs: landHtml(land, t, { outputs: !separateOutputs }) + inputsHtml(agreement),
+                ...(separateOutputs ? { outputs: byHashOnly + piecesHtml(land, ownerOutcomes(agreement)) + allocationHtml(allocationLines(agreement)), persons: ledgerHtml(ledger) } : {}),
                 rules: ruleHtml(rule, deadline, t, { owners: agreement.rule?.electorate === 'owners', scheme: !!win.AgreementRecord.schemeOf(agreement.rule), counter: true }) };
             if (!(state.tab in panels)) state.tab = 'overview';
             return status
@@ -1497,8 +1544,8 @@
     }
 
     return {
-        titleOf, statusOf, landSummary, allocationLines, ledgerRows, ruleSummary, ruleShort, designRows, groundIds, holdersLine,
-        statusHtml, actionsHtml, remoteStatusOf, observedRemote, publishedHtml, designsHtml, landHtml, allocationHtml, ledgerHtml, ruleHtml,
+        titleOf, statusOf, landSummary, ownerOutcomes, allocationLines, ledgerRows, ruleSummary, ruleShort, designRows, groundIds, holdersLine,
+        statusHtml, actionsHtml, remoteStatusOf, observedRemote, publishedHtml, designsHtml, landHtml, piecesHtml, allocationHtml, ledgerHtml, ruleHtml,
         inputsHtml, inspectionFeatures, tabbedHtml,
         shortKey, chainStatusText, mintReadiness, isBinding, chainHtml, nonBindingChainHtml, browserPanel
     };
