@@ -87,8 +87,10 @@ function makeWindow(proposals, { city = null } = {}) {
         CityMoney: CityMoney.forCity(() => city),
         PlanAnalysis: { prepare: async plan => {
             if (!plan) throw new Error('Choose a plan.');
-            return { plan, records: proposals.map(p => ({ ...p, applied: true })), materializedFeatures: [], cadastralFeatures: [] };
+            if (plan.failure) throw new Error(plan.failure);
+            return { plan, records: (plan.records || proposals).map(p => ({ ...p, applied: true })), materializedFeatures: [], cadastralFeatures: [] };
         } },
+        CbDialog: { open: options => { window.openedDialog = options; return options; } },
         proposalStorage: { getAllProposals: () => { throw new Error('Must not read map designs'); } }
     };
     window.window = window;
@@ -307,5 +309,40 @@ describe('the period table', () => {
         await window.showPlanStatsModal({ content: { title: 'Garden plan' } });
 
         expect(window.document.querySelector('[data-plan-stat="epoch-section"]').hidden).toBe(true);
+    });
+});
+
+// Compare plans: each plan measured as Plan stats measures one, side by side, turnable.
+describe('comparing plans', () => {
+    const textOf = node => node.textContent + node.children.map(textOf).join('');
+    const rowsOf = table => table.children.map(tr => tr.children.map(textOf));
+    const tableOf = window => window.openedDialog.body.querySelectorAll('[data-plan-compare]')[0]
+        || (function find(node) { if (node.dataset?.planCompare) return node; for (const child of node.children) { const hit = find(child); if (hit) return hit; } return null; })(window.openedDialog.body);
+
+    it('shows every plan’s figures in its own column, and swaps to plans as rows', async () => {
+        const window = openDialog(plan);
+        await window.comparePlanStats([
+            { content: { title: 'Two blocks' }, records: [block(2035), block(2045)] },
+            { content: { title: 'One block' }, records: [block(2035)] },
+            { content: { title: 'Broken' }, failure: 'Parcel coverage is unavailable.' }
+        ]);
+        expect(window.openedDialog.title).toBe('Compare plans');
+        let rows = rowsOf(tableOf(window));
+        expect(rows[0]).toEqual(['', 'Two blocks', 'One block', 'BrokenNot measured: Parcel coverage is unavailable.']);
+        const buildings = rows.find(row => row[0].startsWith('Buildings'));
+        expect(digits(buildings[1])).toBe(2);
+        expect(digits(buildings[2])).toBe(1);
+        expect(buildings[3]).toBe('—');
+        expect(rows).toHaveLength(1 + 9);
+
+        const swap = (function find(node) { if (node.dataset && 'planCompareSwap' in node.dataset) return node; for (const child of node.children) { const hit = find(child); if (hit) return hit; } return null; })(window.openedDialog.body);
+        swap.listeners.click.forEach(fn => fn());
+        expect(swap.getAttribute('aria-pressed')).toBe('true');
+        rows = rowsOf(tableOf(window));
+        expect(rows).toHaveLength(1 + 3);
+        expect(rows[0][0]).toBe('Plan');
+        expect(rows[1][0]).toBe('Two blocks');
+        expect(rows[0].findIndex(label => label.startsWith('Buildings'))).toBeGreaterThan(0);
+        swap.listeners.click.forEach(fn => fn());
     });
 });

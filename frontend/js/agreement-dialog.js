@@ -159,6 +159,27 @@
         return null;
     }
 
+    // Randomize (Allocate output parcels): the persons in a random order, each piece in turn to the
+    // next one, so every person receives a piece before anyone receives a second, and then the order
+    // starts again. `random` returns [0, 1) like Math.random. No persons: no allocations.
+    function randomAllocations(inputs, outputs, random = Math.random) {
+        const parties = partiesOf(inputs).map(party => `party:${party.ownerKey}`);
+        for (let i = parties.length - 1; i > 0; i--) {
+            const j = Math.floor(random() * (i + 1));
+            [parties[i], parties[j]] = [parties[j], parties[i]];
+        }
+        if (!parties.length) return {};
+        return Object.fromEntries((Array.isArray(outputs) ? outputs : []).map((output, index) => [output.hash, parties[index % parties.length]]));
+    }
+
+    // How the pieces fall to the persons: how many receive none and how many more than one.
+    function allocationSpread(inputs, allocations = {}) {
+        const counts = new Map(partiesOf(inputs).map(party => [`party:${party.ownerKey}`, 0]));
+        Object.values(allocations || {}).forEach(value => { if (counts.has(value)) counts.set(value, counts.get(value) + 1); });
+        const values = [...counts.values()];
+        return { persons: values.length, without: values.filter(count => count === 0).length, several: values.filter(count => count > 1).length };
+    }
+
     // Typed amounts → cents: empty is no line (null); anything that is not an amount is NaN, so the
     // validation names it instead of the line vanishing.
     function cashCents(text) {
@@ -480,12 +501,26 @@
             return `<li><label class="agreement-allocation-row"><span class="agreement-allocation-row__piece">${esc(`${t('agreement.land.piece', 'Piece')} ${index + 1} · ${areaText(output.areaM2)}`)}</span>`
                 + `<select data-agreement-allocation="${esc(output.hash)}"${mode !== 'individual' ? ' disabled' : ''}>${options.map(option => `<option value="${esc(option.value)}"${option.value === value ? ' selected' : ''}>${esc(option.label)}</option>`).join('')}</select></label></li>`;
         }).join('');
+        // Randomize is an action, not a lasting mode: it fills the pieces' selects, which stay
+        // editable (the dialog shows Set individually after it). It needs persons to hand pieces to.
+        const persons = partiesOf(land.inputs).length;
         const modes = [
             ['individual', t('agreement.allocation.individual', 'Set individually')],
+            ['random', t('agreement.allocation.random', 'Randomize'), !persons],
             ['proposer', t('agreement.allocation.proposer', 'Proposer')],
             ['public', t('agreement.allocation.publicLand', 'Public land')]
         ];
-        return `<label class="proposal-editor-field"><span>${esc(t('agreement.allocation.allOutputs', 'Allocate output parcels'))}</span><select data-agreement-allocation-mode>${modes.map(([value, label]) => `<option value="${value}"${mode === value ? ' selected' : ''}>${esc(label)}</option>`).join('')}</select></label><ul class="agreement-allocation-list">${rows}</ul>`;
+        return `<label class="proposal-editor-field"><span>${esc(t('agreement.allocation.allOutputs', 'Allocate output parcels'))}</span><select data-agreement-allocation-mode>${modes.map(([value, label, disabled]) => `<option value="${value}"${mode === value ? ' selected' : ''}${disabled ? ' disabled' : ''}>${esc(label)}</option>`).join('')}</select></label>`
+            + allocationSummaryHtml(land, allocations) + `<ul class="agreement-allocation-list">${rows}</ul>`;
+    }
+
+    // Above the pieces: how many persons receive no piece and how many more than one, when any do.
+    function allocationSummaryHtml(land, allocations = {}) {
+        const spread = allocationSpread(land && land.inputs, allocations);
+        const parts = [];
+        if (spread.without) parts.push(t('agreement.allocation.withoutParcel', 'Persons without a parcel: {{count}}', { count: spread.without }));
+        if (spread.several) parts.push(t('agreement.allocation.severalParcels', 'Persons with more than one parcel: {{count}}', { count: spread.several }));
+        return `<p class="agreement-hint" data-agreement-allocation-summary${parts.length ? '' : ' hidden'}>${esc(parts.join(' · '))}</p>`;
     }
 
     // Land values per m² for settlement by value: one number field per input parcel ('inputs') or
@@ -530,9 +565,14 @@
 
     // The whole body. `view`: { designs, selected, missing, land, loading, landError, values, today }.
     const TABS = ['rules', 'inputs', 'outputs', 'persons'];
-    function tabLabel(tab) {
+    // counts: { inputs, outputs, persons } shown in brackets, since inputs and outputs differ in number.
+    function tabLabel(tab, counts = {}) {
         const labels = { rules: ['agreement.workflow.rules', 'Rules'], inputs: ['agreement.workflow.inputs', 'Input parcels'], outputs: ['agreement.workflow.outputs', 'Output parcels'], persons: ['agreement.workflow.persons', 'Persons'] };
-        return t(...labels[tab]);
+        return t(...labels[tab]) + (Number.isInteger(counts[tab]) ? ` (${counts[tab]})` : '');
+    }
+    function tabCounts(land) {
+        const inputs = land && land.inputs ? land.inputs : { parcels: [] };
+        return { inputs: (inputs.parcels || []).length, outputs: (land && Array.isArray(land.outputs) ? land.outputs : []).length, persons: partiesOf(inputs).length };
     }
     function planSelectorHtml(plans, selected) {
         return `<label class="proposal-editor-field"><span>${esc(t('plan.label', 'Plan'))}</span><select data-agreement-plan><option value="">${esc(t('agreement.workflow.choosePlan', 'Choose a saved plan'))}</option>${plans.map(plan => `<option value="${esc(plan.cid)}"${plan.cid === selected?.cid ? ' selected' : ''}>${esc(plan.content.title)}</option>`).join('')}</select></label>`
@@ -572,7 +612,7 @@
             persons: '<div data-agreement-persons></div>'
         };
         return '<ul class="agreement-issues agreement-issues--error" data-agreement-errors aria-live="assertive"></ul><ul class="agreement-issues agreement-issues--warning" data-agreement-warnings aria-live="polite"></ul>'
-            + `<div class="cb-tabs agreement-editor__tabs" role="tablist" aria-label="${esc(t('agreement.panel.title', 'Agreement'))}">${TABS.map(tab => `<button type="button" class="cb-tab" role="tab" id="agreement-tab-${tab}" aria-controls="agreement-tabpanel-${tab}" aria-selected="${tab === 'inputs'}" tabindex="${tab === 'inputs' ? 0 : -1}" data-agreement-tab="${tab}">${esc(tabLabel(tab))}</button>`).join('')}</div>`
+            + `<div class="cb-tabs agreement-editor__tabs" role="tablist" aria-label="${esc(t('agreement.panel.title', 'Agreement'))}">${TABS.map(tab => `<button type="button" class="cb-tab" role="tab" id="agreement-tab-${tab}" aria-controls="agreement-tabpanel-${tab}" aria-selected="${tab === 'inputs'}" tabindex="${tab === 'inputs' ? 0 : -1}" data-agreement-tab="${tab}">${esc(tabLabel(tab, view.counts))}</button>`).join('')}</div>`
             + TABS.map(tab => `<section role="tabpanel" id="agreement-tabpanel-${tab}" aria-labelledby="agreement-tab-${tab}" data-agreement-tabpanel="${tab}"${tab === 'inputs' ? '' : ' hidden'}>${panels[tab]}</section>`).join('');
     }
 
@@ -802,6 +842,8 @@
             else if (state.landError) target.innerHTML = `<p class="agreement-alert">${esc(state.landError)}</p><button type="button" class="btn" data-agreement-action="apply-plan">${esc(t('agreement.workflow.applyPlan', 'Apply plan designs'))}</button>`;
             else target.innerHTML = inputsTableHtml(state.land.inputs.parcels) + valuationSection('inputs');
             part('[data-agreement-plan-designs]').innerHTML = inputDesignsHtml(state.designs);
+            const counts = state.loading || state.landError ? {} : tabCounts(state.land);
+            body.querySelectorAll('[data-agreement-tab]').forEach(button => { button.textContent = tabLabel(button.dataset.agreementTab, counts); });
             part('[data-agreement-allocations]').innerHTML = allocationHtml(state.land, state.values.allocations, state.allocationMode) + valuationSection('outputs');
             if (state.values.electorate === 'community') part('[data-agreement-allocations]').querySelectorAll('select').forEach(select => { select.disabled = true; });
             renderPersons(); issues();
@@ -995,10 +1037,19 @@
                     state.values.allocations = {}; deriveLand(); return;
                 }
                 if (target.closest('[data-agreement-rule-form]')) { readRule(); renderRule(); renderPersons(); issues(); return; }
+                if (target.matches('[data-agreement-allocation-mode]') && target.value === 'random') {
+                    readRule(); state.allocationMode = 'individual'; reconcileAllocations();
+                    Object.assign(state.values.allocations, randomAllocations(state.land.inputs, state.land.outputs));
+                    log(`randomized ${state.land.outputs.length} pieces over ${partiesOf(state.land.inputs).length} persons`);
+                    renderRule(); renderLand(); return;
+                }
                 if (target.matches('[data-agreement-allocation-mode]')) {
                     state.allocationMode = target.value; reconcileAllocations(); renderLand(); return;
                 }
-                if (target.matches('[data-agreement-allocation]')) { state.values.allocations[target.dataset.agreementAllocation] = target.value; readRule(); renderRule(); }
+                if (target.matches('[data-agreement-allocation]')) {
+                    state.values.allocations[target.dataset.agreementAllocation] = target.value; readRule(); renderRule();
+                    part('[data-agreement-allocation-summary]').outerHTML = allocationSummaryHtml(state.land, state.values.allocations);
+                }
                 if (target.matches('[data-agreement-binding]')) state.values.binding = target.checked;
                 if (target.matches('[data-agreement-electorate]')) {
                     readRule(); state.values.electorate = target.value; state.values.binding = false; renderRule(); renderLand();
@@ -1057,7 +1108,8 @@
     }
     return {
         open, SCHEMA, LOCAL_RIGHTS_PROVIDER, appliedDesigns, designTitle, inputParcelIds, originalsById,
-        partiesOf, allocationOptions, allocationValue, allocationTo, allocationMode, cashCents, cashInputText, termsOf,
+        partiesOf, allocationOptions, allocationValue, allocationTo, allocationMode, randomAllocations, allocationSpread,
+        allocationSummaryHtml, tabLabel, tabCounts, cashCents, cashInputText, termsOf,
         keptTerms, sponsorLine, ruleConfigAfterDerive, deadlineFromDate, dateFromDeadline, recordFromForm,
         issueText, holdersText, landHtml, allocationHtml, valuationHtml, valuationRows, ruleHtml, detailsHtml,
         consultationHtml, bodyHtml, personsHtml, planSelectorHtml, inputDesignsHtml

@@ -184,6 +184,15 @@ are reviewed and proposed in agreement details before their public link can be s
 resolves exact members, obtains their source bindings and source parcels, and calls
 `AgreementHeadless.materialize` with private fabric, ownership and storage ports; it does not read
 or change the displayed composition, unapplied members count, unrelated applied designs do not.
+Plan stats stays unapplied on purpose (user ruling 2026-10-28): plans that cannot stand on the map
+together must still be comparable. A member this device holds a copy of is replayed on that copy's
+own `cadastreParcelIds`, as applying it would; only members held nowhere here use the server
+binding, which for an unpublished design can name fewer parcels than its pieces stand on.
+**Compare plans** (Lists → Plans) adds checkboxes; **Compare** measures each chosen plan that way at
+the default assumptions (`comparePlanStats` in `plan-stats.js`) and shows one table whose **Swap
+rows and columns** turns between plans as columns and plans as rows. A plan that cannot be measured
+keeps its place with the reason. The figures are Plan stats' own (`summaryTexts`), including
+**Plan area**: every parcel the plan stands on, once, plus its open ground.
 The rooster scores the plan as it stands on the map (user ruling 2026-10-28): every member must be
 applied, and `GrainScoreRules.appliedPlanGround` reads the members' pieces and ground from the
 live fabric and the cadastral repository, with no binding and no headless replay. An unapplied

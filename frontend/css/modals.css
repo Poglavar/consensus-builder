@@ -402,6 +402,50 @@ body.site-intro-open { overflow: hidden; }
     font-variant-numeric: tabular-nums;
 }
 
+/* Compare plans (plan-stats.js comparePlans): the stats table with one column or row per plan,
+   scrolling sideways when many plans are compared on a narrow screen. */
+.plan-compare {
+    display: grid;
+    gap: var(--cb-space-3);
+}
+
+.plan-compare__swap {
+    justify-self: start;
+}
+
+.plan-compare__scroll {
+    overflow-x: auto;
+}
+
+.plan-compare__table th.plan-compare__plan {
+    color: var(--cb-text-strong);
+}
+
+.plan-compare__table th[scope="row"],
+.plan-compare__table th.plan-compare__plan {
+    min-width: 8rem;
+}
+
+.plan-compare__table td {
+    white-space: nowrap;
+}
+
+.plan-compare__table[data-plan-compare="plans-as-rows"] th[scope="col"] {
+    min-width: 6rem;
+    vertical-align: bottom;
+}
+
+.plan-compare__table[data-plan-compare="plans-as-columns"] th.plan-compare__plan {
+    text-align: end;
+}
+
+.plan-compare__error {
+    display: block;
+    font-weight: normal;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-danger);
+}
+
 .plan-stats-notes {
     font-size: var(--cb-text-sm);
     color: var(--cb-warning);

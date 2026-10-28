@@ -18,6 +18,16 @@ const client = require('../../frontend/js/solana/agreement-client.js');
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const Cid = require('../../frontend/js/cid.js');
 
+describe('agreement panel tabs', () => {
+    it('shows how many input parcels, output parcels and persons the agreement has', () => {
+        const html = panel.tabbedHtml({ overview: '', inputs: '', outputs: '', persons: '', rules: '' }, 'overview', (_key, fallback) => fallback, { inputs: 4, outputs: 9, persons: 3 });
+        expect(html).toContain('data-agreement-properties-tab="inputs">Input parcels (4)</button>');
+        expect(html).toContain('data-agreement-properties-tab="outputs">Output parcels (9)</button>');
+        expect(html).toContain('data-agreement-properties-tab="persons">Persons (3)</button>');
+        expect(html).toContain('data-agreement-properties-tab="overview">Overview</button>');
+    });
+});
+
 // A translator that shows which key was asked for, and with what count.
 const keys = (key, _fallback, params = {}) => (params.count === undefined ? key : `${key}#${params.count}`);
 

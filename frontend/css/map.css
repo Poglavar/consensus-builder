@@ -1388,6 +1388,16 @@ body.three-mode-active #agent-bubbles-container {
     padding: var(--cb-space-3) 0 0;
 }
 
+/* In the stack, Add to plan heads the design card (.click-stack__actions--design), so the hosted
+   panel's footer does not repeat it. */
+#click-stack #proposal-details-panel.is-hosted .proposal-primary-actions > .btn.btn-add-to-plan {
+    display: none;
+}
+
+.click-stack__actions--design {
+    margin-block-end: var(--cb-space-2);
+}
+
 #click-stack #parcel-info-panel.is-hosted .parcel-tabs {
     margin-inline: 0;
 }

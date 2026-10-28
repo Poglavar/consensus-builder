@@ -3590,6 +3590,13 @@
       "markup": "doc.createElement('button')"
     },
     {
+      "id": "control-56b96b1ca1b37d-2",
+      "source": "js/click-stack/click-stack-relations.js",
+      "markup": "doc.createElement('button')",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-d12f64e8b91aa1-1",
       "source": "js/click-stack/click-stack-relations.js",
       "markup": "doc.createElement('select')"
@@ -4393,6 +4400,18 @@
         {
           "name": "Urban rooster",
           "label": "Urban rooster",
+          "interaction": "click"
+        },
+        {
+          "name": "Compare plans",
+          "label": "Compare plans",
+          "interaction": "click"
+        },
+        {
+          "name": "Compare",
+          "attrs": {
+            "data-lists-compare": ""
+          },
           "interaction": "click"
         }
       ]

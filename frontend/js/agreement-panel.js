@@ -577,10 +577,11 @@
         return [...inputs, ...(agreement.outputs || []).filter(item => hashes.has(item.hash)).flatMap(output)];
     }
 
-    function tabbedHtml(panels, selected, tr = t) {
+    // counts: { inputs, outputs, persons } shown in brackets, since inputs and outputs differ in number.
+    function tabbedHtml(panels, selected, tr = t, counts = {}) {
         const labels = { overview: tr('panel.proposal.tabs.overview', 'Overview'), inputs: tr('agreement.workflow.inputs', 'Input parcels'),
             outputs: tr('agreement.workflow.outputs', 'Output parcels'), persons: tr('agreement.workflow.persons', 'Persons'), rules: tr('agreement.workflow.rules', 'Rules') };
-        const label = kind => labels[kind];
+        const label = kind => labels[kind] + (Number.isInteger(counts[kind]) ? ` (${counts[kind]})` : '');
         const kinds = Object.keys(panels);
         return `<div class="cb-tabs cb-tabs--fill agreement-properties-tabs" role="tablist" aria-label="${esc(tr('agreement.panel.title', 'Agreement'))}">`
             + kinds.map(kind => `<button type="button" class="cb-tab" role="tab" id="agreement-properties-tab-${kind}" aria-controls="agreement-properties-panel-${kind}" aria-selected="${kind === selected}" tabindex="${kind === selected ? 0 : -1}" data-agreement-properties-tab="${kind}">${esc(label(kind))}</button>`).join('') + '</div>'
@@ -685,8 +686,10 @@
             });
             if (!agreement) return status;
             let ledger = { rows: [], sponsor: '', error: null };
+            const counts = { inputs: (agreement.inputs?.parcels || []).length, outputs: (agreement.outputs || []).length };
             try {
                 const computed = win.AgreementRecord.ledger(agreement);
+                counts.persons = computed.parties.length;
                 const sponsor = dialogApi().sponsorLine(computed.money);
                 ledger = { rows: ledgerRows(computed), sponsor: sponsor ? sponsor.text : '', error: null };
             } catch (error) {
@@ -720,7 +723,7 @@
             return status
                 + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement), readOnly })
                 + (!current && !readOnly ? `<p class="agreement-panel-hint" data-agreement-compare-unavailable>${esc(t('agreement.panel.compareUnavailable', 'Before / after is available when this agreement matches the designs applied on the map.'))}</p>` : '')
-                + tabbedHtml(panels, state.tab);
+                + tabbedHtml(panels, state.tab, t, counts);
         }
 
         function renderPanel() {

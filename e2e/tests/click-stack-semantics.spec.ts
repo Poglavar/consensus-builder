@@ -55,6 +55,12 @@ for (const width of [1280, 390]) {
     const detailsPanel = design.locator('#proposal-details-panel');
     await expect(detailsPanel).toBeVisible();
     await expect(detailsPanel.locator('[style]')).toHaveCount(0);
+    // Add to plan heads the card, above the hosted panel, and the panel's footer does not repeat it.
+    const addToPlan = design.locator('.click-stack__actions--design [data-design-action="add-to-plan"]');
+    await expect(addToPlan).toBeVisible();
+    await expect(addToPlan).toHaveText('Add to plan');
+    expect(await addToPlan.evaluate((button, panel) => !!(button.compareDocumentPosition(panel!) & Node.DOCUMENT_POSITION_FOLLOWING), await detailsPanel.elementHandle())).toBe(true);
+    await expect(detailsPanel.locator('.proposal-primary-actions > .btn-add-to-plan')).toBeHidden();
     const designActions = detailsPanel.locator('.proposal-primary-actions > button');
     await expect(designActions.first()).toBeVisible();
     const designShot = testInfo.outputPath(`design-details-${width}.png`);

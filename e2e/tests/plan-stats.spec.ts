@@ -64,4 +64,42 @@ test.describe('Plan arithmetic @features', () => {
     await modal.getByRole('button', { name: 'Close plan stats' }).click();
     await expect(modal).toBeHidden();
   });
+
+  test('compare plans measures several saved plans side by side without applying them', async ({ mockApi: page }) => {
+    test.setTimeout(120_000);
+    await openCity(page);
+    const building = await createBuilding(page);
+    await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), building);
+    const park = await createSpace(page, 'park');
+    await openPlanActions(page, 'Houses only', [building]);
+    await page.locator('#proposals-button').click();
+    await openPlanActions(page, 'Houses and park', [building, park]);
+    const applied = () => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.applied).map((p: any) => p.proposalId));
+    const before = await applied();
+    await page.getByRole('button', { name: 'Compare plans', exact: true }).click();
+    const compare = page.locator('[data-lists-compare]');
+    await expect(compare).toBeDisabled();
+    for (const title of ['Houses only', 'Houses and park']) {
+      await page.getByRole('checkbox', { name: new RegExp(title) }).check();
+    }
+    await expect(compare).toBeEnabled();
+    await compare.click();
+    const dialog = page.locator('.plan-compare-dialog');
+    await expect(dialog.getByRole('heading', { name: 'Compare plans' })).toBeVisible();
+    const table = dialog.locator('[data-plan-compare]');
+    await expect(table).toHaveAttribute('data-plan-compare', 'plans-as-columns');
+    await expect(table.locator('th.plan-compare__plan')).toHaveText(['Houses only', 'Houses and park']);
+    const row = (label: RegExp) => table.locator('tr').filter({ has: page.locator('th[scope="row"]', { hasText: label }) }).locator('td');
+    await expect(row(/^Buildings/)).toHaveCount(2);
+    const openSpace = await row(/^Open space/).allInnerTexts();
+    expect(openSpace.filter(text => text === '0')).toHaveLength(1);
+    expect(await applied()).toEqual(before);
+    await dialog.screenshot({ path: test.info().outputPath('plan-compare-columns.png') });
+    await test.info().attach('plan-compare-columns', { path: test.info().outputPath('plan-compare-columns.png'), contentType: 'image/png' });
+    await dialog.getByRole('button', { name: 'Swap rows and columns' }).click();
+    await expect(table).toHaveAttribute('data-plan-compare', 'plans-as-rows');
+    await expect(table.locator('th[scope="row"]')).toHaveCount(2);
+    await dialog.screenshot({ path: test.info().outputPath('plan-compare-rows.png') });
+    await test.info().attach('plan-compare-rows', { path: test.info().outputPath('plan-compare-rows.png'), contentType: 'image/png' });
+  });
 });

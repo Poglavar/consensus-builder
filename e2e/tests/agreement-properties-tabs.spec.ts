@@ -24,7 +24,7 @@ for (const width of [1280, 390]) {
       return JSON.stringify(w.AgreementStore.list());
     }, layoutId);
     const panel = page.locator('#click-stack #agreement-panel');
-    await expect(panel.getByRole('tab')).toHaveText(['Overview', 'Input parcels', 'Output parcels', 'Persons', 'Rules']);
+    await expect(panel.getByRole('tab')).toHaveText(['Overview', /^Input parcels \(\d+\)$/, /^Output parcels \(\d+\)$/, /^Persons \(\d+\)$/, 'Rules']);
     const tabWidths = await panel.getByRole('tab').evaluateAll(tabs => tabs.map(tab => tab.getBoundingClientRect().width));
     expect(Math.max(...tabWidths) - Math.min(...tabWidths)).toBeLessThan(1);
     const tabStrip = await panel.locator('[role="tablist"]').evaluate(el => ({ width: el.clientWidth, scroll: el.scrollWidth }));
@@ -40,14 +40,14 @@ for (const width of [1280, 390]) {
     expect(await page.evaluate(() => (window as any).__agreementFitCalls)).toBe(0);
     await design.click(); await expect(design).toHaveAttribute('aria-pressed', 'true');
     await expect(panel).toBeVisible();
-    await panel.getByRole('tab', { name: 'Input parcels', exact: true }).click();
+    await panel.getByRole('tab', { name: /^Input parcels \(\d+\)$/ }).click();
     const input = panel.locator('[data-agreement-inspect="input"]').first();
     await input.hover(); await expect(page.locator('path.agreement-map-hover').first()).toBeVisible(); await input.click();
     await expect(input).toHaveAttribute('aria-pressed', 'true');
-    await panel.getByRole('tab', { name: 'Output parcels', exact: true }).click();
+    await panel.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
     const output = panel.locator('[data-agreement-inspect="output"]').first(); await output.click();
     await expect(output).toHaveAttribute('aria-pressed', 'true'); await expect(page.locator('path.agreement-map-focus').first()).toBeVisible();
-    await panel.getByRole('tab', { name: 'Persons', exact: true }).click();
+    await panel.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
     await panel.locator('[data-agreement-inspect="person"]').first().click();
     expect(await page.locator('path.agreement-map-focus').count()).toBeGreaterThanOrEqual(3);
     await panel.getByRole('tab', { name: 'Rules', exact: true }).click();

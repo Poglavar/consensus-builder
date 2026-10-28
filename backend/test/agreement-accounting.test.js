@@ -68,6 +68,32 @@ describe('plan-first agreement accounting', () => {
         expect(Dialog.allocationHtml(record, assignments)).not.toContain(' disabled');
         expect(Dialog.keptTerms({ allocations: assignments }, record).allocations).toEqual(assignments);
     });
+    it('randomizes the pieces over every person before anyone gets a second, and counts the spread', () => {
+        const record = fixture();
+        const three = [...record.outputs, { ...record.outputs[0], hash: 'third' }];
+        const random = Dialog.randomAllocations(record.inputs, three, () => 0);
+        const owners = Object.values(random);
+        expect(owners).toHaveLength(3);
+        // Both persons receive a piece before the order starts again.
+        expect(new Set(owners.slice(0, 2))).toEqual(new Set(['party:parcel-owner:A', 'party:parcel-owner:B']));
+        expect(owners[2]).toBe(owners[0]);
+        expect(Dialog.randomAllocations({ parcels: [] }, three)).toEqual({});
+        expect(Dialog.allocationSpread(record.inputs, random)).toEqual({ persons: 2, without: 0, several: 1 });
+        expect(Dialog.allocationSpread(record.inputs, { x: 'proposer' })).toEqual({ persons: 2, without: 2, several: 0 });
+        const html = Dialog.allocationHtml(record, { [record.outputs[0].hash]: 'party:parcel-owner:A', [record.outputs[1].hash]: 'party:parcel-owner:A' });
+        expect(html).toContain('<option value="random">Randomize</option>');
+        expect(html).toMatch(/data-agreement-allocation-summary>Persons without a parcel: 1 · Persons with more than one parcel: 1<\/p><ul/);
+        expect(Dialog.allocationSummaryHtml(record, random)).toContain('Persons with more than one parcel: 1');
+        expect(Dialog.allocationSummaryHtml(record, Object.fromEntries(record.outputs.map((o, i) => [o.hash, `party:parcel-owner:${i ? 'B' : 'A'}`])))).toContain(' hidden>');
+        expect(Dialog.allocationHtml({ inputs: { parcels: [] }, outputs: record.outputs })).toContain('<option value="random" disabled>');
+    });
+    it('counts input parcels, output parcels and persons on the tabs', () => {
+        const record = fixture();
+        expect(Dialog.tabCounts(record)).toEqual({ inputs: 2, outputs: 2, persons: 2 });
+        expect(Dialog.tabLabel('outputs', { outputs: 5 })).toBe('Output parcels (5)');
+        expect(Dialog.tabLabel('rules', { outputs: 5 })).toBe('Rules');
+        expect(Dialog.bodyHtml({ plans: [], values: {}, counts: { inputs: 3 } })).toContain('data-agreement-tab="inputs">Input parcels (3)</button>');
+    });
     it('requires a saved exact plan and never creates one from the form', () => {
         const record = fixture();
         expect(codes({ ...record, plan: null })).toContain('plan-required');

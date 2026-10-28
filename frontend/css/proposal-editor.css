@@ -121,7 +121,8 @@
 }
 .approval-setup__check li[data-check-ok="true"] { color: var(--cb-success); }
 .approval-setup__check li[data-check-ok="false"] { color: var(--cb-danger); font-weight: var(--cb-weight-medium); }
-.approval-setup__guide { align-self: flex-start; padding: 0; font-size: var(--cb-text-sm); }
+/* The guide link's line: the link inherits the small size from it. */
+.approval-setup__guide { align-self: flex-start; margin: 0; font-size: var(--cb-text-sm); }
 
 /* The scheme guide (approval-setup.js schemeGuideHtml), a dialog opened from the scheme card. */
 .scheme-guide { display: grid; gap: var(--cb-space-4); line-height: var(--cb-leading); }

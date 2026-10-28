@@ -1,18 +1,23 @@
-// Read an exact plan revision and derive its ground without touching the displayed composition.
+// Read an exact plan revision and derive its ground without touching the displayed composition, so
+// a plan's figures need no apply and two plans can be compared while neither is on the map.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) root.PlanAnalysis = api.browser(root);
 })(typeof window === 'undefined' ? null : window, function () {
     'use strict';
-    async function prepare(plan, { resolve, bind, parcels, materialize }) {
+    // declared(cid): the parcel ids of this device's copy of a member, or null. That copy's own
+    // declaration is what applying it on the map uses; a design not yet published has never been
+    // checked against its binding, which can name fewer parcels than its pieces stand on.
+    async function prepare(plan, { resolve, bind, parcels, materialize, declared = () => null }) {
         const snapshot = await resolve(plan);
         const designs = [];
         const sources = new Map();
         for (const member of snapshot.designs) {
             const binding = await bind(member.content, snapshot.designSources?.[member.cid]);
             if (!binding || binding.coverage === 'unknown' || binding.unknownM2 > 0) throw new Error('Parcel coverage is unavailable.');
-            const ids = binding.parcels.map(p => String(p.parcelId));
+            const own = declared(member.cid);
+            const ids = Array.isArray(own) ? [...new Set(own.map(String))].sort() : binding.parcels.map(p => String(p.parcelId));
             if (ids.length) {
                 const source = binding.parcelSource?.sourceId;
                 if (!source) throw new Error('Parcel source is unavailable.');
@@ -68,7 +73,13 @@
                 return answer.binding;
             },
             parcels,
-            materialize: args => win.AgreementHeadless.materialize(args)
+            materialize: args => win.AgreementHeadless.materialize(args),
+            declared: cid => {
+                const record = win.proposalStorage.getAllProposals().find(row => {
+                    try { return win.DesignRecord.cidOf(row) === cid; } catch (_) { return false; }
+                });
+                return record && Array.isArray(record.cadastreParcelIds) ? record.cadastreParcelIds : null;
+            }
         }) };
     }
     return { prepare, browser };

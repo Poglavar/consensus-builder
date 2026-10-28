@@ -43,6 +43,22 @@ describe('exact plan analysis', () => {
         await expect(prepare(snapshot, deps)).rejects.toThrow('could not be loaded');
         expect(deps.materialize).not.toHaveBeenCalled();
     });
+    it('replays a member on its own device copy’s parcels, which the binding can undercount', async () => {
+        // An unpublished parcel layout bound to A whose pieces stand on A, B and C: the map applies
+        // it on its declared A, B, C, so the replay must seed and claim the same ground.
+        const deps = ports();
+        deps.parcels.mockImplementation(async (_source, ids) => ids.map(id => ({ type: 'Feature', id, properties: { parcelId: id } })));
+        const declared = vi.fn(cid => (cid === 'saved-design' ? ['C', 'A', 'B', 'A'] : null));
+        await prepare(snapshot, { ...deps, declared });
+        expect(declared).toHaveBeenCalledWith('saved-design');
+        expect(deps.parcels).toHaveBeenCalledWith('source-a', ['A', 'B', 'C']);
+        expect(deps.materialize.mock.calls[0][0].designs[0].parcelIds).toEqual(['A', 'B', 'C']);
+    });
+    it('keeps the binding for a member this device holds no copy of', async () => {
+        const deps = ports();
+        await prepare(snapshot, { ...deps, declared: () => null });
+        expect(deps.materialize.mock.calls[0][0].designs[0].parcelIds).toEqual(['A']);
+    });
     it('retains open-ground members without inventing source parcels', async () => {
         const deps = ports(); deps.bind.mockResolvedValue({ coverage: 'none', parcels: [], unsurveyedM2: 200 });
         const result = await prepare(snapshot, deps);

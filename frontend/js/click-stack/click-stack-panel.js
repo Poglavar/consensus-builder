@@ -443,7 +443,14 @@
                 };
                 if (global.DesignMemberships) mount();
                 else global.ensureOptionalTool('designMemberships').then(mount).catch(error => global.showStyledAlert(error.message));
-            } else if (kind === 'designs' && instance.serverId) {
+            }
+            if (kind === 'designs') {
+                body.querySelector('.click-stack__actions--design')?.remove();
+                const actions = global.ClickStackRelations.renderDesignActions(instance, doc, global);
+                const selector = body.querySelector('.click-stack__selector-wrap');
+                body.insertBefore(actions, selector ? selector.nextSibling : body.firstChild);
+            }
+            if (kind === 'designs' && instance.serverId) {
                 openPublishedDesign(instance);
             } else if (kind === 'designs') {
                 selectDesign(instance.id);

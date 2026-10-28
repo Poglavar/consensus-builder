@@ -106,6 +106,10 @@
         });
         const noParcels = parcels.bound === false;
         const ground = siteStatsApi()?.planGround(records);
+        // The land the plan covers: every parcel its designs stand on, once, plus open ground.
+        const parcelAreas = cadastralFeatures.map(feature => api.geometryAreaM2(feature));
+        const openGround = ground && finiteNumber(ground.openGroundM2) ? ground.openGroundM2 : 0;
+        const planAreaM2 = parcelAreas.every(area => finiteNumber(area)) ? parcelAreas.reduce((sum, area) => sum + area, 0) + openGround : null;
         return { unavailable: false, planTitle: plan.content.title,
             proposalsTotal: records.length, proposalsCounted: records.length, yield: result,
             parcelCount: noParcels ? null : parcels.resulting.length,
@@ -113,7 +117,7 @@
             parcelConsumed: noParcels ? null : parcels.consumed.length,
             parcelMeasuredCount: noParcels ? null : measuredCount,
             parcelMeasuredArea: noParcels ? null : measuredArea,
-            openGroundM2: ground && finiteNumber(ground.openGroundM2) ? ground.openGroundM2 : null };
+            openGroundM2: ground && finiteNumber(ground.openGroundM2) ? ground.openGroundM2 : null, planAreaM2 };
     }
 
     // Looks live in css/modals.css (.plan-stats-*) and css/primitives.css, never inline.
@@ -125,6 +129,7 @@
     }
 
     const SUMMARY_ROWS = [
+        { key: 'plan-area', i18nKey: 'sidebar.proposals.planStats.planArea', label: 'Plan area (m²)' },
         { key: 'resulting-parcels', i18nKey: 'sidebar.proposals.planStats.resultingParcels', label: 'Resulting parcels (avg m²)' },
         { key: 'buildings', i18nKey: 'sidebar.proposals.planStats.buildings', label: 'Buildings (footprint m²)' },
         { key: 'floor-area', i18nKey: 'sidebar.proposals.planStats.floorArea', label: 'Gross floor area (m²)' },
@@ -336,6 +341,26 @@
         host.appendChild(table);
     }
 
+    // The summary figures of one plan's stats as text, by SUMMARY_ROWS key: the dialog and the plan
+    // comparison show the same words. price: sales price per m² in the city's currency.
+    function summaryTexts(stats, price) {
+        const total = stats.yield.total;
+        const noParcels = !finiteNumber(stats.parcelCount);
+        const avgParcel = !noParcels && stats.parcelMeasuredCount > 0 ? stats.parcelMeasuredArea / stats.parcelMeasuredCount : null;
+        return {
+            'plan-area': formatNumber(stats.planAreaM2),
+            'resulting-parcels': noParcels ? tPlanStats('groundStats.noParcels', 'No parcels here')
+                : avgParcel === null ? formatNumber(stats.parcelCount) : `${formatNumber(stats.parcelCount)} (${formatSquareMetres(avgParcel)})`,
+            buildings: `${formatNumber(total.buildings)} (${formatSquareMetres(total.footprintM2)})`,
+            'floor-area': formatNumber(total.grossFloorAreaM2),
+            'open-space': formatNumber(total.openSpaceM2),
+            apartments: formatNumber(total.apartments),
+            people: formatNumber(total.people),
+            jobs: formatNumber(total.jobs),
+            'sales-value': formatSalesValue(total.grossFloorAreaM2 * price)
+        };
+    }
+
     function renderPlanStatsModal(stats) {
         const modal = ensureModal();
         if (!modal) return;
@@ -354,7 +379,9 @@
 
         const total = stats.yield.total;
         const noParcels = !finiteNumber(stats.parcelCount);
-        const avgParcel = !noParcels && stats.parcelMeasuredCount > 0 ? stats.parcelMeasuredArea / stats.parcelMeasuredCount : null;
+        const priceInput = modal.querySelector('#plan-stats-price');
+        const price = Math.max(0, Number(priceInput && priceInput.value) || 0);
+        const figures = summaryTexts(stats, price);
 
         set('scope', tPlanStats(
             'sidebar.proposals.planStats.scope',
@@ -362,20 +389,15 @@
             { title: stats.planTitle, counted: formatNumber(stats.proposalsCounted) }
         ));
 
-        if (noParcels) set('resulting-parcels', tPlanStats('groundStats.noParcels', 'No parcels here'));
-        else set('resulting-parcels', avgParcel === null
-            ? formatNumber(stats.parcelCount)
-            : `${formatNumber(stats.parcelCount)} (${formatSquareMetres(avgParcel)})`);
-        set('buildings', `${formatNumber(total.buildings)} (${formatSquareMetres(total.footprintM2)})`);
-        set('floor-area', formatNumber(total.grossFloorAreaM2));
-        set('open-space', formatNumber(total.openSpaceM2));
-        set('apartments', formatNumber(total.apartments));
-        set('people', formatNumber(total.people));
-        set('jobs', formatNumber(total.jobs));
-
-        const priceInput = modal.querySelector('#plan-stats-price');
-        const price = Math.max(0, Number(priceInput && priceInput.value) || 0);
-        set('sales-value', formatSalesValue(total.grossFloorAreaM2 * price));
+        set('plan-area', figures['plan-area']);
+        set('resulting-parcels', figures['resulting-parcels']);
+        set('buildings', figures.buildings);
+        set('floor-area', figures['floor-area']);
+        set('open-space', figures['open-space']);
+        set('apartments', figures.apartments);
+        set('people', figures.people);
+        set('jobs', figures.jobs);
+        set('sales-value', figures['sales-value']);
 
         const notes = [];
         if (total.unmeasuredBuildings > 0) {
@@ -454,5 +476,83 @@
         renderPlanStatsModal(computePlanStatsSync(snapshot, readAssumptionsFromModal(modal)));
     }
 
+    // ── Plan comparison (Lists → Plans → Compare plans) ─────────────────────────────────────────
+    // Each chosen plan is measured as Plan stats measures one, without applying it, at the default
+    // assumptions, and shown in one table. Swap turns it between plans as columns and plans as rows.
+    // A plan that cannot be measured keeps its place and says why.
+    let comparePlansAsColumns = true;
+
+    // entries: [{ title, figures (summaryTexts) } | { title, error }] → the table element.
+    function compareTable(entries, plansAsColumns) {
+        const table = el('table', 'plan-stats-table plan-compare__table');
+        table.dataset.planCompare = plansAsColumns ? 'plans-as-columns' : 'plans-as-rows';
+        const metrics = SUMMARY_ROWS.map(row => ({ key: row.key, label: tPlanStats(row.i18nKey, row.label) }));
+        const planHeader = (entry, scope) => {
+            const th = el('th', 'plan-compare__plan', entry.title);
+            th.setAttribute('scope', scope);
+            if (entry.error) th.appendChild(el('span', 'plan-compare__error',
+                tPlanStats('planCompare.failed', 'Not measured: {{reason}}', { reason: entry.error })));
+            return th;
+        };
+        const value = (entry, key) => el('td', 'plan-stats-table__number', entry.error ? '—' : entry.figures[key]);
+        const head = document.createElement('tr');
+        head.appendChild(el('th', null, plansAsColumns ? '' : tPlanStats('plan.label', 'Plan')));
+        if (plansAsColumns) entries.forEach(entry => head.appendChild(planHeader(entry, 'col')));
+        else metrics.forEach(metric => { const th = el('th', 'plan-stats-table__number', metric.label); th.setAttribute('scope', 'col'); head.appendChild(th); });
+        table.appendChild(head);
+        if (plansAsColumns) {
+            metrics.forEach(metric => {
+                const tr = document.createElement('tr');
+                const th = el('th', null, metric.label); th.setAttribute('scope', 'row'); tr.appendChild(th);
+                entries.forEach(entry => tr.appendChild(value(entry, metric.key)));
+                table.appendChild(tr);
+            });
+        } else {
+            entries.forEach(entry => {
+                const tr = document.createElement('tr');
+                tr.appendChild(planHeader(entry, 'row'));
+                metrics.forEach(metric => tr.appendChild(value(entry, metric.key)));
+                table.appendChild(tr);
+            });
+        }
+        return table;
+    }
+
+    async function comparePlans(plans) {
+        const assumptions = readAssumptionsFromModal(null);
+        const price = salesPrice().salesPerSqm;
+        const entries = [];
+        for (const plan of plans) {
+            const title = plan?.content?.title || '';
+            try {
+                const stats = computePlanStatsSync(await window.PlanAnalysis.prepare(plan), assumptions);
+                entries.push({ title: stats.planTitle || title, figures: summaryTexts(stats, price) });
+            } catch (error) {
+                console.error(`[${new Date().toISOString()}] [PlanCompare] ${title || plan?.cid} could not be measured`, error);
+                entries.push({ title, error: error && error.message ? error.message : String(error) });
+            }
+        }
+        const body = el('div', 'plan-compare');
+        const swap = el('button', 'btn btn-sm plan-compare__swap', tPlanStats('planCompare.swap', 'Swap rows and columns'));
+        swap.type = 'button';
+        swap.dataset.planCompareSwap = '';
+        const scroll = el('div', 'plan-compare__scroll');
+        const draw = () => {
+            scroll.innerHTML = '';
+            scroll.appendChild(compareTable(entries, comparePlansAsColumns));
+            swap.setAttribute('aria-pressed', String(!comparePlansAsColumns));
+        };
+        swap.addEventListener('click', () => { comparePlansAsColumns = !comparePlansAsColumns; draw(); });
+        const note = el('p', 'sheet-note', tPlanStats('planCompare.assumptions',
+            'At the default assumptions and {{price}} per m². Plan stats on one plan lets you change them.',
+            { price: formatSalesValue(price) }));
+        body.appendChild(swap);
+        body.appendChild(scroll);
+        body.appendChild(note);
+        draw();
+        return window.CbDialog.open({ title: tPlanStats('planCompare.title', 'Compare plans'), size: 'lg', className: 'plan-compare-dialog', body });
+    }
+
     window.showPlanStatsModal = openPlanStats;
+    window.comparePlanStats = comparePlans;
 })();

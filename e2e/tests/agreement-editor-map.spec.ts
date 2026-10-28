@@ -23,14 +23,14 @@ test('creation belongs to the saved plan; four tabs preserve exact membership an
   await showProposal(page, layoutId);
   await expect(page.locator('#proposal-details-panel .btn-create-agreement')).toHaveCount(0);
   const editor = await create(page, layoutId);
-  await expect(editor.locator('[role="tab"]')).toHaveText(['Rules', 'Input parcels', 'Output parcels', 'Persons']);
+  await expect(editor.locator('[role="tab"]')).toHaveText(['Rules', /^Input parcels \(\d+\)$/, /^Output parcels \(\d+\)$/, /^Persons \(\d+\)$/]);
   await expect(editor.locator('[data-agreement-design]')).toHaveCount(0);
   const planCid = await editor.locator('[data-agreement-plan]').inputValue();
-  await editor.getByRole('tab', { name: 'Output parcels', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
   const recipients = editor.locator('[data-agreement-allocation]');
   await expect(recipients).toHaveCount(2);
   expect(await recipients.first().locator('option').allTextContents()).not.toContain('Current holders');
-  await editor.getByRole('tab', { name: 'Persons', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
   await expect(editor.locator('.agreement-persons-table')).toContainText('Ana Owner');
   await expect(editor.locator('[data-agreement-cash]')).toHaveCount(0);
   await editorSave(editor).click();
@@ -45,7 +45,7 @@ test('creation belongs to the saved plan; four tabs preserve exact membership an
 test('bulk proposer acquisition disables parcel selectors and saves explicit recipients and compensation', async ({ mockApi: page }) => {
   const { layoutId, ownerKey } = await applyLayout(page);
   const editor = await create(page, layoutId);
-  await editor.getByRole('tab', { name: 'Output parcels', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
   const mode = editor.locator('[data-agreement-allocation-mode]');
   const parcels = editor.locator('[data-agreement-allocation]');
   await mode.selectOption('proposer');
@@ -56,8 +56,20 @@ test('bulk proposer acquisition disables parcel selectors and saves explicit rec
   for (const parcel of await parcels.all()) { await expect(parcel).toBeEnabled(); await expect(parcel).toHaveValue('public'); }
   await parcels.first().selectOption('proposer');
   await expect(parcels.first()).toHaveValue('proposer');
+  // Randomize hands every piece to a person, each person before anyone gets a second, and leaves the
+  // selects editable; the line above the pieces counts who got none and who got several.
+  const persons = Number((await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).innerText()).match(/\((\d+)\)/)![1]);
+  await mode.selectOption('random');
+  await expect(mode).toHaveValue('individual');
+  for (const parcel of await parcels.all()) { await expect(parcel).toBeEnabled(); await expect(parcel).toHaveValue(/^party:/); }
+  const owners = await parcels.evaluateAll(selects => selects.map(select => (select as HTMLSelectElement).value));
+  expect(new Set(owners).size).toBe(Math.min(persons, owners.length));
+  const summary = editor.locator('[data-agreement-allocation-summary]');
+  if (owners.length > persons) await expect(summary).toContainText('Persons with more than one parcel:');
+  else if (owners.length < persons) await expect(summary).toContainText(`Persons without a parcel: ${persons - owners.length}`);
+  else await expect(summary).toBeHidden();
   await mode.selectOption('proposer');
-  await editor.getByRole('tab', { name: 'Persons', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
   const proposer = editor.locator('.agreement-persons-table tbody tr').filter({ hasText: 'Proposer' });
   await expect(proposer).toBeVisible(); await expect(proposer).toContainText('EUR');
   await editorSave(editor).click(); await expect(editor).toBeHidden();
@@ -67,7 +79,7 @@ test('bulk proposer acquisition disables parcel selectors and saves explicit rec
   expect(saved.money.lines).toEqual([{ ownerKey, amountCents: Math.round(area * saved.rule.settlement.rateCentsPerM2) }]);
   await page.evaluate(id => { void (window as any).AgreementDialog.open({ agreementId: id }); }, saved.id);
   await expect(editor).toBeVisible();
-  await editor.getByRole('tab', { name: 'Output parcels', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
   await expect(mode).toHaveValue('proposer'); await expect(parcels.first()).toBeDisabled();
 });
 
@@ -96,7 +108,7 @@ test('agreement authoring blocks the map and page controls, contains focus and r
   await editorSave(editor).focus(); await page.keyboard.press('Tab'); await page.keyboard.press('Tab');
   expect(await page.evaluate(() => !!document.activeElement?.closest('.agreement-editor-modal'))).toBe(true);
   for (const name of ['Input parcels', 'Output parcels', 'Persons', 'Rules']) {
-    await editor.getByRole('tab', { name, exact: true }).click();
+    await editor.getByRole('tab', { name: new RegExp(`^${name}( \\(\\d+\\))?$`) }).click();
     const screenshot = testInfo.outputPath(`${name.replace(/ /g, '-').toLowerCase()}.png`);
     await editor.screenshot({ path: screenshot });
     await testInfo.attach(name, { path: screenshot, contentType: 'image/png' });
@@ -151,11 +163,11 @@ test('shared striped lens edits persist as defaults while saved agreement lenses
 test('public allocation updates compensation, rate and sponsor tally without editable person cash', async ({ mockApi: page }) => {
   const { layoutId, ownerKey } = await applyLayout(page);
   const editor = await create(page, layoutId);
-  await editor.getByRole('tab', { name: 'Output parcels', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
   await editor.locator('[data-agreement-allocation]').first().selectOption('public');
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await editor.locator('[data-agreement-rate]').fill('150');
-  await editor.getByRole('tab', { name: 'Persons', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
   await expect(editor.locator('.agreement-persons-table')).toContainText('Sponsor');
   await expect(editor.locator('[data-agreement-persons]')).toContainText('150');
   await editorSave(editor).click();
@@ -176,7 +188,7 @@ test('unnamed parcel owners work and ownership/lens settings open separate dialo
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await expect(editor.locator('[data-approval-file]')).toHaveCount(0);
   await expect(editor.locator('[data-approval-lens]')).toHaveCount(0);
-  await editor.getByRole('tab', { name: 'Input parcels', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Input parcels \(\d+\)$/ }).click();
   await editor.locator('[data-agreement-action="rights"]').click();
   const rights = page.locator('.cb-dialog').filter({ hasText: 'Parcel ownership rights' });
   await expect(rights.locator('[data-approval-file]')).toBeVisible();
@@ -266,9 +278,9 @@ test('input parcels and designs share inspection rows with temporary hover and p
   await expect(design).toHaveAttribute('aria-pressed', 'true');
   await expect(parcel).toHaveAttribute('aria-pressed', 'false');
   await expect(page.locator('#agreement-editor')).toBeVisible();
-  await editor.getByRole('tab', { name: 'Persons', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
   await expect(hover).toHaveCount(0); await expect(pinned).toHaveCount(0);
-  await editor.getByRole('tab', { name: 'Input parcels', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Input parcels \(\d+\)$/ }).click();
   await design.focus();
   await expect(hover.first()).toBeVisible();
   await design.press('Enter');
@@ -315,7 +327,7 @@ test('a chosen scheme is checked against the plan, and settlement by value value
   await expect(scheme.locator('option[value="de-umlegung-developed"]')).toHaveAttribute('data-scheme-met', 'true');
   await editor.screenshot({ path: testInfo.outputPath('rules-scheme-met.png') });
   // Giving a piece to public breaks the cap: the card, the dropdown and the save all say so.
-  await editor.getByRole('tab', { name: 'Output parcels', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
   await editor.locator('[data-agreement-allocation]').first().selectOption('public');
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await expect(check).toHaveAttribute('data-approval-scheme-ok', 'false');
@@ -342,19 +354,19 @@ test('a chosen scheme is checked against the plan, and settlement by value value
   await editor.locator('[data-agreement-compensation]').selectOption('value');
   await expect(editor.locator('[data-agreement-value-hint]')).toBeVisible();
   await expect(editor.locator('[data-agreement-rate]')).toBeHidden();
-  await editor.getByRole('tab', { name: 'Input parcels', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Input parcels \(\d+\)$/ }).click();
   const inputValues = editor.locator('[data-agreement-value-kind="inputs"]');
   await expect(inputValues).toHaveCount(1);
   await editor.locator('[data-agreement-value-all="inputs"]').fill('100');
   await expect(inputValues).toHaveValue('100');
   await editor.screenshot({ path: testInfo.outputPath('inputs-values.png') });
-  await editor.getByRole('tab', { name: 'Output parcels', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
   await editor.locator('[data-agreement-allocation]').first().selectOption('proposer');
   const pieceValues = editor.locator('[data-agreement-value-kind="outputs"]');
   await expect(pieceValues).toHaveCount(2);
   await editor.locator('[data-agreement-value-all="outputs"]').fill('400');
   await pieceValues.first().fill('300');
-  await editor.getByRole('tab', { name: 'Persons', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
   await expect(editor.locator('.agreement-persons-table')).toContainText('entitled to');
   await expect(editor.locator('[data-agreement-balance]')).toContainText('Value in');
   await editor.screenshot({ path: testInfo.outputPath('persons-values.png') });
@@ -369,6 +381,6 @@ test('a chosen scheme is checked against the plan, and settlement by value value
   expect(saved.money.lines).toEqual([{ ownerKey, amountCents: Math.round(acquired.areaM2 * 30000) }]);
   await page.evaluate(id => { void (window as any).AgreementDialog.open({ agreementId: id }); }, saved.id);
   await expect(editor).toBeVisible();
-  await editor.getByRole('tab', { name: 'Output parcels', exact: true }).click();
+  await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
   await expect(pieceValues.first()).toHaveValue('300');
 });

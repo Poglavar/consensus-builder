@@ -224,7 +224,7 @@
                     need.publicBodies ? t('proposalDrafts.approval.needPublicBodies', 'which holders are public bodies') : null].filter(Boolean).join(t('proposalApproval.rules.and', ' and '))
             }))}</p>` : ''}
             <p class="approval-setup__sources">${esc(t('proposalDrafts.approval.sources', 'Sources:'))} ${sources}</p>
-            <button type="button" class="cb-link approval-setup__guide" data-editor-action="approval-scheme-guide" data-scheme-id="${esc(template.id)}" data-scheme-version="${esc(template.version)}">${esc(t('proposalDrafts.approval.guide.open', 'How this scheme works…'))}</button>
+            <p class="approval-setup__guide"><button type="button" class="cb-link" data-editor-action="approval-scheme-guide" data-scheme-id="${esc(template.id)}" data-scheme-version="${esc(template.version)}">${esc(t('proposalDrafts.approval.guide.open', 'How this scheme works…'))}</button></p>
         </div>`;
     }
 

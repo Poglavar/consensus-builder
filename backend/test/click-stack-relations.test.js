@@ -109,3 +109,27 @@ describe('click stack relationship rendering', () => {
         expect(selector.querySelector('small')).toBeNull();
     });
 });
+
+describe('design card actions', () => {
+    const track = (button, work) => work();
+    it('heads the card with Add to plan for a design held on this device', async () => {
+        const addDesign = vi.fn(async () => null);
+        const win = { i18n: testI18n(), BusyControl: { track }, PlanDialog: { addDesign },
+            proposalStorage: { getProposal: id => (id === 'local-1' ? { proposalId: id } : null) } };
+        const actions = relations.renderDesignActions({ id: 'local-1' }, makeDocument(), win);
+        const button = actions.querySelector('[data-design-action="add-to-plan"]');
+        expect(button.textContent).toBe(dictionary('en').planDialog.addToPlan);
+        button.click();
+        await vi.waitFor(() => expect(addDesign).toHaveBeenCalledWith('local-1'));
+    });
+    it('imports a published design this browser lacks before adding it', async () => {
+        const addDesign = vi.fn(async () => null);
+        const win = { i18n: testI18n(), BusyControl: { track }, PlanDialog: { addDesign },
+            proposalStorage: { getProposal: () => null },
+            DesignSync: { fetchDesign: vi.fn(async id => ({ id })), importDesign: vi.fn(async () => ({ proposalId: 'imported-9' })) },
+            getProposalKey: proposal => proposal.proposalId };
+        relations.renderDesignActions({ id: 'srv', serverId: 'bafy-x' }, makeDocument(), win).querySelector('button').click();
+        await vi.waitFor(() => expect(addDesign).toHaveBeenCalledWith('imported-9'));
+        expect(win.DesignSync.fetchDesign).toHaveBeenCalledWith('bafy-x');
+    });
+});

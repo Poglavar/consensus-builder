@@ -156,5 +156,33 @@
         return wrap;
     }
 
-    return Object.freeze({ designType, designOptionLabel, renderDesignType, renderGroup, renderSelector, updateSelector });
+    // The design card's first action, above its panel: Add to plan (PlanDialog.addDesign). A published
+    // design this browser holds no copy of is imported first, as opening it does.
+    function renderDesignActions(instance, doc, win) {
+        if (!instance || !doc) return null;
+        const actions = doc.createElement('div');
+        actions.className = 'cb-actions click-stack__actions click-stack__actions--design';
+        const add = doc.createElement('button');
+        add.type = 'button';
+        add.className = 'btn btn-add-to-plan';
+        add.dataset.designAction = 'add-to-plan';
+        const icon = doc.createElement('i');
+        icon.className = 'fas fa-list';
+        icon.setAttribute('aria-hidden', 'true');
+        const label = doc.createElement('span');
+        label.textContent = win?.i18n?.t?.('planDialog.addToPlan') || 'Add to plan';
+        add.append(icon, label);
+        add.addEventListener('click', () => win.BusyControl.track(add, async () => {
+            let key = instance.id;
+            if (!win.proposalStorage.getProposal(key) && instance.serverId) {
+                const proposal = await win.DesignSync.importDesign(await win.DesignSync.fetchDesign(instance.serverId));
+                key = win.getProposalKey(proposal) || proposal.proposalId;
+            }
+            return win.PlanDialog.addDesign(key);
+        }));
+        actions.appendChild(add);
+        return actions;
+    }
+
+    return Object.freeze({ designType, designOptionLabel, renderDesignType, renderGroup, renderSelector, updateSelector, renderDesignActions });
 });

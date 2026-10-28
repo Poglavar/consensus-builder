@@ -15,7 +15,8 @@
     function browser(win) {
         const doc = win.document;
         const state = { tab: 'designs', source: 'local', search: '', publication: 'all', sort: 'title',
-            filtersOpen: false, selecting: false, selected: new Map(), active: null, remote: new Map() };
+            // selecting: the tab whose rows show checkboxes (designs → Create plan, plans → Compare plans).
+            filtersOpen: false, selecting: null, selected: new Map(), active: null, remote: new Map() };
         let ready = false;
         const t = (key, params) => win.i18n.t(key, params || {});
         const node = (tag, cls, text) => {
@@ -122,23 +123,37 @@
         }
         function renderActions() {
             const actions = doc.getElementById('lists-actions'); actions.replaceChildren();
+            const startSelecting = () => { state.selecting = state.tab; state.selected.clear(); renderActions(); renderRows(); };
+            const stopSelecting = () => { state.selecting = null; state.selected.clear(); };
+            const cancel = () => button(t('common.cancel'), () => { stopSelecting(); renderActions(); renderRows(); }, '', 'xmark');
+            if (state.selecting === state.tab) actions.append(node('span', 'lists-selection-count', t('planDialog.selected', { count: state.selected.size })));
             if (state.tab === 'designs') {
-                if (!state.selecting) actions.append(button(t('planDialog.createPlan'), () => {
-                    state.selecting = true; state.selected.clear(); renderActions(); renderRows();
-                }, 'btn-primary', 'layer-group'));
+                if (state.selecting !== 'designs') actions.append(button(t('planDialog.createPlan'), startSelecting, 'btn-primary', 'layer-group'));
                 else {
-                    actions.append(node('span', 'lists-selection-count', t('planDialog.selected', { count: state.selected.size })));
                     const next = button(t('lists.continue'), async () => {
                         const members = [...state.selected.values()];
-                        win.MapShell.closeSheets(); state.selecting = false; state.selected.clear();
+                        win.MapShell.closeSheets(); stopSelecting();
                         await win.PlanDialog.create({ members });
                     }, 'btn-primary', 'arrow-right'); next.disabled = !state.selected.size;
-                    actions.append(next, button(t('common.cancel'), () => { state.selecting = false; state.selected.clear(); renderActions(); renderRows(); }, '', 'xmark'));
+                    actions.append(next, cancel());
                 }
-            } else if (state.tab === 'plans') actions.append(button(t('planDialog.createPlan'), () => {
-                win.MapShell.closeSheets(); return win.PlanDialog.create();
-            }, 'btn-primary', 'layer-group'));
-            else actions.append(node('span', 'sheet-note', t('lists.agreementHint')));
+            } else if (state.tab === 'plans') {
+                if (state.selecting !== 'plans') {
+                    actions.append(button(t('planDialog.createPlan'), () => {
+                        win.MapShell.closeSheets(); return win.PlanDialog.create();
+                    }, 'btn-primary', 'layer-group'));
+                    actions.append(button(t('planCompare.title'), startSelecting, '', 'table-columns'));
+                } else {
+                    // Measured without applying, so plans that cannot stand on the map together compare.
+                    const compare = button(t('planCompare.compare'), async () => {
+                        const plans = [...state.selected.values()];
+                        await win.comparePlanStats(plans);
+                        stopSelecting(); renderActions(); renderRows();
+                    }, 'btn-primary', 'table-columns'); compare.disabled = state.selected.size < 2;
+                    compare.dataset.listsCompare = '';
+                    actions.append(compare, cancel());
+                }
+            } else actions.append(node('span', 'sheet-note', t('lists.agreementHint')));
         }
         function renderRows() {
             if (!ready || !opened()) return;
@@ -163,14 +178,14 @@
                         'ownership-transfer': ['handshake', 'agreement'], 'as-is': ['location-dot', 'place'] }[goal] || ['pen-ruler', 'place']);
                 item.dataset.listTone = appearance[1];
                 const heading = node('div', 'lists-item__heading');
-                if (kind === 'designs' && state.selecting) {
+                if (state.selecting === kind) {
                     const label = node('label', 'lists-item__selection');
                     const check = node('input'); check.type = 'checkbox'; check.checked = state.selected.has(row.key);
                     check.setAttribute('aria-label', t('lists.select', { title: row.title }));
                     check.addEventListener('change', async () => {
                         check.disabled = true; item.setAttribute('aria-busy', 'true');
                         try {
-                            if (check.checked) state.selected.set(row.key, await designOf(row));
+                            if (check.checked) state.selected.set(row.key, kind === 'plans' ? await planOf(row) : await designOf(row));
                             else state.selected.delete(row.key);
                         } catch (error) { check.checked = false; win.showStyledAlert(error.message); }
                         finally { check.disabled = false; item.removeAttribute('aria-busy'); renderActions(); }
@@ -284,6 +299,7 @@
             await win.i18n.translationsReady;
             init(); state.tab = tab === 'browse' ? 'designs' : tab;
             if (!['designs', 'plans', 'agreements'].includes(state.tab)) state.tab = 'designs';
+            if (state.selecting && state.selecting !== state.tab) { state.selecting = null; state.selected.clear(); }
             for (const el of doc.querySelectorAll('[data-list-tab]')) {
                 const active = el.dataset.listTab === state.tab;
                 el.setAttribute('aria-selected', String(active)); el.tabIndex = active ? 0 : -1;

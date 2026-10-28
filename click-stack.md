@@ -108,7 +108,9 @@ right-side panels that clicks used to open one at a time.
   - Design: the proposal's actions panel itself (2026-10-23), without its own − and ×: an
     Overview tab (name, rung badges, type, author, parcel count and one area) and a Details tab
     (land and ownership, verification, the record), with the actions under both; plus the
-    member plans and agreements inside the card body. Starting Before / after from it folds the stack to its
+    member plans and agreements inside the card body. **Add to plan** heads the card, under the
+    design selector and above the panel, in the map and the model view (2026-10-28); the hosted
+    panel's footer does not repeat it. Starting Before / after from it folds the stack to its
     rows (the card stays hosted, so the comparison keeps running); a row click unfolds it.
 - A proposal opened from a list, shared link, restored selection, or just placed (an editor's Done,
   a one-click structure, the create dialog) opens the
