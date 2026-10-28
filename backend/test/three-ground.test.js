@@ -29,7 +29,7 @@ function stubThree() {
     class MeshBasicMaterial extends Material { }
     const THREE = {
         BufferAttribute, BufferGeometry, Group, Mesh, MeshLambertMaterial, MeshBasicMaterial,
-        NotEqualStencilFunc: 'not-equal', EqualStencilFunc: 'equal', AlwaysStencilFunc: 'always', KeepStencilOp: 'keep', ReplaceStencilOp: 'replace', DoubleSide: 'double'
+        NotEqualStencilFunc: 'not-equal', EqualStencilFunc: 'equal', GreaterStencilFunc: 'greater', AlwaysStencilFunc: 'always', KeepStencilOp: 'keep', ReplaceStencilOp: 'replace', DoubleSide: 'double'
     };
     return { THREE, disposed };
 }
@@ -88,7 +88,7 @@ describe('three-ground', () => {
         expect(STENCIL_BIT & 1).toBe(0);
     });
 
-    it('fills only pixels unclaimed by parcels or roads, without competing coplanar depths', () => {
+    it('layers flat ground by claims: each claim takes only unclaimed pixels, the background what is left', () => {
         const { THREE } = stubThree();
         const layer = create({ THREE });
         layer.setGeometry(result());
@@ -98,15 +98,22 @@ describe('three-ground', () => {
         expect(background.material.polygonOffset).toBeFalsy();
         expect(background.material.stencilFunc).toBe('equal');
         expect(background.material.stencilWriteMask).toBe(0);
-        expect(parcel.stencilFunc).toBe('not-equal');
+        expect(parcel.stencilFunc).toBe('greater');
         expect(parcel.stencilZPass).toBe('replace');
         expect(parcel.stencilWriteMask).toBe(PARCEL_BIT);
         const passes = (material, stencil) => {
-            const matches = (material.stencilRef & material.stencilFuncMask) === (stencil & material.stencilFuncMask);
-            return material.stencilFunc === 'equal' ? matches : !matches;
+            const ref = material.stencilRef & material.stencilFuncMask, value = stencil & material.stencilFuncMask;
+            if (material.stencilFunc === 'greater') return ref > value;
+            return material.stencilFunc === 'equal' ? ref === value : ref !== value;
         };
         expect(passes(parcel, 0)).toBe(true);
-        expect(passes(parcel, STENCIL_BIT)).toBe(false);
+        // Not over the sunk roadbed, and not where an earlier claim (ground cover) already drew.
+        for (const occupied of [STENCIL_BIT, PARCEL_BIT, PARCEL_BIT | STENCIL_BIT]) expect(passes(parcel, occupied)).toBe(false);
+        // What a claim writes is the claim bit.
+        expect(parcel.stencilRef & parcel.stencilWriteMask).toBe(PARCEL_BIT);
+        // Ground cover claims before the parcels, the background after them.
+        expect(ORDER.cover).toBeLessThan(0);
+        expect(ORDER.cover).toBeGreaterThan(ORDER.lid);
         expect(passes(background.material, 0)).toBe(true);
         for (const occupied of [PARCEL_BIT, STENCIL_BIT, PARCEL_BIT | STENCIL_BIT]) {
             expect(passes(background.material, occupied)).toBe(false);

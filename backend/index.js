@@ -241,6 +241,7 @@ export const READ_ONLY_POST_PATHS = new Set([
     '/imagery-sources/discover',
     '/decor/near',
     '/decor/water',
+    '/decor/green',
     '/proposals/batch',
     '/designs/batch',
     '/designs/binding'
