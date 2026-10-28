@@ -294,7 +294,7 @@ button.status-log-message {
    and status toast share its width and spacing, so wrapped messages cannot overlap each other. */
 .map-feedback-stack {
     position: absolute;
-    left: var(--map-shell-centre, 50%);
+    left: 50%;
     bottom: var(--map-shell-bottom-clearance);
     transform: translateX(-50%);
     z-index: var(--cb-z-map-chrome);
@@ -307,7 +307,7 @@ button.status-log-message {
     pointer-events: none;
 }
 
-#map-feedback-stack:has(#floating-status-text:empty):not(:has(.three-view-hint)) {
+#map-feedback-stack:has(#floating-status-text:empty):not(:has(.three-view-hint)):not(:has(.app-update-notice:not([hidden]))) {
     display: none;
 }
 
@@ -393,11 +393,6 @@ button.status-log-message {
     /* Include padding and border in width calculations */
     max-width: 100%;
     /* Prevent overflow */
-}
-
-/* Force buttons in groups to fill container width */
-.btn-group .btn {
-    width: 100%;
 }
 
 /* 2x2 Grid layout for specific button groups */
@@ -1059,7 +1054,7 @@ input.proposal-author-name {
     opacity: 0;
     transform: translateY(-12px);
     transition: opacity 0.3s ease, transform 0.3s ease;
-    pointer-events: auto;
+    pointer-events: none;
 }
 
 .ephemeral-message.visible {
@@ -1149,9 +1144,6 @@ input.proposal-author-name {
     position: fixed;
     right: 10px;
     bottom: var(--map-shell-bottom-clearance);
-    border: 1px solid var(--cb-line-strong);
-    border-radius: 12px;
-    box-shadow: var(--cb-shadow-md);
     /* One step above the parcel panel it shares the dock with, under the sheets: panels no longer
        step aside when a sheet opens, so a card at dialog level covered the sheet's own buttons. */
     z-index: calc(var(--cb-z-panel) + 20);
@@ -1180,7 +1172,7 @@ input.proposal-author-name {
 
 /* Mobile panel as bottom sheet */
 @media (max-width: 767.98px) {
-    .info-panel:not(#proposal-details-panel) {
+    .info-panel:not(#proposal-details-panel):not(.mobile-sheet-ready) {
         left: var(--info-panel-mobile-inset, 0) !important;
         right: 0 !important;
         top: auto !important;
@@ -1197,7 +1189,7 @@ input.proposal-author-name {
 
     /* Docked sheets run edge to edge by default. An active editor can reserve the view strip
        through --info-panel-mobile-inset without fighting these shared positioning rules. */
-    .info-panel.right-dock-panel:not(#proposal-details-panel) {
+    .info-panel.right-dock-panel:not(#proposal-details-panel):not(.mobile-sheet-ready) {
         left: var(--info-panel-mobile-inset, 0) !important;
         border-radius: 12px;
     }
@@ -1242,11 +1234,6 @@ input.proposal-author-name {
     .btn-group {
         flex-direction: column;
         gap: 8px;
-    }
-
-    /* Force equal width buttons in groups */
-    .btn-group .btn {
-        width: 100%;
     }
 
     .btn-grid-2x2 {
@@ -1333,77 +1320,6 @@ input.proposal-author-name {
 
 /* Rounded sliders */
 
-
-/* Memory monitor overlay (a developer readout, js/memory-monitor.js): a glass card on the tokens,
-   its fold toggle a btn btn-quiet btn-sm btn-icon. */
-.memory-monitor-panel {
-    position: fixed;
-    top: 16px;
-    right: 16px;
-    width: 260px;
-    background: var(--cb-glass-sheet);
-    color: var(--cb-text);
-    border: 1px solid var(--cb-line-glass);
-    border-radius: var(--cb-radius-lg);
-    box-shadow: var(--cb-shadow-md);
-    font-size: 12px;
-    line-height: 1.4;
-    z-index: var(--cb-z-dev-overlay);
-    backdrop-filter: blur(var(--cb-panel-blur));
-    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
-    pointer-events: auto;
-}
-
-.memory-monitor-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: space-between;
-    padding: 10px 12px 8px 12px;
-    border-bottom: 1px solid var(--cb-line);
-    font-weight: 600;
-    letter-spacing: 0.01em;
-}
-
-.memory-monitor-title {
-    flex: 0 0 auto;
-}
-
-.memory-monitor-summary {
-    flex: 1 1 auto;
-    text-align: right;
-    font-weight: 500;
-    color: var(--cb-text-muted);
-}
-
-.memory-monitor-body {
-    padding: 10px 12px;
-}
-
-.memory-monitor-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-}
-
-.memory-monitor-row span:first-child {
-    color: var(--cb-text-muted);
-}
-
-.memory-monitor-row:last-child {
-    margin-bottom: 0;
-}
-
-.memory-monitor-divider {
-    height: 1px;
-    background: var(--cb-line);
-    margin: 8px 0;
-}
-
-.memory-monitor-collapsed .memory-monitor-body {
-    display: none;
-}
 
 /* ENS name line — compact (parcel panel + minted proposal cards): the "ENS" badge (cb-badge)
    links out to the ENS app, the name (a quiet cb-link) copies it. The name ellipsis-truncates so a

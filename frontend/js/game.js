@@ -526,7 +526,7 @@ async function dispatchAgentAction(actor, action, context = {}) {
  */
 function updateGameSectionTitle() {
     const gameCheckbox = document.getElementById('gameCheckbox');
-    const gameLabel = document.querySelector('.accordion-section[data-section="game"] [data-section-title="game"]');
+    const gameLabel = document.querySelector('.activity-simulation[data-section="game"] [data-section-title="game"]');
     if (!gameLabel) return;
 
     const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
@@ -884,7 +884,7 @@ function showProposalFromLog(proposalId) {
     } else if (typeof showProposalInfo === 'function') {
         showProposalInfo(proposal, focusParcelId);
     } else {
-        showGameAlert('unable_to_open_proposal_details', 'Unable to open proposal details.');
+        showGameAlert('unable_to_open_proposal_details', 'Unable to open design details.');
     }
 }
 
@@ -903,7 +903,7 @@ async function openServerProposalFromLog(lookup) {
             return;
         }
         console.warn(`[${new Date().toISOString()}] [activity] could not download proposal ${lookup}`, error);
-        showGameAlert('proposal_with_id_not_found', 'Proposal with ID {{id}} not found.', { id: lookup });
+        showGameAlert('proposal_with_id_not_found', 'Design with ID {{id}} not found.', { id: lookup });
         return;
     }
     window.closeActivityPanel?.();

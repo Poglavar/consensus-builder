@@ -74,7 +74,7 @@ test('AI scene captures real pixels and height map, validates prompt, retries ge
   });
   const tweetPopup = page.waitForEvent('popup').then(async popup => {
     await expect.poll(() => intentUrl?.pathname).toBe('/intent/tweet');
-    expect(intentUrl?.searchParams.get('text')).toBe('Photorealistic view of my urban proposal');
+    expect(intentUrl?.searchParams.get('text')).toBe('Photorealistic view of my urban design');
     expect(intentUrl?.searchParams.get('url')).toBe(link);
     await popup.close();
   });

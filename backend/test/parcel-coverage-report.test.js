@@ -2,7 +2,8 @@
 import { describe, expect, it } from 'vitest';
 import { nextSort, sortRows, filterCities, countSupportedCities, countryCategory, summarizeJurisdictions, mapLinks } from '../../frontend/js/parcel-coverage-report-model.mjs';
 import { buildParcelReport } from '../../scripts/build-parcel-coverage-report.mjs';
-import { reportMessages } from '../../frontend/js/parcel-coverage-report-i18n.mjs';
+import { dictionary } from './helpers/i18n.js';
+const reportMessages = Object.fromEntries(['en', 'es', 'sr', 'hr'].map(lang => [lang, dictionary(lang).parcelReport]));
 import { readFileSync } from 'node:fs';
 
 function buildSmallReport({ registry, liveCities, enrichmentCities = [], sourceCatalog = { sources: [] } }) {

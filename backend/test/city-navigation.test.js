@@ -4,17 +4,19 @@
 // a place that cannot open; staying keeps the stayed-in city in the address. Real city-config.js and
 // city-switch-prompt.js, with a fake location and history.
 import { describe, it, expect, vi, beforeAll } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import vm from 'node:vm';
 
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
-const cityConfigSource = read('../../frontend/js/city-config.js');
+const cityConfigText = cityConfigSource();
 const promptSource = read('../../frontend/js/city-switch-prompt.js');
 const Cid = createRequire(import.meta.url)('../../frontend/js/cid.js');
 // Design and agreement links name published objects by CID (plan-design-agreement.md, M2).
 const DESIGN = Cid.cidOf(new TextEncoder().encode('design-a'));
 const AGREEMENT = Cid.cidOf(new TextEncoder().encode('agreement-a'));
+const PLAN = Cid.cidOf(new TextEncoder().encode('plan-a'));
 
 // A window whose address assignments are recorded instead of followed.
 function fakeWindow(href) {
@@ -45,7 +47,7 @@ function boot(href) {
     context.window = context;
     context.globalThis = context;
     vm.createContext(context);
-    vm.runInContext(cityConfigSource, context, { filename: 'city-config.js' });
+    vm.runInContext(cityConfigText, context, { filename: 'city-config.js' });
     vm.runInContext(promptSource, context, { filename: 'city-switch-prompt.js' });
     return { context, manager: context.CityConfigManager, visits: fake.visits, history: fake.history };
 }
@@ -62,13 +64,36 @@ describe('a city switch', () => {
         for (const param of ['focusProposal', 'arrive', 'activity', 'scene', 'bets']) expect(next.searchParams.has(param), param).toBe(false);
     });
 
-    it.each([`/designs/${DESIGN}`, `/agreements/${AGREEMENT}`])('clears the record link %s too, so it does not reopen in the next city', async pathname => {
+    it.each([`/designs/${DESIGN}`, `/agreements/${AGREEMENT}`, `/plans/${PLAN}`])('clears the record link %s too, so it does not reopen in the next city', async pathname => {
         const { manager, visits } = boot(`http://localhost:8080${pathname}?city=zagreb&lang=hr`);
         await expect(manager.switchCity('split', { clearRoute: true })).resolves.toBe(true);
         const next = new URL(visits.at(-1));
         expect(next.pathname).toBe('/');
         expect(next.searchParams.get('city')).toBe('split');
         expect(next.searchParams.get('lang')).toBe('hr');
+    });
+
+    it('drops the old plan camera and selection while retaining the destination place and display preferences', async () => {
+        const { context, manager, visits } = boot(`http://localhost:8080/plans/${PLAN}?city=birmingham&at=52.48,-1.88,18&camera=52.48,-1.88,1,0,500&rotate=1&planningSelection=proposed:old&3d=&existing=ghost&backend=https%3A%2F%2Fapi.example.test&lang=en`);
+        context.WorldEntryModel = { formatAt: at => `${at.lat},${at.lon},${at.zoom}` };
+        await manager.switchCity('split', { clearRoute: true, at: { lat: 43.5, lon: 16.44, zoom: 17 } });
+        const next = new URL(visits.at(-1));
+        expect(next.pathname).toBe('/');
+        expect(next.searchParams.get('at')).toBe('43.5,16.44,17');
+        expect(next.searchParams.get('city')).toBe('split');
+        for (const param of ['camera', 'rotate', 'planningSelection']) expect(next.searchParams.has(param), param).toBe(false);
+        expect(next.searchParams.has('3d')).toBe(true);
+        expect(next.searchParams.get('existing')).toBe('ghost');
+        expect(next.searchParams.get('backend')).toBe('https://api.example.test');
+    });
+
+    it('drops a private draft route when exploring another city', async () => {
+        const { manager, visits } = boot('http://localhost:8080/designs?city=birmingham&draft=private-draft&planningSelection=proposed:old');
+        await manager.switchCity('split', { clearRoute: true });
+        const next = new URL(visits.at(-1));
+        expect(next.pathname).toBe('/');
+        expect(next.searchParams.has('draft')).toBe(false);
+        expect(next.searchParams.has('planningSelection')).toBe(false);
     });
 
     it('goes to the address it is given, leaving the current entry for Back', async () => {
@@ -144,7 +169,7 @@ describe('the city\'s default language', () => {
         context.window = context;
         context.globalThis = context;
         vm.createContext(context);
-        vm.runInContext(cityConfigSource, context, { filename: 'city-config.js' });
+        vm.runInContext(cityConfigText, context, { filename: 'city-config.js' });
         return { setLanguage, load: async () => { loaded = true; release(); await ready; await Promise.resolve(); } };
     }
 

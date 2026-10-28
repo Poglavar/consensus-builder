@@ -31,7 +31,7 @@
             const host = feature(parcel);
             const intersection = turf.intersect(footprint, host);
             const overlapM2 = intersection ? turf.area(intersection) : 0;
-            // Numerical edge contacts are not touched parcels; retain real small building takes.
+            // Whole-parcel surroundings belong to a building on that parcel, not a separate paving tool.
             if (overlapM2 <= Math.min(0.001, turf.area(footprint) * 1e-6)) continue;
             const id = String(host.properties?.parcelId ?? host.id ?? '');
             const key = JSON.stringify([id, host.geometry]);

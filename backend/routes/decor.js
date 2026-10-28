@@ -14,14 +14,16 @@ import { createDecorSources, NETWORK_ENVIRONMENT_SOURCES } from '../sources/netw
 // Which osm_decor kinds are renderable scenery toggles in the 3D view. Buildings are not scenery —
 // they render via the Built/Both/Planned controls. Extend as new kinds get a renderer.
 const SCENERY_LAYERS = ['trees'];
-// Layers every city has, whatever is ingested: water comes from OpenFreeMap's worldwide tiles.
-const WORLDWIDE_LAYERS = ['water'];
+// Layers every city has, whatever is ingested: water and green areas come from OpenFreeMap's
+// worldwide tiles.
+const WORLDWIDE_LAYERS = ['water', 'green'];
 
 export function setupDecorRoute(app, pool, options = {}) {
     // Worldwide scenery is scoped by geometry, without city-specific provider selection.
     const sources = createDecorSources(pool, options);
     const treesProvider = sources.trees.open(NETWORK_ENVIRONMENT_SOURCES.trees);
     const waterProvider = sources.water.open(NETWORK_ENVIRONMENT_SOURCES.water);
+    const greenProvider = sources.green.open(NETWORK_ENVIRONMENT_SOURCES.green);
 
     // GET /decor/layers?bbox=minLon,minLat,maxLon,maxLat → { layers: ['trees', ...] } — the scenery
     // layers with rows in that box (the 3D scene's area), whatever ingest they came from.
@@ -95,6 +97,27 @@ export function setupDecorRoute(app, pool, options = {}) {
             // Scenery: the scene draws without water, and the log says why.
             console.error('Error in POST /decor/water:', err.message);
             res.status(502).json({ error: 'Water could not be loaded.' });
+        }
+    });
+    // POST /decor/green - lawns, parks, meadows, farmland and woods within `buffer_meters` of a GeoJSON
+    // geometry, anywhere on Earth. Body: { geometry, buffer_meters? }.
+    // Response: { areas: [{ geometry: Polygon|MultiPolygon, kind: 'lawn'|'meadow'|'forest' }], count, source }
+    app.post('/decor/green', async (req, res) => {
+        try {
+            const body = req.body || {};
+            const geometry = body.geometry;
+            const bufferMeters = Number.isFinite(Number(body.buffer_meters)) ? Number(body.buffer_meters) : 150;
+            if (!geometry || typeof geometry !== 'object' || !geometry.type) {
+                return res.status(400).json({ error: 'Missing or invalid `geometry` (expected GeoJSON Geometry in EPSG:4326).' });
+            }
+            if (!isFinite(bufferMeters) || bufferMeters < 0 || bufferMeters > 1000) {
+                return res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
+            }
+            res.json(await greenProvider.near(geometry, bufferMeters));
+        } catch (err) {
+            // Scenery: the scene draws without green areas, and the log says why.
+            console.error('Error in POST /decor/green:', err.message);
+            res.status(502).json({ error: 'Green areas could not be loaded.' });
         }
     });
     return sources;

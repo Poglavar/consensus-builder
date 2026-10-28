@@ -41,7 +41,8 @@ async function fetchStagedOsmBuildings(pool, bbox) {
     const { rows } = await pool.query(
         `SELECT DISTINCT ON (osm_id)
                 osm_id, names, height, num_floors, class, subtype,
-                ST_AsGeoJSON(geom)::json AS geometry
+                -- GeoJSON precision: 7 decimals of WGS84 degrees is about 1 cm; the default 9 only adds bytes.
+                ST_AsGeoJSON(geom, 7)::json AS geometry
            FROM overture_building_footprint
           WHERE osm_id IS NOT NULL
             AND geom IS NOT NULL

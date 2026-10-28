@@ -1,3 +1,4 @@
+import { dictionary } from './helpers/i18n.js';
 import express from 'express';
 import request from 'supertest';
 import { createRequire } from 'node:module';
@@ -5,7 +6,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { setupFeedbackRoute, validateFeedback } from '../routes/feedback.js';
 const require = createRequire(import.meta.url);
 const { pageLink } = require('../../frontend/js/feedback.js');
-const translations = require('../../frontend/js/feedback-translations.js');
+const translations = Object.fromEntries(['en', 'es', 'sr', 'hr'].map(lang => [lang, dictionary(lang).feedback]));
 const id = '7489c4d1-0804-4f51-b34d-114907452e72';
 const body = { reportId: id, kind: 'bug', message: 'Road comparison is disabled.', pageUrl: 'https://urbangametheory.xyz/agreements/example', source: 'web' };
 function appWith(pool, options) { const app = express(); app.use(express.json()); setupFeedbackRoute(app, pool, options); return app; }

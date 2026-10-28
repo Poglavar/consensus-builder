@@ -172,7 +172,7 @@
 
     // ---- Leaflet wiring (browser) ------------------------------------------------------------
 
-    const state = { enabled: false, queued: false, group: null, renderer: null, cache: new Map(), flagged: [], drawn: 0, tooltip: null, hovered: null };
+    const state = { enabled: false, queued: false, group: null, renderer: null, cache: new Map(), flagged: [], drawn: 0, tooltip: null, hovered: null, modulesLoading: null };
 
     function t(key, fallback) {
         const i18n = global.i18n;
@@ -229,6 +229,28 @@
         if (!map.hasLayer(state.tooltip)) state.tooltip.addTo(map);
     }
 
+    // The floor-plan modules are not in the boot list: the model view loads them, and so does this layer
+    // the first time it is turned on (map-mode-loader.js, window.__ensureFloorPlanModules).
+    function floorPlanModules() {
+        const context = global.__defaultFloorPlanContext, generator = global.__defaultFloorPlans, plans = global.__buildingFloorPlans;
+        return context && generator && plans ? { context, generator, plans } : null;
+    }
+
+    function ensureFloorPlanModules() {
+        if (floorPlanModules()) return Promise.resolve(true);
+        if (!state.modulesLoading) {
+            const ensure = global.__ensureFloorPlanModules;
+            if (typeof ensure !== 'function') {
+                return Promise.reject(new Error('suggested-layouts-2d: building-floor-plans.js, default-floor-plans.js and default-floor-plan-context.js are not loaded and window.__ensureFloorPlanModules is missing'));
+            }
+            state.modulesLoading = Promise.resolve(ensure()).then(() => {
+                if (!floorPlanModules()) throw new Error('suggested-layouts-2d: the floor-plan modules loaded without defining their globals');
+                return true;
+            }).finally(() => { state.modulesLoading = null; });
+        }
+        return state.modulesLoading;
+    }
+
     // Plans and draws what is in view. Cheap after the first time: plans are cached per slice content.
     function rebuild() {
         state.queued = false;
@@ -238,9 +260,15 @@
         state.flagged = [];
         state.drawn = 0;
         hideTooltip();
+        const modules = floorPlanModules();
+        if (!modules) {
+            ensureFloorPlanModules().then(scheduleRebuild, error => {
+                console.error(`${stamp()} Suggested layouts are unavailable: the floor-plan modules failed to load`, error);
+            });
+            return;
+        }
         if (!(map.getZoom() >= MIN_ZOOM)) return;
-        const context = global.__defaultFloorPlanContext, generator = global.__defaultFloorPlans, plans = global.__buildingFloorPlans;
-        if (!context || !generator || !plans) throw new Error('suggested-layouts-2d: building-floor-plans.js, default-floor-plans.js and default-floor-plan-context.js must load first');
+        const { context, generator, plans } = modules;
         const view = map.getBounds().pad(VIEW_PAD);
         const bbox = [view.getWest(), view.getSouth(), view.getEast(), view.getNorth()];
         // Neighbours only matter near what is drawn: both pools are cut to the view once, not per building.

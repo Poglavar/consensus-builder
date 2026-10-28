@@ -136,15 +136,11 @@
 
 /* The Settings sheet's "Command palette" button, with its shortcut. */
 .settings-palette-button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    margin-bottom: 12px;
+    flex-wrap: wrap;
 }
 
 .settings-palette-shortcut {
-    margin-left: auto;
+    margin: 0;
     padding: 1px 6px;
     border: 1px solid var(--cb-line-strong);
     border-radius: 4px;

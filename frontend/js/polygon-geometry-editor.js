@@ -103,6 +103,27 @@
         return features;
     }
 
+    // One connected area from a GeoJSON file (WGS84 longitude/latitude), for tools whose shape is a
+    // single area (a site, a park/square/lake boundary). Every polygon is unioned and holes are kept;
+    // separate areas are refused with error.code 'disconnected', anything else as polygonFeaturesFromGeoJSON.
+    function areaGeometryFromGeoJSON(input, turfApi) {
+        const features = polygonFeaturesFromGeoJSON(input);
+        let merged = features[0];
+        for (let index = 1; index < features.length; index++) {
+            const next = turfApi.union(merged, features[index]);
+            if (!next || !next.geometry) throw new Error('The polygons could not be joined.');
+            merged = next;
+        }
+        let geometry = merged.geometry;
+        if (geometry.type === 'MultiPolygon') {
+            if (geometry.coordinates.length !== 1) {
+                throw Object.assign(new Error('The polygons form separate areas.'), { code: 'disconnected' });
+            }
+            geometry = { type: 'Polygon', coordinates: geometry.coordinates[0] };
+        }
+        return { type: 'Polygon', coordinates: JSON.parse(JSON.stringify(geometry.coordinates)) };
+    }
+
     // The clickable edge is intentionally wider than the visible line for touch/mouse usability.
     // Project the pointer back onto the real edge so insertion adds topology without unexpectedly
     // changing the footprint's shape just because the click landed a few pixels off-centre.
@@ -708,6 +729,7 @@
         coordinateOnEdge,
         constrainRingToBoundary,
         polygonFeaturesFromGeoJSON,
+        areaGeometryFromGeoJSON,
         insertVertexAfterEdge,
         removeVertexAt,
         snapCoordinateToBoundary

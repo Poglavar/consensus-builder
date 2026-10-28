@@ -4,14 +4,16 @@ let isStatusExpanded = false;
 
 // The report form is a satellite page; this link stays available alongside the app's contacts.
 document.addEventListener('DOMContentLoaded', () => {
-    const contact = document.querySelector('[data-i18n-key="sidebar.info.contactTitle"]')?.parentElement;
+    const contact = document.querySelector('#settings-sheet [data-section="help"] .settings-links');
     if (!contact || contact.querySelector('[data-feedback-link]')) return;
-    import('./feedback-translations.js').then(() => {
+    Promise.resolve(window.i18n.translationsReady).then(() => {
         const link = document.createElement('a');
         link.className = 'btn btn-quiet'; link.dataset.feedbackLink = '';
         link.dataset.i18nKey = 'feedback.open'; link.href = '/feedback.html';
         link.addEventListener('click', () => {
             const target = new URL('/feedback.html', window.location.origin);
+            const backend = window.getBackendBase?.();
+            if (backend) target.searchParams.set('backend', backend);
             target.searchParams.set('page', window.location.origin + window.location.pathname);
             target.searchParams.set('lang', window.i18n.getLocale());
             link.href = target.href;
@@ -112,7 +114,7 @@ function statusLogRow(entry, isCurrent) {
     if (entry.proposalId) {
         message.type = 'button';
         message.classList.add('is-linked');
-        message.title = window.i18n?.t ? window.i18n.t('hud.showThisProposal') : 'Show this proposal';
+        message.title = window.i18n?.t ? window.i18n.t('hud.showThisProposal') : 'Show this design';
         message.addEventListener('click', (event) => {
             event.stopPropagation();   // the bar's own click toggles the log; this is not that click
             goToProposalFromStatusLog(entry.proposalId);
@@ -576,8 +578,9 @@ function runWithButtonBusyState(button, busyLabel, task, options) {
     // followed a language switch).
     const originalHtml = button.innerHTML;
     const wasDisabled = button.disabled;
-    const busyClass = opts.busyClass;
+    const busyClass = opts.busyClass || 'cb-busy';
     const hadBusyClass = busyClass ? button.classList.contains(busyClass) : false;
+    const originalAriaBusy = button.getAttribute('aria-busy');
 
     // busyLabel is plain text, or { key, fallback } translated through window.i18n.
     let busyText = busyLabel;
@@ -590,6 +593,7 @@ function runWithButtonBusyState(button, busyLabel, task, options) {
         button.textContent = busyText;
     }
     button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
     if (busyClass) {
         button.classList.add(busyClass);
     }
@@ -601,6 +605,8 @@ function runWithButtonBusyState(button, busyLabel, task, options) {
             button.innerHTML = originalHtml;
         }
         button.disabled = wasDisabled;
+        if (originalAriaBusy === null) button.removeAttribute('aria-busy');
+        else button.setAttribute('aria-busy', originalAriaBusy);
         if (busyClass && !hadBusyClass) {
             button.classList.remove(busyClass);
         }

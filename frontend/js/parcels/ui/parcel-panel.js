@@ -251,7 +251,7 @@
             identityNoteFallback = 'Ground left outside the authored plots by this parcel layout. It is kept separately from the plot outputs.';
         } else if (identityKind === 'formed') {
             identityNoteKey = 'panel.parcel.identity.formedNote';
-            identityNoteFallback = 'Ground formed by the applied proposals. This reference identifies the current piece, not a registered parcel or an authored plot.';
+            identityNoteFallback = 'Ground formed by the applied design.';
         } else if (identityKind === 'sourcePart') {
             identityNoteKey = 'panel.parcel.identity.sourcePartNote';
             identityNoteFallback = 'One connected part of a source parcel. This reference identifies the displayed part; the source parcel can contain other parts.';
@@ -417,8 +417,8 @@
             && ['unknown', 'unavailable', 'not available'].includes(feature.properties.ownershipType.trim().toLowerCase());
         const ownershipIsUnknown = !ownershipSupported
             || (unknownOwnershipType && !ownershipListFromProps && !shouldFetchRealOwners && !simulatedOwnershipMode);
-        const unknownOwnerLabel = tParcel('common.unknownOwner', {}, 'Unknown owner');
-        const unknownOwnerHtml = `<span data-i18n-key="common.unknownOwner">${unknownOwnerLabel}</span>`;
+        const unknownOwnerLabel = tParcel('common.unknown', {}, 'Unknown');
+        const unknownOwnerHtml = `<span data-i18n-key="common.unknown">${unknownOwnerLabel}</span>`;
         const simulatedOwnerHtml = ownershipIsUnknown ? '' : buildSimulatedOwnerHtml(parcelId);
         const fallbackOwnerName = tParcel('panel.parcel.owner.single', {}, 'Single owner');
         const fallbackOwnerHtml = ownershipIsUnknown ? unknownOwnerHtml : (simulatedOwnerHtml || `
@@ -474,8 +474,8 @@
             ownershipHtml = `<span class="owner-loading" data-i18n-key="panel.parcel.owner.loading">${tParcel('panel.parcel.owner.loading', {}, 'Loading real ownership data...')}</span>`;
         }
 
-        let proposalsHtml = tParcel('panel.parcel.proposalsSection.empty', {}, 'No proposals');
-        const proposalFallbackTitle = tParcel('panel.parcel.proposalsSection.fallbackTitle', {}, 'Proposal');
+        let proposalsHtml = tParcel('panel.parcel.proposalsSection.empty', {}, 'No designs');
+        const proposalFallbackTitle = tParcel('panel.parcel.proposalsSection.fallbackTitle', {}, 'Design');
         const proposalRoadSuffix = tParcel('panel.parcel.proposalsSection.roadSuffix', {}, ' (Road)');
         const proposalIdLabel = tParcel('panel.parcel.proposalsSection.details.id', {}, 'ID:');
         const proposalAuthorLabel = tParcel('panel.parcel.proposalsSection.details.author', {}, 'Author:');
@@ -566,7 +566,7 @@
                 const proposalBody = `
                     <div class="proposal-item-body">
                         <div class="proposal-item-header">
-                            <span class="proposal-item-title">${proposalTitle}${roadSuffix}</span>
+                            <h3 class="proposal-item-title"><button type="button" class="cb-link" onclick="showProposalDetails(${inlineJsArg(proposal.proposalId)}, ${inlineJsArg(parcelId)})">${proposalTitle}${roadSuffix}</button></h3>
                             <div class="proposal-item-badges">
                                 ${producerPill}
                                 ${channelChip}
@@ -583,9 +583,9 @@
                     </div>
                 `;
                 return `
-                    <div class="proposal-item" data-proposal-id="${escapeHtml(String(proposal.proposalId))}" onclick="showProposalDetails(${inlineJsArg(proposal.proposalId)}, ${inlineJsArg(parcelId)})">
+                    <article class="proposal-item" data-proposal-id="${escapeHtml(String(proposal.proposalId))}">
                         ${thumbHtml ? `<div class="proposal-item-row">${thumbHtml}${proposalBody}</div>` : proposalBody}
-                    </div>
+                    </article>
                 `;
             }).join('');
 
@@ -641,19 +641,20 @@
         ` : '';
 
         // Determine ownership type for display - will be updated when owners are fetched
-        const ownershipTypeLabel = '<span class="parcel-ownership-type-label" style="display: none;"></span>';
+        const ownershipTypeLabel = '<span class="cb-badge parcel-ownership-type-label" hidden></span>';
 
         const infoContent = `
         ${sourceNoteHtml}
-        <div class="parcel-owner-section">
+        <div class="parcel-owner-section${ownershipIsUnknown ? ' parcel-owner-section--unknown' : ''}">
             <div class="parcel-owner-header">
                 <div class="parcel-owner-header-label" data-i18n-key="panel.parcel.metrics.owner">${ownerLabel}</div>
                 ${ownershipTypeLabel}
                 ${adButtonHtml}
                 ${ownershipIsUnknown ? '' : `<div class="parcel-owner-header-label parcel-owner-header-share" data-i18n-key="panel.parcel.metrics.share">${shareLabel}</div>`}
+                ${ownershipIsUnknown ? `<div class="parcel-owners-container parcel-owners-container--unknown" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>` : ''}
             </div>
             ${adLink ? `
-            <div class="parcel-ad-dialog" id="parcel-ad-dialog" data-ad-link="${adLink}" style="display:none;">
+            <div class="parcel-ad-dialog" id="parcel-ad-dialog" data-ad-link="${adLink}" hidden>
                 <button type="button" class="btn btn-sm"
                     onclick="window.open(${inlineJsArg(adLink)}, '_blank', 'noopener,noreferrer'); return false;">
                     <i class="fas fa-cart-shopping" aria-hidden="true"></i>
@@ -666,31 +667,31 @@
                 </button>
             </div>
             ` : ''}
-            <div class="parcel-owners-container" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>
+            ${ownershipIsUnknown ? '' : `<div class="parcel-owners-container" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>`}
         </div>
         ${identityNoteHtml}
         <div class="parcel-metric-row">
-            <div class="metric-group">
-                <div class="metric-label" data-i18n-key="panel.parcel.metrics.owners">${ownersLabel}</div>
-                <div class="metric-value" id="parcel-owners-count">-</div>
-            </div>
-            <div class="metric-group">
-                <div class="metric-label" data-i18n-key="panel.parcel.metrics.block">${blockLabel}</div>
-                <div class="metric-value">${blockHtml}</div>
-            </div>
+            <dl class="metric-group">
+                <dt class="metric-label" data-i18n-key="panel.parcel.metrics.owners">${ownersLabel}</dt>
+                <dd class="metric-value" id="parcel-owners-count">-</dd>
+            </dl>
+            <dl class="metric-group">
+                <dt class="metric-label" data-i18n-key="panel.parcel.metrics.block">${blockLabel}</dt>
+                <dd class="metric-value">${blockHtml}</dd>
+            </dl>
         </div>
         <div class="parcel-metric-row">
-            <div class="metric-group">
-                <div class="metric-label" data-i18n-key="panel.parcel.metrics.area">${areaLabel}</div>
-                <div class="metric-value">${formattedArea}</div>
-            </div>
-            <div class="metric-group">
-                <div class="metric-label">${marketPriceLabel}</div>
-                <div class="metric-value" title="${escapeHtml(economicEvidence)}">${formattedPrice}</div>
-            </div>
+            <dl class="metric-group">
+                <dt class="metric-label" data-i18n-key="panel.parcel.metrics.area">${areaLabel}</dt>
+                <dd class="metric-value">${formattedArea}</dd>
+            </dl>
+            <dl class="metric-group">
+                <dt class="metric-label">${marketPriceLabel}</dt>
+                <dd class="metric-value" title="${escapeHtml(economicEvidence)}">${formattedPrice}</dd>
+            </dl>
         </div>
         ${(typeof ensNameLineHtml === 'function' && parcelId) ? ensNameLineHtml(parcelEnsName(parcelId)) : ''}
-        <div id="roadMeasurements" style="display: none;">
+        <div id="roadMeasurements" hidden>
         </div>
     `;
 
@@ -702,7 +703,7 @@
         // With nothing here yet, the empty list points to the Propose tab instead of a blank page.
         const proposalsEmptyHtml = `
         <div class="parcel-proposals-empty">
-            <p data-i18n-key="panel.parcel.proposalsSection.empty">${tParcel('panel.parcel.proposalsSection.empty', {}, 'No proposals on this parcel yet.')}</p>
+            <p data-i18n-key="panel.parcel.proposalsSection.empty">${tParcel('panel.parcel.proposalsSection.empty', {}, 'No designs on this parcel yet.')}</p>
             <button type="button" class="btn btn-primary btn-sm parcel-proposals-empty-btn" data-i18n-key="parcelMenu.actions.propose"
                 onclick="(window.switchParcelTab || function(){})(null, 'propose-tab')">${tParcel('parcelMenu.actions.propose', {}, 'Propose here')}</button>
         </div>
@@ -808,7 +809,7 @@
                 return;
             }
             if (!ownershipSupported) {
-                ownershipTypeLabelEl.style.display = 'none';
+                ownershipTypeLabelEl.hidden = true;
                 return;
             }
 
@@ -889,7 +890,7 @@
 
             if (typeLabel) {
                 ownershipTypeLabelEl.textContent = typeLabel;
-                ownershipTypeLabelEl.style.display = 'inline-block';
+                ownershipTypeLabelEl.hidden = false;
 
                 // Add color class based on ownership type
                 // Remove any existing ownership type classes
@@ -925,7 +926,7 @@
                     ownershipTypeLabelEl.classList.add(`ownership-type-${normalizedType}`);
                 }
             } else {
-                ownershipTypeLabelEl.style.display = 'none';
+                ownershipTypeLabelEl.hidden = true;
             }
         });
 
@@ -993,12 +994,13 @@
         }
 
         if (measurementsDiv) {
-            measurementsDiv.style.display = 'none';
             measurementsDiv.innerHTML = '';
+            measurementsDiv.hidden = true;
         }
     }
 
     function hideParcelInfoPanel({ preserveProposalSelection = false } = {}) {
+        global.multiParcelSelection?.clearInfoListHighlight?.();
         const parcelInfoPanel = global.document.getElementById('parcel-info-panel');
         if (parcelInfoPanel) parcelInfoPanel.classList.remove('visible');
         renderParcelHistory(null);
@@ -1052,7 +1054,7 @@
     function toggleAdActionsDialog(link) {
         const dialog = document.getElementById('parcel-ad-dialog');
         if (!dialog) return;
-        const isVisible = dialog.style.display === 'flex';
+        const isVisible = !dialog.hidden;
         if (!isVisible) {
             if (link) {
                 dialog.setAttribute('data-ad-link', link);
@@ -1064,9 +1066,9 @@
                     };
                 }
             }
-            dialog.style.display = 'flex';
+            dialog.hidden = false;
         } else {
-            dialog.style.display = 'none';
+            dialog.hidden = true;
         }
     }
 

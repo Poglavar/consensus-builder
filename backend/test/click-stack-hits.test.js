@@ -3,6 +3,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const formation = require('../../frontend/js/proposals/formation-depth.js');
+const neighbours = require('../../frontend/js/click-stack/click-stack-neighbours.js');
 
 const source = readFileSync(new URL('../../frontend/js/click-stack/click-stack-hits.js', import.meta.url), 'utf8');
 
@@ -10,9 +14,11 @@ const POINT = { lat: 45.8, lng: 15.97 };
 const parcelFeature = (props = {}) => ({ type: 'Feature', properties: props, geometry: { type: 'Polygon', coordinates: [] } });
 
 // stack: what __drillUi.stackAt finds (topmost first). Everything else is optional per test.
-function loadHits({ stack = [], buildings = [], planning = null, agreements = [], city = 'zagreb', bareGround = false,
+function loadHits({ stack = [], buildings = [], planning = null, bareGround = false,
     registry = {}, proposals = {}, parcelProposals = [], parcelBuildings = [] } = {}) {
     const context = {
+        __formationDepth: formation,
+        ClickStackNeighbours: neighbours,
         console,
         __drillUi: { stackAt: vi.fn(() => stack) },
         buildingsAt: vi.fn(() => buildings),
@@ -20,8 +26,7 @@ function loadHits({ stack = [], buildings = [], planning = null, agreements = []
         ParcelSetProposals: { lookup: vi.fn(() => ({ entries: parcelProposals })) },
         getProposalKey: proposal => proposal.proposalId,
         PlanningViews: planning ? { isReady: () => true, itemsAt: vi.fn(() => planning) } : undefined,
-        AgreementStore: { list: vi.fn(() => agreements) },
-        CityConfigManager: { getCurrentCityId: () => city },
+        AgreementStore: { list: vi.fn(() => []) },
         GroundMenu: { isBareGround: vi.fn(() => bareGround) },
         CadastralParcelRepository: { get: id => registry[id] || null },
         proposalStorage: { getProposal: id => proposals[id] || null },
@@ -38,14 +43,90 @@ const formedEntry = (id, producerId, props = {}) => ({ kind: 'parcel', id, depth
 const bareEntry = (id, props = {}) => ({ kind: 'parcel', id, depth: 0, feature: parcelFeature(props) });
 
 describe('click stack hits', () => {
-    it('focuses the selected design geometry, its agreement designs, and the exact selected parcel', () => {
+    it('gives a design its formed body pieces and its cadastral parcels, live or not', () => {
+        const source = parcelFeature({ parcelId: 'source' });
+        const kept = parcelFeature({ parcelId: 'kept' });
+        const outputs = [parcelFeature({ parcelId: 'piece-a', structureType: 'park' }), parcelFeature({ parcelId: 'piece-b', structureType: 'park' }), parcelFeature({ parcelId: 'leftover' })];
+        const proposal = { proposalId: 'park', title: 'Park', goal: 'park', cadastreParcelIds: ['source', 'kept'] };
+        const { context } = loadHits({ registry: { source }, proposals: { park: proposal } });
+        context.LiveParcelFabric = { producedBy: vi.fn(() => outputs), featureId: feature => feature.properties.parcelId, get: id => (id === 'kept' ? kept : null) };
+        const { hits } = context.ClickStackHits.withNeighbours({ designs: [{ id: 'park', proposal }] }, 'designs', { id: 'park', proposal });
+        // Only the design's body pieces are formed land; the leftover is not.
+        expect(hits.formed.map(item => item.id)).toEqual(['piece-a', 'piece-b']);
+        expect(hits.formed.every(item => item.designId === 'park' && item.designLabel === 'Park')).toBe(true);
+        expect(hits.parcels).toEqual([{ id: 'source', label: 'source', feature: source, live: false }, { id: 'kept', label: 'kept', feature: kept, live: true }]);
+        expect(context.LiveParcelFabric.producedBy).toHaveBeenCalledWith('park');
+    });
+
+    it('gives an unapplied design no formed parcel and a missing record nothing', () => {
+        const { context } = loadHits();
+        context.LiveParcelFabric = { producedBy: () => [], get: () => null, featureId: feature => feature.id };
+        const draft = { proposalId: 'draft', goal: 'park', cadastreParcelIds: ['source'] };
+        const { hits } = context.ClickStackHits.withNeighbours({}, 'designs', { id: 'draft', proposal: draft });
+        expect(hits.formed).toEqual([]);
+        expect(hits.parcels.map(item => [item.id, item.live])).toEqual([['source', false]]);
+        const empty = { designs: [] };
+        expect(context.ClickStackHits.withNeighbours(empty, 'designs', { id: 'missing' }).hits).toBe(empty);
+    });
+
+    it('gives a cadastral parcel its pieces, the designs and buildings on it and its permitted massing', () => {
+        const parcel = parcelFeature({ parcelId: 'HR-1-12' });
+        const piece = parcelFeature({ parcelId: 'HR-1-12#a', producedByProposalId: 'road', cadastreParcelIds: ['HR-1-12'] });
+        const house = { id: 'b1', feature: { type: 'Feature', properties: { name: 'House' }, geometry: null }, tunnelled: false };
+        const { context } = loadHits({
+            proposals: { road: { proposalId: 'road', title: 'Road' } },
+            parcelBuildings: [house],
+            parcelProposals: [
+                { proposal: { proposalId: 'local-1', title: 'Row houses', createdAt: '2026-10-01' } },
+                { proposal: { proposalId: 'local-copy', cid: 'bafy-published', title: 'Park' }, serverId: 'bafy-published' }
+            ]
+        });
+        context.LiveParcelFabric = { get: id => (id === 'HR-1-12' ? parcel : null), featureId: feature => feature.properties.parcelId,
+            entriesForCadastre: vi.fn(() => [parcel, piece]) };
+        context.PlanningViews = { isReady: () => true, getItems: () => [
+            { id: 'm1', role: 'permitted', source: { parcel: 'HR-1-12' } },
+            { id: 'm2', role: 'permitted', title: 'By evidence', sourceEvidence: { parcelReference: { parcelId: 'HR-1-12' } } },
+            { id: 'm3', role: 'permitted', source: { parcel: 'HR-1-99' } },
+            { id: 'm4', role: 'existing', source: { parcel: 'HR-1-12' } }
+        ] };
+        const onPublished = vi.fn();
+        const { hits } = context.ClickStackHits.withNeighbours({ parcels: [{ id: 'HR-1-12', feature: parcel, live: true }] }, 'parcels',
+            { id: 'HR-1-12', feature: parcel, live: true }, { onPublished });
+        expect(context.LiveParcelFabric.entriesForCadastre).toHaveBeenCalledWith(['HR-1-12']);
+        // The parcel itself is not one of its own pieces.
+        expect(hits.formed.map(item => [item.id, item.designId, item.designLabel])).toEqual([['HR-1-12#a', 'road', 'Road']]);
+        expect(context.ParcelSetProposals.lookup).toHaveBeenCalledWith(['HR-1-12'], { onPublished });
+        // A published design is keyed by its server id first.
+        expect(hits.designs.map(item => [item.id, item.label, item.serverId, item.onParcel])).toEqual([
+            ['local-1', 'Row houses', null, true], ['bafy-published', 'Park', 'bafy-published', true]]);
+        expect(context.buildingsOn).toHaveBeenCalledWith(parcel);
+        expect(hits.built.map(item => [item.id, item.label, item.onParcel])).toEqual([['b1', 'House', true]]);
+        expect(hits.permitted.map(item => [item.id, item.label])).toEqual([['m1', 'HR-1-12'], ['m2', 'By evidence']]);
+    });
+
+    it('lets a view replace a lookup with its own', () => {
+        const parcel = parcelFeature({ parcelId: 'HR-1-12' });
+        const { context } = loadHits({ parcelBuildings: [{ id: 'map-building', feature: parcelFeature() }] });
+        context.LiveParcelFabric = { get: () => parcel, featureId: feature => feature.properties.parcelId, entriesForCadastre: () => [] };
+        const sceneBuilding = { id: 'scene-building', feature: { type: 'Feature', properties: { name: 'Scene house' }, geometry: null } };
+        const overrides = { builtOnParcel: vi.fn(() => [sceneBuilding]), parcelLabel: () => '12' };
+        const lookups = context.ClickStackHits.neighbourLookups({ overrides });
+        expect(lookups.builtOnParcel).toBe(overrides.builtOnParcel);
+        const { hits } = context.ClickStackHits.withNeighbours({}, 'permitted', { id: 'm1', item: { source: { parcel: 'HR-1-12' } } }, { overrides });
+        expect(hits.parcels).toEqual([{ id: 'HR-1-12', label: '12', feature: parcel, live: true }]);
+        const { hits: onParcel } = context.ClickStackHits.withNeighbours({}, 'parcels', { id: 'HR-1-12', feature: parcel }, { overrides });
+        expect(overrides.builtOnParcel).toHaveBeenCalledWith(parcel);
+        expect(context.buildingsOn).not.toHaveBeenCalled();
+        expect(onParcel.built.map(item => [item.id, item.label])).toEqual([['scene-building', 'Scene house']]);
+    });
+
+    it('focuses the selected design geometry and the exact selected parcel', () => {
         const source = parcelFeature({ parcelId: 'source' });
         const shapeA = parcelFeature({ design: 'a' }), shapeB = parcelFeature({ design: 'b' });
         const { context } = loadHits({ registry: { source }, proposals: { a: { proposalId: 'a' }, b: { proposalId: 'b' } } });
         context.collectProposalFeatureSets = proposal => ({ primaryFeatures: [proposal.proposalId === 'a' ? shapeA : shapeB] });
         const focus = context.ClickStackHits.featuresFor;
         expect(focus('designs', { id: 'a' })).toEqual([shapeA]);
-        expect(focus('agreements', { agreement: { designs: [{ proposalId: 'a' }, { proposalId: 'b' }] } })).toEqual([shapeA, shapeB]);
         expect(focus('parcels', { id: 'source' })).toEqual([source]);
         // A replaced source keeps its immutable original outline, even if the hit held a fragment.
         expect(focus('parcels', { id: 'source', live: false, feature: shapeB })).toEqual([source]);
@@ -54,6 +135,25 @@ describe('click stack hits', () => {
         context.PlanningViews = { permittedFeatures: () => ({ body: [shapeA], bound: [shapeB] }) };
         expect(focus('permitted', { item: { id: 'permit', site: source } })).toEqual([shapeA, shapeB]);
         expect(focus('designs', { id: 'missing' })).toEqual([]);
+    });
+
+    it('uses only inspected plan features without falling back to mutable local designs', () => {
+        const mutable = parcelFeature({ design: 'mutable-local-copy' });
+        const inspected = parcelFeature({ design: 'inspected-canonical-revision' });
+        const { context } = loadHits({ proposals: { 'local-design': { proposalId: 'local-design' } } });
+        context.collectProposalFeatureSets = vi.fn(() => ({ primaryFeatures: [mutable] }));
+        const focus = context.ClickStackHits.featuresFor;
+        const plan = { id: 'plan-cid', cid: 'plan-cid', features: [inspected] };
+        expect(focus('plans', plan)).toEqual([inspected]);
+        expect(focus('plans', { id: 'plan-cid', cid: 'plan-cid', plan: { designCids: ['published-design'] } })).toEqual([]);
+        expect(focus('plans', { id: 'plan-cid', cid: 'plan-cid', designCids: ['local-design'] })).toEqual([]);
+        expect(context.collectProposalFeatureSets).not.toHaveBeenCalled();
+    });
+
+    it('does not project agreements into hits or read the agreement store', () => {
+        const { hits, context } = loadHits({ stack: [proposalEntry('d1')] });
+        expect(hits).not.toHaveProperty('agreements');
+        expect(context.AgreementStore.list).not.toHaveBeenCalled();
     });
 
     it('adds the buildings and proposals of the parcel under the point when no design is there', () => {
@@ -74,7 +174,7 @@ describe('click stack hits', () => {
             ['local-1', 'Row houses', null, true], ['bafy-published', 'Park', 'bafy-published', true]]);
         // The building under the point is listed once, as a point hit; the parcel adds the other.
         expect(hits.built.map(b => [b.id, b.label, !!b.onParcel])).toEqual([['b1', 'House', false], ['b2', 'Shed', true]]);
-        expect(hits.agreements).toEqual([]);
+        expect(hits).not.toHaveProperty('agreements');
     });
 
     it('lists only the point\'s own hits when a design is under it', () => {
@@ -132,20 +232,9 @@ describe('click stack hits', () => {
         expect(hits.parcels.map(p => p.id)).toEqual(['HR-1-12']);
     });
 
-    it('finds the agreements of this city that contain a design at the point', () => {
-        const agreements = [
-            { id: 'a-in', city: 'zagreb', title: 'Block deal', createdAt: '2026-10-02', designs: [{ proposalId: 'd1' }, { proposalId: 'elsewhere' }] },
-            { id: 'a-other-city', city: 'split', designs: [{ proposalId: 'd1' }] },
-            { id: 'a-unrelated', city: 'zagreb', designs: [{ proposalId: 'elsewhere' }] }
-        ];
-        const { hits } = loadHits({ stack: [proposalEntry('d1')], agreements });
-        expect(hits.agreements.map(a => a.id)).toEqual(['a-in']);
-        expect(hits.agreements[0]).toMatchObject({ label: 'Block deal', designIds: ['d1', 'elsewhere'] });
-    });
-
-    it('reads no agreements when no design is at the point', () => {
-        const { hits, context } = loadHits({ stack: [bareEntry('HR-1-1')], agreements: [{ id: 'a', city: 'zagreb', designs: [{ proposalId: 'x' }] }] });
-        expect(hits.agreements).toEqual([]);
+    it('does not read the agreement store when there is no design at the point either', () => {
+        const { hits, context } = loadHits({ stack: [bareEntry('HR-1-1')] });
+        expect(hits).not.toHaveProperty('agreements');
         expect(context.AgreementStore.list).not.toHaveBeenCalled();
     });
 

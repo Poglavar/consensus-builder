@@ -77,9 +77,9 @@
         weight: 1
     };
     const selectedParcelStyle = {
-        fillColor: '#ff3300',
+        fillColor: global.MapHighlight.color,
         fillOpacity: 0.4,
-        color: '#ff3300',
+        color: global.MapHighlight.color,
         weight: 4,
         opacity: 1,
         dashArray: ''
@@ -343,9 +343,9 @@
 
             if (hasMultiSelection && global.multiParcelSelection.selectedParcels && global.multiParcelSelection.selectedParcels.has(idStr)) {
                 layer.setStyle({
-                    fillColor: '#ff9800',
+                    fillColor: global.MapHighlight.color,
                     fillOpacity: 0.6,
-                    color: '#f57c00',
+                    color: global.MapHighlight.color,
                     weight: 3
                 });
                 return;
@@ -357,7 +357,7 @@
                 : (typeof global !== 'undefined' ? global.selectedBlockName : null);
             const layerBlockName = global.parcelBlockNameForId?.(idStr) || null;
             if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
-                layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
+                layer.setStyle({ fillColor: global.MapHighlight.color, fillOpacity: 0.4, color: global.MapHighlight.color, weight: 2 });
                 return;
             }
 
@@ -418,7 +418,7 @@
                 const isTrackSelected = global.LiveParcelFabric?.get?.(selectedId)?.properties?.isTrack === true || Boolean(selectedLayer?._trackStyle);
                 if (isTrackSelected) {
                     const trackStyle = getParcelBaseStyle(selectedId, selectedLayer, { isTrack: true });
-                    selectedLayer.setStyle({ ...trackStyle, weight: 4 });
+                    selectedLayer.setStyle({ ...trackStyle, color: global.MapHighlight.color, opacity: 1, weight: 4 });
                 } else {
                     selectedLayer.setStyle(selectedParcelStyle);
                 }

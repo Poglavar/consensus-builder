@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { create, COLORS, ORDER, STENCIL_BIT, PAVE_SLAB_M } = require('../../frontend/js/three-ground.js');
+const { create, COLORS, ORDER, STENCIL_BIT, PARCEL_BIT, PAVE_SLAB_M } = require('../../frontend/js/three-ground.js');
 const { buildGroundGeometry } = require('../../frontend/js/life/ground-geometry.js');
 
 function stubThree() {
@@ -29,7 +29,7 @@ function stubThree() {
     class MeshBasicMaterial extends Material { }
     const THREE = {
         BufferAttribute, BufferGeometry, Group, Mesh, MeshLambertMaterial, MeshBasicMaterial,
-        NotEqualStencilFunc: 'not-equal', AlwaysStencilFunc: 'always', KeepStencilOp: 'keep', ReplaceStencilOp: 'replace', DoubleSide: 'double'
+        NotEqualStencilFunc: 'not-equal', EqualStencilFunc: 'equal', AlwaysStencilFunc: 'always', KeepStencilOp: 'keep', ReplaceStencilOp: 'replace', DoubleSide: 'double'
     };
     return { THREE, disposed };
 }
@@ -77,17 +77,41 @@ describe('three-ground', () => {
         expect(byName(layer, 'ground-lid').geometry.index.array).toBe(byName(layer, 'ground-roadbed').geometry.index.array);
         const slab = { needsUpdate: false };
         layer.cutHoles(slab);
-        [byName(layer, 'ground-pavement').material, slab].forEach(material => {
-            expect(material.stencilWrite).toBe(true);
-            expect(material.stencilWriteMask).toBe(0);
-            expect(material.stencilFuncMask).toBe(STENCIL_BIT);
-            expect(material.stencilRef).toBe(STENCIL_BIT);
-            expect(material.stencilFunc).toBe('not-equal');
-            expect(material.stencilZPass).toBe('keep');
-        });
+        expect(slab.stencilWrite).toBe(true);
+        expect(slab.stencilWriteMask).toBe(0);
+        expect(slab.stencilFuncMask).toBe(STENCIL_BIT);
+        expect(slab.stencilRef).toBe(STENCIL_BIT);
+        expect(slab.stencilFunc).toBe('not-equal');
+        expect(slab.stencilZPass).toBe('keep');
         expect(slab.needsUpdate).toBe(true);
         // The ghost pass tests NotEqual 1 under a full mask: this bit must not collide with its ref.
         expect(STENCIL_BIT & 1).toBe(0);
+    });
+
+    it('fills only pixels unclaimed by parcels or roads, without competing coplanar depths', () => {
+        const { THREE } = stubThree();
+        const layer = create({ THREE });
+        layer.setGeometry(result());
+        const parcel = layer.parcelSurface({});
+        const background = byName(layer, 'ground-pavement');
+        expect(background.renderOrder).toBeGreaterThan(0);
+        expect(background.material.polygonOffset).toBeFalsy();
+        expect(background.material.stencilFunc).toBe('equal');
+        expect(background.material.stencilWriteMask).toBe(0);
+        expect(parcel.stencilFunc).toBe('not-equal');
+        expect(parcel.stencilZPass).toBe('replace');
+        expect(parcel.stencilWriteMask).toBe(PARCEL_BIT);
+        const passes = (material, stencil) => {
+            const matches = (material.stencilRef & material.stencilFuncMask) === (stencil & material.stencilFuncMask);
+            return material.stencilFunc === 'equal' ? matches : !matches;
+        };
+        expect(passes(parcel, 0)).toBe(true);
+        expect(passes(parcel, STENCIL_BIT)).toBe(false);
+        expect(passes(background.material, 0)).toBe(true);
+        for (const occupied of [PARCEL_BIT, STENCIL_BIT, PARCEL_BIT | STENCIL_BIT]) {
+            expect(passes(background.material, occupied)).toBe(false);
+        }
+        expect(PARCEL_BIT & (STENCIL_BIT | 1)).toBe(0);
     });
 
     it('uploads the kerb with its own horizontal normals on a two-sided material', () => {
@@ -120,6 +144,7 @@ describe('three-ground', () => {
         expect(pavement.vertexShader).toContain('vPaveXY = transformed.xy * uPaveScale;');
         expect(pavement.fragmentShader).toContain('diffuseColor.rgb *=');
         expect(pavement.fragmentShader).toContain('fwidth(slab)');
+        expect(pavement.fragmentShader).toContain('(tint - 0.5) * detail');
         const slab = { userData: {} };
         layer.paveTexture(slab, 1 / 1.25);
         expect(compile(slab).uniforms.uPaveScale.value).toBeCloseTo(0.8, 12);

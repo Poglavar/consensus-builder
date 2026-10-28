@@ -34,6 +34,7 @@
 //   STAGE: planned | chosen | designed | proposed | minted | recorded | staked (default staked)
 // Env: DATABASE_URL (from backend/.env), AGENT_DAILY_ACTION_CAP (4), AGENT_DAILY_USDC_CAP (0.35),
 //      AGENT_SETTLE_MAX_PER_RUN (3), AGENT_API_BASE (default http://localhost:$API_PORT),
+//      AGENT_MARKET_SEED_USDC_CAP (0; explicit opt-in seed allowance, separate from trade budget),
 //      AGENT_APP_ORIGIN (the Origin the index writes send; default https://urbangametheory.xyz),
 //      AGENT_LENS (the lens member to operate, a lens-member persona's name or key, when --lens is not
 //      given; by default the one lens-member persona whose service names an operator token),
@@ -56,30 +57,31 @@ import { createPool } from '../db/connection.cjs';
 import { Keypair } from '@solana/web3.js';
 import * as turf from '@turf/turf';
 import { fetchCandidateParcels } from './parcel-source.js';
-import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, rivalAgreementCids, runKeyFor, seedFor, slotLabel, windowIn } from './area-plan.js';
+import { findProposalPlan, contestParcels, parcelsFromSource, pickedParcelIds, rivalAgreementCids, runKeyFor, seedFor, slotLabel, windowIn } from './area-plan.js';
 import { planCandidates } from './planner.js';
 import { cityMoney } from '../scripts/lib/frontend-city-money.mjs';
-import { chooseHousingArea, planHousingCandidates, housingOutreach } from './housing-policy.js';
+import { planHousingCandidates, housingOutreach } from './housing-policy.js';
+import { findHousingPlan } from './housing-area-search.js';
 import { fetchHousingScreen } from './housing-screen.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { fetchSourceParcels } from './source-fetch.js';
 import { bindingRejection, preflightCandidates, prioritizedPlannedCandidates } from './candidate-preflight.js';
 import { checkProposalBinding } from '../proposals/binding.js';
-import { hash32, selectAlgorithmicPicks } from './algorithmic-picker.js';
+import { hash32, isEligible, selectAlgorithmicPicks } from './algorithmic-picker.js';
 import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pickCustomId, createAgentLlm } from './llm-picker.js';
-import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
+import { usdcToAtomic, openAgreementMarket } from './bettor.js';
 import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd, listRuns, failStaleRuns, STALE_RUN_HOURS } from './ledger.js';
 import { createRpcConnection } from '../solana/rpc.js';
-import { ensureBotSolFunding, fundBotAction } from './funding.js';
+import { ensureBotSolFunding, ensureBotUsdcFunding } from './funding.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import {
     assertExecutionPlan, decisionCompletion, executionPolicy, summarizeExecutionPlan,
-    settlementPolicy, ownedAgreementsFromRuns, settlementsSpent, planSettlements
+    settlementPolicy, ownedAgreementsFromRuns, settlementsSpent, planSettlements, planningNeedsRefresh, hasPublishedWork
 } from './run-policy.js';
 import { inspectSettlement, executeSettlement } from './lifecycle-actions.js';
 import { buildRecipe } from './record-builder.js';
 import {
-    agreementObject, deadlineAfterDays, designObject, holdersFromRights, noMoney, ownersRule, parcelOutputs, registryRights
+    agreementObject, deadlineAfterDays, designObject, holdersFromRights, mapViewFromGeometry, noMoney, ownersRule, parcelOutputs, registryRights, planForDesigns
 } from './agreement-objects.js';
 import { createIndexClient } from './publication-client.js';
 import { mintAgreement } from './agreement-minter.js';
@@ -93,8 +95,6 @@ const actionEngineApi = require('../../frontend/js/agent-action-engine.js');
 
 export const STAGES = ['planned', 'chosen', 'designed', 'proposed', 'minted', 'recorded', 'staked'];
 const CONTROLLERS = ['algorithm', 'llm'];
-const USDC_DEVNET = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
-const SIDE_YES = 1;
 const CLUSTER = 'devnet';
 const DEFAULT_APP_ORIGIN = 'https://urbangametheory.xyz';
 const PUBLIC_APP_BASE = 'https://urbangametheory.xyz';
@@ -147,6 +147,11 @@ function parseArgs(argv) {
     if (!CONTROLLERS.includes(args.controller)) usage(2);
     if (!Number.isInteger(args.candidates) || args.candidates < 1) usage(2);
     return args;
+}
+
+// Checkpoint previews can contain unknown measurements. Logging must preserve that distinction.
+export function formatCandidateQuantity(value, digits = 0) {
+    return typeof value === 'number' && Number.isFinite(value) ? value.toFixed(digits) : 'unknown';
 }
 
 function log(message) {
@@ -286,7 +291,7 @@ export async function settleStage({
         if (plan.limited) log(`   ${plan.limited} agreement(s) deferred: per-run cap ${settle.maxPerRun} or action cap (${plan.budget} left) reached; they settle on a later run`);
         // Nothing left to do for these, ever: recorded so later runs stop reading them (a missing account
         // is read again: an RPC that lags is not proof it is gone).
-        const finished = inspections.filter(item => ['closed', 'foreign'].includes(item.state));
+        const finished = inspections.filter(item => ['closed', 'foreign', 'retired'].includes(item.state));
         if (dryRun || (!plan.selected.length && !finished.length)) {
             if (plan.selected.length || plan.limited) report.push(`${persona.name}: ${dryRun ? 'would settle' : 'settled'} ${plan.selected.length}${plan.limited ? ` (${plan.limited} deferred)` : ''}`);
             continue;
@@ -296,7 +301,7 @@ export async function settleStage({
         const run = actionRunner({ persona, controller: summary.controller || controller, wallet: owner, activities });
         const settlementPlan = { day: e.day, budget: plan.budget, selected: plan.selected.map(item => ({ cid: item.cid, account: item.account, state: item.state, steps: item.steps })), skipped: plan.skipped };
         for (const item of finished) {
-            settlements[item.account] = { cid: item.cid, account: item.account, state: item.state, settled: true, completedAt: now().toISOString() };
+            settlements[item.account] = { cid: item.cid, account: item.account, state: item.state, settled: item.state !== 'retired', retired: item.state === 'retired', completedAt: now().toISOString() };
         }
         e.run = await updateRun(pool, e.runId, { summaryPatch: { settlements, settlementPlan } });
         let settled = 0;
@@ -334,6 +339,12 @@ export async function settleStage({
                     done.claim ? `claim ${done.claim.signature ?? done.claim.reason ?? '-'}` : null
                 ].filter(Boolean).join(' · ')}`);
             } catch (err) {
+                if (err?.status === 410 && err?.code === 'retired-agreement-format') {
+                    settlements[item.account] = { ...settlements[item.account], cid: item.cid, account: item.account, state: 'retired', retired: true, settled: false, completedAt: now().toISOString() };
+                    e.run = await updateRun(pool, e.runId, { summaryPatch: { settlements, settlementPlan, activities } });
+                    log(`${persona.name} settlement ${item.cid}: retired format; automation skipped`);
+                    continue;
+                }
                 failures.push(`${persona.name} settlement ${item.cid}: ${safeFailureDiagnostic(err)}`);
             }
         }
@@ -341,14 +352,19 @@ export async function settleStage({
     }
 }
 
-// The chain status each rival agreement's index row records (onchain.status: written at mint and
-// refreshed on every pass of the lifecycle oracle, oracle/agreement-lifecycle.js), by CID; null for
-// one the index holds no account of.
+// Rival index admission by CID: a current agreement returns its recorded chain status (onchain.status,
+// refreshed by the lifecycle oracle), or null without an account. Only a retired-format HTTP 410 maps
+// to `retired`, which is an index admission state, not a chain lifecycle status.
 export async function rivalIndexStatuses(index, cids) {
     const statuses = {};
     for (const cid of cids) {
-        const row = await index.getAgreement(cid);
-        statuses[cid] = row?.onchain?.status ?? null;
+        try {
+            const row = await index.getAgreement(cid);
+            statuses[cid] = row?.onchain?.status ?? null;
+        } catch (error) {
+            if (error?.status === 410 && error?.code === 'retired-agreement-format') statuses[cid] = 'retired';
+            else throw error;
+        }
     }
     return statuses;
 }
@@ -411,14 +427,18 @@ export function parcelLand(candidate) {
 // it leaves the machine, so a rerun resumes at the first unfinished step and never builds a second CID,
 // mints twice or stakes twice. Returns { refusal } when the index binds the design to land other than the
 // candidate's parcel (the caller fails the persona's run); any other failure throws. The chain steps
-// (mintImpl, stakeImpl, fundStake) and the clock are injected so the stages run headless in tests.
+// (mintImpl) and the clock are injected so the stages run headless in tests.
 export async function advancePick({
     pick, candidate, tag, persona, keypair, lens, until = 'staked', city, day, slot = null, seedOwners = false,
-    walletNames = {}, stakeUsdc = '0', state, index, pool, connection, run, save, fundStake = async () => {},
-    mintImpl = mintAgreement, stakeImpl = ensureMarketAndStake, sendAndConfirm = sendAndConfirmPolling,
+    walletNames = {}, stakeUsdc = '0', state, index, pool, connection, run, save,
+    mintImpl = mintAgreement, openMarketImpl = openAgreementMarket, fundMarketSeed = ensureBotUsdcFunding,
+    marketSeedCapUsdc = 0, sendAndConfirm = sendAndConfirmPolling,
     now = () => new Date()
 }) {
+    if (!isEligible(candidate)) throw new Error('Candidate has no supported planning basis; replan before publication or minting.');
     const { designs, owners, agreements, mints, onchain, stakes, bindingFailures } = state;
+    const markets = state.markets ??= {};
+    const marketFunding = state.marketFunding ??= {};
     const wallet = keypair.publicKey.toBase58();
     const staking = usdcToAtomic(stakeUsdc) > 0n;
     const key = pick.candidateId;
@@ -487,21 +507,22 @@ export async function advancePick({
         const land = parcelLand(candidate);
         const rights = registryRights([{ parcelId: owners[key].parcelId, owners: owners[key].owners }]);
         const holders = holdersFromRights(rights, owners[key].parcelId, walletNames);
-        const { content, cid } = agreementObject({
+        const { content, cid, plan } = agreementObject({
             title: terms.title, author: persona.name, sponsor: wallet, city: design.city ?? city, createdAt,
+            plan: planForDesigns(terms.title, [design], mapViewFromGeometry([candidate.geometry], design.content.city ?? city)),
             designs: [{ cid: design.cid, goal: design.goal, title: design.title }],
             parcels: land.parcels.map(parcel => ({ ...parcel, holders })), openGroundM2: 0, outputs: land.outputs,
             money: noMoney(cityMoney(design.city ?? city).currentCurrency()),
             rule: ownersRule({ lens: lens.key, rights }), deadline
         });
-        agreements[key] = { cid, content, title: terms.title, deadline, lamports: terms.lamports, soleOwner: owners[key].soleOwner };
+        agreements[key] = { cid, content, plan, title: terms.title, deadline, lamports: terms.lamports, soleOwner: owners[key].soleOwner };
         await save(null, { agreements, lens: lens.key });
         log(`${tag} agreement built: ${cid} · binding, ${owners[key].soleOwner ? 'its sole owner decides' : 'its owners decide'} · deadline ${deadline} · escrow ${terms.lamports} lamports · lens ${lens.name} ${lens.key}`);
     }
     if (!agreements[key].indexedAt) {
         const agreement = agreements[key];
         const published = await run({ type: 'propose', agreementCid: agreement.cid, designCid: designs[key].cid, pickId: pick.pickId },
-            () => index.publishAgreement(agreement.content),
+            () => index.publishAgreement(agreement.content, { plan: agreement.plan }),
             { entity: { type: 'agreement', id: agreement.cid }, message: agreement.soleOwner
                 ? `${persona.name} proposed "${agreement.title}" as a binding agreement on its own parcel ${owners[key].parcelId}.`
                 : `${persona.name} proposed "${agreement.title}" to the owners of parcel ${owners[key].parcelId}.` });
@@ -535,22 +556,30 @@ export async function advancePick({
         await save('recorded', { onchain });
         log(`${tag} recorded in the index: ${mint.account}`);
     }
-    if (stageIndex(until) < stageIndex('staked') || !staking) return {};
+    if (stageIndex(until) < stageIndex('staked')) return {};
+    if (marketSeedCapUsdc > 0 && !markets[key]) {
+        const opened = await run({ type: 'openMarket', agreementCid: agreements[key].cid, pickId: pick.pickId },
+            () => openMarketImpl({ connection, sponsorKeypair: keypair, subject: mints[key].account,
+                maxSeedAtomic: usdcToAtomic(String(marketSeedCapUsdc)), sendAndConfirm,
+                ensureSeed: async requiredAtomic => {
+                    const funding = await fundMarketSeed({ connection, persona, pool, requiredAtomic, maxActionAtomic: usdcToAtomic(String(marketSeedCapUsdc)), sendAndConfirm });
+                    if (funding.status === 'funded') { marketFunding[key] = funding; await save(null, { marketFunding }); }
+                    return funding;
+                } }),
+            { entity: { type: 'agreement', id: agreements[key].cid }, message: `${persona.name} opened the market for ${agreements[key].title}.` });
+        markets[key] = { ...opened, openedAt: now().toISOString() };
+        await save(null, { markets });
+        log(`${tag} market opened: ${opened.address} · seed ${opened.seedAtomic} atomic devnet USDC`);
+    }
+    if (!staking) return {};
 
-    // stake YES on its own agreement's market.
+    // The author is the sponsor and cannot trade its own market. Persist the reason at the normal
+    // checkpoint boundary so resumed runs do not retry an action the protocol forbids.
     if (!stakes[key]) {
         const agreement = agreements[key];
-        await fundStake();
-        const staked = await run({ type: 'stake', agreementCid: agreement.cid, account: mints[key].account, amount: stakeUsdc, side: 'yes', pickId: pick.pickId },
-            () => stakeImpl({
-                connection, ownerKeypair: keypair, subject: mints[key].account,
-                stakeMint: USDC_DEVNET, side: SIDE_YES, amountAtomic: usdcToAtomic(stakeUsdc),
-                sendAndConfirm
-            }),
-            { entity: { type: 'agreement', id: agreement.cid }, message: `${persona.name} staked ${stakeUsdc} USDC YES on "${agreement.title}".` });
-        stakes[key] = { ...staked, amount: stakeUsdc };
+        stakes[key] = { skipped: true, skipReason: 'agreement-sponsor-cannot-trade-own-market', amount: stakeUsdc };
         await save('staked', { stakes });
-        log(`${tag} staked ${stakeUsdc} USDC YES: market ${staked.marketPda}${staked.created ? ' (created)' : ''} tx ${staked.stakeSignature}`);
+        log(`${tag} skipped own-market trade: agreement sponsor cannot trade its market`);
     }
     return {};
 }
@@ -571,7 +600,7 @@ async function main() {
     const model = llm ? llm.model : null;
     const apiBase = (args.api || process.env.AGENT_API_BASE || `http://localhost:${process.env.API_PORT || 3000}`).replace(/\/$/, '');
     const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
-    const index = createIndexClient({ apiBase, origin: process.env.AGENT_APP_ORIGIN || DEFAULT_APP_ORIGIN, log });
+    const index = createIndexClient({ apiBase, origin: process.env.AGENT_APP_ORIGIN || DEFAULT_APP_ORIGIN, waitOnRateLimit: true, pinIntervalMs: 31_000, log });
     const allPersonas = readPersonas();
     const personas = proposersOf(allPersonas, args.persona);
     const lens = operatedLens(allPersonas, args.lens ?? process.env.AGENT_LENS);
@@ -608,7 +637,11 @@ async function main() {
                 await startRun(pool, { runId, persona: persona.name, day, mode });
                 startedRuns.add(runId);
             }
-            if (existing && stageIndex(existing.stage) >= stageIndex('planned') && existing.summary?.candidates?.length) {
+            const refreshPlanning = planningNeedsRefresh(existing, persona);
+            const resumePlanning = existing && !refreshPlanning && stageIndex(existing.stage) >= stageIndex('planned') && existing.summary?.candidates?.length;
+            if (!resumePlanning && hasPublishedWork(existing)) throw new Error(`${persona.name}: this run already published under a different planning policy; use a fresh --slot rather than rewriting its CIDs`);
+            if (refreshPlanning) log(`${persona.name}: replanning unpublished candidates under ${persona.planningPolicy}`);
+            if (resumePlanning) {
                 log(`${persona.name} ${i + 1}/${personas.length} planned: resumed ${existing.summary.candidates.length} candidates from ${runId}`);
                 let candidates = existing.summary.candidates;
                 let run = existing;
@@ -628,31 +661,38 @@ async function main() {
                 entries.push({ persona, runId, day, run, candidates });
                 continue;
             }
-            const area = persona.housingResearch ? chooseHousingArea(persona.areas, day) : chooseArea(persona.areas, runKey, persona.name);
-            const { parcels, city, where } = await parcelsForArea({ pool, apiBase, index, area, persona, runKey, day, runs: allRuns, limit: args.candidates * 6 });
-            // Gains are in the money of the place (London in GBP, Zagreb in EUR), at the app's own
-            // floor-area sale price for that city (frontend-owned money settings).
-            const prices = cityMoney(city).currentFloorAreaPrices();
-            const money = { currency: prices.currency, salePricePerM2: prices.sale.perSqm };
-            const planned = (persona.housingResearch ? planHousingCandidates : planCandidates)(parcels, persona, { turf, money, limit: args.candidates * 2, seed: seedFor(runKey) });
-            // The default envelope for a parcel without a stated rule (5 floors) is taller than anything
-            // the 2025 GUP actually says in this bbox (3), so rule-backed candidates come first and the
-            // default-rule ones are only used when nothing else is on offer.
-            const preflight = await preflightCandidates({
-                db: pool, rankedCandidates: prioritizedPlannedCandidates(planned),
-                limit: args.candidates, scanLimit: args.candidates * 2,
-                persona, city, checkBinding: checkProposalBinding, log
-            });
+            const planArea = async area => {
+                const source = await parcelsForArea({ pool, apiBase, index, area, persona, runKey, day, runs: allRuns, limit: args.candidates * 6 });
+                const { parcels, city } = source;
+                // Gains are in the money of the place (London in GBP, Zagreb in EUR), at the app's own
+                // floor-area sale price for that city (frontend-owned money settings).
+                const prices = cityMoney(city).currentFloorAreaPrices();
+                const money = { currency: prices.currency, salePricePerM2: prices.sale.perSqm };
+                const planned = (persona.housingResearch ? planHousingCandidates : planCandidates)(parcels, persona, { turf, money, limit: args.candidates * 2, seed: seedFor(runKey) });
+                // Rule-backed previews come first. Automatic uplift selection additionally requires a
+                // complete building baseline; a default envelope alone does not authorize publication.
+                const preflight = await preflightCandidates({
+                    db: pool, rankedCandidates: prioritizedPlannedCandidates(planned),
+                    limit: args.candidates, scanLimit: args.candidates * 2,
+                    persona, city, checkBinding: checkProposalBinding, log
+                });
+                return { ...source, preflight };
+            };
+            const { parcels, city, where, preflight, areaAttempts = [] } = persona.housingResearch
+                ? await findHousingPlan(persona.areas, day, planArea, { log })
+                : await findProposalPlan(persona.areas, runKey, persona.name, planArea, { log });
             const candidates = preflight.candidates;
             logCandidatePreflight(persona.name, preflight);
             log(`${persona.name} ${i + 1}/${personas.length} planned in ${where}: ${parcels.length} parcels → ${candidates.length} candidates`);
             for (const c of candidates) {
-                log(`   ${c.parcelId} ${c.koName ?? ''} ${Math.round(c.areaM2)} m² · built ${c.builtKnown === false ? 'unknown' : `${Math.round(c.builtGfaM2)} m²`} → ${Math.round(c.proposedGfaM2)} m² (${c.plannedFloors ?? c.allowedFloors}/${c.allowedFloors} fl) · gain ${Math.round(c.gain)} ${c.currency} · score ${c.score.toFixed(3)}`);
+                log(`   ${c.parcelId} ${c.koName ?? ''} ${formatCandidateQuantity(c.areaM2)} m² · built ${formatCandidateQuantity(c.builtGfaM2)} m² → ${formatCandidateQuantity(c.proposedGfaM2)} m² (${c.plannedFloors ?? c.allowedFloors}/${c.allowedFloors} fl) · gain ${formatCandidateQuantity(c.gain)} ${c.currency} · score ${formatCandidateQuantity(c.score, 3)}`);
             }
             let run = null;
             if (args.live) {
                 run = await updateRun(pool, runId, { stage: 'planned', status: 'running', summaryPatch: {
                     candidates, city, area: where, slot, wallet: persona.wallet,
+                    ...(existing ? { picks: null, designs: {}, agreements: {}, owners: {} } : {}),
+                    areaAttempts,
                     candidatePreflight: { scanned: preflight.scanned, accepted: candidates.length, rejected: preflight.rejected },
                     controller, ...(model ? { model } : {})
                 } });
@@ -706,7 +746,7 @@ async function main() {
                 if (completion.noPicks) report.push(`${e.persona.name}: no design selected · $0.0000`);
             }
         } else {
-            const needPicks = needDecision.filter((entry) => entry.candidates.length);
+            const needPicks = needDecision.filter((entry) => entry.candidates.some(isEligible));
             const requests = buildPickRequests({ llm, runId: `${day}`, day, entries: needPicks });
             const requestsByPersona = new Map(needPicks.map((entry, index) => [entry.persona.name, requests[index]]));
             const estimate = estimateBatchCostUsd(requests);
@@ -728,18 +768,18 @@ async function main() {
             }
             if (stageIndex(args.until) < stageIndex('chosen')) return;
 
-            for (const e of needDecision.filter(entry => !entry.candidates.length)) {
+            for (const e of needDecision.filter(entry => !entry.candidates.some(isEligible))) {
                 e.run = await updateRun(pool, e.runId, { stage: 'chosen', status: 'done', summaryPatch: {
                     controller: 'llm',
                     picks: [],
                     rejectedPicks: [],
                     pickCostUsd: 0,
                     decisionInput: { controller: 'llm', day, candidateIds: [] },
-                    decisionResult: { controller: 'llm', costUsd: 0, reason: 'no-binding-eligible-candidates' },
+                    decisionResult: { controller: 'llm', costUsd: 0, reason: 'no-eligible-planning-candidates' },
                     outcome: 'no-picks'
                 } });
-                log(`${e.persona.name} chosen: 0 picks; no binding-eligible candidates · $0.0000`);
-                report.push(`${e.persona.name}: no binding-eligible candidates · $0.0000`);
+                log(`${e.persona.name} chosen: 0 picks; no eligible planning candidates · $0.0000`);
+                report.push(`${e.persona.name}: no eligible planning candidates · $0.0000`);
             }
 
             if (needPicks.length) {
@@ -805,7 +845,7 @@ async function main() {
         // ---- stages 3–7 per persona: design → agreement → mint → record → stake --------------
         const policy = executionPolicy(process.env);
         const executionPlan = assertExecutionPlan(summarizeExecutionPlan(entries, policy), policy);
-        log(`execution policy: ${executionPlan.actionCount}/${policy.maxActions} signed actions · ≤ ${executionPlan.maxUsdc.toFixed(2)}/${policy.maxUsdc.toFixed(2)} USDC`);
+        log(`execution policy: ${executionPlan.actionCount}/${policy.maxActions} signed actions · ≤ ${executionPlan.maxUsdc.toFixed(2)}/${policy.maxUsdc.toFixed(2)} USDC · ≤ ${executionPlan.maxMarketSeedUsdc.toFixed(5)}/${policy.maxMarketSeedUsdc.toFixed(5)} devnet USDC market seed`);
         const connection = createRpcConnection(rpcUrl, 'confirmed');
 
         for (const entry of entries) {
@@ -824,7 +864,8 @@ async function main() {
                 executionPlan: {
                     pickCount: executionPlan.picks.filter(item => item.persona === e.persona.name).length,
                     actions: executionPlan.picks.filter(item => item.persona === e.persona.name).reduce((sum, item) => sum + item.actions, 0),
-                    maxUsdc: executionPlan.picks.filter(item => item.persona === e.persona.name).reduce((sum, item) => sum + item.usdc, 0)
+                    maxUsdc: executionPlan.picks.filter(item => item.persona === e.persona.name).reduce((sum, item) => sum + item.usdc, 0),
+                    maxMarketSeedUsdc: executionPlan.picks.filter(item => item.persona === e.persona.name).reduce((sum, item) => sum + item.marketSeedUsdc, 0)
                 }
             } });
         }
@@ -843,6 +884,8 @@ async function main() {
             const mints = { ...(summary.mints ?? {}) };
             const onchain = { ...(summary.onchain ?? {}) };
             const stakes = { ...(summary.stakes ?? {}) };
+            const markets = { ...(summary.markets ?? {}) };
+            const marketFunding = { ...(summary.marketFunding ?? {}) };
             const bindingFailures = [...(summary.bindingFailures ?? [])];
             const activities = Array.isArray(summary.activities) ? [...summary.activities] : [];
             const city = summary.city ?? 'zagreb';
@@ -862,9 +905,8 @@ async function main() {
                 try {
                     const { refusal } = await advancePick({
                         pick, candidate, tag, persona, keypair, lens, until, city, day, slot, seedOwners: Boolean(args.seedOwners),
-                        walletNames, stakeUsdc, state: { designs, owners, agreements, mints, onchain, stakes, bindingFailures },
-                        index, pool, connection, run, save,
-                        fundStake: () => fundBotAction({ connection, pool, persona, runId: e.runId, action: { type: 'stake', amount: stakeUsdc } })
+                        walletNames, stakeUsdc, state: { designs, owners, agreements, mints, onchain, stakes, markets, marketFunding, bindingFailures },
+                        index, pool, connection, run, save, marketSeedCapUsdc: policy.maxMarketSeedUsdc,
                     });
                     if (refusal) {
                         await updateRun(pool, e.runId, { status: 'failed', summaryPatch: { designs, bindingFailures, activities, outcome: 'failed', error: `binding refused ${refusal.code}` } });
@@ -879,7 +921,7 @@ async function main() {
                 }
             }
 
-            const finishedAt = key => (staking ? Boolean(stakes[key]) : Boolean(onchain[key]));
+            const finishedAt = key => (staking ? Boolean(stakes[key]) : Boolean(onchain[key])) && (policy.maxMarketSeedUsdc <= 0 || Boolean(markets[key]));
             const reachedAll = stage => picks.every(pick => ({
                 designed: designs[pick.candidateId]?.indexedAt,
                 proposed: agreements[pick.candidateId]?.indexedAt,
@@ -905,13 +947,15 @@ async function main() {
                 stage: done ? until : furthest,
                 status: personaFailed ? 'failed' : (done && until === 'staked' ? 'done' : 'running'),
                 summaryPatch: {
-                    designs, owners, agreements, mints, onchain, stakes, bindingFailures, activities, lens: lens.key,
+                    designs, owners, agreements, mints, onchain, stakes, markets, marketFunding, bindingFailures, activities, lens: lens.key,
                     ...(outreach ? { outreach } : {}),
                     error: personaFailed ? failures.filter(value => value.startsWith(persona.name)).map(safeFailureDiagnostic).join('; ').slice(0, 500) : null,
                     outcome: personaFailed ? 'failed' : (done && until === 'staked' ? 'completed' : 'partial')
                 }
             });
-            report.push(`${persona.name}: ${picks.length} picks · ${Object.keys(designs).length} designs · ${Object.keys(agreements).length} agreements · ${Object.keys(mints).length} minted · ${Object.keys(onchain).length} recorded · ${Object.keys(stakes).length} staked · $${(summary.pickCostUsd ?? 0).toFixed(4)}`);
+            const marketTrades = Object.values(stakes).filter(item => !item.skipped).length;
+            const skippedOwnTrades = Object.values(stakes).filter(item => item.skipped).length;
+            report.push(`${persona.name}: ${picks.length} picks · ${Object.keys(designs).length} designs · ${Object.keys(agreements).length} agreements · ${Object.keys(mints).length} minted · ${Object.keys(onchain).length} recorded · ${marketTrades} market trade(s) · ${skippedOwnTrades} own-market trade(s) skipped · $${(summary.pickCostUsd ?? 0).toFixed(4)}`);
         }
     } catch (error) {
         for (const runId of startedRuns) {

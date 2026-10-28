@@ -196,8 +196,10 @@ test.describe('Whole-site placement editing @features', () => {
     await expect(tree).toHaveCSS('width', '23px');
     await editor.locator('[data-action="save"]').click();
     await expect(editor).toHaveCount(0);
-    const saved = await page.evaluate(id => (window as any).proposalStorage.getAllProposals()
-      .find((p: any) => p.proposalId === id)?.structureProposal.decorationDesign.trees[0], proposalId);
+    const readSavedTree = () => page.evaluate(id => (window as any).proposalStorage.getAllProposals()
+      .find((p: any) => p.proposalId === id)?.structureProposal?.decorationDesign?.trees?.[0] || null, proposalId);
+    await expect.poll(readSavedTree).not.toBeNull();
+    const saved = await readSavedTree();
     expect(saved.heightM).toBe(9);
     await showProposal(page, proposalId);
     await page.locator('#proposal-details-footer .btn-edit-geometry').click();
@@ -213,8 +215,7 @@ test.describe('Whole-site placement editing @features', () => {
       const draftId = source.draftId;
       const editor = page.locator('#structure-geometry-editor');
       const before = await readRenderedStructure(page);
-      await editor.locator('[data-tool="move"]').click();
-      // Start on a visible decoration: Move mode must let the boundary receive the gesture.
+      // The area is draggable immediately, even when the gesture starts on a decoration.
       const from: [number, number] = [15.98208, 45.80015];
       const to: [number, number] = [15.98219, 45.80022];
       await dragMapPoint(page, from, to);
@@ -231,13 +232,13 @@ test.describe('Whole-site placement editing @features', () => {
       await undo.click();
       await expect.poll(async () => readRenderedStructure(page)).toEqual(before);
 
-      // With Move deselected the same seeded tree remains individually draggable.
+      // Choosing Tree makes the seeded tree individually draggable.
       await editor.locator('[data-tool="tree"]').click();
       await dragMapPoint(page, [15.98208, 45.80015], [15.98210, 45.80017]);
       await expect.poll(async () => (await readRenderedStructure(page)).decorations.trees[0][0]).toBeGreaterThan(before.decorations.trees[0][0]);
       await undo.click();
 
-      await editor.locator('[data-tool="move"]').click();
+      await editor.locator('[data-tool="boundary"]').click();
       await dragMapPoint(page, from, to);
       await editor.locator('[data-action="save"]').click();
       await expect(editor).toHaveCount(0);
@@ -266,11 +267,9 @@ test.describe('Whole-site placement editing @features', () => {
     const originalGeometry = await page.evaluate(id => (window as any).proposalStorage.getProposal(id).structureProposal.geometry, id);
     const originalBounds = coordinateBounds(originalGeometry);
     const editor = page.locator('#structure-geometry-editor');
-    await editor.locator('[data-tool="move"]').click();
     await dragMapPoint(page, [15.9822, 45.80025], [15.98272, 45.80062]);
-    await expect(page.locator('.on-map-editor__placement-warning')).toBeVisible();
-    // Turn Move off to expose the regular lake boundary handles, then drag one vertex farther out.
-    await editor.locator('[data-tool="move"]').click();
+    await expect(page.locator('.on-map-editor__placement-warning')).toBeHidden();
+    // Boundary handles remain available after dragging the area; drag a vertex farther out.
     const vertex = page.locator('.polygon-geometry-editor__vertex').first();
     await expect(vertex).toBeVisible();
     const box = await vertex.boundingBox();
@@ -311,6 +310,50 @@ test.describe('Whole-site placement editing @features', () => {
         && maxLat > originalBounds[3] + 0.0001;
     }).toBe(true);
     expect(await savedLake(id)).toEqual(savedGeometry);
+  });
+
+  for (const kind of ['park','square','lake'] as const) test(`${kind} opens with draggable vertices and saves arbitrary boundary edits`, async ({mockApi:page},testInfo)=>{
+    await openCity(page);
+    const {proposalId}=await addEditableStructure(page,kind,`boundary-${kind}`);
+    const editor=page.locator('#structure-geometry-editor');
+    const vertices=page.locator('.polygon-geometry-editor__vertex');
+    await expect(vertices).toHaveCount(4);
+    await expect(editor.locator('[data-tool="move"]')).toHaveCount(0);
+    await expect(editor.locator('[data-action="save"]')).toHaveText('Done');
+    const before=(await readRenderedStructure(page)).geometry;
+    const vertex=await vertices.first().boundingBox();
+    if(!vertex)throw new Error('Boundary vertex is not visible');
+    await page.mouse.move(vertex.x+vertex.width/2,vertex.y+vertex.height/2);
+    await page.mouse.down();
+    await page.mouse.move(vertex.x+vertex.width/2-22,vertex.y+vertex.height/2-16,{steps:6});
+    await page.mouse.up();
+    const dragged=(await readRenderedStructure(page)).geometry;
+    expect(dragged).not.toEqual(before);
+    const edge=await page.locator('.polygon-geometry-editor__edge').last().boundingBox();
+    if(!edge)throw new Error('Boundary edge is not visible');
+    await page.mouse.click(edge.x+edge.width/2,edge.y+edge.height/2);
+    await expect(vertices).toHaveCount(5);
+    const inserted=(await readRenderedStructure(page)).geometry;
+    await vertices.first().click();
+    await page.locator('.polygon-geometry-editor__delete-marker').click();
+    await expect(vertices).toHaveCount(4);
+    await editor.locator('[data-action="undo"]').click();
+    await expect(vertices).toHaveCount(5);
+    expect((await readRenderedStructure(page)).geometry).toEqual(inserted);
+    await editor.locator('[data-action="undo"]').click();
+    await expect(vertices).toHaveCount(4);
+    expect((await readRenderedStructure(page)).geometry).toEqual(dragged);
+    await page.screenshot({path:testInfo.outputPath(`${kind}-boundary.png`)});
+    await editor.locator('[data-action="save"]').click();
+    await expect(editor).toHaveCount(0);
+    await expect.poll(()=>page.evaluate(id=>(window as any).proposalStorage.getProposal(id)?.structureProposal?.geometry,proposalId)).toEqual(dragged);
+    expect(await page.evaluate(id=>(window as any).proposalStorage.getProposal(id).site,proposalId)).toEqual({type:'MultiPolygon',coordinates:[dragged.coordinates]});
+    await page.reload({waitUntil:'domcontentloaded'});
+    await page.waitForFunction(()=>!!(window as any).proposalStorage);
+    await showProposal(page,proposalId);
+    await page.locator('#proposal-details-footer .btn-edit-geometry').click();
+    await expect(vertices).toHaveCount(4);
+    expect((await readRenderedStructure(page)).geometry).toEqual(dragged);
   });
 
   test('station body and centre marker move while preserving type, bearing, and height, including release over the panel', async ({ mockApi: page }) => {

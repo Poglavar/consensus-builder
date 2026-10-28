@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1003",
+  "name": "Adelaide, Australia",
+  "point": [
+    -34.8915426977892,
+    138.599237166828
+  ],
+  "bindings": [
+    {
+      "appCityId": "adelaide",
+      "runtimeConfig": {
+        "id": "adelaide",
+        "wupCityCode": "1003",
+        "label": "Adelaide, Australia",
+        "currency": {
+          "locale": "en-AU",
+          "code": "AUD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -34.8915426977892,
+            138.599237166828
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -34.8915426977892,
+            138.599237166828
+          ],
+          "fallbackDataset": [
+            138.599237166828,
+            -34.8915426977892
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "au-sa-locationsa-parcel-cadastre",
+          "idPrefix": "AU-SA-PARCEL-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Government of South Australia / Location SA Parcel Cadastre; Land Services SA. Indicative boundaries; legal title and survey accuracy unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "au-sa-locationsa-parcel-cadastre",
+      "name": "South Australia Location SA Parcel Cadastre",
+      "adapter": "arcgis",
+      "endpoint": "https://lsa4.geohub.sa.gov.au/server/rest/services/LSA/LocationSAViewerV34/MapServer/124/query",
+      "idField": "planparcel",
+      "idType": "string",
+      "objectIdField": "objectid",
+      "idPrefix": "AU-SA-PARCEL-",
+      "outFields": [
+        "objectid",
+        "parcel_id",
+        "planparcel"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 200,
+      "idBatchSize": 20,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "maxResponseBytes": 16777216,
+      "countryCode": "AU",
+      "metricSrid": 32754,
+      "sourceCrs": "EPSG:3857",
+      "cityIds": [
+        "adelaide"
+      ],
+      "operator": "Government of South Australia / Location SA; Land Services SA",
+      "attribution": "Government of South Australia / Location SA Parcel Cadastre; Land Services SA. Indicative boundaries; legal title and survey accuracy unverified.",
+      "catalogueUrl": "https://location.sa.gov.au/Viewer/",
+      "licenceUrl": "https://www.landservices.com.au/products-and-services/south-australian-cadastral-data/",
+      "licenceNote": "Reuse permission unresolved: Land Services SA states South Australian cadastral data is not open data and supplied subject to authorised-purpose terms and fees. Anonymous Location SA access is not proof of application-scale reuse rights.",
+      "scope": "South Australian Parcel Cadastre (LMS 833). Initial qualification checks one native parcel at the immutable Adelaide queue point; metropolitan completeness and current/history semantics remain unverified.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "AU",
+          "basis": "Live official layer 124 metadata identifies LMS 833 Parcel Cadastre: land parcels as shown in Certificates of Title for land ownership purposes.",
+          "evidence": [
+            "https://apps.geohub.sa.gov.au/viewer/prod/config/config.js",
+            "https://lsa4.geohub.sa.gov.au/server/rest/services/LSA/LocationSAViewerV34/MapServer/124"
+          ]
+        }
+      },
+      "identityKind": "native-key-geometry-sha256-v1",
+      "defaultForCity": true
+    }
+  ]
+}

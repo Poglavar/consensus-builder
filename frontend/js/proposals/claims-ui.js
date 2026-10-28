@@ -149,6 +149,7 @@
                     style: baseStyle,
                     onEachFeature: (_f, lyr) => {
                         lyr.on('click', (event) => {
+                            if (global.roadDrawingMode || global.__mapEditLock?.isHeld()) return;
                             try { if (event && event.originalEvent) L.DomEvent.stop(event); } catch (_) { }
                             openBaseParcel(key);
                         });

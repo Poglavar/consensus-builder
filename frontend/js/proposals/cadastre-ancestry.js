@@ -176,7 +176,7 @@
             const list = undeclared.map(hit => hit.id).join(', ');
             const error = new Error(translate(
                 'modal.createProposal.errors.undeclaredParcels',
-                'This proposal\'s geometry lies on {{count}} parcel(s) you did not select: {{list}}. Select them too, or keep the geometry inside the selected parcels.',
+                'This design\'s geometry lies on {{count}} parcel(s) you did not select: {{list}}. Select them too, or keep the geometry inside the selected parcels.',
                 { count: undeclared.length, list }
             ));
             error.code = 'undeclared-parcels';

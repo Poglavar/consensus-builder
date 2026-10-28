@@ -15,7 +15,7 @@ describe('applyRoadUndo', () => {
         const state = {
             segments: [[pt(0, 0), pt(0, 1), pt(0, 2)]],
             segmentIds: ['a'],
-            activeIndex: 0, hasStarted: true, strokeBaseCount: 1
+            activeIndex: 0, hasStarted: true
         };
         const r = applyRoadUndo(state);
         expect(r.undone).toBe(true);
@@ -28,7 +28,7 @@ describe('applyRoadUndo', () => {
         const state = {
             segments: [[pt(0, 0), pt(0, 1)], [pt(5, 5)]],
             segmentIds: ['a', 'b'],
-            activeIndex: 1, hasStarted: true, strokeBaseCount: 1
+            activeIndex: 1, hasStarted: true
         };
         // A stray first click (pt(5,5)) must be undoable: the stub goes, its id with it, pen up.
         const r = applyRoadUndo(state);
@@ -41,21 +41,21 @@ describe('applyRoadUndo', () => {
     });
 
     it('undoes the only point of a fresh drawing, leaving it empty', () => {
-        const state = { segments: [[pt(1, 1)]], segmentIds: ['a'], activeIndex: 0, hasStarted: true, strokeBaseCount: 0 };
+        const state = { segments: [[pt(1, 1)]], segmentIds: ['a'], activeIndex: 0, hasStarted: true };
         const r = applyRoadUndo(state);
         expect(r.undone).toBe(true);
         expect(state.segments).toEqual([]);
         expect(state.segmentIds).toEqual([]);
         expect(r.hasStarted).toBe(false);
         // …and a further undo is a no-op.
-        expect(applyRoadUndo({ segments: state.segments, segmentIds: state.segmentIds, activeIndex: -1, hasStarted: false, strokeBaseCount: 0 }).undone).toBe(false);
+        expect(applyRoadUndo({ segments: state.segments, segmentIds: state.segmentIds, activeIndex: -1, hasStarted: false }).undone).toBe(false);
     });
 
     it('empties a 2-point active segment down to nothing and removes it in lockstep', () => {
         const state = {
             segments: [[pt(0, 0), pt(0, 1)]],
             segmentIds: ['a'],
-            activeIndex: 0, hasStarted: true, strokeBaseCount: 0
+            activeIndex: 0, hasStarted: true
         };
         const r = applyRoadUndo(state); // pops (0,1) → [pt(0,0)] length 1, not empty yet
         expect(state.segments[0]).toHaveLength(1);
@@ -67,7 +67,7 @@ describe('applyRoadUndo', () => {
         const state = {
             segments: [[pt(0, 0), pt(0, 1), pt(0, 2)]],
             segmentIds: ['a'],
-            activeIndex: -1, hasStarted: false, strokeBaseCount: 0
+            activeIndex: -1, hasStarted: false
         };
         const r = applyRoadUndo(state);
         expect(r.undone).toBe(true);
@@ -77,8 +77,8 @@ describe('applyRoadUndo', () => {
     });
 
     it('is a no-op with nothing to undo', () => {
-        expect(applyRoadUndo({ segments: [], segmentIds: [], activeIndex: -1, hasStarted: false, strokeBaseCount: 0 }).undone).toBe(false);
-        expect(applyRoadUndo({ segments: [[]], segmentIds: ['a'], activeIndex: -1, hasStarted: false, strokeBaseCount: 0 }).undone).toBe(false);
+        expect(applyRoadUndo({ segments: [], segmentIds: [], activeIndex: -1, hasStarted: false }).undone).toBe(false);
+        expect(applyRoadUndo({ segments: [[]], segmentIds: ['a'], activeIndex: -1, hasStarted: false }).undone).toBe(false);
     });
 });
 
@@ -90,7 +90,7 @@ describe('applyPenLift', () => {
         const state = {
             segments: [[pt(5, 5), pt(5, 6)], [pt(0, 0), pt(0, 1), pt(0, 2), pt(0, 3)]],
             segmentIds: ['a', 'b'],
-            activeIndex: 1, hasStarted: true, strokeBaseCount: 2
+            activeIndex: 1, hasStarted: true
         };
         const r = applyPenLift(state);
         expect(r.lifted).toBe(true);
@@ -107,7 +107,7 @@ describe('applyPenLift', () => {
         const state = {
             segments: [[pt(0, 0), pt(0, 1)], [pt(9, 9)]],
             segmentIds: ['keep', 'stub'],
-            activeIndex: 1, hasStarted: true, strokeBaseCount: 0
+            activeIndex: 1, hasStarted: true
         };
         const r = applyPenLift(state);
         expect(r.lifted).toBe(true);
@@ -118,7 +118,7 @@ describe('applyPenLift', () => {
     });
 
     it('is a no-op when the pen is already up', () => {
-        const state = { segments: [[pt(0, 0), pt(0, 1)]], segmentIds: ['a'], activeIndex: -1, hasStarted: false, strokeBaseCount: 0 };
+        const state = { segments: [[pt(0, 0), pt(0, 1)]], segmentIds: ['a'], activeIndex: -1, hasStarted: false };
         const r = applyPenLift(state);
         expect(r.lifted).toBe(false);
         expect(state.segments).toHaveLength(1);
@@ -128,10 +128,10 @@ describe('applyPenLift', () => {
         const state = {
             segments: [[pt(0, 0), pt(0, 1), pt(0, 2)]],
             segmentIds: ['a'],
-            activeIndex: 0, hasStarted: true, strokeBaseCount: 0
+            activeIndex: 0, hasStarted: true
         };
         const lifted = applyPenLift(state);
-        const undo = applyRoadUndo({ ...state, activeIndex: lifted.activeIndex, hasStarted: lifted.hasStarted, strokeBaseCount: lifted.strokeBaseCount });
+        const undo = applyRoadUndo({ ...state, activeIndex: lifted.activeIndex, hasStarted: lifted.hasStarted });
         expect(undo.undone).toBe(true);
         expect(undo.removedEdges).toEqual([[pt(0, 1), pt(0, 2)]]);
         expect(state.segments).toEqual([[pt(0, 0), pt(0, 1)]]);
@@ -149,7 +149,7 @@ describe('the index-alignment invariant survives any push/undo/lift sequence', (
     it('never lets segments.length diverge from segmentIds.length', () => {
         for (let seed = 1; seed <= 25; seed++) {
             const rng = makeRng(seed);
-            const state = { segments: [], segmentIds: [], activeIndex: -1, hasStarted: false, strokeBaseCount: 0 };
+            const state = { segments: [], segmentIds: [], activeIndex: -1, hasStarted: false };
             let nextId = 0;
 
             for (let step = 0; step < 60; step++) {
@@ -161,7 +161,6 @@ describe('the index-alignment invariant survives any push/undo/lift sequence', (
                         state.segmentIds.push('id-' + (nextId++));
                         state.activeIndex = state.segments.length - 1;
                         state.hasStarted = true;
-                        state.strokeBaseCount = 0;
                     } else {
                         state.segments[state.activeIndex].push(pt(rng(), rng()));
                     }
@@ -169,12 +168,10 @@ describe('the index-alignment invariant survives any push/undo/lift sequence', (
                     const r = applyRoadUndo(state);
                     state.activeIndex = r.activeIndex;
                     state.hasStarted = r.hasStarted;
-                    state.strokeBaseCount = r.strokeBaseCount;
                 } else {
                     const r = applyPenLift(state);
                     state.activeIndex = r.activeIndex;
                     state.hasStarted = r.hasStarted;
-                    state.strokeBaseCount = r.strokeBaseCount;
                 }
 
                 // THE invariant, checked after every operation.

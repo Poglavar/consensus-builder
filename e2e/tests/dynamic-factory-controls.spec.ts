@@ -1,3 +1,4 @@
+import { openPlanActions } from '../helpers/plan-actions';
 // Verify shared dynamic dialogs and controls produce the expected corridor, plan, and claim effects.
 import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, createBuilding, createSpace, drawCorridor, openCity, openParcel } from '../helpers/runtime';
@@ -5,7 +6,7 @@ import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRu
 import { selectNativeOption } from '../helpers/controls';
 import { surveyResponse } from '../helpers/mocks/survey-data';
 import { pageIndex } from '../helpers/mocks/shared-server';
-import { fileIndexedAgreement, MINTED_ACCOUNT, OPEN_POOL } from '../helpers/agreements';
+import { fileIndexedAgreement, MINTED_ACCOUNT, OPEN_POOL, selectDevnetUsdc } from '../helpers/agreements';
 import { encodeAgreementAccount } from '../helpers/agreement-chain';
 
 const BET_ACCOUNT = MINTED_ACCOUNT;
@@ -13,29 +14,30 @@ const BET_WALLET = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
 
 // A minted agreement whose pool settled: the index lists it under GET /markets (helpers/mocks/
 // shared-server.ts) with its chain status and the pool the chain holds, Executed for a yes outcome,
-// Cancelled for no.
+// Expired for no.
 function fileSettledAgreement(page: import('@playwright/test').Page, outcome: 'yes' | 'no'): void {
   fileIndexedAgreement(pageIndex(page), {
     title: 'Plan-led infill', designTitles: ['Infill block'], areaM2: 500,
-    minted: { sponsor: BET_WALLET, status: outcome === 'yes' ? 'executed' : 'cancelled', decision: outcome === 'yes' ? 'satisfied' : 'pending' },
-    pool: { ...OPEN_POOL, resolved: true, outcome },
+    minted: { sponsor: BET_WALLET, status: outcome === 'yes' ? 'executed' : 'expired', decision: outcome === 'yes' ? 'satisfied' : 'pending' },
+    pool: { ...OPEN_POOL, creator: BET_WALLET, resolved: true, outcome },
   });
 }
 
 async function prepareWinningsPage(page: import('@playwright/test').Page, side: 'yes' | 'no' = 'no'): Promise<void> {
+  await selectDevnetUsdc(page);
   fileSettledAgreement(page, side);
   await injectMockSolanaWallet(page, { publicKey: BET_WALLET, providerName: 'phantom' });
   await openCity(page);
   await connectWalletByConnectorId(page, 'solana-phantom');
   await waitForBlockchainRuntime(page, ['SolanaMarketBridge', 'solanaWeb3']);
-  await page.evaluate(({ account, wallet, side }) => {
+  const marketAddress = await page.evaluate(({ account, wallet, side }) => {
     const w = window as any;
-    const client = w.SolanaMarketClient;
+    const client = w.SolanaLmsrClient;
     const web3 = w.solanaWeb3;
     const proposalKey = new web3.PublicKey(account);
     const walletKey = new web3.PublicKey(wallet);
     const mintKey = new web3.PublicKey('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
-    const [marketPda] = client.getMarketPda(proposalKey);
+    const [marketPda] = client.getMarketPda(proposalKey, walletKey);
     const sideValue = side === 'yes' ? client.constants.SIDE_YES : client.constants.SIDE_NO;
     const [position] = client.getPositionPda(marketPda, walletKey, sideValue);
     const marketBytes = new Uint8Array(client.MARKET_SIZE);
@@ -46,10 +48,17 @@ async function prepareWinningsPage(page: import('@playwright/test').Page, side: 
       new DataView(bytes.buffer).setBigUint64(0, value, true);
       put(bytes);
     };
-    put(Uint8Array.from(client.ACCOUNT_DISCRIMINATORS.Market));
-    put(proposalKey.toBytes()); put(mintKey.toBytes()); put(new Uint8Array(32));
-    writeU64(250_000n); writeU64(50_000n);
-    put(Uint8Array.of(1, side === 'yes' ? 1 : 0, 1)); // resolved, outcome, bump
+    put(Uint8Array.from(client.ACCOUNT_DISCRIMINATORS.LmsrMarket));
+    put(Uint8Array.of(client.constants.KIND_PROPOSAL));
+    put(proposalKey.toBytes()); put(walletKey.toBytes()); put(mintKey.toBytes());
+    put(client.getVaultAddress(marketPda, mintKey).toBytes());
+    writeU64(100_000_000n); writeU64(250_000n); writeU64(50_000n); writeU64(w.Lmsr.maxLoss(100_000_000n));
+    writeU64(BigInt(Math.floor(Date.parse('2026-12-31T00:00:00.000Z') / 1000)));
+    put(new Uint8Array(4)); writeU64(0n); // zero grace and no position cap
+    put(new Uint8Array(224)); // recipe/evidence identity fields are unused for an agreement market
+    put(Uint8Array.of(1, side === 'yes' ? 1 : 0)); // resolved, outcome
+    writeU64(BigInt(Math.floor(Date.now() / 1000)));
+    put(new Uint8Array(64)); writeU64(0n); put(Uint8Array.of(1)); // evidence, hash, paid out, bump
 
     const positionBytes = new Uint8Array(client.POSITION_SIZE);
     offset = 0;
@@ -97,17 +106,20 @@ async function prepareWinningsPage(page: import('@playwright/test').Page, side: 
     w.__betClaimRpcEvents = events;
     w.__betClaimExpectedPosition = position.toBase58();
     w.SolanaChainDataLoader.getConnection = () => connection;
+    return marketPda.toBase58();
   }, { account: BET_ACCOUNT, wallet: BET_WALLET, side });
-  await installAgreementAccount(page, { account: BET_ACCOUNT, sponsor: BET_WALLET, status: side === 'yes' ? 1 : 2 });
+  pageIndex(page).markets.get(BET_ACCOUNT)!.address = marketAddress;
+  await installAgreementAccount(page, { account: BET_ACCOUNT, sponsor: BET_WALLET, status: side === 'yes' ? 1 : 3 });
 }
 
 // The market's subject on chain (market-bridge.js readChainStatus): the agreement account at
 // `account` (bytes from helpers/agreement-chain.ts), owned by the agreement program, in its status
-// (1 Executed, 2 Cancelled), added to the connection installed above, which also answers as devnet
+// (1 Executed, 3 Expired), added to the connection installed above, which also answers as devnet
 // (getVerifiedConnection checks the genesis).
 async function installAgreementAccount(page: import('@playwright/test').Page, options: { account: string; sponsor: string; status: number }): Promise<void> {
   const bytes = encodeAgreementAccount({
     cid: `bafkrei${'c'.repeat(52)}`, authority: options.sponsor, lens: options.sponsor, payout: options.sponsor,
+    deadline: Math.floor(Date.parse('2026-12-31T00:00:00.000Z') / 1000),
     status: options.status, decision: options.status === 1 ? 1 : 0,
   });
   await page.evaluate(({ account, status, bytes, genesisHash }) => {
@@ -224,7 +236,7 @@ test.describe('shared dynamic button factories @features', () => {
     }, firstId);
 
     await page.locator('#proposals-button').click();
-    await page.locator('#planStatsButton').click();
+    await (await openPlanActions(page)).getByRole('button', { name: 'Plan stats', exact: true }).click();
     const modal = page.locator('#plan-stats-modal');
     await expect(modal).toBeVisible();
     const section = modal.locator('[data-plan-stat="epoch-section"]');
@@ -239,7 +251,7 @@ test.describe('shared dynamic button factories @features', () => {
     expect(await secondYearProposals.innerText()).toBe('2');
     await section.locator('[data-epoch-view="added"]').click();
     await expect.poll(() => secondYearProposals.innerText()).toBe(addedCount);
-    await modal.getByRole('button', { name: 'Close applied proposal stats' }).click();
+    await modal.getByRole('button', { name: 'Close plan stats' }).click();
     await expect(modal).toBeHidden();
   });
 
@@ -254,7 +266,7 @@ test.describe('shared dynamic button factories @features', () => {
     await expect.poll(() => page.evaluate(() => {
       const w = window as any;
       const instruction = w.__betClaimInstructions.find((item: any) =>
-        w.SolanaMarketClient.IX_DISCRIMINATORS.claim.every((byte: number, index: number) => item.data[index] === byte));
+        w.SolanaLmsrClient.IX_DISCRIMINATORS.claim_lmsr.every((byte: number, index: number) => item.data[index] === byte));
       return instruction?.keys[1];
     })).toBe(await page.evaluate(() => (window as any).__betClaimExpectedPosition));
   });
@@ -271,7 +283,7 @@ test.describe('shared dynamic button factories @features', () => {
     await expect.poll(() => page.evaluate(() => {
       const w = window as any;
       const instruction = w.__betClaimInstructions.find((item: any) =>
-        w.SolanaMarketClient.IX_DISCRIMINATORS.claim.every((byte: number, index: number) => item.data[index] === byte));
+        w.SolanaLmsrClient.IX_DISCRIMINATORS.claim_lmsr.every((byte: number, index: number) => item.data[index] === byte));
       return instruction?.keys[1];
     })).toBe(await page.evaluate(() => (window as any).__betClaimExpectedPosition));
     await expect(dialog.locator('[data-market-dialog-status]')).toContainText('Collected no winnings.');
@@ -287,7 +299,7 @@ test.describe('shared dynamic button factories @features', () => {
     await expect.poll(() => page.evaluate(() => {
       const w = window as any;
       const instruction = w.__betClaimInstructions.find((item: any) =>
-        w.SolanaMarketClient.IX_DISCRIMINATORS.claim.every((byte: number, index: number) => item.data[index] === byte));
+        w.SolanaLmsrClient.IX_DISCRIMINATORS.claim_lmsr.every((byte: number, index: number) => item.data[index] === byte));
       return instruction?.keys[1];
     })).toBe(await page.evaluate(() => (window as any).__betClaimExpectedPosition));
   });
@@ -304,7 +316,7 @@ test.describe('shared dynamic button factories @features', () => {
     await expect.poll(() => page.evaluate(() => {
       const w = window as any;
       const instruction = w.__betClaimInstructions.find((item: any) =>
-        w.SolanaMarketClient.IX_DISCRIMINATORS.claim.every((byte: number, index: number) => item.data[index] === byte));
+        w.SolanaLmsrClient.IX_DISCRIMINATORS.claim_lmsr.every((byte: number, index: number) => item.data[index] === byte));
       return instruction?.keys[1];
     })).toBe(await page.evaluate(() => (window as any).__betClaimExpectedPosition));
     await expect(dialog.locator('[data-market-dialog-status]')).toContainText('Collected yes winnings.');

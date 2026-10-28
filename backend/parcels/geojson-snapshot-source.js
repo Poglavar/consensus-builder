@@ -106,6 +106,8 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
     const maxSnapshotBytes = descriptor.maxSnapshotBytes ?? 3 * 1024 * 1024;
     const maxSnapshotFeatures = descriptor.maxSnapshotFeatures ?? 5000;
     const maxFeatures = descriptor.maxFeatures ?? 10000;
+    // Whole-mouza form responses can be several MB; keep their configured read budget bounded.
+    const snapshotTimeoutMs = descriptor.snapshotTimeoutMs ?? 15000;
     const limits = [maxSnapshotBytes, maxSnapshotFeatures, maxFeatures];
     const url = new URL(endpoint);
     const identifier = /^[A-Za-z_][A-Za-z0-9_]*$/;
@@ -131,6 +133,7 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
             || new Set(outFields).size !== outFields.length
             || [...idFields, ...outFields].some(field => !CSV_GEOJSON_FIELDS.includes(field) || field === 'GEOJSON')))
         || typeof fetchImpl !== 'function' || typeof now !== 'function'
+        || !Number.isSafeInteger(snapshotTimeoutMs) || snapshotTimeoutMs < 1000 || snapshotTimeoutMs > 45000
         || !Array.isArray(idFields) || !idFields.length || idFields.length > 8
         || new Set(idFields).size !== idFields.length || idFields.some(field => typeof field !== 'string' || !field)
         || !Array.isArray(outFields) || idFields.some(field => !outFields.includes(field))
@@ -159,7 +162,7 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
     if (!state) { state = { snapshot: null, expires: 0, pending: null }; instances.set(cacheKey, state); }
 
     async function load() {
-        const signal = AbortSignal.timeout(15000);
+        const signal = AbortSignal.timeout(snapshotTimeoutMs);
         let reader;
         try {
             const response = await fetchImpl(endpoint, { signal,

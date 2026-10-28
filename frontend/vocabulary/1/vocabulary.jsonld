@@ -28,7 +28,21 @@
       "@id": "cb:Agreement",
       "@type": "rdfs:Class",
       "rdfs:label": "Published agreement",
-      "rdfs:comment": "A set of designs plus a decision rule, with optional allocations and money, identified by the CID of its canonical content, which names its designs by their CIDs. Its existence does not assert consent, execution or legal approval.",
+      "rdfs:comment": "An arrangement with a decision rule, optional allocations and money, identified by the CID of its canonical content and linked to one exact plan. Its existence does not assert consent, execution or legal approval.",
+      "rdfs:subClassOf": [
+        {
+          "@id": "schema:CreativeWork"
+        },
+        {
+          "@id": "prov:Entity"
+        }
+      ]
+    },
+    {
+      "@id": "cb:Plan",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Published plan",
+      "rdfs:comment": "An immutable selection of designs and a saved map view, identified by the CID of its canonical content.",
       "rdfs:subClassOf": [
         {
           "@id": "schema:CreativeWork"
@@ -106,12 +120,12 @@
       }
     },
     {
-      "@id": "cb:designs",
+      "@id": "cb:plan",
       "@type": "rdf:Property",
-      "rdfs:label": "Designs",
-      "rdfs:comment": "An RDF list of the designs the agreement includes, by CID, in authored order.",
+      "rdfs:label": "Plan",
+      "rdfs:comment": "The exact plan whose design selection the agreement settles.",
       "rdfs:range": {
-        "@id": "rdf:List"
+        "@id": "cb:Plan"
       }
     },
     {

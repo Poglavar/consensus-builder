@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5743",
+  "name": "Albuquerque, United States",
+  "point": [
+    35.1087162408547,
+    -106.564811229385
+  ],
+  "bindings": [
+    {
+      "appCityId": "albuquerque",
+      "runtimeConfig": {
+        "id": "albuquerque",
+        "wupCityCode": "5743",
+        "label": "Albuquerque, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            35.1087162408547,
+            -106.564811229385
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            35.1087162408547,
+            -106.564811229385
+          ],
+          "fallbackDataset": [
+            -106.564811229385,
+            35.1087162408547
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-nm-nmtrd-bernalillo-parcels-2025",
+          "idPrefix": "us-nm-nmtrd-bernalillo-parcels-2025:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "NMTRD, Bernalillo County; Bernalillo County Parcels 2025."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-nm-nmtrd-bernalillo-parcels-2025",
+      "name": "New Mexico TRD / Bernalillo County Parcels 2025",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.ose.nm.gov/server_s/rest/services/Parcels/County_Parcels_2025/MapServer/0",
+      "idField": "StateParcelId",
+      "idType": "string",
+      "idPattern": "^35001-[A-Za-z0-9-]+$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "us-nm-nmtrd-bernalillo-parcels-2025:",
+      "outFields": [
+        "OBJECTID",
+        "StateParcelId"
+      ],
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 30000,
+      "maxResponseBytes": 1048576,
+      "countryCode": "US",
+      "stateCode": "NM",
+      "metricSrid": 32613,
+      "cityIds": [
+        "albuquerque"
+      ],
+      "scope": "Bernalillo County assessor aggregation, annual 2025 layer. Albuquerque coverage is established only at the bounded tested parcel; municipal completeness, adjacent jurisdictions and tribal coverage are unverified.",
+      "operator": "New Mexico Taxation & Revenue Department / Property Tax Division; hosted by New Mexico Office of the State Engineer",
+      "attribution": "NMTRD, Bernalillo County; Bernalillo County Parcels 2025.",
+      "licenceUrl": "https://gis.ose.nm.gov/server_s/rest/services/Parcels/County_Parcels_2025/MapServer/0",
+      "licence": "Public anonymous query access. Explicit redistribution/reuse terms not found in inspected metadata; reuse remains unconfirmed.",
+      "catalogueUrl": "https://gis.ose.nm.gov/server_s/rest/services/Parcels/County_Parcels_2025/MapServer/0",
+      "defaultForCity": true
+    }
+  ]
+}

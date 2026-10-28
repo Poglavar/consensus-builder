@@ -44,9 +44,8 @@ function fakeStorage(seed = {}) {
     };
 }
 
-function bootStore(storage, options = {}) {
+function bootStore(storage) {
     install('window', globalThis);
-    install('__cbSecondaryTab', options.secondaryTab === true);
     install('__formationDepth', formationDepth);
     install('__planOrder', planOrder);
     install('ProposalOrigin', proposalOrigin);
@@ -97,25 +96,6 @@ describe('proposal rows: mutations', () => {
         expect(storage.writes[0].deletes).toEqual(['proposal:gone']);
         expect([...storage.writes[0].puts.keys()].sort()).toEqual(['cadastre_proposals_manifest', 'proposal:new']);
         expect(JSON.parse(storage.values.get('cadastre_proposals_manifest'))).toEqual({ manifestVersion: 1, nextProposalId: 9 });
-    });
-
-    it('in a read-only tab, writes no shared row: the change stays in memory and is parked', async () => {
-        // multi-tab-guard.js marked this tab secondary: its city is open in another tab
-        const storage = fakeStorage();
-        const store = bootStore(storage);
-        store.proposals.set('p1', record('p1'));
-        const blocked = vi.fn();
-        const runtime = { __cbSecondaryTab: true, __cbReportSecondaryWriteBlocked: blocked };
-        await ParcelMutation.run({ kind: 'test' }, async context => {
-            context.proposals.getProposal('p1').title = 'edited here';
-            return true;
-        }, { proposalStore: store, agentStore: null, storage, fabric: null, runtime });
-        expect(storage.writes).toEqual([]);
-        expect(rowKeys(storage)).toEqual([]);
-        expect(store.getProposal('p1').title).toBe('edited here');
-        // parked under the recovery key (a store of this tab's own), and the user is told
-        expect(JSON.parse(storage.values.get('cadastre_proposals_recovery')).records.map(r => r.title)).toEqual(['edited here']);
-        expect(blocked).toHaveBeenCalledOnce();
     });
 
     it('leaves an abandoned single-blob store alone when a mutation writes', async () => {
@@ -304,7 +284,7 @@ describe('proposal rows: whole-store save and clear', () => {
         expect(rowKeys(storage)).toEqual(['proposal:a', 'proposal:b']);
     });
 
-    it('clear removes every row, the manifest and the recovery blob in one write, and nothing else', () => {
+    it('clear removes every row and the manifest while leaving unrelated storage untouched', () => {
         const blob = '{"version":2,"nextProposalId":0,"records":[]}';
         const storage = fakeStorage({
             cadastre_proposals: blob,
@@ -317,15 +297,14 @@ describe('proposal rows: whole-store save and clear', () => {
         store.load();
         store.clear();
         expect(storage.writes).toHaveLength(1);
-        expect(storage.writes[0].deletes.sort()).toEqual(['cadastre_proposals_manifest', 'cadastre_proposals_recovery', 'proposal:a']);
-        expect(Array.from(storage.values.keys()).sort()).toEqual(['cadastre_proposals', 'parcel_HR-1_owner']);
+        expect(storage.writes[0].deletes.sort()).toEqual(['cadastre_proposals_manifest', 'proposal:a']);
+        expect(Array.from(storage.values.keys()).sort()).toEqual(['cadastre_proposals', 'cadastre_proposals_recovery', 'parcel_HR-1_owner']);
         expect(store.getAllProposals()).toEqual([]);
     });
 });
 
 describe('proposal rows: a record is stored only in its own city', () => {
-    // projections.md §10 M8: storage refuses another city's record (CityConfigManager.foreignCityFor);
-    // every link and list route catches the refusal and opens the record in its city instead.
+    // Storage retains definitions independently of the viewing context and descriptive city text.
     function bootInCity(foreign, current = 'zagreb') {
         const storage = fakeStorage();
         const store = bootStore(storage);
@@ -341,14 +320,13 @@ describe('proposal rows: a record is stored only in its own city', () => {
         return { storage, store };
     }
 
-    it('refuses a record of a city with other parcel data, writing nothing', () => {
-        const { storage, store } = bootInCity(['paris']);
-        let refusal = null;
-        try { store.importProposal(record('p1', { city: 'paris' })); } catch (error) { refusal = error; }
-        expect(refusal).toMatchObject({ code: 'proposal-in-other-city', cityId: 'paris' });
-        expect(refusal.message).toMatch(/Paris/);
-        expect(store.getProposal('p1')).toBeFalsy();
-        expect(rowKeys(storage)).toEqual([]);
+    it('imports the same ground definition regardless of its descriptive city label', () => {
+        const { store } = bootInCity(['paris']);
+        for (const city of ['paris', 'new_york', 'zagreb', 'place-label', null]) {
+            const id = `p-${city}`;
+            expect(store.importProposal(record(id, { city }))).toBeTruthy();
+            expect(store.getProposal(id)).toMatchObject({ city, cadastreParcelIds: ['HR-1'], applied: false });
+        }
     });
 
     // A cancelled server record used to be rewritten to Active on import, so a link to it applied it.
@@ -367,12 +345,10 @@ describe('proposal rows: a record is stored only in its own city', () => {
         expect(store.importProposal(record('n1'))).toBeTruthy();
     });
 
-    it('places a record naming no city by its parcels: a Croatian one is not New York\'s', () => {
-        const { storage, store } = bootInCity(['zagreb'], 'new_york');
-        let refusal = null;
-        try { store.importProposal(record('legacy', { city: 'city', cadastreParcelIds: ['HR-335649-100'] })); } catch (error) { refusal = error; }
-        expect(refusal).toMatchObject({ code: 'proposal-in-other-city', cityId: 'zagreb' });
-        expect(rowKeys(storage)).toEqual([]);
+    it('stores foreign cadastral references without changing them or applying the definition', () => {
+        const { store } = bootInCity(['zagreb'], 'new_york');
+        const imported = store.importProposal(record('ground-definition', { city: 'city', cadastreParcelIds: ['HR-335649-100'] }));
+        expect(imported).toMatchObject({ city: 'city', cadastreParcelIds: ['HR-335649-100'], applied: false });
     });
 });
 

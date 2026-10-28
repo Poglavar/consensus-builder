@@ -1,7 +1,7 @@
 // Everything under one map point, by geometry rather than by which layer is drawn on top
 // (click-stack.md): designs and parcels from the drill stack, buildings from the drawn building
-// layers, permitted massing from the planning views, agreements from the agreement store. With
-// no design under the point, the parcel there adds its buildings and proposals.
+// layers, permitted massing from the planning views. With no design under the point, the parcel
+// there adds its buildings and designs.
 // Returns the hits object the pure click-stack model orders.
 (function (global) {
     'use strict';
@@ -51,18 +51,6 @@
     function isFragment(entry) {
         const ids = entry.feature?.properties?.cadastreParcelIds;
         return Array.isArray(ids) && ids.length > 0 && !ids.map(String).includes(String(entry.id));
-    }
-
-    function agreementsWith(designs) {
-        const store = global.AgreementStore;
-        if (!store || !designs.length) return [];
-        const keys = new Set(designs.flatMap(design => [design.id, design.proposal?.proposalId].filter(Boolean).map(String)));
-        let agreements = [];
-        try { agreements = store.list(); } catch (error) { console.error('[ClickStack] agreements could not be read', error); return []; }
-        return agreements.filter(agreement => agreement.city === global.CityConfigManager?.getCurrentCityId?.()
-            && agreement.designs.some(design => keys.has(String(design.proposalId))))
-            .map(agreement => ({ id: agreement.id, label: agreement.title || agreement.id, createdAt: agreement.createdAt, agreement,
-                designIds: agreement.designs.map(design => String(design.proposalId)) }));
     }
 
     // What stands on the parcel under the point when no design is there (click-stack.md): its
@@ -117,8 +105,13 @@
             });
         }
         let built = [];
-        try { built = (global.buildingsAt?.(latlng) || []).map(hit => ({ id: hit.id, feature: hit.feature, demolition: hit.demolition,
-            tunnelled: hit.tunnelled, label: buildingLabel(hit.feature) })); }
+        try { built = (global.buildingsAt?.(latlng) || []).map(hit => {
+            const by = hit.demolition?.proposalKey || hit.demolition?.proposalId;
+            const proposal = by ? global.proposalStorage?.getProposal?.(by) : null;
+            return { id: hit.id, feature: hit.feature, demolition: hit.demolition,
+                ...(proposal ? { affectedDesign: { id: String(by), label: designLabel(proposal, by), proposal } } : {}),
+                tunnelled: hit.tunnelled, label: buildingLabel(hit.feature) };
+        }); }
         catch (error) { console.error('[ClickStack] buildings could not be hit-tested', error); }
         let permitted = [];
         try {
@@ -126,7 +119,6 @@
                 .filter(item => item.role === 'permitted')
                 .map(item => ({ id: item.id, label: item.source?.parcel || item.title || item.id, item }));
         } catch (error) { console.error('[ClickStack] massing could not be hit-tested', error); }
-        const agreements = agreementsWith(designs);
         const ground = designs.length ? null : [...formed, ...parcels].find(parcel => parcel.live !== false && parcel.feature);
         if (ground) {
             const extra = onParcel(ground, onPublished);
@@ -134,12 +126,48 @@
             designs.push(...extra.designs.filter(item => !has(designs, item.id)));
             built.push(...extra.built.filter(item => !has(built, item.id)));
         }
-        const hits = { agreements, designs, built, permitted, formed, parcels, ground: [] };
+        const hits = { designs, built, permitted, formed, parcels, ground: [] };
         // Nothing at all here: bare ground offers what can be drawn on it, when the place has no
         // register to wait for (ui/ground-menu-model.js decides).
         if (!designs.length && !built.length && !permitted.length && !formed.length && !parcels.length
             && global.GroundMenu?.isBareGround?.(latlng)) hits.ground = [{ id: 'here', label: '' }];
         return hits;
+    }
+
+    // The app's lookups behind the neighbour rule (click-stack-neighbours.js): a selected object's
+    // own references, read the same way in the map and the model view. `onPublished` runs once a
+    // parcel's published proposals arrive after the lookup answered; `overrides` replace lookups
+    // for a view that reads a kind from its own scene (the model view's buildings).
+    function neighbourLookups({ onPublished, overrides } = {}) {
+        const fabric = global.LiveParcelFabric;
+        const permittedParcelId = item => String(item?.sourceEvidence?.parcelReference?.parcelId || item?.source?.parcel || '') || null;
+        return {
+            proposalOf: id => global.proposalStorage?.getProposal?.(String(id)) || null,
+            parcelFeature: id => fabric?.get?.(String(id)) || baseFeature(id),
+            isLive: id => !!fabric?.get?.(String(id)),
+            formedByDesign: proposal => {
+                const id = String(proposal.proposalId);
+                return (fabric?.producedBy?.(id) || []).filter(feature => global.__formationDepth.isBodyParcel(proposal, feature))
+                    .map(feature => ({ id: String(fabric.featureId(feature)), feature }));
+            },
+            piecesOfParcel: id => (fabric?.entriesForCadastre?.([String(id)]) || [])
+                .map(feature => ({ id: String(fabric.featureId(feature)), feature, producerId: feature.properties?.producedByProposalId ?? null })),
+            designsOnParcel: id => global.ParcelSetProposals.lookup([String(id)], { onPublished }).entries.map(entry => ({
+                id: entry.serverId || global.getProposalKey?.(entry.proposal) || entry.proposal.proposalId, proposal: entry.proposal, serverId: entry.serverId || null })),
+            builtOnParcel: feature => global.buildingsOn?.(feature) || [],
+            permittedOnParcel: id => (global.PlanningViews?.isReady?.() ? global.PlanningViews.getItems() : [])
+                .filter(item => item.role === 'permitted' && permittedParcelId(item) === String(id))
+                .map(item => ({ id: item.id, label: item.source?.parcel || item.title || item.id, item })),
+            permittedParcel: instance => permittedParcelId(instance.item || global.PlanningViews?.getItems?.().find(item => item.id === instance.id)),
+            parcelLabel, designLabel, buildingLabel,
+            ...(overrides || {})
+        };
+    }
+
+    // { hits, added }: the hits with the selected object's neighbours merged in (the same object
+    // when nothing is new) and the ids this call appended per kind.
+    function withNeighbours(hits, kind, instance, options = {}) {
+        return global.ClickStackNeighbours.withNeighbours(hits, kind, instance, neighbourLookups(options));
     }
 
     // The selected object's own geometry, shared by the 2D and model-view focus outlines.
@@ -154,7 +182,7 @@
             return footprint ? [footprint] : [];
         };
         let features = [];
-        if (kind === 'agreements') features = (instance.agreement?.designs || []).flatMap(design => designFeatures(design.proposalId));
+        if (kind === 'plans' || kind === 'agreements') features = instance.features || instance.plan?.features || [];
         else if (kind === 'designs') features = designFeatures(instance.id);
         else if (kind === 'permitted') {
             const item = instance.item || global.PlanningViews?.getItems?.().find(item => item.id === instance.id);
@@ -167,5 +195,5 @@
         return features.filter(feature => feature?.geometry && ['Polygon', 'MultiPolygon', 'LineString', 'MultiLineString'].includes(feature.geometry.type));
     }
 
-    global.ClickStackHits = Object.freeze({ hitsAt, parcelLabel, featuresFor });
+    global.ClickStackHits = Object.freeze({ hitsAt, withNeighbours, neighbourLookups, parcelLabel, buildingLabel, featuresFor });
 })(window);

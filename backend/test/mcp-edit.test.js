@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createPreviewLinks } from '../agents/mcp-preview-links.js';
+import { createTestPreviewLinks as createPreviewLinks } from './helpers/mcp-preview-store.js';
 import { appTurf as turf, intentDesign } from '../agents/mcp-geometry.js';
 import { editedDesign, patchDocument } from '../agents/mcp-edit.js';
 import { cidOfObject } from '../cid.js';
@@ -35,6 +35,86 @@ describe('granular authored editing', () => {
         expect(turf.area(next.geometry.buildings[1])).toBeCloseTo(turf.area(design.geometry.buildings[0]),1);
         expect(edit(next,[{op:'remove',path:'/geometry/buildings/0'}]).geometry.buildings).toHaveLength(1);
     });
+    it('moves only a freeform footprint while retaining ground and furniture, and edits land take independently', () => {
+        const design=make('building',{floors:4,coverage:.05});
+        const body=design.geometry.buildings[0];
+        design.geometry.groundBoundary=turf.feature(structuredClone(site));
+        design.geometry.groundSurface={treatment:'green',polygon:turf.difference(turf.feature(site),body).geometry,
+            decorationDesign:{trees:[{coordinate:[-.099,51.501],kind:'broadleaf',heightM:8}]}};
+        design.geometry.landTake={geometry:structuredClone(body.geometry)};
+        const before=structuredClone(design);
+        const next=edit(design,[{op:'transform',path:'/geometry/buildings/0/geometry',eastM:5},
+            {op:'replace',path:'/geometry/landTake/geometry',value:structuredClone(site)}]);
+        expect(next.geometry.buildings[0].geometry).not.toEqual(body.geometry);
+        expect(next.geometry.groundBoundary).toEqual(design.geometry.groundBoundary);
+        expect(next.geometry.groundSurface.decorationDesign).toEqual(design.geometry.groundSurface.decorationDesign);
+        expect(turf.bbox(next.geometry.groundSurface.polygon)).toEqual(turf.bbox(site));
+        expect(next.geometry.landTake.geometry).toEqual(site);
+        expect(design).toEqual(before);
+    });
+    it('takes pavement trees on paved building surroundings and refuses them on green ones', () => {
+        const design=make('building',{floors:4,coverage:.05});
+        const body=design.geometry.buildings[0];
+        design.geometry.groundBoundary=turf.feature(structuredClone(site));
+        design.geometry.groundSurface={treatment:'paved',polygon:turf.difference(turf.feature(site),body).geometry,
+            decorationDesign:{trees:[{coordinate:[-.099,51.501],kind:'broadleaf',heightM:8}]}};
+        const pitted=edit(design,[{op:'add',path:'/geometry/groundSurface/decorationDesign/trees/0/pit',value:'grille'},
+            {op:'replace',path:'/geometry/groundSurface/decorationDesign/trees/0/heightM',value:9}]);
+        expect(pitted.geometry.groundSurface.decorationDesign.trees[0]).toEqual({coordinate:[-.099,51.501],kind:'broadleaf',heightM:9,pit:'grille'});
+        expect(()=>edit(pitted,[{op:'replace',path:'/geometry/groundSurface/treatment',value:'green'}])).toThrow(expect.objectContaining({code:'invalid-tree'}));
+        const green=edit(pitted,[{op:'replace',path:'/geometry/groundSurface/treatment',value:'green'},
+            {op:'remove',path:'/geometry/groundSurface/decorationDesign/trees/0/pit'}]);
+        expect(green.geometry.groundSurface.decorationDesign.trees[0]).not.toHaveProperty('pit');
+    });
+    it('a footprint-only land-take edit removes surrounding ground and furniture', () => {
+        const design=make('building',{floors:4,coverage:.05});
+        const body=design.geometry.buildings[0];
+        design.geometry.landTake=turf.feature(structuredClone(site));
+        design.geometry.groundBoundary=turf.feature(structuredClone(site));
+        design.geometry.groundSurface={treatment:'green',polygon:turf.difference(turf.feature(site),body).geometry,
+            decorationDesign:{trees:[{coordinate:[-.099,51.501],kind:'broadleaf',heightM:8}]}};
+        const before=structuredClone(design);
+        const next=edit(design,[{op:'replace',path:'/geometry/landTake',value:body}]);
+        expect(next.geometry.groundSurface).toBeNull();
+        expect(next.geometry.buildings).toEqual(design.geometry.buildings);
+        expect(next.geometry.landTake).toEqual(body);
+        expect(design).toEqual(before);
+        expect(validateDesignContent(next).ok).toBe(true);
+    });
+    it('moves a building off its former whole parcel through the same reviewed land contract', () => {
+        const design=make('building',{floors:4,coverage:.05});
+        const body=design.geometry.buildings[0], before=structuredClone(design);
+        design.geometry.landTake=turf.feature(structuredClone(site));
+        design.geometry.groundBoundary=turf.feature(structuredClone(site));
+        design.geometry.groundSurface={treatment:'paved',polygon:turf.difference(turf.feature(site),body).geometry,
+            decorationDesign:{trees:[{coordinate:[-.099,51.501],kind:'broadleaf',heightM:8}]}};
+        const original=structuredClone(design);
+        const moved=structuredClone(body);
+        moved.geometry.coordinates=moved.geometry.coordinates.map(ring=>ring.map(([x,y])=>[x+.01,y]));
+        const next=edit(design,[
+            {op:'replace',path:'/geometry/buildings/0/geometry',value:moved.geometry},
+            {op:'replace',path:'/geometry/landTake',value:moved},
+            {op:'replace',path:'/site',value:moved.geometry}
+        ]);
+        expect(next.geometry.groundSurface).toBeNull();
+        expect(turf.intersect(turf.feature(next.site),turf.feature(before.site))).toBeNull();
+        expect(validateDesignContent(next).ok).toBe(true);
+        expect(design).toEqual(original);
+    });
+    it('reshapes a park or square, updates its land and removes furniture outside the new boundary', () => {
+        for (const spaceKind of ['park','square']) {
+            const design=make('space',{spaceKind,treeCount:0});
+            design.structureProposal.decorationDesign={version:3,trees:[],benches:[
+                {coordinate:[-.0998,51.5002],bearing:0},{coordinate:[-.0982,51.5018],bearing:90}]};
+            const before=structuredClone(design);
+            const geometry={type:'Polygon',coordinates:[[[-.1,51.5],[-.099,51.5],[-.099,51.501],[-.1,51.501],[-.1,51.5]]]};
+            const next=edit(design,[{op:'replace',path:'/structureProposal/geometry',value:geometry}]);
+            expect(next.site).toEqual(geometry);
+            expect(next.structureProposal.decorationDesign.benches).toEqual([before.structureProposal.decorationDesign.benches[0]]);
+            expect(design).toEqual(before);
+            expect(validateDesignContent(next).ok).toBe(true);
+        }
+    });
     it('rejects stale revisions, failed tests, invalid pointers and prototype pollution atomically', () => {
         const design=make('building',{floors:4}), before=structuredClone(design);
         expect(()=>editedDesign(design,cidOfObject({wrong:true}),[{op:'replace',path:'/title',value:'Changed'}])).toThrow(/revision/);
@@ -61,6 +141,20 @@ describe('granular authored editing', () => {
         expect(()=>edit(design,[{op:'remove',path:'/roadProposal/definition/osm/elements/0'}])).toThrow(/nodes/);
         expect(()=>edit(design,[{op:'transform',path:'/roadProposal/definition/polygon',eastM:1}])).toThrow(/derived/);
     });
+    it('prepares a new construction frame when canonical road nodes move to another city', () => {
+        const design=make('road',{points:[[-.1,51.5],[-.099,51.5]],preset:'1+1'}), before=structuredClone(design);
+        const next=edit(design,[
+            {op:'replace',path:'/roadProposal/definition/osm/elements/0/lon',value:78.474},
+            {op:'replace',path:'/roadProposal/definition/osm/elements/0/lat',value:17.36},
+            {op:'replace',path:'/roadProposal/definition/osm/elements/1/lon',value:78.475},
+            {op:'replace',path:'/roadProposal/definition/osm/elements/1/lat',value:17.361}
+        ]);
+        expect(next.roadProposal.definition.constructionFrame.anchor).toEqual([78.4745,17.3605]);
+        expect(next.site).toEqual(next.roadProposal.definition.polygon);
+        expect(validateDesignContent(next).ok).toBe(true);
+        expect(next.origin.cid).toBe(cidOfObject(design));
+        expect(design).toEqual(before);
+    });
     it('patches park trees, paths and furniture while preserving other authored decorations', () => {
         const design=make('space',{spaceKind:'park',treeCount:5}), saved=structuredClone(design.structureProposal.decorationDesign);
         const next=edit(design,[{op:'copy',from:'/structureProposal/decorationDesign/trees/0',path:'/structureProposal/decorationDesign/trees/-'},
@@ -72,6 +166,45 @@ describe('granular authored editing', () => {
         expect(next.structureProposal.decorationDesign.benches).toHaveLength(1);
         expect(next.structureProposal.decorationDesign.paths).toHaveLength(1);
         expect(()=>edit(design,[{op:'add',path:'/structureProposal/decorations',value:{trees:[]}}])).toThrow(/runtime|noncanonical/);
+    });
+    it('makes a tree taller and puts a square tree in a pit like the editor, refusing pits outside squares', () => {
+        const square=make('space',{spaceKind:'square'});
+        const tree={coordinate:[-.0995,51.5005],kind:'broadleaf',heightM:9,pit:'grille'};
+        const next=edit(square,[{op:'add',path:'/structureProposal/decorationDesign',value:{version:2,trees:[tree]}}]);
+        expect(next.structureProposal.decorationDesign.trees).toEqual([tree]);
+        const taller=edit(next,[{op:'replace',path:'/structureProposal/decorationDesign/trees/0/heightM',value:10},
+            {op:'replace',path:'/structureProposal/decorationDesign/trees/0/pit',value:'grass'}]);
+        expect(taller.structureProposal.decorationDesign.trees[0]).toEqual({...tree,heightM:10,pit:'grass'});
+        expect(validateDesignContent(taller).ok).toBe(true);
+        expect(()=>edit(next,[{op:'replace',path:'/structureProposal/decorationDesign/trees/0/pit',value:'cobbles'}])).toThrow(expect.objectContaining({code:'invalid-tree'}));
+        expect(()=>edit(next,[{op:'replace',path:'/structureProposal/decorationDesign/trees/0/heightM',value:15}])).toThrow(expect.objectContaining({code:'invalid-tree'}));
+        const park=make('space',{spaceKind:'park',treeCount:0});
+        expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/trees/-',value:tree}])).toThrow(expect.objectContaining({code:'invalid-tree'}));
+    });
+    it('normalizes square/park furniture models and lamps like the site and refuses kinds the structure lacks', () => {
+        const square=make('space',{spaceKind:'square'}), url='https://api.example/uploads/models/statue.glb';
+        const next=edit(square,[{op:'add',path:'/structureProposal/decorationDesign',value:{version:2,benches:[],
+            lamps:[{coordinate:[-.0995,51.5005],bearing:370},{coordinate:[-.0985,51.5015]}],
+            models:{statue:{url,name:`  ${'s'.repeat(130)}  `},fountain:{url}}}}]);
+        expect(next.structureProposal.decorationDesign.lamps).toEqual([{coordinate:[-.0995,51.5005],bearing:10},{coordinate:[-.0985,51.5015],bearing:0}]);
+        expect(next.structureProposal.decorationDesign.models).toEqual({statue:{url,name:'s'.repeat(120)},fountain:{url}});
+        expect(validateDesignContent(next).ok).toBe(true);
+        expect(edit(next,[{op:'replace',path:'/structureProposal/decorationDesign/models',value:{}}]).structureProposal.decorationDesign).not.toHaveProperty('models');
+        const park=make('space',{spaceKind:'park',treeCount:0}), lake=make('space',{spaceKind:'lake'});
+        expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/models',value:{statue:{url}}}])).toThrow(expect.objectContaining({code:'furniture-kind-not-allowed'}));
+        // Market stalls are park furniture too: a stall model, coloured canopies, and bare coordinates.
+        const stalls=edit(park,[{op:'add',path:'/structureProposal/decorationDesign/models',value:{stall:{url}}},
+            {op:'add',path:'/structureProposal/decorationDesign/stalls',value:[{coordinate:[-.0995,51.5005],bearing:-45,color:' #D64545 '},
+                {coordinate:[-.0994,51.5005],color:'red'},[-.0993,51.5005]]}]).structureProposal.decorationDesign;
+        expect(stalls.models).toEqual({stall:{url}});
+        expect(stalls.stalls).toEqual([{coordinate:[-.0995,51.5005],bearing:315,color:'#d64545'},{coordinate:[-.0994,51.5005],bearing:0},{coordinate:[-.0993,51.5005],bearing:0}]);
+        expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/stalls',value:[{coordinate:[-.0995,951.5],bearing:0}]}])).toThrow(expect.objectContaining({code:'invalid-decoration'}));
+        expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/stalls',value:[{bearing:0}]}])).toThrow(expect.objectContaining({code:'invalid-decoration'}));
+        expect(()=>edit(lake,[{op:'add',path:'/structureProposal/decorationDesign',value:{stalls:[[-.0995,51.5005]]}}])).toThrow(expect.objectContaining({code:'furniture-kind-not-allowed'}));
+        expect(()=>edit(lake,[{op:'add',path:'/structureProposal/decorationDesign',value:{lamps:[{coordinate:[-.0995,51.5005],bearing:0}]}}])).toThrow(expect.objectContaining({code:'furniture-kind-not-allowed'}));
+        expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/models',value:{bench:{name:'No asset'}}}])).toThrow(expect.objectContaining({code:'invalid-decoration'}));
+        expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/lamps',value:[{bearing:0}]}])).toThrow(expect.objectContaining({code:'invalid-decoration'}));
+        expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/lamps',value:{coordinate:[-.0995,51.5005]}}])).toThrow(expect.objectContaining({code:'invalid-decoration'}));
     });
     it('moves a shared plot boundary with granular vertex edits and rejects gaps or overlap', () => {
         const design=make('parcel-layout',{algorithm:'equal',count:2});
@@ -90,8 +223,8 @@ describe('granular authored editing', () => {
         expect(()=>edit(design,[{op:'replace',path:'/geometry/buildings/0/geometry/coordinates/0/1',value:[NaN,51]}])).toThrow();
         expect(()=>edit(design,[{op:'add',path:'/geometry/buildings/0/properties/minFootprint',value:{type:'Polygon',coordinates:[]}}])).toThrow();
         expect(()=>edit(design,[{op:'add',path:'/buildingProposal/parameters/width',value:30}])).toThrow(/geometry/);
-        design.geometry.blockMassing={...structuredClone(design.geometry.buildings[0]),properties:{massing:true}};
-        expect(()=>edit(design,[{op:'transform',path:'/geometry/buildings/0/geometry',degrees:10}])).toThrow(/blockMassing/);
+        design.geometry.ruleMassing={...structuredClone(design.geometry.buildings[0]),properties:{massing:true}};
+        expect(()=>edit(design,[{op:'transform',path:'/geometry/buildings/0/geometry',degrees:10}])).toThrow(/ruleMassing/);
     });
     it('cuts and buffers polygons using existing geometry rather than invented coordinates', () => {
         const design=make('building',{floors:4,coverage:.1});

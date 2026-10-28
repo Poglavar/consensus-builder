@@ -266,6 +266,20 @@ function corridorProfileWidth(profile) {
     return normalized.strips.reduce((total, strip) => total + strip.width, 0);
 }
 
+// The same cross-section seen from the other end: the strips in reverse order and every one-way lane's
+// direction swapped. Lanes are laid out left to right of the direction the centre line runs, and
+// `forward`/`backward` are relative to it too, so a centre line that is reversed carries this profile.
+function reversedCorridorProfile(profile) {
+    const normalized = normalizeCorridorProfile(profile);
+    if (!normalized) return null;
+    const swapped = { forward: 'backward', backward: 'forward' };
+    return {
+        strips: normalized.strips.slice().reverse().map(strip => (swapped[strip.direction]
+            ? { ...strip, direction: swapped[strip.direction] }
+            : { ...strip }))
+    };
+}
+
 // Round to millimetres: the presets are exact, but rebalancing divides.
 function roundStripWidth(width) {
     return Math.round(width * 1000) / 1000;
@@ -1469,6 +1483,31 @@ function junctionNeedsTreatment(node) {
 }
 
 // Planar entries for the junction finder: one per road piece, with its profile and identity.
+function corridorJunctionPriority(profile, corridorId, segmentId) {
+    const normalized = normalizeCorridorProfile(profile);
+    const edges = normalized && corridorProfileEdges(normalized);
+    if (!normalized || !edges) return null;
+    const stableStrip = strip => Object.fromEntries(Object.keys(strip).sort().map(key => [key, strip[key]]));
+    const stableId = [corridorId, segmentId].map(value => value === null || value === undefined ? '' : String(value));
+    const orientedKey = reversed => {
+        const leftEdge = reversed ? -edges.carriagewayRight : edges.carriagewayLeft;
+        const rightEdge = reversed ? edges.carriagewayLeft : -edges.carriagewayRight;
+        const outerLeft = reversed ? edges.outerRight : edges.outerLeft;
+        const outerRight = reversed ? edges.outerLeft : edges.outerRight;
+        const inbound = reversed ? edges.inbound.end : edges.inbound.start;
+        const inboundOutward = inbound && reversed ? [-inbound[1], -inbound[0]] : inbound;
+        const strips = (reversed ? reversedCorridorProfile(normalized) : normalized).strips.map(stableStrip);
+        // This signature is a deterministic tie policy, not a claim about which duplicate source
+        // is authoritative. Width remains the primary choice; canonical oriented content and then
+        // stable source IDs only decide otherwise equal candidates.
+        return JSON.stringify([
+            leftEdge, rightEdge, outerLeft, outerRight, edges.total, edges.hasSidewalk,
+            inboundOutward, strips, stableId
+        ]);
+    };
+    return { forward: orientedKey(false), reverse: orientedKey(true) };
+}
+
 function planarJunctionEntries(entries, frame) {
     return (entries || [])
         .filter(entry => Array.isArray(entry && entry.points) && entry.points.length >= 2)
@@ -1477,8 +1516,21 @@ function planarJunctionEntries(entries, frame) {
             corridorId: (entry.corridorId !== undefined && entry.corridorId !== null) ? String(entry.corridorId) : null,
             segmentId: (entry.segmentId !== undefined && entry.segmentId !== null) ? String(entry.segmentId) : null,
             width: entry.profile ? corridorProfileWidth(entry.profile) : Number(entry.width) || 0,
+            junctionPriority: entry.profile ? corridorJunctionPriority(
+                entry.profile,
+                (entry.corridorId !== undefined && entry.corridorId !== null) ? String(entry.corridorId) : null,
+                (entry.segmentId !== undefined && entry.segmentId !== null) ? String(entry.segmentId) : null
+            ) : null,
             points: entry.points
-                .map(point => (point && Number.isFinite(point.lat) && Number.isFinite(point.lng)) ? frame.latLngToMetric(point.lat, point.lng) : null)
+                .map(point => {
+                    if (!point || !Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return null;
+                    const xy = frame.latLngToMetric(point.lat, point.lng);
+                    if (!Array.isArray(xy) || !Number.isFinite(xy[0]) || !Number.isFinite(xy[1])) return null;
+                    // Preserve level only as a topological key for node matching. Junction math
+                    // continues to use x/y alone; omitted levels share ground level 0.
+                    const level = (typeof point.level === 'number' && Number.isFinite(point.level)) ? point.level : 0;
+                    return [xy[0], xy[1], level];
+                })
                 .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1]))
         }))
         .filter(entry => entry.points.length >= 2);
@@ -1523,6 +1575,7 @@ function junctionTreatmentFor(node, frame, options = {}) {
     return {
         lat,
         lng,
+        level: Number.isFinite(node.point[2]) ? node.point[2] : 0,
         degree: junction.degree,
         corridorIds,
         surfacePolygons: junction.surface.map(toLatLng),
@@ -1600,7 +1653,8 @@ function buildCorridorJunctionSet(corridors) {
     const seen = new Set();
     const treatments = [];
     const keep = list => list.forEach(treatment => {
-        const key = `${(treatment.corridorIds || []).join('|')}@${Number(treatment.lat).toFixed(7)},${Number(treatment.lng).toFixed(7)}`;
+        const level = Number.isFinite(treatment.level) ? treatment.level : 0;
+        const key = `${(treatment.corridorIds || []).join('|')}@${Number(treatment.lat).toFixed(7)},${Number(treatment.lng).toFixed(7)}#${level}`;
         if (seen.has(key)) return;
         seen.add(key);
         treatments.push(treatment);
@@ -1692,6 +1746,8 @@ function corridorJunctionsIn(corridors, frame) {
                 const len2 = dx * dx + dy * dy;
                 const inserts = [];
                 if (len2 > 1e-9) {
+                    const levelA = Number.isFinite(a[2]) ? a[2] : 0;
+                    const levelB = Number.isFinite(b[2]) ? b[2] : 0;
                     planarEntries.forEach(other => {
                         if (other.corridorId === target.corridorId) return;
                         other.points.forEach(point => {
@@ -1699,7 +1755,12 @@ function corridorJunctionsIn(corridors, frame) {
                             if (t <= 1e-6 || t >= 1 - 1e-6) return;
                             const px = a[0] + t * dx;
                             const py = a[1] + t * dy;
-                            if (Math.hypot(point[0] - px, point[1] - py) <= TOLERANCE) inserts.push({ t, point: [point[0], point[1]] });
+                            if (Math.hypot(point[0] - px, point[1] - py) > TOLERANCE) return;
+                            const pointLevel = Number.isFinite(point[2]) ? point[2] : 0;
+                            // Levels are discrete topology labels, not an elevation to interpolate.
+                            // Only a same-level span can receive a render-only T node.
+                            if (levelA !== levelB || pointLevel !== levelA) return;
+                            inserts.push({ t, point: [point[0], point[1], pointLevel] });
                         });
                     });
                 }
@@ -2424,6 +2485,7 @@ if (typeof module !== 'undefined' && module.exports) {
         CORRIDOR_PROFILE_PRESETS,
         normalizeCorridorProfile,
         corridorProfileWidth,
+        reversedCorridorProfile,
         corridorProfileFromLegacy,
         corridorDefaultTrackProfile,
         corridorProfileOf,

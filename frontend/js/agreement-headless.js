@@ -6,7 +6,7 @@
     if (root) root.AgreementHeadless = api;
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
     'use strict';
-    async function derive({ designs, parcels, ownerOf = () => [] }) {
+    async function materialize({ designs, parcels }) {
         const turf = root.turf;
         const fabric = root.createLiveParcelFabric({ geometry: turf });
         const mutation = fabric.beginMutation({ kind: 'mcp-ground' });
@@ -14,9 +14,14 @@
         mutation.seedCadastre(source);
         const originals = new Map(source.map(f => [f.properties.parcelId, f]));
         const rows = designs.map(d => ({ ...structuredClone(d.content), proposalId: d.cid, cadastreParcelIds: d.parcelIds,
-            createdAt: d.content.authoredAt, applied: true, lifecycleStatus: 'active' }));
+            createdAt: d.content.authoredAt, binding: d.binding, applied: true, lifecycleStatus: 'active' }));
         const store = { peekAllProposals: () => rows, getAllProposals: () => rows, getProposal: id => rows.find(r => r.proposalId === id), _indexProposal() {}, save() {} };
-        const options = { deferPresentation: true, _parcelMutation: { fabric: mutation, proposals: store, storage: { getItem: () => null }, agents: { getAgent: () => null } } };
+        const values = new Map(), people = new Map();
+        const storage = { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value),
+            removeItem: key => values.delete(key), keys: () => [...values.keys()] };
+        const agents = { getAgent: id => people.get(id), getAllAgents: () => [...people.values()],
+            addAgent: agent => people.set(agent.id, agent), updateAgent: (id, patch) => people.set(id, { ...people.get(id), ...patch }) };
+        const options = { deferPresentation: true, _parcelMutation: { fabric: mutation, proposals: store, storage, agents } };
         const manager = Object.create(root.ProposalManager);
         let lastFailure;
         // This host has no Leaflet or persistence: effect ports write only the private fabric draft.
@@ -29,6 +34,7 @@
             .map(piece => root.__parcelArrangement.featureForPiece(piece, parcel)));
         mutation.replaceCadastreScope([...originals.keys()], roadPieces);
         for (const row of root.__planOrder.orderFormations(rows)) {
+            if (!row.cadastreParcelIds.length) continue;
             if (row.parcelLayout) {
                 if (!await manager._applyParcelLayoutProposal(row.proposalId, row, options)) throw Object.assign(new Error(lastFailure?.message || 'Layout could not form'), lastFailure);
             } else if (row.structureProposal) {
@@ -46,9 +52,20 @@
                 const buildings = row.geometry?.buildings || [];
                 const goal = root.__applyRoute.normalizeGoalKey(row.goal);
                 if (root.ProposalApplyBuildings.shouldFormOwnBuildingParcel(row, goal, buildings.length)) {
-                    const parents = manager._resolveLiveFormationParents(row, row.proposalId, 'building', options);
+                    // Roads already partition the private live fabric. Resolve the surviving
+                    // material and reviewed take against those pieces, just as structure replay
+                    // does, while keeping the immutable authored row in the agreement unchanged.
+                    const landTake = row.geometry?.landTake;
+                    const takeGeometry = landTake?.geometry || landTake;
+                    const carved = manager._groundAfterLaterCorridors(row,
+                        [buildings[0].geometry, ...(takeGeometry ? [takeGeometry] : [])], options);
+                    if (!carved.geometries[0]) throw new Error('A later corridor takes the entire building');
+                    const record = { ...row, geometry: { ...row.geometry,
+                        buildings: [{ ...buildings[0], geometry: carved.geometries[0] }],
+                        ...(takeGeometry ? { landTake: landTake.geometry ? { ...landTake, geometry: carved.geometries[1] } : carved.geometries[1] } : {}) } };
+                    const parents = manager._resolveLiveFormationParents(record, row.proposalId, 'building', options);
                     if (!parents.ok) throw new Error(parents.message);
-                    const formed = await manager._formBuildingParcel(row.proposalId, row, row.buildingProposal, buildings[0].geometry, parents.ids, row.proposalId, parents.features, options);
+                    const formed = await manager._formBuildingParcel(row.proposalId, record, row.buildingProposal, carved.geometries[0], parents.ids, row.proposalId, parents.features, options);
                     if (!formed.ok) throw Object.assign(new Error(lastFailure?.message || 'Building could not form'), lastFailure);
                 }
             }
@@ -56,7 +73,11 @@
         // Validate the whole partition against immutable source facts, then derive with AgreementGround.
         mutation.replaceCadastreScope([...originals.keys()], mutation.list());
         await mutation.prepare(); mutation.publish();
-        return root.AgreementGround.derive({ designs: rows, fabric, originals, ownerOf });
+        return { records: rows, fabric, originals };
     }
-    return { derive };
+    async function derive({ designs, parcels, ownerOf = () => [] }) {
+        const result = await materialize({ designs, parcels });
+        return root.AgreementGround.derive({ designs: result.records, fabric: result.fabric, originals: result.originals, ownerOf });
+    }
+    return { derive, materialize };
 });

@@ -7,6 +7,7 @@
 // gain), so an agent's proposal is measured exactly the way the UI measures a human's.
 
 import { createRequire } from 'node:module';
+import { buildingBaseline } from './building-baseline.js';
 
 const require = createRequire(import.meta.url);
 const {
@@ -49,7 +50,9 @@ function ruleSourceOf(rule) {
  *
  * Skips a parcel when the rule excludes it (evaluateParcel status ≠ 'ok'), when no build-out can be
  * sampled inside the envelope, when it exceeds a stated coverage/GFA limit, when the build-out cannot be measured, or when it would not add
- * floor area over what is already built — an agent that proposes less than exists is noise.
+ * floor area over a known existing-stock baseline — an agent that proposes less than exists is noise.
+ * An unknown baseline permits geometry previews, but dependent quantities and weighted scores stay
+ * null. Only a named source with complete inventory coverage can establish existing-stock totals.
  *
  * Scoring (all parts in 0..1 before weighting):
  *   density      (proposed − built) / max(proposed, 1)   — how much of the result is new
@@ -88,8 +91,8 @@ export function planCandidates(parcels, persona, {
         if (!parcel || !parcel.geometry) return;
 
         const areaM2 = num(parcel.areaM2);
-        const builtGfaM2 = num(parcel.builtGfaM2) ?? 0;
-        const builtFootprintM2 = num(parcel.builtFootprintM2) ?? 0;
+        const baseline = buildingBaseline(parcel);
+        const { builtGfaM2, builtFootprintM2 } = baseline;
         const sourceRule = (parcel.rule && typeof parcel.rule === 'object') ? parcel.rule : null;
 
         // A rule that states nothing takes the module's own defaults — never Number(null), which
@@ -134,10 +137,11 @@ export function planCandidates(parcels, persona, {
         const maxGfaM2 = num(sourceRule && sourceRule.maxGfaM2);
         if (maxGfaM2 !== null && proposedGfaM2 > maxGfaM2) return;
 
-        // No uplift, no proposal.
-        if (!(proposedGfaM2 > builtGfaM2)) return;
+        // A known non-positive uplift is rejected. Unknown stock still permits a geometry preview,
+        // but it cannot establish gain, an offer or an uplift-based ranking.
+        if (builtGfaM2 !== null && proposedGfaM2 <= builtGfaM2) return;
 
-        const gain = computeGain({
+        const gain = builtGfaM2 === null ? null : computeGain({
             builtFloorArea: builtGfaM2,
             proposedFloorArea: proposedGfaM2,
             pricePerM2: money.salePricePerM2,
@@ -145,10 +149,10 @@ export function planCandidates(parcels, persona, {
             parcelCount: 1
         }).gain;
 
-        const density = (proposedGfaM2 - builtGfaM2) / Math.max(proposedGfaM2, 1);
-        const openSpace = (areaM2 !== null && areaM2 > 0)
+        const density = builtGfaM2 === null ? null : (proposedGfaM2 - builtGfaM2) / Math.max(proposedGfaM2, 1);
+        const openSpace = (builtFootprintM2 !== null && areaM2 !== null && areaM2 > 0)
             ? Math.max(0, 1 - (builtFootprintM2 / areaM2))
-            : 0;
+            : null;
 
         candidates.push({
             candidateId: `${personaName}:${parcel.parcelId}`,
@@ -160,22 +164,22 @@ export function planCandidates(parcels, persona, {
             areaM2,
             centroid: parcel.centroid ?? null,
             geometry: parcel.geometry,
-            buildingCount: num(parcel.buildingCount) ?? 0,
-            builtGfaM2,
-            rule: { maxFloors: allowedFloors, minSetbackM: rule.minDistance, source: ruleSourceOf(sourceRule) },
+            ...baseline,
+            ...(parcel.buildingObservations ? { buildingObservations: { ...parcel.buildingObservations } } : {}),
+            rule: { maxFloors: allowedFloors, minSetbackM: rule.minDistance, source: ruleSourceOf(sourceRule),
+                ...(persona.planningPolicy === 'proposed-design' ? { controls: { floors: num(sourceRule?.maxFloors) === null ? 'assumed' : 'mapped', setback: num(sourceRule?.minSetbackM) === null ? 'assumed' : 'mapped' } } : {}) },
             allowedFloors,
             plannedFloors: rule.maxFloors,
             parcelNumber: parcel.parcelNumber ?? null,
-            builtKnown: parcel.builtKnown !== false,
             ...(parcel.rival ? { rival: parcel.rival } : {}),
             envelope: evaluated.envelope,
             massing,
             proposedGfaM2,
             currency: money.currency,
             gain,
-            offer: Math.round(gain * offerShareOfGain),
-            score: 0,
-            scoreParts: { density, valueUplift: 0, openSpace, heritage: 0 },
+            offer: gain === null ? null : Math.round(gain * offerShareOfGain),
+            score: null,
+            scoreParts: { density, valueUplift: null, openSpace, heritage: 0 },
             // The exact rule the envelope and the build-out were derived from. record-builder.js
             // stamps this onto buildingProposal.parameters.rule so the stored proposal can be
             // re-derived: the same rule and the same seed reproduce this massing.
@@ -185,7 +189,8 @@ export function planCandidates(parcels, persona, {
 
     // valueUplift is relative to the best gain in THIS set, so it can only be filled once the set
     // is known. With no positive gain anywhere the term contributes nothing rather than dividing.
-    const maxGain = candidates.reduce((best, c) => Math.max(best, c.gain), 0);
+    const maxProposedGfa = Math.max(1, ...candidates.map(candidate => candidate.proposedGfaM2));
+    const maxGain = candidates.reduce((best, c) => c.gain === null ? best : Math.max(best, c.gain), 0);
     const weights = {
         density: weightOf(persona, 'density'),
         valueUplift: weightOf(persona, 'valueUplift'),
@@ -193,15 +198,30 @@ export function planCandidates(parcels, persona, {
         heritage: weightOf(persona, 'heritage')
     };
     for (const candidate of candidates) {
-        candidate.scoreParts.valueUplift = maxGain > 0 ? candidate.gain / maxGain : 0;
-        candidate.score = weights.density * candidate.scoreParts.density
-            + weights.valueUplift * candidate.scoreParts.valueUplift
-            + weights.openSpace * candidate.scoreParts.openSpace
-            + weights.heritage * candidate.scoreParts.heritage;
+        candidate.scoreParts.valueUplift = candidate.gain === null ? null : maxGain > 0 ? candidate.gain / maxGain : 0;
+        if (persona.planningPolicy === 'proposed-design') {
+            const footprintM2 = num(measureBuilding(candidate.massing, {}, { floorHeightM }).footprintM2);
+            const openSpaceRatio = candidate.areaM2 > 0 && footprintM2 !== null ? Math.max(0, 1 - footprintM2 / candidate.areaM2) : null;
+            const designWeights = persona.designWeights;
+            if (!designWeights || ![designWeights.floorArea, designWeights.openSpace].every(value => typeof value === 'number' && Number.isFinite(value) && value >= 0) || designWeights.floorArea + designWeights.openSpace <= 0) {
+                throw new Error('proposed-design policy needs positive designWeights for floorArea/openSpace');
+            }
+            candidate.designPolicy = { kind: 'proposed-design', ruleBasis: candidate.rule.source === 'urban-rule' ? 'mapped' : 'assumed', controls: {
+                    floors: { value: candidate.allowedFloors, basis: candidate.rule.controls.floors },
+                    setback: { value: candidate.rule.minSetbackM, basis: candidate.rule.controls.setback }
+                }, footprintM2, openSpaceRatio,
+                score: openSpaceRatio === null ? null : designWeights.floorArea * candidate.proposedGfaM2 / maxProposedGfa + designWeights.openSpace * openSpaceRatio };
+        }
+        const weighted = Object.entries(weights).filter(([, weight]) => weight !== 0);
+        candidate.score = weighted.some(([part]) => candidate.scoreParts[part] === null) ? null
+            : weighted.reduce((score, [part, weight]) => score + weight * candidate.scoreParts[part], 0);
     }
 
     // candidateId breaks ties so the order is total, not merely sorted — two parcels with equal
     // scores must not swap places between runs.
-    candidates.sort((a, b) => (b.score - a.score) || a.candidateId.localeCompare(b.candidateId));
+    const rank = candidate => candidate.designPolicy?.score ?? candidate.score;
+    candidates.sort((a, b) => (rank(a) === null) - (rank(b) === null)
+        || (rank(a) !== null && rank(b) !== null ? rank(b) - rank(a) : 0)
+        || a.candidateId.localeCompare(b.candidateId));
     return candidates.slice(0, Math.max(0, limit));
 }

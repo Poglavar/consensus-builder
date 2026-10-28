@@ -15,9 +15,12 @@ const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
 const agreementClient = require('../../../frontend/js/solana/agreement-client.js');
 const marketClient = require('../../../frontend/js/solana/market-client.js');
+const lmsrClient = require('../../../frontend/js/solana/lmsr-client.js');
+const lmsrMath = require('../../../frontend/js/bets/lmsr.js');
 const pledgeClient = require('../../../frontend/js/solana/pledge-client.js');
 agreementClient.configure({ web3 });
 marketClient.configure({ web3 });
+lmsrClient.configure({ web3 });
 pledgeClient.configure({ web3 });
 
 const { constants, IX_DISCRIMINATORS, ACCOUNT_DISCRIMINATORS } = agreementClient;
@@ -71,6 +74,32 @@ export function positionAccount({ agreement, owner, side = 1, amount = 0n, claim
     const data = Buffer.concat([Buffer.from(marketClient.ACCOUNT_DISCRIMINATORS.Position), key(market), key(owner), Buffer.from([side]),
         u64(amount), Buffer.from([claimed ? 1 : 0, 253])]);
     return { address: address.toBase58(), owner: marketClient.constants.PROGRAM_ID, data: new Uint8Array(data) };
+}
+
+/** Current sponsor-bound LMSR market account for agent trade and settlement tests. */
+export function lmsrMarketAccount({ agreement, sponsor, stakeMint = pledgeClient.constants.USDC_DEVNET_MINT,
+    closesAt, b = 100_000_000n, qYes = 0n, qNo = 0n, resolved = false, outcome = 0, schema = web3.PublicKey.default.toBase58() }) {
+    const [address] = lmsrClient.getMarketPda(agreement, sponsor);
+    const data = Buffer.alloc(lmsrClient.MARKET_SIZE);
+    Buffer.from(lmsrClient.ACCOUNT_DISCRIMINATORS.LmsrMarket).copy(data, 0);
+    data[8] = lmsrClient.constants.KIND_PROPOSAL;
+    key(agreement).copy(data, 9); key(sponsor).copy(data, 41); key(stakeMint).copy(data, 73);
+    key(lmsrClient.getVaultAddress(address, stakeMint)).copy(data, 105);
+    data.writeBigUInt64LE(BigInt(b), 137); data.writeBigUInt64LE(BigInt(qYes), 145); data.writeBigUInt64LE(BigInt(qNo), 153);
+    data.writeBigUInt64LE(lmsrMath.maxLoss(BigInt(b)), 161); data.writeBigInt64LE(BigInt(closesAt), 169);
+    data.writeUInt32LE(0, 177); data.writeBigUInt64LE(0n, 181); key(schema).copy(data, 381);
+    data[413] = resolved ? 1 : 0; data[414] = outcome;
+    return { address: address.toBase58(), owner: lmsrClient.constants.PROGRAM_ID, data: new Uint8Array(data) };
+}
+
+/** Current LMSR position account. */
+export function lmsrPositionAccount({ market, owner, side = 1, amount = 0n, claimed = false }) {
+    const [address] = lmsrClient.getPositionPda(market, owner, side);
+    const data = Buffer.alloc(lmsrClient.POSITION_SIZE);
+    Buffer.from(lmsrClient.ACCOUNT_DISCRIMINATORS.Position).copy(data, 0);
+    key(market).copy(data, 8); key(owner).copy(data, 40); data[72] = side;
+    data.writeBigUInt64LE(BigInt(amount), 73); data[81] = claimed ? 1 : 0;
+    return { address: address.toBase58(), owner: lmsrClient.constants.PROGRAM_ID, data: new Uint8Array(data) };
 }
 
 /** proposal_pledge DonationEscrow at PDA ["donation_escrow", agreement]. */
@@ -270,6 +299,21 @@ export function createAgreementChain({ now = systemNow } = {}) {
     }
 
     const connection = {
+        async getGenesisHash() { return 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG'; },
+        async getMultipleAccountsInfoAndContext(addresses) {
+            return { context: { slot: 1 }, value: addresses.map(address => {
+                const entry = accounts.get(address.toBase58());
+                return entry ? { owner: new web3.PublicKey(entry.owner), data: Buffer.from(entry.data), lamports: 1_000_000, executable: false } : null;
+            }) };
+        },
+        async getMultipleAccountsInfo(addresses) {
+            return addresses.map(address => {
+                const entry = accounts.get(address.toBase58());
+                return entry ? { owner: new web3.PublicKey(entry.owner), data: Buffer.from(entry.data), lamports: 1_000_000, executable: false } : null;
+            });
+        },
+        async getSlot() { return 1; },
+        async getBlockTime() { return now(); },
         async getAccountInfo(address) {
             const entry = accounts.get(typeof address === 'string' ? address : address.toBase58());
             return entry ? { owner: new web3.PublicKey(entry.owner), data: Buffer.from(entry.data), lamports: 1_000_000, executable: false } : null;

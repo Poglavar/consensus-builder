@@ -1,5 +1,5 @@
 // ui/search-model.js — the pure half of the map search box (js/ui/map-search.js): what a query looks
-// like (city, parcel id, proposal, address, command), which parcel ids to try for it, how result
+// like (city, parcel id, plan, design, address, command), which parcel ids to try for it, how result
 // groups are ranked, where a geocoded place sits relative to the configured cities, the recent
 // searches list and the keyboard selection state. No DOM, no network; UMD so
 // backend/test/frontend-map-search.test.js runs it headlessly. window.SearchModel in the browser.
@@ -10,8 +10,8 @@
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
 
-    const GROUPS = Object.freeze(['recent', 'cities', 'parcels', 'proposals', 'places', 'commands']);
-    const GROUP_LIMITS = Object.freeze({ recent: 8, cities: 12, parcels: 5, proposals: 8, places: 5, commands: 5 });
+    const GROUPS = Object.freeze(['recent', 'plans', 'proposals', 'cities', 'parcels', 'places', 'commands']);
+    const GROUP_LIMITS = Object.freeze({ recent: 8, cities: 12, parcels: 5, plans: 20, proposals: 20, places: 5, commands: 5 });
     const RECENT_MAX = 8;
     const PLACE_MIN_CHARS = 3;
     const PROPOSAL_MIN_CHARS = 2;
@@ -81,7 +81,7 @@
         const wordy = hasLetter && !parcel;
         if (wordy) kinds.push('city');
         if (parcel) kinds.push('parcel');
-        if (trimmed.length >= PROPOSAL_MIN_CHARS) kinds.push('proposal');
+        if (trimmed.length >= PROPOSAL_MIN_CHARS) kinds.push('plan', 'proposal');
         if (trimmed.length >= PLACE_MIN_CHARS && wordy) kinds.push('address');
         if (hasLetter) kinds.push('command');
         return { text: trimmed, empty: false, parcelLike: parcel, kinds };
@@ -196,6 +196,33 @@
         return localItems.concat(rankProposals(remoteItems, currentCityId));
     }
 
+    function rankPlans(plans, query) {
+        const seen = new Set();
+        return plans.filter(plan => {
+            if (!plan?.cid || seen.has(plan.cid)) return false;
+            seen.add(plan.cid);
+            return true;
+        }).map(plan => ({ ...plan, rank: matchRank(plan.title, query) ?? matchRank(plan.cid, query) }))
+            .filter(plan => plan.rank !== null).sort((a, b) => a.rank - b.rank || a.title.localeCompare(b.title));
+    }
+
+    // Repeated queries reuse small metadata responses; failures are never put in this cache.
+    function createQueryCache({ limit = 20, maxAgeMs = 30000, now = Date.now } = {}) {
+        const rows = new Map();
+        return {
+            get(key) {
+                const row = rows.get(key);
+                if (!row || now() - row.time >= maxAgeMs) { rows.delete(key); return undefined; }
+                rows.delete(key); rows.set(key, row);
+                return row.value;
+            },
+            set(key, value) {
+                rows.delete(key); rows.set(key, { value, time: now() });
+                if (rows.size > limit) rows.delete(rows.keys().next().value);
+            }
+        };
+    }
+
     // Photon GeoJSON → plain places. `type` is Photon's feature class (house, street, city, ...).
     function parsePhoton(payload) {
         const features = payload && Array.isArray(payload.features) ? payload.features : [];
@@ -288,9 +315,9 @@
         return [text, ...prev.filter(item => normalize(item) !== normalize(text))].slice(0, max);
     }
 
-    // Order groups by their best item (rank 0 exact … 3 substring); ties keep GROUPS order. Server
-    // and geocoder results carry no rank of ours and count as a word match (2), a parcel-looking
-    // query puts parcels at 0. Empty groups drop out, every group is cut to its limit.
+    // Plans lead, then designs; other groups sort by their best item (0 exact … 3 substring).
+    // Ties keep GROUPS order. Geocoder results count as a word match (2), parcel ids as exact (0).
+    // Empty groups drop out, every group is cut to its limit.
     function orderGroups(groups) {
         const order = new Map(GROUPS.map((id, i) => [id, i]));
         return (Array.isArray(groups) ? groups : [])
@@ -303,6 +330,8 @@
             .filter(group => group.items.length || group.status)
             .sort((a, b) => {
                 if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+                const priority = group => group.items.length ? ({ plans: 0, proposals: 1 }[group.id] ?? 2) : 2;
+                if (priority(a) !== priority(b)) return priority(a) - priority(b);
                 return (a.best - b.best) || ((order.get(a.id) ?? 99) - (order.get(b.id) ?? 99));
             });
     }
@@ -352,6 +381,8 @@
     return {
         GROUPS,
         GROUP_LIMITS,
+        rankPlans,
+        createQueryCache,
         RECENT_MAX,
         PLACE_MIN_CHARS,
         PROPOSAL_MIN_CHARS,

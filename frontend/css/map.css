@@ -235,6 +235,10 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     gap: var(--cb-space-2);
 }
 
+#model-layer-controls [data-map-modes][hidden] {
+    display: none;
+}
+
 /* Floor-plan toggle and source-accuracy status inside the 3D controls. */
 #model-layer-controls .three-mode-xray-row {
     display: grid;
@@ -290,21 +294,21 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 /* The 3D view's value figures (Built / Planned / Proposed), shown inside the Design and Parcel
    sections of its click stack (js/three-click-stack.js, css/three-click-stack.css). */
 .three-mode-parcel-panel {
-    font-size: var(--cb-text-sm);
+    font-size: var(--cb-text-base);
     color: var(--cb-text);
 }
 
 /* Proposal panel: "Parcels: N" subnote and the average-gain-per-parcel line. */
 .three-mode-parcel-panel .parcel-panel-subnote {
-    font-size: var(--cb-text-xs);
-    color: var(--cb-text-faint);
-    margin: 0 0 8px;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+    margin: 0 0 var(--cb-space-2);
 }
 
 .three-mode-parcel-panel .parcel-panel-avg {
     margin-top: 2px;
-    font-weight: 600;
-    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+    font-size: var(--cb-text-base);
 }
 
 .three-mode-parcel-panel .parcel-panel-avg:empty {
@@ -339,15 +343,19 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 }
 
 .three-mode-parcel-panel .parcel-panel-table th {
-    font-weight: 600;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
     color: var(--cb-text-muted);
+}
+
+.three-mode-parcel-panel .parcel-panel-table thead th {
     border-bottom: 1px solid var(--cb-line);
 }
 
 .three-mode-parcel-panel .parcel-panel-note {
-    font-size: var(--cb-text-xs);
-    color: var(--cb-text-faint);
-    margin: 4px 0 8px;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+    margin: var(--cb-space-1) 0 var(--cb-space-2);
     text-align: right;
 }
 
@@ -369,7 +377,8 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 
 .three-mode-parcel-panel .parcel-panel-slider-label {
     display: block;
-    font-weight: 600;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
     color: var(--cb-text-muted);
     padding-top: 4px;
 }
@@ -379,7 +388,7 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 }
 
 /* The Profit row label explains its formula on hover. */
-.three-mode-parcel-panel .parcel-panel-table td[title] {
+.three-mode-parcel-panel .parcel-panel-table th[title] {
     cursor: help;
 }
 
@@ -521,12 +530,10 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     color: var(--cb-text-muted);
 }
 
-/* Abstract 3D has four Built states but only three Planned states. Two same-width selects avoid
-   uneven segmented cells and keep long translated labels fully readable. The selects take their
-   look from the base form controls (css/primitives.css); only their width is set here. */
+/* Use the available row width for long facade labels. Base form controls supply the appearance. */
 #model-layer-controls .three-mode-display-select {
-    flex: 0 0 168px;
-    width: 168px;
+    flex: 1 1 168px;
+    width: auto;
     min-width: 0;
 }
 
@@ -830,13 +837,29 @@ body.three-mode-active #agent-bubbles-container {
    action view: the planning inspector, proposal card or parcel info panel is moved inside and
    loses its own docking (the .is-hosted rules below). On phones the stack is the bottom sheet.
    The 3D model view's stack (#three-click-stack, js/three-click-stack.js) takes the same frame. */
+.click-stack {
+    font-family: var(--cb-font-sans);
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-normal);
+    line-height: var(--cb-leading);
+    color: var(--cb-text);
+}
+
+.click-stack__title {
+    margin: 0;
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+    line-height: var(--cb-leading);
+    overflow-wrap: anywhere;
+}
+
 #click-stack,
 #three-click-stack {
     position: fixed;
     right: var(--right-dock-gap);
     top: calc(var(--map-shell-top-clearance) + var(--cb-space-2));
-    bottom: var(--right-dock-bottom);
-    max-height: none;
+    bottom: auto;
+    max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--cb-space-2) - var(--right-dock-bottom));
     padding: 0;
     gap: 0;
     background: transparent;
@@ -847,8 +870,7 @@ body.three-mode-active #agent-bubbles-container {
     box-shadow: none;
     pointer-events: none;
     z-index: var(--cb-z-panel);
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 #click-stack.visible,
@@ -861,13 +883,6 @@ body.three-mode-active #agent-bubbles-container {
 #click-stack > .mobile-dock-sheet-handle,
 #three-click-stack > .mobile-dock-sheet-handle {
     pointer-events: auto;
-}
-
-/* The column ends where its content does; only a hosted panel (with its own scrolling body) makes
-   it run to the dock's bottom. */
-#click-stack:not(:has(.is-hosted)),
-#three-click-stack:not(:has(.is-hosted)) {
-    bottom: auto;
 }
 
 /* Folded for Before / after: only the rows show; the open section's panel stays hosted, hidden. */
@@ -892,7 +907,7 @@ body.three-mode-active #agent-bubbles-container {
     display: flex;
     flex-direction: column;
     min-height: 0;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
 }
 
 @keyframes click-stack-focus-pulse {
@@ -902,7 +917,7 @@ body.three-mode-active #agent-bubbles-container {
 
 .click-stack-map-focus {
     animation: click-stack-focus-pulse 1.4s ease-in-out infinite;
-    filter: drop-shadow(0 0 1px #fff);
+    filter: drop-shadow(0 0 1px var(--cb-surface));
     pointer-events: none;
 }
 
@@ -923,7 +938,7 @@ body.three-mode-active #agent-bubbles-container {
 .click-stack__card {
     display: flex;
     flex-direction: column;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     min-height: 0;
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-lg);
@@ -938,43 +953,77 @@ body.three-mode-active #agent-bubbles-container {
     margin-top: var(--cb-space-3);
 }
 
-/* The connector stays behind the cards, centred between successive sections. */
+/* Short connectors follow the icon axis, keeping the relationship visible in the gaps. */
 .click-stack__section + .click-stack__section::before {
     content: '';
     position: absolute;
-    left: calc(50% - 2px);
+    left: calc(var(--cb-space-3) + 14px - 2px);
     top: calc(-1 * var(--cb-space-3) - 2px);
     height: var(--cb-space-3);
-    border-left: 4px solid #000;
-    z-index: -1;
+    border-left: 4px solid var(--cb-line-strong);
+    z-index: calc(var(--cb-z-local-0) - 1);
     pointer-events: none;
 }
 
 .click-stack__section.is-selected > .click-stack__card {
-    border-color: #facc15;
-    box-shadow: inset 0 0 0 2px #facc15, var(--cb-shadow-sm);
+    border-color: var(--cb-map-highlight);
+    box-shadow: inset 0 0 0 1px var(--cb-map-highlight), var(--cb-shadow-sm);
 }
 
-.click-stack__section.is-selected > .click-stack__card > .click-stack__heading {
-    background: #facc15;
-    border-radius: calc(var(--cb-radius-lg) - 1px);
-    --cb-text: #1c1917;
-    --cb-text-muted: #292524;
-    --cb-primary-soft: #fde047;
-    --cb-focus: #1c1917;
+.click-stack__section .click-stack__row > i:first-child {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--cb-line-strong);
+    border-radius: 50%;
+    background: var(--cb-surface-2);
 }
 
-/* The expanded card gives up height down to a floor that keeps its panel's tabs, first lines and
-   actions in view; below that the stack itself scrolls. */
-.click-stack__section.is-expanded:has(.is-hosted) {
-    flex: 1 1 auto;
-    min-height: min(22rem, 70vh);
+.click-stack__section.is-selected .click-stack__row > i:first-child {
+    border-color: var(--cb-map-highlight);
+    background: var(--cb-map-highlight-soft);
+    color: var(--cb-map-highlight-ink);
+}
+
+/* The same dark halo keeps selected map geometry readable over pale imagery and paving. */
+.click-stack-map-focus,
+.proposal-primary-outline,
+.proposal-parcel-outline,
+.proposal-road-outline,
+.proposal-road-selected-outline,
+.proposal-hover-outline {
+    filter: drop-shadow(0 0 2px var(--cb-map-highlight-halo));
+}
+
+/* Short cards fit their content. Only the expanded body shrinks and scrolls when content is
+   long, leaving the other section headings visible within the dock. */
+.click-stack__section.is-expanded {
+    flex: 0 1 auto;
+    min-height: 0;
+}
+
+.click-stack__membership-details {
+    flex: 0 0 auto;
 }
 
 /* In the phone sheet the expanded card is as tall as its panel, which does not scroll inside
    itself: the sheet scrolls, so the panel's tabs, text and actions all stay reachable. */
 @media (max-width: 767.98px) {
-    .click-stack__section.is-expanded:has(.is-hosted) {
+    .click-stack__sections {
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    #click-stack .click-stack__body {
+        flex: none;
+        overflow: visible;
+    }
+
+    .click-stack__section.is-expanded {
         flex: 0 0 auto;
         min-height: 0;
     }
@@ -984,6 +1033,10 @@ body.three-mode-active #agent-bubbles-container {
         max-height: none;
         overflow: visible;
     }
+
+    #click-stack #proposal-details-panel.is-hosted .proposal-primary-actions > button:not(.btn-proposal-details) {
+        display: inline-flex;
+    }
 }
 
 .click-stack__row {
@@ -991,7 +1044,7 @@ body.three-mode-active #agent-bubbles-container {
     align-items: center;
     gap: var(--cb-space-2);
     width: 100%;
-    min-height: 40px;
+    min-height: var(--cb-control-height-touch);
     padding: var(--cb-space-2) var(--cb-space-3);
     border: 0;
     border-radius: var(--cb-radius-lg);
@@ -1038,6 +1091,30 @@ body.three-mode-active #agent-bubbles-container {
     color: var(--cb-text-muted);
 }
 
+/* The authored design type is prominent in the expanded header and design details. */
+.proposal-type-badge {
+    height: auto;
+    min-height: var(--cb-space-6);
+    padding-block: var(--cb-space-1);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+    line-height: var(--cb-leading);
+    white-space: normal;
+}
+
+.click-stack__section.is-expanded[data-kind="designs"] .click-stack__row {
+    flex-wrap: wrap;
+}
+
+.click-stack__section.is-expanded[data-kind="designs"] .click-stack__row-detail {
+    order: 1;
+    flex-basis: 100%;
+}
+
+.click-stack__section[data-kind="designs"] .click-stack__chevron {
+    margin-inline-start: auto;
+}
+
 .click-stack__chevron {
     flex: 0 0 auto;
     color: var(--cb-text-muted);
@@ -1048,24 +1125,23 @@ body.three-mode-active #agent-bubbles-container {
     transform: rotate(180deg);
 }
 
-/* Related objects flank the selected card; the count stays fixed while its choices scroll. */
+/* Relationship links sit inside the selected card body as small, wrapping groups. */
 .click-stack__choices {
     display: flex;
-    align-items: center;
-    gap: var(--cb-space-2);
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--cb-space-1);
     flex: 0 0 auto;
     min-width: 0;
-    padding: var(--cb-space-2);
-    border: 1px solid var(--cb-line);
-    border-radius: var(--cb-radius-lg);
-    background: var(--cb-glass-sheet);
-    backdrop-filter: blur(var(--cb-panel-blur));
-    -webkit-backdrop-filter: blur(var(--cb-panel-blur));
+    max-width: 100%;
+    padding: var(--cb-space-1) 0;
     pointer-events: auto;
 }
 
-.click-stack__choice-count {
-    flex: 0 0 auto;
+.click-stack__relation-label,
+.click-stack__selector-label {
+    display: block;
+    min-width: 0;
     font-size: var(--cb-text-sm);
     font-weight: var(--cb-weight-semibold);
     color: var(--cb-text-muted);
@@ -1074,26 +1150,24 @@ body.three-mode-active #agent-bubbles-container {
 .click-stack__strip {
     flex: 1 1 auto;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
     gap: var(--cb-space-1);
+    width: 100%;
     min-width: 0;
-    padding: 2px;
-    overflow-x: auto;
-    scrollbar-width: thin;
+    max-width: 100%;
+    overflow: visible;
 }
 
 /* The expanded card already names its item in the hosted details or agreement summary. */
 #click-stack .click-stack__section.is-expanded[data-kind="designs"] .click-stack__row-detail,
-.click-stack__section.is-expanded[data-kind="agreements"] .click-stack__row-detail,
+.click-stack__section.is-expanded[data-kind="plans"] .click-stack__row-detail,
+.click-stack__section.is-expanded[data-kind="agreements"]:has(.click-stack__selector) .click-stack__row-detail,
 .click-stack__section.is-expanded[data-kind="built"] .click-stack__row-detail {
     display: none;
 }
 
 /* The model view's figures have no title of their own: name the design in the card header. */
-#three-click-stack .click-stack__section.is-expanded[data-kind="designs"] .click-stack__row {
-    flex-wrap: wrap;
-}
-
 #three-click-stack .click-stack__section.is-expanded[data-kind="designs"] .click-stack__row-detail {
     order: 1;
     flex: 1 0 100%;
@@ -1104,73 +1178,169 @@ body.three-mode-active #agent-bubbles-container {
 }
 
 .click-stack__chip {
-    flex: 0 0 auto;
-    max-width: min(24rem, calc(100vw - 64px));
-    min-height: 44px;
-    padding: var(--cb-space-2);
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: left;
+    justify-content: flex-start;
+}
+
+.click-stack__selector-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    min-width: 0;
+    max-width: 100%;
+    padding: var(--cb-space-2) 0;
+}
+
+.click-stack__selector {
+    width: 100%;
+    min-width: 0;
+    min-height: var(--cb-control-height);
+    padding: var(--cb-space-1) var(--cb-space-2);
     border: 1px solid var(--cb-line-strong);
     border-radius: var(--cb-radius-md);
     background: var(--cb-surface);
     color: var(--cb-text);
-    font-size: var(--cb-text-sm);
-    white-space: normal;
-    overflow-wrap: anywhere;
-    text-align: left;
-    cursor: pointer;
+    font: inherit;
 }
 
-.click-stack__chip[aria-pressed="true"] {
-    border-color: var(--cb-primary);
-    background: var(--cb-primary-soft);
-    color: var(--cb-primary-soft-ink);
+/* The native menu keeps its full option labels; its closed face is the design's title. */
+.click-stack__selector-field {
+    position: relative;
+    display: block;
+    min-width: 0;
 }
 
-.click-stack__chip:focus-visible {
-    outline: 2px solid var(--cb-focus);
-    outline-offset: 1px;
+.click-stack__selector-field > select { display: block; appearance: none; }
+
+.click-stack__selector-value {
+    position: absolute;
+    inset: 1px;
+    padding: var(--cb-space-1) var(--cb-space-2);
+    align-content: center;
+    padding-right: 2em;
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font-weight: var(--cb-weight-semibold);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+}
+
+.click-stack__selector-arrow {
+    position: absolute;
+    top: 50%;
+    right: var(--cb-space-2);
+    transform: translateY(-50%);
+    color: var(--cb-text-muted);
+    pointer-events: none;
+}
+
+/* A multi-design selector already names the selected item; singleton cards retain their title. */
+#click-stack .click-stack__section[data-kind="designs"]:has(.click-stack__selector) #proposal-details-panel.is-hosted > .panel-header,
+#three-click-stack .click-stack__section.is-expanded[data-kind="designs"]:has(.click-stack__selector) .click-stack__row-detail {
+    display: none;
 }
 
 .click-stack__body {
     display: flex;
     flex-direction: column;
     min-height: 0;
-    flex: 1 1 auto;
-    padding: 0 var(--cb-space-3) var(--cb-space-3);
+    flex: 0 1 auto;
+    gap: var(--cb-space-3);
+    padding: var(--cb-space-3);
     overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.click-stack__heading,
+.click-stack__choices,
+.click-stack__body > * {
+    flex: 0 0 auto;
 }
 
 .click-stack__summary {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    margin-bottom: var(--cb-space-2);
+    gap: var(--cb-space-1);
+    margin: 0;
 }
 
 .click-stack__facts {
-    margin: 0 0 var(--cb-space-2);
-    font-size: var(--cb-text-sm);
+    margin: 0;
+    font-size: var(--cb-text-base);
     color: var(--cb-text-muted);
 }
 
 .click-stack__actions {
     flex-wrap: wrap;
-    margin-bottom: var(--cb-space-2);
+    margin: 0;
 }
 
-.click-stack__coords {
-    pointer-events: auto;
-    text-shadow: var(--cb-text-halo);
-    align-self: flex-start;
-    margin-top: var(--cb-space-2);
-    padding: 2px var(--cb-space-2);
-    border: 0;
-    background: transparent;
-    color: var(--cb-text-muted);
-    font: inherit;
-    font-size: var(--cb-text-xs);
-    font-variant-numeric: tabular-nums;
-    cursor: copy;
+.click-stack__section[data-kind="ground"] .click-stack__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+.click-stack__section[data-kind="ground"] [data-command="ground.drawSite"] {
+    grid-column: 1 / -1;
+}
+
+/* Parallel actions fill their row equally throughout either inspection stack. Existing grid
+   action palettes keep their column count; flex rows divide the available width by button count. */
+.click-stack :is(.cb-actions:not(.cb-actions--stack), .btn-group) {
+    align-items: stretch;
+}
+.click-stack :is(.cb-actions:not(.cb-actions--stack), .btn-group, .approval-card__actions, .parcel-context-actions, .agreement-panel-actions) > :is(button, .btn) {
+    flex: 1 1 0;
+    min-width: 0;
+    white-space: normal;
+}
+.click-stack .click-stack__strip > button {
+    flex: 1 1 calc(50% - var(--cb-space-1)); min-width: 0; white-space: normal;
+}
+.click-stack .click-stack__strip:has(> button:nth-child(3):last-child) > button { flex-basis: 0; }
+
+/* Saved-plan contents share one inset and row rhythm in both map stacks. */
+.click-stack__body.click-stack__plan {
+    gap: var(--cb-space-3);
+    padding: var(--cb-space-3);
+}
+.click-stack__plan > .click-stack__facts,
+.click-stack__plan > .click-stack__summary,
+.click-stack__plan > .click-stack__actions { margin: 0; }
+.click-stack__plan > .click-stack__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--cb-space-2);
+}
+.click-stack__plan > .click-stack__actions > .btn {
+    width: 100%;
+    min-width: 0;
+    min-height: var(--cb-control-height);
+    white-space: normal;
+}
+.click-stack__plan .click-stack__strip {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--cb-space-2);
+}
+.click-stack__plan .click-stack__chip {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    line-height: var(--cb-leading);
+}
+.click-stack__plan .click-stack__choices .click-stack__facts { margin: 0; }
+
+
 
 /* A panel hosted in an expanded section is part of the card: no docking, size, frame or sheet of
    its own. Two ids each, so these win over each panel's own id rules. */
@@ -1185,7 +1355,7 @@ body.three-mode-active #agent-bubbles-container {
     height: auto;
     max-height: none;
     min-height: 0;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     margin: 0;
     padding: 0;
     border: 0;
@@ -1201,6 +1371,35 @@ body.three-mode-active #agent-bubbles-container {
 
 #click-stack .is-hosted .mobile-dock-sheet-handle {
     display: none;
+}
+
+/* The section body supplies the outer inset; hosted readers supply only their internal rhythm. */
+#click-stack #parcel-info-panel.is-hosted .panel-body,
+#click-stack #proposal-details-panel.is-hosted .panel-body {
+    padding: var(--cb-space-3) 0;
+    font-size: var(--cb-text-base);
+}
+
+#click-stack #proposal-details-panel.is-hosted .panel-header {
+    padding: 0 0 var(--cb-space-3);
+}
+
+#click-stack #proposal-details-panel.is-hosted .panel-footer {
+    padding: var(--cb-space-3) 0 0;
+}
+
+/* In the stack, Add to plan heads the design card (.click-stack__actions--design), so the hosted
+   panel's footer does not repeat it. */
+#click-stack #proposal-details-panel.is-hosted .proposal-primary-actions > .btn.btn-add-to-plan {
+    display: none;
+}
+
+.click-stack__actions--design {
+    margin-block-end: var(--cb-space-2);
+}
+
+#click-stack #parcel-info-panel.is-hosted .parcel-tabs {
+    margin-inline: 0;
 }
 
 /* In the stack the section row folds the parcel and Escape closes the spot, and the parcel's
@@ -1221,6 +1420,16 @@ body.three-mode-active #agent-bubbles-container {
 #click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn,
 #three-click-stack #planning-inspector.is-hosted .planning-inspector__header .close-circle-btn {
     display: none;
+}
+
+/* On desktop, let the hosted proposal panel fill the expanded card's bounded body. Its header and
+   footer stay in view while the panel-body supplies the scroll viewport for long Details content.
+   Phones scroll the click-stack sheet as a whole and keep the hosted body overflow visible below. */
+@media (min-width: 768px) {
+    #click-stack .click-stack__body > #proposal-details-panel.is-hosted {
+        flex: 1 1 auto;
+        min-height: 0;
+    }
 }
 
 /* One cursor for the map surface. Every point on the 2D map now resolves to a claim — the drill
@@ -1536,5 +1745,15 @@ body.three-mode-active #agent-bubbles-container {
     }
 }
 
-.click-stack__heading { display: flex; align-items: center; }
+.click-stack__heading { display: flex; align-items: center; margin: 0; font: inherit; }
 .click-stack__heading > .click-stack__row { flex: 1; min-width: 0; width: auto; }
+/* Focus: frames the expanded section's object on the map (2D and model view). */
+.click-stack__heading > .click-stack__focus { flex: 0 0 auto; margin-inline-end: var(--cb-space-2); }
+
+/* Agreement terms are context for the selected plan and share the stack's section rhythm. */
+.click-stack__body.click-stack__agreement { gap: var(--cb-space-3); padding: var(--cb-space-3); }
+.click-stack__agreement-terms { display: grid; gap: var(--cb-space-3); min-width: 0; }
+.click-stack__agreement-terms .agreement-panel-section {
+    margin: 0; padding: var(--cb-space-3); border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md); background: var(--cb-surface-2);
+}

@@ -103,6 +103,12 @@ mapping lives in `backend/buildings/overture-cities.js`.
 - public.road_widening_segment
 - public.gup_street_line
 - consensus.proposal
+- consensus.bet_event (schema-only)
+- consensus.points_account (schema-only)
+- consensus.points_market (schema-only)
+- consensus.points_position (schema-only)
+- consensus.points_transaction (schema-only)
+- consensus.points_wallet_challenge (schema-only)
 - consensus.building_floor_model
 - public.road_parcel_classification
 - public.street
@@ -110,3 +116,11 @@ mapping lives in `backend/buildings/overture-cities.js`.
 - consensus.urban_rule_text
 - consensus.urban_rule_variable
 - court.attestation
+
+## Community code voting
+
+- consensus.community_voting_ballot (schema-only)
+- consensus.community_voting_event (schema-only)
+- consensus.community_voting_throttle (schema-only)
+
+Defined in `backend/db/community-voting-ddl.sql`; private ballots and limiter state are not copied from production.

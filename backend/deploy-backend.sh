@@ -81,6 +81,8 @@ DDL_FILES=(
     routes/lenses-ddl.sql
     routes/lens-member-ddl.sql
     routes/city-requests-ddl.sql
+    routes/bets-events-ddl.sql
+    sql/points-ledger.sql
     routes/feedback-ddl.sql
     routes/parcels-ddl.sql
     routes/transactions-ddl.sql
@@ -93,6 +95,8 @@ DDL_FILES=(
     db/camera-flight.sql
     db/agreement-ddl.sql
     db/agreement-decision-ddl.sql
+    db/community-report-ddl.sql
+    db/community-voting-ddl.sql
     db/building-floor-model.sql
     db/publication-immutability.sql
     ens/parcel-ens-ddl.sql

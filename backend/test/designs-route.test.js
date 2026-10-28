@@ -201,8 +201,8 @@ describe('POST /designs', () => {
             [designContent({ site: box(200, 0, 201, 1) }), {}, 400, 'invalid-site'],
             [designContent({ toleranceM: 3 }), {}, 400, 'invalid-tolerance'],
             [road({ width: 12, points: [{ lat: 45.8, lng: 15.97 }, { lat: 45.801, lng: 15.971 }] }), {}, 400, 'invalid-footprint'],
-            // The width/2 buffer of a legacy centre line is for stored legacy rows; a new design carries its land.
-            [road({ width: 12, points: [{ lat: 45.8, lng: 15.97 }, { lat: 45.801, lng: 15.971 }], constructionFrame: { kind: 'legacy-centreline' } }), {}, 400, 'invalid-footprint'],
+            // A flagged legacy frame is refused by design validation before footprint binding.
+            [road({ width: 12, points: [{ lat: 45.8, lng: 15.97 }, { lat: 45.801, lng: 15.971 }], constructionFrame: { kind: 'legacy-centreline' } }), {}, 400, 'invalid-design'],
             [designContent({ structureProposal: { kind: 'park', geometry: { type: 'Polygon', coordinates: 'x' } } }), {}, 400, 'invalid-footprint'],
             [designContent({ site: null, geometry: {}, structureProposal: { kind: 'park' } }), {}, 400, 'site-required'],
             [designContent(), { outsideM2: 37.2 }, 400, 'footprint-outside-site'],
@@ -290,6 +290,15 @@ describe('GET /designs', () => {
         expect(call.sql).not.toMatch(/WHERE/);
         expect(call.sql).toMatch(/ORDER BY created_at DESC, cid\s+LIMIT \$1/);
         expect(call.params).toEqual([100]);
+    });
+
+    // A listing reads up to 1000 rows; its readers render summaries and read a design whole by CID.
+    it('lists rows without content: the column is not selected and the key is absent', async () => {
+        const { res, call } = await listed('?limit=5');
+        expect(call.sql).not.toMatch(/\bcontent\b/);
+        expect(res.body.designs[0]).not.toHaveProperty('content');
+        expect(Object.keys(res.body.designs[0]).sort()).toEqual(['author', 'binding', 'cid', 'city', 'createdAt', 'goal', 'originCid',
+            'screenshotBeforeUrl', 'screenshotPairUrl', 'screenshotUrl', 'title']);
     });
 
     it('filters by city, text and box, in that parameter order', async () => {

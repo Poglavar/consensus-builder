@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "198",
+  "name": "Mendoza, Argentina",
+  "point": [
+    -32.9044235903811,
+    -68.8275288471433
+  ],
+  "bindings": [
+    {
+      "appCityId": "mendoza",
+      "runtimeConfig": {
+        "id": "mendoza",
+        "wupCityCode": "198",
+        "label": "Mendoza, Argentina",
+        "currency": {
+          "locale": "es-AR",
+          "code": "ARS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -32.9044235903811,
+            -68.8275288471433
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -32.9044235903811,
+            -68.8275288471433
+          ],
+          "fallbackDataset": [
+            -68.8275288471433,
+            -32.9044235903811
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ar-mendoza-ciudad-webgis-catastro-publico",
+          "idPrefix": "AR-MENDOZA-NC-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Municipalidad de la Ciudad de Mendoza, Catastro público, Parcelario catastral."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ar-mendoza-ciudad-webgis-catastro-publico",
+      "name": "City of Mendoza Catastro público — Parcelario catastral",
+      "adapter": "arcgis",
+      "endpoint": "https://webgis.ciudaddemendoza.gob.ar/server/rest/services/Catastro_p%C3%BAblico/FeatureServer/1",
+      "idField": "par_nomenclatura",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "idPattern": "^[0-9]{21}$",
+      "idPrefix": "AR-MENDOZA-NC-",
+      "parcelNumberField": "par_nomenclatura",
+      "outFields": [
+        "objectid",
+        "par_nomenclatura"
+      ],
+      "queryFormat": "geojson",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "maxResponseBytes": 16777216,
+      "metricSrid": 32719,
+      "countryCode": "AR",
+      "cityIds": [
+        "mendoza"
+      ],
+      "scope": "Municipal City of Mendoza cadastral parcels. Bounded observations only; no metropolitan or citywide completeness claim. The WUP point is near the southern service edge.",
+      "catalogueUrl": "https://webgis.ciudaddemendoza.gob.ar/server/rest/services/Catastro_p%C3%BAblico/FeatureServer/1",
+      "attribution": "Municipalidad de la Ciudad de Mendoza, Catastro público, Parcelario catastral.",
+      "licenceNote": "Polygon FeatureServer reuse terms remain unverified. The separate CKAN points/KMZ dataset CC BY 4.0 licence is not assumed to cover these polygons. Source conditions are informational.",
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true
+      }
+    }
+  ]
+}

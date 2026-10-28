@@ -59,7 +59,7 @@
           "attribution": "Government of Angola GGPEN/AGT — CuanzaSul_AGT_Oficial_gdb / CuanzaSul_AGT_Oficial, Inscreva Já property-registration workflow."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "source": "osm"
         },
         "sidebar": {
           "disabledSections": [

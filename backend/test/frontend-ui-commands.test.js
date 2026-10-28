@@ -58,12 +58,17 @@ const NOT_COMMANDS = {
     'sun-now': 'model-view lighting setting, handled by three-sun.js',
     'sun-play': 'model-view lighting setting, handled by three-sun.js',
     'planning-view-retry': 'retry the current source request after an error',
+    'planning-tab-display': 'Buildings and massing sheet tab, handled by three-compare.js',
+    'planning-tab-compare': 'Buildings and massing sheet tab, handled by three-compare.js',
+    'planning-compare-enable': 'model-view comparison view setting, handled by three-compare.js',
+    'planning-compare-left': 'model-view comparison view setting, handled by three-compare.js',
+    'planning-compare-right': 'model-view comparison view setting, handled by three-compare.js',
+    'planning-compare-swap': 'model-view comparison view setting, handled by three-compare.js',
     'planning-open-model': 'same model navigation as mode-3d-toggle',
     areaMonitorUploadButton: 'permanently disabled (upload not built)',
     showClaimsCounts: 'permanently disabled (claims counts not built)',
     'activity-panel-expand': 'Activity sheet expand/collapse toggle handled by the Activity controller',
     'photo-parcels-visible': 'photo-view parcel boundary control handled by PhotorealParcels',
-    'photo-parcel-close': 'photo-view selection close control handled by PhotorealParcels',
     'area-monitor-drawing-undo': 'transient area drawing toolbar action',
     'area-monitor-drawing-cancel': 'transient area drawing toolbar action',
     'dev-badge': 'indicator, not an action',
@@ -104,14 +109,18 @@ describe('command registry shape', () => {
             expect(entry.fallbackLabel, entry.id).toBeTruthy();
             expect(typeof entry.run, entry.id).toBe('function');
             expect(typeof entry.when, entry.id).toBe('function');
-            expect(entry.icon, entry.id).toMatch(/^fas fa-[a-z0-9-]+$/);
+            expect(entry.icon, entry.id).toMatch(/^(fas (fa|cb-icon)-[a-z0-9-]+|cb-icon-track)$/);
         }
     });
 
     it('uses only icons the vendored Font Awesome 6.4 has', () => {
         const css = fs.readFileSync(path.join(FRONTEND, 'vendor/fontawesome-6.4.0/css/all.min.css'), 'utf8');
+        const primitives = fs.readFileSync(path.join(FRONTEND, 'css/primitives.css'), 'utf8');
         for (const entry of commands) {
+            if (entry.icon === 'cb-icon-track') continue;
             const name = entry.icon.split(' ')[1];
+            // Concept icons (design, plan, agreement) are defined once in primitives.css.
+            if (name.startsWith('cb-icon-')) { expect(primitives.includes(`.${name}::before`), `${entry.id}: ${name}`).toBe(true); continue; }
             expect(css.includes(`.${name}:before`) || css.includes(`.${name},`), `${entry.id}: ${name}`).toBe(true);
         }
     });
@@ -168,7 +177,8 @@ describe('rehoused sidebar controls', () => {
         expect(parcelSourceSettingsSource).toContain("root.openImagerySourceSettings = () => api.open(root, 'imagery');");
         expect(shellHtml).not.toContain('id="aerial-city-visible"');
         expect(photorealParcelsSource).toContain("toggle?.addEventListener('change', onToggle)");
-        expect(photorealParcelsSource).toContain("close?.addEventListener('click', clearSelection)");
+        expect(indexHtml).not.toContain('id="photo-parcel-selection"');
+        expect(photorealParcelsSource).not.toContain("element.addEventListener('click'");
     });
 
     it('turns every interactive control in the sheets into a command, or says why not', () => {
@@ -181,6 +191,8 @@ describe('rehoused sidebar controls', () => {
                 if (id && (byControl.has(id) || NOT_COMMANDS[id])) continue;
                 if (tagName === 'button' && attr(tag, 'data-sheet-target') !== null) continue; // shell buttons
                 if (tagName === 'button' && attr(tag, 'data-sheet-close') !== null) continue;
+                // Update Reload is contextual and uses the guarded release-notice action.
+                if (tagName === 'button' && attr(tag, 'data-app-update-reload') !== null) continue;
                 if (tagName === 'button' && attr(tag, 'data-activity-view') !== null) continue; // Activity panel tabs
                 if (tagName === 'button' && commands.some(c => c.id === attr(tag, 'data-command'))) continue;
                 if (tagName === 'button' && attr(tag, 'data-site-intro-open') !== null) {
@@ -345,7 +357,7 @@ describe('availability and search', () => {
 
     it('shares the 2D capability rule across command listing, ranking, and execution', () => {
         const model = { mode: 'model', global: { isThreeModeActive: () => true } };
-        for (const id of ['stations.bus', 'site.draw', 'tools.measure', 'parcel.propose', 'selection.useAsSite']) {
+        for (const id of ['stations.road', 'site.draw', 'tools.measure', 'parcel.propose', 'selection.useAsSite']) {
             expect(UiCommands.supportsMode(id, model), id).toBe(false);
             expect(UiCommands.isAvailable(id, model), id).toBe(false);
             expect(UiCommands.rankCommands(id, model, tEn).map(item => item.entry.id)).not.toContain(id);
@@ -359,11 +371,20 @@ describe('availability and search', () => {
 
     it('requires parcel or open-ground context for global station placement', () => {
         const global = { startTransitStationPlacement: vi.fn() };
-        expect(UiCommands.isAvailable('stations.bus', { mode: '2d', global })).toBe(false);
+        expect(UiCommands.isAvailable('stations.road', { mode: '2d', global })).toBe(false);
         const onParcel = { mode: '2d', global, parcel: { parcelId: 'p-1', isRoad: false } };
-        expect(UiCommands.isAvailable('stations.bus', onParcel)).toBe(true);
-        UiCommands.runCommand('stations.bus', onParcel);
+        expect(UiCommands.isAvailable('stations.road', onParcel)).toBe(true);
+        UiCommands.runCommand('stations.road', onParcel);
         expect(global.startTransitStationPlacement).toHaveBeenCalledWith('bus');
+    });
+
+    it('requires the track station chooser and dispatches it from parcel context', () => {
+        const global = { chooseTrackStationType: vi.fn() };
+        const onParcel = { mode: '2d', global, parcel: { parcelId: 'p-1' } };
+        expect(UiCommands.isAvailable('stations.track', { mode: '2d', global: { startTransitStationPlacement: vi.fn() }, parcel: onParcel.parcel })).toBe(false);
+        expect(UiCommands.isAvailable('stations.track', onParcel)).toBe(true);
+        UiCommands.runCommand('stations.track', onParcel);
+        expect(global.chooseTrackStationType).toHaveBeenCalledOnce();
     });
 
     it('keeps Use as site dispatch behind an active, nonempty selection gate', () => {
@@ -469,7 +490,7 @@ describe('the floating shell', () => {
 
     it('wires every shell button to a sheet that exists', () => {
         const sheets = new Set(openingTags(shellHtml, 'section')
-            .filter(tag => /class="map-sheet\b/.test(tag)).map(tag => attr(tag, 'id')));
+            .filter(tag => (attr(tag, 'class') || '').split(/\s+/).includes('map-sheet')).map(tag => attr(tag, 'id')));
         expect([...sheets].sort()).toEqual(['activity-sheet', 'bets-sheet', 'layers-sheet', 'measurement-sheet', 'planning-views', 'proposals-sheet', 'settings-sheet', 'sun-sheet']);
         const triggers = openingTags(shellHtml, 'button').filter(tag => attr(tag, 'data-sheet-target') !== null);
         expect(triggers.length).toBe(8);

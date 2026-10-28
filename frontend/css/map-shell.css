@@ -58,22 +58,14 @@
    keeps its bottom edge and the credits and scale bar share the row from the corners. */
 .map-shell-cluster--bottom-right {
     bottom: var(--map-shell-edge);
-    left: var(--map-shell-centre, 50%);
+    left: 50%;
     transform: translateX(-50%);
     align-items: center;
     justify-content: center;
 }
 
-/* A docked panel runs down to the bottom-right corner on a wide map (--right-dock-bottom,
-   css/panels.css), so the pills and the status line centre in the map left of the dock instead
-   of under it. Below 900px the panels stop above the pills and the centre stays the map's. */
-@media (min-width: 900px) {
-    body:has(#parcel-info-panel.visible),
-    body:has(#road-info-panel.visible),
-    body:has(#proposal-details-panel.visible:not(.is-minimized)) {
-        --map-shell-centre: calc((100% - var(--right-dock-width) - 2 * var(--right-dock-gap)) / 2);
-    }
-}
+/* Navigation stays centred on the viewport. DockClearance shortens the inspection column only
+   where its horizontal extent meets navigation or feedback; the controls never move for it. */
 
 .map-shell-cluster--bottom-right .map-shell-button--labelled {
     flex: 0 0 auto;
@@ -97,7 +89,7 @@
     cursor: pointer;
 }
 
-.layer-actions .btn-group { margin-bottom: var(--cb-space-2); }
+.layer-actions .cb-actions { margin-bottom: var(--cb-space-2); }
 
 .layer-source-actions { margin-bottom: var(--cb-space-3); }
 
@@ -153,6 +145,13 @@ body:not(.three-mode-active):is(.site-tool-active, .station-placement-active, .a
 
 body.three-mode-active :is(.map-editor-toolbar, .area-monitor-creation-panel) {
     display: none;
+}
+
+/* The 3D scene uses its selection controls; the map navigation row belongs to 2D. Reclaim its
+   clearance as well as hiding its buttons, while respecting a phone's home indicator. */
+body.three-mode-active {
+    --map-shell-dock-height: env(safe-area-inset-bottom, 0px);
+    --map-shell-bottom-clearance: calc(env(safe-area-inset-bottom, 0px) + var(--map-shell-gap));
 }
 
 /* The site tool's panel is a compact card of its own (site-tool.css). */
@@ -464,7 +463,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 .map-sheet-body {
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 10px 14px 14px;
+    padding: var(--right-panel-padding, 10px 14px 14px);
     overscroll-behavior: contain;
 }
 
@@ -473,32 +472,13 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     box-sizing: border-box;
 }
 
-/* ---- Dock sheets: Proposals, Bets, Activity ----
-   The bottom row's three destinations share one frame: the same width and height, centred on the
-   row (its data-sheet-anchor in index.html), so switching between them swaps the content and
-   nothing moves or resizes. Wide enough for a row with a thumbnail, a title and its actions. On a
-   phone they fill the screen above the bar instead (the phone block at the end of this file). */
+/* ---- Navigation sheets ----
+   Bets and Activity share a wider frame centred on the navigation row. Lists opts into the
+   right-screen-panel column; that contract owns its desktop width and placement. Phone sheets
+   share the resize controls in mobile-sheets.css. */
 .map-sheet--dock {
     width: 560px;
     height: min(var(--sheet-max-height, 70vh), 80vh, 880px);
-}
-
-@media (min-width: 768px) {
-    #proposals-sheet {
-        top: var(--map-shell-top-clearance);
-        bottom: var(--map-shell-bottom-clearance);
-        left: auto;
-        right: var(--map-shell-edge);
-        width: clamp(360px, 36vw, 560px);
-        height: auto;
-        max-height: none;
-    }
-}
-
-.map-sheet .btn-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
 }
 
 /* Sections share the same spacing whether their controls fold or stay visible. */
@@ -575,10 +555,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 }
 
 /* ---- Controls inside the sheets ----
-   One compact layout for everything rehoused from the sidebar: full-width rows with an icon,
-   whatever role the button carries (the roles keep their colours, css/primitives.css). Scoped to
-   .map-sheet so the same classes elsewhere (modals, panels) keep their layout. Rows are 36px on
-   desktop and 44px touch targets on phones. */
+   Fields keep compact rows; actions use the shared button and action-group primitives. */
 .map-sheet {
     --sheet-row-height: 36px;
 }
@@ -603,19 +580,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     gap: 6px;
 }
 
-/* Sheet rows: every button in a sheet is a full-width, left-aligned row of one height. Only the
-   layout lives here; the role classes keep their colours (css/utilities.css), so a primary, a
-   success or a danger button inside a sheet looks like one anywhere else. */
-.map-sheet .btn:not(.btn-sm):not(.btn-icon) {
-    justify-content: flex-start;
-    gap: 8px;
-    width: 100%;
-    min-height: var(--sheet-row-height);
-    margin: 0;
-    padding: 7px 12px;
-    text-align: left;
-}
-
 .map-sheet .btn > i {
     flex: 0 0 16px;
     text-align: center;
@@ -627,21 +591,6 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
 .map-sheet a:focus-visible {
     outline: 2px solid var(--cb-focus);
     outline-offset: 2px;
-}
-
-/* Rows that carry a second line (share plan's "apply some first", the spinners) stay left-aligned. */
-.map-sheet .share-plan-button {
-    flex-wrap: wrap;
-}
-
-.map-sheet .share-plan-label,
-.map-sheet .share-plan-subtext {
-    text-align: left;
-}
-
-.map-sheet .share-plan-subtext {
-    padding-left: 24px;
-    color: var(--cb-text-muted);
 }
 
 .map-sheet select:not(.proposal-epoch-card-select) {
@@ -1072,13 +1021,10 @@ body.app-loading .map-shell-cluster {
 /* First visible labels use the selected locale; the map can load in parallel. */
 body.i18n-loading [data-i18n-key] { visibility: hidden; }
 
-/* Designs and sharing share one dock, one header and one phone resize handle. */
+/* The design library and saved plans share one dock and phone resize handle. */
 .designs-panel-tabs { margin: 8px 12px; flex-shrink: 0; }
-#designs-browse:not([hidden]), #designs-share:not([hidden]) { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; overflow: hidden; }
-#proposals-sheet .share-plan-panel--embedded { display: flex; flex-direction: column; overflow: hidden; position: relative; inset: auto; width: 100%; height: 100%; min-height: 0; z-index: auto; padding: 0; }
-#proposals-sheet .share-plan-panel-content { position: relative; flex: 1; min-height: 0; box-shadow: none; background: transparent; backdrop-filter: none; }
+#designs-browse:not([hidden]) { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; overflow: hidden; }
 body.map-pick-mode #proposals-sheet { pointer-events: auto; opacity: 1; }
-#proposals-sheet .share-plan-link > .btn { width: auto; flex: 0 0 auto; white-space: nowrap; }
 
 /* The optional flight editor action occupies the row below the map menu. */
 .camera-flight-open {

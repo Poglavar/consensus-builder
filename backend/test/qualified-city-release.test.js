@@ -2,6 +2,7 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { describe, expect, it } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { browserParcelFactories } from '../parcels/browser-source-runtime.js';
 
 const root = new URL('../../', import.meta.url);
@@ -13,7 +14,7 @@ const settings = readdirSync(directory).filter(code => /^\d+$/.test(code)
     .map(code => ({ code, ...json(`world-parcels/cities/${code}/settings.json`) }));
 const catalog = json('frontend/data/source-catalog.json');
 const context = { console, URL, URLSearchParams }; context.window = context;
-runInNewContext(read('frontend/js/city-config.js'), context);
+runInNewContext(cityConfigSource(), context);
 const queryFields = ['adapter', 'endpoint', 'idPrefix', 'idField', 'idFields', 'identityKind',
     'lookupCellSize', 'attributeFilters', 'attributeExclusions', 'attributeNotNull', 'attributeNull',
     'featureType', 'boundsQueryMode', 'idsQueryMode', 'boundsSrid', 'boundsProjection', 'queryFormat',

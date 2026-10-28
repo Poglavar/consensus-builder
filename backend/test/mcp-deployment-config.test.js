@@ -1,5 +1,7 @@
 // Keep the public MCP listener separate from existing API and lens services and route to it.
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { createRequire } from 'node:module';
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
@@ -20,9 +22,10 @@ describe('MCP production routing', () => {
         await once(reserved, 'listening');
         const listenPort = reserved.address().port;
         await new Promise(resolve => reserved.close(resolve));
+        const directory = mkdtempSync(join(tmpdir(), 'mcp-launch-test-'));
         const child = spawn(mcp.script, mcp.args, {
             cwd: fileURLToPath(new URL('../', import.meta.url)),
-            env: { PATH: process.env.PATH, HOME: process.env.HOME, MCP_PORT: String(listenPort), NODE_ENV: 'test' },
+            env: { PATH: process.env.PATH, HOME: process.env.HOME, MCP_PORT: String(listenPort), MCP_DRAFT_DIRECTORY: directory, NODE_ENV: 'test' },
             stdio: ['ignore', 'ignore', 'pipe']
         });
         try {
@@ -38,6 +41,7 @@ describe('MCP production routing', () => {
             expect(await response.json()).toMatchObject({ service: 'ugt-mcp', status: 'ok' });
         } finally {
             if (child.exitCode === null) { child.kill('SIGINT'); await once(child, 'exit'); }
+            rmSync(directory, { recursive: true, force: true });
         }
     });
 

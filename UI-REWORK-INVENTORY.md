@@ -83,7 +83,7 @@ a DOMContentLoaded handler (auto-collapse <768px, forces showProposedBuildings o
   (click .status-bar → toggleStatusExpanded; Copy all / Open log → #status-log-modal).
 - #toggle-sidebar-desktop (outside #sidebar) → toggleSidebar(); left 10px/330px.
 
-Per-city `sidebar.disabledSections` (city-config.js): zagreb none; split, sibenik, belgrade,
+Per-city `sidebar.disabledSections` (data/city-configs.js): zagreb none; split, sibenik, belgrade,
 buenos_aires, colorado, new_york ['parcelBlocks','buildings','roads','areaMonitor']; ljubljana
 ['buildings','roads','areaMonitor']. applySidebarConfiguration() runs from initializeSidebar and on
 every sidebar expand: parcelBlocks unchecks+disables #parcelBlocksCheckbox and hides the blocks section;
@@ -204,7 +204,7 @@ inline DOMContentLoaded boot (after PersistentStorage.ready: initializeUser, ini
 initializeSidebar, initializeMapCore, gameState.updateGameUI, initializeVersionHistory,
 initBlockchainSync); road/corridor scripts; import map (three 0.184.0 jsDelivr, 3d-tiles-renderer
 esm.sh) + window.whenThreeReady(); more scripts; lazy 3D stack loader (__ensure3DModeStack) + mode
-shim; area-monitor/*, unsaved-work-guard, boot-ready.js (removes body.app-loading).
+shim; area-monitor/*, boot-ready.js (removes body.app-loading).
 
 ## Behavioral coverage update — 2026-10-02
 

@@ -93,7 +93,7 @@
                 // An editing mode owns the map: let the click THROUGH untouched. Stopping it here
                 // is what stopped the park editor receiving its own placement clicks — the fill
                 // swallowed the event to select the proposal that was already being edited.
-                if (window.__mapEditLock?.isHeld()) return;
+                if (window.roadDrawingMode || window.__mapEditLock?.isHeld()) return;
                 try { if (event && event.originalEvent) L.DomEvent.stop(event); } catch (_) { }
                 // The click stack shows everything at the point (something may stand above this
                 // structure); without it, select the structure itself.
@@ -364,6 +364,39 @@
                 }).addTo(group);
             });
         } catch (_) { }
+        try { drawFurnitureGlyphs(group, parkFeature, decorations, pane); } catch (_) { }
+    }
+
+    // A furniture record's point: a bare [lng, lat] (generated stalls) or { coordinate } (editor records).
+    function furniturePoint(entry) {
+        const coord = Array.isArray(entry) ? entry : entry?.coordinate;
+        return Array.isArray(coord) && coord.length >= 2 && Number.isFinite(Number(coord[0])) && Number.isFinite(Number(coord[1]))
+            ? [Number(coord[0]), Number(coord[1])] : null;
+    }
+
+    // Market stalls (in their canopy colour, furniture-models.js stallColor) and lamps of a park or
+    // square on the 2D map, static like the benches; skipped where a road cuts through the structure.
+    function drawFurnitureGlyphs(group, feature, decorations, pane) {
+        const glyph = (coord, className, icon, size, style = '') => L.marker([coord[1], coord[0]], {
+            icon: L.divIcon({
+                className: `structure-furniture-glyph ${className}`,
+                html: `<i class="fa-solid ${icon}"${style} aria-hidden="true"></i>`,
+                iconSize: [size, size],
+                iconAnchor: [size / 2, size / 2]
+            }),
+            pane,
+            zIndexOffset: 1000,
+            interactive: false
+        }).addTo(group);
+        (Array.isArray(decorations.stalls) ? decorations.stalls : []).forEach((stall, index) => {
+            const coord = furniturePoint(stall);
+            if (!coord || !pointInFeature(turf.point(coord), feature)) return;
+            glyph(coord, 'is-stall', 'fa-store', 18, ` style="--stall-color:${window.FurnitureModels.stallColor(stall, index)}"`);
+        });
+        (Array.isArray(decorations.lamps) ? decorations.lamps : []).forEach(lamp => {
+            const coord = furniturePoint(lamp);
+            if (coord && pointInFeature(turf.point(coord), feature)) glyph(coord, 'is-lamp', 'fa-lightbulb', 14);
+        });
     }
 
     function ensureParkDecorations(parkFeature) {
@@ -875,22 +908,8 @@
                 interactive: false
             }).addTo(group);
         });
-        // Stalls / terraces (skipped when they fall on a road cut through the square)
-        const stalls = (Array.isArray(dec.stalls) ? dec.stalls : [])
-            .filter(coord => pointInFeature(turf.point(coord), squareFeature));
-        stalls.forEach(([lng, lat]) => {
-            L.marker([lat, lng], {
-                icon: L.divIcon({
-                    className: 'square-stall-emoji',
-                    html: '<div style="font-size:18px;line-height:18px;">🍽️</div>',
-                    iconSize: [18, 18],
-                    iconAnchor: [9, 9]
-                }),
-                pane,
-                zIndexOffset: 1000,
-                interactive: false
-            }).addTo(group);
-        });
+        // Market stalls and lamps (skipped when they fall on a road cut through the square)
+        drawFurnitureGlyphs(group, squareFeature, dec, pane);
         // Statues (one auto-placed per square; more placeable in the geometry editor)
         (Array.isArray(dec.statues) ? dec.statues : [])
             .filter(coord => Array.isArray(coord) && pointInFeature(turf.point(coord), squareFeature))
@@ -1384,21 +1403,53 @@
     }
     window.drawBuildingGroundSurface = drawBuildingGroundSurface;
 
-    function vacantLayoutPlots() {
+    // The plots an applied layout left empty. By default the Leaflet view decides which plots are
+    // asked for and the viewport-fetched building pool says what stands on them: right for the 2D
+    // layer, which is redrawn on every move. The 3D scene passes its own frozen parcel band and the
+    // buildings it drew, so its painted set cannot depend on where the hidden Leaflet map was left.
+    function vacantLayoutPlots({ features = null, existingBuildings = null } = {}) {
         const fabric = window.LiveParcelFabric;
         if (!fabric || !window.BuildingGround || !window.proposalStorage) return [];
         const proposals = window.proposalStorage.getAllProposals();
         if (!proposals.some(proposal => proposal.parcelLayout && isApplied(proposal))) return [];
-        const bounds = map.getBounds();
-        const features = fabric.queryBounds([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]);
-        const demolished = new Map((window.collectDemolishedBuildingRecords?.() || []).map(record => [String(record.id), record]));
-        const existing = (window.buildingFeaturePool || []).map(feature => {
-            const record = demolished.get(String(window.corridorBuildingKey(feature)));
-            return record ? (record.remainder ? { ...feature, geometry: record.remainder } : null) : feature;
-        }).filter(Boolean);
-        return window.BuildingGround.vacantPlots(features, proposals, isApplied, turf, existing);
+        let parcels = features;
+        if (!parcels) {
+            const bounds = map.getBounds();
+            parcels = fabric.queryBounds([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]);
+        }
+        let existing = existingBuildings;
+        if (!existing) {
+            const demolished = new Map((window.collectDemolishedBuildingRecords?.() || []).map(record => [String(record.id), record]));
+            existing = (window.buildingFeaturePool || []).map(feature => {
+                const record = demolished.get(String(window.corridorBuildingKey(feature)));
+                return record ? (record.remainder ? { ...feature, geometry: record.remainder } : null) : feature;
+            }).filter(Boolean);
+        }
+        return window.BuildingGround.vacantPlots(parcels, proposals, isApplied, turf, existing);
     }
     window.vacantLayoutPlots = vacantLayoutPlots;
+
+    // The fences of a building design's open ground (BuildingGround.fenceLines): the parcel boundaries
+    // that cross it, as [[lng, lat], ...] lines. One answer per surface and parcel-fabric revision,
+    // shared by the 2D layer, the model view and the photo view.
+    const groundFenceCache = new Map();
+    function buildingGroundFences(surface) {
+        const fabric = window.LiveParcelFabric;
+        if (!fabric || !window.BuildingGround || !surface?.geometry) return [];
+        const key = JSON.stringify([surface.proposalId, fabric.revision(), surface.geometry]);
+        if (groundFenceCache.has(key)) return groundFenceCache.get(key);
+        let lines = [];
+        try {
+            const [west, south, east, north] = turf.bbox(surface.geometry);
+            lines = window.BuildingGround.fenceLines(surface.geometry, fabric.peekBounds([west, south, east, north]), surface.buildings, turf);
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] [structures] fences of building ground ${surface.proposalId} could not be derived`, error);
+        }
+        if (groundFenceCache.size > 200) groundFenceCache.clear();
+        groundFenceCache.set(key, lines);
+        return lines;
+    }
+    window.buildingGroundFences = buildingGroundFences;
 
     function updateBuildingGroundLayer() {
         if (typeof map === 'undefined') return;
@@ -1408,7 +1459,8 @@
         const surfaces = appliedBuildingGroundSurfaces();
         const vacant = vacantLayoutPlots();
         let signature = '';
-        try { signature = JSON.stringify([surfaces.map(s => [s.proposalId, s.treatment, s.geometry, s.decorationDesign]), vacant]); } catch (_) { signature = String(surfaces.length); }
+        // The fabric revision is in it because fences follow the parcel layout under the ground.
+        try { signature = JSON.stringify([surfaces.map(s => [s.proposalId, s.treatment, s.geometry, s.decorationDesign]), vacant, window.LiveParcelFabric?.revision?.()]); } catch (_) { signature = String(surfaces.length); }
         vacant.forEach(feature => L.geoJSON(feature, {
             pane: PARKS_PANE, interactive: false,
             style: { color: '#6d705b', weight: 1.5, dashArray: '4,3', fillColor: '#adae75', fillOpacity: 0.9, className: 'vacant-layout-plot' }
@@ -1419,6 +1471,11 @@
                 const pane = paved ? SQUARES_PANE : PARKS_PANE;
                 // Ground is an overlay on top of parcels; keep parcel clicks working.
                 drawBuildingGroundSurface(group, { ...surface, polygon: surface.geometry }, pane);
+                const fences = buildingGroundFences(surface);
+                if (fences.length) L.geoJSON({ type: 'MultiLineString', coordinates: fences }, {
+                    pane, interactive: false,
+                    style: { color: '#4b4f3f', weight: 1.5, dashArray: '1,3', className: 'building-ground-fence' }
+                }).addTo(group);
             } catch (error) {
                 console.error('[structures] failed to render a building ground surface', surface.proposalId, error);
             }

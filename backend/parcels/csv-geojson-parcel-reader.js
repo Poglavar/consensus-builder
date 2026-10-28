@@ -4,7 +4,7 @@ export const CSV_GEOJSON_FIELDS = Object.freeze([
     'MSLINK', 'SECCION', 'MANZANA', 'GRAFICO', 'SD', 'SP', 'PASILLO', 'CARPETA', 'GEOJSON'
 ]);
 
-function parseRows(text) {
+export function parseCsvRows(text) {
     if (typeof text !== 'string' || !text.length) throw new Error('Empty CSV snapshot.');
     if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
     const rows = [];
@@ -52,7 +52,7 @@ export function readCsvGeojsonParcelSnapshot(text, { csvFields, csvGeometryField
         || outFields.some(field => field === csvGeometryField || !csvFields.includes(field))) {
         throw new Error('Invalid CSV GeoJSON snapshot descriptor.');
     }
-    const rows = parseRows(text);
+    const rows = parseCsvRows(text);
     const header = rows.shift();
     if (!header || header.length !== csvFields.length || header.some((field, index) => field !== csvFields[index])) {
         throw new Error('CSV parcel snapshot schema does not match its verified header.');

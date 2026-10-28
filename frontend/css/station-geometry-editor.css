@@ -48,3 +48,7 @@
 @media (max-width: 639.98px) {
     .on-map-editor__footer [data-station-editor-action] { min-height: 40px; }
 }
+
+/* Three placement levels share the normal touch-sized choice tiles. */
+.station-level-choices { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.station-level-choices .cb-tile { min-width: 0; }

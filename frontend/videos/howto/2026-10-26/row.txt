@@ -1,0 +1,9 @@
+Select neighbouring parcels. Use Detect block for the whole site, then choose Row houses.
+
+Set length, width and height. Reshape the footprint so it fits the selected land.
+
+Finish the rule to save the row-house design.
+
+Review the warning about different parcel shapes, then confirm whether to proceed.
+
+Inspect the row in 3D. Tilt and rotate to see its relationship to the neighbouring buildings.

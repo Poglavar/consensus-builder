@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1684",
+  "name": "Tver, Russia",
+  "point": [
+    56.8526121935049,
+    35.8935971762724
+  ],
+  "bindings": [
+    {
+      "appCityId": "tver",
+      "runtimeConfig": {
+        "id": "tver",
+        "wupCityCode": "1684",
+        "label": "Tver, Russia",
+        "currency": {
+          "locale": "ru-RU",
+          "code": "RUB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            56.8526121935049,
+            35.8935971762724
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            56.8526121935049,
+            35.8935971762724
+          ],
+          "fallbackDataset": [
+            35.8935971762724,
+            56.8526121935049
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ru-tver-reestr54-tver-cadastral",
+          "idPrefix": "RU-REESTR54-TVER-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; independent cadastral viewer; three observed Tver land parcels only; wider coverage unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ru-tver-reestr54-tver-cadastral",
+      "name": "Tver public cadastral viewer — three observed land parcels",
+      "operator": "Кадастровые инженеры Новосибирска (independent public-map operator)",
+      "adapter": "reestr54-bounded",
+      "endpoint": "https://kk.reestr54.ru/tver/",
+      "countryCode": "RU",
+      "cityIds": [
+        "tver"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "RU-REESTR54-TVER-",
+      "idField": "cad_num",
+      "parcelNumberField": "cad_num",
+      "outFields": [
+        "cad_num"
+      ],
+      "nativeCrs": "EPSG:3857",
+      "srsName": "EPSG:4326",
+      "metricSrid": 32636,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "coverage": {
+        "scope": "explicit-native-id-subset",
+        "citywide": false,
+        "nativeIds": [
+          "69:40:0000000:7394",
+          "69:40:0100293:44",
+          "69:40:0200180:5269"
+        ],
+        "basis": "Three discovery-observed full parcels read live by exact cadastral number. Finite subset only; no citywide enumeration or authoritative absence claim."
+      },
+      "scope": "Three observed native cadastral IDs only; wider Tver fabric is not enumerated. Viewport completeness applies only to this explicit subset.",
+      "licence": "Unresolved; anonymous access is not an open-data or redistribution licence.",
+      "licenceNote": "Reuse permission, legal custody and upstream Rosreestr/NSPD lineage remain unverified.",
+      "attribution": "Кадастровые инженеры Новосибирска / reestr54.ru; independent cadastral viewer; three observed Tver land parcels only; wider coverage unverified.",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://kk.reestr54.ru/tver/",
+          "https://kk.reestr54.ru/static/pkk/js/mapinit16102025.js",
+          "https://kk.reestr54.ru/static/pkk/js/pkk04112025.js?v=20251210_5"
+        ],
+        "jurisdiction": {
+          "basis": "Tver-specific operator page; native district 69:40; retained exact queue point covered by full MultiPolygon."
+        }
+      },
+      "adapterModule": "reestr54-source.js"
+    }
+  ]
+}

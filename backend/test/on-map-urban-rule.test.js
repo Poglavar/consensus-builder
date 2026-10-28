@@ -27,6 +27,7 @@ function extracted(name) {
 function previewHarness({ modal, authoredSite, lastSuperparcel, ruleKind }) {
     const context = { blockifyModal: modal, authoredSite, lastSuperparcel, ruleKind };
     vm.runInNewContext(`
+        let blockifySurroundings=null;
         let blockifyModal=this.blockifyModal;
         let blockifyAuthoredSite=this.authoredSite;
         let blockifyGenerationSite=this.authoredSite;
@@ -62,6 +63,7 @@ function closeHarness() {
         finishProposalDraftDesignSession: finished
     };
     const prefix = `
+        let blockifySurroundings=null;
         let blockifyModal=this.modal, blockifyMap=this.map;
         let blockifyParcelLayer=this.layers.parcel, blockifyBoundaryLayer=this.layers.boundary;
         let blockifyBuildingLayer=this.layers.building, blockifyFootprintLayer=this.layers.footprint;
@@ -122,6 +124,7 @@ describe('Urban rule shared-map editor behavior', () => {
         expect(setPreview).toHaveBeenCalledWith({
             draftPreview: { kind: 'buildings', features: [example] },
             boundary: authoredSite,
+            groundSurface: null,
             envelopes: [envelope],
             excluded: [excluded]
         });

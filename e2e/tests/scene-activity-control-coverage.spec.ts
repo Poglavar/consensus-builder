@@ -1,0 +1,81 @@
+import { test, expect } from '../helpers/fixtures';
+import { openCity, openParcel } from '../helpers/runtime';
+import { mockBuildingScene } from '../helpers/mocks/building-data';
+import { fillNativeDateTime, selectNativeOption } from '../helpers/controls';
+
+test('sun controls set a date and time, pause playback, reset now and disable shadows', async ({ mockApi: page }) => {
+  await mockBuildingScene(page);
+  await openCity(page);
+  await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 15000 });
+  await page.locator('#sun-button').click();
+  const sheet = page.locator('#sun-sheet');
+  await expect(sheet).toBeVisible();
+  await fillNativeDateTime(sheet.locator('#sun-date'), '2035-06-21');
+  await expect.poll(() => page.evaluate(() => (window as any).__threeSun.state.dateISO)).toBe('2035-06-21');
+  const slider = sheet.locator('#sun-time');
+  await slider.focus();
+  await slider.press('Home');
+  await slider.press('ArrowRight');
+  await expect(slider).toHaveValue('1');
+  await expect.poll(() => page.evaluate(() => (window as any).__threeSun.state.minutes)).toBe(1);
+  await expect(sheet.locator('#sun-play')).toHaveAttribute('aria-pressed', 'false');
+  await sheet.locator('#sun-play').click();
+  await expect(sheet.locator('#sun-play')).toHaveAttribute('aria-pressed', 'true');
+  await sheet.locator('#sun-play').click();
+  await expect(sheet.locator('#sun-play')).toHaveAttribute('aria-pressed', 'false');
+  await sheet.locator('#sun-now').click();
+  await expect.poll(() => page.evaluate(() => {
+    const { dateISO, minutes } = (window as any).__threeSun.state;
+    return { dateISO, minutes };
+  })).toEqual({ dateISO: null, minutes: null });
+  await sheet.locator('#sun-enabled').uncheck();
+  await expect(sheet.locator('#sun-time')).toBeDisabled();
+  await expect.poll(() => page.evaluate(() => (window as any).PersistentStorage.getItem('cb_3d_sun_enabled'))).toBe('0');
+  await sheet.locator('#sun-enabled').check();
+  await expect(sheet.locator('#sun-time')).toBeEnabled();
+  await sheet.locator('[data-sheet-close]').click();
+  await expect(sheet).toBeHidden();
+  await page.locator('#layers-button').click();
+  const ground = page.locator('.three-mode-wide-toggle').filter({ hasText: 'Streets and pavement' }).locator('input');
+  await expect(ground).toBeChecked();
+  await ground.uncheck();
+  await expect.poll(() => page.evaluate(() => (window as any).PersistentStorage.getItem('cb_3d_ground_enabled'))).toBe('0');
+  await expect.poll(() => page.evaluate(() => (window as any).getThreeModeInternals().scene.getObjectByName('Ground')?.visible ?? false)).toBe(false);
+  await ground.check();
+  await expect.poll(() => page.evaluate(() => (window as any).PersistentStorage.getItem('cb_3d_ground_enabled'))).toBe('1');
+});
+
+test('Activity expands and its current-city notice restores the all-cities filter', async ({ mockApi: page }) => {
+  await openCity(page);
+  await page.evaluate(() => (window as any).openActivityPanel());
+  const sheet = page.locator('#activity-sheet');
+  const expand = sheet.locator('#activity-panel-expand');
+  await expand.click();
+  await expect(sheet).toHaveClass(/activity-panel--expanded/);
+  await expect(expand).toHaveAttribute('aria-expanded', 'true');
+  await expand.click();
+  await expect(sheet).not.toHaveClass(/activity-panel--expanded/);
+  const details = sheet.locator('#activity-panel-controls details');
+  await details.locator('summary').click();
+  const city = sheet.locator('[data-activity-filter-field="cityScope"]');
+  await selectNativeOption(city, 'current');
+  await sheet.locator('#activity-panel-notices').getByRole('button', { name: 'Show all cities' }).click();
+  await expect(city).toHaveValue('all');
+  await expect(sheet.locator('#activity-panel-notices')).not.toContainText('Events without a location');
+});
+
+test('road drawing panel folds and expands without cancelling the drawing', async ({ mockApi: page }) => {
+  await openCity(page);
+  await openParcel(page, 'proposals');
+  await page.locator('.parcel-transport-btn--road').click();
+  const panel = page.locator('#road-info-panel');
+  const fold = panel.locator('#road-panel-minimize');
+  await fold.click();
+  await expect(panel).toHaveClass(/is-minimized/);
+  await expect(fold).toHaveAttribute('aria-expanded', 'false');
+  await fold.click();
+  await expect(panel).not.toHaveClass(/is-minimized/);
+  await expect(fold).toHaveAttribute('aria-expanded', 'true');
+  await expect(panel.locator('#importRoadsButton')).toBeVisible();
+});

@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2134",
+  "name": "Seremban, Malaysia",
+  "point": [
+    2.70605282873579,
+    101.958045373885
+  ],
+  "bindings": [
+    {
+      "appCityId": "seremban",
+      "runtimeConfig": {
+        "id": "seremban",
+        "wupCityCode": "2134",
+        "label": "Seremban, Malaysia",
+        "currency": {
+          "locale": "en-MY",
+          "code": "MYR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            2.70605282873579,
+            101.958045373885
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            2.70605282873579,
+            101.958045373885
+          ],
+          "fallbackDataset": [
+            101.958045373885,
+            2.70605282873579
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "my-planmalaysia-iplan-lot-negeri-sembilan",
+          "idPrefix": "MY-IPLAN-NS-UPI-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "PLANMalaysia iPLAN; Lot Negeri Sembilan"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "my-planmalaysia-iplan-lot-negeri-sembilan",
+      "name": "PLANMalaysia iPLAN Lot Negeri Sembilan",
+      "adapter": "arcgis",
+      "endpoint": "https://scharms.planmalaysia.gov.my/arcgis/rest/services/iPLAN/LOT_05/MapServer/0",
+      "idField": "UPI",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9A-Za-z]+$",
+      "idPrefix": "MY-IPLAN-NS-UPI-",
+      "outFields": [
+        "OBJECTID",
+        "UPI"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "timeoutMs": 40000,
+      "countryCode": "MY",
+      "metricSrid": 32647,
+      "cityIds": [
+        "seremban"
+      ],
+      "sourceCrs": "EPSG:4742",
+      "operator": "PLANMalaysia / Jabatan Perancangan Bandar dan Desa Malaysia",
+      "catalogueUrl": "https://scharms.planmalaysia.gov.my/arcgis/rest/services/iPLAN/LOT_05/MapServer/0?f=pjson",
+      "attribution": "PLANMalaysia iPLAN; Lot Negeri Sembilan",
+      "licenceNote": "Anonymous public queries with normal TLS. No explicit reuse or redistribution licence in first-party layer metadata; retain attribution and confirm terms during second-pass review.",
+      "scope": "Negeri Sembilan cadastral lot layer; bounded Seremban-area availability only. Municipal and district completeness, currentness and historic validity remain unverified.",
+      "defaultForCity": true,
+      "maxResponseBytes": 16777216,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "MY",
+          "cityCode": "2134",
+          "basis": "Official Lot Negeri Sembilan polygon layer; native UPI and LOT cadastral fields. Retained discovery geometries near immutable Seremban locator. Bounded availability is not municipal completeness.",
+          "evidenceFiles": [
+            "evidence/layer-metadata.json",
+            "evidence/source-review.json"
+          ]
+        }
+      }
+    }
+  ]
+}

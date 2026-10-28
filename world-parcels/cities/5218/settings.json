@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5218",
+  "name": "San Luis Potosí, Mexico",
+  "point": [
+    22.1533233429272,
+    -100.959583790101
+  ],
+  "bindings": [
+    {
+      "appCityId": "san_luis_potosi",
+      "runtimeConfig": {
+        "id": "san_luis_potosi",
+        "wupCityCode": "5218",
+        "label": "San Luis Potosí, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            22.1533233429272,
+            -100.959583790101
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            22.1533233429272,
+            -100.959583790101
+          ],
+          "fallbackDataset": [
+            -100.959583790101,
+            22.1533233429272
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-sedatu-ran-pit24-parcelas-2020-wfs",
+          "idPrefix": "MX-SEDATU-RAN-PIT24-2020-PAR_ID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Registro Agrario Nacional (RAN) / SEDATU SITU, PIT24 Parcelas San Luis Potosí 2020, CC BY 4.0. Historical partial agrarian parcel coverage."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-sedatu-ran-pit24-parcelas-2020-wfs",
+      "name": "SEDATU / RAN PIT24 San Luis Potosí agrarian parcels (2020)",
+      "adapter": "wfs",
+      "endpoint": "https://ide.sedatu.gob.mx/geoserver/ows",
+      "featureType": "geonode:a__24_PARCELAS_RAN_2020",
+      "version": "2.0.0",
+      "idField": "PAR_ID",
+      "idType": "integer",
+      "idPrefix": "MX-SEDATU-RAN-PIT24-2020-PAR_ID-",
+      "outFields": [
+        "PAR_ID"
+      ],
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 1,
+      "minRequestIntervalMs": 150,
+      "countryCode": "MX",
+      "metricSrid": 32614,
+      "cityIds": [
+        "san_luis_potosi"
+      ],
+      "defaultForCity": true,
+      "scope": "Bounded northern San Luis Potosí city-area RAN ejido/community agrarian parcel coverage in the statewide 2020 extract. Historical partial social-property coverage; private urban cadastre, municipal conformity, currentness and citywide completeness are unverified.",
+      "attribution": "Registro Agrario Nacional (RAN) / SEDATU SITU, PIT24 Parcelas San Luis Potosí 2020, CC BY 4.0. Historical partial agrarian parcel coverage.",
+      "catalogueUrl": "https://ide.sedatu.gob.mx/catalogue/csw_to_extra_format/f8125086-53c8-11ec-8e6c-005056b8fa85/a__24_PARCELAS_RAN_2020.html",
+      "metadataUrl": "https://ide.sedatu.gob.mx/catalogue/csw_to_extra_format/f8125086-53c8-11ec-8e6c-005056b8fa85/a__24_PARCELAS_RAN_2020.html",
+      "nativeCrs": "EPSG:4326",
+      "responseCrs": "EPSG:4326",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometryQuery": true
+      },
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "license": "CC BY 4.0",
+      "browserTransport": "relay",
+      "ownership": false
+    }
+  ]
+}

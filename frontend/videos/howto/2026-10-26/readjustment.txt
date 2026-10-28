@@ -1,0 +1,7 @@
+Select neighbouring parcels and choose Lay out parcels to redesign their boundaries together.
+
+Start with Equal plots and set the plot count. You can also edit boundaries directly on the map.
+
+Compare New plots with Old plots. The full site remains one fixed pool.
+
+Finish the layout, then inspect the new boundaries in their 3D surroundings.

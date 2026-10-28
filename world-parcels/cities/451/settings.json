@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "451",
+  "name": "Yerevan, Armenia",
+  "point": [
+    40.180088343519,
+    44.505655051258
+  ],
+  "bindings": [
+    {
+      "appCityId": "yerevan",
+      "runtimeConfig": {
+        "id": "yerevan",
+        "wupCityCode": "451",
+        "label": "Yerevan, Armenia",
+        "currency": {
+          "locale": "hy-AM",
+          "code": "AMD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            40.180088343519,
+            44.505655051258
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            40.180088343519,
+            44.505655051258
+          ],
+          "fallbackDataset": [
+            44.505655051258,
+            40.180088343519
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "am-yerevan-municipal-cadastral-parcels",
+          "idPrefix": "AM-YEREVAN-GIS-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Yerevan Municipality Geoportal / Yerevan City Management Technologies"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "am-yerevan-municipal-cadastral-parcels",
+      "name": "Yerevan municipal cadastral land parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.yerevan.am/server/rest/services/%D5%80%D5%B8%D5%B2%D5%A1%D5%B4%D5%A1%D5%BD_search/FeatureServer/1/query",
+      "idField": "cadastre_code",
+      "idType": "string",
+      "idPattern": "^[0-9]{2}-[0-9]{3}-[0-9]{4}-[0-9]{4}$",
+      "objectIdField": "objectid",
+      "idPrefix": "AM-YEREVAN-GIS-",
+      "parcelNumberField": "cadastre_code",
+      "outFields": [
+        "objectid",
+        "cadastre_code"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "pageSize": 100,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 1,
+      "countryCode": "AM",
+      "metricSrid": 32638,
+      "cityIds": [
+        "yerevan"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "operator": "Yerevan Municipality Geoportal / Yerevan City Management Technologies",
+      "attribution": "Yerevan Municipality Geoportal / Yerevan City Management Technologies",
+      "catalogueUrl": "https://gis.yerevan.am/portal",
+      "scope": "Municipal cadastral land-plot layer; bounded central Yerevan exact reads verified. Citywide completeness and current/historic semantics are unverified.",
+      "licenceNote": "Public anonymous query service. No explicit reuse licence in layer metadata; terms and attribution confirmation remain a follow-up."
+    }
+  ]
+}

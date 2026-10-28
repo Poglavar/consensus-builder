@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2483",
+  "name": "Seweding, South Africa",
+  "point": [
+    -25.8660980158163,
+    25.6094579612092
+  ],
+  "bindings": [
+    {
+      "appCityId": "seweding",
+      "runtimeConfig": {
+        "id": "seweding",
+        "wupCityCode": "2483",
+        "label": "Seweding, South Africa",
+        "currency": {
+          "locale": "en-ZA",
+          "code": "ZAR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -25.8660980158163,
+            25.6094579612092
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -25.8660980158163,
+            25.6094579612092
+          ],
+          "fallbackDataset": [
+            25.6094579612092,
+            -25.8660980158163
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "za-mahikeng-landinformation-cadastre",
+          "idPrefix": "ZA-MAHIKENG-LANDINFORMATION-CADASTRE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Mahikeng Local Municipality GIS / Land Information System; Chief Surveyor-General cadastral provenance"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "za-mahikeng-landinformation-cadastre",
+      "name": "Mahikeng Local Municipality Land Information System — Cadastre",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.mahikeng.gov.za/hosting/rest/services/LandInformation/Land_Information/MapServer/4",
+      "idPrefix": "ZA-MAHIKENG-LANDINFORMATION-CADASTRE-",
+      "idField": "parcel_key",
+      "objectIdField": "ESRI_OID",
+      "idType": "string",
+      "idPattern": "^[A-Z0-9]{26}$",
+      "outFields": [
+        "parcel_key",
+        "ESRI_OID"
+      ],
+      "queryFormat": "esri-json",
+      "pageSize": 500,
+      "idBatchSize": 1,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 2,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "ZA",
+      "metricSrid": 32735,
+      "projection": "EPSG:32735",
+      "cityIds": [
+        "seweding"
+      ],
+      "defaultForCity": true,
+      "operator": "Mahikeng Local Municipality Planning and Town Development GIS",
+      "catalogueUrl": "https://www.mahikeng.gov.za/departments/planning-development/",
+      "attribution": "Mahikeng Local Municipality GIS / Land Information System; Chief Surveyor-General cadastral provenance",
+      "scope": "Bounded Seweding/Mahikeng cadastral source observations only. The immutable queue point and Stats SA locality are covered by a large two-shell Farm parcel; that farm is not evidence of urban lots or citywide completeness. Nearby Farm and Street records are separate sample records. All original rings retained.",
+      "licenceNote": "Anonymous public cadastral map access; no explicit geometry redistribution licence established. Attribute minimization, attribution and source notices retained. Currentness, legal title and survey accuracy unverified."
+    }
+  ]
+}

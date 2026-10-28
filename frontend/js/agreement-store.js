@@ -1,8 +1,8 @@
 // The agreements of this device (plan-design-agreement.md, M1 (b)): one JSON row per agreement at
 // `agreement:<id>` in the city's storage, next to the `proposal:<id>` rows. Saving normalizes and
-// stamps the record; writes refuse in a secondary tab, where the city's data is read-only.
+// stamps the record.
 //
-// create({ storage, isSecondaryTab, normalize?, now? }) builds a store over any PersistentStorage-shaped
+// create({ storage, normalize?, now? }) builds a store over any PersistentStorage-shaped
 // object (getItem, setItem, removeItem, forEach), so a node test can drive it; window.AgreementStore
 // is the browser instance over window.PersistentStorage.
 (function (root, factory) {
@@ -12,8 +12,7 @@
         // Resolved at call time: the storage and the record module may load after this file.
         root.AgreementStore = Object.freeze({
             ...api.create({
-                storage: () => root.PersistentStorage,
-                isSecondaryTab: () => root.__cbSecondaryTab === true
+                storage: () => root.PersistentStorage
             }),
             create: api.create
         });
@@ -26,12 +25,6 @@
     const recordApi = () => root.AgreementRecord || (typeof require === 'function' ? require('./agreement-record.js') : null);
     const idOf = value => (value === undefined || value === null ? '' : String(value).trim());
 
-    function secondaryTabError() {
-        const error = new Error('Another tab holds this city’s data; agreements can be edited there only.');
-        error.code = 'secondary-tab';
-        return error;
-    }
-
     // A subscriber that throws must not undo or hide a write that already happened: its error is
     // raised on its own, after the write and the other subscribers, so it still fails loudly.
     function raiseLater(error) {
@@ -39,17 +32,13 @@
         else console.error('[AgreementStore] subscriber failed', error);
     }
 
-    function create({ storage, isSecondaryTab, normalize, now } = {}) {
+    function create({ storage, normalize, now } = {}) {
         const subscribers = new Set();
 
         function store() {
             const resolved = typeof storage === 'function' ? storage() : storage;
             if (!resolved || typeof resolved.getItem !== 'function') throw new Error('AgreementStore has no storage.');
             return resolved;
-        }
-
-        function refuseInSecondaryTab() {
-            if (typeof isSecondaryTab === 'function' && isSecondaryTab() === true) throw secondaryTabError();
         }
 
         function normalized(raw) {
@@ -114,7 +103,6 @@
         // Normalizes, stamps updatedAt (and createdAt when it is missing), writes, notifies, and
         // returns what was stored.
         function save(agreement) {
-            refuseInSecondaryTab();
             if (!agreement || typeof agreement !== 'object') throw new TypeError('save() needs an agreement.');
             const at = stamp();
             const record = normalized({ ...agreement, createdAt: agreement.createdAt || at, updatedAt: at });
@@ -127,7 +115,6 @@
         }
 
         function remove(id) {
-            refuseInSecondaryTab();
             const key = keyOf(id);
             const storage = store();
             if (storage.getItem(key) === null) return false;
@@ -138,7 +125,6 @@
 
         // Every agreement row of this city goes; nothing else in the storage is touched.
         function clear() {
-            refuseInSecondaryTab();
             const storage = store();
             const keys = [];
             storage.forEach((_value, key) => {

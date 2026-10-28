@@ -37,6 +37,12 @@ function failBlockDetection(message) {
     return true;
 }
 
+function failBlockParcelLimit() {
+    return failBlockDetection(tBlock('alerts.messages.block_parcel_limit_exceeded',
+        { limit: window.__parcelBlockTopology.MAX_BLOCK_PARCELS },
+        'Block detection stopped: the connected area exceeds the {{limit}}-parcel limit. Select a smaller group of parcels manually.'));
+}
+
 function applyBlockTranslations(root) {
     const apply = (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function')
         ? window.i18n.applyTranslations
@@ -911,7 +917,10 @@ function updateBlocksList() {
                     <span>${block.name}</span>
                     <span class="block-count">${block.count} parcels</span>
                 `;
-        blockItem.onclick = () => highlightAndCenterBlock(block.name);
+        blockItem.onclick = () => {
+            window.MapShell?.closeSheets();
+            highlightAndCenterBlock(block.name);
+        };
         blocksContent.appendChild(blockItem);
     });
 }
@@ -1190,9 +1199,15 @@ function showBlockInfo(blockName, deferStats = false) {
     const infoPanel = document.getElementById('block-info-panel');
     if (!infoPanel) return;
 
-    // Both inspectors occupy the right dock. The parcel panel would cover the block's lower
-    // actions after detecting a block from a selected parcel.
+    // Every inspector occupies the right dock. The parcel panel would cover the block's lower
+    // actions after detecting a block from a selected parcel, and a design's own details panel
+    // (an ownership design's, say) would sit over the block and take its clicks. A panel the click
+    // stack hosts is part of the stack, not a docked panel, and stays.
     window.hideParcelInfoPanel?.();
+    const designPanel = document.getElementById('proposal-details-panel');
+    if (designPanel?.classList.contains('visible') && !designPanel.classList.contains('is-hosted')) {
+        window.hideProposalDetailsPanel?.(true);
+    }
     setActiveBlockTab('block-info-tab');
 
     const infoContent = document.getElementById('block-info-content');
@@ -1231,7 +1246,7 @@ function showBlockInfo(blockName, deferStats = false) {
 
     const proposalsContent = document.getElementById('block-proposals-content');
     if (proposalsContent) {
-        const loadingText = tBlock('panel.block.metrics.loadingProposals', {}, 'Loading proposals…');
+        const loadingText = tBlock('panel.block.metrics.loadingProposals', {}, 'Loading designs…');
         proposalsContent.innerHTML = `<p class="block-proposals-empty" data-i18n-key="panel.block.metrics.loadingProposals">${loadingText}</p>`;
     }
 
@@ -1459,7 +1474,7 @@ async function renderBlockInfoStats(blockName) {
                         ? selectedBlockName
                         : (typeof window !== 'undefined' ? window.selectedBlockName : null);
                     if (currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
-                        const parcelHighlightStyle = { fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 };
+                        const parcelHighlightStyle = { fillColor: window.MapHighlight.color, fillOpacity: 0.4, color: window.MapHighlight.color, weight: 2 };
                         layer.setStyle(parcelHighlightStyle);
                     } else {
                         const styleFn = typeof window.getParcelBaseStyle === 'function' ? window.getParcelBaseStyle : null;
@@ -1604,10 +1619,10 @@ function buildBlockProposalListItem(proposal) {
     // details hold the rest). proposal-action-btn stays as the hook the specs find it by.
     const appliedOnMap = isRoadProposal ? roadApplied : isBuildingProposal ? buildingApplied : structureApplied;
     const actionTitle = isRoadProposal
-        ? (appliedOnMap ? tBlock('panel.block.proposals.roadRemoveTooltip', {}, 'Unapply this road proposal') : tBlock('panel.block.proposals.roadApplyTooltip', {}, 'Apply this road proposal'))
+        ? (appliedOnMap ? tBlock('panel.block.proposals.roadRemoveTooltip', {}, 'Unapply this road design') : tBlock('panel.block.proposals.roadApplyTooltip', {}, 'Apply this road design'))
         : isBuildingProposal
-            ? (appliedOnMap ? tBlock('panel.block.proposals.buildingRemoveTooltip', {}, 'Unapply this building proposal') : tBlock('panel.block.proposals.buildingApplyTooltip', {}, 'Apply this building proposal'))
-            : (appliedOnMap ? tBlock('panel.block.proposals.structureRemoveTooltip', {}, 'Unapply this structure proposal') : tBlock('panel.block.proposals.structureApplyTooltip', {}, 'Apply this structure proposal'));
+            ? (appliedOnMap ? tBlock('panel.block.proposals.buildingRemoveTooltip', {}, 'Unapply this building design') : tBlock('panel.block.proposals.buildingApplyTooltip', {}, 'Apply this building design'))
+            : (appliedOnMap ? tBlock('panel.block.proposals.structureRemoveTooltip', {}, 'Unapply this structure design') : tBlock('panel.block.proposals.structureApplyTooltip', {}, 'Apply this structure design'));
     // Apply / Unapply is offered as proposals/display-state.js decides for every list: a cancelled
     // proposal is withdrawn and gets neither, whatever this browser's applied flag says.
     const mapAction = window.__proposalDisplayState.of(proposal, { applied: appliedOnMap }).mapAction;
@@ -1651,7 +1666,6 @@ function buildBlockProposalListItem(proposal) {
 
     const metaInfo = metaParts.join(' • ');
     const typeLabel = isRoadProposal ? 'Road' : isBuildingProposal ? 'Building' : isStructureProposal ? (proposal.structureProposal.kind ? proposal.structureProposal.kind.charAt(0).toUpperCase() + proposal.structureProposal.kind.slice(1) : 'Structure') : '';
-    const deleteLabel = tBlock('modal.roadWidth.proposalList.deleteTooltip', {}, 'Delete proposal');
 
     // The lifecycle reads as the proposals list does (proposalLadderBadgesHtml, proposals/list-ui.js);
     // "Applied" is the row's map action, so it is not repeated as a badge.
@@ -1663,9 +1677,7 @@ function buildBlockProposalListItem(proposal) {
                 <div class="cb-actions proposal-actions">
                     ${actionButtons}
                     ${proposalLadderBadgesHtml(proposal, { applied: false })}
-                    <button type="button" class="btn btn-sm btn-icon btn-danger proposal-delete-btn" onclick="event.stopPropagation(); if (typeof deleteProposal === 'function') deleteProposal('${proposal.proposalId}')" title="${deleteLabel}" aria-label="${deleteLabel}">
-                        <i class="fas fa-trash" aria-hidden="true"></i>
-                    </button>
+
                 </div>
             </div>
             <div class="proposal-list-meta">${metaInfo}</div>
@@ -1752,7 +1764,7 @@ function createProposalFromBlock(blockName) {
 
     // Notify user
     if (typeof updateStatus === 'function') {
-        updateStatus(tBlock('panel.block.proposals.parcelsSelected', { count: addedCount }, `${addedCount} parcels selected for proposal`));
+        updateStatus(tBlock('panel.block.proposals.parcelsSelected', { count: addedCount }, `${addedCount} parcels selected for design`));
     }
 }
 
@@ -1771,7 +1783,7 @@ function renderBlockProposalsTab(blockName) {
     if (!proposalsContainer) return;
 
     // Build the create proposal button HTML
-    const createButtonLabel = tBlock('panel.block.proposals.create', {}, 'Create Proposal');
+    const createButtonLabel = tBlock('panel.block.proposals.create', {}, 'Create Design');
     const createButtonHtml = blockName ? `
         <div class="block-proposals-actions">
             <button type="button" class="btn btn-primary btn-block" onclick="createProposalFromBlock(${inlineJsArg(blockName)})">
@@ -1782,13 +1794,13 @@ function renderBlockProposalsTab(blockName) {
 
     if (!blockName) {
         setBlockProposalsTabCount(0);
-        proposalsContainer.innerHTML = '<p class="block-proposals-empty">Select a block to see proposals.</p>';
+        proposalsContainer.innerHTML = '<p class="block-proposals-empty">Select a block to see designs.</p>';
         return;
     }
 
     if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') {
         setBlockProposalsTabCount(0);
-        proposalsContainer.innerHTML = createButtonHtml + '<p class="block-proposals-empty">Proposal data is unavailable.</p>';
+        proposalsContainer.innerHTML = createButtonHtml + '<p class="block-proposals-empty">Design data is unavailable.</p>';
         return;
     }
 
@@ -1805,7 +1817,7 @@ function renderBlockProposalsTab(blockName) {
     setBlockProposalsTabCount(proposals.length);
 
     if (proposals.length === 0) {
-        proposalsContainer.innerHTML = createButtonHtml + `<p class="block-proposals-empty">${tBlock('panel.block.proposals.noProposals', {}, 'No proposals for this block yet.')}</p>`;
+        proposalsContainer.innerHTML = createButtonHtml + `<p class="block-proposals-empty">${tBlock('panel.block.proposals.noProposals', {}, 'No designs for this block yet.')}</p>`;
         return;
     }
 
@@ -1995,7 +2007,7 @@ function revealBlockParcels(blockParcels) {
 // A whole-block suggestion replaces its one-parcel source selection; the explicit Detect button
 // remains additive so users can deliberately collect more than one block.
 function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
-    const button = document.querySelector('button[onclick="animateFloodfillFromSelected()"]');
+    const button = document.querySelector('.multi-select-detect-btn');
 
     const run = async () => {
         const services = liveBlockServices();
@@ -2089,6 +2101,7 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
         let searchBounds = map.getBounds();
         for (let expansion = 0; expansion < BLOCK_SEARCH_MAX_EXPANSIONS; expansion++) {
             if (attempt.result && attempt.result.isValid) break;
+            if (attempt.result?.invalidReason === 'parcel_limit_exceeded') break;
             if (!repository || typeof repository.ensureBounds !== 'function') break;
             searchBounds = searchBounds.pad(BLOCK_SEARCH_EXPANSION_PAD);
             // A failure to load the wider ground is an error, not an answer: it propagates to the
@@ -2109,6 +2122,8 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
             const idLabel = invalidParcelId || unknownLabel;
             const reason = floodResult ? floodResult.invalidReason : null;
 
+            if (reason === 'parcel_limit_exceeded') return failBlockParcelLimit();
+
             // The rule is about the VIEWPORT, not about roads: a block is grown only through
             // parcels that lie entirely inside the current view, so that a partly-loaded neighbour
             // cannot produce a partial block. Say exactly that, and say which parcel broke it —
@@ -2117,7 +2132,7 @@ function selectCurrentBlockIntoMultiSelection(startParcel, options = {}) {
             // Deliberately NO camera move and NO selection change: this used to fly the map to the
             // offending parcel and select it, which threw away both the view and the selection the
             // user was working with to deliver what is only a message.
-            // Only the two visibility outcomes have a message of their own; anything else is an
+            // Visibility outcomes also have a message of their own; anything else is an
             // internal failure and must not be dressed up as one of them.
             if (reason === 'start_not_fully_visible') {
                 return failBlockDetection(tBlock('alerts.messages.block_seed_not_fully_visible', {},
@@ -2251,7 +2266,7 @@ function animateFloodfillFromSelected(options = {}) {
             'Could not resolve the selected parcel in the live map, so there is nothing to grow a block from.'));
         return;
     }
-    const button = document.querySelector('button[onclick="animateFloodfillFromSelected()"]');
+    const button = document.querySelector('.multi-select-detect-btn');
 
     const run = () => new Promise(resolve => {
         let finished = false;
@@ -2267,11 +2282,12 @@ function animateFloodfillFromSelected(options = {}) {
             const neighborMap = liveBlockNeighborGraph(parcelIdFromLayer(startParcel));
 
             const visited = new Set();
+            const queued = new Set([parcelIdFromLayer(startParcel)]);
             const blockParcels = [];
             const queue = [startParcel];
             let blockInvalid = false;
             const acceptedStyle = {
-                fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2
+                fillColor: window.MapHighlight.color, fillOpacity: 0.4, color: window.MapHighlight.color, weight: 2
             };
             const rejectedStyle = {
                 fillColor: '#fff3f3', fillOpacity: 0.7, color: '#c00', weight: 2
@@ -2344,7 +2360,14 @@ function animateFloodfillFromSelected(options = {}) {
                     const neighbors = findNeighbors(current, neighborMap);
                     for (const neighbor of neighbors) {
                         const nId = parcelIdFromLayer(neighbor);
-                        if (nId && !visited.has(nId)) queue.push(neighbor);
+                        if (!nId || queued.has(nId)) continue;
+                        if (queued.size >= window.__parcelBlockTopology.MAX_BLOCK_PARCELS) {
+                            failBlockParcelLimit();
+                            finish();
+                            return;
+                        }
+                        queued.add(nId);
+                        queue.push(neighbor);
                     }
                     setTimeout(animateStep, 100);
                 } catch (err) {
@@ -2700,7 +2723,7 @@ let blockPolygonCacheScope = null;
 
 function currentBlockPolygonScope() {
     const city = window.CityConfigManager?.getCurrentCityId?.() || 'default';
-    const revision = window.LiveParcelFabric?.snapshot?.().revision ?? 'none';
+    const revision = window.LiveParcelFabric?.revision?.() ?? 'none';
     return `${city}|${revision}`;
 }
 
@@ -2762,7 +2785,7 @@ function rehighlightSelectedBlockParcels() {
 
         const block = blockStorage.blocks.get(currentSelected);
         if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) return;
-        const parcelHighlightStyle = { fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 };
+        const parcelHighlightStyle = { fillColor: window.MapHighlight.color, fillOpacity: 0.4, color: window.MapHighlight.color, weight: 2 };
         block.parcels.forEach(layer => {
             try {
                 if (layer && typeof layer.setStyle === 'function') {

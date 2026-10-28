@@ -98,14 +98,14 @@ describe('footprintParts (shared by browser, API and migration)', () => {
 
 
 // A scripted cadastre: answers the binding statements by identity and records them.
-function cadastre({ count = 2, parcels = [], inRegion = true, unsurveyedM2 = 0, unknownM2 = 0, outsideM2 = 0, found = null } = {}) {
+function cadastre({ count = 2, parcels = [], inRegion = true, unsurveyedM2 = 0, unknownM2 = 0, outsideM2 = 0, outsideGeometry = null, found = null } = {}) {
     const calls = [];
     return {
         calls,
         async query(sql, params) {
             calls.push({ sql, params });
             if (sql === BINDING_COUNT_SQL) return { rows: [{ parcels: count }] };
-            if (sql === FOOTPRINT_OUTSIDE_SITE_SQL) return { rows: [{ outside_m2: outsideM2 }] };
+            if (sql === FOOTPRINT_OUTSIDE_SITE_SQL) return { rows: [{ outside_m2: outsideM2, outside_geojson: outsideGeometry && JSON.stringify(outsideGeometry) }] };
             if (sql === BINDING_SQL) {
                 return { rows: [{ parcels, site_m2: 9000, in_region: inRegion, unsurveyed_m2: unsurveyedM2, unknown_m2: unknownM2, site_geojson: SITE_JSON }] };
             }
@@ -231,8 +231,9 @@ describe('checkProposalBinding (declared == binding)', () => {
         expect(db.calls.map(call => call.sql)).toEqual([FOOTPRINT_OUTSIDE_SITE_SQL, BINDING_COUNT_SQL, BINDING_SQL]);
         expect(JSON.parse(db.calls[1].params[0])).toEqual([{ type: 'MultiPolygon', coordinates: [SITE.coordinates] }]);
 
-        const outside = await checkProposalBinding(cadastre({ parcels: SPILL, outsideM2: 37.2 }), park, ['HR-335649-100'], { parcelSourceId: 'oss-wfs', site: SITE });
-        expect(outside).toMatchObject({ ok: false, code: 'footprint-outside-site' });
+        const outside = await checkProposalBinding(cadastre({ parcels: SPILL, outsideM2: 37.2, outsideGeometry: PARK }), park, ['HR-335649-100'], { parcelSourceId: 'oss-wfs', site: SITE });
+        expect(outside).toMatchObject({ ok: false, code: 'footprint-outside-site', outsideM2: 37.2, outsideGeometry: PARK, site: { type: 'MultiPolygon', coordinates: [SITE.coordinates] } });
+        expect(outside.error).not.toMatch(/proposal/i);
     });
 
     it('lets a material proposal on unsurveyed ground have an empty declaration', async () => {

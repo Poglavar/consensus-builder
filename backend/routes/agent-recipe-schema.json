@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://api.urbangametheory.xyz/docs/agents.json",
   "title": "Urban Game Theory — what an agent publishes: design/v1 and agreement/v1",
-  "description": "Two content-addressed objects, checked as the server checks them (frontend/js/design-record.js validate with routes/designs.js validateDesignContent; routes/agreements.js validateAgreementContent). A CID identifies a UnixFS file: CIDv1, sha2-256, lower-case base32, fixed 256 KiB chunks and raw leaves. Single-chunk files use the raw codec (bafkrei…); multi-chunk files use a UnixFS dag-pb root (bafybei…). The CID covers the object's canonical bytes: JSON with keys sorted at every depth, no whitespace, UTF-8. Publish steps: (1) POST /designs/binding { site, toleranceM? } (free, nothing stored) shows the parcels a site takes. (2) Build a design/v1 object, POST /pins { kind: 'design', cid, bytes (base64 canonical bytes) }, then POST /designs { cid, content, parcelSourceId? }: the row carries its binding. A parcel layout is not indexed alone: it travels in the designs of its agreement. (3) Build an agreement/v1 object over the design CIDs, its inputs exactly the union of the designs' bindings, POST /pins { kind: 'agreement', … }, then POST /agreements { cid, content, designs?: [{ cid, content }] }. Writes need an Origin header of the app (https://urbangametheory.xyz); pins are limited to 30 per 15 minutes per client. (4) The sponsor creates the agreement's account (PDA [\"agreement\", sponsor, sha256(cid)]) on the agreement program and reports it at POST /agreements/{cid}/onchain { chain: 'solana', cluster: 'devnet', account, signature }. The app publishes both objects with every field below present (null when empty); the MCP tools refuse anything else.",
+  "description": "Two content-addressed objects, checked as the server checks them (frontend/js/design-record.js validate with routes/designs.js validateDesignContent; routes/agreements.js validateAgreementContent). A CID identifies a UnixFS file: CIDv1, sha2-256, lower-case base32, fixed 256 KiB chunks and raw leaves. Single-chunk files use the raw codec (bafkrei…); multi-chunk files use a UnixFS dag-pb root (bafybei…). The CID covers the object's canonical bytes: JSON with keys sorted at every depth, no whitespace, UTF-8. Publish steps: (1) POST /designs/binding { site, toleranceM? } (free, nothing stored) shows the parcels a site takes. (2) Build a design/v1 object, POST /pins { kind: 'design', cid, bytes (base64 canonical bytes) }, then POST /designs { cid, content, parcelSourceId? }: the row carries its binding. A parcel layout is not indexed alone: it travels in the designs of its named plan. (3) Build an agreement/v1 object with the exact planCid, its inputs exactly the union of that plan's member bindings, POST /pins { kind: 'agreement', … }, then POST /agreements { cid, content, plan?, designs?: [{ cid, content }] }; the optional transport designs carry unpublished plan members, not membership in the agreement content. Writes need an Origin header of the app (https://urbangametheory.xyz); pins are limited to 30 per 15 minutes per client. (4) The sponsor creates the agreement's account (PDA [\"agreement\", sponsor, sha256(cid)]) on the agreement program and reports it at POST /agreements/{cid}/onchain { chain: 'solana', cluster: 'devnet', account, signature }. The app publishes both objects with every field below present (null when empty); the MCP tools refuse anything else.",
   "oneOf": [
     { "$ref": "#/$defs/design" },
     { "$ref": "#/$defs/agreement" }
@@ -23,6 +23,70 @@
       "type": "string",
       "pattern": "\\S",
       "maxLength": 256
+    },
+    "organiserDid": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^did:web:[a-z0-9.-]+(?:%3A[0-9]+)?(?::[A-Za-z0-9._~-]+)*$",
+      "description": "Canonical DID Web identifier with a public DNS hostname, optional encoded port and path; normalize with CommunityDidWeb.normalizeDid. The named website is resolved only in the browser."
+    },
+    "httpsUrl": {
+      "type": "string",
+      "maxLength": 2048,
+      "format": "uri",
+      "pattern": "^https://[^/@?#]+(?:[/?#]|$)",
+      "description": "Canonical HTTPS URL without credentials, exactly as URL.href writes it."
+    },
+    "communityVoting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "id", "codeHashes"],
+      "properties": {
+        "schema": { "const": "community-voting/v1" },
+        "id": { "type": "string", "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$" },
+        "codeHashes": { "type": "array", "minItems": 1, "maxItems": 10000, "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "description": "Strictly sorted code verifiers generated locally by CommunityVoting.configuration. No raw codes, names or contact details." }
+      },
+      "description": "Immutable eligibility: list-salted PBKDF2-HMAC-SHA256, 600000 iterations. Changing codes creates a new agreement with independent ballots."
+    },
+    "consultation": {
+      "type": "object",
+      "required": ["organiser", "participationUrl"],
+      "additionalProperties": false,
+      "properties": {
+        "organiser": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/organiserDid" }] },
+        "participationUrl": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/httpsUrl" }] },
+        "voting": { "$ref": "#/$defs/communityVoting" }
+      },
+      "description": "Optional metadata for a nonbinding community consultation; no owner allocations, financial transfers, mint or chain settlement."
+    },
+    "communityReport": {
+      "type": "object",
+      "required": ["schema", "agreementCid", "attester", "signer", "statement", "url", "postedAt", "didDocumentSha256", "didDocument", "proof"],
+      "additionalProperties": false,
+      "properties": {
+        "schema": { "const": "community-result/v1" },
+        "agreementCid": { "$ref": "#/$defs/cid" },
+        "attester": { "$ref": "#/$defs/organiserDid" },
+        "signer": {
+          "type": "string",
+          "pattern": "^solana:(?:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp|EtWTRABZaYq6iMfeYKouRu166VU2xqa1|4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z):[1-9A-HJ-NP-Za-km-z]{32,44}$",
+          "description": "Solana CAIP-10 wallet identifier, including the standard mainnet, devnet or testnet genesis reference."
+        },
+        "statement": { "type": "string", "minLength": 1, "maxLength": 280, "pattern": "\\S", "description": "Plain text without control characters other than tab, newline and carriage return." },
+        "url": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/httpsUrl" }] },
+        "postedAt": { "$ref": "#/$defs/instant" },
+        "didDocumentSha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "didDocument": { "type": "object", "description": "DID document snapshot committed by its canonical JSON SHA-256 digest; not evidence of current website authorization." },
+        "proof": {
+          "type": "object",
+          "required": ["scheme", "signature"],
+          "additionalProperties": false,
+          "properties": { "scheme": { "const": "ed25519-wallet/v1" }, "signature": { "type": "string", "pattern": "^[1-9A-HJ-NP-Za-km-z]+$" } }
+        }
+      },
+      "description": "At most 96 KiB of canonical JSON. The wallet signs CommunityResult.reportMessage: all fields except proof and didDocument; the signed digest commits to the document. postedAt may be historical or at most five minutes ahead. Admission checks signature and snapshot without fetching the website; browsers resolve live DID Web authorization on every read. Reports append after the deadline as well as before it."
     },
     "site": {
       "type": "object",
@@ -110,10 +174,11 @@
     },
     "agreement": {
       "type": "object",
-      "description": "agreement/v1: designs linked by CID, the land they take (inputs) and leave (outputs), who receives which piece (allocations), money, the decision rule, a deadline and the sponsor wallet that mints it. It is what is minted, bet on, pledged to, decided and executed. The index refuses it unless every linked design is indexed or sent along, and its input parcels are exactly the union of its designs' server bindings.",
-      "required": ["schema", "designs", "inputs", "outputs", "allocations", "money", "rule"],
+      "description": "agreement/v1: one exact named plan, its input land and output pieces, allocations, controlled settlement terms and derived cash schedule. Each owner output has one input-party, proposer or public recipient. Community agreements are nonbinding consultations with no allocations or financial transfers.",
+      "required": ["schema", "planCid", "inputs", "outputs", "allocations", "money", "rule"],
       "properties": {
         "schema": { "const": "agreement/v1" },
+        "planCid": { "$ref": "#/$defs/cid", "description": "The exact existing named plan whose design membership this agreement settles." },
         "title": { "type": ["string", "null"], "maxLength": 500 },
         "author": { "type": ["string", "null"], "maxLength": 255 },
         "sponsor": {
@@ -122,21 +187,6 @@
         },
         "city": { "type": ["string", "null"], "maxLength": 100 },
         "createdAt": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/instant" }] },
-        "designs": {
-          "type": "array",
-          "minItems": 1,
-          "maxItems": 200,
-          "items": {
-            "type": "object",
-            "required": ["cid"],
-            "properties": {
-              "cid": { "$ref": "#/$defs/cid" },
-              "goal": { "type": ["string", "null"] },
-              "title": { "type": ["string", "null"] }
-            }
-          },
-          "description": "The linked designs in authored order, each CID once; the published form is { cid, goal, title }."
-        },
         "inputs": {
           "type": "object",
           "required": ["parcels"],
@@ -153,7 +203,7 @@
                   "holders": { "type": "array", "items": { "$ref": "#/$defs/holder" } }
                 }
               },
-              "description": "Exactly the parcels the designs' sites take (binding.parcels[].parcelId of each design, united), each once, with a snapshot of their holders ([] when unknown)."
+              "description": "Exactly the parcels the named plan's design sites take (binding.parcels[].parcelId of each member design, united), each once, with a snapshot of their holders. When ownership is unavailable, the agreement uses an abstract Owner(s) of parcel <id> party."
             },
             "openGroundM2": { "type": ["number", "null"], "minimum": 0, "description": "Land the designs take on no parcel. The account records open_ground = openGroundM2 > 0." }
           },
@@ -193,31 +243,14 @@
               "output": { "type": "string", "description": "The hash of one of the outputs; one line per output at most." },
               "to": {
                 "oneOf": [
-                  { "type": "object", "required": ["kind"], "properties": { "kind": { "const": "holders" } } },
                   { "type": "object", "required": ["kind", "ownerKey"], "properties": { "kind": { "const": "party" }, "ownerKey": { "$ref": "#/$defs/text" } } },
                   { "type": "object", "required": ["kind"], "properties": { "kind": { "const": "public" } } },
-                  {
-                    "type": "object",
-                    "required": ["kind", "shares"],
-                    "properties": {
-                      "kind": { "const": "joint" },
-                      "shares": {
-                        "type": "array",
-                        "minItems": 1,
-                        "items": {
-                          "type": "object",
-                          "required": ["ownerKey", "share"],
-                          "properties": { "ownerKey": { "$ref": "#/$defs/text" }, "share": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 } }
-                        },
-                        "description": "Distinct holders whose shares sum to 1."
-                      }
-                    }
-                  }
+                  { "type": "object", "required": ["kind"], "properties": { "kind": { "const": "proposer" } } }
                 ]
               }
             }
           },
-          "description": "Who receives which output: one holder of the input land (party), the public, or joint shares. An output without a line stays with the holders it carried over to (the published form leaves out holders lines, which mean the same)."
+          "description": "Exactly one recipient per owner output: one input party, proposer or public. Proposer receives land independently of input ownership; the sponsor balances the compensation schedule. Bulk allocation uses one explicit line per output. Joint and implicit holder allocations are not supported."
         },
         "money": {
           "type": "object",
@@ -240,7 +273,7 @@
         },
         "rule": {
           "type": "object",
-          "required": ["electorate", "binding", "lens"],
+          "required": ["electorate", "binding", "lens", "settlement"],
           "properties": {
             "electorate": { "enum": ["owners", "community"], "description": "Who decides: the holders of the input land, or the community." },
             "binding": { "type": "boolean", "description": "Whether the decision binds the owners (an owner deal); a community vote never does." },
@@ -252,20 +285,49 @@
               "type": "array",
               "items": { "type": "string", "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$" },
               "description": "Lens member keys (GET /lenses/members). The agreement program names exactly one, whose AgreementDecision-v1 attestation records the decision; it must not be the sponsor."
+            },
+            "settlement": {
+              "oneOf": [
+                { "type": "null" },
+                { "type": "object", "required": ["method", "rateCentsPerM2", "contributionBasisPoints"], "properties": {
+                  "method": { "enum": ["area", "value", "none"], "description": "area: (land put in after the contribution − land received) × rate; value: land values per m² in `valuation`, each party entitled to its value share, rate and contribution 0; none: no cash." },
+                  "rateCentsPerM2": { "type": "integer", "minimum": 0 },
+                  "contributionBasisPoints": { "type": "integer", "minimum": 0, "maximum": 10000 }
+                }, "additionalProperties": false }
+              ], "description": "Controlled compensation by area (EUR/m² and allowed land contribution) or by value (valuation); cash lines are derived automatically. A pinned scheme (approvalConfig.regime) caps the contribution and rules the distribution."
             }
           },
           "allOf": [
             {
               "if": { "properties": { "electorate": { "const": "community" } } },
-              "then": { "properties": { "binding": { "const": false }, "approvalConfig": { "type": "null" } } }
+              "then": { "properties": { "binding": { "const": false }, "approvalConfig": { "type": "null" }, "settlement": { "type": "null" } } }
             }
           ]
+        },
+        "valuation": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "object", "required": ["inputs", "outputs"], "properties": {
+              "inputs": { "type": "array", "items": { "type": "object", "required": ["parcelId", "unitValueCents"], "properties": { "parcelId": { "$ref": "#/$defs/text" }, "unitValueCents": { "type": "integer", "minimum": 0 } }, "additionalProperties": false } },
+              "outputs": { "type": "array", "items": { "type": "object", "required": ["output", "unitValueCents"], "properties": { "output": { "type": "string" }, "unitValueCents": { "type": "integer", "minimum": 0 } }, "additionalProperties": false } }
+            }, "additionalProperties": false }
+          ],
+          "description": "Settlement by value only: a whole-cent value per m² for every input parcel (before) and every output hash (after). null otherwise."
+        },
+        "consultation": {
+          "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/consultation" }],
+          "description": "Community agreements only; null or absent for an ordinary poll or any owners' agreement."
         },
         "deadline": {
           "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/instant" }],
           "description": "Must lie ahead when the agreement is indexed. The decision must be recorded before it; after it, anyone may expire the account. null: no deadline."
         }
-      }
+      },
+      "allOf": [{
+        "if": { "properties": { "rule": { "properties": { "electorate": { "const": "community" } } } } },
+        "then": { "properties": { "allocations": { "maxItems": 0 }, "money": { "properties": { "lines": { "maxItems": 0 } } } } },
+        "else": { "properties": { "consultation": { "type": "null" } } }
+      }]
     }
   }
 }

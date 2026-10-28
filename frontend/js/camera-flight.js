@@ -15,6 +15,8 @@
         'permittedMap', 'zoningAreas', 'planningSource', 'planningScenario', 'xray', 'suggested', 'suggestedExisting', 'cutaway'];
     const CUE_SETTINGS = ['xray', 'suggested', 'suggestedExisting', 'cutaway'];
     const CAMERA = ['targetLat', 'targetLng', 'headingDeg', 'pitchRad', 'range'];
+    // The app's languages, as plan-record.js accepts them.
+    const LANGUAGES = ['en', 'hr', 'es', 'sr', 'ar', 'fr', 'pt'];
     const finite = x => typeof x === 'number' && Number.isFinite(x);
     const object = x => !!x && typeof x === 'object' && !Array.isArray(x) && [Object.prototype, null].includes(Object.getPrototypeOf(x));
     const keys = (x, allowed) => object(x) && Object.keys(x).every(key => allowed.includes(key));
@@ -57,7 +59,7 @@
         if (parts.length !== 3 || parts.some(x => !x.trim()) || !at.every(finite)
             || Math.abs(at[0]) > 85.0511 || Math.abs(at[1]) > 180 || at[2] < 3 || at[2] > 22) return true;
         if (v.city !== undefined && v.city !== null && !text(v.city, 100)) return true;
-        if (v.language !== undefined && v.language !== null && !['en', 'hr', 'es', 'sr'].includes(v.language)) return true;
+        if (v.language !== undefined && v.language !== null && !LANGUAGES.includes(v.language)) return true;
         if (v.camera !== undefined && v.camera !== null && (!keys(v.camera, CAMERA)
             || !CAMERA.every(key => finite(v.camera[key])) || Math.abs(v.camera.targetLat) > 85.0511
             || Math.abs(v.camera.targetLng) > 180 || v.camera.pitchRad < -Math.PI / 2

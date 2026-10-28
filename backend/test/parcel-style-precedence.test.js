@@ -3,6 +3,8 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
+const { MapHighlight } = createRequire(import.meta.url)('../../frontend/js/shared-utils.js');
 
 const PRIVATE_STYLE = { fillColor: '#e74c3c', fillOpacity: 0.3, color: '#a93226', weight: 2 };
 
@@ -18,6 +20,7 @@ function environment() {
         id, options: {}, setStyle(style) { Object.assign(this.options, style); }, bringToFront() {}
     }]));
     const context = {
+        MapHighlight,
         console: { log() {}, warn() {} },
         addEventListener() {},
         document: { getElementById: () => null },
@@ -49,6 +52,15 @@ function environment() {
 }
 
 describe('parcel style precedence under an ownership highlight', () => {
+    it('keeps selected parcels yellow through bulk restyling and restores their underlying style on deselection', () => {
+        const { context, layers } = environment();
+        context.selectedParcelId = 'plain-plot';
+        context.refreshParcelStylesForAppliedProposals();
+        expect(layers.get('plain-plot').options).toMatchObject({ color: MapHighlight.color, fillColor: MapHighlight.color });
+        context.selectedParcelId = null;
+        context.refreshParcelStylesForAppliedProposals();
+        expect(layers.get('plain-plot').options).toMatchObject(PRIVATE_STYLE);
+    });
     it('the bulk restyle keeps an ad parcel in the ad style, as getParcelStyle does', () => {
         const { context, layers } = environment();
         context.refreshParcelStylesForAppliedProposals();

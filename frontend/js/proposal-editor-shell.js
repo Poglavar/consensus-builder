@@ -123,7 +123,7 @@
 
     function proposalLabel(goal) {
         const adapter = global.proposalEditorAdapterRegistry?.get(goal);
-        return adapter?.label || String(goal || tDraft('proposalDrafts.proposal', 'Proposal')).replace(/-/g, ' ');
+        return adapter?.label || String(goal || tDraft('proposalDrafts.proposal', 'Design')).replace(/-/g, ' ');
     }
 
     function relativeTime(value) {
@@ -145,8 +145,8 @@
         if (!global.document?.body) return null;
         shell = global.document.createElement('aside');
         shell.id = 'proposal-editor-shell';
-        shell.className = 'proposal-editor-shell';
-        shell.setAttribute('aria-label', tDraft('proposalDrafts.editorAria', 'Proposal draft editor'));
+        shell.className = 'proposal-editor-shell right-screen-panel';
+        shell.setAttribute('aria-label', tDraft('proposalDrafts.editorAria', 'Design draft editor'));
         global.document.body.appendChild(shell);
         shell.addEventListener('click', handleShellClick);
         shell.addEventListener('input', handleShellInput);
@@ -183,19 +183,19 @@
     }
 
     const DETAILS_COPY = {
-        new: ['proposalDrafts.sections.detailsCopyNew', 'Describe what this proposal does, so others can follow it.'],
-        edit: ['proposalDrafts.sections.detailsCopyEdit', 'Describe what this proposal does. Saving updates it in place; it keeps its id.'],
-        counterproposal: ['proposalDrafts.sections.detailsCopyCounterproposal', 'Describe how this counterproposal differs. The published proposal stays as it is.']
+        new: ['proposalDrafts.sections.detailsCopyNew', 'Describe what this design does, so others can follow it.'],
+        edit: ['proposalDrafts.sections.detailsCopyEdit', 'Describe what this design does. Saving updates it in place; it keeps its id.'],
+        counterproposal: ['proposalDrafts.sections.detailsCopyCounterproposal', 'Describe how this alternative design differs. The published design stays as it is.']
     };
     const REVIEW_NOTICE = {
-        edit: ['proposalDrafts.review.inPlaceNotice', 'Saving updates this proposal in place. It keeps its id.'],
-        counterproposal: ['proposalDrafts.review.counterproposalNotice', 'Saving creates a counterproposal. The published proposal is not changed or removed.']
+        edit: ['proposalDrafts.review.inPlaceNotice', 'Saving updates this design in place. It keeps its id.'],
+        counterproposal: ['proposalDrafts.review.counterproposalNotice', 'Saving creates an alternative design. The published design is not changed or removed.']
     };
 
     function renderDetails(draft) {
         const typeSelector = !draft.sourceLocalProposalId
             ? `<label class="proposal-editor-field">
-                    <span>${escapeHtml(tDraft('proposalDrafts.fields.type', 'Proposal type'))}</span>
+                    <span>${escapeHtml(tDraft('proposalDrafts.fields.type', 'Design type'))}</span>
                     <select data-draft-goal>${(global.proposalEditorAdapterRegistry?.list?.() || [])
                         .map(entry => option(entry.key, entry.label, draft.adapterKey || draft.goal))
                         .join('')}</select>
@@ -203,7 +203,7 @@
             : '';
         return `
             <section class="proposal-editor-section" data-editor-section="details">
-                <h3>${escapeHtml(tDraft('proposalDrafts.sections.detailsTitle', 'Proposal details'))}</h3>
+                <h3>${escapeHtml(tDraft('proposalDrafts.sections.detailsTitle', 'Design details'))}</h3>
                 <p class="proposal-editor-section-copy">${escapeHtml(tDraft(...DETAILS_COPY[draftSaveKind(draft)]))}</p>
                 ${typeSelector}
                 <label class="proposal-editor-field">
@@ -278,7 +278,7 @@
         }
         if ((draft.adapterKey || draft.goal) === 'station') {
             const station = payload.structureProposal || {};
-            const type = global.TransitStationModels?.specFor?.(station.stationType)?.label || station.stationType || 'Station';
+            const type = global.TransitStations?.specFor?.(station.stationType)?.label || station.stationType || 'Station';
             const bearing = Math.round(Number(station.bearing) || 0);
             const height = station.stationType === 'elevated' && Number.isFinite(Number(station.platformHeightM))
                 ? ` · ${CbFormat.formatLength(Number(station.platformHeightM))} high`
@@ -302,7 +302,7 @@
                 ${draft.incompatibilityReason ? `<div class="proposal-editor-unsupported">${escapeHtml(draft.incompatibilityReason)}</div>` : ''}
                 ${canOpen && !draft.incompatibilityReason
                     ? `<button type="button" class="btn btn-primary" data-editor-action="open-design">${escapeHtml(tDraft('proposalDrafts.actions.openDesign', 'Edit design on map'))}</button>`
-                    : `<div class="proposal-editor-card"><p>${escapeHtml(tDraft('proposalDrafts.design.parcelOnly', 'This proposal has no separate design geometry. Parcel highlighting remains live while you edit its other facets.'))}</p></div>`}
+                    : `<div class="proposal-editor-card"><p>${escapeHtml(tDraft('proposalDrafts.design.parcelOnly', 'This design has no separate geometry. Parcel highlighting remains live while you edit its other facets.'))}</p></div>`}
             </section>`;
     }
 
@@ -336,8 +336,8 @@
                 <h3>${escapeHtml(tDraft('proposalDrafts.review.title', 'Review changes'))}</h3>
                 ${REVIEW_NOTICE[draftSaveKind(draft)] ? `<div class="proposal-editor-review-notice">${escapeHtml(tDraft(...REVIEW_NOTICE[draftSaveKind(draft)]))}</div>` : ''}
                 <div class="proposal-editor-card">
-                    <strong>${escapeHtml(summary?.sourceName || draft.sourceLocalProposalId || tDraft('proposalDrafts.review.newProposal', 'New proposal'))}</strong>
-                    <p>${escapeHtml(draft.sourceLocalProposalId || tDraft('proposalDrafts.review.noSource', 'No source proposal'))} → ${escapeHtml(draft.fields?.name || '')}</p>
+                    <strong>${escapeHtml(summary?.sourceName || draft.sourceLocalProposalId || tDraft('proposalDrafts.review.newProposal', 'New design'))}</strong>
+                    <p>${escapeHtml(draft.sourceLocalProposalId || tDraft('proposalDrafts.review.noSource', 'No source design'))} → ${escapeHtml(draft.fields?.name || '')}</p>
                 </div>
                 <dl class="proposal-editor-diff-list">
                     ${rows || `<div class="proposal-editor-diff-row"><dt>${escapeHtml(tDraft('proposalDrafts.review.details', 'Details'))}</dt><dd>${escapeHtml(tDraft('proposalDrafts.review.noFacetChanges', 'No metadata changes'))}</dd></div>`}
@@ -803,6 +803,12 @@
     // anything thrown inside (createDraftFromProposal rejects a proposal with no stable ID) became
     // an unhandled rejection and the click simply did nothing, with no way to tell which gate
     // refused. Report the reason instead — a dead button must always say why.
+    // An editor that will not open says why by throwing an 'editor-refused' error (parcel-layout.js
+    // refuseOpen); only an editor that gave no reason gets the generic "unavailable" message.
+    function refusalOf(error) {
+        return error && error.code === 'editor-refused' && error.message ? error.message : null;
+    }
+
     function reportGeometryEditFailure(reason, detail) {
         console.warn('[ProposalEditor] Geometry editor did not open:', reason, detail || '');
         if (typeof global.showStyledAlert === 'function') global.showStyledAlert(reason);
@@ -815,13 +821,13 @@
         const proposal = proposalById(proposalIdOrHash);
         if (!proposal) {
             return reportGeometryEditFailure(
-                tDraft('proposalDrafts.errors.sourceMissing', 'Proposal source not found.'),
+                tDraft('proposalDrafts.errors.sourceMissing', 'Design source not found.'),
                 proposalIdOrHash
             );
         }
         if (!canEditProposalGeometry(proposal)) {
             return reportGeometryEditFailure(
-                tDraft('proposalDrafts.errors.notReshapeable', 'This proposal type cannot be reshaped.'),
+                tDraft('proposalDrafts.errors.notReshapeable', 'This design type cannot be reshaped.'),
                 global.ProposalDesignGoals?.keyOf(proposal) || 'unknown'
             );
         }
@@ -830,13 +836,13 @@
             draft = global.proposalDraftStore.createDraftFromProposal(proposal, { activate: true });
         } catch (error) {
             return reportGeometryEditFailure(
-                tDraft('proposalDrafts.errors.draftFailed', 'Could not open this proposal for editing.'),
+                tDraft('proposalDrafts.errors.draftFailed', 'Could not open this design for editing.'),
                 error
             );
         }
         if (!draft) {
             return reportGeometryEditFailure(
-                tDraft('proposalDrafts.errors.draftFailed', 'Could not open this proposal for editing.'),
+                tDraft('proposalDrafts.errors.draftFailed', 'Could not open this design for editing.'),
                 'createDraftFromProposal returned nothing'
             );
         }
@@ -877,7 +883,7 @@
     // The one Freeform building a Block or Row becomes, or the reason it cannot become one.
     const MERGE_REFUSALS = {
         'not-contiguous': ['proposalDrafts.freeform.notContiguous', 'Its buildings do not touch each other, so they cannot become one Freeform building.'],
-        'no-buildings': ['proposalDrafts.freeform.noBuildings', 'This proposal has no buildings to keep.']
+        'no-buildings': ['proposalDrafts.freeform.noBuildings', 'This design has no buildings to keep.']
     };
 
     function mergeRuleBuildings(features) {
@@ -918,8 +924,8 @@
         const params = { name: record?.title || record?.name || record?.proposalId || ruleLabel(typology), rule: ruleLabel(typology), count };
         if (count > 1) {
             return global.CbDialog.confirm(inPlace
-                ? tDraft('proposalDrafts.freeform.confirmLocalMany', '“{{name}}” becomes {{count}} Freeform proposals, one building per house: each parcel\'s massing at the greatest height its {{rule}} rule allows. The first keeps this proposal; the rule\'s parameters no longer apply afterwards.', params)
-                : tDraft('proposalDrafts.freeform.confirmPublishedMany', '“{{name}}” is published, so {{count}} Freeform counterproposals are made, one building per house: each parcel\'s massing at the greatest height its {{rule}} rule allows. The published proposal stays as it is.', params), {
+                ? tDraft('proposalDrafts.freeform.confirmLocalMany', '“{{name}}” becomes {{count}} Freeform designs, one building per house: each parcel\'s massing at the greatest height its {{rule}} rule allows. The first replaces this design; the rule\'s parameters no longer apply afterwards.', params)
+                : tDraft('proposalDrafts.freeform.confirmPublishedMany', '“{{name}}” is published, so {{count}} Freeform designs are created, one building per house: each parcel\'s massing at the greatest height its {{rule}} rule allows. The published design stays as it is.', params), {
                 title: tDraft('proposalDrafts.freeform.titleMany', 'Convert to freeform buildings'),
                 okText: tDraft('proposalDrafts.freeform.convert', 'Convert'),
                 cancelText: tDraft('proposalDrafts.freeform.keepRule', 'Keep the rule')
@@ -927,7 +933,7 @@
         }
         return global.CbDialog.confirm(inPlace
             ? tDraft('proposalDrafts.freeform.confirmLocal', '“{{name}}” becomes one Freeform building: its {{rule}} rule\'s massing at the greatest height the rule allows. The rule\'s parameters no longer apply afterwards: you edit the building, and lower it, directly.', params)
-            : tDraft('proposalDrafts.freeform.confirmPublished', '“{{name}}” is published, so a Freeform counterproposal is made: one building, its {{rule}} rule\'s massing at the greatest height the rule allows. The rule\'s parameters do not apply to it: you edit the building directly. The published proposal stays as it is.', params), {
+            : tDraft('proposalDrafts.freeform.confirmPublished', '“{{name}}” is published, so a Freeform design is created: one building, its {{rule}} rule\'s massing at the greatest height the rule allows. The rule\'s parameters do not apply to it: you edit the building directly. The published design stays as it is.', params), {
             title: tDraft('proposalDrafts.freeform.title', 'Convert to freeform building'),
             okText: tDraft('proposalDrafts.freeform.convert', 'Convert'),
             cancelText: tDraft('proposalDrafts.freeform.keepRule', 'Keep the rule')
@@ -943,7 +949,8 @@
         const proposal = proposalById(proposalIdOrHash);
         if (!proposal || !conversion?.convertsToFreeform(proposal)) return null;
         const typology = conversion.ruleTypologyOf(proposal);
-        const merged = mergeRuleBuildings(proposal.geometry?.buildings);
+        // A Block stores its buildings cut per parcel; the authored massing is the one shape to keep.
+        const merged = mergeRuleBuildings(proposal.geometry?.ruleMassing ? [proposal.geometry.ruleMassing] : proposal.geometry?.buildings);
         if (!merged.ok) {
             reportGeometryEditFailure(merged.reason, proposal.proposalId);
             return null;
@@ -1129,7 +1136,7 @@
             const intro = tDraft('proposalDrafts.freeform.dropMessage', 'The {{rule}} rule builds on its own parcels, so the design cannot simply move. What should happen here?', { rule })
                 + (typeof tryConvert === 'function'
                     ? `\n\n${many
-                        ? tDraft('proposalDrafts.freeform.dropConvertMeaningMany', 'Converting makes each of the {{count}} houses one Freeform proposal: its parcel\'s massing at the greatest height the rule allows. The rule\'s parameters no longer apply to them.', { count: buildings })
+                        ? tDraft('proposalDrafts.freeform.dropConvertMeaningMany', 'Converting makes each of the {{count}} houses one Freeform design: its parcel\'s massing at the greatest height the rule allows. The rule\'s parameters no longer apply to them.', { count: buildings })
                         : tDraft('proposalDrafts.freeform.dropConvertMeaning', 'Converting keeps the rule\'s massing at the greatest height it allows; the rule\'s parameters no longer apply to it.')}`
                     : '');
             const answer = await global.CbDialog.choice(reason ? `${reason}\n\n${intro}` : intro, [
@@ -1172,21 +1179,43 @@
         geometryEditCommitDraftId = draft.id;
         try { global.document?.getElementById('parcel-info-panel')?.classList.remove('visible'); } catch (_) { }
         let opened = false;
+        let refusal = null;
         try {
             opened = await global.openProposalDraftDesign?.(draft.id);
         } catch (error) {
             opened = false;
+            refusal = refusalOf(error);
             console.warn('[ProposalEditor] Build tool failed to open', error);
         }
         if (opened === false) {
             geometryEditCommitDraftId = null;
             global.proposalDraftStore.deleteDraft(draft.id);
-            if (typeof global.updateStatus === 'function') {
+            if (refusal) reportGeometryEditFailure(refusal);
+            else if (typeof global.updateStatus === 'function') {
                 global.updateStatus(tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.'));
             }
         }
         return opened;
     }
+
+    // "Courtyard as a parcel" on a block design. A courtyard is private ground split by its
+    // parcels' fences until the layout makes it a parcel of its own: this opens Parcel layout on
+    // the block's parcels with their borders kept and the block's courtyard already carved.
+    async function startCourtyardParcelLayout(proposalKey) {
+        const proposal = global.getProposalByIdOrHash?.(proposalKey) || global.proposalStorage?.getProposal?.(proposalKey);
+        const ids = (proposal?.cadastreParcelIds || []).map(String).filter(Boolean);
+        if (!proposal || !ids.length) {
+            global.updateStatus?.(tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.'));
+            return false;
+        }
+        global.pendingCourtyardLayout = { proposalId: String(proposal.proposalId) };
+        let opened = false;
+        try { opened = await startInstantProposalDesign('parcel-layout', ids); } finally {
+            if (!opened) global.pendingCourtyardLayout = null;
+        }
+        return opened;
+    }
+    global.startCourtyardParcelLayout = startCourtyardParcelLayout;
 
     // ---- Site-first creation (js/site-drawing.js, PARCEL-OPTIONAL.md phase 2) ----
     // siteContext: { site (MultiPolygon), toleranceM, binding (preview or server), selectionIds? }. The draft carries the site; its declaration starts as the binding's parcels
@@ -1211,9 +1240,12 @@
     }
 
     // A park, square or lake IS its site: no design tool, the object appears, on cadastral
-    // parcels and on open ground alike (PARCEL-OPTIONAL.md phase 3).
-    async function instantCreateStructureFromSite(kind, siteContext) {
+    // parcels and on open ground alike (PARCEL-OPTIONAL.md phase 3). options.structure adds
+    // record fields (an uploaded model's) to the structure; its geometry stays the site's.
+    async function instantCreateStructureFromSite(kind, siteContext, options = {}) {
         if (!STRUCTURE_KIND_LABELS[kind] || !siteContext || !siteContext.site) return null;
+        const extraFields = options.structure ? JSON.parse(JSON.stringify(options.structure)) : {};
+        delete extraFields.geometry;
         let structureGeometry = polygonOfSite(siteContext.site);
         if (!structureGeometryIsOneArea(structureGeometry)) {
             reportDisconnectedStructureSelection();
@@ -1238,7 +1270,13 @@
             // started as a selection's outline (it may have been reshaped since).
             fields: siteDraftFields(siteContext, []),
             editorPayload: {
-                structureProposal: { kind, applied: false, geometry: structureGeometry, blockName: null, lakeGraphics: lakeGraphics || null }
+                // A drawn site needs the same authoritative binding on first placement as on
+                // later moves. A preview with unknown coverage must not become applied ground.
+                placement: { free: true, site: JSON.parse(JSON.stringify(siteContext.site)), bindingStatus: 'pending' },
+                structureProposal: {
+                    ...extraFields,
+                    kind, applied: false, geometry: structureGeometry, blockName: null, lakeGraphics: lakeGraphics || null
+                }
             },
             previewGeometry: structureGeometry
         });
@@ -1247,6 +1285,23 @@
             return null;
         }
         return instantCreateProposalFromDraft(draft.id);
+    }
+
+    // A park, square or lake from an uploaded model (the create dialog's Upload): the model's
+    // projected outline, placed at a point on the anchor (the dialog's site or selection), is a
+    // drawn site, so it binds like any site-first structure. Returns null at once when the model
+    // cannot be placed, else the pending creation.
+    function instantCreateStructureFromModel(kind, anchor, upload) {
+        const api = global.ProposalApplyStructures;
+        if (!STRUCTURE_KIND_LABELS[kind] || !api || !global.turf || !global.SingleBuildingGeometry) return null;
+        const geometry = api.structureModelGeometry(upload?.footprint, anchor, {
+            turf: global.turf,
+            placeModelFootprint: global.SingleBuildingGeometry.placeModelFootprint
+        });
+        const structure = geometry ? api.structureFromModelUpload(kind, geometry, upload) : null;
+        if (!structure) return null;
+        const site = { type: 'MultiPolygon', coordinates: [geometry.coordinates] };
+        return instantCreateStructureFromSite(kind, { site, toleranceM: 0, binding: null }, { structure });
     }
 
     function reportSiteDesignStartIssue(key, fallback, params = {}) {
@@ -1308,8 +1363,10 @@
                 && GEOMETRY_EDITABLE_ADAPTERS.has(adapterKey)) {
                 geometryEditCommitDraftId = String(draftId);
             }
-        }).catch(() => {
-            reportReopenFailure();
+        }).catch(error => {
+            const refusal = refusalOf(error);
+            if (refusal) reportGeometryEditFailure(refusal, error);
+            else reportReopenFailure();
         }).finally(() => failedDraftReopenInFlight.delete(id));
         return true;
     }
@@ -1712,7 +1769,7 @@
         const receipt = store.getPublishReceipt(draftId);
         if (receipt) {
             if (typeof global.showStyledAlert === 'function') {
-                global.showStyledAlert(tDraft('proposalDrafts.publish.alreadyCreated', 'This draft already created proposal {{id}}.', { id: receipt.persistedProposalId || '' }));
+                global.showStyledAlert(tDraft('proposalDrafts.publish.alreadyCreated', 'This draft already created design {{id}}.', { id: receipt.persistedProposalId || '' }));
             }
             return false;
         }
@@ -1781,7 +1838,7 @@
             } : null
         };
         if (typeof global.showProposalDialog !== 'function') {
-            store.markPublishFailed(draft.id, new Error('Proposal creation is unavailable.'));
+                store.markPublishFailed(draft.id, new Error('Design creation is unavailable.'));
             renderShell();
             return false;
         }
@@ -1805,7 +1862,7 @@
             const source = draft.sourceLocalProposalId ? proposalById(draft.sourceLocalProposalId) : null;
             submit.textContent = source
                 ? global.ProposalLineage.forkSubmitLabel(draft.sourceLocalProposalId, { fork: options.fork === true })
-                : tDraft('proposalDrafts.actions.createProposal', 'Create proposal');
+                : tDraft('proposalDrafts.actions.createProposal', 'Create design');
             submit.dataset.proposalDraftId = draft.id;
         }
         closeProposalEditorShell();
@@ -2086,9 +2143,9 @@
                 const reason = failureInfo?.message || lastFailure || deriveFailure?.message || '';
                 global.showStyledAlert(reason
                     ? tDraft('proposalDrafts.builtButParkedBecause',
-                        'The object was created but could not be placed on the map: {{reason}} It is parked in your proposals list — select it there to see and apply it.',
+                        'The design was created but could not be placed on the map: {{reason}} It is in your designs list — select it there to see and apply it.',
                         { reason })
-                    : tDraft('proposalDrafts.builtButParked', 'The object was created but could not be placed on the map (a conflict blocked it). It is parked in your proposals list — select it there to see and apply it.'));
+                    : tDraft('proposalDrafts.builtButParked', 'The design was created but could not be placed on the map (a conflict blocked it). It is in your designs list — select it there to see and apply it.'));
             }
         } catch (_) { }
         if (landed && (inPlaceSource || proposal.proposalOrigin)
@@ -2136,6 +2193,10 @@
                 ? adapter.payloadFromDrawingSeed(payload, draft.editorPayload?.definition)
                 : { kind: payload.kind || draft.editorPayload?.kind, definition: payload.definition || payload };
             patch = { editorPayload: converted, previewGeometry: converted.definition?.polygon || null };
+            if (converted.definition?.polygon) {
+                fields.site = global.__siteDraft.toMultiPolygon(converted.definition.polygon);
+                fields.binding = null;
+            }
             if (Array.isArray(options.parcelIds)) fields.selectedParcelIds = options.parcelIds.map(String);
         } else if (kind === 'building') {
             if (!['buildings', 'row', 'parcelBased', 'single'].includes(draft.adapterKey || draft.goal)) return null;
@@ -2321,6 +2382,7 @@
     global.stageProposalDraftForPublishing = stageProposalDraftForPublishing;
     global.instantCreateProposalFromDraft = instantCreateProposalFromDraft;
     global.instantCreateStructureFromSite = instantCreateStructureFromSite;
+    global.instantCreateStructureFromModel = instantCreateStructureFromModel;
     global.startInstantSiteDesign = startInstantSiteDesign;
     global.startSiteSubdivision = startSiteSubdivision;
     global.syncActiveProposalDraftFromEditor = syncActiveProposalDraftFromEditor;

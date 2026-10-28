@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7462",
+  "name": "Omsk, Russia",
+  "point": [
+    54.9838341202561,
+    73.3598446301569
+  ],
+  "bindings": [
+    {
+      "appCityId": "omsk",
+      "runtimeConfig": {
+        "id": "omsk",
+        "wupCityCode": "7462",
+        "label": "Omsk, Russia",
+        "currency": {
+          "locale": "ru-RU",
+          "code": "RUB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            54.9838341202561,
+            73.3598446301569
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            54.9838341202561,
+            73.3598446301569
+          ],
+          "fallbackDataset": [
+            73.3598446301569,
+            54.9838341202561
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ru-omsk-gisogd55-egrn-city-active-parcels",
+          "idPrefix": "ru-omsk-gisogd55-egrn-city-active-parcels:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "GISOGD Omsk Oblast / Omsk GISOGD; active EGRN land parcels."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ru-omsk-gisogd55-egrn-city-active-parcels",
+      "name": "Omsk GISOGD active EGRN land parcels",
+      "adapter": "wfs",
+      "endpoint": "https://gisogd55.omskportal.ru/map/tiles/wfs",
+      "version": "2.0.0",
+      "featureType": "agate_omsk:agate_omsk_geo_gkn_parcel_exist_88c6700a",
+      "idField": "key",
+      "idType": "integer",
+      "idPrefix": "ru-omsk-gisogd55-egrn-city-active-parcels:",
+      "geometryField": "geoloc",
+      "outFields": [
+        "key"
+      ],
+      "requestProperties": true,
+      "paginationIdentity": "native-id",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "browserTransport": "relay",
+      "filterBoundsGeometry": true,
+      "countryCode": "RU",
+      "metricSrid": 32643,
+      "cityIds": [
+        "omsk"
+      ],
+      "catalogueUrl": "https://gisogd55.omskportal.ru/api/catalogs/agate_omsk",
+      "attribution": "GISOGD Omsk Oblast / Omsk GISOGD; active EGRN land parcels.",
+      "scope": "Bounded east-Omsk parcel observations only. Citywide completeness and survey accuracy are unverified. Layer suffix refreshed from the first-party catalog on 2026-10-25; native key values persist from the discovery layer. Request explicitly tagged EPSG:3857 to avoid the provider WGS84 serializer rounding; the standard inverse projection preserves rings and vertices without repair or fitted offsets.",
+      "licenseNotes": "Anonymous first-party viewer access; no separate reuse licence established. Reuse terms require follow-up.",
+      "responseSrid": 3857,
+      "defaultForCity": true
+    }
+  ]
+}

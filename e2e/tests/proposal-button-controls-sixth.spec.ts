@@ -32,10 +32,10 @@ async function openFreshProposalFromBlock(page: import('@playwright/test').Page)
   await expect.poll(() => page.evaluate(() => (window as any).blockStorage.blocks.size)).toBeGreaterThan(0);
   await page.locator('#showBlockListButton').click();
   await page.locator('#blocks-content .block-item').first().click();
-  await page.locator('#layers-sheet [data-sheet-close]').click();
+  await expect(page.locator('#layers-sheet')).toBeHidden();
   await expect(page.locator('#block-info-panel')).toBeVisible();
   await page.locator('#block-proposals-tab-button').click();
-  await page.locator('#block-proposals-content').getByRole('button', { name: 'Create proposal', exact: true }).click();
+  await page.locator('#block-proposals-content').getByRole('button', { name: 'Create design', exact: true }).click();
   await expect(page.locator('.create-proposal-modal:visible')).toBeVisible();
 }
 

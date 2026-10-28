@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7868",
+  "name": "Burewala, Pakistan",
+  "point": [
+    30.1593515650401,
+    72.6808197136685
+  ],
+  "bindings": [
+    {
+      "appCityId": "burewala",
+      "runtimeConfig": {
+        "id": "burewala",
+        "wupCityCode": "7868",
+        "label": "Burewala, Pakistan",
+        "currency": {
+          "locale": "en-PK",
+          "code": "PKR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            30.1593515650401,
+            72.6808197136685
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            30.1593515650401,
+            72.6808197136685
+          ],
+          "fallbackDataset": [
+            72.6808197136685,
+            30.1593515650401
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "pk-pulse-vehari-burewala-parcels",
+          "idPrefix": "PK-PULSE-VEHARI-OBJECTID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Punjab PULSE / Punjab Land Records Authority · cadastral-reference polygons · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "pk-pulse-vehari-burewala-parcels",
+      "name": "Punjab PULSE Vehari cadastral reference polygons for Burewala",
+      "adapter": "pulse-public",
+      "endpoint": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/37",
+      "idField": "OBJECTID",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "PK-PULSE-VEHARI-OBJECTID-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "boundsSrid": 3857,
+      "boundsProjection": "EPSG:3857",
+      "countryCode": "PK",
+      "metricSrid": 32643,
+      "cityIds": [
+        "burewala"
+      ],
+      "operator": "Punjab PULSE / Punjab Land Records Authority",
+      "scope": "Partial bounded cadastral-reference coverage near Burewala in the Vehari layer; the exact unchanged WUP centre window has zero records. The northeast native-ID polygons establish local availability about 1.4 km from the locator. Layer extent is not a completeness mask. Native OBJECTID identifies the current public GIS row, not a legal cadastral key. No citywide completeness, currentness, survey accuracy or long-term OID continuity claim. Full returned polygons are preserved without clipping, simplification or fitted offsets. The spatial count endpoint disagrees with ID membership at exact parcel edges; bounded and exact reads instead compare independent complete ID-only rows with the native object-ID manifest before fetching full geometry.",
+      "attribution": "Punjab PULSE / Punjab Land Records Authority · cadastral-reference polygons · adapted",
+      "catalogueUrl": "https://lis.pulse.gop.pk/",
+      "licenceNote": "Official anonymous public viewer provides indicative property lines derived from Mussavie maps, unsuitable for legal boundaries. Publisher attribution retained; explicit reuse terms, cadastral currentness and legal/survey accuracy remain unverified. Personal fields are excluded; public-reader tokens remain in memory.",
+      "maxConcurrentQueries": 2,
+      "queryFormat": "geojson",
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 25000,
+      "browserTransport": "relay",
+      "defaultForCity": true,
+      "objectIdManifestCheck": "id-rows"
+    }
+  ]
+}

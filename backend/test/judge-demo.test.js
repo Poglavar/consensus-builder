@@ -29,7 +29,7 @@ describe('judge demo model', () => {
         });
         const labels = demo.steps.map(step => step.label);
         expect(labels.slice(2, 6)).toEqual([
-            'Hackathon proof manifest', 'Canonical multi-parcel agreement',
+            'Hackathon proof manifest', 'Cancelled agreement (market paid NO)',
             'Executed agreement (lens attested, market paid YES)', 'Lens member directory (who may attest)'
         ]);
         expect(demo.steps[3].url).toBe('https://api.example/hackathon/cases/bafkreicanonical');
@@ -42,7 +42,7 @@ describe('judge demo model', () => {
         expect(named.steps.find(step => step.label.startsWith('Lens member directory')).url).toBe('https://x/lenses');
         expect(buildJudgeDemo({}).steps.find(step => step.label.startsWith('Lens member directory')).url).toBeNull();
         // A manifest that declares no case leaves its step without a link rather than inventing one.
-        expect(named.steps.find(step => step.label === 'Canonical multi-parcel agreement').url).toBeNull();
+        expect(named.steps.find(step => step.label === 'Cancelled agreement (market paid NO)').url).toBeNull();
     });
 
     it('fails closed when proof is incomplete or the prospective market is not visible', () => {

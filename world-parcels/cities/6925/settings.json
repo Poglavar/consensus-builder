@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6925",
+  "name": "Van, Turkey",
+  "point": [
+    38.5071088507022,
+    43.3803052768634
+  ],
+  "bindings": [
+    {
+      "appCityId": "van",
+      "runtimeConfig": {
+        "id": "van",
+        "wupCityCode": "6925",
+        "label": "Van, Turkey",
+        "currency": {
+          "locale": "tr-TR",
+          "code": "TRY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            38.5071088507022,
+            43.3803052768634
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            38.5071088507022,
+            43.3803052768634
+          ],
+          "fallbackDataset": [
+            43.3803052768634,
+            38.5071088507022
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tr-ipekyolu-belediyesi-eimar-kentrehberi-parsel",
+          "idPrefix": "tr-ipekyolu-belediyesi-eimar-kentrehberi-parsel:OBJECTID=",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "İpekyolu Belediyesi E-İmar / Kent Rehberi · kentrehberi_parsel"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tr-ipekyolu-belediyesi-eimar-kentrehberi-parsel",
+      "name": "Van İpekyolu Belediyesi E-İmar cadastral parcels",
+      "adapter": "mersin-eimar",
+      "endpoint": "https://keos.ipekyolu.bel.tr:90/imardurumu/service/imarsvc.aspx",
+      "viewerEndpoint": "https://keos.ipekyolu.bel.tr:90/imardurumu/index.aspx",
+      "layer": "kentrehberi_parsel",
+      "idPrefix": "tr-ipekyolu-belediyesi-eimar-kentrehberi-parsel:OBJECTID=",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "parcelNumberField": "OBJECTID",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "geometryField": "POLY",
+      "countryCode": "TR",
+      "cityIds": [
+        "van"
+      ],
+      "metricSrid": 32638,
+      "returnsWGS84": true,
+      "browserTransport": "relay",
+      "queryMode": "configured-cadastral-block-search",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "maxResponseBytes": 2097152,
+      "maxFeatures": 999,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "operator": "İpekyolu Belediyesi, Van, Türkiye",
+      "attribution": "İpekyolu Belediyesi E-İmar / Kent Rehberi · kentrehberi_parsel",
+      "scope": "Bounded live block 2148 in BAHÇIVAN, İpekyolu, Van. Viewports search this cadastral block live and filter full unchanged polygons. Separated ŞAFAK exact-ID samples establish additional bounded parcel availability only. No all-Van or all-İpekyolu completeness, exact queue-point parcel or currentness claim.",
+      "licenceNote": "Anonymous municipal viewer access is verified. No explicit automated reuse or redistribution licence established; permission and rate terms remain follow-up before publication.",
+      "catalogueUrl": "https://www.ipekyolu.bel.tr/",
+      "nativeCrsNote": "POLY has no CRS label. Longitude/latitude geographic coordinates align with the viewer and Van sample locations. Datum, epoch, native CRS and transformation accuracy remain unverified; no reprojection, fitted offset, repair or coordinate rounding applied.",
+      "spatialScopes": [
+        {
+          "block": "2148",
+          "bbox": [
+            43.383445,
+            38.498058,
+            43.384234,
+            38.498599
+          ]
+        }
+      ],
+      "extent": [
+        43.383445,
+        38.498058,
+        43.384234,
+        38.498599
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

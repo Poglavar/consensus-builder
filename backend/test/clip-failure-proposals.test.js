@@ -80,6 +80,14 @@ const calledFrom = file => () => {
     return !!caller && caller.includes(file);
 };
 
+// The same, for a clip `file` makes through the shared clip (parcel-arrangement.js clip/clipWith):
+// the first caller outside that module.
+const calledThroughClipFrom = file => () => {
+    const frames = String(new Error().stack).split('\n').slice(1)
+        .filter(line => !/clip-failure-proposals\.test\.js/.test(line) && !/parcel-arrangement\.js/.test(line));
+    return !!frames[0] && frames[0].includes(file);
+};
+
 // Fails the call with a ClipFailure from `site`, and counts it there once.
 function expectClipFailure(run, site) {
     const before = siteCount(site);
@@ -378,8 +386,8 @@ describe('apply/buildings.js _formBuildingParcel', () => {
         globalThis.window.__openGround = openGround;
         const host = feature(rect(0, 0, 20, 20), { parcelId: 'ground:abc', openGroundHost: true, groundIds: ['ground:abc'] });
         const self = mixinThis({ _formBuildingParcel: buildingsApply._formBuildingParcel }, [host]);
-        // Intersect #1 measures the host overlap (it works); #2 is the open-ground take.
-        globalThis.turf = failingTurf(['intersect'], (_op, n) => n === 2);
+        // Intersect #1 measures the host overlap; the take and its coarser retries all fail.
+        globalThis.turf = failingTurf(['intersect'], (_op, n) => n >= 2);
         const failure = await expectClipRejection(run(self, {}, rect(5, 5, 10, 10)), 'apply-buildings.groundTake');
         expect(failure.parcelId).toBe('ground:abc');
     });
@@ -437,13 +445,13 @@ describe('apply/parcels.js _applyParcelLayoutProposal', () => {
 
     it('the plots\' union refuses instead of minting a plot back as a remainder', async () => {
         installApplyGlobals();
-        globalThis.turf = failingTurf(['union'], calledFrom('apply/parcels.js'));
+        globalThis.turf = failingTurf(['union'], calledThroughClipFrom('apply/parcels.js'));
         await expectClipRejection(self()._applyParcelLayoutProposal('p-layout', data(), {}), 'apply-parcels.plotsUnion');
     });
 
     it('a remainder that cannot be computed refuses instead of orphaning the owner\'s leftover', async () => {
         installApplyGlobals();
-        globalThis.turf = failingTurf(['difference'], calledFrom('apply/parcels.js'));
+        globalThis.turf = failingTurf(['difference'], calledThroughClipFrom('apply/parcels.js'));
         const failure = await expectClipRejection(self()._applyParcelLayoutProposal('p-layout', data(), {}), 'apply-parcels.remainder');
         expect(failure.parcelId).toBe('HR-A');
     });

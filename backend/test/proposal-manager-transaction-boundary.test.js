@@ -141,9 +141,12 @@ describe('ProposalManager mutation boundary', () => {
             expect(candidates.map(record => record.proposalId)).toEqual(['conflict', 'untouched']);
             return [options._parcelMutation.proposals.getProposal('conflict')];
         };
-        ProposalManager.rebuildAppliedFabric = async options => {
+        ProposalManager._loadReplayGround = async () => {};
+        ProposalManager.rebuildAppliedFabric = () => { throw new Error('A local plan replacement must not replay the whole composition'); };
+        ProposalManager._rematerializeResolvedScope = async (records, scope, options) => {
+            expect(records.map(record => record.proposalId)).toEqual(['target', 'second', 'conflict']);
+            expect(scope.cadastreParcelIds).toEqual([]);
             rebuilt.push(options._parcelMutation.proposals.getAllProposals().map(record => [record.proposalId, record.applied]));
-            expect(options.resetProposalIds).toEqual(['conflict']);
             return { ok: true, failed: [] };
         };
         const result = await ProposalManager.applyProposalPlan(['target', 'second', 'target']);
@@ -160,7 +163,8 @@ describe('ProposalManager mutation boundary', () => {
         store.proposals.set('second', { proposalId: 'second', applied: false });
         const before = structuredClone([...store.proposals]);
         ProposalManager._collectAppliedAlternativesForExplicitApply = (_member, _candidates, options) => [options._parcelMutation.proposals.getProposal('conflict')];
-        ProposalManager.rebuildAppliedFabric = async options => {
+        ProposalManager._loadReplayGround = async () => {};
+        ProposalManager._rematerializeResolvedScope = async (_records, _scope, options) => {
             expect(options._parcelMutation.proposals.getProposal('conflict').applied).toBe(false);
             return { ok: false, failed: [{ proposalId: 'second', code: 'bad-ground', reason: 'Ground missing' }] };
         };
@@ -181,7 +185,9 @@ describe('ProposalManager mutation boundary', () => {
         ].forEach(record => store.proposals.set(record.proposalId, record));
         const preview = ProposalManager.validateSharedProposalGround('target', new Set(['target']));
         expect(preview.blockers.map(record => record.proposalId)).toEqual(['old-layout', 'old-road']);
-        ProposalManager.rebuildAppliedFabric = async options => {
+        ProposalManager._loadReplayGround = async () => {};
+        ProposalManager._rematerializeResolvedScope = async (records, _scope, options) => {
+            expect(records.map(record => record.proposalId)).toEqual(['target', 'old-layout', 'old-road']);
             const draft = options._parcelMutation.proposals;
             expect(draft.getAllProposals().filter(record => record.applied).map(record => record.proposalId))
                 .toEqual(['target', 'elsewhere']);
@@ -192,6 +198,37 @@ describe('ProposalManager mutation boundary', () => {
         expect(store.getProposal('old-layout').applied).toBe(false);
         expect(store.getProposal('old-road').applied).toBe(false);
         expect(store.getProposal('elsewhere').applied).toBe(true);
+    });
+
+    it('uses occupied-ground replacement for explicit Apply and rolls it back when derivation fails', async () => {
+        const polygon = turf.bboxPolygon([0, 0, 0.001, 0.001]).geometry;
+        const target = { proposalId: 'target', applied: false, goal: 'building', title: 'New building',
+            buildingProposal: { geometry: polygon }, geometry: { buildings: [{ geometry: polygon }] } };
+        const oldRoad = { proposalId: 'conflict', applied: true, goal: 'road-track',
+            roadProposal: { definition: { polygon } } };
+        store.proposals.clear();
+        store.proposals.set(target.proposalId, target);
+        store.proposals.set(oldRoad.proposalId, oldRoad);
+
+        let observedOptions;
+        ProposalManager._collectAppliedAlternativesForExplicitApply = (_proposal, _records, options) => {
+            observedOptions = options;
+            return [options._parcelMutation.proposals.getProposal('conflict')];
+        };
+        ProposalManager.deriveForNewProposal = async () => ({ ok: true });
+
+        await expect(ProposalManager.applyProposal('target')).resolves.toBe(true);
+        expect(observedOptions.replaceOccupiedGround).toBe(true);
+        expect(store.getProposal('target').applied).toBe(true);
+        expect(store.getProposal('conflict').applied).toBe(false);
+
+        // A failed derivation must restore both the chosen proposal and the parked road.
+        store.getProposal('target').applied = false;
+        store.getProposal('conflict').applied = true;
+        const before = structuredClone([...store.proposals]);
+        ProposalManager.deriveForNewProposal = async () => null;
+        await expect(ProposalManager.applyProposal('target')).resolves.toBe(false);
+        expect([...store.proposals]).toEqual(before);
     });
 
     it('identifies every unavailable member and distinguishes missing records from withdrawn designs', async () => {

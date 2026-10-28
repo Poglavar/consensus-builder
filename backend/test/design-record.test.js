@@ -7,6 +7,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const DesignRecord = require('../../frontend/js/design-record.js');
 const Cid = require('../../frontend/js/cid.js');
+const metricFrames = require('../../frontend/js/metric-frame.js');
 
 const square = (x, y, size = 0.001) => ({
     type: 'Polygon',
@@ -16,6 +17,36 @@ const SITE = square(15.96, 45.8);
 const ORIGIN = Cid.cidOfObject({ schema: 'design/v1', title: 'the source' });
 const FIELDS = ['schema', 'goal', 'title', 'description', 'author', 'city', 'site', 'toleranceM', 'geometry', 'origin', 'authoredAt'];
 const thrownCode = fn => { try { fn(); } catch (error) { return error.code; } return null; };
+
+describe('road construction-frame validation', () => {
+    const road = () => {
+        const site = square(78.474, 17.36);
+        const frame = metricFrames.frameFor(site);
+        return DesignRecord.published({ goal: 'road-track', city: 'hyderabad', site,
+            roadProposal: { definition: { polygon: site, constructionFrame: frame.provenance(), osm: { version: .6, elements: [
+                { type: 'node', id: -1, lon: 78.474, lat: 17.36 },
+                { type: 'node', id: -2, lon: 78.475, lat: 17.361 },
+                { type: 'way', id: -1, nodes: [-1, -2], tags: { highway: 'residential', width: '7' } }
+            ] } } } });
+    };
+    it('accepts geometry within its declared frame and rejects a frame carried from another location', () => {
+        const design = road();
+        expect(DesignRecord.validate(design).valid).toBe(true);
+        design.roadProposal.definition.constructionFrame = metricFrames.frameAt([16, 46]).provenance();
+        expect(DesignRecord.validate(design).errors).toContainEqual(expect.objectContaining({
+            code: 'design-road-frame', field: 'roadProposal.definition.constructionFrame',
+            message: expect.stringContaining('Re-prepare')
+        }));
+    });
+    it('checks both the canonical road nodes and the saved footprint', () => {
+        const nodesMoved = road();
+        nodesMoved.roadProposal.definition.osm.elements[0].lon = 16;
+        expect(DesignRecord.validate(nodesMoved).valid).toBe(false);
+        const footprintMoved = road();
+        footprintMoved.roadProposal.definition.polygon = square(16, 46);
+        expect(DesignRecord.validate(footprintMoved).valid).toBe(false);
+    });
+});
 
 // A park as the browser stores it after drawing, publishing and applying it.
 function park() {

@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "280",
+  "name": "Musanze, Rwanda",
+  "point": [
+    -1.50199527385739,
+    29.6398405531819
+  ],
+  "bindings": [
+    {
+      "appCityId": "musanze",
+      "runtimeConfig": {
+        "id": "musanze",
+        "wupCityCode": "280",
+        "label": "Musanze, Rwanda",
+        "currency": {
+          "locale": "en-RW",
+          "code": "RWF"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -1.50199527385739,
+            29.6398405531819
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -1.50199527385739,
+            29.6398405531819
+          ],
+          "fallbackDataset": [
+            29.6398405531819,
+            -1.50199527385739
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "rw-naeb-musanze-parcels-arcgis",
+          "idPrefix": "RW-NAEB-MUSANZE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Rwanda NAEB GIS, Musanze_Parcels."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "rw-naeb-musanze-parcels-arcgis",
+      "name": "Musanze cadastral parcels (NAEB hosted)",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.naeb.gov.rw/server/rest/services/Hosted/Musanze_Parcels/FeatureServer/4",
+      "countryCode": "RW",
+      "cityIds": [
+        "musanze"
+      ],
+      "operator": "Rwanda National Agricultural Export Development Board (NAEB), hosted Musanze_Parcels layer",
+      "idField": "globalid",
+      "idType": "string",
+      "idPattern": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+      "idPrefix": "RW-NAEB-MUSANZE-",
+      "objectIdField": "fid",
+      "outFields": [
+        "fid",
+        "globalid"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 1000,
+      "idBatchSize": 20,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "sourceCrs": "EPSG:3857",
+      "metricSrid": 32735,
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "attribution": "Rwanda NAEB GIS, Musanze_Parcels.",
+      "scope": "Musanze-labelled cadastral parcel layer; bounded city-centre polygons verified. Citywide/districtwide completeness and maintenance/version relationship to NLA/LAIS are unverified.",
+      "licenceNote": "Anonymous public access; service item accessInformation and licenseInfo blank in retained metadata. Reuse terms and currentness remain unverified.",
+      "defaultForCity": true
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6625",
+  "name": "Diyarbakir, Turkey",
+  "point": [
+    37.9332568756786,
+    40.1944403844313
+  ],
+  "bindings": [
+    {
+      "appCityId": "diyarbakir",
+      "runtimeConfig": {
+        "id": "diyarbakir",
+        "wupCityCode": "6625",
+        "label": "Diyarbakir, Turkey",
+        "currency": {
+          "locale": "tr-TR",
+          "code": "TRY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            37.9332568756786,
+            40.1944403844313
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            37.9332568756786,
+            40.1944403844313
+          ],
+          "fallbackDataset": [
+            40.1944403844313,
+            37.9332568756786
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tr-diyarbakir-dbb-eimar-imarsvc-parcels",
+          "idPrefix": "TR-DBB-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Diyarbakır Büyükşehir Belediyesi DBB E-İmar · kentrehberi_parsel"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tr-diyarbakir-dbb-eimar-imarsvc-parcels",
+      "name": "Diyarbakır Büyükşehir Belediyesi DBB E-İmar parcels",
+      "adapter": "diyarbakir-eimar",
+      "endpoint": "https://cbs.diyarbakir.bel.tr/imardurumu/service/imarsvc.aspx",
+      "viewerEndpoint": "https://cbs.diyarbakir.bel.tr/imardurumu/",
+      "layer": "kentrehberi_parsel",
+      "idPrefix": "TR-DBB-",
+      "idField": "OBJECTID",
+      "parcelNumberField": "OBJECTID",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "geometryField": "POLY",
+      "countryCode": "TR",
+      "cityIds": [
+        "diyarbakir"
+      ],
+      "metricSrid": 32637,
+      "returnsWGS84": true,
+      "browserTransport": "relay",
+      "queryMode": "cadastral-neighborhood-search",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "maxResponseBytes": 2097152,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "operator": "Diyarbakır Büyükşehir Belediyesi",
+      "attribution": "Diyarbakır Büyükşehir Belediyesi DBB E-İmar · kentrehberi_parsel",
+      "scope": "Configured MEZOPOTAMYA cadastral neighborhood (native TAPU_MAH_ID 484400) in Kayapınar, using live neighborhood-filtered Ada/Parsel search. Viewports are filtered against unchanged full provider polygons within the observed neighborhood envelope. Coverage at the unchanged Bağlar city locator and citywide completeness are unverified.",
+      "licenceNote": "Public municipal viewer access; no explicit automated redistribution licence found. Attribution retained; reuse terms remain follow-up.",
+      "catalogueUrl": "https://cbs.diyarbakir.bel.tr/imardurumu/",
+      "nativeCrsNote": "POLY has GeoJSON longitude,latitude degree coordinates consumed directly by the official MapLibre viewer. No explicit CRS/datum declaration; geodetic accuracy and operations remain unverified.",
+      "spatialScopes": [
+        {
+          "tapuMahalleId": "484400",
+          "name": "MEZOPOTAMYA",
+          "bbox": [
+            40.128677,
+            37.933143,
+            40.173104,
+            37.962314
+          ]
+        }
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

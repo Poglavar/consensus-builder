@@ -1,6 +1,7 @@
 // Exercise the proposal shell through selection, design, validation, and save controls.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, openParcel, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
+import { clickMapPoint, openCity, openParcel, showProposal, createSpace, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 
 async function addParkSource(
   page: import('@playwright/test').Page,
@@ -44,6 +45,36 @@ async function editSource(
 }
 
 test.describe('Shared proposal editor shell controls @core', () => {
+  test('refresh and close preserve an unpublished design and editor draft without a leave warning', async ({ mockApi: page }) => {
+    test.setTimeout(90_000);
+    await openCity(page);
+    const sourceId = await createSpace(page, 'park');
+    const draftId = await editSource(page, sourceId, 'details');
+    const description = 'Saved locally before refreshing.';
+    await page.locator('[data-draft-path="fields.description"]').fill(description);
+    await page.locator('[data-draft-path="fields.description"]').press('Tab');
+    await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore.getDraft(id)?.fields.description, draftId)).toBe(description);
+    expect(await page.evaluate(id => (window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), sourceId)).toBeFalsy();
+    const dialogs: string[] = [];
+    page.on('dialog', dialog => { dialogs.push(dialog.type()); void dialog.accept(); });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore?.getDraft(id)?.fields.description, draftId)).toBe(description);
+    await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage?.getProposal(id), sourceId)).toBe(true);
+    expect(dialogs).toEqual([]);
+    const url = page.url();
+    // Real user activation makes a beforeunload handler eligible to display its browser prompt.
+    await page.locator('#proposals-button').click();
+    await page.close({ runBeforeUnload: true });
+    await expect.poll(() => page.isClosed()).toBe(true);
+    expect(dialogs).toEqual([]);
+    const reopened = await page.context().newPage();
+    await mockAllApiRoutes(reopened);
+    await reopened.goto(url, { waitUntil: 'domcontentloaded' });
+    await expect.poll(() => reopened.evaluate(id => (window as any).proposalDraftStore?.getDraft(id)?.fields.description, draftId)).toBe(description);
+    await expect.poll(() => reopened.evaluate(id => !!(window as any).proposalStorage?.getProposal(id), sourceId)).toBe(true);
+    await reopened.close();
+  });
+
   test('parcel fields autosave and survive a reload without changing the source', async ({ mockApi: page }) => {
     test.setTimeout(60_000);
     await openCity(page);
@@ -158,12 +189,12 @@ test.describe('Shared proposal editor shell controls @core', () => {
     const draftId = await editSource(page, sourceId, 'details');
     // The editor's copy follows what saving does: a local record is updated in place.
     await expect(page.locator('[data-editor-section="details"] .proposal-editor-section-copy'))
-      .toHaveText('Describe what this proposal does. Saving updates it in place; it keeps its id.');
+      .toHaveText('Describe what this design does. Saving updates it in place; it keeps its id.');
     await page.locator('[data-draft-path="fields.description"]').fill('Updated description from the proposal editor.');
 
     await page.locator('[data-editor-action="review"]').click();
     await expect(page.locator('.proposal-editor-review')).toContainText('Updated description from the proposal editor.');
-    await expect(page.locator('.proposal-editor-review-notice')).toHaveText('Saving updates this proposal in place. It keeps its id.');
+    await expect(page.locator('.proposal-editor-review-notice')).toHaveText('Saving updates this design in place. It keeps its id.');
     await expect.poll(() => page.evaluate(id => (window as any).proposalDraftStore.getDraft(id).state, draftId)).toBe('review');
 
     await page.locator('[data-editor-action="back-to-edit"]').click();
@@ -209,10 +240,10 @@ test.describe('Shared proposal editor shell controls @core', () => {
     expect(await page.evaluate(id => !!(window as any).DesignSync.publishedCid((window as any).proposalStorage.getProposal(id)), sourceId)).toBe(true);
     await editSource(page, sourceId, 'details');
     await expect(page.locator('[data-editor-section="details"] .proposal-editor-section-copy'))
-      .toHaveText('Describe how this counterproposal differs. The published proposal stays as it is.');
+      .toHaveText('Describe how this alternative design differs. The published design stays as it is.');
     await page.locator('[data-draft-path="fields.description"]').fill('A counterproposal of the published park.');
     await page.locator('[data-editor-action="review"]').click();
     await expect(page.locator('.proposal-editor-review-notice'))
-      .toHaveText('Saving creates a counterproposal. The published proposal is not changed or removed.');
+      .toHaveText('Saving creates an alternative design. The published design is not changed or removed.');
   });
 });

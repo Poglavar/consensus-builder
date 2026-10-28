@@ -13,6 +13,8 @@ import { describe, it, expect, beforeAll, beforeEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { createRequire } from 'node:module';
+const { MapHighlight } = createRequire(import.meta.url)('../../frontend/js/shared-utils.js');
 
 const featureAt = (lng, lat, id) => ({
     type: 'Feature',
@@ -57,7 +59,7 @@ beforeAll(() => {
     // No panes: getPane/createPane are absent, so ensureProposalHighlightPanes bails and the
     // painter falls back to the default pane. That path must still draw.
     global.map = { addLayer: noop, removeLayer: noop, on: noop };
-    global.window = {};
+    global.window = { MapHighlight };
     global.getParcelDisplayNumberFromFeature = feature => feature?.properties?.id || null;
     global.getFeatureCentroid = () => ({ lat: 45.787, lng: 16.015 });
     global.resolveProposalGoalKey = () => 'park';
@@ -67,6 +69,7 @@ beforeAll(() => {
         globalThis.__cap = {
             highlightFeatureGroupsForHover,
             highlightFeaturesForHover,
+            highlightFeaturesForInspection,
             clearProposalHoverLayers,
             getParcelFeaturesForHighlight,
             collectProposalHighlightFeatures,
@@ -79,10 +82,23 @@ beforeAll(() => {
 
 beforeEach(() => {
     // Fresh overlay groups per test, so clear counts start at zero.
-    global.window = {};
+    global.window = { MapHighlight };
 });
 
 describe('highlightFeatureGroupsForHover', () => {
+    it('keeps persistent inspection and transient hover independent when either one is cleared', () => {
+        cap.highlightFeaturesForInspection([bodyFeature], { className: 'click-stack-map-focus' });
+        const selected = global.window.proposalInspectionGroup.layers[0];
+        expect(selected.__feature).toBe(bodyFeature);
+        cap.highlightFeaturesForHover([parcelFeature]);
+        cap.clearProposalHoverLayers();
+        expect(global.window.proposalInspectionGroup.layers).toEqual([selected]);
+        cap.highlightFeaturesForHover([parcelFeature]);
+        cap.highlightFeaturesForInspection([]);
+        expect(global.window.proposalInspectionGroup.layers).toEqual([]);
+        expect(hoverGroup().layers[0].__feature).toBe(parcelFeature);
+    });
+
     it('paints each group in its own style, in order, so the body lands on top of the parcels', () => {
         cap.highlightFeatureGroupsForHover([
             { features: [parcelFeature], color: '#FFEB3B', weight: 6, dashArray: '10 8' },
@@ -149,6 +165,10 @@ describe('highlightFeatureGroupsForHover', () => {
 });
 
 describe('highlightFeaturesForHover', () => {
+    it('uses the same yellow as model selection by default, without tinting the object fill', () => {
+        cap.highlightFeaturesForHover([bodyFeature]);
+        expect(drawn()).toEqual([expect.objectContaining({ color: '#ffdd00', fillColor: '#ffdd00', fillOpacity: 0 })]);
+    });
     it('still paints a single set of features in one style', () => {
         cap.highlightFeaturesForHover([parcelFeature], { color: '#FFEB3B', weight: 6, dashArray: '10 8' });
 

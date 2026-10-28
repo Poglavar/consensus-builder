@@ -220,7 +220,6 @@
     top: 18px;
     right: 18px;
     z-index: var(--cb-z-panel);
-    width: min(400px, calc(100% - 36px));
     max-height: calc(100% - 36px);
     overflow: auto;
     box-sizing: border-box;
@@ -457,12 +456,6 @@
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     margin-top: 13px;
-}
-
-.grain-score-actions .btn {
-    min-height: 36px;
-    margin: 0;
-    font-size: 11px;
 }
 
 body.grain-score-mode #proposal-details-panel,

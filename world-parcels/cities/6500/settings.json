@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6500",
+  "name": "Naberezhnye Chelny, Russia",
+  "point": [
+    55.7219960248535,
+    52.3842170017091
+  ],
+  "bindings": [
+    {
+      "appCityId": "naberezhnye_chelny",
+      "runtimeConfig": {
+        "id": "naberezhnye_chelny",
+        "wupCityCode": "6500",
+        "label": "Naberezhnye Chelny, Russia",
+        "currency": {
+          "locale": "ru-RU",
+          "code": "RUB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            55.7219960248535,
+            52.3842170017091
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            55.7219960248535,
+            52.3842170017091
+          ],
+          "fallbackDataset": [
+            52.3842170017091,
+            55.7219960248535
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ru-tatarstan-karta-cadastre",
+          "idPrefix": "RU-TATARSTAN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Geoportal of the Republic of Tatarstan / karta.tatar.ru — historic March 2011 layer; two observed parcels only."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ru-tatarstan-karta-cadastre",
+      "name": "Tatarstan Geoportal — historic cadastral parcels (March 2011), bounded subset",
+      "operator": "Geoportal of the Republic of Tatarstan",
+      "adapter": "tatarstan-cadastre-bounded",
+      "adapterModule": "tatarstan-cadastre-source.js",
+      "endpoint": "https://karta.tatar.ru/gis/ajax/info",
+      "geometryEndpoint": "https://karta.tatar.ru/GIS/AJAX/CadastreGeom",
+      "countryCode": "RU",
+      "cityIds": [
+        "naberezhnye_chelny"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "RU-TATARSTAN-",
+      "idField": "cad_num",
+      "parcelNumberField": "cad_num",
+      "outFields": [
+        "cad_num"
+      ],
+      "identityKind": "native",
+      "nativeCrs": "EPSG:3857",
+      "sourceCrs": "EPSG:3857",
+      "srsName": "EPSG:4326",
+      "metricSrid": 32639,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "coverage": {
+        "scope": "explicit-native-id-subset",
+        "citywide": false,
+        "parcels": [
+          {
+            "id": "16:27:070701:242",
+            "externalId": "205164",
+            "point": [
+              52.38,
+              55.78
+            ]
+          },
+          {
+            "id": "16:27:120101:1",
+            "externalId": "202380",
+            "point": [
+              52.3842170017091,
+              55.7219960248535
+            ]
+          }
+        ],
+        "nativeIds": [
+          "16:27:070701:242",
+          "16:27:120101:1"
+        ],
+        "basis": "Two retained discovery identities are independently reconfirmed via their documented point anchors before each live externalId geometry read. Viewport filtering is complete only within this finite subset."
+      },
+      "scope": "Two observed cadastral records from the historic March-2011 layer; includes the exact city locator. Wider municipal coverage and currentness unverified.",
+      "attribution": "Geoportal of the Republic of Tatarstan / karta.tatar.ru — historic March 2011 layer; two observed parcels only.",
+      "licence": "Unresolved; public anonymous access does not establish redistribution permission.",
+      "licenceNote": "Reuse permission, legal registry custody and currentness remain unverified.",
+      "catalogueUrl": "https://karta.tatar.ru/",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://karta.tatar.ru/GIS/AJAX/LayersSections",
+          "https://karta.tatar.ru/js/Tools/CadastreTool.js"
+        ],
+        "jurisdiction": {
+          "basis": "Regional portal for Tatarstan; exact immutable city-point geometry and a northern anchor. Prefixes 16:27 do not establish modern municipal 16:52 registry scope."
+        }
+      }
+    }
+  ]
+}

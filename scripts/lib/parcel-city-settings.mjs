@@ -3,14 +3,15 @@
 // city scopes back into the executable catalog before rewriting runtime configuration.
 import fs from 'node:fs';
 import path from 'node:path';
-import vm from 'node:vm';
 import { createHash } from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { CITY_CONFIGS_FILE, jsonReplacer, jsonReviver, parseCityConfigs } from './city-configs.mjs';
+import { writeCityFiles } from '../build-city-files.mjs';
+
+export { parseCityConfigs };
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_ROOT = path.resolve(HERE, '../..');
-const jsonReplacer = (_key, value) => value === Infinity ? { $number: 'Infinity' } : value === -Infinity ? { $number: '-Infinity' } : value;
-const jsonReviver = (_key, value) => value && value.$number === 'Infinity' ? Infinity : value && value.$number === '-Infinity' ? -Infinity : value;
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 
 export async function recoverQualifiedSettings(root = DEFAULT_ROOT, artifactRoots = []) {
@@ -73,42 +74,6 @@ function isBoundWorkingSettings(settings, code) {
     const ids = new Set(settings.sources.map(source => source?.id).filter(Boolean));
     return settings.bindings.some(binding => binding?.appCityId && binding.runtimeConfig?.id === binding.appCityId
         && sourceIds(binding.runtimeConfig).some(id => ids.has(id)));
-}
-
-function objectLiteralAt(source, marker) {
-    const start = source.indexOf(marker);
-    if (start < 0) throw new Error(`Missing ${marker}`);
-    const open = source.indexOf('{', start + marker.length);
-    let depth = 0, quote = '', escaped = false, lineComment = false, blockComment = false;
-    for (let i = open; i < source.length; i++) {
-        const ch = source[i];
-        const next = source[i + 1];
-        if (lineComment) { if (ch === '\n') lineComment = false; continue; }
-        if (blockComment) { if (ch === '*' && next === '/') { blockComment = false; i++; } continue; }
-        if (quote) {
-            if (escaped) escaped = false;
-            else if (ch === '\\') escaped = true;
-            else if (ch === quote) quote = '';
-            continue;
-        }
-        if (ch === '/' && next === '/') { lineComment = true; i++; continue; }
-        if (ch === '/' && next === '*') { blockComment = true; i++; continue; }
-        if (ch === '"' || ch === "'" || ch === '`') { quote = ch; continue; }
-        if (ch === '{') depth++;
-        if (ch === '}') {
-            depth--;
-            if (depth === 0) return source.slice(open, i + 1);
-        }
-    }
-    throw new Error(`Unclosed ${marker}`);
-}
-
-export function parseCityConfigs(source) {
-    const literal = objectLiteralAt(source, 'const CITY_CONFIGS =');
-    const context = vm.createContext({ SHARED_DEFAULT_ZOOM: 19, Infinity, NaN,
-        exploreView: { lat: 30, lon: 15, zoom: 3 },
-        translateCityText: (_key, fallback) => fallback, formatCityText: value => value });
-    return JSON.parse(JSON.stringify(vm.runInContext(`(${literal})`, context, { timeout: 1000 }), jsonReplacer), jsonReviver);
 }
 
 function cityCodeMap(demographics) {
@@ -226,7 +191,7 @@ export function buildCitySettings({ configs, catalog, demographics, codes }) {
 }
 
 export function exportCitySettings(root = DEFAULT_ROOT, options = {}) {
-    const configs = parseCityConfigs(fs.readFileSync(path.join(root, 'frontend/js/city-config.js'), 'utf8'));
+    const configs = parseCityConfigs(fs.readFileSync(path.join(root, CITY_CONFIGS_FILE), 'utf8'));
     const catalog = JSON.parse(fs.readFileSync(path.join(root, 'frontend/data/source-catalog.json'), 'utf8'));
     const demographics = JSON.parse(fs.readFileSync(path.join(root, 'world-parcels/report/city-demographics.json'), 'utf8'));
     const rows = buildCitySettings({ configs, catalog, demographics, codes: options.codes });
@@ -330,7 +295,7 @@ export function applyCitySettings(root = DEFAULT_ROOT, options = {}) {
         .filter(item => item.isDirectory() && /^\d+$/.test(item.name)
             && fs.existsSync(path.join(dir, item.name, 'settings.json'))).map(item => item.name);
     const rows = codes.map(code => JSON.parse(fs.readFileSync(path.join(dir, code, 'settings.json'), 'utf8'), jsonReviver));
-    const configFile = path.join(root, 'frontend/js/city-config.js');
+    const configFile = path.join(root, CITY_CONFIGS_FILE);
     const catalogFile = path.join(root, 'frontend/data/source-catalog.json');
     const catalog = JSON.parse(fs.readFileSync(catalogFile, 'utf8'));
     const { appIds, descriptors, databaseDescriptors } = validateSettings(rows, catalog);
@@ -359,6 +324,7 @@ export function applyCitySettings(root = DEFAULT_ROOT, options = {}) {
     }
     catalog.databaseSources = [...database.values()];
     fs.writeFileSync(configFile, configSource);
+    writeCityFiles(root);
     fs.writeFileSync(catalogFile, `${JSON.stringify(catalog, null, 2)}\n`);
     return { citySettings: rows.length, appCities: appIds.size, sources: descriptors.size, databaseSources: databaseDescriptors.size };
 }

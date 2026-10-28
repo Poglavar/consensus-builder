@@ -1,6 +1,6 @@
 # Guess parcels: Zagreb CDOF spike
 
-This is a local experiment for the **estimated parcels** option in [`world-parcels.md`](../../world-parcels.md). It does not enter the cadastral repository or claim ownership evidence. The non-model baseline reads imagery, OSM-sourced building footprints and roads, and optional Overture river/lake/sea polygons. The SAM 3 experiment reads RGB imagery and text prompts. Cadastral parcels are exported to a separate file and used only for evaluation.
+This is a local experiment for the **estimated parcels** option in [`world-parcels.md`](../../docs/world-parcels.md). It does not enter the cadastral repository or claim ownership evidence. The non-model baseline reads imagery, OSM-sourced building footprints and roads, and optional Overture river/lake/sea polygons. The SAM 3 experiment reads RGB imagery and text prompts. Cadastral parcels are exported to a separate file and used only for evaluation.
 
 ## Inputs and method
 

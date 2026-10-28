@@ -10,6 +10,8 @@ function candidate(id, score, overrides = {}) {
         gain: 100000,
         offer: 30000,
         builtGfaM2: 200,
+        buildingSourceId: 'survey-fixture',
+        buildingCoverage: 'complete',
         proposedGfaM2: 500,
         allowedFloors: 4,
         rule: { source: 'urban-rule' },
@@ -45,14 +47,28 @@ describe('algorithmic design picker', () => {
         expect(result.policy.eligibleCandidateIds).toEqual(['densifier-01:eligible']);
     });
 
-    it('accepts the default envelope only where the parcel source has no buildings or zoning to read', () => {
+    it('does not turn an unknown inventory and default envelope into an automatic pick', () => {
         const result = selectAlgorithmicPicks({
             day: '2026-09-20', persona,
             candidates: [candidate('world', 1, { rule: { source: 'default' }, builtKnown: false, builtGfaM2: 0, koName: 'San Francisco', parcelNumber: '3513080', allowedFloors: 5 })]
         });
-        expect(result.picks[0]).toMatchObject({ candidateId: 'densifier-01:world', name: '5-storey infill on parcel 3513080, San Francisco' });
-        expect(result.picks[0].rationale).toContain("No zoning rule is mapped for parcel world, so the platform's default envelope applies (5 floors");
-        expect(result.picks[0].rationale).toContain('Existing buildings are not measured');
+        expect(result.picks).toEqual([]);
+        expect(result.policy.eligibleCandidateIds).toEqual([]);
+    });
+
+    it.each([
+        { builtGfaM2: null }, { builtGfaM2: undefined }, { builtGfaM2: false },
+        { builtGfaM2: -1 }, { builtKnown: false, builtGfaM2: 0 },
+        { buildingCoverage: 'unknown', builtGfaM2: 0 }, { buildingCoverage: 'partial' },
+        { buildingSourceId: null }, { score: null }, { gain: null }
+    ])('rejects unsupported quantities even if other metrics look attractive: %j', overrides => {
+        const result = selectAlgorithmicPicks({ day: '2026-09-20', persona, candidates: [candidate('bad', 1, overrides)] });
+        expect(result.picks).toEqual([]);
+    });
+
+    it('accepts a verified empty baseline as zero', () => {
+        const result = selectAlgorithmicPicks({ day: '2026-09-20', persona, candidates: [candidate('empty', 1, { builtGfaM2: 0 })] });
+        expect(result.picks[0].rationale).toContain('from 0 m² to 500 m²');
     });
 
     it('writes its name and rationale only from candidate facts, and promises no owner offer', () => {

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2289",
+  "name": "Malacca City, Malaysia",
+  "point": [
+    2.23405701325659,
+    102.24199595037
+  ],
+  "bindings": [
+    {
+      "appCityId": "malacca_city",
+      "runtimeConfig": {
+        "id": "malacca_city",
+        "wupCityCode": "2289",
+        "label": "Malacca City, Malaysia",
+        "currency": {
+          "locale": "ms-MY",
+          "code": "MYR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            2.23405701325659,
+            102.24199595037
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            2.23405701325659,
+            102.24199595037
+          ],
+          "fallbackDataset": [
+            102.24199595037,
+            2.23405701325659
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "my-melaka-jupem-lot-kadaster-2021",
+          "idPrefix": "MY-MELAKA-UPI-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Melaka state geospatial portal / AGENSI/JUPEM; Jabatan Ukur dan Pemetaan Malaysia (JUPEM)."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "my-melaka-jupem-lot-kadaster-2021",
+      "name": "Melaka JUPEM Lot Kadaster 2021",
+      "adapter": "arcgis",
+      "endpoint": "http://mygdispatial.melaka.gov.my/arcgis/rest/services/AGENSI/JUPEM/FeatureServer/0",
+      "idField": "UPI",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]+$",
+      "idPrefix": "MY-MELAKA-UPI-",
+      "outFields": [
+        "OBJECTID",
+        "UPI"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 80,
+      "idBatchSize": 3,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 16777216,
+      "maxConcurrentQueries": 1,
+      "timeoutMs": 40000,
+      "browserTransport": "relay",
+      "countryCode": "MY",
+      "metricSrid": 32648,
+      "cityIds": [
+        "malacca_city"
+      ],
+      "sourceCrs": "GDM_2000_RSO_Peninsular_Malaysia (publisher WKT in evidence/layer-metadata.json)",
+      "operator": "Melaka state geospatial portal / AGENSI/JUPEM",
+      "catalogueUrl": "http://mygdispatial.melaka.gov.my/arcgis/rest/services/AGENSI/JUPEM/FeatureServer/0?f=pjson",
+      "attribution": "Melaka state geospatial portal / AGENSI/JUPEM; Jabatan Ukur dan Pemetaan Malaysia (JUPEM).",
+      "licenceNote": "Anonymous public read access observed; no explicit reuse or redistribution licence stated in inspected metadata. Terms require confirmation. Retain attribution.",
+      "scope": "Melaka state cadastral lots, published as Lot_Kadaster_2021. Bounded Malacca City samples only; citywide completeness, municipal boundaries, currentness, survey accuracy and title are unverified. HTTP upstream is publicly available; HTTPS certificate is expired. Browser uses fixed-source relay without bypassing TLS verification.",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "defaultForCity": true
+    }
+  ]
+}

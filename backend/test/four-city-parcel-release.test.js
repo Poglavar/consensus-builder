@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { describe, expect, it } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
 import { browserParcelFactories } from '../parcels/browser-source-runtime.js';
 
@@ -13,7 +14,7 @@ const registry = json('world-parcels/registry.json');
 const report = json('frontend/data/parcel-coverage-report.json');
 const coverage = json('frontend/data/world-coverage.json');
 const context = { console, URL, URLSearchParams }; context.window = context;
-runInNewContext(read('frontend/js/city-config.js'), context);
+runInNewContext(cityConfigSource(), context);
 const cities = [['3008', 'sisulu_village'], ['5590', 'jakarta'], ['7935', 'rio_de_janeiro'], ['9913', 'hyderabad']];
 const queryFields = ['adapter', 'endpoint', 'layerId', 'idField', 'objectIdField', 'idPrefix',
     'identityKind', 'outFields', 'queryFormat', 'boundsQueryMode', 'idsQueryMode', 'timeoutMs',

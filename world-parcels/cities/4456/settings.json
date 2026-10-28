@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4456",
+  "name": "León, Mexico",
+  "point": [
+    21.1241552910899,
+    -101.66695408078
+  ],
+  "bindings": [
+    {
+      "appCityId": "leon",
+      "runtimeConfig": {
+        "id": "leon",
+        "wupCityCode": "4456",
+        "label": "León, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            21.1241552910899,
+            -101.66695408078
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            21.1241552910899,
+            -101.66695408078
+          ],
+          "fallbackDataset": [
+            -101.66695408078,
+            21.1241552910899
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-leon-implan-predios-piloto-wfs",
+          "idPrefix": "MX-LEON-IMPLAN-PREDIOS_PILOTO-OBJECTID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Municipio de León / IMPLAN León · Predios_Piloto · bounded northern cadastral pilot · municipal platform citation required"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-leon-implan-predios-piloto-wfs",
+      "name": "León IMPLAN Predios_Piloto (bounded cadastral pilot)",
+      "adapter": "wfs",
+      "endpoint": "https://plataformaleon.gob.mx/geoserver/wfs",
+      "version": "2.0.0",
+      "featureType": "implan:predios_piloto",
+      "idField": "objectid",
+      "idType": "integer",
+      "idPrefix": "MX-LEON-IMPLAN-PREDIOS_PILOTO-OBJECTID-",
+      "outFields": [
+        "objectid"
+      ],
+      "geometryField": "geom",
+      "requestProperties": true,
+      "pageSize": 100,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "countryCode": "MX",
+      "stateCode": "GTO",
+      "operator": "Municipio de León / IMPLAN León",
+      "metricSrid": 32614,
+      "defaultForCity": true,
+      "scope": "Small northern pilot only; queue locator lies outside advertised extent. No citywide completeness or municipal legal boundary claim.",
+      "attribution": "Municipio de León / IMPLAN León · Predios_Piloto · bounded northern cadastral pilot · municipal platform citation required",
+      "catalogueUrl": "https://plataformaleon.gob.mx/mapamunicipio.php",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "MX",
+          "basis": "Municipal Catastro responsibility for digital cartography of predios and fraccionamientos; official IMPLAN Predios_Piloto layer with cadastral sector/subsector/manzana and predial schema. Not a sale listing, development proposal or planning overlay.",
+          "evidence": [
+            "https://plataformaleon.gob.mx/"
+          ]
+        }
+      },
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "cityIds": [
+        "leon"
+      ]
+    }
+  ]
+}

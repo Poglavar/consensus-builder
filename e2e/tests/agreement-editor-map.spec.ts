@@ -1,257 +1,386 @@
-// Purpose: the agreement editor docked on the map picks its designs there (plan-design-agreement.md,
-// "M3 notes", UI decision 2026-10-22; js/agreement-dialog.js over js/map-pick.js): Add to agreement
-// on a design's details opens it with the map in pick mode and the chosen designs highlighted; a real
-// click on an applied design removes or adds it; Add to agreement offers the agreements not proposed
-// yet; Edit takes the agreement panel's place and Cancel or Escape brings it back; a proposed agreement
-// is never edited; on a phone the editor is a bottom sheet and the map above it still picks.
-import type { Locator, Page } from '@playwright/test';
+// Plan-first agreement editing: tabs preserve the fixed plan, single allocations drive derived
+// money, abstract owners work without a rights import, and advanced controls stay in dialogs.
 import { test, expect } from '../helpers/fixtures';
-import { chooseProfileName, clickDesignOnMap as clickDesign, showProposal, stubBasemapTiles } from '../helpers/runtime';
-import { sampleParcels } from '../helpers/mocks/parcel-data';
-import { pageIndex } from '../helpers/mocks/shared-server';
-import {
-  applyLayout, layOutParcel, agreementEditor, agreementPanel, storedAgreements, landLoaded, createFromDetails, openAgreementsList,
-  panelStatus, editorOpen, editorClosed, editorSave, editorCancel, editorClose,
-} from '../helpers/agreements';
+import { stubBasemapTiles, showProposal, PARCEL_ID } from '../helpers/runtime';
+import { applyLayout, agreementEditor, editorSave, storedAgreements } from '../helpers/agreements';
+import type { Page } from '@playwright/test';
 
-test.beforeEach(async ({ mockApi: page }) => {
-  await stubBasemapTiles(page);
+test.beforeEach(async ({ mockApi: page }) => { await stubBasemapTiles(page); });
+async function create(page: Page, layoutId: string) {
+  await page.evaluate(id => { const w = window as any; void w.PlanDialog.create({ members: [w.proposalStorage.getProposal(id)] }); }, layoutId);
+  const composer = page.locator('.plan-dialog');
+  await composer.locator('input[type="text"]').fill('Block agreement plan');
+  await composer.getByRole('button', { name: 'Create plan', exact: true }).click();
+  await page.locator('#click-stack .click-stack__section[data-kind="plans"]').getByRole('button', { name: 'Create agreement', exact: true }).click();
+  const editor = agreementEditor(page);
+  await expect(editor).toBeVisible();
+  await expect(editor.locator('[data-agreement-input]')).toHaveCount(1);
+  return editor;
+}
+
+test('creation belongs to the saved plan; four tabs preserve exact membership and save', async ({ mockApi: page }) => {
+  const { layoutId } = await applyLayout(page);
+  await showProposal(page, layoutId);
+  await expect(page.locator('#proposal-details-panel .btn-create-agreement')).toHaveCount(0);
+  const editor = await create(page, layoutId);
+  await expect(editor.locator('[role="tab"]')).toHaveText(['Rules', /^Input parcels \(\d+\)$/, /^Output parcels \(\d+\)$/, /^Persons \(\d+\)$/]);
+  await expect(editor.locator('[data-agreement-design]')).toHaveCount(0);
+  const planCid = await editor.locator('[data-agreement-plan]').inputValue();
+  await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
+  const recipients = editor.locator('[data-agreement-allocation]');
+  await expect(recipients).toHaveCount(2);
+  expect(await recipients.first().locator('option').allTextContents()).not.toContain('Current holders');
+  await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
+  await expect(editor.locator('.agreement-persons-table')).toContainText('Ana Owner');
+  await expect(editor.locator('[data-agreement-cash]')).toHaveCount(0);
+  await editorSave(editor).click();
+  await expect(editor).toBeHidden();
+  const [record] = await storedAgreements(page);
+  expect(record.plan.cid).toBe(planCid);
+  expect(record.designs.map((row: any) => row.proposalId)).toEqual([layoutId]);
+  expect(record.allocations).toHaveLength(2);
+  expect(record.money.lines).toEqual([]);
 });
 
-const SECOND_PARCEL = sampleParcels.features[1].properties.parcelId;
-// The highlight MapPick draws for the editor: the chosen designs' outlines in their own pane.
-const highlight = (page: Page) => page.locator('.leaflet-pick-highlight-pane .map-pick-highlight');
-const titleOf = (page: Page, id: string) => page.evaluate(id => String((window as any).proposalStorage.getProposal(id).title), id);
-const pickStatus = (editor: Locator) => editor.locator('[data-agreement-pick-status]');
-const inputRows = (editor: Locator) => editor.locator('[data-agreement-land] tr[data-agreement-input]');
-
-test.describe('The agreement editor on the map @core', () => {
-  test('Add to agreement opens the editor picking on the map, where a click removes the design and another adds it back', async ({ mockApi: page }) => {
-    test.setTimeout(180_000);
-    const { layoutId } = await applyLayout(page);
-    const title = await titleOf(page, layoutId);
-    const editor = await createFromDetails(page, layoutId);
-
-    // The map picks for the editor: pan and zoom only, the chosen design highlighted.
-    await expect(page.locator('body')).toHaveClass(/\bmap-pick-mode\b/);
-    await expect(page.locator('body')).toHaveAttribute('data-map-pick', 'agreement');
-    await expect(highlight(page).first()).toBeAttached({ timeout: 15_000 });
-    await expect(editor.locator('[data-agreement-map-hint]')).toHaveText('Click a design on the map to add or remove it');
-    await expect(pickStatus(editor)).toHaveText('');
-
-    // A click on the layout takes it out: the line says so, its box is unticked, its highlight and its land go.
-    await clickDesign(page, layoutId);
-    await expect(pickStatus(editor)).toHaveText(`Removed “${title}”.`);
-    await expect(editor.locator(`input[data-agreement-design="${layoutId}"]`)).not.toBeChecked();
-    await expect(highlight(page)).toHaveCount(0);
-    await expect(inputRows(editor)).toHaveCount(0);
-    expect(await page.evaluate(() => (window as any).MapPick.active())).toBe('agreement');
-
-    // Another click puts it back, with its land read again.
-    await clickDesign(page, layoutId);
-    await expect(pickStatus(editor)).toHaveText(`Added “${title}”.`);
-    await expect(editor.locator(`input[data-agreement-design="${layoutId}"]`)).toBeChecked();
-    await expect(highlight(page).first()).toBeAttached();
-    await landLoaded(editor);
-
-    // The checklist picks the same selection: unticking the box takes the highlight off too, and the
-    // line only speaks of map clicks.
-    await editor.locator(`input[data-agreement-design="${layoutId}"]`).uncheck();
-    await expect(highlight(page)).toHaveCount(0);
-    await expect(pickStatus(editor)).toHaveText('');
-    await editor.locator(`input[data-agreement-design="${layoutId}"]`).check();
-    await expect(highlight(page).first()).toBeAttached();
-    await landLoaded(editor);
-
-    // Save stores the agreement over the design, the panel takes the dock and the map stops picking.
-    await editorSave(editor).click();
-    await editorClosed(page);
-    await expect(highlight(page)).toHaveCount(0);
-    await panelStatus(page, 'current');
-    await expect(agreementPanel(page).locator(`[data-agreement-design="${layoutId}"]`)).toBeVisible();
-    const [saved] = await storedAgreements(page);
-    expect(saved.designs.map((design: any) => design.proposalId)).toEqual([layoutId]);
-  });
-
-  test('a second layout picked on the map joins the agreement, and Add to agreement offers the agreements not proposed yet', async ({ mockApi: page }) => {
-    test.setTimeout(240_000);
-    const { layoutId } = await applyLayout(page);
-    let editor = await createFromDetails(page, layoutId);
-    await editor.locator('[data-agreement-title]').fill('Two blocks');
-    await editorSave(editor).click();
-    await editorClosed(page);
-    await panelStatus(page, 'current');
-    const [first] = await storedAgreements(page);
-
-    // The next parcel is laid out from its own panel, so the agreement panel is closed first (it would
-    // cover that panel on the dock).
-    await agreementPanel(page).locator('[data-agreement-action="close"]').click();
-    await expect(agreementPanel(page)).toBeHidden();
-    const secondId = await layOutParcel(page, SECOND_PARCEL);
-    const secondTitle = await titleOf(page, secondId);
-
-    // An agreement is waiting to be proposed, so Add to agreement asks: a new one, or that one.
-    await showProposal(page, secondId);
-    await page.locator('#proposal-details-panel .btn-create-agreement').click();
-    let chooser = page.locator('.cb-dialog.agreement-add-to');
-    await expect(chooser).toBeVisible();
-    await expect(chooser.locator('.cb-dialog__title')).toHaveText('Add to agreement');
-    await expect(chooser).toContainText(`Add “${secondTitle}” to a new agreement, or to one not proposed yet.`);
-    await expect(chooser.locator('[data-action-id="__new__"]')).toHaveText('New agreement');
-    await expect(chooser.locator(`[data-action-id="${first.id}"]`)).toHaveText('Two blocks · 1 design');
-    // A new agreement starts from that design alone; cancelled, nothing is stored.
-    await chooser.locator('[data-action-id="__new__"]').click();
-    editor = await editorOpen(page, 'Create agreement');
-    await expect(editor.locator(`input[data-agreement-design="${secondId}"]`)).toBeChecked();
-    await expect(editor.locator(`input[data-agreement-design="${layoutId}"]`)).not.toBeChecked();
-    await landLoaded(editor);
-    await expect(inputRows(editor)).toHaveCount(1);
-    await expect(editor.locator(`tr[data-agreement-input="${SECOND_PARCEL}"]`)).toBeVisible();
-    await editorCancel(editor).click();
-    await editorClosed(page);
-    expect((await storedAgreements(page)).map((agreement: any) => agreement.id)).toEqual([first.id]);
-
-    // Edit from the panel, and the second layout is picked on the map: it joins, with its land.
-    let list = await openAgreementsList(page);
-    await list.locator(`.agreement-item[data-agreement-id="${first.id}"]`).click();
-    await panelStatus(page, 'current');
-    await agreementPanel(page).locator('[data-agreement-action="edit"]').click();
-    editor = await editorOpen(page, 'Edit agreement');
-    await landLoaded(editor);
-    await expect(inputRows(editor)).toHaveCount(1);
-    await clickDesign(page, secondId);
-    await expect(pickStatus(editor)).toHaveText(`Added “${secondTitle}”.`);
-    await expect(editor.locator(`input[data-agreement-design="${secondId}"]`)).toBeChecked();
-    await expect(editor.locator(`input[data-agreement-design="${layoutId}"]`)).toBeChecked();
-    await expect(inputRows(editor)).toHaveCount(2);
-    await expect(editor.locator(`tr[data-agreement-input="${SECOND_PARCEL}"]`)).toBeVisible();
-    await editorSave(editor).click();
-    await editorClosed(page);
-    await panelStatus(page, 'current');
-    await expect(agreementPanel(page).locator(`[data-agreement-design="${secondId}"]`)).toBeVisible();
-    const [joined] = await storedAgreements(page);
-    expect(joined.id).toBe(first.id);
-    expect(joined.designs.map((design: any) => design.proposalId).sort()).toEqual([layoutId, secondId].sort());
-    expect(joined.inputs.parcels.map((parcel: any) => parcel.parcelId).sort()).toEqual([sampleParcels.features[0].properties.parcelId, SECOND_PARCEL].sort());
-
-    // Choosing the agreement a design is already in says so, and opens the editor on it as it is.
-    await agreementPanel(page).locator('[data-agreement-action="close"]').click();
-    await showProposal(page, layoutId);
-    await page.locator('#proposal-details-panel .btn-create-agreement').click();
-    chooser = page.locator('.cb-dialog.agreement-add-to');
-    await expect(chooser.locator(`[data-action-id="${first.id}"]`)).toHaveText('Two blocks · 2 designs');
-    await chooser.locator(`[data-action-id="${first.id}"]`).click();
-    await expect(page.locator('#ephemeral-message-container').getByText(`“${await titleOf(page, layoutId)}” is already in this agreement.`)).toBeVisible();
-    editor = await editorOpen(page, 'Edit agreement');
-    await expect(editor.locator('input[data-agreement-design]:checked')).toHaveCount(2);
-    await editorClose(editor).click();
-    await editorClosed(page);
-    expect(await storedAgreements(page)).toEqual([joined]);
-  });
-
-  test('Edit takes the agreement panel\'s place; Cancel and Escape bring it back, but Escape in a field does not', async ({ mockApi: page }) => {
-    test.setTimeout(180_000);
-    const { layoutId } = await applyLayout(page);
-    let editor = await createFromDetails(page, layoutId);
-    await editor.locator('[data-agreement-title]').fill('Kept title');
-    await editorSave(editor).click();
-    await editorClosed(page);
-    await panelStatus(page, 'current');
-    const [saved] = await storedAgreements(page);
-
-    // Edit: the editor takes the dock, the panel steps aside; Cancel discards the change and brings it back.
-    await agreementPanel(page).locator('[data-agreement-action="edit"]').click();
-    editor = await editorOpen(page, 'Edit agreement');
-    await expect(agreementPanel(page)).toBeHidden();
-    await expect(page.locator('body')).not.toHaveClass(/\bagreement-panel-open\b/);
-    await editor.locator('[data-agreement-title]').fill('Cancelled title');
-    await editorCancel(editor).click();
-    await editorClosed(page);
-    await panelStatus(page, 'current');
-    await expect(page.locator('#agreement-panel-title')).toHaveText('Kept title');
-
-    // Escape while typing belongs to the field: the editor stays, with what was typed.
-    await agreementPanel(page).locator('[data-agreement-action="edit"]').click();
-    editor = await editorOpen(page, 'Edit agreement');
-    const titleField = editor.locator('[data-agreement-title]');
-    await titleField.fill('Escaped title');
-    await titleField.press('Escape');
-    await expect(editor).toBeVisible();
-    await expect(titleField).toHaveValue('Escaped title');
-    // Anywhere else Escape cancels: the panel returns, as it was, and stays open.
-    await editor.locator('#agreement-editor-title').focus();
-    await page.keyboard.press('Escape');
-    await editorClosed(page);
-    await panelStatus(page, 'current');
-    await expect(page.locator('#agreement-panel-title')).toHaveText('Kept title');
-    expect(await storedAgreements(page)).toEqual([saved]);
-  });
-
-  test('a proposed agreement is not edited: Add to agreement starts a new one, and its editor refuses it', async ({ mockApi: page }) => {
-    test.setTimeout(240_000);
-    const { layoutId } = await applyLayout(page);
-    const editor = await createFromDetails(page, layoutId);
-    await editor.locator('input[name="agreement-electorate"][value="community"]').check();
-    await editorSave(editor).click();
-    await editorClosed(page);
-    await panelStatus(page, 'current');
-    const panel = agreementPanel(page);
-    await panel.locator('[data-agreement-action="propose"]').click();
-    await chooseProfileName(page, 'Editor author');
-    await panel.locator('[data-agreement-action="propose"]').click();
-    await expect(panel.locator('code.agreement-panel-cid')).toBeVisible({ timeout: 30_000 });
-    await expect(panel.locator('[data-agreement-action="edit"]')).toHaveCount(0);
-    const [proposed] = await storedAgreements(page);
-    expect(proposed.published.cid).toBe([...pageIndex(page).agreements.keys()][0]);
-
-    // The editor will not open on it (a change is a new agreement)...
-    expect(await page.evaluate(id => (window as any).AgreementDialog.open({ agreementId: id })
-      .then(() => 'opened', (error: any) => error.code), proposed.id)).toBe('agreement-published');
-    await expect(agreementEditor(page)).toBeHidden();
-    // ...and Add to agreement offers no proposed agreement: it opens a new one straight away.
-    await panel.locator('[data-agreement-action="close"]').click();
-    await showProposal(page, layoutId);
-    await page.locator('#proposal-details-panel .btn-create-agreement').click();
-    await expect(page.locator('.cb-dialog.agreement-add-to')).toHaveCount(0);
-    const fresh = await editorOpen(page, 'Create agreement');
-    await expect(fresh.locator(`input[data-agreement-design="${layoutId}"]`)).toBeChecked();
-    await editorCancel(fresh).click();
-    await editorClosed(page);
-    expect(await storedAgreements(page)).toEqual([proposed]);
-  });
+test('bulk proposer acquisition disables parcel selectors and saves explicit recipients and compensation', async ({ mockApi: page }) => {
+  const { layoutId, ownerKey } = await applyLayout(page);
+  const editor = await create(page, layoutId);
+  await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
+  const mode = editor.locator('[data-agreement-allocation-mode]');
+  const parcels = editor.locator('[data-agreement-allocation]');
+  await mode.selectOption('proposer');
+  for (const parcel of await parcels.all()) { await expect(parcel).toBeDisabled(); await expect(parcel).toHaveValue('proposer'); }
+  await mode.selectOption('public');
+  for (const parcel of await parcels.all()) { await expect(parcel).toBeDisabled(); await expect(parcel).toHaveValue('public'); }
+  await mode.selectOption('individual');
+  for (const parcel of await parcels.all()) { await expect(parcel).toBeEnabled(); await expect(parcel).toHaveValue('public'); }
+  await parcels.first().selectOption('proposer');
+  await expect(parcels.first()).toHaveValue('proposer');
+  // Randomize hands every piece to a person, each person before anyone gets a second, and leaves the
+  // selects editable; the line above the pieces counts who got none and who got several.
+  const persons = Number((await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).innerText()).match(/\((\d+)\)/)![1]);
+  await mode.selectOption('random');
+  await expect(mode).toHaveValue('individual');
+  for (const parcel of await parcels.all()) { await expect(parcel).toBeEnabled(); await expect(parcel).toHaveValue(/^party:/); }
+  const owners = await parcels.evaluateAll(selects => selects.map(select => (select as HTMLSelectElement).value));
+  expect(new Set(owners).size).toBe(Math.min(persons, owners.length));
+  const summary = editor.locator('[data-agreement-allocation-summary]');
+  if (owners.length > persons) await expect(summary).toContainText('Persons with more than one parcel:');
+  else if (owners.length < persons) await expect(summary).toContainText(`Persons without a parcel: ${persons - owners.length}`);
+  else await expect(summary).toBeHidden();
+  await mode.selectOption('proposer');
+  await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
+  const proposer = editor.locator('.agreement-persons-table tbody tr').filter({ hasText: 'Proposer' });
+  await expect(proposer).toBeVisible(); await expect(proposer).toContainText('EUR');
+  await editorSave(editor).click(); await expect(editor).toBeHidden();
+  const [saved] = await storedAgreements(page);
+  expect(saved.allocations.every((line: any) => line.to.kind === 'proposer')).toBe(true);
+  const area = saved.outputs.reduce((sum: number, o: any) => sum + o.areaM2, 0);
+  expect(saved.money.lines).toEqual([{ ownerKey, amountCents: Math.round(area * saved.rule.settlement.rateCentsPerM2) }]);
+  await page.evaluate(id => { void (window as any).AgreementDialog.open({ agreementId: id }); }, saved.id);
+  await expect(editor).toBeVisible();
+  await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
+  await expect(mode).toHaveValue('proposer'); await expect(parcels.first()).toBeDisabled();
 });
 
-test.describe('The agreement editor on a phone @core', () => {
-  test.use({ viewport: { width: 375, height: 812 } });
-
-  test('the editor is a bottom sheet, and a click on the map above it still picks', async ({ mockApi: page }) => {
-    test.setTimeout(180_000);
-    const { layoutId } = await applyLayout(page);
-    const title = await titleOf(page, layoutId);
-    const editor = await createFromDetails(page, layoutId);
-
-    // A sheet along the bottom (the shared dock sheet, 66% of the screen), the width of the screen,
-    // with the map above it.
-    const viewport = page.viewportSize()!;
-    const box = (await editor.boundingBox())!;
-    expect(box.width).toBeGreaterThan(viewport.width - 4);
-    expect(box.y).toBeGreaterThan(viewport.height * 0.15);
-    expect(box.y + box.height).toBeGreaterThan(viewport.height * 0.8);
-    expect(box.y + box.height).toBeLessThanOrEqual(viewport.height + 1);
-    await expect(editorSave(editor)).toBeInViewport();
-
-    // The design brought above the sheet is clicked there: it leaves the agreement, then returns.
-    const above = { x: 0.5, y: (box.y / 2) / viewport.height };
-    await clickDesign(page, layoutId, above);
-    await expect(pickStatus(editor)).toHaveText(`Removed “${title}”.`);
-    await expect(editor.locator(`input[data-agreement-design="${layoutId}"]`)).not.toBeChecked();
-    await expect(highlight(page)).toHaveCount(0);
-    await clickDesign(page, layoutId, above);
-    await expect(pickStatus(editor)).toHaveText(`Added “${title}”.`);
-    await expect(editor.locator(`input[data-agreement-design="${layoutId}"]`)).toBeChecked();
-    await landLoaded(editor);
-    await editorSave(editor).click();
-    await editorClosed(page);
-    await panelStatus(page, 'current');
+test('agreement authoring blocks the map and page controls, contains focus and restores interaction on cancel and create', async ({ mockApi: page }, testInfo) => {
+  const { layoutId } = await applyLayout(page);
+  await page.evaluate(() => {
+    const w = window as any; w.agreementOutsideClicks = { map: 0, controls: 0 };
+    w.map.on('click', () => w.agreementOutsideClicks.map++);
+    document.getElementById('layers-button')!.addEventListener('click', () => w.agreementOutsideClicks.controls++);
   });
+  const editor = await create(page, layoutId);
+  await expect(page.locator('.agreement-editor-modal')).toHaveJSProperty('open', true);
+  await expect(editorSave(editor)).toHaveText('Create agreement');
+  const cancel = editor.locator('.panel-footer [data-agreement-action="cancel"]');
+  const footerWidths = await editor.locator('.panel-footer > button').evaluateAll(buttons => buttons.map(b => b.getBoundingClientRect().width));
+  expect(Math.abs(footerWidths[0] - footerWidths[1])).toBeLessThan(1);
+  const camera = await page.evaluate(() => { const m = (window as any).map; return [m.getCenter().lat, m.getCenter().lng, m.getZoom()]; });
+  await page.mouse.click(150, 200);
+  await page.mouse.move(150, 200); await page.mouse.wheel(0, -500);
+  const layers = await page.locator('#layers-button').boundingBox();
+  await page.mouse.click(layers!.x + layers!.width / 2, layers!.y + layers!.height / 2);
+  expect(await page.evaluate(() => (window as any).agreementOutsideClicks)).toEqual({ map: 0, controls: 0 });
+  expect(await page.evaluate(() => { const m = (window as any).map; return [m.getCenter().lat, m.getCenter().lng, m.getZoom()]; })).toEqual(camera);
+  await expect(editor).toBeVisible();
+  await page.keyboard.press('Control+k'); await expect(page.locator('.command-palette')).not.toBeVisible();
+  await editorSave(editor).focus(); await page.keyboard.press('Tab'); await page.keyboard.press('Tab');
+  expect(await page.evaluate(() => !!document.activeElement?.closest('.agreement-editor-modal'))).toBe(true);
+  for (const name of ['Input parcels', 'Output parcels', 'Persons', 'Rules']) {
+    await editor.getByRole('tab', { name: new RegExp(`^${name}( \\(\\d+\\))?$`) }).click();
+    const screenshot = testInfo.outputPath(`${name.replace(/ /g, '-').toLowerCase()}.png`);
+    await editor.screenshot({ path: screenshot });
+    await testInfo.attach(name, { path: screenshot, contentType: 'image/png' });
+  }
+  await cancel.click(); await expect(editor).toBeHidden(); await expect(page.locator('.agreement-editor-modal')).toHaveCount(0);
+  await page.mouse.click(150, 200);
+  expect(await page.evaluate(() => (window as any).agreementOutsideClicks.map)).toBe(1);
+  await page.locator('#layers-button').click();
+  expect(await page.evaluate(() => (window as any).agreementOutsideClicks.controls)).toBe(1);
+  await page.evaluate(() => (window as any).MapShell.closeSheets());
+  await create(page, layoutId); await editorSave(editor).click(); await expect(editor).toBeHidden();
+  await expect(page.locator('.agreement-editor-modal')).toHaveCount(0);
+  await page.locator('#layers-button').click();
+  expect(await page.evaluate(() => (window as any).agreementOutsideClicks.controls)).toBe(2);
+});
+
+test('shared striped lens edits persist as defaults while saved agreement lenses keep their own snapshot', async ({ mockApi: page }) => {
+  const { layoutId } = await applyLayout(page);
+  const initial = await page.evaluate(() => (window as any).getLensEntries().map((e: any) => e.address));
+  const editor = await create(page, layoutId);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  const trigger = editor.locator('[data-agreement-action="lens"]');
+  await expect(trigger).toHaveClass(/lens-pattern-button/);
+  await expect(editor.locator('.agreement-lens h4')).toHaveText('Lens');
+  const row = await editor.locator('.agreement-lens__row').boundingBox(), button = await trigger.boundingBox();
+  expect(Math.abs(button!.x + button!.width / 2 - row!.x - row!.width / 2)).toBeLessThan(1);
+  expect(await trigger.evaluate(e => getComputedStyle(e).backgroundImage)).toContain('data:image/svg+xml');
+  await trigger.click();
+  const lens = page.locator('.lens-modal');
+  await expect(lens.locator('.cb-dialog__title')).toHaveText('The lens through which I see the world');
+  await expect(lens.locator('.lens-address-input')).toHaveCount(initial.length);
+  const member = '0x1111111111111111111111111111111111111111';
+  await lens.locator('.lens-address-input').first().fill(member);
+  await lens.locator('.lens-close-btn').click();
+  await editorSave(editor).click(); await expect(editor).toBeHidden();
+  const [saved] = await storedAgreements(page); expect(saved.rule.lens[0]).toBe(member);
+  await page.evaluate(() => { void (window as any).showLensModal(); });
+  await expect(lens.locator('.lens-address-input').first()).toHaveValue(member);
+  const other = '0x2222222222222222222222222222222222222222';
+  await lens.locator('.lens-address-input').first().fill(other); await lens.locator('.lens-close-btn').click();
+  await page.evaluate(id => { void (window as any).AgreementDialog.open({ agreementId: id }); }, saved.id);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click(); await trigger.click();
+  await expect(lens.locator('.lens-address-input').first()).toHaveValue(member);
+  expect(await page.evaluate(() => (window as any).getLensEntries()[0].address)).toBe(other);
+  await lens.locator('.lens-close-btn').click();
+  await editor.locator('.panel-footer [data-agreement-action="cancel"]').click();
+  await create(page, layoutId); await editorSave(editor).click();
+  const all = await storedAgreements(page); expect(all.find((r: any) => r.id !== saved.id).rule.lens[0]).toBe(other);
+  expect(all.find((r: any) => r.id === saved.id).rule.lens[0]).toBe(member);
+});
+
+test('public allocation updates compensation, rate and sponsor tally without editable person cash', async ({ mockApi: page }) => {
+  const { layoutId, ownerKey } = await applyLayout(page);
+  const editor = await create(page, layoutId);
+  await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
+  await editor.locator('[data-agreement-allocation]').first().selectOption('public');
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await editor.locator('[data-agreement-rate]').fill('150');
+  await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
+  await expect(editor.locator('.agreement-persons-table')).toContainText('Sponsor');
+  await expect(editor.locator('[data-agreement-persons]')).toContainText('150');
+  await editorSave(editor).click();
+  await expect(editor).toBeHidden();
+  const [saved] = await storedAgreements(page);
+  const publicArea = saved.outputs.find((o: any) => saved.allocations.some((a: any) => a.output === o.hash && a.to.kind === 'public')).areaM2;
+  expect(saved.money.lines).toEqual([{ ownerKey, amountCents: Math.round(publicArea * 15000) }]);
+});
+
+test('unnamed parcel owners work and ownership/lens settings open separate dialogs', async ({ mockApi: page }) => {
+  const { layoutId } = await applyLayout(page);
+  await page.evaluate(() => {
+    const w = window as any;
+    w.PersistentStorage.forEach((_raw: string, key: string) => { if (/^parcel_.*_owner$/.test(key)) w.PersistentStorage.removeItem(key); });
+  });
+  const editor = await create(page, layoutId);
+  await expect(editor.locator('[data-agreement-land]')).toContainText('Owner(s) of parcel');
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await expect(editor.locator('[data-approval-file]')).toHaveCount(0);
+  await expect(editor.locator('[data-approval-lens]')).toHaveCount(0);
+  await editor.getByRole('tab', { name: /^Input parcels \(\d+\)$/ }).click();
+  await editor.locator('[data-agreement-action="rights"]').click();
+  const rights = page.locator('.cb-dialog').filter({ hasText: 'Parcel ownership rights' });
+  await expect(rights.locator('[data-approval-file]')).toBeVisible();
+  await rights.getByRole('button', { name: 'Close', exact: true }).last().click();
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await editor.locator('[data-agreement-action="lens"]').click();
+  await expect(page.locator('.lens-modal')).toBeVisible();
+  await expect(page.locator('.lens-modal .cb-dialog__title')).toHaveText('The lens through which I see the world');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.lens-modal')).toHaveCount(0); await expect(editor).toBeVisible();
+  await editor.locator('#agreement-editor-title').focus(); await page.keyboard.press('Escape');
+  await expect(editor).toBeHidden(); await expect(page.locator('.agreement-editor-modal')).toHaveCount(0);
+});
+
+test('a saved private plan can apply its unpublished members before agreement authoring', async ({ mockApi: page }) => {
+  const { layoutId } = await applyLayout(page);
+  const editor = await create(page, layoutId);
+  const planCid = await editor.locator('[data-agreement-plan]').inputValue();
+  await editor.locator('.panel-header [data-agreement-action="cancel"]').click();
+  await page.evaluate(async ({ layoutId, planCid }) => {
+    const w = window as any;
+    await w.ProposalManager.unapplyProposal(layoutId);
+    const plan = w.NamedPlans.list().find((row: any) => row.cid === planCid);
+    void w.AgreementDialog.open({ plan });
+  }, { layoutId, planCid });
+  await expect(agreementEditor(page).locator('[data-agreement-action="apply-plan"]')).toBeVisible();
+  await agreementEditor(page).locator('[data-agreement-action="apply-plan"]').click();
+  await expect(agreementEditor(page).locator('[data-agreement-input]')).toHaveCount(1);
+  await expect(editorSave(agreementEditor(page))).toBeEnabled();
+  expect(await agreementEditor(page).locator('[data-agreement-plan]').inputValue()).toBe(planCid);
+});
+
+test('phone layout shows tabs without horizontal overflow and requires a saved plan', async ({ mockApi: page }, testInfo) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await applyLayout(page);
+  await page.evaluate(() => { void (window as any).AgreementDialog.open(); });
+  const editor = agreementEditor(page);
+  await expect(editor).toBeVisible();
+  await expect(editor).toContainText('Create a plan first');
+  await expect(editorSave(editor)).toBeDisabled();
+  await expect(editor.locator('[data-agreement-plan]')).toHaveValue('');
+  expect(await editor.evaluate(e => e.scrollWidth <= e.clientWidth)).toBe(true);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await expect(editor.locator('[data-agreement-compensation]')).toBeVisible();
+  const widths = await editor.locator('.panel-footer > button').evaluateAll(buttons => buttons.map(b => b.getBoundingClientRect().width));
+  expect(Math.abs(widths[0] - widths[1])).toBeLessThan(1);
+  const screenshot = testInfo.outputPath('phone-rules.png');
+  await editor.screenshot({ path: screenshot });
+  await testInfo.attach('phone rules', { path: screenshot, contentType: 'image/png' });
+});
+
+
+test('input parcels and designs share inspection rows with temporary hover and persistent click highlights', async ({ mockApi: page }) => {
+  const { layoutId } = await applyLayout(page);
+  const editor = await create(page, layoutId);
+  const parcel = editor.locator('[data-agreement-inspect="parcel"]').first();
+  const design = editor.locator('[data-agreement-inspect="design"]').first();
+  await expect(editor.locator('[data-agreement-action="rights"]')).toBeVisible();
+  await expect(editor.locator('[data-agreement-tabpanel="rules"] [data-agreement-action="rights"]')).toHaveCount(0);
+  const appearance = (row: any) => row.evaluate((element: HTMLElement) => {
+    const style = getComputedStyle(element);
+    const title = getComputedStyle(element.querySelector('.agreement-object-row__title')!);
+    return { font: style.font, padding: style.padding, border: style.borderRadius, titleFont: title.font };
+  });
+  expect(await appearance(parcel)).toEqual(await appearance(design));
+  expect((await parcel.locator('.agreement-object-row__title').boundingBox())!.x)
+    .toBe((await design.locator('.agreement-object-row__title').boundingBox())!.x);
+  const hover = page.locator('.agreement-map-hover');
+  const pinned = page.locator('.agreement-map-focus');
+  await parcel.hover();
+  await expect(hover.first()).toBeVisible();
+  await parcel.click();
+  await expect(parcel).toHaveAttribute('aria-pressed', 'true');
+  await editor.locator('.panel-header').hover();
+  await expect(hover).toHaveCount(0);
+  await expect(pinned.first()).toBeVisible();
+  const drawn = await page.evaluate(() => {
+    const features: any[] = [];
+    (window as any).map.eachLayer((layer: any) => { if (layer.options?.className === 'agreement-map-focus' && layer.feature) features.push(layer.feature.geometry); });
+    return features;
+  });
+  const original = await page.evaluate(id => (window as any).CadastralParcelRepository.get(id).geometry, await parcel.getAttribute('data-agreement-object-id'));
+  expect(drawn).toContainEqual(original);
+  await design.hover();
+  await expect(hover.first()).toBeVisible();
+  await design.click();
+  await expect(design).toHaveAttribute('aria-pressed', 'true');
+  await expect(parcel).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('#agreement-editor')).toBeVisible();
+  await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
+  await expect(hover).toHaveCount(0); await expect(pinned).toHaveCount(0);
+  await editor.getByRole('tab', { name: /^Input parcels \(\d+\)$/ }).click();
+  await design.focus();
+  await expect(hover.first()).toBeVisible();
+  await design.press('Enter');
+  await expect(design).toHaveAttribute('aria-pressed', 'true');
+  await editor.locator('.panel-header [data-agreement-action="cancel"]').click();
+  await expect(hover).toHaveCount(0); await expect(pinned).toHaveCount(0);
+  expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id).applied, layoutId)).toBe(true);
+});
+
+
+test('agreement rules show one yellow experimental pill without research or legal disclaimers', async ({ mockApi: page }) => {
+  const { layoutId } = await applyLayout(page);
+  const editor = await create(page, layoutId);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await editor.locator('[data-approval-regime]').selectOption('de-umlegung-new');
+  const pill = editor.locator('[data-approval-experimental]');
+  await expect(pill).toHaveCount(1); await expect(pill).toHaveText('Experimental');
+  await expect(pill).toHaveClass(/cb-badge--warning/);
+  await expect(editor.locator('.approval-setup__regime .cb-link').first()).toBeVisible();
+  await expect(editor).not.toContainText('Agreement rules');
+  await expect(editor.locator('[data-approval-rules-card] h4')).toHaveCount(0);
+  await expect(editor).not.toContainText('Research template'); await expect(editor).not.toContainText('not legal advice');
+  await page.evaluate(async () => { await (window as any).i18n.setLanguage('hr'); });
+  await editor.locator('[data-approval-regime]').selectOption('de-umlegung-developed');
+  await expect(pill).toHaveText('Eksperimentalno');
+  await expect(editor).not.toContainText('Istraživački predložak');
+  await expect(editor).not.toContainText('Usporedno istraživanje');
+  await expect(editor).not.toContainText('ne pravni savjet');
+});
+
+test('a chosen scheme is checked against the plan, and settlement by value values every parcel and piece', async ({ mockApi: page }, testInfo) => {
+  const { layoutId, ownerKey } = await applyLayout(page);
+  const editor = await create(page, layoutId);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  // Both pieces go back to their owner, so the German scheme for developed land (10% cap) is met;
+  // a kavelruil needs three parties and one brings land in, which the dropdown says before it is chosen.
+  const scheme = editor.locator('[data-approval-regime]');
+  await scheme.selectOption('de-umlegung-developed');
+  const check = editor.locator('[data-approval-scheme-check]');
+  await expect(check).toHaveAttribute('data-approval-scheme-ok', 'true');
+  await expect(check.locator('li[data-check-ok="true"]').first()).toContainText('The most any owner gives up is 0% (Ana Owner); the cap is 10%.');
+  await expect(scheme.locator('option[value="nl-kavelruil"]')).toHaveAttribute('data-scheme-met', 'false');
+  await expect(scheme.locator('option[value="nl-kavelruil"]')).toHaveText(/not met by this plan/);
+  await expect(scheme.locator('option[value="de-umlegung-developed"]')).toHaveAttribute('data-scheme-met', 'true');
+  await editor.screenshot({ path: testInfo.outputPath('rules-scheme-met.png') });
+  // Giving a piece to public breaks the cap: the card, the dropdown and the save all say so.
+  await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
+  await editor.locator('[data-agreement-allocation]').first().selectOption('public');
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await expect(check).toHaveAttribute('data-approval-scheme-ok', 'false');
+  await expect(check.locator('li[data-check-ok="false"]')).toContainText('Ana Owner gives up');
+  await expect(scheme.locator('option[value="de-umlegung-developed"]')).toHaveText(/not met by this plan/);
+  await expect(editorSave(editor)).toBeDisabled();
+  await expect(editor.locator('[data-agreement-issue="scheme-cap"]')).toContainText('Germany — Umlegung, already developed land: Ana Owner gives up');
+  await editor.screenshot({ path: testInfo.outputPath('rules-scheme-broken.png') });
+  // The guide explains the scheme and says what would meet it, with this plan's parties.
+  await editor.locator('[data-editor-action="approval-scheme-guide"]').click();
+  const guide = page.locator('.cb-dialog').filter({ has: page.locator('[data-scheme-guide="de-umlegung-developed"]') });
+  await expect(guide).toBeVisible();
+  await expect(guide.locator('.cb-dialog__title')).toHaveText('Germany — Umlegung, already developed land');
+  await expect(guide.locator('[data-scheme-guide-check] li[data-check-ok="false"]')).toContainText('Ana Owner gives up 50%');
+  await expect(guide.locator('[data-scheme-guide-fixes]')).toContainText('In Output parcels, give Ana Owner at least');
+  await expect(guide.locator('.scheme-guide__svg .scheme-guide__slice--public')).toHaveCount(1);
+  await expect(guide).toContainText('Set it up here');
+  await guide.screenshot({ path: testInfo.outputPath('scheme-guide.png') });
+  await guide.getByRole('button', { name: 'Close', exact: true }).last().click();
+  await expect(guide).toBeHidden();
+  await expect(editor).toBeVisible();
+  // By value: every parcel and piece gets a value per m², prefilled, settable for all and per row.
+  await scheme.selectOption('unanimous');
+  await editor.locator('[data-agreement-compensation]').selectOption('value');
+  await expect(editor.locator('[data-agreement-value-hint]')).toBeVisible();
+  await expect(editor.locator('[data-agreement-rate]')).toBeHidden();
+  await editor.getByRole('tab', { name: /^Input parcels \(\d+\)$/ }).click();
+  const inputValues = editor.locator('[data-agreement-value-kind="inputs"]');
+  await expect(inputValues).toHaveCount(1);
+  await editor.locator('[data-agreement-value-all="inputs"]').fill('100');
+  await expect(inputValues).toHaveValue('100');
+  await editor.screenshot({ path: testInfo.outputPath('inputs-values.png') });
+  await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
+  await editor.locator('[data-agreement-allocation]').first().selectOption('proposer');
+  const pieceValues = editor.locator('[data-agreement-value-kind="outputs"]');
+  await expect(pieceValues).toHaveCount(2);
+  await editor.locator('[data-agreement-value-all="outputs"]').fill('400');
+  await pieceValues.first().fill('300');
+  await editor.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
+  await expect(editor.locator('.agreement-persons-table')).toContainText('entitled to');
+  await expect(editor.locator('[data-agreement-balance]')).toContainText('Value in');
+  await editor.screenshot({ path: testInfo.outputPath('persons-values.png') });
+  await editorSave(editor).click();
+  await expect(editor).toBeHidden();
+  const [saved] = await storedAgreements(page);
+  expect(saved.rule.settlement).toEqual({ method: 'value', rateCentsPerM2: 0, contributionBasisPoints: 0 });
+  expect(saved.valuation.inputs).toEqual([{ parcelId: PARCEL_ID, unitValueCents: 10000 }]);
+  expect(saved.valuation.outputs.map((row: any) => row.unitValueCents).sort()).toEqual([30000, 40000]);
+  // The owner is entitled to the value of both pieces and got one: the proposer's piece is paid for.
+  const acquired = saved.outputs.find((o: any) => saved.allocations.some((a: any) => a.output === o.hash && a.to.kind === 'proposer'));
+  expect(saved.money.lines).toEqual([{ ownerKey, amountCents: Math.round(acquired.areaM2 * 30000) }]);
+  await page.evaluate(id => { void (window as any).AgreementDialog.open({ agreementId: id }); }, saved.id);
+  await expect(editor).toBeVisible();
+  await editor.getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
+  await expect(pieceValues.first()).toHaveValue('300');
 });

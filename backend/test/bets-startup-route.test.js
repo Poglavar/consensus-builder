@@ -42,13 +42,40 @@ describe('Bets startup route', () => {
     const app = boot(`http://localhost/bets/${ACCOUNT}?city=zg`);
     app.root.location = new URL(`http://localhost/bets/${OTHER}?city=zg`);
     await app.load();
-    expect(app.opened).toEqual([{ account: ACCOUNT }]);
+    expect(app.opened).toEqual([{ account: ACCOUNT, entryPoint: 'deep-link' }]);
   });
 
   it('still opens a normal query-form shared link after app boot', async () => {
     const app = boot(`http://localhost/?city=zg&bets=${ACCOUNT}`);
     await app.load();
-    expect(app.opened).toEqual([{ account: ACCOUNT }]);
+    expect(app.opened).toEqual([{ account: ACCOUNT, entryPoint: 'deep-link' }]);
+  });
+});
+
+describe('Opening a bet’s published agreement', () => {
+  it.each([true, false])('counts a completed review only when the requested agreement panel is visible: %s', async visible => {
+    const app = boot('http://localhost/?city=sf');
+    const events = [];
+    app.root.BetsTelemetry = { track: (name, properties) => events.push({ name, ...properties }) };
+    app.root.AgreementSync = { handleAgreementRoute: async () => {} };
+    app.root.AgreementPanel = { isOpen: () => visible, current: () => 'local-agreement' };
+    app.root.AgreementStore = { get: () => ({ published: { cid: 'bafy-requested' } }) };
+    await app.root.BetsSheet.openAgreement({ cid: 'bafy-requested' }, { entryPoint: 'dialog' });
+    expect(events.map(event => event.result)).toEqual(['started', visible ? 'succeeded' : 'unknown']);
+    expect(events.every(event => event.entryPoint === 'dialog')).toBe(true);
+  });
+
+  it('refreshes a cached agreement through the shared-link path before opening its panel', async () => {
+    const app = boot('http://localhost/?city=sf');
+    const calls = [];
+    const cid = 'bafkrei-published-agreement';
+    app.root.MapShell = { closeSheets: () => calls.push('close-sheets') };
+    app.root.AgreementStore = { list: () => [{ id: 'cached', published: { cid }, outputs: [{ geometry: null }] }] };
+    app.root.AgreementPanel = { open: id => calls.push(['open-cached', id]) };
+    app.root.AgreementSync = { handleAgreementRoute: async value => calls.push(['refresh-published', value]) };
+    await app.root.BetsSheet.openAgreement({ cid });
+    expect(calls).toEqual(['close-sheets', ['refresh-published', cid]]);
+    expect(app.messages).toEqual([]);
   });
 });
 
@@ -69,7 +96,7 @@ describe('The agreement panel\'s Bet action (window.AgreementBets)', () => {
     const app = withStore(boot('http://localhost/?city=zg'));
     expect(app.root.AgreementBets.available(minted)).toBe(true);
     await app.root.AgreementBets.open('agreement-1');
-    expect(app.opened).toEqual([{ account: ACCOUNT, title: 'Courtyard + Tower' }]);
+    expect(app.opened).toEqual([{ account: ACCOUNT, title: 'Courtyard + Tower', entryPoint: 'agreement' }]);
   });
 
   it('offers no bet on an agreement that is not minted on devnet', async () => {
@@ -80,6 +107,6 @@ describe('The agreement panel\'s Bet action (window.AgreementBets)', () => {
     expect(await app.root.AgreementBets.open('agreement-2')).toBeNull();
     expect(await app.root.AgreementBets.open('no-such-agreement')).toBeNull();
     expect(app.opened).toEqual([]);
-    expect(app.messages).toEqual(['Not minted yet, so no pool']);
+    expect(app.messages).toEqual(['Agreement not minted yet']);
   });
 });

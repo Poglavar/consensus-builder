@@ -468,7 +468,7 @@
         const uploadLabel = t('reparcellization.modal.uploadGeojson', 'Upload GeoJSON');
 
         const algorithmControls = `
-                    <div class="reparcel-controls" data-reparcel-alg-group>
+                    <fieldset class="reparcel-controls" data-reparcel-alg-group aria-label="${t('reparcellization.modal.layoutTitle', 'Starting layout')}" aria-disabled="false">
                       <div class="reparcel-secondary-controls" data-reparcel-secondary-controls>
                         <div class="cb-segmented reparcel-alg-options" role="radiogroup" aria-label="${t('reparcellization.modal.layoutTitle', 'Starting layout')}">${buildAlgorithmRadios(state.algorithm)}</div>
                         ${plotCountFieldHtml()}
@@ -499,7 +499,7 @@
                           <button type="button" class="btn btn-sm btn-success" data-reparcel-finish>${t('reparcellization.modal.drawFinish', 'Finish plot')} (F)</button>
                           <button type="button" class="btn btn-sm" data-reparcel-cancel-draw>${t('reparcellization.modal.drawCancel', 'Cancel')} (C)</button>
                       </div>
-                    </div>`;
+                    </fieldset>`;
 
         // The layout's output and its input: the plots it draws, and the parcels it redraws. Old plots
         // is a READ-ONLY view — the cadastre is the given, not something this editor edits.
@@ -536,7 +536,6 @@
             footer,
             tools,
             modes: ['2d'],
-            wide: true,
             hints: { '2d': t('parcelLayout.editor.mapHint', 'Draw the plots here. Who receives which plot is decided later, in the agreement.') },
             handleEscape: false,
             onCancel: cancelModal
@@ -690,7 +689,7 @@
         const history = ensureHistory();
         if (history) {
             // One shortcut and one button, both owned by the shared module.
-            history.bindKeyboard(window);
+            history.bindKeyboard(window, { enabled: () => state.plotsTab !== 'old' });
             if (state.undoEditBtn) history.bindButton(state.undoEditBtn);
             if (state.redoEditBtn) history.bindRedoButton(state.redoEditBtn);
         }
@@ -994,12 +993,20 @@
         // Editing belongs to the new-plots view only — there is nothing here to edit in the
         // cadastre, and leaving handles up over a read-only view invites a drag that means nothing.
         if (next === 'old') {
-            state.nodeEditWasActive = state.nodeEdit.active;
+            state.nodeEditWasActive = state.nodeEdit.active || state.erase.nodeEditWasActive;
+            if (state.erase.active) toggleEraseMode(false);
             if (state.nodeEdit.active) toggleNodeEditing(false);
             if (state.drawing.active) cancelDraw();
         } else if (state.nodeEditWasActive) {
             state.nodeEditWasActive = false;
             toggleNodeEditing(true);
+        }
+        // Native fieldset disabling removes every edit control from keyboard interaction while
+        // retaining each child's own validity/history disabled state for the new-plots view.
+        const editControls = state.modal?.querySelector('[data-reparcel-alg-group]');
+        if (editControls) {
+            editControls.disabled = next === 'old';
+            editControls.setAttribute('aria-disabled', String(next === 'old'));
         }
         (state.modal ? [state.modal] : []).forEach(el => el.classList.toggle('reparcel-old-plots-view', next === 'old'));
         clearInputHighlight();
@@ -1216,6 +1223,8 @@
     // plot, then add it as a new plot. Returns 'carved', 'outside' (it does not reach the pool) or
     // 'refused' (the result would not tile the pool; the status says why). The layout is only
     // replaced on 'carved'.
+    // flags.checkTiling false: the caller checks the finished result once (an import of many
+    // polygons, which checked the whole layout after every one and stalled at 1,000).
     function carvePlotIntoPlan(polygonFeature, source, flags = {}) {
         if (typeof turf === 'undefined' || !state.superParcel) return 'refused';
         const next = window.ReparcellizationPlanUtils.carveLayout({
@@ -1223,7 +1232,7 @@
             source, derivation: flags.derivation
         }, turf);
         if (!next) return 'outside';
-        const problem = tilingProblem(null, next.map(slice => slice.geometry), { pool: state.superParcel });
+        const problem = flags.checkTiling === false ? null : tilingProblem(null, next.map(slice => slice.geometry), { pool: state.superParcel });
         if (problem) {
             setStatus(refusalText(problem), 'error');
             return 'refused';
@@ -2035,6 +2044,11 @@
     // does not cover stays as one leftover plot. It is one undo step, and a file that misses the
     // pool entirely leaves the layout as it was.
     function applyUploadedGeometry(features) {
+        const maxPlots = window.ParcelLayoutValidation.MAX_PLOTS;
+        if (features.filter(feature => /^(Polygon|MultiPolygon)$/.test(feature?.geometry?.type || '')).length > maxPlots) {
+            setStatus(t('parcelLayout.editor.status.uploadTooMany', 'Use at most {{count}} polygons in one layout.', { count: maxPlots }), 'error');
+            return;
+        }
         if (typeof turf === 'undefined') {
             setStatus(t('parcelLayout.editor.status.uploadUnavailable', 'GeoJSON upload needs the geometry engine, which has not loaded.'), 'error');
             return;
@@ -2046,11 +2060,21 @@
         const previous = state.slices;
         state.slices = [makePlot(state.superParcel.geometry, 'base')];
         let added = 0;
+        const started = Date.now();
         features.forEach(feature => {
             const geomType = feature && feature.geometry && feature.geometry.type;
             if (geomType !== 'Polygon' && geomType !== 'MultiPolygon') return;
-            if (carvePlotIntoPlan(feature, 'geojson') === 'carved') added++;
+            if (carvePlotIntoPlan(feature, 'geojson', { checkTiling: false }) === 'carved') added++;
         });
+        // The whole import is one edit: it tiles the pool, or the layout stays as it was.
+        const problem = added ? tilingProblem(null, state.slices.map(slice => slice.geometry), { pool: state.superParcel }) : null;
+        log('debug', 'import carved', { polygons: added, plots: state.slices.length, ms: Date.now() - started });
+        if (problem) {
+            state.slices = previous;
+            discardLastHistory();
+            setStatus(refusalText(problem), 'error');
+            return;
+        }
         if (!added) {
             state.slices = previous;
             discardLastHistory();
@@ -3417,11 +3441,13 @@
         const fabric = window.LiveParcelFabric;
         const ground = window.__openGround;
         const order = window.__planOrder;
+        const sourceId = window.getActiveProposalDesignDraft?.()?.sourceLocalProposalId;
         if (fabric && typeof fabric.queryBounds === 'function' && ground && order && typeof order.intersectionArea === 'function') {
             const siteFeature = { type: 'Feature', properties: {}, geometry: site };
             const holders = new Set();
             fabric.queryBounds(ground.bboxOf(site))
-                .filter(feature => ground.groundIdsOf(feature).length && feature.properties && feature.properties.producedByProposalId)
+                .filter(feature => ground.groundIdsOf(feature).length && feature.properties && feature.properties.producedByProposalId
+                    && String(feature.properties.producedByProposalId) !== String(sourceId || ''))
                 .filter(feature => Number(order.intersectionArea(siteFeature, feature)) >= (Number(order.MIN_INTERSECTION_M2) || 0.25))
                 .forEach(feature => holders.add(String(feature.properties.producedByProposalId)));
             if (holders.size) {
@@ -3453,11 +3479,10 @@
         };
     }
 
-    // Tell the user why the editor did not open: in the status bar and as a notice.
+    // The editor will not open, and why: thrown as an 'editor-refused' error whose message the
+    // design shell shows instead of its generic "editor is unavailable" (proposal-editor-shell.js).
     function refuseOpen(message) {
-        if (typeof updateStatus === 'function') updateStatus(message);
-        try { if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(message, 8000, 'warning'); } catch (_) { }
-        return false;
+        throw Object.assign(new Error(message), { code: 'editor-refused' });
     }
 
     async function buildEditor(options = {}) {
@@ -3479,7 +3504,7 @@
                 return refuseOpen(built && built.error === 'missing'
                     ? t('reparcellization.modal.siteParcelsMissing', 'The parcels under this site could not be loaded: {{ids}}.', { ids: built.missing.join(', ') })
                     : (built && built.error === 'taken'
-                        ? t('reparcellization.modal.siteGroundTaken', 'This site covers ground another proposal already formed: {{names}}. Draw the site off it, or unapply that proposal first.', { names: built.names.map(name => `"${name}"`).join(', ') })
+                        ? t('reparcellization.modal.siteGroundTaken', 'This site covers ground already formed by another design: {{names}}. Draw the site off it, or unapply that design first.', { names: built.names.map(name => `"${name}"`).join(', ') })
                         : t('reparcellization.modal.siteUnavailable', 'This site cannot be subdivided here.')));
             }
             state.sitePool = built;
@@ -3521,7 +3546,6 @@
             const inputPool = resolved.features.length && !resolved.missing.length
                 ? poolOrRefuse(resolved.features)
                 : null;
-            if (inputPool === false) return false;
             if (explicitPool) {
                 log('debug', 'pooled from the layout\'s saved pool', { inputs: planIds.length, plots: savedPlots.length });
                 planPool = explicitPool;
@@ -3535,7 +3559,6 @@
                 log('warn', 'could not resolve every input parcel — pooling from the layout geometry instead',
                     { declared: planIds.length, resolved: resolved.features.length, missing: resolved.missing });
                 planPool = poolOrRefuse(savedPlots);
-                if (planPool === false) return false;
                 state.poolFromOutputs = true;
             }
             if (planPool) selection = { ids: planIds.slice(), source: 'cadastre' };
@@ -3628,6 +3651,41 @@
         state.openSignature = layoutSignature();
         if (state.historyCtl) state.historyCtl.clear();
         updateUndoAffordance();
+        // Opened from a block's "Courtyard as a parcel" action (proposal-editor-shell.js): the
+        // request is consumed once, whether or not the carve succeeds.
+        const courtyardRequest = window.pendingCourtyardLayout;
+        window.pendingCourtyardLayout = null;
+        if (courtyardRequest) await carveCourtyardOfDesign(courtyardRequest.proposalId);
+        return true;
+    }
+
+    // Keep the existing borders and carve one building design's courtyard out as a plot of its
+    // own. Switching the starting layout is part of opening, not an edit; the carve is (undoable).
+    async function carveCourtyardOfDesign(proposalId) {
+        const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(String(proposalId)) : null;
+        if (state.algorithm !== 'amend') {
+            const option = getAlgorithmOptionByKey('amend');
+            if (!option || option.disabled) {
+                setStatus(t('parcelLayout.editor.status.courtyardNeedsBorders',
+                    'A courtyard can be carved only while keeping the existing borders.'), 'warning');
+                return false;
+            }
+            setAlgorithmKey('amend');
+            await refreshPreview();
+            state.openSignature = layoutSignature();
+        }
+        let candidate = null;
+        try {
+            [candidate] = proposal ? window.ReparcellizationPlanUtils.buildingCourtyardCandidates([proposal], state.superParcel, turf) : [];
+        } catch (error) {
+            log('error', 'building courtyard lookup failed', error);
+        }
+        if (!candidate) {
+            setStatus(t('reparcellization.modal.status.noBlockProposals',
+                'No building block with an enclosed courtyard overlaps these parcels.'), 'warning');
+            return false;
+        }
+        applyCourtyard(candidate.courtyard, candidate.derivation);
         return true;
     }
 
@@ -3639,7 +3697,7 @@
         applyTranslations, updateSubtitle, getAlgorithmOptions, getAlgorithmOptionByKey, buildAlgorithmRadios,
         plotCountFieldHtml, updateCountField, setStatus, updateActiveModeHint, closeChoicePopup, destroyMap,
         layoutSignature, isDirty, cancelModal, confirmDiscard, closeModal, buildModalStructure, setPlotCount,
-        initMap, formatArea, cadastreIdOf, buildAmendSlices, applyCourtyard, openBuiltFormPicker,
+        initMap, formatArea, cadastreIdOf, buildAmendSlices, applyCourtyard, carveCourtyardOfDesign, openBuiltFormPicker,
         validateLayout, validationText, updateCommitState, updateLegend, inputParcelFeatures,
         inputParcelLabel, setPlotsTab, clearInputHighlight, highlightInputParcel, updateOldPlotsList,
         computeRingCentroidAndAreaXY, getSuperParcelCentroidLngLat, makePlot, hydratePlots,

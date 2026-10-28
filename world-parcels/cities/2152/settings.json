@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2152",
+  "name": "Cuiabá, Brazil",
+  "point": [
+    -15.6146077910969,
+    -56.0874091534311
+  ],
+  "bindings": [
+    {
+      "appCityId": "cuiaba",
+      "runtimeConfig": {
+        "id": "cuiaba",
+        "wupCityCode": "2152",
+        "label": "Cuiabá, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -15.6146077910969,
+            -56.0874091534311
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -15.6146077910969,
+            -56.0874091534311
+          ],
+          "fallbackDataset": [
+            -56.0874091534311,
+            -15.6146077910969
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-cuiaba-smartgis-geocloud-lotes",
+          "idPrefix": "BR-CUIABA-LOTES-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Prefeitura Municipal de Cuiabá / SIG Cuiabá; SmartGIS/Tecnomapas, GeoCloud service hosting."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-cuiaba-smartgis-geocloud-lotes",
+      "adapter": "wfs",
+      "endpoint": "https://cdn-wms.geocloud.com.br/geoserver/wfs",
+      "featureType": "cuiaba:lotes",
+      "version": "2.0.0",
+      "idField": "id",
+      "idType": "integer",
+      "idPrefix": "BR-CUIABA-LOTES-",
+      "outFields": [
+        "id"
+      ],
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "paginationIdentity": "native-id",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "name": "Cuiabá municipal cadastral lots (SIG Cuiabá / SmartGIS GeoCloud)",
+      "countryCode": "BR",
+      "metricSrid": 32721,
+      "cityIds": [
+        "cuiaba"
+      ],
+      "scope": "Municipal cadastral/fiscal lots in observed central, northern and eastern Cuiabá windows. Citywide completeness, legal title and historic validity are not established.",
+      "licenceUrl": "https://app.smartgis.net.br/cuiaba/publico/",
+      "catalogueUrl": "https://www.cuiaba.mt.gov.br/secretarias/economia/sig-cuiaba",
+      "licenceNote": "Public municipal SIG service. WFS metadata reports Fees NONE and AccessConstraints NONE; these do not establish an open reuse licence. Confirm publisher terms for intended use.",
+      "attribution": "Prefeitura Municipal de Cuiabá / SIG Cuiabá; SmartGIS/Tecnomapas, GeoCloud service hosting.",
+      "defaultForCity": true
+    }
+  ]
+}

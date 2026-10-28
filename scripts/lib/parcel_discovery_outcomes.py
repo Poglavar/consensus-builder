@@ -18,7 +18,7 @@ SEARCH_LEVELS = {"municipal", "regional", "national", "web"}
 # Admission updates these shared application references. They provide current app
 # context, not immutable first-party evidence for a source-discovery decision.
 APP_CONTEXT_FILES = {
-    "frontend/data/source-catalog.json", "frontend/js/city-config.js", "world-parcels/registry.json",
+    "frontend/data/source-catalog.json", "frontend/data/city-configs.js", "world-parcels/registry.json",
     "world-parcels/report/city-demographics.json", "frontend/data/parcel-coverage-report.json",
     "frontend/data/world-coverage.json", "frontend/i18n/en.json", "frontend/i18n/es.json",
     "frontend/i18n/hr.json", "frontend/i18n/sr.json",

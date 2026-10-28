@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const FRONTEND = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../frontend');
 const indexHtml = fs.readFileSync(path.join(FRONTEND, 'index.html'), 'utf8');
-const DOCK_SHEETS = ['bets-sheet', 'activity-sheet'];
+const DOCK_SHEETS = ['activity-sheet', 'bets-sheet'];
 
 function openingTag(pattern) {
     const match = indexHtml.match(pattern);

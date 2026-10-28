@@ -1,0 +1,42 @@
+<div id="atlas-regional-fields">
+  <style>
+    #atlas-regional-fields .legend { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 14px; }
+    #atlas-regional-fields .swatch { display: inline-block; width: 18px; height: 9px; margin-right: 6px; background: var(--viz-series-1); }
+    #atlas-regional-fields .setbacks { opacity: 0.28; }
+    #atlas-regional-fields .row { margin: 0 0 18px; }
+    #atlas-regional-fields .labels { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; margin-bottom: 5px; }
+    #atlas-regional-fields .values { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    #atlas-regional-fields .track { position: relative; height: 14px; background: var(--muted); }
+    #atlas-regional-fields .mark { position: absolute; top: 0; left: 0; height: 14px; background: var(--viz-series-1); }
+    #atlas-regional-fields .scale { display: flex; justify-content: space-between; color: var(--muted-foreground); margin-bottom: 16px; }
+  </style>
+  <div class="legend">
+    <span><span class="swatch setbacks" aria-hidden="true"></span>Three setbacks</span>
+    <span><span class="swatch" aria-hidden="true"></span>Also height</span>
+    <span class="text-muted">One-family records</span>
+  </div>
+  <div class="scale text-small"><span>0%</span><span>50%</span><span>100%</span></div>
+  <div class="rows"></div>
+  <script type="application/json" id="atlas-regional-fields-data">[{"label":"New Hampshire","total":1036,"setbacks":1034,"height":868},{"label":"Montana","total":549,"setbacks":430,"height":361},{"label":"Hawaii","total":156,"setbacks":116,"height":88},{"label":"Middle Tennessee","total":377,"setbacks":250,"height":125},{"label":"Massachusetts","total":1456,"setbacks":903,"height":781},{"label":"Dallas–Fort Worth","total":1378,"setbacks":677,"height":590},{"label":"Northern Virginia","total":313,"setbacks":80,"height":70},{"label":"Hampton Roads","total":271,"setbacks":33,"height":17}]</script>
+  <script>
+    (() => {
+      const root = document.getElementById('atlas-regional-fields');
+      const data = JSON.parse(root.querySelector('#atlas-regional-fields-data').textContent);
+      const rows = root.querySelector('.rows');
+      const percent = (n, total) => (100 * n / total).toFixed(1) + '%';
+      for (const item of data) {
+        const row = document.createElement('div'); row.className = 'row';
+        const labels = document.createElement('div'); labels.className = 'labels';
+        const label = document.createElement('span'); label.textContent = item.label + ' (n = ' + item.total.toLocaleString('en-US') + ')';
+        const values = document.createElement('span'); values.className = 'values';
+        values.textContent = percent(item.setbacks, item.total) + ' / ' + percent(item.height, item.total);
+        labels.append(label, values);
+        const track = document.createElement('div'); track.className = 'track'; track.setAttribute('role', 'img');
+        track.setAttribute('aria-label', item.label + ': ' + item.setbacks + ' records with all three numeric setbacks; ' + item.height + ' also have a positive height, out of ' + item.total + ' eligible one-family records.');
+        const setbacks = document.createElement('span'); setbacks.className = 'mark setbacks'; setbacks.style.width = percent(item.setbacks, item.total);
+        const height = document.createElement('span'); height.className = 'mark'; height.style.width = percent(item.height, item.total);
+        track.append(setbacks, height); row.append(labels, track); rows.append(row);
+      }
+    })();
+  </script>
+</div>

@@ -667,7 +667,7 @@
         const host = doc.getElementById('map-container') || doc.body;
         const panel = doc.createElement('section');
         panel.id = 'site-panel';
-        panel.className = 'site-panel right-dock-panel';
+        panel.className = 'site-panel right-dock-panel right-screen-panel';
         panel.setAttribute('role', 'region');
         panel.innerHTML = `
             <div class="site-panel__head" data-site-region="head"></div>
@@ -679,6 +679,7 @@
             </div>
             <div class="site-panel__actions" data-site-region="actions"></div>`;
         panel.addEventListener('click', onPanelClick);
+        panel.addEventListener('change', onPanelChange);
         host.appendChild(panel);
         state.panel = panel;
         return panel;
@@ -862,6 +863,9 @@
             actions.push(`<button type="button" class="btn btn-primary" data-site-action="propose" ${state.site ? '' : 'disabled'} aria-expanded="${state.proposeOpen}">${escapeHtml(t('parcelMenu.actions.propose', 'Propose here'))}</button>`);
             actions.push(`<button type="button" class="btn" data-site-action="redraw">${escapeHtml(t('siteTool.actions.redraw', 'Redraw'))}</button>`);
         }
+        if (state.phase === 'drawing' || state.phase === 'editing') {
+            actions.push(`<label class="btn" data-site-import>${escapeHtml(t('siteTool.actions.importGeoJSON', 'Import GeoJSON'))}<input type="file" data-site-import-file accept=".geojson,.json,application/geo+json,application/json" hidden></label>`);
+        }
         actions.push(`<button type="button" class="btn" data-site-action="cancel">${escapeHtml(t('siteTool.actions.cancel', 'Cancel'))}</button>`);
         return actions.join('');
     }
@@ -874,7 +878,7 @@
         const host = doc.getElementById('map-container') || doc.body;
         const panel = doc.createElement('section');
         panel.id = 'site-info-panel';
-        panel.className = 'info-panel right-dock-panel site-info-panel';
+        panel.className = 'info-panel right-dock-panel right-screen-panel site-info-panel';
         panel.setAttribute('role', 'region');
         panel.innerHTML = `
             <div class="panel-header">
@@ -883,8 +887,8 @@
                 <button type="button" class="close-circle-btn close-circle-btn--lg close-button" data-site-action="close-propose"></button>
             </div>
             <div class="cb-tabs cb-tabs--fill parcel-tabs" role="tablist">
-                <button type="button" role="tab" class="cb-tab parcel-tab-btn" aria-selected="false" data-site-tab="info"><span class="parcel-tab-label"></span></button>
-                <button type="button" role="tab" class="cb-tab parcel-tab-btn" aria-selected="false" data-site-tab="propose"><span class="parcel-tab-label"></span></button>
+                <button type="button" role="tab" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" aria-selected="false" data-site-tab="info"><i class="fas fa-circle-info" aria-hidden="true"></i></button>
+                <button type="button" role="tab" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" aria-selected="false" data-site-tab="propose"><i class="fas fa-pen" aria-hidden="true"></i></button>
                 <button type="button" role="tab" class="cb-tab parcel-tab-btn" aria-selected="false" data-site-tab="proposals"><span class="parcel-tab-label"></span><span class="cb-badge cb-badge--count parcel-tab-count" hidden></span></button>
             </div>
             <div class="panel-body">
@@ -923,11 +927,16 @@
         minimize.setAttribute('title', minimizeLabel);
         minimize.setAttribute('aria-expanded', String(!state.proposeMinimized));
         panel.classList.toggle('is-minimized', state.proposeMinimized);
-        const labels = { info: t('panel.parcel.tabInfo', 'Info'), propose: t('proposalDrafts.tabs.design', 'Design'), proposals: t('panel.parcel.tabProposals', 'Proposals') };
+        const labels = { info: t('panel.parcel.tabInfo', 'Info'), propose: t('proposalDrafts.tabs.design', 'Design'), proposals: t('panel.parcel.tabProposals', 'Designs') };
         const existing = existingProposals();
         panel.querySelectorAll('[data-site-tab]').forEach(button => {
             const tab = button.getAttribute('data-site-tab'), active = tab === state.proposeTab;
-            button.querySelector('.parcel-tab-label').textContent = labels[tab];
+            const label = button.querySelector('.parcel-tab-label');
+            if (label) label.textContent = labels[tab];
+            else {
+                button.setAttribute('aria-label', labels[tab]);
+                button.setAttribute('title', labels[tab]);
+            }
             const badge = button.querySelector('.parcel-tab-count');
             if (badge) { badge.textContent = existing.entries.length ? String(existing.entries.length) : ''; badge.hidden = !existing.entries.length; }
             button.setAttribute('aria-selected', String(active));
@@ -948,9 +957,9 @@
         const sum = summary();
         const ids = sum ? sum.bound.map(hit => hit.parcelId) : [];
         if (!win.ParcelSetProposals || !ids.length) {
-            return { entries: [], html: `<p class="parcel-set-proposals-empty">${escapeHtml(t('siteTool.proposals.none', 'No proposals on this site\'s parcels yet.'))}</p>` };
+            return { entries: [], html: `<p class="parcel-set-proposals-empty">${escapeHtml(t('siteTool.proposals.none', 'No designs on this site\'s parcels yet.'))}</p>` };
         }
-        return win.ParcelSetProposals.view(ids, { emptyText: t('siteTool.proposals.none', 'No proposals on this site\'s parcels yet.'), onPublished: renderPanel });
+        return win.ParcelSetProposals.view(ids, { emptyText: t('siteTool.proposals.none', 'No designs on this site\'s parcels yet.'), onPublished: renderPanel });
     }
 
     function existingProposalsLineHtml() {
@@ -958,7 +967,7 @@
         const count = existingProposals().entries.length;
         if (!count) return '';
         return `<p class="site-panel__existing">
-            <span>${escapeHtml(t('siteTool.proposals.existing', '{{count}} proposals already on these parcels', { count }))}</span>
+            <span>${escapeHtml(t('siteTool.proposals.existing', '{{count}} designs already on these parcels', { count }))}</span>
             <button type="button" class="btn btn-sm" data-site-action="show-proposals">${escapeHtml(t('siteTool.proposals.show', 'Show'))}</button>
         </p>`;
     }
@@ -1050,6 +1059,34 @@
         else if (action === 'cancel') cancel();
         else if (action === 'plots-continue') continueWithPlots();
         else if (action === 'plots-back') leavePlots();
+    }
+
+    // A site from a GeoJSON polygon file (WGS84): its one connected area's outer outline starts an
+    // editable site, the same plug-in point a parcel selection uses.
+    function onPanelChange(event) {
+        const input = event.target.closest('[data-site-import-file]');
+        const file = input && input.files && input.files[0];
+        if (!file) return;
+        input.value = '';
+        const label = input.closest('[data-site-import]');
+        if (win.BusyControl) win.BusyControl.track(label, () => importSiteFile(file));
+        else importSiteFile(file);
+    }
+
+    async function importSiteFile(file) {
+        let geometry;
+        try {
+            geometry = win.PolygonGeometryEditor.areaGeometryFromGeoJSON(JSON.parse(await file.text()), win.turf);
+        } catch (error) {
+            log('GeoJSON import failed', error);
+            notify(error && error.code === 'disconnected'
+                ? t('siteTool.errors.importDisconnected', 'The file holds separate areas. A site must be one connected area.')
+                : t('siteTool.errors.importInvalid', 'This file is not a GeoJSON polygon in longitude/latitude.'), 'error');
+            return false;
+        }
+        if (geometry.coordinates.length > 1) log('the imported polygon has holes; the site keeps its outer outline only');
+        try { map().fitBounds(win.L.geoJSON(geometry).getBounds(), { maxZoom: 19 }); } catch (_) { }
+        return start({ ring: geometry.coordinates[0] });
     }
 
     // ---- building on the site ----

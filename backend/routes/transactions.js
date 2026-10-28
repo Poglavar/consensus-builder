@@ -60,12 +60,16 @@ export function setupTransactionsRoute(app, pool, {
         const limit = parseLimit(req.query.limit);
         const address = typeof req.query.address === 'string' && req.query.address.trim() ? req.query.address.trim() : null;
         try {
-            const rows = await readTransactions(pool, { limit, address, cluster: CLUSTER });
+            // Three independent pool reads (the page, the stored count, the latest sync run): asked
+            // together, not one after another.
+            const [rows, stored, syncRun] = await Promise.all([
+                readTransactions(pool, { limit, address, cluster: CLUSTER }),
+                countTransactions(pool, CLUSTER),
+                latestTransactionSync(pool)
+            ]);
             const transactions = rows
                 .map((row) => decodeParsedTransaction(row.raw, { book, idls }))
                 .filter(Boolean);
-            const stored = await countTransactions(pool, CLUSTER);
-            const syncRun = await latestTransactionSync(pool);
 
             res.json({
                 cluster: CLUSTER,

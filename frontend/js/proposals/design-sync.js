@@ -96,6 +96,12 @@
             .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
     }
 
+    // A binding is server evidence about this published site, not authored design content. Keep its
+    // coverage and source facts on an imported local record without letting them affect the CID.
+    function copyBinding(binding) {
+        return isObject(binding) ? JSON.parse(JSON.stringify(binding)) : null;
+    }
+
     // A local design record rebuilt from an index row: the design/v1 content as the record fields
     // DesignRecord.published reads (so the record hashes back to the row's CID), the parcels the index
     // bound as its cadastral declaration, and the publication mark. Throws (code 'cid-mismatch') when
@@ -133,6 +139,8 @@
             cadastreParcelIds: bindingParcelIds(row.binding),
             published: { cid: row.cid, publishedAt: row.createdAt || null, apiBase: base }
         };
+        const binding = copyBinding(row.binding);
+        if (binding) record.binding = binding;
         if (content.origin) record.origin = { cid: content.origin.cid };
         if (row.screenshotUrl) record.screenshotUrl = row.screenshotUrl;
         designRecord().PAYLOAD_KEYS.forEach(key => {
@@ -145,6 +153,7 @@
     // `indexed` says it is the index's row, published by definition (DesignSync.publishedCid).
     function designSummary(row) {
         if (!isObject(row) || !cidApi().isCid(row.cid)) return null;
+        const binding = copyBinding(row.binding);
         return {
             id: row.cid,
             cid: row.cid,
@@ -158,7 +167,8 @@
             createdAt: row.createdAt || null,
             updatedAt: row.createdAt || null,
             screenshotUrl: row.screenshotUrl || null,
-            cadastreParcelIds: bindingParcelIds(row.binding)
+            cadastreParcelIds: bindingParcelIds(row.binding),
+            ...(binding ? { binding } : {})
         };
     }
 
@@ -176,6 +186,52 @@
         const log = (message, ...rest) => console.log(`[${new Date().toISOString()}] [DesignSync] ${message}`, ...rest);
         const warn = (message, ...rest) => console.warn(`[${new Date().toISOString()}] [DesignSync] ${message}`, ...rest);
         const preparedMapPreviews = new Map();
+        let publicationProblemLayer = null;
+
+        function clearPublicationProblem() {
+            if (publicationProblemLayer) publicationProblemLayer.remove();
+            publicationProblemLayer = null;
+        }
+
+        // The server returns the actual rejected pieces, measured with its binding tolerance.
+        // Never reconstruct a different approximation of the failure in the browser.
+        function showPublicationProblem(body) {
+            clearPublicationProblem();
+            if (body?.code !== 'footprint-outside-site' || !body.outsideGeometry || !win.L || !win.map) return false;
+            if (win.isThreeModeActive?.()) win.exitThreeMode?.();
+            const pane = 'pick-highlight';
+            if (!win.map.getPane(pane)) win.map.createPane(pane);
+            const boundary = win.L.geoJSON(body.site, {
+                pane, interactive: false, style: { color: '#facc15', weight: 3, dashArray: '7 5', fill: false }
+            });
+            const outside = win.L.geoJSON(body.outsideGeometry, {
+                pane, interactive: false, style: { color: '#dc2626', weight: 3, fillColor: '#dc2626', fillOpacity: 0.65 }
+            });
+            publicationProblemLayer = win.L.featureGroup([boundary, outside]).addTo(win.map);
+            const sheet = win.document?.getElementById('proposals-sheet');
+            const mobile = sheet && win.matchMedia?.('(max-width: 767.98px)').matches;
+            if (mobile && sheet.getBoundingClientRect().top < 24) {
+                sheet.querySelector(':scope > .mobile-dock-sheet-handle')?.click();
+            }
+            const padding = win.getProposalPanelFitPadding?.(48) || { padding: [48, 48] };
+            if (mobile) {
+                const mapBox = win.map.getContainer().getBoundingClientRect();
+                padding.paddingTopLeft = [48, 72];
+                padding.paddingBottomRight = [48, Math.max(48, mapBox.bottom - sheet.getBoundingClientRect().top + 24)];
+            }
+            win.map.fitBounds(publicationProblemLayer.getBounds(), { ...padding, maxZoom: 21, animate: false });
+            return true;
+        }
+
+        function publicationFailure(localDesign, status, body) {
+            let message = refusalMessage(status, body);
+            const title = localDesign.title || localDesign.name || localDesign.proposalId;
+            if (title) message = t('proposals.share.errors.namedFailure', '“{{title}}”: {{reason}}', { title, reason: message });
+            try {
+                if (showPublicationProblem(body)) message += ' ' + t('proposals.share.errors.siteProblemMap', 'Red marks the area outside the saved land boundary; the dashed yellow line shows that boundary.');
+            } catch (error) { warn('the publication problem could not be drawn', error); }
+            return failure(body?.code || `http-${status}`, message, { status, body, designId: localDesign.proposalId });
+        }
 
         function t(key, fallback, params = {}) {
             if (typeof win.getProposalI18nHelper === 'function') return win.getProposalI18nHelper()(key, fallback, params);
@@ -195,6 +251,8 @@
         function failure(code, message, extra = {}) {
             return Object.assign(new Error(message), { code }, extra);
         }
+        const observe = (operation, code, action) => win.AppDiagnostics
+            ? win.AppDiagnostics.run(operation, { entity: 'design', code, context: { surface: 'design-index' } }, action) : action();
 
         // The user-facing sentence for a refusal of a design publish, by the server's code.
         function refusalMessage(status, body) {
@@ -203,6 +261,7 @@
             if (code === 'pinning-unconfigured') return t('proposals.share.errors.pinningUnconfigured', 'This server cannot pin published designs yet (pinning is not configured).');
             if (code === 'layout-needs-agreement') return t('proposals.share.errors.layoutNeedsAgreement', 'A parcel layout is published with the agreement that settles its land.');
             if (code === 'too-large') return t('proposals.share.errors.tooLarge', 'This design exceeds the 10 MiB publication limit. Reduce its extent or detail before sharing; it is saved locally.');
+            if (code === 'footprint-outside-site') return t('proposals.share.errors.outsideSite', 'The design extends {{area}} m² beyond its saved land boundary. The land boundary must include the geometry before it can be published.', { area: body.outsideM2 });
             if (status === 429) {
                 const seconds = Number(body && body.retryAfterSeconds);
                 return Number.isFinite(seconds) && seconds > 0
@@ -312,11 +371,11 @@
             // The author is content: it is stamped before the CID is taken.
             win.stampCurrentAuthor(localDesign);
             const content = designRecord().published(localDesign);
+            clearPublicationProblem();
             const { cid } = await pinObject('design', content);
             const response = await request('POST', '/designs', { cid, content, parcelSourceId: parcelSourceIdOf(content.city) });
             if (!response.ok && response.status !== 409) {
-                const code = (response.body && response.body.code) || `http-${response.status}`;
-                throw failure(code, refusalMessage(response.status, response.body), { status: response.status, body: response.body });
+                throw publicationFailure(localDesign, response.status, response.body);
             }
             const row = response.body;
             if (!row || row.cid !== cid) throw failure('cid-mismatch', t('proposals.share.errors.cidMismatch', 'The server computed a different identity for this design, so nothing was published.'));
@@ -395,8 +454,8 @@
 
         /**
          * Imports an index row as a local design (parked: importing never applies). A local copy of
-         * the same CID is returned as it is. Throws like localDesignFromRow, and code
-         * 'proposal-in-other-city' for another city's design (proposalStorage.importProposal).
+         * the same CID is returned as it is. Validates the published content and stored definition.
+         * Import retains the definition independently of the map context.
          * Imports share the map mutation queue so an older background snapshot cannot erase them.
          * @returns a promise for the stored local record
          */
@@ -444,11 +503,13 @@
         // Copies a link; resolves whether the clipboard took it.
         async function copyLink(url) {
             try {
-                if (!win.navigator.clipboard || typeof win.navigator.clipboard.writeText !== 'function') return false;
+                if (!win.navigator.clipboard || typeof win.navigator.clipboard.writeText !== 'function') throw new Error('clipboard unavailable');
                 await win.navigator.clipboard.writeText(url);
+                win.AppDiagnostics?.event('share', 'success', { entity: 'design', context: { surface: 'share-panel' } });
                 return true;
             } catch (error) {
-                warn('the clipboard refused the link', error);
+                const diagnostic = win.AppDiagnostics?.report(error, { code: 'clipboard-unavailable', context: { surface: 'share-panel' } });
+                win.AppDiagnostics?.event('share', 'failure', { entity: 'design', correlationId: diagnostic?.correlationId, context: { surface: 'share-panel' } });
                 return false;
             }
         }
@@ -515,6 +576,55 @@
             return { area, city, key: (area && area.key) || city };
         }
 
+        // Explore asks for its view snapped outward to the viewport grid (planning/scene.js) and keeps
+        // each complete answer (fewer rows than the list size) for the count's 15 s window. A pan that
+        // stays inside an answered area, or returns to one, filters that answer to the view instead of
+        // asking again. An answer the list size cut short cannot stand for a smaller view, so such a
+        // view is asked for exactly, as before.
+        const DESIGN_AREA_MAX_AGE_MS = 15000;
+        let designAreas = null;
+        const designAreaCache = () => designAreas
+            || (designAreas = win.PlanningScene.createViewportCache({ limit: 64, maxAgeMs: DESIGN_AREA_MAX_AGE_MS }));
+        // Whether a row of the index meets the view the way the index matches it (its site
+        // intersects the box). A row whose site cannot be measured here is kept: the index matched it.
+        function designMeetsView(row, view) {
+            const site = row && row.content && row.content.site;
+            const extent = site && win.__proposalCounts ? win.__proposalCounts.proposalBounds({ site }) : null;
+            if (!extent) return true;
+            if (!win.PlanningScene.bboxIntersects(extent, view)) return false;
+            if (!win.turf || typeof win.turf.booleanIntersects !== 'function') return true;
+            try { return win.turf.booleanIntersects(site, win.turf.bboxPolygon(view)); } catch (_) { return true; }
+        }
+        async function exploreDesigns(view, params) {
+            const cache = designAreaCache();
+            const ask = box => {
+                const query = new URLSearchParams(params);
+                query.set('bbox', box.join(','));
+                return request('GET', `/designs?${query}`);
+            };
+            const inView = rows => ({ ok: true, status: 200, body: { designs: rows.filter(row => designMeetsView(row, view)) } });
+            const hit = cache.find('designs', view);
+            if (hit) return inView(hit.value);
+            const snapped = win.PlanningScene.snapBbox(view);
+            try {
+                const entry = await cache.load('designs', snapped, async () => {
+                    const response = await ask(snapped);
+                    if (!response.ok || !response.body || !Array.isArray(response.body.designs)) {
+                        throw Object.assign(new Error('Design index request failed'), { response });
+                    }
+                    if (response.body.designs.length >= listLimit()) {
+                        throw Object.assign(new Error('Design area answer was cut short'), { cutShort: true });
+                    }
+                    return response.body.designs;
+                });
+                return inView(entry.value);
+            } catch (error) {
+                if (error.response) return error.response;
+                if (error.cutShort) return ask(view);
+                throw error;
+            }
+        }
+
         // GET /designs for the list's area: the city, or the view in explore. Newest first, as many as
         // the list shows (SERVER_PROPOSAL_SUMMARY_LIMIT); the count is the rows that came back (the
         // index has no count route).
@@ -529,9 +639,10 @@
             if (typeof win.renderProposalListModal === 'function') win.renderProposalListModal();
             const params = new URLSearchParams({ limit: String(listLimit()) });
             if (city) params.set('city', city);
-            if (area && area.explore && area.bbox) params.set('bbox', area.bbox.join(','));
             try {
-                const response = await request('GET', `/designs?${params}`);
+                const response = area && area.explore && area.bbox
+                    ? await exploreDesigns(area.bbox, params)
+                    : await request('GET', `/designs?${params}`);
                 if (!response.ok || !response.body || !Array.isArray(response.body.designs)) {
                     throw new Error((response.body && response.body.error) || `HTTP ${response.status}`);
                 }
@@ -542,8 +653,8 @@
                 }
             } catch (error) {
                 if (state.summaryRequestId === requestId) {
-                    warn('the design index could not be listed', error);
-                    state.error = (error && error.message) || 'Unable to load published designs';
+                    const diagnostic = win.AppDiagnostics?.report(error, { code: 'design-load-failed', context: { surface: 'design-index' } });
+                    state.error = diagnostic?.message || 'Unable to load published designs. Check the connection and retry.';
                 }
             } finally {
                 if (state.summaryRequestId === requestId) {
@@ -593,8 +704,9 @@
 
         return {
             api: {
-                publishDesign, pinDesign, pinObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf,
-                designLink, copyLink, prepareMapPreview, parcelSourceIdOf, refusalMessage,
+                publishDesign: record => observe('publish', 'design-publish-failed', () => publishDesign(record)),
+                pinDesign, pinObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf,
+                designLink, copyLink, prepareMapPreview, parcelSourceIdOf, refusalMessage, clearPublicationProblem,
                 // A local record's exact CID at the current index, or an index summary's own.
                 publishedCid: record => (isObject(record) && record.indexed === true && cidApi().isCid(record.cid)
                     ? record.cid

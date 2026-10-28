@@ -1,0 +1,35 @@
+1
+00:00:00,000 --> 00:00:03,448
+Select neighbouring parcels and choose Lay out parcels
+
+2
+00:00:03,715 --> 00:00:06,269
+to redesign their boundaries together.
+
+3
+00:00:06,633 --> 00:00:09,141
+Start with Equal plots and set the plot
+
+4
+00:00:09,199 --> 00:00:12,322
+count. You can also edit boundaries directly on
+
+5
+00:00:12,368 --> 00:00:13,088
+the map.
+
+6
+00:00:13,467 --> 00:00:16,683
+Compare New plots with Old plots. The full
+
+7
+00:00:16,753 --> 00:00:19,318
+site remains one fixed pool.
+
+8
+00:00:19,668 --> 00:00:22,652
+Finish the layout, then inspect the new boundaries
+
+9
+00:00:22,768 --> 00:00:24,591
+in their 3D surroundings.

@@ -112,6 +112,33 @@ describe('MapBeforeAfter.tileLayerSpecs', () => {
 });
 
 describe('MapBeforeAfter.attach', () => {
+    it('repositions the image divider when the picture loads and disconnects on close', () => {
+        let onResize;
+        const observe = vi.fn(), disconnect = vi.fn();
+        vi.stubGlobal('ResizeObserver', class {
+            constructor(callback) { onResize = callback; }
+            observe = observe;
+            disconnect = disconnect;
+        });
+        try {
+            const doc = fakeDocument();
+            const container = doc.createElement('div');
+            const before = doc.createElement('img');
+            container.clientWidth = 0;
+            const divider = MapBeforeAfter.attachDivider(container, before, { control, percent: 25 });
+            expect(observe).toHaveBeenCalledWith(container);
+            container.clientWidth = 160;
+            onResize();
+            expect(divider.handleEl.style.left).toBe('40px');
+            expect(before.style.clipPath).toBe('inset(0 120px 0 0)');
+            divider.dispose();
+            expect(disconnect).toHaveBeenCalledOnce();
+            container.clientWidth = 400;
+            onResize();
+            expect(divider.handleEl.style.left).toBe('40px');
+        } finally { vi.unstubAllGlobals(); }
+    });
+
     it('builds the before map on the host\'s tiles and view, freezes only the gestures that were on, and clips at the divider', () => {
         const { container, map } = hostMap();
         const drawBefore = vi.fn();

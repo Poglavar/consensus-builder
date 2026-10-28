@@ -23,12 +23,13 @@ import { createApprovalAttester, devnetOwnerRegistry } from '../lens/approval.js
 import { createAgreementChain, createLedgerPool, decisionAttestation, fetchVia } from './helpers/agent-chain-fakes.js';
 
 const require = createRequire(import.meta.url);
-const marketClient = require('../../frontend/js/solana/market-client.js');
+const marketClient = require('../../frontend/js/solana/lmsr-client.js');
 const Cid = require('../../frontend/js/cid.js');
 
 const NOW = Math.floor(Date.now() / 1000);
 const YES = marketClient.constants.SIDE_YES;
 const NO = marketClient.constants.SIDE_NO;
+const market = (agreement, { qYes = 0n, qNo = 0n, resolved = false, outcome = 0 } = {}) => ({ model: 'lmsr', b: 100_000_000n, qYes, qNo, closesAt: agreement.deadline, resolved, outcome });
 const STATUS = { Active: 0, Executed: 1, Cancelled: 2, Expired: 3 };
 
 let chain;
@@ -76,7 +77,7 @@ describe('inspecting an agreement', () => {
     it('decides a funded agreement on the persona\'s own land: approve, lens decision, attest, execute, then resolve YES and claim', async () => {
         const book = marketBook();
         const item = { ...placeAgreement('decidable'), soleOwner: true };
-        book.markets.set(item.account, { resolved: false, yesPool: 250000n, noPool: 0n, outcome: 0 });
+        book.markets.set(item.account, market(item, { qYes: 250000n }));
         book.positions.set(item.account, { amount: 250000n, claimed: false });
         const inspected = await inspect(item, { readers: book.readers });
         expect(inspected).toMatchObject({ state: 'decidable', outcome: 'YES', steps: ['decide', 'lens', 'attest', 'execute', 'resolve', 'claim'],
@@ -96,27 +97,27 @@ describe('inspecting an agreement', () => {
             .toMatchObject({ state: 'awaiting-funds', steps: [] });
     });
 
-    it('expires one past its deadline and resolves NO, claiming the YES refund only when nobody staked NO', async () => {
+    it('expires one past its deadline and gives YES shares no payout', async () => {
         const book = marketBook();
         const item = { ...placeAgreement('late', { deadline: NOW - 60 }), soleOwner: true };
-        book.markets.set(item.account, { resolved: false, yesPool: 100000n, noPool: 0n });
+        book.markets.set(item.account, market(item, { qYes: 100000n }));
         book.positions.set(item.account, { amount: 100000n, claimed: false });
-        expect(await inspect(item, { readers: book.readers })).toMatchObject({ state: 'due', outcome: 'NO', steps: ['expire', 'resolve', 'claim'], expectedPayout: '100000' });
-        book.markets.set(item.account, { resolved: false, yesPool: 100000n, noPool: 50000n });
+        expect(await inspect(item, { readers: book.readers })).toMatchObject({ state: 'due', outcome: 'NO', steps: ['expire', 'resolve'], expectedPayout: '0' });
+        book.markets.set(item.account, market(item, { qYes: 100000n, qNo: 50000n }));
         expect(await inspect(item, { readers: book.readers }))
-            .toMatchObject({ state: 'due', steps: ['expire', 'resolve'], expectedPayout: '0', note: 'YES stake lost: the NO pool is not empty' });
+            .toMatchObject({ state: 'due', steps: ['expire', 'resolve'], expectedPayout: '0' });
     });
 
     it('finishes terminal agreements and closes those with nothing left', async () => {
         const book = marketBook();
         const executed = { ...placeAgreement('done', { status: 'Executed', decision: 1 }), soleOwner: true };
-        book.markets.set(executed.account, { resolved: true, outcome: YES, yesPool: 1n, noPool: 0n });
+        book.markets.set(executed.account, market(executed, { resolved: true, outcome: YES, qYes: 1n }));
         book.positions.set(executed.account, { amount: 1n, claimed: false });
         expect(await inspect(executed, { readers: book.readers })).toMatchObject({ state: 'executed', outcome: 'YES', steps: ['claim'] });
         book.positions.set(executed.account, { amount: 1n, claimed: true });
         expect(await inspect(executed, { readers: book.readers })).toMatchObject({ state: 'closed', steps: [] });
         const cancelled = { ...placeAgreement('cancelled', { status: 'Cancelled' }), soleOwner: true };
-        expect(await inspect(cancelled)).toMatchObject({ state: 'closed', outcome: 'NO', steps: [] });
+        expect(await inspect(cancelled)).toMatchObject({ state: 'closed', outcome: 'VOID', steps: [] });
         expect(await inspect({ ...placeAgreement('strangers', { authority: Keypair.generate().publicKey.toBase58() }), soleOwner: true })).toMatchObject({ state: 'foreign', steps: [] });
         expect(await inspect({ cid: 'x', account: Keypair.generate().publicKey.toBase58() })).toMatchObject({ state: 'missing', steps: [] });
     });
@@ -133,11 +134,11 @@ describe('executing the steps', () => {
         const fact = decisionAttestation({ lensKey: LENS, agreementCid: item.cid, sponsor: OWNER, sourceObservedAt: NOW - 30 });
         chain.putAttestation(fact.address, fact.bytes);
         const book = marketBook();
-        book.markets.set(item.account, { resolved: false, yesPool: 10n, noPool: 0n, outcome: 0 });
+        book.markets.set(item.account, market(item, { qYes: 10n }));
         book.positions.set(item.account, { amount: 10n, claimed: false });
         const adapters = {
             resolveAgreementMarket: vi.fn(async () => {
-                book.markets.set(item.account, { resolved: true, yesPool: 10n, noPool: 0n, outcome: YES });
+                book.markets.set(item.account, market(item, { resolved: true, qYes: 10n, outcome: YES }));
                 return { replayed: false, signature: 'resolve-sig', outcome: 'YES' };
             }),
             claimAgreementMarket: vi.fn(async ({ side }) => ({ replayed: false, signature: `claim-${side}`, claimed: true }))
@@ -161,38 +162,38 @@ describe('executing the steps', () => {
         expect(adapters.claimAgreementMarket).toHaveBeenCalledWith(expect.objectContaining({ subject: item.account, side: 'yes' }));
     });
 
-    it('expires a due agreement, resolves NO and takes the YES refund', async () => {
-        const item = { ...placeAgreement('late', { deadline: NOW - 60 }), outcome: 'NO', steps: ['expire', 'resolve', 'claim'] };
+    it('expires a due agreement and resolves NO without a YES payout', async () => {
+        const item = { ...placeAgreement('late', { deadline: NOW - 60 }), outcome: 'NO', steps: ['expire', 'resolve'] };
         const book = marketBook();
-        book.markets.set(item.account, { resolved: false, yesPool: 10n, noPool: 0n });
+        book.markets.set(item.account, market(item, { qYes: 10n }));
         book.positions.set(item.account, { amount: 10n, claimed: false });
         const adapters = {
             resolveAgreementMarket: async () => {
-                book.markets.set(item.account, { resolved: true, yesPool: 10n, noPool: 0n, outcome: NO });
+                book.markets.set(item.account, market(item, { resolved: true, qYes: 10n, outcome: NO }));
                 return { replayed: false, signature: 'resolve-sig', outcome: 'NO' };
             },
             claimAgreementMarket: vi.fn(async () => ({ replayed: false, signature: 'refund-sig', claimed: true }))
         };
         const { actions, perform } = performer();
         const result = await executeSettlement({ connection: chain.connection, ownerKeypair: owner, item, perform, checkpoint: async () => {}, readers: book.readers, adapters, sendAndConfirm: chain.sendAndConfirm });
-        expect(actions).toEqual(['expire', 'resolve', 'claim']);
-        expect(result).toMatchObject({ expiry: { status: 'Expired', refundedLamports: '1000' }, resolution: { outcome: 'NO' }, claim: { signature: 'refund-sig' } });
+        expect(actions).toEqual(['expire', 'resolve']);
+        expect(result).toMatchObject({ expiry: { status: 'Expired', refundedLamports: '1000' }, resolution: { outcome: 'NO' } });
         expect(chain.agreement(item.account).status).toBe('Expired');
     });
 
     it('skips a claim with nothing to take, and stops on a market that resolved the other way', async () => {
-        const item = { ...placeAgreement('lost', { deadline: NOW - 60 }), outcome: 'NO', steps: ['expire', 'resolve', 'claim'] };
+        const item = { ...placeAgreement('lost', { deadline: NOW - 60 }), outcome: 'NO', steps: ['expire', 'resolve'] };
         const book = marketBook();
         book.positions.set(item.account, { amount: 10n, claimed: false });
         const claim = vi.fn();
         const resolveTo = outcome => async () => {
-            book.markets.set(item.account, { resolved: true, yesPool: 10n, noPool: 40n, outcome: outcome === 'YES' ? YES : NO });
+            book.markets.set(item.account, market(item, { resolved: true, qYes: 10n, qNo: 40n, outcome: outcome === 'YES' ? YES : NO }));
             return { signature: 'r', outcome };
         };
         const { perform } = performer();
         const lost = await executeSettlement({ connection: chain.connection, ownerKeypair: owner, item, perform, checkpoint: async () => {}, readers: book.readers,
             adapters: { resolveAgreementMarket: resolveTo('NO'), claimAgreementMarket: claim }, sendAndConfirm: chain.sendAndConfirm });
-        expect(lost.claim).toEqual({ skipped: true, reason: 'nothing-to-claim', signature: null });
+        expect(lost.claim).toBeUndefined();
         expect(claim).not.toHaveBeenCalled();
 
         const other = { ...placeAgreement('mismatch', { deadline: NOW - 60 }), outcome: 'NO', steps: ['resolve'] };
@@ -332,6 +333,38 @@ describe('the settlement phase of a run (run.mjs settleStage)', () => {
         expect(chain.signed()).toHaveLength(signed);
     });
 
+    it('records retired content as a terminal skip without a chain or relay action', async () => {
+        const agreement = await earlierAgreement('Retired');
+        const pool = createLedgerPool({ runs: [
+            runRow('previous', '2026-10-20', [{ ...agreement, content: { ...agreement.content, designs: [] } }]),
+            { run_id: 'current', persona: persona.name, day: '2026-10-22', summary: {} }
+        ] });
+        const signed = chain.signed().length;
+        const entry = { persona, runId: 'current', day: '2026-10-22', run: pool.run('current') };
+        expect((await settle(pool, [entry])).failures).toEqual([]);
+        expect(pool.run('current').summary.settlements[agreement.account]).toMatchObject({ state: 'retired', retired: true, settled: false });
+        expect(chain.signed()).toHaveLength(signed);
+        expect(chain.agreement(agreement.account).status).toBe('Active');
+        expect(world.onchainCalls).toEqual([]);
+        expect(await world.decisionStore.list(agreement.cid)).toEqual([]);
+        expect((await settle(pool, [{ ...entry, run: pool.run('current') }])).report).toEqual([]);
+    });
+    it('checkpoints an explicit retired-format 410 and continues to the next agreement', async () => {
+        const retired = await earlierAgreement('Retired server record');
+        const valid = await earlierAgreement('Current server record');
+        const listDecisions = world.index.listDecisions;
+        world.index.listDecisions = async cid => {
+            if (cid === retired.cid) throw Object.assign(new Error('Retired experimental format'), { status: 410, code: 'retired-agreement-format' });
+            return listDecisions(cid);
+        };
+        const pool = createLedgerPool({ runs: [runRow('previous', '2026-10-20', [retired, valid]),
+            { run_id: 'current', persona: persona.name, day: '2026-10-22', summary: {} }] });
+        const entry = { persona, runId: 'current', day: '2026-10-22', run: pool.run('current') };
+        expect((await settle(pool, [entry])).failures).toEqual([]);
+        expect(pool.run('current').summary.settlements[retired.account]).toMatchObject({ retired: true, settled: false });
+        expect(chain.agreement(retired.account).status).toBe('Active');
+        expect(chain.agreement(valid.account).status).toBe('Executed');
+    });
     it('lists what it would settle in a dry run without loading a key or writing a checkpoint', async () => {
         const agreement = await earlierAgreement('Dry');
         const pool = createLedgerPool({ runs: [runRow('2026-10-20-densifier-01', '2026-10-20', [agreement])] });

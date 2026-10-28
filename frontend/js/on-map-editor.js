@@ -40,7 +40,7 @@
             const root = node('section', 'on-map-editor');
             root.id = options.id || `${options.owner}-editor`;
             root.setAttribute('aria-label', options.title || '');
-            const panel = node('aside', `on-map-editor__panel${options.wide ? ' on-map-editor__panel--wide' : ''}`, root);
+            const panel = node('aside', 'on-map-editor__panel right-screen-panel', root);
             const header = node('header', 'on-map-editor__header', panel);
             const title = node('div', 'on-map-editor__heading', header);
             node('span', 'on-map-editor__state', title, text('editing', 'Editing'));

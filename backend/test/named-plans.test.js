@@ -19,6 +19,14 @@ const cid = cidOf(canonicalBytes(content));
 
 function server({ records = new Map(), designs = [a, b], pin = vi.fn(async ({ cid }) => ({ cid })) } = {}) {
     const pool = { query: vi.fn(async (sql, params) => {
+        if (sql.includes('FROM consensus.plan') && sql.includes("content->'designCids'")) {
+            const matching = [...records.values()].filter(row => row.content.designCids.includes(params[0])).sort((x, y) => x.cid.localeCompare(y.cid));
+            return { rows: matching.slice(params[2], params[2] + params[1]).map(row => ({ cid: row.cid, title: row.content.title, design_count: row.content.designCids.length })) };
+        }
+        if (sql.includes("content->'view'->>'city'")) {
+            const matching = [...records.values()].filter(row => !params[0] || row.content.view.city === params[0]).sort((a,b) => a.cid.localeCompare(b.cid));
+            return { rows: matching.slice(params[2], params[2] + params[1]) };
+        }
         if (sql.startsWith('SELECT cid, content')) return { rows: records.has(params[0]) ? [records.get(params[0])] : [] };
         if (sql.startsWith('SELECT cid FROM consensus.design')) return { rows: designs.map(cid => ({ cid })) };
         if (sql.startsWith('INSERT INTO consensus.plan')) { records.set(params[0], { cid: params[0], content: JSON.parse(params[1]) }); return { rows: [] }; }
@@ -42,6 +50,14 @@ describe('named plan records and API', () => {
         for (const changed of [PlanRecord.create('Another name', [a, b], view), PlanRecord.create(content.title, [a], view),
             PlanRecord.create(content.title, [a, b], { ...view, at: '52,-1,17' })]) expect(cidOf(canonicalBytes(changed))).not.toBe(cid);
         expect(content).not.toHaveProperty('rule');
+    });
+    it('saves arrival rotation in the snapshot and restores it unless the link explicitly opts out', () => {
+        const rotating = PlanRecord.create(content.title, [a,b], { ...view, rotate: true });
+        expect(rotating.view.rotate).toBe(true);
+        expect(cidOf(canonicalBytes(rotating))).not.toBe(cid);
+        expect(new URL(NamedPlans.restoreUrl(`https://app.example/plans/${cid}`, rotating.view, MapShare)).searchParams.get('rotate')).toBe('1');
+        expect(new URL(NamedPlans.restoreUrl(`https://app.example/plans/${cid}?rotate=0`, rotating.view, MapShare)).searchParams.get('rotate')).toBe('0');
+        expect(PlanRecord.validate({ ...rotating, view: { ...rotating.view, rotate: 'yes' } })).toBe('Invalid saved camera rotation.');
     });
     it.each([
         { ...content, title: ' ' }, { ...content, title: 'x'.repeat(161) }, { ...content, designCids: [] },
@@ -78,6 +94,43 @@ describe('named plan records and API', () => {
         expect((await request(app).get('/plans/invalid')).status).toBe(400);
         expect((await request(app).get(`/plans/${cid}`)).status).toBe(404);
     });
+    it('lists exact design membership with compact summaries and bounded pagination', async () => {
+        const other = PlanRecord.create('Other design', [b], view);
+        const third = PlanRecord.create('Third member', [a], view);
+        const records = new Map([content, other, third].map(item => {
+            const id = cidOf(canonicalBytes(item)); return [id, { cid: id, content: item }];
+        }));
+        const { app, pool } = server({ records });
+        const first = await request(app).get(`/plans?design=${a}&limit=1&offset=0`);
+        expect(first.status).toBe(200);
+        expect(first.body).toEqual({ plans: [{ cid: [...records.values()].filter(row => row.content.designCids.includes(a)).map(row => row.cid).sort()[0], title: expect.any(String), designCount: expect.any(Number) }], count: 1, hasMore: true, nextOffset: 1 });
+        expect(pool.query.mock.calls[0][0]).toMatch(/content->'designCids' @> jsonb_build_array\(\$1::text\)/);
+        expect(pool.query.mock.calls[0][1]).toEqual([a, 2, 0]);
+        const second = await request(app).get(`/plans?design=${a}&limit=1&offset=1`);
+        expect(second.body).toMatchObject({ count: 1, hasMore: false, nextOffset: null });
+        expect(second.body.plans[0].cid).not.toBe(first.body.plans[0].cid);
+        expect((await request(app).get(`/plans?design=${b}&limit=20`)).body.count).toBe(2);
+        expect((await request(app).get(`/plans?design=${cidOf(Buffer.from('no match'))}`)).body).toEqual({ plans: [], count: 0, hasMore: false, nextOffset: null });
+    });
+    it('browses published plans by city without a design, with bounded pages', async () => {
+        const other = PlanRecord.create('Another city', [b], { ...view, city: 'london' });
+        const records = new Map([content, other].map(content => [Cid.cidOfObject(content), { cid: Cid.cidOfObject(content), content }]));
+        const { app } = server({ records });
+        const first = await request(app).get('/plans?limit=1');
+        expect(first.status).toBe(200); expect(first.body).toMatchObject({ count: 1, hasMore: true, nextOffset: 1 });
+        const second = await request(app).get('/plans?limit=1&offset=1');
+        expect(second.body).toMatchObject({ count: 1, hasMore: false });
+        expect(second.body.plans[0].cid).not.toBe(first.body.plans[0].cid);
+        const filtered = await request(app).get('/plans?city=birmingham');
+        expect(filtered.body.plans).toEqual([{ cid, content, title: content.title, designCount: 2 }]);
+    });
+    it('rejects malformed design and pagination before querying', async () => {
+        const { app, pool } = server();
+        for (const query of ['?design=bad', '?city[]=bad', `?design=${a}&limit=0`, `?design=${a}&limit=51`, `?design=${a}&limit=1.5`, `?design=${a}&offset=-1`, `?design=${a}&offset=1000001`]) {
+            expect((await request(app).get(`/plans${query}`)).status).toBe(400);
+        }
+        expect(pool.query).not.toHaveBeenCalled();
+    });
 });
 
 describe('named plan browser transport', () => {
@@ -93,7 +146,7 @@ describe('named plan browser transport', () => {
         expect(new URL(explicit).searchParams.has('3d')).toBe(false);
     });
     const client = fetch => NamedPlans.browser({ location: new URL('https://app.example/?backend=https%3A%2F%2Fapi.example'),
-        PlanRecord, Cid, MapShare, fetch, resolveBackendBaseUrl: () => 'https://api.example', resolveFrontendBaseUrl: () => 'https://app.example' });
+        PlanRecord, Cid, MapShare, fetch, PersistentStorage: { setItem: vi.fn(), forEach() {} }, resolveBackendBaseUrl: () => 'https://api.example', resolveFrontendBaseUrl: () => 'https://app.example' });
     it('verifies a GET of the durable record before reporting a saved link', async () => {
         const fetch = vi.fn(async () => Response.json({ cid, content }));
         const api = client(fetch);

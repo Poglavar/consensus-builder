@@ -2,6 +2,7 @@
 // preview it in a three.js scene, and turn its footprint + height into a single-building
 // placement (via window.createSingleBuildingFromUpload). Review the asset here, then place
 // its editable footprint on the main map; the saved model reference supplies its 3D mesh.
+// A park, square or lake uses the same pipeline (context.kind) with model wording, through onUse.
 
 (function () {
     let modalEl = null;
@@ -33,6 +34,12 @@
     let loadedName = null;
     let loadedFile = null;
     let loadVersion = 0;
+
+    const STRUCTURE_KINDS = ['park', 'square', 'lake'];
+    // A structure's model is not a building: its kind-specific copy says "model".
+    function isStructureUpload() {
+        return STRUCTURE_KINDS.includes(currentContext?.kind);
+    }
 
     function t(key, fallback, params = {}) {
         const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
@@ -68,15 +75,20 @@
     }
 
     function buildModal() {
+        const structure = isStructureUpload();
         const text = {
-            title: t('modal.buildingUpload.title', 'Upload a building model'),
+            title: structure
+                ? t('modal.buildingUpload.structureTitle', 'Upload a model')
+                : t('modal.buildingUpload.title', 'Upload a building model'),
             closeLabel: t('modal.buildingUpload.closeLabel', 'Close upload modal'),
             previewLabel: t('modal.buildingUpload.previewLabel', '3D Preview'),
             chooseFile: t('modal.buildingUpload.chooseFile', 'Choose a model file'),
             hint: t('modal.buildingUpload.hint', 'Supported: glTF 2.0 (.glb or .gltf).'),
             noFile: t('modal.buildingUpload.noFile', 'No model loaded yet.'),
             cancel: t('modal.buildingUpload.cancel', 'Cancel'),
-            confirm: t('modal.buildingUpload.confirm', 'Use this building')
+            confirm: structure
+                ? t('modal.buildingUpload.structureConfirm', 'Use this model')
+                : t('modal.buildingUpload.confirm', 'Use this building')
         };
 
         const modal = document.createElement('div');
@@ -113,7 +125,11 @@
 
         modal.querySelector('#building-upload-close').addEventListener('click', close);
         modal.querySelector('#building-upload-cancel').addEventListener('click', close);
-        modal.querySelector('#building-upload-confirm').addEventListener('click', confirmUpload);
+        modal.querySelector('#building-upload-confirm').addEventListener('click', event => {
+            const button = event.currentTarget;
+            if (!window.BusyControl || window.BusyControl.isBusy(button)) return;
+            window.BusyControl.track(button, confirmUpload);
+        });
         modal.querySelector('#building-upload-file').addEventListener('change', onFileChosen);
         modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
 
@@ -214,54 +230,12 @@
         return { box, size, center, dimensions };
     }
 
-    // Read the same visible triangles that Three renders, including node and instance transforms.
-    // The map is east/north (X, -Z); the source model is Y-up. Boolean union runs off the UI thread.
-    function modelTriangles(object, center) {
-        const triangles = [];
-        const vertex = new THREE.Vector3();
-        const instanceMatrix = new THREE.Matrix4();
-        const transform = new THREE.Matrix4();
-        object.updateMatrixWorld(true);
-        object.traverseVisible(node => {
-            const geometry = node.isMesh && node.geometry;
-            const position = geometry && geometry.attributes.position;
-            if (!position) return;
-            const index = geometry.index;
-            const count = index ? index.count : position.count;
-            const drawStart = geometry.drawRange.start;
-            const drawEnd = Math.min(count, drawStart + geometry.drawRange.count);
-            const materials = Array.isArray(node.material) ? node.material : [node.material];
-            const groups = Array.isArray(node.material) ? geometry.groups : [{ start: 0, count, materialIndex: 0 }];
-            for (let instance = 0; instance < (node.isInstancedMesh ? node.count : 1); instance++) {
-                transform.copy(node.matrixWorld);
-                if (node.isInstancedMesh) {
-                    node.getMatrixAt(instance, instanceMatrix);
-                    transform.multiply(instanceMatrix);
-                }
-                for (const group of groups) {
-                    if (!materials[group.materialIndex] || materials[group.materialIndex].visible === false) continue;
-                    const start = Math.max(drawStart, group.start);
-                    const end = Math.min(drawEnd, group.start + group.count);
-                    for (let offset = start; offset + 2 < end; offset += 3) {
-                        if (triangles.length >= window.BuildingModelGeometry.MAX_FOOTPRINT_TRIANGLES * 6) throw Object.assign(new Error('Model triangle limit'), { code: 'complex' });
-                        for (let corner = 0; corner < 3; corner++) {
-                            const vertexIndex = index ? index.getX(offset + corner) : offset + corner;
-                            node.getVertexPosition(vertexIndex, vertex).applyMatrix4(transform);
-                            triangles.push(vertex.x - center.x, -(vertex.z - center.z));
-                        }
-                    }
-                }
-            }
-        });
-        return new Float64Array(triangles);
-    }
-
     function cancelFootprintJob() {
         if (footprintJob) footprintJob.cancel();
     }
 
     function extractFootprint(object, center) {
-        const triangles = modelTriangles(object, center);
+        const triangles = window.BuildingModelGeometry.modelTriangles(object, center, THREE);
         return new Promise((resolve, reject) => {
             const worker = new Worker(footprintWorkerUrl);
             let timer;
@@ -308,8 +282,9 @@
         disposeScene();
         if (!preview.container) return;
         preview.container.dataset.state = 'unavailable';
-        preview.container.textContent = t('modal.buildingUpload.previewUnavailable',
-            '3D preview unavailable. You can still use this building.');
+        preview.container.textContent = isStructureUpload()
+            ? t('modal.buildingUpload.structurePreviewUnavailable', '3D preview unavailable. You can still use this model.')
+            : t('modal.buildingUpload.previewUnavailable', '3D preview unavailable. You can still use this building.');
     }
 
     async function onFileChosen(event) {
@@ -363,14 +338,18 @@
                     return;
                 }
                 let footprint;
-                setStatus(t('modal.buildingUpload.outlining', 'Calculating building outline…'));
+                setStatus(isStructureUpload()
+                    ? t('modal.buildingUpload.structureOutlining', 'Calculating model outline…')
+                    : t('modal.buildingUpload.outlining', 'Calculating building outline…'));
                 try {
                     footprint = await extractFootprint(root, measurement.center);
                 } catch (error) {
                     disposeModel(root);
                     if (!isCurrent()) return;
                     const messages = {
-                        disconnected: ['modal.buildingUpload.errorDisconnected', 'This model contains separate parts. Import one connected building at a time.'],
+                        disconnected: isStructureUpload()
+                            ? ['modal.buildingUpload.structureErrorDisconnected', 'This model contains separate parts. Include a ground surface that joins them and try again.']
+                            : ['modal.buildingUpload.errorDisconnected', 'This model contains separate parts. Import one connected building at a time.'],
                         complex: ['modal.buildingUpload.errorComplex', 'This model is too detailed to calculate its outline. Export a simpler building mesh and try again.'],
                         empty: ['modal.buildingUpload.errorEmpty', 'The model contains no visible geometry.']
                     };
@@ -414,33 +393,11 @@
         else reader.readAsArrayBuffer(file);
     }
 
-    function fileToDataUrl(file) {
-        return new Promise((resolve, reject) => {
-            const r = new FileReader();
-            r.onerror = () => reject(r.error || new Error('read failed'));
-            r.onload = () => resolve(r.result);
-            r.readAsDataURL(file);
-        });
-    }
-
-    // Uploads the raw model bytes to the backend; returns the served modelUrl.
+    // Uploads the raw model bytes to the backend; returns the served modelUrl (model-upload.js,
+    // shared with the structure editor's furniture models).
     async function uploadModel(file) {
-        const base = (typeof window.getBackendBase === 'function')
-            ? window.getBackendBase() : 'http://localhost:3000';
-        const dataUrl = await fileToDataUrl(file);
-        const resp = await fetch(base.replace(/\/$/, '') + '/models', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ modelData: dataUrl, fileName: file.name })
-        });
-        if (!resp.ok) {
-            const error = new Error('models endpoint returned ' + resp.status);
-            error.status = resp.status;
-            throw error;
-        }
-        const json = await resp.json();
-        if (!json || !json.modelUrl) throw new Error('models endpoint returned no modelUrl');
-        return json.modelUrl;
+        await window.ensureOptionalTool('modelUpload');
+        return window.ModelUpload.uploadModel(file);
     }
 
     // Named so it does not shadow the browser's own confirm().
@@ -476,13 +433,17 @@
         if (version !== loadVersion || !modalEl) return;
         let created;
         try {
-            created = use({ ...input, modelUrl });
+            // A structure's onUse may finish asynchronously; the confirm spinner covers it.
+            created = await use({ ...input, modelUrl });
         } catch (error) {
             console.warn('Building model placement failed', error);
         }
+        if (version !== loadVersion || !modalEl) return;
         if (!created) {
-            setStatus(t('modal.buildingUpload.placementFailed',
-                'Could not open the building editor. Your file is still selected; try again.'), true);
+            setStatus(isStructureUpload()
+                ? t('modal.buildingUpload.structurePlacementFailed', 'Could not place this model. Your file is still selected; try again.')
+                : t('modal.buildingUpload.placementFailed',
+                    'Could not open the building editor. Your file is still selected; try again.'), true);
             setConfirmEnabled(true);
             return;
         }
@@ -522,7 +483,8 @@
         loadedFile = null;
     }
 
-    // context: { parcelIds: string[], site?: Polygon | MultiPolygon, blockName: string }
+    // context: { parcelIds: string[], site?: Polygon | MultiPolygon, blockName: string,
+    //           kind?: 'park' | 'square' | 'lake' (a structure's model; pass options.onUse) }
     function open(context, options = {}) {
         if (modalEl) close();
         currentContext = context || {};

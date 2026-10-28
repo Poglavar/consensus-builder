@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "12132",
+  "name": "Tainan, Taiwan",
+  "point": [
+    23.0029454841064,
+    120.225466132239
+  ],
+  "bindings": [
+    {
+      "appCityId": "tainan",
+      "runtimeConfig": {
+        "id": "tainan",
+        "wupCityCode": "12132",
+        "label": "Tainan, Taiwan",
+        "currency": {
+          "locale": "zh-TW",
+          "code": "TWD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            23.0029454841064,
+            120.225466132239
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            23.0029454841064,
+            120.225466132239
+          ],
+          "fallbackDataset": [
+            120.225466132239,
+            23.0029454841064
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tw-tainan-ldmap-tn-measure-parcels",
+          "idPrefix": "TW-TNLD-MEASURE-17:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Tainan City Government Land Administration Bureau; cadastral reference only"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tw-tainan-ldmap-tn-measure-parcels",
+      "name": "Tainan Land Administration Bureau cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://ldmap.tainan.gov.tw/arcgis/rest/services/MapData/TN_Measure/MapServer/17",
+      "publicTokenUrl": "https://landmap.tainan.gov.tw/gis/assist/ARGISHandler.ashx",
+      "countryCode": "TW",
+      "cityIds": [
+        "tainan"
+      ],
+      "idPrefix": "TW-TNLD-MEASURE-17:",
+      "idFields": [
+        "LANDCODE",
+        "SECT",
+        "LANDNO8"
+      ],
+      "idFieldTypes": {
+        "LANDCODE": "string",
+        "SECT": "string",
+        "LANDNO8": "string"
+      },
+      "compositeIdSeparator": ":",
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "LANDCODE",
+        "SECT",
+        "LANDNO8"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 500,
+      "idBatchSize": 3,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 1,
+      "metricSrid": 32651,
+      "browserTransport": "relay",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "operator": "Tainan City Government Land Administration Bureau",
+      "attribution": "Tainan City Government Land Administration Bureau; cadastral reference only",
+      "catalogueUrl": "https://landmap.tainan.gov.tw/gis/",
+      "licenceNote": "Public municipal viewer; reference only, not a legal certificate. Parcel-layer reuse terms unconfirmed; related section KML licence is not assumed applicable.",
+      "scope": "Observed bounded central Tainan / North District cadastral parcels. No citywide completeness claim. Currentness, topology and projection-operation proof require second-pass review.",
+      "defaultForCity": true,
+      "discovery": {
+        "jurisdiction": {
+          "basis": "Official 府城南籍圈 viewer supports 地號定位 and 地籍圖 and uses TN_Measure layer 17; live native composite exact read corroborates cadastral purpose.",
+          "evidenceFiles": [
+            "evidence/source-purpose.json",
+            "evidence/source-metadata.json"
+          ]
+        }
+      }
+    }
+  ]
+}

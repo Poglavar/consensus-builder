@@ -15,7 +15,8 @@ const Cid = require('../../frontend/js/cid.js');
 const CID = Cid.cidOfObject({ schema: 'design/v1', title: 'Road 1407-0247' });
 
 describe('designSummary', () => {
-    // The shape GET /designs returns (backend/routes/designs.js serializeDesignRow).
+    // The shape GET /designs returns (backend/routes/designs.js serializeDesignSummaryRow): the
+    // design row without its content.
     const indexRow = {
         cid: CID,
         city: 'zagreb',
@@ -24,7 +25,6 @@ describe('designSummary', () => {
         author: 'Guest 9888',
         originCid: null,
         binding: { coverage: 'complete', parcels: [{ parcelId: 'HR-335789-1204' }, { parcelId: 'HR-335789-1199' }] },
-        content: { schema: 'design/v1' },
         screenshotUrl: 'https://api.urbangametheory.xyz/uploads/images/design-thumb-1784065207119.png',
         screenshotBeforeUrl: null,
         screenshotPairUrl: null,

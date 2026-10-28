@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6724",
+  "name": "Reynosa, Mexico",
+  "point": [
+    26.0440943085345,
+    -98.3025378234559
+  ],
+  "bindings": [
+    {
+      "appCityId": "reynosa",
+      "runtimeConfig": {
+        "id": "reynosa",
+        "wupCityCode": "6724",
+        "label": "Reynosa, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            26.0440943085345,
+            -98.3025378234559
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            26.0440943085345,
+            -98.3025378234559
+          ],
+          "fallbackDataset": [
+            -98.3025378234559,
+            26.0440943085345
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-sedatu-ran-pit28-parcelas-2020",
+          "idPrefix": "MX-SEDATU-RAN-PIT28-CLAVE-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Registro Agrario Nacional (RAN) / SEDATU IDE, PIT28 Parcelas Tamaulipas 2020. Historical partial social/agrarian parcel coverage; source geometry unchanged."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-sedatu-ran-pit28-parcelas-2020",
+      "name": "SEDATU / RAN PIT28 Tamaulipas agrarian parcels (2020)",
+      "adapter": "wfs",
+      "endpoint": "https://ide.sedatu.gob.mx/geoserver/ows",
+      "featureType": "geonode:a__28_PARCELAS_RAN_2020",
+      "version": "1.0.0",
+      "idField": "CLAVE",
+      "idType": "string",
+      "idPattern": "^[0-9]{8}-[0-9]{19}$",
+      "idPrefix": "MX-SEDATU-RAN-PIT28-CLAVE-",
+      "outFields": [
+        "CLAVE",
+        "DES_TIPOPR"
+      ],
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "attributeFilters": {
+        "DES_TIPOPR": "PARCELA"
+      },
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 1,
+      "minRequestIntervalMs": 150,
+      "countryCode": "MX",
+      "metricSrid": 32614,
+      "cityIds": [
+        "reynosa"
+      ],
+      "defaultForCity": true,
+      "scope": "Historical RAN social/agrarian parcel cartography for Tamaulipas (2020). Bounded evidence at the southern Reynosa urban edge. Only DES_TIPOPR=PARCELA is admitted; NO VALIDO records are excluded. Private urban cadastre, municipal conformity, currentness and citywide completeness are unverified.",
+      "attribution": "Registro Agrario Nacional (RAN) / SEDATU IDE, PIT28 Parcelas Tamaulipas 2020. Historical partial social/agrarian parcel coverage; source geometry unchanged.",
+      "metadataUrl": "https://ide.sedatu.gob.mx/geoserver/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=geonode%3Aa__28_PARCELAS_RAN_2020&outputFormat=application%2Fjson",
+      "catalogueUrl": "https://datos.ran.gob.mx/conjuntoDatosPublico.php",
+      "responseCrs": "EPSG:4326",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometryQuery": true
+      },
+      "reuseTerms": "Anonymous public WFS reads observed; exact-layer reuse and redistribution licence unverified. No licence inferred from other PIT layers. Preserve RAN/SEDATU attribution.",
+      "browserTransport": "relay",
+      "ownership": false
+    }
+  ]
+}

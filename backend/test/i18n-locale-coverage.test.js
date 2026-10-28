@@ -7,15 +7,24 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { testI18n } from './helpers/i18n.js';
 
 const FRONTEND = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../frontend');
-const LANGS = ['en', 'hr', 'es', 'sr'];
+const LANGS = testI18n().getSupportedLanguages();
 const PLURAL_FORMS = ['zero', 'one', 'two', 'few', 'many', 'other'];
 
 // Keys assembled at runtime (`prefix.${value}`) cannot be checked statically. Each such prefix must be
 // listed here on purpose; a new dynamic call site with an unlisted prefix fails the test.
 const DYNAMIC_KEY_PREFIXES = [
+    'planDialog.',
+    'diagnostics.errors.',
+    'diagnostics.ui.',
     'alerts.messages.',
+    'designMemberships.',
+    'clickStackRelations.',
+    'pageHeader.',
+    'parcelReport.',
+    'feedback.',                  // feedback.js selects status messages from the registered feature dictionary
     'commandPalette.groups.',   // frontend-map-search.test.js checks every command group
     'commandPalette.reason.',   // and every reason, in all four locales
     'parcelSourceHealth.',      // source-health messages are assembled from a runtime failure kind
@@ -44,6 +53,7 @@ const DYNAMIC_KEY_PREFIXES = [
     'modal.roadWidth.proposalList.sort.',
     'modal.roadWidth.proposalList.typeLabels.',
     'modal.singleBuilding.',
+    'bets.trade.', // bets-ui.js selects error messages from code → key mappings
     'bets.dialog.next.',  // bets-dialog.js: market-view.js lifecycle() nextKey (proposal-market-view.test.js pins the keys)
     'panel.proposal.market.state.', // and stateKey
 
@@ -88,25 +98,18 @@ function walk(dir, out = []) {
         if (['node_modules', 'vendor', 'lib', 'i18n', 'contracts'].includes(entry.name)) continue;
         const p = path.join(dir, entry.name);
         if (entry.isDirectory()) walk(p, out);
-        else if (/\.(js|html)$/.test(entry.name) && !/\.min\./.test(entry.name)) out.push(p);
+        else if (/\.(js|mjs|html)$/.test(entry.name) && !/\.min\./.test(entry.name)) out.push(p);
     }
     return out;
 }
 
-const locales = Object.fromEntries(LANGS.map(lang => [
-    lang,
+// JSON files are the only translation source, including feature and language-switcher copy.
+const locales = Object.fromEntries(LANGS.map(lang => [lang,
     flatten(JSON.parse(fs.readFileSync(path.join(FRONTEND, 'i18n', `${lang}.json`), 'utf8')))
 ]));
-
-// i18n.js ships a small built-in table (language switcher labels) that the JSON files extend.
-const inlineKeys = new Set(
-    [...fs.readFileSync(path.join(FRONTEND, 'js/i18n.js'), 'utf8').matchAll(/'(language\.[\w.]+)'\s*:/g)].map(m => m[1])
-);
-
-const namespaces = new Set([...Object.keys(JSON.parse(fs.readFileSync(path.join(FRONTEND, 'i18n/en.json'), 'utf8'))), 'language', 'tools']);
+const namespaces = new Set(Object.keys(JSON.parse(fs.readFileSync(path.join(FRONTEND, 'i18n/en.json'), 'utf8'))));
 
 function hasKey(table, key) {
-    if (inlineKeys.has(key)) return true;
     if (key in table) return true;
     return PLURAL_FORMS.some(form => `${key}.${form}` in table);
 }
@@ -118,8 +121,8 @@ function scanFrontend() {
         if (!map.has(key)) map.set(key, []);
         map.get(key).push(where);
     };
-    const callRe = /([A-Za-z_$][\w$.]*)\(\s*(['"])([A-Za-z][\w-]*(?:\.[\w-]+)+)\2\s*[,)]/g;
-    const templateRe = /([A-Za-z_$][\w$.]*)\(\s*`([A-Za-z][\w-]*(?:\.[\w-]+)*\.)\$\{/g;
+    const callRe = /(?<![\w$.])([A-Za-z_$][\w$.]*)\(\s*(['"])([A-Za-z][\w-]*(?:\.[\w-]+)+)\2\s*[,)]/g;
+    const templateRe = /(?<![\w$.])([A-Za-z_$][\w$.]*)\(\s*`([A-Za-z][\w-]*(?:\.[\w-]+)*\.)\$\{/g;
     const attrRe = /data-i18n-key=["']([A-Za-z][\w-]*(?:\.[\w-]+)+)["']/g;
 
     for (const file of walk(FRONTEND)) {
@@ -130,7 +133,8 @@ function scanFrontend() {
         for (const m of src.matchAll(callRe)) {
             const [, fn, , rawKey] = m;
             if (NON_TRANSLATION_CALL.test(fn)) continue;
-            const key = prefixing && fn === prefixing.fn ? prefixing.prefix + rawKey : rawKey;
+            const key = fn === 'tShare' ? 'modal.roadWidth.share.' + rawKey
+                : prefixing && fn === prefixing.fn ? prefixing.prefix + rawKey : rawKey;
             if (!namespaces.has(key.split('.')[0])) continue;
             record(literal, key, `${rel}:${lineOf(m.index)}`);
         }
@@ -208,8 +212,18 @@ describe('i18n locale coverage', () => {
         }
     });
 
+    it('defines every dynamically selected diagnostic error and UI message in every locale', () => {
+        const keys = Object.keys(locales.en).filter(key => key.startsWith('diagnostics.errors.') || key.startsWith('diagnostics.ui.'));
+        expect(keys.length).toBeGreaterThan(20);
+        const placeholders = value => [...String(value).matchAll(/\{\{\s*([\w.-]+)\s*\}\}/g)].map(match => match[1]).sort();
+        for (const lang of LANGS) for (const key of keys) {
+            expect(hasKey(locales[lang], key), `${lang}: ${key}`).toBe(true);
+            expect(placeholders(locales[lang][key]), `${lang}: ${key} placeholders`).toEqual(placeholders(locales.en[key]));
+        }
+    });
+
     it('every en key exists in hr, es and sr', () => {
-        for (const lang of ['hr', 'es', 'sr']) {
+        for (const lang of LANGS.filter(lang => lang !== 'en')) {
             const missing = Object.keys(locales.en).filter(key => !hasKey(locales[lang], key)
                 // a plural form another language does not need (en one/other vs hr one/few/other)
                 && !PLURAL_FORMS.some(form => key.endsWith(`.${form}`) && hasKey(locales[lang], key.slice(0, -form.length - 1))));

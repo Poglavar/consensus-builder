@@ -47,7 +47,9 @@
     // Default parameter values
     const DEFAULT_BUILDING_LENGTH = 40; // meters (length along longest side, will be auto-calculated)
     const DEFAULT_BUILDING_WIDTH = 10; // meters (depth/width of row, perpendicular to longest side)
-    const DEFAULT_BUILDING_HEIGHT = 12; // meters
+    const DEFAULT_BUILDING_HEIGHT = 12; // meters (4 floors x 3 m)
+    const ROW_FLOOR_HEIGHT_M = 3;       // one storey, as the MCP Row constructor uses
+    const ROW_MAX_FLOORS = 25;          // the height control's ceiling
     const DEFAULT_CHAMFER = 0; // meters (corner cut length)
     let currentBuildingLength = DEFAULT_BUILDING_LENGTH;
     let currentBuildingWidth = DEFAULT_BUILDING_WIDTH;
@@ -77,8 +79,6 @@
 
     // Cached superparcel data for boundary checking
     let cachedSuperparcel = null;
-    // Ground a Row must keep under it to count as standing on its site when it cannot fit (rowHouseFitsSite).
-    const ROW_SITE_OVERLAP_MIN_M2 = 1;
     let cachedSuperparcelMeters = null;
     let cachedCentroid = null;
     let cachedMetersPerDegLng = null;
@@ -88,7 +88,10 @@
     function formatRowHouseText(template, params = {}) {
         if (!template) return '';
         return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
-            return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+            if (!Object.prototype.hasOwnProperty.call(params, key)) return match;
+            const value = params[key];
+            // An i18n reference ({ key, count }) without i18n loaded: its count is the best fallback.
+            return value && typeof value === 'object' && 'count' in value ? value.count : value;
         });
     }
 
@@ -154,7 +157,11 @@
     }
 
     function rowHouseGeneratorSite(block) {
-        if (block?.site?.geometry) return cloneRowHouseFeature(block.site);
+        if (block?.site?.geometry) {
+            // Remove redundant collinear vertices without changing the selected boundary.
+            // Cadastral provenance retains its original geometry on the block.
+            return turf.cleanCoords(cloneRowHouseFeature(block.site));
+        }
         return robustUnionLocal((block?.parcels || []).map(parcel => parcel?.feature).filter(Boolean));
     }
 
@@ -184,30 +191,22 @@
     // stays inside them. Leaving them is a choice made on the drop (onDragEnd).
     function rowHouseSiteBoundary() { return rowHouseBlock?.site || cachedSuperparcel; }
 
-    // Whether a bar of the current dimensions fits the cached site anywhere the placement rule looks
-    // (placeRowHouseBar: centred at the current rotation, or centred unrotated).
-    function rowHouseSiteHasFit() {
-        return [currentRotation, 0].some(rotation => checkBuildingFitsInSuperparcel(
-            currentBuildingLength, currentBuildingWidth, currentChamfer, 0, 0, rotation));
-    }
-
-    function rowHouseOverlapsSite(feature, boundary) {
-        const outside = turf.difference(feature, boundary);
-        const outsideArea = outside ? Number(turf.area(outside)) : 0;
-        return Number(turf.area(feature)) - outsideArea > ROW_SITE_OVERLAP_MIN_M2;
-    }
-
-    // The one rule for whether a Row stands on its site, used by generation, the re-run where it was
-    // dropped, drags, rotation and manual edits alike: inside the site; or, where no bar of its
-    // dimensions fits the site at all (an L too narrow for it), still standing on part of it. A bar
-    // the editor had to draw overhanging can therefore be moved and shaped like any other, and it
-    // leaves its parcels only when it no longer stands on them.
+    // Whole-footprint containment is the same requirement used when applying the design.
+    // A centroid or a few corner samples cannot prove containment on concavities or holes.
     function rowHouseFitsSite(feature, boundary = rowHouseSiteBoundary()) {
         if (!boundary?.geometry) return true;
         try {
-            if (window.SingleBuildingGeometry?.footprintWithinBoundary?.(feature, boundary, turf) === true) return true;
-            return !rowHouseSiteHasFit() && rowHouseOverlapsSite(feature, boundary);
+            return window.SingleBuildingGeometry?.footprintWithinBoundary?.(feature, boundary, turf) === true;
         } catch (_) { return false; }
+    }
+
+    // Search each connected component independently; the union centroid can lie in empty ground.
+    // These are placement candidates, never a claim that no geometric solution exists.
+    function rowHouseInteriorOffsets(site) {
+        const runtime = window.BuildingRuleGeometry.createRowPlacement({ lengthM: currentBuildingLength, depthM: currentBuildingWidth, chamferM: currentChamfer, height: currentBuildingHeight || DEFAULT_BUILDING_HEIGHT }, { cachedSuperparcel, cachedCentroid, cachedMetersPerDegLng, cachedMetersPerDegLat, cachedSuperparcelMeters, baseRotation });
+        const result = runtime.interiorOffsets(site);
+        ({ cachedSuperparcel, cachedCentroid, cachedMetersPerDegLng, cachedMetersPerDegLat, cachedSuperparcelMeters, baseRotation } = runtime.cache());
+        return result;
     }
 
     function rowHouseGeometrySnapshot() {
@@ -267,7 +266,7 @@
             ['rowhouse-length-slider', currentBuildingLength],
             ['rowhouse-width-slider', currentBuildingWidth],
             ['rowhouse-chamfer-slider', currentChamfer],
-            ['rowhouse-height-slider', currentBuildingHeight]
+            ['rowhouse-height-slider', rowFloors(currentBuildingHeight)]
         ];
         controls.forEach(([id, value]) => {
             const element = document.getElementById(id);
@@ -275,12 +274,14 @@
         });
         const labels = [
             ['rowhouse-length-value', currentBuildingLength, 1], ['rowhouse-width-value', currentBuildingWidth, 1],
-            ['rowhouse-height-value', currentBuildingHeight, 0], ['rowhouse-chamfer-value', currentChamfer, 1]
+            ['rowhouse-chamfer-value', currentChamfer, 1]
         ];
         labels.forEach(([id, value, digits]) => {
             const element = document.getElementById(id);
             if (element) element.textContent = CbFormat.formatNumber(Number(value), { maxFractionDigits: digits, minFractionDigits: digits });
         });
+        const heightLabel = document.getElementById('rowhouse-height-value');
+        if (heightLabel) heightLabel.textContent = rowFloorsLabel(currentBuildingHeight);
         ['rowhouse-length-slider', 'rowhouse-width-slider', 'rowhouse-chamfer-slider'].forEach(id => {
             const element = document.getElementById(id);
             if (element) element.disabled = rowHouseManualMode;
@@ -432,313 +433,26 @@
 
     // Apply chamfer to polygon corners (45-degree cuts)
     function applyChamferToPolygon(feature, chamferLength) {
-        if (!feature || !feature.geometry || chamferLength <= 0) return feature;
-
-        const geom = feature.geometry;
-        if (geom.type !== 'Polygon') return feature;
-
-        const ring = geom.coordinates[0];
-        if (!Array.isArray(ring) || ring.length < 4) return feature;
-
-        // Work in meters using centroid as origin
-        const centroid = turf.centroid(feature);
-        const [cLng, cLat] = centroid.geometry.coordinates;
-        // The affine local frame with the ellipsoid's true scales at the centroid (local-frame.js)
-        const localFrame = window.LocalFrame.makeLocalFrame(cLng, cLat);
-        const metersPerDegLng = localFrame.metersPerDegLng;
-        const metersPerDegLat = localFrame.metersPerDegLat;
-
-        // Convert to local meters
-        const toMeters = ([lng, lat]) => [
-            (lng - cLng) * metersPerDegLng,
-            (lat - cLat) * metersPerDegLat
-        ];
-        const toDegrees = ([x, y]) => [
-            x / metersPerDegLng + cLng,
-            y / metersPerDegLat + cLat
-        ];
-
-        // Convert ring to meters (excluding closing point)
-        const meterRing = ring.slice(0, -1).map(toMeters);
-        const n = meterRing.length;
-
-        // Calculate chamfered ring
-        // Chamfer is defined as an isosceles triangle cut from each corner.
-        // chamferLength = the length of each equal leg of the triangle,
-        // measured from the corner vertex along each adjacent edge.
-        const chamferedRing = [];
-
-        for (let i = 0; i < n; i++) {
-            const prev = meterRing[(i - 1 + n) % n];
-            const curr = meterRing[i];
-            const next = meterRing[(i + 1) % n];
-
-            // Vector from current to previous
-            const toPrev = [prev[0] - curr[0], prev[1] - curr[1]];
-            const lenToPrev = Math.sqrt(toPrev[0] * toPrev[0] + toPrev[1] * toPrev[1]);
-
-            // Vector from current to next
-            const toNext = [next[0] - curr[0], next[1] - curr[1]];
-            const lenToNext = Math.sqrt(toNext[0] * toNext[0] + toNext[1] * toNext[1]);
-
-            if (lenToPrev < 0.001 || lenToNext < 0.001) {
-                chamferedRing.push(curr);
-                continue;
-            }
-
-            // Limit chamfer to not exceed 40% of either adjacent edge length
-            const effectiveChamfer = Math.min(chamferLength, lenToPrev * 0.4, lenToNext * 0.4);
-
-            if (effectiveChamfer < 0.001) {
-                chamferedRing.push(curr);
-                continue;
-            }
-
-            // Normalize vectors
-            const normPrev = [toPrev[0] / lenToPrev, toPrev[1] / lenToPrev];
-            const normNext = [toNext[0] / lenToNext, toNext[1] / lenToNext];
-
-            // Point along edge toward previous, at chamferLength distance from corner
-            const p1 = [
-                curr[0] + normPrev[0] * effectiveChamfer,
-                curr[1] + normPrev[1] * effectiveChamfer
-            ];
-
-            // Point along edge toward next, at chamferLength distance from corner
-            const p2 = [
-                curr[0] + normNext[0] * effectiveChamfer,
-                curr[1] + normNext[1] * effectiveChamfer
-            ];
-
-            // Replace the corner vertex with two points (the chamfer cut)
-            chamferedRing.push(p1);
-            chamferedRing.push(p2);
-        }
-
-        // Convert back to degrees and close the ring
-        const degreesRing = chamferedRing.map(toDegrees);
-        if (degreesRing.length > 0) {
-            degreesRing.push([...degreesRing[0]]);
-        }
-
-        return {
-            type: 'Feature',
-            properties: { ...feature.properties },
-            geometry: {
-                type: 'Polygon',
-                coordinates: [degreesRing]
-            }
-        };
+        return window.BuildingRuleGeometry.rowChamfer(feature, chamferLength);
     }
 
     // Generate row house polygon
     function generateRowHousePolygon(block, length, width, chamfer, offsetX = 0, offsetY = 0, rotation = 0) {
-        if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
-            return null;
-        }
-
-        // An authored site can extend beyond the currently selected child parcels. Keep it as
-        // the geometry boundary while parcel features still define ownership and row splitting.
-        const parcelFeatures = block.parcels.map(p => p.feature);
-        let superparcel = rowHouseGeneratorSite(block) || robustUnionLocal(parcelFeatures);
-
-        if (!superparcel) {
-            throw new Error('Failed to create superparcel');
-        }
-
-        // Sanitize polygon
-        if (typeof sanitizePolygonFeature === 'function') {
-            superparcel = sanitizePolygonFeature(superparcel) || superparcel;
-        }
-        superparcel = toSingleLargestPolygonLocal(superparcel) || superparcel;
-
-        if (!superparcel || !superparcel.geometry) {
-            throw new Error('Failed to process superparcel');
-        }
-
-        // Get the exterior ring of the superparcel
-        const geom = superparcel.geometry;
-        let ring;
-        if (geom.type === 'Polygon') {
-            ring = geom.coordinates[0];
-        } else if (geom.type === 'MultiPolygon') {
-            // Use the largest polygon
-            let maxArea = 0;
-            for (const poly of geom.coordinates) {
-                const area = Math.abs(turf.area(turf.polygon([poly[0]])));
-                if (area > maxArea) {
-                    maxArea = area;
-                    ring = poly[0];
-                }
-            }
-        }
-
-        if (!ring || ring.length < 4) {
-            throw new Error('Invalid superparcel geometry');
-        }
-
-        // Convert to meters using centroid as origin for accurate distance calculations
-        const centroid = turf.centroid(superparcel);
-        const [cLng, cLat] = centroid.geometry.coordinates;
-        // The affine local frame with the ellipsoid's true scales at the centroid (local-frame.js)
-        const localFrame = window.LocalFrame.makeLocalFrame(cLng, cLat);
-        const metersPerDegLng = localFrame.metersPerDegLng;
-        const metersPerDegLat = localFrame.metersPerDegLat;
-
-        // Cache for boundary checking
-        cachedSuperparcel = superparcel;
-        cachedCentroid = [cLng, cLat];
-        cachedMetersPerDegLng = metersPerDegLng;
-        cachedMetersPerDegLat = metersPerDegLat;
-
-        const toMeters = ([lng, lat]) => [
-            (lng - cLng) * metersPerDegLng,
-            (lat - cLat) * metersPerDegLat
-        ];
-        const toDegrees = ([x, y]) => [
-            x / metersPerDegLng + cLng,
-            y / metersPerDegLat + cLat
-        ];
-
-        // Convert ring to meters (excluding closing point)
-        const meterRing = ring.slice(0, -1).map(toMeters);
-        cachedSuperparcelMeters = meterRing;
-        const n = meterRing.length;
-
-        // Step 1: Find the longest straight side of the superparcel to determine orientation
-        let longestSideLength = 0;
-        let longestSideStart = null;
-        let longestSideEnd = null;
-
-        for (let i = 0; i < n; i++) {
-            const p1 = meterRing[i];
-            const p2 = meterRing[(i + 1) % n];
-            const dx = p2[0] - p1[0];
-            const dy = p2[1] - p1[1];
-            const sideLen = Math.sqrt(dx * dx + dy * dy);
-
-            if (sideLen > longestSideLength) {
-                longestSideLength = sideLen;
-                longestSideStart = p1;
-                longestSideEnd = p2;
-            }
-        }
-
-        if (!longestSideStart || !longestSideEnd || longestSideLength < 0.1) {
-            throw new Error('Could not find valid longest side');
-        }
-
-        // Step 2: Calculate the base direction vector of the longest side
-        const dx = longestSideEnd[0] - longestSideStart[0];
-        const dy = longestSideEnd[1] - longestSideStart[1];
-        const sideLength = longestSideLength;
-
-        // Base angle from longest side
-        baseRotation = Math.atan2(dy, dx);
-
-        // Total rotation = base + user rotation
-        const totalRotation = baseRotation + rotation;
-
-        // Unit vector along the rotated length direction
-        const ux = Math.cos(totalRotation);
-        const uy = Math.sin(totalRotation);
-
-        // Perpendicular unit vector (width direction)
-        const perpX = -uy;
-        const perpY = ux;
-
-        // Step 3: Create rectangle centered at offset position
-        const halfLength = length / 2;
-        const halfWidth = width / 2;
-
-        // Rectangle corners centered at offset position
-        const corner1 = [offsetX - halfLength * ux - halfWidth * perpX, offsetY - halfLength * uy - halfWidth * perpY];
-        const corner2 = [offsetX + halfLength * ux - halfWidth * perpX, offsetY + halfLength * uy - halfWidth * perpY];
-        const corner3 = [offsetX + halfLength * ux + halfWidth * perpX, offsetY + halfLength * uy + halfWidth * perpY];
-        const corner4 = [offsetX - halfLength * ux + halfWidth * perpX, offsetY - halfLength * uy + halfWidth * perpY];
-
-        // Rectangle vertices in order (closed ring)
-        const rectMeters = [corner1, corner2, corner3, corner4, corner1];
-
-        // Convert back to degrees
-        const rectDegrees = rectMeters.map(toDegrees);
-
-        // Create the base rectangle feature
-        let buildingPolygon = {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-                type: 'Polygon',
-                coordinates: [rectDegrees]
-            }
-        };
-
-        // Apply the chamfer to the base rectangle
-        if (chamfer > 0) {
-            buildingPolygon = applyChamferToPolygon(buildingPolygon, chamfer);
-        }
-
-        // Set properties
-        buildingPolygon.properties.type = 'proposedRowHouse';
-        buildingPolygon.properties.length = length;
-        buildingPolygon.properties.width = width;
-        buildingPolygon.properties.chamfer = chamfer;
-        buildingPolygon.properties.height = Math.round(currentBuildingHeight || DEFAULT_BUILDING_HEIGHT);
-        buildingPolygon.properties.block = getRowHouseDisplayName();
-        buildingPolygon.properties.longestSideLength = longestSideLength;
-        buildingPolygon.properties.offsetX = offsetX;
-        buildingPolygon.properties.offsetY = offsetY;
-        buildingPolygon.properties.rotation = rotation;
-
-        // Store the pre-chamfer corners for reference
-        const cornersInDegrees = [
-            toDegrees(corner1),
-            toDegrees(corner2),
-            toDegrees(corner3),
-            toDegrees(corner4)
-        ];
-        buildingPolygon.properties._corners = cornersInDegrees;
-
-        // Store midpoints of rectangle sides for rotation handles (avoiding chamfered corners)
-        buildingPolygon.properties._sideMidpoints = [
-            // Midpoint of side 1-2 (bottom in length direction)
-            [(cornersInDegrees[0][0] + cornersInDegrees[1][0]) / 2, (cornersInDegrees[0][1] + cornersInDegrees[1][1]) / 2],
-            // Midpoint of side 2-3 (right in width direction)
-            [(cornersInDegrees[1][0] + cornersInDegrees[2][0]) / 2, (cornersInDegrees[1][1] + cornersInDegrees[2][1]) / 2],
-            // Midpoint of side 3-4 (top in length direction)
-            [(cornersInDegrees[2][0] + cornersInDegrees[3][0]) / 2, (cornersInDegrees[2][1] + cornersInDegrees[3][1]) / 2],
-            // Midpoint of side 4-1 (left in width direction)
-            [(cornersInDegrees[3][0] + cornersInDegrees[0][0]) / 2, (cornersInDegrees[3][1] + cornersInDegrees[0][1]) / 2]
-        ];
-
-        return buildingPolygon;
+        const result = window.BuildingRuleGeometry.rowFootprint(block, { lengthM: length, depthM: width, chamferM: chamfer,
+            offsetEastM: offsetX, offsetNorthM: offsetY, rotationRadians: rotation,
+            height: currentBuildingHeight || DEFAULT_BUILDING_HEIGHT, blockName: getRowHouseDisplayName() });
+        if (!result) return null;
+        ({ cachedSuperparcel, cachedCentroid, cachedMetersPerDegLng, cachedMetersPerDegLat, cachedSuperparcelMeters, baseRotation } = result.cache);
+        return result.feature;
     }
 
-    // One placement rule for a Row bar on its parcels, used both when the editor generates it and
-    // when the rule is re-run on the parcels it was dropped on: the bar goes at the asked offset and
-    // rotation, else centred, else centred unrotated, whichever first fits inside the site with a
-    // margin; when none fits it goes at the first of them that still stands on the site
-    // (rowHouseFitsSite) and may overhang (rebuildRowUnits then keeps it as one massing instead of
-    // cutting houses). Returns { feature, offsetX, offsetY, rotation }, or null when no bar stands on
-    // the site, and leaves the site cache (cachedSuperparcel and its frame) on this block.
-    function placeRowHouseBar(block, { offsetX = 0, offsetY = 0, rotation = 0 } = {}) {
-        // Generating once caches this block's site and frame, which the fit check reads.
-        if (!generateRowHousePolygon(block, currentBuildingLength, currentBuildingWidth, currentChamfer, 0, 0, rotation)) return null;
-        const site = cachedSuperparcel;
-        const candidates = [{ offsetX, offsetY, rotation }, { offsetX: 0, offsetY: 0, rotation }, { offsetX: 0, offsetY: 0, rotation: 0 }];
-        const bar = candidate => generateRowHousePolygon(block, currentBuildingLength, currentBuildingWidth, currentChamfer,
-            candidate.offsetX, candidate.offsetY, candidate.rotation);
-        const fitting = candidates.find(candidate => checkBuildingFitsInSuperparcel(currentBuildingLength, currentBuildingWidth,
-            currentChamfer, candidate.offsetX, candidate.offsetY, candidate.rotation));
-        if (fitting) {
-            const feature = bar(fitting);
-            return feature ? { feature, ...fitting } : null;
-        }
-        for (const candidate of candidates) {
-            const feature = bar(candidate);
-            if (feature && rowHouseFitsSite(feature, site)) return { feature, ...candidate };
-        }
-        return null;
+    // Preserve the requested placement when valid, then search interior points of every component.
+    // Reject an unplaceable bar instead of saving a draft that cadastral application must refuse.
+    function placeRowHouseBar(block, options = {}) {
+        const runtime = window.BuildingRuleGeometry.createRowPlacement({ lengthM: currentBuildingLength, depthM: currentBuildingWidth, chamferM: currentChamfer, height: currentBuildingHeight || DEFAULT_BUILDING_HEIGHT }, { cachedSuperparcel, cachedCentroid, cachedMetersPerDegLng, cachedMetersPerDegLat, cachedSuperparcelMeters, baseRotation });
+        const result = runtime.place(block, options);
+        ({ cachedSuperparcel, cachedCentroid, cachedMetersPerDegLng, cachedMetersPerDegLat, cachedSuperparcelMeters, baseRotation } = runtime.cache());
+        return result;
     }
 
     // A Length or Width change goes through the placement rule: kept with the offset and rotation it
@@ -769,232 +483,20 @@
         ({ cachedSuperparcel, cachedSuperparcelMeters, cachedCentroid, cachedMetersPerDegLng, cachedMetersPerDegLat, baseRotation } = cache);
     }
 
-    // Calculate the maximum building dimensions that fit within the superparcel with 1m margin
-    // Also sets up cached values for consistent boundary checking
+    // Size the initial 2:1 bar, preferring the centred fit with a 1m margin.
+    // Irregular sites use interior candidates with whole-footprint containment instead.
     function calculateMaxBuildingDimensions(block) {
-        if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
-            return { maxLength: DEFAULT_BUILDING_LENGTH, maxWidth: DEFAULT_BUILDING_WIDTH };
-        }
-
-        // Use the authored site as the fit boundary when one was supplied; parcel features remain
-        // the ownership inputs for the generated row.
-        const parcelFeatures = block.parcels.map(p => p.feature);
-        let superparcel = rowHouseGeneratorSite(block) || robustUnionLocal(parcelFeatures);
-
-        if (!superparcel) {
-            return { maxLength: DEFAULT_BUILDING_LENGTH, maxWidth: DEFAULT_BUILDING_WIDTH };
-        }
-
-        // Sanitize polygon
-        if (typeof sanitizePolygonFeature === 'function') {
-            superparcel = sanitizePolygonFeature(superparcel) || superparcel;
-        }
-        superparcel = toSingleLargestPolygonLocal(superparcel) || superparcel;
-
-        if (!superparcel || !superparcel.geometry) {
-            return { maxLength: DEFAULT_BUILDING_LENGTH, maxWidth: DEFAULT_BUILDING_WIDTH };
-        }
-
-        // Get the exterior ring of the superparcel
-        const geom = superparcel.geometry;
-        let ring;
-        if (geom.type === 'Polygon') {
-            ring = geom.coordinates[0];
-        } else if (geom.type === 'MultiPolygon') {
-            let maxArea = 0;
-            for (const poly of geom.coordinates) {
-                const area = Math.abs(turf.area(turf.polygon([poly[0]])));
-                if (area > maxArea) {
-                    maxArea = area;
-                    ring = poly[0];
-                }
-            }
-        }
-
-        if (!ring || ring.length < 4) {
-            return { maxLength: DEFAULT_BUILDING_LENGTH, maxWidth: DEFAULT_BUILDING_WIDTH };
-        }
-
-        // Convert to meters using centroid as origin
-        const centroid = turf.centroid(superparcel);
-        const [cLng, cLat] = centroid.geometry.coordinates;
-        // The affine local frame with the ellipsoid's true scales at the centroid (local-frame.js)
-        const localFrame = window.LocalFrame.makeLocalFrame(cLng, cLat);
-        const metersPerDegLng = localFrame.metersPerDegLng;
-        const metersPerDegLat = localFrame.metersPerDegLat;
-
-        const toMeters = ([lng, lat]) => [
-            (lng - cLng) * metersPerDegLng,
-            (lat - cLat) * metersPerDegLat
-        ];
-
-        const meterRing = ring.slice(0, -1).map(toMeters);
-        const n = meterRing.length;
-
-        // Set up cached values for consistent boundary checking
-        cachedSuperparcel = superparcel;
-        cachedCentroid = [cLng, cLat];
-        cachedMetersPerDegLng = metersPerDegLng;
-        cachedMetersPerDegLat = metersPerDegLat;
-        cachedSuperparcelMeters = meterRing;
-
-        // Find the longest side to determine orientation
-        let longestSideLength = 0;
-        let longestSideStart = null;
-        let longestSideEnd = null;
-
-        for (let i = 0; i < n; i++) {
-            const p1 = meterRing[i];
-            const p2 = meterRing[(i + 1) % n];
-            const dx = p2[0] - p1[0];
-            const dy = p2[1] - p1[1];
-            const sideLen = Math.sqrt(dx * dx + dy * dy);
-
-            if (sideLen > longestSideLength) {
-                longestSideLength = sideLen;
-                longestSideStart = p1;
-                longestSideEnd = p2;
-            }
-        }
-
-        if (!longestSideStart || !longestSideEnd) {
-            return { maxLength: DEFAULT_BUILDING_LENGTH, maxWidth: DEFAULT_BUILDING_WIDTH };
-        }
-
-        // Direction vectors
-        const dx = longestSideEnd[0] - longestSideStart[0];
-        const dy = longestSideEnd[1] - longestSideStart[1];
-
-        // Set baseRotation to the angle of the longest side (used by checkBuildingFitsInSuperparcel)
-        baseRotation = Math.atan2(dy, dx);
-
-        const ux = dx / longestSideLength;
-        const uy = dy / longestSideLength;
-        const perpX = -uy;
-        const perpY = ux;
-
-        // Binary search to find maximum dimensions with 2:1 aspect ratio
-        // that keep all edges at least 1m from the superparcel border
-        const MIN_MARGIN = 1.0; // 1 meter margin
-        let minScale = 0;
-        let maxScale = 500; // Start with a large scale
-
-        // Helper to check if a rectangle at given scale fits (inside polygon and margin from boundary)
-        const rectFitsWithMargin = (scale) => {
-            const halfLength = scale;
-            const halfWidth = scale / 2; // 2:1 aspect ratio
-
-            // Rectangle corners centered at origin
-            const corners = [
-                [-halfLength * ux - halfWidth * perpX, -halfLength * uy - halfWidth * perpY],
-                [halfLength * ux - halfWidth * perpX, halfLength * uy - halfWidth * perpY],
-                [halfLength * ux + halfWidth * perpX, halfLength * uy + halfWidth * perpY],
-                [-halfLength * ux + halfWidth * perpX, -halfLength * uy + halfWidth * perpY]
-            ];
-
-            // Check center and each corner and edge midpoint
-            const testPoints = [
-                [0, 0], // center
-                ...corners,
-                // Edge midpoints
-                [(corners[0][0] + corners[1][0]) / 2, (corners[0][1] + corners[1][1]) / 2],
-                [(corners[1][0] + corners[2][0]) / 2, (corners[1][1] + corners[2][1]) / 2],
-                [(corners[2][0] + corners[3][0]) / 2, (corners[2][1] + corners[3][1]) / 2],
-                [(corners[3][0] + corners[0][0]) / 2, (corners[3][1] + corners[0][1]) / 2]
-            ];
-
-            for (const pt of testPoints) {
-                // First check if point is inside the superparcel
-                if (!pointInPolygon(pt, meterRing)) {
-                    return false;
-                }
-                // Then check minimum distance to boundary
-                let minDist = Infinity;
-                for (let i = 0; i < n; i++) {
-                    const e1 = meterRing[i];
-                    const e2 = meterRing[(i + 1) % n];
-                    const dist = pointToSegmentDistance(pt, e1, e2);
-                    if (dist < minDist) {
-                        minDist = dist;
-                    }
-                }
-                if (minDist < MIN_MARGIN) {
-                    return false;
-                }
-            }
-            return true;
-        };
-
-        // Binary search for maximum scale
-        for (let iter = 0; iter < 50; iter++) {
-            const midScale = (minScale + maxScale) / 2;
-            if (rectFitsWithMargin(midScale)) {
-                minScale = midScale;
-            } else {
-                maxScale = midScale;
-            }
-        }
-
-        // minScale now holds the maximum half-length that fits
-        const maxLength = Math.max(4, minScale * 2); // Full length (minimum 4m)
-        const maxWidth = Math.max(2, minScale); // Full width (minimum 2m, which is half of length due to 2:1 ratio)
-
-        // Calculate polygon diameter (longest line that fits inside)
-        // This is the maximum distance between any two vertices
-        let polygonDiameter = 0;
-        for (let i = 0; i < n; i++) {
-            for (let j = i + 1; j < n; j++) {
-                const dx = meterRing[j][0] - meterRing[i][0];
-                const dy = meterRing[j][1] - meterRing[i][1];
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist > polygonDiameter) {
-                    polygonDiameter = dist;
-                }
-            }
-        }
-        // Apply 1m margin to the diameter
-        const maxSliderValue = Math.max(4, Math.round(polygonDiameter - 2)); // -2m for 1m margin on each side
-
-        return { maxLength, maxWidth, maxSliderValue };
+        const runtime = window.BuildingRuleGeometry.createRowPlacement({ lengthM: currentBuildingLength, depthM: currentBuildingWidth, chamferM: currentChamfer, height: currentBuildingHeight || DEFAULT_BUILDING_HEIGHT }, { cachedSuperparcel, cachedCentroid, cachedMetersPerDegLng, cachedMetersPerDegLat, cachedSuperparcelMeters, baseRotation });
+        const result = runtime.calculate(block);
+        ({ cachedSuperparcel, cachedCentroid, cachedMetersPerDegLng, cachedMetersPerDegLat, cachedSuperparcelMeters, baseRotation } = runtime.cache());
+        return result;
     }
 
     // Helper: distance from point to line segment
-    function pointToSegmentDistance(pt, e1, e2) {
-        const dx = e2[0] - e1[0];
-        const dy = e2[1] - e1[1];
-        const lenSq = dx * dx + dy * dy;
-
-        if (lenSq < 0.0001) {
-            // Segment is essentially a point
-            return Math.sqrt((pt[0] - e1[0]) ** 2 + (pt[1] - e1[1]) ** 2);
-        }
-
-        // Project point onto line, clamped to segment
-        let t = ((pt[0] - e1[0]) * dx + (pt[1] - e1[1]) * dy) / lenSq;
-        t = Math.max(0, Math.min(1, t));
-
-        const projX = e1[0] + t * dx;
-        const projY = e1[1] + t * dy;
-
-        return Math.sqrt((pt[0] - projX) ** 2 + (pt[1] - projY) ** 2);
-    }
+    function pointToSegmentDistance(...args) { return window.BuildingRuleGeometry.pointToSegmentDistance(...args); }
 
     // Helper: check if a point is inside a polygon using ray casting algorithm
-    function pointInPolygon(pt, polygon) {
-        const x = pt[0], y = pt[1];
-        let inside = false;
-        const n = polygon.length;
-
-        for (let i = 0, j = n - 1; i < n; j = i++) {
-            const xi = polygon[i][0], yi = polygon[i][1];
-            const xj = polygon[j][0], yj = polygon[j][1];
-
-            if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
-                inside = !inside;
-            }
-        }
-        return inside;
-    }
+    function pointInPolygon(...args) { return window.BuildingRuleGeometry.pointInPolygon(...args); }
 
     // Helper: minimum distance from point to polygon boundary
     function distanceToPolygonBoundary(pt, polygon) {
@@ -1262,7 +764,7 @@
             return;
         }
         if (result?.cancelled) return;
-        setRowHouseInfo('', result?.reason || translateRowHouseText('proposalDrafts.freeform.noBuildings', 'This proposal has no buildings to keep.'));
+        setRowHouseInfo('', result?.reason || translateRowHouseText('proposalDrafts.freeform.noBuildings', 'This design has no buildings to keep.'));
     }
 
     function commitRowHousePolygonRing(ring) {
@@ -1365,6 +867,7 @@
             kind: rowRuleKind,
             maxHeightM: Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT,
             minHeightM: rowMinHeightM,
+            floorHeightM: ROW_FLOOR_HEIGHT_M,
             minPlotAreaM2: rowMinPlotAreaM2
         });
     }
@@ -1398,18 +901,7 @@
         } catch (_) { fitsParcelUnion = false; }
         // A design on a site without parcels (PARCEL-OPTIONAL.md) has no parcels to split by.
         if (rowHouseBlock?.syntheticSite || !fitsParcelUnion) {
-            const rule = currentRowRule();
-            const massing = cloneRowHouseFeature(barFeature);
-            massing.properties = {
-                ...(massing.properties || {}),
-                massing: true,
-                urbanRule: rule,
-                variationSeed: rowVariationSeed
-            };
-            const compelled = rule.kind === 'range' && rule.minDepthM > 0
-                ? window.UrbanRuleVariation.buildToMinimum(massing, rule.minDepthM, deps)
-                : null;
-            if (compelled?.geometry) massing.properties.minFootprint = compelled.geometry;
+            const massing = window.UrbanRuleVariation.massingWithRule(barFeature, currentRowRule(), rowVariationSeed, deps);
             rowUnits = [massing];
             rowExcluded = [];
             rowBuildOut = [window.UrbanRuleVariation.realizeFeature(massing, deps)];
@@ -1432,11 +924,48 @@
         const slider = document.getElementById('rowhouse-minheight-slider');
         if (!slider) return;
         const ceiling = Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT;
-        slider.max = String(ceiling);
+        slider.max = String(rowFloors(ceiling));
         if (rowMinHeightM > ceiling) rowMinHeightM = ceiling;
-        slider.value = String(rowMinHeightM);
+        slider.value = String(rowFloors(rowMinHeightM));
         const label = document.getElementById('rowhouse-minheight-value');
-        if (label) label.textContent = CbFormat.formatNumber(rowMinHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
+        if (label) label.textContent = rowFloorsLabel(rowMinHeightM);
+    }
+
+    // The rule is stored in metres (UrbanRuleVariation.normalizeBlockRule); the controls count whole
+    // storeys of ROW_FLOOR_HEIGHT_M, as plans state heights, and show the metres beside them.
+    function rowFloors(heightM) {
+        return Math.max(0, Math.round((Number(heightM) || 0) / ROW_FLOOR_HEIGHT_M));
+    }
+
+    function rowFloorsLabel(heightM) {
+        const metres = Number(heightM) || 0;
+        return metres > 0 ? `${rowFloors(metres)} (${CbFormat.formatLength(metres)})` : '0';
+    }
+
+    // Like a Block, a rule that leaves no plot buildable has nothing to save: Done waits, and the
+    // panel says why. The message reuses the Block's wording for the same situation.
+    function syncRowDoneState({ clearInfo = false } = {}) {
+        const doneButton = document.getElementById('btn-rowhouse-done');
+        if (doneButton) doneButton.disabled = rowUnits.length === 0;
+        const info = document.getElementById('rowhouse-info');
+        if (!rowUnits.length) {
+            setRowHouseInfo('blockify.modal.messages.rangeNoneExcluded', 'No buildings \u00b7 {{excluded}}',
+                { excluded: { key: 'blockify.modal.messages.parcelsLeftOut', count: rowExcluded.length } });
+        } else if (clearInfo || info?.getAttribute('data-i18n-key') === 'blockify.modal.messages.rangeNoneExcluded') {
+            setRowHouseInfo('', '');
+        }
+    }
+
+    // Geometry statistics for the rule's envelopes (the permitted houses, not one example of them).
+    function refreshRowDensityStats() {
+        const api = window.BuildingDensityStats;
+        if (!api) return;
+        const floorHeightM = currentRowRule().floorHeightM;
+        api.refreshCard(document, 'rowhouse', { parcelFeature: rowHouseSiteBoundary(), buildings: rowUnits, turf, floorHeightM }, {
+            format: CbFormat,
+            hint: translateRowHouseText('densityStats.floorHeightHint', 'Calculated from the drawn footprints and height \u00f7 {{height}} m per storey.',
+                { height: CbFormat.formatNumber(floorHeightM, { maxFractionDigits: 1, minFractionDigits: 1 }) })
+        });
     }
 
     function rowExclusionReason(status) {
@@ -1465,6 +994,8 @@
         if (!feature || !feature.geometry) return;
 
         rebuildRowUnits(feature);
+        refreshRowDensityStats();
+        syncRowDoneState();
 
         // Houses go down first so the bar stays on top and keeps its drag and vertex handles; the
         // bar's fill is nearly clear so the shades read through it.
@@ -1516,6 +1047,8 @@
         rowHouseModal?.setPreview({
             groundSurface: rowHouseSurroundings?.refresh() || null,
             draftPreview: { kind: 'buildings', features: rowBuildOut },
+            // The whole terrace the houses are cut from, present even when no plot can hold one.
+            massing: feature,
             boundary: rowHouseBlock?.site || cachedSuperparcel,
             envelopes: rowRuleKind === 'exact' ? [] : rowUnits,
             excluded: rowExcluded.filter(entry => entry?.feature?.geometry).map(entry => entry.feature)
@@ -1583,7 +1116,9 @@
             parcelIds.push(id);
             parentDetails.push({ id, number: String(props?.BROJ_CESTICE || id) });
         });
-        const feature = window.UrbanRuleVariation.massingWithRule(generatedRowHouseFeature, currentRowRule(), rowVariationSeed, { turf });
+        const { buildings, ruleMassing } = window.UrbanRuleVariation.ruleDesignGeometry(
+            generatedRowHouseFeature, rowUnits, currentRowRule(), rowVariationSeed, { turf });
+        if (!buildings.length) return;
         window.syncActiveProposalDraftFromEditor('building', {
             parcelIds,
             parentDetails,
@@ -1601,8 +1136,9 @@
                 seed: rowVariationSeed,
                 manualMode: rowHouseManualMode
             },
-            buildingFeature: feature,
-            buildings: [feature],
+            buildingFeature: ruleMassing,
+            buildings,
+            ruleMassing,
             groundSurface: rowHouseSurroundings?.surface() || null,
             // A Row stays on its parcels (proposals/freeform-conversion.js): never a free placement.
             placement: { free: false, site: cloneRowHouseFeature(rowHouseSiteBoundary()) }
@@ -1630,18 +1166,14 @@
             generatedRowHouseFeature = buildingFeature;
             displayRowHouseBuildingInModal(buildingFeature);
             autosaveRowHouseDraft();
-
-            const doneButton = document.getElementById('btn-rowhouse-done');
-            if (doneButton) doneButton.disabled = false;
-
-            // Clear info text on successful generation
-            setRowHouseInfo('', '');
+            syncRowDoneState({ clearInfo: true });
 
         } catch (error) {
+            generatedRowHouseFeature = null;
             console.error('[RowHouse] Generation error:', error);
             setRowHouseInfo(
-                'rowHouses.modal.messages.creationFailed',
-                'Row houses creation failed. Try adjusting parameters.',
+                'rowHouses.modal.messages.invalidPlacement',
+                'The footprint must fit entirely within the selected land, avoiding gaps and holes. Reduce its dimensions or edit its shape.',
                 {}
             );
             const doneButton = document.getElementById('btn-rowhouse-done');
@@ -1687,10 +1219,10 @@
                     </div>
                     <div class="parameter-group" id="rowhouse-minheight-group" style="display: none;">
                         <label for="rowhouse-minheight-slider">
-                            <span data-i18n-key="rowHouses.modal.labels.minHeight" data-i18n-attr="text">Min Height (m):</span>
-                            <span id="rowhouse-minheight-value">0.0</span>
+                            <span data-i18n-key="common.minFloors" data-i18n-attr="text">Min floors:</span>
+                            <span id="rowhouse-minheight-value">0</span>
                         </label>
-                        <input type="range" id="rowhouse-minheight-slider" min="0" max="80" value="0" step="0.5">
+                        <input type="range" id="rowhouse-minheight-slider" min="0" max="${ROW_MAX_FLOORS}" value="0" step="1">
                     </div>
                     <div class="parameter-group">
                         <label for="rowhouse-minplot-slider">
@@ -1718,10 +1250,10 @@
                     </div>
                     <div class="parameter-group">
                         <label for="rowhouse-height-slider">
-                            <span data-i18n-key="rowHouses.modal.labels.height" data-i18n-attr="text">Height (m):</span>
-                            <span id="rowhouse-height-value">${CbFormat.formatNumber(DEFAULT_BUILDING_HEIGHT, { maxFractionDigits: 0, minFractionDigits: 0 })}</span>
+                            <span data-i18n-key="common.maxFloors" data-i18n-attr="text">Max floors:</span>
+                            <span id="rowhouse-height-value">${rowFloorsLabel(DEFAULT_BUILDING_HEIGHT)}</span>
                         </label>
-                        <input type="range" id="rowhouse-height-slider" min="3" max="80" value="${DEFAULT_BUILDING_HEIGHT}" step="1">
+                        <input type="range" id="rowhouse-height-slider" min="1" max="${ROW_MAX_FLOORS}" value="${rowFloors(DEFAULT_BUILDING_HEIGHT)}" step="1">
                     </div>
                     <div class="parameter-group">
                         <label data-i18n-key="rowHouses.modal.labels.rotation" data-i18n-attr="text">Rotate footprint</label>
@@ -1758,11 +1290,12 @@
                             </div>
                         </div>
                     </details>
+                    ${window.BuildingDensityStats.cardMarkup('rowhouse')}
                 </div>
                 <div id="rowhouse-controls" class="cb-dialog__footer">
                     <div id="rowhouse-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
                     <div id="rowhouse-buttons">
-                        <button type="button" class="btn" id="btn-rowhouse-regenerate" hidden data-i18n-key="rowHouses.modal.regenerate" data-i18n-attr="text">Regenerate</button>
+                        <button type="button" class="btn" id="btn-rowhouse-regenerate" hidden data-i18n-key="rowHouses.modal.regenerate" data-i18n-attr="text">Illustrate</button>
                         <button type="button" class="btn" id="btn-rowhouse-freeform" data-i18n-key="proposalDrafts.freeform.title" data-i18n-attr="text">Convert to freeform building</button>
                         <button type="button" class="btn btn-primary" id="btn-rowhouse-done" data-i18n-key="rowHouses.modal.done" data-i18n-attr="text">Done</button>
                     </div>
@@ -1780,7 +1313,6 @@
                 content,
                 footer,
                 modes: ['2d', 'model'],
-                wide: false,
                 tools: rotationTools,
                 hints: {
                     '2d': translateRowHouseText('rowHouses.modal.helper.adjust', 'Drag the footprint to move it. Drag vertices to reshape it, click an edge to add a vertex, or select a vertex to remove it.')
@@ -1797,7 +1329,9 @@
             rowHouseSurroundings = window.BuildingSurroundingsEditor.mount({
                 session: rowHouseModal, id: 'rowhouse-ground-treatment', initialTreatment: rowHouseInitialGroundTreatment, initialDecorationDesign: rowHouseInitialDecorationDesign,
                 boundary: rowHouseSiteBoundary,
-                buildings: () => [generatedRowHouseFeature].filter(Boolean),
+                // The green reaches the example houses, so plots left unbuilt (below the minimum
+                // size, or only a sliver of the row) stay part of the surroundings.
+                buildings: () => (rowBuildOut.length ? rowBuildOut : [generatedRowHouseFeature]).filter(Boolean),
                 onChange: () => autosaveRowHouseDraft()
             });
             ensureRowHouseHistory();
@@ -1851,8 +1385,8 @@
 
             document.getElementById('rowhouse-height-slider').addEventListener('input', function (e) {
                 rowHouseHistory?.record?.();
-                currentBuildingHeight = parseFloat(e.target.value);
-                document.getElementById('rowhouse-height-value').textContent = CbFormat.formatNumber(currentBuildingHeight, { maxFractionDigits: 0, minFractionDigits: 0 });
+                currentBuildingHeight = parseInt(e.target.value, 10) * ROW_FLOOR_HEIGHT_M;
+                document.getElementById('rowhouse-height-value').textContent = rowFloorsLabel(currentBuildingHeight);
                 // Height affects the model preview and volume metric
                 if (generatedRowHouseFeature) {
                     generatedRowHouseFeature.properties.height = Math.round(currentBuildingHeight);
@@ -1869,15 +1403,17 @@
                     rowRuleKind = e.target.value;
                     syncRowRuleControls();
                     if (generatedRowHouseFeature) displayRowHouseBuildingInModal(generatedRowHouseFeature);
+                    autosaveRowHouseDraft();
                 });
             }
 
             const rowMinHeightSlider = document.getElementById('rowhouse-minheight-slider');
             if (rowMinHeightSlider) {
                 rowMinHeightSlider.addEventListener('input', function (e) {
-                    rowMinHeightM = parseFloat(e.target.value);
-                    document.getElementById('rowhouse-minheight-value').textContent = CbFormat.formatNumber(rowMinHeightM, { maxFractionDigits: 1, minFractionDigits: 1 });
+                    rowMinHeightM = parseInt(e.target.value, 10) * ROW_FLOOR_HEIGHT_M;
+                    document.getElementById('rowhouse-minheight-value').textContent = rowFloorsLabel(rowMinHeightM);
                     if (generatedRowHouseFeature) displayRowHouseBuildingInModal(generatedRowHouseFeature);
+                    autosaveRowHouseDraft();
                 });
             }
 
@@ -1887,6 +1423,7 @@
                     rowMinPlotAreaM2 = parseFloat(e.target.value);
                     document.getElementById('rowhouse-minplot-value').textContent = rowMinPlotAreaM2.toString();
                     if (generatedRowHouseFeature) displayRowHouseBuildingInModal(generatedRowHouseFeature);
+                    autosaveRowHouseDraft();
                 });
             }
 
@@ -1898,6 +1435,7 @@
                 rowRegenerate.addEventListener('click', function () {
                     rowVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
                     if (generatedRowHouseFeature) displayRowHouseBuildingInModal(generatedRowHouseFeature);
+                    autosaveRowHouseDraft();
                 });
             }
 
@@ -1996,8 +1534,8 @@
             document.getElementById('rowhouse-width-value').textContent = CbFormat.formatNumber(currentBuildingWidth, { maxFractionDigits: 1, minFractionDigits: 1 });
         }
         if (heightSlider) {
-            heightSlider.value = currentBuildingHeight;
-            document.getElementById('rowhouse-height-value').textContent = CbFormat.formatNumber(currentBuildingHeight, { maxFractionDigits: 0, minFractionDigits: 0 });
+            heightSlider.value = rowFloors(currentBuildingHeight);
+            document.getElementById('rowhouse-height-value').textContent = rowFloorsLabel(currentBuildingHeight);
         }
         if (chamferSlider) {
             chamferSlider.value = currentChamfer;
@@ -2027,9 +1565,7 @@
                 generatedRowHouseFeature = seedFeature;
                 displayRowHouseBuildingInModal(seedFeature);
                 autosaveRowHouseDraft();
-                const doneButton = document.getElementById('btn-rowhouse-done');
-                if (doneButton) doneButton.disabled = false;
-                setRowHouseInfo('', '');
+                syncRowDoneState({ clearInfo: true });
             } else {
                 generateRowHouseInModal();
             }
@@ -2211,6 +1747,12 @@
             return;
         }
 
+        if (!rowHouseFeatureValid(generatedRowHouseFeature)) {
+            setRowHouseInfo('rowHouses.modal.messages.invalidPlacement',
+                'The footprint must fit entirely within the selected land, avoiding gaps and holes. Reduce its dimensions or edit its shape.');
+            return;
+        }
+
         if (!(await confirmRowHouseParcelSimilarity(block))) return;
 
         const parentDetails = [];
@@ -2252,8 +1794,15 @@
             return;
         }
 
-        const clonedFeature = window.UrbanRuleVariation.massingWithRule(generatedRowHouseFeature, currentRowRule(), rowVariationSeed, { turf });
-        const clonedUnits = [cloneRowHouseFeature(clonedFeature)];
+        // One house per parcel as the editor drew them, each with its own seed, plus the whole
+        // terrace they were cut from (UrbanRuleVariation.ruleDesignGeometry). A rule that leaves no
+        // plot buildable has nothing to save.
+        const { buildings: clonedUnits, ruleMassing: clonedFeature } = window.UrbanRuleVariation.ruleDesignGeometry(
+            generatedRowHouseFeature, rowUnits, currentRowRule(), rowVariationSeed, { turf });
+        if (!clonedUnits.length) {
+            setRowHouseInfo('rowHouses.modal.messages.generateBeforeFinishing', 'Generate row houses before finishing.');
+            return;
+        }
         const context = {
             parcelIds: normalizedParcelIds.slice(),
             parentDetails: parentDetails.slice(),
@@ -2275,6 +1824,7 @@
             },
             buildingFeature: clonedFeature,
             buildings: clonedUnits,
+            ruleMassing: clonedFeature,
             groundSurface: rowHouseSurroundings?.surface() || null,
             placement: { free: false, site: cloneRowHouseFeature(rowHouseSiteBoundary()) }
         };
@@ -2293,7 +1843,7 @@
         closeRowHouseModal({ preservePending: true });
 
         if (typeof updateStatus === 'function') {
-            updateStatus('Row house design saved. Add proposal details to submit.');
+            updateStatus('Row house design saved. Add design details to submit.');
         }
 
         const description = document.getElementById('proposalDescription');
@@ -2301,7 +1851,7 @@
             if (!description.value.trim()) {
                 description.value = translateRowHouseText(
                     'rowHouses.modal.messages.defaultProposalDescription',
-                    'Row house proposal for {{blockName}}',
+                    'Row house design for {{blockName}}',
                     { blockName: context.blockName || 'selected parcels' }
                 );
             }

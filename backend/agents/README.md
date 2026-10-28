@@ -29,7 +29,8 @@ next run: lens-approval-client ──▶ publication-client ──▶ lens-appro
 | module | what it is | pure? |
 |---|---|---|
 | `parcel-source.js` | one SQL statement: parcels in a persona's bbox with area, geometry, the GDI buildings on them and the urban rule over them | no |
-| `planner.js` | envelope, one legal build-out, GFA, € gain, persona score | yes (turf injected) |
+| `building-baseline.js` | nullable existing-stock quantities qualified by source and inventory coverage | yes |
+| `planner.js` | envelope, one legal build-out, GFA, supported gain in the city's currency and persona score | yes (turf injected) |
 | `candidate-preflight.js` | the binding the index will give the candidate's design (`proposals/binding.js` checkProposalBinding, as POST /designs runs it): kept only when it is exactly the candidate parcel with complete coverage | orchestration (checker injected) |
 | `algorithmic-picker.js` | guardrails plus seeded variation among the near-best candidates | yes |
 | `llm-picker.js` | the Anthropic Batches step: request building, parsing, cost estimate, submit/await/collect | pure except `runPickBatch` |
@@ -59,6 +60,52 @@ or donate is topped up to 0.5 test USDC (`funding.js`). The escrow lamports an a
 come from the proposer's own SOL and return to it when the agreement expires or is cancelled.
 
 ## The proposer run (`run.mjs`)
+
+Existing-building totals require `buildingSourceId` and `buildingCoverage: 'complete'`, with
+finite nonnegative measurements. A documented empty inventory can report zero. Missing or partial
+coverage leaves the baseline unknown; a missing height leaves GFA unknown even if footprints are
+measured. `parcel-source.js` retains GDI query results in `buildingObservations` (including the
+3.5 m storey-height assumption, missing-height count, and source evidence). The City of Zagreb
+describes ZG3D 2022 as covering the city, with building models based on mixed capture years
+(2008, 2019, 2020, and 2022); published coverage evidence does not assure a complete inventory.
+Accordingly, source-wide coverage is recorded as `partial`, while every parcel baseline remains
+`unknown`: a source-level caveat cannot prove completeness for a particular parcel. Height-derived
+floor area remains an estimate under the stated storey-height assumption, not surveyed GFA.
+Promoting a parcel baseline to `complete` requires evidence for the relevant area and edition,
+verified import integrity, and sufficient height/floor-area evidence for the claimed quantity.
+
+Unknown stock still permits a geometry preview. Gain, offers and score components that depend on
+unknown quantities remain null. The uplift selection policy requires a complete named
+baseline, a mapped urban rule and positive supported uplift; the publication/minting path checks
+the same eligibility on resume. This intentionally invalidates older numeric-only candidate
+checkpoints: replan them with the required evidence rather than adapting their assumed zeros.
+Builder, Densifier and Gentle explicitly use `planningPolicy: 'proposed-design'`. Its separate
+`designPolicy.score` ranks proposed floor area and ground outside the proposed footprint using
+the persona's `designWeights`. It never substitutes for baseline-dependent score, gain or offer.
+Mapped controls retain their provenance; missing controls are recorded and described as design
+assumptions. All policies retain exact-parcel binding preflight and known non-positive floor-area
+uplift rejection. A proposer tries at most three configured areas in deterministic rotation when
+a source fails or yields no eligible candidate; attempts are recorded, and an exhausted search
+with source failures fails visibly. Gentle answers current rivals and waits when none exist.
+
+Sponsor market opening is optional under `AGENT_MARKET_SEED_USDC_CAP` (default `0`, disabled).
+The scheduled proposers explicitly enable a `70` allowance. The canonical market uses
+`69.31472` devnet USDC of seed liquidity. This allowance
+admits one seed per run; two new seeds fail preflight. The ordinary `AGENT_DAILY_USDC_CAP`
+remains separate. Opening uses the sponsor PDA, existing canonical terms and verified devnet,
+checks balance and deadline, and checkpoints seed-funding receipts before opening. A restart
+reads an existing canonical market and never seeds it twice. Sponsor self-trading remains
+forbidden. The existing configured funding wallet and shared reserve lock fund only the exact
+seed shortfall under the explicit allowance. The configured source retains at least one devnet USDC.
+
+The proposer serializes pins with 31-second spacing. HTTP 429 is handled once by the index client,
+honoring the longer body/header cooldown (including HTTP-date Retry-After), up to four attempts
+and at most 16 minutes per wait. Transport/5xx retries remain separate. A retired experimental
+agreement gets a durable `retired` automation skip, without claiming chain settlement or retrying
+it on every subsequent run.
+
+The separately screened housing-research policy can select explicit concepts, with unknown gain
+and offer; it does not claim net uplift over existing stock.
 
 For each proposer persona: plan → choose → for each pick, in order, each stage checkpointed in
 `consensus.agent_run.summary` before the next starts:
@@ -130,6 +177,10 @@ parcels their runs picked (`--day [--slot] [--persona]`, from the runs' checkpoi
 **Affordabot** (`AFFORDABOT.md`) is a proposer persona with `housingResearch`; its published
 agreements fill `summary.outreach` (drafts linking `/agreements/<cid>`), read with
 `node agents/affordabot-outreach.mjs --list`; `affordabot-outcome.mjs` is its monitor check.
+It starts with the daily priority city, then tries each other configured city once when source
+loading fails or planning/binding yields no eligible candidates. Selected runs retain the city
+attempts in their summary. An exhausted search with source errors fails rather than reporting
+a clean no-picks result.
 
 ## Supporters and a society of agents that disagree
 
@@ -251,9 +302,10 @@ Publishing recomputes the CID and reads the index back, checking both CID and co
 and canonical artifacts appear under `untrusted`; canonical objects are kept intact for reuse.
 Failures return `{ code, message, next }`.
 
-Publish ordinary designs individually, then reference their CIDs in `agreement.designs`. The
-separate `ugt_propose_agreement.designs` argument is only for unpublished linked content, including
-parcel layouts that must be indexed with their agreement. Do not resend already indexed designs.
+Publish ordinary designs individually, then publish a plan that lists their CIDs. Each agreement
+references one exact plan CID. The separate `ugt_propose_agreement.designs` argument carries only
+unpublished plan members, including parcel layouts that must be indexed with their agreement. Do not
+resend already indexed designs.
 The MCP transport and its nginx proxy accept the API's 15 MiB JSON request budget; each canonical
 published object still has its own 10 MiB limit. A larger transport request returns HTTP 413 with
 recovery guidance rather than changing the design/agreement contract.
@@ -375,3 +427,6 @@ spherical calculation at 1 mm² resolution; the radius stays Turf 6.5’s 637813
 uses the existing 0.25 m² ancestry floor, retaining legitimate small parcel contributions. These
 corrections can change experimental agreement CIDs; recreate affected records rather than retaining
 a second geometry or area contract.
+
+MCP parity: these changes affect scheduled persona selection and execution only. Design, plan
+and agreement authoring/publication schemas and existing MCP editing primitives are unchanged.

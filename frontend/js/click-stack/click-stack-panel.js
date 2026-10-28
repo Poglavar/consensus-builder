@@ -21,10 +21,12 @@
     const HOSTABLE = ['proposal-details-panel', 'planning-inspector', 'parcel-info-panel'];
     // Right-dock panels the stack never hosts: when one opens, the stack steps aside.
     const DOCKED_ELSEWHERE = ['block-info-panel', 'road-info-panel', 'road-analysis-panel'];
-    const ICONS = Object.freeze({ agreements: 'fas fa-file-signature', designs: 'fas fa-drafting-compass', built: 'fas fa-building',
+    // Sections whose object has a shape on the map, so the Focus button can bring it into view.
+    const FRAMEABLE = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'selection']);
+    const ICONS = Object.freeze({ agreements: 'fas fa-file-signature', plans: 'fas fa-layer-group', designs: 'fas fa-drafting-compass', built: 'fas fa-building',
         permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
-    const state = { el: null, stack: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false };
+    const state = { el: null, stack: null, frameRequest: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null , baseHits: null, derived: {} };
 
     // A key with a dot is a full key shared with the rest of the app; a bare one is clickStack's own.
     function t(key, fallback, params = {}) {
@@ -54,7 +56,7 @@
     }
 
     function isDockOccupied() {
-        return DOCKED_ELSEWHERE.some(id => isShown(doc.getElementById(id))) || !!global.AgreementPanel?.isOpen?.();
+        return DOCKED_ELSEWHERE.some(id => isShown(doc.getElementById(id))) || (!!global.AgreementPanel?.isOpen?.() && !doc.getElementById('agreement-panel')?.classList.contains('is-hosted'));
     }
 
     function host(slot, id) {
@@ -82,9 +84,11 @@
     function unhost({ hide = true } = {}) {
         const hosted = state.hosted;
         if (!hosted) return;
+        if (hosted.el.id === 'parcel-info-panel') global.multiParcelSelection?.clearInfoListHighlight?.();
         state.hosted = null;
         hosted.el.classList.remove('is-hosted');
         hosted.el.querySelector('.click-stack__actions--parcel')?.remove();
+        hosted.el.querySelector('.parcel-site-action')?.remove();
         if (hosted.parent) hosted.parent.insertBefore(hosted.el, hosted.next && hosted.next.parentNode === hosted.parent ? hosted.next : null);
         if (!hide) return;
         if (hosted.el.id === 'planning-inspector') global.PlanningViews?.select(null);
@@ -108,7 +112,7 @@
                 return;
             }
             // The agreement panel (an agreement's Details) is a full dock of its own.
-            if (global.AgreementPanel?.isOpen?.()) { close({ keepPanels: true }); return; }
+            if (global.AgreementPanel?.isOpen?.() && !doc.getElementById('agreement-panel')?.classList.contains('is-hosted')) { close({ keepPanels: true }); return; }
             const expanded = state.stack?.expanded;
             // The expanded section's view moved on inside its own kind (a design's summary opened
             // its full card): the section hosts the new panel.
@@ -140,9 +144,10 @@
         if (state.el && doc.body.contains(state.el)) return state.el;
         const el = doc.createElement('aside');
         el.id = PANEL_ID;
-        el.className = 'click-stack right-dock-panel';
+        el.className = 'click-stack right-dock-panel right-screen-panel';
         el.hidden = true;
         el.addEventListener('click', onPanelClick);
+        el.addEventListener('change', onPanelChange);
         el.addEventListener('keydown', event => {
             if (event.key !== 'Escape') return;
             event.preventDefault();
@@ -167,11 +172,24 @@
         return global.ParcelMenuModel?.displayParcelId?.(instance?.feature?.properties || {}, instance?.id) || instance?.id || '';
     }
 
+    function focusButton(kind) {
+        const focus = button('btn btn-quiet btn-icon click-stack__focus', undefined, { action: 'focus', kind });
+        const label = t('modal.roadWidth.polygonError.showOnMap', 'Show on map');
+        focus.title = label;
+        focus.setAttribute('aria-label', label);
+        const icon = doc.createElement('i');
+        icon.className = 'fas fa-crosshairs';
+        icon.setAttribute('aria-hidden', 'true');
+        focus.appendChild(icon);
+        return focus;
+    }
+
     function rowTitle(section) {
         const instance = section.instances[section.selectedIndex];
         switch (section.kind) {
             case 'selection': return t('selectedParcels.count', 'Selected parcels ({{count}})', { count: section.count });
-            case 'agreements': return section.multi ? t('agreements', 'Agreements ({{count}})', { count: section.count }) : t('agreement.panel.title', 'Agreement');
+            case 'agreements': return t('designMemberships.agreements', 'Agreements');
+            case 'plans': return t('designMemberships.plan', 'Plan');
             case 'designs': return section.count > 1 ? t('designs', 'Designs ({{count}})', { count: section.count }) : t('proposalDrafts.tabs.design', 'Design');
             case 'built': return section.count > 1 ? t('buildings', 'Buildings ({{count}})', { count: section.count }) : t('building', 'Building');
             case 'permitted': return section.multi ? t('permittedMany', 'Permitted ({{count}})', { count: section.count }) : t('planningViews.permitted', 'Permitted');
@@ -200,38 +218,19 @@
         return instance.label || '';
     }
 
-    function renderChoices(group) {
-        const choices = doc.createElement('div');
-        choices.className = 'click-stack__choices';
-        choices.dataset.kind = group.kind;
-        choices.setAttribute('role', 'group');
-        choices.setAttribute('aria-label', rowTitle({ ...group, multi: group.count > 1, selectedIndex: 0 }));
-        const count = doc.createElement('span');
-        count.className = 'click-stack__choice-count';
-        count.textContent = `(${group.count})`;
-        const strip = doc.createElement('div');
-        strip.className = 'click-stack__strip';
-        group.instances.forEach(instance => {
-            const chip = button('click-stack__chip', instance.label || instance.id, { action: 'related', kind: group.kind, id: instance.id });
-            chip.title = instance.label || instance.id;
-            strip.appendChild(chip);
-        });
-        choices.append(count, strip);
-        return choices;
-    }
-
-    function render() {
+    function render({ keepBody = null } = {}) {
+        if (!keepBody) global.AgreementPanel?.release?.(state.el);
         const el = ensureElement();
         const { stack } = state;
         // The hosted panel goes home (still open) before the old bodies are dropped; the section
         // that expands next hosts it again.
-        if (state.hosted) unhost({ hide: false });
+        if (state.hosted && !keepBody) unhost({ hide: false });
         el.textContent = '';
         el.setAttribute('aria-label', stack.topRef === 'selection:current'
             ? t('selectedParcels.label', 'Selected parcels') : t('title', 'At this spot'));
         const list = doc.createElement('div');
         list.className = 'click-stack__sections';
-        stack.sections.forEach(section => {
+        model.visibleSections(stack).forEach(section => {
             const expanded = stack.expanded === section.kind;
             const wrap = doc.createElement('section');
             wrap.className = 'click-stack__section';
@@ -239,50 +238,93 @@
             wrap.classList.toggle('is-expanded', expanded);
             wrap.classList.toggle('is-selected', stack.selectedKind === section.kind);
             const instance = section.instances[section.selectedIndex];
-            const context = expanded ? model.contextFor(section.kind, instance, state.hits) : [];
-            context.filter(group => group.position === 'above').forEach(group => wrap.appendChild(renderChoices(group)));
             const card = doc.createElement('div');
             card.className = 'click-stack__card';
             card.id = `click-stack-${section.kind}-card`;
             const row = button('click-stack__row', undefined, { action: 'row', kind: section.kind });
             row.disabled = !section.expandable;
-            if (section.expandable) row.setAttribute('aria-expanded', String(expanded));
+            if (section.expandable) {
+                row.setAttribute('aria-expanded', String(expanded));
+                row.setAttribute('aria-controls', `click-stack-${section.kind}-content`);
+            }
             const icon = doc.createElement('i');
             icon.className = ICONS[section.kind] || 'fas fa-circle';
             icon.setAttribute('aria-hidden', 'true');
             const name = doc.createElement('span');
+            name.id = `click-stack-${section.kind}-label`;
             name.className = 'click-stack__row-title';
+            wrap.setAttribute('aria-labelledby', name.id);
             // The selector counts the collection; the card always describes one selected item.
             name.textContent = rowTitle(section.multi ? { ...section, multi: false, count: 1 } : section);
+            if (section.multi && (section.kind !== 'designs' || expanded)) name.textContent += ` (${section.count})`;
             const detail = doc.createElement('span');
             detail.className = 'click-stack__row-detail';
             detail.textContent = rowDetail(section);
-            row.append(icon, name, detail);
+            row.append(icon, name);
+            if (section.kind === 'designs' && expanded) {
+                const pill = global.ClickStackRelations?.renderDesignType(instance, doc, global);
+                if (pill) row.appendChild(pill);
+            }
+            row.appendChild(detail);
             if (section.expandable) {
                 const chevron = doc.createElement('i');
                 chevron.className = 'click-stack__chevron fas fa-chevron-down';
                 chevron.setAttribute('aria-hidden', 'true');
                 row.appendChild(chevron);
             }
-            const heading = doc.createElement('div');
+            const heading = doc.createElement('h2');
             heading.className = 'click-stack__heading';
             heading.appendChild(row);
+            if (expanded && FRAMEABLE.has(section.kind)) heading.appendChild(focusButton(section.kind));
             card.appendChild(heading);
             if (expanded) {
-                const body = doc.createElement('div');
+                const body = keepBody || doc.createElement('div');
                 body.className = 'click-stack__body';
+                body.id = `click-stack-${section.kind}-content`;
+                body.setAttribute('role', 'region');
+                body.setAttribute('aria-labelledby', name.id);
+                if (keepBody) global.ClickStackRelations?.updateSelector(section, body, global, state.hits?.plans);
+                else {
+                    const selector = global.ClickStackRelations?.renderSelector(section, doc, global, state.hits?.plans);
+                    if (selector) body.appendChild(selector);
+                }
+                card.appendChild(body);
+            } else if (section.expandable) {
+                const body = doc.createElement('div');
+                body.id = `click-stack-${section.kind}-content`;
+                body.hidden = true;
                 card.appendChild(body);
             }
             wrap.appendChild(card);
-            context.filter(group => group.position === 'below').forEach(group => wrap.appendChild(renderChoices(group)));
             list.appendChild(wrap);
         });
         el.appendChild(list);
-        if (state.latlng) {
-            const coords = button('click-stack__coords', `${state.latlng.lat.toFixed(6)}, ${state.latlng.lng.toFixed(6)}`, { action: 'coords' });
-            coords.title = t('copyCoordinates', 'Copy coordinates');
-            el.appendChild(coords);
-        }
+        syncAgreements();
+
+    }
+
+    function syncAgreements() {
+        if (!isOpen() || !global.DesignMemberships?.createAgreementScope) return;
+        if (!state.agreementScope) state.agreementScope = global.DesignMemberships.createAgreementScope(global, {
+            getPlan: () => state.stack && model.selectedInstance(state.stack, 'plans'),
+            getAgreement: () => state.hits?.agreementContext,
+            onChange(rows, group) {
+                if (!isOpen()) return;
+                state.agreementGroup = group;
+                const previous = state.stack;
+                const selected = Object.fromEntries(previous.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
+                state.hits.agreements = rows;
+                const next = model.buildClickStack(state.hits, { selected });
+                const has = kind => next.sections.some(section => section.kind === kind);
+                const expanded = has(previous.expanded) ? previous.expanded : previous.expanded === 'agreements' ? 'plans' : null;
+                state.stack = { ...next, expanded, selectedKind: has(previous.selectedKind) ? previous.selectedKind : 'plans', topRef: previous.topRef };
+                const sameAgreement = expanded === 'agreements' && model.selectedInstance(previous, 'agreements')?.id === model.selectedInstance(state.stack, 'agreements')?.id;
+                const keepBody = expanded && (expanded !== 'agreements' || sameAgreement) ? bodyOf(expanded) : null;
+                render({ keepBody }); if (!keepBody && expanded) activate(expanded);
+                if (keepBody && expanded === 'agreements') global.DesignMemberships.updateAgreementGroup(keepBody, group, global);
+            }
+        });
+        state.agreementScope.sync();
     }
 
     function bodyOf(kind) {
@@ -290,39 +332,6 @@
     }
 
     // ── section bodies ────────────────────────────────────────────────────────────────────────
-
-    function designFootprint(key) {
-        const proposal = global.proposalStorage?.getProposal?.(key);
-        try { return proposal ? global.__planOrder?.footprintOf?.(proposal) || null : null; } catch (_) { return null; }
-    }
-
-    function renderAgreement(body, instance) {
-        const agreement = instance.agreement;
-        const summary = doc.createElement('div');
-        summary.className = 'click-stack__summary';
-        const name = doc.createElement('strong');
-        name.textContent = agreement.title || agreement.id;
-        const facts = doc.createElement('span');
-        facts.className = 'click-stack__facts';
-        facts.textContent = t('designs', 'Designs ({{count}})', { count: agreement.designs.length });
-        summary.append(name, facts);
-        const actions = doc.createElement('div');
-        actions.className = 'cb-actions click-stack__actions';
-        actions.append(button('btn btn-sm', t('showDesigns', 'Show its designs'), { action: 'agreement-designs', id: agreement.id }),
-            button('btn btn-sm btn-primary', t('proposalDrafts.tabs.details', 'Details'), { action: 'agreement-details', id: agreement.id }));
-        body.append(summary, actions);
-        showAgreementDesigns(agreement, { fit: false });
-    }
-
-    function showAgreementDesigns(agreement, { fit = true } = {}) {
-        const features = agreement.designs.map(design => designFootprint(String(design.proposalId))).filter(Boolean);
-        global.highlightFeaturesForHover?.(features, focusStyle());
-        if (!fit || !features.length || !global.L || !global.map) return;
-        try {
-            const bounds = global.L.geoJSON({ type: 'FeatureCollection', features }).getBounds();
-            if (bounds.isValid() && !global.map.getBounds().contains(bounds)) global.map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18 });
-        } catch (error) { console.error('[ClickStack] agreement designs could not be framed', error); }
-    }
 
     // The main action of a section: what a person most often came to the spot to do.
     const MAIN_COMMANDS = new Set(['ground.drawSite']);
@@ -332,7 +341,7 @@
         const actions = doc.createElement('div');
         actions.className = `cb-actions click-stack__actions ${className || ''}`;
         global.UiCommands.commandsFor(surface, context).forEach(entry => {
-            const node = button(MAIN_COMMANDS.has(entry.id) ? 'btn btn-sm btn-primary' : 'btn btn-sm', undefined, { command: entry.id });
+            const node = button(MAIN_COMMANDS.has(entry.id) ? 'btn btn-primary' : 'btn', undefined, { command: entry.id });
             const icon = doc.createElement('i');
             icon.className = entry.icon;
             icon.setAttribute('aria-hidden', 'true');
@@ -352,13 +361,55 @@
     }
 
     function focusStyle() {
-        return { color: '#0284c7', weight: 5, dashArray: null, fillOpacity: 0,
-            className: 'click-stack-map-focus' };
+        return global.MapHighlight.style({ weight: 5, className: 'click-stack-map-focus' });
     }
 
+    // A section opened from a list or link asks for its object to be framed; the request waits
+    // here until the object's shape is known (a plan's member geometry arrives after it opens).
     function highlightSection(kind, instance) {
         const features = global.ClickStackHits.featuresFor?.(kind, instance) || [];
-        global.highlightFeaturesForHover?.(features, focusStyle());
+        global.highlightFeaturesForInspection?.(features, focusStyle());
+        if (state.frameRequest === kind && features.length) {
+            state.frameRequest = null;
+            frameFeatures(features);
+        }
+    }
+
+    // Brings an object into the part of the map the stack leaves visible. A scene click never
+    // moves the camera; the Focus button always frames (always: true); an object opened from a
+    // list or link is framed only when it is out of view or too small to make out (click-stack.md).
+    function frameFeatures(features, { always = false } = {}) {
+        const map = global.map;
+        if (!features.length || !map || doc.body.classList.contains('three-mode-active')) return false;
+        const bounds = global.L.geoJSON({ type: 'FeatureCollection', features }).getBounds();
+        if (!bounds.isValid()) return false;
+        const rect = isOpen() && !state.el.classList.contains('is-folded') ? state.el.getBoundingClientRect() : null;
+        const viewport = { width: global.innerWidth, height: global.innerHeight };
+        if (!always) {
+            const pad = global.proposalPanelFitPadding(rect, viewport, 16);
+            const size = map.getSize();
+            const northWest = map.latLngToContainerPoint(bounds.getNorthWest());
+            const southEast = map.latLngToContainerPoint(bounds.getSouthEast());
+            const box = { left: northWest.x, top: northWest.y, right: southEast.x, bottom: southEast.y };
+            const view = { left: pad.paddingTopLeft[0], top: pad.paddingTopLeft[1],
+                right: size.x - pad.paddingBottomRight[0], bottom: size.y - pad.paddingBottomRight[1] };
+            if (!model.framingNeeded(box, view)) return false;
+        }
+        const { paddingTopLeft, paddingBottomRight } = global.proposalPanelFitPadding(rect, viewport, 48);
+        log(`framing ${features.length} shape(s)${always ? ' (Focus)' : ''}`);
+        map.fitBounds(bounds, { paddingTopLeft, paddingBottomRight, maxZoom: 19 });
+        return true;
+    }
+
+    function focusSection(kind) {
+        const instance = model.selectedInstance(state.stack, kind);
+        const features = global.ClickStackHits.featuresFor?.(kind, instance) || [];
+        if (!features.length) {
+            global.updateStatus?.(t('focusUnavailable', 'This has no shape on the map yet.'));
+            return;
+        }
+        global.highlightFeaturesForInspection?.(features, focusStyle());
+        frameFeatures(features, { always: true });
     }
 
     // Selects what the expanded section shows (with its map highlight) and hosts its panel.
@@ -369,20 +420,43 @@
         if (!instance || !body) return;
         state.expanding = true;
         try {
-            global.highlightFeaturesForHover?.([]);
+            global.clearProposalHoverLayers?.();
+            global.highlightFeaturesForInspection?.([]);
             if (kind !== 'designs' && kind !== 'selection') {
                 global.clearProposalHighlights?.();
                 global.ProposalSelection?.clear?.();
             }
             if (kind === 'agreements') {
                 unhost();
-                renderAgreement(body, instance);
-            } else if (kind === 'designs' && instance.serverId) {
+                state.agreementReady = global.DesignMemberships.mountAgreement(body, instance, global, { group: state.agreementGroup,
+                    onFocus: item => { if (isOpen() && state.stack.selectedKind === 'agreements' && model.selectedInstance(state.stack, 'agreements')?.id === item.id) highlightSection('agreements', item); } });
+            } else if (kind === 'plans') {
+                unhost();
+                const version = state.membershipVersion;
+                const mount = () => {
+                    if (body.isConnected) global.DesignMemberships.mountSection(body, kind, instance, state.memberships, global, {
+                        hits: state.hits, onFocus: item => {
+                            if (state.membershipVersion === version && state.stack?.selectedKind === kind
+                                && model.selectedInstance(state.stack, kind)?.id === item.id) highlightSection(kind, item);
+                        }
+                    });
+                };
+                if (global.DesignMemberships) mount();
+                else global.ensureOptionalTool('designMemberships').then(mount).catch(error => global.showStyledAlert(error.message));
+            }
+            if (kind === 'designs') {
+                body.querySelector('.click-stack__actions--design')?.remove();
+                const actions = global.ClickStackRelations.renderDesignActions(instance, doc, global);
+                const selector = body.querySelector('.click-stack__selector-wrap');
+                body.insertBefore(actions, selector ? selector.nextSibling : body.firstChild);
+            }
+            if (kind === 'designs' && instance.serverId) {
                 openPublishedDesign(instance);
             } else if (kind === 'designs') {
                 selectDesign(instance.id);
             } else if (kind === 'built') {
-                global.PlanningViews.inspectBuilding(instance.feature, instance.id);
+                host(body, 'planning-inspector');
+                global.PlanningViews.inspectBuilding(instance.feature, instance.id, { hosted: true });
             } else if (kind === 'permitted') {
                 global.PlanningViews.selectAt(instance.id, state.latlng);
             } else if (kind === 'selection') {
@@ -418,14 +492,12 @@
             if (target === 'parcel-info-panel') {
                 const toolbar = doc.getElementById(target)?.querySelector('.parcel-context-actions');
                 const actions = body.querySelector('.click-stack__actions--parcel');
-                if (toolbar && actions) toolbar.appendChild(actions);
-                const customSite = body.querySelector('[data-command="selection.useAsSite"]');
-                if (toolbar && customSite) {
-                    const wrap = doc.createElement('div');
-                    wrap.className = 'cb-actions click-stack__actions--parcel';
-                    wrap.appendChild(customSite);
-                    toolbar.appendChild(wrap);
-                }
+                if (toolbar && actions?.children.length) toolbar.appendChild(actions);
+                else actions?.remove();
+            }
+            if (kind !== 'plans') {
+                const relations = model.visibleContextFor(kind, instance, state.hits);
+                for (const group of relations) body.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
             }
             if (!instance.serverId) highlightSection(kind, instance);
         } catch (error) {
@@ -473,7 +545,13 @@
     function refreshSpot(latlng) {
         if (!isOpen() || state.latlng !== latlng) return;
         const hits = { ...global.ClickStackHits.hitsAt(latlng) };
-        // A list can open an unapplied design or agreement that is not a geometry hit here.
+        hits.agreements = state.hits?.agreements || [];
+        if (state.memberships && state.stack.selectedKind !== 'built') {
+            hits.plans = state.memberships.instances('plans', state.stack.selectedKind === 'plans');
+            hits.designs = hits.designs.map(item => String(item.proposal?.proposalId) === state.memberships.proposalId
+                ? { ...item, cid: state.memberships.cid } : item);
+        }
+        // A list can open a design that is not a geometry hit here.
         // A background lookup adds choices; it must not discard the object being inspected.
         const selectedKind = state.stack.selectedKind;
         const focused = model.selectedInstance(state.stack, selectedKind);
@@ -483,9 +561,12 @@
         const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
         const next = model.buildClickStack(hits, { selected });
         const expanded = state.stack.expanded;
-        state.hits = hits;
+        state.hits = { ...hits };
+        state.baseHits = { ...hits };
+        state.derived = {};
         state.stack = expanded && next.sections.some(section => section.kind === expanded) ? model.expand(next, expanded)
             : { ...next, expanded: null, selectedKind: next.sections.some(section => section.kind === selectedKind) ? selectedKind : next.selectedKind };
+        if (state.stack.selectedKind) absorbNeighbours(state.stack.selectedKind);
         render();
         if (state.stack.expanded) activate(state.stack.expanded);
     }
@@ -541,10 +622,58 @@
         // Another section takes over: the old one's panel closes. Within one section (a strip
         // choice) the panel stays open and is hosted again for the new instance.
         if (state.hosted && state.stack.expanded !== kind) unhost();
+        absorbNeighbours(kind);
         state.stack = model.expand(state.stack, kind);
         if (kind !== 'selection') remember(state.stack.expanded);
         render();
         activate(state.stack.expanded);
+        if (kind === 'designs' || kind === 'built') syncMemberships();
+    }
+
+    // The stack is built from the selected object outward (click-stack.md "Neighbours"): whatever
+    // opened it, the selected object's own references add what stands above and below it, so a
+    // design reached through a plan still shows its land, and a parcel its designs and buildings.
+    function absorbNeighbours(kind, { force = false } = {}) {
+        const instance = state.stack && model.selectedInstance(state.stack, kind);
+        if (!instance) return;
+        const previous = state.derived[kind];
+        if (previous && previous.id === instance.id && !force) return;
+        let hits = state.hits;
+        if (previous) {
+            // Another instance of this kind: the old one's neighbours make way for the new one's.
+            delete state.derived[kind];
+            hits = global.ClickStackNeighbours.withoutInstances(hits, previous.added, protectedInstances());
+        }
+        const result = global.ClickStackHits.withNeighbours(hits, kind, instance, { onPublished: publishedArrived });
+        state.derived[kind] = { id: instance.id, added: result.added };
+        if (result.hits === state.hits) return;
+        state.hits = result.hits;
+        const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
+        const next = model.buildClickStack(state.hits, { selected });
+        state.stack = { ...next, expanded: state.stack.expanded, selectedKind: state.stack.selectedKind, topRef: state.stack.topRef };
+    }
+
+    // What a replaced selection never takes away: what the stack arrived with and what the other
+    // selections derived.
+    function protectedInstances() {
+        const protect = {};
+        const add = (kind, id) => { (protect[kind] ||= []).push(String(id)); };
+        for (const [kind, list] of Object.entries(state.baseHits || {})) {
+            if (Array.isArray(list)) list.forEach(item => { if (item?.id != null) add(kind, item.id); });
+        }
+        for (const entry of Object.values(state.derived)) {
+            for (const [kind, ids] of Object.entries(entry.added || {})) ids.forEach(id => add(kind, id));
+        }
+        return protect;
+    }
+
+    // A parcel's published proposals arrived after its neighbours were read.
+    function publishedArrived() {
+        if (!isOpen()) return;
+        if (state.latlng) { refreshSpot(state.latlng); return; }
+        const before = state.stack;
+        absorbNeighbours(state.stack.selectedKind, { force: true });
+        if (state.stack !== before) render({ keepBody: bodyOf(state.stack.expanded) });
     }
 
     // The expanded section's header clicked again: everything collapses to rows.
@@ -559,8 +688,10 @@
         highlightSection(state.stack.selectedKind, model.selectedInstance(state.stack, state.stack.selectedKind));
     }
 
-    function show(stack, latlng, hits) {
+    // frame: the stack was opened from a list or link, not a scene click (see frameFeatures).
+    function show(stack, latlng, hits, { frame = false } = {}) {
         observePanels();
+        state.frameRequest = frame ? stack.selectedKind : null;
         ensureElement().classList.remove('is-folded');
         state.expanding = true;
         try {
@@ -573,7 +704,11 @@
         } finally { state.expanding = false; }
         state.stack = stack;
         state.latlng = latlng;
-        state.hits = hits;
+        state.hits = { ...hits };
+        state.baseHits = { ...hits };
+        state.derived = {};
+        if (stack.selectedKind) absorbNeighbours(stack.selectedKind);
+
         render();
         const el = ensureElement();
         el.hidden = false;
@@ -581,10 +716,12 @@
         doc.body.classList.add('click-stack-open');
         if (stack.expanded) activate(stack.expanded);
         else highlightSection(stack.selectedKind, model.selectedInstance(stack, stack.selectedKind));
+        syncMemberships(true); syncAgreements();
     }
 
     function close({ keepPanels = false, keepSelection = false } = {}) {
         if (!isOpen()) return;
+        global.AgreementPanel?.release?.(state.el);
         if (keepPanels) {
             // Another surface took a hostable panel: release ours without closing theirs.
             if (state.hosted) unhost({ hide: false });
@@ -604,9 +741,18 @@
             global.ProposalSelection?.clear?.();
             global.hideProposalDetailsPanel?.(true);
         }
-        global.highlightFeaturesForHover?.([]);
+        global.clearProposalHoverLayers?.();
+        global.highlightFeaturesForInspection?.([]);
+        state.memberships?.dispose();
+        state.agreementScope?.dispose(); state.agreementScope = null;
+        state.memberships = null;
+        state.membershipDesign = null;
+        state.membershipVersion++;
         state.stack = null;
+        state.frameRequest = null;
         state.hits = null;
+        state.baseHits = null;
+        state.derived = {};
         state.latlng = null;
         state.el.hidden = true;
         state.el.textContent = '';
@@ -646,24 +792,78 @@
                 if (state.stack.expanded === kind) return;
             }
             if (state.stack.expanded === kind) collapse(); else expand(kind);
+        } else if (action === 'focus') {
+            focusSection(kind);
         } else if (action === 'related') {
             const section = state.stack.sections.find(section => section.kind === kind);
             if (section?.instances.some(instance => instance.id === id)) {
                 state.stack = model.selectInstance(state.stack, kind, id);
+                state.frameRequest = kind;
                 expand(kind);
-            } else if (kind === 'designs') showDesign(id);
-            else if (kind === 'agreements') showAgreement(id);
+            } else if (kind === 'designs') {
+                const related = model.selectedInstance(state.stack, state.stack.selectedKind)?.members?.find(item => item.id === id);
+                if (related?.serverId) {
+                    global.DesignSync.fetchDesign(related.serverId).then(row => global.DesignSync.importDesign(row))
+                        .then(proposal => showDesign(proposal.proposalId)).catch(error => global.showStyledAlert(error.message));
+                } else showDesign(id);
+            }
             state.el.querySelector(`.click-stack__section[data-kind="${kind}"]`)?.scrollIntoView?.({ block: 'nearest' });
-        } else if (action === 'agreement-designs') {
-            const agreement = model.selectedInstance(state.stack, 'agreements')?.agreement;
-            if (agreement) showAgreementDesigns(agreement);
-        } else if (action === 'agreement-details') {
-            global.AgreementPanel.open(id);
-        } else if (action === 'coords') {
-            const text = target.textContent;
-            global.navigator.clipboard?.writeText(text).then(() => global.updateStatus?.(t('copied', 'Coordinates copied')),
-                error => console.error('[ClickStack] coordinates could not be copied', error));
+
         }
+    }
+
+    function onPanelChange(event) {
+        const target = event.target;
+        if (target.dataset.action !== 'instance') return;
+        state.stack = model.selectInstance(state.stack, target.dataset.kind, target.value);
+        expand(target.dataset.kind);
+    }
+
+    function syncMemberships(force = false) {
+        if (!global.loadDesignMemberships) return;
+        const design = model.selectedInstance(state.stack, 'designs');
+        const proposal = global.proposalStorage?.getProposal?.(design?.id) || design?.proposal;
+        if (!proposal || state.stack.selectedKind === 'built') {
+            state.memberships?.dispose(); state.memberships = null; state.membershipDesign = null;
+            state.membershipVersion++;
+            return;
+        }
+        const key = `${design.id}:${global.DesignSync?.publishedCid(proposal) || ''}`;
+        if (!force && state.membershipDesign === key) return;
+        state.memberships?.dispose();
+        state.memberships = null;
+        state.membershipDesign = key;
+        const version = ++state.membershipVersion;
+        global.loadDesignMemberships(proposal, session => {
+            if (!isOpen() || version !== state.membershipVersion) return;
+            const current = model.selectedInstance(state.stack, 'designs');
+            const currentProposal = global.proposalStorage?.getProposal?.(current?.id) || current?.proposal;
+            if (current?.id !== design.id || (global.DesignSync?.publishedCid(currentProposal) || null) !== session.cid) {
+                session.dispose();
+                syncMemberships(true);
+                return;
+            }
+            state.memberships = session;
+            const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
+            const previous = state.stack;
+            state.hits = { ...state.hits, plans: Array.from(new Map([...session.instances('plans', previous.selectedKind === 'plans'), ...(state.hits.planContext ? [state.hits.planContext] : [])].map(item => [item.id, item])).values()) };
+            // Annotate only the exact inspected revision for relationship matching.
+            state.hits.designs = state.hits.designs.map(item => item.id === design.id ? { ...item, cid: session.cid } : item);
+            const next = model.buildClickStack(state.hits, { selected });
+            const has = kind => next.sections.some(section => section.kind === kind);
+            state.stack = { ...next, expanded: previous.expanded && has(previous.expanded) ? previous.expanded : null,
+                selectedKind: has(previous.selectedKind) ? previous.selectedKind : next.selectedKind, topRef: previous.topRef };
+            const keepBody = previous.expanded !== 'plans' ? bodyOf(previous.expanded) : null;
+            render({ keepBody });
+            if (keepBody) {
+                [...keepBody.children].filter(child => child.classList.contains('click-stack__choices')).forEach(child => child.remove());
+                for (const group of model.visibleContextFor(previous.expanded, model.selectedInstance(state.stack, previous.expanded), state.hits)) {
+                    keepBody.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
+                }
+            } else if (state.stack.expanded) activate(state.stack.expanded);
+        }).then(session => {
+            if (version !== state.membershipVersion) session?.dispose();
+        }).catch(error => console.error(`[${new Date().toISOString()}] [ClickStack] memberships could not load`, error));
     }
 
     // Every entry point (a route, list, editor or click) uses its view's Design section.
@@ -688,19 +888,42 @@
         log(`placed ${designKey}: ${stack.sections.map(section => `${section.kind}×${section.count}`).join(' ')}`);
         // No click opened this spot, so the first click on the design is a new one (it selects what
         // it hits, such as a road's stretch), not "the same spot again", which would close the stack.
-        show({ ...stack, topRef: null }, latlng, hits);
+        show({ ...stack, topRef: null }, latlng, hits, { frame: true });
     }
 
-    function showAgreement(id) {
-        const agreement = global.AgreementStore.get(id);
-        if (!agreement) throw new Error(`ClickStack: agreement ${id} is not stored`);
-        const first = agreement.designs.find(design => global.proposalStorage.getProposal(design.proposalId));
-        if (first) showDesign(first.proposalId);
-        const hits = first ? { ...state.hits } : {};
-        hits.agreements = [...(hits.agreements || []).filter(item => item.id !== String(id)),
-            { id: String(id), label: agreement.title || String(id), agreement, designIds: agreement.designs.map(design => String(design.proposalId)) }];
-        const stack = model.expand(model.buildClickStack(hits, { selected: { agreements: String(id) } }), 'agreements');
-        show({ ...stack, topRef: null }, first ? state.latlng : null, hits);
+    async function showPlan(plan, { designs = [], draft = false } = {}) {
+        if (!global.DesignMemberships) await global.ensureOptionalTool('designMemberships');
+        const instance = { id: plan.cid, cid: plan.cid, content: plan.content, label: plan.content.title, draft, localDesigns: designs };
+        Object.assign(instance, await global.DesignMemberships.inspect('plans', instance, global));
+        if (doc.body.classList.contains('three-mode-active')) return global.showThreeModePlan(instance);
+        const hits = { plans: [instance], planContext: instance, designs: instance.members };
+        const stack = model.expand(model.buildClickStack(hits, { selected: { plans: instance.id } }), 'plans');
+        state.lastClick = null;
+        show({ ...stack, topRef: null }, global.map.getCenter(), hits, { frame: true });
+    }
+
+    async function showAgreement(agreement, { readOnly = false, designs = [] } = {}) {
+        if (!global.DesignMemberships) await global.ensureOptionalTool('designMemberships');
+        global.MapShell?.closeSheets();
+        const plan = { ...agreement.plan, id: agreement.plan.cid, label: agreement.plan.content.title,
+            localDesigns: agreement.designs, draft: !agreement.published };
+        const supplied = designs instanceof Map ? designs : new Map(designs.map(design => [String(design.proposalId), design]));
+        plan.members = agreement.designs.flatMap(ref => {
+            const proposal = supplied.get(String(ref.proposalId)) || global.proposalStorage.getProposal(ref.proposalId);
+            return proposal ? [{ id: String(proposal.proposalId), label: proposal.title || ref.title, proposal, cid: ref.cid }] : [];
+        });
+        const instance = { id: readOnly ? agreement.published.cid : agreement.id, ...(readOnly ? {} : { localId: agreement.id }),
+            cid: agreement.published?.cid, label: agreement.title || global.i18n.t('agreement.panel.untitled'), title: agreement.title,
+            agreement, readOnly, designs, plan, onParcel: true };
+        if (doc.body.classList.contains('three-mode-active')) return global.showThreeModePlan(plan, { agreement: instance });
+        const hits = { plans: [plan], planContext: plan, agreements: [instance], agreementContext: instance, designs: plan.members };
+        const stack = model.expand(model.buildClickStack(hits, { selected: { plans: plan.id, agreements: instance.id } }), 'agreements');
+        state.lastClick = null; show({ ...stack, topRef: null }, global.map.getCenter(), hits, { frame: true });
+        return state.agreementReady;
+    }
+
+    function restoreFocus() {
+        if (isOpen()) highlightSection(state.stack.selectedKind, model.selectedInstance(state.stack, state.stack.selectedKind));
     }
 
     function showParcel(feature) {
@@ -715,7 +938,26 @@
             label: global.ClickStackHits.parcelLabel(id, feature), live: !!global.LiveParcelFabric.get(id) });
         const stack = model.expand(model.buildClickStack(hits, { selected: { [kind]: id } }), kind);
         state.lastClick = null;
-        show({ ...stack, topRef: null }, latlng, hits);
+        show({ ...stack, topRef: null }, latlng, hits, { frame: true });
+    }
+
+    function showBuilding(feature, key = null) {
+        if (!feature?.geometry) return false;
+        if (doc.body.classList.contains('three-mode-active')) return global.showThreeModeBuilding?.(feature, key) || false;
+        const [lng, lat] = global.turf.pointOnFeature(feature).geometry.coordinates;
+        const latlng = global.L.latLng(lat, lng);
+        const hits = { ...global.ClickStackHits.hitsAt(latlng) };
+        const id = String(key || global.buildingPoolFeatureKey?.(feature) || feature.id || 'built');
+        hits.built = [...(hits.built || [])];
+        const existing = hits.built.findIndex(item => String(item.id) === id);
+        const supplied = { ...(existing >= 0 ? hits.built[existing] : {}), id, feature,
+            label: global.ClickStackHits.buildingLabel(feature) };
+        if (existing >= 0) hits.built[existing] = supplied;
+        else hits.built.unshift(supplied);
+        const stack = model.expand(model.buildClickStack(hits, { selected: { built: id } }), 'built');
+        state.lastClick = null;
+        show({ ...stack, topRef: null }, latlng, hits, { frame: true });
+        return true;
     }
 
     // Every map click on the 2D map arrives here, whichever layer received it. One physical click
@@ -759,7 +1001,12 @@
         log(`click ${latlng.lat.toFixed(6)},${latlng.lng.toFixed(6)}: ${stack.sections.map(section => `${section.kind}×${section.count}`).join(' ') || 'nothing'} → ${action}`);
         if (action === 'close') close();
         else if (action === 'open') show(stack, latlng, hits);
-        else if (global.GroundMenu?.factsAt(latlng)?.kind === 'not-loaded') {
+        else if (action === 'retain') {
+            // A click always selects the topmost object under it: the retained stack opens that
+            // object's section again when another one had been expanded.
+            const topKind = stack.topRef ? stack.topRef.slice(0, stack.topRef.indexOf(':')) : null;
+            if (topKind && state.stack.expanded !== topKind) expand(topKind);
+        } else if (global.GroundMenu?.factsAt(latlng)?.kind === 'not-loaded') {
             global.updateStatus?.(global.i18n.t('groundMenu.notLoaded'));
         }
         return true;
@@ -779,6 +1026,6 @@
 
     // Selection owns the map focus, including while its details are collapsed.
     const holdsHighlight = () => isOpen() && !!state.stack?.selectedKind;
-    global.ClickStack = Object.freeze({ handleClick, showDesign, showAgreement, showParcel, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
+    global.ClickStack = Object.freeze({ handleClick, showDesign, showPlan, showAgreement, showParcel, showBuilding, restoreFocus, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
         current: () => state.stack, point: () => state.latlng });
 })(window);

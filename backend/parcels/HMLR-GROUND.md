@@ -163,6 +163,10 @@ stay separate until their next admission.
 
 The current v2 routing release is
 `af29bc44f39eefffff610c64df4d14dfe40f64ef94ec9ca4e7e7b0c353af2263`.
+Since 2026-10-28 it is served from the `uk-cadastre` R2 bucket next to the tile
+releases (`https://uk-cadastre.urbangametheory.xyz/<releaseId>/manifest.json`), not
+from the frontend docroot. Moving it only rebased the scope and ID URLs inside the
+manifest; the release ID covers hashes and sizes, not URLs, so it did not change.
 An independent audit verified all 318 archive pins, 24,453,254 source records and
 5,022 ID directory shards against the original release. Only coverage metadata
 and archive selection changed; the geometry policy, source identities and city
@@ -175,7 +179,9 @@ boundary queries still include neighbouring ZIPs when required.
 
 ```sh
 node backend/scripts/build-hmlr-browser-manifest.mjs --run \
-  --out tmp/hmlr-browser-metadata --base-url https://YOUR-PUBLIC-HOST/hmlr
+  --out tmp/hmlr-browser-metadata --base-url https://uk-cadastre.urbangametheory.xyz
+rclone copy tmp/hmlr-browser-metadata/<releaseId> r2-uk-cadastre:uk-cadastre/<releaseId> --transfers 64 \
+    --header-upload "Cache-Control: public, max-age=31536000, immutable"
 ```
 
 The destination must be supplied explicitly. This one-time/monthly metadata job
@@ -187,9 +193,9 @@ of repeating that scan. Geometry is consumed and discarded; it is never stored
 in Postgres or served from a parcel database.
 The metadata destination needs normal static HTTPS hosting with CORS when it is
 on a different origin. Configure `manifestUrl` on the source before qualification.
-When publishing under the frontend's `/data/hmlr/`, deployment preserves that
-directory. Its nginx location must use `try_files $uri =404` so a missing shard
-returns a real error instead of the app's HTML fallback. Publish only the release
+The manifest's scope and ID URLs must sit under the manifest's own host and release
+directory, so publish the whole release directory to the same place as its manifest.
+The frontend deploy no longer preserves `/data/hmlr/` in the docroot. Publish only the release
 directories and final manifest; checkpoints and staging files stay private.
 
 ## Shared provider, separate cities
@@ -223,7 +229,7 @@ from a sealed manifest and the same WUP input used by discovery:
 python3 scripts/build-hmlr-wup-seed.py \
   --manifest tmp/hmlr-browser-metadata/manifest.json \
   --expected-manifest-sha256 VERIFIED_MANIFEST_SHA256 \
-  --manifest-base-url https://YOUR-PUBLIC-HOST/data/hmlr \
+  --manifest-base-url https://uk-cadastre.urbangametheory.xyz \
   --manifest-evidence-path tmp/hmlr-browser-metadata/manifest.json \
   --wup tmp/WUP2025.csv.gz --output tmp/hmlr-city-seed.json
 python3 scripts/build-provider-expansion-queue.py --no-catalog \

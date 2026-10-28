@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3037",
+  "name": "Hiroshima, Japan",
+  "point": [
+    34.4082401125981,
+    132.45216492325
+  ],
+  "bindings": [
+    {
+      "appCityId": "hiroshima",
+      "runtimeConfig": {
+        "id": "hiroshima",
+        "wupCityCode": "3037",
+        "label": "Hiroshima, Japan",
+        "currency": {
+          "locale": "ja-JP",
+          "code": "JPY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            34.4082401125981,
+            132.45216492325
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            34.4082401125981,
+            132.45216492325
+          ],
+          "fallbackDataset": [
+            132.45216492325,
+            34.4082401125981
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "jp-moj-hiroshima-asaminami-registered-map-2026",
+          "idPrefix": "jp-moj-hiroshima-asaminami-registered-map-2026/geometry-sha256-v1/",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Japan Ministry of Justice registry-office map data; AIGID / Geospatial Information Center conversion and distribution. Hiroshima Asaminami Ward public-coordinate sheets; 2026 distribution (collection label 2025)."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "jp-moj-hiroshima-asaminami-registered-map-2026",
+      "adapter": "geojson-range",
+      "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/34/aigid-moj-34105/34105_%E5%BA%83%E5%B3%B6%E5%B8%82%E5%AE%89%E4%BD%90%E5%8D%97%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%993%E7%B3%BB_%E7%AD%86R_2026.geojson",
+      "idPrefix": "jp-moj-hiroshima-asaminami-registered-map-2026/geometry-sha256-v1/",
+      "outFields": [],
+      "name": "Japan MOJ registry-map parcels — Hiroshima Asaminami Ward (2026 distribution)",
+      "operator": "Japan Ministry of Justice; AIGID / Geospatial Information Center conversion and distribution",
+      "countryCode": "JP",
+      "cityIds": [
+        "hiroshima"
+      ],
+      "metricSrid": 32653,
+      "sourceCrs": "OGC:CRS84",
+      "nativeCrs": "OGC:CRS84",
+      "returnsWGS84": true,
+      "geometryType": "Polygon",
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 1,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "expectedEtag": "\"837261ac9d9c2ea44fb98e9c22f4182e-3\"",
+      "expectedSnapshotBytes": 20953285,
+      "expectedSnapshotFeatures": 20881,
+      "expectedSnapshotSha256": "c3876d6152f8768c26522835d710e3c7fd4e8b254264b75f7ad4f0d47294c231",
+      "expectedCollectionName": "34105_広島市安佐南区_公共座標3系_筆R_2025",
+      "rangeBytes": 1048576,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "dataVersion": "2026 distribution; collection label 2025 (publisher metadata discrepancy)",
+      "scope": "Partial Hiroshima City coverage: Asaminami Ward (34105) public-coordinate registry-map sheets only. City locator is in Nishi Ward and is preserved. No ward-wide or citywide completeness or survey accuracy claimed. Geometry and precision are unchanged; only geometry is retained. Full area scans validate all 20,881 rows and the pinned release SHA-256; exact reads stop once requested hashes are found in an ETag-pinned prefix.",
+      "licenceNote": "CKAN reports CC BY and directs users to original Ministry of Justice map-data terms. Attribute MOJ and AIGID conversion/distribution. This is converted registry map data, not legal-title or survey-accuracy evidence.",
+      "licenceUrl": "https://www.geospatial.jp/ckan/organization/moj-mapdata",
+      "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-34105",
+      "attribution": "Japan Ministry of Justice registry-office map data; AIGID / Geospatial Information Center conversion and distribution. Hiroshima Asaminami Ward public-coordinate sheets; 2026 distribution (collection label 2025).",
+      "identity": {
+        "scheme": "geometry-sha256-v1",
+        "recipe": "Lowercase SHA-256 of UTF-8 JSON.stringify({type: geometry.type, coordinates: geometry.coordinates}) preserving source coordinate order and precision. Prefix with source ID + /geometry-sha256-v1/. Deduplicate only identical canonical geometry hashes. Geometry corrections and annual revisions change derived IDs; native ID is not globally unique."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "JP",
+          "city": "Hiroshima",
+          "basis": "First-party AIGID CKAN package aigid-moj-34105 identifies Hiroshima City Asaminami Ward converted Ministry of Justice registry-office maps; only public-coordinate sheets."
+        },
+        "sourcePurpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-34105",
+          "https://www.geospatial.jp/ckan/dataset/ea23a4d2-ca8c-479e-82ef-d844debca069"
+        ]
+      },
+      "defaultForCity": true
+    }
+  ]
+}

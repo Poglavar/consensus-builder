@@ -51,6 +51,8 @@ function parcel(overrides = {}) {
         buildingCount: 0,
         builtFootprintM2: 0,
         builtGfaM2: 0,
+        buildingSourceId: 'survey-fixture',
+        buildingCoverage: 'complete',
         rule: { ruleId: 'r', shortName: '1.4', maxFloors: 4, maxCoveragePct: null, maxGfaM2: null, minSetbackM: 3, minPlotM2: null, variables: {} }
     };
     const { index: _i, sideM: _s, ...rest } = overrides;
@@ -102,6 +104,48 @@ describe('planCandidates basics', () => {
     it('honours the limit', () => {
         const parcels = [0, 1, 2, 3, 4].map(index => parcel({ index }));
         expect(planCandidates(parcels, PERSONA, { ...OPTS, limit: 2 })).toHaveLength(2);
+    });
+});
+
+describe('unknown existing buildings', () => {
+    it.each([
+        { builtGfaM2: null, builtFootprintM2: null, buildingCount: null },
+        { builtGfaM2: undefined, builtFootprintM2: undefined, buildingCount: undefined },
+        { buildingCoverage: 'unknown' },
+        { buildingCoverage: 'partial' },
+        { buildingSourceId: null },
+        { builtKnown: false, builtFootprintM2: null, buildingCount: null }
+    ])('keeps a geometry preview without inventing stock, gain, offer or rank for %j', evidence => {
+        const [candidate] = planCandidates([parcel(evidence)], PERSONA, OPTS);
+        expect(candidate.massing.geometry.type).toBe('Polygon');
+        expect(candidate.proposedGfaM2).toBeGreaterThan(0);
+        expect(candidate).toMatchObject({
+            builtGfaM2: null, builtKnown: false, gain: null, offer: null, score: null,
+            scoreParts: { density: null, valueUplift: null, openSpace: null }
+        });
+    });
+
+    it('retains measured footprint evidence when only floor area is missing', () => {
+        const [candidate] = planCandidates([parcel({ builtGfaM2: null, builtFootprintM2: 400, buildingCount: 2 })], PERSONA, OPTS);
+        expect(candidate).toMatchObject({ builtGfaM2: null, builtFootprintM2: 400, buildingCount: 2, gain: null, score: null });
+        expect(candidate.scoreParts.openSpace).toBeCloseTo(1 - 400 / candidate.areaM2);
+    });
+
+    it('ranks supported candidates first without letting unknown stock alter their gain scores', () => {
+        const known = parcel({ index: 1, sideM: 30 });
+        const unknown = parcel({ index: 0, sideM: 100, buildingCoverage: 'unknown' });
+        const candidates = planCandidates([known, unknown], PERSONA, OPTS);
+        expect(candidates).toHaveLength(2);
+        expect(candidates[0].parcelId).toBe(known.parcelId);
+        expect(candidates[0].scoreParts.valueUplift).toBe(1);
+        expect(candidates[1].score).toBeNull();
+    });
+
+    it('does not require a missing footprint for a persona that gives open space zero weight', () => {
+        const [candidate] = planCandidates([parcel({ builtFootprintM2: null })],
+            { ...PERSONA, weights: { density: 1, openSpace: 0 } }, OPTS);
+        expect(candidate.scoreParts.openSpace).toBeNull();
+        expect(candidate.score).toBe(1);
     });
 });
 

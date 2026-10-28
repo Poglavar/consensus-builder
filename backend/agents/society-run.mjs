@@ -24,7 +24,7 @@ import { societyHistory } from './policies/history.js';
 import { decideTurn } from './policies/collect.js';
 import { societyPolicy, societySlot, societyTurns, societyTurnSpent, societyBudget } from './run-policy.js';
 import { ensurePledgeBookAndSet } from './pledger.js';
-import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
+import { buyAgreementShares, sellAgreementShares, readAgreementMarket, readAgreementMarkets, usdcToAtomic } from './bettor.js';
 import { claimAgreementMarket, resolveAgreementMarket, revokePledge } from './lifecycle-actions.js';
 import { assertUnderCap, dailyCapUsd, dailySpendUsd, failStaleRuns, getRun, listPersonaRuns, recordCosts, STALE_RUN_HOURS, startRun, updateRun } from './ledger.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
@@ -43,7 +43,7 @@ const require = createRequire(import.meta.url);
 const actionEngineApi = require('../../frontend/js/agent-action-engine.js');
 const web3 = require('@solana/web3.js');
 const supportClient = require('../../frontend/js/solana/pledge-client.js');
-const marketClient = require('../../frontend/js/solana/market-client.js');
+const marketClient = require('../../frontend/js/solana/lmsr-client.js');
 supportClient.configure({ web3 });
 marketClient.configure({ web3 });
 const USDC_DEVNET = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
@@ -160,10 +160,16 @@ async function gatherInputs({ index, persona, needs, connection, wallet }) {
         minted = minted.slice(0, MAX_MINTED);
     }
     const accounts = minted.map(agreement => agreement.account);
-    const chainStatuses = Object.fromEntries(minted.map(agreement => [agreement.account, agreement.chainStatus]));
-    const marketInfos = await readAccounts(connection, accounts.map(account => marketClient.getMarketPda(account)[0]));
+    const contexts = await readAgreementMarkets(connection, accounts);
     const markets = {};
-    accounts.forEach((account, position) => { markets[account] = decodeOrNull(marketInfos[position], marketClient.decodeMarket); });
+    accounts.forEach(account => {
+        const context = contexts.get(account);
+        const agreement = minted.find(item => item.account === account);
+        agreement.chainStatus = context.agreement.status.toLowerCase();
+        agreement.executedAt = context.agreement.executedAt;
+        markets[account] = context.market;
+    });
+    const chainStatuses = Object.fromEntries(minted.map(agreement => [agreement.account, agreement.chainStatus]));
 
     const positions = {};
     const chain = { noPositionCids: [], yesPositionCids: [], pledges: {} };
@@ -171,13 +177,14 @@ async function gatherInputs({ index, persona, needs, connection, wallet }) {
         const owner = new PublicKey(wallet);
         const withMarket = accounts.filter(account => markets[account]);
         const positionPdas = withMarket.flatMap(account => {
-            const [market] = marketClient.getMarketPda(account);
+            const market = contexts.get(account).address;
             return [SIDE_YES, SIDE_NO].map(side => marketClient.getPositionPda(market, owner, side)[0]);
         });
         const positionInfos = await readAccounts(connection, positionPdas);
         withMarket.forEach((account, position) => {
-            const yes = decodeOrNull(positionInfos[position * 2], marketClient.decodePosition);
-            const no = decodeOrNull(positionInfos[position * 2 + 1], marketClient.decodePosition);
+            const address = contexts.get(account).address;
+            const yes = marketClient.readPositionAccount(positionInfos[position * 2], address, owner, SIDE_YES);
+            const no = marketClient.readPositionAccount(positionInfos[position * 2 + 1], address, owner, SIDE_NO);
             if (yes || no) positions[account] = { yes, no };
         });
         minted.forEach(agreement => {
@@ -216,19 +223,24 @@ async function gatherInputs({ index, persona, needs, connection, wallet }) {
     return { agreements, markets, positions, chainStatuses, chain, recordFailures };
 }
 
-const ADAPTERS = { fundBotAction, ensureMarketAndStake, ensurePledgeBookAndSet, revokePledge, resolveAgreementMarket, claimAgreementMarket };
+const ADAPTERS = { fundBotAction, buyAgreementShares, sellAgreementShares, readAgreementMarket, ensurePledgeBookAndSet, revokePledge, resolveAgreementMarket, claimAgreementMarket };
 
 /** Sign one society action. `adapters` replaces the chain calls in tests. */
 export async function execute({ action, connection, keypair, caps, pool, persona, runId, adapters = {} }) {
     const act = { ...ADAPTERS, ...adapters };
     if (action.usdc > caps.maxUsdc + 1e-9) throw new Error(`${action.type} of ${action.amount} USDC exceeds AGENT_SOCIETY_USDC_CAP ${caps.maxUsdc}`);
     if (action.type === 'stake' && (action.side === 'yes' || action.side === 'no')) {
+        const context = await act.readAgreementMarket(connection, action.account);
+        if (!context.market) throw Object.assign(new Error('The sponsor has not opened the canonical agreement market.'), { code: 'MARKET_NOT_OPEN' });
         await act.fundBotAction({ action, connection, pool, persona, runId });
-        // targetAmount makes a retried turn a replay instead of a second stake.
-        return act.ensureMarketAndStake({
+        return act.buyAgreementShares({
             connection, ownerKeypair: keypair, subject: action.account, stakeMint: USDC_DEVNET,
-            side: action.side === 'yes' ? SIDE_YES : SIDE_NO, amountAtomic: usdcToAtomic(action.amount), targetAmount: true, sendAndConfirm: sendAndConfirmPolling
+            side: action.side === 'yes' ? SIDE_YES : SIDE_NO, amountAtomic: usdcToAtomic(action.amount), sendAndConfirm: sendAndConfirmPolling
         });
+    }
+    if (action.type === 'sell' && (action.side === 'yes' || action.side === 'no')) {
+        return act.sellAgreementShares({ connection, ownerKeypair: keypair, subject: action.account, stakeMint: USDC_DEVNET,
+            side: action.side === 'yes' ? SIDE_YES : SIDE_NO, sharesAtomic: BigInt(action.sharesAtomic), sendAndConfirm: sendAndConfirmPolling });
     }
     if (action.type === 'pledge') {
         return act.ensurePledgeBookAndSet({
@@ -257,8 +269,8 @@ export async function execute({ action, connection, keypair, caps, pool, persona
 }
 
 export function activityMessage(persona, action) {
-    if (action.type === 'stake' && action.side === 'yes') return `${persona.name} bet YES ${action.amount} USDC on agreement ${action.agreementName}.`;
-    if (action.type === 'stake') return `${persona.name} bet ${String(action.side).toUpperCase()} ${action.amount} USDC against agreement ${action.agreementName}.`;
+    if (action.type === 'stake') return `${persona.name} bought ${String(action.side).toUpperCase()} shares with a budget of ${action.amount} USDC on agreement ${action.agreementName}.`;
+    if (action.type === 'sell') return `${persona.name} sold ${String(action.side).toUpperCase()} shares on agreement ${action.agreementName}.`;
     if (action.type === 'claim') return `${persona.name} collected ${action.payout} USDC from its ${String(action.side).toUpperCase()} bet on agreement ${action.agreementName}${action.resolveFirst ? ' after settling its market' : ''}.`;
     if (action.type === 'pledge') return `${persona.name} pledged ${action.amount} USDC to agreement ${action.agreementName}.`;
     if (action.type === 'revokePledge') return `${persona.name} revoked its pledge to agreement ${action.agreementName}.`;

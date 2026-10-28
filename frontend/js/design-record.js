@@ -100,7 +100,7 @@
      * Checks a published design/v1 object, as the courier and index receive one.
      * @returns {{ valid: boolean, errors: { code, message, field? }[] }} with codes design-schema,
      *   design-payload, design-goal, design-shape, design-origin, design-field-missing,
-     *   design-field-unknown and design-field-invalid
+     *   design-field-unknown, design-field-invalid and design-road-frame
      */
     function validate(object) {
         if (!isObject(object)) return { valid: false, errors: [{ code: 'design-schema', message: `A design is a ${SCHEMA} object.` }] };
@@ -147,6 +147,24 @@
             add('design-field-invalid', 'The site is a Polygon or MultiPolygon geometry.', 'site');
         }
         if (object.geometry != null && !isObject(object.geometry)) add('design-field-invalid', 'The geometry is an object.', 'geometry');
+
+        const road = object.roadProposal?.definition;
+        if (road?.constructionFrame) {
+            // A relocated drawing must be prepared again; an old frame otherwise prevents 3D rendering.
+            const frames = root.__metricFrame || (typeof require === 'function' ? require('./metric-frame.js') : null);
+            if (!frames) throw new Error('The metric construction-frame helper is not loaded.');
+            try {
+                const frame = frames.frameFromProvenance(road.constructionFrame);
+                const positions = [
+                    ...(road.osm?.elements || []).filter(element => element.type === 'node').map(node => [node.lon, node.lat]),
+                    ...frames.collectPositions(road.polygon)
+                ];
+                if (!positions.length) throw new Error('The road has no coordinates.');
+                positions.forEach(position => frame.toMetric(position));
+            } catch (_) {
+                add('design-road-frame', 'Road coordinates do not match their saved construction frame. Re-prepare the road at its current location.', 'roadProposal.definition.constructionFrame');
+            }
+        }
 
         if (object.origin != null && !(isObject(object.origin) && Object.keys(object.origin).length === 1
             && cid().isCid(object.origin.cid))) {

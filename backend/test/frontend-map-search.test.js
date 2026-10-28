@@ -38,9 +38,9 @@ describe('query classification', () => {
         expect(Model.classifyQuery('   ')).toMatchObject({ empty: true, kinds: [] });
     });
 
-    it('reads a city or street name as city, proposal, address and command — not a parcel', () => {
-        expect(kinds('Split')).toEqual(['city', 'proposal', 'address', 'command']);
-        expect(kinds('Ilica 1')).toEqual(['city', 'proposal', 'address', 'command']);
+    it('reads a city or street name as city, plan, design, address and command — not a parcel', () => {
+        expect(kinds('Split')).toEqual(['city', 'plan', 'proposal', 'address', 'command']);
+        expect(kinds('Ilica 1')).toEqual(['city', 'plan', 'proposal', 'address', 'command']);
     });
 
     it('reads cadastral ids as parcels, never as addresses', () => {
@@ -58,8 +58,8 @@ describe('query classification', () => {
         }
     });
 
-    it('needs three characters for an address and two for a proposal', () => {
-        expect(kinds('Il')).toEqual(['city', 'proposal', 'command']);
+    it('needs three characters for an address and two for plans and designs', () => {
+        expect(kinds('Il')).toEqual(['city', 'plan', 'proposal', 'command']);
         expect(kinds('I')).toEqual(['city', 'command']);
     });
 
@@ -135,7 +135,7 @@ describe('ranking', () => {
 
     it('has a translated name for every configured city in every locale', () => {
         // map-search.js shows city.labels.<id>; a missing key falls back to the English label.
-        const source = fs.readFileSync(path.join(FRONTEND, 'js/city-config.js'), 'utf8');
+        const source = fs.readFileSync(path.join(FRONTEND, 'data/city-configs.js'), 'utf8');
         const block = source.slice(source.indexOf('const CITY_CONFIGS'), source.indexOf('\n    };', source.indexOf('const CITY_CONFIGS')));
         const ids = [...block.matchAll(/^ {8}([a-z_]+): \{\n {12}id: '([a-z_]+)'/gm)].map(m => m[2]).filter(id => id !== 'explore');
         expect(ids).toEqual(expect.arrayContaining(['zagreb', 'split', 'sibenik', 'belgrade', 'ljubljana', 'buenos_aires', 'colorado', 'new_york']));
@@ -200,12 +200,12 @@ describe('ranking', () => {
         expect(groups.find(g => g.id === 'places').items).toHaveLength(Model.GROUP_LIMITS.places);
     });
 
-    it('puts parcels first for an id-looking query (rank 0) and keeps the fixed order on ties', () => {
+    it('keeps designs ahead of other matches and uses the fixed order on ties', () => {
         const groups = Model.orderGroups([
             { id: 'proposals', items: [{}] },
             { id: 'parcels', items: [{ rank: 0 }] }
         ]);
-        expect(groups.map(g => g.id)).toEqual(['parcels', 'proposals']);
+        expect(groups.map(g => g.id)).toEqual(['proposals', 'parcels']);
         expect(Model.orderGroups([{ id: 'cities', items: [{ rank: 0 }] }, { id: 'recent', items: [{ rank: 0 }] }]).map(g => g.id))
             .toEqual(['recent', 'cities']);
     });
@@ -356,7 +356,7 @@ describe('translations', () => {
         for (const match of src.matchAll(/\bt\('((?:mapSearch|commandPalette|sidebar|world|modal)\.[A-Za-z0-9_.]+)'/g)) keys.add(match[1]);
     });
     const dynamic = [
-        ...['recent', 'cities', 'parcels', 'proposals', 'places', 'commands'].map(g => `mapSearch.groups.${g}`),
+        ...['recent', 'plans', 'cities', 'parcels', 'proposals', 'places', 'commands'].map(g => `mapSearch.groups.${g}`),
         ...['disabledIn3D', 'busy', 'hiddenForCity', 'disabled'].map(r => `commandPalette.reason.${r}`),
         ...['live', 'source', 'none', 'unknown'].flatMap(tier => [`world.tier.${tier}.short`, `world.tier.${tier}.text`])
     ];
@@ -383,5 +383,35 @@ describe('translations', () => {
                 expect(typeof lookup(dictionaries[lang], `commandPalette.groups.${group}`), `${lang}: ${group}`).toBe('string');
             }
         }
+    });
+});
+
+describe('plan search and response cache', () => {
+    it('ranks matching plans, deduplicates local and remote CIDs, and excludes unrelated titles', () => {
+        expect(Model.rankPlans([
+            { cid: CID_701, title: 'River plan' }, { cid: CID_702, title: 'River' },
+            { cid: CID_701, title: 'Remote duplicate' }, { cid: 'other', title: 'Hill' }
+        ], 'river').map(row => row.title)).toEqual(['River', 'River plan']);
+        expect(Model.rankPlans([{ cid: CID_701, title: 'River' }], CID_701)[0].cid).toBe(CID_701);
+    });
+
+    it('puts plans first and designs second even when a command is an exact match', () => {
+        expect(Model.orderGroups([
+            { id: 'commands', items: [{ rank: 0 }] }, { id: 'proposals', items: [{ rank: 0 }] },
+            { id: 'plans', items: [{ rank: 3 }] }, { id: 'cities', items: [{ rank: 1 }] }
+        ]).map(group => group.id)).toEqual(['plans', 'proposals', 'commands', 'cities']);
+    });
+
+    it('caches empty responses, expires without extending freshness on reads, and evicts least used queries', () => {
+        let time = 0;
+        const cache = Model.createQueryCache({ limit: 2, maxAgeMs: 30, now: () => time });
+        cache.set('a', []); cache.set('b', { plans: [], designs: [] });
+        time = 10;
+        expect(cache.get('a')).toEqual([]);
+        cache.set('c', [1]);
+        expect(cache.get('b')).toBeUndefined();
+        time = 30;
+        expect(cache.get('a')).toBeUndefined();
+        expect(cache.get('c')).toEqual([1]);
     });
 });

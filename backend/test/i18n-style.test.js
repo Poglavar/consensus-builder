@@ -1,13 +1,14 @@
 // Copy rules from docs/design-language.md, enforced on frontend/i18n/en.json (the source of truth)
-// and the three translations.
+// and every registered translation.
 //
 // Sentence case, one ellipsis character, no duplicate strings: the legacy surfaces were Title Case
 // and the new shell sentence case, which produced 45 exact case conflicts ("Create Proposal" ×5 next
 // to "Create proposal" ×2) and 320 groups of duplicated values that drift apart. The counts here are
 // ratchets against backend/test/fixtures/design-baselines.json: they may only go down. The three-dot
-// ellipsis is a hard zero. Translation completeness is a hard rule: every en key exists in hr, es, sr.
+// ellipsis is a hard zero. Translation completeness is a hard rule: every en key exists in each registered language.
 
 import { describe, it, expect } from 'vitest';
+import { testI18n } from './helpers/i18n.js';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { FRONTEND, auditNow, readBaseline, flattenJson, titleCaseLabels, caseConflicts, threeDotValues } from './helpers/design-audit.mjs';
@@ -40,14 +41,14 @@ describe('en.json copy rules', () => {
             .toEqual({ caseConflicts: Math.min(list.length, ceiling), ceiling, sample: [] });
     });
 
-    it('does not add duplicate value groups', () => {
+    it('does not add duplicate copies with identical translations in every locale', () => {
         const ceiling = baseline ? baseline.i18n.duplicateGroups : 0;
         expect(now.i18n.duplicateGroups).toBeLessThanOrEqual(ceiling);
     });
 });
 
 describe('translations are complete', () => {
-    it.each(['hr', 'es', 'sr'])('%s.json has every en key', (lang) => {
+    it.each(testI18n().getSupportedLanguages().filter(lang => lang !== 'en'))('%s.json has every en key', (lang) => {
         const other = read(lang);
         const missing = Object.keys(en).filter(k => !(k in other));
         expect(missing).toEqual([]);

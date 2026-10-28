@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { createBuildingProviders } from '../buildings/index.js';
 import { createNycArcgisProvider } from '../buildings/nyc-arcgis.js';
 import { createNycProvider } from '../buildings/nyc-footprints.js';
@@ -7,7 +8,6 @@ import request from 'supertest';
 import { setupBuildingsRoute } from '../routes/buildings.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 import { createRequire } from 'node:module';
-import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 
 const require = createRequire(import.meta.url);
@@ -24,7 +24,7 @@ afterEach(() => vi.unstubAllGlobals());
 
 it('every configured city has the complete building provider contract', () => {
     const context = { URLSearchParams, console }; context.window = context;
-    runInNewContext(readFileSync(new URL('../../frontend/js/city-config.js', import.meta.url), 'utf8'), context);
+    runInNewContext(cityConfigSource(), context);
     const registry = createBuildingProviders({ query: async () => ({ rows: [] }) }, {});
     const cities = context.CityConfigManager.getAvailableCities();
     expect(cities.length).toBeGreaterThan(500);

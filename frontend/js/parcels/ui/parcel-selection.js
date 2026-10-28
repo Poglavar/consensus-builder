@@ -6,6 +6,7 @@
     // A tool or editor that owns map clicks while it is open; a parcel click (and a box selection,
     // ui/box-select.js) then does nothing.
     function parcelClicksOwnedElsewhere() {
+        if (global.roadDrawingMode) return true;
         if (global.measureMode) return true;
         // Pinpoint owns the click: it reports what is on the ground there ("At this spot"); a parcel
         // menu opening on top of that answer was noise.
@@ -137,13 +138,7 @@
         if (!isRoad && feature.properties.geometries) {
             const splitFeatures = feature.properties.geometries;
             if (splitFeatures && splitFeatures.length > 0) {
-                const style = {
-                    color: '#ff0000',
-                    weight: 3,
-                    opacity: 0.8,
-                    fillColor: '#ff0000',
-                    fillOpacity: 0.3
-                };
+                const style = global.MapHighlight.style({ fillOpacity: 0.3 });
                 global.splitLayer = L.layerGroup().addTo(global.map);
                 splitFeatures.forEach(geom => {
                     const layer = L.geoJSON(geom, { style });

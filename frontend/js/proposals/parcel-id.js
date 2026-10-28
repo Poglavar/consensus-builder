@@ -67,7 +67,7 @@ let _parcelAreaScope = null;
 function parcelAreaScope(root) {
     let city = 'default';
     try { city = String(root.CityConfigManager?.getCurrentCityId?.() || 'default'); } catch (_) { }
-    const revision = root.LiveParcelFabric?.snapshot?.().revision ?? 'none';
+    const revision = root.LiveParcelFabric?.revision?.() ?? 'none';
     return `${city}|${revision}`;
 }
 

@@ -259,3 +259,39 @@ describe('redo (opt-in)', () => {
         expect(state.value).toBe('b');
     });
 });
+
+describe('input gestures', () => {
+    function inputEditor(initial = 10) {
+        const listeners = new Map();
+        const element = { value: initial,
+            addEventListener: (type, handler) => listeners.set(type, handler),
+            removeEventListener: type => listeners.delete(type) };
+        let value = initial;
+        const history = History.create({ capture: () => value, restore: snapshot => { value = snapshot; }, redo: true });
+        history.bindInput(element, () => { value = Number(element.value); });
+        return { history, value: () => value, fire: (type, event = {}) => listeners.get(type)?.(event),
+            set(next) { element.value = next; listeners.get('input')?.({ target: element }); } };
+    }
+
+    it('groups a held key despite range change events, then records the next key gesture', () => {
+        const env = inputEditor(279);
+        env.fire('keydown', { key: 'ArrowRight' }); env.set(280); env.fire('change');
+        env.fire('keydown', { key: 'ArrowRight', repeat: true }); env.set(281); env.fire('change');
+        expect(env.history.depth()).toBe(1);
+        env.fire('keyup', { key: 'ArrowRight' });
+        env.fire('keydown', { key: 'ArrowRight' }); env.set(282); env.fire('keyup');
+        env.history.undo(); expect(env.value()).toBe(281);
+        env.history.undo(); expect(env.value()).toBe(279);
+        env.history.redo(); expect(env.value()).toBe(281);
+    });
+
+    it('records a height drag once, ignores no-op input, and cleans up on destroy', () => {
+        const env = inputEditor(250);
+        env.set(250); expect(env.history.canUndo()).toBe(false);
+        env.fire('pointerdown'); env.set(200); env.set(3); env.fire('pointerup');
+        expect(env.history.depth()).toBe(1);
+        env.history.undo(); expect(env.value()).toBe(250);
+        env.history.redo(); expect(env.value()).toBe(3);
+        env.history.destroy(); env.set(20); expect(env.value()).toBe(3);
+    });
+});

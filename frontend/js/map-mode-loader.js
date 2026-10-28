@@ -1,18 +1,27 @@
 // Loads model, photo and AI capabilities separately, and gives every entry point one mode owner.
 (function (root) {
     'use strict';
+    // The floor-plan contract, generator and context: the model view's X-ray and the 2D "Suggested
+    // layouts" layer (suggested-layouts-2d.js) read them; they are not in the boot list.
+    const floorPlans = ['vendor/interior-viewer/interior-geometry.js', 'js/building-floor-plans.js', 'js/default-floor-plan-rooms.js',
+        'js/default-floor-plans.js', 'js/default-floor-plan-context.js'];
     const groups = {
+        floorPlans,
+        // Photo always enters through the model view (map-mode-transition.js), so the terrain-following
+        // road formation that photoreal-mode.js also reads loads here only.
         model: [
+            ...floorPlans, 'js/corridor-terrain-formation.js',
             'js/building-height.js', 'js/proposals/gain.js', 'js/three-mesh-sanitize.js',
             'js/three-screen-door.js', 'js/three-smooth-transparency.js', 'js/three-building-display.js',
             'vendor/interior-viewer/interior-meshes.js', 'js/three-floor-plans.js', 'js/three-building-facades.js', 'js/three-resources.js',
-            'js/three-scene-work.js', 'js/three-scene-readiness.js', 'js/three-structure-refresh.js', 'js/three-square-paving.js',
+            'js/three-scene-work.js', 'js/three-scene-readiness.js', 'js/three-structure-refresh.js', 'js/three-square-paving.js', 'js/three-lake-basin.js',
             'js/three-snapshot-navigation.js', 'js/three-keyboard-context.js', 'js/three-parcel-emphasis.js',
-            'js/elevated-rail-3d.js', 'js/three-focus-plan.js', 'js/three-click-plan.js', 'js/three-click-stack.js',
+            'js/elevated-rail-3d.js', 'js/three-focus-plan.js', 'js/three-click-plan.js', 'js/three-click-stack.js?v=20261028-stack-focus',
             'js/life/life-graph.js', 'js/life/life-surface.js', 'js/life/life-agents.js', 'js/three-life.js',
-            'js/life/ground-geometry.js', 'js/three-ground.js', 'js/three-site-ground.js',
+            'js/life/ground-geometry.js', 'js/three-ground.js', 'js/tree-species.js', 'js/three-grass.js',
+            'js/three-site-ground.js?v=20261028-trees-grass',
             'vendor/suncalc-1.9.0/suncalc.js', 'vendor/tz-lookup-11.7.0/tz.js', 'js/sun-shadows.js', 'js/three-sun.js',
-            'js/three-mode.js'
+            'js/three-mode.js?v=20261028-trees-grass'
         ],
         photo: ['js/photoreal-frame.js', 'js/photoreal-ground.js', 'js/photoreal-seam.js',
             'js/photoreal-protect.js', 'js/photoreal-attribution.js', 'js/photoreal-parcels.js', 'js/photoreal-mode.js'],
@@ -49,11 +58,19 @@
     }
     root.__ensure3DModeStack = async () => {
         if (!await root.whenThreeReady()) return false;
+        const [lines, geometry, material] = await Promise.all([
+            import('three/addons/lines/LineSegments2.js'),
+            import('three/addons/lines/LineSegmentsGeometry.js'),
+            import('three/addons/lines/LineMaterial.js')
+        ]);
+        Object.assign(root.THREE, { LineSegments2: lines.LineSegments2,
+            LineSegmentsGeometry: geometry.LineSegmentsGeometry, LineMaterial: material.LineMaterial });
         await loadGroup('model');
         root.__threeModeStackReady = true;
         return true;
     };
     root.__ensurePhotorealMode = () => loadGroup('photo');
+    root.__ensureFloorPlanModules = () => loadGroup('floorPlans');
     function paint(state) {
         root.__mapModeState = state;
         root.dispatchEvent(new CustomEvent('mapmodechange', { detail: state }));
@@ -112,6 +129,8 @@
     if (typeof MutationObserver === 'function' && document.body) {
         new MutationObserver(paintModeLocks).observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
+    const addressSync = root.MapShare.createAddressSync(root);
+    root.addEventListener('threecamerachange', addressSync.schedule);
     const controller = root.__mapModeTransition.createController({
         loadModel: root.__ensure3DModeStack,
         loadPhoto: root.__ensurePhotorealMode,
@@ -119,7 +138,10 @@
         leaveModel: () => root.__threeModeDriver?.exit(),
         enterPhoto: options => root.PhotorealMode.activate(options),
         leavePhoto: options => root.PhotorealMode?.deactivate(options),
-        onChange: paint,
+        onChange: state => {
+            paint(state);
+            if (!state.pending) addressSync.write();
+        },
         onError: (error, mode) => {
             console.error(`[${new Date().toISOString()}] [map-mode] Mode transition failed`, { mode, error });
             const key = 'mapShell.viewFailed';

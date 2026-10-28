@@ -10,7 +10,9 @@ import { fileURLToPath } from 'node:url';
 const editorSource = readFileSync(fileURLToPath(new URL('../../frontend/js/structure-geometry-editor.js', import.meta.url)), 'utf8');
 const require = createRequire(import.meta.url);
 globalThis.proj4 ||= require('proj4');
+const realTurf = require('@turf/turf');
 const SingleBuildingGeometry = require('../../frontend/js/single-building-geometry.js');
+const ProposalApplyStructures = require('../../frontend/js/proposals/apply/structures.js');
 // A stored park/square tree: its point and its look (park-planting.js).
 const tree = (lng, lat) => ({ coordinate: [lng, lat], kind: 'broadleaf', heightM: 10 });
 
@@ -55,6 +57,22 @@ function makeEditorHarness(decorations, options = {}) {
     };
     const groups = [];
     const previewLayers = [];
+    // The selected tree's card: its summary, the height buttons and a square's pit buttons.
+    const treeCard = {
+        hidden: true,
+        summary: { textContent: '' },
+        taller: { disabled: false },
+        shorter: { disabled: false },
+        pits: ['none', 'grille', 'grass', 'soil'].map(pit => ({ dataset: { treePit: pit }, attributes: {}, setAttribute(name, value) { this.attributes[name] = value; } })),
+        querySelector(selector) {
+            if (selector === '[data-role="tree-summary"]') return this.summary;
+            if (selector === '[data-action="tree-taller"]') return this.taller;
+            if (selector === '[data-action="tree-shorter"]') return this.shorter;
+            return null;
+        },
+        querySelectorAll(selector) { return selector === '[data-tree-pit]' ? this.pits : []; },
+        pressedPit() { return this.pits.find(button => button.attributes['aria-pressed'] === 'true')?.dataset.treePit || null; }
+    };
     const panel = {
         classList: makeClassList(),
         listeners: {},
@@ -73,17 +91,35 @@ function makeEditorHarness(decorations, options = {}) {
             if (selector === '[data-role="lake-error"]') return lakeError;
             if (selector === '[data-action="save"]') return lakeSave;
             if (selector === '[data-action="undo"]') return undoButton;
+            if (selector === '[data-role="tree-card"]') return treeCard;
             return /finish-path/.test(selector) ? finishButton : (/data-role/.test(selector) ? element : null);
         },
-        fireClick({ tool, action }) {
+        fireClick({ tool, action, furnitureKind, pit }) {
             const target = {
                 closest(selector) {
                     if (tool && selector === '.structure-geometry-tools [data-tool]') return { dataset: { tool } };
-                    if (action && selector === '[data-action]') return { dataset: { action } };
+                    if (pit && selector === '[data-tree-pit]') return { dataset: { treePit: pit } };
+                    if (action && selector === '[data-action]') {
+                        return { dataset: { action }, closest: () => (furnitureKind ? { dataset: { furnitureKind } } : null) };
+                    }
                     return null;
                 }
             };
             this.listeners.click({ target });
+        },
+        // A file chosen in a furniture row's Upload control.
+        chooseFurnitureFile(furnitureKind, file) {
+            const input = {
+                files: [file], value: 'C:\\fakepath\\' + file.name,
+                closest(selector) {
+                    if (selector === '[data-furniture-kind]') return { dataset: { furnitureKind } };
+                    if (selector === '[data-role="furniture-model-upload"]') return { role: 'upload-label' };
+                    return null;
+                }
+            };
+            const target = { closest: selector => (selector === '[data-role="furniture-model-file"]' ? input : null) };
+            this.listeners.change({ target });
+            return input;
         }
     };
 
@@ -223,9 +259,16 @@ function makeEditorHarness(decorations, options = {}) {
     };
     const context = createContext({
         document, map, L, GeometryEditHistory: historyFactory,
+        CbDialog: { confirm: vi.fn(async () => true) },
         SingleBuildingGeometry,
+        ProposalApplyStructures,
         __parkPlanting: require('../../frontend/js/park-planting.js'),
+        FurnitureModels: require('../../frontend/js/furniture-models.js'),
+        BusyControl: { isBusy: () => false, track: (_control, work) => Promise.resolve().then(work) },
+        ensureOptionalTool: vi.fn(async () => true),
+        ModelUpload: options.modelUpload || null,
         turf: {
+            ...realTurf,
             booleanPointInPolygon(point) {
                 if (options.rejectOutsidePoints !== true) return true;
                 const [lng, lat] = point.coordinates;
@@ -377,6 +420,7 @@ function makeEditorHarness(decorations, options = {}) {
                 editorPayload: { structureProposal: JSON.parse(JSON.stringify(draft.editorPayload.structureProposal)) }
             });
         },
+        treeCard,
         save() {
             panel.fireClick({ action: 'save' });
             return savedPayload?.structureProposal?.kind === 'lake'
@@ -384,7 +428,7 @@ function makeEditorHarness(decorations, options = {}) {
                 : (savedPayload?.structureProposal?.decorationDesign || savedDecorations);
         },
         // The header × is the editor's only way out without saving (the shell's onCancel).
-        cancel() { mapEditorOptions.at(-1).onCancel(); },
+        cancel() { return mapEditorOptions.at(-1).onCancel(); },
         undo() { document.fireKey({ key: 'z', ctrlKey: true, preventDefault() {} }); }
     };
 }
@@ -392,6 +436,24 @@ function makeEditorHarness(decorations, options = {}) {
 const currentMarkers = harness => harness.groups.at(-1).items.filter(item => typeof item.getLatLng === 'function');
 
 describe('structure geometry editor history wiring', () => {
+    it.each(['park', 'square', 'lake'])('guards changed %s designs and closes clean designs without a prompt', async kind => {
+        const clean = makeEditorHarness(null, { kind });
+        expect(clean.open()).toBe(true);
+        await clean.cancel();
+        expect(clean.context.CbDialog.confirm).not.toHaveBeenCalled();
+        expect(clean.context.isStructureGeometryEditorActive()).toBe(false);
+
+        const changed = makeEditorHarness(null, { kind });
+        expect(changed.open()).toBe(true);
+        expect(changed.polygonEditorOptions.onCommit({ ring: [[0, 0], [0.8, 0], [0.8, 0.8], [0, 0.8]], reason: 'insert' })).toBe(true);
+        changed.context.CbDialog.confirm.mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+        await changed.cancel();
+        expect(changed.context.isStructureGeometryEditorActive()).toBe(true);
+        await changed.cancel();
+        expect(changed.context.isStructureGeometryEditorActive()).toBe(false);
+        expect(changed.context.CbDialog.confirm).toHaveBeenCalledTimes(2);
+    });
+
     it('restores the selected proposal actions after cancelling a geometry edit', () => {
         const harness = makeEditorHarness(null, { commitSession: true });
         harness.context.ProposalSelection.getKey = () => 'proposal-1';
@@ -416,7 +478,6 @@ describe('structure geometry editor history wiring', () => {
         const harness = makeEditorHarness(null, { kind: 'lake', geometry });
 
         expect(harness.open()).toBe(true);
-        harness.panel.fireClick({ tool: 'move' });
         harness.boundaryLayer().fire('mousedown', { latlng: { lng: 15.0005, lat: 45.8005 }, originalEvent: {} });
         harness.fireMap('mousemove', { latlng: { lng: 15.002, lat: 45.802 } });
         harness.fireMap('mouseup');
@@ -430,18 +491,19 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.context.isStructureGeometryEditorActive()).toBe(false);
     });
 
-    it('keeps the lake geometry validity gate when a reshape would make a self-crossing ring', () => {
+    it('rejects a lake reshape that would create a self-crossing ring without damaging the saved outline', () => {
         const geometry = { type: 'Polygon', coordinates: [[[15, 45.8], [15.001, 45.8], [15.001, 45.801], [15, 45.801], [15, 45.8]]] };
         const harness = makeEditorHarness(null, { kind: 'lake', geometry });
         expect(harness.open()).toBe(true);
         const crossed = [[0, 0], [1, 1], [0, 1], [1, 0]];
-        expect(harness.polygonEditorOptions.onCommit({ ring: crossed, reason: 'insert' })).toBe(true);
-        expect(harness.lakeError.hidden).toBe(false);
-        expect(harness.lakeSave.disabled).toBe(true);
-        harness.save();
-        expect(harness.context.isStructureGeometryEditorActive()).toBe(true);
-        expect(harness.savedPayload).toBeNull();
-        harness.cancel();
+        expect(harness.polygonEditorOptions.onCommit({ ring: crossed, reason: 'insert' })).toBe(false);
+        expect(harness.boundaryLayer().feature.geometry).toEqual(geometry);
+        expect(harness.lakeError.hidden).toBe(true);
+        expect(harness.lakeSave.disabled).toBe(false);
+        const saved = harness.save().structureProposal;
+        expect(saved.geometry).toEqual(geometry);
+        expect(saved.lakeGraphics.version).toBe('fresh');
+        expect(harness.context.isStructureGeometryEditorActive()).toBe(false);
     });
 
     it('edits and saves a lake boundary with freshly derived graphics', () => {
@@ -455,9 +517,10 @@ describe('structure geometry editor history wiring', () => {
 
         expect(harness.open()).toBe(true);
         expect(harness.panel.innerHTML).toContain('Lake boundary editor');
-        expect(harness.panel.innerHTML).toContain('data-tool="move"');
+        expect(harness.panel.innerHTML).not.toContain('data-tool=');
+        expect(harness.panel.innerHTML).toContain('data-role="lake-error"');
         expect(harness.polygonEditorOptions.ring).toEqual([...originalRing, originalRing[0]]);
-        expect(harness.polygonEditorOptions.undoTitle).toBe('Undo lake boundary edit');
+        expect(harness.polygonEditorOptions.undoTitle).toBe('Undo');
         expect(harness.polygonEditorOptions.onCommit({ ring: editedRing, reason: 'move' })).toBe(true);
 
         const saved = harness.save().structureProposal;
@@ -470,17 +533,19 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.finishedDrafts).toEqual(['draft-1']);
     });
 
-    it('keeps lake boundary edits cancellable and routes undo commits back into the outline', () => {
+    it('keeps lake boundary edits cancellable and routes undo commits back into the outline', async () => {
         const originalRing = [[0, 0], [1, 0], [1, 1], [0, 1]];
         const geometry = { type: 'Polygon', coordinates: [[...originalRing, originalRing[0]]] };
         const harness = makeEditorHarness(null, { kind: 'lake', geometry });
         const movedRing = [[0, 0], [1.2, 0], [1, 1], [0, 1]];
 
         expect(harness.open()).toBe(true);
-        harness.polygonEditorOptions.onCommit({ ring: movedRing, reason: 'move' });
-        harness.polygonEditorOptions.onCommit({ ring: originalRing, reason: 'undo' });
-        expect(harness.polygonEditorOptions.onCommit({ ring: originalRing, reason: 'undo' })).toBe(true);
-        harness.cancel();
+        expect(harness.polygonEditorOptions.onCommit({ ring: movedRing, reason: 'insert' })).toBe(true);
+        expect(harness.boundaryLayer().feature.geometry.coordinates[0]).toEqual([...movedRing, movedRing[0]]);
+        harness.undoButton.fire();
+        expect(harness.boundaryLayer().feature.geometry).toEqual(geometry);
+        expect(harness.polygonEditorDestroyed).toBe(false);
+        await harness.cancel();
 
         expect(harness.savedPayload).toBeNull();
         expect(harness.draft.editorPayload.structureProposal.geometry).toEqual(geometry);
@@ -491,10 +556,12 @@ describe('structure geometry editor history wiring', () => {
         ['park', {
             trees: [tree(15.0002, 45.8003)], flowerbeds: [[[15.00015, 45.80015], [15.00025, 45.80015], [15.00025, 45.80025], [15.00015, 45.80015]]],
             ponds: [[[15.00055, 45.80015], [15.00065, 45.80015], [15.00065, 45.80025], [15.00055, 45.80015]]],
-            paths: [[[15.0002, 45.8002], [15.0004, 45.8004]]], benches: [{ coordinate: [15.00045, 45.80025], bearing: 35 }]
+            paths: [[[15.0002, 45.8002], [15.0004, 45.8004]]], benches: [{ coordinate: [15.00045, 45.80025], bearing: 35 }],
+            lamps: [{ coordinate: [15.00035, 45.80065], bearing: 90 }],
+            stalls: [{ coordinate: [15.00075, 45.80075], bearing: 180, color: '#2f9e6b' }]
         }],
-        ['square', { fountains: [[15.0003, 45.8003]], trees: [tree(15.0006, 45.8006)], benches: [{ coordinate: [15.0004, 45.8004], bearing: 15 }], stalls: [[15.0002, 45.8006]], statues: [[15.0007, 45.8003]] }]
-    ])('moves the whole %s design in metric space as one undoable gesture', (kind, decorations) => {
+        ['square', { fountains: [[15.0003, 45.8003]], trees: [tree(15.0006, 45.8006)], benches: [{ coordinate: [15.0004, 45.8004], bearing: 15 }], stalls: [{ coordinate: [15.0002, 45.8006], bearing: 0 }], statues: [[15.0007, 45.8003]], lamps: [{ coordinate: [15.0005, 45.8007], bearing: 0 }] }]
+    ])('moves the whole %s design in metric space as one undoable boundary gesture', (kind, decorations) => {
         const geometry = { type: 'Polygon', coordinates: [[[15, 45.8], [15.001, 45.8], [15.001, 45.801], [15, 45.801], [15, 45.8]]] };
         const originalDecorations = JSON.parse(JSON.stringify(decorations));
         const harness = makeEditorHarness(decorations, { kind, geometry });
@@ -504,11 +571,11 @@ describe('structure geometry editor history wiring', () => {
         const expectedGeometry = SingleBuildingGeometry.moveGeometry(geometry, from, to);
         const expectedDecorations = JSON.parse(JSON.stringify(originalDecorations));
         for (const [key, coordinates] of Object.entries(originalDecorations)) {
-            if (!['benches', 'trees'].includes(key) && Array.isArray(coordinates)) {
+            if (!['benches', 'trees', 'lamps', 'stalls'].includes(key) && Array.isArray(coordinates)) {
                 expectedDecorations[key] = SingleBuildingGeometry.moveCoordinateCollection(coordinates, from, to);
             }
         }
-        for (const key of ['benches', 'trees']) {
+        for (const key of ['benches', 'trees', 'lamps', 'stalls']) {
             expectedDecorations[key] = originalDecorations[key].map(record => ({
                 ...record,
                 coordinate: SingleBuildingGeometry.moveCoordinateCollection(record.coordinate, from, to)
@@ -516,13 +583,14 @@ describe('structure geometry editor history wiring', () => {
         }
         expectedDecorations.version = kind === 'park' ? 3 : 2;
         const originalPoints = [
-            ...(decorations.fountains || []), ...(decorations.stalls || []), ...(decorations.statues || []),
+            ...(decorations.fountains || []), ...(decorations.statues || []),
+            ...(decorations.stalls || []).map(stall => stall.coordinate),
             ...(decorations.trees || []).map(record => record.coordinate),
-            ...(decorations.benches || []).map(bench => bench.coordinate)
+            ...(decorations.benches || []).map(bench => bench.coordinate),
+            ...(decorations.lamps || []).map(lamp => lamp.coordinate)
         ].map(point => [point[0], point[1]]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
 
         expect(harness.open()).toBe(true);
-        harness.panel.fireClick({ tool: 'move' });
         harness.boundaryLayer().fire('mousedown', { latlng: from, originalEvent: {} });
         expect(harness.isMapDraggingEnabled()).toBe(false);
         harness.fireMap('mousemove', { latlng: intermediate });
@@ -565,30 +633,38 @@ describe('structure geometry editor history wiring', () => {
     it.each([
         ['park', { trees: [tree(15.0003, 45.8003)], paths: [[[15.0002, 45.8002], [15.0004, 45.8004]]] }],
         ['square', { fountains: [[15.0003, 45.8003]], benches: [{ coordinate: [15.0004, 45.8004], bearing: 25 }] }]
-    ])('routes %s decoration hits through the whole-boundary Move tool', (kind, decorations) => {
+    ])('keeps %s decoration handles tied to their active tool while the boundary moves', (kind, decorations) => {
         const geometry = { type: 'Polygon', coordinates: [[[15, 45.8], [15.001, 45.8], [15.001, 45.801], [15, 45.801], [15, 45.8]]] };
         const originalDecorations = JSON.parse(JSON.stringify(decorations));
         const harness = makeEditorHarness(decorations, { kind, geometry });
         expect(harness.open()).toBe(true);
-        const editableMarkers = currentMarkers(harness);
-        expect(editableMarkers.length).toBeGreaterThan(0);
-        expect(editableMarkers[0].options.draggable).toBe(true);
-        expect(editableMarkers[0].options.interactive).not.toBe(false);
+        const boundaryModeMarkers = currentMarkers(harness);
+        expect(boundaryModeMarkers.length).toBeGreaterThan(0);
+        expect(boundaryModeMarkers.every(marker => marker.options.draggable === false && marker.options.interactive === false)).toBe(true);
         let pathLayer = harness.groups.at(-1).items.find(item => item.options?.className === 'structure-geometry-draggable');
-        if (kind === 'park') {
-            expect(pathLayer.options.interactive).not.toBe(false);
-            expect(pathLayer.events.mousedown).toBeTypeOf('function');
-        }
-
-        harness.panel.fireClick({ tool: 'move' });
-        const movedMarkers = currentMarkers(harness);
-        expect(movedMarkers.every(marker => marker.options.draggable === false && marker.options.interactive === false)).toBe(true);
-        expect(movedMarkers.every(marker => !marker.events.dragstart && !marker.events.click)).toBe(true);
-        pathLayer = harness.groups.at(-1).items.find(item => item.options?.className === 'structure-geometry-draggable');
         if (kind === 'park') {
             expect(pathLayer.options.interactive).toBe(false);
             expect(pathLayer.events.mousedown).toBeUndefined();
         }
+
+        const movedMarkers = currentMarkers(harness);
+        expect(movedMarkers.every(marker => marker.options.draggable === false && marker.options.interactive === false)).toBe(true);
+        expect(movedMarkers.every(marker => !marker.events.dragstart && !marker.events.click)).toBe(true);
+        if (kind === 'park') {
+            expect(pathLayer.options.interactive).toBe(false);
+            expect(pathLayer.events.mousedown).toBeUndefined();
+        }
+
+        // Furniture handles become interactive only in a real placement mode; Boundary mode
+        // owns whole-area movement and keeps every decoration handle inert.
+        harness.panel.fireClick({ tool: kind === 'park' ? 'tree' : 'fountain' });
+        expect(currentMarkers(harness).every(marker => marker.options.draggable && marker.options.interactive)).toBe(true);
+        if (kind === 'park') {
+            pathLayer = harness.groups.at(-1).items.find(item => item.options?.className === 'structure-geometry-draggable');
+            expect(pathLayer.options.interactive).toBe(true);
+            expect(pathLayer.events.mousedown).toBeTypeOf('function');
+        }
+        harness.panel.fireClick({ tool: 'boundary' });
 
         const from = { lng: 15.0005, lat: 45.8005 };
         const to = { lng: 15.0007, lat: 45.8006 };
@@ -634,13 +710,12 @@ describe('structure geometry editor history wiring', () => {
         const harness = makeEditorHarness({ trees: [tree(15.0004, 45.8004)] }, { kind: 'park', geometry });
         expect(harness.open()).toBe(true);
         expect(harness.mapEditorSessions[0].placement.setLocked(true)).toBe(true);
-        harness.panel.fireClick({ tool: 'move' });
         harness.boundaryLayer().fire('mousedown', { latlng: { lng: 15.0005, lat: 45.8005 }, originalEvent: {} });
         harness.fireMap('mousemove', { latlng: { lng: 15.002, lat: 45.802 } });
         harness.fireMap('mouseup');
         expect(harness.boundaryLayer().feature.geometry).toEqual(geometry);
         expect(harness.undoButton.disabled).toBe(true);
-        expect(harness.save()).toEqual({ trees: [tree(15.0004, 45.8004)], flowerbeds: [], ponds: [], paths: [], benches: [], version: 3 });
+        expect(harness.save()).toEqual({ trees: [tree(15.0004, 45.8004)], flowerbeds: [], ponds: [], paths: [], benches: [], stalls: [], lamps: [], version: 3 });
         expect(harness.syncOptions.placement).toEqual({ site: geometry, free: true });
     });
 
@@ -665,7 +740,6 @@ describe('structure geometry editor history wiring', () => {
         harness.undoButton.fire();
         expect(harness.boundaryLayer().feature.geometry).toEqual(geometry);
 
-        harness.panel.fireClick({ tool: 'move' });
         harness.boundaryLayer().fire('mousedown', { latlng: { lng: 15.0005, lat: 45.8005 }, originalEvent: {} });
         harness.fireMap('mousemove', { latlng: { lng: 15.0007, lat: 45.8007 } });
         harness.fireMap('mouseup');
@@ -687,9 +761,9 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.save().trees).toEqual([tree(0.2, 0.2)]);
     });
 
-    // Clicking a planted tree with the Tree tool re-rolls its look in place instead of planting a
-    // second tree on top of it; undo brings the old look back.
-    it.each([['park'], ['square']])('re-rolls a %s tree clicked with the Tree tool, undoably', kind => {
+    // Clicking a planted tree with the Tree tool opens its card instead of planting a second tree on
+    // top of it; New look re-rolls it in place and undo brings the old look back.
+    it.each([['park'], ['square']])('re-rolls a %s tree from its card, undoably', kind => {
         const decorations = kind === 'park'
             ? { trees: [tree(0.2, 0.2)], version: 3 }
             : { fountains: [], trees: [tree(0.2, 0.2)], benches: [], stalls: [], statues: [] };
@@ -699,6 +773,8 @@ describe('structure geometry editor history wiring', () => {
             harness.panel.fireClick({ tool: 'tree' });
             currentMarkers(harness)[0].fire('click', {});
             expect(currentMarkers(harness)).toHaveLength(1);
+            expect(harness.treeCard.hidden).toBe(false);
+            harness.panel.fireClick({ action: 'tree-reroll' });
             return harness;
         };
 
@@ -710,6 +786,48 @@ describe('structure geometry editor history wiring', () => {
         const undone = clickTree();
         undone.undoButton.fire();
         expect(undone.save().trees).toEqual([tree(0.2, 0.2)]);
+    });
+
+    it('makes the selected tree taller and shorter within its range, undoably', () => {
+        const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 });
+        expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'tree' });
+        currentMarkers(harness)[0].fire('click', {});
+        expect(harness.treeCard.summary.textContent).toBe('Broadleaf, 10.0 m');
+        harness.panel.fireClick({ action: 'tree-taller' });
+        expect(harness.treeCard.summary.textContent).toBe('Broadleaf, 11.0 m');
+        for (let i = 0; i < 5; i++) harness.panel.fireClick({ action: 'tree-taller' });
+        expect(harness.treeCard.taller.disabled).toBe(true);
+        expect(harness.treeCard.summary.textContent).toBe('Broadleaf, 14.0 m');
+        harness.undoButton.fire();
+        expect(harness.treeCard.hidden).toBe(true);
+        currentMarkers(harness)[0].fire('click', {});
+        harness.panel.fireClick({ action: 'tree-shorter' });
+        expect(harness.save().trees).toEqual([{ ...tree(0.2, 0.2), heightM: 12 }]);
+    });
+
+    it('plants a pavement tree under a grille on a square and changes its pit from the card', () => {
+        const harness = makeEditorHarness({ fountains: [], trees: [], benches: [], stalls: [], statues: [] }, { kind: 'square' });
+        expect(harness.open()).toBe(true);
+        expect(harness.panel.innerHTML).toContain('data-tool="pavementTree"');
+        harness.panel.fireClick({ tool: 'pavementTree' });
+        harness.fireMap('click', { latlng: { lng: 0.2, lat: 0.2 } });
+        expect(harness.treeCard.hidden).toBe(false);
+        expect(harness.treeCard.pressedPit()).toBe('grille');
+        harness.panel.fireClick({ pit: 'grass' });
+        expect(harness.treeCard.pressedPit()).toBe('grass');
+        harness.panel.fireClick({ pit: 'none' });
+        expect(harness.treeCard.pressedPit()).toBe('none');
+        harness.undoButton.fire();
+        expect(harness.save().trees).toEqual([expect.objectContaining({ coordinate: [0.2, 0.2], pit: 'grass' })]);
+    });
+
+    it('offers no pavement tree in a park and keeps park trees out of pits', () => {
+        const harness = makeEditorHarness({ trees: [{ ...tree(0.2, 0.2), pit: 'grille' }], version: 3 });
+        expect(harness.open()).toBe(true);
+        expect(harness.panel.innerHTML).not.toContain('data-tool="pavementTree"');
+        expect(harness.panel.innerHTML).not.toContain('data-tree-pit');
+        expect(harness.save().trees).toEqual([tree(0.2, 0.2)]);
     });
 
     it.each([
@@ -734,7 +852,7 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.open()).toBe(true);
         expect(harness.panel.innerHTML).not.toContain('data-role="hint"');
         expect(harness.panel.innerHTML).toContain('data-action="finish-path"');
-        expect(harness.mapEditorSessions[0].hints.at(-1)).toBe('Select an item to begin.');
+        expect(harness.mapEditorSessions[0].hints.at(-1)).toBe('Drag the area to move it, or drag boundary points to reshape. Tap an edge to add a point; select a point to remove it.');
 
         harness.panel.fireClick({ tool: 'path' });
         expect(harness.finishButton.hidden).toBe(false);
@@ -772,6 +890,7 @@ describe('structure geometry editor history wiring', () => {
     it('restores a tree coordinate after a marker drag is undone', () => {
         const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 });
         expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'tree' });
         const marker = currentMarkers(harness)[0];
         marker.fire('dragstart');
         marker.setLatLng([0.35, 0.4]); // Leaflet uses [latitude, longitude].
@@ -790,6 +909,7 @@ describe('structure geometry editor history wiring', () => {
         const harness = makeEditorHarness(decorations, { kind, rejectOutsidePoints: true });
         expect(harness.open()).toBe(true);
         expect(harness.context.turf.booleanPointInPolygon(harness.context.turf.point([0.4, 0.35]))).toBe(true);
+        harness.panel.fireClick({ tool: kind === 'park' ? (type === 'benches' ? 'bench' : 'tree') : 'fountain' });
         const marker = currentMarkers(harness)[0];
 
         marker.setLatLng([0.35, 0.4]);
@@ -806,6 +926,7 @@ describe('structure geometry editor history wiring', () => {
     it.each(['null', 'throw'])('keeps the park editor open after draft sync %s and preserves edits for retry', (syncBehavior) => {
         const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 }, { syncBehavior });
         expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'tree' });
         const marker = currentMarkers(harness)[0];
         marker.setLatLng([0.35, 0.4]);
         marker.fire('dragend');
@@ -874,6 +995,7 @@ describe('structure geometry editor history wiring', () => {
     it('does not report local success while saving a valid commit-session draft', () => {
         const harness = makeEditorHarness({ trees: [tree(0.2, 0.2)], version: 3 }, { commitSession: true });
         expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'tree' });
         const marker = currentMarkers(harness)[0];
         marker.setLatLng([0.35, 0.4]);
         marker.fire('dragend');
@@ -890,6 +1012,7 @@ describe('structure geometry editor history wiring', () => {
         const harness = makeEditorHarness(decorations, { kind });
 
         expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: kind === 'park' ? 'tree' : 'fountain' });
         const marker = currentMarkers(harness)[0];
         expect(marker.options.pane).toBe('onMapEditorHandles');
         expect(marker.options.zIndexOffset).toBeUndefined();
@@ -911,7 +1034,8 @@ describe('structure geometry editor history wiring', () => {
         });
 
         expect(harness.open()).toBe(true);
-        const path = harness.previewLayers.find(layer => layer.options?.className === 'structure-geometry-draggable');
+        harness.panel.fireClick({ tool: 'path' });
+        const path = [...harness.previewLayers].reverse().find(layer => layer.options?.className === 'structure-geometry-draggable');
         expect(path).toBeDefined();
         const activeListenersBeforeDrag = {
             map: ['mousemove', 'touchmove', 'mouseup', 'touchend', 'touchcancel']
@@ -942,6 +1066,7 @@ describe('structure geometry editor history wiring', () => {
         });
 
         expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ tool: 'path' });
         const path = harness.previewLayers.find(layer => layer.options?.className === 'structure-geometry-draggable');
         path.fire('touchstart', { latlng: { lng: 0.1, lat: 0.2 }, originalEvent: {} });
         harness.fireDocument('touchend');
@@ -949,5 +1074,114 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.isMapDraggingEnabled()).toBe(false);
         expect(harness.listenerCount('map', 'touchmove')).toBe(0);
         expect(harness.listenerCount('document', 'touchend')).toBe(0);
+    });
+    it.each(['park', 'square'])('places, saves and undoes %s lamps like benches', kind => {
+        const harness = makeEditorHarness(kind === 'park' ? { trees: [], version: 3 } : { fountains: [], version: 2 }, { kind });
+        expect(harness.open()).toBe(true);
+        expect(harness.panel.innerHTML).toContain('data-tool="lamp"');
+        harness.panel.fireClick({ tool: 'lamp' });
+        harness.fireMap('click', { latlng: { lng: 0.2, lat: 0.3 } });
+        harness.fireMap('click', { latlng: { lng: 0.4, lat: 0.5 } });
+        const markers = currentMarkers(harness);
+        expect(markers).toHaveLength(2);
+        expect(markers[0].options.icon.className).toContain('is-lamp');
+
+        markers[1].fire('dragstart');
+        markers[1].setLatLng([0.6, 0.7]);
+        markers[1].fire('dragend');
+        harness.undo();
+        harness.undoButton.fire();
+        expect(currentMarkers(harness)).toHaveLength(1);
+        expect(harness.save().lamps).toEqual([{ coordinate: [0.2, 0.3], bearing: 0 }]);
+    });
+
+    it.each(['park', 'square'])('places %s market stalls as bearing records with a coloured marker', kind => {
+        const harness = makeEditorHarness(kind === 'park' ? { trees: [], version: 3 } : { fountains: [], stalls: [[0.1, 0.1]], version: 2 }, { kind });
+        expect(harness.open()).toBe(true);
+        expect(harness.panel.innerHTML).toContain('data-tool="stall"');
+        harness.panel.fireClick({ tool: 'stall' });
+        harness.fireMap('click', { latlng: { lng: 0.2, lat: 0.3 } });
+        const markers = currentMarkers(harness);
+        const placed = markers.at(-1);
+        expect(placed.options.icon.className).toContain('is-stall');
+        expect(placed.options.icon.html).toMatch(/--stall-color:#[0-9a-f]{6}/);
+        const stalls = harness.save().stalls;
+        expect(stalls.at(-1)).toEqual({ coordinate: [0.2, 0.3], bearing: 0 });
+        if (kind === 'square') expect(stalls[0]).toEqual({ coordinate: [0.1, 0.1], bearing: 0 });
+    });
+
+    it('offers a model row for each furniture kind the structure has', () => {
+        const park = makeEditorHarness({ trees: [], version: 3 }, { kind: 'park' });
+        expect(park.open()).toBe(true);
+        expect([...park.panel.innerHTML.matchAll(/data-furniture-kind="([^"]+)"/g)].map(match => match[1])).toEqual(['bench', 'stall', 'tree', 'lamp']);
+        const square = makeEditorHarness({ fountains: [], version: 2 }, { kind: 'square' });
+        expect(square.open()).toBe(true);
+        expect([...square.panel.innerHTML.matchAll(/data-furniture-kind="([^"]+)"/g)].map(match => match[1]))
+            .toEqual(['bench', 'statue', 'fountain', 'stall', 'tree', 'lamp']);
+        const lake = makeEditorHarness(null, { kind: 'lake' });
+        expect(lake.open()).toBe(true);
+        expect(lake.panel.innerHTML).not.toContain('data-furniture-kind');
+    });
+
+    it('uploads a furniture model within the limits, saves it under models, and undoes or removes it', async () => {
+        const modelUpload = {
+            parseModelFile: vi.fn(async () => ({ scene: true })),
+            modelSummary: vi.fn((_scene, bytes) => ({ triangles: 1200, textures: [{ width: 512, height: 512 }], bytes })),
+            disposeScene: vi.fn(),
+            uploadModel: vi.fn(async () => '/models/bench.glb')
+        };
+        const harness = makeEditorHarness({ fountains: [], version: 2 }, { kind: 'square', modelUpload });
+        expect(harness.open()).toBe(true);
+        const file = { name: 'Bench.glb', size: 40000 };
+        const input = harness.panel.chooseFurnitureFile('bench', file);
+        expect(input.value).toBe('');
+        await vi.waitFor(() => expect(modelUpload.uploadModel).toHaveBeenCalledWith(file));
+        await vi.waitFor(() => expect(harness.undoButton.disabled).toBe(false));
+        expect(harness.context.ensureOptionalTool).toHaveBeenCalledWith('modelUpload');
+        expect(modelUpload.disposeScene).toHaveBeenCalledOnce();
+
+        // Undo takes the model back off; redoing the upload and removing it leaves no models key.
+        harness.undoButton.fire();
+        expect(harness.save()).not.toHaveProperty('models');
+
+        const again = makeEditorHarness({ fountains: [], version: 2 }, { kind: 'square', modelUpload });
+        expect(again.open()).toBe(true);
+        again.panel.chooseFurnitureFile('bench', file);
+        await vi.waitFor(() => expect(again.undoButton.disabled).toBe(false));
+        again.panel.fireClick({ action: 'remove-furniture-model', furnitureKind: 'bench' });
+        expect(again.save()).not.toHaveProperty('models');
+
+        const kept = makeEditorHarness({ fountains: [], version: 2 }, { kind: 'square', modelUpload });
+        expect(kept.open()).toBe(true);
+        kept.panel.chooseFurnitureFile('bench', file);
+        await vi.waitFor(() => expect(kept.undoButton.disabled).toBe(false));
+        expect(kept.save().models).toEqual({ bench: { url: '/models/bench.glb', name: 'Bench.glb' } });
+    });
+
+    it.each([
+        ['too many triangles', { triangles: 9000, textures: [] }, 'This model has 9000 triangles. A furniture model may have at most 5000.'],
+        ['an oversized texture', { triangles: 100, textures: [{ width: 2048, height: 512 }] }, 'A texture is 2048 × 512 px. Furniture textures may be at most 1024 px on each side.']
+    ])('refuses a furniture model with %s and uploads nothing', async (_label, summary, message) => {
+        const modelUpload = {
+            parseModelFile: vi.fn(async () => ({})),
+            modelSummary: vi.fn((_scene, bytes) => ({ ...summary, bytes })),
+            disposeScene: vi.fn(),
+            uploadModel: vi.fn(async () => '/models/x.glb')
+        };
+        const harness = makeEditorHarness({ trees: [], version: 3 }, { kind: 'park', modelUpload });
+        expect(harness.open()).toBe(true);
+        harness.panel.chooseFurnitureFile('lamp', { name: 'lamp.glb', size: 1000 });
+        await vi.waitFor(() => expect(harness.statusMessages).toContain(message));
+        expect(modelUpload.uploadModel).not.toHaveBeenCalled();
+        expect(harness.save()).not.toHaveProperty('models');
+    });
+
+    it('refuses a furniture file over 4 MiB before parsing it', async () => {
+        const modelUpload = { parseModelFile: vi.fn(), modelSummary: vi.fn(), disposeScene: vi.fn(), uploadModel: vi.fn() };
+        const harness = makeEditorHarness({ trees: [], version: 3 }, { kind: 'park', modelUpload });
+        expect(harness.open()).toBe(true);
+        harness.panel.chooseFurnitureFile('bench', { name: 'big.glb', size: 5 * 1024 * 1024 });
+        await vi.waitFor(() => expect(harness.statusMessages).toContain('This file is 5.0 MB. A furniture model may be at most 4.0 MB.'));
+        expect(modelUpload.parseModelFile).not.toHaveBeenCalled();
     });
 });

@@ -133,7 +133,7 @@ function makeMapContext(features) {
     };
     const fabric = {
         get(id) { return fixture.features.get(String(id)) || null; },
-        snapshot() { return { revision: fixture.revision }; }
+        revision() { return fixture.revision; }
     };
     const context = vm.createContext({
         console, document, L, map, parcelLayer: { eachLayer() { throw new Error('full-layer scan'); } },

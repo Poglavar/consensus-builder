@@ -92,7 +92,8 @@ async function streetsNear(pool, bbox, options = {}) {
     }
     if (contains(await osmRoadExtentOf(pool), bbox)) {
         const { rows } = await pool.query(`
-            SELECT ST_AsGeoJSON(r.geom)::json AS geometry, r.osm_id, r.name, r.highway_type
+            -- GeoJSON precision: 7 decimals of WGS84 degrees is about 1 cm; the default 9 only adds bytes.
+            SELECT ST_AsGeoJSON(r.geom, 7)::json AS geometry, r.osm_id, r.name, r.highway_type
             FROM osm_road r
             WHERE r.current AND r.geom && ST_MakeEnvelope($1, $2, $3, $4, 4326)
               AND (r.highway_type = ANY($5) OR (r.highway_type = 'service' AND r.name IS NOT NULL))

@@ -224,7 +224,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         // An applied parcel layout can replace its inputs in the map model: that is the case to compare.
         const parcelCompareHtml = ((fullProposal || proposal).parcelLayout && parcelCompare && proposalKeyForCompare
             && isProposalApplied(fullProposal || proposal) && parcelCompare.canCompare(fullProposal || proposal))
-            ? `<button type="button" class="btn btn-quiet btn-sm btn-compare-parcel" data-focus-parcel="${safeAgentText(String(parcelId))}" aria-pressed="${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}"
+            ? `<button type="button" class="btn btn-quiet btn-compare-parcel" data-focus-parcel="${safeAgentText(String(parcelId))}" aria-pressed="${parcelCompare.isActive(proposalKeyForCompare) && parcelCompare.activeFocus() === String(parcelId) ? 'true' : 'false'}"
                     title="${tProposal('mapCompare.sliderLabel', 'Before and after comparison')}"
                     onclick="event.stopPropagation(); event.preventDefault(); BusyControl.track(this, () => toggleProposalBeforeAfter(${inlineJsArg(proposalKeyForCompare)}, { focusParcelId: ${inlineJsArg(String(parcelId))} }));"><i class="fas fa-left-right" aria-hidden="true"></i> ${tProposal('mapCompare.toggle', 'Before / after')}</button>`
             : '';
@@ -246,12 +246,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
 
         // The row and its status take their look from classes (css/proposal-details.css).
         return `
-            <div class="proposal-parcel-item proposal-parcel-row${isReplaced ? ' is-replaced' : ''}" data-parcel-id="${parcelId}" data-reference-state="${parentParcel.referenceState}" ${replacedDataAttr} ${geometryDataAttr} onclick="handleProposalParcelClick(${inlineJsArg(parcelId)}, event)" title="${parcelTooltip}">
+            <div class="proposal-parcel-item proposal-parcel-row${isReplaced ? ' is-replaced' : ''}" data-parcel-id="${parcelId}" data-reference-state="${parentParcel.referenceState}" ${replacedDataAttr} ${geometryDataAttr}>
                 <div class="parcel-info proposal-parcel-row__info">
                     <div class="proposal-parcel-row__main">
                         ${ownerAvatarHtml}
                         <div class="proposal-parcel-row__text">
-                            <span class="parcel-number parcel-id-text" title="${safeAgentText(parcelId)}">${safeAgentText(parcelLabelText)}</span>
+                            <span class="parcel-number parcel-id-text"><button type="button" class="cb-link" ${replacedDataAttr} ${geometryDataAttr} onclick="handleProposalParcelClick(${inlineJsArg(parcelId)}, event)" title="${parcelTooltip}">${safeAgentText(parcelLabelText)}</button></span>
                             ${parcelCompareHtml}
                             ${isReplaced
                 ? `<span class="parcel-status parcel-status-replaced">${replacedLabel}</span>`
@@ -274,9 +274,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         const descendantData = proposalStorage.getProposal(descendantKey);
         if (descendantData) {
             const descendantId = descendantData.proposalId || descendantKey;
-            return `<div class="descendant-item" data-descendant-type="proposal" data-proposal-id="${descendantId}" tabindex="0">
+            return `<button type="button" class="btn descendant-item" data-descendant-type="proposal" data-proposal-id="${descendantId}">
                 <strong>${descendantData.title}</strong> (${descendantData.type || 'proposal'})
-            </div>`;
+            </button>`;
         }
 
         let parcelNumber = null;
@@ -301,15 +301,15 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             const plotArea = Number.isFinite(plotProps.calculatedArea) ? CbFormat.formatArea(plotProps.calculatedArea) : '';
             const plotLabel = tProposal('panel.proposal.parcels.newPlot', 'New plot {{n}}', { n: plotProps.syntheticIndex });
             const plotDetail = [plotArea, plotOwners].filter(Boolean).join(' · ');
-            return `<div class="descendant-item" data-descendant-type="parcel" data-parcel-id="${safeAgentText(descendantKey)}" tabindex="0">
+            return `<button type="button" class="btn descendant-item" data-descendant-type="parcel" data-parcel-id="${safeAgentText(descendantKey)}">
             <span class="parcel-id-text" title="${safeAgentText(descendantKey)}">${safeAgentText(plotLabel)}</span>${plotDetail ? ` · ${safeAgentText(plotDetail)}` : ''}
-        </div>`;
+        </button>`;
         }
         const label = parcelNumber ? `Parcel ${parcelNumber}` : `Parcel ${descendantKey}`;
         const roadSuffix = isRoad ? (roadName ? ` • Road: ${roadName}` : ' • Road') : '';
-        return `<div class="descendant-item" data-descendant-type="parcel" data-parcel-id="${descendantKey}" tabindex="0">
+        return `<button type="button" class="btn descendant-item" data-descendant-type="parcel" data-parcel-id="${descendantKey}">
             <span class="parcel-id-text" title="${safeAgentText(descendantKey)}">${safeAgentText(label)}</span>${safeAgentText(roadSuffix)}
-        </div>`;
+        </button>`;
     };
 
     const descendantKeys = (typeof window !== 'undefined'
@@ -341,18 +341,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         proposalPanelTitle.textContent = headerTitle;
         proposalPanelTitle.title = headerTitle; // tooltip while paused or when the marquee is off
     }
-    const proposalDisplayTypeRaw = getProposalDisplayTypeLabel(fullProposal, proposal);
-    const proposalDisplayType = proposalDisplayTypeRaw
-        && proposalDisplayTypeRaw.trim().toLowerCase() !== proposalDisplayTitle.trim().toLowerCase()
-        ? proposalDisplayTypeRaw
-        : '';
+    const proposalType = window.ClickStackRelations.designType({ proposal: fullProposal || proposal }, window);
+    const proposalTypePill = proposalType ? `<span class="cb-badge cb-badge--${proposalType.tone} proposal-type-badge" data-design-goal="${proposalType.goal}"><span aria-hidden="true">${safeAgentText(proposalType.icon)}</span><span>${safeAgentText(proposalType.label)}</span></span>` : '';
     const proposalDisplayDescription = displayText(getProposalDisplayDescription(fullProposal, proposal, proposalDisplayTitle));
     const escapedProposalDisplayTitle = typeof escapeHtml === 'function'
         ? escapeHtml(proposalDisplayTitle)
         : proposalDisplayTitle;
-    const escapedProposalDisplayType = proposalDisplayType && typeof escapeHtml === 'function'
-        ? escapeHtml(proposalDisplayType)
-        : proposalDisplayType;
 
     const formatAuthorForDisplay = (authorRaw) => {
         const author = authorRaw || '';
@@ -363,7 +357,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             : author;
         const safeText = typeof escapeHtml === 'function' ? escapeHtml(truncated) : truncated;
         const safeTitle = typeof escapeHtml === 'function' ? escapeHtml(author) : author;
-        return `<span class="author-text" style="display: inline-block; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${safeTitle}">${safeText}</span>`;
+        return `<span class="author-text proposal-author-text" title="${safeTitle}">${safeText}</span>`;
     };
 
     const {
@@ -434,33 +428,28 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const publishRefusal = window.DesignSync.publishedCid(fullProposal || proposal)
         ? null : window.ProposalPublishTerms.publishRefusal(fullProposal || proposal);
     const agreementOnlyPublication = publishRefusal?.code === 'layout-needs-agreement';
-    // Share publishes the design and copies its link (sharing-routes.js shareSingleProposal). It is
-    // the main action of an applied design; before it is applied, applying is.
+    // Share publishes this exact design; adding it to a plan is a separate action.
     const shareButtonHtml = publishRefusal
         ? `
         <button type="button" class="btn btn-share-proposal" disabled aria-disabled="true" aria-describedby="proposal-publish-later-note">
             <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share')}
         </button>
-        <p class="proposal-publish-later" id="proposal-publish-later-note">${safeAgentText(publishRefusal.message)}</p>
     `
         : `
         <button type="button" class="btn ${appliedState ? 'btn-primary' : ''} btn-share-proposal" onclick="BusyControl.track(this, () => shareProposalFromDetails())"
-            title="${safeAgentText(tProposal('proposals.share.shareHint', 'Publish this design and copy its link'))}">
+            title="${safeAgentText(tProposal('planDialog.shareDesignHint', 'Share this design'))}">
             <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share')}
         </button>
     `;
 
-    // Add to agreement (plan-design-agreement.md, M1 b; UI decision 2026-10-22) over an applied
-    // design: a new agreement, or one this device holds that is not proposed yet
-    // (AgreementDialog.addDesign) — who decides, who receives which piece and what money moves. A
-    // parcel layout leaves the device only with its agreement, so there it is the main action, before
-    // the disabled Share; elsewhere it follows Share.
-    const addToAgreementButtonHtml = (appliedState === true && proposalKey) ? `
-        <button type="button" class="btn ${agreementOnlyPublication ? 'btn-primary ' : ''}btn-create-agreement" onclick="window.AgreementDialog.addDesign(${inlineJsArg(proposalKey)})">
-            <i class="fas fa-handshake" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.addToAgreement', 'Add to agreement')}
+    const addToPlanButtonHtml = proposalKey
+        ? `
+        <button type="button" class="btn btn-add-to-plan" onclick="BusyControl.track(this, () => window.PlanDialog.addDesign(${inlineJsArg(proposalKey)}))">
+            <i class="fas cb-icon-plan" aria-hidden="true"></i> ${tProposal('planDialog.addToPlan', 'Add to plan')}
         </button>
     ` : '';
 
+    // Agreement creation belongs to a saved plan's actions, whose membership is fixed.
     // Duplicate places fresh movable geometry. Site-bound acts and rules have no free-copy action.
     // Edit geometry below still opens the source's design tool under the ordinary edit contract.
     const duplicateButtonHtml = proposalKey && window.ProposalDesignGoals.canDuplicate(fullProposal)
@@ -507,6 +496,21 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
 
+    // A block with an enclosed courtyard: its parcels' ground stays private (fenced) until the
+    // parcel layout makes the courtyard a parcel of its own. This is the shortcut to that layout.
+    const courtyardOf = window.ReparcellizationPlanUtils?.deriveCourtyardFromFootprint;
+    const courtyardLayoutButtonHtml = (proposalKey && geometryEditable && courtyardOf
+        && typeof window.startCourtyardParcelLayout === 'function'
+        && courtyardOf((fullProposal || proposal)?.geometry?.ruleMassing))
+        ? `
+        <button type="button" class="btn btn-courtyard-layout"
+            onclick="BusyControl.track(this, () => startCourtyardParcelLayout(${inlineJsArg(proposalKey)}))"
+            title="${safeAgentText(tProposal('panel.proposal.actions.courtyardParcelHint', 'Parcels keep their own fenced ground. Lay out the courtyard as a parcel of its own to share it.'))}">
+            <i class="fas fa-vector-square" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.courtyardParcel', 'Courtyard as a parcel')}
+        </button>
+    `
+        : '';
+
     // Before / after (dividers.md, M2): the ground without this proposal beside the map with it.
     // Only an applied record with a footprint has an "after" to show.
     const beforeAfter = (typeof window !== 'undefined') ? window.ProposalBeforeAfter : null;
@@ -537,21 +541,6 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `
         : '';
-    // Map actions remain available in the compact card and the reader. Details is an explicit
-    // transition into the reader; Fork and the contextual design editors keep distinct labels.
-    const primaryActionsHtml = `
-        <div class="proposal-actions proposal-actions-group proposal-primary-actions">
-            ${mapActionButtonHtml}
-            ${agreementOnlyPublication ? addToAgreementButtonHtml : ''}
-            ${shareButtonHtml}
-            ${agreementOnlyPublication ? '' : addToAgreementButtonHtml}
-            ${duplicateButtonHtml}
-            <button type="button" class="btn btn-proposal-details" onclick="toggleProposalDetailsPanelMinimized(false)">
-                <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}
-            </button>
-        </div>
-        ${mapActionFailureHtml}
-    `;
     // A Block or Row proposal is a rule on its parcels; leaving them is a conversion to one Freeform
     // building (proposals/freeform-conversion.js, proposal-editor-shell.js).
     const convertsToFreeform = proposalKey
@@ -566,8 +555,23 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `
         : '';
-    const additionalActionsHtml = crossSectionButtonHtml + editGeometryButtonHtml + convertToFreeformButtonHtml + compareButtonHtml + driveButtonHtml;
-
+    const additionalActionsHtml = crossSectionButtonHtml + editGeometryButtonHtml + courtyardLayoutButtonHtml + convertToFreeformButtonHtml + compareButtonHtml + driveButtonHtml;
+    // Map actions remain available in the compact card and the reader. Details is an explicit
+    // transition into the reader; Fork and the contextual design editors keep distinct labels.
+    const primaryActionsHtml = `
+        <div class="proposal-actions proposal-actions-group proposal-primary-actions">
+            ${mapActionButtonHtml}
+            ${shareButtonHtml}
+            ${addToPlanButtonHtml}
+            ${duplicateButtonHtml}
+            <button type="button" class="btn btn-proposal-details" onclick="toggleProposalDetailsPanelMinimized(false)">
+                <i class="fas fa-circle-info" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.details', 'Details')}
+            </button>
+            ${additionalActionsHtml}
+            ${publishRefusal ? `<p class="proposal-publish-later" id="proposal-publish-later-note">${safeAgentText(publishRefusal.message)}</p>` : ''}
+        </div>
+        ${mapActionFailureHtml}
+    `;
     const escapedProposalDescription = proposalDisplayDescription && typeof escapeHtml === 'function'
         ? escapeHtml(proposalDisplayDescription)
         : proposalDisplayDescription;
@@ -764,16 +768,14 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             const ladder = displayState.rung;
             const ladderLabel = window.__proposalDisplayState.rungLabel(ladder, tProposal);
             const ladderTitle = escapeHtml(window.__proposalDisplayState.rungHint(ladder, tProposal));
-            const ladderBadge = `<span class="cb-badge cb-badge--${ladder}" title="${ladderTitle}">${ladderLabel}</span>`;
+            const ladderIcon = ladder === 'published' ? 'fa-globe' : 'fa-file-pen';
+            const ladderBadge = `<span class="cb-badge cb-badge--${ladder} proposal-ladder-badge" title="${ladderTitle}"><i class="fas ${ladderIcon}" aria-hidden="true"></i> ${ladderLabel}</span>`;
             const applied = appliedState
                 ? `<span class="cb-badge cb-badge--applied"><i class="fas fa-check" aria-hidden="true"></i> ${mapStatusBadgeLabel}</span>`
                 : '';
-            return ladderBadge + applied;
+            return proposalTypePill + applied + ladderBadge;
         })()}
                 ${agentBadgeHtml}
-            </div>
-            <div class="proposal-heading-row">
-                ${escapedProposalDisplayType ? `<div class="proposal-display-type">${escapedProposalDisplayType}</div>` : ''}
             </div>
             <div class="proposal-description-row">
                 ${escapedProposalDescription ? `<p class="proposal-description-text">${escapedProposalDescription}</p>` : ''}
@@ -790,7 +792,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 const agent = agents.find(a => a.name === proposal.author);
                 if (agent && typeof getAvatarImagePath === 'function') {
                     return `
-                                        <img src="${getAvatarImagePath(agent.avatarIndex)}" class="author-avatar" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid #007bff; margin-right: 8px; vertical-align: middle;">
+                                        <img src="${getAvatarImagePath(agent.avatarIndex)}" class="author-avatar proposal-author-avatar">
                                         <button type="button" data-agent-id="${agent.id}" class="cb-link agent-link-clickable">${formatAuthorForDisplay(proposal.author)}</button>
                                     `;
                 }
@@ -801,7 +803,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             </div>
             <div class="proposal-overview-facts">
             <div class="metric-group">
-                <span class="metric-label">${tProposal('panel.proposal.metrics.parcels', 'Parcels in design:')}</span> <span class="metric-value">${parcelIds.length}</span>
+                <span class="metric-label">${tProposal('panel.proposal.metrics.parcels', 'Source parcels:')}</span> <span class="metric-value">${parcelIds.length}</span>
             </div>
             ${areaSummary.hasSite ? `<div class="metric-group" data-proposal-area-basis="site">
                 <span class="metric-label">${tProposal('panel.proposal.metrics.siteArea', 'Site area:')}</span>
@@ -832,7 +834,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <div class="metric-label-count-container">
                     <span class="metric-label">${tProposal('panel.proposal.sections.cadastralParcels', 'Cadastral parcels:')}</span> <span class="metric-value">${cadastreParcelIds.length}</span>
                 </div>
-                <div class="proposal-parcels-list" id="proposal-parent-parcels-list" style="max-height: 420px; overflow-y: auto;">
+                <div class="proposal-parcels-list proposal-parcel-list-scroll" id="proposal-parent-parcels-list">
                     ${parentParcelItemsInitial}
                 </div>
             </div>
@@ -851,7 +853,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <div class="metric-label-count-container">
                     <span class="metric-label">${tProposal('panel.proposal.sections.generatedParcels', 'Generated parcels:')}</span> <span class="metric-value">${descendantKeys.length}</span>
                 </div>
-                <div class="proposal-descendants-list" id="proposal-descendants-list" style="max-height: 420px; overflow-y: auto;">
+                <div class="proposal-descendants-list proposal-parcel-list-scroll" id="proposal-descendants-list">
                     ${descendantItemsInitial}
                 </div>
             </div>`;
@@ -956,7 +958,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             return `
             <hr class="proposal-details-divider">
             <div class="metric-group">
-                <div class="metric-label" style="font-weight: 600; margin-bottom: 10px;">${tProposal('panel.proposal.sections.ownershipStats', 'Modeled ownership and acquisition')}</div>
+                <div class="metric-label proposal-ownership-stats-heading">${tProposal('panel.proposal.sections.ownershipStats', 'Modeled ownership and acquisition')}</div>
             </div>
             <p><small data-ownership-estimates>${tProposal('panel.proposal.stats.summaryScope', 'Estimates from proposal metadata; owner entries may repeat across parcels and include assumed owners.')}</small></p>
             ${statsItems.join('')}
@@ -975,7 +977,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                 <code class="metric-value proposal-published-cid" title="${safeAgentText(publishedCid)}">${safeAgentText(`${publishedCid.slice(0, 12)}…${publishedCid.slice(-6)}`)}</code>
             </div>` : ''}
             ${escapedProposalDisplayId ? `<div class="proposal-id-row">
-                    <button type="button" class="btn btn-quiet btn-sm proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy local ID')}</button>
+                    <button type="button" class="btn btn-quiet proposal-id-copy" title="${escapedProposalDisplayId}" onclick="copyProposalIdToClipboard(${inlineJsArg(String(fullProposal.proposalId || proposal.proposalId || ''))})"><i class="fas fa-copy" aria-hidden="true"></i> ${tProposal('panel.proposal.copyId', 'Copy local ID')}</button>
                 </div>` : ''}
             ${sectionEnd}
             </div>
@@ -1060,9 +1062,9 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         // Only show spinner for proposals with many parcels
         const loadingText = tProposal('panel.proposal.rendering', 'Rendering proposal details...');
         detailsContent.innerHTML = `
-            <div class="loader-spinner" role="status" aria-live="polite" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; min-height: 200px;">
+            <div class="loader-spinner proposal-details-loader" role="status" aria-live="polite">
                 <div class="spinner-circle" aria-hidden="true"></div>
-                <span class="loader-text" style="margin-top: 16px; color: #666;">${loadingText}</span>
+                <span class="loader-text proposal-details-loader__text">${loadingText}</span>
             </div>
         `;
 
@@ -1106,9 +1108,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     // Populate footer with action buttons
     const footer = document.getElementById('proposal-details-footer');
     if (footer) {
-        footer.innerHTML = primaryActionsHtml + (additionalActionsHtml
-            ? `<div class="proposal-actions proposal-actions-group proposal-context-actions">${additionalActionsHtml}</div>`
-            : '');
+        footer.innerHTML = primaryActionsHtml;
         const defaultActionButton = footer.querySelector('.proposal-action-default');
         if (defaultActionButton && typeof defaultActionButton.focus === 'function' && !defaultActionButton.disabled) {
             requestAnimationFrame(() => {
@@ -1231,15 +1231,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                     handleDescendantItemClick(item);
                 } catch (_) { }
             });
-            item.addEventListener('keydown', event => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    try {
-                        handleDescendantItemClick(item);
-                    } catch (_) { }
-                }
-            });
+
         });
 
     } catch (_) { }
@@ -1552,7 +1544,7 @@ function showProposalInfoHoverOverlay(parcelId) {
             return;
         }
         highlightParcelHover(parcelId, {
-            color: '#FFEB3B',
+            color: window.MapHighlight.color,
             weight: 6,
             dashArray: '10 8',
             // No number label on plain MAP hover: it only appeared over proposal-owned parcels,

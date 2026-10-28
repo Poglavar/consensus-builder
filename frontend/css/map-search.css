@@ -22,11 +22,6 @@ body.map-search-expanded .map-shell-slot--search {
     z-index: var(--cb-z-search-expanded);
 }
 
-/* The search moves the 2D map, which the model/photo views cover. */
-body.three-mode-active .map-search {
-    display: none;
-}
-
 body.app-loading .map-search {
     pointer-events: none;
 }
@@ -70,6 +65,28 @@ body.app-loading .map-search {
 
 .map-search__chip:hover {
     background: var(--cb-primary-soft);
+}
+
+.map-search__chip[data-share-state="shared"] .map-search__planet { color: var(--cb-success); }
+.map-search__chip[data-share-state="local"] .map-search__planet { color: var(--cb-warning); }
+
+/* Keep the planet's place/share status and globe action in both model and aerial 3D. */
+body.three-mode-active .map-search {
+    width: var(--map-search-height);
+    min-width: 0;
+    padding: 0;
+}
+body.three-mode-active .map-search .map-search__chip {
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    padding: 0;
+    background: transparent;
+}
+body.three-mode-active .map-search :is(.map-search__chip-label, .map-search__field, .map-search__back, .map-search__results) {
+    display: none;
 }
 
 .map-search__chip-label {
@@ -169,8 +186,11 @@ body.app-loading .map-search {
     left: 0;
     width: max(100%, var(--map-search-width));
     max-width: calc(100vw - 2 * var(--map-shell-edge));
-    max-height: calc(100vh - var(--map-search-height) - 40px);
+    max-height: min(65dvh, calc(100dvh - var(--map-search-height) - 40px));
     overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
     box-sizing: border-box;
     padding: 4px 0;
     border: 1px solid var(--cb-line-glass);
@@ -391,12 +411,10 @@ body.app-loading .map-search {
     }
 }
 
-/* Explore's compass label shares the narrow top row with the account button; a city chip drops
-   its globe icon to keep the name readable. */
+/* Keep the status planet on narrow screens; shorten the city name instead. */
 @media (max-width: 359.98px) {
     :root { --map-search-compact-width: 120px; }
     body.explore-city { --map-search-compact-width: 120px; }
     .map-search__chip,
     .map-search__chip.is-explore { max-width: 76px; }
-    .map-search__chip:not(.is-explore) .fas { display: none; }
 }

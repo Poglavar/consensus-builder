@@ -2,6 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { describe, expect, it, vi } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { createParcelSource, parcelSourceCatalog } from '../parcels/sources.js';
 
 const read = path => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
@@ -12,7 +13,7 @@ describe('world-capital city parcel bindings', () => {
     it('matches active city profiles to registered providers and executable adapters', () => {
         const context = { console, URL, URLSearchParams };
         context.window = context;
-        runInNewContext(read('frontend/js/city-config.js'), context);
+        runInNewContext(cityConfigSource(), context);
         const sources = new Map(parcelSourceCatalog.sources.map(source => [source.id, source]));
         const liveCities = new Map(coverage.liveCities.map(city => [city.id, city]));
 

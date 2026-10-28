@@ -1,7 +1,15 @@
-<!-- Design of record for the LMSR market in the proposal_market program (streamline.md, track 1): units, account layout, instructions, invariants, rounding, resolution and void rules, and the test contract shared with the JavaScript reference module. -->
-# LMSR market: program design
+<!-- Current LMSR market contract and implementation notes. -->
+# LMSR markets
 
-The market maker replaces the parimutuel for every new market. The JavaScript reference is
+The dated agreement market is the current betting contract. It replaces parimutuel pools for new
+records and intentionally changes the experimental data shape: old pool records are not migrated or
+read through a compatibility path. Recreate test markets against the current contract.
+
+The implementation exists in the Rust program source, browser quote and points ledger, but the
+updated Solana market program has **not been deployed**. Devnet-USDC execution requires that program
+release. The points book is an independent server-side simulation and does not require a wallet.
+
+The maker is LMSR. The JavaScript reference is
 `frontend/js/bets/lmsr.js`; the Rust port must reproduce `backend/test/fixtures/lmsr-vectors.json`
 exactly, because the browser quote, the points ledger and the vault all run the same arithmetic.
 
@@ -48,13 +56,22 @@ One account type for both resolution paths; `kind` selects the path at resolutio
 | `paid_out` | u64 | claims paid so far, for the creator's reclaim |
 | `bump` | u8 | |
 
-PDA seeds, as built on 2026-10-12: `["lmsr", proposal]` for kind 0 and `["lmsr", recipe_hash]` for
-kind 1, positions under `["lmsr_position", market, owner, side]`. `Position` keeps its layout
-(`amount` holds shares). **To change before any deploy:** those seeds let anyone squat the single
-address with useless terms (b = 1, closing in a second), and a kind 1 creator can pass a proposal's
-key as `recipe_hash` and take a kind 0 address. The seeds become `["lmsr", proposal, creator]` and
-`["lmsr_recipe", recipe_hash, creator]`: anyone can still open a market, nobody can block one, and
-the app lists the market it registered at creation as the canonical one.
+For a kind 0 agreement market, canonical parameters are `b = 100_000_000` atomic units,
+`closes_at = agreement.deadline`, `grace_seconds = 0`, and `max_position = 0` (no per-position
+limit). Its creator is the agreement sponsor and its PDA is derived from `['lmsr', agreement,
+sponsor]`. The sponsor deposits the seed and receives any reclaimable vault remainder. This
+identifies the canonical chain market; points markets use the same agreement subject and quote
+contract in a separate server-side book.
+
+PDA seeds are `["lmsr", agreement, creator]` for kind 0 and
+`["lmsr_recipe", recipe_hash, creator]` for kind 1, with positions under
+`["lmsr_position", market, owner, side]`. `Position` keeps its layout (`amount` holds shares).
+Separate namespaces prevent a recipe hash from taking an agreement market's address; the creator
+signature prevents another wallet from reserving that creator's address with unusable terms.
+Vault payouts sign with the full namespace, subject and creator seeds. The browser and Node codec
+is `frontend/js/solana/lmsr-client.js`; tests compare its bytes and account ordering with the IDL and
+independent Anchor serialization. Earlier unscoped experimental LMSR addresses are intentionally
+not read by this codec. These changes still require a market-program release.
 
 ## Instructions
 
@@ -67,7 +84,8 @@ the app lists the market it registered at creation as the canonical one.
   shares to the side and the position, enforces `max_position`.
 - `sell(side, shares, min_return)`. Same checks; requires the position holds the shares; computes
   the sell quote, requires it `≥ min_return`, transfers it from the vault, removes the shares.
-- `resolve_lmsr()` kind 0: Executed → YES; Expired → NO; Cancelled → see below; else, once
+- `resolve_lmsr()` kind 0: Executed with valid positive `executed_at ≤ closes_at` → YES; execution after
+  `closes_at` → NO; Expired → NO; Cancelled → VOID; else, once
   `now ≥ closes_at + grace`, NO. Kind 1: a qualifying attestation whose event time is on or before
   `closes_at` → the committed outcome; else, once `now ≥ closes_at + grace`, NO. Conflicting
   qualifying attestations for both outcomes → VOID (streamline B5).
@@ -128,13 +146,14 @@ postdate close) belongs to its own question shape and stays with the legacy `Ext
 4. Price of a side rises with its own shares and falls with the other side's.
 5. The JavaScript module and the Rust port agree on every vector in `lmsr-vectors.json`.
 
-Two limits of the resolution paths, documented rather than solved: NO-by-absence sees only the
+NO-by-absence for kind 1 sees only the
 attestations passed in, so the attester's service must resolve within the grace window, ideally in
-the same transaction as its attestation; and kind 0 has no execution timestamp, so an `Executed`
-status reached after `closes_at` still counts as YES, which makes the kind 0 deadline effectively
-`closes_at + grace`. The fix for the second is `executed_at` and `cancelled_at` on the proposal
-account, in the proposal program's next version, with the market comparing `executed_at` to
-`closes_at`.
+the same transaction as its attestation. Kind 0 reads the agreement account's existing `executed_at`
+field. A missing, nonpositive or future execution time, or an unrecognized lifecycle status, is
+invalid evidence and fails settlement. The grace period delays the absence decision; it does not
+extend the event cutoff. The account reader's test serializes a real agreement, independently of
+the reader's offsets. This source correction requires a market-program release before deployment
+can be claimed; it does not change the agreement account layout.
 
 ## Insiders (streamline B3)
 
@@ -143,47 +162,23 @@ and bound kind 1 markets those come from the proposal account at trade time (`Pr
 an unbound kind 1 market bars the attester only. The check is best effort by construction: a
 colluding second wallet is not detectable on-chain, which is why cancellation has its own rule.
 
-## Cancellation: decided VOID, with a refinement to confirm
+## Cancellation resolves VOID
 
-Decision 2026-10-12 (streamline B2): cancelling a proposal with open positions voids its market.
-VOID pays one half per share, the standard void settlement, provably covered by invariant 2.
+The current rule is Cancelled → VOID. Every unclaimed position on either side is eligible for half
+its shares, rounded down per position. VOID is distinct from a NO forecast: it returns half a share
+unit to either side rather than rewarding only NO holders. The aggregate obligation is
+`floor(q_yes / 2) + floor(q_no / 2)` and is covered by the maker reserve invariant.
 
-Two consequences to confirm before this becomes immutable:
+The prior collusion calculations and unimplemented cancellation-notice alternative remain in the
+[cancellation tradeoff record](docs/lmsr-cancellation-analysis.md). Direct insider restrictions do
+not detect a second wallet controlled by an insider.
 
-- An honest cancellation is the common case and the truthful answer to "will it be agreed by the
-  date?" is then NO. VOID pays the NO holders who were right one half instead of one, and pays
-  the YES holders who were wrong one half instead of nothing. The forecast is right and the money
-  says otherwise.
-- The exploit VOID guards against survives in smaller form: a colluder buys NO at a low price,
-  the author cancels, the colluder collects one half.
+## Deployment boundary
 
-Measured with the reference module, `b` = 100 USDC, an honest YES crowd that spent 100 USDC
-(price 81.6% YES), then a colluder buys NO and the author cancels:
-
-| Colluder spends on NO | VOID at one half | VOID at last price | Resolve NO |
-|---|---|---|---|
-| 10 USDC | +12.61 | +1.83 | +35.22 |
-| 50 USDC | +25.50 | +26.26 | +101.00 |
-| 200 USDC | −21.19 | +118.12 | +157.61 |
-
-Resolving NO on cancel is open-ended, which is why the parimutuel's rule had to go. VOID at one
-half caps the extraction near a quarter of `b`, but it is available to any author and colluder at
-any time, and it misprices every honest cancellation.
-
-The alternative that fixes both: Cancelled → NO, but a proposal with an open market can only be
-cancelled with notice. `proposal_nft` records `cancel_requested_at` and the cancellation takes
-effect after a fixed notice period during which trading continues with the pending cancel visible,
-so the market prices the cancellation in and nobody can cancel into a position. The author is
-barred anyway. The same notice mechanism serves the "retire test data" path with a zero notice
-period while a market has no positions. Recommendation: NO with notice; VOID reserved for
-conflicting evidence. Whichever rule the user confirms is a one-line policy in `resolve_lmsr`.
-
-## Legacy coexistence
-
-The deployed parimutuel instructions and the `Market`, `ExternalMarket` and `Position` layouts
-stay as they are, so existing devnet markets resolve and claim exactly as before. New markets are
-LMSR only. Before the immutable mainnet deploy the parimutuel instructions are dropped behind a
-cargo feature so the binary carries only what mainnet uses (streamline B6).
+The previously deployed parimutuel program and its existing accounts remain historical chain
+state. The current source retains their old instructions and readers, but new frontend and points
+markets use the LMSR model. The LMSR instructions and account layout described here still require a
+program release; source code and local tests do not establish devnet deployment.
 
 ## Test contract (streamline K7)
 

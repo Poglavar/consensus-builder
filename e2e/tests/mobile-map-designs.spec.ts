@@ -1,168 +1,67 @@
-// Phone regressions: useful list space, integrated Designs sharing, published layouts and absent permitted sources.
+// Phone regressions for the saved-plan workflow, layouts, ownership evidence and absent sources.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, stubBasemapTiles, PARCEL_ID, openOnAnotherDevice, chooseProfileName, showProposal } from '../helpers/runtime';
-import { applyLayout, editorOpen, editorSave, editorClosed, landLoaded, agreementPanel, panelStatus } from '../helpers/agreements';
-import { fileDesign, pageIndex } from '../helpers/mocks/shared-server';
+import { openCity, stubBasemapTiles, PARCEL_ID, openOnAnotherDevice, chooseProfileName } from '../helpers/runtime';
+import { applyLayout, agreementEditor, editorSave } from '../helpers/agreements';
+import { pageIndex, fileDesign } from '../helpers/mocks/shared-server';
 
 test.use({ viewport: { width: 390, height: 844 } });
 test.beforeEach(async ({ mockApi: page }) => { await stubBasemapTiles(page); });
+const writes=(page:any)=>pageIndex(page).requests.filter(r=>r.method==='POST'&&['/pins','/designs','/plans','/agreements'].includes(r.path));
+async function openPlans(page:any){if(!await page.locator('#proposals-sheet').isVisible())await page.locator('#proposals-button').click();await page.locator('#shareAppliedProposalsButton').click();await expect(page.locator('#designs-plans')).toBeVisible();}
+async function savePlan(page:any,title:string){await page.locator('#designs-plans').getByRole('button',{name:'Create plan',exact:true}).click();const form=page.locator('.plan-composer');await form.getByLabel('Plan name',{exact:true}).fill(title);for(const box of await form.locator('input[type="checkbox"]').all())await box.check();await form.getByRole('button',{name:'Create plan',exact:true}).click();await expect(page.locator('.plan-details')).toBeVisible();return page.evaluate(title=>(window as any).PlanWorkspace.list().find((r:any)=>r.content.title===title),title);}
 
-test('Designs gives most of a phone screen to cards with actions always visible', async ({ mockApi: page }) => {
-  await openCity(page);
-  await page.evaluate(parcelId => {
-    const w = window as any;
-    for (let i = 0; i < 15; i++) w.proposalStorage.addProposal({ title: `Neighbourhood design ${i}`, goal: 'park', author: 'Test author', cadastreParcelIds: [parcelId] });
-  }, PARCEL_ID);
-  await page.locator('#proposals-button').click();
-  const sheet = page.locator('#proposals-sheet');
-  await expect(sheet.getByRole('heading', { name: 'Designs', exact: true })).toBeVisible();
-  await expect(sheet.locator('.proposal-list-item')).toHaveCount(15);
-  const body = await sheet.locator('.proposal-list-modal-body').boundingBox();
-  expect(body!.height).toBeGreaterThan(844 * 0.55);
-  await expect(sheet.locator('.proposal-list-item').first()).toBeInViewport({ ratio: 1 });
-  await expect(sheet.locator('#agreementsButton, #mintedAgreementsButton')).toHaveCount(0);
-  await expect(sheet.locator('#planStatsButton')).toBeVisible();
-  await expect(sheet.locator('#proposal-list-actions summary')).toHaveCount(0);
-  await expect(sheet.locator('.proposal-list-navigation-hint')).toHaveCount(0);
-  await sheet.locator('.proposal-filters-toggle').click();
-  await expect(sheet.locator('#proposal-filter-publication')).toHaveText(/Draft.*Published/);
-  await expect(sheet.locator('#proposal-filter-lifecycle')).toHaveCount(0);
-  await sheet.locator('.proposal-filters-toggle').click();
-  await sheet.locator('.proposal-list-modal-body').evaluate(element => { element.scrollTop = element.scrollHeight; });
-  await expect(sheet.locator('.proposal-list-item').last()).toBeInViewport({ ratio: 1 });
+test('Designs cards fit a phone; Saved plans becomes the Plans page',async({mockApi:page})=>{
+  await openCity(page);await page.evaluate(parcelId=>{const w=window as any;for(let i=0;i<15;i++)w.proposalStorage.addProposal({title:`Neighbourhood design ${i}`,goal:'park',author:'Test author',cadastreParcelIds:[parcelId]});},PARCEL_ID);
+  await page.locator('#proposals-button').click();const sheet=page.locator('#proposals-sheet');
+  await expect(sheet.locator('.proposal-list-item')).toHaveCount(15);const body=await sheet.locator('.proposal-list-modal-body').boundingBox();expect(body!.height).toBeGreaterThan(844*.55);
+  await expect(sheet.locator('.proposal-list-item').first()).toBeInViewport({ratio:1});await expect(sheet.locator('#agreementsButton, #mintedAgreementsButton')).toHaveCount(0);
+  await sheet.getByRole('tab',{name:'Saved plans',exact:true}).click();await expect(sheet.locator('#proposals-sheet-title')).toHaveText('Plan');
+  await expect(sheet.locator('#designs-plans')).toContainText('No saved plans yet.');await expect(sheet.locator('#designs-plans a[href*="/plans/"]')).toHaveCount(0);
 });
 
-test('Share tab on an empty map offers its location without a profile gate', async ({ mockApi: page }) => {
-  await openCity(page);
-  const at = await page.evaluate(() => { const w = window as any; const c = w.map.getCenter(); return [c.lat, c.lng, w.map.getZoom()].join(','); });
-  await page.locator('#proposals-button').click();
-  const sheet = page.locator('#proposals-sheet');
-  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
-  const share = sheet.locator('#designs-share');
-  await expect(share.locator('.share-plan-panel--embedded')).toBeVisible();
-  const input = share.locator('.share-plan-link__input');
-  await expect(input).toBeVisible();
-  const url = new URL(await input.inputValue());
-  expect(url.searchParams.get('at')).toBe(at);
-  expect(url.searchParams.has('3d')).toBe(false);
-  await expect(sheet).toBeVisible();
-  await page.keyboard.press('Escape');
-  await expect(sheet).toBeHidden();
+test('a parcel-layout plan stays local; sharing explains it needs its agreement and plan details still create one',async({mockApi:page})=>{
+  test.setTimeout(120_000);const {layoutId}=await applyLayout(page);await openPlans(page);const plan=await savePlan(page,'Layout agreement plan');expect(writes(page)).toHaveLength(0);
+  await page.locator('.plan-details').getByRole('button',{name:'Share plan',exact:true}).click();const share=page.locator('.plan-share');
+  await share.getByRole('button',{name:'Publish and copy link',exact:true}).click();await expect(share.locator('.plan-dialog__status')).toContainText(/published with its agreement|Create an agreement/i);
+  expect(writes(page)).toHaveLength(0);await page.keyboard.press('Escape');
+  await page.locator('#designs-plans').getByRole('button',{name:'Open plan',exact:true}).click();await expect(page.locator('.plan-details')).toBeVisible();
+  await page.locator('.plan-details').getByRole('button',{name:'Create agreement',exact:true}).click();const editor=agreementEditor(page);
+  await expect(editor).toBeVisible();await expect(editor.locator('#agreement-editor-title')).toHaveText('Create agreement');await expect(editor.locator('[data-agreement-plan]')).toHaveValue(plan.cid);
+  expect(await page.evaluate(id=>(window as any).proposalStorage.getProposal(id).goal,layoutId)).toBe('parcel-layout');
 });
 
-test('a published parcel layout starts checked and produces its existing link; an unpublished layout explains the agreement path', async ({ mockApi: page, browser, baseURL }) => {
-  test.setTimeout(120_000);
-  const { layoutId } = await applyLayout(page);
-  await page.locator('#proposals-button').click();
-  const sheet = page.locator('#proposals-sheet');
-  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
-  const shareTab = sheet.locator('#designs-share');
-  const panel = shareTab.locator('.share-plan-panel--embedded');
-  const row = panel.locator('.share-plan-row');
-  await expect(row.locator('input')).toBeChecked();
-  await expect(row.locator('input')).toBeEnabled();
-  await expect(row.locator('.share-plan-row__refusal')).toBeVisible();
-  await expect(panel.locator('.share-plan-create-agreement')).toBeVisible();
-  await expect(panel.locator('.share-plan-link')).toBeHidden();
-  await sheet.getByRole('tab', { name: 'Designs', exact: true }).click();
-  const content = await page.evaluate(id => (window as any).DesignRecord.published((window as any).proposalStorage.getProposal(id)), layoutId);
-  const cid = fileDesign(pageIndex(page), content);
-  await page.evaluate(({ id, cid }) => {
-    const w = window as any;
-    w.DesignSync.markPublished(w.proposalStorage.getProposal(id), { cid, apiBase: w.resolveBackendBaseUrl(), publishedAt: new Date().toISOString() });
-  }, { id: layoutId, cid });
-  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
-  await expect(row.locator('input')).toBeChecked();
-  await expect(row.locator('input')).toBeEnabled();
-  await expect(row.locator('.share-plan-row__published')).toBeVisible();
-  await expect(row.locator('.share-plan-row__refusal')).toHaveCount(0);
-  await expect(row).not.toHaveClass(/is-excluded/);
-  const link = panel.locator('.share-plan-link__input');
-  await expect(link).toBeVisible();
-  const url = new URL(await link.inputValue());
-  expect(url.pathname).toBe(`/designs/${cid}`);
-  const receiver = await openOnAnotherDevice(browser, url.pathname + url.search, pageIndex(page), baseURL);
-  try {
-    await expect.poll(() => receiver.page.evaluate(id => {
-      const w = window as any; const p = w.proposalStorage.getProposal(`design-${id}`);
-      return p && w.isApplied(p) && p.parcelLayout.plots.length > 0;
-    }, cid), { timeout: 60_000 }).toBe(true);
-  } finally { await receiver.context.close(); }
-  expect(pageIndex(page).requests.filter(request => request.method === 'POST' && request.path !== '/designs/batch')).toEqual([]);
-  await page.keyboard.press('Escape');
-  await expect(sheet).toBeHidden();
-  await showProposal(page, layoutId);
-  await expect(page.locator('#proposal-details-panel .btn-share-proposal')).toBeEnabled();
-  await expect(page.locator('#proposal-publish-later-note')).toHaveCount(0);
+test('a published layout shares its exact saved plan and a fresh device applies it',async({mockApi:page,browser,baseURL})=>{
+  test.setTimeout(150_000);const {layoutId}=await applyLayout(page);await page.evaluate(()=>(window as any).guestPolicyBlocks('publish'));await chooseProfileName(page,'Layout publisher');
+  const content=await page.evaluate(id=>(window as any).DesignRecord.published((window as any).proposalStorage.getProposal(id)),layoutId);
+  const cid=fileDesign(pageIndex(page),content);
+  await page.evaluate(({id,cid})=>{const w=window as any;w.DesignSync.markPublished(w.proposalStorage.getProposal(id),{cid,apiBase:w.resolveBackendBaseUrl(),publishedAt:new Date().toISOString()});},{id:layoutId,cid});
+  await openPlans(page);const plan=await savePlan(page,'Published layout plan');await page.context().grantPermissions(['clipboard-read','clipboard-write']);
+  await page.locator('.plan-details').getByRole('button',{name:'Share plan',exact:true}).click();const share=page.locator('.plan-share');
+  await share.getByRole('button',{name:'Publish and copy link',exact:true}).click();const link=share.getByLabel('Plan link',{exact:true});
+  await expect(link).toHaveValue(new RegExp(`/plans/${plan.cid}`));const snapshotUrl=new URL(await link.inputValue());
+  const requests=writes(page);expect(requests.find(r=>r.path==='/plans')!.body.content).toEqual(plan.content);expect(requests.filter(r=>r.path==='/agreements')).toHaveLength(0);
+  const receiver=await openOnAnotherDevice(browser,snapshotUrl.pathname+snapshotUrl.search,pageIndex(page),baseURL);
+  try{await expect.poll(()=>receiver.page.evaluate(cid=>{const w=window as any,p=w.proposalStorage.getProposal(`design-${cid}`);return p&&w.isApplied(p)&&p.parcelLayout.plots.length>0;},plan.content.designCids[0]),{timeout:60_000}).toBe(true);}
+  finally{await receiver.context.close();}
 });
 
-test('2D massing puts Permitted first and disables it cleanly when there is no source', async ({ mockApi: page }) => {
-  await page.route('**/planning/sources?**', route => route.fulfill({ json: { city: 'zagreb', sources: [] } }));
-  await openCity(page);
-  await page.locator('#planning-views-button').click();
-  const panel = page.locator('#planning-views');
-  await expect(panel.locator('.planning-map-context')).toHaveText('Compare building footprints and massing on the 2D map.');
-  const rows = panel.locator('.planning-layer-row');
-  await expect(rows.first().locator('[data-role-label]')).toHaveAttribute('data-role-label', 'permitted');
-  await expect(rows.nth(1).locator('[data-role-label]')).toHaveAttribute('data-role-label', 'existing');
-  await expect(rows.first()).toHaveAttribute('aria-disabled', 'true');
-  await expect(rows.first().locator('[data-planning-setting="permitted"]')).toBeDisabled();
-  await expect(rows.nth(1).locator('[data-planning-setting="existing"]')).toBeEnabled();
-  await expect(panel.locator('.planning-source-select')).toBeHidden();
-  await expect(panel.locator('.planning-source-note').last()).toBeHidden();
-  await expect(panel.locator('.planning-coverage')).toBeHidden();
-  await expect(panel.locator('.planning-view-status')).toBeHidden();
+test('2D massing puts Permitted first and disables it cleanly when there is no source',async({mockApi:page})=>{
+  await page.route('**/planning/sources?**',route=>route.fulfill({json:{city:'zagreb',sources:[]}}));await openCity(page);await page.locator('#planning-views-button').click();const panel=page.locator('#planning-views');
+  await expect(panel.locator('.planning-map-context')).toHaveText('Compare building footprints and massing on the 2D map.');const rows=panel.locator('.planning-layer-row');
+  await expect(rows.first().locator('[data-role-label]')).toHaveAttribute('data-role-label','permitted');await expect(rows.nth(1).locator('[data-role-label]')).toHaveAttribute('data-role-label','existing');
+  await expect(rows.first()).toHaveAttribute('aria-disabled','true');await expect(rows.first().locator('[data-planning-setting="permitted"]')).toBeDisabled();await expect(rows.nth(1).locator('[data-planning-setting="existing"]')).toBeEnabled();
+  await expect(panel.locator('.planning-source-select')).toBeHidden();await expect(panel.locator('.planning-source-note').last()).toBeHidden();await expect(panel.locator('.planning-coverage')).toBeHidden();await expect(panel.locator('.planning-view-status')).toBeHidden();
 });
 
-
-test('a blocked layout can create and publish its agreement, then Share includes it without deselecting', async ({ mockApi: page }) => {
-  test.setTimeout(150_000);
-  await applyLayout(page);
-  await page.locator('#proposals-button').click();
-  const sheet = page.locator('#proposals-sheet');
-  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
-  const share = sheet.locator('#designs-share .share-plan-panel--embedded');
-  await expect(share.locator('.share-plan-status')).toContainText('or deselect it');
-  await share.locator('.share-plan-create-agreement').click();
-  const editor = await editorOpen(page, 'Create agreement');
-  await landLoaded(editor);
-  await editor.locator('input[name="agreement-electorate"][value="community"]').check();
-  await editor.locator('[data-agreement-title]').fill('Neighbourhood agreement');
-  await editorSave(editor).click();
-  await editorClosed(page);
-  await panelStatus(page, 'current');
-  const agreement = agreementPanel(page);
-  const box = await agreement.boundingBox();
-  expect(box!.height).toBeLessThanOrEqual(844 / 2 + 1);
-  await expect(agreement.locator('.agreement-panel-kind')).toHaveText('Agreement');
-  await expect(agreement.locator('[data-agreement-action="close"]')).toBeHidden();
-  await expect(agreement.getByRole('button', { name: 'Remove from this device', exact: true })).toBeVisible();
-  await agreement.locator('[data-agreement-action="propose"]').click();
-  await chooseProfileName(page, 'Neighbourhood author');
-  await agreement.locator('[data-agreement-action="propose"]').click();
-  await expect(agreement.locator('code.agreement-panel-cid')).toBeVisible({ timeout: 30_000 });
-  await agreement.locator(':scope > .mobile-dock-sheet-handle').focus();
-  await page.keyboard.press('Escape');
-  await expect(agreement).toBeHidden();
-  await page.locator('#proposals-button').click();
-  await sheet.getByRole('tab', { name: 'Share', exact: true }).click();
-  await expect(share.locator('.share-plan-row input')).toBeChecked();
-  await expect(share.locator('.share-plan-row__published')).toBeVisible();
-  await expect(share.locator('.share-plan-link__input')).toBeVisible();
-  await page.keyboard.press('Escape');
-  await expect(sheet).toBeHidden();
+test('phone agreement editor requires a saved plan and fits its tabs without overflow',async({mockApi:page})=>{
+  await page.setViewportSize({width:375,height:812});await applyLayout(page);await page.evaluate(()=>{void(window as any).AgreementDialog.open();});const editor=agreementEditor(page);
+  await expect(editor).toBeVisible();await expect(editor.locator('#agreement-editor-title')).toHaveText('Create agreement');
+  await expect(editor).toContainText('Choose a saved plan');await expect(editorSave(editor)).toBeDisabled();await expect(editor.locator('[data-agreement-plan]')).toHaveValue('');expect(await editor.evaluate(e=>e.scrollWidth<=e.clientWidth)).toBe(true);
+  await editor.getByRole('tab',{name:'Rules',exact:true}).click();await expect(editor.locator('[data-agreement-compensation]')).toBeVisible();
 });
 
-test('wrong-city choices have equal touch areas on a phone', async ({ mockApi: page }) => {
-  await openCity(page);
-  await page.evaluate(() => { void (window as any).promptCityMismatchForProposal('birmingham'); });
-  const prompt = page.locator('.city-switch-dialog');
-  await expect(prompt).toBeVisible();
-  const stay = await prompt.locator('[data-action-id="stay"]').boundingBox();
-  const open = await prompt.locator('[data-action-id="switch"]').boundingBox();
-  expect(stay!.width).toBeCloseTo(open!.width, 0);
-  expect(stay!.height).toBeCloseTo(open!.height, 0);
-  expect(stay!.height).toBeGreaterThanOrEqual(44);
-  expect(open!.y).toBeGreaterThanOrEqual(stay!.y + stay!.height);
-  await prompt.locator('[data-action-id="stay"]').click();
+test('wrong-city choices have equal touch areas on a phone',async({mockApi:page})=>{
+  await openCity(page);await page.evaluate(()=>{void(window as any).promptCityMismatchForProposal('birmingham');});const prompt=page.locator('.city-switch-dialog');await expect(prompt).toBeVisible();
+  const stay=await prompt.locator('[data-action-id="stay"]').boundingBox(),open=await prompt.locator('[data-action-id="switch"]').boundingBox();
+  expect(stay!.width).toBeCloseTo(open!.width,0);expect(stay!.height).toBeCloseTo(open!.height,0);expect(stay!.height).toBeGreaterThanOrEqual(44);expect(open!.y).toBeGreaterThanOrEqual(stay!.y+stay!.height);await prompt.locator('[data-action-id="stay"]').click();
 });

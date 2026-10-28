@@ -24,41 +24,32 @@
         { key: 'buildings', icon: 'fa-city', labelKey: 'panel.parcel.build.block', fallback: 'Block' },
         { key: 'row', icon: 'fa-grip-horizontal', labelKey: 'panel.parcel.build.row', fallback: 'Row houses' },
         { key: 'parcelBased', icon: 'fa-home', labelKey: 'panel.parcel.build.parcelBased', fallback: 'Detached' },
-        { key: 'single', icon: 'fa-ruler-combined', labelKey: 'panel.parcel.build.single', fallback: 'Freeform' },
+        { key: 'single', icon: 'cb-icon-freeform', labelKey: 'panel.parcel.build.single', fallback: 'Freeform' },
         { key: 'parcel-layout', icon: 'fa-vector-square', labelKey: 'panel.parcel.build.layOutParcels', fallback: 'Lay out parcels' },
         { key: 'park', icon: 'fa-tree', labelKey: 'panel.parcel.build.park', fallback: 'Park' },
         { key: 'square', icon: 'fa-chess-board', labelKey: 'panel.parcel.build.square', fallback: 'Square' },
         { key: 'lake', icon: 'fa-water', labelKey: 'panel.parcel.build.lake', fallback: 'Lake' }
     ];
 
-    // Corridors and stops are all transport-network proposals. Keep them together at the end of
-    // the parcel palette instead of presenting Road/Track as unrelated full-width form buttons.
+    // Corridors and stops share the final transport group, after parcel layout.
     const PARCEL_TRANSPORT_TOOLS = [
         {
             key: 'road', icon: 'fa-road', labelKey: 'panel.parcel.build.road', fallback: 'Road',
             titleKey: 'sidebar.roads.drawManualTooltip', titleFallback: 'Open the manual road drawing tool'
         },
         {
-            key: 'track', icon: 'fa-train', labelKey: 'panel.parcel.build.track', fallback: 'Track',
+            key: 'track', icon: 'cb-icon-track', labelKey: 'panel.parcel.build.track', fallback: 'Track',
             titleKey: 'sidebar.roads.drawTrackTooltip', titleFallback: 'Open the manual track drawing tool with curvature constraints'
         },
         {
-            key: 'bus', stationType: 'bus', icon: 'fa-bus', labelKey: 'panel.parcel.build.busStation', fallback: 'Bus station',
-            titleKey: 'sidebar.stations.bus', titleFallback: 'Bus station'
+            key: 'roadStation', stationType: 'bus', icon: 'fa-bus',
+            labelKey: 'panel.parcel.build.roadStation', fallback: 'Road station',
+            titleKey: 'panel.parcel.build.roadStation', titleFallback: 'Road station'
         },
         {
-            key: 'tram', stationType: 'tram', icon: 'fa-tram', labelKey: 'panel.parcel.build.tramStation', fallback: 'Tram station',
-            titleKey: 'sidebar.stations.tram', titleFallback: 'Tram station'
-        },
-        {
-            key: 'underground', stationType: 'underground', icon: 'fa-train-subway',
-            labelKey: 'panel.parcel.build.undergroundStation', fallback: 'Metro station',
-            titleKey: 'sidebar.stations.underground', titleFallback: 'Underground station'
-        },
-        {
-            key: 'elevated', stationType: 'elevated', icon: 'fa-train',
-            labelKey: 'panel.parcel.build.elevatedStation', fallback: 'Elevated station',
-            titleKey: 'sidebar.stations.elevated', titleFallback: 'Elevated train station'
+            key: 'trackStation', stationType: 'track', icon: 'cb-icon-track',
+            labelKey: 'panel.parcel.build.trackStation', fallback: 'Track station',
+            titleKey: 'panel.parcel.build.trackStation', titleFallback: 'Track station'
         }
     ];
 
@@ -70,7 +61,7 @@
     }
 
     function startParcelTransportTool(toolKey) {
-        const key = String(toolKey || '').trim().toLowerCase();
+        const key = String(toolKey || '').trim();
         if (key === 'road') {
             global.requestRoadDrawTool?.();
             return;
@@ -79,8 +70,9 @@
             global.requestTrackDrawTool?.();
             return;
         }
-        const stationType = PARCEL_TRANSPORT_TOOLS.find(tool => tool.stationType === key)?.stationType;
-        if (stationType) global.startTransitStationPlacement?.(stationType);
+        const stationType = PARCEL_TRANSPORT_TOOLS.find(tool => tool.key === key)?.stationType;
+        if (stationType === 'track') return global.chooseTrackStationType?.();
+        if (stationType) return global.startTransitStationPlacement?.(stationType);
     }
 
     let parcelBuildContextId = null;
@@ -153,16 +145,19 @@
             }
             return;
         }
-        // The shared policy decides which fresh proposal types have block semantics. Run it before
-        // per-tool guards (a row on one parcel is exactly where selecting the block solves it).
-        if (await maybeSuggestWholeBlockForFreshProposal(toolKey, ids)) return;
         // A row dictates form across parcels — on a single parcel it degenerates to a building.
         if (toolKey === 'row' && ids.length < 2) {
-            const message = tParcel('panel.parcel.build.rowNeedsTwo', {}, 'Row houses need at least two parcels.');
+            const message = rowSelectionHint();
+            const multi = global.multiParcelSelection;
+            if (multi && !multi.isActive) multi.toggle();
+            multi?.showSelectionInPanel?.();
+            global.switchParcelTab?.(null, 'propose-tab');
             if (typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(message, 4000, 'info');
             else if (typeof global.updateStatus === 'function') global.updateStatus(message);
             return;
         }
+        // Valid single-parcel tools can still offer the whole block as a larger starting scope.
+        if (await maybeSuggestWholeBlockForFreshProposal(toolKey, ids)) return;
         if (['park', 'square', 'lake'].includes(toolKey)) {
             if (typeof global.instantCreateStructureFromSelection !== 'function') {
                 global.reportProposalDesignSaveFailure?.('proposalDrafts.design.unavailable');
@@ -187,11 +182,18 @@
         }
     }
 
+    function rowSelectionHint() {
+        return tParcel('panel.parcel.build.rowSelectionHint', {},
+            'Row houses need at least two parcels. Select another parcel or use Detect block.');
+    }
+
     // options (the site tool's palette, js/site-drawing.js, reuses this one):
     //   buildHandler     — global called with the tool key (default startParcelBuildTool);
     //   disabled         — { toolKey: reason } shown disabled, the reason as its title and a note;
     //   labels           — { toolKey: label } replaces a tool's label (the site tool names Lay out
     //                      parcels "Subdivide" on a site with open ground).
+    //   selectionCount   — parcel count; unavailable Row houses stays focusable to offer selection.
+    //   selecting        — show the row's selection instructions while manual picking is active.
     // The palette is the shared choice tiles (cb-tiles > cb-tile, css/primitives.css) under section
     // kickers. parcel-build-btn and its --<tool> / parcel-transport-btn--<tool> modifiers stay on each
     // tile as the hooks the specs and the site tool find them by; they paint nothing.
@@ -199,24 +201,23 @@
         const buildHandler = options.buildHandler || 'startParcelBuildTool';
         const disabled = options.disabled || {};
         const labels = options.labels || {};
+        const needsMoreParcels = options.selectionCount === 1;
         const escapeAttr = value => String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
         const buttonHtml = tool => {
             const label = labels[tool.key] || tParcel(tool.labelKey, {}, tool.fallback);
             const reason = disabled[tool.key];
+            const selectionHint = !reason && needsMoreParcels && tool.key === 'row' ? rowSelectionHint() : null;
             return `
             <button type="button" class="cb-tile parcel-build-btn parcel-build-btn--${tool.key}" onclick="BusyControl.track(this, () => ${buildHandler}('${tool.key}'))"
-                title="${escapeAttr(reason || label)}"${reason ? ' disabled aria-disabled="true"' : ''}>
+                title="${escapeAttr(reason || selectionHint || label)}"${reason ? ' disabled aria-disabled="true"' : selectionHint ? ' aria-disabled="true" aria-describedby="parcel-row-selection-hint"' : ''}>
                 <i class="cb-tile__icon fas ${tool.icon}" aria-hidden="true"></i>
                 <span class="cb-tile__label">${label}</span>
             </button>
             ${reason ? `<p class="parcel-build-disabled-reason">${escapeAttr(reason)}</p>` : ''}
         `;
         };
-        // The §15a taxonomy, drawn as labelled groups (rethink-proposals.md, decision 2026-08-05):
-        // Lay out parcels stands alone first — the formation primitive; Block/Row/Detached are
-        // RULES-based tools (form follows parameters → Urban rules); Freeform Building, Park,
-        // Square and Lake all TAKE their parcel (→ Structures). The urban-rule park (use
-        // restriction, no taking) joins the rules group when rules grow that vocabulary.
+        // Structures first, then urban rules, parcel layout and transport. Block/Row/Detached
+        // remain rules; Freeform, Park, Square and Lake are structures.
         const RULE_KEYS = ['buildings', 'row', 'parcelBased'];
         const STRUCTURE_KEYS = ['single', 'park', 'square', 'lake'];
         const layoutButton = PARCEL_BUILD_TOOLS.filter(tool => tool.key === 'parcel-layout').map(buttonHtml).join('');
@@ -224,6 +225,7 @@
         const structureButtons = PARCEL_BUILD_TOOLS.filter(tool => STRUCTURE_KEYS.includes(tool.key)).map(buttonHtml).join('');
         const rulesTitle = tParcel('panel.parcel.build.rulesCategory', {}, 'Urban rules');
         const structuresTitle = tParcel('panel.parcel.build.structuresCategory', {}, 'Structures');
+        const layoutTitle = tParcel('proposalDrafts.design.parcelLayout', {}, 'Parcel layout');
         // A station tile is a toggle: transit-stations.js marks the type being placed.
         const transportButtons = PARCEL_TRANSPORT_TOOLS
             .filter(tool => tool.stationType || roadToolsEnabled())
@@ -243,14 +245,18 @@
         const transportTitle = tParcel('panel.parcel.build.transport', {}, 'Transport');
         return `
             <div class="parcel-build-palette">
-                <div class="cb-tiles parcel-build-grid">${layoutButton}</div>
-                <section class="parcel-rules-group">
-                    <h4 class="cb-kicker">${rulesTitle}</h4>
-                    <div class="cb-tiles parcel-rules-grid">${ruleButtons}</div>
-                </section>
                 <section class="parcel-structures-group">
                     <h4 class="cb-kicker">${structuresTitle}</h4>
                     <div class="cb-tiles parcel-structures-grid">${structureButtons}</div>
+                </section>
+                <section class="parcel-rules-group">
+                    <h4 class="cb-kicker">${rulesTitle}</h4>
+                    <div class="cb-tiles parcel-rules-grid">${ruleButtons}</div>
+                    ${needsMoreParcels && !disabled.row ? `<p id="parcel-row-selection-hint" class="${options.selecting ? 'parcel-build-disabled-reason' : 'map-shell-sr-only'}">${escapeAttr(rowSelectionHint())}</p>` : ''}
+                </section>
+                <section class="parcel-layout-group">
+                    <h4 class="cb-kicker">${layoutTitle}</h4>
+                    <div class="cb-tiles parcel-build-grid">${layoutButton}</div>
                 </section>
                 <section class="parcel-transport-group">
                     <h4 class="cb-kicker">${transportTitle}</h4>
@@ -323,7 +329,7 @@
         }
         if (global.ParcelMenuModel.buildPaletteAvailable({
             parcelContextId: targetIds[0], multiSelectActive: !!multi?.isActive, selectionCount: targetIds.length
-        })) container.innerHTML = buildPaletteHtml();
+        })) container.innerHTML = buildPaletteHtml({ selectionCount: targetIds.length, selecting: !!multi?.isActive });
         else container.innerHTML = '';
     }
 

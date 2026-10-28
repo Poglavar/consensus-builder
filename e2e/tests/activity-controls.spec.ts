@@ -9,13 +9,12 @@ import { Page } from '@playwright/test';
 
 const shortCid = (cid: string) => `${cid.slice(0, 12)}…${cid.slice(-6)}`;
 
-// Simulation controls live in their own top-level Settings section.
+// Simulation controls live under Settings → Advanced.
 async function openSimulation(page: Page) {
   await page.locator('#settings-button').click();
-  const simulation = page.locator('#settings-sheet details.activity-simulation[data-section="game"]');
-  await expect(simulation).toBeVisible();
-  if (!(await simulation.evaluate((details: HTMLDetailsElement) => details.open))) await simulation.locator(':scope > summary').click();
-  await expect(simulation).toHaveAttribute('open', '');
+  const advanced = page.locator('#settings-sheet details[data-section="advanced"]');
+  if (!(await advanced.evaluate((details: HTMLDetailsElement) => details.open))) await advanced.locator(':scope > summary').click();
+  await expect(page.locator('#settings-sheet .activity-simulation[data-section="game"]')).toBeVisible();
 }
 
 async function openActivityPanel(page: Page, options: Record<string, unknown> = {}) {
@@ -125,7 +124,7 @@ test.describe('Activity and simulation controls @features', () => {
     await expect(panel).toBeHidden();
   });
 
-  test('the command palette Actors action opens the actor view', async ({ mockApi: page }) => {
+  test('the command palette Actors and Events actions open their respective views', async ({ mockApi: page }) => {
     await openCity(page);
     await page.keyboard.press('Meta+k');
     const palette = page.locator('.command-palette-backdrop');
@@ -139,6 +138,14 @@ test.describe('Activity and simulation controls @features', () => {
     await expect(panel.locator('[data-activity-actors]')).toBeVisible();
     await panel.locator('[data-sheet-close]').click();
     await expect(panel).toBeHidden();
+
+    await page.keyboard.press('Meta+k');
+    await expect(palette).toBeVisible();
+    await page.locator('.command-palette__input').fill('Events');
+    await page.locator('.command-palette__item').filter({ hasText: 'Events' }).first().click();
+    await expect(panel).toBeVisible();
+    await expect(panel.locator('[data-activity-view="events"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(panel.locator('#activity-events-pane')).toBeVisible();
   });
 
   test('ordinary filters are temporarily overridden by a deep scope and restored when it clears', async ({ mockApi: page }) => {

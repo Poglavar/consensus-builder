@@ -10,7 +10,7 @@ import { createMockPool } from './helpers/mock-pool.js';
 import { createContentApp } from './helpers/create-app.js';
 import { scriptedCadastre } from './helpers/content-fixtures.js';
 import { canonicalBytes, cidOf } from '../cid.js';
-import { PINATA_FILE_ENDPOINT } from '../storage/pinning.js';
+import { PINATA_FILE_ENDPOINT } from '../storage/providers/pinata.js';
 const require = createRequire(import.meta.url);
 const DesignRecord = require('../../frontend/js/design-record.js');
 const BrowserCid = require('../../frontend/js/cid.js');
@@ -43,12 +43,13 @@ describe('generated building design publication', () => {
             expect(bytes.length).toBeGreaterThan(256 * 1024);
         }
         expect(content.geometry.buildings).toHaveLength(count);
-        expect(content.geometry.blockMassing).toBeUndefined();
+        expect(content.geometry.ruleMassing).toBeUndefined();
         expect(content.geometry.buildings[0].geometry.coordinates).toHaveLength(2);
         expect(BrowserCid.cidOfObject(content)).toBe(cid);
         expect(BrowserCid.parse(cid).codec).toBe(count === 1 ? 0x55 : 0x70);
         expect(DesignRecord.validate(content).valid).toBe(true);
 
+        vi.stubEnv('IPFS_PINNING_PROVIDER', 'pinata');
         vi.stubEnv('PINATA_API_KEY', 'test-key');
         vi.stubEnv('PINATA_API_SECRET', 'test-secret');
         vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -80,7 +81,7 @@ describe('generated building design publication', () => {
         expect(pinned.status, JSON.stringify(pinned.body)).toBe(200);
         expect(pinned.body.cid).toBe(cid);
         expect(upstream).toHaveBeenCalledTimes(1);
-        const indexed = await request(app).post('/designs').send({ cid, content });
+        const indexed = await request(app).post('/designs').send({ cid, content, parcelSourceId: 'oss-wfs' });
         expect(indexed.status, JSON.stringify(indexed.body)).toBe(201);
         const reopened = await request(app).get(`/designs/${cid}`);
         expect(reopened.status).toBe(200);

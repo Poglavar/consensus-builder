@@ -1,9 +1,9 @@
 // Renders the research snapshot; every table shares numeric-aware, reversible header sorting.
 import { nextSort, sortRows, filterCities, filterCountries, countSupportedCities } from './parcel-coverage-report-model.mjs?v=4';
-import { reportMessages } from './parcel-coverage-report-i18n.mjs?v=5';
+await window.i18n.translationsReady;
 
 const params = new URLSearchParams(location.search);
-let language = Object.hasOwn(reportMessages, params.get('lang')) ? params.get('lang') : 'en';
+let language = window.i18n.getLanguage();
 const validCohorts = new Set(['all', 'largest200', 'growth200', 'growth-top20', 'india-africa', 'india', 'africa']);
 const initialCohort = validCohorts.has(params.get('cohort')) ? params.get('cohort') : 'all';
 const initialSupport = ['yes', 'no'].includes(params.get('support')) ? params.get('support') : 'all';
@@ -12,7 +12,7 @@ let report;
 const sorts = { cities: { key: 'name', direction: 'asc' }, countries: { key: 'name', direction: 'asc' }, breakdown: { key: 'landAreaKm2', direction: 'desc' } };
 if (isGrowthCohort(initialCohort)) sorts.cities = { key: 'annualGrowthPct2015To2025', direction: 'desc' };
 const byId = id => document.getElementById(id);
-const tr = (key, values = {}) => (reportMessages[language]?.[key] || reportMessages.en[key] || key).replace(/\{(\w+)\}/g, (_, name) => String(values[name] ?? ''));
+const tr = (key, values = {}) => window.i18n.t(`parcelReport.${key}`, values);
 const numeric = value => typeof value === 'number' && Number.isFinite(value);
 const number = value => numeric(value) ? new Intl.NumberFormat(language, { maximumFractionDigits: 0 }).format(value) : '—';
 const percentage = value => numeric(value) ? `${new Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(value)}%` : '—';
@@ -46,7 +46,7 @@ function applyLanguage() {
     document.querySelectorAll('[data-table-region]').forEach(element => element.setAttribute('aria-label', tr(element.dataset.tableRegion === 'breakdown' ? 'breakdownCaption' : element.dataset.tableRegion === 'cities' ? 'cityTitle' : 'countryTitle')));
     byId('report-language').value = language;
     byId('report-language').setAttribute('aria-label', tr('language'));
-    window.CbPageHeader.apply(language);
+    window.CbPageHeader.apply();
 }
 
 function safeLink(url, label, title) {
@@ -238,8 +238,11 @@ function render() {
 }
 
 byId('report-language').addEventListener('change', event => {
-    language = event.target.value;
-    const url = new URL(location.href); url.searchParams.set('lang', language); history.replaceState(null, '', url);
+    window.i18n.setLanguage(event.target.value, { userChoice: true });
+    const url = new URL(location.href); url.searchParams.set('lang', window.i18n.getLanguage()); history.replaceState(null, '', url);
+});
+window.addEventListener('i18n:translationsLoaded', () => {
+    language = window.i18n.getLanguage();
     if (report) render(); else applyLanguage();
 });
 byId('print-report').addEventListener('click', () => window.print());

@@ -165,7 +165,7 @@
     // would), so it is wedged too. The wider arm sets the wedge, so it always reaches the outer
     // corner that needs covering.
     function sharedNodeWedges(arms) {
-        const key = p => `${Math.round(p[0] / NODE_KEY_M)},${Math.round(p[1] / NODE_KEY_M)}`;
+        const key = p => `${Math.round(p[0] / NODE_KEY_M)},${Math.round(p[1] / NODE_KEY_M)}@${finite(p[2]) ? p[2] : 0}`;
         const byNode = new Map();
         const note = (node, neighbour, arm) => {
             if (!node || !neighbour) return;
@@ -197,7 +197,7 @@
     // that fillet reaches past the two straight land edges by a corner piece. An arm knows its kerbs
     // and footways through `edges` (corridorProfileEdges); an arm given only a width has no footway,
     // so the whole fillet is land. `foreign` are the arms of OTHER records at nodes this corridor
-    // shares with them ([{ point: [x,y], arms: [{ dir, edges, width }] }], from the definition's
+    // shares with them ([{ point: [x,y,level], arms: [{ dir, edges, width }] }], from the definition's
     // stored junctions), so a branch takes the corner land of the junction it joins. Returns metric
     // rings to union.
     function junctionLandCorners(arms, foreign = []) {
@@ -297,7 +297,7 @@
                 if (!finite(width) || width <= 0) return null;
                 return { dir: [toward[0] - point[0], toward[1] - point[1]], edges, width };
             }).filter(Boolean);
-            return foreignArms.length ? { point, arms: foreignArms } : null;
+            return foreignArms.length ? { point: [point[0], point[1], finite(junction.level) ? junction.level : 0], arms: foreignArms } : null;
         }).filter(Boolean);
         (Array.isArray(arms) ? arms : []).forEach(arm => {
             const width = Number(arm && arm.width);
@@ -306,7 +306,8 @@
             if (points.length < 2) return;
             const metric = points.map(p => {
                 if (!p || !finite(p.lat) || !finite(p.lng)) throw new Error('corridor-footprint: a centre-line point is not finite');
-                return frame.toMetric([p.lng, p.lat]);
+                const xy = frame.toMetric([p.lng, p.lat]);
+                return [xy[0], xy[1], finite(p.level) ? p.level : 0];
             });
             // Per-vertex widths (a zone) or the one width everywhere.
             const widths = Array.isArray(arm.widths) && arm.widths.length === metric.length && arm.widths.every(w => finite(w) && w > 0)

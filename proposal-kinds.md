@@ -1,6 +1,11 @@
 # Proposal kinds: owner deal, owner vote, community vote
 
-Current contract and remaining plan for proposals by owners, NGOs and neighbourhood organisers.
+**Superseded model:** decision kinds moved to Agreement decision rules. Bare designs and named
+plans have no decision kind. The current NGO consultation and result-reporting contract is described
+in [community consultations](docs/community-consultations.md) and [vocabulary.md](vocabulary.md).
+The dated material below preserves the original decisions and implementation history.
+
+Historical contract and remaining plan for proposals by owners, NGOs and neighbourhood organisers.
 Decision kind is chosen at publication. The three kinds, publish controls and money validation
 are implemented; community-result reporting, its DID verification and sponsorship remain planned.
 Started 2026-10-17 after the organiser UX audit; current-contract review: 2026-10-19.

@@ -110,7 +110,7 @@ describe('Atlas URL loading', () => {
             const fetchImpl = vi.fn().mockImplementationOnce(failed).mockImplementation(async () => response(collection()));
             const source = createAtlasUrlProvider(metadata, { fetchImpl });
             await expect(source.query({}, query)).rejects.toMatchObject({ status: 503,
-                message: 'Atlas URL could not be loaded as a valid slices dataset.' });
+                message: 'Atlas URL could not be loaded as a valid zoning dataset.' });
             expect((await source.query({}, query)).items).toHaveLength(1);
             expect(fetchImpl).toHaveBeenCalledTimes(2);
         });

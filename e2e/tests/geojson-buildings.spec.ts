@@ -1,6 +1,6 @@
 // Complete GeoJSON footprints use the standard Freeform editor and save as editable buildings.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, showProposal, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
+import { openCity, openParcel, showProposal, closeParcel, showSelectionDesignTab, placeFreeformBuilding } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 
 const ring = (x: number, y: number, size: number) => [[x,y],[x+size,y],[x+size,y+size],[x,y+size],[x,y]];
@@ -10,11 +10,8 @@ const multipart = { type: 'Feature', properties: { name: 'Small buildings', floo
   geometry: { type: 'MultiPolygon', coordinates: [[ring(15.9823,45.80010,0.00005)],[ring(15.9823,45.80025,0.00004)]] } };
 const collection = { type: 'FeatureCollection', features: [courtyard, multipart] };
 
-async function acceptLandTake(page: any) {
-  const acceptance = page.locator('#single-land-take [data-land-accept]');
-  await expect(acceptance).toBeVisible();
-  await expect(acceptance).toBeEnabled({ timeout: 20_000 });
-  await acceptance.check();
+async function waitForLandTakeSummary(page: any) {
+  await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²', { timeout: 20_000 });
 }
 
 // Geometry editing uses fixture ground. Live background tiles can remain pending through the
@@ -45,6 +42,7 @@ async function openTool(page: any, kind: string) {
   await expect.poll(async () => await editor.isVisible() || await prompt.isVisible()).toBe(true);
   if (await prompt.isVisible()) await prompt.getByRole('button', { name: 'No, just this parcel' }).click();
   await expect(editor).toBeVisible();
+  if (kind === 'single') await placeFreeformBuilding(page);
 }
 
 const savedUploads = (page: any) => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
@@ -67,12 +65,12 @@ for (const kind of ['single', 'buildings', 'row']) {
       await page.locator(input).setInputFiles(file);
     }
     await expect(page.locator('#single-building-editor .on-map-editor__panel')).toBeVisible();
-    await expect(page.locator('#single-building-selector option')).toHaveCount(3);
+    await expect(page.locator('#map-container .single-building-fill')).toHaveCount(3);
     // All four exterior and four courtyard vertices are handles on the selected first building.
     await expect(page.locator('#map-container .polygon-geometry-editor__vertex')).toHaveCount(8);
     await page.locator('#single-height-slider').fill('19');
     await page.locator('#single-height-slider').dispatchEvent('input');
-    await acceptLandTake(page);
+    await waitForLandTakeSummary(page);
     await page.locator('#single-building-confirm').click();
     await expect.poll(async () => (await savedUploads(page)).filter((p: any) => p.applied).length).toBe(3);
     const records = await savedUploads(page);
@@ -88,11 +86,11 @@ for (const kind of ['single', 'buildings', 'row']) {
     // Reopen through the ordinary geometry action and save a height edit; never regenerate shape.
     await showProposal(page, kept.proposalId);
     await page.getByRole('button', { name: 'Edit geometry', exact: true }).click();
-    await expect(page.locator('#single-building-selector option')).toHaveCount(1);
+    await expect(page.locator('#map-container .single-building-fill')).toHaveCount(1);
     await expect(page.locator('#map-container .polygon-geometry-editor__vertex')).toHaveCount(8);
     await page.locator('#single-height-slider').fill('20');
     await page.locator('#single-height-slider').dispatchEvent('input');
-    await acceptLandTake(page);
+    await waitForLandTakeSummary(page);
     await page.locator('#single-building-confirm').click();
     await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.geometry?.buildings?.[0]?.properties.height, kept.proposalId)).toBe(20);
     const edited = (await savedUploads(page)).find((p: any) => p.proposalId === kept.proposalId);
@@ -102,12 +100,15 @@ for (const kind of ['single', 'buildings', 'row']) {
 
 test('a partially invalid GeoJSON upload keeps the existing design unchanged', async ({ mockApi: page }) => {
   await openTool(page, 'single');
+  // The initial land review completes asynchronously and writes the editor preview. Capture the
+  // settled design so this check isolates the rejected upload rather than that normal startup.
+  await waitForLandTakeSummary(page);
   const before = await page.evaluate(() => (window as any).getActiveProposalDesignDraft().editorPayload);
   await page.locator('#single-building-geojson-input').setInputFiles({ name: 'invalid.geojson', mimeType: 'application/geo+json',
     buffer: Buffer.from(JSON.stringify({ type: 'FeatureCollection', features: [courtyard, { type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: [15.982,45.8002] } }] })) });
   await expect(page.getByRole('alertdialog')).toBeVisible();
   expect(await page.evaluate(() => (window as any).getActiveProposalDesignDraft().editorPayload)).toEqual(before);
-  await expect(page.locator('#single-building-selector option')).toHaveCount(1);
+  await expect(page.locator('#map-container .single-building-fill')).toHaveCount(1);
   expect(await savedUploads(page)).toHaveLength(0);
 });
 
@@ -133,7 +134,7 @@ test('courtyard vertices reshape independently and undo restores the uploaded fo
 test('cancelling a Block upload discards the continued Freeform design session', async ({ mockApi: page }) => {
   await openTool(page, 'buildings');
   await page.locator('#blockify-geojson-input').setInputFiles({ name: 'buildings.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(collection)) });
-  await expect(page.locator('#single-building-selector option')).toHaveCount(3);
+  await expect(page.locator('#map-container .single-building-fill')).toHaveCount(3);
   await page.locator('#single-building-editor').getByRole('button', { name: 'Cancel', exact: true }).last().click();
   const prompt = page.getByRole('alertdialog');
   await expect.poll(async () => await page.locator('#single-building-editor').count() === 0 || await prompt.isVisible()).toBe(true);
@@ -152,9 +153,10 @@ test('a collection from the proposal form Design tab saves every building on Don
     const draft = w.proposalDraftStore.createDraft({ cityId: 'zagreb', goal: 'single', adapterKey: 'single', fields: { site, selectedParcelIds: [] }, editorPayload: {} });
     await w.openProposalDraftDesign(draft.id);
   }, courtyard.geometry);
+  await placeFreeformBuilding(page);
   await page.locator('#single-building-geojson-input').setInputFiles({ name: 'buildings.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(collection)) });
-  await expect(page.locator('#single-building-selector option')).toHaveCount(3);
-  await acceptLandTake(page);
+  await expect(page.locator('#map-container .single-building-fill')).toHaveCount(3);
+  await waitForLandTakeSummary(page);
   await page.locator('#single-building-confirm').click();
   await expect.poll(async () => (await savedUploads(page)).filter((p: any) => p.applied).length).toBe(3);
 });

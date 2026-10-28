@@ -21,7 +21,8 @@
     }
     function initialRecord() {
         const internals = win.getThreeModeInternals(), view = win.MapShare.capture(win);
-        view.mode = 'model'; delete view.backend;
+        // A flight waits for Play, so the map's auto-rotate flag has no place in it.
+        view.mode = 'model'; delete view.backend; delete view.rotate;
         const center = internals.originLatLng(), anchor = win.__metricFrame.canonicalAnchor([center.lng, center.lat]);
         const frame = { lat: anchor[1], lng: anchor[0], datum: 'model-ground' };
         const adapter = win.CameraFlightCamera.createAdapter({ THREE: win.THREE, internals, frame, metricFrame: win.__metricFrame });

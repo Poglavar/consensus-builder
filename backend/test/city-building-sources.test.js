@@ -2,14 +2,13 @@
 // Overture's tiles in the browser, and Bogotá's cadastre id decodes on the backend with its storey
 // field and Overture behind it. A person's own source replaces the city's without its fallback.
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { createContext, runInContext } from 'node:vm';
 import { decodeCustomBuildingSource } from '../parcels/custom-source-config.js';
 
-const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const cityContext = { URLSearchParams, console };
 cityContext.window = cityContext;
-runInContext(read('../../frontend/js/city-config.js'), createContext(cityContext));
+runInContext(cityConfigSource(), createContext(cityContext));
 const manager = cityContext.CityConfigManager;
 
 describe('city building sources', () => {

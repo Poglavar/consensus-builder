@@ -148,14 +148,14 @@ describe('carried into the applied plan', () => {
         expect(save).toContain('wouldBe: entry.wouldBe ?');
         expect(save).toContain('ineligibleParcels,');
         expect(save).not.toContain('blockParcelIds: normalizedParcelIds.slice()');
-        expect(save).toContain('blockMassing');
+        expect(save).toContain('ruleMassing');
     });
 
     it('serializes them onto the proposal record', () => {
         expect(adapters).toContain('ineligibleParcels: isFreePlacementDraft(draft) ? [] : clone(context.ineligibleParcels || [])');
         expect(adapters).toContain('context.ineligibleParcels = [];');
         expect(adapters).not.toContain('blockParcelIds: clone(');
-        expect(adapters).toContain('output.geometry.blockMassing = blockMassing');
+        expect(adapters).toContain('output.geometry.ruleMassing = ruleMassing');
     });
 
     const collectAdapter = buildingBlocks.slice(

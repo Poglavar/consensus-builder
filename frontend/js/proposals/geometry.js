@@ -524,10 +524,11 @@ function renderGeometrySection(goalKey) {
     }
 
     if (goalKey === 'square' || goalKey === 'park' || goalKey === 'lake') {
-        // Geometry is generated algorithmically and there are no actionable buttons,
-        // so hide the whole section rather than showing two disabled buttons.
-        group.style.display = 'none';
+        // Geometry is generated from the selection or site; the one action is uploading a model,
+        // which creates the structure from the model's outline instead.
+        showGroup();
         setGeometryStatus(label.auto, { submitted: true });
+        buttonsRow.appendChild(makeButton('upload', label.upload, { disabled: false }));
         updateCreateProposalSubmitState();
         return;
     }
@@ -593,7 +594,12 @@ async function handleGeometryAction(actionKey) {
             break;
         }
         case 'upload':
-            // Currently only the single-building goal supports uploading a 3D model.
+            // A park, square or lake is created at once from its uploaded model.
+            if (['park', 'square', 'lake'].includes(currentGeometryGoal)) {
+                await openStructureModelUpload(currentGeometryGoal);
+                break;
+            }
+            // Otherwise only the single-building goal supports uploading a 3D model.
             if (currentGeometryGoal === 'single') {
                 if (typeof window.BuildingUpload === 'undefined' || typeof window.BuildingUpload.open !== 'function') {
                     if (typeof updateStatus === 'function') updateStatus('Upload tool is unavailable.');
@@ -633,6 +639,39 @@ async function handleGeometryAction(actionKey) {
     updateCreateProposalSubmitState();
 }
 
+// The model is placed at a point on the dialog's site, or on its parcel selection's union.
+async function openStructureModelUpload(kind) {
+    const t = getProposalI18nHelper();
+    const report = message => {
+        if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(message, 6000, 'error');
+        if (typeof updateStatus === 'function') updateStatus(message);
+    };
+    if (typeof window.BuildingUpload?.open !== 'function' || typeof window.instantCreateStructureFromModel !== 'function') {
+        report(t('modal.createProposal.geometry.uploadUnavailable', 'Upload tool is unavailable.'));
+        return;
+    }
+    const site = window.pendingProposalSiteContext?.site || null;
+    const selection = site ? null
+        : (typeof getCurrentParcelSelectionContext === 'function' ? getCurrentParcelSelectionContext() : null);
+    const anchor = site || (selection?.ids?.length ? buildGeometryFromParcels(selection.ids) : null);
+    if (!anchor) {
+        report(t('modal.createProposal.geometry.selectBeforeUpload', 'Select parcels or draw a site before uploading a model.'));
+        return;
+    }
+    const button = document.querySelector('#proposalGeometryButtons [data-geometry-action="upload"]');
+    const open = () => window.BuildingUpload.open({ kind }, {
+        onUse: upload => {
+            const creating = window.instantCreateStructureFromModel(kind, anchor, upload);
+            if (!creating) return false;
+            // The structure is created on the map; the create dialog's job is done.
+            if (typeof closeProposalDialog === 'function') closeProposalDialog();
+            return Promise.resolve(creating).then(() => true);
+        }
+    });
+    if (button && window.BusyControl) await window.BusyControl.track(button, open);
+    else await open();
+}
+
 function relocateProposalGeometryGroup(goalKey) {
     const geo = document.getElementById('proposalGeometryGroup');
     const typology = document.getElementById('proposalTypologyGroup');
@@ -644,7 +683,7 @@ function relocateProposalGeometryGroup(goalKey) {
         if (geo && typology) typology.insertAdjacentElement('afterend', geo);
         return;
     }
-    if (goalKey === 'single' || goalKey === 'road-track') {
+    if (['single', 'road-track', 'park', 'square', 'lake'].includes(goalKey)) {
         if (geo && landUse) landUse.insertAdjacentElement('afterend', geo);
         return;
     }

@@ -45,11 +45,13 @@ describe('opening', () => {
 
     it('refuses ground another design holds (a road\'s corridor piece)', async () => {
         const w = world({ parcels: [PARCELS[0], { ...PARCELS[1], properties: { isCorridor: true } }] });
-        expect(await w.editor.openParcelLayoutEditor()).toBe(false);
-        expect(globalThis.showEphemeralMessage.calls[0]).toEqual([
-            'A parcel layout cannot redraw ground another design already holds. Deselect it, or unapply that design first.', 8000, 'warning'
-        ]);
+        // The reason travels to the design shell, which shows it instead of "editor is unavailable".
+        await expect(w.editor.openParcelLayoutEditor()).rejects.toMatchObject({ code: 'editor-refused',
+            message: 'A parcel layout cannot redraw ground another design already holds. Deselect it, or unapply that design first.' });
         expect(globalThis.OnMapEditor.open.calls).toHaveLength(0);
+        // The one-editor latch is released after a refusal: a second request is refused for its
+        // reason again, not ignored as "already open" (which would answer false).
+        await expect(w.editor.openParcelLayoutEditor()).rejects.toMatchObject({ code: 'editor-refused' });
     });
 
     it('is one editor at a time, even for two requests in the same tick', async () => {
@@ -382,6 +384,18 @@ describe('uploading a GeoJSON layout', () => {
         expect(w.state.slices).toBe(before);
         expect(w.statusText()).toBe('Uploaded polygons do not overlap with selected parcels.');
     });
+
+    it('rejects an oversized file before changing the layout or its history', async () => {
+        const w = world({ globals: { FileReader: FakeFileReader } });
+        await w.editor.openParcelLayoutEditor();
+        const before = w.state.slices;
+        const depth = w.state.historyCtl.depth();
+        const feature = { type: 'Feature', properties: {}, geometry: box(0, 0, 1, 1) };
+        upload(w, { type: 'FeatureCollection', features: Array(1001).fill(feature) });
+        expect(w.state.slices).toBe(before);
+        expect(w.state.historyCtl.depth()).toBe(depth);
+        expect(w.statusText()).toBe('Use at most 1000 polygons in one layout.');
+    });
 });
 
 describe('before and after', () => {
@@ -549,7 +563,7 @@ describe('other starting layouts and pools', () => {
         const ring = (w, s, e, n) => [lngLat(w, s), lngLat(e, s), lngLat(e, n), lngLat(w, n), lngLat(w, s)];
         // A block wrapping the two parcels' common corner: its hole is the courtyard.
         const block = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring(20, 5, 70, 45), ring(30, 15, 60, 35).reverse()] } };
-        const proposals = [{ proposalId: 'b-1', title: 'Courtyard block', buildingProposal: {}, geometry: { blockMassing: block } }];
+        const proposals = [{ proposalId: 'b-1', title: 'Courtyard block', buildingProposal: {}, geometry: { ruleMassing: block } }];
         const w = world({ proposals });
         await w.editor.openParcelLayoutEditor({ algorithm: 'amend' });
         w.$('[data-reparcel-courtyard-building]').click();
@@ -575,5 +589,56 @@ describe('other starting layouts and pools', () => {
         w.$('[data-reparcel-commit]').click();
         expect(globalThis.pendingParcelLayout).toMatchObject({ poolSource: 'site', parcelIds: ['P1'] });
         expect(globalThis.pendingParcelLayout.openGroundM2).toBeCloseTo(area(site) - area(PARCELS[0].geometry), -1);
+    });
+
+    it('reopens its own applied ground but still refuses ground held by another design', async () => {
+        const site = box(0, 0, 60, 50);
+        const holder = id => ({ type: 'Feature', properties: { producedByProposalId: id }, geometry: site });
+        let features = [holder('layout-1')];
+        const layout = { poolSource: 'site', pool: site, parcelIds: ['P1'], openGroundM2: area(site) - area(PARCELS[0].geometry),
+            plots: [{ geometry: site, source: 'manual' }] };
+        const w = world({ selection: null, pendingLayout: layout, globals: {
+            getActiveProposalDesignDraft: () => ({ sourceLocalProposalId: 'layout-1' }),
+            LiveParcelFabric: { queryBounds: () => features },
+            __openGround: { bboxOf: () => [], groundIdsOf: () => ['open-1'] },
+            proposalStorage: { getProposal: id => ({ title: id === 'other' ? 'Other design' : id }) }
+        } });
+        const pool = await w.editor.buildSitePool(w.editor.sitePoolOfPendingLayout());
+        expect(pool.boundParcelIds).toEqual(['P1']);
+        features = [holder('layout-1'), holder('other')];
+        expect(await w.editor.buildSitePool(w.editor.sitePoolOfPendingLayout())).toEqual({ error: 'taken', names: ['Other design'] });
+        features = [holder('layout-1')];
+        expect(await w.editor.openParcelLayoutEditor()).toBe(true);
+        w.$('[data-reparcel-commit]').click();
+        expect(globalThis.pendingParcelLayout).toMatchObject({ poolSource: 'site', parcelIds: ['P1'] });
+    });
+});
+
+describe('Old plots read-only controls', () => {
+    it('disables edit controls and history shortcuts while preserving individual validity flags', async () => {
+        const w = world();
+        await w.editor.openParcelLayoutEditor();
+        const controls = w.state.modal.querySelector('[data-reparcel-alg-group]');
+        const done = w.state.modal.querySelector('[data-reparcel-commit]');
+        w.editor.pushHistory();
+        const snapshot = JSON.stringify(w.state.slices);
+        const depth = w.state.historyCtl.depth();
+        done.disabled = true;
+        w.editor.setPlotsTab('old');
+        expect(controls.tagName).toBe('FIELDSET');
+        expect(controls.disabled).toBe(true);
+        expect(controls.getAttribute('aria-disabled')).toBe('true');
+        expect(w.state.nodeEdit.active).toBe(false);
+        w.key('z', { ctrlKey: true });
+        expect(w.state.historyCtl.depth()).toBe(depth);
+        expect(JSON.stringify(w.state.slices)).toBe(snapshot);
+        w.editor.setPlotsTab('new');
+        expect(controls.disabled).toBe(false);
+        expect(controls.getAttribute('aria-disabled')).toBe('false');
+        expect(done.disabled).toBe(true);
+        expect(w.state.undoEditBtn.disabled).toBe(false);
+        expect(w.state.redoEditBtn.disabled).toBe(true);
+        w.key('z', { ctrlKey: true });
+        expect(w.state.historyCtl.depth()).toBe(depth - 1);
     });
 });

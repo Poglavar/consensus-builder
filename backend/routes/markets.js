@@ -3,16 +3,17 @@
 // agent reads before staking. Agreements come from the index (consensus.agreement: its `onchain`
 // pointer is recorded when an agreement is minted, its status as the lifecycle oracle observes the
 // account), market accounts from one batched RPC read; the payload is cached briefly per city because
-// every sheet open would otherwise be an RPC. GET /oracle/recipes/agreement-execution-v1 serves the
-// recipe one agreement's pool settles by (oracle/market-recipe.js).
+// every sheet open would otherwise be an RPC. The dated LMSR recipe is registered separately in
+// routes/lmsr-recipes.js; the old agreement-execution-v1 endpoint serves historical parimutuel proof.
 
 import { createRequire } from 'node:module';
 import { Connection } from '@solana/web3.js';
 import { buildContests, subjectAccountOf } from '../markets/contests.js';
-import { AGREEMENT_PROGRAM_ID, DEVNET_GENESIS_HASH } from '../agreements/onchain.js';
+import { AGREEMENT_PROGRAM_ID, AgreementClient, DEVNET_GENESIS_HASH, ONCHAIN_STATUSES } from '../agreements/onchain.js';
+import { MARKET_LIQUIDITY, MARKET_GRACE_SECONDS } from '../markets/agreement-source.js';
 import { AGREEMENT_EXECUTION_RECIPE_ID, buildAgreementExecutionRecipe, chainStatusOf } from '../oracle/market-recipe.js';
 import { normalizeCityCode } from '../utils/city-code.js';
-import { AGREEMENT_TABLE } from './agreements.js';
+import { currentPlanAgreementSelect, CURRENT_AGREEMENTS_BY_ACCOUNT_SQL } from '../agreements/current-plan-sql.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 import { DEVNET_USDC_MINT } from '../solana/address-book.js';
 
@@ -21,6 +22,8 @@ const web3 = require('@solana/web3.js');
 // The same codec the browser and the agent bettor use (frontend/js/solana/market-client.js).
 const marketClient = require('../../frontend/js/solana/market-client.js');
 marketClient.configure({ web3 });
+const lmsrClient = require('../../frontend/js/solana/lmsr-client.js').configure({ web3 });
+const lmsr = require('../../frontend/js/bets/lmsr.js');
 const MARKET_PROGRAM_ID = marketClient.constants.PROGRAM_ID;
 
 export { DEVNET_USDC_MINT };
@@ -33,28 +36,11 @@ async function assertMarketNetwork(connection) {
     }
 }
 
-// The columns rowToAgreement reads.
-export const AGREEMENT_COLUMNS_SQL = `
-        cid, city, title, author, input_parcel_ids, parcel_source_id, deadline,
-        content->>'sponsor' AS sponsor,
-        ARRAY(SELECT design->>'title' FROM jsonb_array_elements(content->'designs') AS design) AS design_titles,
-        onchain, screenshot_url, screenshot_before_url, screenshot_pair_url, created_at`;
-
-const AGREEMENTS_SQL = `
-    SELECT ${AGREEMENT_COLUMNS_SQL}
-    FROM ${AGREEMENT_TABLE}
-    WHERE city = $1
-    ORDER BY created_at DESC
-    LIMIT $2`;
+export const AGREEMENTS_SQL = currentPlanAgreementSelect({ predicate: 'a.city = $1', orderBy: 'a.created_at DESC', limit: '$2' });
 
 // The agreements whose index pointer names an account; rowToAgreement keeps the account only when it
 // is the one that row's CID and sponsor derive, so at most one row is it.
-const AGREEMENTS_BY_ACCOUNT_SQL = `
-    SELECT ${AGREEMENT_COLUMNS_SQL}
-    FROM ${AGREEMENT_TABLE}
-    WHERE onchain->>'account' = $1
-    ORDER BY created_at DESC
-    LIMIT 20`;
+export const AGREEMENTS_BY_ACCOUNT_SQL = CURRENT_AGREEMENTS_BY_ACCOUNT_SQL;
 
 const iso = value => (value instanceof Date ? value.toISOString() : value || null);
 const text = value => (typeof value === 'string' && value.trim() ? value.trim() : null);
@@ -73,6 +59,7 @@ export function rowToAgreement(row) {
         city: row.city || null,
         title: text(row.title),
         author: text(row.author),
+        sponsor: text(row.sponsor),
         designTitles: (Array.isArray(row.design_titles) ? row.design_titles : []).map(text).filter(Boolean),
         inputParcelIds: Array.isArray(row.input_parcel_ids) ? row.input_parcel_ids : [],
         parcelSourceId: row.parcel_source_id || null,
@@ -98,24 +85,42 @@ export async function agreementByAccount(db, account) {
 export function defaultMarketReader(env = process.env) {
     const batchSize = accountsPerRequest(env);
     let connection = null;
-    return async (accounts) => {
+    return async (accounts, agreements) => {
         connection ??= new Connection(env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
         await assertMarketNetwork(connection);
-        const pdas = accounts.map(account => ({ account, pda: marketClient.getMarketPda(account)[0] }));
+        const subjects = new Map((agreements || []).map(agreement => [agreement.account, agreement]));
+        // The app's market is sponsored by the agreement's own sponsor. Creator-bound addresses
+        // allow other markets without letting an unrelated wallet reserve this canonical one.
+        const pdas = accounts.map(account => {
+            const subject = subjects.get(account);
+            if (!subject?.sponsor) throw new Error('The indexed agreement sponsor is required.');
+            return { account, subject, pda: lmsrClient.getMarketPda(account, subject.sponsor)[0] };
+        });
         const result = new Map();
-        const infos = await getMultipleAccountsBatched(connection, pdas.map(entry => entry.pda), { batchSize });
+        const infos = await getMultipleAccountsBatched(connection,
+            pdas.flatMap(entry => [entry.pda, new web3.PublicKey(entry.account)]), { batchSize });
         pdas.forEach((entry, index) => {
-            const info = infos[index];
+            const info = infos[index * 2];
+            const subjectInfo = infos[index * 2 + 1];
+            if (subjectInfo?.owner?.toBase58() !== AGREEMENT_PROGRAM_ID) throw new Error('Agreement account is unavailable.');
+            const subject = AgreementClient.readAgreement(subjectInfo.data, entry.account);
+            if (!subject || subject.cid !== entry.subject.cid || subject.authority !== entry.subject.sponsor ||
+                !ONCHAIN_STATUSES[subject.statusCode]) throw new Error('Agreement account identity or status differs.');
             let market = null;
             if (info) {
                 if (info.owner?.toBase58() !== MARKET_PROGRAM_ID) throw new Error('Unexpected market account program.');
-                market = marketClient.decodeMarket(info.data);
+                market = lmsrClient.readMarketAccount(info, entry.pda);
                 // The program names a market's subject account `proposal`.
-                if (market.proposal !== entry.account || market.stakeMint !== DEVNET_USDC_MINT) {
-                    throw new Error('Market account has a different subject or stake mint.');
+                if (market.kind !== 0 || market.proposal !== entry.account || market.stakeMint !== DEVNET_USDC_MINT ||
+                    market.creator !== subject.authority || String(market.b) !== MARKET_LIQUIDITY ||
+                    Number(market.closesAt) !== subject.deadline || market.graceSeconds !== MARKET_GRACE_SECONDS ||
+                    market.maxPosition !== 0n || market.seed !== lmsr.maxLoss(BigInt(MARKET_LIQUIDITY))) {
+                    throw new Error('Market account terms differ from the canonical agreement bet.');
                 }
             }
-            result.set(entry.account, { address: entry.pda.toBase58(), market });
+            result.set(entry.account, { address: entry.pda.toBase58(), market,
+                chainStatus: ONCHAIN_STATUSES[subject.statusCode], executedAt: subject.executedAt,
+                deadline: subject.deadline > 0 ? new Date(subject.deadline * 1000).toISOString() : null });
         });
         return result;
     };
@@ -143,7 +148,7 @@ export function setupMarketsRoute(app, pool, options = {}) {
             const { rows } = await pool.query(AGREEMENTS_SQL, [city, MAX_AGREEMENTS]);
             const agreements = rows.map(rowToAgreement);
             const accounts = Array.from(new Set(agreements.map(item => item.account).filter(Boolean)));
-            const markets = accounts.length ? await readMarkets(accounts) : new Map();
+            const markets = accounts.length ? await readMarkets(accounts, agreements) : new Map();
             const payload = {
                 ...buildContests({ city, agreements, markets, now: now() }),
                 cluster: 'devnet',

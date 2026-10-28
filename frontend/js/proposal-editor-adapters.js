@@ -128,7 +128,7 @@
         if (!placement || placement.free !== true) return null;
         const goal = normalizeGoal(draft?.adapterKey || draft?.goal);
         if (!FREE_PLACEMENT_GOALS.has(goal)) {
-            throw new Error(placementMessage('fixedSite', 'This proposal type has a fixed site and cannot be moved.'));
+            throw new Error(placementMessage('fixedSite', 'This design type has a fixed site and cannot be moved.'));
         }
         const site = siteDraftApi().toMultiPolygon(placement.site);
         if (!site) throw new Error(placementMessage('invalidSite', 'A free placement needs a valid polygon site.'));
@@ -230,7 +230,7 @@
         const errors = [];
         const warnings = [];
         if (!draft?.fields?.name || !String(draft.fields.name).trim()) {
-            errors.push(issue('missing-name', 'Add a proposal name.', 'fields.name'));
+            errors.push(issue('missing-name', 'Add a design name.', 'fields.name'));
         }
         // Parcel acts need parcels; material proposals need a site, parcels or their own design
         // geometry (proposals/site-draft.js, PARCEL-OPTIONAL.md).
@@ -238,8 +238,15 @@
         if (groundIssue) errors.push(issue(groundIssue.code, groundIssue.message, groundIssue.path));
         const placementIssue = placementBindingIssue(draft);
         if (placementIssue) errors.push(placementIssue);
+        const validateRecipient = global.validateProposalRecipient || (typeof require === 'function'
+            ? require('./proposal-drafts.js').validateProposalRecipient : null);
+        if (!validateRecipient) throw new Error('Proposal recipient validation is unavailable.');
+        if (!validateRecipient(draft?.fields || {})) {
+            errors.push(issue('recipient-required', translate('modal.createProposal.recipientRequired',
+                'Enter a recipient name or address.'), 'fields.recipientAddress'));
+        }
         if (!draft?.fields?.description || !String(draft.fields.description).trim()) {
-            warnings.push(issue('missing-description', 'A description will help others understand this proposal.', 'fields.description'));
+            warnings.push(issue('missing-description', 'A description will help others understand this design.', 'fields.description'));
         }
         return { errors, warnings };
     }
@@ -326,7 +333,7 @@
             parameters: clone(bp.parameters || {}),
             buildingFeature: clone(primary),
             buildings: clone(buildings.length ? buildings : (primary ? [primary] : [])),
-            blockMassing: clone(proposal?.geometry?.blockMassing || null),
+            ruleMassing: clone(proposal?.geometry?.ruleMassing || null),
             ineligibleParcels: clone(bp.ineligibleParcels || []),
             // Freeform proposals may pave or green the parcel area around their buildings.
             groundSurface: clone(proposal?.geometry?.groundSurface || null),
@@ -747,9 +754,9 @@
             'road-track': 'Road / Track', buildings: 'Block', row: 'Row houses', parcelBased: 'Detached houses',
             single: 'Freeform building', 'parcel-layout': 'Parcel layout', park: 'Park', square: 'Square', lake: 'Lake',
             station: 'Transit station',
-            'urban-rule': 'Urban rule', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Proposal'
+            'urban-rule': 'Urban rule', 'ownership-transfer': 'Ownership transfer', 'as-is': 'Keep as is'
         };
-        return labels[goal] || String(goal || 'Proposal').replace(/-/g, ' ');
+        return labels[goal] || String(goal || 'Design').replace(/-/g, ' ');
     }
 
     function buildGenericAdapter(key, options = {}) {
@@ -776,7 +783,7 @@
                 const { errors, warnings } = commonValidation(draft);
                 if (key === 'as-is' && !draft.sourceLocalProposalId
                     && (!draft.fields?.ownership || draft.fields.ownership === 'no-change')) {
-                    errors.push(issue('missing-goal', 'Choose a proposal type or an ownership change.', 'goal'));
+                    errors.push(issue('missing-goal', 'Choose a design type or an ownership change.', 'goal'));
                 }
                 return { valid: errors.length === 0, errors, warnings };
             },
@@ -1032,6 +1039,12 @@
                 applied: false,
                 isCorridor: true
             };
+            // A redrawn/widened road authors its new land with its footprint, as the structure
+            // editor does. Retaining the source site's old edges rejects valid geometry edits.
+            if (definition.polygon && !same(definition.polygon, corridorDefinition(draft.sourceSnapshot)?.polygon)) {
+                output.site = siteDraftApi().toMultiPolygon(definition.polygon);
+                delete output.binding;
+            }
             return finalizeAuthoredProposal(output);
         },
         summarizeChanges(source, draft) {
@@ -1087,7 +1100,7 @@
                 const context = proposalBuildingContext(proposal);
                 const features = context.buildings?.length ? context.buildings : (context.buildingFeature ? [context.buildingFeature] : []);
                 if (!features.length || features.some(feature => !featureGeometryValid(feature))) {
-                    return { editable: false, reason: 'This building proposal does not contain valid footprint geometry.' };
+                    return { editable: false, reason: 'This building design does not contain valid footprint geometry.' };
                 }
                 return true;
             },
@@ -1110,7 +1123,7 @@
                 const features = context.buildings?.length ? context.buildings : (context.buildingFeature ? [context.buildingFeature] : []);
                 if (!features.length) errors.push(issue('missing-building', 'Create at least one building footprint.', 'editorPayload.context.buildings'));
                 if ((draft.editorPayload?.typology || key) === 'single' && features.length > 1) {
-                    errors.push(issue('freeform-building-count', 'Each Freeform proposal contains one building. Use Done in the geometry editor to save separate buildings.', 'editorPayload.context.buildings'));
+                    errors.push(issue('freeform-building-count', 'Each Freeform design contains one building. Use Done in the geometry editor to save separate buildings.', 'editorPayload.context.buildings'));
                 }
                 features.forEach((feature, index) => {
                     if (!featureGeometryValid(feature)) errors.push(issue('invalid-building', `Building ${index + 1} has an invalid footprint.`, `editorPayload.context.buildings.${index}`, feature?.geometry));
@@ -1171,7 +1184,8 @@
                         initialParameters: context.parameters || null,
                         initialGroundTreatment: context.groundSurface?.treatment || null, initialDecorationDesign: context.groundSurface?.decorationDesign || null,
                         site: authoredSite,
-                        initialFeature: features[0] || null
+                        // The saved buildings are per-parcel pieces; the editor reopens on the whole terrace.
+                        initialFeature: context.ruleMassing || features[0] || null
                     });
                     return opened !== false;
                 }
@@ -1194,7 +1208,7 @@
                 const features = context.buildings?.length ? context.buildings : [context.buildingFeature].filter(Boolean);
                 const typology = draft.editorPayload?.typology || key;
                 if (typology === 'single' && features.length !== 1) {
-                    throw new Error('Each Freeform proposal must contain exactly one building.');
+                    throw new Error('Each Freeform design must contain exactly one building.');
                 }
                 if (isFreePlacementDraft(draft)) {
                     const site = draft.editorPayload.placement.site;
@@ -1203,18 +1217,18 @@
                     }
                     context.ineligibleParcels = [];
                     if (context.groundSurface?.polygon && !geometryWithinSite(context.groundSurface.polygon, site)) {
-                        throw new Error(placementMessage('surroundingsOutsideSite', 'The moved surroundings must fit entirely inside the new site. Move the whole proposal or adjust its ground boundary before saving.'));
+                        throw new Error(placementMessage('surroundingsOutsideSite', 'The moved surroundings must fit entirely inside the new site. Move the whole design or adjust its ground boundary before saving.'));
                     }
                 }
                 output.goal = typology === 'single' ? 'single' : 'buildings';
                 output.primaryType = 'Urban Rule';
                 output.typologyType = typology;
                 output.geometry = { ...(output.geometry || {}), buildings: clone(features) };
-                const blockMassing = typology === 'block' && featureGeometryValid(context.blockMassing)
-                        ? clone(context.blockMassing)
+                const ruleMassing = (typology === 'block' || typology === 'row') && featureGeometryValid(context.ruleMassing)
+                        ? clone(context.ruleMassing)
                         : null;
-                if (blockMassing) output.geometry.blockMassing = blockMassing;
-                else delete output.geometry.blockMassing;
+                if (ruleMassing) output.geometry.ruleMassing = ruleMassing;
+                else delete output.geometry.ruleMassing;
                 // Every building typology owns its authored surroundings within this same design.
                 const groundSurface = clone(context.groundSurface || null);
                 if (groundSurface) output.geometry.groundSurface = groundSurface;
@@ -1224,7 +1238,8 @@
                 else delete output.geometry.groundBoundary;
                 const landTake = typology === 'single' ? clone(context.landTake || null) : null;
                 if (landTake) {
-                    if (!geometryWithinSite(landTake, output.site) || !features.every(building => geometryWithinSite(building, landTake))) {
+                    if (!geometryWithinSite(landTake, output.site) || !features.every(building => geometryWithinSite(building, landTake))
+                        || (groundSurface?.polygon && !geometryWithinSite(groundSurface.polygon, landTake))) {
                         throw new Error(global.i18n?.t?.('landTake.invalid') || 'The reviewed land take must contain the building and fit within the site.');
                     }
                     output.geometry.landTake = landTake;
@@ -1422,7 +1437,7 @@
 
         function canEdit(proposal) {
             const adapter = get(proposal);
-            if (!adapter) return { editable: false, reason: 'No editor adapter is registered for this proposal type.' };
+            if (!adapter) return { editable: false, reason: 'No editor adapter is registered for this design type.' };
             const result = typeof adapter.canEdit === 'function' ? adapter.canEdit(proposal) : true;
             if (result === true) return { editable: true, reason: null, adapter };
             if (typeof result === 'string') return { editable: false, reason: result, adapter };

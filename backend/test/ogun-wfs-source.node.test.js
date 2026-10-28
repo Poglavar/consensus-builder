@@ -117,3 +117,21 @@ test('foreign or malformed IDs fail before schema or parcel network requests', a
         assert.equal(requests.length, 0);
     }
 });
+
+test('rejects rebound schema type namespaces before requesting any parcels', async () => {
+    for (const xml of [schema().replace('xmlns:gml="http://www.opengis.net/gml/3.2"', 'xmlns:gml="https://other.invalid/types"'),
+        schema().replace('xmlns:geonode="http://www.geonode.org/"', 'xmlns:geonode="https://other.invalid/types"')]) {
+        const { source, requests } = fixture([new Response(xml)]);
+        await assert.rejects(source.queryIds(['NG-OGUN-parcels.340']), /schema changed/);
+        assert.equal(requests.length, 1);
+    }
+});
+
+test('a long-lived adapter rechecks schema before its next exact read', async () => {
+    const { source, requests } = fixture([new Response(schema()), page([raw(340)]),
+        new Response(schema({ unexpected: 'xsd:string' }))]);
+    assert.equal((await source.queryIds(['NG-OGUN-parcels.340'])).features.length, 1);
+    await assert.rejects(source.queryIds(['NG-OGUN-parcels.340']), /schema changed/);
+    assert.deepEqual(requests.map(({ url }) => url.searchParams.get('request')),
+        ['DescribeFeatureType', 'GetFeature', 'DescribeFeatureType']);
+});

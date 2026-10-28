@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2447",
+  "name": "Mazatlán, Mexico",
+  "point": [
+    23.2431324447942,
+    -106.405496504792
+  ],
+  "bindings": [
+    {
+      "appCityId": "mazatlan",
+      "runtimeConfig": {
+        "id": "mazatlan",
+        "wupCityCode": "2447",
+        "label": "Mazatlán, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            23.2431324447942,
+            -106.405496504792
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            23.2431324447942,
+            -106.405496504792
+          ],
+          "fallbackDataset": [
+            -106.405496504792,
+            23.2431324447942
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-ices-sinaloa-predio-mazatlan-vte",
+          "idPrefix": "MX-ICES-PREDIOMAZATLAN|Clave=",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Instituto Catastral del Estado de Sinaloa (ICES) · Visor Territorial · PredioMazatlan"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-ices-sinaloa-predio-mazatlan-vte",
+      "name": "ICES Sinaloa Visor Territorial — PredioMazatlan",
+      "adapter": "wfs",
+      "endpoint": "https://geoservervte.sinaloa.gob.mx/geoserver/wfs",
+      "featureType": "ices:PredioMazatlan",
+      "version": "2.0.0",
+      "idField": "Clave",
+      "idType": "string",
+      "idPattern": "^[0-9]{18}$",
+      "idPrefix": "MX-ICES-PREDIOMAZATLAN|Clave=",
+      "identityKind": "attribute-geometry-sha256-v1",
+      "geometryField": "geom",
+      "outFields": [
+        "Clave"
+      ],
+      "requestProperties": true,
+      "filterBoundsGeometry": true,
+      "pageSize": 200,
+      "idBatchSize": 40,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 1,
+      "minRequestIntervalMs": 100,
+      "countryCode": "MX",
+      "metricSrid": 32613,
+      "sourceCrs": "EPSG:6368",
+      "responseCrs": "CRS:84",
+      "cityIds": [
+        "mazatlan"
+      ],
+      "operator": "Instituto Catastral del Estado de Sinaloa (ICES)",
+      "attribution": "Instituto Catastral del Estado de Sinaloa (ICES) · Visor Territorial · PredioMazatlan",
+      "catalogueUrl": "https://ices.gob.mx/portal/",
+      "viewerUrl": "https://vte.sinaloa.gob.mx/",
+      "licenceNote": "No explicit geometry reuse licence established. Preserve attribution and confirm terms in second-pass review.",
+      "scope": "Bounded Mazatlan cadastral parcel queries. Layer extent does not establish municipal boundary or citywide completeness; currentness and survey accuracy unverified.",
+      "browserTransport": "relay",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "defaultForCity": true,
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "MX",
+          "admin1": [
+            "MX-SIN"
+          ],
+          "basis": "Official portal describes statewide property identification, registration, changes and valuation records, and links Visor Territorial at https://vte.sinaloa.gob.mx/.",
+          "evidence": [
+            "https://ices.gob.mx/portal/",
+            "https://vte.sinaloa.gob.mx/"
+          ]
+        }
+      }
+    }
+  ]
+}

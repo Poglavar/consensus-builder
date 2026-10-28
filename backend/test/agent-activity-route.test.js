@@ -19,7 +19,7 @@ import { cidOfObject } from '../cid.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
-const marketClient = require('../../frontend/js/solana/market-client.js').configure({ web3 });
+const marketClient = require('../../frontend/js/solana/lmsr-client.js').configure({ web3 });
 const MARKET_PROGRAM_ID = marketClient.constants.PROGRAM_ID;
 
 const SPONSOR = Keypair.generate().publicKey.toBase58();
@@ -31,7 +31,7 @@ const DESIGN = cidOfObject({ schema: 'design/v1', title: 'Pocket park' });
 const ACCOUNT = agreementAccountOf(AGREEMENT, SPONSOR);
 // A recorded account the index holds for RECORDED (e.g. minted under another program id); it wins over the derived one.
 const RECORDED_ACCOUNT = Keypair.generate().publicKey.toBase58();
-const MARKET = marketClient.getMarketPda(ACCOUNT)[0].toBase58();
+const MARKET = marketClient.getMarketPda(ACCOUNT, SPONSOR)[0].toBase58();
 const BOUNDS = { west: 15.9, south: 45.8, east: 15.92, north: 45.82 };
 
 // consensus.agreement rows as AGREEMENT_ROWS selects them.
@@ -50,6 +50,9 @@ const agreementIx = (name, account, extra = {}) => {
 const marketIx = (action, accounts, args = {}) => ({ index: 0, inner: false, program: { name: 'proposal_market', address: MARKET_PROGRAM_ID }, action, args, accounts });
 const tx = (signature, instructions, extra = {}) => ({ signature, slot: 42, status: 'success', time: '2026-10-21T12:00:00Z', feePayer: { address: HUMAN, label: null }, instructions, ...extra });
 
+// The account-index statement's filter: agreements with a recorded or derivable chain account.
+const WITH_ACCOUNT_SQL = "a.onchain IS NOT NULL OR a.content->>'sponsor' IS NOT NULL";
+
 // A pool answering the feeds' statements by what they select.
 function poolFor({ proposed = ROWS, withAccount = ROWS, transactions = [], marketTransactions = [], runs = [], designs = [], costs = [] } = {}) {
     const calls = [];
@@ -62,7 +65,7 @@ function poolFor({ proposed = ROWS, withAccount = ROWS, transactions = [], marke
             if (sql.includes('touched_addresses')) return { rows: marketTransactions };
             if (sql.includes('consensus.solana_transaction')) return { rows: transactions };
             if (sql.includes('FROM consensus.design') && !sql.includes('consensus.agreement')) return { rows: designs };
-            if (sql.includes("a.onchain IS NOT NULL OR a.content->>'sponsor' IS NOT NULL")) return { rows: withAccount };
+            if (sql.includes(WITH_ACCOUNT_SQL)) return { rows: withAccount };
             if (sql.includes('FROM consensus.agreement a')) return { rows: proposed };
             if (sql.includes('GROUP BY city')) return { rows: [] };
             throw new Error(`unexpected statement ${sql}`);
@@ -107,14 +110,14 @@ describe('chainEvents', () => {
 
     it('maps market and pledge instructions by their agreement account, or a market PDA, and keeps their side and amount', () => {
         const rows = [
-            { raw: tx('stake-tx', [marketIx('stake', [{ role: 'market', address: MARKET }, { role: 'proposal', address: ACCOUNT }, { role: 'staker', address: HUMAN, signer: true }], { side: 1, amount: '1500000' })]) },
-            { raw: tx('claim-tx', [marketIx('claim', [{ role: 'market', address: MARKET }, { role: 'claimer', address: HUMAN, signer: true }])]) },
+            { raw: tx('stake-tx', [marketIx('buy', [{ role: 'market', address: MARKET }, { role: 'proposal', address: ACCOUNT }, { role: 'buyer', address: HUMAN, signer: true }], { side: 1, shares: '1500000', max_cost: '1200000' })]) },
+            { raw: tx('claim-tx', [marketIx('claim_lmsr', [{ role: 'market', address: MARKET }, { role: 'owner', address: HUMAN, signer: true }])]) },
             { raw: tx('donate-tx', [{ index: 0, inner: false, program: { name: 'proposal_pledge', address: 'pledge-program' }, action: 'donate', args: { amount: '50000' },
                 accounts: [{ role: 'escrow', address: 'escrow' }, { role: 'proposal', address: RECORDED_ACCOUNT }, { role: 'donor', address: HUMAN, signer: true }] }]) }
         ];
         const events = chainEvents(rows, { agreementsByAccount: index, decode: raw => raw, book: { entryFor: () => null } });
         expect(events.map(event => [event.action, event.entity.id])).toEqual([
-            [{ type: 'stake', agreementCid: AGREEMENT, side: 'yes', amount: '1.5' }, AGREEMENT],
+            [{ type: 'stake', agreementCid: AGREEMENT, side: 'yes', maxCost: '1.2', shares: '1500000' }, AGREEMENT],
             [{ type: 'claim', agreementCid: AGREEMENT }, AGREEMENT],
             [{ type: 'donate', agreementCid: RECORDED, amount: '0.05' }, RECORDED]
         ]);
@@ -167,19 +170,20 @@ describe('GET /activity/recent', () => {
                 { raw: tx('fund-tx', [agreementIx('fund', ACCOUNT)], { time: '2026-10-21T13:30:00Z' }), signature: 'fund-tx' },
                 { raw: tx('failed-tx', [agreementIx('cancel', ACCOUNT)], { status: 'failed', time: '2026-10-21T14:00:00Z' }), signature: 'failed-tx' }
             ],
-            marketTransactions: [{ raw: tx('stake-tx', [marketIx('stake', [{ role: 'proposal', address: ACCOUNT }], { side: 0, amount: '20000' })], { time: '2026-10-21T12:30:00Z' }), signature: 'stake-tx' }]
+            marketTransactions: [{ raw: tx('stake-tx', [marketIx('buy', [{ role: 'proposal', address: ACCOUNT }], { side: 0, shares: '20000', max_cost: '18000' })], { time: '2026-10-21T12:30:00Z' }), signature: 'stake-tx' }]
         });
         const response = await request(appFor(pool)).get('/activity/recent?limit=4');
 
         expect(response.status).toBe(200);
-        expect(response.headers['cache-control']).toContain('no-store');
+        // Identical for every visitor and memoized for 20 s, so a browser may reuse it briefly.
+        expect(response.headers['cache-control']).toBe('public, max-age=15');
         // fund is detail for the explorer; a failed cancel is no outcome.
         expect(response.body.events.map(event => event.action.type)).toEqual(['execute', 'stake', 'propose', 'propose']);
         expect(response.body.events[0]).toMatchObject({
             action: { type: 'execute', agreementCid: AGREEMENT }, entity: { type: 'agreement', id: AGREEMENT },
             agreementName: 'Pocket park deal', designGoal: 'park', cityId: 'zagreb', location: { lat: 45.81, lon: 15.91 }, transaction: 'execute-tx'
         });
-        expect(response.body.events[1].action).toEqual({ type: 'stake', agreementCid: AGREEMENT, side: 'no', amount: '0.02' });
+        expect(response.body.events[1].action).toEqual({ type: 'stake', agreementCid: AGREEMENT, side: 'no', maxCost: '0.018', shares: '20000' });
         expect(response.body.events.find(event => event.entity.id === RECORDED)).not.toHaveProperty('location');
         expect(pool.calls.find(call => call.sql.includes('ORDER BY a.created_at')).params).toEqual([4]);
         expect(pool.calls.find(call => call.sql.includes('consensus.solana_transaction') && !call.sql.includes('touched_addresses')).params).toEqual([16]);
@@ -190,11 +194,43 @@ describe('GET /activity/recent', () => {
         const pool = poolFor();
         await request(appFor(pool)).get('/activity/recent');
         await request(appFor(pool)).get('/activity/recent?limit=999');
-        expect(pool.calls.filter(call => call.sql.includes('ORDER BY a.created_at')).map(call => call.params)).toEqual([[12], [30]]);
+        const proposedCalls = pool.calls.filter(call => call.sql.includes('ORDER BY a.created_at') && !call.sql.includes(WITH_ACCOUNT_SQL));
+        expect(proposedCalls.map(call => call.params)).toEqual([[12], [30]]);
         const failing = { query: async () => { throw new Error('connection refused'); } };
         const response = await request(appFor(failing)).get('/activity/recent');
         expect(response.status).toBe(500);
+        expect(response.headers['cache-control']).toBe('no-store');
         expect(response.body).toEqual({ error: 'Failed to read recent activity', source: 'live' });
+    });
+
+    it('bounds the account index to the scan window, newest first', async () => {
+        const pool = poolFor();
+        await request(appFor(pool)).get('/activity/recent');
+        const index = pool.calls.find(call => call.sql.includes(WITH_ACCOUNT_SQL));
+        expect(index.sql).toMatch(new RegExp(`ORDER BY a\\.created_at DESC, a\\.cid LIMIT ${ACTIVITY_SCAN_WINDOW}\\s*$`));
+    });
+
+    it('reads once for concurrent and repeated requests with the same limit, again for another limit', async () => {
+        const pool = poolFor();
+        const app = appFor(pool);
+        const answers = await Promise.all([request(app).get('/activity/recent?limit=4'), request(app).get('/activity/recent?limit=4&junk=1')]);
+        await request(app).get('/activity/recent?limit=4');
+        expect(answers.map(answer => answer.status)).toEqual([200, 200]);
+        expect(answers[1].body).toEqual(answers[0].body);
+        const proposedReads = () => pool.calls.filter(call => call.sql.includes('ORDER BY a.created_at') && !call.sql.includes(WITH_ACCOUNT_SQL));
+        expect(proposedReads()).toHaveLength(1);
+        await request(app).get('/activity/recent?limit=5');
+        expect(proposedReads().map(call => call.params)).toEqual([[4], [5]]);
+    });
+
+    it('does not keep a failure: the next request reads again', async () => {
+        let fail = true;
+        const healthy = poolFor();
+        const pool = { query: async (...args) => { if (fail) throw new Error('connection refused'); return healthy.query(...args); } };
+        const app = appFor(pool);
+        expect((await request(app).get('/activity/recent')).status).toBe(500);
+        fail = false;
+        expect((await request(app).get('/activity/recent')).status).toBe(200);
     });
 });
 
@@ -282,7 +318,7 @@ describe('agent run events', () => {
 });
 
 describe('GET /agent/activity', () => {
-    const stakeRow = { raw: tx('human-stake-tx', [marketIx('stake', [{ role: 'proposal', address: ACCOUNT }, { role: 'staker', address: HUMAN, signer: true }], { side: 1, amount: '10000' })], { time: '2026-10-21T09:00:00Z' }) };
+    const stakeRow = { raw: tx('human-stake-tx', [marketIx('buy', [{ role: 'proposal', address: ACCOUNT }, { role: 'buyer', address: HUMAN, signer: true }], { side: 1, shares: '10000', max_cost: '9000' })], { time: '2026-10-21T09:00:00Z' }) };
     const mintRow = { raw: tx('create-tx', [agreementIx('create', ACCOUNT)], { time: '2026-10-21T08:03:30Z' }) };
     const pool = () => poolFor({
         runs: [run], transactions: [mintRow, stakeRow], proposed: [agreementRow(AGREEMENT)],
@@ -298,7 +334,7 @@ describe('GET /agent/activity', () => {
         const design = response.body.events.find(event => event.action.type === 'design');
         expect(design).toMatchObject({ designName: 'Pocket park', designGoal: 'park', cityId: agreementRow(AGREEMENT).city, location: { lat: 45.81, lon: 15.91 }, actor: { name: 'densifier-01', controller: 'algorithm' } });
         const chainStake = response.body.events.find(event => event.action.type === 'stake' && !event.runId);
-        expect(chainStake).toMatchObject({ actor: { id: HUMAN }, agreementName: 'Pocket park deal', action: { side: 'yes', amount: '0.01' } });
+        expect(chainStake).toMatchObject({ actor: { id: HUMAN }, agreementName: 'Pocket park deal', action: { side: 'yes', maxCost: '0.009', shares: '10000' } });
         expect(response.body).toMatchObject({ count: 5, source: 'live' });
         expect(response.body).not.toHaveProperty('scanWindow');
     });
@@ -368,6 +404,17 @@ describe('GET /agent/activity', () => {
         const all = await request(appFor(runPool())).get('/agent/activity');
         expect(all.body.events).toHaveLength(2);
         expect(all.body.events.find(event => event.runId === 'unlocated-account-run')).not.toHaveProperty('cityId');
+    });
+
+    it('shares one read per limit and filters, and reads again for another filter', async () => {
+        const memoPool = poolFor();
+        const app = appFor(memoPool);
+        await Promise.all([request(app).get('/agent/activity?limit=10'), request(app).get('/agent/activity?limit=10')]);
+        await request(app).get('/agent/activity?limit=10');
+        const runReads = () => memoPool.calls.filter(call => call.sql.includes('consensus.agent_run'));
+        expect(runReads()).toHaveLength(1);
+        await request(app).get('/agent/activity?limit=10&source=live');
+        expect(runReads().map(call => call.params)).toEqual([[10], [ACTIVITY_SCAN_WINDOW]]);
     });
 
     it('bounds the window to 250 without filters', async () => {

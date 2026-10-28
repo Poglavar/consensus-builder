@@ -59,7 +59,8 @@ describe('3D parcel emphasis', () => {
 
         apply(root, 'parcel-a', originals);
         expect(selected.material).not.toBe(shared);
-        expect(selected.material.color.hex).toBe(0x29c8ff);
+        expect(selected.material.color.hex).toBe(0xffdd00);
+        expect(selected.material.emissive.hex).toBe(0x3d3000);
         expect(other.material.color.hex).toBe(0x353535);
         expect(building.material.color.hex).toBe(0x353535);
         expect([selected.visible, other.visible, building.visible]).toEqual([true, true, true]);
@@ -80,7 +81,7 @@ describe('3D parcel emphasis', () => {
         const object = { userData: { isParcel: true, parcelId: 'selected' }, material: [left, right] };
         const originals = new WeakMap();
         apply(scene(object), 'selected', originals);
-        expect(object.material.map(entry => entry.color.hex)).toEqual([0x29c8ff, 0x29c8ff]);
+        expect(object.material.map(entry => entry.color.hex)).toEqual([0xffdd00, 0xffdd00]);
         apply(scene(object), null, originals);
         expect(object.material).toEqual([left, right]);
     });

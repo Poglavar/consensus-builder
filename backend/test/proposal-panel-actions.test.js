@@ -57,6 +57,7 @@ function render(proposal, { applied = false, road = false, lifecycle = 'Active',
         createElement: () => ({ ...htmlContainer(), get childNodes() { return [{ innerHTML: this.innerHTML }]; }, get firstChild() { return null; } })
     };
     const window = {
+        ClickStackRelations: require('../../frontend/js/click-stack/click-stack-relations.js'),
         ClickStack: { showDesign: vi.fn() },
         CityMoney: require('../../frontend/js/city-money.js'),
         ProposalDesignGoals: require('../../frontend/js/proposals/design-goals.js'),
@@ -87,6 +88,7 @@ function render(proposal, { applied = false, road = false, lifecycle = 'Active',
     const globals = {
         CbFormat: require('../../frontend/js/format.js'),
         window, document, console, Date, Math, Number, String, Array, Object, Set, Map, Promise, JSON,
+        BusyControl: { track: vi.fn((_button, action) => action()) },
         escapeHtml: require('../../frontend/js/shared-utils.js').escapeHtml,
         performance: { now: () => 1 }, requestAnimationFrame: callback => callback(),
         setTimeout: callback => timers.push(callback), clearTimeout() {},
@@ -230,6 +232,9 @@ describe('proposal details action footer', () => {
         const sourceFeature = { type: 'Feature', properties: { parcelId: 'source-1' }, geometry };
         const available = parse(render(proposal, { sourceFeature }).content.innerHTML)('.proposal-parcel-row');
         expect(available.attr('data-reference-state')).toBe('available');
+        expect(available.attr('onclick')).toBeUndefined();
+        expect(available.find('.parcel-number button[type="button"]').text()).toBeTruthy();
+        expect(available.find('.parcel-number button').attr('onclick')).toContain('handleProposalParcelClick');
         // A design has no owner acceptance: an available reference carries no Accepted/Pending status.
         expect(available.find('.parcel-status').length).toBe(0);
         expect(available.hasClass('is-accepted')).toBe(false);
@@ -238,6 +243,8 @@ describe('proposal details action footer', () => {
         expect(replaced.hasClass('is-replaced')).toBe(true);
         expect(replaced.find('.parcel-status').text()).toBe('Replaced in map model');
         expect(JSON.parse(replaced.attr('data-parcel-geometry'))).toEqual(geometry);
+        expect(replaced.find('.parcel-number button').attr('data-parcel-replaced')).toBe('true');
+        expect(JSON.parse(replaced.find('.parcel-number button').attr('data-parcel-geometry'))).toEqual(geometry);
     });
 
     it('keeps a failed map-application reason visible in the proposal panel', () => {
@@ -294,37 +301,44 @@ describe('proposal details action footer', () => {
         expect(park('.proposal-publish-later').length).toBe(0);
     });
 
-    it('offers Add to agreement over an applied design: before the disabled Share for a parcel layout, after Share otherwise', () => {
-        // The primary row's buttons in order, by the action each one is.
-        const primaryRow = result => {
-            const $ = parse(result.footer.innerHTML);
-            return $('.proposal-primary-actions button').toArray().map(button => $(button));
-        };
-        const position = (row, className) => row.findIndex(button => button.hasClass(className));
-
+    it('keeps design actions separate from agreement creation and preserves publication availability', () => {
         const layout = { proposalId: 'layout-2', goal: 'parcel-layout', title: 'Layout', cadastreParcelIds: ['source-1'], parcelLayout: { plots: [] } };
         const appliedLayout = render(layout, { applied: true });
-        const layoutRow = primaryRow(appliedLayout);
-        const layoutAdd = layoutRow[position(layoutRow, 'btn-create-agreement')];
-        expect(layoutAdd.hasClass('btn-primary')).toBe(true);
-        expect(layoutAdd.text()).toContain('Add to agreement');
-        expect(position(layoutRow, 'btn-create-agreement')).toBeLessThan(position(layoutRow, 'btn-share-proposal'));
-        expect(layoutRow[position(layoutRow, 'btn-share-proposal')].attr('disabled')).toBeDefined();
-        expect(appliedLayout.footer.innerHTML).toContain('window.AgreementDialog.addDesign("layout-2")');
+        const layoutFooter = parse(appliedLayout.footer.innerHTML);
+        expect(layoutFooter('.btn-create-agreement').length).toBe(0);
+        expect(layoutFooter('.btn-add-to-plan').length).toBe(1);
+        expect(layoutFooter('.btn-share-proposal').attr('disabled')).toBeDefined();
 
         const park = { proposalId: 'park-3', goal: 'park', title: 'Park', cadastreParcelIds: [] };
         const appliedPark = render(park, { applied: true });
-        const parkRow = primaryRow(appliedPark);
-        const parkAdd = parkRow[position(parkRow, 'btn-create-agreement')];
-        expect(parkAdd.hasClass('btn-primary')).toBe(false);
-        expect(position(parkRow, 'btn-create-agreement')).toBe(position(parkRow, 'btn-share-proposal') + 1);
-        expect(parkRow[position(parkRow, 'btn-share-proposal')].hasClass('btn-primary')).toBe(true);
-        expect(appliedPark.footer.innerHTML).toContain('window.AgreementDialog.addDesign("park-3")');
+        const parkFooter = parse(appliedPark.footer.innerHTML);
+        expect(parkFooter('.btn-create-agreement').length).toBe(0);
+        expect(parkFooter('.btn-add-to-plan').length).toBe(1);
+        expect(parkFooter('.btn-share-proposal').hasClass('btn-primary')).toBe(true);
+        expect(parkFooter('.btn-share-proposal').attr('disabled')).toBeUndefined();
 
-        // An agreement bundles designs applied to the map; one that is not offers none.
+        // A design need not be applied to be added to a plan.
         for (const proposal of [layout, park]) {
             expect(parse(render(proposal).footer.innerHTML)('.btn-create-agreement').length).toBe(0);
+            expect(parse(render(proposal).footer.innerHTML)('.btn-add-to-plan').length).toBe(1);
         }
+    });
+
+    it('shows the type and state pills in the Overview row, with type first', () => {
+        const content = parse(render({ proposalId: 'named-park', goal: 'park', title: 'Park', cadastreParcelIds: [] }).content.innerHTML);
+        const badges = content('.proposal-badges-row > .cb-badge');
+        expect(badges).toHaveLength(2);
+        expect(badges.eq(0).attr('data-design-goal')).toBe('park');
+        expect(badges.eq(0).text()).toContain('Park');
+        expect(badges.eq(1).hasClass('proposal-ladder-badge')).toBe(true);
+        expect(badges.eq(1).text()).toContain('Draft');
+        expect(badges.eq(1).find('[aria-hidden="true"]')).toHaveLength(1);
+        const appliedBadges = parse(render({ proposalId: 'applied-park', goal: 'park', title: 'Park', cadastreParcelIds: [] }, { applied: true }).content.innerHTML)
+            ('.proposal-badges-row > .cb-badge');
+        expect(appliedBadges).toHaveLength(3);
+        expect(appliedBadges.eq(0).attr('data-design-goal')).toBe('park');
+        expect(appliedBadges.eq(1).hasClass('cb-badge--applied')).toBe(true);
+        expect(appliedBadges.eq(2).hasClass('proposal-ladder-badge')).toBe(true);
     });
 
     it('renders the primary and contextual actions once, Duplicate named for the design', () => {
@@ -333,12 +347,23 @@ describe('proposal details action footer', () => {
         const $ = parse(result.footer.innerHTML);
         expect($('.proposal-action-default').length + $('[onclick^="removeProposalFromMap"]').length).toBe(1);
         expect($('[onclick*="shareProposalFromDetails"]').length).toBe(1);
-        expect($('.btn-share-proposal').attr('title')).toBe('Publish this design and copy its link');
+        expect($('.btn-share-proposal').attr('title')).toBe('Share this design');
         expect($('[onclick^="startDesignDuplication"]').length).toBe(1);
         expect($('.btn-duplicate-design').text().trim()).toBe('Duplicate');
         expect($('.btn-duplicate-design').attr('title')).toBe('Move a copy with the pointer and click to place a new design.');
         expect($('.btn-proposal-details').length).toBe(1);
         expect($.text()).not.toContain('changed land');
+    });
+
+    it('routes Add to plan to the selected design and keeps Share design only', () => {
+        const proposal = { proposalId: 'plan-target', goal: 'park', title: 'Garden', cadastreParcelIds: [] };
+        const result = render(proposal);
+        const $ = parse(result.footer.innerHTML);
+        const add = $('.btn-add-to-plan');
+        expect(add.text()).toContain('Add to plan');
+        expect(result.footer.innerHTML).toContain('window.PlanDialog.addDesign("plan-target")');
+        expect($('.btn-share-proposal').attr('title')).toBe('Share this design');
+        expect($('.btn-share-proposal').attr('onclick')).toContain('shareProposalFromDetails()');
     });
 
     it('renders contextual geometry and track actions; Drive only for a track design published at this index', () => {
@@ -385,7 +410,7 @@ describe('proposal details action footer', () => {
     });
 
     it('badges a design published here Published, and anything else Draft', () => {
-        const badge = proposal => parse(render(proposal).content.innerHTML)('.proposal-badges-row .cb-badge').first();
+        const badge = proposal => parse(render(proposal).content.innerHTML)('.proposal-badges-row .proposal-ladder-badge');
         const design = { proposalId: 'park-780', goal: 'park', title: 'Block', cadastreParcelIds: [], site: { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0]]] } };
         expect(badge(published(design)).hasClass('cb-badge--published')).toBe(true);
         // A bare numeric id says nothing about publication.

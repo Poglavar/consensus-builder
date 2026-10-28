@@ -46,6 +46,17 @@
         return Math.hypot(nx, ny, nz) / 2;
     }
 
+    // Clipping can leave long, bent ribbons with distinct vertices but negligible width.
+    // Extruding those ribbons creates full-height walls coincident with the real footprint.
+    function hasRenderableArea(ring, epsilonM = DEFAULT_EPSILON_M) {
+        if (!Array.isArray(ring) || ring.length < 3) return false;
+        let perimeter = 0;
+        for (let i = 0; i < ring.length; i++) {
+            perimeter += Math.sqrt(distanceSquared(ring[i], ring[(i + 1) % ring.length]));
+        }
+        return polygonArea3D(ring) > epsilonM * perimeter / 2;
+    }
+
     function quantizedPointKey(point, epsilonM) {
         return point.map(value => Math.round(value / epsilonM)).join(',');
     }
@@ -94,6 +105,7 @@
         DEFAULT_MIN_AREA_M2,
         cleanRing,
         polygonArea3D,
+        hasRenderableArea,
         canonicalRingKey,
         prepareFaceRings,
         appendUniqueTriangle

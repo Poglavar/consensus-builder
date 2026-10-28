@@ -30,7 +30,6 @@ afterEach(() => {
 
 function bootStore() {
     install('window', globalThis);
-    install('__cbSecondaryTab', false);
     install('__formationDepth', formationDepth);
     install('__planOrder', planOrder);
     install('normalizeParcelIdList', values => Array.from(new Set((values || []).map(String))));

@@ -141,10 +141,10 @@ describe('materializing a shared link', () => {
             'status:Applying Block B (2/2)…',
             'paint',
             'apply:b',
-            'status:Refreshing the map and proposal list…',
+            'status:Refreshing the map and designs list…',
             'paint',
             'refresh',
-            'status:Saving applied proposals…',
+            'status:Saving applied designs…',
             'paint'
         ]);
     });
@@ -515,15 +515,16 @@ const row = (name, { goal = 'park', authoredAt = '2026-10-10T10:00:00.000Z', cit
 // A /designs link opened against stubs of everything the route calls. `designs` are the rows the index
 // holds; `local` the local copies DesignSync.localCopyOf finds, by CID; `refused` the local ids the
 // apply precheck refuses, with its message; `failing` the local ids whose apply fails, with the stored
-// failure; `foreignCity` a city whose rows belong to another city's store.
-function designLink({ designs = [], local = {}, refused = {}, failing = {}, held = {}, conflictChoice = 'cancel', planFailure = null, foreignCity = null, leaveForCity = true,
-    wants3D = false, replayDone = true, tookOver = false, fetchError = null } = {}) {
+// failure. A row's groundContext fixture represents a geometry-derived source switch.
+function designLink({ designs = [], local = {}, refused = {}, failing = {}, held = {}, conflictChoice = 'cancel', planFailure = null, leaveForCity = true,
+    wants3D = false, replayDone = true, tookOver = false, fetchError = null, arrivalView = null } = {}) {
     const records = new Map(Object.values(local).map(record => [record.proposalId, record]));
     const rows = new Map(designs.map(design => [design.cid, design]));
     const order = [];
     const takeover = { stop: vi.fn(), tookOver: () => tookOver };
     const window = {
         location: { search: "" },
+        WorldEntry: { arrivalMapView: () => arrivalView },
         Cid,
         DesignSync: {
             fetchDesigns: vi.fn(async cids => {
@@ -543,7 +544,7 @@ function designLink({ designs = [], local = {}, refused = {}, failing = {}, held
                 return record;
             })
         },
-        CityConfigManager: { foreignCityFor: city => (foreignCity && city === foreignCity ? foreignCity : null) },
+        CityConfigManager: { foreignGroundContextFor: design => design.groundContext || null },
         shouldSkipWelcomeForProposalLink: () => true,
         ReplayStatus: { watchUserTakeover: vi.fn(() => takeover), statusReporter: vi.fn(() => vi.fn()) },
         __claims: { cadastreParcelIdsOf: record => (record && record.cadastreParcelIds) || [] },
@@ -588,7 +589,7 @@ function designLink({ designs = [], local = {}, refused = {}, failing = {}, held
     const stubs = {
         console: { log() {}, info() {}, debug() {}, warn: vi.fn(), error: vi.fn() },
         document: {},
-        map: { fitBounds: vi.fn() },
+        map: { fitBounds: vi.fn(), setView: vi.fn(), getZoom: () => 19 },
         proposalStorage: { getProposal: id => records.get(String(id)) || null, getAllProposals: () => [...records.values()], save: vi.fn(() => { order.push('save'); }) },
         ProposalManager,
         CadastralParcelRepository: { ensureIds: vi.fn(async () => { order.push('ground'); }) },
@@ -597,7 +598,8 @@ function designLink({ designs = [], local = {}, refused = {}, failing = {}, held
         getShareI18nHelper: () => translate,
         formatSharedProposalLabel: (record, fallback) => (record && record.title) || String(fallback),
         getStoredApplyFailureInfo: id => (failing[id] ? { message: failing[id] } : null),
-        calculateBoundsForLastAppliedProposal: id => ({ id, isValid: () => true }),
+        calculateBoundsForLastAppliedProposal: vi.fn(id => ({ id, ids: [id], isValid: () => true,
+            extend(bounds) { this.ids.push(...bounds.ids); return this; } })),
         focusProposalDetails: vi.fn(async () => {}),
         showProposalLoadOverlay: vi.fn(), updateProposalLoadOverlay: vi.fn(), hideProposalLoadOverlay: vi.fn(),
         updateProposalLayer: vi.fn(), updateShowProposalsButton: vi.fn(),
@@ -644,6 +646,65 @@ describe('opening a /designs link', () => {
         expect(link.records.get('old-tower').applied).toBe(false);
         expect(link.records.get('elsewhere').applied).toBe(true);
         expect(link.records.size).toBe(4);
+    });
+
+    it('frames the full confirmed replacement instead of restoring an off-site named-plan URL view', async () => {
+        const link = conflictingLink('replace', { arrivalView: { lat: 52.50539, lon: -1.95889, zoom: 19 } });
+        const result = await link.open([link.tower.cid, park.cid], { frame: false, openDetails: false });
+        const incoming = [`design-${link.tower.cid}`, `design-${park.cid}`];
+        expect(result.applied).toEqual(incoming);
+        expect(link.map.fitBounds).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ ids: incoming }),
+            { padding: [80, 80], maxZoom: 18, animate: false });
+        expect(link.map.setView).not.toHaveBeenCalled();
+        expect(link.focusProposalDetails).not.toHaveBeenCalled();
+    });
+
+    it('focuses every replaced member in an already open 3D scene', async () => {
+        const link = conflictingLink('replace', { arrivalView: { lat: 52.50539, lon: -1.95889, zoom: 19 } });
+        link.window.isThreeModeActive = () => true;
+        link.window.focusThreeModeOnProposals = vi.fn();
+        await link.open([link.tower.cid, park.cid], { frame: false });
+        expect(link.window.focusThreeModeOnProposals).toHaveBeenCalledExactlyOnceWith([`design-${link.tower.cid}`, `design-${park.cid}`]);
+        expect(link.map.fitBounds).not.toHaveBeenCalled();
+        expect(link.map.setView).not.toHaveBeenCalled();
+    });
+
+    it('drops the stale saved 3D camera after confirmed replacement', async () => {
+        const link = conflictingLink('replace', { wants3D: true, arrivalView: { lat: 52.50539, lon: -1.95889, zoom: 19 } });
+        link.window.proposedBuildings = [{ properties: { proposalId: `design-${link.tower.cid}` } }];
+        await link.open([link.tower.cid, park.cid], { frame: false });
+        expect(link.enterUrlDrivenView).toHaveBeenCalledExactlyOnceWith([`design-${link.tower.cid}`, `design-${park.cid}`], { restoreView: null });
+    });
+
+    it('lets explicit replacement framing suppress a saved camera at 3D entry', () => {
+        const core = readFileSync(new URL('../../frontend/js/proposals/core.js', import.meta.url), 'utf8');
+        const enter = core.slice(core.indexOf('function enterUrlDrivenView('), core.indexOf('function tryEnterThreeMode('));
+        const camera = { targetLat: 52.50539, targetLng: -1.95889, range: 100 };
+        const context = { window: { location: { search: '' }, MapShare: { arrivalOptions: () => ({ restoreView: camera, rotate: false }) } },
+            isRealisticModeRequestedFromUrl: () => false, tryEnterThreeMode: vi.fn(() => true) };
+        vm.runInNewContext(enter, context);
+        context.enterUrlDrivenView(['incoming']);
+        expect(context.tryEnterThreeMode).toHaveBeenLastCalledWith(expect.objectContaining({ restoreView: camera }));
+        context.enterUrlDrivenView(['incoming'], { restoreView: null });
+        expect(context.tryEnterThreeMode).toHaveBeenLastCalledWith(expect.objectContaining({ restoreView: null, focusProposalIds: ['incoming'], frameProposal: true }));
+    });
+
+    it.each(['cancel', 'skip'])('keeps the arrival view when replacement was not confirmed (%s)', async choice => {
+        const link = conflictingLink(choice, { arrivalView: { lat: 52.50539, lon: -1.95889, zoom: 19 } });
+        await link.open([link.tower.cid, park.cid], { frame: false });
+        expect(link.map.fitBounds).not.toHaveBeenCalled();
+        if (choice === 'skip') expect(link.map.setView).toHaveBeenCalledExactlyOnceWith([52.50539, -1.95889], 19, { animate: false });
+        else expect(link.map.setView).not.toHaveBeenCalled();
+    });
+
+    it('does not frame a failed replacement or override a visitor who took over the view', async () => {
+        const failed = conflictingLink('replace', { planFailure: 'Invalid layout', arrivalView: { lat: 52.5, lon: -1.9, zoom: 18 } });
+        await failed.open([failed.tower.cid, park.cid], { frame: false });
+        expect(failed.map.fitBounds).not.toHaveBeenCalled();
+        const moved = conflictingLink('replace', { replayDone: false, tookOver: true, arrivalView: { lat: 52.5, lon: -1.9, zoom: 18 } });
+        await moved.open([moved.tower.cid, park.cid], { frame: false });
+        expect(moved.map.fitBounds).not.toHaveBeenCalled();
+        expect(moved.map.setView).not.toHaveBeenCalled();
     });
 
     it('skips conflicting incoming designs by choice, keeping existing work and applying clear members', async () => {
@@ -791,9 +852,9 @@ describe('opening a /designs link', () => {
         expect(link.focusProposalDetails).toHaveBeenCalledExactlyOnceWith('local-park', { centerOnProposal: false, showDetails: true });
     });
 
-    it('asks to go to the city a design belongs to, and imports nothing here when it goes', async () => {
-        const split = row('Riva', { city: 'split' });
-        const link = designLink({ designs: [park, split], foreignCity: 'split' });
+    it('switches to the ground source required by geometry, independently of the city label', async () => {
+        const split = { ...row('Riva', { city: 'wrong-label' }), groundContext: 'split' };
+        const link = designLink({ designs: [park, split] });
 
         const result = await link.open([park.cid, split.cid]);
 
@@ -821,7 +882,7 @@ describe('opening a /designs link', () => {
         const link = designLink({ designs: [park, square], wants3D: true });
 
         await link.open([park.cid, square.cid]);
-        expect(link.enterUrlDrivenView).toHaveBeenCalledExactlyOnceWith([`design-${park.cid}`, `design-${square.cid}`]);
+        expect(link.enterUrlDrivenView).toHaveBeenCalledExactlyOnceWith([`design-${park.cid}`, `design-${square.cid}`], {});
         expect(link.context.url3DModeHandled).toBe(true);
 
         await link.open([park.cid]);

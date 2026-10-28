@@ -1,4 +1,4 @@
-> Historical snapshot, 2026-10-23. The [canonical glossary](../vocabulary.md) supersedes this file for current definitions. This snapshot preserves the former implementation checkpoints, research, contract history and audit register, including unresolved findings and working-tree notes. Its dated implementation and deployment claims describe their original checkpoints; they do not establish current behavior.
+> Historical snapshot, 2026-10-23. The [canonical glossary](vocabulary.md) supersedes this file for current definitions. This snapshot preserves the former implementation checkpoints, research, contract history and audit register, including unresolved findings and working-tree notes. Its dated implementation and deployment claims describe their original checkpoints; they do not establish current behavior.
 
 <!-- Code-grounded vocabulary and semantic audit. Keep observed behavior separate from proposed terminology and RDF mappings. -->
 
@@ -93,7 +93,7 @@ User decisions, not implemented: above a single authored change there is exactly
 minted, ENS-named, bet on and executed. A **design** is today's proposal without terms or a decision
 rule. "Plan" names no record: it is the applied composition or a share link. Named plans as records
 and publish-time decision kinds are superseded. Design of record and open questions:
-[plan-design-agreement.md](../plan-design-agreement.md).
+[plan-design-agreement.md](plan-design-agreement.md).
 
 ## Name mapping during the rework (2026-10-21)
 
@@ -111,7 +111,7 @@ them. Until a rename lands, the two columns name the same thing.
 ## M1 (a) state: the parcel-layout design (2026-10-21)
 
 A **parcel layout** is a design whose record is geometry only: the pool outline and its output
-plots (`parcelLayout`, see [plan-design-agreement.md](../plan-design-agreement.md), "M1 (a) build
+plots (`parcelLayout`, see [plan-design-agreement.md](plan-design-agreement.md), "M1 (a) build
 contract"). Applying it forms the plots and **carries ownership over** from the ground: a plot inside
 one source parcel keeps that owner, a plot straddling several is a joint holding with pro-rata
 shares, open ground stays unowned. A layout changes borders, never ownership. Until its agreement
@@ -149,7 +149,7 @@ public or joint shares), **money** (EUR cash lines per party; the sponsor line i
 `proposal-approval/v1` config evaluated by `ProposalApproval`). It is "current" while every design is
 present, applied and unchanged and the re-derived inputs and output hashes match; otherwise "stale".
 Nothing about an agreement leaves the device until M2; it has no lifecycle, consent, publication,
-mint or market yet. See [plan-design-agreement.md](../plan-design-agreement.md), "M1 (b) build contract".
+mint or market yet. See [plan-design-agreement.md](plan-design-agreement.md), "M1 (b) build contract".
 
 ## M2 state: publishing designs and agreements (2026-10-21, code complete, tests pending)
 
@@ -189,7 +189,7 @@ the owner-offer mode, the consent card on design details, the epoch and rename s
 `proposal` table is read-only for the chain readers (markets, bets, oracle, agents, ENS `chain-`
 labels) until M3 re-points them at agreements and drops it. A design is never an act on parcels:
 `site-binding.js` lost `isParcelAct`, and a road designation binds by its polygon. See
-[plan-design-agreement.md](../plan-design-agreement.md), "M2 build contract" and "M3 notes".
+[plan-design-agreement.md](plan-design-agreement.md), "M2 build contract" and "M3 notes".
 
 ## M3 state: the agreement on chain, server side (2026-10-22, code complete, tests pending)
 
@@ -1295,7 +1295,7 @@ flowchart LR
 | V15 | **Open-ground accounting can read as a title assertion. Resolved for the current readjustment deal contract, 2026-10-20.** Subdivision labels and site/create help state unknown ownership, explain omitted draft accounting, and qualify the authority-verdict requirement as on-chain execution. The `unrepresentedGround` marker replaces `noOwner`; it has no represented party or cash recipient, and the v3 deal requires zero cash for that entry. [subdivision](../frontend/js/proposals/subdivision.js), [deal](../frontend/js/reparcellization-deal.js), editor | Coverage `unknown`, absent parcel records, public ownership and legally ownerless land remain distinct. The v3 deal hash is an intentional contract change; the marker supplies no legal ownership evidence. |
 | V16 | **Several “shares” and financial quantities coexist. Resolved for audited authored, modeled and comparison quantities, 2026-10-20.** The seller dialog no longer treats the `funded` readiness flag as money or offers a no-op Fund action. Rights fractions, plot percentages, contribution ratios, assigned values, cash payouts, budgets and gains use distinct bases. Market percentages name their stake-pool basis, separately from payout multiples and probabilities. Proposal offers require explicit currency; readjustment cash is EUR-only, cash-free deals have no effective currency, and modeled parcel prices distinguish source estimates from an explicit EUR-per-area fallback. Road-corridor stats identify their area model and EUR basis. [DDL](../backend/routes/proposals-ddl.sql), [approval](../frontend/js/proposals/approval.js), [deal](../frontend/js/reparcellization-deal.js), [price model](../frontend/js/financials.js), [road stats](../frontend/js/road-drawing.js) | Missing or mixed source currencies leave aggregate value unknown; invalid present estimates do not fall through to the area model. Canton ledger amounts without a declared currency remain currency-unknown. Never export an unqualified `share` or treat modeled gain as consideration paid. |
 | V17 | **Resolved as a distinct, source-qualified relationship, 2026-10-20.** (M3, 2026-10-22: the entries are published agreements, grouped by their qualified input parcel references; named-plan folding is gone, see **Market / contest**.) Contest membership is transitive connectivity through shared recognized parcel references `(sourceId, snapshotId, parcelId)` carried from explicit binding descriptors. Equal raw IDs from different sources, snapshots, or unknown sources do not join contests. Named-plan membership folds explicitly listed proposals even when source identity is unknown, while its land-reference union contains only qualified references. Contest IDs hash the qualified reference tuple; unqualified contests receive proposal-scoped IDs. This can link disjoint proposals on one qualified parcel and does not group site-only proposals by intersection. Market help states the grouping basis and that multiple proposals in a group can execute. The proposal comparison card labels declared-reference relations, qualifies its loaded-record scope and counts matches before limiting displayed rows. [contests](../backend/markets/contests.js): `groupByLand`, [market route](../backend/routes/markets.js), [reference comparison](../frontend/js/proposals/parcel-set-relations.js), [help](../frontend/index.html): Bets sheet | Preserve contest membership and declared-reference relations separately from “conflicts with”, “overlaps”, and “alternative to”. No geometric conflict relation is inferred or exported from these groupings. Current comparisons require the durable `cadastreParcelIds` declaration; derived `parcelSet` metadata alone is not an alternate record contract. |
-| V18 | **Cited discrepancies resolved, 2026-10-19.** The kind document describes the implemented enum, sale-offer consent boundary and independent structure category, while marking result reporting and sponsorship as planned. Its dated milestones remain historical. The site-binding header now describes the server’s site-local operation frame. The lifecycle definition distinguishes creation defaults from Unknown reads. [kind document](../proposal-kinds.md), kind code, [binding header](../frontend/js/proposals/site-binding.js), [server](../backend/proposals/binding.js) | Source-checked against the executable definitions; keep documentation current with each related change. This resolves the specific audited discrepancies, not every historical design note in the repository. |
+| V18 | **Cited discrepancies resolved, 2026-10-19.** The kind document describes the implemented enum, sale-offer consent boundary and independent structure category, while marking result reporting and sponsorship as planned. Its dated milestones remain historical. The site-binding header now describes the server’s site-local operation frame. The lifecycle definition distinguishes creation defaults from Unknown reads. [kind document](proposal-kinds.md), kind code, [binding header](../frontend/js/proposals/site-binding.js), [server](../backend/proposals/binding.js) | Source-checked against the executable definitions; keep documentation current with each related change. This resolves the specific audited discrepancies, not every historical design note in the repository. |
 | V19 | **Named-plan scoring identity and materialization were conflated. Resolved for current-session scoring, 2026-10-19.** The old filter followed replacement ancestry and then measured the whole live fabric on member anchors. [Membership rules](../frontend/js/proposals/grain-score-rules.js) now require every verified unchanged member by exact published row identity, with no outside applied proposals. [Grain scoring](../frontend/js/proposals/grain-score.js) measures captured features after ground loading and rejects incomplete named-result geometry or a changed revision before inspection. | **Current contract:** Apply is enabled only when every unique named member is loaded and explicitly verified unchanged; it rechecks the API-qualified plan commitment and exact ordered row IDs after fetching the records, before materialization. Missing, changed, unverified or incomplete members block the whole plan rather than applying a subset. Scoring requires the exact named members, including when outsiders appear distant, and does not unapply anything automatically. The assessment describes current ground/runtime inputs and one fabric revision. Isolated evaluation in a mixed composition and historical reproducibility remain unimplemented capabilities, not guarantees of immutable plan membership. |
 
 | V20 | **Statutory authority is not a proposal decision kind.** The original audit found only deal/vote kinds; neither lifecycle nor local application expressed an instrument's authority, validity or conditional applicability. Atlas summaries and cached candidates also differ from authoritative permissions. kind code, [planning-rule audit](../docs/planning-rule-audit.md) | Protocol separation implemented 2026-10-19: `source-proposal.v1` keeps source authority/applicability/quality independent, while authored records pin `sourceReferences`. Existing provider storage remains authoritative; no owner consent, legal review or construction is inferred. Unknown legal conditions remain explicit; their interpretation and enforcement are not resolved by this display protocol. |
@@ -1736,3 +1736,251 @@ stopped and no full suite ran. A headed browser loaded the full
 51-design draft through the reference endpoint: 32 building designs and 812 road meshes were present,
 2D/3D shared the saved location, and no page errors were reported. These are local verification
 results, not evidence of deployment.
+
+### Shared-plan replacement must not replay unrelated designs (2026-10-24)
+
+The confirmed replacement branch called `rebuildAppliedFabric` over every applied design in the
+active city. An unrelated experimental record with a retired goal therefore aborted a new plan's
+replacement and appeared in its failure summary. The local branch now provisions the recorded
+ground of the incoming members and released rivals, then uses the existing transactional local
+materializer and spatial dependency closure. Unrelated applied records and their live output stay
+unchanged. A failure inside the affected scope still rolls the entire replacement back.
+
+The headless unit regression reproduced the original error in both cadastral and open-ground cases
+(2 failures, 72 unrelated cases skipped). The first 3-file targeted headless unit run passed 124/124.
+An additional 4-case targeted run passed 3 and failed one fixture assertion: a road on bare ground
+has no cadastral fabric piece. Moving that mixed road/park fixture onto surveyed ground made its
+output assertion meaningful; the final 3-file headless unit run passed 126/126. The first two headed
+Playwright cases reached the replacement but failed a fixture expectation: intentionally changing
+a published fixture's goal invalidates its CID lookup. After accounting for that fixture state,
+both headed cases passed at 390 px and 1280 px, including unchanged unrelated state, skip/cancel,
+reload and reference-only private import. No full suite ran and no run was stopped.
+
+
+### Parcel controls and icons, 2026-10-27
+
+Manual, Detect block and Custom site share one non-wrapping row in the parcel,
+formed-ground and multi-parcel contexts, including 320 px and 390 px viewports.
+Hosting cleanup removes the temporary Custom site button before another context opens.
+Design and Info use pen and information icons with translated accessible names and
+titles in both parcel and authored-site panels. Track uses a shared rails-and-sleepers
+SVG; station controls retain vehicle icons.
+
+Custom site is retained: it authors a working boundary for parks, squares, blocks and
+synthetic row/detached plots, including partial parcels and open ground. Selecting or
+reshaping it does not author replacement parcel borders. Freeform building dragging
+does not replace those uses. This preserves the existing Site and Parcel layout
+contracts; no glossary definition, record schema or editing operation changes.
+MCP parity: this is presentation only. Existing site geometry and granular design
+edits remain available through the existing MCP authoring and editing operations.
+
+Verification: targeted headless unit `click-stack-panel.test.js` passed 36/36.
+Targeted headed Playwright batches passed 4/4 (selection hosting), 5/5 (icon tabs
+and shared controls), 2/2 (Track rendering and real tool launch), and 1/1 (final
+narrow layout). Those are 12 executions of six distinct cases. All runs completed;
+none stopped and no full suite ran. The Track capture and 320 px control-row capture
+were visually inspected. No deployment was performed.
+
+
+**Custom site clarification and Freeform icon, 2026-10-27:** “building layout” above
+means the area supplied to a generator, not an individual building footprint. Block
+receives the drawn area as one synthetic superparcel. Row/Detached first slice it
+into temporary plots along a frontage, then pass those plots to their generators.
+The distinction from cadastral source boundaries does not remove the conceptual
+overlap with parcel layout: those temporary plots act as working parcels. Freeform
+uses the area as initial context/guide and can be placed elsewhere. Whether to retire
+the building branch of Custom site or route it through parcel layout remains an open
+product decision; no such flow was removed in this change. Park/square area drawing
+still has a separate use.
+
+Freeform now uses an irregular pentagon outline through the shared SVG mask styling.
+Two targeted headed Playwright cases passed (narrow palette and Track tool launch);
+the 320 px Freeform capture was visually inspected. Both completed, none stopped,
+and no full or unit suite was run for this reversible visual change. MCP parity:
+no authored operation, schema or geometry changed; existing editing primitives apply.
+
+
+### Direct area editing and panel follow-up, 2026-10-27
+
+Park, square and lake editors open with the whole area and its exterior vertices
+immediately draggable. Edges insert vertices; selected vertices can be removed down
+to the shared triangle minimum. Shared validation rejects crossing boundaries and
+invalid hole placement. The shared history restores boundary and furniture together.
+Moving the whole area refreshes its vertex handles so the next reshape cannot restore
+an old position. Standalone area shapes are editable; building-surroundings child
+editors retain their fixed parent-owned boundary. Geometry completion controls use
+Done, including the road drawing and cross-section editors.
+
+The parcel/selection Custom site shortcuts are removed with the user's approval.
+Draw a site remains available for starting an area on open ground. Advanced contextual
+site commands remain in the command palette under the existing palette-only policy.
+A drawn outline is temporary; applying its park/square/lake forms ground and consumes
+that authored area. The starting-site movement warning is removed; explicitly trying
+to enable an incompatible lock still explains the refusal. Freeform land review is
+live, while final binding is verified on save.
+
+Parcel/site tabs share their row equally. Design actions use two equal columns and
+equal-height rows. The latest pill decision supersedes the earlier removal request:
+Overview has one row ordered type, Applied, Draft/Published, with state icons and
+consistent badge size. Author matches the parcel-count label typography. Details
+scrolls within the desktop host and through the phone sheet; the nested phone scroll
+trap is removed and its action buttons remain reachable. Unknown ownership is shown
+inline as Owner: Unknown. The formed-ground note now says only Ground formed by the
+applied design. Selection guidance explicitly names manual and automatic block selection.
+
+MCP parity: existing granular structure geometry edits update the site and share the
+same furniture-to-ground scoping used by the browser. Targeted edits verify preserved
+source content, updated area and removal of furniture outside a reshaped park/square.
+No tool/schema addition is needed. The editing guide and current vocabulary describe
+the occupied-area relationship.
+
+Targeted verification before the requested full headed run: 220 unique headless unit
+checks across 13 files and 13 distinct headed browser cases passed after repairs.
+The headless unit run ledger is: 5/5 placement; 50/50 parcel/ground commands; 29/29
+structure/MCP; 39/39 with palette checks; 21/22 action-template checks (obsolete Share
+title expectation), then 22/22; 75/75 actions/guides/corridor checks; 18/18 formed
+reference checks, 6/6 unknown ownership, 18/18 shortened formed-note check; 65/66 final
+geometry/palette/mobile checks (obsolete Finish caption expectation), then 27/27 mobile.
+The headed run ledger is: 3/7 (stale moved handles and three normalized-site fixture
+assertions), 6/6 after repairs; 4/5 and 2/3 while isolating the phone scroll trap;
+1/1 after that repair; final panel batch 3/3. All completed; none stopped. Pure
+geometry and browser checks include Undo, insertion/removal, save/reload, lock refusal,
+MCP editing, equal actions/pills, tab sizing, and the fixed-boundary surroundings child.
+A bounded gpt-6-luna worker handled the independent copy/layout/template changes.
+
+The user then explicitly authorized committing all work in the worktree, including
+other sessions' pending planning hover, locale and glossary edits, followed by the
+full headed suite, repairs and deployment. Full-run and release results follow separately.
+
+
+### Full headed release verification, 2026-10-27
+
+The explicitly requested all-worktree commit is `dceddc791`, including the pending
+planning hover regression, shared locale copy and glossary changes from the other
+session. A frozen Git export of that commit ran the full configured Chromium suite
+headed, with one background worker and traces disabled (failure screenshots retained).
+The complete run finished in 42.8 minutes: **888 passed, 23 failed, 0 skipped** across
+911 tests in 198 files. It was not stopped. This is the initial-run result, not an
+all-green full-suite claim for later repairs.
+
+Repairs were verified while the frozen run continued:
+
+- Two PostgreSQL ledger cases lacked the local database setting in the frozen export.
+  Only DATABASE_URL was supplied after verifying the local geodata target and ledger
+  schema; both headed cases passed. No application change was required.
+- Mobile plan sections now retain natural height in the shared sheet, so agreement
+  chips do not paint beneath the following section. One headed case passed, retaining
+  the overflow and click assertions.
+- The phone Designs sheet compacts its plan-file utility row and excess spacing,
+  preserving the unchanged card-space and first/last action reachability requirements.
+  The capacity and list-layout headed checks both passed.
+- Agreement sheets now use the shared resize height instead of a fixed half-screen
+  override. The headed resize and persisted-layout case passed.
+- Explicit government road-plan Apply now honors its existing ignoreZoomGuard flag;
+  automatic application keeps the zoom guard. The headed tools/apply case passed.
+  This is a viewport gate correction, not a new authored operation; existing MCP
+  road geometry authoring is independent of browser zoom and needs no schema change.
+- Browser fixtures now complete the real Freeform placement click, await committed
+  canonical records, supply isolated-selector i18n, use accessible icon-tab identifiers,
+  and assert current copy, footprint-only land and source-backed fixed frontage.
+  Geometry, ring, persistence, identity, theme, reachability and retired-flow assertions
+  remain in place. The GeoJSON spec passed all seven headed cases; the four isolated
+  type-pill cases and each remaining failing case passed headed rechecks.
+
+After all repairs, the failed test names were collected and listed before execution:
+exactly **23 tests in 15 files**. This combined targeted headed recheck completed with
+**23 passed, 0 failed, 0 skipped** in 1.2 minutes. No second full suite was run.
+The separate feature-inventory check passed: 106 commands indexed across 73 spec files.
+The production static build also succeeded. Targeted headless unit checks reached
+221 distinct passing cases; no full unit suite was run.
+
+The remote development branch had advanced with separate diagnostics work. The
+release uses its own branch for the verified worktree, preserving the divergent
+remote branch. Production build metadata is the source of truth for the deployed
+commit and build number.
+
+### October 27: 3D background paving coverage
+
+At the reported Arlington view, zooming out reproduced triangular patches of background
+paving through cadastral parcel surfaces. Both surfaces were at z=0; the background's
+polygon offset did not consistently resolve their competing depths. Parcels now mark their
+visible pixels in a separate stencil bit, and the background draws afterwards only outside
+parcel and road coverage. This reuses the existing road stencil and five ground draw calls;
+it adds no geometry or camera-movement rebuilds. Fine paving tint also fades as slabs become
+smaller than a pixel to reduce zoom shimmer.
+
+Verification: 49 targeted headless unit cases in five files passed, plus three targeted headed
+Playwright cases. The new WebGL case checked 2,525 parcel pixels across five camera distances
+and three headings: zero background leaks with coverage masking, versus 324 leaks in its
+diagnostic offset-only control on the same GPU. The application cases exercised actual zoom,
+parcel selection/material restoration and returning to 2D. The real local Arlington scene
+was also checked with all 61 loaded parcel meshes using the coverage mask. No timing claim
+is made: the host was busy during verification.
+
+MCP parity: this changes display coverage and texture sampling only. Authored land, geometry,
+records and edit operations are unchanged; existing MCP inspection/editing needs no schema
+or discovery change. No glossary definition changes.
+
+Separate observation retained for investigation: one direct 3D reload captured an empty
+parcel snapshot before source parcels arrived, and the warm scene reused that snapshot.
+Rebuilding after source load restored the 61 parcel surfaces. This is distinct from the
+reproduced coplanar-paving leak; a general source-readiness fix is not included here.
+
+### October 27: Permitted sample-building dice
+
+The Arlington reproduction pinned One-family. The former dice changed only a housing-type
+counter, so that pin left the drawn volume unchanged. Per the user's decision, the dice now
+varies a sample building's footprint and height inside the selected configuration's volumes.
+Housing type, per-parcel pins, source frontage and the outer bound remain fixed. Source records
+and authored designs are not changed. The shared 2D/3D realization clips samples against exact
+source polygons, including holes and concavities, and caps stepped parts at one sample roof.
+
+Both dice use the shared busy-control ring until their resulting frame is ready, including
+reduced-motion mode. Rebuilt Permitted meshes receive shadow flags immediately rather than
+waiting for the periodic sun sweep, removing the apparent shadow on/off behavior.
+
+Verification: 67 targeted headless unit checks in five files passed. The targeted headed
+Permitted and Proposed browser cases both passed, covering fixed housing type, changed sample,
+busy lifetime, unchanged source data, independent role variations and immediate shadow flags.
+An older proposed-map unit fixture was corrected to supply the current proposedVariation key;
+its existing geometry and immutability assertions are retained. The real local Arlington
+check changed its sample, retained One-family and source volumes, restored the dice control,
+and immediately retained all seven shadow-casting sample meshes. No full suite was run.
+
+MCP parity: this is a display-only realization, not a new authored editing operation. Source
+inspection and editable authored geometry remain available through the existing parcel-context
+and design inspect/edit primitives; source constraints and their records are unchanged. No MCP
+schema or service change is needed. The current display meaning is recorded in the glossary.
+
+### October 27: parcel inspection, compact layout actions and agreement identity
+
+Selected-parcel Info rows now temporarily emphasize the corresponding selected parcel on
+pointer hover, click, keyboard focus or Enter/Space. Other selected parcels retain their normal
+highlight. Moving away, switching tabs, collapsing/closing the panel or clearing the selection
+restores that style; no selection membership or camera state changes.
+The parcel presenter also preserves the temporary style when source data refreshes.
+
+Removed the repeated Permitted map-height labels. Those numbers described the shown form's
+height and repeated where parcels shared the same limit; source heights and inspector metrics
+remain available. Parcel-layout actions now use content-sized rows. The Share explanation
+spans both columns below the buttons instead of occupying a button cell and stretching every row.
+
+The reported published Sydney agreement reproduced a false design-changed warning. Its design
+arrived with the correct CID, but browser storage deleted an explicit null building rule from
+the authored parameters. The local copy then hashed differently from the agreement's pinned
+design. Storage now preserves authored null values. The regression failed before the fix and
+passes through import, save and reload afterwards. Reopening the same published agreement in
+the same previously affected browser re-imported the correct content and displayed Matches the
+map with Before / after available; no device-data reset or publication was performed.
+
+Verification: 645 targeted headless unit checks in nine files passed, including the presenter
+matrix. Three targeted headed
+browser cases passed together: actual Info-row interaction and restoration without selection
+or camera changes; compact two-column parcel-layout actions at 390px; and Permitted geometry,
+inspection, dice, shadows and reload with no map-height labels. The Info-row case passed again
+with presenter-refresh coverage after the visual check caught a repaint. No full suite was run.
+
+MCP parity: the inspection and layout changes affect presentation only, and preserving explicit
+null fixes the browser's identity round trip to match the existing canonical JSON contract.
+MCP already retains those source values. Existing design inspect/edit primitives and source
+geometry remain unchanged; no new operation or schema is needed. No glossary definition changes.

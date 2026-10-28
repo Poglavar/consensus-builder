@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "264",
+  "name": "Brest, Belarus",
+  "point": [
+    52.1048113105078,
+    23.7148717432269
+  ],
+  "bindings": [
+    {
+      "appCityId": "brest_by",
+      "runtimeConfig": {
+        "id": "brest_by",
+        "wupCityCode": "264",
+        "label": "Brest, Belarus",
+        "currency": {
+          "locale": "ru-BY",
+          "code": "BYN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            52.1048113105078,
+            23.7148717432269
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            52.1048113105078,
+            23.7148717432269
+          ],
+          "fallbackDataset": [
+            23.7148717432269,
+            52.1048113105078
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "by-nca-public-cadastral-map",
+          "idPrefix": "BY-NCA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "National Cadastral Agency of Belarus / State Property Committee"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "by-nca-public-cadastral-map",
+      "name": "Belarus National Cadastral Agency public cadastral map — registered land plots",
+      "adapter": "vector-tiles",
+      "endpoint": "https://map.nca.by/tiles/294b19b9-3259-44e5-b8e8-000000000001/{z}/{x}/{y}.pbf",
+      "viewerUrl": "https://map.nca.by/",
+      "catalogueUrl": "https://map.nca.by/",
+      "layer": "294b19b9-3259-44e5-b8e8-000000000001",
+      "zoom": 14,
+      "extent": 4096,
+      "identityKind": "native",
+      "idField": "cad_num",
+      "idType": "string",
+      "parcelNumberField": "cad_num",
+      "idPrefix": "BY-NCA-",
+      "outFields": [
+        "cad_num"
+      ],
+      "geometryMode": "interior-only",
+      "idLookupBounds": [
+        27.57568359375,
+        53.891391285752874,
+        27.59765625,
+        53.90433815627469
+      ],
+      "queryMode": "bounded-tiles",
+      "countryCode": "BY",
+      "metricSrid": 32635,
+      "maxConcurrentQueries": 1,
+      "maxTiles": 9,
+      "maxFeatures": 4000,
+      "maxBboxKm2": 4,
+      "cityIds": [
+        "brest_by"
+      ],
+      "defaultForCity": true,
+      "operator": "National Cadastral Agency of Belarus",
+      "attribution": "National Cadastral Agency of Belarus / State Property Committee",
+      "licenceNote": "Public anonymous cadastral-map access observed. No explicit reuse licence established; legal/reuse terms and update/status semantics remain follow-up.",
+      "scope": "Bounded central Minsk: only unchanged whole polygons strictly inside z14 tile 9447/5268. Tile-edge parcels are unresolved and excluded from this explicit subset. No citywide or full-tile completeness claim.",
+      "capabilities": {
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "unchanged-whole-interior-polygons",
+        "explicitAbsence": false
+      },
+      "browserTransport": "relay",
+      "sourcePurpose": "cadastral-parcels",
+      "responseSrid": 4326,
+      "metricSridByCity": {
+        "brest_by": 32634
+      }
+    }
+  ]
+}

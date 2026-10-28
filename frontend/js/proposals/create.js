@@ -1,5 +1,15 @@
 // proposals/create.js — extracted from proposals.js (behavior-preserving relocation).
 
+function buildingSiteFromSelection(ids, resolve, siteFromFeatures) {
+    const features = ids.map(id => resolve(id));
+    if (!features.length || features.some(feature => !feature?.geometry)) {
+        throw new Error('Could not resolve the selected land for the building site.');
+    }
+    const site = siteFromFeatures(features);
+    if (!site) throw new Error('Could not construct the selected building site.');
+    return site;
+}
+
 // The city a proposal belongs to, as a city id ('zagreb', 'new_york', …) — the same form the
 // backend's `proposal.city` column stores. Recorded on the proposal itself so its origin survives
 // being uploaded from elsewhere, opened from a link, or copied.
@@ -29,7 +39,7 @@ function updateCreateProposalSubmitState() {
         btn.textContent = createsReplacement
             ? window.ProposalLineage.forkSubmitLabel(window.pendingProposalReplacementSource.proposalId,
                 { fork: window.pendingProposalReplacementSource.fork === true })
-            : (t ? t('modal.createProposal.submit', 'Create Proposal') : 'Create Proposal');
+            : (t ? t('modal.createProposal.submit', 'Create Design') : 'Create Design');
     }
     if (hint) {
         hint.textContent = !hasGeometry ? 'Please add a geometry first.' : '';
@@ -167,7 +177,7 @@ function generateDefaultProposalDescription(proposalType, proposalName) {
 
     // Generate simpler description without repeating the name
     // The name is shown separately in the proposal details
-    const fallback = `A new ${localizedType} proposal by ${authorName}`;
+    const fallback = `A new ${localizedType} design by ${authorName}`;
     return t
         ? t('modal.createProposal.defaultDescription', fallback, { type: localizedType, author: authorName })
         : fallback;
@@ -216,7 +226,7 @@ async function createProposal() {
     };
     const selectedTool = getSelectedProposalTool();
     if (!selectedTool) {
-        showProposalAlertMessage('select_a_proposal_goal_before_creating_a_proposal', 'Select a proposal goal before creating a proposal.');
+        showProposalAlertMessage('select_a_proposal_goal_before_creating_a_proposal', 'Select a design goal before creating a design.');
         return;
     }
     if (goalRequiresGeometry(selectedTool) && !proposalGeometrySubmitted) {
@@ -249,6 +259,12 @@ async function createProposal() {
     }
     if (!description) {
         showProposalAlertMessage('please_enter_a_description', 'Please enter a description.');
+        return;
+    }
+    const recipient = window.proposalFacets;
+    if (!window.validateProposalRecipient(recipient || {})) {
+        showProposalAlertMessage('recipient_required', t('modal.createProposal.recipientRequired', 'Enter a recipient name or address.'));
+        document.getElementById('proposalRecipientAddress')?.focus();
         return;
     }
 
@@ -285,7 +301,7 @@ async function createProposal() {
         if (siteContext) finalParcelIds = [];
         console.debug('[createProposal] Final parcel IDs:', finalParcelIds.length, 'parcels', siteContext ? '(site-first)' : '');
         if (finalParcelIds.length === 0 && !siteContext) {
-            showProposalAlertMessage('no_parcels_selected_please_select_parcels_before_creating_a_proposal', 'No parcels selected. Please select parcels before creating a proposal.');
+            showProposalAlertMessage('no_parcels_selected_please_select_parcels_before_creating_a_proposal', 'No parcels selected. Please select parcels before creating a design.');
             return;
         }
 
@@ -441,10 +457,13 @@ async function createProposal() {
         if (proposalMainType === 'Purchase' && (selectedTool === 'park' || selectedTool === 'square' || selectedTool === 'lake')) {
             const kind = selectedTool;
             let structureGeometry = null;
+            // An uploaded model travels with the draft's structure (vocabulary.md "Structure design").
+            const publishingDraft = publishingDraftId ? window.proposalDraftStore?.getDraft?.(publishingDraftId) : null;
+            const structureModel = window.ProposalApplyStructures?.structureModelFields?.(publishingDraft?.editorPayload?.structureProposal) || null;
             try {
                 if (siteContext) {
                     // A site-first structure is its authored geometry (the draft), else its site.
-                    const draft = publishingDraftId ? window.proposalDraftStore?.getDraft?.(publishingDraftId) : null;
+                    const draft = publishingDraft;
                     const authored = draft?.editorPayload?.structureProposal?.geometry || draft?.editorPayload?.geometry || null;
                     structureGeometry = authored || (siteContext.site.coordinates.length === 1
                         ? { type: 'Polygon', coordinates: siteContext.site.coordinates[0] } : siteContext.site);
@@ -458,7 +477,8 @@ async function createProposal() {
             proposal.structureProposal = {
                 kind,
                 geometry: structureGeometry || null,
-                blockName: formatParcelSelectionLabel(selectedLiveParcelIds)
+                blockName: formatParcelSelectionLabel(selectedLiveParcelIds),
+                ...(structureModel || {})
             };
         }
 
@@ -559,7 +579,7 @@ async function createProposal() {
             } else {
                 if (!corridor) {
                     const tCorridor = getCorridorI18nHelper();
-                    showProposalAlertMessage('corridor_missing', tCorridor('statusMissing', 'Open the constrained corridor tool and click Done before creating a road/track proposal.'));
+                showProposalAlertMessage('corridor_missing', tCorridor('statusMissing', 'Open the constrained corridor tool and click Done before creating a road/track design.'));
                     return;
                 }
 
@@ -636,7 +656,7 @@ async function createProposal() {
             || (typeof pendingBuildingProposalContext !== 'undefined' ? pendingBuildingProposalContext : null);
         if (selectedTool === 'buildings' || selectedTool === 'row' || selectedTool === 'parcelBased' || selectedTool === 'single') {
             if (!pendingBuildingContext || !pendingBuildingContext.parcelIds || !pendingBuildingContext.parcelIds.length) {
-                showProposalAlertMessage('building_design_missing', 'Open the building/urban rule tool and click Done before creating this proposal.');
+                showProposalAlertMessage('building_design_missing', 'Open the building/urban rule tool and click Done before creating this design.');
                 setProposalModalInteractivity(true);
                 setProposalCreateButtonState(false);
                 return;
@@ -653,7 +673,7 @@ async function createProposal() {
             const buildingFeatures = rawBuildings.map(safeClone).filter(f => f && f.geometry);
 
             if (!buildingFeatures.length) {
-                showProposalAlertMessage('building_design_missing', 'Open the building/urban rule tool and click Done before creating this proposal.');
+                showProposalAlertMessage('building_design_missing', 'Open the building/urban rule tool and click Done before creating this design.');
                 setProposalModalInteractivity(true);
                 setProposalCreateButtonState(false);
                 return;
@@ -664,6 +684,13 @@ async function createProposal() {
                 : (selectedTool === 'row' ? 'row' : (selectedTool === 'parcelBased' ? 'parcelBased' : 'block'));
 
             const designParcelIds = pendingBuildingContext.parcelIds.map(String).filter(Boolean);
+
+            // The editor's selected live land, including parcels without generated buildings,
+            // is the authored site. Never infer the site from the generated footprints.
+            if (!proposal.site && selectedTool !== 'single') {
+                const resolve = window.resolveDesignParcelFeature || (id => liveFabric.get(id));
+                proposal.site = buildingSiteFromSelection(designParcelIds, resolve, window.__siteDraft.siteFromFeatures);
+            }
 
             proposal.primaryType = 'Urban Rule';
             proposal.goal = selectedTool === 'single' ? 'single' : 'buildings';
@@ -687,11 +714,11 @@ async function createProposal() {
                 && typeof window.__cadastreAncestry?.declarationCoveringFootprint === 'function') {
                 proposal.cadastreParcelIds = window.__cadastreAncestry.declarationCoveringFootprint(proposal);
             }
-            const blockMassing = resolvedTypology === 'block'
-                ? safeClone(pendingBuildingContext.blockMassing)
+            const ruleMassing = (resolvedTypology === 'block' || resolvedTypology === 'row')
+                ? safeClone(pendingBuildingContext.ruleMassing)
                 : null;
-            if (blockMassing?.geometry) proposal.geometry.blockMassing = blockMassing;
-            else delete proposal.geometry.blockMassing;
+            if (ruleMassing?.geometry) proposal.geometry.ruleMassing = ruleMassing;
+            else delete proposal.geometry.ruleMassing;
             // Building surroundings belong to the same authored design for every typology.
             const groundSurface = safeClone(pendingBuildingContext.groundSurface);
             if (groundSurface) proposal.geometry.groundSurface = groundSurface;
@@ -738,9 +765,9 @@ async function createProposal() {
         // Persist the proposal (this device only; publishing is a separate step)
         console.debug('[createProposal] Saving proposal to storage');
         const saveStartTime = performance.now();
-        updateStatus('Saving proposal...');
+        updateStatus('Saving design...');
         if (!waitingPopupVisible) {
-            showProposalWaitingPopup('Saving proposal...');
+            showProposalWaitingPopup('Saving design...');
             waitingPopupVisible = true;
             setProposalModalDimmed(true);
         }
@@ -766,7 +793,7 @@ async function createProposal() {
         console.debug('[createProposal] Proposal save took:', (performance.now() - saveStartTime).toFixed(2), 'ms');
         if (proposalId === null) {
             hideWaitingPopupSafe();
-            updateStatus('Unable to save proposal.');
+            updateStatus('Unable to save design.');
             setProposalModalInteractivity(true);
             setProposalCreateButtonState(false);
             markDraftPublishFailed(Object.assign(new Error('Unable to save the proposal.'), { code: 'PROPOSAL_STORAGE_FAILED' }));
@@ -820,7 +847,7 @@ async function createProposal() {
         // Update proposal list if open
         updateProposalList();
 
-        updateStatus(`Proposal "${proposalType}" created successfully with ${proposal.cadastreParcelIds.length} parcels.`);
+        updateStatus(`Design "${proposalType}" created successfully with ${proposal.cadastreParcelIds.length} parcels.`);
 
         if (typeof multiParcelSelection !== 'undefined') {
             if (createdFromMultiSelect && multiParcelSelection.isActive) {
@@ -840,8 +867,8 @@ async function createProposal() {
             const applied = await ProposalManager.applyProposal(proposalId);
             if (!applied) throw new Error('The saved proposal could not be derived from the cadastral fabric.');
         } catch (replayError) {
-            console.warn('[createProposal] Could not replay the saved proposal', replayError);
-            updateStatus('Proposal saved, but it could not be applied to the cadastral fabric.');
+            const diagnostic = window.AppDiagnostics?.report(replayError, { code: 'design-apply-failed', context: { surface: 'draft-editor' } });
+            updateStatus(diagnostic?.message || 'Design saved, but it could not be applied to the cadastral fabric.');
         }
 
         const openProposalDetails = () => {
@@ -862,10 +889,10 @@ async function createProposal() {
         openProposalDetails();
 
     } catch (error) {
-        console.error('Error creating proposal:', error);
         markDraftPublishFailed(error);
-        const fallback = t('alerts.messages.failed_to_create_proposal', 'Failed to create proposal.');
-        const message = (error && error.message) ? error.message : fallback;
+        const fallback = t('alerts.messages.failed_to_create_proposal', 'Failed to create design.');
+        const diagnostic = window.AppDiagnostics?.report(error, { code: 'planning-action-failed', context: { surface: 'draft-editor' } });
+        const message = diagnostic?.message || fallback;
         if (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') {
             window.showStyledAlert(message);
         } else {

@@ -39,7 +39,7 @@ export function stageMcpPackage(output) {
     }
     walk(resolve(repo, 'frontend/js'));
     walk(resolve(repo, 'frontend/vendor/noble-hashes-1.8.0'));
-    queue.push(resolve(repo, 'vocabulary.md'), resolve(repo, 'backend/routes/agent-recipe-schema.json'));
+    queue.push(resolve(repo, 'docs/vocabulary.md'), resolve(repo, 'backend/routes/agent-recipe-schema.json'));
     while (queue.length) visit(queue.shift());
     writeFileSync(resolve(destination, 'backend/package.json'), JSON.stringify({ type: 'module', private: true }, null, 2));
     writeFileSync(resolve(destination, 'package.json'), JSON.stringify({ name: 'urban-game-theory-mcp', version: '0.3.0', private: true,

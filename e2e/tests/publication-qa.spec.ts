@@ -102,7 +102,7 @@ async function publishBuildingCollection(page: import('@playwright/test').Page, 
     count + building.geometry.coordinates.reduce((ringCount: number, ring: any[]) => ringCount + ring.length, 0), 0);
   if (options.size === 'compact') expect(positions).toBeLessThan(1_000);
   else expect(positions).toBeGreaterThan(10_000);
-  expect(content.geometry).not.toHaveProperty('blockMassing');
+  expect(content.geometry).not.toHaveProperty('ruleMassing');
   expect(await page.evaluate(content => (window as any).DesignRecord.validate(content), content)).toEqual({ valid: true, errors: [] });
 
   const saved = await page.evaluate(id => {
@@ -142,8 +142,11 @@ for (const kind of ['road', 'track'] as const) {
     expect(bytes.toString('utf8')).toBe(canonicalJson(content));
     expect(indexed.body.cid).toBe(pin.body.cid);
     expect(cidOfObject(content)).toBe(indexed.body.cid);
-    expect(content).toMatchObject({ schema: 'design/v1', goal: 'road-track', site: null, geometry: null });
+    // The corridor polygon is the authored road land. It is stored as the design site as well as
+    // in the road payload, so later footprint edits have one durable land boundary to update.
+    expect(content).toMatchObject({ schema: 'design/v1', goal: 'road-track', geometry: null });
     expect(content.roadProposal.definition.polygon).toMatchObject({ type: 'Polygon' });
+    expect(content.site).toEqual(content.roadProposal.definition.polygon);
     expect(content.roadProposal.definition.metadata.isTrack).toBe(kind === 'track');
     expect(await page.evaluate(content => (window as any).DesignRecord.validate(content), content)).toEqual({ valid: true, errors: [] });
 

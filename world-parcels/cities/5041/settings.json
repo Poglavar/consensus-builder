@@ -59,7 +59,7 @@
           "attribution": "City of Polokwane Local Municipality GIS / Land Information Management / Polokwane Properties. Provider WGS84 output; complete returned polygon rings retained."
         },
         "buildings": {
-          "source": "overture-tiles"
+          "source": "osm"
         },
         "sidebar": {
           "disabledSections": [

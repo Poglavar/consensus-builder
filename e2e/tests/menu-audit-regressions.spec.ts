@@ -33,7 +33,7 @@ test('NYC coverage reports ground area and fits its dialog at desktop and phone 
   await waitForMapReady(page);
   await page.waitForFunction(() => (window as any).CadastralParcelRepository?.snapshot().boundsKeys.length > 0);
   await page.locator('#settings-button').click();
-  const data = page.locator('#settings-sheet details.accordion-section[data-section="data"]');
+  const data = page.locator('#settings-sheet details.accordion-section[data-section="advanced"]');
   if (!(await data.evaluate((details: HTMLDetailsElement) => details.open))) await data.locator(':scope > summary').click();
   await page.locator('#showParcelCoverageButton').click();
   const coverage = page.locator('#parcel-coverage-modal');
@@ -50,10 +50,7 @@ test('NYC coverage reports ground area and fits its dialog at desktop and phone 
 test('the NYC command palette respects building-source availability', async ({ mockApi: page }) => {
   await page.goto('/?city=new_york&reduceMotion=1', { waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
-  await page.locator('#settings-button').click();
-  const navigation = page.locator('#settings-sheet details.accordion-section[data-section="navigation"]');
-  if (!(await navigation.evaluate((details: HTMLDetailsElement) => details.open))) await navigation.locator(':scope > summary').click();
-  await page.locator('#command-palette-button').click();
+  await page.keyboard.press('Control+k');
   const palette = page.locator('.command-palette-backdrop');
   await expect(palette).toBeVisible();
   await palette.locator('input').fill('Show buildings');
@@ -77,10 +74,7 @@ test('OSM block refresh and browsing remain palette commands when parcel blocks 
   await page.evaluate(() => {
     for (const id of ['urban-blocks-refresh', 'urban-blocks-browse']) (document.getElementById(id) as HTMLButtonElement).disabled = false;
   });
-  await page.locator('#settings-button').click();
-  const navigation = page.locator('#settings-sheet details.accordion-section[data-section="navigation"]');
-  if (!(await navigation.evaluate((details: HTMLDetailsElement) => details.open))) await navigation.locator(':scope > summary').click();
-  await page.locator('#command-palette-button').click();
+  await page.keyboard.press('Control+k');
   const palette = page.locator('.command-palette-backdrop');
   for (const label of ['Refresh this area', 'Browse blocks']) {
     await palette.locator('input').fill(label);
@@ -116,7 +110,7 @@ test('Activity Clear scope restores the Actors chooser, event count and run prov
   await expect(modal.locator('#activity-panel-status')).toContainText('2 events');
 });
 
-test('downloading a foreign-city design from Activity discloses the reload and lets the visitor stay', async ({ mockApi: page }) => {
+test('downloading a foreign-city design from Activity keeps the current map and parks the imported design', async ({ mockApi: page }) => {
   const cid = fileDesign(pageIndex(page), {
     schema: 'design/v1', goal: 'park', title: 'London park', description: null, author: 'Remote author',
     city: 'london', site: { type: 'Polygon', coordinates: [[[-0.128, 51.507], [-0.127, 51.507], [-0.127, 51.508], [-0.128, 51.508], [-0.128, 51.507]]] }, toleranceM: null, geometry: null, origin: null,
@@ -129,15 +123,15 @@ test('downloading a foreign-city design from Activity discloses the reload and l
   await expect(openDesign).toBeVisible();
   await openDesign.click();
   await page.getByRole('button', { name: 'Download', exact: true }).click();
-  const prompt = page.locator('.city-switch-dialog');
-  await expect(prompt).toBeVisible();
-  await expect(prompt).toContainText('London');
-  await expect(prompt).toContainText('reloads');
-  await prompt.getByRole('button', { name: /^Stay in Zagreb/ }).click();
-  await expect(prompt).toBeHidden();
+  await expect.poll(() => page.evaluate(cid => (window as any).DesignSync.localCopyOf(cid)?.published?.cid, cid)).toBe(cid);
+  await expect(page.locator('.city-switch-dialog')).toHaveCount(0);
   expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('zagreb');
   expect(await page.evaluate(() => (window as any).getCurrentUserAgent().id)).toBe(actorId);
-  expect(await page.evaluate(cid => (window as any).DesignSync.localCopyOf(cid), cid)).toBeNull();
+  expect(await page.evaluate(cid => {
+    const w = window as any;
+    const design = w.DesignSync.localCopyOf(cid);
+    return { city: design.city, applied: w.isApplied(design), cid: w.DesignRecord.cidOf(design) };
+  }, cid)).toEqual({ city: 'london', applied: false, cid });
 });
 
 for (const width of [1180, 390]) test(`Designs Browse keeps filtered draft and published cards reachable at ${width}px`, async ({ mockApi: page }) => {
@@ -221,10 +215,7 @@ test('phone menus fit the viewport and dismiss; Designs separates publication fr
 test('an explicit World view failure explains recovery and leaves the map usable', async ({ mockApi: page }) => {
   await openCity(page);
   await page.evaluate(() => { (window as any).WorldView.open = async () => { throw new Error('Fixture: WebGL unavailable'); }; });
-  await page.locator('#settings-button').click();
-  const navigation = page.locator('#settings-sheet details.accordion-section[data-section="navigation"]');
-  if (!(await navigation.evaluate((details: HTMLDetailsElement) => details.open))) await navigation.locator(':scope > summary').click();
-  await page.locator('#world-view-button').click();
+  await page.locator('.map-search__chip').click();
   await expect(page.locator('#ephemeral-message-container')).toContainText('World view could not start.');
   await expect(page.locator('#map')).toBeVisible();
   await page.locator('#settings-button').click();

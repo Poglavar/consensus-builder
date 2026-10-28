@@ -184,14 +184,23 @@ function corridorRecord(key, segments, { ids = null, profiles = null, isTrack = 
 
 // Boot the node editor on fakes, with `selected` as the selected road. Edits apply in place to the
 // stored definitions; Cmd/Ctrl+Z is delivered through the window keydown listener the editor binds.
-function bootNodeEditor(proposals, selected, { choice = null } = {}) {
+function bootNodeEditor(proposals, selected, { choice = null, mode = '2d', active3D = false } = {}) {
     const map = fakeMap();
     const byKey = new Map(proposals.map(proposal => [proposal.proposalId, proposal]));
-    const calls = { updates: [], statuses: [], prompts: [] };
+    const calls = { updates: [], statuses: [], prompts: [], zooms: [], preloads: 0 };
     const keydown = [];
+    const listeners = new Map();
 
     installGlobal('window', globalThis);
-    installGlobal('addEventListener', (type, handler) => { if (type === 'keydown') keydown.push(handler); });
+    installGlobal('addEventListener', (type, handler) => {
+        if (type === 'keydown') keydown.push(handler);
+        listeners.set(type, handler);
+    });
+    installGlobal('document', { readyState: 'complete', addEventListener() {} });
+    installGlobal('__mapModeState', { desired: mode, pending: false });
+    installGlobal('__pending3DMode', false);
+    installGlobal('isThreeModeActive', () => active3D);
+    installGlobal('ensureRoadOperationBuildings', () => { calls.preloads++; });
     installGlobal('removeEventListener', () => {});
     installGlobal('map', map);
     installGlobal('L', fakeLeaflet());
@@ -205,7 +214,7 @@ function bootNodeEditor(proposals, selected, { choice = null } = {}) {
     installGlobal('corridorIsTrack', value => value.isTrack === true);
     installGlobal('CorridorGeometry', corridorGeometry);
     installGlobal('GeometryEditHistory', geometryEditHistory);
-    installGlobal('RoadEditingZoom', { enter() {}, exit() {} });
+    installGlobal('RoadEditingZoom', { enter: mode => calls.zooms.push(mode), exit() {} });
     installGlobal('updateStatus', message => { calls.statuses.push(message); });
     installGlobal('showStyledChoice', async (message, choices) => {
         calls.prompts.push({ message, choices });
@@ -221,12 +230,17 @@ function bootNodeEditor(proposals, selected, { choice = null } = {}) {
 
     delete require.cache[roadNodeEditPath];
     require(roadNodeEditPath);
-    globalThis.refreshRoadNodeHandles();
 
     const handles = () => (map.layers.find(layer => layer.kind === 'group')?.layers || [])
         .filter(layer => layer.kind === 'marker' && layer.options.draggable);
     return {
         calls,
+        handles,
+        changeMode: (desired, active = desired !== '2d', pending = false) => {
+            globalThis.__mapModeState = { desired, pending };
+            active3D = active;
+            listeners.get('mapmodechange')();
+        },
         handleAt: (lat, lng) => handles().find(layer => layer.latLng.lat === lat && layer.latLng.lng === lng),
         undo: () => keydown.forEach(handler => handler({
             key: 'z', metaKey: true, target: { tagName: 'DIV' }, preventDefault() {}
@@ -240,6 +254,31 @@ function bootNodeEditor(proposals, selected, { choice = null } = {}) {
 const settle = () => new Promise(resolve => setImmediate(resolve));
 
 describe('node editor honesty', () => {
+    it.each(['model', 'photo'])('keeps selected road handles, editing zoom and preloads inactive in %s', mode => {
+        const editor = bootNodeEditor([corridorRecord('road-1', [[[0, 0], [0, 10]]])], 'road-1', { mode });
+        for (let i = 0; i < 5; i++) globalThis.refreshRoadNodeHandles();
+        expect(editor.handles()).toEqual([]);
+        expect(editor.calls.zooms).toEqual([]);
+        expect(editor.calls.preloads).toBe(0);
+    });
+
+    it('removes 2D handles as 3D starts loading and restores them only after returning to 2D', () => {
+        const editor = bootNodeEditor([corridorRecord('road-1', [[[0, 0], [0, 10]]])], 'road-1');
+        expect(editor.handles()).toHaveLength(2);
+        expect(editor.calls.preloads).toBe(1);
+        editor.changeMode('model', false, true);
+        expect(editor.handles()).toEqual([]);
+        editor.changeMode('model');
+        expect(editor.calls.preloads).toBe(1);
+        // Even with 2D intent, the hidden Leaflet editor waits until the 3D view has exited.
+        editor.changeMode('2d', true);
+        expect(editor.handles()).toEqual([]);
+        editor.changeMode('2d', false);
+        expect(editor.handles()).toHaveLength(2);
+        expect(editor.calls.preloads).toBe(2);
+        expect(editor.calls.zooms).toEqual(['nodes', 'nodes']);
+    });
+
     it('undoes a junction drag in one step, putting back every road the junction carried', async () => {
         const roads = [
             corridorRecord('road-1', [[[0, 0], [0, 5], [0, 10]]]),

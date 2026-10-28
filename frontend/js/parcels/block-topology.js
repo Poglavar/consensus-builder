@@ -13,6 +13,8 @@
 (function attachParcelBlockTopology(global) {
     'use strict';
 
+    const MAX_BLOCK_PARCELS = 100;
+
     const adjacency = () => global.__parcelAdjacency
         || (typeof require === 'function' ? require('./parcel-adjacency.js') : null);
 
@@ -336,7 +338,8 @@
     // Breadth-first block growth from `seedId`. Every member must satisfy `isInside(id)` (in the
     // app: lies wholly inside ground that is loaded); the first one that does not makes the block
     // invalid and stops the fill, because a block with a member running out of known ground is
-    // not known to be complete.
+    // not known to be complete. Stop before admitting a 101st distinct parcel: missing road
+    // barriers must not turn one block detection into a walk across a whole city.
     function growBlock({ seedId, neighborsOf, isInside }) {
         const seed = String(seedId);
         const result = { ids: [], isValid: true, invalidId: null, invalidReason: null };
@@ -351,6 +354,9 @@
             for (const neighbour of neighborsOf(id)) {
                 const neighbourId = String(neighbour);
                 if (queued.has(neighbourId)) continue;
+                if (queued.size >= MAX_BLOCK_PARCELS) {
+                    return { ...result, isValid: false, invalidId: neighbourId, invalidReason: 'parcel_limit_exceeded' };
+                }
                 if (!isInside(neighbourId)) {
                     return { ...result, isValid: false, invalidId: neighbourId, invalidReason: 'not_fully_visible' };
                 }
@@ -362,6 +368,7 @@
     }
 
     const api = {
+        MAX_BLOCK_PARCELS,
         DEFAULTS,
         barrierBoundaryDistance,
         barrierContains,

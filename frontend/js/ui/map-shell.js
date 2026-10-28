@@ -1,8 +1,8 @@
 // ui/map-shell.js — the floating map shell that replaced the left sidebar: the Layers/Settings
 // buttons (top-right), the Proposals/Bets/Activity dock and the sheets they
-// open. A sheet is a popover anchored to its button on desktop and
-// a bottom sheet under 768px; the dock's own three (.map-sheet--dock) share one frame centred on the
-// dock, and fill the screen above the bar on a phone. One is open at a time, Esc and an outside click close it. The controls
+// open. Right-screen panels use the shared inspection column on desktop; other sheets are
+// popovers anchored to their buttons. Bets and Activity share a wider frame centred on the dock.
+// Phones use the shared sheet controls. One is open at a time; Escape closes it. The controls
 // inside the sheets are the old sidebar's, moved with their ids and handlers (see UI-REWORK.md).
 // placePopover is pure and exported for backend/test/frontend-ui-commands.test.js.
 (function (root, factory) {
@@ -135,7 +135,7 @@
 
     function positionSheet(sheet, trigger) {
         const props = ['--sheet-top', '--sheet-bottom', '--sheet-left', '--sheet-right', '--sheet-max-height'];
-        if (!trigger || isMobile() || sheet.id === 'proposals-sheet') {
+        if (!trigger || isMobile() || sheet.classList.contains('right-screen-panel')) {
             props.forEach(prop => sheet.style.removeProperty(prop));
             return;
         }
@@ -411,29 +411,11 @@
         updateMapViewportInsets();
     }
 
-    // The Proposals button carries the same count as the "Proposals List (N)" button inside its
-    // sheet. That button's count is written in one place (list-ui.js updateShowProposalsButton) as
-    // data-i18n-params, so the badge follows that attribute rather than asking a second time.
+    // Lists contains three record types; a design-only count would mislabel its contents.
     function syncProposalsBadge() {
-        const source = doc.getElementById('showProposalsButton');
         const badge = doc.getElementById('proposals-button-count');
-        const button = doc.getElementById('proposals-button');
-        if (!source || !badge) return;
-        let count = 0;
-        try {
-            const params = JSON.parse(source.getAttribute('data-i18n-params') || '{}');
-            count = Number.isFinite(Number(params.count)) ? Number(params.count) : 0;
-        } catch (_) { count = 0; }
-        badge.textContent = String(count);
-        const ready = source.getAttribute('data-proposal-count-ready') !== '0';
-        const opened = source.getAttribute('data-proposal-list-opened') === '1';
-        badge.hidden = !ready;
-        badge.classList.toggle('is-unopened', ready && count > 0 && !opened);
-        if (button) {
-            button.setAttribute('aria-label', ready
-                ? t('mapShell.proposalsCount', `Proposals (${count})`, { count })
-                : t('mapShell.proposals', 'Proposals'));
-        }
+        if (badge) badge.hidden = true;
+        doc.getElementById('proposals-button')?.setAttribute('aria-label', t('lists.title', 'Lists'));
     }
 
     function watchProposalsBadge() {

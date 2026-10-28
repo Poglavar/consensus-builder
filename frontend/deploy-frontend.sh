@@ -99,35 +99,40 @@ for p in paths:
 PY
 echo "🆕 Cache-bust token: $BUILD_ID"
 
+# build-static.cjs minifies every bundle with esbuild, a backend devDependency it resolves from
+# backend/ upwards, and stops when it is missing. This deploy-only clone has no backend install (a full
+# one is ~600 MB), so install just the version backend/package-lock.json locks into the clone's own
+# node_modules (gitignored, so reset --hard keeps it), and only when the installed one differs.
+ESBUILD_LOCKED=$(node -p "require('$REMOTE_REPO/backend/package-lock.json').packages['node_modules/esbuild'].version")
+ESBUILD_INSTALLED=$(node -p "try { require('$REMOTE_REPO/node_modules/esbuild/package.json').version } catch (error) { '' }")
+if [ "$ESBUILD_INSTALLED" != "$ESBUILD_LOCKED" ]; then
+    echo "📦 Installing esbuild $ESBUILD_LOCKED for bundle minification (found: ${ESBUILD_INSTALLED:-none})"
+    npm install --prefix "$REMOTE_REPO" --no-save --no-package-lock --no-audit --no-fund "esbuild@$ESBUILD_LOCKED"
+fi
+
 # Build immutable production-only classic-script bundles from the freshly reset, metadata-stamped
 # source tree. The builder writes a staged copy and never mutates the checked-out frontend.
 STAGING_DIR=$(mktemp -d "${TMPDIR:-/tmp}/cb-frontend-static.XXXXXX")
 trap 'rm -rf "$STAGING_DIR"' EXIT
 node "$REMOTE_REPO/frontend/build-static.cjs" "$STAGING_DIR" "$REMOTE_REPO/frontend"
 
-# Back up current docroot, then prune old ones. Without the prune this leaked a
-# full ~25 MB copy per deploy forever: by 2026-08-15 there were 222 backups
-# eating 4.4 GB on a disk that was 95% full.
-# The timestamp format sorts lexicographically, so newest-first + skipping the
-# first N leaves exactly the stale ones. `sort -r | tail -n +N` is POSIX;
-# `head -n -N` would be shorter but is GNU-only and fails on macOS.
-KEEP_BACKUPS="${KEEP_BACKUPS:-3}"
+# Keep exactly one backup: the deployment that is live right now. Copy it, then delete every
+# older backup. Unbounded backups once filled the disk (222 copies, 4.4 GB by 2026-08-15).
 if [ -d "$DOCROOT" ] && [ -n "$(ls -A "$DOCROOT" 2>/dev/null)" ]; then
-    BACKUP="${DOCROOT}_backup_$(date +%Y%m%d_%H%M%S)"
-    cp -r "$DOCROOT" "$BACKUP"; echo "💾 Backup: $BACKUP"
-
     # Match only our own timestamped backups, never $DOCROOT itself.
-    STALE=$(ls -d "${DOCROOT}"_backup_* 2>/dev/null \
-        | grep -E "^${DOCROOT}_backup_[0-9]{8}_[0-9]{6}$" \
-        | sort -r | tail -n +"$((KEEP_BACKUPS + 1))")
-    if [ -n "$STALE" ]; then
-        echo "$STALE" | xargs rm -rf
-        echo "🧹 Pruned $(echo "$STALE" | wc -l | tr -d ' ') old backup(s), keeping the newest ${KEEP_BACKUPS}"
+    OLD_BACKUPS=$(ls -d "${DOCROOT}"_backup_* 2>/dev/null \
+        | grep -E "^${DOCROOT}_backup_[0-9]{8}_[0-9]{6}$" || true)
+    BACKUP="${DOCROOT}_backup_$(date +%Y%m%d_%H%M%S)"
+    rsync -a "$DOCROOT/" "$BACKUP/"
+    echo "💾 Backup: $BACKUP ($(du -sh "$BACKUP" | cut -f1))"
+    OLD_BACKUPS=$(echo "$OLD_BACKUPS" | grep -v -x -F "$BACKUP" || true)
+    if [ -n "$OLD_BACKUPS" ]; then
+        echo "$OLD_BACKUPS" | xargs rm -rf
+        echo "🧹 Deleted $(echo "$OLD_BACKUPS" | wc -l | tr -d ' ') older backup(s)"
     fi
 fi
 
 # Sync frontend/ -> docroot (server-local rsync). Keep dev/deploy artefacts out of the docroot.
-# HMLR routing releases are published by the separate metadata job and must survive frontend deploys.
 mkdir -p "$DOCROOT"
 # Two passes so HTML lands last. nginx serves ?build=deploy-N assets as immutable for a year
 # (backend/nginx/urbangametheory.xyz.nginx.conf); if the new index.html went live before the new
@@ -137,13 +142,11 @@ mkdir -p "$DOCROOT"
 rsync -a \
     --exclude='*.html' \
     --exclude='.git' --exclude='.gitignore' --exclude='node_modules' --exclude='.DS_Store' \
-    --exclude='/data/hmlr/' \
     --exclude='deploy-frontend.sh' --exclude='rollback-frontend.sh' \
     --exclude='Dockerfile' --exclude='.env' --exclude='.deploy-build-counter' \
     "$STAGING_DIR/" "$DOCROOT/"
 rsync -a --delete \
     --exclude='.git' --exclude='.gitignore' --exclude='node_modules' --exclude='.DS_Store' \
-    --exclude='/data/hmlr/' \
     --exclude='deploy-frontend.sh' --exclude='rollback-frontend.sh' \
     --exclude='Dockerfile' --exclude='.env' --exclude='.deploy-build-counter' \
     "$STAGING_DIR/" "$DOCROOT/"

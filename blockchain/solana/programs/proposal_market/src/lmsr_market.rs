@@ -16,8 +16,11 @@ use crate::{
     SIDE_NO, SIDE_YES, STATUS_ACTIVE, STATUS_CANCELLED, STATUS_EXECUTED, STATUS_EXPIRED,
 };
 
-/// LmsrMarket PDA: ["lmsr", agreement] for kind 0, ["lmsr", recipe_hash] for kind 1.
+/// LmsrMarket PDA: ["lmsr", agreement, creator] for kind 0, ["lmsr_recipe", recipe_hash,
+/// creator] for kind 1.
 pub const LMSR_SEED: &[u8] = b"lmsr";
+/// Kind 1 market PDAs use a separate namespace and bind the creator.
+pub const LMSR_RECIPE_SEED: &[u8] = b"lmsr_recipe";
 /// LMSR positions reuse the Position layout under their own prefix, so they can never collide
 /// with a parimutuel position: ["lmsr_position", market, owner, [side]].
 pub const LMSR_POSITION_SEED: &[u8] = b"lmsr_position";
@@ -79,7 +82,7 @@ pub struct LmsrMarket {
 }
 
 impl LmsrMarket {
-    /// The second PDA seed: the agreement for kind 0, the recipe hash for kind 1.
+    /// The identity seed: agreement for kind 0, recipe hash for kind 1.
     pub fn seed_key(&self) -> [u8; 32] {
         if self.kind == KIND_PROPOSAL {
             self.proposal.to_bytes()
@@ -117,15 +120,21 @@ pub fn lmsr_obligation(q_yes: u64, q_no: u64, outcome: u8) -> u64 {
 }
 
 /// Kind 0 settlement policy (lmsr-market.md "Cancellation: decided VOID, with a refinement to
-/// confirm"): Executed → YES, Expired → NO, Cancelled → VOID per the 2026-10-12 decision
-/// (streamline B2). The doc's open alternative, NO with a cancellation notice period, is a change
-/// to the Cancelled arm only. None: not terminal, so only the deadline plus grace can settle it.
-pub fn proposal_outcome(status: u8) -> Option<u8> {
+/// confirm"): Executed → YES only when its valid on-chain time is no later than close, otherwise
+/// NO; Expired → NO; Cancelled → VOID per the 2026-10-12 decision (streamline B2). The doc's open
+/// alternative, NO with a cancellation notice period, is a change to the Cancelled arm only.
+/// Active settles NO after the deadline plus grace.
+pub fn proposal_outcome(status: u8, executed_at: i64, closes_at: i64, grace_ends_at: i64, now: i64) -> Result<Option<u8>> {
     match status {
-        STATUS_EXECUTED => Some(SIDE_YES),
-        STATUS_EXPIRED => Some(SIDE_NO),
-        STATUS_CANCELLED => Some(OUTCOME_VOID),
-        _ => None,
+        STATUS_EXECUTED => {
+            require!(executed_at > 0 && executed_at <= now, MarketError::InvalidProposalAccount);
+            Ok(Some(if executed_at <= closes_at { SIDE_YES } else { SIDE_NO }))
+        }
+        STATUS_EXPIRED => Ok(Some(SIDE_NO)),
+        STATUS_CANCELLED => Ok(Some(OUTCOME_VOID)),
+        STATUS_ACTIVE if now >= grace_ends_at => Ok(Some(SIDE_NO)),
+        STATUS_ACTIVE => Ok(None),
+        _ => err!(MarketError::InvalidProposalAccount),
     }
 }
 
@@ -178,9 +187,13 @@ fn pay_from_vault<'info>(
     token_program: &Program<'info, Token>,
     amount: u64,
 ) -> Result<()> {
-    let key = market.seed_key();
     let bump = [market.bump];
-    let seeds: &[&[u8]] = &[LMSR_SEED, key.as_ref(), &bump];
+    let identity = market.seed_key();
+    let seeds: &[&[u8]] = if market.kind == KIND_PROPOSAL {
+        &[LMSR_SEED, identity.as_ref(), market.creator.as_ref(), &bump]
+    } else {
+        &[LMSR_RECIPE_SEED, identity.as_ref(), market.creator.as_ref(), &bump]
+    };
     token::transfer(
         CpiContext::new_with_signer(
             token_program.to_account_info(),
@@ -443,13 +456,10 @@ pub(crate) fn handle_resolve_lmsr(ctx: Context<ResolveLmsr>) -> Result<()> {
         require_keys_eq!(ctx.accounts.proposal.key(), market.proposal, MarketError::InvalidProposalAccount);
         require_keys_eq!(ctx.accounts.schema.key(), market.schema, MarketError::WrongEvidenceSchema);
         if market.kind == KIND_PROPOSAL {
-            let status = read_subject(&ctx.accounts.proposal, Some(&market.proposal))?.status;
-            match proposal_outcome(status) {
+            let agreement = read_subject(&ctx.accounts.proposal, Some(&market.proposal))?;
+            match proposal_outcome(agreement.status, agreement.executed_at, market.closes_at, market.grace_ends_at(), now)? {
                 Some(outcome) => Settlement::without_evidence(outcome),
-                None => {
-                    require!(now >= market.grace_ends_at(), MarketError::GraceNotElapsed);
-                    Settlement::without_evidence(SIDE_NO)
-                }
+                None => return err!(MarketError::GraceNotElapsed),
             }
         } else {
             settle_from_evidence(market, &ctx.accounts.schema, ctx.remaining_accounts, now)?
@@ -654,7 +664,7 @@ pub struct CreateLmsrMarket<'info> {
         init,
         payer = creator,
         space = 8 + LmsrMarket::INIT_SPACE,
-        seeds = [LMSR_SEED, proposal.key().as_ref()],
+        seeds = [LMSR_SEED, proposal.key().as_ref(), creator.key().as_ref()],
         bump
     )]
     pub market: Box<Account<'info, LmsrMarket>>,
@@ -687,7 +697,7 @@ pub struct CreateLmsrExternalMarket<'info> {
         init,
         payer = creator,
         space = 8 + LmsrMarket::INIT_SPACE,
-        seeds = [LMSR_SEED, recipe_hash.as_ref()],
+        seeds = [LMSR_RECIPE_SEED, recipe_hash.as_ref(), creator.key().as_ref()],
         bump
     )]
     pub market: Box<Account<'info, LmsrMarket>>,
@@ -937,10 +947,28 @@ mod tests {
     }
 
     #[test]
-    fn settles_kind_0_from_the_proposal_status() {
-        assert_eq!(proposal_outcome(STATUS_EXECUTED), Some(SIDE_YES));
-        assert_eq!(proposal_outcome(STATUS_EXPIRED), Some(SIDE_NO));
-        assert_eq!(proposal_outcome(STATUS_CANCELLED), Some(OUTCOME_VOID));
-        assert_eq!(proposal_outcome(STATUS_ACTIVE), None);
+    fn settles_kind_0_execution_only_when_execution_is_by_close() {
+        let grace_ends_at = CLOSES_AT + 100;
+        assert_eq!(proposal_outcome(STATUS_EXECUTED, CLOSES_AT - 1, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(SIDE_YES));
+        assert_eq!(proposal_outcome(STATUS_EXECUTED, CLOSES_AT, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(SIDE_YES));
+        assert_eq!(proposal_outcome(STATUS_EXECUTED, CLOSES_AT + 1, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(SIDE_NO));
+    }
+
+    #[test]
+    fn kind_0_execution_requires_a_present_valid_nonfuture_timestamp() {
+        let grace_ends_at = CLOSES_AT + 100;
+        assert!(proposal_outcome(STATUS_EXECUTED, 0, CLOSES_AT, grace_ends_at, grace_ends_at).is_err());
+        assert!(proposal_outcome(STATUS_EXECUTED, -1, CLOSES_AT, grace_ends_at, grace_ends_at).is_err());
+        assert!(proposal_outcome(STATUS_EXECUTED, grace_ends_at + 1, CLOSES_AT, grace_ends_at, grace_ends_at).is_err());
+    }
+
+    #[test]
+    fn kind_0_terminal_and_active_statuses_keep_their_outcomes() {
+        let grace_ends_at = CLOSES_AT + 100;
+        assert_eq!(proposal_outcome(STATUS_EXPIRED, 0, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(SIDE_NO));
+        assert_eq!(proposal_outcome(STATUS_CANCELLED, 0, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(OUTCOME_VOID));
+        assert_eq!(proposal_outcome(STATUS_ACTIVE, 0, CLOSES_AT, grace_ends_at, grace_ends_at - 1).unwrap(), None);
+        assert_eq!(proposal_outcome(STATUS_ACTIVE, 0, CLOSES_AT, grace_ends_at, grace_ends_at).unwrap(), Some(SIDE_NO));
+        assert!(proposal_outcome(255, 0, CLOSES_AT, grace_ends_at, grace_ends_at).is_err());
     }
 }

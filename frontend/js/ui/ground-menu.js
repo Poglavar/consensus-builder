@@ -55,7 +55,8 @@
     function runAction(action, facts) {
         if (!facts) throw new Error(`GroundMenu: ${action} needs ground facts`);
         const station = model.STATION_ACTIONS[action];
-        if (station) return win.startTransitStationPlacement(station);
+        if (station === 'bus') return win.startTransitStationPlacement(station);
+        if (station === 'track') return win.chooseTrackStationType();
         const runner = RUNNERS[action];
         if (!runner) throw new Error(`GroundMenu: unknown action ${action}`);
         return runner(facts);

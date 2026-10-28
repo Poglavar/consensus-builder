@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6058",
+  "name": "Ulyanovsk, Russia",
+  "point": [
+    54.3000327102264,
+    48.3371699285129
+  ],
+  "bindings": [
+    {
+      "appCityId": "ulyanovsk",
+      "runtimeConfig": {
+        "id": "ulyanovsk",
+        "wupCityCode": "6058",
+        "label": "Ulyanovsk, Russia",
+        "currency": {
+          "locale": "ru-RU",
+          "code": "RUB"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            54.3000327102264,
+            48.3371699285129
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            54.3000327102264,
+            48.3371699285129
+          ],
+          "fallbackDataset": [
+            48.3371699285129,
+            54.3000327102264
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ru-ulyanovsk-reestr54-cadastral",
+          "idPrefix": "RU-REESTR54-ULYANOVSK-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "reestr54.ru independent cadastral viewer; EGRN context; one observed Ulyanovsk parcel; wider city coverage unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ru-ulyanovsk-reestr54-cadastral",
+      "name": "Ulyanovsk reestr54 public cadastral viewer — one observed land parcel",
+      "operator": "reestr54.ru (independent public cadastral viewer)",
+      "adapter": "reestr54-bounded",
+      "adapterModule": "reestr54-source.js",
+      "endpoint": "https://kk.reestr54.ru/ulyanovskaya-oblast/",
+      "countryCode": "RU",
+      "cityIds": [
+        "ulyanovsk"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "RU-REESTR54-ULYANOVSK-",
+      "idField": "cad_num",
+      "parcelNumberField": "cad_num",
+      "outFields": [
+        "cad_num"
+      ],
+      "nativeCrs": "EPSG:3857",
+      "srsName": "EPSG:4326",
+      "metricSrid": 32639,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 1,
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": false,
+        "exactIds": true,
+        "queryBounds": true,
+        "queryPoint": true,
+        "point": true,
+        "exactId": true,
+        "geometry": "full-wgs84"
+      },
+      "coverage": {
+        "scope": "explicit-native-id-subset",
+        "citywide": false,
+        "nativeIds": [
+          "73:24:041902:363"
+        ],
+        "basis": "Accepted central Sobornaya Square parcel only. Runtime reads this declared finite subset live by exact cadastral number; viewport completeness applies only to this subset."
+      },
+      "scope": "One accepted central-city parcel; broader city coverage and completeness unverified. No authoritative absence.",
+      "licence": "Unresolved; anonymous access does not establish geometry reuse or redistribution permission.",
+      "licenceNote": "Operator/upstream custody, currentness and reuse permission remain second-pass follow-ups.",
+      "attribution": "reestr54.ru independent cadastral viewer; EGRN context; one observed Ulyanovsk parcel; wider city coverage unverified.",
+      "discovery": {
+        "purpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://kk.reestr54.ru/ulyanovskaya-oblast/",
+          "https://kk.reestr54.ru/static/pkk/js/mapinit16102025.js",
+          "https://kk.reestr54.ru/static/pkk/js/pkk04112025.js?v=20251210_5"
+        ],
+        "jurisdiction": {
+          "basis": "Ulyanovsk-region viewer; accepted Sobornaya Square city proof; cadastral district 73:24."
+        }
+      }
+    }
+  ]
+}

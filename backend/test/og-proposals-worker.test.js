@@ -75,6 +75,38 @@ describe('per-link previews of designs and agreements', () => {
         ]));
     });
 
+    it('describes an NGO consultation from its agreement, with a website, design count and stated deadline', async () => {
+        const fetchImpl = serve({ [`/agreements/${AGREEMENT}`]: { cid: AGREEMENT, content: {
+            title: 'Riverside consultation', rule: { electorate: 'community', binding: false },
+            consultation: { organiser: 'did:web:community.example:chapter' },
+            planCid: DESIGN, deadline: '2026-11-01T00:00:00.000Z',
+            description: 'A description that does not state the kind of agreement.'
+        } } });
+        const html = await (await get(`/agreements/${AGREEMENT}`)).text();
+        expect(meta(html, 'og:title')).toBe('Riverside consultation · Urban Game Theory');
+        expect(meta(html, 'og:description')).toBe('Nonbinding agreement by community.example about an urban plan. Closes 1 Nov 2026.');
+        expect(meta(html, 'twitter:description')).toBe(meta(html, 'og:description'));
+        expect(fetchImpl.mock.calls.map(([input]) => typeof input === 'string' ? input : input.url)).toEqual([
+            `https://site.example/agreements/${AGREEMENT}`, `${env.API_BASE}/agreements/${AGREEMENT}`
+        ]);
+    });
+
+    it.each([null, 'invalid deadline', '2026-02-30T00:00:00.000Z'])('does not invent an organiser or closing date for %s', async deadline => {
+        serve({ [`/agreements/${AGREEMENT}`]: { content: { rule: { electorate: 'community' }, planCid: DESIGN, deadline } } });
+        const html = await (await get(`/agreements/${AGREEMENT}`)).text();
+        expect(meta(html, 'og:title')).toBe('Nonbinding agreement · Urban Game Theory');
+        expect(meta(html, 'og:description')).toBe('Nonbinding agreement about an urban plan.');
+    });
+
+    it('reads a multi-chunk UnixFS agreement for its consultation card and image', async () => {
+        const cid = AGREEMENT.replace('bafkrei', 'bafybei');
+        const fetchImpl = serve({ [`/agreements/${cid}`]: { content: { rule: { electorate: 'community' }, planCid: DESIGN }, screenshotUrl: 'https://api.example/consultation.png' } });
+        const html = await (await get(`/agreements/${cid}`)).text();
+        expect(meta(html, 'og:description')).toBe('Nonbinding agreement about an urban plan.');
+        expect(fetchImpl).toHaveBeenCalledWith(`${env.API_BASE}/agreements/${cid}`);
+        expect((await get(`/agreements/${cid}/og-image.png`)).headers.get('location')).toBe('https://api.example/consultation.png');
+    });
+
     it('uses the full design list for metadata and image URL without fetching one design as representative', async () => {
         const second = 'bafkreid2zzzld3ix5ws24s3qn3ghwqsot7byya2sgrh4txbyjtwy2oabtq';
         const fetchImpl = serve({ [`/designs/${DESIGN}`]: { cid: DESIGN, content: { title: null } } });

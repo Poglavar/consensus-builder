@@ -54,8 +54,9 @@ const json = (value, status = 200) => new Response(JSON.stringify(value), { stat
 const rowOf = ({ cid, content }) => ({ cid, city: 'zagreb', title: content.title, author: content.author, content, onchain: null, status: 'active' });
 
 // The public API over a fake fetch: the index's pins, designs and agreements, and plain JSON reads.
-function fakeApi({ agreements = [] } = {}) {
+function fakeApi({ agreements = [], plans = [] } = {}) {
     const rows = new Map(agreements.map(item => [item.cid, rowOf(item)]));
+    const planRows = new Map(plans.map(plan => [plan.cid, plan]));
     const designRows = new Map();
     const calls = [];
     const fetchImpl = vi.fn(async (url, init = {}) => {
@@ -69,7 +70,14 @@ function fakeApi({ agreements = [] } = {}) {
             designRows.set(body.cid, { cid: body.cid, content: body.content, binding: { parcels: [{ parcelId: PARCEL }] } });
             return json(designRows.get(body.cid), 201);
         }
-        if (method === 'GET' && target.pathname.startsWith('/designs/')) return json(designRows.get(target.pathname.slice('/designs/'.length)));
+        if (method === 'GET' && target.pathname.startsWith('/designs/')) {
+            const row = designRows.get(target.pathname.slice('/designs/'.length));
+            return row ? json(row) : json({ error: 'not found', code: 'design-not-found' }, 404);
+        }
+        if (method === 'GET' && target.pathname.startsWith('/plans/')) {
+            const row = planRows.get(target.pathname.slice('/plans/'.length));
+            return row ? json(row) : json({ error: 'not found', code: 'http-404' }, 404);
+        }
         if (method === 'POST' && target.pathname === '/agreements') {
             rows.set(body.cid, rowOf(body));
             return json(rows.get(body.cid), 201);
@@ -105,8 +113,7 @@ describe('reads', () => {
             `/agreements?city=zagreb&design=${design.cid}&parcel=HR-335550-1%2F1&limit=7`,
             '/agent/activity?limit=12&source=live',
             '/agent/pledges/agreement-account',
-            '/oracle/events?subject=agreement-account&limit=3',
-            '/docs/agents.json'
+            '/oracle/events?subject=agreement-account&limit=3'
         ]);
         expect(tools.config).toMatchObject({
             apiBase: API, appOrigin: 'https://urbangametheory.xyz', cluster: 'solana-devnet', agreementProgram: AGREEMENT_PROGRAM_ID,
@@ -194,7 +201,8 @@ describe('publishing designs and agreements', () => {
 
     it('proposes an agreement with the designs it carries and answers the account its sponsor will mint', async () => {
         const agreement = agreementOf();
-        const api = fakeApi();
+        const poll = agreementOf({ sponsor: null, rule: communityRule([LENS]) });
+        const api = fakeApi({ plans: [agreement.plan, poll.plan] });
         const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl });
         const result = await tools.proposeAgreement({ agreement: agreement.content, designs: [{ content: design.content }], confirm: true });
         expect(result).toMatchObject({
@@ -203,15 +211,14 @@ describe('publishing designs and agreements', () => {
         expect(api.posts().map(call => [call.path, call.body.kind ?? null, call.body.cid])).toEqual([
             ['/pins', 'design', design.cid], ['/pins', 'agreement', agreement.cid], ['/agreements', null, agreement.cid]
         ]);
-        expect(api.posts()[2].body).toEqual({ cid: agreement.cid, content: agreement.content, designs: [{ cid: design.cid, content: design.content }] });
+        expect(api.posts()[2].body).toEqual({ cid: agreement.cid, content: agreement.content, plan: agreement.plan, designs: [{ cid: design.cid, content: design.content }] });
         // A poll without a sponsor has no account.
-        const poll = agreementOf({ sponsor: null, rule: communityRule([LENS]) });
         expect(await tools.proposeAgreement({ agreement: poll.content, confirm: true })).toMatchObject({ cid: poll.cid, sponsor: null, account: null, carried: [] });
     });
 
     it('refuses a stray or doubled carried design, an agreement not in its published form and a sponsor that is no wallet', async () => {
         const agreement = agreementOf();
-        const api = fakeApi();
+        const api = fakeApi({ plans: [agreement.plan] });
         const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl });
         const stray = designObject({ ...design.content, title: 'Another design', createdAt: design.content.authoredAt });
         await expect(tools.proposeAgreement({ agreement: agreement.content, designs: [{ content: stray.content }], confirm: true }))
@@ -287,18 +294,18 @@ describe('betting on an agreement', () => {
         const unsponsored = agreementOf({ sponsor: null, title: 'Unsponsored' });
         const api = fakeApi({ agreements: [agreement, unsponsored] });
         const readAgreementAccount = vi.fn(async () => state);
-        const ensureMarketAndStake = vi.fn(async () => ({ marketPda: 'market', created: false, stakeSignature: 'stake-tx' }));
-        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { readAgreementAccount, ensureMarketAndStake, sendAndConfirmPolling: vi.fn() } });
-        return { agreement, unsponsored, tools, readAgreementAccount, ensureMarketAndStake };
+        const buyAgreementShares = vi.fn(async () => ({ marketPda: 'market', signature: 'stake-tx' }));
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl, createConnection: () => ({}), dependencies: { readAgreementAccount, buyAgreementShares, sendAndConfirmPolling: vi.fn() } });
+        return { agreement, unsponsored, tools, readAgreementAccount, buyAgreementShares };
     }
 
     it('stakes on the agreement account once it is minted, Active and before its deadline', async () => {
         const account = Keypair.generate().publicKey.toBase58();
-        const { agreement, tools, readAgreementAccount, ensureMarketAndStake } = setup({ address: account, status: 'Active', deadline: future });
+        const { agreement, tools, readAgreementAccount, buyAgreementShares } = setup({ address: account, status: 'Active', deadline: future });
         const result = await tools.betOnAgreement({ agreementCid: agreement.cid, side: 'NO', amountUsdc: '0.07', confirm: true });
         expect(readAgreementAccount).toHaveBeenCalledWith(expect.anything(), { cid: agreement.cid, sponsor: AGENT });
-        expect(ensureMarketAndStake).toHaveBeenCalledWith(expect.objectContaining({ subject: account, side: 0, amountAtomic: 70000n, stakeMint: USDC_DEVNET }));
-        expect(result).toMatchObject({ agreementCid: agreement.cid, agreementAccount: account, side: 'no', stakeSignature: 'stake-tx' });
+        expect(buyAgreementShares).toHaveBeenCalledWith(expect.objectContaining({ subject: account, side: 0, amountAtomic: 70000n, stakeMint: USDC_DEVNET }));
+        expect(result).toMatchObject({ agreementCid: agreement.cid, agreementAccount: account, side: 'no', signature: 'stake-tx' });
     });
 
     it('refuses a bet it cannot place before signing anything', async () => {
@@ -313,7 +320,7 @@ describe('betting on an agreement', () => {
         await expect(executed.tools.betOnAgreement({ agreementCid: executed.agreement.cid, side: 'yes', amountUsdc: '0.01', confirm: true })).rejects.toThrow(/is Executed; its market takes no more stakes/);
         const lapsed = setup({ address: account, status: 'Active', deadline: 1_700_000_000 });
         await expect(lapsed.tools.betOnAgreement({ agreementCid: lapsed.agreement.cid, side: 'yes', amountUsdc: '0.01', confirm: true })).rejects.toThrow(/past its deadline/);
-        for (const run of [open, unminted, executed, lapsed]) expect(run.ensureMarketAndStake).not.toHaveBeenCalled();
+        for (const run of [open, unminted, executed, lapsed]) expect(run.buyAgreementShares).not.toHaveBeenCalled();
     });
 });
 

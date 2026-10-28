@@ -111,15 +111,16 @@
     // Zadnja upisana epoha, da autor koji crta pet stvari za 2045. ne bira 2045.
     // pet puta. Preživljava reload; "Bez epohe" je isto pamćenje (prazan string).
     const ZADNJA_KLJUC = 'cb.epoch.lastUsed';
+    const epochStorage = () => global.BrowserWorkspace?.storage || global.localStorage;
     function lastUsedEpoch() {
         try {
-            const raw = localStorage.getItem(ZADNJA_KLJUC);
+            const raw = epochStorage().getItem(ZADNJA_KLJUC);
             if (raw === '') return null;
             return parseEpochYear(raw);
         } catch (_) { return null; }
     }
     function rememberEpoch(year) {
-        try { localStorage.setItem(ZADNJA_KLJUC, year === null ? '' : String(year)); } catch (_) { }
+        try { epochStorage().setItem(ZADNJA_KLJUC, year === null ? '' : String(year)); } catch (_) { }
     }
 
     function t(key, fallback, params) {

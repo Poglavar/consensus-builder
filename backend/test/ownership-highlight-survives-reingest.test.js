@@ -25,7 +25,7 @@ beforeEach(() => {
     globalThis.getOwnershipType = label => (String(label).includes('GRAD') ? 'government' : 'private individual');
     globalThis.CityConfigManager = { getCurrentCityId: () => 'sibenik' };
     globalThis.LiveParcelFabric = {
-        snapshot: () => ({ revision }),
+        revision: () => revision,
         featureId: feature => feature?.properties?.parcelId || null,
         list: () => layers.map(layer => layer.feature),
         get: id => layers.find(layer => layer.feature.properties.parcelId === String(id))?.feature || null

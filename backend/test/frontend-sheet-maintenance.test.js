@@ -20,8 +20,13 @@ const indexHtml = fs.readFileSync(path.join(FRONTEND, 'index.html'), 'utf8');
 function sheetHtml(id) {
     const start = indexHtml.indexOf(`<section id="${id}"`);
     expect(start, id).toBeGreaterThan(-1);
-    const end = indexHtml.indexOf('</section>', start);
-    return indexHtml.slice(start, end);
+    const tags = /<\/?section\b[^>]*>/g; tags.lastIndex = start;
+    let depth = 0, match;
+    while ((match = tags.exec(indexHtml))) {
+        depth += match[0].startsWith('</') ? -1 : 1;
+        if (!depth) return indexHtml.slice(start, tags.lastIndex);
+    }
+    throw new Error('Unclosed sheet');
 }
 
 const MAINTENANCE = [
@@ -29,7 +34,6 @@ const MAINTENANCE = [
     { marker: 'clearLocalParcelData', section: 'parcels', command: 'parcels.clearLocal' },
     { marker: 'onclick="clearBlocks()"', section: 'blocks', command: 'blocks.clear' },
     { marker: 'onclick="clearDetectedRoads()"', section: 'roads', command: 'roads.clear' },
-    { marker: 'onclick="clearLocalProposalData()"', section: 'proposals', command: 'proposals.clearLocal' },
     { marker: 'id="wipeLocalDataButton"', section: 'data', command: 'settings.wipeLocalData' }
 ];
 
@@ -88,7 +92,7 @@ describe('Data & maintenance section', () => {
 
     it('offers the per-dataset clears in the palette only in debug mode, like the sheet', () => {
         // The sheet hides them outside debug mode (.btn-danger); the palette used to offer them anyway.
-        const clears = ['parcels.clearLocal', 'blocks.clear', 'roads.clear', 'proposals.clearLocal'];
+        const clears = ['parcels.clearLocal', 'blocks.clear', 'roads.clear'];
         const ctx = debug => ({ global: {}, isControlAvailable: () => true, isDebugMode: () => debug });
         const ids = debug => UiCommands.commandsFor('palette', ctx(debug)).map(c => c.id);
         for (const id of clears) {
@@ -108,17 +112,17 @@ describe('Data & maintenance section', () => {
         }
     });
 
-    it('keeps only the six Settings groups as accordions and leaves upkeep wrappers flat', () => {
+    it('keeps Advanced as the only accordion and leaves upkeep wrappers flat', () => {
         const settings = sheetHtml('settings-sheet');
         const groups = [...settings.matchAll(/<details\b([^>]*)>/g)].flatMap(([, attributes]) => {
             const classes = attributes.match(/\bclass="([^"]*)"/)?.[1].split(/\s+/) || [];
             const section = attributes.match(/\bdata-section="([^"]+)"/)?.[1];
             return classes.includes('accordion-section') && section ? [section] : [];
         });
-        expect(groups).toEqual(['navigation', 'appearance', 'data', 'info', 'game', 'diagnostics']);
+        expect(groups).toEqual(['advanced']);
         const upkeepWrappers = [...settings.matchAll(/<[^>]+data-section="(?:parcels|blocks|roads|proposals)"[^>]*>/g)]
             .map(match => match[0]);
-        expect(upkeepWrappers.length).toBeGreaterThanOrEqual(4);
+        expect(upkeepWrappers.length).toBeGreaterThanOrEqual(3);
         for (const wrapper of upkeepWrappers) expect(wrapper).not.toContain('accordion-section');
     });
 });
@@ -131,10 +135,15 @@ describe('runWithButtonBusyState', () => {
     const factory = new Function('window', `${source.slice(start, end)}\nreturn runWithButtonBusyState;`);
 
     function fakeButton(html) {
+        const classes = new Set();
+        const attrs = new Map();
         return {
             innerHTML: html,
             disabled: false,
-            classList: { contains: () => false, add() { }, remove() { } },
+            classList: { contains: name => classes.has(name), add: name => classes.add(name), remove: name => classes.delete(name) },
+            getAttribute: name => attrs.get(name) ?? null,
+            setAttribute: (name, value) => attrs.set(name, value),
+            removeAttribute: name => attrs.delete(name),
             focus() { },
             get textContent() { return this.innerHTML.replace(/<[^>]+>/g, ''); },
             set textContent(value) { this.innerHTML = String(value); }
@@ -148,11 +157,14 @@ describe('runWithButtonBusyState', () => {
         const button = fakeButton(markup);
         let during = null;
         await run(button, { key: 'common.busy.refreshing', fallback: 'Refreshing...' }, async () => {
-            during = { text: button.textContent, disabled: button.disabled };
+            during = { text: button.textContent, disabled: button.disabled,
+                spinner: button.classList.contains('cb-busy'), ariaBusy: button.getAttribute('aria-busy') };
         });
-        expect(during).toEqual({ text: 'Osvježavanje...', disabled: true });
+        expect(during).toEqual({ text: 'Osvježavanje...', disabled: true, spinner: true, ariaBusy: 'true' });
         expect(button.innerHTML).toBe(markup);
         expect(button.disabled).toBe(false);
+        expect(button.classList.contains('cb-busy')).toBe(false);
+        expect(button.getAttribute('aria-busy')).toBe(null);
     });
 
     it('falls back to English when the key is missing, and restores after a failure too', async () => {
@@ -165,6 +177,9 @@ describe('runWithButtonBusyState', () => {
         })).rejects.toThrow('boom');
         expect(during).toBe('Working...');
         expect(button.innerHTML).toBe(markup);
+        expect(button.disabled).toBe(false);
+        expect(button.classList.contains('cb-busy')).toBe(false);
+        expect(button.getAttribute('aria-busy')).toBe(null);
     });
 
     it('still takes a plain text label and an explicit restoreText', () => {
@@ -172,5 +187,18 @@ describe('runWithButtonBusyState', () => {
         const button = fakeButton(markup);
         run(button, 'Busy', () => { expect(button.textContent).toBe('Busy'); }, { restoreText: 'Done' });
         expect(button.innerHTML).toBe('Done');
+    });
+
+    it('restores existing disabled and busy state after a synchronous failure', () => {
+        const run = factory({});
+        const button = fakeButton(markup);
+        button.disabled = true;
+        button.classList.add('cb-busy');
+        button.setAttribute('aria-busy', 'true');
+        expect(() => run(button, 'Working...', () => { throw new Error('failed'); })).toThrow('failed');
+        expect(button.innerHTML).toBe(markup);
+        expect(button.disabled).toBe(true);
+        expect(button.classList.contains('cb-busy')).toBe(true);
+        expect(button.getAttribute('aria-busy')).toBe('true');
     });
 });

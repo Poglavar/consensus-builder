@@ -26,7 +26,7 @@
 
     const EXPLORE_CITY_ID = 'explore';
     const MIN_ZOOM = 3;
-    const MAX_ZOOM = 19;
+    const MAX_ZOOM = 23;
     // Precise search results must land close enough for parcels to load; globe points use zoom 19.
     const PARCEL_ZOOM = 17;
     const EXPLORE_ZOOM = 19;

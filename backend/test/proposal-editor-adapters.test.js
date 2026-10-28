@@ -94,7 +94,7 @@ describe('fresh building editor launch results', () => {
         let resolveOpen;
         const pendingOpen = new Promise(resolve => { resolveOpen = resolve; });
         const launcher = loadListUiFunction(launcherName, {
-            getCurrentParcelSelectionContext: () => ({ ids: ['p1'] }),
+            getCurrentParcelSelectionContext: () => ({ ids: ['p1', 'p2'] }),
             shouldStopFreshProposalForWholeBlock: async () => false,
             formatParcelSelectionLabel: () => 'Block A',
             getPendingBuildingSeedFor: () => null,
@@ -185,7 +185,7 @@ describe('proposal editor adapter registry', () => {
 
     it('has no editor for a goal it does not register', () => {
         expect(registry.get('merge')).toBeNull();
-        expect(registry.canEdit({ goal: 'merge' })).toEqual({ editable: false, reason: 'No editor adapter is registered for this proposal type.' });
+        expect(registry.canEdit({ goal: 'merge' })).toEqual({ editable: false, reason: 'No editor adapter is registered for this design type.' });
         expect(registry.list().map(entry => entry.key)).toEqual(expect.arrayContaining(['road-track', 'parcel-layout', 'park']));
     });
 
@@ -357,6 +357,19 @@ describe('corridor proposal adapter', () => {
         expect(view.width).toBe(12);
         expect(replacement.sourceProposalId).toBeUndefined();
         expect(replacement.proposalId).toBeUndefined();
+    });
+
+    it('updates an extended road site instead of retaining its source boundary and binding', () => {
+        const oldSite = turf.bboxPolygon([15.9, 45.8, 15.91, 45.81]).geometry;
+        const newSite = turf.bboxPolygon([15.9, 45.8, 15.92, 45.81]).geometry;
+        const source = { ...proposal, site: oldSite, binding: { coverage: 'complete' } };
+        source.roadProposal = { definition: { ...proposal.roadProposal.definition, polygon: oldSite } };
+        const draft = draftFor(corridorAdapter, source);
+        draft.editorPayload.definition.polygon = newSite;
+        const saved = corridorAdapter.serializeProposal(draft);
+        expect(saved.site).toEqual({ type: 'MultiPolygon', coordinates: [newSite.coordinates] });
+        expect(saved.binding).toBeUndefined();
+        expect(source.site).toEqual(oldSite);
     });
 
     it('reports a precise read-only reason for invalid corridors without centerlines', () => {
@@ -608,13 +621,26 @@ describe('building proposal adapters', () => {
             expect(saved.geometry.landTake).toBeUndefined();
             expect(saved.buildingProposal.takeWholeParcels).toBeUndefined();
         });
+        it('refuses surrounding ground outside a Freeform footprint-only take', () => {
+            const adapter = buildBuildingAdapter('single');
+            const draft = draftFor(adapter, freeform);
+            draft.editorPayload.context.landTake = freeform.geometry.buildings[0];
+            const site = turf.buffer(feature, 0.01, { units: 'kilometers' });
+            draft.fields.site = site.geometry;
+            draft.editorPayload.context.groundSurface = null;
+            expect(adapter.serializeProposal(draft).geometry.landTake).toEqual(feature);
+            const surface = turf.difference(site, feature);
+            expect(surface).toBeTruthy();
+            draft.editorPayload.context.groundSurface = { treatment: 'green', polygon: surface.geometry };
+            expect(() => adapter.serializeProposal(draft)).toThrow(/land take/i);
+        });
     });
 
     it('classifies invalid building data as read-only', () => {
         const adapter = buildBuildingAdapter('single');
         expect(adapter.canEdit({ goal: 'single', buildingProposal: { parameters: { height: 10 } } })).toEqual({
             editable: false,
-            reason: 'This building proposal does not contain valid footprint geometry.'
+            reason: 'This building design does not contain valid footprint geometry.'
         });
     });
 });
@@ -721,7 +747,7 @@ describe('saved single-building geometry edits', () => {
         const adapter = buildBuildingAdapter('buildings');
         const draft = draftFor(adapter, {
             proposalId: 'parametric-after-undo', goal: 'buildings', title: 'Block', cadastreParcelIds: ['parcel-a'],
-            geometry: { buildings: [oldFeature], blockMassing: oldFeature },
+            geometry: { buildings: [oldFeature], ruleMassing: oldFeature },
             buildingProposal: { typologyType: 'block', parameters: { mode: 'manual', typology: 'block', manualOuterRing: [[0, 0], [1, 0], [1, 1]] } }
         });
         draft.id = 'parametric-after-undo-draft';
@@ -1474,6 +1500,19 @@ describe('site-first drafts', () => {
     });
 });
 
+describe('ownership recipient draft validation', () => {
+    it.each(['', '   '])('refuses a specific recipient with empty text %j', recipientAddress => {
+        const adapter = registry.get('ownership-transfer');
+        const draft = draftFor(adapter, { proposalId: 'transfer', goal: 'ownership-transfer', title: 'Transfer',
+            cadastreParcelIds: ['parcel-1'], facets: { ownership: 'third-party', recipientScope: 'specific', recipientAddress } });
+        expect(adapter.validate(draft).errors.map(error => error.code)).toContain('recipient-required');
+        draft.fields.recipientAddress = 'Recipient';
+        expect(adapter.validate(draft).errors.map(error => error.code)).not.toContain('recipient-required');
+        draft.fields.recipientScope = 'any'; draft.fields.recipientAddress = '';
+        expect(adapter.validate(draft).errors.map(error => error.code)).not.toContain('recipient-required');
+    });
+});
+
 describe('free-placement binding handoff', () => {
     const SITE = {
         type: 'MultiPolygon',
@@ -1519,6 +1558,33 @@ describe('free-placement binding handoff', () => {
         const fn = loadProposalEditorShellFunction('rebindFreePlacementDraft', { global }, prefix);
         return { fn, bindingRequest, fetch };
     }
+
+    it.each(['park', 'square', 'lake'])('requires a verified binding on initial %s site creation', async kind => {
+        let draft;
+        const updateDraft = vi.fn((_id, patch) => {
+            draft = { ...draft, fields: { ...draft.fields, ...patch.fields },
+                editorPayload: { ...draft.editorPayload, ...patch.editorPayload } };
+            return draft;
+        });
+        const store = { createDraft: options => (draft = { id: 'fresh-site', ...options }),
+            getDraft: () => draft, updateDraft, validateDraft: () => draft };
+        const start = loadProposalEditorShellFunction('instantCreateStructureFromSite', {
+            global: { proposalDraftStore: store, buildLakeGraphicsFromGeometry: geometry => ({ geometry }) },
+            STRUCTURE_KIND_LABELS: { park: 'Park', square: 'Square', lake: 'Lake' }, currentCityId: () => 'london',
+            polygonOfSite: site => ({ type: 'Polygon', coordinates: site.coordinates[0] }),
+            structureGeometryIsOneArea: () => true, siteDraftFields: context => ({ site: context.site, binding: context.binding }),
+            instantCreateProposalFromDraft: id => id
+        });
+        await start(kind, { site: SITE, binding: { source: 'server:live-cadastre', coverage: 'unknown', parcels: [] } });
+        const unknown = loadRebind(store, { source: 'server:live-cadastre', coverage: 'unknown', parcels: [] });
+        await expect(unknown.fn(draft.id)).rejects.toThrow(/cannot verify/);
+        expect(updateDraft).not.toHaveBeenCalled();
+        expect(draft.editorPayload.placement.bindingStatus).toBe('pending');
+        const confirmed = loadRebind(store, { source: 'server:live-cadastre', coverage: 'none', parcels: [] });
+        await confirmed.fn(draft.id);
+        expect(draft.editorPayload.placement.bindingStatus).toBe('bound');
+        expect(draft.fields.binding.coverage).toBe('none');
+    });
 
     function shellFunctionSource(name) {
         const ast = parse(proposalEditorShellSource, { sourceType: 'script' });

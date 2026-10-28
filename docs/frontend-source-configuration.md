@@ -10,7 +10,9 @@ The frontend owns city settings and selects every source it requests. Backend se
 resources and validated adapters. They do not select a source from a city, a parcel-ID prefix or
 geographic coverage. A city on a saved record is caller metadata, not a backend routing instruction.
 
-`frontend/js/city-config.js` owns each city's parcel, building, planning and floor-evidence choices.
+`frontend/data/city-configs.js` owns each city's parcel, building, planning and floor-evidence choices.
+The browser loads `data/city-index.js` (every city, light) plus `data/cities/<id>.js` (the current city,
+full), generated from it: regenerate the browser files with `node scripts/build-city-files.mjs --run` after editing it.
 `CityConfigManager.getDataContext(geometry, cityId)` resolves the frontend context for a location;
 `getParcelContext` returns just the publication metadata and parcel source. Source choices made by
 the visitor are applied there too.
@@ -39,6 +41,10 @@ in [economic-sources.md](economic-sources.md).
   incomplete sources still fail; they do not become a `none` selection.
 - Planning reads name a source ID. `/planning/sources` lists services independently of consumer city;
   frontend `planning.sourceIds` controls the visible choices and their default order.
+  Atlas definitions live in `frontend/data/planning-sources.json`; parcel envelopes require an explicit
+  `parcelSourceId`. City entries can repeat a regional URL and archive profile: the adapter shares
+  each edition's loaded data. Public district GeoJSON and selected ZIP/CSV/XLSX members use
+  `product: "districts"`; Slices GeoJSON remains the default product. See [public Atlas sources](atlas-public-sources.md).
 - Custom source discovery does not require an app city. An optional caller-supplied `cityIds` label
   remains portable metadata for frontend settings, not backend membership or permission.
 - MCP reads require the parcel source explicitly. Building context/demolition measurement takes

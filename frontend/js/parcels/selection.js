@@ -7,7 +7,7 @@
 
     function currentPresentationScope() {
         const city = global.CityConfigManager?.getCurrentCityId?.() || 'default';
-        const revision = global.LiveParcelFabric?.snapshot?.().revision ?? 'none';
+        const revision = global.LiveParcelFabric?.revision?.() ?? 'none';
         return `${city}|${revision}`;
     }
 
@@ -137,13 +137,10 @@
             && global.proposalHighlightStyleOverride.has(layer)) {
             return;
         }
-        // Proposal-aware: only change border, not fill. Road parcels have a dark asphalt fill
-        // (#2b2b2b), so the default grey #666 hover border blends into it and reads as "no hover" —
-        // give roads a bright, high-contrast border instead. Normal (transparent-fill) parcels keep #666.
-        const isRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
+        // Hover uses the common yellow boundary while retaining the parcel's own surface fill.
         layer.setStyle({
             weight: 5,
-            color: isRoad ? '#00e5ff' : '#666',
+            color: global.MapHighlight.color,
             dashArray: '',
             // Do not change fillColor/fillOpacity
         });
@@ -177,9 +174,9 @@
             const layerBlockName = global.parcelBlockNameForId?.(parcelId) || null;
             if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
                 const parcelHighlightStyle = {
-                    fillColor: '#3388ff',
+                    fillColor: global.MapHighlight.color,
                     fillOpacity: 0.4,
-                    color: '#3388ff',
+                    color: global.MapHighlight.color,
                     weight: 2
                 };
                 layer.setStyle(parcelHighlightStyle);
@@ -226,9 +223,9 @@
         if (isMultiSelected) {
             // Restore multi-selection highlighting
             layer.setStyle({
-                fillColor: '#ff9800',
+                fillColor: global.MapHighlight.color,
                 fillOpacity: 0.6,
-                color: '#f57c00',
+                color: global.MapHighlight.color,
                 weight: 3
             });
             return;
@@ -243,7 +240,7 @@
             const layerBlockName = global.parcelBlockNameForId?.(parcelId) || null;
             const blocksShown = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
             if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
-                layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
+                layer.setStyle({ fillColor: global.MapHighlight.color, fillOpacity: 0.4, color: global.MapHighlight.color, weight: 2 });
             } else {
                 // Use getParcelStyle to preserve ownership highlighting
                 const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
@@ -405,7 +402,7 @@
                 const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
                 // Keep track fill; optionally bump stroke weight for selection
                 const trackStyle = styleFn ? styleFn(parcelId, selectedLayer, { isTrack: true }) : (global.trackStyle || {});
-                selectedLayer.setStyle({ ...trackStyle, weight: 4 });
+                selectedLayer.setStyle({ ...trackStyle, color: global.MapHighlight.color, opacity: 1, weight: 4 });
             } else {
                 selectedLayer.setStyle(global.selectedParcelStyle);
             }

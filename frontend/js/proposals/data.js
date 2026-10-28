@@ -23,13 +23,6 @@ function proposalManifest(nextProposalId) {
     });
 }
 
-// Where a READ-ONLY (secondary) tab parks work it is not allowed to write to the shared rows above.
-// Separate key on purpose: the primary tab's rows stay untouched, so nothing can be clobbered, and
-// the work survives the reload that used to destroy it. Per-city already, since PersistentStorage
-// opens one database per city.
-const PROPOSALS_RECOVERY_KEY = 'cadastre_proposals_recovery';
-const PROPOSALS_RECOVERY_VERSION = 2;
-
 // Copy-on-read view of the authored log for one mutation. Untouched records stay shared with the
 // store (no clone); a record is cloned the first time the mutation reads it; only touched ids are
 // published, persisted and restorable. Profiled on the Šibenik plan, cloning and re-serializing
@@ -60,17 +53,6 @@ class DraftRecordMap extends Map {
     [Symbol.iterator]() { return this.entries(); }
     // Raw entries without cloning: for the coordinator's publish and serialize steps only.
     rawEntries() { return Map.prototype.entries.call(this); }
-}
-
-// The parked recovery blob: every record of a read-only tab, with its id counter.
-function proposalRecoveryState(nextProposalId, records) {
-    return {
-        version: PROPOSALS_RECOVERY_VERSION,
-        nextProposalId: Number.isFinite(Number(nextProposalId)) && Number(nextProposalId) >= 0
-            ? Math.floor(Number(nextProposalId))
-            : 0,
-        records: Array.isArray(records) ? records : []
-    };
 }
 
 function declaredCadastreAnchors(parcelIds) {
@@ -183,47 +165,13 @@ function stripProposalCadastreAliases(record) {
     return record;
 }
 
-const proposalListTranslationsHydrated = new Set();
 
 // proposalStorage is the durable authored log, not a snapshot of the current browser's replay.
 // Persist only authored fields + applied/order state. Child ids, formation receipts, parent feature
 // snapshots and demolition scans are disposable materialization output and are regenerated from
 // cadastre on boot. Keeping them in the durable blob is how dead generations became prerequisites.
-// The configured city a record belongs to: the one it names, else — a legacy record naming none (or
-// the old placeholder 'city') — the one its parcels identify (parcels/route.js parcelIdToCityId), so
-// it is still placed. null only when neither says (a site-only record without a city).
-function proposalCityOf({ city, cadastreParcelIds } = {}) {
-    const root = typeof window !== 'undefined' ? window : globalThis;
-    const manager = root.CityConfigManager || null;
-    const named = manager && typeof manager.resolveCityId === 'function' ? manager.resolveCityId(city) : null;
-    if (named) return named;
-    const byParcel = typeof root.parcelIdToCityId === 'function' ? root.parcelIdToCityId : null;
-    for (const id of Array.isArray(cadastreParcelIds) ? cadastreParcelIds : []) {
-        // A Croatian id names the country, not a city (one countrywide cadastre): this city when it
-        // reads it, else the first city that does.
-        if (/^HR-/i.test(String(id)) && manager && typeof manager.getCitiesByParcelSource === 'function') {
-            const croatian = manager.getCitiesByParcelSource('oss-wfs').map(config => config.id);
-            const current = manager.getCurrentCityId();
-            if (croatian.length) return croatian.includes(current) ? current : croatian[0];
-        }
-        const placed = byParcel ? byParcel(String(id)) : null;
-        if (placed && manager && manager.resolveCityId(placed)) return placed;
-    }
-    return null;
-}
-
-// Refuses another city's record for this city's store: proposal-in-other-city, naming its city.
-function refuseForeignProposal(cityId) {
-    const manager = (typeof window !== 'undefined' && window.CityConfigManager) || null;
-    const foreignCity = manager && typeof manager.foreignCityFor === 'function' ? manager.foreignCityFor(cityId) : null;
-    if (!foreignCity) return;
-    const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper()
-        : (key, fallback, params = {}) => String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (m, name) => (name in params ? params[name] : m));
-    const label = id => t(`city.labels.${id}`, manager.getCityLabel(id));
-    throw Object.assign(new Error(t('proposals.inOtherCity', 'This proposal belongs to {{city}}, not {{current}}: open it there.',
-        { city: label(foreignCity), current: label(manager.getCurrentCityId()) })), { code: 'proposal-in-other-city', cityId: foreignCity });
-}
-
+// Import stores an authored definition independently of the map's current source context.
+// Ground/source eligibility is checked when deriving its effect, never from a city label.
 function proposalRecordForPersistence(record) {
     if (!record || typeof record !== 'object') return record;
     const root = typeof window !== 'undefined' ? window : globalThis;
@@ -274,7 +222,6 @@ const proposalStorage = {
         return {
             records: new Map(this.proposals),
             nextProposalId: this.nextProposalId,
-            blockedWriteCount: this._blockedWriteCount,
             rollback: null
         };
     },
@@ -359,6 +306,14 @@ const proposalStorage = {
         });
         this.nextProposalId = draft.nextProposalId;
         this._hasPendingSave = false;
+        this._notifyChanged();
+    },
+
+    _notifyChanged() {
+        // Publication and any synchronous rollback finish before observers read the composition.
+        if (typeof document !== 'undefined' && document.dispatchEvent) {
+            queueMicrotask(() => document.dispatchEvent(new Event('proposalStorageChanged')));
+        }
     },
 
     restoreMutationSnapshot(snapshot) {
@@ -388,7 +343,6 @@ const proposalStorage = {
             snapshot.records.forEach((record, id) => { if (!this.proposals.has(id)) this.proposals.set(id, record); });
         }
         this.nextProposalId = snapshot.nextProposalId;
-        this._blockedWriteCount = snapshot.blockedWriteCount;
     },
 
     beginBatch() {
@@ -541,27 +495,6 @@ const proposalStorage = {
 
     _persist() {
         if (typeof PersistentStorage === 'undefined') return;
-        // Secondary tab (app already open elsewhere): skip writes so we don't clobber the primary
-        // tab's data. All tabs share one store with no cross-tab merge — see multi-tab-guard.js.
-        // Say so every time: this used to return in complete silence, so a read-only tab looked
-        // like a working one — proposals could be created, applied and rendered, and then simply
-        // were not there after a reload, with nothing in the console to explain it. The guard's
-        // banner is dismissable, so it cannot be the only signal that work is being dropped.
-        if (typeof window !== 'undefined' && window.__cbSecondaryTab) {
-            this._blockedWriteCount = (this._blockedWriteCount || 0) + 1;
-            // Warning the user that work MIGHT be lost was never a licence to throw it away. The
-            // reason a secondary tab must not write is that all tabs share ONE proposals store with
-            // no cross-tab merge, so saving here would clobber the primary tab's work. That argument
-            // only covers the SHARED key — writing our own is harmless (PersistentStorage is a
-            // key/value store; each key is its own record), so the work is parked under a private
-            // recovery key and offered back the next time this city opens as the primary tab.
-            this._persistRecovery();
-            console.error('[proposalStorage] This tab is read-only because the app is open in another tab,'
-                + ` so nothing here is saved to the shared store (dropped writes: ${this._blockedWriteCount}).`
-                + ' Your work has been parked and will be offered back when you reload with the other tabs closed.');
-            try { window.__cbReportSecondaryWriteBlocked?.(); } catch (_) { }
-            return;
-        }
         // A whole-store save outside the mutation protocol may follow in-place edits anywhere, so
         // every record is projected again — but only the rows whose projection differs from what
         // is on disk are written, plus a delete for every row on disk with no record in memory,
@@ -585,7 +518,11 @@ const proposalStorage = {
             });
             puts.set(PROPOSALS_MANIFEST_KEY, proposalManifest(this.nextProposalId));
             const write = Promise.resolve(PersistentStorage.atomicWrite({ puts, deletes }))
-                .then(() => { this._persistFragments = fragments; });
+                .then(() => {
+                    this._persistFragments = fragments;
+                    // Includes edits, deletion, application and publication, even without a redraw.
+                    this._notifyChanged();
+                });
             // Fire-and-forget callers still report failures. A plan's final save awaits the same
             // promise, so its saving phase cannot finish before the durable write does.
             write.catch(error => {
@@ -596,67 +533,6 @@ const proposalStorage = {
             console.error('proposalStorage.save: Failed to persist proposals', error);
             throw error;
         }
-    },
-
-    // Park this read-only tab's proposals under its own key so a reload cannot destroy them. Safe
-    // against the primary: a different key is a different record, so the shared rows are untouched.
-    // Best-effort by construction — a rescue that throws must never break the edit the user is
-    // making, and it is only ever a second chance at work the tab could not save anyway.
-    _persistRecovery() {
-        if (typeof PersistentStorage === 'undefined') return;
-        try {
-            const serialisable = Array.from(this.proposals.values()).map(proposalRecordForPersistence);
-            if (!serialisable.length) return;
-            const state = proposalRecoveryState(this.nextProposalId, serialisable);
-            PersistentStorage.setItem(PROPOSALS_RECOVERY_KEY, JSON.stringify({
-                ...state,
-                savedAt: new Date().toISOString()
-            }));
-        } catch (error) {
-            console.error('[proposalStorage] could not park read-only work for recovery', error);
-        }
-    },
-
-    // What a previous read-only tab parked, or null. Read on load by the PRIMARY tab only — a
-    // secondary tab offering to restore would just park it again on the next keystroke.
-    readRecovery() {
-        if (typeof PersistentStorage === 'undefined') return null;
-        if (typeof window !== 'undefined' && window.__cbSecondaryTab) return null;
-        try {
-            const raw = PersistentStorage.getItem(PROPOSALS_RECOVERY_KEY);
-            if (!raw) return null;
-            const parsed = JSON.parse(raw);
-            const proposals = Array.isArray(parsed && parsed.records) ? parsed.records : null;
-            if (!proposals || !proposals.length) return null;
-            // Only what this store does NOT already have: the usual case is that the user gave up
-            // and redrew the road in the primary tab, and re-adding the parked copy would duplicate it.
-            const missing = proposals.filter(entry => {
-                const id = entry && (entry.proposalId || entry.id);
-                return id && !this.proposals.has(String(id));
-            });
-            return missing.length ? { savedAt: parsed.savedAt || null, proposals: missing } : null;
-        } catch (error) {
-            console.error('[proposalStorage] could not read parked work', error);
-            return null;
-        }
-    },
-
-    // Merge parked work back in and clear the slot. Returns how many were restored.
-    restoreRecovery() {
-        const parked = this.readRecovery();
-        if (!parked) return 0;
-        parked.proposals.forEach(entry => {
-            try { this.addProposal({ ...entry, lifecycleStatus: getLifecycleStatus(entry) }); } catch (error) {
-                console.error('[proposalStorage] could not restore a parked proposal', error);
-            }
-        });
-        this.discardRecovery();
-        return parked.proposals.length;
-    },
-
-    discardRecovery() {
-        if (typeof PersistentStorage === 'undefined') return;
-        try { PersistentStorage.removeItem(PROPOSALS_RECOVERY_KEY); } catch (_) { }
     },
 
     getAllProposals() {
@@ -781,7 +657,6 @@ const proposalStorage = {
         // A record is stored only where its parcels are: one whose city reads other parcel data
         // belongs to that city's store, which every link and list route opens it in (projections.md
         // §10 M8). Importing it here would apply it over this city's cadastre — or none, in explore.
-        refuseForeignProposal(proposalCityOf({ city: proposal.city ?? proposal.proposal_data?.city, cadastreParcelIds: proposal.cadastreParcelIds }));
 
         const { overwrite = true, deferSave = false } = options;
         const normalized = this._normalizeProposal({ ...proposal });
@@ -847,8 +722,8 @@ const proposalStorage = {
         this.proposals.clear();
         this._persistFragments = new Map();
         if (typeof PersistentStorage === 'undefined') return;
-        // Every row, the manifest and the parked recovery blob, in one write.
-        const deletes = [PROPOSALS_MANIFEST_KEY, PROPOSALS_RECOVERY_KEY];
+        // Every row and the manifest, in one write.
+        const deletes = [PROPOSALS_MANIFEST_KEY];
         PersistentStorage.forEach((_value, key) => {
             if (String(key).startsWith(PROPOSAL_ROW_PREFIX)) deletes.push(String(key));
         });
@@ -1048,10 +923,12 @@ const proposalStorage = {
         // lacks (a building's parameters or geometry, a structure's blockName) stays absent.
         if (proposal.buildingProposal) {
             const bp = { ...proposal.buildingProposal };
-            if (bp.parameters !== undefined) {
-                bp.parameters = bp.parameters && typeof bp.parameters === 'object' ? { ...bp.parameters } : {};
+            if (bp.parameters && typeof bp.parameters === 'object' && !Array.isArray(bp.parameters)) {
+                bp.parameters = { ...bp.parameters };
                 Object.keys(bp.parameters).forEach(key => {
-                    if (bp.parameters[key] === undefined || bp.parameters[key] === null) {
+                    // Explicit null is authored JSON, distinct from an absent field. Dropping it
+                    // changes a published design's CID and falsely marks its agreement stale.
+                    if (bp.parameters[key] === undefined) {
                         delete bp.parameters[key];
                     }
                 });
@@ -1232,6 +1109,33 @@ const multiParcelSelection = {
     isActive: false,
     selectedParcels: new Set(),
     lastSelectedParcelId: null,
+    _infoListHighlight: null,
+
+    infoListHighlightStyle() {
+        return { fillColor: '#ffb000', fillOpacity: 0.9, color: '#111827', weight: 6, opacity: 1 };
+    },
+
+    clearInfoListHighlight() {
+        const id = this._infoListHighlight;
+        if (!id) return;
+        this._infoListHighlight = null;
+        const layer = window.ParcelPresenter?.getLayer?.(id);
+        if (!layer) return;
+        const isSelected = this.selectedParcels.has(String(id));
+        if (isSelected) this.addParcelHighlight(layer);
+        else this.removeParcelHighlight(layer);
+    },
+
+    highlightInfoListParcel(id) {
+        const parcelId = String(id || '');
+        if (!parcelId || !this.selectedParcels.has(parcelId)) return;
+        this.clearInfoListHighlight();
+        const layer = window.ParcelPresenter?.getLayer?.(parcelId);
+        if (!layer) return;
+        this._infoListHighlight = parcelId;
+        layer.setStyle(this.infoListHighlightStyle());
+        layer.bringToFront?.();
+    },
 
     // Manual controls map picking; the selected land survives leaving the mode.
     toggle() {
@@ -1313,6 +1217,7 @@ const multiParcelSelection = {
 
     // Clear all selected parcels
     clearSelection() {
+        this.clearInfoListHighlight();
         // Remove highlights from all selected parcels
         this.selectedParcels.forEach(parcelId => {
             const parcel = this.findParcelById(parcelId);
@@ -1401,9 +1306,9 @@ const multiParcelSelection = {
     addParcelHighlight(parcel) {
         // Apply multi-selection style (matches .parcel-layer.multi-selected CSS)
         parcel.setStyle({
-            fillColor: '#ff9800',
+            fillColor: window.MapHighlight.color,
             fillOpacity: 0.6,
-            color: '#f57c00',
+            color: window.MapHighlight.color,
             weight: 3
         });
         parcel.bringToFront();
@@ -1503,6 +1408,7 @@ const multiParcelSelection = {
 
     // Show multi-parcel info panel
     showMultiParcelInfo() {
+        this.clearInfoListHighlight();
         const parcels = this.getSelectedParcels();
         const landPrice = window.CityMoney.currentLandPriceOptions('land');
         const priceModel = window.ParcelPriceModel;
@@ -1618,7 +1524,7 @@ const multiParcelSelection = {
                 : CbFormat.formatMoney(estimate.amount, estimate.currency, { maxFractionDigits: 0 });
             const priceBasis = estimate.basis === 'area-model' ? 'Modeled' : (estimate.basis === 'source-estimate' ? 'Source estimate' : '');
             return `
-                            <div class="selected-parcel-item">
+                            <div class="selected-parcel-item" data-parcel-id="${escapeHtml(String(parcelId))}" tabindex="0" role="button" aria-label="${escapeHtml(parcelLabel)}">
                                 <div class="parcel-number"><span class="parcel-id-text" title="${escapeHtml(String(parcelId))}">${escapeHtml(parcelLabel)}</span></div>
                                 <div class="parcel-details">
                                             ${CbFormat.formatArea(area)} •
@@ -1634,6 +1540,36 @@ const multiParcelSelection = {
 
         // Show multi-parcel content in the Info tab
         document.getElementById('info-content').innerHTML = content;
+        const selectedParcelList = document.querySelector('.selected-parcels-list');
+        if (selectedParcelList) {
+            selectedParcelList.onpointerover = event => {
+                const item = event.target.closest?.('.selected-parcel-item');
+                if (item && selectedParcelList.contains(item)) this.highlightInfoListParcel(item.dataset.parcelId);
+            };
+            selectedParcelList.onpointerout = event => {
+                const item = event.target.closest?.('.selected-parcel-item');
+                if (item && !item.contains(event.relatedTarget)) this.clearInfoListHighlight();
+            };
+            selectedParcelList.onfocusin = event => {
+                const item = event.target.closest?.('.selected-parcel-item');
+                if (item) this.highlightInfoListParcel(item.dataset.parcelId);
+            };
+            selectedParcelList.onfocusout = event => {
+                const item = event.target.closest?.('.selected-parcel-item');
+                if (item && !item.contains(event.relatedTarget)) this.clearInfoListHighlight();
+            };
+            selectedParcelList.onclick = event => {
+                const item = event.target.closest?.('.selected-parcel-item');
+                if (item) this.highlightInfoListParcel(item.dataset.parcelId);
+            };
+            selectedParcelList.onkeydown = event => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                const item = event.target.closest?.('.selected-parcel-item');
+                if (!item) return;
+                event.preventDefault();
+                this.highlightInfoListParcel(item.dataset.parcelId);
+            };
+        }
 
         const proposeContent = `
             <div class="metric-group multi-parcel-proposal-hint">

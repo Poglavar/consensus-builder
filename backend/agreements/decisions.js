@@ -119,7 +119,12 @@ export function createAgreementDecisionHandlers({ loadAgreement, store, now = ()
             res.status(400).json({ error: 'Not an agreement CID.', code: 'invalid_cid' });
             return null;
         }
-        const agreement = await loadAgreement(cid);
+        let agreement;
+        try { agreement = await loadAgreement(cid); } catch (error) {
+            if (error?.code !== 'retired-agreement-format') throw error;
+            res.status(410).json({ error: error.message, code: error.code });
+            return null;
+        }
         if (!agreement) {
             res.status(404).json({ error: 'Agreement not found', code: 'agreement_not_found' });
             return null;

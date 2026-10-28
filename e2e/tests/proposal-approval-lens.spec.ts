@@ -84,10 +84,13 @@ async function proposeOwnerAgreement(page: Page, memberKeys: string[], approvalC
     });
     const design = w.proposalStorage.getProposal(designId);
     const designCid = w.DesignRecord.cidOf(design);
+    const planContent = w.PlanRecord.create('Lens-backed owner agreement', [designCid], w.MapShare.capture(w));
+    const plan = { cid: w.Cid.cidOfObject(planContent), content: planContent };
     const holder = (ownerKey: string, share: number) => ({ ownerKey, displayName: ownerKey, share });
     const record = {
       schema: 'agreement/v1', id: 'ag-0123456789abcdef0123456789abcdef', title: 'Lens-backed owner agreement',
       city: w.CityConfigManager.getCurrentCityId(), createdAt,
+      plan,
       designs: [{ proposalId: designId, title: design.title, goal: design.goal, cid: designCid }],
       inputs: { parcels: [
         { parcelId: parcels.a, areaM2: 100, holders: [holder('owner-a', 1)] },
@@ -102,19 +105,23 @@ async function proposeOwnerAgreement(page: Page, memberKeys: string[], approvalC
       (id: string) => (id === designId ? designCid : null));
     const cid = w.Cid.cidOfObject(content);
     const saved = w.AgreementStore.save({ ...record, published: { cid, publishedAt: createdAt, apiBase: w.DesignSync.apiBase() } });
-    return { id: saved.id, cid, content };
+    return { id: saved.id, cid, content, plan };
   }, { parcels: PARCELS, members: memberKeys, approvalConfig });
   // The browser's CID is the CID of the object's canonical bytes (node's own computation).
   expect(cidOfObject(seeded.content)).toBe(seeded.cid);
-  pageIndex(page).agreements.set(seeded.cid, agreementRow(seeded.cid, seeded.content));
+  const index = pageIndex(page);
+  index.plans.set(seeded.plan.cid, seeded.plan);
+  index.agreements.set(seeded.cid, agreementRow(index, seeded.cid, seeded.content));
   return { id: seeded.id, cid: seeded.cid };
 }
 
 // The index row of a proposed agreement (backend/routes/agreements.js serializeAgreementRow).
-function agreementRow(cid: string, content: Record<string, any>): Record<string, any> {
+function agreementRow(index: ReturnType<typeof pageIndex>, cid: string, content: Record<string, any>): Record<string, any> {
+  const plan = index.plans.get(content.planCid);
+  if (!plan || plan.cid !== content.planCid || cidOfObject(plan.content) !== content.planCid) throw new Error('Agreement fixture needs its verified plan snapshot.');
   return {
     cid, city: content.city, title: content.title, author: content.author,
-    designCids: content.designs.map((design: any) => design.cid),
+    planCid: plan.cid, designCids: [...plan.content.designCids],
     inputParcelIds: content.inputs.parcels.map((parcel: any) => parcel.parcelId),
     parcelSourceId: null, deadline: content.deadline, status: 'active', content, onchain: null,
     screenshotUrl: null, screenshotBeforeUrl: null, screenshotPairUrl: null, createdAt: content.createdAt
@@ -237,7 +244,7 @@ async function startBackendProcess(args: string[], url: string, env: Record<stri
   child.stderr!.on('data', chunk => log.push(String(chunk)));
   await expect.poll(async () => {
     try { return (await fetch(url)).status; } catch { return 0; }
-  }, { timeout: 20_000, message: () => `${args.join(' ')} did not start:\n${log.join('')}` }).toBe(200);
+  }, { timeout: 20_000, message: `${args.join(' ')} did not start:\n${log.join('')}` }).toBe(200);
 }
 
 type Signer = { ownerId: string; wallet: string };
@@ -397,7 +404,7 @@ test('four owners across three parcels accept only for themselves through a lens
   await useWallet(page, wallets.stranger.address);
   await card(page).locator('[data-approval-action="verify"]').click();
   await dialog(page).locator('[data-approval-verify-submit]').click();
-  await expect(dialog(page).locator('.approval-dialog__status')).toHaveText('This lens member does not recognize this wallet as acting for any owner of this proposal.');
+  await expect(dialog(page).locator('.approval-dialog__status')).toHaveText('This lens member does not recognize this wallet as acting for any owner of this design.');
   await dialog(page).locator('.close-circle-btn').click();
   await expect(page.locator('#proposal-approval-dialog')).toHaveCount(0);
 

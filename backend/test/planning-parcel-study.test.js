@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 import { createAtlasProvider } from '../planning/providers/atlas.js';
-import { loadParcelStudy } from '../planning/parcel-study.js';
+import { assembleParcelStudy, loadParcelStudy } from '../planning/parcel-study.js';
 import { setupPlanningRoutes } from '../routes/planning.js';
 const core = createRequire(import.meta.url)('../../frontend/js/planning/parcel-assessment.js');
 const metadata = { id: 'atlas-study-test', city: 'colorado', label: 'Synthetic Atlas study', edition: 'test',
@@ -103,6 +103,29 @@ describe('Atlas parcel study', () => {
             return answer;
         };
         expect((await context(source)).source.site.coordinates.length).toBeGreaterThan(0);
+    });
+    it('preserves exact coverage, holes and source identity across disconnected district components', async () => {
+        const local = turf.bboxPolygon([-105.002,39.999,-105.0007,40.001]).geometry.coordinates;
+        const hole = turf.bboxPolygon([-105.00095,40.0001,-105.00085,40.0002]).geometry.coordinates[0];
+        local.push(hole);
+        const remote = turf.bboxPolygon([-105.02,39.98,-105.01,39.99]).geometry.coordinates;
+        const site = { type: 'MultiPolygon', coordinates: [remote, local] };
+        const original = structuredClone(site);
+        const ctx = await context(provider({}, [{ type: 'Feature', properties: properties(), geometry: site }]));
+        expect(ctx.source.site).toBe(site);
+        expect(site).toEqual(original);
+        expect(ctx.sourceReference).toMatchObject({ recordId: 'test', scenario: 'family1' });
+        const exactCovered = turf.intersect(parcel(), turf.feature(site));
+        const exactUncovered = turf.difference(parcel(), turf.feature(site));
+        expect(turf.area(turf.feature(ctx.coveredGeometry))).toBeCloseTo(turf.area(exactCovered), 6);
+        expect(ctx.sourceCoverage.uncoveredM2).toBeCloseTo(turf.area(exactUncovered), 6);
+        expect(ctx.coveredGeometry.coordinates[0].length).toBeGreaterThan(0);
+        const remoteOnly = { ...ctx.source, site: { type: 'MultiPolygon', coordinates: [remote] } };
+        expect(() => assembleParcelStudy(parcel(), { id: metadata.parcelSourceId }, [remoteOnly]))
+            .toThrow('study-zoning-missing');
+        // The full record remains reusable for a different parcel near the other component.
+        const otherParcel = { ...parcel(), geometry: turf.bboxPolygon([-105.019,39.981,-105.0185,39.9814]).geometry };
+        expect(assembleParcelStudy(otherParcel, { id: metadata.parcelSourceId }, [ctx.source]).sourceCoverage.uncoveredM2).toBe(0);
     });
     it('refuses multiple intersecting zoning areas rather than choosing a convenient rule set', async () => {
         const first = { type: 'Feature', properties: properties(), geometry: turf.bboxPolygon([-105.002,39.999,-105,40.001]).geometry };

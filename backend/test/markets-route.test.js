@@ -7,7 +7,7 @@ import express from 'express';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import * as web3 from '@solana/web3.js';
-import { AGREEMENT_COLUMNS_SQL, DEVNET_USDC_MINT, agreementByAccount, rowToAgreement, setupMarketsRoute } from '../routes/markets.js';
+import { AGREEMENTS_BY_ACCOUNT_SQL, AGREEMENTS_SQL, DEVNET_USDC_MINT, agreementByAccount, rowToAgreement, setupMarketsRoute } from '../routes/markets.js';
 import { AGREEMENT_PROGRAM_ID, agreementAccountOf } from '../agreements/onchain.js';
 import { buildAgreementExecutionRecipe } from '../oracle/market-recipe.js';
 import { cidOfObject } from '../cid.js';
@@ -43,7 +43,10 @@ function rows() {
 }
 
 const poolFor = (agreementRows = rows()) => ({ query: vi.fn(async () => ({ rows: agreementRows })) });
-const openPool = () => new Map([[ACCOUNT, { address: MARKET, market: { yesPool: 250000n, noPool: 0n, resolved: false, outcome: 0 } }]]);
+const openPool = () => new Map([[ACCOUNT, { address: MARKET, market: {
+    b: 100_000_000n, qYes: 250000n, qNo: 0n, seed: 69_314_720n, closesAt: Math.floor(Date.parse('2026-12-31T00:00:00Z') / 1000),
+    graceSeconds: 0, maxPosition: 0n, paidOut: 0n, creator: SPONSOR, resolved: false, outcome: 0
+} }]]);
 
 function appFor({ pool, readMarkets, now } = {}) {
     const app = express();
@@ -65,20 +68,20 @@ describe('GET /markets', () => {
         const readMarkets = vi.fn(async () => openPool());
         const res = await request(appFor({ pool, readMarkets })).get('/markets?city=zg');
         expect(res.status).toBe(200);
-        expect(pool.query.mock.calls[0][0]).toMatch(/FROM consensus\.agreement\s+WHERE city = \$1/);
-        expect(pool.query.mock.calls[0][1]).toEqual(['zagreb', 2000]);
-        expect(readMarkets).toHaveBeenCalledWith([ACCOUNT]);
+        expect(pool.query.mock.calls[0][0]).toMatch(/FROM consensus\.agreement a[\s\S]+WHERE a\.city = \$1/);
+        expect(pool.query.mock.calls[0][1]).toEqual(['zg', 2000]);
+        expect(readMarkets).toHaveBeenCalledWith([ACCOUNT], expect.arrayContaining([expect.objectContaining({ account: ACCOUNT, sponsor: SPONSOR })]));
         expect(res.body).toMatchObject({
-            city: 'zagreb', cluster: 'devnet', agreementProgram: AGREEMENT_PROGRAM_ID,
+            city: 'zg', cluster: 'devnet', agreementProgram: AGREEMENT_PROGRAM_ID,
             marketProgram: 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', stakeMint: DEVNET_USDC_MINT, stakeDecimals: 6,
-            summary: { contests: 1, agreements: 2, markets: 1, openMarkets: 1, poolAtomic: '250000' }
+            summary: { contests: 1, agreements: 2, markets: 1, openMarkets: 1, sharesAtomic: '250000' }
         });
         const [contest] = res.body.contests;
         expect(contest.agreements.map(entry => entry.cid)).toEqual([CID, RIVAL_CID]);
         expect(contest.agreements[0]).toMatchObject({
             cid: CID, account: ACCOUNT, title: 'Plan-led infill', designTitles: ['Six storeys'], status: 'active', chainStatus: 'active',
             deadline: '2026-12-31T00:00:00.000Z', bettable: true, canOpenMarket: false,
-            market: { address: MARKET, yesPool: '250000', noPool: '0', poolAtomic: '250000', resolved: false, outcome: null }
+            market: { address: MARKET, model: 'lmsr', asset: 'devnet-usdc', creator: SPONSOR, b: '100000000', qYes: '250000', qNo: '0', seed: '69314720', closesAt: Math.floor(Date.parse('2026-12-31T00:00:00Z') / 1000), graceSeconds: 0, maxPosition: '0', paidOut: '0', resolved: false, outcome: null }
         });
         // Proposed without a sponsor: never minted, so in the contest without a pool.
         expect(contest.agreements[1]).toMatchObject({ cid: RIVAL_CID, account: null, chainStatus: null, market: null, bettable: false, canOpenMarket: false });
@@ -142,14 +145,12 @@ describe('rowToAgreement and agreementByAccount', () => {
         expect(rowToAgreement(row)).toEqual({
             cid: CID, city: 'zagreb', title: 'Plan-led infill', author: 'densifier-01', designTitles: ['Six storeys'],
             inputParcelIds: ['HR-335614-2311'], parcelSourceId: null, deadline: '2026-12-31T00:00:00.000Z',
-            createdAt: '2026-10-01T10:00:00.000Z', screenshotUrl: null, screenshotBeforeUrl: null, screenshotPairUrl: null,
+            createdAt: '2026-10-01T10:00:00.000Z', screenshotUrl: null, screenshotBeforeUrl: null, screenshotPairUrl: null, sponsor: SPONSOR,
             account: ACCOUNT, chainStatus: 'active'
         });
         expect(rowToAgreement(rival)).toMatchObject({ title: null, account: null, chainStatus: null, deadline: null, parcelSourceId: 'hr-cadastre' });
         // An unknown status word is no status.
         expect(rowToAgreement({ ...row, onchain: onchain({ status: 'Executed' }) }).chainStatus).toBeNull();
-        expect(AGREEMENT_COLUMNS_SQL).toMatch(/content->>'sponsor' AS sponsor/);
-        expect(AGREEMENT_COLUMNS_SQL).toMatch(/jsonb_array_elements\(content->'designs'\)/);
     });
 
     it('carries the before and pair pictures beside the thumbnail', () => {
@@ -163,9 +164,19 @@ describe('rowToAgreement and agreementByAccount', () => {
         const claimed = { ...row, cid: RIVAL_CID };
         const pool = { query: vi.fn(async () => ({ rows: [claimed, row] })) };
         expect(await agreementByAccount(pool, ACCOUNT)).toMatchObject({ cid: CID, account: ACCOUNT });
-        expect(pool.query.mock.calls[0][0]).toMatch(/WHERE onchain->>'account' = \$1/);
+        expect(pool.query.mock.calls[0][0]).toMatch(/WHERE a\.onchain->>'account' = \$1/);
         expect(pool.query.mock.calls[0][1]).toEqual([ACCOUNT]);
         expect(await agreementByAccount({ query: async () => ({ rows: [claimed] }) }, ACCOUNT)).toBeNull();
+    });
+
+    it('uses the same plan and membership admission for city catalog and account lookups', () => {
+        const admission = sql => sql.slice(sql.indexOf("AND p.content->>'schema'"), sql.indexOf('ELSE false END'));
+        expect(admission(AGREEMENTS_SQL)).toBe(admission(AGREEMENTS_BY_ACCOUNT_SQL));
+        expect(AGREEMENTS_SQL).toContain("a.content->>'planCid' IS NOT NULL");
+        expect(AGREEMENTS_SQL).toContain("p.content->>'schema' = 'plan/v1'");
+        expect(AGREEMENTS_SQL).toContain("NOT (a.content ? 'designs')");
+        expect(AGREEMENTS_SQL).toContain("NOT (a.content ? 'designCids')");
+        expect(AGREEMENTS_SQL).toContain('CASE WHEN jsonb_typeof(p.content->\'designCids\') = \'array\' THEN');
     });
 });
 

@@ -95,9 +95,9 @@ test.describe('proposal button controls follow-up @features', () => {
     await expect(stack).toBeVisible();
     const designs = stack.locator('.click-stack__section[data-kind="designs"]');
     await expect(designs).toHaveClass(/is-selected/);
-    await expect(designs.locator('.click-stack__row-title')).toHaveText('Design');
+    await expect(designs.locator('.click-stack__row-title')).toHaveText('Design (2)');
     const sourceParcels = designs.locator('.click-stack__choices[data-kind="parcels"]');
-    await expect(sourceParcels.locator('.click-stack__choice-count')).toHaveText('(2)');
+    await expect(sourceParcels.locator('.click-stack__chip')).toHaveCount(2);
     await sourceParcels.locator(`.click-stack__chip[data-id="${SECOND_PARCEL_ID}"]`).click();
 
     const parcels = stack.locator('.click-stack__section[data-kind="parcels"]');
@@ -106,14 +106,14 @@ test.describe('proposal button controls follow-up @features', () => {
     await expect(page.locator('#parcel-info-panel')).toBeVisible();
     await expect(page.locator('#parcel-info-title')).toContainText(SECOND_PARCEL_ID);
     await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
-    // The selected source parcel offers only its related designs above its row.
+    // The selected source parcel offers its related designs inside its section.
     const relatedDesigns = parcels.locator('.click-stack__choices[data-kind="designs"]');
-    await expect(relatedDesigns.locator('.click-stack__choice-count')).toHaveText('(2)');
+    await expect(relatedDesigns.locator('.click-stack__chip')).toHaveCount(2);
     const chosenDesign = relatedDesigns.locator(`.click-stack__chip[data-id="${proposalIds[0]}"]`);
     await chosenDesign.click();
 
     await expect(designs).toHaveClass(/is-selected/);
-    await expect(designs.locator('.click-stack__row-title')).toHaveText('Design');
+    await expect(designs.locator('.click-stack__row-title')).toHaveText('Design (2)');
     await expect(page.locator('#proposal-details-panel')).toBeVisible();
     await expect(page.locator('#proposal-details-panel')).toContainText('Drill stack park');
     await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalIds[0]);
@@ -121,7 +121,7 @@ test.describe('proposal button controls follow-up @features', () => {
     await expect(parcels.locator('.click-stack__choices[data-kind="designs"]')).toHaveCount(0);
     // The selected design has no sibling-design strip; its source-parcel context remains below it.
     await expect(designs.locator('.click-stack__choices[data-kind="designs"]')).toHaveCount(0);
-    await expect(designs.locator('.click-stack__choices[data-kind="parcels"] .click-stack__choice-count')).toHaveText('(2)');
+    await expect(designs.locator('.click-stack__choices[data-kind="parcels"] .click-stack__chip')).toHaveCount(2);
     await page.keyboard.press('Escape');
     await expect(stack).toBeHidden();
   });

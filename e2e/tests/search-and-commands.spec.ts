@@ -96,8 +96,7 @@ test.describe('Search and command palette @features', () => {
   test('the introduction Previous, Next, and page dots navigate the visible feature slides', async ({ mockApi: page }) => {
     await openCity(page);
     await page.locator('#settings-button').click();
-    const info = page.locator('#settings-sheet details.accordion-section[data-section="info"]');
-    if (!(await info.evaluate((details: HTMLDetailsElement) => details.open))) await info.locator(':scope > summary').click();
+    const info = page.locator('#settings-sheet [data-section="help"]');
     await info.locator('[data-site-intro-open]').click();
     const intro = page.locator('#site-intro-modal');
     await expect(intro).toBeVisible();
@@ -121,7 +120,6 @@ test.describe('Search and command palette @features', () => {
     await intro.getByRole('button', { name: 'Close introduction', exact: true }).click();
     await expect(intro).toBeHidden();
     if (!(await page.locator('#settings-sheet').isVisible())) await page.locator('#settings-button').click();
-    if (!(await info.evaluate((details: HTMLDetailsElement) => details.open))) await info.locator(':scope > summary').click();
     await info.locator('[data-site-intro-open]').click();
     await expect(intro).toBeVisible();
     await intro.locator('.site-intro-skip').click();

@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3304",
+  "name": "Wajir, Kenya",
+  "point": [
+    1.75335206188523,
+    40.052422710595
+  ],
+  "bindings": [
+    {
+      "appCityId": "wajir",
+      "runtimeConfig": {
+        "id": "wajir",
+        "wupCityCode": "3304",
+        "label": "Wajir, Kenya",
+        "currency": {
+          "locale": "en-KE",
+          "code": "KES"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            1.75335206188523,
+            40.052422710595
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            1.75335206188523,
+            40.052422710595
+          ],
+          "fallbackDataset": [
+            40.052422710595,
+            1.75335206188523
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ke-wajir-county-geonode-municipality-parcels",
+          "idPrefix": "wajir_municipality_parcels.",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Wajir County Government / Wajir County Integrated GIS System, gis.wajir.go.ke"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ke-wajir-county-geonode-municipality-parcels",
+      "name": "Wajir County Integrated GIS — Wajir Municipality Parcels",
+      "adapter": "wfs",
+      "endpoint": "https://gis.wajir.go.ke/geoserver/wfs",
+      "featureType": "geonode:wajir_municipality_parcels",
+      "version": "2.0.0",
+      "idField": "ogc_fid",
+      "idType": "integer",
+      "idPrefix": "wajir_municipality_parcels.",
+      "outFields": [
+        "ogc_fid"
+      ],
+      "requestProperties": true,
+      "geometryField": "geometry",
+      "pageSize": 250,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "KE",
+      "metricSrid": 32637,
+      "cityIds": [
+        "wajir"
+      ],
+      "operator": "Wajir County Government / Lands and Physical Planning",
+      "attribution": "Wajir County Government / Wajir County Integrated GIS System, gis.wajir.go.ke",
+      "scope": "Wajir Municipality published extent; exact-ID sample near Wajir queue locator. Coverage is partial and municipal/county completeness is unestablished.",
+      "licenceNote": "GeoNode license not_specified; WFS Fees NONE and AccessConstraints NONE. Reuse permission unresolved; technical initial availability only.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "KE",
+          "basis": "County Lands and Physical Planning Land Parcels dashboard and Wajir Municipality parcel dataset 500.",
+          "evidence": [
+            "https://gis.wajir.go.ke/",
+            "https://gis.wajir.go.ke/api/v2/datasets/500"
+          ]
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

@@ -1,20 +1,154 @@
-/* The agreement editor (js/agreement-dialog.js): Create / Edit agreement docked on the right of the
-   map in place of the agreement panel (css/agreement.css) while it is open, at the dock's width
-   (--right-dock-width, css/panels.css); on a phone the shared bottom sheet (css/panels.css,
-   css/utilities.css) with the map above it. A header, one scrolling column of sections — designs,
-   land, allocation, money, decision rule, details — with the issues at its top, and a footer with
-   Cancel and Save that stays at the bottom. At the dock's width every row stacks: a parcel or a piece
-   is a two-line row, and each piece sits above the select that names its recipient. Layout only, on
-   the tokens; the controls are the shared ones (base form controls, cb-badge, .btn), and the approval
-   form inside keeps its own rules (css/proposal-editor.css). */
+/* Four-tab agreement editor on the shared right dock (a bottom sheet on phones). Rules own
+   compensation controls; output parcels own recipient choices; persons are a read-only tally. */
 
-/* ---- The panel: under the top-right buttons, as tall as the dock runs ---- */
+/* The native modal owns input and focus; its transparent full-screen host keeps the map visible
+   behind the dock and gives the shared ownership/lens dialogs the same top layer. */
+.cb-dialog-overlay.agreement-editor-modal {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--cb-text);
+    overflow: hidden;
+}
+.cb-dialog-overlay.agreement-editor-modal:not([open]) { display: none; }
+.agreement-editor-modal::backdrop { background: var(--cb-backdrop); }
+
+.agreement-section[hidden],
+[data-agreement-binding-control][hidden],
+.agreement-editor .proposal-editor-field[hidden],
+.agreement-editor [role="tabpanel"][hidden] { display: none; }
+
+.agreement-editor [role="tabpanel"] {
+    display: grid;
+    gap: var(--cb-space-4);
+    min-width: 0;
+}
+.agreement-editor__tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--cb-space-1);
+    padding: var(--cb-space-1);
+    overflow: visible;
+    position: sticky;
+    top: 0;
+    z-index: var(--cb-z-local-1);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-2);
+}
+.agreement-editor .proposal-editor-field { gap: var(--cb-space-2); min-width: 0; }
+.agreement-editor .proposal-editor-field > span,
+.agreement-editor .agreement-fieldset legend { font-size: var(--cb-text-md); }
+.agreement-editor .proposal-editor-check { font-size: var(--cb-text-md); line-height: var(--cb-leading); }
+.agreement-editor .proposal-editor-card {
+    display: grid;
+    gap: var(--cb-space-3);
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+.agreement-editor .proposal-editor-card p { margin: 0; }
+.agreement-editor .approval-setup__regime {
+    gap: var(--cb-space-2);
+    margin: 0;
+    padding: var(--cb-space-3);
+    border: 0;
+    background: var(--cb-surface-2);
+}
+.agreement-rule-form,
+.agreement-lens,
+.agreement-editor [data-agreement-settlement]:not(:empty) {
+    display: grid;
+    gap: var(--cb-space-3);
+    border-top: 1px solid var(--cb-line);
+    padding-top: var(--cb-space-4);
+}
+.agreement-rule-form:empty { display: none; }
+.agreement-editor [data-agreement-land],
+.agreement-editor [data-agreement-plan-designs],
+.agreement-editor [data-agreement-allocations],
+.agreement-editor [data-agreement-persons] { display: grid; gap: var(--cb-space-3); min-width: 0; }
+.agreement-lens__row { display: flex; justify-content: center; }
+.agreement-lens .agreement-object-heading { margin: 0; }
+
+.agreement-persons-table { width: 100%; border-collapse: collapse; font-size: var(--cb-text-md); }
+.agreement-persons-table th, .agreement-persons-table td {
+    padding: var(--cb-space-3) var(--cb-space-2);
+    border-bottom: 1px solid var(--cb-line);
+    overflow-wrap: anywhere;
+    text-align: start;
+    vertical-align: top;
+}
+.agreement-persons-table thead { background: var(--cb-surface-2); font-size: var(--cb-text-sm); }
+.agreement-persons-table td { font-variant-numeric: tabular-nums; }
+.agreement-persons-table th:first-child { width: 40%; }
+.agreement-persons-table .agreement-persons-cash { display: inline-block; font-size: var(--cb-text-sm); }
+.agreement-persons-table .agreement-persons-value,
+.agreement-persons-table .agreement-persons-entitled { display: inline-block; font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
+
+/* Land values for settlement by value: one amount per input parcel or resulting piece. */
+.agreement-valuation { display: grid; gap: var(--cb-space-3); min-width: 0; }
+.agreement-valuation-list { display: grid; gap: var(--cb-space-2); margin: 0; padding: 0; list-style: none; }
+.agreement-valuation-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "title input" "facts input";
+    align-items: center;
+    gap: var(--cb-space-1) var(--cb-space-3);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+}
+.agreement-valuation-row__title { grid-area: title; font-weight: var(--cb-weight-medium); color: var(--cb-text-strong); overflow-wrap: anywhere; }
+.agreement-valuation-row__facts { grid-area: facts; color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+.agreement-valuation-row input { grid-area: input; width: 8.5em; max-width: 40vw; }
+.agreement-allocation-row select:disabled { opacity: 0.55; cursor: not-allowed; background: var(--cb-surface-2); }
+.agreement-editor input[type="range"] { width: 100%; margin: 0; }
+
+/* Parcel, design and allocation rows share one spacing and type scale. */
+.agreement-object-heading { margin: 0; font-size: var(--cb-text-md); font-weight: var(--cb-weight-semibold); }
+.agreement-object-list { display: grid; gap: var(--cb-space-2); margin: 0; padding: 0; list-style: none; }
+.agreement-object-row, .agreement-allocation-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
+    justify-items: stretch;
+    align-items: start;
+    gap: var(--cb-space-2);
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: var(--cb-space-3);
+    line-height: var(--cb-leading);
+    text-align: start;
+    white-space: normal;
+}
+.agreement-allocation-row {
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+    font-size: var(--cb-text-base);
+}
+.agreement-object-row__title, .agreement-allocation-row__piece { font-weight: var(--cb-weight-medium); color: var(--cb-text-strong); overflow-wrap: anywhere; }
+.agreement-object-row__facts { color: var(--cb-text-muted); font-size: var(--cb-text-sm); overflow-wrap: anywhere; }
+
 #agreement-editor {
     position: absolute;
     top: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
     right: var(--right-dock-gap);
     bottom: var(--right-dock-bottom);
     padding: 0;
+    font-size: var(--cb-text-base);
+    line-height: var(--cb-leading);
     overflow: hidden;
     z-index: var(--cb-z-panel);
 }
@@ -29,7 +163,7 @@
     flex-shrink: 0;
     align-items: center;
     gap: var(--cb-space-2);
-    padding: var(--cb-space-2) var(--cb-space-3);
+    padding: var(--cb-space-3) var(--cb-space-4);
     border-bottom: 1px solid var(--cb-line);
 }
 
@@ -37,7 +171,7 @@
     flex: 1;
     min-width: 0;
     margin: 0;
-    font-size: var(--cb-text-xl);
+    font-size: var(--cb-text-lg);
     line-height: 1.3;
     overflow-wrap: anywhere;
 }
@@ -53,28 +187,23 @@
 
 .agreement-editor .panel-body {
     display: grid;
+    grid-auto-rows: max-content;
     flex: 1 1 auto;
     align-content: start;
     gap: var(--cb-space-4);
     min-height: 0;
-    padding: var(--cb-space-3) var(--cb-space-4);
+    padding: var(--cb-space-4);
+    overscroll-behavior: contain;
     overflow-y: auto;
 }
 
 .agreement-editor .panel-footer {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     flex-shrink: 0;
-    justify-content: flex-end;
     gap: var(--cb-space-2);
-    padding: var(--cb-space-2) var(--cb-space-4);
+    padding: var(--cb-space-3) var(--cb-space-4);
     border-top: 1px solid var(--cb-line);
-}
-
-/* While the editor picks designs on the map (js/map-pick.js), the rest of the map dims less than it
-   does for a shared plan (css/proposals.css): the other applied designs are what the next click
-   adds, so they stay readable. */
-body[data-map-pick="agreement"] {
-    --map-pick-dim: 0.5;
 }
 
 .agreement-intro {
@@ -83,6 +212,8 @@ body[data-map-pick="agreement"] {
     font-size: var(--cb-text-md);
     line-height: var(--cb-leading);
 }
+
+.agreement-editor .panel-footer > .btn { width: 100%; min-width: 0; }
 
 /* Errors and warnings at the top of the body; an empty list takes no room. */
 .agreement-issues {
@@ -117,7 +248,7 @@ body[data-map-pick="agreement"] {
 
 .agreement-section__title {
     margin: 0;
-    font-size: var(--cb-text-lg);
+    font-size: var(--cb-text-md);
     font-weight: var(--cb-weight-semibold);
     color: var(--cb-text-strong);
 }
@@ -299,12 +430,6 @@ body[data-map-pick="agreement"] {
     display: grid;
     gap: var(--cb-space-2);
     min-width: 0;
-}
-
-.agreement-allocation-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--cb-space-1);
 }
 
 .agreement-column-head,

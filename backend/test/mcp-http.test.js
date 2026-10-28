@@ -1,5 +1,8 @@
 // Real MCP clients exercise hosted isolation, protocol negotiation and public request limits.
 import { request } from 'node:http';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { once } from 'node:events';
 import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -11,10 +14,11 @@ import { cidOfObject } from '../cid.js';
 import { previewArtifact } from '../agents/mcp-preview.js';
 import { checkContracts } from '../scripts/mcp-check-contracts.mjs';
 
-const services = [], clients = [];
-afterEach(async () => { await Promise.all(clients.splice(0).map(client => client.close())); await Promise.all(services.splice(0).map(service => service.close())); });
+const services = [], clients = [], directories = [];
+afterEach(async () => { await Promise.all(clients.splice(0).map(client => client.close())); await Promise.all(services.splice(0).map(service => service.close())); directories.splice(0).forEach(dir => rmSync(dir, { recursive: true, force: true })); });
 async function host(options = {}) {
-    const service = createMcpHttpService({ env: {}, fetchImpl: async () => new Response(JSON.stringify({ sources: [] })), ...options });
+    const storeDirectory = mkdtempSync(join(tmpdir(), 'mcp-http-')); directories.push(storeDirectory);
+    const service = createMcpHttpService({ storeDirectory, env: {}, fetchImpl: async () => new Response(JSON.stringify({ sources: [] })), ...options });
     services.push(service); service.http.listen(0, '127.0.0.1'); await once(service.http, 'listening');
     return `http://127.0.0.1:${service.http.address().port}`;
 }
@@ -47,6 +51,11 @@ describe('hosted MCP HTTP', () => {
         await client.connect(new StreamableHTTPClientTransport(new URL(`${base}/mcp`)));
         const { tools } = await client.listTools();
         expect(tools.map(t => t.name)).toEqual(MCP_HOSTED_TOOLS);
+        for (const tool of tools) {
+            expect(tool.title).toEqual(expect.any(String));
+            expect(tool.annotations.title).toBe(tool.title);
+            expect(tool.title).not.toMatch(/^ugt_/);
+        }
         expect(tools.map(t => t.name)).toContain('ugt_publish_design');
         expect(tools.map(t => t.name)).toContain('ugt_find_place');
         expect(tools.filter(t => t.annotations?.destructiveHint)).toEqual([]);
@@ -108,14 +117,40 @@ describe('hosted MCP HTTP', () => {
         const ready = new Promise(resolve => { entered = resolve; });
         const pending = new Promise(resolve => { release = resolve; });
         const base = await host({ maxConcurrent: 1, factory: () => createUrbanGameTheoryMcpServer({ mode: 'hosted', env: {}, tools: {
-            capabilities: async () => { entered(); return pending; }
+            getActivity: async () => { entered(); return pending; }
         } }) });
         const client = new Client({ name: 'concurrent-budget', version: '1' }); clients.push(client);
         await client.connect(new StreamableHTTPClientTransport(new URL(`${base}/mcp`)));
-        const call = client.callTool({ name: 'ugt_capabilities', arguments: {} });
+        const call = client.callTool({ name: 'ugt_activity', arguments: {} });
         await ready;
         try { expect((await fetch(`${base}/mcp`)).status).toBe(429); }
         finally { release({ ok: true }); await call; }
+    });
+    it('finishes an accepted draft before releasing its writer lock on shutdown', async () => {
+        let release, entered;
+        const ready = new Promise(resolve => { entered = resolve; });
+        const pending = new Promise(resolve => { release = resolve; });
+        const design = { schema: 'design/v1', title: 'Shutdown draft', geometry: {} };
+        const storeDirectory = mkdtempSync(join(tmpdir(), 'mcp-drain-')); directories.push(storeDirectory);
+        const options = { storeDirectory, env: {}, previewOrigin: 'https://preview.example' };
+        const base = await host({ ...options, factory: settings => createUrbanGameTheoryMcpServer({ ...settings, mode: 'hosted', env: {}, tools: {
+            draftSpace: async () => { entered(); await pending; return { design, cid: cidOfObject(design), ...await previewArtifact({ design }) }; }
+        } }) });
+        const service = services.at(-1);
+        const client = new Client({ name: 'shutdown-draft', version: '1' }); clients.push(client);
+        await client.connect(new StreamableHTTPClientTransport(new URL(`${base}/mcp`)));
+        const call = client.callTool({ name: 'ugt_draft_space', arguments: { city: 'london', spaceKind: 'park' } });
+        await ready;
+        const closing = service.close();
+        try { expect(() => createMcpHttpService(options)).toThrow(/already|writer|locked/i); }
+        finally { release(); }
+        const result = (await call).structuredContent;
+        expect(result).toMatchObject({ cid: cidOfObject(design), previewStatus: 'private-link' });
+        await closing;
+        const restarted = await host(options);
+        const response = await fetch(`${restarted}${new URL(result.draftRef).pathname}`);
+        expect(response.status).toBe(200);
+        expect((await response.json()).record).toEqual(design);
     });
     it('fails a contract check with missing source fixtures and never publishes', async () => {
         const paths = [];
@@ -124,7 +159,7 @@ describe('hosted MCP HTTP', () => {
         expect(report.ok).toBe(false);
         expect(report.checks.find(c => c.tool === 'ugt_capabilities').status).toBe('passed');
         expect(report.checks.some(c => c.status === 'missing-fixture')).toBe(true);
-        expect(report.checks.filter(c => c.status === 'write-refused-without-confirmation')).toHaveLength(3);
+        expect(report.checks.filter(c => c.status === 'write-refused-without-confirmation')).toHaveLength(0);
         expect(paths).not.toContain('/pins');
         expect(paths).not.toContain('/agreements');
     });

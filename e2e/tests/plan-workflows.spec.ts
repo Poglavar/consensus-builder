@@ -1,0 +1,89 @@
+import { test, expect } from '../helpers/fixtures';
+import { openCity, createSpace, showProposal, chooseProfileName } from '../helpers/runtime';
+import { pageIndex, cidOfObject } from '../helpers/mocks/shared-server';
+
+const writes = (page:any) => pageIndex(page).requests.filter(request => request.method==='POST' && ['/pins','/designs','/plans','/agreements'].includes(request.path));
+async function openPlans(page:any) {
+  if(!await page.locator('#proposals-sheet').isVisible())await page.locator('#proposals-button').click();
+  await page.locator('#shareAppliedProposalsButton').click();
+  await expect(page.locator('#designs-plans')).toBeVisible();
+}
+async function savePlan(page:any, title:string) {
+  const composer=page.locator('.plan-composer');
+  await composer.getByLabel('Plan name',{exact:true}).fill(title);
+  const choices=composer.locator('input[type="checkbox"]');
+  for(const choice of await choices.all())await choice.check();
+  await composer.getByRole('button',{name:'Create plan',exact:true}).click();
+  await expect(page.locator('.plan-details')).toBeVisible();
+  return page.evaluate(title => (window as any).PlanWorkspace.list().find((row:any)=>row.content.title===title),title);
+}
+
+test('Plan creation is local; sharing publishes only the saved immutable snapshot',async({mockApi:page})=>{
+  test.setTimeout(120000);
+  await openCity(page);
+  await page.evaluate(()=>(window as any).guestPolicyBlocks('publish'));
+  await chooseProfileName(page,'Plan author');
+  const first=await createSpace(page,'park');
+  await openPlans(page);
+  const heading=page.locator('#proposals-sheet-title');
+  await expect(heading).toHaveText('Plan');
+  await expect(page.locator('#designs-agreements-button')).toHaveCount(0);
+  const center=await heading.evaluate(el=>{const a=el.getBoundingClientRect(),b=el.closest('.map-sheet-header')!.getBoundingClientRect();return Math.abs(a.x+a.width/2-b.x-b.width/2);});
+  expect(center).toBeLessThanOrEqual(1);
+  await page.locator('#designs-plans').getByRole('button',{name:'Create plan',exact:true}).click();
+  await expect(page.locator('.plan-composer').getByRole('button',{name:/Share|Publish|agreement/i})).toHaveCount(0);
+  const plan=await savePlan(page,'Original park plan');
+  expect(writes(page)).toHaveLength(0);
+  // A later edit to the live design does not silently update this saved plan's source bytes.
+  await page.evaluate(id=>{const w=window as any,r=w.proposalStorage.getProposal(id);r.title='Later local edit';w.proposalStorage._indexProposal(r);},first);
+  await page.context().grantPermissions(['clipboard-read','clipboard-write']);
+  await page.locator('.plan-details').getByRole('button',{name:'Share plan',exact:true}).click();
+  const share=page.locator('.plan-share');
+  await expect(share).toBeVisible();
+  const box=(await share.locator('..').locator('..').boundingBox())!;
+  expect(box.width).toBeLessThanOrEqual(420);
+  expect(box.height).toBeLessThan(450);
+  await expect(share.locator('input[type="checkbox"],input[type="search"]')).toHaveCount(0);
+  await expect(share.getByRole('button',{name:/Add|Create agreement|Edit/i})).toHaveCount(0);
+  expect(writes(page)).toHaveLength(0);
+  await share.getByRole('button',{name:'Publish and copy link',exact:true}).click();
+  await expect(share.getByLabel('Plan link',{exact:true})).toHaveValue(new RegExp(`/plans/${plan.cid}`));
+  const sent=writes(page);
+  expect(sent.filter(request=>request.path==='/designs').map(request=>request.body.cid)).toEqual(plan.content.designCids);
+  expect(sent.find(request=>request.path==='/designs')!.body.content).toEqual(plan.designs[0].content);
+  expect(sent.find(request=>request.path==='/plans')!.body.content).toEqual(plan.content);
+  expect(cidOfObject(sent.find(request=>request.path==='/plans')!.body.content)).toBe(plan.cid);
+  expect(sent.filter(request=>request.path==='/agreements')).toHaveLength(0);
+  const before=sent.length;
+  await share.getByRole('button',{name:'Copy link',exact:true}).click();
+  expect(writes(page)).toHaveLength(before);
+});
+
+test('Add to plan creates a reviewed revision and retains the old membership',async({mockApi:page})=>{
+  test.setTimeout(120000);await page.setViewportSize({width:390,height:844});
+  await openCity(page);const first=await createSpace(page,'park');
+  await showProposal(page,first);
+  await page.locator('#proposal-details-panel .btn-add-to-plan').click();
+  const original=await savePlan(page,'Pocket spaces');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.plan-details')).toHaveCount(0);
+  await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), first);
+  const second=await createSpace(page,'square');
+  await showProposal(page,second);
+  await page.locator('#proposal-details-panel .btn-add-to-plan').click();
+  await page.getByRole('button',{name:'Pocket spaces',exact:true}).click();
+  const composer=page.locator('.plan-composer');
+  await expect(composer.getByText('Saving changes creates a new plan revision. Existing links stay unchanged.')).toBeVisible();
+  await expect(composer.locator('input[type="checkbox"]:checked')).toHaveCount(2);
+  await composer.getByRole('button',{name:'Save new revision',exact:true}).click();
+  await expect(page.locator('.plan-details')).toBeVisible();
+  const saved=await page.evaluate(()=>(window as any).PlanWorkspace.list().filter((row:any)=>row.content.title==='Pocket spaces'));
+  expect(saved).toHaveLength(2);
+  expect(saved.find((row:any)=>row.cid===original.cid).content.designCids).toEqual(original.content.designCids);
+  const next=saved.find((row:any)=>row.cid!==original.cid);expect(next.content.designCids).toHaveLength(2);
+  expect(writes(page)).toHaveLength(0);
+  await page.locator('.plan-details').getByRole('button',{name:'Create agreement',exact:true}).click();
+  await expect(page.locator('#agreement-editor')).toBeVisible();
+  await expect(page.locator('#agreement-editor [data-agreement-plan]')).toHaveValue(next.cid);
+  await expect(page.locator('#agreement-editor .plan-composer')).toHaveCount(0);
+});

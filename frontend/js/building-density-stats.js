@@ -126,9 +126,61 @@
         };
     }
 
-    // Display formatting is not here: the editors render these numbers with js/format.js (CbFormat).
+    // The Geometry statistics disclosure the urban-rule editors (Block, Row, Detached) share. Its
+    // summary is the only heading; `prefix` namespaces the element ids. English fallbacks only:
+    // each editor translates its panel through the data-i18n keys.
+    function cardMarkup(prefix) {
+        const row = (key, suffix, fallback) =>
+            `<div><dt data-i18n-key="densityStats.${key}" data-i18n-attr="text">${fallback}</dt><dd id="${prefix}-density-${suffix}">\u2014</dd></div>`;
+        return `<details>
+            <summary data-i18n-key="densityStats.title" data-i18n-attr="text">Geometry statistics</summary>
+            <section id="${prefix}-density-stats" class="building-density-card" aria-live="polite">
+                <dl class="building-density-grid">
+                    ${row('parcelArea', 'parcel', 'Parcel area')}
+                    ${row('footprint', 'footprint', 'Building footprint')}
+                    ${row('siteCoverage', 'coverage', 'Site coverage')}
+                    ${row('gbp', 'gbp', 'Above-ground floor area')}
+                    ${row('kin', 'kin', 'Floor area ratio (above ground)')}
+                </dl>
+                <p id="${prefix}-density-hint" class="building-density-hint"></p>
+            </section>
+        </details>`;
+    }
+
+    // Display strings for one summary, formatted with js/format.js (CbFormat). The ratios need
+    // ground to divide by, so without it they show a dash rather than a 0 that reads as empty.
+    function cardValues(stats, format) {
+        const dash = '\u2014';
+        const ground = Boolean(stats && stats.parcelAreaM2 > 0);
+        const area = value => (stats && Number.isFinite(value) ? format.formatArea(value) : dash);
+        return {
+            parcel: ground ? area(stats.parcelAreaM2) : dash,
+            footprint: area(stats && stats.footprintAreaM2),
+            coverage: ground ? format.formatPercent(stats.siteCoveragePercent, { ofHundred: true, maxFractionDigits: 1, missing: dash }) : dash,
+            gbp: area(stats && stats.aboveGroundGbpM2),
+            kin: ground ? format.formatNumber(stats.kin, { maxFractionDigits: 3, missing: dash }) : dash
+        };
+    }
+
+    // Fill a card made by cardMarkup. A geometry the summary cannot measure shows dashes.
+    function refreshCard(doc, prefix, input, { format, hint } = {}) {
+        let stats = null;
+        try { stats = summarizeDensity({ preferHeight: true, ...input }); } catch (_) { }
+        const values = cardValues(stats, format);
+        for (const [suffix, value] of Object.entries(values)) {
+            const element = doc.getElementById(`${prefix}-density-${suffix}`);
+            if (element) element.textContent = value;
+        }
+        const hintElement = doc.getElementById(`${prefix}-density-hint`);
+        if (hintElement && typeof hint === 'string') hintElement.textContent = hint;
+        return values;
+    }
+
     return {
         DEFAULT_FLOOR_HEIGHT_M,
-        summarizeDensity
+        summarizeDensity,
+        cardMarkup,
+        cardValues,
+        refreshCard
     };
 });

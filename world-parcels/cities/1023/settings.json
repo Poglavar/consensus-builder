@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1023",
+  "name": "Boa Vista, Brazil",
+  "point": [
+    2.81557899522809,
+    -60.7186704603058
+  ],
+  "bindings": [
+    {
+      "appCityId": "boa_vista",
+      "runtimeConfig": {
+        "id": "boa_vista",
+        "wupCityCode": "1023",
+        "label": "Boa Vista, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            2.81557899522809,
+            -60.7186704603058
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            2.81557899522809,
+            -60.7186704603058
+          ],
+          "fallbackDataset": [
+            -60.7186704603058,
+            2.81557899522809
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-boa-vista-pmbv-urbigis-lotes-pmbv01",
+          "idPrefix": "BR-BOAVISTA-PMBV01-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Prefeitura de Boa Vista (Roraima - Brasil) · urbiGIS · Lotes PMBV_01 · CCL-BY 4.0 (publisher share label)."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-boa-vista-pmbv-urbigis-lotes-pmbv01",
+      "name": "Boa Vista municipal cadastral lots — Lotes PMBV_01",
+      "adapter": "wfs",
+      "endpoint": "https://urbigis.com/uproxy/capproxy/AQG7PfUU8nkiFH5rOhJHnHgaUXbDoSFliqO7NuEkuLZF-9uSSk6FH78aBJYi9lqfHJjDFZKDtE4AowmX_mK1kYxh3cz9PFrfCaGLR4BkkGb0N7IaSFs",
+      "featureType": "nlaiwufy7H:2a561508-e7c3-470e-91b0-32b6238af828",
+      "version": "2.0.0",
+      "idField": "iden",
+      "idType": "decimal",
+      "idPrefix": "BR-BOAVISTA-PMBV01-",
+      "geometryField": "geom",
+      "outFields": [
+        "iden"
+      ],
+      "requestProperties": true,
+      "paginationIdentity": "native-id",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 25000,
+      "countryCode": "BR",
+      "stateCode": "RR",
+      "metricSrid": 32620,
+      "cityIds": [
+        "boa_vista"
+      ],
+      "defaultForCity": true,
+      "browserTransport": "relay",
+      "operator": "Prefeitura de Boa Vista (Roraima - Brasil)",
+      "sourceUuid": "57af3ee7-51e4-4263-8570-d944c2cf40c0",
+      "nativeCrs": "EPSG:3857",
+      "responseCrs": "CRS:84",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "catalogueUrl": "https://urbigis.com/services/mapservices/mapservices/743727",
+      "scope": "Municipal cadastral lot layer published as Lotes PMBV_01 under Cadastro Imobiliario. Bounded centre, east and southwest samples; citywide completeness and currentness are unverified. Published extent [-60.79906471033733,2.745147450186069,-60.62618445083938,2.8970574133017086] is a service limit.",
+      "attribution": "Prefeitura de Boa Vista (Roraima - Brasil) · urbiGIS · Lotes PMBV_01 · CCL-BY 4.0 (publisher share label).",
+      "licenceNote": "Current municipal map-service metadata declares adm.sharetype.CCL-BY_4.0, acronym CCL-BY 4.0, without a licence URL. Exact legal text and municipal attribution conditions remain second-pass follow-ups.",
+      "discovery": {
+        "jurisdiction": {
+          "basis": "Public municipal-owner metadata names Boa Vista, Prefeitura de Boa Vista and Cadastro Imobiliario; WFS returns native iden and full lot MultiPolygons near the queue point.",
+          "evidence": [
+            "evidence/source-metadata.json"
+          ]
+        }
+      }
+    }
+  ]
+}

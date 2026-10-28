@@ -1,12 +1,13 @@
 // Keeps the Surat app entry scoped to the municipal final-plot layer and its metric CRS.
 import { describe, expect, it } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const cityContext = { URLSearchParams, console };
 cityContext.window = cityContext;
-runInContext(read('../../frontend/js/city-config.js'), createContext(cityContext));
+runInContext(cityConfigSource(), createContext(cityContext));
 
 describe('Surat city config', () => {
     const city = cityContext.CityConfigManager.getCityConfig('surat');

@@ -11,6 +11,11 @@
     const designGoals = global.ProposalDesignGoals || (typeof require === 'function'
         ? require('./proposals/design-goals.js') : null);
 
+    function validateProposalRecipient(fields = {}) {
+        return fields.ownership !== 'third-party' || fields.recipientScope !== 'specific'
+            || (typeof fields.recipientAddress === 'string' && fields.recipientAddress.trim().length > 0);
+    }
+
     function cloneDraftValue(value) {
         if (value === undefined || value === null) return value;
         try {
@@ -241,7 +246,7 @@
                     parameters: cloneDraftValue(buildingProposal.parameters || {}),
                     buildingFeature: cloneDraftValue(buildingProposal.buildingFeature || buildings[0] || null),
                     buildings: cloneDraftValue(buildings),
-                    blockMassing: cloneDraftValue(proposal?.geometry?.blockMassing || null),
+                    ruleMassing: cloneDraftValue(proposal?.geometry?.ruleMassing || null),
                     ineligibleParcels: cloneDraftValue(buildingProposal.ineligibleParcels || [])
                 }
             };
@@ -396,7 +401,12 @@
     }
 
     function createProposalDraftStore(options = {}) {
-        const storage = options.storage || global.localStorage || null;
+        const diagnostics = options.diagnostics || global.AppDiagnostics;
+        const observeDraft = (operation, saved) => {
+            diagnostics?.event(operation, 'success', { entity: 'design', context: { surface: 'draft-editor' } });
+            diagnostics?.event('save', saved ? 'success' : 'failure', { entity: 'design', context: { surface: 'draft-editor' } });
+        };
+        const storage = options.storage || global.BrowserWorkspace?.storage || global.localStorage || null;
         const storageKey = options.storageKey || PROPOSAL_DRAFT_STORAGE_KEY;
         const now = options.now || (() => new Date());
         const idFactory = options.idFactory || defaultDraftId;
@@ -462,11 +472,13 @@
                 }
                 if (!persistenceWarningShown) {
                     persistenceWarningShown = true;
-                    console.warn('[ProposalDraftStore] Could not persist drafts (storage full or unavailable) — keeping them in memory only', lastError);
+                    const diagnostic = diagnostics?.report(lastError, { code: 'draft-storage-unavailable', context: { surface: 'draft-editor' } });
+                    if (diagnostic && typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(diagnostic.message, 8000, 'error');
+                    console.warn('[ProposalDraftStore] Drafts remain in memory; device storage is unavailable. Download work before closing.');
                 }
                 return false;
             }
-            return true;
+            return false; // A memory-only draft must not be counted as a successful device save.
         }
 
         // Erase every draft, receipt, and stored byte of this store — used by "wipe ALL local data".
@@ -581,7 +593,7 @@
             }, now);
             envelope.drafts.push(draft);
             if (input.activate !== false) envelope.activeDraftId = draft.id;
-            persist();
+            observeDraft('create', persist());
             notify('create', draft.id);
             return cloneDraftValue(draft);
         }
@@ -678,7 +690,8 @@
             if (!normalized) throw new TypeError('Proposal draft updates must preserve an explicit canonical goal.');
             const index = envelope.drafts.findIndex(item => item.id === draftId);
             envelope.drafts[index] = normalized;
-            persist();
+            const saved = persist();
+            if (meaningfulChange) observeDraft('edit', saved);
             if (updateOptions.validate === true) validateDraft(draftId);
             else notify('update', draftId);
             return getDraft(draftId);
@@ -969,30 +982,31 @@
     }
 
     global.PROPOSAL_DRAFT_SCHEMA_VERSION = PROPOSAL_DRAFT_SCHEMA_VERSION;
+    global.validateProposalRecipient = validateProposalRecipient;
     global.PROPOSAL_DRAFT_STORAGE_KEY = PROPOSAL_DRAFT_STORAGE_KEY;
     global.createProposalDraftStore = createProposalDraftStore;
-    if (!global.proposalDraftStore) global.proposalDraftStore = createProposalDraftStore();
-
-    if (global.addEventListener && global.proposalDraftStore) {
+    function attachDefaultStore() {
+        if (!global.proposalDraftStore) global.proposalDraftStore = createProposalDraftStore();
+        if (!global.addEventListener) return;
         const flush = () => {
+            if (global.BrowserWorkspace && global.BrowserWorkspace.status !== 'ready') return;
             try { global.proposalDraftStore.flush(); } catch (_) { }
         };
         global.addEventListener('pagehide', flush);
         global.addEventListener('beforeunload', flush);
-        global.addEventListener('storage', event => {
-            // key === null means another tab cleared ALL of localStorage (a wipe) — re-read then too,
-            // so this tab's in-memory drafts don't get re-persisted by its own unload flush.
-            if (event && (event.key === PROPOSAL_DRAFT_STORAGE_KEY || event.key === null)) {
-                try { global.proposalDraftStore.reload(); } catch (_) { }
-            }
-        });
     }
+    if (global.BrowserWorkspace) {
+        global.BrowserWorkspace.ready.then(owned => {
+            if (owned) attachDefaultStore();
+        }).catch(() => {}); // The workspace startup screen handles ownership/storage failures.
+    } else attachDefaultStore();
 
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = {
             PROPOSAL_DRAFT_SCHEMA_VERSION,
             PROPOSAL_DRAFT_STORAGE_KEY,
             createProposalDraftStore,
+            validateProposalRecipient,
             cloneDraftValue,
             normalizeGoalKey,
             envelopeWithHistoryLimit

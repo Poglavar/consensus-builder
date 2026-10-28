@@ -72,6 +72,27 @@ async function segmentPoint(page: Page): Promise<{ x: number; y: number }> {
   });
 }
 
+async function unobstructedHandlePoint(locator: Locator): Promise<{ x: number; y: number }> {
+  return locator.evaluate(element => {
+    const rect = element.getBoundingClientRect();
+    const point = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    if (document.elementFromPoint(point.x, point.y) !== element) {
+      throw new Error(`Handle ${element.className} is covered at its center`);
+    }
+    return point;
+  });
+}
+
+async function handleOpacity(locator: Locator): Promise<string> {
+  return locator.evaluate(element => getComputedStyle(element).opacity);
+}
+
+async function attachEditorScreenshot(page: Page, testInfo: import('@playwright/test').TestInfo, name: string) {
+  const path = testInfo.outputPath(name);
+  await page.screenshot({ path, fullPage: true });
+  await testInfo.attach(name, { path, contentType: 'image/png' });
+}
+
 // The ends of an east-west line across the pool (the red outline), just outside it on both sides and
 // clear of the editor's panels. Equal plots are cut north-south, so this line crosses them all.
 async function crossingLine(page: Page): Promise<Array<{ x: number; y: number }>> {
@@ -217,6 +238,65 @@ test('a boundary segment drags straight away, undo and redo walk it back and for
   await expect(editor.locator('[data-reparcel-status]')).toContainText('Drawing freely from the current layout');
 });
 
+test('editing handles appear on hover and hide again on desktop', async ({ mockApi: page }, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 860 });
+  const editor = await openLayoutEditor(page);
+  const node = page.locator('#map-container .reparcel-node-handle').first();
+  const midpoint = page.locator('#map-container .reparcel-edge-handle').first();
+  const sweep = page.locator('#map-container .reparcel-sweep-handle');
+  const edge = page.locator('#map-container path.geom-handle-edge').first();
+
+  await expect(node).toBeAttached();
+  await expect(midpoint).toBeAttached();
+  await expect(sweep).toBeAttached();
+  await expect.poll(() => handleOpacity(node)).toBe('0');
+  await expect.poll(() => handleOpacity(midpoint)).toBe('0');
+  await expect.poll(() => handleOpacity(sweep)).toBe('0');
+  await attachEditorScreenshot(page, testInfo, 'parcel-layout-handles-hidden.png');
+
+  for (const handle of [node, midpoint, sweep]) {
+    const point = await unobstructedHandlePoint(handle);
+    await page.mouse.move(point.x, point.y);
+    await expect.poll(() => handleOpacity(handle)).toBe('1');
+    await page.mouse.move(5, 400);
+    await expect.poll(() => handleOpacity(handle)).toBe('0');
+  }
+
+  const segment = await segmentPoint(page);
+  await page.mouse.move(segment.x, segment.y);
+  await expect.poll(() => edge.evaluate(element => getComputedStyle(element).strokeOpacity)).toBe('0.35');
+  await page.mouse.move(5, 400);
+  await expect.poll(() => handleOpacity(node)).toBe('0');
+  await expect.poll(() => handleOpacity(midpoint)).toBe('0');
+  await expect.poll(() => handleOpacity(sweep)).toBe('0');
+  await page.evaluate(() => {
+    const map=(window as any).map;
+    map.setZoom(map.getZoom()-3,{animate:false});
+  });
+  for(const handle of [node,midpoint,sweep])await expect.poll(()=>handleOpacity(handle)).toBe('0');
+  await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
+});
+
+test.describe('touch parcel layout handles', () => {
+  test.use({ viewport: { width: 1280, height: 860 }, hasTouch: true });
+
+  test('keeps node, midpoint, and sweep handles visible and opens a node popup on tap', async ({ mockApi: page }) => {
+    const editor = await openLayoutEditor(page);
+    const node = page.locator('#map-container .reparcel-node-handle').first();
+    const midpoint = page.locator('#map-container .reparcel-edge-handle').first();
+    const sweep = page.locator('#map-container .reparcel-sweep-handle');
+    for (const handle of [node, midpoint, sweep]) {
+      await expect(handle).toBeVisible();
+      await expect.poll(() => handleOpacity(handle)).toBe('1');
+    }
+
+    const point = await unobstructedHandlePoint(node);
+    await page.touchscreen.tap(point.x, point.y);
+    await expect(page.locator('.leaflet-popup .reparcel-node-popup')).toBeVisible();
+    await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
+  });
+});
+
 test('a click on a boundary offers to erase it, and Delete removes a node from its popup', async ({ mockApi: page }) => {
   test.setTimeout(90_000);
   const editor = await openLayoutEditor(page);
@@ -290,6 +370,38 @@ test('a line cuts the plots it crosses, a GeoJSON file replaces the layout, and 
   const layout = await appliedLayout(page);
   expect(layout.parcelLayout.algorithm).toBe('manual');
   expect(layout.parcelLayout.plots.map((plot: any) => plot.source)).toEqual(['geojson', 'geojson']);
+});
+
+// The import limit is 1,000 polygons (parcel-layout-validation.js MAX_PLOTS); exactly that many,
+// a 40 × 25 grid over parcel 1234, used to stall the editor (N1, 2026-10-28 retest).
+function gridPlots(cols: number, rows: number) {
+  const [west, south, east, north] = [15.9819, 45.8, 15.9825, 45.8005];
+  const dx = (east - west) / cols, dy = (north - south) / rows;
+  const features = [];
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+    const x = west + c * dx, y = south + r * dy;
+    features.push({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[x, y], [x + dx, y], [x + dx, y + dy], [x, y + dy], [x, y]]] } });
+  }
+  return { type: 'FeatureCollection', features };
+}
+
+test('a file of exactly 1,000 plots imports, and Done applies all of them', async ({ mockApi: page }) => {
+  test.setTimeout(180_000);
+  const editor = await openLayoutEditor(page);
+  const started = Date.now();
+  await editor.locator('[data-reparcel-upload]').setInputFiles({
+    name: 'grid-1000.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(gridPlots(40, 25))),
+  });
+  await expect(editor.locator('[data-reparcel-status]')).toHaveText('Loaded 1000 polygons from file.', { timeout: 60_000 });
+  const importMs = Date.now() - started;
+  await expect(editor.locator('[data-reparcel-newplots-table] tbody tr')).toHaveCount(1000);
+  test.info().annotations.push({ type: 'import-ms', description: String(importMs) });
+  const committed = Date.now();
+  await editor.locator('[data-reparcel-commit]').click();
+  await expect(editor).toHaveCount(0, { timeout: 90_000 });
+  const layout = await appliedLayout(page);
+  expect(layout.parcelLayout.plots).toHaveLength(1000);
+  test.info().annotations.push({ type: 'apply-ms', description: String(Date.now() - committed) });
 });
 
 test('Done applies the plots, and every live piece keeps its authored plot reference through a reload', async ({ mockApi: page }) => {
@@ -424,6 +536,7 @@ test('a parcel layout\'s details offer no sharing or duplicate: it is published 
   await editor.locator('[data-reparcel-commit]').click();
   await expect(editor).toHaveCount(0);
   const { proposalId } = await appliedLayout(page);
+  await page.setViewportSize({ width: 390, height: 844 });
   await showProposal(page, proposalId);
   const panel = page.locator('#proposal-details-panel');
   const share = panel.locator('.btn-share-proposal');
@@ -432,6 +545,27 @@ test('a parcel layout\'s details offer no sharing or duplicate: it is published 
   await expect(share).toHaveAttribute('aria-describedby', 'proposal-publish-later-note');
   await expect(panel.locator('#proposal-publish-later-note')).toHaveText('A parcel layout is published with its agreement. Propose an agreement that includes it.');
   await expect(panel.locator('.btn-duplicate-design')).toHaveCount(0);
+  const actionGrid = panel.locator('.proposal-primary-actions');
+  const layout = await actionGrid.evaluate(grid => {
+    const buttons = [...grid.querySelectorAll<HTMLElement>(':scope > button')].filter(button => getComputedStyle(button).display !== 'none');
+    const note = grid.querySelector<HTMLElement>('.proposal-publish-later')!;
+    const gridRect = grid.getBoundingClientRect(), noteRect = note.getBoundingClientRect();
+    const buttonRects = buttons.map(button => button.getBoundingClientRect());
+    const panelRect = document.querySelector('#proposal-details-panel')!.getBoundingClientRect();
+    const footerRect = grid.closest('.panel-footer')!.getBoundingClientRect();
+    return { columns: getComputedStyle(grid).gridTemplateColumns.split(' ').length,
+      heights: buttonRects.map(rect => rect.height), buttonBottom: Math.max(...buttonRects.map(rect => rect.bottom)),
+      gridLeft: gridRect.left, gridWidth: gridRect.width, noteLeft: noteRect.left, noteWidth: noteRect.width,
+      noteTop: noteRect.top, noteBottom: noteRect.bottom, panelBottom: panelRect.bottom, footerBottom: footerRect.bottom };
+  });
+  expect(layout.columns).toBe(2);
+  expect(layout.heights.length).toBeGreaterThanOrEqual(4);
+  expect(layout.heights.every(height => height <= 56)).toBe(true);
+  expect(layout.noteTop).toBeGreaterThanOrEqual(layout.buttonBottom);
+  expect(Math.abs(layout.noteLeft - layout.gridLeft)).toBeLessThanOrEqual(1);
+  expect(Math.abs(layout.noteWidth - layout.gridWidth)).toBeLessThanOrEqual(1);
+  expect(layout.noteBottom).toBeLessThanOrEqual(layout.footerBottom);
+  expect(layout.footerBottom).toBeLessThanOrEqual(layout.panelBottom);
   // Nobody decides on or bets on a design by itself (M3): only an agreement over it is minted and bet on.
   await expect(panel.getByRole('button', { name: /\bbet\b/i })).toHaveCount(0);
   // What it offers instead: Add to agreement, the layout's main action, which opens the agreement

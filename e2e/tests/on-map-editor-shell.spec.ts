@@ -1,7 +1,8 @@
+import { openPlanActions } from '../helpers/plan-actions';
 // Purpose: exercise the shared editor shell where map context, mode changes, and narrow screens
 // used to make controls drift, disappear, or unlock too early.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, openBlockEditor, clickMapPoint, createBuilding, PARCEL_GEOMETRY, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, openBlockEditor, clickMapPoint, createBuilding, PARCEL_GEOMETRY, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
 import { buildings3D, mockBuildingScene } from '../helpers/mocks/building-data';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import type { Page } from '@playwright/test';
@@ -52,6 +53,7 @@ async function openEditor(page: Page, kind: 'block' | 'single' | 'detached' | 'r
   await openParcel(page, 'proposals');
   if (kind === 'single') {
     await page.locator('.parcel-build-btn--single').click();
+    await placeFreeformBuilding(page);
     return { root: '#single-building-editor', done: '#single-building-confirm', cancel: '#single-building-editor .on-map-editor__header .close-circle-btn' };
   }
   await page.locator('.parcel-build-btn--parcelBased').click();
@@ -89,7 +91,7 @@ test.describe('Shared on-map editor shell @features', () => {
     { label: 'desktop', width: 1280, height: 900 },
     { label: '320px mobile', width: 320, height: 780 }
   ]) {
-    test(`3D view hint, live status and bottom navigation do not overlap on ${viewport.label}`, async ({ mockApi: page }) => {
+    test(`3D view hint and live status fit while bottom navigation is hidden on ${viewport.label}`, async ({ mockApi: page }) => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await mockBuildingScene(page);
       await openCity(page);
@@ -110,15 +112,15 @@ test.describe('Shared on-map editor shell @features', () => {
       await expect(status).toBeVisible();
       await expect(status).not.toHaveClass(/is-idle/);
 
+      await expect(page.locator('#map-shell-bottom-right')).toBeHidden();
       const layout = await page.evaluate(() => {
         const feedback = document.getElementById('map-feedback-stack')!.getBoundingClientRect();
         const hint = document.querySelector('.three-view-hint')!.getBoundingClientRect();
         const status = document.getElementById('floating-status')!.getBoundingClientRect();
-        const dock = document.getElementById('map-shell-bottom-right')!.getBoundingClientRect();
-        return { feedbackBottom: feedback.bottom, hintBottom: hint.bottom, statusTop: status.top, dockTop: dock.top };
+        return { feedbackBottom: feedback.bottom, hintBottom: hint.bottom, statusTop: status.top, viewportHeight: innerHeight };
       });
       expect(layout.hintBottom).toBeLessThanOrEqual(layout.statusTop);
-      expect(layout.feedbackBottom).toBeLessThanOrEqual(layout.dockTop);
+      expect(layout.feedbackBottom).toBeLessThanOrEqual(layout.viewportHeight);
     });
   }
 
@@ -162,25 +164,20 @@ test.describe('Shared on-map editor shell @features', () => {
     await expect(menu.locator('[data-command="parcel.view3d"]')).toHaveCount(0);
   });
 
-  test('Plan stats stays disabled for an empty plan, then opens after an applied building is created', async ({ mockApi: page }) => {
+  test('Plan stats belongs to saved plans, including unapplied designs', async ({ mockApi: page }) => {
     await openCity(page);
-    const actions = page.locator('#proposal-list-actions');
-    const openActionsIfNeeded = async () => {
-      if (!(await actions.isVisible())) await page.locator('#proposals-button').click();
-    };
-    await openActionsIfNeeded();
-    const statsButton = page.locator('#planStatsButton');
-    await expect(statsButton).toBeDisabled();
     await page.locator('#proposals-button').click();
-
-    await createBuilding(page);
-    await openActionsIfNeeded();
-    await expect(statsButton).toBeEnabled();
-    await statsButton.click();
+    await page.locator('[data-list-tab="plans"]').click();
+    await expect(page.getByRole('button', { name: 'Plan stats', exact: true })).toHaveCount(0);
+    await page.locator('#proposals-button').click();
+    const id = await createBuilding(page);
+    await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), id);
+    const row = await openPlanActions(page);
+    await row.getByRole('button', { name: 'Plan stats', exact: true }).click();
     const modal = page.locator('#plan-stats-modal');
     await expect(modal).toBeVisible();
-    await expect(modal.locator('[data-plan-stat="scope"]')).toContainText('1 applied');
-    await modal.getByRole('button', { name: 'Close applied proposal stats' }).click();
+    await expect(modal.locator('[data-plan-stat="scope"]')).toContainText('Inspection plan');
+    await modal.getByRole('button', { name: 'Close plan stats' }).click();
     await expect(modal).toBeHidden();
   });
 
@@ -224,8 +221,8 @@ test.describe('Shared on-map editor shell @features', () => {
       const root = page.locator(editor.root);
       await expect(page.locator(editor.done)).toBeEnabled({ timeout: 20_000 });
       if (kind === 'single') {
-        // The freeform land-take review refines its initial placement preview asynchronously.
-        await expect(page.locator('#single-land-take [data-land-accept]')).toBeEnabled({ timeout: 20_000 });
+        // The freeform land-take summary refines its initial placement preview asynchronously.
+        await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²', { timeout: 20_000 });
       }
       await expectEditorDockedRight(page, editor.root);
       const preview = await page.evaluate(() => JSON.parse(JSON.stringify((window as any).OnMapEditor.getPreview())));

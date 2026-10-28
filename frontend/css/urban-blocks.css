@@ -30,7 +30,7 @@
 .urban-block-panel-heading h2 { margin: 0; font-size: var(--cb-text-lg); }
 #urban-block-panel-summary { font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
 .urban-block-panel-header .btn-quiet { min-width: var(--cb-control-height); min-height: var(--cb-control-height); padding: 0; }
-.urban-block-info { padding: var(--cb-space-4); overflow-y: auto; font-size: var(--cb-text-md); line-height: var(--cb-leading); }
+.urban-block-info { padding: var(--right-panel-padding, var(--cb-space-4)); overflow-y: auto; font-size: var(--cb-text-md); line-height: var(--cb-leading); }
 .urban-block-details-view { display: flex; flex-direction: column; min-height: 0; }
 .urban-block-back { align-self: flex-start; margin: var(--cb-space-1) var(--cb-space-3) 0; flex-shrink: 0; }
 .urban-block-list-view { padding: var(--cb-space-3); overflow-y: auto; min-height: 0; overscroll-behavior: contain; }

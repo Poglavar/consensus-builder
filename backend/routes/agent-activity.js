@@ -19,12 +19,13 @@ import { decodeBase58, decodeParsedTransaction, loadIdls } from '../solana/tx-de
 import { formatAtomicAmount } from '../utils/x402-payment.js';
 import { AGREEMENT_PROGRAM_ID, AgreementClient, agreementAccountOf } from '../agreements/onchain.js';
 import { normalizeCityCode } from '../utils/city-code.js';
+import { createSingleFlightMemo } from '../utils/single-flight-memo.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
 // The market program's codec (proposal_market): its id and the market PDA of an agreement account. web3
 // is injected because the codec's own require would resolve from frontend/.
-const marketClient = require('../../frontend/js/solana/market-client.js').configure({ web3 });
+const marketClient = require('../../frontend/js/solana/lmsr-client.js').configure({ web3 });
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const MARKET_PROGRAM_ID = marketClient.constants.PROGRAM_ID;
@@ -43,7 +44,7 @@ const AGREEMENT_ACTIONS = Object.freeze({
 // without that role names the market, whose PDA the account index maps as well.
 const SUBJECT_ACTIONS = new Map([
     ['proposal_market', new Map([
-        ['create_market', 'createMarket'], ['stake', 'stake'], ['resolve', 'resolve'], ['claim', 'claim']
+        ['create_lmsr_market', 'createMarket'], ['buy', 'stake'], ['sell', 'sell'], ['resolve_lmsr', 'resolve'], ['claim_lmsr', 'claim']
     ])],
     ['proposal_pledge', new Map([
         ['donate', 'donate'], ['refund_donation', 'refundMyDonations'], ['release_donations', 'releaseDonations'],
@@ -54,10 +55,10 @@ const SUBJECT_ACTIONS = new Map([
 // The chain actions the landing feed shows: outcomes, bets and support. Its agreements arrive as proposed
 // from the index; a mint, a fund or an attestation is detail for the explorer.
 const RECENT_CHAIN_ACTIONS = new Set([
-    'execute', 'cancel', 'expire', 'createMarket', 'stake', 'resolve', 'claim', 'donate', 'pledge', 'fulfillPledge'
+    'execute', 'cancel', 'expire', 'createMarket', 'stake', 'sell', 'resolve', 'claim', 'donate', 'pledge', 'fulfillPledge'
 ]);
 // The bet's own actions; the landing feed keeps room for them and links them to the bet.
-const BET_ACTIONS = new Set(['createMarket', 'stake', 'resolve', 'claim']);
+const BET_ACTIONS = new Set(['createMarket', 'stake', 'sell', 'resolve', 'claim']);
 
 // Agreement rows as the feeds read them, with the goal and site bounds of the agreement's first design.
 const AGREEMENT_ROWS = `
@@ -111,7 +112,7 @@ export function agreementAccountIndex(rows = []) {
         if (!account) continue;
         const entry = { cid: row.cid, account };
         index.set(account, entry);
-        index.set(derived(`market:${account}`, () => marketClient.getMarketPda(account)[0].toBase58()), entry);
+        if (row.sponsor) index.set(derived(`market:${account}:${row.sponsor}`, () => marketClient.getMarketPda(account, row.sponsor)[0].toBase58()), entry);
     }
     return index;
 }
@@ -147,8 +148,14 @@ function agreementStep(instruction) {
     const type = SUBJECT_ACTIONS.get(instruction.program?.name)?.get(instruction.action);
     if (!type) return null;
     const fields = {};
-    if (instruction.action === 'stake') fields.side = Number(instruction.args?.side) === 1 ? 'yes' : 'no';
-    if (instruction.args?.amount != null && ['stake', 'donate', 'set_pledge'].includes(instruction.action)) {
+    if (['buy', 'sell'].includes(instruction.action)) fields.side = Number(instruction.args?.side) === 1 ? 'yes' : 'no';
+    if (instruction.action === 'buy') {
+        if (instruction.args?.shares != null) fields.shares = String(instruction.args.shares);
+        if (instruction.args?.max_cost != null) fields.maxCost = formatAtomicAmount(String(instruction.args.max_cost), USDC_DECIMALS);
+    } else if (instruction.action === 'sell') {
+        if (instruction.args?.shares != null) fields.shares = String(instruction.args.shares);
+        if (instruction.args?.min_return != null) fields.minReturn = formatAtomicAmount(String(instruction.args.min_return), USDC_DECIMALS);
+    } else if (instruction.args?.amount != null && ['donate', 'set_pledge'].includes(instruction.action)) {
         fields.amount = formatAtomicAmount(String(instruction.args.amount), USDC_DECIMALS);
     }
     return {
@@ -375,6 +382,21 @@ function runEvents(row, book = null) {
 // window per source and reports it, so a client can tell "none in the window" from "none at all".
 export const ACTIVITY_SCAN_WINDOW = 1000;
 
+// Both feeds answer every visitor alike, and each world-view visitor polls /activity/recent every
+// 60 s. One read per distinct request every 20 s, shared by everyone asking meanwhile, is fresh enough
+// for a feed of confirmed changes; the browser may reuse an answer for 15 s on top.
+export const ACTIVITY_MEMO_TTL_MS = 20000;
+const ACTIVITY_MEMO_MAX_KEYS = 50;
+const RECENT_CACHE_CONTROL = 'public, max-age=15';
+
+// The account index (agreementAccountIndex) used to read every agreement with an account, unbounded.
+// No feed returns those rows: they only name the agreement a decoded transaction is about, so the
+// bound is the scan window the explorer already reports, newest first. A chain action on an
+// agreement older than the newest ACTIVITY_SCAN_WINDOW with an account is left out of the feeds, as
+// an action on an unindexed account is.
+const ACCOUNT_INDEX_SQL = `${AGREEMENT_ROWS} WHERE ${WITH_ACCOUNT}
+     ORDER BY a.created_at DESC, a.cid LIMIT ${ACTIVITY_SCAN_WINDOW}`;
+
 /**
  * The newest `limit` events, newest first, keeping up to half the places for bets: a burst of new
  * agreements (a whole superblock proposed at once) must not push every bet off the landing feed. Places
@@ -496,43 +518,52 @@ export function setupAgentActivityRoute(app, pool, {
     // A compact public feed of confirmed, useful changes. This deliberately reads the agreements
     // proposed to the index alongside successful confirmed transactions on indexed agreements: their
     // outcomes (execute, cancel, expire), bets and support.
+    // Keyed by the normalized limit, the request's only input, so junk query parameters cannot
+    // multiply the reads (and there are at most 30 keys).
+    const recentMemo = createSingleFlightMemo({ ttlMs: ACTIVITY_MEMO_TTL_MS, maxKeys: ACTIVITY_MEMO_MAX_KEYS });
     app.get('/activity/recent', async (req, res) => {
-        res.set('Cache-Control', 'no-store');
         try {
             const requested = Number(req.query.limit);
             const limit = Number.isInteger(requested) && requested > 0 ? Math.min(requested, 30) : 12;
-            const [proposed, withAccount, transactions, marketTransactions] = await Promise.all([
-                pool.query(`${AGREEMENT_ROWS} ORDER BY a.created_at DESC, a.cid LIMIT $1`, [limit]),
-                pool.query(`${AGREEMENT_ROWS} WHERE ${WITH_ACCOUNT}`),
-                pool.query(
-                    `${TRANSACTION_ROWS}
-                      WHERE cluster = 'devnet'
-                      ORDER BY block_time DESC NULLS LAST, slot DESC
-                      LIMIT $1`, [limit * 4]
-                ),
-                // The market program's own recent transactions, so bets reach the feed even when
-                // a burst of mints fills the general window above.
-                pool.query(
-                    `${TRANSACTION_ROWS}
-                      WHERE cluster = 'devnet' AND touched_addresses @> ARRAY[$1]::text[]
-                      ORDER BY block_time DESC NULLS LAST, slot DESC
-                      LIMIT $2`, [MARKET_PROGRAM_ID, limit * 2]
-                )
-            ]);
-            const transactionRows = [...new Map([...transactions.rows, ...marketTransactions.rows]
-                .map(row => [row.signature, row])).values()];
-            const confirmedChainEvents = chainEvents(transactionRows, {
-                book, idls, agreementsByAccount: agreementAccountIndex(withAccount.rows), decode
-            }).filter(event => event.ok === true && RECENT_CHAIN_ACTIONS.has(event.action.type));
-            const agreements = byCid([...withAccount.rows, ...proposed.rows]);
-            const events = recentWithBets(mergeEvents(agreementEvents(proposed.rows), confirmedChainEvents), limit)
-                .map(event => withSubject(event, { agreements }));
-            return res.json({ events, source: 'live' });
+            const body = await recentMemo.get(String(limit), () => readRecentActivity(limit));
+            res.set('Cache-Control', RECENT_CACHE_CONTROL);
+            return res.json(body);
         } catch (error) {
             console.error(`[${new Date().toISOString()}] GET /activity/recent failed:`, error);
+            res.set('Cache-Control', 'no-store');
             return res.status(500).json({ error: 'Failed to read recent activity', source: 'live' });
         }
     });
+
+    async function readRecentActivity(limit) {
+        const [proposed, withAccount, transactions, marketTransactions] = await Promise.all([
+            pool.query(`${AGREEMENT_ROWS} ORDER BY a.created_at DESC, a.cid LIMIT $1`, [limit]),
+            pool.query(ACCOUNT_INDEX_SQL),
+            pool.query(
+                `${TRANSACTION_ROWS}
+                  WHERE cluster = 'devnet'
+                  ORDER BY block_time DESC NULLS LAST, slot DESC
+                  LIMIT $1`, [limit * 4]
+            ),
+            // The market program's own recent transactions, so bets reach the feed even when
+            // a burst of mints fills the general window above.
+            pool.query(
+                `${TRANSACTION_ROWS}
+                  WHERE cluster = 'devnet' AND touched_addresses @> ARRAY[$1]::text[]
+                  ORDER BY block_time DESC NULLS LAST, slot DESC
+                  LIMIT $2`, [MARKET_PROGRAM_ID, limit * 2]
+            )
+        ]);
+        const transactionRows = [...new Map([...transactions.rows, ...marketTransactions.rows]
+            .map(row => [row.signature, row])).values()];
+        const confirmedChainEvents = chainEvents(transactionRows, {
+            book, idls, agreementsByAccount: agreementAccountIndex(withAccount.rows), decode
+        }).filter(event => event.ok === true && RECENT_CHAIN_ACTIONS.has(event.action.type));
+        const agreements = byCid([...withAccount.rows, ...proposed.rows]);
+        const events = recentWithBets(mergeEvents(agreementEvents(proposed.rows), confirmedChainEvents), limit)
+            .map(event => withSubject(event, { agreements }));
+        return { events, source: 'live' };
+    }
 
     // How many agreements each city holds: what the globe paints its city dots and label badges with.
     // One grouped count; a minute of caching is plenty for a globe.
@@ -554,51 +585,57 @@ export function setupAgentActivityRoute(app, pool, {
 
     // The explorer's feed: agreements proposed and designs published to the index, decoded chain actions
     // on indexed agreements and the agent runs' recorded activities, the newest `limit` of them.
+    // The same memo as /activity/recent, keyed by the normalized limit and filters.
+    const activityMemo = createSingleFlightMemo({ ttlMs: ACTIVITY_MEMO_TTL_MS, maxKeys: ACTIVITY_MEMO_MAX_KEYS });
     app.get('/agent/activity', async (req, res) => {
         try {
             const limit = asLimit(req.query.limit);
             const filters = activityFilters(req.query);
-            const filtered = Object.keys(filters).length > 0;
-            const window = filtered ? ACTIVITY_SCAN_WINDOW : limit;
-            const [runs, transactions, withAccount, proposed, designs] = await Promise.all([
-                pool.query(
-                    `SELECT run_id, persona, mode, status, stage, summary, started_at, updated_at
-                       FROM consensus.agent_run
-                      ORDER BY updated_at DESC
-                      LIMIT $1`,
-                    [window]
-                ),
-                pool.query(
-                    `${TRANSACTION_ROWS}
-                      WHERE cluster = 'devnet'
-                      ORDER BY block_time DESC NULLS LAST, slot DESC
-                      LIMIT $1`,
-                    [window]
-                ),
-                pool.query(`${AGREEMENT_ROWS} WHERE ${WITH_ACCOUNT}`),
-                pool.query(`${AGREEMENT_ROWS} ORDER BY a.created_at DESC, a.cid LIMIT $1`, [window]),
-                pool.query(`${DESIGN_ROWS} ORDER BY created_at DESC, cid LIMIT $1`, [window])
-            ]);
-            const chain = chainEvents(transactions.rows, {
-                book, idls, agreementsByAccount: agreementAccountIndex(withAccount.rows), decode
-            });
-            const subjects = { agreements: byCid([...withAccount.rows, ...proposed.rows]), designs: byCid(designs.rows) };
-            const events = mergeEvents(
-                agreementEvents(proposed.rows),
-                designEvents(designs.rows),
-                chain,
-                runs.rows.flatMap(row => runEvents(row, book))
-            ).map(event => withSubject(event, subjects))
-                .filter(event => matchesActivityFilters(event, filters)).slice(-limit);
-            res.json({
-                events, count: events.length, source: 'live',
-                ...(filtered ? { filters, scanWindow: ACTIVITY_SCAN_WINDOW } : {})
-            });
+            res.json(await activityMemo.get(JSON.stringify([limit, filters]), () => readAgentActivity(limit, filters)));
         } catch (error) {
             console.error(`[${new Date().toISOString()}] GET /agent/activity failed:`, error);
             res.status(500).json({ error: 'Failed to read agent activity' });
         }
     });
+
+    async function readAgentActivity(limit, filters) {
+        const filtered = Object.keys(filters).length > 0;
+        const window = filtered ? ACTIVITY_SCAN_WINDOW : limit;
+        const [runs, transactions, withAccount, proposed, designs] = await Promise.all([
+            pool.query(
+                `SELECT run_id, persona, mode, status, stage, summary, started_at, updated_at
+                   FROM consensus.agent_run
+                  ORDER BY updated_at DESC
+                  LIMIT $1`,
+                [window]
+            ),
+            pool.query(
+                `${TRANSACTION_ROWS}
+                  WHERE cluster = 'devnet'
+                  ORDER BY block_time DESC NULLS LAST, slot DESC
+                  LIMIT $1`,
+                [window]
+            ),
+            pool.query(ACCOUNT_INDEX_SQL),
+            pool.query(`${AGREEMENT_ROWS} ORDER BY a.created_at DESC, a.cid LIMIT $1`, [window]),
+            pool.query(`${DESIGN_ROWS} ORDER BY created_at DESC, cid LIMIT $1`, [window])
+        ]);
+        const chain = chainEvents(transactions.rows, {
+            book, idls, agreementsByAccount: agreementAccountIndex(withAccount.rows), decode
+        });
+        const subjects = { agreements: byCid([...withAccount.rows, ...proposed.rows]), designs: byCid(designs.rows) };
+        const events = mergeEvents(
+            agreementEvents(proposed.rows),
+            designEvents(designs.rows),
+            chain,
+            runs.rows.flatMap(row => runEvents(row, book))
+        ).map(event => withSubject(event, subjects))
+            .filter(event => matchesActivityFilters(event, filters)).slice(-limit);
+        return {
+            events, count: events.length, source: 'live',
+            ...(filtered ? { filters, scanWindow: ACTIVITY_SCAN_WINDOW } : {})
+        };
+    }
 
     // Bounded run index for the judge/demo surface. This is intentionally separate from the event
     // feed: a completed zero-pick run is evidence of scheduler liveness even when it produced no

@@ -101,7 +101,7 @@ Authored cash offers and agreement allocations are not rewritten by a source pre
 | Economic unit rates | UK appraisal, assumptions, local imported rates | No general live market or assessment feed yet |
 | Roads/paths | Shared OSM reader and backend transport | No general road-dataset registry/visitor override |
 | Terrain/elevation | Specific terrain/profile providers | Fixed provider/datum contracts, no general selector |
-| Trees and water | Overture trees, OpenFreeMap water | Provider choices fixed |
+| Trees, water and green areas | Overture trees, OpenFreeMap water and landcover | Provider choices fixed |
 | Building details/interiors for x-ray | Published floor models and explicit evidence namespaces; recorded plans and generated suggestions remain distinct | No general visitor source selector/import for arbitrary detail providers |
 | Transit alignments | Configured GeoJSON track sources used for station snapping and 3D | No general visitor source chooser |
 | Search/geocoding | Shared Photon usage | Provider fixed |
@@ -116,7 +116,8 @@ an absolute unit cost and a whole-property sale is not a land-only sale.
 
 ## Place defaults and visitor preferences
 
-`frontend/js/city-config.js` is the per-city registry. It currently combines place identity, source
+`frontend/data/city-configs.js` is the per-city registry (the browser loads it split into
+`data/city-index.js` and `data/cities/<id>.js`; regenerate the browser files with `node scripts/build-city-files.mjs --run`). It currently combines place identity, source
 choices, availability constraints and display defaults. User customization should be a validated
 override over place defaults, not an editor for that entire object.
 

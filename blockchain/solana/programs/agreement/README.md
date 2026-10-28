@@ -2,7 +2,7 @@
 
 # agreement
 
-Design of record: [`plan-design-agreement.md`](../../../../plan-design-agreement.md) (decisions
+Design of record: [`plan-design-agreement.md`](../../../../docs/plan-design-agreement.md) (decisions
 "Consent and execution move to the agreement" and "What is minted", simplification 7, the M2
 `agreement/v1` object and its CID). One program replaces proposal_nft's per-proposal consent
 machinery: no parcels, owner lists, acceptance records, withdrawals or vote variants on chain. Owners

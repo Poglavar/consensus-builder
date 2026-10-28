@@ -564,7 +564,7 @@ function renderCorridorStrips(strips, options = {}) {
 // inputs it was drawn from, its bbox and the signature of the junctions it takes part in.
 // `junctions` holds one group per junction — a road's own T as much as a crossing between two
 // roads: all come from ONE set (corridor-profile.js buildCorridorJunctionSet) — keyed by the sorted
-// ids it joins plus its position. A refresh rebuilds only what the hashes say changed: one road
+// ids it joins plus its position and discrete level. A refresh rebuilds only what the hashes say changed: one road
 // edit is one corridor's strips plus the junctions it takes part in, not the whole town (~640 ms on
 // the Šibenik plan when every refresh rebuilt all 127 corridors).
 const corridorRenderState = { root: null, byId: new Map(), junctions: new Map(), presentationPending: false };
@@ -574,6 +574,27 @@ let corridorRefreshHandle = null;
 // as it is made. Nothing is written to the proposal — an applied road on the map is still the road that
 // was proposed until the edit is saved as a new proposal of its own.
 let corridorProfilePreview = null;
+let corridorDrawingJunctionPreview = [];
+let corridorDrawingPreviewByCorridor = new Map();
+let corridorDrawingPreviewSignatures = new Map();
+
+function setCorridorDrawingJunctionPreview(junctions) {
+    const next = Array.isArray(junctions) ? junctions : [];
+    const byCorridor = new Map();
+    next.forEach(treatment => (treatment.corridorIds || []).forEach(id => {
+        const key = String(id);
+        if (!byCorridor.has(key)) byCorridor.set(key, []);
+        byCorridor.get(key).push(treatment);
+    }));
+    const signatures = new Map([...byCorridor].map(([id, items]) => [id, corridorJunctionSignature(id, items)]));
+    const ids = new Set([...corridorDrawingPreviewSignatures.keys(), ...signatures.keys()]);
+    if ([...ids].every(id => corridorDrawingPreviewSignatures.get(id) === signatures.get(id))) return false;
+    corridorDrawingJunctionPreview = next;
+    corridorDrawingPreviewByCorridor = byCorridor;
+    corridorDrawingPreviewSignatures = signatures;
+    refreshAppliedCorridorStrips();
+    return true;
+}
 
 // `options.keepOverrides`: a road-scope preview that leaves the stretches with their own
 // cross-section as they are — what the editor's save does unless "Also replace…" is ticked — so
@@ -931,10 +952,10 @@ function corridorKeyOf(proposal) {
 // Everything the drawing of one corridor depends on. Being applied is implicit (only applied
 // corridors are listed); the cross-section editor's live preview counts for the corridor it
 // previews, so a keystroke rebuilds that one corridor and clearing the preview rebuilds it once.
-function corridorRenderHash(proposal, definition, preview) {
+function corridorRenderHash(proposal, definition, preview, drawingPreviewSignature = null) {
     const key = corridorKeyOf(proposal);
     const previewPart = preview && String(preview.proposalKey) === key ? [preview.profile, preview.segmentId, preview.keepOverrides === true] : null;
-    return JSON.stringify([definition, corridorOwnerClass(key), previewPart]);
+    return JSON.stringify([definition, corridorOwnerClass(key), previewPart, drawingPreviewSignature]);
 }
 
 // What a corridor's own drawing takes from the junctions it meets: where each of its arms is cut,
@@ -946,13 +967,19 @@ function corridorJunctionSignature(corridorId, junctions) {
     return JSON.stringify((junctions || [])
         .map(treatment => [
             Number(treatment.lat).toFixed(7), Number(treatment.lng).toFixed(7),
+            Number.isFinite(treatment.level) ? treatment.level : 0,
             (treatment.arms || []).filter(arm => String(arm.corridorId) === id).map(arm => [arm.cut, arm.markingTrim, arm.toward]),
             (treatment.surfacePolygons || []).map(ringKey),
             (treatment.cornerPolygons || []).map(corner => ringKey(corner && corner.polygon))
         ])
         // A junction none of whose arms is this corridor's asks nothing of its drawing.
-        .filter(([, , arms]) => arms.length)
+        .filter(([, , , arms]) => arms.length)
         .sort());
+}
+
+function corridorJunctionSiteKey(treatment) {
+    const level = Number.isFinite(treatment.level) ? treatment.level : 0;
+    return `${Number(treatment.lat).toFixed(6)},${Number(treatment.lng).toFixed(6)}#${level}`;
 }
 
 // Pure: which keyed entries to drop and which corridors to (re)build, from the hashes drawn last
@@ -1143,7 +1170,9 @@ function refreshCorridorJunctionLayers(junctionSet, scopeIds) {
     (junctionSet || []).forEach(treatment => {
         const ids = Array.isArray(treatment.corridorIds) ? treatment.corridorIds.map(String) : [];
         if (!ids.some(id => scope.has(id))) return;
-        const key = `${ids.join('|')}@${Number(treatment.lat).toFixed(6)},${Number(treatment.lng).toFixed(6)}`;
+        if (corridorDrawingJunctionPreview.some(preview => corridorJunctionSiteKey(preview) === corridorJunctionSiteKey(treatment))) return;
+        const level = Number.isFinite(treatment.level) ? treatment.level : 0;
+        const key = `${ids.join('|')}@${Number(treatment.lat).toFixed(6)},${Number(treatment.lng).toFixed(6)}#${level}`;
         if (state.junctions.has(key)) return;
         const group = L.layerGroup();
         renderCorridorJunctions([treatment], group, CORRIDOR_JUNCTIONS_PANE);
@@ -1202,7 +1231,8 @@ function* corridorStripRefreshSteps(run) {
         .filter(isAppliedCorridorProposal)
         .map(proposal => {
             const definition = corridorProposalDefinition(proposal);
-            return { proposal, definition, id: corridorKeyOf(proposal), hash: corridorRenderHash(proposal, definition, corridorProfilePreview) };
+            const id = corridorKeyOf(proposal);
+            return { proposal, definition, id, hash: corridorRenderHash(proposal, definition, corridorProfilePreview, corridorDrawingPreviewSignatures.get(id) || null) };
         });
     const previousHashes = new Map(Array.from(state.byId.values(), entry => [entry.id, entry.hash]));
     const { removed, changed: changedByDefinition } = corridorRenderDiff(previousHashes, applied);
@@ -1231,9 +1261,14 @@ function* corridorStripRefreshSteps(run) {
         if (!junctionsByCorridor.has(String(id))) junctionsByCorridor.set(String(id), []);
         junctionsByCorridor.get(String(id)).push(treatment);
     }));
+    const junctionsForCorridor = id => {
+        const preview = corridorDrawingPreviewByCorridor.get(String(id)) || [];
+        const previewSites = new Set(preview.map(corridorJunctionSiteKey));
+        return (junctionsByCorridor.get(String(id)) || []).filter(treatment => !previewSites.has(corridorJunctionSiteKey(treatment))).concat(preview);
+    };
     const changed = applied.filter(item => changedByDefinition.includes(item.id)
         || (candidates.includes(item) && state.byId.has(item.id)
-            && state.byId.get(item.id).junctionSignature !== corridorJunctionSignature(item.id, junctionsByCorridor.get(item.id) || [])))
+            && state.byId.get(item.id).junctionSignature !== corridorJunctionSignature(item.id, junctionsForCorridor(item.id))))
         .map(item => item.id);
 
     if (removed.length || changed.length) state.presentationPending = true;
@@ -1242,7 +1277,7 @@ function* corridorStripRefreshSteps(run) {
     if (run.superseded) return;
     for (const id of changed) {
         dropCorridorRender(id);
-        const entry = buildCorridorRender(appliedById.get(id).proposal, junctionsByCorridor.get(id) || []);
+        const entry = buildCorridorRender(appliedById.get(id).proposal, junctionsForCorridor(id));
         entry.hash = appliedById.get(id).hash;
         state.byId.set(id, entry);
         state.root.addLayer(entry.group);

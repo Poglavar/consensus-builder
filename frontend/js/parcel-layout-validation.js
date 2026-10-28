@@ -61,12 +61,14 @@
 
     // A clip that throws is recorded as a ClipFailure (counted in clipHealth()); validate() still
     // answers, with an invalid-pool error carrying the clip's message.
+    // Plot unions and coverage differences use the shared clip (proposals/parcel-arrangement.js): the
+    // same coordinate grid as every other parcel clip, with its coarser retries. A raw turf union of
+    // a block's plots with its carved courtyard left a three-point sliver ring and refused the layout.
     function clipped(turf, operation, a, b) {
-        try { return turf[operation](a, b); } catch (error) {
-            const api = (typeof window !== 'undefined' && window.__parcelArrangement)
-                || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
-            throw api ? api.clipFailure(operation, error, { site: 'parcel-layout-validation.pool' }, [a, b]) : error;
-        }
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+        if (!api) throw new Error('The parcel clipper is not loaded.');
+        return api.clipWith(turf, operation, a, b, { site: 'parcel-layout-validation.pool' });
     }
 
     /**

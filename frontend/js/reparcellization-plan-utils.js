@@ -43,7 +43,15 @@
                 if (turfApi.area(feature(part)) > 0) next.push({ ...clone(template), geometry: clone(part) });
             }
         };
+        // A plot whose box misses the carved piece keeps its shape: only the plots it can touch are
+        // differenced. Without this a 1,000-plot import ran a million differences (N1, 2026-10-28).
+        const [cw, cs, ce, cn] = turfApi.bbox(clipped);
         for (const slice of slices) {
+            const [w, s, e, n] = turfApi.bbox(feature(slice.geometry));
+            if (w > ce || e < cw || s > cn || n < cs) {
+                next.push(clone(slice));
+                continue;
+            }
             const remainder = turfApi.difference(feature(slice.geometry), clipped);
             if (remainder?.geometry) append(remainder.geometry, slice);
         }
@@ -62,8 +70,8 @@
             if (!proposal.buildingProposal) continue;
             // Block massing retains the complete ring even when its rendered buildings are split
             // into per-parcel pieces. Other authored building groups can enclose a courtyard too.
-            const footprints = proposal.geometry?.blockMassing?.geometry
-                ? [proposal.geometry.blockMassing]
+            const footprints = proposal.geometry?.ruleMassing?.geometry
+                ? [proposal.geometry.ruleMassing]
                 : (proposal.geometry?.buildings || []).filter(value => value?.geometry);
             let footprintUnion = null;
             for (const footprint of footprints) {

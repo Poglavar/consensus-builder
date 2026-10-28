@@ -3,6 +3,8 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const geometry = require('../../frontend/js/corridor-geometry.js');
+const planOrder = require('../../frontend/js/proposals/plan-order.js');
+const turf = require('@turf/turf');
 const authoring = require('../../frontend/js/proposals/corridor-authoring.js');
 const { ProposalManager } = require('../../frontend/js/proposal-manager.js');
 
@@ -31,6 +33,18 @@ function corridor(id, segments, options = {}) {
 const plan = (newProposal, existing, options = {}) => authoring.planCorridorAuthoring(
     newProposal,
     existing,
+    {
+        geometry,
+        isApplied: record => record.applied === true,
+        isTrack: definition => definition.metadata?.isTrack === true,
+        ...options
+    }
+);
+
+const planEdit = (before, edited, records, options = {}) => authoring.planCorridorEdit(
+    before,
+    edited,
+    records,
     {
         geometry,
         isApplied: record => record.applied === true,
@@ -109,23 +123,144 @@ function managerHarness(existing, derive) {
     };
     const browserRoot = {
         CorridorAuthoring: authoring,
-        CorridorGeometry: geometry
+        CorridorGeometry: geometry,
+        __planOrder: planOrder
     };
     installGlobal('window', browserRoot);
+    installGlobal('turf', turf);
     installGlobal('proposalStorage', storage);
     installGlobal('setProposalApplied', (record, applied) => { record.applied = applied === true; });
     const manager = {
         createCorridorProposalAtomically: ProposalManager.createCorridorProposalAtomically,
         _createCorridorProposalTransactionBody: ProposalManager._createCorridorProposalTransactionBody,
+        _collectAppliedAlternativesForExplicitApply: ProposalManager._collectAppliedAlternativesForExplicitApply,
+        _standDownAppliedRivals: ProposalManager._standDownAppliedRivals,
         _enqueueFabricChange: operation => operation(),
         rematerializeCorridorScope: derive,
         _clearLastApplyFailure: vi.fn(),
-        _refreshUIAfterProposalChange: vi.fn()
+        _refreshUIAfterProposalChange: vi.fn(),
+        _reportJunctionRevisions: vi.fn()
     };
     return { manager, records, storage, addProposal };
 }
 
+// road-drawing.js reviseRoadForJunction, reduced to its contract: a new record carrying the junction,
+// naming the published source by CID, applied in the source's place; the source is otherwise untouched.
+function installJunctionRevision() {
+    installGlobal('reviseRoadForJunction', (store, source, definition) => {
+        const revision = clone(source);
+        revision.proposalId = `${source.proposalId}-v2`;
+        delete revision.published;
+        revision.origin = { cid: source.published.cid };
+        revision.roadProposal.definition = clone(definition);
+        revision.applied = true;
+        store.proposals.set(revision.proposalId, revision);
+        source.applied = false;
+        return revision;
+    });
+}
+
+function publishedRevisionFixture() {
+    const polygon = (west, south, east, north) => ({
+        type: 'Polygon',
+        coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
+    });
+    const sourceLand = polygon(0, 0, 10, 10);
+    const revisionLand = polygon(5, 0, 15, 10);
+    const disjointLand = polygon(30, 30, 40, 40);
+    const source = corridor('published-source', [[P(0, 0), P(0, 10)]], {
+        identity: { published: PUBLISHED }
+    });
+    source.title = 'Digbeth North Street';
+    source.site = clone(sourceLand);
+    source.roadProposal.definition.polygon = clone(sourceLand);
+    const disjoint = corridor('disjoint-source-copy', [[P(30, 30), P(30, 40)]], {
+        identity: { origin: { cid: PUBLISHED.cid } }
+    });
+    disjoint.site = clone(disjointLand);
+    disjoint.roadProposal.definition.polygon = clone(disjointLand);
+    const revision = corridor(null, [[P(0, 0), P(0, 10)]], {
+        identity: {
+            origin: { cid: PUBLISHED.cid },
+            proposalOrigin: {
+                relation: 'revision',
+                source: { kind: 'design', cid: PUBLISHED.cid },
+                title: 'Digbeth North Street'
+            }
+        }
+    });
+    revision.title = 'Digbeth North Street revision';
+    revision.site = clone(revisionLand);
+    revision.roadProposal.definition.polygon = clone(revisionLand);
+    return { source, disjoint, revision, sourceLand, revisionLand, disjointLand };
+}
+
 describe('atomic corridor authoring plan', () => {
+    it('refreshes peer cross-sections after an in-place profile edit without touching unrelated records', () => {
+        const through = corridor('through', [[P(0, 0), P(0, 10)]]);
+        const branch = corridor('branch', [[P(5, 5), P(0, 5)]]);
+        const far = corridor('far', [[P(20, 20), P(20, 25)]]);
+        const profile = width => ({ strips: [{ type: 'driving', width }] });
+        through.roadProposal.definition.profile = profile(4);
+        branch.roadProposal.definition.profile = profile(3);
+        const initial = plan(branch, [through]);
+        const appliedThrough = clone(through);
+        appliedThrough.roadProposal.definition = initial.existingChanges[0].definition;
+        const appliedBranch = clone(initial.proposal);
+        appliedBranch.proposalId = 'branch';
+        const originalFar = clone(far);
+        const editedThrough = clone(appliedThrough);
+        editedThrough.roadProposal.definition.profile = profile(6);
+
+        const result = planEdit(appliedThrough, editedThrough, [appliedThrough, appliedBranch, far]);
+
+        const refreshedBranch = result.existingChanges.find(change => change.proposalId === 'branch');
+        expect(refreshedBranch).toBeTruthy();
+        expect(refreshedBranch.definition.junctions[0].arms.map(arm => arm.profile.strips[0].width)).toEqual([6, 6]);
+        expect(result.proposal.roadProposal.definition.junctions[0].arms.map(arm => arm.profile.strips[0].width)).toEqual([3]);
+        expect(result.existingChanges.some(change => change.proposalId === 'far')).toBe(false);
+        expect(far).toEqual(originalFar);
+        // Planning returns detached snapshots and does not mutate committed inputs.
+        expect(appliedBranch.roadProposal.definition.junctions[0].arms.map(arm => arm.profile.strips[0].width)).toEqual([4, 4]);
+    });
+
+    it('refreshes every peer at a new edge join in a three-way junction', () => {
+        const eastWest = corridor('east-west', [[P(0, -5), P(0, 5)]]);
+        const northSouth = corridor('north-south', [[P(-5, 0), P(5, 0)]]);
+        const existing = authoring.planCorridorComposition([eastWest, northSouth], { geometry });
+        const branch = corridor(null, [[P(5, 5), P(0, 0)]]);
+
+        const result = planEdit(branch, branch, existing);
+
+        expect(result.existingChanges.map(change => change.proposalId)).toEqual(['east-west', 'north-south']);
+        for (const change of result.existingChanges) {
+            const center = change.definition.junctions.find(junction => junction.lat === 0 && junction.lng === 0);
+            expect(center.arms).toHaveLength(3);
+            expect(center.arms.some(arm => arm.toward.lat === 5 && arm.toward.lng === 5)).toBe(true);
+        }
+        const center = result.proposal.roadProposal.definition.junctions.find(junction => junction.lat === 0 && junction.lng === 0);
+        expect(center.arms).toHaveLength(4);
+    });
+
+    it('removes stale peer junction snapshots when an edited road moves away', () => {
+        const through = corridor('through', [[P(0, 0), P(0, 10)]]);
+        const branch = corridor('branch', [[P(5, 5), P(0, 5)]]);
+        const initial = plan(branch, [through]);
+        const appliedThrough = clone(through);
+        appliedThrough.roadProposal.definition = initial.existingChanges[0].definition;
+        const appliedBranch = clone(initial.proposal);
+        appliedBranch.proposalId = 'branch';
+        const editedThrough = clone(appliedThrough);
+        editedThrough.roadProposal.definition.points = [[P(10, 0), P(10, 10)]];
+        editedThrough.roadProposal.definition.segments = clone(editedThrough.roadProposal.definition.points);
+
+        const result = planEdit(appliedThrough, editedThrough, [appliedThrough, appliedBranch]);
+
+        expect(result.proposal.roadProposal.definition.junctions).toBeUndefined();
+        const refreshedBranch = result.existingChanges.find(change => change.proposalId === 'branch');
+        expect(refreshedBranch.definition.junctions).toBeUndefined();
+    });
+
     it('writes a snapped T node into the existing road while keeping two proposal records', () => {
         const through = corridor('through', [[P(0, 0), P(0, 10)]]);
         const branch = corridor(null, [[P(5, 5), P(0, 5)]]);
@@ -329,30 +464,86 @@ describe('atomic corridor authoring plan', () => {
         expect(result.junctionRecords).toBe(0);
     });
 
-    it('detaches only the publication mark, the one published identity a design has (M3)', () => {
-        const ORIGIN = { cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq' };
-        const record = corridor('local-id', [[P(0, 0), P(0, 1)]], {
-            identity: { published: PUBLISHED, origin: ORIGIN, author: 'Ana' }
-        });
-
-        const removed = authoring.detachPublishedIdentity(record);
-
-        expect(authoring.PUBLISHED_IDENTITY_KEYS).toEqual(['published']);
-        expect(removed).toEqual({ published: PUBLISHED });
-        expect(record.published).toBeUndefined();
-        expect(record.proposalId).toBe('local-id');
-        // Its own lineage and author are content, not publication: they stay.
-        expect(record.origin).toEqual(ORIGIN);
-        expect(record.author).toBe('Ana');
-        expect(record.roadProposal).toBeTruthy();
-    });
 });
 
 describe('corridor authoring commit boundary', () => {
-    it('persists both sides of a T before deriving its ground', async () => {
-        const through = corridor('through', [[P(0, 0), P(0, 10)]], {
-            identity: { published: PUBLISHED }
+    it('stands down only overlapping published alternatives when a revision is applied', async () => {
+        const { source, disjoint, revision } = publishedRevisionFixture();
+        const archivedSource = clone(source);
+        const derive = vi.fn(async records => {
+            expect(records.map(record => record.proposalId)).toEqual(['new-road', 'published-source']);
+            expect(records.find(record => record.proposalId === 'published-source').applied).toBe(false);
+            expect(records.find(record => record.proposalId === 'new-road').applied).toBe(true);
+            return { ok: true, failed: [] };
         });
+        const { manager, records, addProposal } = managerHarness([source, disjoint], derive);
+
+        const result = await manager.createCorridorProposalAtomically(revision);
+
+        expect(result.ok).toBe(true);
+        expect(result.topology.changedProposalIds).toEqual(['published-source']);
+        expect(addProposal).toHaveBeenCalledWith(expect.any(Object), { emitEvent: false });
+        expect(records.get('new-road').applied).toBe(true);
+        expect(records.get('published-source').applied).toBe(false);
+        expect(records.get('disjoint-source-copy').applied).toBe(true);
+        expect(source).toEqual({ ...archivedSource, applied: false });
+        expect(source.published).toEqual(PUBLISHED);
+        expect(source.roadProposal.definition.polygon).toEqual(archivedSource.roadProposal.definition.polygon);
+        expect(derive).toHaveBeenCalledOnce();
+        expect(manager._refreshUIAfterProposalChange.mock.calls.map(([record]) => record.proposalId))
+            .toEqual(['published-source', 'new-road']);
+    });
+
+    it('restores the published road and removes its revision when derivation fails', async () => {
+        const { source, disjoint, revision } = publishedRevisionFixture();
+        const archivedSource = clone(source);
+        const derive = vi.fn(async () => ({
+            ok: false,
+            failed: [{ reason: 'ground derivation failed' }]
+        }));
+        const { manager, records } = managerHarness([source, disjoint], derive);
+
+        const result = await manager.createCorridorProposalAtomically(revision);
+
+        expect(result).toEqual({
+            ok: false,
+            proposalId: null,
+            reason: 'ground derivation failed'
+        });
+        expect(records.has('new-road')).toBe(false);
+        expect(records.get('published-source')).toBe(source);
+        expect(source).toEqual(archivedSource);
+        expect(disjoint.applied).toBe(true);
+    });
+
+    it('updates both road sites to rebuilt junction land before deriving or persisting them', async () => {
+        const through = corridor('through', [[P(0, 0), P(0, 10)]]);
+        const branch = corridor(null, [[P(5, 5), P(0, 5)]]);
+        const oldSite = { type: 'Polygon', coordinates: [[[0,0],[1,0],[1,1],[0,1],[0,0]]] };
+        for (const record of [through, branch]) {
+            record.site = clone(oldSite);
+            record.binding = { coverage: 'complete' };
+            record.roadProposal.definition.polygon = clone(oldSite);
+        }
+        const derive = vi.fn(async records => {
+            for (const record of records) {
+                expect(record.site).toEqual(record.roadProposal.definition.polygon);
+                expect(record.site).not.toEqual(oldSite);
+                expect(record.binding).toBeUndefined();
+            }
+            return { ok: true };
+        });
+        const { manager, records } = managerHarness([through], derive);
+        installGlobal('rebuildRoadDefinitionFootprint', definition => {
+            definition.polygon = { type: 'Polygon', coordinates: [[[0,0],[2,0],[2,1],[0,1],[0,0]]] };
+        });
+        expect((await manager.createCorridorProposalAtomically(branch)).ok).toBe(true);
+        expect(derive).toHaveBeenCalledOnce();
+        for (const record of records.values()) expect(record.site).toEqual(record.roadProposal.definition.polygon);
+    });
+
+    it('persists both sides of a T before deriving its ground', async () => {
+        const through = corridor('through', [[P(0, 0), P(0, 10)]]);
         const branch = corridor(null, [[P(5, 5), P(0, 5)]]);
         const derive = vi.fn(async (records, options) => {
             expect(records[0].proposalId).toBe('new-road');
@@ -371,11 +562,41 @@ describe('corridor authoring commit boundary', () => {
         expect(result.topology.changedProposalIds).toEqual(['through']);
         expect(addProposal).toHaveBeenCalledWith(expect.any(Object), { emitEvent: false });
         expect(records.get('new-road').applied).toBe(true);
-        expect(through.published).toBeUndefined();
+        expect(result.topology.revisedProposalIds).toEqual([]);
         expect(derive).toHaveBeenCalledOnce();
     });
 
+    it('a published road joined by a T is not rewritten: the junction becomes its new version', async () => {
+        installJunctionRevision();
+        const through = corridor('through', [[P(0, 0), P(0, 10)]], {
+            identity: { published: PUBLISHED }
+        });
+        const original = clone(through);
+        const branch = corridor(null, [[P(5, 5), P(0, 5)]]);
+        const derive = vi.fn(async records => {
+            // The new road, the published road leaving the map and its revision entering it.
+            expect(records.map(record => [record.proposalId, record.applied])).toEqual([
+                ['new-road', true], ['through', false], ['through-v2', true]
+            ]);
+            return { ok: true, failed: [] };
+        });
+        const { manager, records } = managerHarness([through], derive);
+
+        const result = await manager.createCorridorProposalAtomically(branch);
+
+        expect(result.ok).toBe(true);
+        expect(result.topology.changedProposalIds).toEqual(['through', 'through-v2']);
+        expect(result.topology.revisedProposalIds).toEqual(['through-v2']);
+        expect(through).toEqual({ ...original, applied: false });
+        const revision = records.get('through-v2');
+        expect(revision.origin).toEqual({ cid: PUBLISHED.cid });
+        expect(revision.roadProposal.definition.points).toHaveLength(2);
+        expect(revision.roadProposal.definition.junctions).toHaveLength(1);
+        expect(manager._reportJunctionRevisions).toHaveBeenCalledWith([revision]);
+    });
+
     it('restores every touched road and removes the provisional proposal when derivation fails', async () => {
+        installJunctionRevision();
         const through = corridor('through', [[P(0, 0), P(0, 10)]], {
             identity: { published: PUBLISHED }
         });
@@ -395,6 +616,7 @@ describe('corridor authoring commit boundary', () => {
             reason: 'ground derivation failed'
         });
         expect(records.has('new-road')).toBe(false);
+        expect(records.has('through-v2')).toBe(false);
         expect(records.get('through')).toBe(through);
         expect(through).toEqual(original);
     });

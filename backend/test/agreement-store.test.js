@@ -1,6 +1,5 @@
 // agreement-store.js and the pure helpers of agreement-dialog.js (plan-design-agreement.md, M1 (b)):
-// the local agreement rows on a fake storage (save, list, get, remove, clear, the secondary-tab
-// refusal, subscribers) and the editor's record, allocation, money, rule and section helpers, without
+// the local agreement rows on a fake storage (save, list, get, remove, clear, subscribers) and the editor's record, allocation, money, rule and section helpers, without
 // a DOM; and what the editor decides before it docks (M3): "Add to agreement" choosing a new agreement
 // or one not proposed yet, and the refusal to edit a proposed one. AgreementRecord and AgreementGround
 // are stubbed: this file tests the store and the editor only.
@@ -11,9 +10,11 @@ const require = createRequire(import.meta.url);
 const Store = require('../../frontend/js/agreement-store.js');
 const Dialog = require('../../frontend/js/agreement-dialog.js');
 const Panel = require('../../frontend/js/agreement-panel.js');
+const Record = require('../../frontend/js/agreement-record.js');
 // The real money schedule the agreement ledger hands back (AgreementRecord.ledger(...).money).
 const Deal = require('../../frontend/js/reparcellization-deal.js');
 const Cid = require('../../frontend/js/cid.js');
+const PlanRecord = require('../../frontend/js/plan-record.js');
 
 // A PersistentStorage-shaped map; like the real one, forEach swallows what its iterator throws.
 function fakeStorage(seed = {}) {
@@ -35,12 +36,11 @@ const normalize = vi.fn(raw => {
     return { ...raw, title: raw.title ? String(raw.title).trim() : null };
 });
 
-function setup({ seed, secondary = false } = {}) {
+function setup({ seed } = {}) {
     const storage = fakeStorage(seed);
     let clock = new Date('2026-10-21T10:00:00.000Z');
-    const tab = { secondary };
-    const store = Store.create({ storage, isSecondaryTab: () => tab.secondary, normalize, now: () => clock });
-    return { storage, store, tab, tick: iso => { clock = new Date(iso); } };
+    const store = Store.create({ storage, normalize, now: () => clock });
+    return { storage, store, tick: iso => { clock = new Date(iso); } };
 }
 
 const agreement = (id, extra = {}) => ({ schema: 'agreement/v1', id, title: ` ${id} title `, designs: [], ...extra });
@@ -99,19 +99,6 @@ describe('AgreementStore', () => {
         expect(store.clear()).toBe(2);
         expect(store.list()).toEqual([]);
         expect(Array.from(storage.rows.keys())).toEqual(['proposal:p1']);
-    });
-
-    it('refuses every write in a secondary tab and writes nothing', () => {
-        const { storage, store, tab } = setup();
-        store.save(agreement('ag-1'));
-        tab.secondary = true;
-        const before = new Map(storage.rows);
-        expect(() => store.save(agreement('ag-2'))).toThrow(expect.objectContaining({ code: 'secondary-tab' }));
-        expect(() => store.remove('ag-1')).toThrow(expect.objectContaining({ code: 'secondary-tab' }));
-        expect(() => store.clear()).toThrow(expect.objectContaining({ code: 'secondary-tab' }));
-        expect(storage.rows).toEqual(before);
-        // Reading stays possible: the other tab's data is shown, only not changed here.
-        expect(store.get('ag-1').id).toBe('ag-1');
     });
 
     it('writes nothing and tells nobody when the record does not normalize', () => {
@@ -209,7 +196,8 @@ describe('allocation and money', () => {
     it('offers the current holders, each input party once, and the public', () => {
         expect(Dialog.partiesOf(land.inputs)).toEqual([{ ownerKey: 'agent-ana', displayName: 'Ana' }, { ownerKey: 'agent-ben', displayName: 'Ben' }]);
         expect(Dialog.allocationOptions(land.inputs)).toEqual([
-            { value: 'holders', label: 'Current holders' },
+            { value: '', label: 'Choose recipient' },
+            { value: 'proposer', label: 'Proposer' },
             { value: 'party:agent-ana', label: 'Ana' },
             { value: 'party:agent-ben', label: 'Ben' },
             { value: 'public', label: 'Public' }
@@ -251,12 +239,20 @@ describe('allocation and money', () => {
         const terms = Dialog.termsOf(stored);
         expect(terms).toEqual({
             allocations: { 'piece1-sha256:aa': 'party:agent-ben', 'piece1-sha256:gone': 'public', 'piece1-sha256:bb': 'party:agent-left' },
-            cash: { 'agent-ana': '-12.5', 'agent-left': '5' }
+            cash: { 'agent-ana': '-12.5', 'agent-left': '5' },
+            valuation: { inputs: {}, outputs: {} }
         });
         expect(Dialog.keptTerms({ ...terms, cash: { ...terms.cash, 'agent-ben': 'invalid' } }, land)).toEqual({
             allocations: { 'piece1-sha256:aa': 'party:agent-ben' },
-            cash: { 'agent-ana': '-12.5' }
+            cash: { 'agent-ana': '-12.5' },
+            valuation: { inputs: {}, outputs: {} }
         });
+        // Land values follow the parcels and pieces that still exist, as the allocations do.
+        const valued = Dialog.termsOf({ ...stored, valuation: { inputs: [{ parcelId: 'P-1', unitValueCents: 12000 }, { parcelId: 'P-gone', unitValueCents: 1 }],
+            outputs: [{ output: 'piece1-sha256:aa', unitValueCents: 30000 }, { output: 'piece1-sha256:gone', unitValueCents: 1 }] } });
+        expect(valued.valuation).toEqual({ inputs: { 'P-1': 12000, 'P-gone': 1 }, outputs: { 'piece1-sha256:aa': 30000, 'piece1-sha256:gone': 1 } });
+        const landWithParcel = { ...land, inputs: { ...land.inputs, parcels: [...land.inputs.parcels, { parcelId: 'P-1', areaM2: 10, holders: [] }] } };
+        expect(Dialog.keptTerms(valued, landWithParcel).valuation).toEqual({ inputs: { 'P-1': 12000 }, outputs: { 'piece1-sha256:aa': 30000 } });
     });
 
     it('words the sponsor line of the real money schedule', () => {
@@ -310,75 +306,44 @@ describe('the deadline field', () => {
 });
 
 describe('the record the form describes', () => {
-    // Each design is named by its CID (DesignRecord.cidOf), which the dialog looks up per design.
-    const LAYOUT_CID = Cid.cidOfObject({ design: 'layout' });
-    const ROAD_CID = Cid.cidOfObject({ design: 'road' });
-    const designs = [
-        { proposalId: 'layout', title: 'Courtyard plots', goal: 'parcel-layout', city: 'ny' },
-        { proposalId: 'road', name: 'New lane', goal: 'road-track' },
-        { proposalId: 'untitled' }
-    ];
-    const formState = {
-        id: 'ag-1', city: 'ny', currency: 'USD', designs, land,
-        fingerprints: new Map([['layout', LAYOUT_CID], ['road', ROAD_CID]]),
-        approvalConfig: { schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' } },
-        lens: ['lens-key-1']
-    };
-    const values = {
-        allocations: { 'piece1-sha256:aa': 'party:agent-ben', 'piece1-sha256:bb': 'holders', 'piece1-sha256:gone': 'public' },
-        cash: { 'agent-ana': '-12.5', 'agent-ben': '12.50', 'agent-nobody': '99' },
-        electorate: 'owners', binding: true, title: '  Courtyard  ', deadline: '2026-12-31'
-    };
-
-    it('is the contract shape: designs in authored order, allocation lines only off the holders, non-zero cash of input parties', () => {
-        const record = Dialog.recordFromForm(formState, values);
-        expect(record).toEqual({
-            schema: 'agreement/v1',
-            id: 'ag-1',
-            title: 'Courtyard',
-            city: 'ny',
-            createdAt: null,
-            updatedAt: null,
-            designs: [
-                { proposalId: 'layout', title: 'Courtyard plots', goal: 'parcel-layout', cid: LAYOUT_CID },
-                { proposalId: 'road', title: 'New lane', goal: 'road-track', cid: ROAD_CID },
-                { proposalId: 'untitled', title: 'Untitled proposal', goal: null, cid: null }
-            ],
-            inputs: land.inputs,
-            outputs: land.outputs,
-            allocations: [{ output: 'piece1-sha256:aa', to: { kind: 'party', ownerKey: 'agent-ben' } }],
-            money: { currency: 'USD', lines: [{ ownerKey: 'agent-ana', amountCents: -1250 }, { ownerKey: 'agent-ben', amountCents: 1250 }] },
-            rule: { electorate: 'owners', binding: true, approvalConfig: formState.approvalConfig, lens: ['lens-key-1'] },
-            deadline: Dialog.deadlineFromDate('2026-12-31')
-        });
+    const designCid = Cid.cidOfObject({ design: 'layout' });
+    const content = PlanRecord.create('Saved plan', [designCid], { at: '45.8,15.96,17', mode: '2d' });
+    const plan = { cid: Cid.cidOfObject(content), content };
+    const inputs = { parcels: land.inputs.parcels.slice(0, 2), openGroundM2: 0 };
+    const outputs = land.outputs.map(output => ({ ...output, hash: Record.outputHash(output.geometry) }));
+    const state = { id: 'ag-form', currency: 'EUR', designs: [{ proposalId: 'layout', title: 'Plots', city: 'zagreb' }],
+        fingerprints: new Map([['layout', designCid]]), plan, land: { inputs, outputs }, lens: [] };
+    const allocations = Object.fromEntries(outputs.map(output => [output.hash, 'party:agent-ana']));
+    it('retains the selected plan and computes cash from land rather than manual amounts', () => {
+        const result = Dialog.recordFromForm(state, { allocations, cash: { 'agent-ana': '99999' }, title: ' Terms ' });
+        expect(result.plan).toEqual(plan); expect(result.title).toBe('Terms');
+        expect(result.money.lines).toEqual([{ ownerKey: 'agent-ana', amountCents: -2000000 }, { ownerKey: 'agent-ben', amountCents: 2000000 }]);
+        expect(result.allocations).toHaveLength(2);
     });
-
-    it('a community vote never binds and carries no owner rule', () => {
-        const record = Dialog.recordFromForm(formState, { ...values, electorate: 'community', binding: true });
-        expect(record.rule).toEqual({ electorate: 'community', binding: false, approvalConfig: null, lens: [] });
+    it('does not create or revise plans when the form has different designs or a typed plan name', () => {
+        expect(Dialog.recordFromForm({ ...state, plan: null }, { allocations, planTitle: 'Invented' }).plan).toBeNull();
+        const result = Dialog.recordFromForm({ ...state, designs: [] }, { allocations, planTitle: 'Renamed' });
+        expect(result.plan).toEqual(plan); expect(Record.validate(result).errors.map(row => row.code)).toContain('plan-membership');
     });
-
-    it('keeps an unreadable amount for the validation to name, and drops zero and empty lines', () => {
-        const record = Dialog.recordFromForm(formState, { ...values, cash: { 'agent-ana': 'invalid', 'agent-ben': '0' }, title: '', deadline: '' });
-        expect(record.money.lines).toHaveLength(1);
-        expect(record.money.lines[0].ownerKey).toBe('agent-ana');
-        expect(record.money.lines[0].amountCents).toBeNaN();
-        expect(record.title).toBeNull();
-        expect(record.deadline).toBeNull();
+    it('community participation carries no allocations, owner rule or settlement', () => {
+        const result = Dialog.recordFromForm(state, { allocations, electorate: 'community', binding: true });
+        expect(result.rule).toEqual({ electorate: 'community', binding: false, approvalConfig: null, lens: [], settlement: null });
+        expect(result.allocations).toEqual([]); expect(result.money.lines).toEqual([]);
+        expect(result.consultation).toEqual({ organiser: null, participationUrl: null });
     });
-
-    it('an empty form is still a record: no designs, no land, no lines', () => {
-        const record = Dialog.recordFromForm({ id: 'ag-2' }, {});
-        expect(record).toMatchObject({ id: 'ag-2', designs: [], inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: null, lines: [] } });
-        expect(record.rule.electorate).toBe('owners');
-        expect(record.rule.binding).toBe(false);
+    it('retains the exact plan when agreement terms and the map view change', () => {
+        const result = Dialog.recordFromForm({ ...state, view: { at: '52.4,-1.9,18', mode: 'model' } }, { allocations, title: 'Changed', deadline: '2026-12-31' });
+        expect(result.plan).toEqual(plan); expect(result.deadline).toBe(Dialog.deadlineFromDate('2026-12-31'));
+    });
+    it('keeps an empty draft empty without implicitly creating a plan', () => {
+        const result = Dialog.recordFromForm({ id: 'ag-empty' }, {});
+        expect(result).toMatchObject({ plan: null, designs: [], inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: null, lines: [] } });
     });
 });
 
 describe('errors and warnings in words', () => {
     it('words every code by its key, with the engine\'s readiness reason or the validator\'s own words', () => {
         expect(Dialog.issueText({ code: 'no-designs', message: 'x' })).toBe('Choose at least one design.');
-        expect(Dialog.issueText({ code: 'secondary-tab' })).toBe('Another tab holds this city’s data; agreements can be edited there only.');
         expect(Dialog.issueText({ code: 'rule-not-ready', reason: 'missing-owners' })).toBe('The rule cannot be evaluated yet: No owners are declared for the selected parcels.');
         expect(Dialog.issueText({ code: 'rule-invalid', message: 'Invalid owner/area threshold.' })).toBe('The decision rule is incomplete: Invalid owner/area threshold.');
         expect(Dialog.issueText({ code: 'rule-invalid' })).toBe('The decision rule is incomplete');
@@ -388,17 +353,11 @@ describe('errors and warnings in words', () => {
 });
 
 describe('the sections as HTML (the hooks the browser spec targets)', () => {
-    it('lists the applied designs as checkboxes, the chosen ones checked, titles escaped', () => {
-        const html = Dialog.designsHtml({ designs: [{ proposalId: 'p1', title: '<b>Plots</b>' }, { proposalId: 'p2', title: 'Road' }], selected: new Set(['p2']) });
-        expect(html).toContain('<input type="checkbox" data-agreement-design="p1">');
-        expect(html).toContain('<input type="checkbox" data-agreement-design="p2" checked>');
-        expect(html).toContain('&lt;b&gt;Plots&lt;/b&gt;');
-        expect(html).not.toContain('data-agreement-empty');
-        expect(Dialog.designsHtml({ designs: [] })).toContain('data-agreement-empty');
-        expect(Dialog.designsHtml({ designs: [], missing: ['p9'] })).toContain('data-agreement-designs-missing');
-        // The map is the main picker: the hint says so, and the status line under it says what a click did.
-        expect(html).toContain('<p class="agreement-hint" data-agreement-map-hint>Click a design on the map to add or remove it</p>');
-        expect(html).toMatch(/<p class="agreement-hint agreement-pick-status" data-agreement-pick-status role="status" aria-live="polite"><\/p>$/);
+    it('shows four tabs and a plan selector without design membership checkboxes', () => {
+        const html = Dialog.bodyHtml({ plans: [], values: {} });
+        expect([...html.matchAll(/data-agreement-tab="([a-z]+)"/g)].map(match => match[1])).toEqual(['rules', 'inputs', 'outputs', 'persons']);
+        expect(html).toContain('data-agreement-plan'); expect(html).toContain('Create a plan first');
+        expect(html).not.toContain('data-agreement-design='); expect(html).not.toContain('data-agreement-cash=');
     });
 
     it('shows the land loading, then the inputs and outputs tables, open ground and the empty case', () => {
@@ -408,7 +367,7 @@ describe('the sections as HTML (the hooks the browser spec targets)', () => {
         const html = Dialog.landHtml({ land, selectedCount: 1 });
         expect(html).toContain('data-agreement-inputs');
         expect(html).toContain('data-agreement-outputs');
-        expect(html).toContain('<tr data-agreement-input="335/10">');
+        expect(html).toContain('<li data-agreement-input="335/10">');
         expect(html).toContain('<tr data-agreement-output="piece1-sha256:aa"><th scope="row">Piece 1</th><td class="agreement-table__from" data-label="From">');
         expect(html).toContain('Ana 50%, Ben 50%');
         expect(html).toContain('No recorded owner');
@@ -419,19 +378,17 @@ describe('the sections as HTML (the hooks the browser spec targets)', () => {
         expect(open).toContain('Open ground: 120 m²');
     });
 
-    it('gives every resulting piece one select, the stored choice selected, an unknown one back to the holders', () => {
+    it('gives every resulting piece one select, the stored choice selected, an unknown one requires a choice', () => {
         const html = Dialog.allocationHtml(land, { 'piece1-sha256:aa': 'party:agent-ben', 'piece1-sha256:bb': 'party:agent-gone' });
         expect(html.match(/<select data-agreement-allocation=/g)).toHaveLength(2);
-        expect(html).toContain('<select data-agreement-allocation="piece1-sha256:aa"><option value="holders">Current holders</option><option value="party:agent-ana">Ana</option><option value="party:agent-ben" selected>Ben</option><option value="public">Public</option></select>');
-        expect(html).toContain('<select data-agreement-allocation="piece1-sha256:bb"><option value="holders" selected>');
+        expect(html).toContain('<select data-agreement-allocation="piece1-sha256:aa"><option value="">Choose recipient</option><option value="proposer">Proposer</option><option value="party:agent-ana">Ana</option><option value="party:agent-ben" selected>Ben</option><option value="public">Public</option></select>');
+        expect(html).toContain('<select data-agreement-allocation="piece1-sha256:bb"><option value="" selected>');
         expect(Dialog.allocationHtml({ inputs: land.inputs, outputs: [] })).toBe('');
     });
 
-    it('gives every party one cash field, showing what was typed unless it cannot be read', () => {
-        const html = Dialog.moneyHtml(land, { 'agent-ana': '-12.5', 'agent-ben': 'invalid' });
-        expect(html).toContain('<input type="number" step="0.01" data-agreement-cash="agent-ana" value="-12.5">');
-        expect(html).toContain('<input type="number" step="0.01" data-agreement-cash="agent-ben" value="">');
-        expect(Dialog.moneyHtml({ inputs: { parcels: [] }, outputs: [] })).toBe('');
+    it('escapes plan labels and preselects the selected exact revision', () => {
+        const html = Dialog.planSelectorHtml([{ cid: 'saved-cid', content: { title: '<b>Plan</b>' } }], { cid: 'saved-cid' });
+        expect(html).toContain('value="saved-cid" selected'); expect(html).toContain('&lt;b&gt;Plan&lt;/b&gt;');
     });
 
     it('offers the two electorates; a community vote has no binding and no owner form', () => {
@@ -445,93 +402,28 @@ describe('the sections as HTML (the hooks the browser spec targets)', () => {
         expect(community).toContain('data-agreement-rule-form hidden');
     });
 
-    it('puts the six sections in order, errors and warnings above them', () => {
+    it('shows community consultation fields while hiding settlement terms', () => {
+        const html = Dialog.bodyHtml({ designs: [], selected: new Set(), values: { electorate: 'community', organiser: 'did:web:ngo.example', participationUrl: 'https://ngo.example/join' } });
+        expect(html).toContain('Ask the community');
+        expect(html).toContain('Seek owners’ decisions');
+        expect(html).toContain('data-agreement-section="consultation"><h3');
+        expect(html).toContain('data-agreement-persons');
+        expect(html).toContain('data-agreement-organiser value="did:web:ngo.example"');
+        expect(html).toContain('data-agreement-participation-url value="https://ngo.example/join"');
+        expect(html).toContain('data-agreement-rule-form hidden');
+    });
+
+    it('puts the decision and consultation sections before the design and settlement sections, errors and warnings above them', () => {
         const html = Dialog.bodyHtml({ designs: [], selected: new Set(), missing: [], land: null, values: { electorate: 'owners', binding: true, title: 'T', deadline: '' }, today: '2026-10-21' });
-        expect([...html.matchAll(/data-agreement-section="([a-z]+)"/g)].map(m => m[1])).toEqual(['designs', 'land', 'allocation', 'money', 'rule', 'details']);
-        expect(html.indexOf('data-agreement-errors')).toBeLessThan(html.indexOf('data-agreement-section="designs"'));
+        expect([...html.matchAll(/data-agreement-tabpanel="([a-z]+)"/g)].map(m => m[1])).toEqual(['rules', 'inputs', 'outputs', 'persons']);
+        expect(html.indexOf('data-agreement-errors')).toBeLessThan(html.indexOf('data-agreement-plan'));
         expect(html).toContain('<input type="text" data-agreement-title value="T" autocomplete="off">');
         expect(html).toContain('<input type="date" data-agreement-deadline value="" min="2026-10-21">');
     });
 });
 
-// The editor docks over the map through MapPick; in node there is none, so open() stops right there
-// (after it has read the agreement it opens): the error says how far it got.
-const EDITOR_REACHED = /MapPick \(js\/map-pick\.js\) is not loaded/;
+// A published agreement is refused before any browser editor is constructed.
 const thrownAsync = async fn => { try { await fn(); } catch (error) { return error; } return null; };
-
-describe('Add to agreement (addDesign)', () => {
-    const DESIGN = { proposalId: 'road-1', title: 'New lane', goal: 'road' };
-    const PUBLISHED = { cid: 'bafkreibm6jg3ux5qumhcn2b3flc3tyu6dmlb4xa7u5bf44yegnrjhc4yeq', publishedAt: '2026-10-21T12:00:00.000Z', apiBase: 'https://api.example.test', sponsor: null };
-    // The agreements this device holds, newest first as AgreementStore.list() gives them.
-    const held = () => [
-        agreement('ag-new', { title: 'Block eight', createdAt: '2026-10-22T09:00:00.000Z', designs: [{ proposalId: 'layout-2' }], published: null }),
-        agreement('ag-proposed', { title: 'Block seven', createdAt: '2026-10-21T09:00:00.000Z', designs: [{ proposalId: 'layout-1' }], published: PUBLISHED }),
-        agreement('ag-old', { title: '', createdAt: '2026-10-20T09:00:00.000Z', designs: [{ proposalId: 'road-1' }, { proposalId: 'park-1' }], published: null })
-    ];
-    function environment(rows, answer) {
-        const store = { list: vi.fn(() => rows), get: vi.fn(id => rows.find(row => row.id === id) || null) };
-        const dialog = { choice: vi.fn(async () => answer) };
-        const message = vi.fn();
-        vi.stubGlobal('AgreementStore', store);
-        vi.stubGlobal('CbDialog', dialog);
-        vi.stubGlobal('AgreementPanel', { titleOf: Panel.titleOf });
-        vi.stubGlobal('proposalStorage', { getProposal: id => (id === DESIGN.proposalId ? DESIGN : null) });
-        vi.stubGlobal('showEphemeralMessage', message);
-        return { store, dialog, message };
-    }
-
-    it('opens a new agreement straight away when none is waiting to be proposed', async () => {
-        for (const rows of [[], [held()[1]]]) {
-            const { store, dialog } = environment(rows, null);
-            expect((await thrownAsync(() => Dialog.addDesign('road-1'))).message).toMatch(EDITOR_REACHED);
-            expect(dialog.choice).not.toHaveBeenCalled();
-            expect(store.get).not.toHaveBeenCalled();
-        }
-    });
-
-    it('offers a new agreement first, then each one not proposed yet, never a proposed one', async () => {
-        const { dialog } = environment(held(), null);
-        expect(await Dialog.addDesign(' road-1 ')).toBeNull();
-        expect(dialog.choice).toHaveBeenCalledTimes(1);
-        const [message, options, settings] = dialog.choice.mock.calls[0];
-        expect(message).toBe('Add “New lane” to a new agreement, or to one not proposed yet.');
-        expect(options).toEqual([
-            { value: '__new__', label: 'New agreement', primary: true },
-            { value: 'ag-new', label: 'Block eight · 1 design' },
-            { value: 'ag-old', label: `${Panel.titleOf(held()[2])} · 2 designs` }
-        ]);
-        expect(settings).toEqual({ title: 'Add to agreement', className: 'agreement-add-to' });
-    });
-
-    it('opens nothing when the choice is dismissed', async () => {
-        const { store } = environment(held(), null);
-        expect(await Dialog.addDesign('road-1')).toBeNull();
-        expect(store.get).not.toHaveBeenCalled();
-    });
-
-    it('opens a new agreement for "New agreement", and the chosen one otherwise', async () => {
-        const fresh = environment(held(), '__new__');
-        expect((await thrownAsync(() => Dialog.addDesign('road-1'))).message).toMatch(EDITOR_REACHED);
-        expect(fresh.store.get).not.toHaveBeenCalled();
-        const chosen = environment(held(), 'ag-new');
-        expect((await thrownAsync(() => Dialog.addDesign('road-1'))).message).toMatch(EDITOR_REACHED);
-        expect(chosen.store.get).toHaveBeenCalledWith('ag-new');
-        expect(chosen.message).not.toHaveBeenCalled();
-    });
-
-    it('says so when the chosen agreement already holds the design, and opens it as it is', async () => {
-        const { store, message } = environment(held(), 'ag-old');
-        expect((await thrownAsync(() => Dialog.addDesign('road-1'))).message).toMatch(EDITOR_REACHED);
-        expect(message).toHaveBeenCalledWith('“New lane” is already in this agreement.', 4000, 'info');
-        expect(store.get).toHaveBeenCalledWith('ag-old');
-    });
-
-    it('refuses a choice that is no longer on this device, and a call without a design', async () => {
-        environment(held(), 'ag-gone');
-        expect((await thrownAsync(() => Dialog.addDesign('road-1'))).message).toBe('Agreement ag-gone is not on this device.');
-        await expect(Dialog.addDesign('  ')).rejects.toThrow(TypeError);
-    });
-});
 
 describe('editing a proposed agreement', () => {
     it('is refused: a proposed agreement is immutable, a change is a new agreement', async () => {
@@ -541,7 +433,6 @@ describe('editing a proposed agreement', () => {
         const error = await thrownAsync(() => Dialog.open({ agreementId: 'ag-proposed', designIds: ['road-1'] }));
         expect(error).toMatchObject({ code: 'agreement-published', message: 'A proposed agreement cannot be edited; propose a new one.' });
         expect((await thrownAsync(() => Dialog.open({ agreementId: 'ag-gone' }))).message).toBe('Agreement ag-gone is not on this device.');
-        // A draft passes the refusal and goes on to the editor.
-        expect((await thrownAsync(() => Dialog.open({ agreementId: 'ag-draft' }))).message).toMatch(EDITOR_REACHED);
+
     });
 });

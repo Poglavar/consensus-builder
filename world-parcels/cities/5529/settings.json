@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "5529",
+  "name": "Mersin, Turkey",
+  "point": [
+    36.8107872459797,
+    34.6176386115012
+  ],
+  "bindings": [
+    {
+      "appCityId": "mersin",
+      "runtimeConfig": {
+        "id": "mersin",
+        "wupCityCode": "5529",
+        "label": "Mersin, Turkey",
+        "currency": {
+          "locale": "tr-TR",
+          "code": "TRY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            36.8107872459797,
+            34.6176386115012
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            36.8107872459797,
+            34.6176386115012
+          ],
+          "fallbackDataset": [
+            34.6176386115012,
+            36.8107872459797
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "tr-mersin-yenisehir-keos-imar-parcels",
+          "idPrefix": "tr-mersin-yenisehir-keos-imar-parcels:OBJECTID=",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Mersin Yenişehir Belediyesi · Netcad e-İmar · kentrehberi_parsel"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "tr-mersin-yenisehir-keos-imar-parcels",
+      "name": "Mersin Yenişehir Belediyesi e-İmar cadastral parcels",
+      "adapter": "mersin-eimar",
+      "endpoint": "https://keos.yenisehir.bel.tr/imardurumu/service/imarsvc.aspx",
+      "viewerEndpoint": "https://keos.yenisehir.bel.tr/imardurumu/index.aspx",
+      "layer": "kentrehberi_parsel",
+      "idPrefix": "tr-mersin-yenisehir-keos-imar-parcels:OBJECTID=",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "parcelNumberField": "OBJECTID",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "geometryField": "POLY",
+      "countryCode": "TR",
+      "cityIds": [
+        "mersin"
+      ],
+      "metricSrid": 32636,
+      "returnsWGS84": true,
+      "browserTransport": "relay",
+      "queryMode": "configured-cadastral-block-search",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "maxResponseBytes": 2097152,
+      "maxFeatures": 999,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "operator": "T.C. Mersin Yenişehir Belediyesi, İmar ve Şehircilik Müdürlüğü",
+      "attribution": "Mersin Yenişehir Belediyesi · Netcad e-İmar · kentrehberi_parsel",
+      "scope": "Bounded live cadastral block 10690 in western urban Yenişehir, Mersin. Viewport reads search the configured block and filter full unchanged polygons. Other blocks, districts, the immutable Mersin locator and citywide completeness are unverified. This is municipal informational cadastre, not legal title.",
+      "licenceNote": "The first-party legal page restricts copying, processing, distribution and third-party use without written permission. No reuse permission is established; technical integration checks do not grant publication rights.",
+      "licenceUrl": "https://keos.yenisehir.bel.tr/imardurumu/legal.aspx",
+      "catalogueUrl": "https://keos.yenisehir.bel.tr/imardurumu/index.aspx",
+      "nativeCrsNote": "Official MapLibre script parses POLY as geographic GeoJSON [longitude,latitude] without transformation. Result page separately labels projected centroid ITRF96 TM 3-degree DOM 36. JSON datum/epoch/EPSG and operation accuracy remain unverified. No offsets or geometry changes.",
+      "spatialScopes": [
+        {
+          "block": "10690",
+          "bbox": [
+            34.559389,
+            36.80582,
+            34.560259,
+            36.806524
+          ]
+        }
+      ],
+      "extent": [
+        34.559389,
+        36.80582,
+        34.560259,
+        36.806524
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

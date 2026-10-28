@@ -41,7 +41,7 @@
                 if (name === 'coordinates' && ['Point', 'MultiPoint', 'LineString', 'MultiLineString', 'Polygon', 'MultiPolygon'].includes(value.type)) output[name] = move(item);
                 else if (name === 'decorationDesign') {
                     output[name] = Object.fromEntries(Object.entries(item || {}).map(([kind, records]) => [kind,
-                        ['trees', 'benches'].includes(kind) ? records.map(record => ({ ...clone(record), coordinate: move(record.coordinate) })) : move(records)]));
+                        ['trees', 'benches', 'lamps', 'stalls'].includes(kind) ? records.map(record => (Array.isArray(record) ? move(record) : { ...clone(record), coordinate: move(record.coordinate) })) : move(clone(records))]));
                 } else output[name] = visit(item);
             }
             return output;

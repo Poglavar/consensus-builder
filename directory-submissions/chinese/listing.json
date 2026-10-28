@@ -1,0 +1,25 @@
+{
+  "name": "Urban Game Theory — Consensus Builder",
+  "slug": "urban-game-theory-consensus-builder",
+  "publisher": "Urban Game Theory",
+  "locale": "zh-CN",
+  "endpoint": "https://urbangametheory.xyz/mcp",
+  "transport": "streamable-http",
+  "authentication": "none",
+  "website": "https://urbangametheory.xyz",
+  "source": "https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair/backend/agents",
+  "documentation": "https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/docs/mcp-editing.md",
+  "privacyPolicy": "https://urbangametheory.xyz/mcp-privacy.html",
+  "support": "https://urbangametheory.xyz/feedback.html",
+  "icon": "https://urbangametheory.xyz/images/consensus-builder-logo-2.png",
+  "oneLiner": "查看真实地块，创建和编辑城市规划方案，比较不同设计，并分享二维与三维设计。",
+  "description": "通过 Consensus Builder 在真实地块上创建和完善城市规划方案。智能体可以查看场地信息，起草建筑、道路、公园、广场、湖泊和地块布局，修改设计几何与建筑高度，增删方案组件，比较不同方案，并打开私密预览。公开发布需要明确确认。此远程 MCP 服务无需账号或 API 密钥，不会签署钱包交易或付款。数据覆盖因地点而异；概念方案不代表规划许可或土地所有权变更。",
+  "keywords": ["城市规划", "地理空间", "建筑设计", "场地规划", "方案编辑"],
+  "examplePrompts": [
+    "查看英国伯明翰 Digbeth 的地块背景，再为选定场地起草一个包含住宅、公园和步行街道的概念方案。先展示私密预览，不要发布。",
+    "把方案中的塔楼降低到18层，旋转15度，并移除湖泊。保留原方案供比较，先展示修改后的私密预览。",
+    "在现有公园草案中增加15棵树，并把道路北侧选定地块改为三层联排住宅。比较修改前后的方案，不要发布。"
+  ],
+  "connectionInstructions": "使用 Streamable HTTP 连接 https://urbangametheory.xyz/mcp，无需认证或自定义请求头。先调用 ugt_capabilities 和 ugt_explain。具体设计操作由智能体组合底层工具完成，并非每个示例句子对应一个独立工具。公开发布和提交反馈需要明确确认。",
+  "preparationStatus": "Prepared copy only; no Chinese directory submission receipt yet."
+}

@@ -32,6 +32,7 @@ import { setupPlannedRoadRoute } from './routes/planned-roads.js';
 import { setupStreetsRoute } from './routes/streets.js';
 import { setupUrbanBlocksRoutes } from './routes/urban-blocks.js';
 import { setupOsmRoadRoute } from './routes/osm-road.js';
+import { setupOsmPublicSpacesRoute } from './routes/osm-public-spaces.js';
 import { setupEstimateContextRoute } from './parcels/estimate-context.js';
 import { setupUrbanRulesRoute } from './routes/urban-rules.js';
 import { setupLandUsesRoute } from './routes/land-uses.js';
@@ -60,6 +61,11 @@ import { setupHackathonOperationsRoute } from './routes/hackathon-operations.js'
 import { setupTransactionsRoute } from './routes/transactions.js';
 import { setupMarketsRoute } from './routes/markets.js';
 import { setupBetsShareRoute } from './routes/bets-share.js';
+import { setupBetsEventsRoute } from './routes/bets-events.js';
+import { setupPlanningDiagnostics } from './routes/planning-diagnostics.js';
+import { setupBetsPointsRoutes } from './routes/bets-points.js';
+import { createAgreementMarketSource } from './markets/agreement-source.js';
+import { setupLmsrRecipesRoute } from './routes/lmsr-recipes.js';
 import { isAgentPath } from './utils/x402-payment.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
 import { setupCityStatsRoute } from './routes/city-stats.js';
@@ -69,8 +75,16 @@ import { setupAiSceneRoute } from './routes/ai-scene.js';
 import { forwardAsyncErrors } from './utils/async-routes.js';
 import { createPool as createDatabasePool } from './db/connection.cjs';
 
-function createPool(env = process.env) {
-    return createDatabasePool({}, env);
+// The API pool's own limits; batch scripts build their pools without these. 20 connections bound
+// what one API process can hold, a connection wait over 5 s fails the request instead of queueing
+// it, and a 20 s statement_timeout ends a runaway request query long before the role's default
+// 30 min statement_timeout — which stays the backstop for every other client. The slowest measured
+// route statement, /parcels/under, is counted first and capped at MAX_PARCELS_UNDER parcels, so it
+// answers in about 2 s (28.9 s for a 15-request replay); nothing a route runs needs 20 s.
+export const API_POOL_OPTIONS = Object.freeze({ max: 20, connectionTimeoutMillis: 5000, statement_timeout: 20000 });
+
+export function createApiPool(env = process.env) {
+    return createDatabasePool({ ...API_POOL_OPTIONS }, env);
 }
 
 const MAX_FORMATTED_VALUE_LENGTH = 256;
@@ -242,10 +256,14 @@ export function createApp({
     // Before ANY route or middleware is registered: every async handler's rejection goes to the
     // error handler below instead of becoming an unhandled rejection that exits the process.
     const app = forwardAsyncErrors(express());
+    // No automatic ETags: clients fetch with `cache: 'no-store'` and nothing sends If-None-Match, so
+    // the SHA-1 Express computed over every multi-MB JSON body was never used. Routes that want
+    // validators set them explicitly (HEAD /proposals/:id); express.static keeps its own.
+    app.set('etag', false);
     const requestContext = new AsyncLocalStorage();
     const isDevEnv = (env.ENVIRONMENT || '').toLowerCase() === 'dev';
     const activePool = attachSqlLogging(
-        providedPool || createPool(env),
+        providedPool || createApiPool(env),
         createQueryLogger({ requestContext, isDevEnv })
     );
 
@@ -352,6 +370,7 @@ export function createApp({
         }
         next();
     });
+    setupPlanningDiagnostics(app, activePool, { env });
     app.use(express.json({ limit: '15mb' }));
     app.use(express.urlencoded({ limit: '15mb', extended: true }));
 
@@ -391,7 +410,10 @@ export function createApp({
                 return parcelsUnderRateLimiter(req, res, next);
             }
             // /agent/* pays per request, so the payment is the limiter (design decision, not an oversight).
-            if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || isAgentPath(req.path))) {
+            // Betting telemetry has its own bounded-batch limiter and must not consume the authoring budget.
+            // Code voting has its own HTTP limit and persistent authentication budget.
+            if (req.method === 'POST' && /^\/agreements\/[^/]+\/voting\/(access|ballot)$/.test(req.path)) return next();
+            if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || isAgentPath(req.path) || req.path === '/bets/events' || req.path.startsWith('/bets/points/'))) {
                 return next();
             }
             return writeRateLimiter(req, res, next);
@@ -439,6 +461,7 @@ export function createApp({
     setupUrbanBlocksRoutes(app);
     setupOsmRoadRoute(app, activePool);
     setupEstimateContextRoute(app);
+    setupOsmPublicSpacesRoute(app); // OSM parks and squares for Plan stats' public land (present-state.js)
     setupUrbanRulesRoute(app, activePool);
     setupLandUsesRoute(app, activePool);
     setupWellKnownRoutes(app, { env }); // /.well-known/x402, llms.txt, openapi.json, robots.txt; must precede docs (/agents.json aliases /docs/agents.json)
@@ -464,7 +487,10 @@ export function createApp({
     setupHackathonOperationsRoute(app, activePool, { env }); // redacted scheduled-job outcomes and freshness
     setupTransactionsRoute(app, activePool); // devnet transaction explorer, derived from the chain
     setupMarketsRoute(app, activePool, { env }); // contests per city with each proposal's prediction market (Bets sheet)
-    setupBetsShareRoute(app, activePool, { env }); // /bets/<account>: link preview for one bet, then on to the app
+    setupBetsEventsRoute(app, activePool); // anonymous betting journey, with simulated activity kept separate
+    setupBetsPointsRoutes(app, activePool, { readAgreement: createAgreementMarketSource(activePool, { env }) });
+    setupLmsrRecipesRoute(app, activePool, { env });
+    setupBetsShareRoute(app, activePool, { env }); // /bets/<account> must follow the named /bets/metrics route
     setupRoadCorridorRoute(app, activePool);
     setupCityStatsRoute(app, activePool);
     setupAreaMonitorsRoute(app, activePool);

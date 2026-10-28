@@ -223,13 +223,13 @@ describe('parcel menu and parcel selection commands', () => {
         expect(UiCommands.commandsFor('parcel-menu', ctx())).toEqual([]);
     });
 
-    it('shows in the parcel section only what the hosted parcel panel does not offer; the rest stays in the palette', () => {
+    it('keeps parcel actions in the palette and only compare in the parcel section', () => {
         const parcel = baseFacts({ compareCount: 2, siteToolAvailable: true });
         expect(UiCommands.commandsFor('parcel-menu', ctx({ parcel })).map(c => c.id))
-            .toEqual(['parcel.compare', 'parcel.useAsSite']);
+            .toEqual(['parcel.compare']);
         expect(UiCommands.commandsFor('parcel-menu', ctx({ parcel: baseFacts({ isRoad: true, can3d: false }) }))).toEqual([]);
         expect(UiCommands.commandsFor('palette', ctx({ parcel })).map(c => c.id)).toEqual(expect.arrayContaining([
-            'parcel.propose', 'parcel.selectMore', 'parcel.details', 'parcel.proposals', 'parcel.history', 'parcel.tools', 'parcel.detectBlock']));
+            'parcel.propose', 'parcel.selectMore', 'parcel.details', 'parcel.proposals', 'parcel.history', 'parcel.tools', 'parcel.detectBlock', 'parcel.useAsSite']));
         // The same commands appear in the palette once a parcel is in hand.
         expect(UiCommands.commandsFor('palette', ctx({ parcel: baseFacts() })).map(c => c.id)).not.toContain('parcel.view3d');
     });
@@ -248,13 +248,15 @@ describe('parcel menu and parcel selection commands', () => {
         expect(UiCommands.commandsFor('parcel-selection', { ...selectionContext, selection: { active: true, count: 0 } }).map(c => c.id))
             .toEqual(['selection.done']);
         expect(UiCommands.commandsFor('parcel-selection', { ...selectionContext, selection: { active: true, count: 2 } }).map(c => c.id))
-            .toEqual(['selection.useAsSite', 'selection.clear', 'selection.done']);
+            .toEqual(['selection.clear', 'selection.done']);
         expect(UiCommands.commandsFor('parcel-selection', { ...selectionContext, selection: { active: false, count: 2 } }).map(c => c.id))
-            .toEqual(['selection.useAsSite', 'selection.clear']);
+            .toEqual(['selection.clear']);
         expect(UiCommands.commandsFor('parcel-selection', { ...selectionContext, selection: { active: false, count: 0 } }).map(c => c.id))
             .toEqual([]);
         expect(UiCommands.commandsFor('layers', { ...selectionContext, selection: { active: true, count: 2 } }).map(c => c.id))
             .toContain('blocks.fromSelected');
+        expect(UiCommands.commandsFor('palette', { ...selectionContext, selection: { active: true, count: 2 } }).map(c => c.id))
+            .toContain('selection.useAsSite');
     });
 
     it('runs selection commands on the existing selection functions', () => {

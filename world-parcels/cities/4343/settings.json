@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4343",
+  "name": "Morelia, Mexico",
+  "point": [
+    19.7059510700371,
+    -101.199806215388
+  ],
+  "bindings": [
+    {
+      "appCityId": "morelia",
+      "runtimeConfig": {
+        "id": "morelia",
+        "wupCityCode": "4343",
+        "label": "Morelia, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            19.7059510700371,
+            -101.199806215388
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            19.7059510700371,
+            -101.199806215388
+          ],
+          "fallbackDataset": [
+            -101.199806215388,
+            19.7059510700371
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-morelia-geoportal-cadastral-wfs",
+          "idPrefix": "MX-MORELIA-FID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "H. Ayuntamiento de Morelia / IMPLAN Morelia · Geoportal Morelia, Predios Catastro"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-morelia-geoportal-cadastral-wfs",
+      "name": "Morelia — Geoportal municipal Predios Catastro",
+      "adapter": "wfs",
+      "endpoint": "https://geoportalmorelia.gob.mx/geoserver/ows",
+      "featureType": "gcm:PredioXY",
+      "version": "1.1.0",
+      "idField": null,
+      "idType": "string",
+      "idPattern": "^PredioXY\\.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      "idPrefix": "MX-MORELIA-FID-",
+      "geometryField": "geom",
+      "outFields": [],
+      "requestProperties": true,
+      "pageSize": 200,
+      "idBatchSize": 40,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "MX",
+      "metricSrid": 32614,
+      "sourceCrs": "EPSG:6369",
+      "cityIds": [
+        "morelia"
+      ],
+      "operator": "H. Ayuntamiento de Morelia / SEDUM / IMPLAN Morelia",
+      "attribution": "H. Ayuntamiento de Morelia / IMPLAN Morelia · Geoportal Morelia, Predios Catastro",
+      "catalogueUrl": "https://geoportalmorelia.gob.mx/",
+      "licenceNote": "No licence specific to the Geoportal WFS layer was established. Preserve municipal attribution; confirm reuse terms in follow-up. Do not infer the open-data catalogue licence applies.",
+      "scope": "Municipal Predios Catastro polygons observed in bounded central Morelia queries. No citywide completeness, exact locator-point coverage, municipal-boundary conformity, currentness, legal-title or survey-accuracy claim.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "MX",
+          "admin1": [
+            "MX-MIC"
+          ],
+          "basis": "Official Morelia municipal Geoportal WFS publishes gcm:PredioXY titled Predios Catastro; safe schema exposes clave_catastro and geom.",
+          "evidence": [
+            "https://geoportalmorelia.gob.mx/geoserver/ows?service=WFS&version=1.1.0&request=GetCapabilities",
+            "https://morelia.gob.mx/blogs/6a3c27690ad979e1826f12c3"
+          ]
+        }
+      },
+      "browserTransport": "relay",
+      "nativeIdMode": "feature-id",
+      "defaultForCity": true
+    }
+  ]
+}

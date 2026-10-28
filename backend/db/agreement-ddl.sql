@@ -1,8 +1,8 @@
 -- Published agreements (plan-design-agreement.md, M2 "Courier and index"): the server's index of the
 -- agreement/v1 objects browsers publish under their own CIDs. `content` is the object exactly as
--- addressed (its canonical bytes hash to `cid`); design_cids, input_parcel_ids, parcel_source_id and
--- deadline are copied out of it for lookups when it is indexed (POST /agreements, routes/agreements.js),
--- after its inputs were checked against its designs' server bindings. Status is computed, never
+-- addressed (its canonical bytes hash to `cid`); design_cids is derived from the referenced plan/v1,
+-- while input_parcel_ids, parcel_source_id and deadline are indexed for lookups after the inputs are
+-- checked against the plan designs' server bindings. Status is computed, never
 -- stored: expired once the deadline has passed, else active (executed and cancelled come from the
 -- chain in M3, which also fills `onchain`). The screenshot columns are filled once by the thumbnail queue.
 --
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS consensus.agreement (
     city                  text,                              -- the city of its first design (consensus.design.city)
     title                 text,
     author                text,
-    design_cids           text[]      NOT NULL,              -- content.designs[].cid, in authored order
+    design_cids           text[]      NOT NULL,              -- derived from consensus.plan.content.designCids; not membership authority
     input_parcel_ids      text[]      NOT NULL,              -- content.inputs.parcels[].parcelId, sorted
     parcel_source_id      text,                              -- the source those ids are in (content.inputs.parcels[].parcelSourceId); null: the city's default
     deadline              timestamptz,                       -- content.deadline; after it the agreement is expired

@@ -106,3 +106,56 @@ test('rejects foreign token routes, foreign service targets and malformed token 
         await assert.rejects(bad(`${endpoint}/query`), /invalid public-token contract/);
     }
 });
+
+test('AkwaGIS object-ID manifests preserve GlobalID identity and full geometry across singleton pages', async () => {
+    const manifestDescriptor = { ...descriptor, boundsQueryMode: 'object-ids', idsQueryMode: 'object-ids' };
+    let tokens = 0;
+    const requests = [];
+    const source = createArcgisParcelSource(manifestDescriptor, { fetchImpl: async input => {
+        if (input === AKWAGIS_PUBLIC_TOKEN_URL) { tokens++; return publicToken(); }
+        const p = new URL(input).searchParams;
+        requests.push(p);
+        if (p.has('returnCountOnly')) return json({ count: 2 });
+        // Deliberately reverse OIDs: canonical identity must remain the native GlobalID.
+        if (p.has('returnIdsOnly')) return json({ objectIdFieldName: 'objectid', objectIds: [92, 17] });
+        assert.equal(p.get('outFields'), 'objectid,globalid');
+        assert.equal(p.get('outSR'), '4326');
+        assert.equal(p.has('geometryPrecision'), false);
+        assert.equal(p.has('geometry'), false);
+        assert.equal(p.has('resultOffset'), false);
+        const oid = Number(p.get('objectIds'));
+        const index = oid === 92 ? 1 : 0;
+        return json({ type: 'FeatureCollection', features: [{ type: 'Feature',
+            properties: { objectid: oid, globalid: ids[index] }, geometry }], exceededTransferLimit: false });
+    } });
+    const exact = await source.queryIds(ids.map(id => descriptor.idPrefix + id));
+    const bounds = await source.queryBounds([7.779, 5.009, 7.782, 5.012]);
+    assert.equal(tokens, 1);
+    for (const result of [exact, bounds]) {
+        assert.equal(result.complete, true);
+        assert.deepEqual(result.features.map(f => f.properties.sourceParcelId).sort(), [...ids].sort());
+        for (const feature of result.features) {
+            assert.equal(feature.id, descriptor.idPrefix + feature.properties.sourceParcelId);
+            assert.deepEqual(feature.geometry, geometry);
+        }
+    }
+    assert.deepEqual(exact.absentIds, []);
+    assert.equal(requests.length, 8);
+    assert.deepEqual(requests.filter(p => p.has('objectIds')).map(p => p.get('objectIds')), ['92', '17', '92', '17']);
+    assert.equal(requests[0].get('where'), `globalid IN ('${ids[0]}','${ids[1]}')`);
+    assert.equal(requests[4].get('geometryType'), 'esriGeometryEnvelope');
+});
+
+test('AkwaGIS incomplete object-ID manifest fails before any polygon request', async () => {
+    let polygonReads = 0;
+    const source = createArcgisParcelSource({ ...descriptor, idsQueryMode: 'object-ids' }, { fetchImpl: async input => {
+        if (input === AKWAGIS_PUBLIC_TOKEN_URL) return publicToken();
+        const p = new URL(input).searchParams;
+        if (p.has('returnCountOnly')) return json({ count: 2 });
+        if (p.has('returnIdsOnly')) return json({ objectIdFieldName: 'objectid', objectIds: [17] });
+        polygonReads++;
+        throw new Error('Incomplete manifests must stop before polygon reads.');
+    } });
+    await assert.rejects(source.queryIds(ids.map(id => descriptor.idPrefix + id)), /incomplete or invalid object-ID list/);
+    assert.equal(polygonReads, 0);
+});

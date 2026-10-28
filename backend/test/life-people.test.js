@@ -7,7 +7,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const lifeGraph = require('../../frontend/js/life/life-graph.js');
 const { buildWalkableSurface, CLASS } = require('../../frontend/js/life/life-surface.js');
-const { createSimulation, PERSON_PER_M2 } = require('../../frontend/js/life/life-agents.js');
+const { createSimulation, PERSON_PER_M2, PAIR_GAP_M } = require('../../frontend/js/life/life-agents.js');
 
 const identity = (lng, lat) => [lng, lat];
 const square = (x0, y0, x1, y1) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]];
@@ -29,6 +29,35 @@ function blockScene() {
 }
 
 describe('people population', () => {
+    it('retains the authored square density when a large OSM context consumes the crowd cap', () => {
+        const b = lifeGraph.createGraphBuilder();
+        b.addSquare({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [square(-50, -100, 50, -50)] } }, identity);
+        b.addOsmRoads([{ type: 'Feature', geometry: { type: 'Polygon', coordinates: [square(-290, 20, 290, 290)] },
+            properties: { highway_type: 'pedestrian', tags: { area: 'yes' } } }], identity);
+        const graph = b.build();
+        const surface = buildWalkableSurface({ bounds: [-300, -300, 300, 300], ...graph.surface });
+        const sim = createSimulation(graph, surface, { seed: 3, maxPeople: 64, maxVehicles: 0 });
+        const inSquare = sim.people.filter(p => p.x >= -50 && p.x <= 51 && p.y >= -100 && p.y <= -50);
+        expect(sim.people).toHaveLength(64);
+        expect(inSquare.length).toBeGreaterThanOrEqual(Math.round(surface.stats.authoredPreferredAreaM2 * PERSON_PER_M2));
+        expect(sim.people.some(p => p.y > 20)).toBe(true);
+    });
+
+    it('excludes blocked footprints from the authored walking allocation', () => {
+        const b = lifeGraph.createGraphBuilder();
+        b.addPark({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [square(-50, -50, 50, 50)] } }, identity);
+        b.addBlockedFeature({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [square(-60, -60, 60, 60)] } }, identity);
+        b.addOsmRoads([{ type: 'Feature', geometry: { type: 'LineString', coordinates: [[-150, 100], [150, 100]] },
+            properties: { highway_type: 'footway' } }], identity);
+        const graph = b.build();
+        const surface = buildWalkableSurface({ bounds: [-170, -170, 170, 170], ...graph.surface });
+        expect(surface.stats.authoredPreferredAreaM2).toBe(0);
+        const sim = createSimulation(graph, surface, { seed: 3, maxPeople: 64, maxVehicles: 0 });
+        expect(sim.people.length).toBeGreaterThan(0);
+        expect(sim.people.every(p => surface.classAt(p.x, p.y) === CLASS.PREFERRED)).toBe(true);
+        expect(sim.people.every(p => p.y > 90)).toBe(true);
+    });
+
     it('sizes the crowd from the walkable area and respects the cap', () => {
         const { graph, surface } = blockScene();
         const expected = Math.round((surface.stats.preferredAreaM2 + 0.05 * surface.stats.openAreaM2) * PERSON_PER_M2);
@@ -122,6 +151,60 @@ describe('wandering', () => {
         for (let t = 0; t < 100; t++) { a.step(0.1); b.step(0.1); c.step(0.1); }
         expect(a.people.map(p => [p.x, p.y])).toEqual(b.people.map(p => [p.x, p.y]));
         expect(a.people.map(p => [p.x, p.y])).not.toEqual(c.people.map(p => [p.x, p.y]));
+    });
+});
+
+describe('pairs and children', () => {
+    it('sets some walkers out in pairs, half of the companions children, and no one marches in step', () => {
+        const { graph, surface } = blockScene();
+        const sim = createSimulation(graph, surface, { seed: 5, maxPeople: 64, maxVehicles: 0 });
+        const companions = sim.people.filter(p => p.partner != null);
+        expect(companions.length).toBeGreaterThan(4);
+        expect(companions.length).toBeLessThan(sim.people.length / 2);
+        expect(companions.some(p => p.child)).toBe(true);
+        expect(companions.some(p => !p.child)).toBe(true);
+        for (const c of companions) {
+            const leader = sim.people[c.partner];
+            expect(leader.partner).toBeNull();
+            expect(Math.hypot(c.x - leader.x, c.y - leader.y)).toBeLessThanOrEqual(PAIR_GAP_M + 1e-6);
+            expect(c.speed).toBeGreaterThan(leader.speed);
+            expect(c.stride).not.toBe(leader.stride);
+            expect(c.gait).not.toBe(leader.gait);
+        }
+        for (const p of sim.people) {
+            if (p.child) { expect(p.height).toBeGreaterThanOrEqual(1.1); expect(p.height).toBeLessThanOrEqual(1.4); }
+            else expect(p.height).toBeGreaterThanOrEqual(1.55);
+            expect(p.gait).toBeGreaterThanOrEqual(0.85); expect(p.gait).toBeLessThanOrEqual(1.15);
+            expect(p.swing).toBeGreaterThanOrEqual(0.75); expect(p.swing).toBeLessThanOrEqual(1.1);
+        }
+    });
+
+    it('keeps a companion beside its partner over two simulated minutes, never in a footprint, crossing streets with them and resting with them', () => {
+        const { graph, surface } = blockScene();
+        const sim = createSimulation(graph, surface, { seed: 5, maxPeople: 64, maxVehicles: 0 });
+        const companions = sim.people.filter(p => p.partner != null);
+        let far = 0, samples = 0, restedTogether = 0, walkedTogether = 0, inRoad = 0, together = 0;
+        for (let t = 0; t < 1200; t++) {
+            const before = companions.map(c => [c.x, c.y, c.stride]);
+            sim.step(0.1);
+            companions.forEach((c, i) => {
+                const leader = sim.people[c.partner];
+                samples++;
+                expect(surface.isBlocked(c.x, c.y)).toBe(false);
+                if (surface.classAt(c.x, c.y) === CLASS.CARRIAGEWAY) inRoad++;
+                const gap = Math.hypot(c.x - leader.x, c.y - leader.y);
+                if (gap > 3) far++;
+                if (gap < 1.2) together++;
+                const stood = c.x === before[i][0] && c.y === before[i][1] && c.stride === before[i][2];
+                if (leader.wait > 0 && gap < 1.2 && stood) restedTogether++;
+                if (leader.wait === 0 && gap < 1.2 && !stood) walkedTogether++;
+            });
+        }
+        expect(far / samples).toBeLessThan(0.02);
+        expect(inRoad / samples).toBeLessThan(0.12); // crosses the street with its partner, never strolls along it
+        expect(restedTogether).toBeGreaterThan(0);
+        expect(together / samples).toBeGreaterThan(0.8);
+        expect(walkedTogether / samples).toBeGreaterThan(0.25); // the rest is standing together while the partner pauses
     });
 });
 

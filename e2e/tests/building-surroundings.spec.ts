@@ -1,15 +1,12 @@
 // The surroundings choice stays with each building design through editing, saving and publication.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, showProposal, proposalState, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, showProposal, proposalState, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 
 async function finishEditor(page: any, editor: any, done: string) {
-  const acceptance = editor.locator('[data-land-accept]');
-  if (await acceptance.count()) {
-    await expect(acceptance).toBeEnabled();
-    await acceptance.check();
-  }
+  const landStatus = editor.locator('[data-land-status]');
+  if (await landStatus.count()) await expect(landStatus).toContainText('m²');
   await page.locator(done).click();
   const proceed = page.getByRole('button', { name: 'Proceed anyway' });
   await expect.poll(async () => await editor.count() === 0 || await proceed.isVisible()).toBe(true);
@@ -33,14 +30,15 @@ async function openBuildingEditor(page: any, tool: string, typology: string, don
       await showSelectionDesignTab(page);
     } else await openParcel(page, 'proposals');
     await page.locator(`.parcel-build-btn--${tool}`).click();
+    if (typology === 'single') await placeFreeformBuilding(page);
     const scope = page.getByRole('alertdialog');
     await expect.poll(async () => await scope.isVisible() || await page.locator(done).isVisible(), { timeout: 45_000 }).toBe(true);
     if (await scope.isVisible()) await scope.getByRole('button', { name: 'No, just this parcel' }).click();
     await expect(page.locator(done)).toBeEnabled({ timeout: 45_000 });
     if (typology === 'single') {
-      await expect(page.locator('[data-land-accept]')).toBeEnabled();
+      await expect(page.locator('[data-land-status]')).toContainText('m²');
       await page.locator('[data-land-whole]').click();
-      await expect(page.locator('[data-land-accept]')).toBeEnabled();
+      await expect(page.locator('[data-land-status]')).toContainText('m²');
     }
 }
 
@@ -56,6 +54,10 @@ async function cancelEditor(parent: any) {
   const close = parent.locator('.on-map-editor__header .close-circle-btn');
   await close.focus();
   await close.press('Enter');
+  // An editor with changes asks before throwing them away.
+  const discard = parent.page().locator('.cb-dialog-overlay:not([hidden])').getByRole('button', { name: 'Discard', exact: true });
+  await expect.poll(async () => (await discard.isVisible()) || (await parent.isHidden())).toBe(true);
+  if (await discard.isVisible()) await discard.click();
 }
 
 for (const [tool, typology, root, prefix, done] of [
@@ -154,6 +156,8 @@ for (const [tool, typology, root, prefix, done, treatment] of [
     await expect(page.locator('#mode-3d-toggle')).toBeDisabled();
     const points = await furniturePoints(page, surfaceForPoints);
     await expect(child.locator('[data-tool="move"]')).toHaveCount(0);
+    // Paved surroundings open as a square, with pavement trees; green ones as a park, without.
+    await expect(child.locator('[data-tool="pavementTree"]')).toHaveCount(treatment === 'paved' ? 1 : 0);
     await child.locator('[data-tool="tree"]').click();
     await page.mouse.click(points[0].x, points[0].y);
     await expect(page.locator('.structure-geometry-icon.is-tree')).toHaveCount(1);
@@ -165,7 +169,7 @@ for (const [tool, typology, root, prefix, done, treatment] of [
 
     await edit.click();
     await expect(page.locator('.structure-geometry-icon.is-tree')).toHaveCount(0);
-    await child.locator('[data-tool="tree"]').click();
+    await child.locator(`[data-tool="${treatment === 'paved' ? 'pavementTree' : 'tree'}"]`).click();
     await page.mouse.click(points[0].x, points[0].y);
     await child.locator('[data-tool="bench"]').click();
     await page.mouse.click(points[1].x, points[1].y);
@@ -176,6 +180,7 @@ for (const [tool, typology, root, prefix, done, treatment] of [
     const surface = await page.evaluate(() => (window as any).OnMapEditor.getPreview().groundSurface);
     await expect(page.locator('#mode-3d-toggle')).toBeEnabled();
     expect(surface.decorationDesign.trees).toHaveLength(1);
+    expect(surface.decorationDesign.trees[0].pit ?? null).toBe(treatment === 'paved' ? 'grille' : null);
     expect(surface.decorationDesign.benches).toHaveLength(1);
     expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(0);
     await finishEditor(page, parent, done);

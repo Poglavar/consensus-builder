@@ -117,3 +117,48 @@ describe('flowerbed planting', () => {
         expect(Planting.ringSeed(ring)).not.toBe(Planting.ringSeed(ring.map(([x, y]) => [x + 0.00001, y])));
     });
 });
+
+describe('tree height steps and pavement pits', () => {
+    const tree = { coordinate: [15.9, 45.8], kind: 'broadleaf', heightM: 9 };
+
+    it('steps a tree taller and shorter within its kind range', () => {
+        expect(Planting.resizeTree(tree, 1)).toEqual({ ...tree, heightM: 10 });
+        expect(Planting.resizeTree(tree, -2)).toEqual({ ...tree, heightM: 7 });
+        expect(Planting.resizeTree({ ...tree, heightM: 13.6 }, 1).heightM).toBe(14);
+        expect(Planting.resizeTree({ ...tree, heightM: 6 }, -1).heightM).toBe(6);
+        expect(Planting.heightRoom({ ...tree, heightM: 14 })).toEqual({ taller: false, shorter: true });
+        expect(Planting.heightRoom({ ...tree, heightM: 6 })).toEqual({ taller: true, shorter: false });
+        expect(Planting.heightRoom(null)).toEqual({ taller: false, shorter: false });
+    });
+
+    it('keeps a known pit through treeOf, a new look and a resize, and drops an unknown one', () => {
+        const pavement = { ...tree, pit: 'grille' };
+        expect(Planting.treeOf(pavement)).toEqual(pavement);
+        expect(Planting.treeOf({ ...tree, pit: 'cobbles' })).toEqual(tree);
+        expect(Planting.rerollTree(pavement, () => 0.99).pit).toBe('grille');
+        expect(Planting.resizeTree(pavement, 1).pit).toBe('grille');
+        expect(Planting.withPit(pavement, 'grass')).toEqual({ ...tree, pit: 'grass' });
+        expect(Planting.withPit(pavement, null)).toEqual(tree);
+        expect(Planting.withPit([15.9, 45.8], 'soil').pit).toBe('soil');
+        expect(Planting.treeIcon(pavement).html).toContain('park-tree-glyph is-pit-grille');
+        expect(Planting.treeIcon(tree).html).toContain('class="park-tree-glyph"');
+    });
+
+    it('does not read a missing height as zero', () => {
+        expect(Planting.treeOf({ ...tree, heightM: null }).heightM).toBeGreaterThan(0);
+        expect(Planting.treeOf({ ...tree, heightM: null })).toEqual(Planting.treeOf(tree.coordinate));
+    });
+
+    it('lays a pit square to the longest edge of its site', () => {
+        // A long east-west edge at Zagreb's latitude, then a short north-south one.
+        expect(Planting.longestEdgeBearing([[15.9, 45.8], [15.902, 45.8], [15.902, 45.8005], [15.9, 45.8005], [15.9, 45.8]])).toBeCloseTo(90, 6);
+        expect(Planting.longestEdgeBearing([[15.9, 45.8], [15.9, 45.802], [15.9005, 45.802], [15.9005, 45.8], [15.9, 45.8]])).toBeCloseTo(0, 6);
+        expect(Planting.longestEdgeBearing(null)).toBe(0);
+        const corners = Planting.pitCorners(10, 20, 0.7, 90);
+        const sides = corners.map((p, i) => Math.hypot(corners[(i + 1) % 4][0] - p[0], corners[(i + 1) % 4][1] - p[1]));
+        sides.forEach(side => expect(side).toBeCloseTo(1.4, 9));
+        expect(corners.reduce((sum, [x]) => sum + x, 0) / 4).toBeCloseTo(10, 9);
+        const area = corners.reduce((sum, p, i) => sum + p[0] * corners[(i + 1) % 4][1] - corners[(i + 1) % 4][0] * p[1], 0) / 2;
+        expect(area).toBeCloseTo(1.96, 9); // counter-clockwise: faces up
+    });
+});

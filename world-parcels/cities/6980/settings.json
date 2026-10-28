@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6980",
+  "name": "Memphis, United States",
+  "point": [
+    35.1005667557473,
+    -89.9360317696787
+  ],
+  "bindings": [
+    {
+      "appCityId": "memphis",
+      "runtimeConfig": {
+        "id": "memphis",
+        "wupCityCode": "6980",
+        "label": "Memphis, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            35.1005667557473,
+            -89.9360317696787
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            35.1005667557473,
+            -89.9360317696787
+          ],
+          "fallbackDataset": [
+            -89.9360317696787,
+            35.1005667557473
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-tn-memphis-shelby-cert-tax-parcels",
+          "idPrefix": "US-TN-MEMPHIS-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "City of Memphis GIS · CERT TAX PARCELS (Shelby County). WGS84 output supplied by provider."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-tn-memphis-shelby-cert-tax-parcels",
+      "endpoint": "https://gis.memphistn.gov/server/rest/services/Parcel/CERT_TAX_PARCELS/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Memphis / Shelby County certified tax parcels",
+      "operator": "City of Memphis GIS",
+      "countryCode": "US",
+      "stateCode": "TN",
+      "cityIds": [
+        "memphis"
+      ],
+      "scope": "Shelby County-area certified tax parcels; bounded Memphis verification only",
+      "idField": "PARCELID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[A-Z0-9 ]{1,15}$",
+      "idPrefix": "US-TN-MEMPHIS-",
+      "outFields": [
+        "OBJECTID",
+        "PARCELID"
+      ],
+      "parcelNumberField": "PARCELID",
+      "queryFormat": "geojson",
+      "boundsSrid": 2274,
+      "boundsProjection": "+proj=lcc +lat_0=34.3333333333333 +lon_0=-86 +lat_1=36.4166666666667 +lat_2=35.25 +x_0=600000 +y_0=0 +datum=NAD83 +units=us-ft +no_defs +type=crs",
+      "metricSrid": 32616,
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 30000,
+      "maxResponseBytes": 16777216,
+      "maxConcurrentQueries": 2,
+      "catalogueUrl": "https://gis.memphistn.gov/server/rest/services/Parcel",
+      "attribution": "City of Memphis GIS · CERT TAX PARCELS (Shelby County). WGS84 output supplied by provider.",
+      "licenceNote": "Public first-party query service. Layer metadata has empty copyright text and does not state a reuse licence; public access does not establish redistribution rights.",
+      "caveats": [
+        "Bounded Memphis checks do not establish citywide completeness, currency or legal title.",
+        "PARCELID contains literal internal spaces; preserve every character.",
+        "EPSG:2274 native bounds avoid the previously unsuccessful WGS84-envelope route. Provider datum operation and grid accuracy remain unverified.",
+        "Historical duplication, wider overlaps and native PARCELID uniqueness remain second-pass follow-ups."
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

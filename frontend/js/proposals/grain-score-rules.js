@@ -182,6 +182,40 @@
         return [...starting];
     }
 
+    // The plan as it stands on the map (user ruling 2026-10-28: the rooster scores applied plans
+    // only, from the live fabric; no binding and no headless replay). `members` are the exact plan
+    // members ({ cid }); `records` the local designs; the ports read the live fabric and the cadastral
+    // repository. A member that is absent or unapplied leaves nothing to inspect: { ok: false, missing }.
+    function appliedPlanGround({ members, records, cidOf, isApplied, producedBy, entriesForCadastre, originalOf }) {
+        const byCid = new Map();
+        (Array.isArray(records) ? records : []).forEach(record => {
+            try { byCid.set(String(cidOf(record)), record); } catch (_) { /* a record without a CID is no member */ }
+        });
+        const proposals = [];
+        const missing = [];
+        (Array.isArray(members) ? members : []).forEach(member => {
+            const record = byCid.get(String(member && member.cid));
+            if (record && isApplied(record)) proposals.push(record);
+            else missing.push(String(member && member.cid));
+        });
+        if (missing.length) return { ok: false, missing, proposals: [], cadastreIds: [], materializedFeatures: [], cadastralFeatures: [] };
+        const ids = new Set();
+        const add = list => (Array.isArray(list) ? list : []).forEach(id => {
+            const text = String(id === undefined || id === null ? '' : id).trim();
+            if (text) ids.add(text);
+        });
+        proposals.forEach(record => {
+            add(record.cadastreParcelIds);
+            (producedBy(record.proposalId) || []).forEach(piece => add(piece && piece.properties && piece.properties.cadastreParcelIds));
+        });
+        const cadastreIds = [...ids].sort();
+        return {
+            ok: true, missing: [], proposals, cadastreIds,
+            materializedFeatures: entriesForCadastre(cadastreIds, { includeCorridors: false }) || [],
+            cadastralFeatures: cadastreIds.map(id => originalOf(id)).filter(Boolean)
+        };
+    }
+
     function scoreParcelCount(beforeCount, afterCount) {
         if (!Number.isInteger(beforeCount) || beforeCount < 0) {
             throw new TypeError('beforeCount must be a non-negative integer');
@@ -250,6 +284,7 @@
         HAPPY_SCORE,
         ROOSTER_PECK,
         roosterPose,
+        appliedPlanGround,
         measureParcelRows,
         parcelDimensionsMeters,
         isFineGrainParcel,

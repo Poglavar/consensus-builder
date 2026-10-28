@@ -34,7 +34,7 @@ async function openBlock(page: Page) {
   await expect.poll(() => page.evaluate(() => (window as any).blockStorage.blocks.size)).toBeGreaterThan(0);
   await page.locator('#showBlockListButton').click();
   await page.locator('#blocks-content .block-item').first().click();
-  await page.locator('#layers-sheet [data-sheet-close]').click();
+  await expect(page.locator('#layers-sheet')).toBeHidden();
   await expect(page.locator('#block-info-panel')).toBeVisible();
   await expect(page.locator('#parcel-info-panel')).toBeHidden();
   return page.evaluate(() => JSON.parse(document.querySelector('#block-info-title')!.getAttribute('data-i18n-params')!).name);
@@ -94,7 +94,7 @@ for (const kind of ['road', 'building', 'park'] as const) {
     await page.locator('#block-info-panel .close-button').click();
     await openLayerSection(page, 'blocks');
     await page.locator('#blocks-content .block-item').first().click();
-    await page.locator('#layers-sheet [data-sheet-close]').click();
+    await expect(page.locator('#layers-sheet')).toBeHidden();
     await page.locator('#block-proposals-tab-button').click();
     const row = page.locator(`#block-proposals-content .proposal-list-item[data-proposal-id="${id}"]`);
     await row.getByRole('button', { name: /Apply to map$/ }).click();
@@ -104,7 +104,7 @@ for (const kind of ['road', 'building', 'park'] as const) {
     await row.locator('button[onclick*="removeProposalFromMap"]').click();
     await expect.poll(async () => (await proposalState(page, id)).applied).toBe(false);
     await expect(row.locator('button[onclick*="applyProposalToMap"]')).toBeVisible();
-    await row.getByTitle('Delete proposal', { exact: true }).click();
+    await row.getByTitle('Delete design', { exact: true }).click();
     const confirmation = page.getByRole('alertdialog');
     if (await confirmation.isVisible()) await confirmation.getByRole('button', { name: /Delete|Yes/i }).click();
     await expect.poll(() => page.evaluate(id => !!(window as any).proposalStorage.getProposal(id), id)).toBe(false);
@@ -112,14 +112,14 @@ for (const kind of ['road', 'building', 'park'] as const) {
   });
 }
 
-test('block Create Proposal opens a proposal for every parcel of the chosen block', async ({ mockApi: page }) => {
+test('block Create design opens a design for every parcel of the chosen block', async ({ mockApi: page }) => {
   await installBlockGround(page);
   await openCity(page);
   await page.evaluate(async ids => (window as any).CadastralParcelRepository.ensureIds(ids), ids);
   const name = await openBlock(page);
   const expected = await page.evaluate(name => [...(window as any).blockStorage.blocks.get(name).parcelIds].sort(), name);
   await page.locator('#block-proposals-tab-button').click();
-  await page.locator('#block-proposals-content').getByRole('button', { name: 'Create proposal', exact: true }).click();
+  await page.locator('#block-proposals-content').getByRole('button', { name: 'Create design', exact: true }).click();
   await expect(page.locator('.create-proposal-modal:visible')).toBeVisible();
   expect(await page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].sort())).toEqual(expected);
   await expect(page.locator('.create-proposal-modal:visible .proposal-parcel-item')).toHaveCount(expected.length);

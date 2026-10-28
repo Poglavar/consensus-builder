@@ -29,11 +29,13 @@ test('Share on an applied park publishes its design object under the CID the bro
   await expect(details.locator('.cb-badge--draft')).toBeVisible();
   // A guest chooses a profile name first: the design carries its author, and nothing left the device.
   await details.locator('.btn-share-proposal').click();
+  await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
   await chooseProfileName(page, 'Share author');
   expect(postsOf(index)).toEqual([]);
 
   await showProposal(page, proposalId);
   await details.locator('.btn-share-proposal').click();
+  await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
   await expect(details.locator('.cb-badge--published')).toBeVisible({ timeout: 30_000 });
 
   // The courier got the canonical bytes, the index the object they encode, both under one CID that
@@ -72,6 +74,7 @@ test('Share on an applied park publishes its design object under the CID the bro
   // Sharing it again copies the same link and sends nothing: it still hashes to its published CID.
   await page.evaluate(() => navigator.clipboard.writeText(''));
   await details.locator('.btn-share-proposal').click();
+  await expect(page.getByRole('alertdialog', { name: 'Share design or plan?', exact: true })).toHaveCount(0);
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(link);
   expect(postsOf(index)).toHaveLength(2);
 

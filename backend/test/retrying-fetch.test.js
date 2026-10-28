@@ -105,3 +105,11 @@ describe('shared transient fetch retries', () => {
         expect(retryLog).not.toContain('upstream');
     });
 });
+
+it('lets the caller own a rate-limit cooldown without consuming or retrying the response', async () => {
+    const fetchImpl = vi.fn(async () => new Response('limited', { status: 429 }));
+    const wait = vi.fn();
+    const retrying = createRetryingFetch({ fetchImpl, wait, shouldRetryResponse: response => response.status !== 429 });
+    expect(await (await retrying('https://example.test/resource')).text()).toBe('limited');
+    expect(fetchImpl).toHaveBeenCalledTimes(1); expect(wait).not.toHaveBeenCalled();
+});

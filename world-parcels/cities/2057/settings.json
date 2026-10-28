@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2057",
+  "name": "Cheongju-si, South Korea",
+  "point": [
+    36.6339269115511,
+    127.46905055706
+  ],
+  "bindings": [
+    {
+      "appCityId": "cheongju_si",
+      "runtimeConfig": {
+        "id": "cheongju_si",
+        "wupCityCode": "2057",
+        "label": "Cheongju-si, South Korea",
+        "currency": {
+          "locale": "ko-KR",
+          "code": "KRW"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            36.6339269115511,
+            127.46905055706
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            36.6339269115511,
+            127.46905055706
+          ],
+          "fallbackDataset": [
+            127.46905055706,
+            36.6339269115511
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "kr-cheongju-mapmoa-cadastral-wfs",
+          "idPrefix": "KR-CHEONGJU-PNU-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Cheongju City · MapMoa / 청주시 지도모아 · reference only, no surveying or legal effect"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "kr-cheongju-mapmoa-cadastral-wfs",
+      "name": "Cheongju MapMoa municipal cadastral parcels",
+      "adapter": "cheongju-mapmoa",
+      "endpoint": "https://map.cheongju.go.kr/getWfs.do",
+      "featureType": "LSMD_CONT_LDREG",
+      "version": "1.1.0",
+      "idField": "PNU",
+      "idType": "string",
+      "idPattern": "^[0-9]{19}$",
+      "idPrefix": "KR-CHEONGJU-PNU-",
+      "parcelNumberField": "PNU",
+      "geometryField": "G2_SPATIAL",
+      "outFields": [
+        "PNU"
+      ],
+      "sourceCrs": "EPSG:5186",
+      "sourceProjection": "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs",
+      "wireCoordinateOrder": "xy",
+      "metricSrid": 32652,
+      "maxFeatures": 1000,
+      "maxResponseBytes": 2097152,
+      "maxBboxKm2": 0.25,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "countryCode": "KR",
+      "cityIds": [
+        "cheongju_si"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "operator": "Cheongju City, MapMoa spatial information system",
+      "catalogueUrl": "https://map.cheongju.go.kr/main.do",
+      "attribution": "Cheongju City · MapMoa / 청주시 지도모아 · reference only, no surveying or legal effect",
+      "scope": "Bounded central Cheongju parcel samples and live filtered viewport reads. Published service extent and discovery probes do not establish citywide completeness.",
+      "licenceNote": "Public anonymous municipal viewer access observed. Source-specific geometry reuse terms unverified; separate national MOLIT licence is not applied. Preserve Cheongju City / MapMoa attribution and reference-only notice."
+    }
+  ]
+}

@@ -341,6 +341,26 @@ describe('Leaflet wiring', () => {
         expect(['moveend', 'mousemove', 'mouseout'].every(type => map.handlers[type].size === 0)).toBe(true);
         expect(layer.snapshot()).toMatchObject({ enabled: false, drawn: 0, flagged: 0 });
     });
+
+    // The floor-plan modules are not in the boot list; turning the layer on loads them through
+    // map-mode-loader's window.__ensureFloorPlanModules and draws once they have arrived.
+    it('loads the floor-plan modules on demand when they are not on the page yet, then draws', async () => {
+        const names = ['__buildingFloorPlans', '__defaultFloorPlans', '__defaultFloorPlanContext'];
+        const saved = names.map(name => globalThis[name]);
+        names.forEach(name => { delete globalThis[name]; });
+        const ensure = vi.fn(() => Promise.resolve().then(() => names.forEach((name, i) => { globalThis[name] = saved[i]; })));
+        globalThis.__ensureFloorPlanModules = ensure;
+        try {
+            layer.setEnabled(true);
+            expect(layer.snapshot()).toMatchObject({ enabled: true, drawn: 0 });
+            await vi.waitFor(() => expect(layer.snapshot()).toMatchObject({ drawn: 3, flagged: 1 }));
+            expect(ensure).toHaveBeenCalledTimes(1);
+        } finally {
+            if (layer.isEnabled()) layer.setEnabled(false);
+            names.forEach((name, i) => { globalThis[name] = saved[i]; });
+            delete globalThis.__ensureFloorPlanModules;
+        }
+    });
 });
 
 // The Layers row and the URL flag: a fresh copy of the module loaded into a fake window whose document

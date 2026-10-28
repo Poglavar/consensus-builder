@@ -1,6 +1,6 @@
 // Source choices belong to frontend configuration, including choices made away from the current map.
 import {describe,it,expect} from 'vitest';
-import {readFileSync} from 'node:fs';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import {runInNewContext} from 'node:vm';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
@@ -8,7 +8,7 @@ const WorldCoverage=require('../../frontend/js/world/world-coverage.js');
 const BOOT_COVERAGE=require('../../frontend/data/world-coverage.json');
 function frontend() {
     const context={URLSearchParams,console,WorldCoverage,BOOT_COVERAGE}; context.window=context;
-    runInNewContext(readFileSync(new URL('../../frontend/js/city-config.js',import.meta.url),'utf8'),context);
+    runInNewContext(cityConfigSource(),context);
     return context.CityConfigManager;
 }
 describe('frontend data context',()=>{
@@ -26,5 +26,18 @@ describe('frontend data context',()=>{
         const manager=frontend();
         expect(manager.getParcelContext({type:'Point',coordinates:[-74.006,40.7128]},'zagreb'))
             .toEqual({city:'new_york',parcelSourceId:'parcel-nyc'});
+    });
+    it('routes cadastral dependencies by geometry and coverage, never by city text',()=>{
+        const manager=frontend();
+        const current=manager.getCurrentCityId();
+        const elsewhere=current==='new_york' ? {city:'zagreb',point:[15.9706,45.81305],id:'HR-1'}
+            : {city:'new_york',point:[-74.006,40.7128],id:'US-NY-1'};
+        const site={type:'Point',coordinates:elsewhere.point};
+        for(const city of [current,elsewhere.city,'misleading-label',null]) {
+            expect(manager.foreignGroundContextFor({city,site,cadastreParcelIds:[elsewhere.id]})).toBe(elsewhere.city);
+            expect(manager.foreignGroundContextFor({city,site,cadastreParcelIds:[]})).toBeNull();
+            expect(manager.foreignGroundContextFor({city,content:{city,site},binding:{parcels:[{parcelId:elsewhere.id}]}})).toBe(elsewhere.city);
+        }
+        expect(manager.foreignGroundContextFor({city:'new_york',site:{type:'Point',coordinates:[35,35]},cadastreParcelIds:[]})).toBeNull();
     });
 });

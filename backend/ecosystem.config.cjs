@@ -26,8 +26,11 @@ module.exports = {
       // origin as that proposal's screenshot_url. It is a public URL, not a secret, so it lives
       // here (versioned, deployed) rather than in a hand-edited .env.
       PUBLIC_API_BASE_URL: 'https://api.urbangametheory.xyz',
-      // Read immutable metadata from the same public gateway as the pinning service.
-      IPFS_READ_GATEWAY: 'https://gateway.pinata.cloud/ipfs',
+      // Upload provider and read gateway are independent. Retain Pinata credentials in .env
+      // and select it explicitly when needed; failed uploads do not silently switch providers.
+      IPFS_PINNING_PROVIDER: process.env.IPFS_PINNING_PROVIDER || 'filebase',
+      FILEBASE_BUCKET: 'consensus-builder-publications',
+      IPFS_READ_GATEWAY: process.env.IPFS_READ_GATEWAY || 'https://nursing-purple-dove.myfilebase.com/ipfs',
       // The configured devnet RPC plan accepts five accounts per getMultipleAccounts request.
       SOLANA_RPC_MAX_ACCOUNTS: '5',
       // Basemap tiles for server-rendered proposal thumbnails (thumbnails/tile-stitch.js). Public

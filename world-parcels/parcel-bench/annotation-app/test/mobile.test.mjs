@@ -9,21 +9,26 @@ import { createReviewServer } from '../server.mjs';
 const require = createRequire(new URL('../../../../e2e/package.json', import.meta.url));
 const { chromium, expect } = require('@playwright/test');
 const bundleDir = fileURLToPath(new URL('../../output/annotation-bundle-v1/', import.meta.url));
-const token = 'local-browser-test-access-key-not-a-secret';
+const assertion = 'test-owner-assertion';
+const verifyAccess = async value => { if (value !== assertion) throw new Error('Unauthorized'); };
 const origin = 'http://localhost:8789';
 const url = `${origin}/autokatastar/pregled/`;
 async function fixture(t) {
   const directory = await mkdtemp(join(tmpdir(), 'autokatastar-mobile-'));
-  const server = await createReviewServer({ bundleDir, dataDir: directory, token, basePath: '/autokatastar/pregled/', publicOrigin: origin });
+  const server = await createReviewServer({ bundleDir, dataDir: directory, verifyAccess, basePath: '/autokatastar/pregled/', publicOrigin: origin });
+  // Model the edge: it adds the assertion from an authenticated cookie, including
+  // service-worker script requests which do not inherit Playwright extra headers.
+  server.prependListener('request', req => { if (req.headers.cookie?.includes('test_access=owner')) req.headers['cf-access-jwt-assertion'] = assertion; });
   await new Promise((done, fail) => { server.once('error', fail); server.listen(8789, '127.0.0.1', done); });
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+  await context.addCookies([{ name: 'test_access', value: 'owner', url: origin, httpOnly: true, sameSite: 'Strict' }]);
   const page = await context.newPage();
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   t.after(async () => { await browser.close(); await new Promise(done => server.close(done)); await rm(directory, { recursive: true }); assert.deepEqual(errors, []); });
   await page.goto(url);
-  await page.locator('#token').fill(token); await page.getByRole('button', { name: 'Open pack', exact: true }).click();
-  await expect(page.locator('#review')).toBeVisible();
+  await expect(page.locator('input[type=password]')).toHaveCount(0);
+  await expect(page.locator('#review')).toBeVisible().catch(async error => { throw new Error(error.message + '\nReview notice: ' + await page.locator('#notice').textContent()); });
   await expect(page.locator('#image-message')).toBeHidden();
   return { page, context, directory };
 }
@@ -84,10 +89,8 @@ test('a conflicting server review remains explicit and keeps both judgments unti
   await page.locator('[data-relation="separate"]').click();
   await expect(page.locator('#progress')).toHaveText('1 of 41 reviewed');
   const batch = JSON.parse(await readFile(join(bundleDir, 'batch.json'))), task = batch.tasks[5];
-  const login = await fetch(`${url}api/session`, { method: 'POST', headers: { Origin: origin, 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) });
-  const cookie = login.headers.get('set-cookie').split(';')[0];
   const value = { id: task.id, sample_id: task.sample_id, a: task.a, b: task.b, relation: 'same_surface', trace: [], note: 'Another device' };
-  const response = await fetch(`${url}api/reviews/${task.id}`, { method: 'PUT', headers: { Cookie: cookie, Origin: origin, 'Content-Type': 'application/json' }, body: JSON.stringify({ batch_hash: batch.batch_hash, base_revision: 0, mutation_id: crypto.randomUUID(), value }) });
+  const response = await fetch(`${url}api/reviews/${task.id}`, { method: 'PUT', headers: { 'cf-access-jwt-assertion': assertion, Origin: origin, 'Content-Type': 'application/json' }, body: JSON.stringify({ batch_hash: batch.batch_hash, base_revision: 0, mutation_id: crypto.randomUUID(), value }) });
   assert.equal(response.status, 200);
   await context.setOffline(false);
   await page.locator('#open-pack').click(); await page.locator('#sync').click(); await expect(page.locator('#sync')).toBeEnabled(); await page.locator('#close-pack').click();

@@ -89,10 +89,10 @@ class CityStorageTests(unittest.TestCase):
         self.assertLess(len(json.dumps(self.row)), 500)
 
     def test_success_can_rebuild_from_settings_after_evidence_deleted(self):
-        for directory in ("scripts/lib", "frontend/js", "backend/parcels", "world-parcels/report"):
+        for directory in ("scripts/lib", "frontend/js", "frontend/data", "backend/parcels", "world-parcels/report"):
             (self.root / directory).mkdir(parents=True, exist_ok=True)
-        shutil.copy2(LIB / "parcel-city-settings.mjs", self.root / "scripts/lib/parcel-city-settings.mjs")
-        (self.root / "frontend/js/city-config.js").write_text("const CITY_CONFIGS = {\n        test: {id:'test',wupCityCode:'123',parcels:{source:'parcel-source',sourceId:'official'}}\n    };")
+        self._copy_settings_cli()
+        (self.root / "frontend/data/city-configs.js").write_text("const CITY_CONFIGS = {\n        test: {id:'test',wupCityCode:'123',map:{defaultCenter:[1,2]},parcels:{source:'parcel-source',sourceId:'official'}}\n    };")
         (self.root / "frontend/data/source-catalog.json").parent.mkdir(parents=True, exist_ok=True)
         (self.root / "frontend/data/source-catalog.json").write_text(json.dumps({"sources": [{"id": "official", "adapter": "arcgis", "endpoint": "https://official.test/parcels", "cityIds": ["test"], "evidenceFile": "research/retired.json"}]}))
         (self.root / "world-parcels/report/city-demographics.json").write_text('{"cities": []}')
@@ -129,11 +129,20 @@ class CityStorageTests(unittest.TestCase):
         self.assertFalse(self.packet.exists())
         self.assertFalse(self.receipt.exists())
 
+    def _copy_settings_cli(self):
+        # The settings CLI and what it imports: applying settings regenerates the browser city files,
+        # so the builder and its row format come along.
+        for directory in ("scripts/lib", "frontend/js"):
+            (self.root / directory).mkdir(parents=True, exist_ok=True)
+        for name in ("parcel-city-settings.mjs", "city-configs.mjs"):
+            shutil.copy2(LIB / name, self.root / "scripts/lib" / name)
+        shutil.copy2(LIB.parent / "build-city-files.mjs", self.root / "scripts/build-city-files.mjs")
+        shutil.copy2(LIB.parents[1] / "frontend/js/city-light-config.js", self.root / "frontend/js/city-light-config.js")
+
     def _qualified_artifact(self, *, complete=True):
         # Exercise the real recovery CLI and its hash/check guards in an isolated project root.
         (self.root / "package.json").write_text('{"type":"module"}')
-        (self.root / "scripts/lib").mkdir(parents=True, exist_ok=True)
-        shutil.copy2(LIB / "parcel-city-settings.mjs", self.root / "scripts/lib/parcel-city-settings.mjs")
+        self._copy_settings_cli()
         (self.root / "backend").mkdir(exist_ok=True)
         (self.root / "backend/parcels").symlink_to(Path(__file__).resolve().parents[2] / "backend/parcels")
         artifact = self.root / "tmp/state/qualification/cities/123/attempt-01"
@@ -196,6 +205,49 @@ class CityStorageTests(unittest.TestCase):
             storage.remove_owned(self.cohort, self.cohort)
         with self.assertRaises(ValueError):
             storage.remove_owned(self.root / "backend", self.cohort)
+
+    def test_stage_download_cleanup_preserves_proof_settings_and_other_city(self):
+        scratch = storage.city_download_path(self.root, "123")
+        scratch.mkdir(parents=True)
+        (scratch / "download.zip").write_bytes(b"discard source archive")
+        (scratch / "extracted").mkdir()
+        (scratch / "extracted/data.gml").write_text("raw polygons")
+        other = storage.city_download_path(self.root, "456")
+        other.mkdir()
+        (other / "live-download").write_text("other active city")
+        storage.clear_city_downloads(self.root, ["123"])
+        self.assertFalse(scratch.exists())
+        self.assertTrue(self.packet.exists())
+        self.assertTrue(self.receipt.exists())
+        self.assertTrue((self.cohort / "sample.geojson").exists())
+        self.assertTrue((other / "live-download").exists())
+
+    def test_download_limit_counts_extracted_files_and_implicit_tempfiles_together(self):
+        scratch = storage.city_download_path(self.root, "123")
+        scratch.mkdir(parents=True)
+        (scratch / "part-1").write_bytes(b"123456")
+        temporary = self.root / "call-downloads"
+        temporary.mkdir()
+        (temporary / "part-2").write_bytes(b"123456")
+        with patch.object(storage, "MAX_PROBE_SCRATCH_BYTES", 10):
+            self.assertIsNotNone(storage.download_limit_error(self.root, ["123"], temporary))
+        storage.clear_city_downloads(self.root, ["123"])
+        with patch.object(storage, "MAX_PROBE_SCRATCH_BYTES", 10):
+            self.assertIsNone(storage.download_limit_error(self.root, ["123"], temporary))
+
+    def test_download_cleanup_cannot_escape_numeric_city_namespace(self):
+        for code in ("..", "../123", "123/x", "", "١٢٣"):
+            with self.assertRaises(ValueError):
+                storage.clear_city_downloads(self.root, [code])
+        outside = self.root / "outside"
+        outside.mkdir()
+        (outside / "keep").write_text("preserve")
+        scratch = storage.city_download_path(self.root, "123")
+        scratch.parent.mkdir(parents=True)
+        scratch.symlink_to(outside, target_is_directory=True)
+        with self.assertRaises(ValueError):
+            storage.clear_city_downloads(self.root, ["123"])
+        self.assertTrue((outside / "keep").exists())
 
 
 if __name__ == "__main__":

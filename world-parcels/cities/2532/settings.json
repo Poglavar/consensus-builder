@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2532",
+  "name": "Campo Grande, Brazil",
+  "point": [
+    -20.4756331624637,
+    -54.6218303206542
+  ],
+  "bindings": [
+    {
+      "appCityId": "campo_grande",
+      "runtimeConfig": {
+        "id": "campo_grande",
+        "wupCityCode": "2532",
+        "label": "Campo Grande, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -20.4756331624637,
+            -54.6218303206542
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -20.4756331624637,
+            -54.6218303206542
+          ],
+          "fallbackDataset": [
+            -54.6218303206542,
+            -20.4756331624637
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-cg-sisgran-infra-imoveis",
+          "idPrefix": "BR-CG-SISGRAN-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Prefeitura Municipal de Campo Grande / PLANURB, SISGRAN; sisgran.vw_infra_imoveis."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-cg-sisgran-infra-imoveis",
+      "name": "Campo Grande SISGRAN municipal cadastral properties",
+      "adapter": "sisgran-wms",
+      "endpoint": "https://sisgran.campogrande.ms.gov.br/sisgran/api/v1/maps/wms",
+      "countryCode": "BR",
+      "cityIds": [
+        "campo_grande"
+      ],
+      "idPrefix": "BR-CG-SISGRAN-",
+      "idField": "gid",
+      "outFields": [
+        "gid"
+      ],
+      "geometryField": "geom",
+      "layer": "sisgran:vw_infra_imoveis",
+      "sourceCrs": "EPSG:31981",
+      "responseCrs": "EPSG:4326",
+      "responseAxisOrder": "longitude-latitude",
+      "outputSrid": 4326,
+      "metricSrid": 32721,
+      "pageSize": 500,
+      "maxFeatures": 500,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "attribution": "Prefeitura Municipal de Campo Grande / PLANURB, SISGRAN; sisgran.vw_infra_imoveis.",
+      "catalogueUrl": "https://sisgran.campogrande.ms.gov.br/",
+      "scope": "Municipal cadastral property polygons; bounded urban-core verification only, citywide completeness unverified.",
+      "licenceNote": "Public municipal map access. No explicit reuse licence was found; reuse terms require follow-up.",
+      "capabilities": {
+        "point": true,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "sourceExtent": [
+        -54.78735572558,
+        -21.48422056319851,
+        -53.64679665912655,
+        -20.23785052221368
+      ],
+      "responseSrid": 4326,
+      "defaultForCity": true,
+      "maxAreaKm2": 1,
+      "operator": "Prefeitura Municipal de Campo Grande / PLANURB / SISGRAN",
+      "version": "1.3.0",
+      "maxResponseBytes": 8388608
+    }
+  ]
+}

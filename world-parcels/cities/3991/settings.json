@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3991",
+  "name": "Kharkiv, Ukraine",
+  "point": [
+    49.9875116472834,
+    36.2663445587846
+  ],
+  "bindings": [
+    {
+      "appCityId": "kharkiv",
+      "runtimeConfig": {
+        "id": "kharkiv",
+        "wupCityCode": "3991",
+        "label": "Kharkiv, Ukraine",
+        "currency": {
+          "locale": "uk-UA",
+          "code": "UAH"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            49.9875116472834,
+            36.2663445587846
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            49.9875116472834,
+            36.2663445587846
+          ],
+          "fallbackDataset": [
+            36.2663445587846,
+            49.9875116472834
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ua-khmr-address-plots",
+          "idPrefix": "UA-KHMR-PLOT-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Kharkiv City Council / Kharkiv municipal geo-portal · municipal address-register land plots"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ua-khmr-address-plots",
+      "name": "Kharkiv municipal Address_Plots parcel polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://ar.khmr.gov.ua/arcgis/rest/services/ARAddressPlots/MapServer/0",
+      "operator": "Kharkiv City Council municipal address registry",
+      "countryCode": "UA",
+      "cityIds": [
+        "kharkiv"
+      ],
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "UA-KHMR-PLOT-",
+      "idType": "integer",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "boundsSrid": 28467,
+      "boundsProjection": "+proj=tmerc +lat_0=0 +lon_0=36 +k=1 +x_0=-1009.35 +y_0=-5526802.42 +ellps=krass +towgs84=24.0,-121.0,-76.0,0.0,0.0,0.0,0.0 +units=m +no_defs",
+      "responseSrid": 28467,
+      "responseProjection": "+proj=tmerc +lat_0=0 +lon_0=36 +k=1 +x_0=-1009.35 +y_0=-5526802.42 +ellps=krass +towgs84=24.0,-121.0,-76.0,0.0,0.0,0.0,0.0 +units=m +no_defs",
+      "sourceCrs": "Kharkiv municipal custom transverse Mercator; service label EPSG:28467",
+      "metricSrid": 32637,
+      "pageSize": 80,
+      "idBatchSize": 80,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "timeoutMs": 15000,
+      "maxResponseBytes": 16777216,
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "scope": "Municipal address-register land-plot records; positive evidence bounded to central Kharkiv. Citywide completeness and equivalence to the State Land Cadastre are unverified.",
+      "catalogueUrl": "https://geo-portal.khmr.gov.ua/kharkiv/index.html",
+      "attribution": "Kharkiv City Council / Kharkiv municipal geo-portal · municipal address-register land plots",
+      "licenceNote": "Anonymous public queries; no explicit vector reuse licence found. Redistribution permission is unresolved.",
+      "defaultForCity": true
+    }
+  ]
+}

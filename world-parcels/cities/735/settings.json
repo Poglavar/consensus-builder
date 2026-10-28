@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "735",
+  "name": "Aktobe, Kazakhstan",
+  "point": [
+    50.2941407239697,
+    57.1878832784277
+  ],
+  "bindings": [
+    {
+      "appCityId": "aktobe",
+      "runtimeConfig": {
+        "id": "aktobe",
+        "wupCityCode": "735",
+        "label": "Aktobe, Kazakhstan",
+        "currency": {
+          "locale": "ru-KZ",
+          "code": "KZT"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            50.2941407239697,
+            57.1878832784277
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            50.2941407239697,
+            57.1878832784277
+          ],
+          "fallbackDataset": [
+            57.1878832784277,
+            50.2941407239697
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "kz-aktobe-eaqtobe-gzk-features",
+          "idPrefix": "kz-aktobe-eaqtobe-gzk-features:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "RGIS Aktobe / Aqtobe regional services portal · GZK cadastral parcels · bounded coverage; currentness and reuse terms unverified · adapted"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "kz-aktobe-eaqtobe-gzk-features",
+      "name": "RGIS Aktobe / Eaqtobe GZK cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://eaqtobe.kz/geoserver/wfs",
+      "featureType": "gis_aqtobe:gzk_features",
+      "version": "1.0.0",
+      "idField": "cad_number",
+      "idType": "string",
+      "idPrefix": "kz-aktobe-eaqtobe-gzk-features:",
+      "parcelNumberField": "cad_number",
+      "outFields": [
+        "cad_number"
+      ],
+      "geometryField": "geom",
+      "requestProperties": true,
+      "responseSrid": 3857,
+      "boundsSrid": 3857,
+      "paginationIdentity": "native-id",
+      "filterBoundsGeometry": true,
+      "pageSize": 256,
+      "idBatchSize": 20,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 1048576,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "KZ",
+      "metricSrid": 32640,
+      "cityIds": [
+        "aktobe"
+      ],
+      "scope": "Bounded central Aktobe cadastral observations only. Citywide completeness, source currency and historic/current semantics are unverified.",
+      "attribution": "RGIS Aktobe / Aqtobe regional services portal · GZK cadastral parcels · bounded coverage; currentness and reuse terms unverified · adapted",
+      "catalogueUrl": "https://eaqtobe.kz/map/",
+      "operator": "Aqtobe regional public-services portal / Regional GIS of Aktobe",
+      "licenceNote": "Anonymous public access; no explicit reuse licence established in inspected first-party materials.",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "caveats": [
+        "Request cad_number and geom only; preserve native ID strings including leading zeroes. GeoServer transport feature IDs are not stable parcel identities.",
+        "Native EPSG:3857 is transformed to WGS84 without coordinate rounding, offsets or geometry repair. Requested geographic output was previously rounded to integer degrees.",
+        "Do not use resultType=hits: discovery recorded inconsistent zero counts. Runtime validates feature-response match counts and pages completely or fails.",
+        "BBOX can match feature envelopes; complete returned polygons are tested for intersection, never clipped.",
+        "Bounded observations do not establish full-city distribution, uniqueness, historic/current semantics or reuse rights."
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

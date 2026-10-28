@@ -315,6 +315,10 @@ describe('agreement comparison (plan-design-agreement.md, M1 b)', () => {
 
     it('takes its input parcels as the affected land: every piece standing on them gives way to the original', async () => {
         const h = agreementHarness();
+        h.deps.map.fitBounds = vi.fn();
+        h.deps.map.getSize = () => ({ x: 1000, y: 800 });
+        h.deps.map.latLngToContainerPoint = () => ({ x: 300, y: 400 });
+        h.deps.fitPadding = () => ({ paddingTopLeft: [40, 40], paddingBottomRight: [420, 40] });
         expect(await h.instance.toggleAgreement('ag-1')).toBe(true);
         expect(h.deps.findAgreement).toHaveBeenCalledWith('ag-1');
         expect(h.instance.activeKey()).toBe(BeforeAfter.agreementKey('ag-1'));
@@ -322,8 +326,12 @@ describe('agreement comparison (plan-design-agreement.md, M1 b)', () => {
         expect(h.instance.isActive('ag-1')).toBe(false);
         expect(h.repository.ensureIds).toHaveBeenCalledWith(['A', 'B'], { retainOnly: true });
         // A:plot-1 (on A) and B are both input land: the before map holds the two originals only.
-        expect(h.drawn[0].target).toBe('before-map');
-        expect(h.drawn[0].collection.features.map(f => f.properties.parcelId)).toEqual(['A', 'B']);
+        const before = h.drawn.find(layer => layer.target === 'before-map');
+        expect(before.collection.features.map(f => f.properties.parcelId)).toEqual(['A', 'B']);
+        expect(h.deps.map.fitBounds).toHaveBeenCalledWith([[45.8, 16], [45.802, 16.003]], {
+            paddingTopLeft: [40, 40], paddingBottomRight: [420, 40], maxZoom: 20, animate: false
+        });
+        expect(h.sessions[0].options.percent).toBe(30);
         expect(h.changes).toEqual([true]);
 
         expect(await h.instance.toggleAgreement('ag-1')).toBe(false);

@@ -25,6 +25,7 @@ function loadOpenApi(source, entryName, editorOpen) {
     };
     const window = {
         OnMapEditor: { open: editorOpen },
+        BuildingDensityStats: { cardMarkup: () => '' },
         resolveDesignParcelFeature: id => id === 'parcel-1' ? polygon : null
     };
     const footer = { classList: { classes: new Set(['cb-dialog__footer']), remove(name) { this.classes.delete(name); } } };
@@ -111,8 +112,9 @@ describe('floating building-family editors', () => {
         expect(parcelBased).not.toContain('btn-parcelbased-cancel');
     });
 
-    it('saves the canonical full row bar and block massing on their own site, never as a free placement', () => {
-        expect(rowHouse).toContain('buildings: [feature]');
+    it('saves a row as its houses beside the full bar, and a block massing, on their own site, never as a free placement', () => {
+        // Both autosave and Done save the per-plot houses the editor drew beside the whole terrace.
+        expect(rowHouse.split('generatedRowHouseFeature, rowUnits, currentRowRule(), rowVariationSeed, { turf })').length - 1).toBe(2);
         expect(rowHouse).toContain('placement: { free: false, site: cloneRowHouseFeature(rowHouseSiteBoundary()) }');
         expect(rowHouse).not.toContain('free: true');
         expect(rowHouse).toContain("manualMode: rowHouseManualMode");
@@ -131,9 +133,11 @@ describe('floating building-family editors', () => {
         };
         let savedContext = null;
         const sandbox = {
-            window: { UrbanRuleVariation: { massingWithRule: value => JSON.parse(JSON.stringify(value)) } },
+            window: { UrbanRuleVariation: { ruleDesignGeometry: (value, pieces) => ({ buildings: JSON.parse(JSON.stringify(pieces)), ruleMassing: JSON.parse(JSON.stringify(value)) }) } },
             generatedBuildingFeature: feature,
             generatedBuildingFeatures: null,
+            blockMassingPieces: [{ ...feature, properties: { ...feature.properties, parcelId: 'plot-1' } }],
+            setBlockifyInfo() {},
             blockifyMode: 'parametric',
             blockifyVariationSeed: 7,
             currentBuildingWidth: 16,
@@ -146,10 +150,13 @@ describe('floating building-family editors', () => {
             currentFloorHeightM: 3,
             gapPositions: [],
             wingPositions: [],
+            currentGapWidth: 5,
+            currentWingLength: 10,
             manualOuterRing: null,
             blockExcludedParcels: [],
             blockVariationSeed: 7,
             blockifyGenerationSite: feature,
+            blockifySurroundings: null,
             turf: {},
             multiParcelSelection: { selectedParcels: new Set(), updateUI() {}, clearSelection() {} },
             document: { getElementById: () => null },
@@ -170,7 +177,8 @@ describe('floating building-family editors', () => {
         return sandbox.save().then(() => {
             expect(savedContext.buildings).toHaveLength(1);
             expect(savedContext.buildings[0].geometry).toEqual(feature.geometry);
-            expect(savedContext.blockMassing.geometry).toEqual(feature.geometry);
+            expect(savedContext.buildings[0].properties.parcelId).toBe('plot-1');
+            expect(savedContext.ruleMassing.geometry).toEqual(feature.geometry);
             expect(savedContext.placement.site.geometry).toEqual(feature.geometry);
             expect(savedContext.placement.free).toBe(false);
         });

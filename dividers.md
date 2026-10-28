@@ -34,15 +34,14 @@ recorded, nothing deployed without a say-so.
 | M4 | Road tool | Build-through and clearance compare the standing fabric against the corridor, the cut pieces and the demolished buildings | done 2026-10-12 |
 | M5 | Replacement versions | For a plan with a newer version, before is the version currently applied and after the new one | done 2026-10-12 for proposal versions (`sourceProposalId`); plan versions (`ens_plan.supersedes`) are a follow-up, see Decisions |
 | M6 | Owner acceptance review | An owner reading a readjustment in the details panel compares their parcel before with their plot after, without opening the editor | done 2026-10-12 |
+| M7 | Model view | The Buildings and massing sheet's Compare tab splits the 3D canvas at a draggable divider; each side is any of Built today, Permitted massing, Proposed, one applied design or one plan (`three-compare.js`, two scissor passes in `three-mode.js`); the pure rules are unit tested; the divider and the passes are checked in a headed Chrome | done 2026-10-28 |
 
 ## Parked
 
-- **Model and photo modes (3D).** A split view means rendering the scene twice per frame with
-  scissor rectangles: one pass with the proposal, one without, same camera. Doable in
-  `three-mode.js` (the existing-buildings ghost already separates the two sets), but it doubles
-  the draw cost of the heaviest view and the photoreal tiles stream per pass. Park until the 2D
-  surfaces have proven the idea; if it comes back, do it as a wipe over one render target, not two
-  scenes.
+- **Photo mode (Google tiles).** The model view's comparison (M7) draws two scissor passes of one
+  scene and switches only the objects the two sides disagree on. In photo mode the tiles are the
+  built state and the carve under a design is a GPU effect, so a side-aware carve is needed before
+  the same two passes read right there. Figures labelled by side in the stack cards are a follow-up.
 
 ## Declined
 

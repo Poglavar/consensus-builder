@@ -51,7 +51,7 @@ test('selection section Detect block expands its selected seed to the cadastral 
   await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBe(5);
 });
 
-test('global 3D mode keeps the selected parcel and its design view focused', async ({ mockApi: page }) => {
+test('global 3D mode keeps the selected parcel while inspecting its unapplied design', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
   await openCity(page);
   await page.evaluate(({ id, geometry }) => (window as any).proposalStorage.addProposal({
@@ -85,8 +85,8 @@ test('global 3D mode keeps the selected parcel and its design view focused', asy
   await expect(design.locator('.click-stack__row-detail')).toHaveText('3D parcel proposal');
   await design.locator('[data-action="row"]').click();
   await expect(design.locator('.three-mode-parcel-panel')).toBeVisible();
-  await expect(page.locator('.three-mode-isolation-banner')).toContainText('Design view');
-  await expect.poll(() => page.evaluate(() => (window as any).getThreeSceneSummary().isolatedProposal)).toBe(true);
+  await expect(page.locator('.three-mode-isolation-banner')).toContainText('Selected parcel');
+  await expect.poll(() => page.evaluate(() => (window as any).getThreeSceneSummary().isolatedProposal)).toBe(false);
   await expect.poll(() => page.evaluate(() => Math.abs((window as any).map.getCenter().lat - 45.80025))).toBeLessThan(0.0001);
 });
 

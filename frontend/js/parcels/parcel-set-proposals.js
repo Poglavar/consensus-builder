@@ -67,10 +67,10 @@
         if (!entries.length) {
             if (emptyText === false) return status;
             return `<p class="parcel-set-proposals-empty">${escapeText(emptyText
-                || t('panel.parcel.setProposals.empty', 'No proposals on these parcels yet.'))}</p>${status}`;
+                || t('panel.parcel.setProposals.empty', 'No designs on these parcels yet.'))}</p>${status}`;
         }
         const total = summary
-            ? `<p class="parcel-set-proposals-summary">${escapeText(t('panel.parcel.setProposals.summary', '{{count}} proposals on these parcels', { count: entries.length }))}</p>`
+            ? `<p class="parcel-set-proposals-summary">${escapeText(t('panel.parcel.setProposals.summary', '{{count}} designs on these parcels', { count: entries.length }))}</p>`
             : '';
         const rows = entries.map(entry => {
             const info = describe(entry.proposal);

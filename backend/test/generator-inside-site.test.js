@@ -121,6 +121,8 @@ describe('block (building-blocks.js blockRingOutline + the per-parcel split)', (
         globalThis.window = { addEventListener: noop, removeEventListener: noop, confirm: () => true, document: globalThis.document };
         globalThis.highlightBlock = noop;
         Object.assign(globalThis, footprint);
+        Object.assign(globalThis.window, { turf, FootprintGeometry: footprint });
+        (0, eval)(read('../../frontend/js/building-rule-geometry.js')); // eslint-disable-line no-eval
         let src = read('../../frontend/js/building-blocks.js');
         src += '\nglobalThis.__blockRingOutline = blockRingOutline;';
         (0, eval)(src); // eslint-disable-line no-eval

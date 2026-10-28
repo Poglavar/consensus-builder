@@ -2,7 +2,7 @@ import { createRequire } from 'node:module';
 import { describe, expect, it } from 'vitest';
 import * as turf from '@turf/turf';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
-import { agreementObject, communityRule, cidOfObject, outputHash } from '../agents/agreement-objects.js';
+import { agreementObject, communityRule, cidOfObject, outputHash, designObject } from '../agents/agreement-objects.js';
 import { authoredAreas } from '../agents/mcp-compare.js';
 const require = createRequire(import.meta.url);
 const builder = require('../../frontend/js/intent-design.js');
@@ -61,17 +61,19 @@ describe('MCP comparison measurements', () => {
     });
     it('uses the shared per-party land/cash ledger rather than returning a money schedule as a ledger', async () => {
         const ground = require('../../frontend/js/agreement-ground.js');
-        const designCid = cidOfObject(park), hash = outputHash(site), areaM2 = ground.areaOf(parcel);
-        const { content } = agreementObject({ city: 'london', designs: [{ cid: designCid }],
+        const agreementDesign = designObject({ ...park, createdAt: park.authoredAt });
+        const designCid = agreementDesign.cid, hash = outputHash(site), areaM2 = ground.areaOf(parcel);
+        const { content, plan } = agreementObject({ city: 'london', designs: [{ cid: designCid }],
             parcels: [{ parcelId: 'A', areaM2, holders: [{ ownerKey: 'party-A', share: 1 }] }],
             outputs: [{ hash, areaM2, fromParcelIds: ['A'], role: 'parcel', producedBy: designCid, geometry: site }],
             allocations: [{ output: hash, to: { kind: 'party', ownerKey: 'party-A' } }],
-            money: { currency: 'GBP', lines: [{ ownerKey: 'party-A', amountCents: 12500 }] }, rule: communityRule() });
+            money: { currency: 'GBP', lines: [{ ownerKey: 'party-A', amountCents: 12500 }] }, rule: { ...communityRule(), electorate: 'owners' } });
         const { tools } = toolsFor();
-        const result = await tools.compare({ buildingSourceId:'osm', targets: [{ agreement: content }, park], parcelSourceId: 'test' });
+        const result = await tools.compare({ buildingSourceId:'osm', targets: [{ agreement: content, plan, designs: [agreementDesign.content] }, park], parcelSourceId: 'test' });
         expect(result.alternatives[0].ledger).toMatchObject({ currency: 'GBP', parties: [{ ownerKey: 'party-A', contributedM2: areaM2, assignedM2: areaM2, changeM2: 0, cashCents: 12500 }] });
         expect(result.alternatives[0].measurementErrors).toEqual([]);
         expect(result.alternatives[0].draftArtifact.agreement).toEqual(content);
+        expect(result.alternatives[0].draftArtifact.plan).toEqual(plan.content);
     });
     it('reads common building floors and does not invent a zero for an unmaterialized rule', () => {
         const design = structuredClone(building); delete design.geometry.buildings[0].properties.floors;

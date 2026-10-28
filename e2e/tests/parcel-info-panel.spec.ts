@@ -69,7 +69,7 @@ test.describe('Parcel inspector @core', () => {
       return feature.properties.parcelId;
     }, proposalId);
     await expect(page.locator('#parcel-info-title')).toHaveText(`Formed ground piece ${pieceId}`);
-    await expect(page.locator('#info-content [role="note"]')).toContainText('Ground formed by the applied proposals');
+    await expect(page.locator('#info-content [role="note"]')).toHaveText('Ground formed by the applied design.');
     await expect(page.locator('#parcel-info-title .parcel-title-id')).toHaveAttribute('aria-label', `Copy to clipboard: ${pieceId}`);
   });
   test('government ownership follows the clicked parcel', async ({ mockApi: page }) => {

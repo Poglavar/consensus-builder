@@ -210,8 +210,8 @@
                 });
                 const names = Array.from(coverers.values());
                 const message = names.length
-                    ? `A parcel layout cannot take ground another proposal already holds: ${names.map(n => `"${n}"`).join(', ')}. Move the outline off it, or unapply ${names.length === 1 ? 'that proposal' : 'those proposals'} first.`
-                    : 'A parcel layout cannot take ground another proposal already holds. Move the outline off it, or unapply that proposal first.';
+                    ? `A parcel layout cannot take ground another design already holds: ${names.map(n => `"${n}"`).join(', ')}. Move the outline off it, or unapply ${names.length === 1 ? 'that design' : 'those designs'} first.`
+                    : 'A parcel layout cannot take ground another design already holds. Move the outline off it, or unapply that design first.';
                 if (typeof updateStatus === 'function') updateStatus(message);
                 console.warn(`[${stamp()}] [_applyParcelLayoutProposal] ${idLabel}: ground already taken —`, takenParents);
                 try {
@@ -317,12 +317,14 @@
             // to its owner. Subsequent corridor takes divide that ordinary remainder as needed.
             if (turfRemainder && typeof turfRemainder.difference === 'function' && parentFeatures.length) {
                 let plotsUnion = null;
+                // The shared clip's grid: a raw union of a block's plots with a carved courtyard left
+                // a three-point sliver ring and refused the layout. A failure there still throws, as a
+                // plot missing from the union would be minted back as the owner's remainder.
                 childFeatures.forEach(feature => {
                     const f = { type: 'Feature', properties: {}, geometry: feature.geometry };
-                    try { plotsUnion = plotsUnion ? turfRemainder.union(plotsUnion, f) : f; } catch (error) {
-                        // A plot missing from the union would be minted back as the owner's remainder.
-                        throw clipFailureApi().clipFailure('union', error, { site: 'apply-parcels.plotsUnion', proposalId }, [plotsUnion, f]);
-                    }
+                    plotsUnion = plotsUnion
+                        ? clipFailureApi().clipWith(turfRemainder, 'union', plotsUnion, f, { site: 'apply-parcels.plotsUnion', proposalId })
+                        : f;
                 });
                 if (plotsUnion) {
                     parentFeatures.forEach(parentFeature => {
@@ -330,19 +332,14 @@
                         // Open ground has no owner to return a remainder to: the host's leftover
                         // stays open ground, nothing is minted for it.
                         if (isHost(parentFeature)) return;
-                        let leftover = null;
-                        try {
-                            leftover = turfRemainder.difference(
-                                { type: 'Feature', properties: {}, geometry: parentFeature.geometry }, plotsUnion);
-                        } catch (error) {
-                            // Null here means "no remainder": the owner's leftover strip would be
-                            // consumed and never minted — a hole in the fabric.
-                            throw clipFailureApi().clipFailure('difference', error, {
+                        // A failed difference throws: null would mean "no remainder", and the owner's
+                        // leftover strip would be consumed and never minted, a hole in the fabric.
+                        const leftover = clipFailureApi().clipWith(turfRemainder, 'difference',
+                            { type: 'Feature', properties: {}, geometry: parentFeature.geometry }, plotsUnion, {
                                 site: 'apply-parcels.remainder',
                                 proposalId,
                                 parcelId: _getParcelIdFromFeature(parentFeature)
-                            }, [parentFeature, plotsUnion]);
-                        }
+                            });
                         if (!leftover || !leftover.geometry) return;
                         let leftoverArea = 0;
                         try { leftoverArea = turfRemainder.area(leftover) || 0; } catch (_) { leftoverArea = 0; }

@@ -36,8 +36,8 @@ The experimental **Hyperstition: Markets for Possible Cities** build also connec
 | New users | [How to use](https://urbangametheory.xyz/how-to-use.html) · [Hrvatske upute](https://urbangametheory.xyz/kako-koristiti.html) |
 | Designers and workshops | [Buildings](https://urbangametheory.xyz/how-to-use-buildings.html) · [Public space](https://urbangametheory.xyz/how-to-use-park-square.html) · [Land readjustment](https://urbangametheory.xyz/how-to-use-reparcellization.html) · [Roads, rail and stations](https://urbangametheory.xyz/how-to-use-road.html) |
 | Reviewers | [Views and counterproposals](https://urbangametheory.xyz/how-to-use-views.html) · [Roadmap](https://urbangametheory.xyz/roadmap.html) |
-| Developers and agents | [Documentation index](docs/README.md) · [Local development](docs/development.md) · [Domain vocabulary](vocabulary.md) · [API and agent quickstart](https://api.urbangametheory.xyz/docs/agents) |
-| Protocol contributors | [Protocol build](https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair) · [Hackathon scope](HACKATHON.md) · [Architecture](https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/docs/architecture.md) · [Build and verification](https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/docs/hackathon-build.md) |
+| Developers and agents | [Documentation index](docs/README.md) · [Local development](docs/development.md) · [Domain vocabulary](docs/vocabulary.md) · [API and agent quickstart](https://api.urbangametheory.xyz/docs/agents) |
+| Protocol contributors | [Protocol build](https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair) · [Hackathon scope](docs/HACKATHON.md) · [Architecture](https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/docs/architecture.md) · [Build and verification](https://github.com/Poglavar/consensus-builder/blob/colosseum-worlds-fair/docs/hackathon-build.md) |
 
 The walkthrough library contains twelve concise narrated demonstrations of the current map workflow, with English captions and transcripts. Written instructions are available in English and Croatian; the app also supports Serbian and Spanish.
 
@@ -53,7 +53,7 @@ The frontend uses JavaScript, Leaflet and Three.js. The API uses Node.js, Expres
 | [`restatements/`](restatements/) | Existing situations and plans restated in the app, with sources |
 | [`world-parcels/`](world-parcels/) | Parcel-source research and coverage evidence |
 
-Start with the [development guide](docs/development.md), check [test scope](TEST.md), and open a focused issue or pull request with a reproducible example. For a planning workshop, a city integration or a research collaboration, [contact the project on Telegram](https://t.me/urbangametheory).
+Start with the [development guide](docs/development.md), check [test scope](docs/TEST.md), and open a focused issue or pull request with a reproducible example. For a planning workshop, a city integration or a research collaboration, [contact the project on Telegram](https://t.me/urbangametheory).
 
 [Follow @UrbanGameTheory](https://x.com/UrbanGameTheory) · [Telegram community](https://t.me/urbangametheory)
 

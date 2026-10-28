@@ -17,43 +17,6 @@ function ensureProposalListHostModal(host) {
     return modal;
 }
 
-async function ensureProposalListTranslations(lang) {
-    const api = (typeof window !== 'undefined') ? window.i18n : null;
-    if (!api || typeof api.registerTranslations !== 'function') return false;
-    const targetLang = lang || (typeof api.getLanguage === 'function' ? api.getLanguage() : 'en');
-    if (proposalListTranslationsHydrated.has(targetLang)) return false;
-    const cacheBust = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
-        ? window.getCacheBustToken()
-        : ((typeof window !== 'undefined' && Array.isArray(window.APP_VERSIONS) && window.APP_VERSIONS.length > 0)
-            ? window.APP_VERSIONS[0].version_number
-            : Date.now());
-    try {
-        const response = await fetch(`i18n/${targetLang}.json?proposalListHydrate=${cacheBust}`, { credentials: 'same-origin' });
-        if (!response.ok) throw new Error(`Failed to load i18n/${targetLang}.json: ${response.status}`);
-        const json = await response.json();
-        const flat = flattenObject(json);
-        // Only register the proposal list subtree to avoid clobbering other runtime translations
-        const subset = {};
-        const prefix = 'modal.roadWidth.proposalList.';
-        Object.entries(flat).forEach(([k, v]) => {
-            if (k.startsWith(prefix)) {
-                subset[k] = v;
-            }
-        });
-        if (Object.keys(subset).length > 0) {
-            api.registerTranslations(targetLang, subset);
-            proposalListTranslationsHydrated.add(targetLang);
-            if (typeof api.applyTranslations === 'function') {
-                api.applyTranslations();
-            }
-            return true;
-        }
-    } catch (err) {
-        console.warn('[i18n] Failed to hydrate proposal list translations', err);
-    }
-    return false;
-}
-
 function syncMultiSelectControls(isActive) {
     document.getElementById('parcel-manual-selection')?.setAttribute('aria-pressed', String(!!isActive));
 }
@@ -65,7 +28,7 @@ function handleDescendantItemHover(element) {
         const proposalId = element.getAttribute('data-proposal-id');
         if (proposalId) {
             highlightProposalHoverById(proposalId, {
-                color: '#4DB6AC',
+                color: window.MapHighlight.color,
                 weight: 4,
                 dashArray: '4 4',
                 showLabels: true,
@@ -76,7 +39,7 @@ function handleDescendantItemHover(element) {
         const parcelId = element.getAttribute('data-parcel-id');
         if (parcelId) {
             highlightParcelHover(parcelId, {
-                color: '#FFEB3B',
+                color: window.MapHighlight.color,
                 weight: 6,
                 dashArray: '10 8',
                 showLabels: true
@@ -101,7 +64,7 @@ function handleDescendantItemClick(element) {
         if (!parcelId) return;
         focusParcelInMap(parcelId);
         highlightParcelHover(parcelId, {
-            color: '#FFEB3B',
+            color: window.MapHighlight.color,
             weight: 6,
             dashArray: '10 8',
             showLabels: true
@@ -157,7 +120,7 @@ function setProposalCreateButtonState(isCreating) {
     if (!createButton) return;
     const t = getProposalI18nHelper();
     const creatingLabel = t('modal.createProposal.creating', 'Creating...');
-    const submitLabel = t('modal.createProposal.submit', 'Create Proposal');
+    const submitLabel = t('modal.createProposal.submit', 'Create design');
 
     if (isCreating) {
         if (!createButton.dataset.originalText) {
@@ -254,6 +217,11 @@ async function launchRowHouseToolForSelection() {
     const selection = getCurrentParcelSelectionContext();
     if (!selection.ids.length) {
         updateStatus('Select parcels before launching the row house tool.');
+        return false;
+    }
+    if (selection.ids.length < 2) {
+        const t = getProposalI18nHelper();
+        updateStatus(t('panel.parcel.build.rowSelectionHint', 'Row houses need at least two parcels. Select another parcel or use Detect block.'));
         return false;
     }
     if (await shouldStopFreshProposalForWholeBlock('row', selection)) return false;
@@ -421,7 +389,7 @@ function getProposalDisplayTitle(proposal, fallbackProposal = null) {
         return typeLabel;
     }
 
-    return fallbackId ? `Proposal ${fallbackId}` : 'Proposal';
+    return fallbackId ? `Design ${fallbackId}` : 'Design';
 }
 
 function getProposalDisplayTypeLabel(proposal, fallbackProposal = null) {
@@ -569,10 +537,10 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         applied: t('modal.roadWidth.proposalList.meta.applied', 'Applied:'),
         minted: t('modal.roadWidth.proposalList.meta.minted', 'Minted:')
     };
-    const emptyText = t('modal.roadWidth.proposalList.empty', 'No proposals match the current filters.');
-    const untitledLabel = t('modal.roadWidth.proposalList.untitled', 'Untitled proposal');
+    const emptyText = t('modal.roadWidth.proposalList.empty', 'No designs match the current filters.');
+    const untitledLabel = t('modal.roadWidth.proposalList.untitled', 'Untitled design');
     const unknownAuthor = t('common.unknown', 'Unknown');
-    const deleteTooltip = t('modal.roadWidth.proposalList.deleteTooltip', 'Delete proposal');
+    const deleteTooltip = t('modal.roadWidth.proposalList.deleteTooltip', 'Delete design');
     const downloadLabel = t('modal.roadWidth.proposalList.actions.download', 'Download');
     const downloadedLabel = t('modal.roadWidth.proposalList.actions.downloaded', 'Downloaded');
 
@@ -643,7 +611,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         const agentProvenance = typeof ProposalAgentProvenance !== 'undefined'
             ? ProposalAgentProvenance.read(proposal)
             : null;
-        const agentBadgeLabel = t('panel.proposal.agent.badge', 'Agent proposal');
+    const agentBadgeLabel = t('panel.proposal.agent.badge', 'Agent design');
         const agentBadgeTitle = agentProvenance
             ? `${agentProvenance.persona} · ${agentProvenance.paymentLabel}`
             : '';
@@ -747,7 +715,7 @@ async function handleProposalListItemClick(event) {
     // no "Download?" question (that was an implementation detail asked of the user).
     if (!proposal && source === 'server') {
         try {
-            updateStatus('Downloading proposal…');
+            updateStatus('Downloading design…');
             proposal = await importServerProposal(rowCid);
             // The card still said "Download". Downloading by clicking the ROW leaves the same card
             // on screen as downloading by its own button does, so it has to end in the same state —
@@ -763,7 +731,7 @@ async function handleProposalListItemClick(event) {
             }
             console.error('Failed to download server proposal on click', rowCid, error);
             const t = getProposalI18nHelper();
-            updateStatus(t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
+            updateStatus(t('modal.roadWidth.proposalList.downloadError', 'Failed to download design'));
             return;
         }
     }
@@ -823,7 +791,7 @@ async function handleProposalListDetailsClick(event) {
                 return;
             }
             console.error('Failed to download server proposal for details', rowCid, error);
-            updateStatus(getProposalI18nHelper()('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
+            updateStatus(getProposalI18nHelper()('modal.roadWidth.proposalList.downloadError', 'Failed to download design'));
             return;
         }
     }
@@ -914,55 +882,21 @@ async function mountProposalList() {
     finally { _proposalListMountPromise = null; }
 }
 
-// One Designs panel owns browsing and sharing; leaving Share always releases its map pick mode.
-function setDesignsPanelTab(tab) {
-    const sharing = tab === 'share';
-    document.getElementById('designs-browse').hidden = sharing;
-    document.getElementById('designs-share').hidden = !sharing;
-    for (const [id, active] of [['designs-browse-tab', !sharing], ['shareAppliedProposalsButton', sharing]]) {
-        const button = document.getElementById(id);
-        button.setAttribute('aria-selected', String(active));
-        button.tabIndex = active ? 0 : -1;
-    }
-}
-
+// The three lists share their scope and filters through ListsPanel.
+function setDesignsPanelTab(tab) { return window.ListsPanel.select(tab); }
 function openDesignsTab(tab) {
-    const request = ++_designsPanelRequest;
-    if (tab === 'share') {
-        setDesignsPanelTab('share');
-        return shareAppliedProposals({ isCurrent: () => request === _designsPanelRequest });
-    }
-    closeSharePlanPanel({ fromPanel: true });
-    setDesignsPanelTab('browse');
     if (!window.MapShell.isOpen('proposals-sheet')) window.MapShell.openSheet('proposals-sheet');
-    return mountProposalList();
+    return window.ListsPanel.select(tab);
 }
-
 function handleProposalSheetOpened(event) {
-    if (event?.detail?.id !== 'proposals-sheet') return;
-    setDesignsPanelTab('browse');
-    mountProposalList();
+    if (event?.detail?.id === 'proposals-sheet') window.ListsPanel.open();
 }
-
 function handleProposalSheetClosed(event) {
-    if (event?.detail?.id !== 'proposals-sheet') return;
-    _designsPanelRequest++;
-    closeSharePlanPanel({ fromPanel: true });
-    closeProposalList({ fromSheet: true });
-    setDesignsPanelTab('browse');
+    if (event?.detail?.id === 'proposals-sheet') closeProposalList({ fromSheet: true });
 }
-
 if (typeof document !== 'undefined') {
     document.addEventListener('mapshell:sheetopened', handleProposalSheetOpened);
     document.addEventListener('mapshell:sheetclosed', handleProposalSheetClosed);
-    document.addEventListener('keydown', event => {
-        const tab = event.target.closest?.('.designs-panel-tabs [role="tab"]');
-        if (!tab || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-        event.preventDefault();
-        const sharing = event.key === 'End' || (event.key !== 'Home' && tab.id === 'designs-browse-tab');
-        document.getElementById(sharing ? 'shareAppliedProposalsButton' : 'designs-browse-tab').focus();
-        openDesignsTab(sharing ? 'share' : 'browse');
-    });
 }
 
 // The fitBounds padding that frames content in the map a panel leaves visible. A panel with room
@@ -987,24 +921,21 @@ function proposalPanelFitPadding(rect, viewport, margin = 40) {
 }
 
 // fitBounds padding that keeps content in the VISIBLE map, clear of whichever proposal panel is
-// currently covering it: the share-plan panel, the list sheet while browsing, or the details panel
-// once a proposal is selected (proposalPanelFitPadding decides which side). Returns a plain
+// currently covering it: the list sheet while browsing or the details panel
+// once a proposal or agreement is selected (proposalPanelFitPadding decides which side). Returns a plain
 // {paddingTopLeft, paddingBottomRight} for fitBounds — a symmetric margin when no panel is open.
 // Shared by fit-all-on-open, the preview zoom, and proposal selection.
 function getProposalPanelFitPadding(margin = 40) {
     let rect = null;
     try {
-        // The share-plan panel exists in the DOM only while open, so presence means visible.
-        const sharePanel = document.querySelector('.share-plan-panel-content');
         const listModal = document.querySelector('.proposal-list-modal');
         const listPanel = document.querySelector('.proposal-list-modal-content');
-        if (sharePanel) {
-            rect = sharePanel.getBoundingClientRect();
-        } else if (listModal && window.MapShell?.isOpen?.('proposals-sheet') && listPanel) {
+        if (listModal && window.MapShell?.isOpen?.('proposals-sheet') && listPanel) {
             rect = listPanel.getBoundingClientRect();
         } else {
-            const details = document.getElementById('proposal-details-panel');
-            if (details && details.classList.contains('visible')) rect = details.getBoundingClientRect();
+            const details = ['agreement-panel', 'proposal-details-panel'].map(id => document.getElementById(id))
+                .find(panel => panel && panel.classList.contains('visible'));
+            if (details) rect = details.getBoundingClientRect();
         }
     } catch (_) { rect = null; }
     return proposalPanelFitPadding(rect, { width: window.innerWidth, height: window.innerHeight }, margin);
@@ -1050,7 +981,7 @@ function fitMapToAppliedProposals() {
 
     if (!combined || !combined.isValid()) return false;
 
-    // Pad the side the open panel covers (proposals list OR share-plan panel) so proposals
+    // Pad the side the open panel covers (proposals list) so proposals
     // aren't framed underneath it.
     const { paddingTopLeft, paddingBottomRight } = getProposalPanelFitPadding(40);
 
@@ -1172,28 +1103,17 @@ function updateShowProposalsButton() {
         try { opened = localStorage.getItem(`cb:proposal-list-opened:${state.area.arrivalKey}`) === '1'; } catch (_) { }
         button.setAttribute('data-proposal-list-opened', opened ? '1' : '0');
         if (!state.ready) {
-            button.textContent = i18nApi?.t?.('sidebar.proposals.listButtonLoading', 'Proposals List (…)', {}) || 'Proposals List (…)';
+            button.textContent = i18nApi?.t?.('sidebar.proposals.listButtonLoading', 'Designs (…)', {}) || 'Designs (…)';
         } else if (i18nApi && typeof i18nApi.t === 'function') {
             button.textContent = i18nApi.t('sidebar.proposals.listButton', { count: totalProposals });
         } else {
-            button.textContent = `Proposals List (${totalProposals})`;
+            button.textContent = `Designs (${totalProposals})`;
         }
     }
 
     const sharePlanButton = document.getElementById('shareAppliedProposalsButton');
-    // While the plan is being prepared the button owns its own disabled state — re-enabling it here
-    // would invite a second click straight into a half-built panel.
-    if (sharePlanButton && !sharePlanButton.dataset.sharePlanBusy) {
+    if (sharePlanButton) {
         sharePlanButton.disabled = false;
-    }
-
-    // The grain inspector has the same plan-level scope as Share and Plan Stats. Keep its empty
-    // state in lockstep with apply/unapply instead of making the user discover an empty scorecard.
-    if (typeof window !== 'undefined' && typeof window.updateGrainScoreButtonState === 'function') {
-        window.updateGrainScoreButtonState();
-    }
-    if (typeof window !== 'undefined' && typeof window.updatePlanStatsButtonState === 'function') {
-        window.updatePlanStatsButtonState();
     }
 
     // no-op safety: the observer below is idempotent, and the button may only now exist

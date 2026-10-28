@@ -70,19 +70,6 @@ function tParcelMulti(key, params = {}, fallback = '') {
     return String(fallback || key || '').replace(/\{\{\s*(\w+)\s*\}\}/g, (m, k) => (params && k in params) ? params[k] : m);
 }
 
-function flattenObject(node, prefix = '', out = {}) {
-    if (!node || typeof node !== 'object' || Array.isArray(node)) return out;
-    Object.entries(node).forEach(([key, value]) => {
-        const path = prefix ? `${prefix}.${key}` : key;
-        if (value && typeof value === 'object' && !Array.isArray(value)) {
-            flattenObject(value, path, out);
-        } else {
-            out[path] = value;
-        }
-    });
-    return out;
-}
-
 function showProposalAlertMessage(key, fallback, params = {}, alertOptions = {}) {
     const translate = getProposalI18nHelper();
     // The dialog turns this slot into an anchor; translation must not replace it with URL text.
@@ -204,7 +191,7 @@ function openProposalFromList(proposalIdOrHash, options = {}) {
     const proposal = normalized.proposal || getProposalByIdOrHash(proposalIdOrHash);
     if (!proposal) {
         const t = getProposalI18nHelper();
-        updateStatus(t('status.messages.proposal_not_found', 'Proposal not found'));
+        updateStatus(t('status.messages.proposal_not_found', 'Design not found'));
         return false;
     }
 
@@ -519,7 +506,7 @@ async function handleProposalDownloadClick(event) {
         // another city's proposal is not stored here: say where it belongs
         const message = error?.code === 'proposal-in-other-city'
             ? error.message
-            : t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal');
+            : t('modal.roadWidth.proposalList.downloadError', 'Failed to download design');
         try {
             updateStatus(message);
         } catch (_) {
@@ -584,7 +571,7 @@ function formatAreaMetric(area) {
 function showProposalDownloadConfirm() {
     const t = getProposalI18nHelper();
     return window.CbDialog.confirm(
-        t('modal.roadWidth.proposalList.downloadConfirm', 'Proposal is not in local storage yet. Download?'),
+        t('modal.roadWidth.proposalList.downloadConfirm', 'Design is not in local storage yet. Download?'),
         { okText: t('common.download', 'Download'), cancelText: t('common.cancel', 'Cancel') }
     );
 }
@@ -726,10 +713,11 @@ function tryEnterRealisticMode(options) {
 }
 
 // URL entry shares the same cancellable transition as the mode buttons.
-function enterUrlDrivenView(focusProposalIds) {
-    const restoreView = window.MapShare?.readCamera(new URLSearchParams(window.location.search).get('camera'))
+function enterUrlDrivenView(focusProposalIds, viewOptions = {}) {
+    const arrival = window.MapShare.arrivalOptions(window.location.search);
+    const restoreView = arrival.restoreView
         || ((typeof window.getAiSceneRestoreView === 'function') ? window.getAiSceneRestoreView() : null);
-    const options = { fromUrl: true, focusProposalIds, restoreView, frameProposal: true };
+    const options = { fromUrl: true, focusProposalIds, restoreView, rotate: arrival.rotate, frameProposal: true, ...viewOptions };
     return isRealisticModeRequestedFromUrl() ? tryEnterRealisticMode(options) : tryEnterThreeMode(options);
 }
 
@@ -809,8 +797,8 @@ function ensureProposalLoadOverlay() {
     proposalLoadTitleEl.id = 'proposal-load-title';
     proposalLoadTitleEl.className = 'proposal-load-title';
     const initialTitle = (typeof tShare === 'function')
-        ? tShare('plan.fetchingPlanTitle', 'Fetching proposal')
-        : 'Fetching proposal';
+        ? tShare('plan.fetchingPlanTitle', 'Fetching design')
+        : 'Fetching design';
     proposalLoadTitleEl.textContent = initialTitle;
 
     const spinner = document.createElement('div');
@@ -1039,6 +1027,8 @@ async function handleProposalRouteFromUrl() {
             'plan.loadFailed', 'The linked plan or proposal could not be loaded. Please try again.'));
         if (typeof showEphemeralMessage === 'function') showEphemeralMessage(getShareI18nHelper()(
             'plan.loadFailed', 'The linked plan or proposal could not be loaded. Please try again.'), 8000, 'error');
+    } finally {
+        window.MapSearch?.refreshChip();
     }
 }
 
@@ -1048,7 +1038,7 @@ function selectProposalFromList(proposalIdOrHash, parcelId) {
     if (!proposal) {
         console.error('Proposal not found:', proposalIdOrHash);
         const t = getProposalI18nHelper();
-        updateStatus(t('status.messages.error_proposal_not_found', 'Error: Proposal not found'));
+        updateStatus(t('status.messages.error_proposal_not_found', 'Error: Design not found'));
         return;
     }
 

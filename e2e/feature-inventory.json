@@ -212,26 +212,18 @@
       ]
     },
     {
-      "id": "stations.bus",
+      "id": "stations.road",
       "specs": [
+        "tests/site-palette-controls.spec.ts",
+        "tests/transport-and-building-inspection.spec.ts",
         "tests/proposal-creation.spec.ts"
       ]
     },
     {
-      "id": "stations.tram",
+      "id": "stations.track",
       "specs": [
-        "tests/proposal-creation.spec.ts"
-      ]
-    },
-    {
-      "id": "stations.underground",
-      "specs": [
-        "tests/proposal-creation.spec.ts"
-      ]
-    },
-    {
-      "id": "stations.elevated",
-      "specs": [
+        "tests/site-palette-controls.spec.ts",
+        "tests/transport-and-building-inspection.spec.ts",
         "tests/proposal-creation.spec.ts"
       ]
     },
@@ -326,50 +318,27 @@
       ]
     },
     {
-      "id": "proposals.planStats",
-      "specs": [
-        "tests/plan-stats.spec.ts"
-      ]
-    },
-    {
-      "id": "proposals.grainScore",
-      "specs": [
-        "tests/world-and-ground.spec.ts"
-      ]
-    },
-    {
-      "id": "proposals.sharePlan",
-      "specs": [
-        "tests/proposals-sharing.spec.ts"
-      ]
-    },
-    {
       "id": "proposals.agreements",
       "specs": [
         "tests/agreement-dialog.spec.ts",
-        "tests/agreement-editor-map.spec.ts"
-      ]
-    },
-    {
-      "id": "proposals.mintedAgreements",
-      "specs": [
         "tests/agreement-chain.spec.ts"
       ]
     },
     {
-      "id": "proposals.clearLocal",
+      "id": "proposals.plans",
       "specs": [
-        "tests/settings-maintenance.spec.ts"
+        "tests/plan-workflows.spec.ts",
+        "tests/named-plans.spec.ts"
       ]
     },
     {
-      "id": "activity.explorer",
+      "id": "activity.events",
       "specs": [
         "tests/activity-controls.spec.ts"
       ]
     },
     {
-      "id": "activity.agents",
+      "id": "activity.actors",
       "specs": [
         "tests/activity-controls.spec.ts"
       ]
@@ -399,7 +368,7 @@
       ]
     },
     {
-      "id": "activity.statusLog",
+      "id": "settings.statusLog",
       "specs": [
         "tests/search-and-commands.spec.ts"
       ]
@@ -483,25 +452,13 @@
       ]
     },
     {
-      "id": "ground.busStation",
+      "id": "ground.roadStation",
       "specs": [
         "tests/context-actions.spec.ts"
       ]
     },
     {
-      "id": "ground.tramStation",
-      "specs": [
-        "tests/menu-button-controls.spec.ts"
-      ]
-    },
-    {
-      "id": "ground.undergroundStation",
-      "specs": [
-        "tests/menu-button-controls.spec.ts"
-      ]
-    },
-    {
-      "id": "ground.elevatedStation",
+      "id": "ground.trackStation",
       "specs": [
         "tests/menu-button-controls.spec.ts"
       ]
@@ -516,12 +473,6 @@
       "id": "site.draw",
       "specs": [
         "tests/site-drawing.spec.ts"
-      ]
-    },
-    {
-      "id": "selection.propose",
-      "specs": [
-        "tests/multi-parcel-selection.spec.ts"
       ]
     },
     {
@@ -558,18 +509,6 @@
       "id": "world.open",
       "specs": [
         "tests/world-and-ground.spec.ts"
-      ]
-    },
-    {
-      "id": "settings.commandPalette",
-      "specs": [
-        "tests/search-and-commands.spec.ts"
-      ]
-    },
-    {
-      "id": "settings.dataSource",
-      "specs": [
-        "tests/settings-maintenance.spec.ts"
       ]
     },
     {
@@ -633,6 +572,12 @@
       ]
     },
     {
+      "id": "urbanBlocks.browse",
+      "specs": [
+        "tests/urban-blocks.spec.ts"
+      ]
+    },
+    {
       "id": "bets.open",
       "specs": [
         "tests/bets-sheet.spec.ts"
@@ -654,6 +599,36 @@
       "id": "settings.theme.dark",
       "specs": [
         "tests/theme-controls.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.checkUpdates",
+      "specs": [
+        "tests/app-updates.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.credits",
+      "specs": [
+        "tests/settings-sections.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.contact",
+      "specs": [
+        "tests/settings-sections.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.about",
+      "specs": [
+        "tests/settings-sections.spec.ts"
+      ]
+    },
+    {
+      "id": "settings.economics",
+      "specs": [
+        "tests/settings-sections.spec.ts"
       ]
     }
   ],
@@ -732,13 +707,13 @@
       ]
     },
     {
-      "feature": "proposing an agreement: Propose (after a profile name) pins the parcel layout and the agreement/v1 object and indexes them, the panel shows it Proposed under its CID without Edit, Copy link, the owners’ decisions card reading the relay and closing once expired, /agreements/<cid> opening it on another device, and a hung agreement read giving up at the parcel-load deadline",
+      "feature": "proposing an agreement: Propose (after a profile name) pins the parcel layout and the agreement/v1 object and indexes them, the panel shows it Proposed under its CID without Edit, Copy link, the owners\u2019 decisions card reading the relay and closing once expired, /agreements/<cid> opening it on another device, and a hung agreement read giving up at the parcel-load deadline",
       "specs": [
         "tests/agreement-propose.spec.ts"
       ]
     },
     {
-      "feature": "owner decisions on a proposed agreement: the decisions card, a second lens member, review on a phone, an authority in the scheme, each owner’s deal readable by anyone, decisions shared through the relay between two browsers",
+      "feature": "owner decisions on a proposed agreement: the decisions card, a second lens member, review on a phone, an authority in the scheme, each owner\u2019s deal readable by anyone, decisions shared through the relay between two browsers",
       "specs": [
         "tests/proposal-approval-lens.spec.ts"
       ]
@@ -879,7 +854,7 @@
       ]
     },
     {
-      "feature": "published track cab-simulator handoff (the sim receives the track’s design CID once it is shared)",
+      "feature": "published track cab-simulator handoff (the sim receives the track\u2019s design CID once it is shared)",
       "specs": [
         "tests/track-drive.spec.ts"
       ]
@@ -891,7 +866,7 @@
       ]
     },
     {
-      "feature": "a design published through the courier and the index with its city’s parcel source, proposals and agreements opening in their own city (a wrong-city link asks first), address bar following the map, read-only second tab per city",
+      "feature": "a design published through the courier and the index with its city\u2019s parcel source, proposals and agreements opening in their own city (a wrong-city link asks first), address bar following the map, read-only second tab per city",
       "specs": [
         "tests/world-city-publication.spec.ts"
       ]
@@ -933,6 +908,27 @@
         "tests/click-stack.spec.ts",
         "tests/proposal-button-controls-followup.spec.ts",
         "tests/context-actions.spec.ts"
+      ]
+    },
+    {
+      "id": "community-consultation",
+      "description": "Create a community consultation, follow participation and report links, sign and verify website-attributed results with retained history.",
+      "specs": [
+        "tests/community-consultation.spec.ts"
+      ]
+    },
+    {
+      "feature": "Application build display, update checks, notification dismissal and explicit reload protection",
+      "specs": [
+        "tests/app-updates.spec.ts"
+      ]
+    },
+    {
+      "feature": "Settings brand header, flat preferences and help, Advanced tools and persistent build footer",
+      "specs": [
+        "tests/settings-sections.spec.ts",
+        "tests/app-updates.spec.ts",
+        "tests/theme-controls.spec.ts"
       ]
     }
   ],

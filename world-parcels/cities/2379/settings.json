@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2379",
+  "name": "Kitchener, Canada",
+  "point": [
+    43.4498480027648,
+    -80.5049962470366
+  ],
+  "bindings": [
+    {
+      "appCityId": "kitchener",
+      "runtimeConfig": {
+        "id": "kitchener",
+        "wupCityCode": "2379",
+        "label": "Kitchener, Canada",
+        "currency": {
+          "locale": "en-CA",
+          "code": "CAD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            43.4498480027648,
+            -80.5049962470366
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            43.4498480027648,
+            -80.5049962470366
+          ],
+          "fallbackDataset": [
+            -80.5049962470366,
+            43.4498480027648
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ca-on-kitchener-geoexplorer-property-boundaries",
+          "idPrefix": "CA-ON-KITCHENER-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "City of Kitchener; Teranet Inc. and its suppliers. Not a plan of survey."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ca-on-kitchener-geoexplorer-property-boundaries",
+      "name": "City of Kitchener Property Boundaries",
+      "adapter": "arcgis",
+      "endpoint": "https://utility.arcgis.com/usrsvcs/servers/6e4c002c74c34d04933946fa5c989eda/rest/services/OnPoint_Int_Ext/Map_Labels_and_Property/MapServer/9",
+      "idField": "REGISTRY_PIN",
+      "idType": "string",
+      "idPattern": "^[0-9]{9,10}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CA-ON-KITCHENER-",
+      "outFields": [
+        "OBJECTID",
+        "REGISTRY_PIN"
+      ],
+      "pageSize": 200,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 4,
+      "timeoutMs": 45000,
+      "maxResponseBytes": 16777216,
+      "minRequestIntervalMs": 300,
+      "maxConcurrentQueries": 1,
+      "countryCode": "CA",
+      "metricSrid": 32617,
+      "nativeCrs": "EPSG:26917",
+      "responseCrs": "EPSG:4326",
+      "cityIds": [
+        "kitchener"
+      ],
+      "scope": "Kitchener municipal property boundaries. Bounded exact-ID proof only; citywide completeness unverified.",
+      "operator": "City of Kitchener",
+      "attribution": "City of Kitchener; Teranet Inc. and its suppliers. Not a plan of survey.",
+      "catalogueUrl": "https://experience.arcgis.com/experience/bdeee81dc63d45f2ad1232ddf2aeea83",
+      "licenceUrl": "https://www.arcgis.com/sharing/rest/content/items/bdeee81dc63d45f2ad1232ddf2aeea83?f=json",
+      "licenceNote": "City/Teranet derivative parcel data; published metadata and viewer terms restrict export and reuse. Permission review remains a publication follow-up; public querying does not establish a reuse entitlement. See the retained first-party terms.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true
+      },
+      "missingIdIdentityKind": "geometry-sha256-v1",
+      "identityKind": "native-key-geometry-sha256-v1",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "boundsSrid": 26917,
+      "boundsProjection": "+proj=utm +zone=17 +datum=NAD83 +units=m +no_defs",
+      "defaultForCity": true
+    }
+  ]
+}

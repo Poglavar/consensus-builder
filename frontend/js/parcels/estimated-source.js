@@ -140,6 +140,7 @@
         };
     }
     function createStore(storage) {
+        storage = storage || root.BrowserWorkspace?.storage || root.localStorage;
         function key(city) { return PREFIX + encodeURIComponent(cityName(city)); }
         function read(city) {
             const name = cityName(city);

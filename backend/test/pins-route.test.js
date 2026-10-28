@@ -9,7 +9,7 @@ import { createContentApp } from './helpers/create-app.js';
 import { canonicalBytes, cidOf } from '../cid.js';
 import { MAX_PINNED_OBJECT_BYTES } from '../storage/pinning.js';
 import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
-import { agreementContent, designContent } from './helpers/content-fixtures.js';
+import { agreementContent, designContent, planContent } from './helpers/content-fixtures.js';
 
 const PINNED_AT = '2026-10-21T10:00:00.000Z';
 const pinError = (code, status, extra = {}) => Object.assign(new Error(code), { code, status, ...extra });
@@ -50,6 +50,26 @@ describe('POST /pins', () => {
         const agreement = pinBody('agreement', agreementContent([design]));
         expect((await request(app).post('/pins').send(agreement)).body).toEqual({ cid: agreement.cid, pinnedAt: PINNED_AT });
         expect(pinBytes.mock.calls[1][0].name).toBe(`agreement-${agreement.cid}`);
+    });
+
+    it('pins a valid plan/v1 object under its exact CID and rejects invalid or tampered plan bytes', async () => {
+        const { app, pinBytes } = appWith();
+        const plan = planContent([designContent()]);
+        const body = pinBody('plan', plan);
+        const accepted = await request(app).post('/pins').send(body);
+        expect(accepted.status).toBe(200);
+        expect(accepted.body).toEqual({ cid: body.cid, pinnedAt: PINNED_AT });
+        expect(pinBytes.mock.calls[0][0].name).toBe(`plan-${body.cid}`);
+        expect(Buffer.from(pinBytes.mock.calls[0][0].bytes).equals(canonicalBytes(plan))).toBe(true);
+
+        const invalid = await request(app).post('/pins').send(pinBody('plan', { schema: 'plan/v1', title: 'Incomplete' }));
+        expect([invalid.status, invalid.body.code]).toEqual([400, 'invalid-plan']);
+
+        const changed = canonicalBytes({ ...plan, title: 'Changed plan' });
+        const tampered = await request(app).post('/pins').send({ ...body, bytes: changed.toString('base64') });
+        expect(tampered.status).toBe(400);
+        expect(tampered.body).toMatchObject({ code: 'cid-mismatch', cid: body.cid, computedCid: cidOf(changed) });
+        expect(pinBytes).toHaveBeenCalledTimes(1);
     });
 
     it.each(['road', 'track'])('pins a %s carried entirely in its corridor payload', async kind => {

@@ -64,8 +64,8 @@
 .cb-page-header__title {
     flex: 1 1 auto;
     min-width: 0;
-    padding-left: var(--cb-space-4);
-    border-left: 1px solid var(--cb-line);
+    padding-inline-start: var(--cb-space-4);
+    border-inline-start: 1px solid var(--cb-line);
 }
 
 .cb-page-header__title > * {
@@ -85,8 +85,8 @@
     white-space: nowrap;
 }
 
-.cb-back-link > i {
-    margin-right: var(--cb-space-2);
+.cb-back-link > :is(i, .cb-back-link__icon) {
+    margin-inline-end: var(--cb-space-2);
 }
 
 .cb-page-header__lang {
@@ -127,8 +127,8 @@
 
     .cb-page-header__title {
         grid-area: title;
-        padding-left: 0;
-        border-left: 0;
+        padding-inline-start: 0;
+        border-inline-start: 0;
     }
 
     .cb-page-header:not(:has(.cb-page-header__lang)) .cb-page-header__title {
@@ -145,4 +145,17 @@
     .cb-page-header__lang {
         display: none;
     }
+}
+
+/* A back arrow points toward the preceding reading direction. */
+:root[dir="rtl"] .cb-back-link > :is(i, .cb-back-link__icon) {
+    transform: scaleX(-1);
+}
+
+/* The shared back arrow also works on pages that do not load an icon font. */
+.cb-back-link__icon {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    vertical-align: middle;
 }

@@ -6,21 +6,15 @@
         const panel = session.content.querySelector('#single-land-take');
         const rows = panel.querySelector('[data-land-rows]');
         const status = panel.querySelector('[data-land-status]');
-        const accept = panel.querySelector('[data-land-accept]');
         const error = document.createElement('p');
         error.id = 'single-land-take-error';
         error.className = 'land-take-error';
         error.setAttribute('role', 'alert');
         error.hidden = true;
-        const confirmation = document.createElement('div');
-        confirmation.className = 'land-take-confirmation';
-        const acceptLabel = accept.closest('label');
-        acceptLabel.before(confirmation);
-        confirmation.append(error, acceptLabel);
-        accept.setAttribute('aria-describedby', error.id);
+        status.after(error);
         const layers = env.L.featureGroup().addTo(session.map);
         let whole = new Set(), parcels = [], current = null, savedTake = initialTake;
-        let sequence = 0, timer = null, closed = false, signature = null, reviewed = null;
+        let sequence = 0, timer = null, closed = false;
         let geometryKey = null, stock = [], outcomes = null, pending = false, baseline = null;
         const text = (key, params = {}) => env.i18n.t(`landTake.${key}`, params);
         function style(kind) {
@@ -29,11 +23,17 @@
             return { color, fillColor: color, weight: 2, fillOpacity: kind === 'take' ? 0.12 : 0.25,
                 dashArray: kind === 'remainder' ? '4 4' : null };
         }
-        function paint(focus = null) {
+        let hoveredKey = null, focusedKey = null, selectedKey = null;
+        function paint() {
+            const key = hoveredKey || focusedKey || selectedKey;
+            const focus = current?.rows.find(row => row.key === key)?.feature;
+            rows.querySelectorAll('.land-take-row').forEach(row => {
+                row.classList.toggle('is-highlighted', row.dataset.landKey === key);
+            });
             layers.clearLayers();
             if (!current) return;
             const draw = (geometry, kind) => {
-                if (geometry) env.L.geoJSON(geometry, { pane: session.pane, interactive: false, style: style(kind) }).addTo(layers);
+                if (geometry) env.L.geoJSON(geometry, { pane: session.pane, interactive: false, style: { ...style(kind), ...(kind === 'focus' ? { className: 'land-take-focus', weight: 4 } : {}) } }).addTo(layers);
             };
             draw(current.take, 'take');
             current.rows.forEach(row => draw(row.remainder, 'remainder'));
@@ -43,19 +43,29 @@
             outcomes?.retained.forEach(building => draw(building, 'retained'));
             if (focus) draw(focus, 'focus');
         }
-        function invalidate() {
-            accept.checked = false;
-            reviewed = null;
-        }
         function render() {
             rows.replaceChildren();
-            if (!current) return;
+            panel.querySelector('[data-land-intro]').textContent = text('intro', { count: current?.rows.length || 0 });
             const multi = getBuildings().length > 1;
+            panel.querySelector('[data-land-whole]').disabled = multi || pending || !current;
+            panel.querySelector('[data-land-footprint]').disabled = pending;
+            if (!current) return;
             for (const row of current.rows) {
                 const label = document.createElement('label');
                 label.className = 'land-take-row';
+                label.dataset.landKey = row.key;
                 const name = document.createElement('span');
-                name.textContent = `${row.feature.properties?.BROJ_CESTICE || row.id} · ${Math.round(row.overlapM2 / row.parcelM2 * 100)}%`;
+                name.className = 'land-take-parcel';
+                const id = String(row.feature.properties?.BROJ_CESTICE || row.id);
+                const number = document.createElement('span');
+                number.className = 'land-take-parcel-id';
+                number.textContent = id.length > 13 ? `${id.slice(0, 5)}…${id.slice(-5)}` : id;
+                number.title = id;
+                number.setAttribute('aria-label', id);
+                const percent = document.createElement('span');
+                percent.className = 'land-take-percent';
+                percent.textContent = `${Math.round(row.overlapM2 / row.parcelM2 * 100)}%`;
+                name.append(number, percent);
                 const select = document.createElement('select');
                 select.setAttribute('aria-label', text('parcelChoice', { id: row.id }));
                 select.dataset.parcelId = row.id;
@@ -67,35 +77,38 @@
                     select.append(option);
                 }
                 select.value = row.mode;
-                select.addEventListener('focus', () => paint(row.feature));
-                select.addEventListener('blur', () => paint());
+                label.addEventListener('mouseenter', () => { hoveredKey = row.key; paint(); });
+                label.addEventListener('mouseleave', () => { hoveredKey = null; paint(); });
+                label.addEventListener('click', () => { selectedKey = row.key; paint(); });
+                select.addEventListener('focus', () => { focusedKey = row.key; paint(); });
+                select.addEventListener('blur', () => { focusedKey = null; paint(); });
                 select.addEventListener('change', () => {
                     onHistory();
                     savedTake = null;
                     if (select.value === 'whole') whole.add(row.key); else whole.delete(row.key);
-                    invalidate();
-                    refresh();
+                    refresh({ choiceChanged: true });
                 });
                 label.append(name, select);
                 rows.append(label);
             }
-            panel.querySelector('[data-land-whole]').disabled = multi || pending;
-            panel.querySelector('[data-land-multi]').hidden = !multi;
         }
-        async function refresh() {
+        async function refresh({ choiceChanged = false } = {}) {
             const ticket = ++sequence;
             pending = true;
-            accept.disabled = true;
             status.textContent = text('loading');
+            panel.querySelector('[data-land-whole]').disabled = true;
+            panel.querySelector('[data-land-footprint]').disabled = true;
             try {
                 const buildings = getBuildings();
                 const nextKey = JSON.stringify(buildings.map(item => item.geometry));
-                if (geometryKey !== null && nextKey !== geometryKey) { savedTake = null; invalidate(); }
+                if (geometryKey !== null && nextKey !== geometryKey) savedTake = null;
                 geometryKey = nextKey;
                 const footprint = api.union(buildings, env.turf);
-                await env.CadastralParcelRepository.ensureFootprint(footprint);
+                const region = footprint;
+                await env.CadastralParcelRepository.ensureFootprint(region);
                 if (closed || ticket !== sequence) return false;
-                parcels = env.LiveParcelFabric.queryBounds(env.turf.bbox(footprint), { includeCorridors: false });
+                // Review source parcels, not the fragments this applied design itself produced.
+                parcels = env.__cadastreAncestry.loadedCadastreParcels(env.turf.bbox(region)).map(item => item.feature);
                 current = api.plan({ buildings, parcels, whole, savedTake, turf: env.turf });
                 savedTake = null;
                 whole = new Set(current.rows.filter(row => row.mode === 'whole').map(row => row.key));
@@ -105,9 +118,7 @@
                     current = api.plan({ buildings, parcels, whole, turf: env.turf });
                 }
                 if (baseline === null) baseline = JSON.stringify(current.take.geometry);
-                onChange(current.take, current.rows.some(row => row.mode === 'whole'));
-                const nextSignature = JSON.stringify(current.take.geometry);
-                if (signature !== nextSignature) { invalidate(); signature = nextSignature; }
+                onChange(current.take, current.rows.some(row => row.mode === 'whole'), choiceChanged);
                 outcomes = null;
                 render();
                 paint();
@@ -115,7 +126,9 @@
                     (...args) => env.BuildingSourceClient.request(...args));
                 if (closed || ticket !== sequence) return false;
                 const ownId = env.getActiveProposalDesignDraft?.()?.sourceLocalProposalId;
-                const pool = env.collectLoadedCorridorBuildings({ extraPool: stock, includeLoadedSurveyPool: false });
+                // Replacing this source must review its original stock, before its own removals.
+                const pool = env.collectLoadedCorridorBuildings({ extraPool: stock, includeLoadedSurveyPool: false,
+                    excludeProposalId: ownId });
                 const hits = env.findBuildingTunnelIntersections(current.take, pool, env.turf)
                     .filter(hit => !ownId || String(env.corridorTunnelHitProposalId(hit)) !== String(ownId));
                 const real = hits.filter(hit => !env.corridorTunnelHitProposalId(hit)).map(hit => ({
@@ -124,16 +137,10 @@
                 outcomes = api.demolitionPreview(current.take, real, env.splitDemolitionFootprint, env.turf);
                 const parked = hits.filter(hit => env.corridorTunnelHitProposalId(hit)).map(hit => hit.feature);
                 outcomes.parked = parked;
-                const review = JSON.stringify([signature,
-                    outcomes.removed.map(item => [item.properties?.source, item.properties?.id, item.geometry]).sort((a, b) => String(a[0]).localeCompare(String(b[0])) || String(a[1]).localeCompare(String(b[1]))),
-                    outcomes.partial.map(item => [item.building.properties?.source, item.building.properties?.id, item.demolishedPart, item.remainder]).sort((a, b) => String(a[0]).localeCompare(String(b[0])) || String(a[1]).localeCompare(String(b[1]))),
-                    parked.map(item => item.properties?.proposalId).sort()]);
-                if (reviewed !== null && reviewed !== review) invalidate();
-                panel.dataset.review = review;
                 status.textContent = text('summary', { area: Math.round(current.areaM2), parcels: current.rows.length,
                     removed: outcomes.removed.length, partial: outcomes.partial.length, parked: parked.length });
                 pending = false;
-                accept.disabled = false;
+                error.hidden = true;
                 render();
                 paint();
                 onReview?.();
@@ -141,30 +148,22 @@
             } catch (error) {
                 if (closed || ticket !== sequence) return false;
                 pending = false;
-                invalidate();
+                render();
                 console.warn('[land-take] Review unavailable', error);
                 status.textContent = text('unavailable');
-                panel.dataset.review = '';
                 paint();
                 return false;
             }
         }
-        panel.querySelector('[data-land-retry]').addEventListener('click', refresh);
-        accept.addEventListener('change', () => {
-            reviewed = accept.checked ? panel.dataset.review : null;
-            error.hidden = true;
-            accept.removeAttribute('aria-invalid');
-        });
-        for (const mode of ['footprint', 'whole']) panel.querySelector(`[data-land-${mode}]`).addEventListener('click', () => {
+        for (const mode of ['footprint', 'whole']) panel.querySelector(`[data-land-${mode}]`).addEventListener('click', event => {
+            if (env.BusyControl.isBusy(event.currentTarget)) return;
             onHistory();
             savedTake = null;
             whole = mode === 'whole' ? new Set(current?.rows.map(row => row.key)) : new Set();
-            invalidate();
-            refresh();
+            env.BusyControl.track(event.currentTarget, () => refresh({ choiceChanged: true }));
         });
         function schedule() {
             if (closed) return;
-            accept.disabled = true;
             clearTimeout(timer);
             timer = setTimeout(refresh, 300);
         }
@@ -183,21 +182,18 @@
                 ] : [] };
             },
             snapshot() { return current?.take || null; },
-            restore(take) { savedTake = take; whole.clear(); geometryKey = null; invalidate(); schedule(); },
+            restore(take) { savedTake = take; whole.clear(); geometryKey = null; schedule(); },
             async prepare() {
                 clearTimeout(timer);
-                const wasAccepted = accept.checked;
                 const ready = await refresh();
-                if (!ready || !accept.checked || !reviewed) {
-                    error.textContent = text(!ready ? 'unavailable' : wasAccepted ? 'reviewChanged' : 'acceptRequired');
+                if (!ready) {
+                    error.textContent = text('unavailable');
                     error.hidden = false;
-                    accept.setAttribute('aria-invalid', 'true');
-                    confirmation.scrollIntoView({ block: 'nearest' });
-                    (accept.disabled ? panel.querySelector('[data-land-retry]') : accept).focus({ preventScroll: true });
+                    error.scrollIntoView({ block: 'nearest' });
+                    panel.querySelector('[data-land-footprint]').focus({ preventScroll: true });
                     return false;
                 }
                 error.hidden = true;
-                accept.removeAttribute('aria-invalid');
                 return true;
             },
             destroy() { closed = true; sequence++; clearTimeout(timer); layers.remove(); }

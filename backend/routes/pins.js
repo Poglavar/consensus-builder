@@ -1,8 +1,8 @@
-// POST /pins (plan-design-agreement.md, M2 "Courier and index"): the courier that pins a design or an
+// POST /pins (plan-design-agreement.md, M2 "Courier and index"): the courier that pins a design, plan or
 // agreement the browser has addressed itself. The server recomputes the CID from the exact bytes sent,
 // pins those bytes through Pinata with CIDv1 (storage/pinning.js) and answers only when Pinata's CID is
 // the same one, so the browser can verify what it later mints against. This route spends OUR Pinata
-// quota, so it is no open relay: it takes one canonical design/v1 or agreement/v1 object of at most
+// quota, so it is no open relay: it takes one canonical design/v1, plan/v1 or agreement/v1 object of at most
 // MAX_PINNED_OBJECT_BYTES (10 MiB, chunked as an IPFS file), shaped as the index would accept it, within the
 // upload routes' per-client rate limit.
 import { canonicalBytes, cidOf, isCid } from '../cid.js';
@@ -11,11 +11,16 @@ import { isPlainObject } from '../utils/request-validation.js';
 import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
 import { DESIGN_SCHEMA, validateDesignContent } from './designs.js';
 import { AGREEMENT_SCHEMA, validateAgreementContent } from './agreements.js';
+import { validatePlanContent } from './plans.js';
 
 // What each kind of object is, and how the index would check it.
 const KINDS = Object.freeze({
     design: { schema: DESIGN_SCHEMA, validate: content => validateDesignContent(content) },
-    agreement: { schema: AGREEMENT_SCHEMA, validate: content => validateAgreementContent(content) }
+    agreement: { schema: AGREEMENT_SCHEMA, validate: content => validateAgreementContent(content) },
+    plan: { schema: 'plan/v1', validate: content => {
+        const error = validatePlanContent(content);
+        return error ? { ok: false, status: 400, code: 'invalid-plan', error } : { ok: true };
+    } }
 });
 // A repeated-group regex over megabytes can overflow the JS engine's backtracking stack.
 function isBase64(value) {
@@ -28,7 +33,7 @@ const MAX_BASE64_LENGTH = Math.ceil(MAX_PINNED_OBJECT_BYTES / 3) * 4;
 const refuse = (res, status, code, error, extra = {}) => res.status(status).json({ error, code, ...extra });
 
 /**
- * POST /pins { kind: 'design' | 'agreement', cid, bytes (base64) } → 200 { cid, pinnedAt }.
+ * POST /pins { kind: 'design' | 'plan' | 'agreement', cid, bytes (base64) } → 200 { cid, pinnedAt }.
  * @param deps { pinBytes?, uploadRateLimiter? } (routes/content-routes.js)
  */
 export function setupPinsRoute(app, deps = {}) {
@@ -39,7 +44,7 @@ export function setupPinsRoute(app, deps = {}) {
             return refuse(res, 400, 'bad-request', 'Body must be { kind, cid, bytes }.');
         }
         const kind = Object.prototype.hasOwnProperty.call(KINDS, body.kind) ? KINDS[body.kind] : null;
-        if (!kind) return refuse(res, 400, 'invalid-kind', 'kind must be design or agreement.');
+        if (!kind) return refuse(res, 400, 'invalid-kind', 'kind must be design, plan or agreement.');
         if (!isCid(body.cid)) return refuse(res, 400, 'invalid-cid', 'cid must be a CIDv1 UnixFS sha2-256 base32 CID.');
         if (typeof body.bytes === 'string' && body.bytes.length > MAX_BASE64_LENGTH) {
             return refuse(res, 413, 'too-large', `A pinned object is at most ${MAX_PINNED_OBJECT_BYTES} bytes.`);

@@ -166,18 +166,11 @@
             ...(record.roadProposal || {}),
             definition: cloneValue(definition)
         };
+        if (definition.polygon) {
+            record.site = cloneValue(definition.polygon);
+            delete record.binding;
+        }
         return true;
-    }
-
-    function detachPublishedIdentity(record) {
-        const removed = {};
-        if (!record) return removed;
-        PUBLISHED_IDENTITY_KEYS.forEach(key => {
-            if (!Object.prototype.hasOwnProperty.call(record, key)) return;
-            removed[key] = record[key];
-            delete record[key];
-        });
-        return removed;
     }
 
 
@@ -281,6 +274,95 @@
         return { changedA, changedB };
     }
 
+    function removeJunctionAtNode(entry, node) {
+        const junctions = Array.isArray(entry.definition.junctions) ? entry.definition.junctions : [];
+        const retained = junctions.filter(junction => !sameNode(junction, node));
+        if (retained.length === junctions.length) return false;
+        if (retained.length) entry.definition.junctions = retained;
+        else delete entry.definition.junctions;
+        return true;
+    }
+
+    function recordSharedJunctionAtNode(a, b, node) {
+        if (!a.segments.some(segment => segment.some(point => sameNode(point, node)))
+            || !b.segments.some(segment => segment.some(point => sameNode(point, node)))) return;
+        recordJunction(a, node, armsAt(b, node));
+        recordJunction(b, node, armsAt(a, node));
+    }
+
+    // Refresh only the junction snapshots that an in-place edit can affect. The ordinary authoring
+    // planner first nodes the edited graph against applied records; this pass then retires stale
+    // snapshots at its old junctions and rebuilds the old/new node from every currently meeting
+    // record. Geometry and every unrelated junction stay as they were.
+    function planCorridorEdit(beforeProposal, editedProposal, records, options = {}) {
+        const editedId = recordId(editedProposal);
+        const authoringOptions = {
+            ...options,
+            excludeProposalIds: [
+                ...(Array.isArray(options.excludeProposalIds) ? options.excludeProposalIds : []),
+                ...(editedId ? [editedId] : [])
+            ]
+        };
+        const planned = planCorridorAuthoring(editedProposal, records, authoringOptions);
+        const edited = entryFor(planned.proposal, options);
+        const impacted = new Map();
+        const addNode = node => {
+            if (!node || !Number.isFinite(Number(node.lat)) || !Number.isFinite(Number(node.lng))) return;
+            const value = { lat: Number(node.lat), lng: Number(node.lng), ...(pointLevel(node) ? { level: pointLevel(node) } : {}) };
+            if (!Array.from(impacted.values()).some(existing => sameNode(existing, value))) {
+                impacted.set(`${value.lat},${value.lng},${pointLevel(value)}`, value);
+            }
+        };
+        const addJunctionNodes = definition => {
+            (Array.isArray(definition && definition.junctions) ? definition.junctions : []).forEach(addNode);
+        };
+        addJunctionNodes(definitionOf(beforeProposal));
+        addJunctionNodes(edited.definition);
+
+        const currentById = new Map();
+        (Array.isArray(records) ? records : []).forEach(record => {
+            const id = recordId(record);
+            if (!id || id === editedId || !isAppliedRecord(record, options)) return;
+            currentById.set(id, cloneValue(record));
+        });
+        planned.existingChanges.forEach(change => {
+            const current = currentById.get(change.proposalId);
+            if (current) writeDefinition(current, change.definition);
+        });
+        const entries = [...currentById.values()].map(record => entryFor(record, options)).filter(Boolean);
+        entries.push(edited);
+
+        for (const node of impacted.values()) {
+            entries.forEach(entry => removeJunctionAtNode(entry, node));
+            const atNode = entries.filter(entry => entry.segments.some(segment => segment.some(point => sameNode(point, node))));
+            for (let i = 0; i < atNode.length; i += 1) {
+                for (let j = i + 1; j < atNode.length; j += 1) recordSharedJunctionAtNode(atNode[i], atNode[j], node);
+            }
+        }
+
+        writeDefinition(planned.proposal, definitionFromEntry(edited));
+        const originalById = new Map((Array.isArray(records) ? records : [])
+            .map(record => [recordId(record), record]).filter(([id]) => !!id));
+        const authoringChangedIds = new Set(planned.existingChanges.map(change => String(change.proposalId)));
+        const existingChanges = entries
+            .filter(entry => recordId(entry.record) !== editedId)
+            .map(entry => ({ proposalId: recordId(entry.record), definition: definitionFromEntry(entry) }))
+            .filter(change => {
+                if (!change.proposalId) return false;
+                const original = definitionOf(originalById.get(change.proposalId));
+                return authoringChangedIds.has(String(change.proposalId))
+                    || JSON.stringify(original && original.junctions) !== JSON.stringify(change.definition.junctions);
+            })
+            .sort((a, b) => a.proposalId.localeCompare(b.proposalId));
+
+        return {
+            ...planned,
+            proposal: planned.proposal,
+            existingChanges,
+            touchedProposalIds: existingChanges.map(change => change.proposalId)
+        };
+    }
+
     // Plan only junctions caused by THIS new corridor. Existing roads are visited one at a time,
     // in stable id order, against the evolving new road. Thus finishing one street cannot quietly
     // heal or rewrite an unrelated intersection elsewhere in the city.
@@ -379,8 +461,8 @@
         centerlineOf,
         isTrackDefinition,
         planCorridorAuthoring,
+        planCorridorEdit,
         planCorridorComposition,
-        writeDefinition,
-        detachPublishedIdentity
+        writeDefinition
     };
 });

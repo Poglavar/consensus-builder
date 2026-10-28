@@ -12,6 +12,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createUrbanGameTheoryMcpServer } from '../agents/mcp-server.mjs';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { cidOfObject } from '../cid.js';
+import { MCP_LOCAL_TOOLS } from '../agents/mcp-catalog.js';
 
 const CID = cidOfObject({ schema: 'agreement/v1', title: 'An agreement' });
 const DESIGN_CID = cidOfObject({ schema: 'design/v1', title: 'A design' });
@@ -27,9 +28,9 @@ afterEach(async () => {
     server = null;
 });
 
-async function connect(tools) {
+async function connect(tools, options = {}) {
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
-    server = createUrbanGameTheoryMcpServer({ tools });
+    server = createUrbanGameTheoryMcpServer({ tools, ...options });
     client = new Client({ name: 'ugt-test', version: '1.0.0' });
     await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
 }
@@ -52,11 +53,12 @@ async function toolsByName() {
 describe('Urban Game Theory MCP server', () => {
     it('exposes exact private inspection and granular edits through the actual MCP schemas', async () => {
         const calls=[];
+        const observations=[];
         const tools=createUrbanGameTheoryTools({mode:'hosted',env:{},fetchImpl:async(url)=>{
             calls.push(new URL(url).pathname);
             return Response.json({parcelSourceId:'fixture',binding:{coverage:'complete',parcels:[{parcelId:'A'}]}});
         }});
-        await connect(tools);
+        await connect(tools, { diagnosticRecorder: row => observations.push(row), env: { NODE_ENV: 'test' } });
         const drafted=await client.callTool({name:'ugt_draft_space',arguments:{city:'london',spaceKind:'park',treeCount:2,
             outline:{type:'Polygon',coordinates:[[[-.1,51.5],[-.099,51.5],[-.099,51.501],[-.1,51.501],[-.1,51.5]]]}}});
         expect(drafted.isError).not.toBe(true);
@@ -69,20 +71,34 @@ describe('Urban Game Theory MCP server', () => {
         expect(edited.structuredContent.untrusted.design.title).toBe('Edited garden');
         expect(edited.structuredContent.untrusted.design.structureProposal.decorationDesign.trees).toHaveLength(1);
         expect(calls.every(path=>path==='/designs/binding')).toBe(true);
+        expect(observations.map(row => [row.operation, row.outcome])).toEqual([['create', 'success'], ['edit', 'success']]);
+        expect(observations.every(row => row.source === 'mcp' && row.test === 'known-test' && row.sessionId === null)).toBe(true);
+        expect(JSON.stringify(observations)).not.toContain('Edited garden');
+        expect(JSON.stringify(observations)).not.toContain('coordinates');
     });
-    it('publishes one 49-tool surface for designs, agreements, editing, markets, support, activity and oracle facts', async () => {
+    it('publishes one declared tool surface for designs, agreements, editing, markets, support, activity and oracle facts', async () => {
         await connect(stubTools());
         const names = (await client.listTools()).tools.map(tool => tool.name);
-        expect(names).toEqual([
-            'ugt_capabilities', 'ugt_activity', 'ugt_list_agreements', 'ugt_get_agreement', 'ugt_list_attesters',
-            'ugt_support_status', 'ugt_oracle_events', 'ugt_inspect_verified_fact', 'ugt_publish_design',
-            'ugt_propose_agreement', 'ugt_chain_agreements', 'ugt_chain_agreement', 'ugt_bet_on_account', 'ugt_mint_agreement', 'ugt_fund_agreement', 'ugt_bet_on_agreement',
-            'ugt_buy_verified_fact', 'ugt_request_ownership', 'ugt_pledge', 'ugt_donate', 'ugt_refund_donation',
-            'ugt_void_pledge', 'ugt_revoke_pledge', 'ugt_release_donations', 'ugt_fulfill_pledge',
-            'ugt_resolve_market', 'ugt_claim_market', 'ugt_resolve_external_market', 'ugt_claim_external_market', 'ugt_approval_link', 'ugt_find_place', 'ugt_parcel_context', 'ugt_list_designs', 'ugt_get_design', 'ugt_markets', 'ugt_explain', 'ugt_draft_road', 'ugt_draft_building', 'ugt_draft_space', 'ugt_draft_parcel_layout', 'ugt_draft_urban_rule', 'ugt_modify_design', 'ugt_inspect_design', 'ugt_edit_design', 'ugt_compare', 'ugt_draft_agreement', 'ugt_inspect_plan', 'ugt_edit_plan', 'ugt_submit_feedback'
-        ]);
-        expect(names).toHaveLength(49);
+        expect(names).toEqual(MCP_LOCAL_TOOLS);
+        expect(names).toContain('ugt_publish_plan');
+        expect(names).toContain('ugt_inspect_agreement');
         expect(names.some(name => /proposal|forecast|verdict|accept/.test(name))).toBe(false);
+    });
+
+    it('refuses malformed successful authoring output while keeping structured recovery errors valid', async () => {
+        const tools = stubTools();
+        const observations = [];
+        tools.draftBuilding = vi.fn(async () => ({ cid: DESIGN_CID }));
+        await connect(tools, { diagnosticRecorder: row => observations.push(row) });
+        const args = { city: 'london', typology: 'freeform', floors: 4 };
+        const malformed = await client.callTool({ name: 'ugt_draft_building', arguments: args });
+        expect(malformed).toMatchObject({ isError: true, structuredContent: { code: 'invalid-tool-output' } });
+        expect(malformed.structuredContent.untrusted.message).toMatch(/Output validation error/);
+        tools.draftBuilding.mockRejectedValueOnce(Object.assign(new Error('Ground is unavailable'), { code: 'ground-unavailable' }));
+        const refused = await client.callTool({ name: 'ugt_draft_building', arguments: args });
+        expect(refused).toMatchObject({ isError: true, structuredContent: { code: 'ground-unavailable', next: expect.any(Object) } });
+        expect(refused.structuredContent).not.toHaveProperty('cid');
+        expect(observations.map(row => row.outcome)).toEqual(['failure', 'failure']);
     });
 
     it('marks reads read-only, publishing additive and idempotent, and chain actions destructive', async () => {
@@ -107,8 +123,8 @@ describe('Urban Game Theory MCP server', () => {
         expect([...mint.required].sort()).toEqual(['agreementCid', 'confirm', 'lamports']);
         expect(Object.keys(byName.ugt_bet_on_agreement.inputSchema.properties)).toEqual(['agreementCid', 'side', 'amountUsdc', 'confirm']);
         expect(byName.ugt_bet_on_agreement.inputSchema.properties.side.enum).toEqual(['yes', 'no']);
-        expect(Object.keys(byName.ugt_propose_agreement.inputSchema.properties)).toEqual(['agreement', 'designs', 'confirm']);
-        expect(Object.keys(byName.ugt_publish_design.inputSchema.properties)).toEqual(['design', 'parcelSourceId', 'confirm']);
+        expect(Object.keys(byName.ugt_propose_agreement.inputSchema.properties)).toEqual(['agreement', 'expectedCid', 'designs', 'confirm']);
+        expect(Object.keys(byName.ugt_publish_design.inputSchema.properties)).toEqual(['design', 'expectedCid', 'parcelSourceId', 'confirm']);
         expect(Object.keys(byName.ugt_list_agreements.inputSchema.properties)).toEqual(['city', 'design', 'parcel', 'limit']);
         expect(Object.keys(byName.ugt_pledge.inputSchema.properties)).toEqual(['agreementAccount', 'amountUsdc', 'confirm']);
         const ownership = byName.ugt_request_ownership.inputSchema;
@@ -152,7 +168,7 @@ describe('Urban Game Theory MCP server', () => {
         tools.fundAgreement.mockResolvedValueOnce({ escrowLamports: 9000n, nested: { amount: 5n } });
         await connect(tools);
         const refused = await client.callTool({ name: 'ugt_bet_on_agreement', arguments: { agreementCid: CID, side: 'yes', amountUsdc: '0.01', confirm: true } });
-        expect(refused).toMatchObject({ isError: true, structuredContent: { code: 'tool-failed', message: 'agreement X is Executed; its market takes no more stakes', next: { action: expect.any(String) } } });
+        expect(refused).toMatchObject({ isError: true, structuredContent: { code: 'tool-failed', message: 'Tool request failed.', untrusted: { message: 'agreement X is Executed; its market takes no more stakes' }, next: { action: expect.any(String) } } });
         const funded = await client.callTool({ name: 'ugt_fund_agreement', arguments: { agreementCid: CID, targetLamports: '9000', confirm: true } });
         expect(funded.structuredContent).toEqual({ escrowLamports: '9000', nested: { amount: '5' } });
     });

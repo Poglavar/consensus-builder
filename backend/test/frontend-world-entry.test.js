@@ -1,7 +1,8 @@
 // Entering the app through the world view: the pure decisions (frontend/js/world/world-entry-model.js),
-// the explore city in the REAL city-config.js, the parcel fetch guard for a city without cadastre,
+// the explore city in the REAL data/city-configs.js, the parcel fetch guard for a city without cadastre,
 // and the optional site intro waiting for a first-visit globe only when requested.
 import { describe, it, expect, vi, beforeAll, afterEach } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -30,6 +31,7 @@ describe('?at= parsing', () => {
 
     it('clamps the zoom into the usable range', () => {
         expect(Model.parseAt('45,15,25').zoom).toBe(Model.MAX_ZOOM);
+        expect(Model.parseAt('45,15,23').zoom).toBe(23);
         expect(Model.parseAt('45,15,0').zoom).toBe(Model.MIN_ZOOM);
         expect(Model.parseAt('45,15,-4').zoom).toBe(Model.MIN_ZOOM);
     });
@@ -132,6 +134,18 @@ describe('globe boot uses the arrival URL', () => {
         });
         return { window, classes, ready: () => callbacks.forEach(callback => callback()) };
     }
+
+    it('reports a failed first-visit globe visibly and releases the boot cover', async () => {
+        const app = boot();
+        app.window.showEphemeralMessage = vi.fn();
+        app.window.WorldView.open.mockRejectedValueOnce(new Error('WebGL unavailable'));
+        app.ready();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        expect(app.classes.has('world-view-pending')).toBe(false);
+        expect(app.window.WorldEntry.ownsBoot()).toBe(false);
+        expect(app.window.showEphemeralMessage).toHaveBeenCalledWith(
+            expect.stringContaining('World view could not start'), 8000, 'warning');
+    });
 
     it('opens a copied map position without a first-visit globe', () => {
         const app = boot('?at=-1.264,36.840,17');
@@ -293,13 +307,13 @@ function loadCityConfig(search, stored = {}) {
             setItem: (key, value) => { writes.push([key, value]); store[key] = String(value); }
         },
         PersistentStorage: {
-            setScope: (scope, options) => { scopes.push([scope, options]); },
+            setScope: scope => { scopes.push([scope]); },
             getItem: () => null,
             setItem: () => {}
         },
         dispatchEvent: () => true
     };
-    const fn = new Function('window', 'localStorage', 'PersistentStorage', 'URL', 'URLSearchParams', read('frontend/js/city-config.js'));
+    const fn = new Function('window', 'localStorage', 'PersistentStorage', 'URL', 'URLSearchParams', cityConfigSource());
     fn(win, win.localStorage, win.PersistentStorage, URL, URLSearchParams);
     return { manager: win.CityConfigManager, win, writes, scopes, store };
 }
@@ -346,9 +360,9 @@ describe('the explore city (city-config.js)', () => {
         for (const section of ['parcels', 'parcelBlocks', 'roads', 'areaMonitor']) {
             expect(disabled).toContain(section);
         }
-        // Buildings need no parcels: explore shows Overture's buildings (OpenStreetMap's among them) anywhere on Earth.
+        // Buildings need no parcels: Explore's city default is OpenStreetMap through the backend.
         expect(disabled).not.toContain('buildings');
-        expect(tokyo.manager.getCityConfig('explore').buildings.source).toBe('overture-tiles');
+        expect(tokyo.manager.getCityConfig('explore').buildings.source).toBe('osm');
         // A site drawn here has an empty binding (PARCEL-OPTIONAL.md): proposals and stations
         // need no parcels.
         expect(disabled).not.toContain('proposals');
@@ -371,7 +385,7 @@ describe('the explore city (city-config.js)', () => {
         expect(manager.getAvailableCities().map(c => c.id)).not.toContain('explore');
         expect(manager.findNearestCity(35.68, 139.76).id).not.toBe('explore');
         expect(writes.filter(([key]) => key === 'cb_current_city')).toEqual([]);
-        expect(scopes).toEqual([['explore', { explicit: true }]]);
+        expect(scopes).toEqual([['explore']]);
         expect(store.cb_explore_at).toBe('35.68000,139.76000,12');
         expect(manager.getCityLabel('explore')).toBe('Explore');
     });
@@ -518,29 +532,32 @@ describe('wiring', () => {
         expect(order('js/world/globe-math.js')).toBeGreaterThan(order('js/world/world-coverage.js'));
         expect(html).toMatch(/<body[^>]*>\s*<!--[\s\S]*?-->\s*<script>\s*window\.writeVersionedLocalScripts\(\['js\/world\/handoff\.js'\]\)/);
         expect(html).toContain("'css/world.css'");
-        expect(html).toContain('id="world-view-button"');
+        expect(html).not.toContain('id="world-view-button"');
     });
 
     it('drops the commands of a section the city config hid, with the reason', () => {
         const UiCommands = require(path.join(REPO, 'frontend/js/ui/commands.js'));
         const ctx = hidden => ({
+            mode: '2d', selection: { active: false, count: 0 },
             global: { startTransitStationPlacement() {} }, parcel: { parcelId: 'parcel-1' },
             isControlAvailable: () => true, isSectionHidden: section => hidden.includes(section)
         });
         const ids = hidden => UiCommands.commandsFor('palette', ctx(hidden)).map(c => c.id);
-        expect(ids([])).toEqual(expect.arrayContaining(['blocks.reform', 'stations.bus', 'proposals.list', 'game.new']));
+        expect(ids([])).toEqual(expect.arrayContaining(['blocks.reform', 'stations.road', 'proposals.list', 'game.new']));
         const explore = ids(['parcels', 'blocks', 'stations', 'roads', 'proposals', 'game', 'areaMonitor']);
-        for (const id of ['blocks.reform', 'stations.bus', 'roads.drawOsm', 'proposals.list', 'game.new', 'parcels.clearLocal']) expect(explore).not.toContain(id);
-        expect(explore).toEqual(expect.arrayContaining(['tools.measure', 'world.open', 'settings.baseMap', 'activity.explorer']));
+        for (const id of ['blocks.reform', 'stations.road', 'roads.drawOsm', 'proposals.list', 'game.new', 'parcels.clearLocal']) expect(explore).not.toContain(id);
+        expect(explore).toEqual(expect.arrayContaining(['tools.measure', 'world.open', 'settings.baseMap', 'activity.events', 'activity.actors']));
         const ranked = UiCommands.rankCommands('reform', ctx(['blocks']), null).find(item => item.entry.id === 'blocks.reform');
         expect(ranked).toMatchObject({ available: false, reason: 'hiddenForCity' });
     });
 
-    it('registers the world view command on the settings surface and the palette', () => {
+    it('registers the world view command through the city control and the palette', () => {
         const UiCommands = require(path.join(REPO, 'frontend/js/ui/commands.js'));
         const entry = UiCommands.findCommand('world.open');
         expect(entry).toBeTruthy();
-        expect(entry.surfaces).toEqual(expect.arrayContaining(['settings', 'palette']));
-        expect(entry.control).toBe('world-view-button');
+        expect(entry.surfaces).toEqual(['palette']);
+        const clickSelector = vi.fn();
+        entry.run({ clickSelector });
+        expect(clickSelector).toHaveBeenCalledWith('.map-search__chip');
     });
 });

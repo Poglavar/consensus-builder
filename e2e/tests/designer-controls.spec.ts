@@ -1,6 +1,6 @@
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, clickMapPoint, closeParcel, showSelectionDesignTab, parcelTab } from '../helpers/runtime';
+import { placeFreeformBuilding, openCity, openParcel, clickMapPoint, closeParcel, showSelectionDesignTab, parcelTab } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 
@@ -152,19 +152,20 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect(visibleExcludedPlots).toHaveCount(3);
     await expect(visibleExcludedPlots.first()).toBeVisible();
     await expect.poll(() => page.evaluate(() => !!(window as any).getActiveProposalDesignDraft?.()
-      ?.editorPayload?.context?.buildingFeature?.geometry)).toBe(true);
+      ?.editorPayload?.context?.ruleMassing?.geometry)).toBe(true);
     const authoredGeometry = await page.evaluate(() => JSON.parse(JSON.stringify(
-      (window as any).getActiveProposalDesignDraft().editorPayload.context.buildingFeature.geometry
+      (window as any).getActiveProposalDesignDraft().editorPayload.context.ruleMassing.geometry
     )));
     await page.locator('#btn-blockify-done').click();
 
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((proposal: any) => proposal.applied && proposal.geometry?.buildings?.length))).toBe(true);
     const proposal = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((entry: any) => entry.applied && entry.geometry?.buildings?.length));
     expect(proposal.cadastreParcelIds).toEqual(expect.arrayContaining(BLOCK_PARCEL_IDS));
-    expect(proposal.geometry.buildings).toHaveLength(1);
-    // Authored records compact an identical blockMassing into the one saved building feature.
-    expect(proposal.geometry.blockMassing).toBeUndefined();
-    expect(proposal.geometry.buildings[0].geometry).toEqual(authoredGeometry);
+    // One building per plot the rule keeps (the two the editor drew), each with its own seed,
+    // beside the complete authored massing they were cut from.
+    expect(proposal.geometry.buildings).toHaveLength(2);
+    expect(new Set(proposal.geometry.buildings.map((building: any) => building.properties.variationSeed)).size).toBe(2);
+    expect(proposal.geometry.ruleMassing.geometry).toEqual(authoredGeometry);
     expect(proposal.buildingProposal.ineligibleParcels).toHaveLength(3);
     const relevantParcelIds = await page.evaluate(([site, ids]) => {
       const turf = (window as any).turf;
@@ -213,7 +214,7 @@ test.describe('Designer controls persist their edits @features', () => {
         lifecycleStatus: 'Active',
         applied: true,
         cadastreParcelIds: ['HR-335754-1234'],
-        geometry: { buildings: [massing], blockMassing: massing },
+        geometry: { buildings: [massing], ruleMassing: massing },
         buildingProposal: {
           typologyType: 'block',
           parameters: { rule: { kind: 'max', maxHeightM: 18 } },
@@ -274,8 +275,7 @@ test.describe('Designer controls persist their edits @features', () => {
       name: 'building.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(uploaded)),
     });
     await expect(page.locator('#single-building-editor .on-map-editor__panel')).toBeVisible();
-    await expect(page.locator('#single-land-take [data-land-accept]')).toBeEnabled();
-    await page.locator('#single-land-take [data-land-accept]').check();
+    await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²');
     await page.locator('#single-building-confirm').click();
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
       .some((p: any) => p.applied && p.goal === 'single' && p.geometry?.buildings?.[0]?.properties?.name === 'fixture manual footprint'))).toBe(true);
@@ -319,17 +319,16 @@ test.describe('Designer controls persist their edits @features', () => {
       .some((feature: any) => feature.properties?.proposalId === id), saved.proposalId)).toBe(true);
   });
 
-  test('single-building palette controls save height, surroundings, parcel treatment, and added footprint', async ({ mockApi: page }) => {
+  test('single-building palette controls save height, surroundings, and parcel treatment', async ({ mockApi: page }) => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-build-btn--single').click();
+    await placeFreeformBuilding(page);
     const wholeBlockPrompt = page.getByRole('alertdialog');
     if (await wholeBlockPrompt.isVisible().catch(() => false)) {
       await wholeBlockPrompt.getByRole('button', { name: 'No, just this parcel' }).click();
     }
     await expect(page.locator('#single-building-editor').locator('.on-map-editor__panel')).toBeVisible();
-    const selector = page.locator('#single-building-selector');
-    const initialBuildings = await selector.locator('option').count();
     const height = page.locator('#single-height-slider');
     const oldHeight = Number(await height.inputValue());
     await height.focus();
@@ -337,25 +336,19 @@ test.describe('Designer controls persist their edits @features', () => {
     // A rotation is disabled when the footprint cannot rotate inside the selected parcel.
     // This fixture's initial placement is constrained, so exercise the supported height and
     // surface controls without bypassing that real geometry gate.
-    await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
     const parcelTake = page.locator('#single-land-take [data-parcel-id]').first();
     await selectNativeOption(parcelTake, 'whole');
-    await page.locator('#single-building-add').click();
-    await expect(selector.locator('option')).toHaveCount(initialBuildings + 1);
-    await expect(page.locator('#single-land-take [data-land-accept]')).toBeEnabled();
-    await page.locator('#single-land-take [data-land-accept]').check();
+    await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²');
+    await selectNativeOption(page.locator('#single-ground-treatment'), 'green');
     await page.locator('#single-building-confirm').click();
     await expect(page.locator('#single-building-editor')).toHaveCount(0);
 
     const context = await page.evaluate(() => (window as any).pendingBuildingProposalContext);
     expect(context.parameters.height).toBe(oldHeight + 1);
-    expect(context.buildings).toHaveLength(initialBuildings + 1);
+    expect(context.buildings).toHaveLength(1);
     expect(context.groundSurface.treatment).toBe('green');
     expect(context.landTake?.geometry).toBeTruthy();
-    const footprintTake = await page.evaluate(buildings => (window as any).FreeformLandTake.union(buildings, (window as any).turf), context.buildings);
-    // Whole-parcel take is unavailable once the second building is added; the saved take is both
-    // building footprints, which is the land the editor reviewed and accepted.
-    expect(context.landTake).toEqual(footprintTake);
+    expect(context.landTake.geometry.coordinates).toEqual([[[15.9819,45.8],[15.9825,45.8],[15.9825,45.8005],[15.9819,45.8005],[15.9819,45.8]]]);
     expect(context.buildings.every((feature: any) => feature.geometry?.type === 'Polygon')).toBe(true);
   });
 
@@ -389,7 +382,10 @@ test.describe('Designer controls persist their edits @features', () => {
     expect(context.parcelIds.length).toBeGreaterThan(1);
     expect(context.parameters.typology).toBe('row');
     expect(context.parameters.rule.kind).toBe('range');
-    expect(context.parameters.rule.minHeightM).toBe(minimumHeight);
+    // The minimum is set in floors; the rule stores metres at 3 m per Row storey.
+    expect(context.parameters.rule.minHeightM).toBe(minimumHeight * 3);
+    // One house per plot, each with its own seed, beside the whole terrace.
+    expect(context.ruleMassing?.geometry?.type).toBe('Polygon');
     expect(Number(context.parameters.rotation)).toBeCloseTo(rotationBefore - 5 * Math.PI / 180, 5);
     expect(context.buildings.length).toBeGreaterThan(0);
     expect(context.buildings.every((feature: any) => feature.geometry?.type === 'Polygon')).toBe(true);
@@ -444,9 +440,10 @@ test.describe('Designer controls persist their edits @features', () => {
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-transport-btn--track').click();
-    await page.locator('#track-speed-confirm-btn').click();
+    await page.locator('.track-speed-option[data-speed="250"]').click();
     await clickMapPoint(page, 15.98195, 45.8001);
     await clickMapPoint(page, 15.9824, 45.8001);
+    await clickMapPoint(page, 15.9824, 45.8005);
     await page.locator('#editRoadCrossSectionButton').click();
     const editor = page.locator('#corridor-editor-overlay');
     const rail = editor.locator('.corridor-lane-row:has(.corridor-lane-gauge)').first();
@@ -456,11 +453,20 @@ test.describe('Designer controls persist their edits @features', () => {
     await expect(rail.locator('.corridor-lane-width')).not.toHaveValue(String(widthBefore));
     await editor.locator('.corridor-editor-save').click();
     await page.locator('#finishRoadButton').click();
+    const warning = page.getByRole('alertdialog');
+    await expect(warning).toContainText('5,000 m target for 250 km/h');
+    await expect(warning).toContainText('not an engineering assessment');
+    await warning.getByRole('button', { name: 'Keep editing', exact: true }).click();
+    await expect(page.locator('#road-drawing-controls')).toBeVisible();
+    expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.applied && p.roadProposal))).toBe(false);
+    await page.locator('#finishRoadButton').click();
+    await warning.getByRole('button', { name: 'Continue', exact: true }).click();
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals().some((p: any) => p.applied && p.roadProposal))).toBe(true);
 
     const track = await page.evaluate(() => (window as any).proposalStorage.getAllProposals().find((p: any) => p.applied && p.roadProposal).roadProposal.definition);
     expect(track.profile.strips.some((lane: any) => lane.type === 'rail' && Number(lane.gauge) === 1000)).toBe(true);
-    expect(track.metadata.trackSpeed).toBeGreaterThan(0);
+    expect(track.metadata.trackSpeed).toBe(250);
+    expect(track.metadata.trackMinRadius).toBe(5000);
   });
 
   test('parcel-layout starting layouts, old/new tabs and commit reflect actual edits', async ({ mockApi: page }) => {

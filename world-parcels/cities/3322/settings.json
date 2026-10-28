@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3322",
+  "name": "Oita, Japan",
+  "point": [
+    33.2290393280175,
+    131.638400049328
+  ],
+  "bindings": [
+    {
+      "appCityId": "oita",
+      "runtimeConfig": {
+        "id": "oita",
+        "wupCityCode": "3322",
+        "label": "Oita, Japan",
+        "currency": {
+          "locale": "ja-JP",
+          "code": "JPY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            33.2290393280175,
+            131.638400049328
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            33.2290393280175,
+            131.638400049328
+          ],
+          "fallbackDataset": [
+            131.638400049328,
+            33.2290393280175
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "jp-naro-moj-2022-oita",
+          "idPrefix": "jp-naro-moj-2022-oita/geometry-sha256-offset-v1/",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "出典：「登記所備付地図（2022年度公開）」（法務省）; NARO FlatGeobuf mirror."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "jp-naro-moj-2022-oita",
+      "adapter": "flatgeobuf-range",
+      "endpoint": "https://habs.rad.naro.go.jp/spatial_data/amxpoly47/amxpoly_2022_44.fgb",
+      "name": "Oita MOJ registry-map parcels (2022), NARO FlatGeobuf",
+      "operator": "Japan Ministry of Justice; NARO public FlatGeobuf conversion",
+      "countryCode": "JP",
+      "cityIds": [
+        "oita"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "jp-naro-moj-2022-oita/geometry-sha256-offset-v1/",
+      "identityKind": "geometry-sha256-offset-v1",
+      "outFields": [
+        "筆ID",
+        "市区町村コード"
+      ],
+      "sourceCrs": "EPSG:6668",
+      "nativeCrs": "EPSG:6668",
+      "sourceSrid": 6668,
+      "metricSrid": 32652,
+      "returnsWGS84": true,
+      "geometryType": "MultiPolygon",
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "maxConcurrentQueries": 1,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "expectedEtag": "\"65f15afc-5b5af750\"",
+      "expectedSnapshotBytes": 1532688208,
+      "expectedSnapshotFeatures": 2034934,
+      "expectedHeaderSha256": "eff38bd2cdb491414977211b48d6bd080571e2f169bae1cd62cfff919b00b3f4",
+      "municipalityCode": "44201",
+      "dataVersion": "2022 MOJ registry-map release; NARO file last modified 2024-03-13",
+      "scope": "Bounded Oita City (44201) registry-map availability only. No claim of citywide completeness, legal title, survey accuracy, or currentness beyond 2022. Arbitrary-coordinate sheets are not reliably georeferenced.",
+      "catalogueUrl": "https://habs.rad.naro.go.jp/spatial_data/amxpoly47/",
+      "licenceUrl": "https://www.digital.go.jp/news/4b7250a3-3fcf-4b83-8d52-4bb131e1ba9d",
+      "licenceNote": "Digital Agency states free reuse subject to MOJ terms. NARO requests MOJ source attribution; no separate mirror licence stated. Preserve attribution; detailed mirror terms and release-refresh review remain follow-ups.",
+      "attribution": "出典：「登記所備付地図（2022年度公開）」（法務省）; NARO FlatGeobuf mirror.",
+      "identity": {
+        "scheme": "geometry-sha256-offset-v1",
+        "recipe": "SHA256 UTF-8 JSON.stringify({type: geometry.type, coordinates: geometry.coordinates}) without rounding, reordering or repairs. Reference g1~<feature-data-relative byte offset>~<lowercase hash> under source prefix. Byte offset is an exact-read locator in the ETag/header-pinned release and distinguishes even coincident rows. Native 筆ID is retained only as safe provenance, never assumed unique.",
+        "stabilityLimits": "References are scoped to this fixed 2022 file revision; repacking or geometry changes may change references. A changed ETag, byte size or header fails closed. No cross-release continuity asserted."
+      },
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "JP",
+          "city": "Oita",
+          "basis": "NARO prefecture 44 MOJ registry-map conversion, with native municipality code 44201 filtering."
+        },
+        "sourcePurpose": "cadastral-parcels",
+        "evidenceUrls": [
+          "https://habs.rad.naro.go.jp/spatial_data/amxpoly47/",
+          "https://www.digital.go.jp/news/4b7250a3-3fcf-4b83-8d52-4bb131e1ba9d"
+        ]
+      }
+    }
+  ]
+}

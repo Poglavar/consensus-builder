@@ -20,6 +20,23 @@ function square(west, south, side) {
 const BLOCK = square(15.97, 45.81, 0.0009);          // ~100 x 100 m parcel block
 const BUILDING = square(15.9702, 45.8102, 0.0002);   // ~22 x 22 m building inside it
 
+describe('surroundings within the land take', () => {
+    it('removes the surface for a footprint-only take and keeps it for a whole parcel', () => {
+        const surface = BuildingGround.buildSurface('green', BLOCK, [BUILDING]);
+        expect(BuildingGround.clipSurfaceToLandTake(surface, BUILDING, turf)).toBeNull();
+        const whole = BuildingGround.clipSurfaceToLandTake(surface, BLOCK, turf);
+        expect(turf.area(turf.feature(whole.polygon))).toBeCloseTo(turf.area(BLOCK) - turf.area(BUILDING), 3);
+    });
+    it('clips a mixed take without moving its original boundary', () => {
+        const surface = BuildingGround.buildSurface('paved', BLOCK, [BUILDING]);
+        const take = square(15.9701, 45.8101, 0.0004);
+        const clipped = BuildingGround.clipSurfaceToLandTake(surface, take, turf);
+        expect(turf.difference(turf.feature(clipped.polygon), take)).toBeNull();
+        expect(turf.intersect(turf.feature(clipped.polygon), BUILDING)).toBeNull();
+        expect(surface.polygon).toEqual(BuildingGround.buildSurface('paved', BLOCK, [BUILDING]).polygon);
+    });
+});
+
 describe('normalizeTreatment', () => {
     it('accepts the two real treatments', () => {
         expect(BuildingGround.normalizeTreatment('paved')).toBe('paved');
@@ -250,5 +267,43 @@ describe('vacant layout plots', () => {
     it('keeps adjacent plots empty while excluding a standing building', () => {
         expect(vacant([layout], [west])).toEqual(['east']);
         expect(vacant([layout], [square(15.9698, 45.81, 0.0002)])).toEqual(['west', 'east']);
+    });
+});
+
+describe('fenceLines', () => {
+    // A ~100 m block of four quarter parcels with a 15 m perimeter building and a paved courtyard.
+    const W = 15.97, S = 45.81, SIDE = 0.0009, HALF = SIDE / 2, WING = SIDE * 0.15;
+    const quarter = (x, y) => square(W + x * HALF, S + y * HALF, HALF);
+    const quarters = [quarter(0, 0), quarter(1, 0), quarter(0, 1), quarter(1, 1)];
+    const inner = square(W + WING, S + WING, SIDE - 2 * WING);
+    const ring = turf.polygon([BLOCK.geometry.coordinates[0], [...inner.geometry.coordinates[0]].reverse()]);
+    const courtyard = turf.difference(BLOCK, ring);
+    const metres = lines => lines.reduce((sum, line) => sum + turf.length(turf.lineString(line), { units: 'meters' }), 0);
+
+    it('fences the private parcel boundaries across a paved or green courtyard', () => {
+        const lines = BuildingGround.fenceLines(courtyard, quarters, [ring], turf);
+        expect(lines.length).toBe(4);
+        // The two dividing lines, each across the courtyard, never along the building's walls.
+        const [west, south, east, north] = turf.bbox(inner);
+        const across = turf.distance([west, south], [east, south], { units: 'meters' })
+            + turf.distance([west, south], [west, north], { units: 'meters' });
+        expect(metres(lines)).toBeCloseTo(across, 0);
+    });
+
+    it('leaves a courtyard laid out as its own parcel open, as shared ground', () => {
+        const plots = quarters.map(parcel => turf.difference(parcel, inner));
+        expect(BuildingGround.fenceLines(courtyard, [...plots, inner], [ring], turf)).toEqual([]);
+    });
+
+    it('fences a front yard along the parcel edge, the street side included, but not along the walls', () => {
+        const house = square(W + SIDE * 0.3, S + SIDE * 0.3, SIDE * 0.4);
+        const yard = turf.difference(BLOCK, house);
+        const lines = BuildingGround.fenceLines(yard, [BLOCK], [house], turf);
+        expect(lines.length).toBe(4);
+        expect(metres(lines)).toBeCloseTo(turf.length(turf.polygonToLine(BLOCK), { units: 'meters' }), 0);
+    });
+
+    it('draws nothing without open ground', () => {
+        expect(BuildingGround.fenceLines(null, quarters, [ring], turf)).toEqual([]);
     });
 });

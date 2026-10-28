@@ -1,0 +1,35 @@
+1
+00:00:00,000 --> 00:00:03,262
+Select neighbouring parcels. Use Detect block for the
+
+2
+00:00:03,309 --> 00:00:06,223
+whole site, then choose Row houses.
+
+3
+00:00:06,573 --> 00:00:10,300
+Set length, width and height. Reshape the footprint
+
+4
+00:00:10,462 --> 00:00:12,517
+so it fits the selected land.
+
+5
+00:00:12,873 --> 00:00:15,938
+Finish the rule to save the row-house design.
+
+6
+00:00:16,288 --> 00:00:19,481
+Review the warning about different parcel shapes, then
+
+7
+00:00:19,562 --> 00:00:21,861
+confirm whether to proceed.
+
+8
+00:00:22,221 --> 00:00:25,507
+Inspect the row in 3D. Tilt and rotate
+
+9
+00:00:25,553 --> 00:00:28,676
+to see its relationship to the neighbouring buildings.

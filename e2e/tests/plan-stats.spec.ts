@@ -1,19 +1,33 @@
+import { openPlanActions } from '../helpers/plan-actions';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createBuilding } from '../helpers/runtime';
+import { openCity, createBuilding, createSpace } from '../helpers/runtime';
 
 test.describe('Plan arithmetic @features', () => {
-  test('applied buildings yield floor area, housing, people and sales; assumptions recalculate the displayed totals', async ({ mockApi: page }) => {
+  test('a saved plan counts its unapplied building independently of an unrelated applied park', async ({ mockApi: page }) => {
+    test.setTimeout(120_000);
     await openCity(page);
-    await createBuilding(page);
+    const building = await createBuilding(page);
+    const row = await openPlanActions(page, 'Inspection plan', [building]);
     await page.locator('#proposals-button').click();
-    // Plan-wide actions sit in the collapsed "Plan actions" group (fbe3758d).
-    await page.locator('#planStatsButton').click();
+    await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), building);
+    await createSpace(page, 'park');
+    const mapState = () => page.evaluate(() => {
+      const w = window as any;
+      return JSON.stringify({ designs: w.proposalStorage.getAllProposals(), fabric: w.LiveParcelFabric.list(), agents: w.agentStorage.getAllAgents() });
+    });
+    const before = await mapState();
+    await page.locator('#proposals-button').click();
+    await page.locator('[data-list-tab="plans"]').click();
+    await row.getByRole('button', { name: 'Plan stats', exact: true }).click();
     const modal = page.locator('#plan-stats-modal');
     await expect(modal).toBeVisible();
-    await expect(modal.getByRole('heading', { name: 'Applied proposal stats', exact: true })).toBeVisible();
-    await expect(modal.locator('[data-plan-stat="scope"]')).toContainText('1 applied');
-    await test.info().attach('applied-proposal-stats', { body: await modal.screenshot(), contentType: 'image/png' });
+    expect(await mapState()).toBe(before);
+    await expect(modal.getByRole('heading', { name: 'Plan stats', exact: true })).toBeVisible();
+    await expect(modal.locator('[data-plan-stat="scope"]')).toContainText('Inspection plan');
+    await test.info().attach('saved-plan-stats', { body: await modal.screenshot(), contentType: 'image/png' });
     const value = (key: string) => modal.locator(`[data-plan-stat="${key}"]`).innerText();
+    expect(await value('buildings')).toMatch(/^1 /);
+    expect(await value('open-space')).toBe('0');
     const floorArea = await value('floor-area');
     expect(Number(floorArea.replace(/[^\d]/g, ''))).toBeGreaterThan(0);
     const sales = await value('sales-value');
@@ -47,7 +61,64 @@ test.describe('Plan arithmetic @features', () => {
       expect(await input.evaluate((el: HTMLInputElement) => el.validity.rangeUnderflow || el.validity.rangeOverflow || el.validity.valueMissing)).toBe(false);
     }
     expect(await value('floor-area')).toBe(floorArea);
-    await modal.getByRole('button', { name: 'Close applied proposal stats' }).click();
+    await modal.getByRole('button', { name: 'Close plan stats' }).click();
     await expect(modal).toBeHidden();
+  });
+
+  test('compare plans measures several saved plans side by side without applying them', async ({ mockApi: page }) => {
+    test.setTimeout(120_000);
+    await openCity(page);
+    const building = await createBuilding(page);
+    await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), building);
+    const park = await createSpace(page, 'park');
+    await openPlanActions(page, 'Houses only', [building]);
+    await page.locator('#proposals-button').click();
+    await openPlanActions(page, 'Houses and park', [building, park]);
+    // From here on the parcel carries one existing two-storey building covering it: both plans clear
+    // it (the block takes its parcel, the park its ground), the present state keeps it.
+    await page.route('**/buildings/under', route => {
+      const regions = route.request().postDataJSON()?.regions || [];
+      return route.fulfill({ json: { supported: true, truncated: false, source: 'gdi',
+        regions: Object.fromEntries(regions.map((region: any) => [region.key, [{ id: 'existing-1', geometry: region.geometry, height_m: null, floors: 2 }]])) } });
+    });
+    const applied = () => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.applied).map((p: any) => p.proposalId));
+    const before = await applied();
+    await page.getByRole('button', { name: 'Compare plans', exact: true }).click();
+    const compare = page.locator('[data-lists-compare]');
+    await expect(compare).toBeDisabled();
+    for (const title of ['Houses only', 'Houses and park']) {
+      await page.getByRole('checkbox', { name: new RegExp(title) }).check();
+    }
+    await expect(compare).toBeEnabled();
+    await compare.click();
+    const dialog = page.locator('.plan-compare-dialog');
+    await expect(dialog.getByRole('heading', { name: 'Compare plans' })).toBeVisible();
+    const table = dialog.locator('[data-plan-compare]');
+    await expect(table).toHaveAttribute('data-plan-compare', 'plans-as-columns');
+    await expect(dialog.locator('.plan-compare__status')).toHaveCount(0);
+    await expect(table.locator('th.plan-compare__plan')).toHaveText(['Present state', 'Houses only', 'Houses and park']);
+    await expect(dialog.locator('[data-plan-compare-basis]')).toHaveValue('compared');
+    const row = (label: RegExp) => table.locator('tr').filter({ has: page.locator('th[scope="row"]', { hasText: label }) }).locator('td');
+    await expect(row(/^Buildings/)).toHaveCount(3);
+    const buildings = await row(/^Buildings/).allInnerTexts();
+    const remaining = await row(/^of which existing/).allInnerTexts();
+    const added = await row(/^of which new/).allInnerTexts();
+    // The present state is the existing building; each plan clears it and stands with its own.
+    expect([buildings[0], remaining[0], added[0]].map(text => text.split(' ')[0])).toEqual(['1', '1', '0']);
+    expect(remaining.slice(1).map(text => text.split(' ')[0])).toEqual(['0', '0']);
+    expect(added.slice(1).map(text => text.split(' ')[0])).toEqual(['1', '1']);
+    const openSpace = await row(/^Open space/).allInnerTexts();
+    expect(openSpace.filter(text => text === '0')).toHaveLength(2);
+    const publicLand = await row(/^Public land/).allInnerTexts();
+    expect(publicLand[0]).toBe('0');
+    expect(Number(publicLand[2].replace(/[^\d]/g, ''))).toBeGreaterThan(0);
+    expect(await applied()).toEqual(before);
+    await dialog.screenshot({ path: test.info().outputPath('plan-compare-columns.png') });
+    await test.info().attach('plan-compare-columns', { path: test.info().outputPath('plan-compare-columns.png'), contentType: 'image/png' });
+    await dialog.getByRole('button', { name: 'Swap rows and columns' }).click();
+    await expect(table).toHaveAttribute('data-plan-compare', 'plans-as-rows');
+    await expect(table.locator('th[scope="row"]')).toHaveCount(3);
+    await dialog.screenshot({ path: test.info().outputPath('plan-compare-rows.png') });
+    await test.info().attach('plan-compare-rows', { path: test.info().outputPath('plan-compare-rows.png'), contentType: 'image/png' });
   });
 });

@@ -37,7 +37,7 @@ for (const origin of ['generated', 'user'] as const) {
         goal: 'buildings', typologyType: 'block', title: 'My courtyard', titleOrigin,
         description: 'Keep this description.', authorAgentId: user?.id, author: user?.name,
         applied: false, cadastreParcelIds: ['HR-335754-1234'],
-        geometry: { buildings: [shape], blockMassing: shape },
+        geometry: { buildings: [shape], ruleMassing: shape },
         buildingProposal: { typologyType: 'block', parameters: { mode: 'parametric',
           typology: 'block', rule: { kind: 'max', maxHeightM: 15 } } }
       });

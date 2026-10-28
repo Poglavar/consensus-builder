@@ -1,5 +1,15 @@
 # Memory
 
+- 2026-10-26: Do not add study/concept, illustrative, not-adopted or planning-permission disclaimers to authored plans or UI copy; the tool is already for studies and concepts. Use plain titles and descriptions.
+
+- 2026-10-26: Every Consensus Builder localhost link must explicitly include its verified `backend`, city and location; copy the complete tested URL into the final answer rather than dropping parameters or relying on saved browser settings. Repeated missing-backend links caused building-data fetch failures.
+
+- 2026-10-26: Publish through Filebase by default, retain Pinata as an explicitly selectable reserve, and configure the read gateway independently; preserve CIDs through the provider adapter. Back up and verify the oldest 250 Pinata files before unpinning that exact set.
+
+- 2026-10-25: The user handles outside-pilot recruitment offline. The current betting contract is dated LMSR with independent points and devnet-USDC books: 1,000 starting points, no wallet needed for points, anonymous opaque points credentials, and explicit simulation-run separation. YES requires a valid on-chain execution timestamp no later than the agreement deadline; late execution, expiry, or active status after grace is NO; cancellation is VOID at half-share per side. The LMSR Solana program is in source but not yet deployed; never present devnet-USDC trading as live until verified after deployment. Complete implementation and instrumentation verification before revising the pitch; until outside participants are available, use clearly labelled simulated visitors. San Francisco uses a separate YES/NO bet for each agreement and YES requires execution by the deadline; both or neither may succeed. The pending choice is whether to create clearly labelled devnet demonstrations with simulated rights or prepare agreements for real counterparties.
+
+- 2026-10-25: MCP named-plan tools operate on `plan/v1` independently of agreement ground and terms; private drafts persist to disk with explicit expiry and export, and reference publication checks the reviewed CID before returning a verified permanent URL.
+
 - 2026-10-24: Applying a shared plan must warn about conflicts and offer to unapply the existing conflicting designs, skip the conflicting incoming designs, or cancel. Reuse the existing conflict flow; never silently replace the working composition. Keep all saved designs and unrelated applied work.
 
 - 2026-10-24: MCP authoring should expose every human-editable authored field through granular inspection, patches and geometry operations; compose unforeseen requests from those primitives instead of adding a high-level tool for each sentence. Plan changes create private revisions with rederived ground, preserving immutable publication identities.
@@ -887,7 +897,7 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 
 - 2026-10-23: Freeform land take is reviewed per touched live parcel (footprint cut or whole parcel), stored as exact geometry separate from building massing, and shared by formation, demolition and agreement inputs; changed consequences require renewed acceptance.
 
-- 2026-10-23: Before sharing a local preview link, verify its listening checkout, resolved backend and a real source-data response in the browser; include the backend override when the local API is not running.
+- 2026-10-23: Verify a local preview's listening checkout, resolved backend and real source-data responses in the browser; the strengthened 2026-10-26 rule requires an explicit backend parameter in every shared localhost link.
 - 2026-10-23: Built/GDI survey overlays start Off; when shown, use a faint fill with a contrasting border instead of opaque purple footprints.
 
 - 2026-10-23: Remove the experimental Atlas parcel-study editor from the UI, including its entry point and link/draft restoration; retain Permitted envelope inspection and calculations.
@@ -919,8 +929,83 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-24: The user approved named plans as immutable selections of published designs plus a map view, saved from Designs → Share; agreements alone retain allocation and decision terms. Use “Name this plan” for the action.
 
 - 2026-10-24: MCP directory promotion is free only; publish the existing hosted identity `xyz.urbangametheory/urban-game-theory` and never purchase listings, boosts or subscriptions.
+- 2026-10-25: OpenAI MCP submission remains deferred; after confirming Claude submitted, the user resumed free Chinese directory submissions.
 
 - 2026-10-24: Design geometry must never travel in URLs. Private previews reference individual stored objects, and named plans contain design CIDs plus a saved view; combined design geometry must not consume a plan-level size budget.
+- 2026-10-24: Affordabot tries another configured city when its priority city cannot supply eligible parcels/candidates; retain source failures and do not report a clean no-picks result after an exhausted search with errors.
+- 2026-10-25: Parcel source checks download only bounded inputs on demand and delete raw downloads/extractions after each turn or stage, including failure/interruption; queued cities must not retain bulk datasets.
 
-- 2026-10-25: Camera flights are independent immutable presentations of published designs, with metric positions, absolute-time orientation keys and saved interior snapshots; free flight ignores collisions and playback starts explicitly.
+- 2026-10-25: Model 3D selections retain the camera and composition; volume outlines identify buildings, while hatched ground designs and unfilled parcel boundaries distinguish design intent from coincident land.
+
+- 2026-10-25: Descriptive city labels must not gate design import, reconstruction or rendering; authored geography and actual cadastral source dependencies determine the required ground context.
+
+- 2026-10-25 (SUPERSEDED): Each map tab owns an independent durable workspace; reload restores it, while new or duplicated tabs fork saved work, preventing cross-tab overwrites and replacing secondary-tab recovery mode.
+
+- 2026-10-25: Keep one saved map workspace per browser profile with one editable tab; extra tabs wait, closing preserves the workspace, and automatic or optional independent copies are disabled.
+
+- 2026-10-26: Design sections prominently identify authored type with a colored icon pill; peer selectors name the object being inspected and explain why several designs appear together.
+
+- 2026-10-26: Public vocabulary is Plans, Designs and Agreements. Each Agreement references one immutable Plan revision; Plans own design membership, can have multiple Agreements or none, and bets remain on eligible Agreements. Agreement links belong inside Plan click-stack sections and open separate dialogs.
+
+- 2026-10-26: Model and Google 3D share selection and inspection behaviour; retire the separate photo cadastral picker while retaining boundary drawing as an independent layer.
+
+- 2026-10-26: Every change to human editing requires an MCP parity check; use shared authoring code and granular tools, and record evidence even when no MCP change is needed.
+
+- 2026-10-26: Enable Permitted for configured US cities using available public Atlas releases first; per-city entries may share a regional adapter URL. Licensed access is being located separately, and broader rule interpretation follows after this usable baseline.
+
+- 2026-10-26: Research existing international zoning/spatial-plan standards before designing a common executable rule model; LADM and INSPIRE provide relevant foundations, while a new core schema remains undecided.
+
+- 2026-10-26: Build Atlas envelope support incrementally, beginning with simple bounds from available setbacks, then adding height and other constraints; expand region by region. Use measured rule-field distributions to choose the next supported cases.
+
+- 2026-10-26: Freeform drags move only the active building footprint; surroundings stay anchored, and the old in-editor building duplication and numbered picker are retired.
+
+- 2026-10-27: Added Arabic, French and Portuguese UI dictionaries through selected-language loading; Arabic sets RTL and Gregorian regional formatting, and saved-plan/MCP validation accepts the same language set so localized plans remain shareable.
+
+- 2026-10-27: Freeform whole-parcel surroundings require building overlap; moving the last building away releases that parcel and restores its source state, because standalone parcel paving is not offered.
+
+- 2026-10-27: Agreements select an existing exact plan and never compose designs; four tabs separate rules, input parcels, single-recipient output parcels and read-only person totals, with scheme-controlled area compensation and abstract parcel-owner parties.
+
+- 2026-10-27: Plan creation is local composition; Share design and Share plan publish exact separate revisions, Add to plan reviews a new snapshot, and agreements are created from a saved plan in their own flow.
+
+- 2026-10-27: Output parcels supports proposer acquisition without prior input ownership, with all-Proposer/all-Public bulk allocation or individual recipients; scheme-derived compensation is funded through the balancing sponsor.
+
+- 2026-10-27: Agreement authoring blocks map and unrelated controls until Create/Cancel; its shared striped Lens button edits the same persistent preference as agent details, while agreements retain individual lens snapshots.
+
+- 2026-10-27: Creating an agreement from a Plan click-stack section preserves that caller on close/cancel and returns there after creation, refreshing its agreement list rather than opening another dock.
+
+- 2026-10-27: Agreements appears above Plans in both click stacks and is scoped to the selected exact Plan revision; agreement-details Plan buttons inspect that revision in place without navigation, workspace application or camera movement.
+
+- 2026-10-27: Click stacks display the selected level and its nearest available neighbours, omit raw coordinates, and host full Agreement properties in the expanded section so inspection needs only one surface.
+
+- 2026-10-27: Community voting uses reusable random codes assigned and distributed by a trusted organiser; personal assignments stay in local browser/files, and immutable agreement verifiers fix eligibility. Adding or replacing codes requires a new agreement with separate votes. Code holders may change votes and inspect every change; server-side guessing limits supplement code entropy.
+
+- The Lists panel has Designs, Plans and Agreements with shared scope/filters; deletion belongs in those lists, while design apply/unapply remains a map operation. Plan creation uses an explicit checkbox selection mode and agreement creation starts from a selected plan.
+
+- 2026-10-27: Desktop navigation and messaging retain their viewport anchors; the click stack uses bottom-row space when clear and shortens only where it would overlap visible controls.
+
+- 2026-10-27: Finishing plan creation or saving a plan revision opens that exact snapshot in the current view's Plan click-stack section instead of the small action dialog.
+
+- 2026-10-27: Agreement properties use tabs inside the click stack; spatial rows preview on hover and frame on click, and parallel action buttons divide their row equally. Design parcel counts name source cadastre, while displayed formed land excludes leftover remainders.
+- 2026-10-27: Existing buildings are baseline context rather than Plan members; their stack shows the building and cadastral parcel, with explicit design impacts linked separately.
+- 2026-10-27: Right-side map panels share the click stack's 400px desktop column and right-screen-panel styling contract; content that needs more width belongs in a centred or full-screen surface.
+- 2026-10-27: Settings shows the running deployed build and offers an update check; visible tabs poll for newer deployments and offer Reload/Later, with explicit reload blocked during editing or busy work.
+- 2026-10-27: Settings keeps the logo, app name and AI-friendly badge in one fixed top row, with direct Appearance, Data & assumptions and Help & about sections, one collapsed Advanced group and a persistent build/update footer.
+
+- 2026-10-27: User preview links keep normal motion; do not add `reduceMotion` unless explicitly requested. Test-only animation overrides must not leak into shared links because reduced motion also hides 3D people and traffic.
+
+- 2026-10-28: 3D immersion decisions: add a real sky; lit windows at night and vehicle headlights yes; no seasons for now; street lamps are placed street furniture, never auto-scattered. Walk/fly cameras are approved in principle: measured at eye level they draw 3–10× fewer calls than the orbit view, with three guards required (shadow box fixed around the camera with hysteresis, movement bounded to the loaded disc with fog at its edge, batching of per-building meshes first).
+- 2026-10-28: Parks, squares and lakes may carry an uploaded GLB (`structureProposal.modelUrl/modelName/rotation/source`), stretched onto the site polygon like building models; roads import GeoJSON centrelines; MCP import tools gain `kind` so spaces can be created from models and polygons.
+- 2026-10-28: City configurations live in `frontend/data/city-configs.js` (source of truth, never loaded by the browser); `scripts/build-city-files.mjs --run` generates the committed `data/city-index.js` (every city, light) and `data/cities/<id>.js` (one city, full), and a page loads only the index plus its own city. Rationale: the inline 2.7 MB literal cost every visitor 205 KB gzipped and a parse-time build of 1,992 objects for one city.
+- 2026-10-28: Agreement schemes are enforced, not described: one shared `AgreementRecord.settlementIssues` (dialog, HTTP, MCP) checks caps, basis, party count and proposer rules; settlement by value (`valuation` per parcel and piece, value-share entitlement, scheme-set value-gain share) joins settlement by area. Scheme rule changes add a new dated version beside the old one.
+- 2026-10-28: Parks and squares assign one uploaded GLB per furniture kind (`decorationDesign.models`), have a placed `lamp` kind that glows at night (faked glow, no lights) and market stalls with coloured canopies on both; all furniture is instanced per structure. Realistic trees (CC0 low-poly species, nearest-N tier) proposed, not decided.
+- 2026-10-28: The click stack moves the camera only on request: scene clicks and header switches keep it; an object opened from a list or link is framed only when out of view or too small (`framingNeeded`); every expanded card with a shape has a Focus button (2D and model view) that always frames it.
+- 2026-10-28: The Urban rooster scores applied plans only, read from the live fabric (`GrainScoreRules.appliedPlanGround`); no server binding, no headless replay. Plan stats is the opposite on purpose: it measures unapplied plans (`PlanAnalysis` headless replay, a local member on its own declared parcels) so plans that cannot be applied together compare in the Compare plans dialog.
+- 2026-10-28: Plans compare against a Present state column (existing buildings as freeform buildings on a chosen plan's land). Public land = roads + OpenStreetMap parks and squares (our server's Overpass chain `/osm-public-spaces` first, public Overpass from the browser as fallback; user-approved server dependency) + design corridors/parks/squares/lakes; private = the rest; semi-private undefined yet. Plans count remaining existing buildings (not cleared by their designs) beside new ones.
+- 2026-10-28: Any edit of a published road, including a junction another road makes with it, is a new version (a revision naming it by CID that replaces it on the map); an unpublished road is edited in place (`reviseRoadForJunction`, user rule: roads behave like every other design).
+- 2026-10-28: Rails sharing a street with traffic lanes are not held to the track radius target; they follow the street's curves in their place in the profile (user decision: tram turns across lanes are not modelled). Only rail-only corridors with a picked target are reviewed.
+- 2026-10-28: the click stack (2D and 3D) is built from the selected object outward through its own references (`click-stack-neighbours.js`); clicks never cycle sections, a click selects the topmost object under it. Why: the user found cycling confusing and plan-opened stacks never reached parcels.
+- 2026-10-28: the model view compares two states side by side (Compare tab of Buildings and massing, `three-compare.js`): any of Built today, Permitted, Proposed, one design or one plan per side. Photo mode parked.
+- 2026-10-28: Every repo-level document lives in `docs/` (56 root `.md` files moved there; only `readme.md`, `AGENTS.md` and `MEMORY.md` stay in the root because tooling reads them there). The corridor levels plan is `docs/corridor-levels-plan.md`, next to its design of record `docs/corridor-elevation.md`.
+
+- 2026-10-25: Camera flights are independent immutable presentations of published designs, with metric positions, views that own their orientation, looks between views and saved interior snapshots; free flight ignores collisions and playback starts explicitly.
 - 2026-10-25: The shared interior viewer has one maintained package and generated artifacts for both consumers, using caller-owned Three.js and scene hooks; apartment walking loads only when requested.

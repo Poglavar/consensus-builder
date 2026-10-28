@@ -33,7 +33,8 @@ export function decisionRuleOf(rule) {
 // deliberately omitted where a predicate is shared; RDF domains infer types, not input validation.
 const classes = [
     ['Design', 'Published design', 'One authored change (a road, a park, a parcel layout, an urban rule, a building), identified by the CID of its canonical content. Its existence does not assert construction, ownership or legal approval.', ['schema:CreativeWork', 'prov:Entity']],
-    ['Agreement', 'Published agreement', 'A set of designs plus a decision rule, with optional allocations and money, identified by the CID of its canonical content, which names its designs by their CIDs. Its existence does not assert consent, execution or legal approval.', ['schema:CreativeWork', 'prov:Entity']],
+    ['Agreement', 'Published agreement', 'An arrangement with a decision rule, optional allocations and money, identified by the CID of its canonical content and linked to one exact plan. Its existence does not assert consent, execution or legal approval.', ['schema:CreativeWork', 'prov:Entity']],
+    ['Plan', 'Published plan', 'An immutable selection of designs and a saved map view, identified by the CID of its canonical content.', ['schema:CreativeWork', 'prov:Entity']],
     ['DesignSite', 'Design site', 'The geographic extent authored as the design site. It is not a legal cadastral parcel or an assertion of a constructed project.', ['geo:Feature']],
     ['CadastreReference', 'Declared cadastral reference', 'A cadastral identifier an agreement names as its input land. This node is scoped to the agreement; it does not establish cross-provider parcel identity.', ['prov:Entity']]
 ];
@@ -43,7 +44,7 @@ const properties = [
     ['declaredGoal', 'Declared design goal', 'The exact design-goal string carried by the design, including unclassified values.', 'xsd:string'],
     ['designGoal', 'Design-goal concept', 'An exact match to the current design-goal concept scheme; not a physical-object classification.', 'skos:Concept'],
     ['site', 'Authored site', 'The geographic site declared by this design.', 'cb:DesignSite'],
-    ['designs', 'Designs', 'An RDF list of the designs the agreement includes, by CID, in authored order.', 'rdf:List'],
+    ['plan', 'Plan', 'The exact plan whose design selection the agreement settles.', 'cb:Plan'],
     ['decisionRule', 'Decision rule', 'Who decides the agreement and whether the decision binds, as its content states it.', 'skos:Concept'],
     ['agreementDeadline', 'Agreement deadline', 'The deadline carried by the agreement. It does not promise a settlement or construction time.', 'xsd:dateTime'],
     ['cadastreReference', 'Declared cadastral reference', 'An agreement-scoped declaration of a cadastral identifier of its input land.', 'cb:CadastreReference'],

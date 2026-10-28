@@ -6,6 +6,7 @@
 //
 // API (window.WorldEntry)
 //   open(opts) -> Promise    opts: { closable?: false, focus: { lat, lon, zoom? } | Place }
+//   reportOpenFailure(error)    shared warning for controls that call open
 //   ownsBoot() -> boolean    true while a first-visit globe is (about to be) open; an explicitly
 //                            requested intro waits for 'worldview:landed' instead of stacking on it
 //   explorePlaceName() -> string   the explored place for the city chip ('' until known)
@@ -44,7 +45,7 @@
 
     function reportOpenFailure(error) {
         console.error(`[${new Date().toISOString()}] [world-entry] world view failed to open`, error);
-        global.showEphemeralMessage?.(t('world.openFailed', 'World view could not start. Check your browser’s graphics support and try again. You can keep using the map.'), 8000, 'warning');
+        global.showEphemeralMessage?.(t('world.openFailed', 'World view could not start. You can keep using the 2D map and search for another city.'), 8000, 'warning');
     }
 
     function landed(reason) {
@@ -257,7 +258,7 @@
                 doc.body.classList.remove('world-view-pending');
             }, error => {
                 doc.body.classList.remove('world-view-pending');
-                console.error(`[${new Date().toISOString()}] [world-entry] the world view failed to open; staying in ${m.getCurrentCityId()}`, error);
+                reportOpenFailure(error);
                 landed('globe failed');
             });
         };
@@ -347,7 +348,7 @@
         banner.textContent = '';
         const place = state.explorePlace;
         banner.appendChild(el('p', 'explore-banner__text', {
-            text: t('world.explore.banner', 'No parcels here: you can draw a site and propose, but a proposal can only execute through an authority\'s verdict.')
+                text: t('world.explore.banner', 'No parcels here: you can draw a site and propose a design, but it can take effect only through an agreement approved by an authority.')
         }));
         // The actions are the shared small buttons (css/primitives.css), Ask the one primary.
         const actions = el('div', 'explore-banner__actions');
@@ -405,15 +406,6 @@
         });
     }
 
-    function wireSettingsButton() {
-        const button = doc.getElementById('world-view-button');
-        if (!button) return;
-        button.addEventListener('click', () => {
-            global.BusyControl.track(button, () => open({}))
-                .catch(reportOpenFailure);
-        });
-    }
-
     // Arm only on native map inputs. Leaflet emits zoomend for boot fitBounds, route cameras and
     // proposal previews too, so zoom direction alone cannot decide whether to open the globe.
     function wireZoomOutToGlobe() {
@@ -454,6 +446,7 @@
 
     global.WorldEntry = {
         open,
+        reportOpenFailure,
         // Only an explicit arrival view belongs to a shared link. map-core later writes the
         // remembered local view into ?at=, which must not stop the link framing its own designs.
         arrivalMapView: () => Model.parseAt(new URLSearchParams(entryLocation.search).get('at')),
@@ -472,6 +465,4 @@
         ? global.whenAppBooted()
         : new Promise(resolve => global.addEventListener('appBooted', resolve, { once: true }));
     booted.then(wireZoomOutToGlobe);
-    if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', wireSettingsButton, { once: true });
-    else wireSettingsButton();
 })(window);

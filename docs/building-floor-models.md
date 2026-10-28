@@ -28,7 +28,7 @@ street-facing facade, two apartments per core, blind party walls, one core per ~
 sources of `kind: 'generated'`; the validator accepts such sources only inside a suggested model, the
 renderer draws them in a cooler palette, and `prepareFloorModel` refuses to store them. A slice whose
 footprint cannot hold the minimum core is painted red instead. Design, parameters and their regulatory
-basis: [`floor-plans.md`](../floor-plans.md).
+basis: [`floor-plans.md`](floor-plans.md).
 
 ## Read paths
 

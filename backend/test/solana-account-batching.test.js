@@ -4,11 +4,17 @@
 import { createRequire } from 'node:module';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Keypair, PublicKey } from '@solana/web3.js';
-import { createHash } from 'node:crypto';
+import { agreementAccountInfo } from './fixtures/agreement-account.js';
+import { MARKET_LIQUIDITY, MARKET_GRACE_SECONDS } from '../markets/agreement-source.js';
 import { DEVNET_GENESIS_HASH, AGREEMENT_PROGRAM_ID, createAgreementChain } from '../agreements/onchain.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 
-const MARKET_PROGRAM_ID = createRequire(import.meta.url)('../../frontend/js/solana/market-client.js').constants.PROGRAM_ID;
+const require = createRequire(import.meta.url);
+const lmsrClient = require('../../frontend/js/solana/lmsr-client.js').configure({ web3: require('@solana/web3.js') });
+const lmsr = require('../../frontend/js/bets/lmsr.js');
+const MARKET_PROGRAM_ID = lmsrClient.constants.PROGRAM_ID;
+const CID = 'bafy-test-agreement';
+const DEADLINE = 1900000000;
 
 const { rpcCalls, rpcState } = vi.hoisted(() => ({ rpcCalls: [], rpcState: {} }));
 
@@ -23,7 +29,7 @@ vi.mock('@solana/web3.js', async (importOriginal) => {
 
             async getMultipleAccountsInfo(addresses, commitment) {
                 rpcCalls.push({ addresses: [...addresses], commitment });
-                return addresses.map(() => rpcState.accountInfo || null);
+                return addresses.map(address => rpcState.accounts?.get(address.toBase58()) || null);
             }
         }
     };
@@ -32,20 +38,39 @@ vi.mock('@solana/web3.js', async (importOriginal) => {
 const { defaultMarketReader, DEVNET_USDC_MINT } = await import('../routes/markets.js');
 const { readAccounts: readSocietyAccounts } = await import('../agents/society-run.mjs');
 
-function marketInfo(proposal, stakeMint = DEVNET_USDC_MINT) {
-    const data = Buffer.alloc(123);
-    createHash('sha256').update('account:Market').digest().copy(data, 0, 0, 8);
-    new PublicKey(proposal).toBuffer().copy(data, 8);
-    new PublicKey(stakeMint).toBuffer().copy(data, 40);
-    new PublicKey(MARKET_PROGRAM_ID).toBuffer().copy(data, 72);
+function marketInfo({ proposal, creator, stakeMint = DEVNET_USDC_MINT, liquidity = MARKET_LIQUIDITY, deadline = DEADLINE, grace = MARKET_GRACE_SECONDS, seed = lmsr.maxLoss(BigInt(MARKET_LIQUIDITY)) }) {
+    const data = Buffer.alloc(496);
+    Buffer.from(lmsrClient.ACCOUNT_DISCRIMINATORS.LmsrMarket).copy(data);
+    new PublicKey(proposal).toBuffer().copy(data, 9);
+    new PublicKey(creator).toBuffer().copy(data, 41);
+    new PublicKey(stakeMint).toBuffer().copy(data, 73);
+    data.writeBigUInt64LE(BigInt(liquidity), 137);
+    data.writeBigUInt64LE(BigInt(seed), 161);
+    data.writeBigInt64LE(BigInt(deadline), 169);
+    data.writeUInt32LE(grace, 177);
     return { owner: new PublicKey(MARKET_PROGRAM_ID), data };
+}
+
+function indexedAgreement(account) {
+    return { account, sponsor: Keypair.generate().publicKey.toBase58(), cid: CID };
+}
+
+function setAgreement(agreement, fields = {}) {
+    rpcState.accounts.set(agreement.account, agreementAccountInfo({ cid: agreement.cid, authority: agreement.sponsor, deadline: DEADLINE, ...fields }));
+}
+
+function setMarket(agreement, info) {
+    const address = lmsrClient.getMarketPda(agreement.account, agreement.sponsor)[0].toBase58();
+    const mint = new PublicKey(info.data.subarray(73, 105));
+    lmsrClient.getVaultAddress(new PublicKey(address), mint).toBuffer().copy(info.data, 105);
+    rpcState.accounts.set(address, info);
 }
 
 describe('Solana account batching', () => {
     beforeEach(() => {
         rpcCalls.length = 0;
         rpcState.genesisHash = DEVNET_GENESIS_HASH;
-        rpcState.accountInfo = null;
+        rpcState.accounts = new Map();
     });
 
     it('defaults to 100 and validates configured limits from 1 through 100', () => {
@@ -93,9 +118,11 @@ describe('Solana account batching', () => {
         const accounts = Array.from({ length: 12 }, () => Keypair.generate().publicKey.toBase58());
         const reader = defaultMarketReader({ SOLANA_RPC_MAX_ACCOUNTS: '5', SOLANA_RPC_URL: 'https://rpc.invalid' });
 
-        const pools = await reader(accounts);
+        const agreements = accounts.map(indexedAgreement);
+        agreements.forEach(agreement => setAgreement(agreement));
+        const pools = await reader(accounts, agreements);
 
-        expect(rpcCalls.map(({ addresses }) => addresses.length)).toEqual([5, 5, 2]);
+        expect(rpcCalls.map(({ addresses }) => addresses.length)).toEqual([5, 5, 5, 5, 4]);
         expect(rpcCalls.every(({ commitment }) => commitment === 'confirmed')).toBe(true);
         expect([...pools.keys()]).toEqual(accounts);
         expect([...pools.values()].every(entry => entry.market === null)).toBe(true);
@@ -125,20 +152,41 @@ describe('Solana account batching', () => {
         await expect(createAgreementChain({ connection, env: { SOLANA_RPC_MAX_ACCOUNTS: '101' } }).readAccounts(accounts)).rejects.toThrow(/SOLANA_RPC_MAX_ACCOUNTS/);
     });
 
-    it('verifies the market program, subject and stake mint before exposing a pool', async () => {
+    it('requires an indexed sponsor before reading accounts', async () => {
+        const account = Keypair.generate().publicKey.toBase58();
+        const read = defaultMarketReader({ SOLANA_RPC_URL: 'https://rpc.invalid' });
+        await expect(read([account], [{ account, cid: CID }])).rejects.toThrow('indexed agreement sponsor');
+        expect(rpcCalls).toEqual([]);
+    });
+
+    it('verifies agreement identity and canonical market terms before exposing a pool', async () => {
         const account = Keypair.generate().publicKey.toBase58();
         const other = Keypair.generate().publicKey.toBase58();
+        const agreement = indexedAgreement(account);
         const read = defaultMarketReader({ SOLANA_RPC_URL: 'https://rpc.invalid' });
-        for (const info of [
-            { ...marketInfo(account), owner: new PublicKey(AGREEMENT_PROGRAM_ID) },
-            marketInfo(other), marketInfo(account, other)
-        ]) {
-            rpcState.accountInfo = info;
-            await expect(read([account])).rejects.toThrow(/Unexpected market account program|different subject or stake mint/);
+        const valid = { proposal: account, creator: agreement.sponsor };
+        setAgreement(agreement);
+        setMarket(agreement, marketInfo(valid));
+        expect((await read([account], [agreement])).get(account).market)
+            .toMatchObject({ proposal: account, creator: agreement.sponsor, stakeMint: DEVNET_USDC_MINT });
+
+        for (const fields of [{ cid: 'different-cid' }, { authority: other }, { status: 255 }]) {
+            setAgreement(agreement, fields);
+            await expect(read([account], [agreement])).rejects.toThrow(/Agreement account identity or status differs/);
         }
-        rpcState.accountInfo = marketInfo(account);
-        const accepted = await read([account]);
-        expect(accepted.get(account).market).toMatchObject({ proposal: account, stakeMint: DEVNET_USDC_MINT });
+        setAgreement(agreement);
+        for (const info of [
+            { ...marketInfo(valid), owner: new PublicKey(AGREEMENT_PROGRAM_ID) },
+            marketInfo({ ...valid, proposal: other }),
+            marketInfo({ ...valid, creator: other }),
+            marketInfo({ ...valid, stakeMint: other }),
+            marketInfo({ ...valid, deadline: DEADLINE + 1 }),
+            marketInfo({ ...valid, liquidity: '100000001' }),
+            marketInfo({ ...valid, seed: 1 })
+        ]) {
+            setMarket(agreement, info);
+            await expect(read([account], [agreement])).rejects.toThrow(/Unexpected market account program|market address does not match|terms differ/);
+        }
     });
 
     it('uses the configured bound in the society runner', async () => {

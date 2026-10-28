@@ -2,9 +2,11 @@
 import { createRequire } from 'node:module';
 import { appTurf as turf, intentEditing } from './mcp-geometry.js';
 import { cidOfObject, designObject } from './agreement-objects.js';
+import { validateTrackDesign } from './mcp-constructors.js';
 const require = createRequire(import.meta.url);
 const layoutValidation = require('../../frontend/js/parcel-layout-validation.js');
 const goals = require('../../frontend/js/proposals/design-goals.js');
+const FurnitureModels = require('../../frontend/js/furniture-models.js');
 const forbidden = new Set(['__proto__', 'prototype', 'constructor']);
 const protectedFields = new Set(['schema', 'origin', 'authoredAt']);
 const fail = (code, message) => { throw Object.assign(new Error(message), { code }); };
@@ -113,13 +115,48 @@ function validatePayload(record) {
     }
 }
 
+// Per-kind furniture models, lamps and market stalls on a park or square, normalized by the same shared rules the
+// site uses (frontend/js/furniture-models.js), so a patched record equals one the structure editor saves.
+// A model kind or lamp the structure does not offer is refused rather than silently dropped.
+const furniturePoint = point => Array.isArray(point) && point.length >= 2 && point.slice(0, 2).every(Number.isFinite)
+    && Math.abs(point[0]) <= 180 && Math.abs(point[1]) <= 90 ? [point[0], point[1]] : null;
+export function normalizeSpaceFurniture(record) {
+    const space = record?.structureProposal, decorations = space?.decorationDesign;
+    if (!decorations || typeof decorations !== 'object') return record;
+    const allowed = FurnitureModels.kindsFor(space.kind);
+    const refuse = kind => fail('furniture-kind-not-allowed', `A ${space.kind} has no ${kind} furniture; use one of: ${allowed.join(', ') || 'none'}.`);
+    if (Object.hasOwn(decorations, 'models')) {
+        const models = decorations.models;
+        if (!models || typeof models !== 'object' || Array.isArray(models)) fail('invalid-decoration', 'decorationDesign.models maps a furniture kind to {url, name}.');
+        for (const kind of Object.keys(models)) if (!allowed.includes(kind)) refuse(kind);
+        const normalized = FurnitureModels.normalizeModels(models, space.kind);
+        if (Object.keys(models).length !== Object.keys(normalized || {}).length) fail('invalid-decoration', 'Each decorationDesign.models entry needs a url string; upload the asset with ugt_import_model kind furniture.');
+        if (normalized) decorations.models = normalized; else delete decorations.models;
+    }
+    // Lamps {coordinate, bearing} and stalls {coordinate, bearing, color?}; an invalid stall colour is dropped.
+    for (const [key, kind, normalize] of [['lamps', 'lamp', FurnitureModels.normalizeLamps], ['stalls', 'stall', FurnitureModels.normalizeStalls]]) {
+        if (!Object.hasOwn(decorations, key)) continue;
+        if (!allowed.includes(kind)) refuse(kind);
+        if (!Array.isArray(decorations[key])) fail('invalid-decoration', `${key} must be an array.`);
+        const items = normalize(decorations[key], furniturePoint);
+        if (items.length !== decorations[key].length) fail('invalid-decoration', `A ${kind} needs coordinate [longitude, latitude] and an optional bearing in degrees.`);
+        decorations[key] = items;
+    }
+    return record;
+}
+
 export function editedDesign(original, expectedCid, edits) {
-    if (cidOfObject(original) !== expectedCid) fail('design-revision-mismatch', 'Inspect the intended design revision before editing.');
+    const currentCid = cidOfObject(original);
+    if (currentCid !== expectedCid) throw Object.assign(new Error('Inspect the intended design revision before editing.'), {
+        code: 'design-revision-mismatch', currentCid, expectedCid,
+        next: { tool: 'ugt_inspect_design', arguments: { design: currentCid }, action: 'Inspect the original reference and retry with its currentCid; retain a private draftRef for unpublished designs.' } });
     const draft = patchDocument(original, edits);
     safeValue(draft);
     validatePayload(draft);
     validateGeometryTree(draft);
     intentEditing.reconcile(draft, original, edits, turf);
+    normalizeSpaceFurniture(draft);
+    validateTrackDesign(draft, original);
     validateGeometryTree(draft);
     if (draft.parcelLayout) {
         const result = layoutValidation.validate(draft.parcelLayout, { turf, site: draft.site });

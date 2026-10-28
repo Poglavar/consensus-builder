@@ -10,12 +10,15 @@ const require = createRequire(import.meta.url);
 const record = require('../../frontend/js/agreement-record.js');
 const approval = require('../../frontend/js/proposals/approval.js');
 const Cid = require('../../frontend/js/cid.js');
+const PlanRecord = require('../../frontend/js/plan-record.js');
 
 const sha256 = text => createHash('sha256').update(text).digest('hex');
 // The designs' CIDs as a published agreement links them, and the lens member that verifies owners.
 const LAYOUT_CID = Cid.cidOfObject({ schema: 'design/v1', goal: 'parcel-layout', title: 'Lay out block seven' });
 const ROAD_CID = Cid.cidOfObject({ schema: 'design/v1', goal: 'road', title: 'Draw road' });
 const MEMBER = 'lens-member-1';
+const PLAN_CONTENT = PlanRecord.create('Block seven', [LAYOUT_CID, ROAD_CID], { at: '45.8,15.96,16', mode: '2d' });
+const PLAN = { cid: Cid.cidOfObject(PLAN_CONTENT), content: PLAN_CONTENT };
 // Rectangles in units of 1e-3 degree from the test origin.
 function rect(x0, y0, x1, y1) {
     const LON = 15.96, LAT = 45.8;
@@ -44,9 +47,10 @@ function fixture() {
         output('k9-p2', rect(1, 0, 3, 2), 700, ['k9', 'k10'], [ana(0.6), boris(0.1), cyril(0.3)]),
         output('road-1#1', rect(0, 2, 5, 2.2), 400, ['k9', 'k10'], [], { producedBy: 'road-1', role: 'corridor' })
     ];
-    return {
+    const raw = {
         schema: 'agreement/v1', id: 'ag-test', title: 'Block seven', city: 'test-city',
         createdAt: '2026-10-21T10:00:00.000Z', updatedAt: '2026-10-21T10:00:00.000Z',
+        plan: { cid: PLAN.cid, content: JSON.parse(JSON.stringify(PLAN_CONTENT)) },
         designs: [
             { proposalId: 'layout-1', title: 'Lay out block seven', goal: 'parcel-layout', cid: LAYOUT_CID },
             { proposalId: 'road-1', title: 'Draw road', goal: 'road', cid: ROAD_CID }
@@ -54,6 +58,7 @@ function fixture() {
         inputs,
         outputs,
         allocations: [
+            { output: outputs[0].hash, to: { kind: 'party', ownerKey: 'agent-ana' } },
             { output: outputs[1].hash, to: { kind: 'party', ownerKey: 'agent-cyril' } },
             { output: outputs[2].hash, to: { kind: 'public' } }
         ],
@@ -66,11 +71,12 @@ function fixture() {
             ]
         },
         rule: {
-            electorate: 'owners', binding: true, lens: [MEMBER],
+            electorate: 'owners', binding: true, lens: [MEMBER], settlement: { method: 'area', rateCentsPerM2: 100, contributionBasisPoints: 0 },
             approvalConfig: { schema: 'proposal-approval/v1', rights: record.rightsFromInputs(inputs), policy: { type: 'unanimous' } }
         },
         deadline: null
     };
+    return record.settle(raw);
 }
 const codes = list => list.map(row => row.code);
 const thrownCode = fn => { try { fn(); } catch (error) { return error.code; } return null; };
@@ -121,7 +127,8 @@ describe('normalize', () => {
         const once = record.normalize(fixture());
         expect(once.schema).toBe('agreement/v1');
         expect(once.designs.map(design => design.proposalId)).toEqual(['layout-1', 'road-1']);
-        expect(once.allocations).toHaveLength(2);
+        expect(once.plan).toEqual(PLAN);
+        expect(once.allocations).toHaveLength(3);
         expect(record.normalize(once)).toEqual(once);
     });
 
@@ -132,7 +139,6 @@ describe('normalize', () => {
         raw.outputs[0].geometry.coordinates[0][1] = [raw.outputs[0].geometry.coordinates[0][1][0] + 4e-9, raw.outputs[0].geometry.coordinates[0][1][1]];
         raw.outputs[0].hash = record.outputHash(raw.outputs[0].geometry);
         raw.outputs[0].holders = [{ ownerKey: ' agent-ana ', share: 1 }];
-        raw.allocations.push({ output: raw.outputs[0].hash, to: { kind: 'holders' } });
         raw.money.lines.push({ ownerKey: 'agent-dora', amountCents: 0 });
         raw.money.currency = 'eur';
         const result = record.normalize(raw);
@@ -140,7 +146,7 @@ describe('normalize', () => {
         expect(result.deadline).toBe('2026-12-31T00:00:00.000Z');
         expect(result.outputs[0].geometry).toEqual(rect(0, 0, 1, 2));
         expect(result.outputs[0].holders).toEqual([{ ownerKey: 'agent-ana', displayName: 'agent-ana', share: 1 }]);
-        expect(result.allocations.map(line => line.to.kind)).toEqual(['party', 'public']);
+        expect(result.allocations.map(line => line.to.kind)).toEqual(['party', 'party', 'public']);
         expect(result.money).toEqual({ currency: 'EUR', lines: fixture().money.lines });
     });
 
@@ -156,6 +162,8 @@ describe('normalize', () => {
             raw => { raw.allocations[0].to = { kind: 'auction' }; },
             raw => { raw.money.lines.push({ ownerKey: 'agent-ana', amountCents: 5 }); },
             raw => { delete raw.rule; },
+            raw => { raw.plan.cid = LAYOUT_CID; },
+            raw => { raw.plan.content.designCids = [LAYOUT_CID]; },
             raw => { raw.createdAt = 'yesterday'; }
         ];
         broken.forEach(breakIt => {
@@ -167,6 +175,16 @@ describe('normalize', () => {
         mismatched.outputs[0].geometry.coordinates[0][1][0] += 1e-5;
         expect(() => record.normalize(mismatched)).toThrow(/does not match its geometry/);
     });
+
+    it('accepts a missing plan only on a draft and checks its CID and immutable content', () => {
+        const draft = fixture();
+        draft.plan = null;
+        expect(record.normalize(draft).plan).toBeNull();
+        for (const plan of [{ cid: 'c2-nope', content: PLAN_CONTENT },
+            { cid: PLAN.cid, content: { ...PLAN_CONTENT, title: 'Changed' } }]) {
+            expect(thrownCode(() => record.normalize({ ...fixture(), plan } ) )).toBe('invalid-agreement');
+        }
+    });
 });
 
 describe('validate', () => {
@@ -177,7 +195,7 @@ describe('validate', () => {
     it('needs designs, and with designOf/isApplied every one applied', () => {
         const empty = record.validate({ ...fixture(), designs: [] });
         expect(empty.valid).toBe(false);
-        expect(empty.errors).toEqual([expect.objectContaining({ code: 'no-designs', section: 'designs' })]);
+        expect(codes(empty.errors)).toEqual(['no-designs', 'plan-membership']);
 
         const options = {
             designOf: id => id === 'road-1' ? null : { proposalId: id, applied: false },
@@ -192,46 +210,29 @@ describe('validate', () => {
     });
 
     it('needs land, and warns about open ground', () => {
-        const bare = { ...fixture(), inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'EUR', lines: [] } };
+        const bare = { ...fixture(), plan: null, inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'EUR', lines: [] } };
         const result = record.validate(bare);
-        expect(result.errors).toEqual([expect.objectContaining({ code: 'no-inputs', section: 'land' })]);
+        expect(codes(result.errors)).toEqual(['plan-required', 'no-inputs']);
         expect(result.warnings).toEqual([expect.objectContaining({ code: 'rule-not-ready', section: 'rule', reason: 'missing-parcels' })]);
 
         const open = record.validate({ ...bare, inputs: { parcels: [], openGroundM2: 250 } });
-        expect(codes(open.errors)).toEqual([]);
+        expect(codes(open.errors)).toEqual(['plan-required', 'land-unbalanced']);
         expect(codes(open.warnings)).toEqual(['open-ground', 'rule-not-ready']);
         expect(open.warnings[0].section).toBe('land');
     });
 
-    it('checks every allocation against the outputs, the land\'s parties and the joint shares', () => {
+    it('checks explicit allocations against outputs and input parties', () => {
         const raw = fixture();
-        const [first, second] = raw.outputs;
-        raw.allocations = [
-            { output: `piece1-sha256:${'0'.repeat(64)}`, to: { kind: 'public' } },
-            { output: first.hash, to: { kind: 'party', ownerKey: 'agent-zoran' } },
-            { output: second.hash, to: { kind: 'joint', shares: [{ ownerKey: 'agent-ana', share: 0.5 }, { ownerKey: 'agent-zoran', share: 0.5 }] } }
-        ];
-        const result = record.validate(raw);
+        raw.allocations = raw.allocations.map((line, index) => index === 0
+            ? { output: `piece1-sha256:${'0'.repeat(64)}`, to: { kind: 'public' } }
+            : index === 1 ? { ...line, to: { kind: 'party', ownerKey: 'agent-zoran' } } : line);
+        const result = record.validate(record.settle(raw));
         expect(result.errors.map(error => [error.code, error.section, error.ownerKey])).toEqual([
+            ['allocation-required', 'allocation', undefined],
             ['allocation-unknown-output', 'allocation', undefined],
             ['allocation-unknown-party', 'allocation', 'agent-zoran'],
-            ['allocation-unknown-party', 'allocation', 'agent-zoran']
+            ['money-party-unknown', 'money', 'agent-zoran']
         ]);
-
-        const invalidShares = [
-            [{ ownerKey: 'agent-ana', share: 0.5 }, { ownerKey: 'agent-cyril', share: 0.4 }],
-            [{ ownerKey: 'agent-ana', share: 0.5 }, { ownerKey: 'agent-ana', share: 0.5 }],
-            [{ ownerKey: 'agent-ana', share: '0.5' }, { ownerKey: 'agent-cyril', share: 0.5 }],
-            []
-        ];
-        invalidShares.forEach(shares => {
-            const joint = fixture();
-            joint.allocations[0] = { output: joint.outputs[1].hash, to: { kind: 'joint', shares } };
-            expect(codes(record.validate(joint).errors)).toEqual(['allocation-shares-invalid']);
-        });
-        const valid = fixture();
-        valid.allocations[0] = { output: valid.outputs[1].hash, to: { kind: 'joint', shares: [{ ownerKey: 'agent-ana', share: 1 / 3 }, { ownerKey: 'agent-cyril', share: 2 / 3 }] } };
-        expect(record.validate(valid).valid).toBe(true);
     });
 
     it('checks the currency, the parties and the amounts of the cash lines', () => {
@@ -246,7 +247,8 @@ describe('validate', () => {
             ['money-currency', 'money', undefined],
             ['money-party-unknown', 'money', 'agent-zoran'],
             ['money-amount-invalid', 'money', 'agent-ana'],
-            ['money-amount-invalid', 'money', 'agent-boris']
+            ['money-amount-invalid', 'money', 'agent-boris'],
+            ['money-unbalanced', 'money', undefined]
         ]);
     });
 
@@ -261,14 +263,20 @@ describe('validate', () => {
         expect(codes(record.validate(nobody).errors)).toEqual(['rule-invalid']);
 
         const communityWithConfig = fixture();
+        communityWithConfig.allocations = [];
+        communityWithConfig.money.lines = [];
         communityWithConfig.rule = { ...communityWithConfig.rule, electorate: 'community', binding: false };
         expect(codes(record.validate(communityWithConfig).errors)).toEqual(['rule-invalid']);
 
         const bindingVote = fixture();
+        bindingVote.allocations = [];
+        bindingVote.money.lines = [];
         bindingVote.rule = { electorate: 'community', binding: true, approvalConfig: null, lens: [] };
         expect(record.validate(bindingVote).errors).toEqual([expect.objectContaining({ code: 'rule-community-binding', section: 'rule' })]);
 
         const vote = fixture();
+        vote.allocations = [];
+        vote.money.lines = [];
         vote.rule = { electorate: 'community', binding: false, approvalConfig: null, lens: [] };
         expect(record.validate(vote)).toEqual({ valid: true, errors: [], warnings: [] });
     });
@@ -318,14 +326,12 @@ describe('ledger', () => {
         });
     });
 
-    it('splits a joint allocation by its shares and keeps carried-over holdings by theirs', () => {
-        const raw = fixture();
-        raw.allocations = [{ output: raw.outputs[0].hash, to: { kind: 'joint', shares: [{ ownerKey: 'agent-ana', share: 1 / 3 }, { ownerKey: 'agent-cyril', share: 2 / 3 }] } }];
-        const byKey = Object.fromEntries(record.ledger(raw).parties.map(party => [party.ownerKey, party]));
-        expect(byKey['agent-ana'].assignedM2).toBeCloseTo(700 / 3 + 700 * 0.6, 9);
-        expect(byKey['agent-boris'].assignedM2).toBeCloseTo(700 * 0.1, 9);
-        expect(byKey['agent-cyril'].assignedM2).toBeCloseTo(1400 / 3 + 700 * 0.3, 9);
-        expect(record.ledger(raw).publicM2).toBe(0);
+    it('assigns each output to its one explicit recipient', () => {
+        const byKey = Object.fromEntries(record.ledger(fixture()).parties.map(party => [party.ownerKey, party]));
+        expect(byKey['agent-ana'].assignedM2).toBe(700);
+        expect(byKey['agent-boris'].assignedM2).toBe(0);
+        expect(byKey['agent-cyril'].assignedM2).toBe(700);
+        expect(record.ledger(fixture()).publicM2).toBe(400);
     });
 
     it('flags parties whose input area is unknown instead of counting it as zero land', () => {
@@ -341,7 +347,7 @@ describe('ledger', () => {
         const raw = fixture();
         raw.outputs[0].holders = [{ ownerKey: 'agent-ana', displayName: 'Ana (plot)', share: 1 }];
         raw.outputs[1].holders[0].displayName = 'Ana (plot)';
-        raw.allocations[0] = { output: raw.outputs[1].hash, to: { kind: 'party', ownerKey: 'agent-emil' } };
+        raw.allocations[1] = { output: raw.outputs[1].hash, to: { kind: 'party', ownerKey: 'agent-emil' } };
         raw.money.lines.push({ ownerKey: 'agent-dora', amountCents: 500 });
         const parties = record.ledger(raw).parties;
         expect(parties.map(party => [party.ownerKey, party.displayName])).toEqual([
@@ -351,12 +357,12 @@ describe('ledger', () => {
         expect(parties[0]).toMatchObject({ cashCents: 500, assignedM2: 0 });
     });
 
-    it('refuses joint shares that do not parse', () => {
+    it('requires an explicit recipient for every output', () => {
         const raw = fixture();
-        raw.allocations = [{ output: raw.outputs[0].hash, to: { kind: 'joint', shares: [{ ownerKey: 'agent-ana', share: 0.5 }] } }];
-        expect(() => record.ledger(raw)).toThrow(/sum to 100/);
-        expect(thrownCode(() => record.ledger(raw))).toBe('invalid-agreement');
+        raw.allocations = raw.allocations.filter(line => line.output !== raw.outputs[0].hash);
+        expect(codes(record.validate(raw).errors)).toContain('allocation-required');
     });
+
 });
 
 describe('rightsFromInputs', () => {
@@ -421,6 +427,8 @@ describe('the lens of an owners rule', () => {
         delete raw.rule.lens;
         expect(codes(record.validate(raw).warnings)).toEqual(['rule-lens-missing']);
         const vote = fixture();
+        vote.allocations = [];
+        vote.money.lines = [];
         vote.rule = { electorate: 'community', binding: false, approvalConfig: null, lens: [] };
         expect(record.validate(vote).warnings).toEqual([]);
     });
@@ -495,18 +503,16 @@ describe('published', () => {
         published: { cid: Cid.cidOfObject({ any: 'earlier' }), publishedAt: '2026-10-21T12:00:00Z', apiBase: 'https://api.example.test' }
     });
 
-    it('is the agreement/v1 object: designs by CID, inputs with holders, outputs by hash without geometry', () => {
+    it('is the agreement/v1 object: one exact plan CID, inputs with holders, outputs by hash without geometry', () => {
         const raw = local();
         raw.inputs.parcels[0].parcelSourceId = 'zagreb-dgu';
         const object = record.published(raw);
-        expect(Object.keys(object).sort()).toEqual(['allocations', 'author', 'city', 'createdAt', 'deadline', 'designs', 'inputs',
-            'money', 'outputs', 'rule', 'schema', 'sponsor', 'title']);
+        expect(Object.keys(object).sort()).toEqual(['allocations', 'author', 'city', 'consultation', 'createdAt', 'deadline', 'inputs',
+            'money', 'outputs', 'planCid', 'rule', 'schema', 'sponsor', 'title']);
         expect(object).toMatchObject({ schema: 'agreement/v1', title: 'Block seven', author: 'Ana', sponsor: SPONSOR, city: 'test-city',
             createdAt: '2026-10-21T10:00:00.000Z', deadline: null });
-        expect(object.designs).toEqual([
-            { cid: LAYOUT_CID, goal: 'parcel-layout', title: 'Lay out block seven' },
-            { cid: ROAD_CID, goal: 'road', title: 'Draw road' }
-        ]);
+        expect(object.planCid).toBe(PLAN.cid);
+        expect(object).not.toHaveProperty('designs');
         expect(object.inputs).toEqual({
             parcels: [
                 { parcelId: 'k9', parcelSourceId: 'zagreb-dgu', areaM2: 1000, holders: [ana()] },
@@ -533,7 +539,10 @@ describe('published', () => {
 
     it('takes the designs\' CIDs from designCidOf when given, and refuses a design without one', () => {
         const fresh = { 'layout-1': Cid.cidOfObject({ edited: 'layout' }), 'road-1': ROAD_CID };
-        expect(record.published(local(), id => fresh[id]).designs.map(design => design.cid)).toEqual([fresh['layout-1'], ROAD_CID]);
+        const revised = local();
+        revised.plan = { ...PLAN, content: PlanRecord.create('Block seven', Object.values(fresh), PLAN_CONTENT.view) };
+        revised.plan.cid = Cid.cidOfObject(revised.plan.content);
+        expect(record.published(revised, id => fresh[id]).planCid).toBe(revised.plan.cid);
         const unnamed = local();
         unnamed.designs[1].cid = null;
         expect(thrownCode(() => record.published(unnamed))).toBe('invalid-agreement');
@@ -545,6 +554,23 @@ describe('published', () => {
         const object = record.published(fixture());
         expect(object.author).toBeNull();
         expect(object.sponsor).toBeNull();
+    });
+
+    it('requires the selected plan to contain exactly the published design CIDs', () => {
+        for (const cids of [[LAYOUT_CID], [LAYOUT_CID, ROAD_CID, Cid.cidOfObject({ other: true })]]) {
+            const raw = local();
+            raw.plan = { content: PlanRecord.create('Block seven', cids, PLAN_CONTENT.view) };
+            raw.plan.cid = Cid.cidOfObject(raw.plan.content);
+            expect(() => record.published(raw)).toThrow(/differ from the referenced plan/);
+        }
+    });
+
+    it('lets separate agreements reuse the same immutable plan revision', () => {
+        const next = fixture();
+        next.id = 'ag-another';
+        next.title = 'A separate agreement';
+        expect(record.published(next).planCid).toBe(record.published(fixture()).planCid);
+        expect(record.publishedCid(next)).not.toBe(record.publishedCid(fixture()));
     });
 });
 
@@ -566,8 +592,8 @@ describe('publishedCid', () => {
     it('moves with the designs, land, allocations, money, rule, deadline and sponsor', () => {
         const cid = record.publishedCid(fixture());
         const edits = [
-            raw => { raw.designs.reverse(); },
-            raw => { raw.designs[0].cid = Cid.cidOfObject({ another: 'layout' }); },
+            raw => { raw.plan = { content: PlanRecord.create('A revised plan', [LAYOUT_CID, ROAD_CID], PLAN_CONTENT.view) }; raw.plan.cid = Cid.cidOfObject(raw.plan.content); },
+            raw => { raw.designs[0].cid = Cid.cidOfObject({ another: 'layout' }); raw.plan = { content: PlanRecord.create('A revised plan', [raw.designs[0].cid, ROAD_CID], PLAN_CONTENT.view) }; raw.plan.cid = Cid.cidOfObject(raw.plan.content); },
             raw => { raw.inputs.parcels[0].holders = [cyril(1)]; },
             raw => { raw.allocations.pop(); },
             raw => { raw.money.lines[0].amountCents += 1; },
@@ -582,5 +608,69 @@ describe('publishedCid', () => {
             edit(raw);
             expect(record.publishedCid(raw), edit.toString()).not.toBe(cid);
         });
+    });
+});
+
+
+describe('consultation metadata', () => {
+    function community(consultation = null) {
+        return { ...fixture(), allocations: [], money: { currency: 'EUR', lines: [] },
+            rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] }, consultation };
+    }
+
+    it('canonicalizes website organisers and participation URLs in the local and published record', () => {
+        const raw = community({ organiser: ' https://NGO.example/branch ', participationUrl: ' https://NGO.example/join ' });
+        const expected = { organiser: 'did:web:ngo.example:branch', participationUrl: 'https://ngo.example/join' };
+        expect(record.normalize(raw).consultation).toEqual(expected);
+        expect(record.published(raw).consultation).toEqual(expected);
+        expect(record.validate(raw).valid).toBe(true);
+        expect(record.normalize(community()).consultation).toEqual({ organiser: null, participationUrl: null });
+    });
+
+    it('commits organiser and participation information to the agreement CID', () => {
+        const raw = community({ organiser: 'did:web:ngo.example', participationUrl: 'https://ngo.example/join' });
+        const original = record.publishedCid(raw);
+        expect(record.publishedCid({ ...raw, consultation: { ...raw.consultation, organiser: 'did:web:other.example' } })).not.toBe(original);
+        expect(record.publishedCid({ ...raw, consultation: { ...raw.consultation, participationUrl: 'https://ngo.example/other' } })).not.toBe(original);
+    });
+
+    it('refuses consultation metadata on owners while normalizing absent metadata to null', () => {
+        expect(record.normalize(fixture()).consultation).toBeNull();
+        expect(record.normalize({ ...fixture(), consultation: null }).consultation).toBeNull();
+        expect(() => record.normalize({ ...fixture(), consultation: { organiser: 'did:web:ngo.example' } })).toThrow(/Only a community/);
+    });
+
+    it('rejects crafted community allocations and cash, even zero or carried-holder lines', () => {
+        const base = community();
+        const samples = [
+            { ...base, allocations: fixture().allocations },
+            { ...base, allocations: fixture().allocations },
+            { ...base, money: fixture().money },
+            { ...base, money: { currency: 'EUR', lines: [{ ownerKey: 'agent-ana', amountCents: 0 }] } }
+        ];
+        for (const raw of samples) {
+            const code = raw.allocations.length ? 'community-allocations' : 'community-money';
+            expect(record.validate(raw).errors).toContainEqual(expect.objectContaining({ code, section: code === 'community-allocations' ? 'allocation' : 'money' }));
+            expect(() => record.published(raw)).toThrow(/cannot allocate land or include cash/);
+        }
+    });
+
+    it('rejects unknown consultation metadata rather than silently dropping it', () => {
+        const raw = community({ organiser: 'did:web:ngo.example', participationUrl: null, secretTerm: 'hidden' });
+        expect(() => record.normalize(raw)).toThrow(/unknown fields/);
+        expect(() => record.validate(raw)).toThrow(/unknown fields/);
+        expect(() => record.published(raw)).toThrow(/unknown fields/);
+        for (const consultation of [{ organiser: 42 }, { participationUrl: 42 }]) {
+            expect(() => record.normalize(community(consultation))).toThrow(/text or null/);
+        }
+    });
+
+    it('reports invalid organiser and participation fields by section', () => {
+        for (const organiser of ['not a did', 'http://ngo.example', 'https://user:password@ngo.example', 'did:web:ngo.example:' + 'x'.repeat(2048)]) {
+            expect(record.validate(community({ organiser })).errors).toContainEqual(expect.objectContaining({ code: 'consultation-organiser', section: 'consultation' }));
+        }
+        for (const participationUrl of ['http://ngo.example', 'javascript:alert(1)', '/join', 'https://user:password@ngo.example/join', 'https://ngo.example/' + 'x'.repeat(2048)]) {
+            expect(record.validate(community({ participationUrl })).errors).toContainEqual(expect.objectContaining({ code: 'consultation-participation-url', section: 'consultation' }));
+        }
     });
 });

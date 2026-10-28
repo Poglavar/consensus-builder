@@ -3,6 +3,7 @@ import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { parcelSourceCatalog, clearParcelSourceRuntimeCache, createParcelSource } from '../parcels/sources.js';
 import { parcelSourceForCity, parcelSourceForIds } from './helpers/frontend-source-selection.js';
 import { computeBinding } from '../proposals/binding.js';
@@ -96,7 +97,7 @@ describe('configured India/Africa live parcel cities', () => {
         expect(parcelSourceForIds([sample.prefix + 'sample-native-id']).descriptor.id).toBe(sample.source);
 
         const context = { console, URL, URLSearchParams }; context.window = context;
-        runInNewContext(read('frontend/js/city-config.js'), context);
+        runInNewContext(cityConfigSource(), context);
         const city = context.CityConfigManager.getCityConfig(sample.city);
         expect(city.parcels).toMatchObject({ sourceId: sample.source, idPrefix: sample.prefix, ownership: false });
         expect(city.projection.metricCrs).toBeUndefined();

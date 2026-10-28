@@ -2,6 +2,7 @@
 // its geodesic area, WGS84 geometry, the GDI buildings that sit on it, and the urban rule covering
 // it. SQL only — no scoring, no geometry work, no rule interpretation; planner.js does all of that
 // on what this returns.
+import { buildingBaseline } from './building-baseline.js';
 
 // The parcel ids the app speaks are composed, not stored: 'HR-<maticni_broj_ko>-<broj_cestice>'.
 const PARCEL_ID_PREFIX = 'HR';
@@ -9,6 +10,20 @@ const PARCEL_ID_PREFIX = 'HR';
 // Existing buildings are converted to floors at this storey height. It is the GDI mesh's own
 // convention (gdi_building.height_m is a roof height in metres), not the planner's floor height.
 const EXISTING_FLOOR_HEIGHT_M = 3.5;
+
+// Publisher describes this as a City-wide model, but the published coverage literature reports
+// that the model is incomplete and uneven. This is source-level context, not parcel-level proof.
+export const GDI_BUILDING_SOURCE_EVIDENCE = Object.freeze({
+    publisher: 'City of Zagreb',
+    sourceId: 'gdi-3d',
+    datasetEdition: 'ZG3D 2022',
+    datasetUrl: 'https://data.zagreb.hr/dataset/zg3d-2022-3d-model-gz',
+    publishedCoverageEvidenceUrl: 'https://www.unin.hr/wp-content/uploads/tj_18_2024_SI.pdf',
+    statedGeographicScope: 'City of Zagreb',
+    captureYears: [2008, 2019, 2020, 2022],
+    captureTemporalBasis: 'mixed capture years; no per-feature capture date',
+    overallInventoryCoverage: 'partial'
+});
 
 // The app's containment rule for "a building on this parcel": at least 90% of the footprint's area
 // falls inside the parcel (backend/routes/buildings.js, the cestica_id branch). Anything less is a
@@ -25,9 +40,10 @@ const CONTAINMENT_RATIO = 0.9;
 // Notes on the two laterals:
 //
 //  * Buildings are counted with the SAME geodesic containment ratio the /buildings route uses, so a
-//    parcel's building list here and in the app agree. height_m is nullable — a building with no
-//    height counts as ONE floor rather than zero, because a footprint that exists is at least a
-//    storey of built volume and a 0 there would understate what is already on the ground.
+//    parcel's building list here and in the app agree. A missing/invalid height leaves total GFA
+//    unknown; SUM must not silently omit that building. Height-derived floors remain an estimate.
+//    These imports carry no parcel-level inventory coverage evidence. Keep query observations
+//    separate from the complete existing-stock baseline needed for net-gain calculations.
 //
 //  * The rule lateral picks ONE rule for the parcel, because urban_rule holds two GUP vintages
 //    (2016 and 2025) whose polygons overlap, and a short name maps to several land-use regimes.
@@ -74,9 +90,10 @@ SELECT
     ST_X(ST_Transform(ST_PointOnSurface(s.geom), 4326))::float8 AS centroid_lng,
     ST_Y(ST_Transform(ST_PointOnSurface(s.geom), 4326))::float8 AS centroid_lat,
     ST_AsGeoJSON(ST_Transform(s.geom, 4326))::json AS geometry,
-    COALESCE(b.building_count, 0) AS building_count,
-    COALESCE(b.built_footprint_m2, 0)::float8 AS built_footprint_m2,
-    COALESCE(b.built_gfa_m2, 0)::float8 AS built_gfa_m2,
+    b.building_count,
+    b.built_footprint_m2,
+    b.built_gfa_m2,
+    b.missing_height_count,
     r.rule_geom_hash,
     r.rule_id,
     r.rule_short_name,
@@ -86,12 +103,15 @@ LEFT JOIN LATERAL (
     SELECT
         count(*) AS building_count,
         SUM(f.footprint_m2)::float8 AS built_footprint_m2,
-        SUM(f.footprint_m2 * f.floors)::float8 AS built_gfa_m2
+        count(*) FILTER (WHERE f.floors IS NULL) AS missing_height_count,
+        CASE WHEN count(*) FILTER (WHERE f.floors IS NULL) > 0 THEN NULL
+             ELSE SUM(f.footprint_m2 * f.floors)::float8 END AS built_gfa_m2
     FROM (
         SELECT
             ST_Area(ST_Transform(ST_CollectionExtract(ST_MakeValid(bf.geom), 3), 4326)::geography)::float8 AS footprint_m2,
-            CASE WHEN bg.height_m IS NULL THEN 1
-                 ELSE GREATEST(1, ROUND(bg.height_m / ${EXISTING_FLOOR_HEIGHT_M})) END AS floors
+            CASE WHEN bg.height_m > 0 AND bg.height_m < 'Infinity'::float8
+                 THEN GREATEST(1, ROUND(bg.height_m / ${EXISTING_FLOOR_HEIGHT_M}))
+                 ELSE NULL END AS floors
         FROM public.gdi_building_footprint bf
         LEFT JOIN public.gdi_building bg ON bg.object_id = bf.object_id
         WHERE bf.geom && s.geom
@@ -164,9 +184,16 @@ function rowToParcel(row) {
         areaM2: num(row.area_m2),
         centroid: { lng: num(row.centroid_lng), lat: num(row.centroid_lat) },
         geometry: row.geometry ?? null,
-        buildingCount: num(row.building_count) ?? 0,
-        builtFootprintM2: num(row.built_footprint_m2) ?? 0,
-        builtGfaM2: num(row.built_gfa_m2) ?? 0,
+        ...buildingBaseline({ buildingSourceId: 'gdi-3d', buildingCoverage: 'unknown' }),
+        buildingObservations: {
+            sourceId: 'gdi-3d',
+            sourceEvidence: GDI_BUILDING_SOURCE_EVIDENCE,
+            buildingCount: num(row.building_count),
+            footprintM2: num(row.built_footprint_m2),
+            gfaM2: num(row.built_gfa_m2),
+            missingHeightCount: num(row.missing_height_count),
+            floorHeightM: EXISTING_FLOOR_HEIGHT_M
+        },
         rule: ruleFromRow(row)
     };
 }

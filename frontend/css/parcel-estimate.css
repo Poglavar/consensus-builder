@@ -24,7 +24,6 @@ body.parcel-estimate-open #explore-banner { display: none; }
     gap: 8px;
 }
 .parcel-estimate-heading h3 { margin: 0; font-size: 15px; }
-.parcel-estimate-heading button { font-size: 18px; }
 .parcel-estimate-notice {
     padding: 8px;
     background: var(--cb-warning-soft);
@@ -35,9 +34,7 @@ body.parcel-estimate-open #explore-banner { display: none; }
 .parcel-estimate-field { display: grid; gap: 4px; margin: 10px 0; font-size: 12px; }
 .parcel-estimate-field input, .parcel-estimate-field select { width: 100%; box-sizing: border-box; }
 .parcel-estimate-actions { flex-wrap: wrap; justify-content: flex-start; }
-.parcel-estimate-actions button { min-height: 36px; font-size: 12px; }
 .parcel-estimate-actions [hidden] { display: none; }
-.parcel-estimate-actions [aria-pressed="true"] { background: var(--cb-warning-soft); border-color: var(--cb-warning); }
 .parcel-estimate-attribution { display: flex; flex-wrap: wrap; gap: 6px; font-size: 10px; }
 .parcel-estimate-frame { fill: none; stroke: var(--cb-primary); stroke-width: 2; stroke-dasharray: 7 5; }
 .leaflet-parcelEstimateImagery-pane { z-index: var(--cb-z-map-pane-estimate-imagery); pointer-events: none; }

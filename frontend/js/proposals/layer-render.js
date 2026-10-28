@@ -52,6 +52,9 @@ function ensureProposalOverlayGroups() {
     if (!window.proposalBorderGroup) {
         window.proposalBorderGroup = L.featureGroup().addTo(map);
     }
+    if (!window.proposalInspectionGroup) {
+        window.proposalInspectionGroup = L.featureGroup().addTo(map);
+    }
     if (!window.proposalHoverGroup) {
         window.proposalHoverGroup = L.featureGroup().addTo(map);
     }
@@ -79,6 +82,7 @@ function ensureProposalOverlayGroups() {
     if (panes) {
         window.proposalPreviewGroup.__paneName = panes.highlight;
         window.proposalBorderGroup.__paneName = panes.highlight;
+        window.proposalInspectionGroup.__paneName = panes.highlight;
         window.proposalBackgroundGroup.__paneName = panes.highlight;
         window.proposalAcceptedGroup.__paneName = panes.highlight;
         window.proposalBuildingPreviewGroup.__paneName = panes.highlight;
@@ -91,6 +95,7 @@ function ensureProposalOverlayGroups() {
     return {
         preview: window.proposalPreviewGroup,
         border: window.proposalBorderGroup,
+        inspection: window.proposalInspectionGroup,
         hover: window.proposalHoverGroup,
         hoverLabels: window.proposalHoverLabelGroup,
         background: window.proposalBackgroundGroup,
@@ -211,6 +216,16 @@ function clearProposalHoverLayers() {
     if (groups.hoverLabels) groups.hoverLabels.clearLayers();
 }
 
+// Inspection survives pointer hover and mouseout. Its owner clears it when selection closes.
+function highlightFeaturesForInspection(features, style = {}) {
+    const group = ensureProposalOverlayGroups().inspection;
+    if (!group) return;
+    group.clearLayers();
+    for (const feature of features || []) {
+        addFeatureToGroup(feature, group, window.MapHighlight.style(style), null);
+    }
+}
+
 // A hover usually answers more than one question at once: a proposal's own BODY — the building
 // footprint, the corridor surface, the park polygon — is not the same shape as the PARCELS it
 // stands on. Painting both in a single colour left a hovered proposal unreadable (a bunch of
@@ -232,7 +247,7 @@ function highlightFeatureGroupsForHover(featureGroups) {
         if (!group || !Array.isArray(group.features)) return;
         const {
             features,
-            color = '#FFB300',
+            color = window.MapHighlight.color,
             weight = 5,
             dashArray = '4 4',
             // Outlines are hollow unless a caller asks for a fill. A filled shape reads as "this
@@ -381,7 +396,7 @@ function highlightParcelHover(parcelId, options = {}) {
     const features = getParcelFeaturesForHighlight(parcelId, proposal, options);
     if (features.length) {
         highlightFeaturesForHover(features, {
-            color: '#FFEB3B',
+            color: window.MapHighlight.color,
             weight: 6,
             dashArray: '10 8',
             // Labels are opt-in per surface: panel-driven hovers pass true (the label answers
@@ -397,7 +412,7 @@ function selectedProposalStatusText(proposal) {
     const count = (proposal.cadastreParcelIds || []).length;
     const title = proposal.title || '';
     const tProposal = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
-    const fallback = `Selected proposal "{{title}}" (contains {{count}} ${count === 1 ? 'parcel' : 'parcels'})`;
+    const fallback = `Selected design "{{title}}" (contains {{count}} ${count === 1 ? 'parcel' : 'parcels'})`;
     return tProposal
         ? tProposal('status.messages.selected_proposal_summary', fallback, { title, count })
         : fallback.replace('{{title}}', title).replace('{{count}}', String(count));
@@ -524,8 +539,8 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
     // with a body are drawn from that body below; their cadastral source parcels are provenance,
     // not part of the visual selection.
     const parcelStyle = {
-        color: '#2563EB',
-        fillColor: '#2563EB',
+        color: window.MapHighlight.color,
+        fillColor: window.MapHighlight.color,
         weight: 3,
         opacity: 0.9,
         dashArray: standsOnMap ? null : '10 5',
@@ -540,7 +555,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
         // corridor itself (rails included, when it has rail lanes), and shading every parent parcel
         // blue only buried the selection. A track takes this path like any other corridor.
         const roadSelectedStyle = {
-            color: '#ff3300',
+            color: window.MapHighlight.color,
             weight: 3,
             opacity: 1,
             dashArray: null,
@@ -555,14 +570,14 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
         // a parcel layout taken off — is drawn as a proposal: dashed lines and no fill. Only a
         // proposal that IS on the map gets the solid, filled primary outline.
         const primaryStyle = (isRoadProposal || !standsOnMap) ? {
-            color: '#2563EB',
+            color: window.MapHighlight.color,
             weight: 4,
             opacity: 1,
             dashArray: '10 5',
             fillOpacity: 0,
             className: isRoadProposal ? 'proposal-road-outline' : 'proposal-primary-outline'
         } : {
-            color: '#2563EB',
+            color: window.MapHighlight.color,
             weight: 4,
             opacity: 1,
             dashArray: null,
@@ -582,7 +597,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
                 onClick: standsOnMap ? null : event => {
                     // A selected preview is an interaction surface, not a change to the fabric.
                     // Editing tools retain the click through normal Leaflet map bubbling.
-                    if (window.MapPick?.active() || window.measureMode || window.__mapEditLock?.isHeld()
+                    if (window.roadDrawingMode || window.MapPick?.active() || window.measureMode || window.__mapEditLock?.isHeld()
                         || window.isParcelDrawingModeActive?.() || window.pinpointToolIsActive?.()) return;
                     L.DomEvent.stopPropagation(event);
                     const panel = document.getElementById('proposal-details-panel');
@@ -675,14 +690,16 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
     // selection, so the card is not asked for and the no-visible-UI safety net below stands down.
     const in3D = typeof window.isThreeModeActive === 'function' && window.isThreeModeActive();
     const detailsWanted = showDetails && !in3D;
+    // Selection in the model view never changes its camera; links navigate explicitly.
+    if (in3D) shouldCenter = false;
 
     const proposal = getProposalByIdOrHash(resolvedId);
     if (!proposal) {
         console.error('[selectAndHighlightProposal] Proposal not found:', proposalIdOrHash);
         const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
         updateStatus(t
-            ? t('status.messages.error_proposal_not_found', 'Error: Proposal not found')
-            : 'Error: Proposal not found');
+            ? t('status.messages.error_proposal_not_found', 'Error: Design not found')
+            : 'Error: Design not found');
         return;
     }
 
@@ -750,12 +767,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         updateProposalLayer();
     }
 
-    if (shouldCenter && in3D && typeof window.focusThreeModeOnProposals === 'function') {
-        // The 2D map is frozen under the scene; a Leaflet fit would move nothing the reader sees.
-        window.isApplyingProposalHighlights = false;
-        window.focusThreeModeOnProposals([proposalKey]);
-        applyProposalHighlights();
-    } else if (shouldCenter) {
+    if (shouldCenter) {
         // Center map first, then apply overlays when movement is complete
         const parcelIdsForCentering = (() => {
             // Use only this formation's current derived parcels; records have no proposal family.
@@ -978,7 +990,7 @@ async function removeProposalFromMap(proposalId, options = {}) {
         if (typeof reportProposalMapActionFailure === 'function') {
             reportProposalMapActionFailure(proposalId, String(error?.message || error || ''), 'unapplyFailedUnknown', 'unapply');
         } else if (typeof showEphemeralMessage === 'function') {
-            showEphemeralMessage(String(error?.message || error || 'Could not remove this proposal from the map.'), 8000, 'error');
+            showEphemeralMessage(String(error?.message || error || 'Could not remove this design from the map.'), 8000, 'error');
         }
         return false;
     } finally {
@@ -989,8 +1001,8 @@ async function removeProposalFromMap(proposalId, options = {}) {
         reconcileProposalMapActionButton(proposalId, original || '');
         if (succeeded) {
             const message = t
-                ? t('panel.proposal.actions.unappliedStatus', 'Unapplied “{{name}}”. The proposal remains in your proposals list.', { name: proposalLabel })
-                : `Unapplied “${proposalLabel}”. The proposal remains in your proposals list.`;
+                ? t('panel.proposal.actions.unappliedStatus', 'Unapplied “{{name}}”. The design remains in your designs list.', { name: proposalLabel })
+                : `Unapplied “${proposalLabel}”. The design remains in your designs list.`;
             try { if (typeof updateStatus === 'function') updateStatus(message, { proposalId: String(proposalId) }); } catch (_) { }
         }
     }

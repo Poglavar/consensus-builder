@@ -17,7 +17,7 @@ function loadOwnershipUi({ ownership = false, gameRunning = false } = {}) {
     const count = { textContent: '', removeAttribute: vi.fn() };
     const typeClasses = new Set();
     const typeLabel = {
-        style: { display: 'inline-block' },
+        hidden: false,
         classList: {
             add: value => typeClasses.add(value),
             remove: (...values) => values.forEach(value => typeClasses.delete(value))
@@ -61,10 +61,10 @@ describe('geometry-only parcel ownership UI', () => {
 
         ui.fetchAndDisplayRealOwners('GEOM-1');
 
-        expect(target.innerHTML).toContain('Unknown owner');
+        expect(target.innerHTML).toContain('Unknown');
         expect(target.innerHTML).not.toMatch(/Single owner|100%/);
         expect(count.textContent).toBe('Unknown');
-        expect(typeLabel.style.display).toBe('none');
+        expect(typeLabel.hidden).toBe(true);
         expect(scope.fetch).not.toHaveBeenCalled();
         expect(ui.buildRealOwnerRowsHtml([])).toContain('Unknown owner');
         expect(ui.buildRealOwnerRowsHtml([])).not.toContain('100%');
@@ -73,10 +73,11 @@ describe('geometry-only parcel ownership UI', () => {
     it('preserves real owner and share rendering for sources that support ownership', () => {
         const { ui } = loadOwnershipUi({ ownership: true });
 
-        expect(ui.buildRealOwnerRowsHtml([{ name: 'A. Example', actualShareText: '50%' }]))
-            .toContain('A. Example');
-        expect(ui.buildRealOwnerRowsHtml([{ name: 'A. Example', actualShareText: '50%' }]))
-            .toContain('50%');
+        const html = ui.buildRealOwnerRowsHtml([{ name: 'A. Example', actualShareText: '50%' }]);
+        expect(html).toContain('A. Example');
+        expect(html).toContain('50%');
+        expect(html).toContain('class="owner-row"');
+        expect(html).not.toContain('style=');
     });
 
     it('keeps an adapter-provided canonical ownerType in the rendered badge', async () => {
@@ -98,6 +99,7 @@ describe('geometry-only parcel ownership UI', () => {
 
         await vi.waitFor(() => expect(typeClasses.has('ownership-type-company')).toBe(true));
         expect(typeLabel.textContent).toBe('Company');
+        expect(typeLabel.hidden).toBe(false);
         expect(typeClasses.has('ownership-type-individual')).toBe(false);
     });
 
@@ -127,7 +129,7 @@ describe('geometry-only parcel ownership UI', () => {
 
         ui.fetchAndDisplayRealOwners('GEOM-1');
 
-        expect(target.innerHTML).toContain('Nepoznat vlasnik');
+        expect(target.innerHTML).toContain('Nepoznato');
         expect(count.textContent).toBe('Nepoznato');
     });
 

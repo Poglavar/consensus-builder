@@ -27,7 +27,7 @@ function buildCurrentCoverage() {
         registry: readJson('world-parcels/registry.json'),
         countryReviews: readJson('world-parcels/country-coverage-reviews.json').reviews,
         countries: { type: 'FeatureCollection', features: sourceFeatures },
-        cityConfigSource: readFileSync(path.join(REPO, 'frontend/js/city-config.js'), 'utf8')
+        cityConfigSource: readFileSync(path.join(REPO, 'frontend/data/city-configs.js'), 'utf8')
     });
 }
 

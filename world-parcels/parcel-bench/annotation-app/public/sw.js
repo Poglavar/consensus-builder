@@ -1,4 +1,4 @@
-const VERSION = 'autokatastar-shell-v1';
+const VERSION = 'autokatastar-shell-v2-access';
 const SHELL = ['./', 'styles.css', 'app.mjs', 'model.mjs', 'storage.mjs', 'viewer.mjs', 'strings.mjs', 'manifest.webmanifest', 'icon.svg'];
 const scope = new URL(self.registration.scope).pathname;
 const shellCache = `${VERSION}:${scope}`;

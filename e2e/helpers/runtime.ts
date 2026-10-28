@@ -68,6 +68,28 @@ export async function clickMapPoint(page: Page, lng: number, lat: number): Promi
   await page.mouse.click(point.x, point.y);
 }
 
+// Finish the explicit placement step using a real pointer on the draft's selected starting land.
+export async function placeFreeformBuilding(page: Page): Promise<void> {
+  await expect(page.locator('#single-building-editor')).toHaveAttribute('data-placing', 'true');
+  const at = await page.evaluate(() => {
+    const w = window as any;
+    const site = w.getActiveProposalDesignDraft()?.fields?.site;
+    const [lng, lat] = w.turf.pointOnFeature(site?.type === 'Feature' ? site : w.turf.feature(site)).geometry.coordinates;
+    const three = w.isThreeModeActive?.() && w.getThreeModeInternals?.();
+    if (three) {
+      const [x, y] = three.latLngToXY(lat, lng);
+      const point = new w.THREE.Vector3(x, y, 0).project(three.camera);
+      const rect = three.renderer.domElement.getBoundingClientRect();
+      return { x: rect.left + (point.x + 1) * rect.width / 2, y: rect.top + (1 - point.y) * rect.height / 2 };
+    }
+    const point = w.map.latLngToContainerPoint([lat, lng]);
+    const rect = w.map.getContainer().getBoundingClientRect();
+    return { x: rect.left + point.x, y: rect.top + point.y };
+  });
+  await page.mouse.click(at.x, at.y);
+  await expect(page.locator('#single-building-editor')).not.toHaveAttribute('data-placing');
+}
+
 // A real mouse click on an applied design on the map: a point inside its shape (MapPick.outlineOf, the
 // shape a pick highlights) is brought to `at` (fractions of the map's size, clear of the dock or a
 // sheet) and clicked once nothing covers the map there (a notice can sit over it for a few seconds).
@@ -106,10 +128,24 @@ export async function expandSelectionSection(page: Page): Promise<void> {
   await expect(row).toHaveAttribute('aria-expanded', 'true');
 }
 
+// Contextual site commands remain available through the palette after their parcel shortcuts retire.
+export async function runPaletteCommand(page: Page, command: string): Promise<void> {
+  const label=await page.evaluate(id=>{
+    const w=window as any;
+    return w.UiCommands.labelOf(w.UiCommands.findCommand(id),(key: string)=>w.i18n.t(key));
+  },command);
+  await page.keyboard.press('Meta+k');
+  await expect(page.locator('.command-palette-backdrop')).toBeVisible();
+  await page.locator('.command-palette__input').fill(label);
+  await page.locator(`.command-palette__item[data-command="${command}"]`).click();
+  await expect(page.locator('.command-palette-backdrop')).toBeHidden();
+}
+
 // Selection actions live in the section body, so reveal them before using a command.
 export async function runSelectionCommand(page: Page, command: string): Promise<void> {
   await expandSelectionSection(page);
-  await stackCommand(page, command).click();
+  if (command === 'selection.useAsSite') await runPaletteCommand(page,command);
+  else await stackCommand(page, command).click();
 }
 
 export async function showSelectionDesignTab(page: Page): Promise<void> {
@@ -171,7 +207,8 @@ export async function openParcelAt(page: Page, lng: number, lat: number): Promis
 // The parcel at a point, then one of the parcel section's actions.
 export async function runParcelCommand(page: Page, lng: number, lat: number, command: string): Promise<void> {
   await openParcelAt(page, lng, lat);
-  await stackCommand(page, command).click();
+  if (command === 'parcel.useAsSite') await runPaletteCommand(page,command);
+  else await stackCommand(page, command).click();
 }
 
 // The parcel at a point, with its panel on one tab.

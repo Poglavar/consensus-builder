@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6861",
+  "name": "Piracicaba, Brazil",
+  "point": [
+    -22.7253874086848,
+    -47.653078712206
+  ],
+  "bindings": [
+    {
+      "appCityId": "piracicaba",
+      "runtimeConfig": {
+        "id": "piracicaba",
+        "wupCityCode": "6861",
+        "label": "Piracicaba, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -22.7253874086848,
+            -47.653078712206
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -22.7253874086848,
+            -47.653078712206
+          ],
+          "fallbackDataset": [
+            -47.653078712206,
+            -22.7253874086848
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-piracicaba-addressforall-pk0041-parcel",
+          "idPrefix": "br-piracicaba-addressforall-pk0041-parcel/gid/",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Prefeitura Municipal de Piracicaba; AddressForAll / Digital Guard, package pk0041; June 2023 snapshot"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-piracicaba-addressforall-pk0041-parcel",
+      "name": "Piracicaba municipal Lotes — AddressForAll pk0041 (June 2023 snapshot)",
+      "adapter": "shapefile-range",
+      "archiveAccess": "verified-native-sequence-v1",
+      "countryCode": "BR",
+      "stateCode": "SP",
+      "cityIds": [
+        "piracicaba"
+      ],
+      "operator": "Prefeitura Municipal de Piracicaba",
+      "publisher": "AddressForAll / Digital Guard",
+      "endpoint": "https://dl.digital-guard.org/out/a4a_br_sp_piracicaba_parcel_7600004101101.zip",
+      "sourceLayer": "a4a_br_sp_piracicaba_parcel_7600004101101/a4a_br_sp_piracicaba_parcel_7600004101101",
+      "sourceCrs": "EPSG:4326",
+      "sourceAxisOrder": "longitude,latitude",
+      "bbox": [
+        -48.018462,
+        -22.842437,
+        -47.503933,
+        -22.5627
+      ],
+      "idPrefix": "br-piracicaba-addressforall-pk0041-parcel/gid/",
+      "idField": "gid",
+      "idType": "integer",
+      "idFields": [
+        "gid"
+      ],
+      "outFields": [
+        "gid"
+      ],
+      "returnsWGS84": true,
+      "supportsAreaEnumeration": true,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "rangeBytes": 16384,
+      "browserTransport": "relay",
+      "maxConcurrentQueries": 1,
+      "metricSrid": 32723,
+      "geometryEndpoint": "https://dl.digital-guard.org/out/a4a_br_sp_piracicaba_parcel_7600004101101.zip",
+      "geometryMemberProfile": "wgs84-zip-member-v1",
+      "geometryEtag": "\"{5249E12E-C8B6-430A-9E7A-2A0632F63358},6\"",
+      "geometryArchiveBytes": 12737047,
+      "geometryMember": {
+        "dataStart": 2685243,
+        "compressedBytes": 10050885,
+        "uncompressedBytes": 55948860,
+        "crc32": 1106933167,
+        "records": 220957
+      },
+      "zipMembers": {
+        "shp": {
+          "name": "a4a_br_sp_piracicaba_parcel_7600004101101/a4a_br_sp_piracicaba_parcel_7600004101101.shp",
+          "method": 8,
+          "crc32": 1106933167,
+          "compressedBytes": 10050885,
+          "uncompressedBytes": 55948860,
+          "localOffset": 2685098,
+          "dataStart": 2685243,
+          "flags": 0,
+          "extraBytes": 28
+        },
+        "dbf": {
+          "name": "a4a_br_sp_piracicaba_parcel_7600004101101/a4a_br_sp_piracicaba_parcel_7600004101101.dbf",
+          "method": 8,
+          "crc32": 3187721298,
+          "compressedBytes": 1990257,
+          "uncompressedBytes": 33806678,
+          "localOffset": 100,
+          "dataStart": 245,
+          "flags": 0,
+          "extraBytes": 28
+        },
+        "prj": {
+          "name": "a4a_br_sp_piracicaba_parcel_7600004101101/a4a_br_sp_piracicaba_parcel_7600004101101.prj",
+          "method": 8,
+          "crc32": 865105353,
+          "compressedBytes": 153,
+          "uncompressedBytes": 256,
+          "localOffset": 1990502,
+          "dataStart": 1990647,
+          "flags": 0,
+          "extraBytes": 28
+        }
+      },
+      "projectionSha256": "b5be241f5d5602047a7dd5b59895f47065bc20859229c8cd586a2ab41f48e6c6",
+      "nativeIdMapping": {
+        "field": "gid",
+        "operation": "one-based-shp-record",
+        "count": 220957,
+        "dbfSha256": "0bc508f8af5b822e307326be2affc545beb4be948d6ce41e4793f2844f4fad81",
+        "scope": "Full DBF scan certified every gid; valid only for pinned archive ETag, DBF CRC and SHP metadata."
+      },
+      "attribution": "Prefeitura Municipal de Piracicaba; AddressForAll / Digital Guard, package pk0041; June 2023 snapshot",
+      "license": "Implied govWorksgeo-BRmunicipal-1.0 (publisher declaration; independent redistribution review pending)",
+      "licenseUrl": "https://git.digital-guard.org/licenses/blob/master/reports/implied-govWorks_geo-BR_municipal-v1.md",
+      "sourceUrl": "https://www.addressforall.org/pt/downloads/",
+      "scope": "Municipal cadastral Lotes snapshot. Observed bounded coverage; all-city completeness unestablished.",
+      "snapshotDate": "2023-06-11",
+      "updatePolicy": "Pinned ETag plus member CRC and audited gid mapping; fail closed on republishing. Requalify before updating metadata; no automatic renumbering.",
+      "archiveRedirectOrigins": [
+        "https://addressforall-my.sharepoint.com"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

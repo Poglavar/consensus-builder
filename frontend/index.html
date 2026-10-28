@@ -11,7 +11,7 @@
 
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="Consensus Builder · Free urban planning software">
-    <meta property="og:description" content="Consensus Builder is a free map-based urban planning tool for real parcels, community zoning proposals, and open city planning.">
+    <meta property="og:description" content="Consensus Builder is a free map-based urban planning tool for real parcels, community zoning designs, and open city planning.">
     <meta property="og:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -26,16 +26,16 @@
     <meta name="twitter:site" content="@UrbanGameTheory">
     <meta name="twitter:creator" content="@UrbanGameTheory">
     <meta name="twitter:title" content="Consensus Builder · Free urban planning software">
-    <meta name="twitter:description" content="Consensus Builder is a free map-based urban planning tool for real parcels, community zoning proposals, and open city planning.">
+    <meta name="twitter:description" content="Consensus Builder is a free map-based urban planning tool for real parcels, community zoning designs, and open city planning.">
     <meta name="twitter:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg">
   <meta name="twitter:image:alt" content="The Consensus Builder globe showing parcel-data coverage across countries and cities.">
     <meta name="twitter:url" content="https://urbangametheory.xyz/">
 
     <!-- Standard Meta Tags -->
-    <meta name="description" content="Consensus Builder is free urban planning software: design changes on real cadastral parcels in 2D and 3D, publish proposals and let communities decide.">
+    <meta name="description" content="Consensus Builder is free urban planning software: design changes on real cadastral parcels in 2D and 3D, publish designs and let communities decide.">
     <link rel="canonical" href="https://urbangametheory.xyz/">
     <!-- Structured data for search engines and LLM crawlers: the site, its publisher and the app. -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://urbangametheory.xyz/#website","name":"Consensus Builder","url":"https://urbangametheory.xyz/","publisher":{"@id":"https://urbangametheory.xyz/#org"},"inLanguage":["en","hr","es","sr"]},{"@type":"Organization","@id":"https://urbangametheory.xyz/#org","name":"Urban Game Theory","url":"https://urbangametheory.xyz/","logo":"https://urbangametheory.xyz/images/consensus-builder-logo-2.png","sameAs":["https://x.com/UrbanGameTheory"]},{"@type":"SoftwareApplication","name":"Consensus Builder","applicationCategory":"DesignApplication","operatingSystem":"Web browser","url":"https://urbangametheory.xyz/","description":"Consensus Builder is free urban planning software: design changes on real cadastral parcels in 2D and 3D, publish proposals and let communities decide.","image":"https://urbangametheory.xyz/images/og-globe-20261019.jpg","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@id":"https://urbangametheory.xyz/#org"}}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://urbangametheory.xyz/#website","name":"Consensus Builder","url":"https://urbangametheory.xyz/","publisher":{"@id":"https://urbangametheory.xyz/#org"},"inLanguage":["en","hr","es","sr"]},{"@type":"Organization","@id":"https://urbangametheory.xyz/#org","name":"Urban Game Theory","url":"https://urbangametheory.xyz/","logo":"https://urbangametheory.xyz/images/consensus-builder-logo-2.png","sameAs":["https://x.com/UrbanGameTheory"]},{"@type":"SoftwareApplication","name":"Consensus Builder","applicationCategory":"DesignApplication","operatingSystem":"Web browser","url":"https://urbangametheory.xyz/","description":"Consensus Builder is free urban planning software: design changes on real cadastral parcels in 2D and 3D, publish designs and let communities decide.","image":"https://urbangametheory.xyz/images/og-globe-20261019.jpg","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@id":"https://urbangametheory.xyz/#org"}}]}</script>
     <!-- Google Search Console ownership verification; keep this tag when updating the page. -->
     <meta name="google-site-verification" content="TiaSv9B5pjjxxDyBZdWBED2xnUAGNL1vjWO6pkRiasw" />
 
@@ -47,6 +47,8 @@
          means every module downstream throws), so a CDN or DNS outage took the whole site down and
          offline development was impossible. Files are the unmodified npm dist artefacts — re-fetch a
          version with `npm pack <pkg>@<version>` and diff if you need to verify one. -->
+
+    <script src="js/app-diagnostics.js"></script>
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="vendor/leaflet-1.9.4/leaflet.css" />
@@ -114,51 +116,58 @@
         (function () {
             var cssFiles = [
                 'css/tokens.css',
-                'css/primitives.css',
+                'css/primitives.css?v=20261027-panel-buttons',
+                'css/workspace.css',
+                'css/community-voting.css',
                 'css/base.css',
                 'css/layout.css',
-                'css/map.css',
-                'css/panels.css?v=20261019-ground-identity',
-                'css/modals.css?v=20261020-profile-offers',
+                'css/map.css?v=20261028-stack-focus',
+                'css/panels.css?v=20261027-panel-buttons',
+                'css/modals.css?v=20261027-panel-buttons',
                 'css/parcel-sources.css',
-                'css/proposals.css?v=20261019-offer-funding',
-                'css/grain-score.css',
-                'css/proposal-editor.css',
+                'css/proposals.css?v=20261027-panel-buttons',
+                'css/grain-score.css?v=20261027-panel-buttons',
+                'css/proposal-editor.css?v=20261027-experimental',
                 'css/structure-geometry-editor.css',
                 'css/on-map-building.css',
                 'css/on-map-editor.css',
                 'css/on-map-reparcellization.css',
-                'css/station-geometry-editor.css',
+                'css/station-geometry-editor.css?v=20261027-station-inspection',
                 'css/corridor-editor.css',
                 'css/corridor-render.css',
                 'css/game.css',
                 'css/actor-explorer.css',
                 'css/road-analysis.css',
-                'css/utilities.css',
+                'css/utilities.css?v=20261027-panel-buttons',
                 'css/photoreal-mode.css',
                 'css/ai-scene.css',
-                'css/map-shell.css',
-                'css/activity-feed.css',
+                'css/map-shell.css?v=20261027-panel-buttons',
+                'css/activity-feed.css?v=20261027-style',
                 'css/area-monitor-list.css',
                 'css/map-credits.css',
-                'css/bets-sheet.css',
+                'css/bets-sheet.css?v=20261025-lmsr',
                 'css/site-tool.css',
                 'css/map-search.css',
-                'css/command-palette.css',
+                'css/command-palette.css?v=20261027-panel-buttons',
                 'css/world.css',
                 'css/ground-fallback.css',
-                'css/parcel-estimate.css?v=20261020-viewport',
+                'css/parcel-estimate.css?v=20261027-panel-buttons',
                 'css/urban-blocks.css',
                 'css/urban-blocks-playground.css',
                 'css/schelling-plan.css',
-                'css/proposal-details.css?v=20261020-source-state',
+                'css/proposal-details.css?v=20261027-panel-buttons',
+                'css/plan-dialog.css',
+                'css/lists.css',
                 'css/proposal-approval.css?v=20261020-approval-rules',
-                'css/agreement.css',
-                'css/agreement-dialog.css',
-                'css/mobile-sheets.css',
-                'css/planning-views.css?v=20261021-envelopes',
+                'css/agreement.css?v=20261027-agreement-tabs',
+                'css/agreement-dialog.css?v=20261027-panel-buttons',
+                'css/mobile-sheets.css?v=20261027-style',
+                'css/planning-views.css?v=20261027-stack-semantics',
                 'css/three-sun.css',
-                'css/three-click-stack.css'
+                'css/three-click-stack.css?v=20261027-stack-semantics',
+                'css/right-screen-panel.css',
+                'css/app-updates.css',
+                'css/settings-panel.css'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
@@ -180,7 +189,12 @@
 
     <!-- Reduced-motion support: must run after Leaflet, before any map is constructed -->
     <script>
-        window.writeVersionedLocalScripts(['js/ui/theme.js', 'js/reduced-motion.js']);
+        window.writeVersionedLocalScripts([
+            // bundle:start theme-motion
+            'js/ui/theme.js',
+            'js/reduced-motion.js'
+            // bundle:end theme-motion
+        ]);
     </script>
 
     <!-- Proj4js for coordinate transformations.
@@ -296,7 +310,7 @@
 
         <!-- Independent OSM block browser and inspector: side panel on desktop, collapsible phone sheet. -->
         <button type="button" id="urban-blocks-open-map" class="map-shell-button urban-blocks-open-map" hidden></button>
-        <section id="urban-block-panel" class="urban-block-panel right-dock-panel" aria-labelledby="urban-block-panel-title" hidden>
+        <section id="urban-block-panel" class="urban-block-panel right-dock-panel right-screen-panel" aria-labelledby="urban-block-panel-title" hidden>
             <header class="urban-block-panel-header">
                 <div class="urban-block-panel-heading">
                     <h2 id="urban-block-panel-title">Blocks in this area</h2>
@@ -343,7 +357,7 @@
              plan is, in the spot where the painting tool (an on-map editor) opens, so Propose reads as
              the same panel's next step. Folding keeps the plan drawn; closing hides it. -->
         <div class="schelling-panel-host" data-map-modes="2d">
-            <section id="schelling-panel" class="on-map-editor__panel on-map-editor__panel--layer schelling-panel" aria-labelledby="schelling-panel-title" hidden>
+            <section id="schelling-panel" class="right-screen-panel on-map-editor__panel on-map-editor__panel--layer schelling-panel" aria-labelledby="schelling-panel-title" hidden>
                 <header class="on-map-editor__header">
                     <div class="on-map-editor__heading">
                         <h2 id="schelling-panel-title" tabindex="-1" data-i18n-key="schellingPlan.title">Schelling plan</h2>
@@ -398,6 +412,14 @@
             <div id="floating-status" class="floating-status cb-toast cb-toast--status">
                 <span class="cb-toast__spinner" aria-hidden="true"></span><span id="floating-status-text"></span>
             </div>
+            <section id="app-update-notice" class="app-update-notice" aria-label="Application update" data-i18n-key="appUpdates.title" data-i18n-attr="aria-label" hidden>
+                <p role="status" data-i18n-key="appUpdates.available">A newer version is available.</p>
+                <div class="app-update-actions">
+                    <button type="button" class="btn btn-primary" data-app-update-reload data-i18n-key="appUpdates.reload">Reload</button>
+                    <button type="button" id="app-update-later" class="btn" data-i18n-key="appUpdates.later">Later</button>
+                </div>
+                <p id="app-update-blocked" role="status"></p>
+            </section>
         </div>
 
         <!-- ===== Floating map shell (js/ui/map-shell.js, css/map-shell.css) =====
@@ -464,19 +486,47 @@
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
                     aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>
+            <div class="cb-tabs cb-tabs--fill planning-tabs" role="tablist">
+                <button type="button" id="planning-tab-display" class="cb-tab" role="tab" aria-selected="true" aria-controls="planning-views-display"
+                    data-planning-tab="display" data-i18n-key="planningViews.tabs.display">Display</button>
+                <button type="button" id="planning-tab-compare" class="cb-tab" role="tab" aria-selected="false" aria-controls="planning-views-compare"
+                    data-planning-tab="compare" data-i18n-key="planningViews.tabs.compare">Compare</button>
+            </div>
             <div class="map-sheet-body">
-                <div class="planning-layer-controls">
-                    <button type="button" id="planning-reroll-permitted" class="btn btn-icon planning-reroll" data-planning-reroll="permitted"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
-                    <button type="button" id="planning-reroll" class="btn btn-icon planning-reroll" data-planning-reroll="proposed"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
+                <div id="planning-views-display" role="tabpanel" data-planning-tab-panel="display">
+                    <div class="planning-layer-controls">
+                        <button type="button" id="planning-reroll-permitted" class="btn btn-icon planning-reroll" data-planning-reroll="permitted"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
+                        <button type="button" id="planning-reroll" class="btn btn-icon planning-reroll" data-planning-reroll="proposed"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
+                    </div>
+                    <p class="planning-view-status"></p>
+                    <button type="button" id="planning-view-retry" class="cb-link planning-view-retry" hidden></button>
+                    <p class="planning-inspect-hint"></p>
+                    <details class="planning-coverage"><summary></summary><p></p><p class="planning-cache-summary"></p><dl class="planning-result-counts"></dl></details>
+                    <button type="button" id="planning-open-model" class="cb-link planning-open-model" hidden></button>
                 </div>
-                <p class="planning-view-status"></p>
-                <button type="button" id="planning-view-retry" class="cb-link planning-view-retry" hidden></button>
-                <p class="planning-inspect-hint"></p>
-                <details class="planning-coverage"><summary></summary><p></p><p class="planning-cache-summary"></p><dl class="planning-result-counts"></dl></details>
-                <button type="button" id="planning-open-model" class="cb-link planning-open-model" hidden></button>
+                <!-- Side by side comparison in the model view (js/three-compare.js). -->
+                <div id="planning-views-compare" class="planning-compare" role="tabpanel" data-planning-tab-panel="compare" hidden>
+                    <label class="planning-compare-toggle">
+                        <input type="checkbox" id="planning-compare-enable">
+                        <span data-i18n-key="planningViews.compare.enable">Compare side by side</span>
+                    </label>
+                    <div class="planning-compare-sides">
+                        <label class="planning-source-field">
+                            <span data-i18n-key="planningViews.compare.left">Left</span>
+                            <select id="planning-compare-left" class="planning-layer-select"></select>
+                        </label>
+                        <button type="button" id="planning-compare-swap" class="btn btn-icon planning-compare-swap" title="Swap sides" aria-label="Swap sides"
+                            data-i18n-key="planningViews.compare.swap" data-i18n-attr="title,aria-label"><i class="fa-solid fa-right-left" aria-hidden="true"></i></button>
+                        <label class="planning-source-field">
+                            <span data-i18n-key="planningViews.compare.right">Right</span>
+                            <select id="planning-compare-right" class="planning-layer-select"></select>
+                        </label>
+                    </div>
+                    <p class="planning-compare-note sheet-note" data-i18n-key="planningViews.compare.modelOnly">Open the model view to draw the comparison.</p>
+                </div>
             </div>
         </section>
-        <aside id="planning-inspector" class="planning-inspector" aria-label="Planning source details" data-i18n-key="planningViews.detailsLabel" data-i18n-attr="aria-label" hidden></aside>
+        <aside id="planning-inspector" class="right-screen-panel planning-inspector" aria-label="Planning source details" data-i18n-key="planningViews.detailsLabel" data-i18n-attr="aria-label" hidden></aside>
 
         <div id="area-monitor-drawing-toolbar" class="map-editor-toolbar" hidden>
             <span data-i18n-key="mapShell.reorg.watchedAreas">Watched areas</span>
@@ -487,12 +537,12 @@
         </div>
 
         <!-- Bottom navigation: Designs opens the right panel; Bets and Activity anchor above the row. -->
-        <div id="map-shell-bottom-right" class="map-shell-cluster map-shell-cluster--bottom-right" data-sheet-anchor>
+        <div id="map-shell-bottom-right" class="map-shell-cluster map-shell-cluster--bottom-right" data-map-modes="2d" data-sheet-anchor>
             <button type="button" id="proposals-button" class="map-shell-button map-shell-button--labelled"
                 data-sheet-target="proposals-sheet" aria-controls="proposals-sheet" aria-expanded="false"
-                title="Designs" data-i18n-key="mapShell.proposals" data-i18n-attr="title">
-                <i class="fas fa-pencil-ruler" aria-hidden="true"></i>
-                <span class="map-shell-button-label" data-i18n-key="mapShell.proposals">Designs</span>
+                title="Lists" data-i18n-key="lists.title" data-i18n-attr="title">
+                <i class="fas fa-list" aria-hidden="true"></i>
+                <span class="map-shell-button-label" data-i18n-key="lists.title">Lists</span>
                 <span id="proposals-button-count" class="map-shell-badge" aria-hidden="true">0</span>
             </button>
             <button type="button" id="activity-button" class="map-shell-button map-shell-button--labelled"
@@ -516,7 +566,7 @@
         </div>
 
         <!-- Layers sheet -->
-        <section id="layers-sheet" class="map-sheet" role="dialog" aria-labelledby="layers-sheet-title" hidden>
+        <section id="layers-sheet" class="right-screen-panel map-sheet" role="dialog" aria-labelledby="layers-sheet-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="layers-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.layers">Layers</h2>
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
@@ -570,7 +620,7 @@
                                 <label>
                                     <input type="checkbox" id="showProposalCounts"
                                         onchange="(window.Parcels?.uiProposalCounts?.toggleProposalCounts || window.toggleProposalCounts || function(){})();">
-                                    <span data-i18n-key="sidebar.parcels.showProposalCounts">Show proposals count (P)</span>
+                                    <span data-i18n-key="sidebar.parcels.showProposalCounts">Show designs count (P)</span>
                                 </label>
                                 <label>
                                     <input type="checkbox" id="markMintedCheckbox">
@@ -579,7 +629,7 @@
                             </div>
                         </div>
 
-                        <div class="btn-group layer-source-actions">
+                        <div class="cb-actions cb-actions--grid layer-source-actions">
 <button type="button" id="parcel-source-settings-button" class="btn" data-section-independent="true" onclick="openParcelSourceSettings()">
                                 <span data-i18n-key="parcelSources.title">Choose a parcel source</span>
                             </button>
@@ -629,7 +679,7 @@
                             data-i18n-key="sidebar.parcels.inViewDefault">Parcels in map view / total: 0
                             / 0</div>
 
-<button id="cadastre-view-toggle" class="btn" data-map-modes="2d" title="Cadastre view: original parcels only" data-i18n-key="claims.cadastreViewToggle" data-i18n-attr="title"><i class="fas fa-table-cells" aria-hidden="true"></i><span data-i18n-key="mapShell.reorg.originalCadastre">Original cadastre</span></button>
+<button type="button" id="cadastre-view-toggle" class="btn" data-map-modes="2d" title="Cadastre view: original parcels only" data-i18n-key="claims.cadastreViewToggle" data-i18n-attr="title"><i class="fas fa-table-cells" aria-hidden="true"></i><span data-i18n-key="mapShell.reorg.originalCadastre">Original cadastre</span></button>
 </div>
                 </details>
 
@@ -647,8 +697,10 @@
                                 <span data-i18n-key="urbanBlocks.toggle">Detect and analyse blocks</span></label>
                         </div>
                         <p id="urban-blocks-status" class="sheet-note" role="status" aria-live="polite">Load OSM roads, then colour the enclosed blocks. Parcel data is optional.</p>
+                        <div class="cb-actions cb-actions--grid">
                         <button type="button" id="urban-blocks-refresh" class="btn" disabled>Refresh this area</button>
                         <button type="button" id="urban-blocks-browse" class="btn" data-i18n-key="urbanBlocks.browse" disabled>Browse blocks</button>
+                        </div>
                         </div>
                         <div class="control-group" data-feature="parcelBlocks">
                             <div class="control-group-title" data-i18n-key="sidebar.blocks.fromParcelsTitle">From cadastral parcels</div>
@@ -663,18 +715,18 @@
                                     <span data-i18n-key="sidebar.blocks.showNames">Block names</span>
                                 </label>
                             </div>
-                            <div class="btn-group">
-                                <button class="btn btn-primary btn-block" onclick="countBlocks()"
+                            <div class="cb-actions cb-actions--grid">
+                                <button type="button" class="btn btn-primary btn-block" onclick="countBlocks()"
                                     data-i18n-key="sidebar.blocks.reformTooltip" data-i18n-attr="title">
                                     <i class="fas fa-shapes" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.blocks.reformButton">(Re)form Blocks</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="animateFloodfillFromSelected()"
+                                <button type="button" class="btn btn-primary btn-block" onclick="animateFloodfillFromSelected()"
                                     data-i18n-key="sidebar.blocks.fromSelectedTooltip" data-i18n-attr="title">
                                     <i class="fas fa-fill-drip" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.blocks.fromSelectedButton">From Selected Parcel</span>
                                 </button>
-                                <button id="showBlockListButton" class="btn btn-block" onclick="showBlocksList()" disabled>
+                                <button type="button" id="showBlockListButton" class="btn btn-block" onclick="showBlocksList()" disabled>
                                     <i class="fas fa-list" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.blocks.showListButton">Show Block List</span>
                                 </button>
@@ -730,7 +782,7 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="btn-group layer-source-actions"><button type="button" id="building-source-settings-button" class="btn" data-section-independent="true" onclick="openBuildingSourceSettings()">
+                        <div class="cb-actions layer-source-actions"><button type="button" id="building-source-settings-button" class="btn" data-section-independent="true" onclick="openBuildingSourceSettings()">
                                 <span data-i18n-key="buildingSources.title">Choose a building source</span>
                             </button></div>
                     </div>
@@ -798,50 +850,50 @@
                         <div class="control-group">
                             <div class="control-group-title" data-i18n-key="sidebar.roads.existingTitle">Existing roads
                             </div>
-                            <div class="btn-group">
-                                <button id="detectExistingRoadsButton" class="btn"
+                            <div class="cb-actions cb-actions--grid">
+                                <button type="button" id="detectExistingRoadsButton" class="btn"
                                     data-i18n-key="sidebar.roads.detectExistingTooltip" data-i18n-attr="title"
                                     onclick="detectExistingRoads()">
                                     <i class="fas fa-road" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectExisting">Detect Existing Roads</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="detectRoadsUsingAI()" disabled hidden
+                                <button type="button" class="btn btn-primary btn-block" onclick="detectRoadsUsingAI()" disabled hidden
                                     data-i18n-key="sidebar.roads.detectAiTooltip" data-i18n-attr="title">
                                     <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectAi">Detect Roads using AI</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="algorithmicRoads()" disabled hidden
+                                <button type="button" class="btn btn-primary btn-block" onclick="algorithmicRoads()" disabled hidden
                                     data-i18n-key="sidebar.roads.drawAlgorithmicTooltip" data-i18n-attr="title">
                                     <i class="fas fa-diagram-project" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.drawAlgorithmic">Draw New Roads
                                         Algorithmically</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="drawOSMRoads()"
+                                <button type="button" class="btn btn-primary btn-block" onclick="drawOSMRoads()"
                                     data-i18n-key="sidebar.roads.drawOsmTooltip" data-i18n-attr="title">
                                     <i class="fas fa-pen" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.drawOsm">Draw Roads from OSM</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="detectRoadsFromOSM()"
+                                <button type="button" class="btn btn-primary btn-block" onclick="detectRoadsFromOSM()"
                                     data-i18n-key="sidebar.roads.detectOsmTooltip" data-i18n-attr="title">
                                     <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectOsm">Detect Roads from OSM</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="drawGUPRoads()"
+                                <button type="button" class="btn btn-primary btn-block" onclick="drawGUPRoads()"
                                     data-i18n-key="sidebar.roads.drawGupTooltip" data-i18n-attr="title">
                                     <i class="fas fa-pen" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.drawGup">Draw Roads from GUP</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="detectRoadsFromGUP()"
+                                <button type="button" class="btn btn-primary btn-block" onclick="detectRoadsFromGUP()"
                                     data-i18n-key="sidebar.roads.detectGupTooltip" data-i18n-attr="title">
                                     <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectGup">Detect Roads from GUP</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="drawWFSRoadParcels()"
+                                <button type="button" class="btn btn-primary btn-block" onclick="drawWFSRoadParcels()"
                                     data-i18n-key="sidebar.roads.drawDguTooltip" data-i18n-attr="title">
                                     <i class="fas fa-pen" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.drawDgu">Draw roads from DGU</span>
                                 </button>
-                                <button class="btn btn-primary btn-block" onclick="detectRoadsFromWFS()"
+                                <button type="button" class="btn btn-primary btn-block" onclick="detectRoadsFromWFS()"
                                     data-i18n-key="sidebar.roads.detectDguTooltip" data-i18n-attr="title">
                                     <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.detectDgu">Detect roads from DGU</span>
@@ -850,10 +902,10 @@
                         </div>
                         <div class="control-group">
                             <div class="control-group-title" data-i18n-key="sidebar.roads.plansTitle">Plans and
-                                proposals
+                                designs
                             </div>
-                            <div class="btn-group">
-                                <button id="applyGovernmentRoadPlanButton" class="btn btn-primary btn-block"
+                            <div class="cb-actions">
+                                <button type="button" id="applyGovernmentRoadPlanButton" class="btn btn-primary btn-block"
                                     data-i18n-key="sidebar.roads.applyGovPlanTooltip" data-i18n-attr="title">
                                     <i class="fas fa-map-location-dot" aria-hidden="true"></i>
                                     <span data-i18n-key="sidebar.roads.applyGovPlan">Apply Government Road Plan</span>
@@ -868,8 +920,8 @@
                             <div id="progressText" class="progress-text" data-i18n-key="sidebar.roads.progressText">
                                 Processing...</div>
                         </div>
-                        <div class="btn-group road-analysis-actions">
-                            <button id="analyzeAllRoadsButton" class="btn btn-primary btn-block"
+                        <div class="cb-actions road-analysis-actions">
+                            <button type="button" id="analyzeAllRoadsButton" class="btn btn-primary btn-block"
                                 data-i18n-key="sidebar.roads.analyzeOsmTooltip" data-i18n-attr="title"
                                 onclick="analyzeAllOSMRoadSegmentsInView()">
                                 <i class="fas fa-chart-line" aria-hidden="true"></i>
@@ -935,23 +987,13 @@
                     </div>
                 </details>
             </div>
-            <div id="model-layer-controls" class="map-sheet-body" data-map-modes="3d" hidden></div>
+            <div id="model-layer-controls" class="map-sheet-body" data-map-modes="3d photo" hidden></div>
             <div class="map-sheet-body" data-map-modes="photo" hidden>
                 <div class="checkbox-group"><label><input id="photo-parcels-visible" type="checkbox" checked><span data-i18n-key="threeMode.photoParcels.toggle">Cadastral parcel boundaries</span></label></div>
                 <p id="photo-parcels-status" class="photoreal-parcel-note"></p>
+                <p class="photoreal-parcel-note" data-i18n-key="threeMode.photoParcels.note">Source boundaries projected onto Google imagery. Imagery and cadastre may differ in date and alignment.</p>
             </div>
         </section>
-
-        <aside id="photo-parcel-selection" class="photoreal-parcel-card" aria-labelledby="photo-parcel-title" hidden>
-            <div class="photoreal-parcel-card-heading">
-                <h2 id="photo-parcel-title" data-i18n-key="threeMode.photoParcels.sourceParcel">Source parcel</h2>
-                <button type="button" id="photo-parcel-close" class="close-circle-btn" aria-label="Close" data-i18n-key="common.close" data-i18n-attr="aria-label">×</button>
-            </div>
-            <p id="photo-parcel-reference" class="photoreal-parcel-reference"></p>
-            <p id="photo-parcel-area"></p>
-            <p id="photo-parcel-overlap" class="photoreal-parcel-note"></p>
-            <p class="photoreal-parcel-note" data-i18n-key="threeMode.photoParcels.note">Source boundaries projected onto Google imagery. Imagery and cadastre may differ in date and alignment.</p>
-        </aside>
 
         <section id="measurement-sheet" class="map-sheet" role="dialog" aria-labelledby="measurement-sheet-title" hidden data-map-modes="2d">
             <div class="map-sheet-header">
@@ -1016,66 +1058,35 @@
         </section>
 
         <!-- Proposals sheet: the whole sheet is the proposals section -->
-        <section id="proposals-sheet" class="map-sheet map-sheet--dock accordion-section" data-section="proposals" role="dialog"
+        <section id="proposals-sheet" class="right-screen-panel map-sheet map-sheet--dock accordion-section" data-section="proposals" role="dialog"
             aria-labelledby="proposals-sheet-title" hidden>
             <div class="map-sheet-header">
                 <h2 id="proposals-sheet-title" class="map-sheet-title">
                     <span class="accordion-title-text" data-section-title="proposals"
-                        data-i18n-key="sidebar.proposals.title">Designs</span>
+                        data-i18n-key="lists.title">Lists</span>
                 </h2>
-                <button type="button" id="designs-agreements-button" class="btn btn-sm"
-                    data-i18n-key="sidebar.proposals.agreementsButton" onclick="window.AgreementList.open()">Agreements</button>
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
                     aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>
-            <div class="designs-panel-tabs cb-segmented" role="tablist" aria-label="Designs" data-i18n-key="mapShell.proposals" data-i18n-attr="aria-label">
-                <button type="button" id="designs-browse-tab" class="cb-segmented__option" role="tab" aria-selected="true" aria-controls="designs-browse" onclick="openDesignsTab('browse')">
-                    <span data-i18n-key="mapShell.proposals">Designs</span>
-                </button>
-                <button type="button" id="shareAppliedProposalsButton" class="cb-segmented__option" role="tab" tabindex="-1" aria-selected="false" aria-controls="designs-share" onclick="openDesignsTab('share')">
-                    <i class="fas fa-share-alt" aria-hidden="true"></i>
-                    <span class="share-plan-label" data-i18n-key="mapShell.share">Share</span>
-                    <span class="share-plan-spinner" aria-live="polite" hidden><i class="fas fa-spinner fa-spin" aria-hidden="true"></i></span>
-                </button>
+            <div class="designs-panel-tabs cb-segmented" role="tablist" aria-label="Lists" data-i18n-key="lists.title" data-i18n-attr="aria-label">
+                <button type="button" id="designs-browse-tab" class="cb-segmented__option" role="tab" aria-selected="true" aria-controls="designs-browse" data-list-tab="designs"><span data-i18n-key="mapShell.proposals">Designs</span></button>
+                <button type="button" id="shareAppliedProposalsButton" class="cb-segmented__option" role="tab" tabindex="-1" aria-selected="false" aria-controls="designs-plans" data-list-tab="plans"><span data-i18n-key="lists.plans">Plans</span></button>
+                <button type="button" id="designs-agreements-tab" class="cb-segmented__option" role="tab" tabindex="-1" aria-selected="false" aria-controls="designs-agreements" data-list-tab="agreements"><span data-i18n-key="sidebar.proposals.agreementsButton">Agreements</span></button>
             </div>
-            <div class="map-sheet-body sheet-section-body">
+            <div class="map-sheet-body sheet-section-body lists-body">
+                <div id="lists-controls" class="lists-controls"></div>
+                <div id="lists-actions" class="cb-actions lists-actions"></div>
+                <p id="lists-status" class="sheet-note" role="status"></p>
                 <div id="designs-browse" role="tabpanel" aria-labelledby="designs-browse-tab">
-                <div id="proposal-list-host"></div>
-                <nav id="proposal-list-actions" aria-label="Design actions" data-i18n-key="mapShell.designActions" data-i18n-attr="aria-label">
-                <div class="control-group">
-                    <div class="btn-group">
-                        <button id="showProposalsButton" hidden class="btn btn-block btn-primary" onclick="showAllProposalsModal()"
-                            data-i18n-key="sidebar.proposals.listButton" data-i18n-params='{"count":0}'>Proposals List (0)</button>
-                        <button id="planStatsButton" class="btn btn-block plan-stats-button" disabled aria-disabled="true">
-                            <i class="fas fa-chart-pie" aria-hidden="true"></i>
-                            <span class="plan-stats-label"
-                                data-i18n-key="sidebar.proposals.planStats.buttonLabel">Applied proposal stats</span>
-                            <span class="plan-stats-spinner" aria-live="polite"
-                                style="display: none; gap: 6px; align-items: center;">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <span class="plan-stats-spinner-text"
-                                    data-i18n-key="sidebar.proposals.planStats.calculating">Calculating...</span>
-                            </span>
-                        </button>
-                        <button id="roosterScoreButton" class="btn grain-score-button" type="button" disabled
-                            title="Urban rooster"
-                            data-i18n-key="sidebar.proposals.grainScore.buttonLabel"
-                            data-i18n-attr="title,aria-label" aria-label="Urban rooster">
-                            <img class="grain-score-button__portrait" src="/images/grain-rooster-critic.png"
-                                width="44" height="44" alt="">
-                            <span class="grain-score-button__copy">
-                                <strong data-i18n-key="sidebar.proposals.grainScore.buttonLabel">Urban rooster</strong>
-                                <small class="grain-score-button__hint"
-                                    data-i18n-key="sidebar.proposals.grainScore.buttonHint">Let him inspect every resulting parcel</small>
-                                <small class="grain-score-button__empty"
-                                    data-i18n-key="sidebar.proposals.grainScore.buttonEmpty">Apply a proposal first</small>
-                            </span>
-                        </button>
-                    </div>
+                <div id="proposal-list-host" class="lists-rows"></div>
+                <button id="showProposalsButton" hidden class="btn btn-block btn-primary" onclick="showAllProposalsModal()"
+                    data-i18n-key="sidebar.proposals.listButton" data-i18n-params='{"count":0}'>Designs List (0)</button>
                 </div>
-            </nav>
+                <div id="designs-plans" role="tabpanel" aria-labelledby="shareAppliedProposalsButton" hidden>
+                    <div id="plan-file-actions"></div>
+                    <div id="plan-list-host" class="lists-rows"></div>
                 </div>
-                <div id="designs-share" role="tabpanel" aria-labelledby="shareAppliedProposalsButton" hidden></div>
+                <div id="designs-agreements" class="lists-rows" role="tabpanel" aria-labelledby="designs-agreements-tab" hidden></div>
             </div>
         </section>
 
@@ -1089,14 +1100,14 @@
             <div class="map-sheet-body bets-sheet-body">
                 <p class="bets-tagline">
                     <strong data-i18n-key="bets.tagline">Bet on cities</strong>
-                    <span data-i18n-key="bets.intro">These pools settle from proposal status on Solana devnet: Executed means yes; Cancelled or Expired means no.</span>
+                    <span data-i18n-key="bets.intro">Bet on whether agreements execute by a deadline. Use points without a wallet, or devnet USDC.</span>
                 </p>
                 <div id="bets-sheet-content" class="bets-content" aria-live="polite"></div>
                 <details class="bets-how">
                     <summary data-i18n-key="bets.how.title">How bets work</summary>
-                    <p data-i18n-key="bets.how.pools">Each proposal has its own yes/no pool. Groups follow shared parcel references; several proposals in a group can execute.</p>
-                    <p data-i18n-key="bets.how.settle">Executed on-chain settles yes; cancelled or expired settles no. The winning side shares the whole pool in proportion to its bets.</p>
-                    <p data-i18n-key="bets.how.devnet">Bets use devnet USDC, which has no value. Get devnet SOL and USDC from the faucets.</p>
+                    <p data-i18n-key="bets.how.pools">Each agreement has its own YES/NO bet. Both, one or neither agreement over the same land can execute.</p>
+                    <p data-i18n-key="bets.how.settle">Each winning share pays 1; losing shares pay 0. Execution must happen by the deadline. Cancellation voids the bet and pays 0.5 per share.</p>
+                    <p data-i18n-key="bets.how.devnet">Points and devnet USDC are play money with no cash value. Each has separate prices and positions.</p>
                     <p class="bets-how-links">
                         <a class="cb-link cb-link--external" href="https://faucet.solana.com" target="_blank" rel="noopener noreferrer" data-i18n-key="bets.how.faucetSol">Solana faucet</a>
                         ·
@@ -1172,16 +1183,12 @@
             </div>
         </section>
 
-        <!-- Settings sheet -->
-        <section id="settings-sheet" class="map-sheet" role="dialog" aria-labelledby="settings-sheet-title" hidden>
-            <div class="map-sheet-header">
-                <h2 id="settings-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.settings">Settings</h2>
-                <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
-                    aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
-            </div>
-            <div class="map-sheet-body">
+        <!-- Settings: preferences and tools, with a fixed brand header and build footer. -->
+        <section id="settings-sheet" class="right-screen-panel map-sheet" role="dialog" aria-labelledby="settings-sheet-title" hidden>
+            <div class="map-sheet-header settings-header">
+                <h2 id="settings-sheet-title" class="map-shell-sr-only" data-i18n-key="mapShell.settings">Settings</h2>
                 <div class="settings-brand">
-                    <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo" class="settings-brand-logo">
+                    <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo" class="settings-brand-logo" loading="lazy">
                     <span class="settings-brand-title" data-i18n-key="sidebar.header.title">Consensus Builder</span>
                     <span class="cb-badge cb-badge--info" data-i18n-key="sidebar.header.aiBadgeTooltip"
                         data-i18n-attr="title,aria-label"
@@ -1191,31 +1198,15 @@
                         <span data-i18n-key="sidebar.header.aiBadge">AI-friendly</span>
                     </span>
                 </div>
-                <details class="accordion-section" data-section="navigation">
-                    <summary class="sheet-section-title">
-                        <i class="fas fa-compass" aria-hidden="true"></i>
-                        <span data-i18n-key="mapShell.settingsSections.navigation">Navigation</span>
-                    </summary>
-                    <div class="sheet-section-body">
-                        <div class="btn-group sheet-shortcuts">
-                            <button type="button" id="world-view-button" class="btn settings-palette-button">
-                                <i class="fas fa-earth-europe" aria-hidden="true"></i>
-                                <span data-i18n-key="mapShell.commands.worldView">World view</span>
-                            </button>
-                            <button type="button" id="command-palette-button" class="btn settings-palette-button">
-                                <i class="fas fa-terminal" aria-hidden="true"></i>
-                                <span data-i18n-key="commandPalette.open">Command palette</span>
-                                <kbd class="settings-palette-shortcut" data-command-palette-shortcut>Ctrl K</kbd>
-                            </button>
-                        </div>
-                    </div>
-                </details>
-                <details class="accordion-section" data-section="appearance">
-                    <summary class="sheet-section-title">
+                <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
+                    aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
+            </div>
+            <div class="map-sheet-body settings-content">
+                <section class="settings-section" data-section="appearance"><h3 class="settings-section-title">
                         <i class="fas fa-palette" aria-hidden="true"></i>
                         <span data-i18n-key="mapShell.appearance.label">Appearance</span>
-                    </summary>
-                    <div class="sheet-section-body">
+                    </h3>
+<div class="sheet-section-body">
                         <div class="settings-appearance">
                             <div class="cb-segmented cb-segmented--fill" role="group" aria-label="Appearance" data-i18n-key="mapShell.appearance.label" data-i18n-attr="aria-label">
                                 <button type="button" id="theme-choice-system" class="cb-segmented__option" data-theme-choice="system" aria-pressed="true"
@@ -1226,33 +1217,33 @@
                                     data-i18n-key="mapShell.appearance.dark">Dark</button>
                             </div>
                         </div>
+                    </div></section>
+                <section class="settings-section" data-section="assumptions">
+                    <h3 class="settings-section-title" data-i18n-key="settingsPanel.dataAssumptions">Data &amp; assumptions</h3>
+                    <div class="settings-links"><a id="source-system-link" class="btn" href="/sources.html" data-i18n-key="sourceSystem.title">Sources &amp; adapters</a><button type="button" id="economic-source-settings-button" class="btn" data-i18n-key="economicSources.title">Valuation &amp; costs</button><button type="button" id="parcel-source-notice-button" class="btn" onclick="openParcelSourceNotice()">
+                                <span data-i18n-key="parcelSourceNotice.title">Parcel source information</span>
+                            </button></div>
+                </section>
+                <section class="settings-section" data-section="help">
+                    <h3 class="settings-section-title" data-i18n-key="settingsPanel.helpAbout">Help &amp; about</h3>
+                    <div class="settings-links">
+                        <button type="button" class="btn site-intro-reopen" data-site-intro-open>
+                                <i class="fas fa-map" aria-hidden="true"></i>
+                                <span data-i18n-key="modal.siteIntro.open">How it works</span>
+                            </button>
+                        <a class="btn" href="how-to-use.html" target="_blank" rel="noopener noreferrer" data-i18n-key="settingsPanel.userGuide">User guide</a>
+                        <button type="button" id="settings-credits-button" class="btn" data-settings-reference="credits" data-i18n-key="mapCredits.title">Sources &amp; software</button>
+                        <button type="button" id="settings-contact-button" class="btn" data-settings-reference="contact" data-i18n-key="sidebar.info.contactTitle">Contact</button>
+                        <button type="button" id="settings-about-button" class="btn" data-settings-reference="about" data-i18n-key="sidebar.info.aboutTitle">About</button>
                     </div>
-                </details>
-                <details class="accordion-section" data-section="sources">
-                    <summary class="sheet-section-title">
-                        <i class="fas fa-database" aria-hidden="true"></i>
-                        <span data-i18n-key="sourceSystem.title">Sources &amp; adapters</span>
-                    </summary>
+                </section>
+                <details class="accordion-section settings-advanced" data-section="advanced">
+                    <summary class="sheet-section-title" data-i18n-key="settingsPanel.advanced">Advanced</summary>
                     <div class="sheet-section-body">
-                        <a id="source-system-link" class="btn" href="/sources.html" data-i18n-key="sourceSystem.title">Sources &amp; adapters</a>
-                    </div>
-                </details>
-                <details class="accordion-section" data-section="economics">
-                    <summary class="sheet-section-title">
-                        <i class="fas fa-coins" aria-hidden="true"></i>
-                        <span data-i18n-key="economicSources.title">Valuation &amp; costs</span>
-                    </summary>
-                    <div class="sheet-section-body">
-                        <button type="button" id="economic-source-settings-button" class="btn" data-i18n-key="economicSources.title">Valuation &amp; costs</button>
-                    </div>
-                </details>
-                <details class="accordion-section" data-section="data">
-                    <summary class="sheet-section-title">
-                        <i class="fas fa-database" aria-hidden="true"></i>
-                        <span data-i18n-key="mapShell.maintenance.localData">Local (browser) data</span>
-                    </summary>
-                    <div class="sheet-section-body">
-                        <div class="btn-group" data-section="parcels">
+                        <section class="settings-section" data-section="data">
+                            <h4 class="settings-section-title" data-i18n-key="mapShell.maintenance.localData">Local (browser) data</h4>
+                            <div class="sheet-section-body">
+                        <div class="cb-actions" data-section="parcels">
                             <button type="button" id="showParcelCoverageButton" data-map-modes="2d" class="btn"
                                 title="Visualize which grid cells are cached locally and how they compare to the current view."
                                 data-i18n-key="sidebar.parcels.coverageTooltip" data-i18n-attr="title">
@@ -1261,7 +1252,7 @@
                             </button>
                         </div>
                         <div class="control-group" data-section="parcels">
-                            <div class="btn-group">
+                            <div class="cb-actions">
                                 <button type="button" class="btn btn-danger debug-only-control"
                                     onclick="(window.Parcels?.fetch?.clearLocalParcelData || window.clearLocalParcelData || function(){})()"
                                     data-i18n-key="sidebar.parcels.clearTooltip" data-i18n-attr="title">
@@ -1271,7 +1262,7 @@
                             </div>
                         </div>
                         <div class="control-group" data-section="blocks">
-                            <div class="btn-group">
+                            <div class="cb-actions">
                                 <button type="button" class="btn btn-danger debug-only-control" onclick="clearBlocks()"
                                     data-i18n-key="sidebar.blocks.clearTooltip" data-i18n-attr="title">
                                     <i class="fas fa-trash" aria-hidden="true"></i>
@@ -1280,7 +1271,7 @@
                             </div>
                         </div>
                         <div class="control-group" data-section="roads">
-                            <div class="btn-group">
+                            <div class="cb-actions">
                                 <button type="button" class="btn btn-danger debug-only-control" onclick="clearDetectedRoads()"
                                     data-i18n-key="sidebar.roads.clearTooltip" data-i18n-attr="title">
                                     <i class="fas fa-trash" aria-hidden="true"></i>
@@ -1288,79 +1279,14 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="control-group" data-section="proposals">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-danger debug-only-control" onclick="clearLocalProposalData()">
-                                    <i class="fas fa-trash" aria-hidden="true"></i>
-                                    <span data-i18n-key="sidebar.proposals.clearButton">Clear Proposals From Local Storage</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" id="wipeLocalDataButton" class="btn btn-danger" onclick="wipeLocalData()"
-                                title="Clear all locally stored data (parcels, roads, proposals, settings)"
-                                data-i18n-key="sidebar.info.wipeDataTooltip" data-i18n-attr="title">
-                                <i class="fas fa-skull-crossbones" aria-hidden="true"></i>
-                                <span data-i18n-key="sidebar.info.wipeDataButton">Reset everything (this browser)</span>
-                            </button>
-                        </div>
+
                     </div>
-                </details>
-                <details class="accordion-section" data-section="info">
-                    <summary class="sheet-section-title">
-                        <i class="fas fa-info-circle" aria-hidden="true"></i>
-                        <span data-i18n-key="sidebar.info.title">Information</span>
-                    </summary>
-                    <div class="sheet-section-body">
-                        <div class="info-subsection">
-                            <h4 id="map-credits-title" tabindex="-1" data-i18n-key="mapCredits.title">Sources &amp; software</h4>
-                            <p data-i18n-key="mapCredits.description">Map and data credits for the current city, plus the software used by this app.</p>
-                            <dl id="map-credits-details" class="map-credits-details"></dl>
-                        </div>
-                        <hr>
-                        <div class="info-subsection">
-                            <h4 data-i18n-key="sidebar.info.contactTitle">Contact</h4>
-                            <p>
-                                <span data-i18n-key="sidebar.info.telegramLabel">Telegram</span>: <a class="cb-link cb-link--external"
-                                href="https://t.me/urbangametheory" target="_blank" rel="noopener noreferrer">https://t.me/urbangametheory</a><br>
-                                <span data-i18n-key="sidebar.info.xLabel">X</span>: <a class="cb-link cb-link--external"
-                                href="https://x.com/UrbanGameTheory" target="_blank" rel="me noopener noreferrer">@UrbanGameTheory</a><br>
-                            </p>
-                        </div>
-                        <hr>
-                        <div class="info-subsection">
-                            <h4 data-i18n-key="sidebar.info.aboutTitle">About</h4>
-                            <p data-i18n-key="sidebar.info.aboutParagraph" data-i18n-attr="html">
-                                <strong>Consensus Builder</strong> is Urban Game Theory's free, map-based planning tool. Hyperstition: Markets for Possible Cities is its hackathon project. Explore real parcels, compare community zoning and development proposals, and build support with the people affected. Read about the <a class="cb-link" href="/urban-planning.html">open city planning workflow</a>, open the
-                                <a class="cb-link" href="/hackathon-demo.html">live hackathon demo</a>, read the
-                                <a class="cb-link" href="/deck.html">pitch deck</a>, or see <a class="cb-link" href="roadmap.html" target="_blank" rel="noopener noreferrer">the roadmap</a>.
-                            </p>
-                            <button type="button" class="btn site-intro-reopen" data-site-intro-open>
-                                <i class="fas fa-map" aria-hidden="true"></i>
-                                <span data-i18n-key="modal.siteIntro.open">How it works</span>
-                            </button>
-                            <button type="button" id="parcel-source-notice-button" class="btn" onclick="openParcelSourceNotice()">
-                                <span data-i18n-key="parcelSourceNotice.title">Parcel source information</span>
-                            </button>
-                        </div>
-                        <hr>
-                        <div class="info-subsection">
-                            <h4 data-i18n-key="sidebar.info.instructionsTitle">Start here</h4>
-                            <p data-i18n-key="sidebar.info.instructionsParagraph" data-i18n-attr="html">
-                                <strong>Build first, propose second.</strong> New designs appear on the map immediately, so
-                                you can edit, park, compare and share them before adding formal terms. Read the
-                                <a class="cb-link" href="how-to-use.html" target="_blank" rel="noopener noreferrer">step-by-step guide</a>, or see what works today
-                                and what comes next on the <a class="cb-link" href="roadmap.html" target="_blank" rel="noopener noreferrer">roadmap</a>.
-                            </p>
-                        </div>
-                    </div>
-                </details>
-                <details class="accordion-section activity-simulation" data-section="game">
-                    <summary class="sheet-section-title">
+                        </section>
+                        <section class="settings-section activity-simulation" data-section="game"><h4 class="settings-section-title">
                         <i class="fas fa-play" aria-hidden="true"></i>
                             <span data-section-title="game" data-i18n-key="mapShell.simulation.title">Simulation</span>
-                    </summary>
-                    <div class="sheet-section-body">
+                    </h4>
+<div class="sheet-section-body">
                         <label class="checkbox-group activity-simulation-switch">
                             <input type="checkbox" id="gameCheckbox" data-layer="game" onchange="toggleAccordion(this)">
                             <span data-i18n-key="sidebar.game.enable">Enable game mode</span>
@@ -1395,22 +1321,20 @@
                                     </div>
                                     <div class="turn-progress-time" id="turn-progress-time">--</div>
                                 </div>
-                                <div class="btn-group">
-                                    <button class="btn btn-danger" onclick="resetGameState(true)">
+                                <div class="cb-actions">
+                                    <button type="button" class="btn btn-danger" onclick="resetGameState(true)">
                                         <i class="fas fa-rotate-left" aria-hidden="true"></i>
                                         <span data-i18n-key="sidebar.game.newGame">New Game</span>
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </details>
-                <details class="accordion-section activity-diagnostics" data-section="diagnostics">
-                    <summary class="sheet-section-title">
+                    </div></section>
+                        <section class="settings-section activity-diagnostics" data-section="diagnostics"><h4 class="settings-section-title">
                         <i class="fas fa-stethoscope" aria-hidden="true"></i>
                         <span data-i18n-key="activityPanel.diagnostics">Diagnostics</span>
-                    </summary>
-                    <div class="sheet-section-body">
+                    </h4>
+<div class="sheet-section-body">
                         <div class="settings-badge-bar" hidden>
                             <span id="dev-badge" class="cb-badge cb-badge--warning" hidden
                                 data-i18n-key="sidebar.header.devBadge">Development</span>
@@ -1428,10 +1352,60 @@
                             <span id="status" data-i18n-key="hud.statusReady">App initialized, loading parcels...</span>
                             <div id="status-log-expanded" class="status-log-expanded" style="display: none;"></div>
                         </div>
+                    </div></section>
+                        <section class="settings-section settings-reset">
+                            <h4 class="settings-section-title" data-i18n-key="settingsPanel.resetBrowserData">Reset browser data</h4>
+                            <p class="settings-note" data-i18n-key="settingsPanel.resetDescription">Deletes designs, plans, agreements, cached data and settings stored in this browser.</p>
+                            <div class="cb-actions">
+                            <button type="button" id="wipeLocalDataButton" class="btn btn-danger" onclick="wipeLocalData()"
+                                title="Clear all locally stored data (parcels, roads, designs, settings)"
+                                data-i18n-key="sidebar.info.wipeDataTooltip" data-i18n-attr="title">
+                                <i class="fas fa-skull-crossbones" aria-hidden="true"></i>
+                                <span data-i18n-key="settingsPanel.resetBrowserData">Reset browser data</span>
+                            </button>
+                        </div>
+                        </section>
                     </div>
                 </details>
             </div>
+            <footer class="settings-footer"><div class="app-update-info">
+                            <strong id="app-running-build"></strong>
+                            <p id="app-deployed-at" class="app-update-meta" hidden></p>
+                            <div class="app-update-actions">
+                                <button type="button" id="app-update-check" class="btn"><i class="fas fa-arrows-rotate" aria-hidden="true"></i> <span data-i18n-key="appUpdates.check">Check for updates</span></button>
+                                <button type="button" class="btn btn-primary" data-app-update-reload data-i18n-key="appUpdates.reload" hidden>Reload</button>
+                            </div>
+                            <p id="app-update-state" role="status"></p>
+                            <p id="app-update-last-checked" class="app-update-meta"></p>
+                            <p id="app-update-reload-hint" role="status"></p>
+                        </div></footer>
         </section>
+        <div id="settings-reference-store" hidden>
+            <div id="settings-reference-credits"><div class="info-subsection">
+
+                            <p data-i18n-key="mapCredits.description">Map and data credits for the current city, plus the software used by this app.</p>
+                            <dl id="map-credits-details" class="map-credits-details"></dl>
+                        </div></div>
+            <div id="settings-reference-contact"><div class="info-subsection">
+
+                            <p>
+                                <span data-i18n-key="sidebar.info.telegramLabel">Telegram</span>: <a class="cb-link cb-link--external"
+                                href="https://t.me/urbangametheory" target="_blank" rel="noopener noreferrer">https://t.me/urbangametheory</a><br>
+                                <span data-i18n-key="sidebar.info.xLabel">X</span>: <a class="cb-link cb-link--external"
+                                href="https://x.com/UrbanGameTheory" target="_blank" rel="me noopener noreferrer">@UrbanGameTheory</a><br>
+                            </p>
+                        </div></div>
+            <div id="settings-reference-about"><div class="info-subsection">
+
+                            <p data-i18n-key="sidebar.info.aboutParagraph" data-i18n-attr="html">
+                                <strong>Consensus Builder</strong> is Urban Game Theory's free, map-based planning tool. Hyperstition: Markets for Possible Cities is its hackathon project. Explore real parcels, compare community zoning and development designs, and build support with the people affected. Read about the <a class="cb-link" href="/urban-planning.html">open city planning workflow</a>, open the
+                                <a class="cb-link" href="/hackathon-demo.html">live hackathon demo</a>, read the
+                                <a class="cb-link" href="/deck.html">pitch deck</a>, or see <a class="cb-link" href="roadmap.html" target="_blank" rel="noopener noreferrer">the roadmap</a>.
+                            </p>
+
+
+                        </div></div>
+        </div>
         <div id="station-placement-toolbar" class="map-editor-toolbar" hidden>
             <span id="station-placement-status" role="status" aria-live="polite"></span>
             <button type="button" class="btn" onclick="cancelTransitStationPlacement()" data-i18n-key="common.cancel">Cancel</button>
@@ -1439,7 +1413,7 @@
         <!-- ===== End floating map shell ===== -->
 
         <!-- Parcel Info Panel -->
-        <div id="parcel-info-panel" class="info-panel right-dock-panel">
+        <div id="parcel-info-panel" class="info-panel right-dock-panel right-screen-panel">
             <div class="panel-header">
                 <h3 id="parcel-info-title" data-i18n-key="panel.parcel.title">Parcel Info</h3>
                 <button type="button" id="parcel-info-minimize" class="close-circle-btn close-circle-btn--lg"
@@ -1452,8 +1426,7 @@
 
             <div class="cb-actions parcel-context-actions">
                 <div class="multi-select-group">
-                    <span class="multi-select-title" data-i18n-key="panel.parcel.selectMultiple">Select multiple
-                        parcels</span>
+                    <span class="multi-select-title" data-i18n-key="panel.parcel.selectMultiple">Select a parcel to start designing. You can also select multiple parcels manually or auto detect and select a block of parcels.</span>
                     <div class="multi-select-options">
                         <button type="button" id="parcel-manual-selection" class="btn btn-sm" aria-pressed="false"
                             onclick="multiParcelSelection.toggle()"
@@ -1472,18 +1445,20 @@
                  strip is the shared cb-tabs (css/primitives.css); parcel-tab-btn / parcel-tabs stay
                  as the hooks switchParcelTab (js/parcels/proposals.js) and the specs find them by. -->
             <div class="cb-tabs cb-tabs--fill parcel-tabs" role="tablist">
-                <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="true"
+                <button type="button" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" role="tab" aria-selected="true"
                     aria-controls="propose-tab" data-parcel-tab-id="propose-tab"
-                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')"><span
-                        class="parcel-tab-label" data-i18n-key="proposalDrafts.tabs.design">Design</span></button>
-                <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="false"
+                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'propose-tab')"
+                    aria-label="Design" title="Design" data-i18n-key="proposalDrafts.tabs.design" data-i18n-attr="aria-label,title"><i
+                        class="fas fa-pen" aria-hidden="true"></i></button>
+                <button type="button" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" role="tab" aria-selected="false"
                     aria-controls="info-tab" data-parcel-tab-id="info-tab"
-                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')"><span
-                        class="parcel-tab-label" data-i18n-key="panel.parcel.tabInfo">Info</span></button>
+                    onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'info-tab')"
+                    aria-label="Info" title="Info" data-i18n-key="panel.parcel.tabInfo" data-i18n-attr="aria-label,title"><i
+                        class="fas fa-circle-info" aria-hidden="true"></i></button>
                 <button type="button" class="cb-tab parcel-tab-btn" role="tab" aria-selected="false"
                     aria-controls="proposals-tab" data-parcel-tab-id="proposals-tab"
                     onclick="(window.Parcels?.proposals?.switchParcelTab || window.switchParcelTab || function(){})(this, 'proposals-tab')"><span
-                        class="parcel-tab-label" data-i18n-key="panel.parcel.tabProposals">Proposals</span><span
+                        class="parcel-tab-label" data-i18n-key="panel.parcel.tabProposals">Designs</span><span
                         class="cb-badge cb-badge--count parcel-tab-count" hidden></span></button>
                 <button type="button" class="cb-tab parcel-tab-btn parcel-tab-btn--icon" role="tab" aria-selected="false"
                     aria-controls="tools-tab" data-parcel-tab-id="tools-tab"
@@ -1566,19 +1541,19 @@
         </div>
 
         <!-- Proposal Details Panel -->
-        <div id="proposal-details-panel" class="info-panel right-dock-panel" role="region" aria-labelledby="proposal-details-title">
+        <div id="proposal-details-panel" class="info-panel right-dock-panel right-screen-panel" role="region" aria-labelledby="proposal-details-title">
             <div class="panel-header">
-                <h3 id="proposal-details-title">Proposal Details</h3>
+                <h3 id="proposal-details-title">Design Details</h3>
                 <div class="panel-header__actions">
                     <button id="proposal-details-minimize" type="button"
                         class="close-circle-btn close-circle-btn--lg proposal-details-toggle"
-                        aria-label="Minimize proposal details" title="Minimize proposal details"
+                        aria-label="Minimize design details" title="Minimize design details"
                         aria-controls="proposal-details-body" aria-expanded="true"
                         data-i18n-key="sidebar.areaMonitor.minimize" data-i18n-attr="aria-label,title"
                         onclick="toggleProposalDetailsPanelMinimized()">&#8722;</button>
                     <button id="proposal-details-close" type="button"
                         class="close-circle-btn close-circle-btn--lg close-button"
-                        aria-label="Close proposal details" title="Close proposal details"
+                        aria-label="Close design details" title="Close design details"
                         data-i18n-key="modal.common.close" data-i18n-attr="aria-label,title"
                         onclick="hideProposalDetailsPanel()">×</button>
                 </div>
@@ -1590,7 +1565,7 @@
         </div>
 
         <!-- Block Info Panel -->
-        <div id="block-info-panel" class="info-panel">
+        <div id="block-info-panel" class="right-screen-panel info-panel">
             <div class="panel-header">
                 <h3 id="block-info-title">Block Info</h3>
                 <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
@@ -1605,7 +1580,7 @@
                 <button type="button" id="block-proposals-tab-button" class="cb-tab" role="tab" aria-selected="false"
                     aria-controls="block-proposals-tab" data-target="block-proposals-tab"
                     onclick="switchBlockTab(this, 'block-proposals-tab')"><span
-                        data-i18n-key="panel.parcel.tabProposals">Proposals</span><span
+                        data-i18n-key="panel.parcel.tabProposals">Designs</span><span
                         class="cb-badge cb-badge--count block-tab-count" hidden></span></button>
                 <button type="button" id="block-tools-tab-button" class="cb-tab" role="tab" aria-selected="false"
                     aria-controls="block-tools-tab" data-target="block-tools-tab"
@@ -1628,10 +1603,10 @@
         </div>
 
         <!-- Road Info Panel -->
-        <div id="road-info-panel" class="info-panel right-dock-panel">
+        <div id="road-info-panel" class="info-panel right-dock-panel right-screen-panel">
             <div class="road-panel-header">
                 <h3 id="road-panel-title" data-i18n-key="panel.road.title">Draw road</h3>
-                <input type="file" id="corridorImportInput" accept=".osm,.json,.xodr" hidden>
+                <input type="file" id="corridorImportInput" accept=".osm,.json,.geojson,.xodr" hidden>
                 <!-- In the header's flex row, not absolutely positioned over it: out of flow, the header
                      could not reserve their width and the title slid underneath them. -->
                 <div class="road-panel-actions">
@@ -1722,7 +1697,7 @@
                     <div class="metric-value" id="road-acquire-difficulty">—</div>
                 </div>
             </div>
-            <!-- Undo · Finish · Cancel: the panel's last row while a road or track is drawn (shown by
+            <!-- Undo · Done · Cancel: the panel's last row while a road or track is drawn (shown by
                  js/road-drawing.js). Part of the panel, so it docks, minimises and reads with it; the
                  metrics above scroll and this row stays. -->
             <div id="road-drawing-controls" class="road-panel-controls" hidden>
@@ -1730,14 +1705,14 @@
                     <button id="undoRoadButton" class="btn" onclick="undoLastRoadOrTrackSegment()"
                         data-i18n-key="panel.road.undoButton">Undo (U)</button>
                     <button id="finishRoadButton" class="btn btn-success" onclick="finishRoadOrTrackDrawing()"
-                        data-i18n-key="panel.road.finishButtonShort">Finish</button>
+                        data-i18n-key="common.done">Done</button>
                     <button type="button" class="btn" onclick="cancelRoadOrTrackDrawing()" data-i18n-key="common.cancel">Cancel</button>
                 </div>
             </div>
         </div>
 
         <!-- New Road Analysis Panel -->
-        <div id="road-analysis-panel" class="info-panel">
+        <div id="road-analysis-panel" class="right-screen-panel info-panel">
             <button type="button" class="close-circle-btn close-circle-btn--lg close-button"
                 aria-label="Close road analysis" data-i18n-key="modal.common.close" data-i18n-attr="aria-label,title"
                 onclick="hideRoadAnalysisPanel()">×</button>
@@ -1790,7 +1765,7 @@
 
         <!-- OSM Road Segment List Popup: a right-dock panel under the top-right buttons. Shown and
              hidden through style.display (js/road-analysis.js; three-mode.js hides it on entering 3D). -->
-        <div id="osm-road-segment-list-popup" class="info-panel right-dock-panel road-analysis-modal" role="region"
+        <div id="osm-road-segment-list-popup" class="info-panel right-dock-panel right-screen-panel road-analysis-modal" role="region"
             aria-labelledby="osm-road-segment-list-title" style="display: none;">
             <div class="panel-header">
                 <h3 id="osm-road-segment-list-title" data-i18n-key="panel.roadAnalysis.modalTitle">Road width analysis</h3>
@@ -1819,13 +1794,16 @@
     </div>
 
     <script>
+        window.__CB_WORKSPACE_REQUIRED__ = true;
         window.writeVersionedLocalScripts([
-            'js/optional-tools-loader.js',
+            'js/optional-tools-loader.js?v=20261027-stack-properties',
             'js/shared-utils.js',
-            'js/ui/banner-stack.js',
             // bundle:start foundation
+            'js/ui/banner-stack.js',
             'js/ui/modal-escape.js',
-            'js/ui/dialogs.js',
+            'js/ui/dialogs.js?v=20261027-agreement-focus',
+            'js/browser-workspace.js',
+            'js/workspace-screen.js',
             'js/persistent-storage.js',
             'js/i18n.js',
             'js/format.js',
@@ -1836,7 +1814,6 @@
             'js/economic-sources.js',
             'js/city-money.js',
             'js/economic-source-settings.js',
-            'js/multi-tab-guard.js',
             'js/work-slicer.js',
             // bundle:end foundation
             'js/versions.js',
@@ -1848,7 +1825,11 @@
             'js/three-view-state.js',
             'js/map-share.js',
             'js/plan-record.js',
-            'js/named-plans.js',
+            'js/named-plans.js?v=20261027-agreement-tabs',
+            'js/plan-composition.js',
+            'js/plan-workspace.js',
+            'js/plan-dialog.js?v=20261027-create-plan-stack',
+            'js/lists-panel.js',
             'js/camera-flight-share.js',
             'js/camera-flight-loader.js',
             'js/wipe-local-data.js',
@@ -1858,11 +1839,15 @@
             'js/metric-frame.js',
             'js/imagery-source.js',
             'js/parcel-source-settings.js',
+            // The index of every city (light configurations) and its row format, read by city-config.js,
+            // which then writes the current city's full configuration (data/cities/<id>.js) into the page.
+            'js/city-light-config.js',
+            'data/city-index.js',
             // bundle:end environment-before-city
-            'js/city-config.js?v=20261020-ljubljana-gurs',
+            'js/city-config.js?v=20261028-city-index',
             // bundle:start environment-after-city
             'js/parcel-source-notice.js',
-            'js/ui/world-entry.js?v=20261020-merged-semantics',
+            'js/ui/world-entry.js?v=20261026-globe-failure',
             'js/city-switch-prompt.js',
             'js/ens/ens-name.js'
             // bundle:end environment-after-city
@@ -1911,12 +1896,16 @@
     </script>
     <script>
         window.writeVersionedLocalScripts([
+            // bundle:start proposal-evidence-routing
             'js/proposals/lifecycle-evidence.js?v=20261020-observation',
             'js/solana/rpc-routing.js',
+            // bundle:end proposal-evidence-routing
             'js/proposals/status.js?v=20261019-local-consent',
+            // bundle:start proposal-display-state
             'js/proposals/display-state.js?v=20261020-recorded-execution',
             'js/proposals/epoch.js?v=20261020-explicit-publication',
             'js/proposals/counts.js',
+            // bundle:end proposal-display-state
             'js/proposal-parcel-identity.js',
             // bundle:start chain-clients
             'js/wallet-connection.js',
@@ -1929,7 +1918,8 @@
             'js/solana/agreement-bridge.js?v=20261022-agreement-chain',
             'js/proposals/site-hash.js',
             'js/solana/market-client.js?v=20261020-verified-funding',
-            'js/solana/market-bridge.js?v=20261022-agreement-chain',
+            'js/solana/lmsr-client.js?v=20261025',
+            'js/solana/market-bridge.js?v=20261025-lmsr',
             'js/solana/parcel-mint.js?v=20261022-agreement-chain',
             'js/asset-upload.js',
             'js/contracts-loader.js',
@@ -1948,16 +1938,16 @@
             'js/parcels/utils/fetch-config.js',
             'js/parcels/controller.js',
             'js/parcels/activity-listener.js',
-            // bundle:end parcel-data-clients
             // Existing buildings: shared height/extrusion rules, the provider core,
             // and the client routing every building read through the backend.
             'js/building-extrusion.js',
             'js/footprint-provider.js',
             'js/building-source-client.js',
+            // bundle:end parcel-data-clients
             'js/map-core.js?v=20261009-map-credits',
             'js/user-management.js?v=20261020-modeled-totals',
             'js/site-intro.js',
-            'js/map-controls.js',
+            'js/map-controls.js?v=20261027-panel-buttons',
             // bundle:start map-ui
             'js/urban-blocks-model.js',
             'js/urban-blocks-controller.js',
@@ -1971,31 +1961,39 @@
             'js/schelling/schelling-layer.js',
             'js/schelling/schelling-propose.js',
             'js/ui/busy-control.js',
-            'js/ui/commands.js',
+            'js/release-updates.js',
+            'js/ui/app-updates.js',
+            'js/ui/settings-panel.js',
+            'js/ui/commands.js?v=20261027-station-inspection',
             'js/ui/map-shell.js',
+            'js/ui/dock-clearance.js',
             'js/planning/scene.js?v=20261021-envelopes',
             'js/planning/envelopes.js?v=20261021-envelopes',
             'js/planning/representations.js?v=20261020-qualified-inspection',
             'js/planning/source-proposal.js',
             'js/planning/feed.js',
             'js/planning/parcel-assessment.js?v=20261021-permitted-envelopes',
-            'js/planning/views.js?v=20261021-envelopes',
+            'js/planning/views.js?v=20261027-station-inspection',
             'js/approval-link.js',
             'js/draft-link.js',
             'js/draft-preview.js',
             'js/bets/bets-link.js',
+            'js/bets/bets-telemetry.js?v=20261025',
             'js/bets/lmsr.js',
+            'js/bets/betting-contract.js?v=20261025',
+            'js/bets/bets-trading.js?v=20261025',
+            'js/bets/bets-ui.js?v=20261025',
             'js/bets/sha256.js',
             'js/bets/market-question.js',
-            'js/bets/bets-model.js?v=20261019-market-evidence',
-            'js/bets/bets-dialog.js?v=20261019-market-evidence',
-            'js/bets/bets-sheet.js?v=20261019-market-evidence',
+            'js/bets/bets-model.js?v=20261025-lmsr',
+            'js/bets/bets-dialog.js?v=20261025-lmsr',
+            'js/bets/bets-sheet.js?v=20261025-lmsr',
             'js/mobile-dock-sheet.js',
             'js/ui/simulation-indicator.js',
             'js/ui/parcel-menu-model.js?v=20261020-local-estimates',
             'js/ui/parcel-menu.js?v=20261019-plot-provenance',
-            'js/ui/ground-menu-model.js',
-            'js/ui/ground-menu.js',
+            'js/ui/ground-menu-model.js?v=20261027-station-inspection',
+            'js/ui/ground-menu.js?v=20261027-station-inspection',
             'js/ui/search-model.js?v=20261008-point-parcels',
             'js/world/globe-math.js',
             'js/world/globe-city-display.js?v=20261012-city-counts',
@@ -2004,7 +2002,7 @@
             'js/world/proposal-entry.js?v=20261009-view-buttons',
             'js/world/arrival.js?v=20261009-view-buttons',
             'js/world/globe.js?v=20261020-point-destinations',
-            'js/ui/map-search.js?v=20261020-collapsed-controls',
+            'js/ui/map-search.js?v=20261026-globe-failure',
             'js/ui/command-palette.js',
             'js/parcels/parcel-id.js',
             'js/parcels/state.js',
@@ -2015,14 +2013,14 @@
             'js/parcels/ui/box-select.js',
             'js/parcels/share-format.js',
             'js/parcels/parcel-set-proposals.js',
-            'js/parcels/ui/parcel-panel.js?v=20261019-plot-provenance',
+            'js/parcels/ui/parcel-panel.js?v=20261027-stack-semantics',
             'js/parcels/ui/locate.js',
-            'js/parcels/ui/road.js',
+            'js/parcels/ui/road.js?v=20261027-stack-semantics',
             'js/parcels/ui/labels.js',
             'js/parcels/ui/owner-counts.js',
             'js/parcels/ui/proposal-counts.js',
             'js/parcels/ui/minted-layer.js',
-            'js/parcels/ui/proposal-actions.js',
+            'js/parcels/ui/proposal-actions.js?v=20261027-station-inspection',
             'js/parcels/ui/ad-parcels.js',
             'js/parcels/ui/map-refresh.js',
             'js/parcels/ownership.js',
@@ -2051,9 +2049,9 @@
             'js/parcels/blocks.js',
             'js/parcels/blockchain.js',
             'js/browser-ownership-source.js',
-            'js/parcels/ownership-ui.js',
+            'js/parcels/ownership-ui.js?v=20261027-stack-semantics',
             'js/parcels/ui/visibility.js',
-            'js/parcels/ui/claim.js',
+            'js/parcels/ui/claim.js?v=20261027-stack-semantics',
             'js/parcels/index.js',
             'js/parcels/route.js',
             'js/proposals/selection.js',
@@ -2066,8 +2064,8 @@
             // road is decoded through them at load. corridor-profile.js is a bare classic script, so
             // it stays outside the bundles.
             'js/corridor-profile.js',
-            'js/corridor-osm-form.js',
             // bundle:start proposal-geometry
+            'js/corridor-osm-form.js',
             'js/proposals/footprint-parts.js',
             'js/proposals/plan-order.js',
             'js/proposals/site-binding.js',
@@ -2081,13 +2079,14 @@
             'js/proposals/readjustment-contributions.js',
             'js/proposals/design-goals.js?v=20261020-canonical-goals',
             'js/proposals/authored-record.js?v=20261019-plot-provenance',
-            'js/proposals/formation-depth.js?v=20261019-local-consent',
+            'js/proposals/formation-depth.js?v=20261027-agreement-tabs',
             'js/proposals/parcel-contiguity.js',
             'js/proposals/formation-edit.js',
             'js/proposals/corridor-levels.js',
             'js/map-edit-lock.js',
             'js/map-pick.js',
             'js/single-building-geometry.js',
+            'js/freeform-placement.js',
             'js/on-map-placement.js',
             'js/on-map-editor.js',
             'js/geometry-edit/history.js',
@@ -2118,7 +2117,7 @@
             'js/reparcel-label-point.js',
             'js/reparcellization-allocation.js',
             'js/proposals/approval-review.js',
-            'js/proposals/approval-setup.js',
+            'js/proposals/approval-setup.js?v=20261027-agreement-focus',
             'js/proposals/lineage.js?v=20261020-lineage-resolution',
             'js/proposals/freeform-conversion.js',
             'js/proposals/ownership-flow.js?v=20261020-explicit-owner-roster',
@@ -2127,85 +2126,113 @@
             'js/proposals/dossier.js',
             'js/proposals/claims-ui.js',
             'js/footprint-geometry.js',
-            'js/building-ground.js',
-            'js/freeform-land-take.js',
-            'js/freeform-land-take-review.js',
+            'js/building-rule-geometry.js',
+            'js/building-ground.js?v=20261028-ground-fences',
+            'js/freeform-land-take.js?v=20261027-occupied-parcels',
+            'js/freeform-land-take-review.js?v=20261027-source-occupancy',
             'js/building-surroundings-editor.js',
             'js/proposal-own-parcel.js',
-            // bundle:end proposal-geometry
             'js/proposals/area.js?v=20261020-complete-area',
+            // bundle:end proposal-geometry
             'js/proposals/geometry.js?v=20261020-consent-evidence',
             'js/proposals/roads.js',
             'js/proposals/reparcel.js',
             'js/proposals/storage.js?v=20261020-estimated-city',
+            // bundle:start proposal-sync
             'js/proposals/agent-provenance.js',
             'js/proposals/design-sync.js',
+            // bundle:end proposal-sync
             'js/proposals/urban-rules.js',
+            // bundle:start proposal-panel-text
             'js/proposals/display-text.js',
             'js/proposals/panel-presentation.js?v=20261020-complete-area',
+            // bundle:end proposal-panel-text
             'js/proposals/list-ui.js?v=20261020-row-lookup',
+            // bundle:start proposal-map-actions
             'js/proposals/map-action.js',
             'js/proposals/before-after.js',
             'js/proposals/road-actions-model.js',
             'js/proposals/road-actions.js',
             'js/proposals/ground-rebase.js',
+            // bundle:end proposal-map-actions
             'js/proposals/execution.js?v=20261020-consent-evidence',
             'js/proposals/layer-render.js',
+            // bundle:start proposal-inspection
             'js/proposals/drill-ui.js',
-            'js/click-stack/click-stack-model.js',
-            'js/click-stack/click-stack-hits.js',
-            'js/click-stack/click-stack-panel.js',
+            'js/click-stack/click-stack-model.js?v=20261028-stack-focus',
+            'js/click-stack/click-stack-relations.js?v=20261027-observed-context',
+            'js/click-stack/click-stack-neighbours.js?v=20261028-neighbours',
+            'js/click-stack/click-stack-hits.js?v=20261028-neighbours',
+            'js/click-stack/click-stack-panel.js?v=20261028-neighbours',
+            'js/three-compare.js?v=20261028-compare',
             'js/proposals/market-view.js?v=20261019-market-evidence',
             'js/proposals/parcel-set-relations.js?v=20261020-reference-relations',
-            'js/proposals/approval-panel.js?v=20261020-approval-rules',
+            'js/proposals/approval-panel.js?v=20261027-experimental',
             'js/proposals/parcel-history-card.js?v=20261020-anchor-observation',
-            'js/proposals/details-panel.js?v=20261020-verified-funding',
+            // bundle:end proposal-inspection
+            'js/proposals/details-panel.js?v=20261028-ground-fences',
+            // bundle:start parcel-compare
             'js/proposals/parcel-compare.js?v=20261020-comparison-status',
             'js/proposals/parcel-compare-ui.js?v=20261020-comparison-status',
+            // bundle:end parcel-compare
             'js/proposals/create.js?v=20261020-mint-identifiers',
+            // bundle:start proposal-drafts
             'js/proposal-drafts.js?v=20261019-local-purchase',
             'js/corridor-draft.js',
+            // bundle:end proposal-drafts
             'js/proposals/copy.js',
-            'js/proposal-editor-adapters.js?v=20261019-design-goals',
-            'js/proposal-editor-shell.js',
+            // bundle:start proposal-editor
+            'js/proposal-editor-adapters.js?v=20261027-surroundings',
+            'js/proposal-editor-shell.js?v=20261028-ground-fences',
             'js/road-editing-zoom.js',
             'js/building-layers-dialog.js',
             'js/road-node-edit.js',
+            // bundle:end proposal-editor
             'js/proposals/dialog-create.js?v=20261019-unknown-ownership',
             'js/proposals/ready-signal.js',
             'js/proposals/create-preview.js',
-            'js/proposals/dialog-share.js?v=20261019-seller-offer',
+            'js/proposals/dialog-share.js?v=20261027-agreement-tabs',
+            // bundle:start plans-agreements
             'js/design-record.js',
-            'js/agreement-record.js',
-            'js/agreement-ground.js',
+            'js/plan-file.js',
+            'js/plan-file-ui.js?v=20261027-agreement-tabs',
+            'js/community/voting.js',
+            'js/community/voting-roster.js',
+            'js/community/voting-ui.js',
+            'js/community/did-web.js',
+            'js/community/result.js',
+            'js/community/consultation.js',
+            'js/agreement-record.js?v=20261027-proposer-allocation',
+            'js/agreement-ground.js?v=20261027-agreement-tabs',
             'js/agreement-store.js',
-            'js/agreement-dialog.js',
-            'js/agreement-panel.js',
-            'js/agreement-list.js',
-            'js/agreement-sync.js',
-            'vendor/interior-viewer/interior-geometry.js',
-            'js/building-floor-plans.js',
-            'js/default-floor-plan-rooms.js',
-            'js/default-floor-plans.js',
-            'js/default-floor-plan-context.js',
-            'js/suggested-layouts-2d.js',
+            'js/agreement-dialog.js?v=20261027-panel-buttons',
+            'js/agreement-panel.js?v=20261027-agreement-tabs',
+            'js/agreement-list.js?v=20261027-agreement-tabs',
+            'js/agreement-sync.js?v=20261027-stack-properties',
+            'js/suggested-layouts-2d.js?v=20261028-lazy-floor-plans',
             'js/proposals/replay-status.js',
+            // bundle:end plans-agreements
             'js/proposals/sharing-routes.js?v=20261020-publication-copies',
             'js/proposals/grain-score-rules.js',
             'js/proposals/core.js?v=20261022-agreement-chain',
             'js/proposals/data.js?v=20261020-chain-title',
             'js/proposals/bootstrap.js?v=20261019-local-purchase',
+            // bundle:start plan-analysis
             'js/proposals/plan-yield.js',
             'js/proposals/site-stats.js',
             'js/proposals/maintenance.js',
             'js/proposals/demolition-prefetch.js',
+            'js/agreement-headless.js',
+            'js/plan-analysis.js',
             'js/proposals/grain-score.js',
             'js/proposals/plan-stats.js',
             'js/parcel-coverage-debug.js',
             'js/ui/notice-queue.js',
+            // bundle:end plan-analysis
             'js/ui-helpers.js',
-            'js/lens.js',
-            'js/lens-picker.js',
+            // bundle:start lens-corridor-apply
+            'js/lens.js?v=20261027-agreement-focus',
+            'js/lens-picker.js?v=20261027-agreement-focus',
             'js/road-supersession.js',
             'js/synthetic-parcel-identity.js',
             'js/corridor-geometry.js',
@@ -2218,14 +2245,18 @@
             'js/publish-gap-debug.js',
             'js/proposals/apply/route.js',
             'js/proposals/apply/validate.js',
+            // bundle:end lens-corridor-apply
             'js/proposals/apply/finalize.js',
             'js/proposals/apply/transaction.js',
             'js/proposal-road-geometry.js',
+            // bundle:start proposal-apply
             'js/proposals/apply/road.js',
             'js/proposals/apply/buildings.js',
             'js/proposals/apply/structures.js',
             'js/proposals/apply/parcels.js?v=20261019-plot-provenance',
+            // bundle:end proposal-apply
             'js/proposal-manager.js',
+            // bundle:start reparcellization
             'js/reparcellization-shares.js',
             'js/reparcellization-slice.js',
             'js/reparcellization-ui-state.js',
@@ -2234,30 +2265,40 @@
             'js/ui/map-before-after.js',
             'js/parcel-layout-validation.js',
             'js/parcel-layout-layouts.js',
-            'js/parcel-layout.js?v=20261021-layout',
             'js/road-ownership-model.js?v=20261020-evidence',
+            // bundle:end reparcellization
             'js/financials.js?v=20261020-modeled-totals',
+            // bundle:start agent-tools
             'js/agent-action-engine.js',
             'js/actor-explorer.js',
             'js/agent-wallet-scope.js?v=20261020-wallet-observations',
             'js/agent-proposal-links.js?v=20261020-qualified-profile-links',
+            // bundle:end agent-tools
             'js/agents.js?v=20261020-profile-offers',
             'js/agent-bubbles.js',
             'js/game.js',
+            // bundle:start activity-structures-transit
             'js/ui/activity-panel-model.js',
             'js/ui/activity-panel.js',
             'js/park-planting.js',
-            'js/structures.js',
-            'js/structure-geometry-editor.js',
+            'js/furniture-models.js',
+            'js/structures.js?v=20261028-ground-fences',
+            'js/structure-geometry-editor.js?v=20261027-boundary-editing',
             'js/vendor/transit-station-models.js',
             'js/transit-alignments.js',
-            'js/transit-stations.js'
+            'js/transit-stations.js?v=20261027-station-inspection'
+            // bundle:end activity-structures-transit
         ]);
     </script>
 
     <script>
         // Initialize application when page loads
         document.addEventListener('DOMContentLoaded', function () {
+            window.BrowserWorkspace?.ready.then(owned => {
+                if (!owned) Promise.resolve(window.i18n?.translationsReady).then(() => {
+                    window.WorkspaceScreen.show(window.BrowserWorkspace.status);
+                });
+            }).catch(() => { /* PersistentStorage's startup handler reports the failure below. */ });
             const boot = () => {
                 initializeUser();
                 initializeNotifications();
@@ -2277,7 +2318,10 @@
             };
 
             if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ready && typeof PersistentStorage.ready.then === 'function') {
-                PersistentStorage.ready.then(boot);
+                PersistentStorage.ready.then(boot).catch(error => {
+                    window.AppDiagnostics.report(error, { code: 'workspace-unavailable', context: { surface: 'workspace' } });
+                    window.WorkspaceScreen.show('error');
+                });
             } else if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {
                 PersistentStorage.ensureReady(boot);
             } else {
@@ -2291,6 +2335,7 @@
     <!-- External JavaScript modules -->
     <script>
         window.writeVersionedLocalScripts([
+            // bundle:start corridor-core
             'js/road-parcels.js',
             'js/legacy-road-centerlines.js',
             'js/corridor-lane-topology.js',
@@ -2301,19 +2346,21 @@
             'js/corridor-import-osm.js',
             'js/corridor-import.js',
             'js/corridor-footprint.js',
-            'js/corridor-terrain-formation.js',
             'js/corridor-clearance.js',
             'js/corridor-edge-fill.js',
             'js/corridor-edge-fill-scene.js',
+            // bundle:end corridor-core
             'js/corridor-carve.js',
             'js/corridor-render.js',
             'js/corridor-editor.js',
+            // bundle:start corridor-structures
             'js/corridor-tunnel.js',
             'js/corridor-grade-separation.js',
             'js/proposals/plot-crossings.js',
             'js/corridor-structures.js',
             'js/road-stroke-state.js',
             'js/road-finalization-state.js',
+            // bundle:end corridor-structures
             'js/road-drawing-loader.js',
             'js/measurement-tool.js',
             'js/pinpoint-tool.js',
@@ -2376,42 +2423,49 @@
         // building-blocks and government-roads are hard dependencies of parcel
         // selection, proposal apply and the area monitor.
         window.writeVersionedLocalScripts([
+            // bundle:start local-frame-context
             'js/local-frame.js',
             'js/urban-rule-variation.js',
-            'js/three-edit-scene.js',
             'js/three-context-buildings.js',
+            // bundle:end local-frame-context
             'js/parcel-blocks.js',
+            // bundle:start site-drawing
             'js/proposal-warnings.js',
             'js/polygon-geometry-editor.js',
             'js/street-frontage.js',
-            'js/site-drawing.js?v=20261020-local-estimates',
+            'js/site-drawing.js?v=20261027-tab-icons',
             'js/building-density-stats.js',
             'js/blockify-map-fit.js',
             'js/design-change-tracker.js',
             'js/ineligible-block-parts.js',
+            // bundle:end site-drawing
             'js/building-blocks.js',
+            // bundle:start view-limits-roads
             'js/view-bbox-limit.js',
             'js/government-roads.js?v=20260404b'
+            // bundle:end view-limits-roads
         ]);
     </script>
     <script>
         window.writeVersionedLocalScripts([
+            // bundle:start map-mode
             'js/map-mode-transition.js',
-            'js/map-mode-loader.js'
+            'js/map-mode-loader.js?v=20261028-lazy-floor-plans'
+            // bundle:end map-mode
         ]);
     </script>
-    <!-- <script src="js/memory-monitor.js"></script> -->
 
     <!-- Area Monitor -->
     <script>
         window.writeVersionedLocalScripts([
+            // bundle:start area-monitor
             'js/area-monitor/draw.js?v=20260404a',
             'js/area-monitor/map.js',
             'js/area-monitor/paint.js?v=20260404i',
             'js/area-monitor/ui.js?v=20260428a',
             'js/area-monitor/routing.js?v=20260404a',
-            'js/unsaved-work-guard.js',
             'js/app-routes.js',
+            // bundle:end area-monitor
             'js/boot-ready.js'
         ]);
     </script>
@@ -2446,12 +2500,12 @@
                 </div>
             </article>
             <article class="site-intro-slide" data-site-intro-slide="propose" hidden>
-                <div class="site-intro-visual" aria-hidden="true"><img src="images/site-intro-parcels.webp" alt="" width="1400" height="700"><div class="site-intro-visual-labels"><span data-i18n-key="modal.siteIntro.before">Existing parcels</span><span data-i18n-key="modal.siteIntro.after">Proposed block</span></div></div>
+                <div class="site-intro-visual" aria-hidden="true"><img src="images/site-intro-parcels.webp" alt="" width="1400" height="700" loading="lazy"><div class="site-intro-visual-labels"><span data-i18n-key="modal.siteIntro.before">Existing parcels</span><span data-i18n-key="modal.siteIntro.after">Proposed block</span></div></div>
                 <div class="site-intro-copy">
-                    <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.tour.propose.eyebrow">From idea to proposal</p>
+                    <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.tour.propose.eyebrow">From idea to design</p>
                     <h2 id="site-intro-title-propose" data-i18n-key="modal.siteIntro.tour.propose.title">Make change visible</h2>
-                    <p id="site-intro-lead-propose" class="site-intro-lead" data-i18n-key="modal.siteIntro.tour.propose.body">Turn an idea into a proposal: reshape parcels, sketch streets and parks, or add buildings. Apply a draft to see how it changes the map.</p>
-                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.propose.hint">Start in Tools, then compare your proposals on the map.</p>
+                    <p id="site-intro-lead-propose" class="site-intro-lead" data-i18n-key="modal.siteIntro.tour.propose.body">Turn an idea into a design: reshape parcels, sketch streets and parks, or add buildings. Apply a draft to see how it changes the map.</p>
+                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.propose.hint">Start in Tools, then compare your designs on the map.</p>
                 </div>
             </article>
             <article class="site-intro-slide" data-site-intro-slide="consent" hidden>
@@ -2465,9 +2519,9 @@
 </svg></div>
                 <div class="site-intro-copy">
                     <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.tour.consent.eyebrow">People make the difference</p>
-                    <h2 id="site-intro-title-consent" data-i18n-key="modal.siteIntro.tour.consent.title">A proposal starts a conversation</h2>
+                    <h2 id="site-intro-title-consent" data-i18n-key="modal.siteIntro.tour.consent.title">A design starts a conversation</h2>
                     <p id="site-intro-lead-consent" class="site-intro-lead" data-i18n-key="modal.siteIntro.tour.consent.body">Share a plan, gather votes and financial support, and seek acceptance from attested owners. Wallet and identity requirements apply to on-chain actions.</p>
-                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.consent.hint">Open a proposal to inspect its support and acceptance.</p>
+                    <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.consent.hint">Open a design to inspect its support and acceptance.</p>
                 </div>
             </article>
             <article class="site-intro-slide" data-site-intro-slide="activity" hidden>
@@ -2482,7 +2536,7 @@
                 <div class="site-intro-copy">
                     <p class="site-intro-eyebrow" data-i18n-key="modal.siteIntro.tour.activity.eyebrow">A city in motion</p>
                     <h2 id="site-intro-title-activity" data-i18n-key="modal.siteIntro.tour.activity.title">See how decisions unfold</h2>
-                    <p id="site-intro-lead-activity" class="site-intro-lead" data-i18n-key="modal.siteIntro.tour.activity.body">Follow proposals and agent activity around the world. Where Simulation is available, play or pause turns to explore how proposals and support evolve.</p>
+                    <p id="site-intro-lead-activity" class="site-intro-lead" data-i18n-key="modal.siteIntro.tour.activity.body">Follow designs and agent activity around the world. Where Simulation is available, play or pause turns to explore how designs and support evolve.</p>
                     <p class="site-intro-hint" data-i18n-key="modal.siteIntro.tour.activity.hint">Open Activity for the live feed and Simulation controls.</p>
                 </div>
             </article>
@@ -2508,7 +2562,7 @@
                     <nav class="site-intro-pages" aria-label="Introduction features" data-i18n-key="modal.siteIntro.tour.pages" data-i18n-attr="aria-label">
                     <button type="button" class="site-intro-dot" data-site-intro-page="0" aria-label="Shape a city people can agree on" data-i18n-key="modal.siteIntro.tour.explore.title" data-i18n-attr="aria-label" aria-current="step"><span aria-hidden="true"></span></button>
                     <button type="button" class="site-intro-dot" data-site-intro-page="1" aria-label="Make change visible" data-i18n-key="modal.siteIntro.tour.propose.title" data-i18n-attr="aria-label"><span aria-hidden="true"></span></button>
-                    <button type="button" class="site-intro-dot" data-site-intro-page="2" aria-label="A proposal starts a conversation" data-i18n-key="modal.siteIntro.tour.consent.title" data-i18n-attr="aria-label"><span aria-hidden="true"></span></button>
+                    <button type="button" class="site-intro-dot" data-site-intro-page="2" aria-label="A design starts a conversation" data-i18n-key="modal.siteIntro.tour.consent.title" data-i18n-attr="aria-label"><span aria-hidden="true"></span></button>
                     <button type="button" class="site-intro-dot" data-site-intro-page="3" aria-label="See how decisions unfold" data-i18n-key="modal.siteIntro.tour.activity.title" data-i18n-attr="aria-label"><span aria-hidden="true"></span></button>
                     <button type="button" class="site-intro-dot" data-site-intro-page="4" aria-label="Keep exploring without a register" data-i18n-key="modal.siteIntro.tour.sources.title" data-i18n-attr="aria-label"><span aria-hidden="true"></span></button>
                     </nav>
@@ -2569,7 +2623,7 @@
                                  toggles below it (user-management.js showAvatarOptions). -->
                             <button type="button" id="selected-avatar" class="cb-option selected-avatar"
                                 aria-controls="avatar-options" aria-expanded="false" onclick="showAvatarOptions()">
-                                <img id="selected-avatar-img" src="avatars/avatar1.png" alt="Avatar"
+                                <img id="selected-avatar-img" src="avatars/avatar1.png" alt="Avatar" loading="lazy"
                                     data-i18n-key="modal.welcome.avatarAlt" data-i18n-attr="alt">
                                 <span class="avatar-selection-hint" data-i18n-key="modal.welcome.avatarHint">Click to
                                     choose</span>

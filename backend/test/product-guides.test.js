@@ -17,14 +17,14 @@ const guidePairs = [
 ];
 const guidePages = guidePairs.flat();
 const clips = ['block', 'row', 'detached', 'freeform', 'readjustment', 'park', 'square', 'lake', 'road', 'track', 'station', 'counterproposal']
-    .map(name => `videos/howto/2026-10-19/${name}`);
+    .map(name => `videos/howto/2026-10-26/${name}`);
 
 describe('public product guides', () => {
     it.each(['how-to-use.html', 'kako-koristiti.html'])('%s explains the current proposal lifecycle', (name) => {
         const html = readFrontend(name);
 
         expect(html).toContain('site-intro-parcels.webp');
-        expect(html).toMatch(/local design applied to the map|lokalni prijedlog koji je već primijenjen/);
+        expect(html).toMatch(/local design applied to the map|lokalni dizajn koji je već primijenjen/);
         expect(html).not.toMatch(/map doesn't change until|karta se ne mijenja dok/);
         expect(html).not.toMatch(/id="drafts"|id="skice"/);
     });
@@ -35,19 +35,24 @@ describe('public product guides', () => {
         expect(html).toContain('<span class="ui-label">Manual mode</span>');
         expect(html).toContain('<span class="ui-label">Selected parcels</span>');
         expect(html).toContain('<span class="ui-label">Done selecting</span>');
-        expect(html).toContain('<span class="ui-label">Custom site</span>');
-        expect(html).toContain('Share applied designs');
-        expect(html).toContain('create an agreement from applied designs');
+        expect(html).not.toContain('<span class="ui-label">Custom site</span>');
+        expect(html).toContain('Draw a site here');
+        expect(html).toContain('<span class="ui-label">Add to plan</span>');
+        expect(html).toContain('<span class="ui-label">Create plan</span>');
+        expect(html).toContain('Creating a plan saves it locally without publishing it.');
+        expect(html).toContain('<span class="ui-label">Share plan</span>');
+        expect(html).toContain('existing links keep their original content.');
+        expect(html).toContain('<span class="ui-label">Create agreement</span> from a saved plan.');
         expect(html).toContain('Propose');
         expect(html).toContain('Owners sign decisions for that agreement');
         expect(html).toContain('A community vote is non-binding and counted off-chain');
         expect(html).not.toMatch(/<td>\s*Offer\s*<\/td>|Owner deal|Owner vote|Fork proposal|Propose here|Select more|selection tray|Propose tab|Use as site/i);
     });
 
-    it.each(['how-to-use-road.html', 'kako-koristiti-cesta.html'])('%s describes finished roads as proposals', (name) => {
+    it.each(['how-to-use-road.html', 'kako-koristiti-cesta.html'])('%s describes finished roads as local designs', (name) => {
         const html = readFrontend(name);
 
-        expect(html).toMatch(/creates a local proposal and applies it immediately|stvara lokalni prijedlog i odmah ga primjenjuje/);
+        expect(html).toMatch(/creates a local design and applies it immediately|stvara lokalni dizajn i odmah ga primjenjuje/);
         expect(html).not.toMatch(/built road is not yet a proposal|Izgrađena cesta još nije prijedlog/);
     });
 
@@ -58,23 +63,21 @@ describe('public product guides', () => {
         expect(readFrontend(name)).toContain(statement);
     });
 
-    // Named plans are gone (plan-design-agreement.md, M2): the guides describe the shared
-    // composition and no longer contrast it with a named plan.
     it.each([
-        ['how-to-use.html', 'The shared composition preserves the applied set and its dependencies.', 'An execution status or source event is evidence of a recorded state; it does not prove payment, legal registration or physical construction.'],
-        ['kako-koristiti.html', 'Dijeljena kompozicija čuva skup primijenjenih prijedloga i njihove ovisnosti.', 'Status izvršenja ili izvorni događaj dokaz je zabilježenog stanja; ne dokazuje plaćanje, pravnu registraciju ni fizičku izgradnju.']
-    ])('%s distinguishes local sharing and execution evidence', (name, sharing, evidence) => {
+        ['how-to-use.html', 'Creating a plan saves it locally without publishing it.', 'An execution status or source event is evidence of a recorded state; it does not prove payment, legal registration or physical construction.'],
+        ['kako-koristiti.html', 'sprema ga lokalno bez objave.', 'Status izvršenja ili izvorni događaj dokaz je zabilježenog stanja; ne dokazuje plaćanje, pravnu registraciju ni fizičku izgradnju.']
+    ])('%s explains immutable plan sharing and execution evidence', (name, sharing, evidence) => {
         const html = readFrontend(name);
         expect(html).toContain(sharing);
         expect(html).toContain(evidence);
-        expect(html).not.toMatch(/named plan|imenovan\w* plan/i);
+        expect(html).toMatch(/saved plan|spremljen\w* plan/i);
     });
 
     it.each([
         ['how-to-use-views.html', 'The slider models floor-area value at a selected EUR per m² of floor area.', 'not sale prices or amounts paid to owners'],
         ['kako-koristiti-prikazi.html', 'Klizač modelira vrijednost etažne površine prema odabranoj cijeni u EUR po m² etažne površine.', 'a ne prodajne cijene ni iznosi isplaćeni vlasnicima'],
-        ['how-to-use-reparcellization.html', 'Cash figures in this ledger are EUR.', 'the EUR 100/m² fallback applies only when no source price is present'],
-        ['kako-koristiti-reparcelacija.html', 'Novčani iznosi u ovom obračunu iskazani su u EUR.', 'model od 100 EUR/m² koristi se samo kad izvorna cijena ne postoji']
+        ['how-to-use-reparcellization.html', 'Currency is the city’s stated fiat currency, EUR here.', 'Monetary compensation is calculated from each party’s remaining land entitlement and allocated area'],
+        ['kako-koristiti-reparcelacija.html', 'Novac se iskazuje u valuti grada, ovdje u EUR.', 'Naknada se računa iz preostalog prava na zemljište i dodijeljene površine']
     ])('%s names the basis and limits of money amounts', (name, basis, limit) => {
         const html = readFrontend(name);
         expect(html).toContain(basis);

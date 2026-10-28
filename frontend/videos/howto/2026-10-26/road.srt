@@ -1,0 +1,43 @@
+1
+00:00:00,000 --> 00:00:02,717
+Choose Road in the Design panel to draw
+
+2
+00:00:02,810 --> 00:00:03,994
+a new street.
+
+3
+00:00:04,344 --> 00:00:08,013
+Edit the cross-section. Choose a preset, then adjust
+
+4
+00:00:08,082 --> 00:00:11,264
+lanes for traffic, cycling and walking.
+
+5
+00:00:11,614 --> 00:00:14,470
+Use a standard profile as the starting point,
+
+6
+00:00:14,784 --> 00:00:16,537
+then apply it to the drawing.
+
+7
+00:00:16,914 --> 00:00:20,118
+Draw the route with clicks, then choose Finish.
+
+8
+00:00:20,481 --> 00:00:24,463
+Review conflicts with existing buildings. Choose a surface
+
+9
+00:00:24,510 --> 00:00:27,447
+road, a tunnel, or another route.
+
+10
+00:00:27,797 --> 00:00:31,547
+Inspect the road in 3D. Tilt, rotate and
+
+11
+00:00:31,628 --> 00:00:35,367
+zoom to review its cross-section and connections.

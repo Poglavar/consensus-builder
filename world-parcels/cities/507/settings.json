@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "507",
+  "name": "Salta, Argentina",
+  "point": [
+    -24.7999287325476,
+    -65.4167676647554
+  ],
+  "bindings": [
+    {
+      "appCityId": "salta",
+      "runtimeConfig": {
+        "id": "salta",
+        "wupCityCode": "507",
+        "label": "Salta, Argentina",
+        "currency": {
+          "locale": "es-AR",
+          "code": "ARS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -24.7999287325476,
+            -65.4167676647554
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -24.7999287325476,
+            -65.4167676647554
+          ],
+          "fallbackDataset": [
+            -65.4167676647554,
+            -24.7999287325476
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ar-salta-muni-idemsa-wfs",
+          "idPrefix": "AR-SALTA-IDEMSA-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "IDEMSA / Municipalidad de Salta; underlying fc_parcelas_v20 parcel lineage: Dirección General de Inmuebles, Provincia de Salta (lineage attribution pending confirmation)."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ar-salta-muni-idemsa-wfs",
+      "name": "IDEMSA Municipalidad de Salta — Catastros Jun2026",
+      "operator": "Municipalidad de Salta / IDEMSA",
+      "adapter": "wfs",
+      "endpoint": "https://geocloud.municipalidadsalta.gob.ar/geoserver/wfs",
+      "version": "2.0.0",
+      "featureType": "public:10_catastros_Jun2026",
+      "geometryField": "geom",
+      "idField": "id",
+      "idType": "string",
+      "idPattern": "^fc_parcelas_v20\\.[0-9]+$",
+      "idPrefix": "AR-SALTA-IDEMSA-",
+      "outFields": [
+        "id"
+      ],
+      "requestProperties": true,
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 8388608,
+      "timeoutMs": 45000,
+      "countryCode": "AR",
+      "metricSrid": 32720,
+      "cityIds": [
+        "salta"
+      ],
+      "defaultForCity": true,
+      "scope": "Municipal cadastral snapshot Catastros Jun2026. Published extent contains Salta and surrounding areas; bounded parcel samples establish local availability only, not citywide completeness or current legal boundaries.",
+      "attribution": "IDEMSA / Municipalidad de Salta; underlying fc_parcelas_v20 parcel lineage: Dirección General de Inmuebles, Provincia de Salta (lineage attribution pending confirmation).",
+      "licence": "Anonymous public WFS access documented by IDEMSA. Explicit dataset reuse licence not identified; second-pass follow-up.",
+      "licenceUrl": "https://www.idemsa.municipalidadsalta.gob.ar/servicios.php",
+      "catalogueUrl": "https://idemsa.municipalidadsalta.gob.ar/catalogo.php",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "discovery": {
+        "jurisdiction": {
+          "basis": "First-party municipal cadastral layer and published Salta extent verified live; evidence/source-metadata.json."
+        }
+      }
+    }
+  ]
+}

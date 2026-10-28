@@ -94,7 +94,7 @@ test.describe('Map context actions @features', () => {
     await clickMapPoint(page, 15.98255, 45.80025);
     const menu = page.locator('#click-stack');
     await expect(menu.locator('.click-stack__section[data-kind="ground"]')).toBeVisible();
-    for (const command of ['ground.road', 'ground.track', 'ground.busStation', 'ground.tramStation']) {
+    for (const command of ['ground.road', 'ground.track', 'ground.roadStation', 'ground.trackStation']) {
       await expect(menu.locator(`[data-command="${command}"]`)).toBeVisible();
     }
     await menu.locator('[data-command="ground.track"]').click();
@@ -108,7 +108,7 @@ test.describe('Map context actions @features', () => {
     // from the same bare-ground section, and its own editor toolbar carries the Cancel.
     await clickMapPoint(page, 15.98255, 45.80025);
     await expect(menu.locator('.click-stack__section[data-kind="ground"]')).toBeVisible();
-    await menu.locator('[data-command="ground.busStation"]').click();
+    await menu.locator('[data-command="ground.roadStation"]').click();
     const toolbar = page.locator('#station-placement-toolbar');
     await expect(toolbar).toBeVisible();
     await expect(page.locator('#station-placement-status')).toContainText(/bus|station/i);
@@ -215,16 +215,16 @@ test.describe('Map context actions @features', () => {
     await expect(panel.locator('[data-parcel-tab-id="info-tab"]')).toHaveAttribute('aria-selected', 'true');
     await expect(panel.locator('[data-original-parcel-boundary]')).toContainText('Its original boundary is highlighted.');
     expect(await panel.locator('#info-content').evaluate(el => el.firstElementChild?.hasAttribute('data-original-parcel-boundary'))).toBe(true);
+    await page.evaluate(() => (window as any).ClickStack.collapse());
+    await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
     const originalOutline = await page.evaluate(id => {
       const w = window as any;
       return {
-        actual: w.proposalHoverGroup.toGeoJSON().features.map((feature: any) => feature.geometry),
+        actual: w.proposalInspectionGroup.toGeoJSON().features.map((feature: any) => feature.geometry),
         original: w.CadastralParcelRepository.get(id).geometry,
       };
     }, PARCEL_ID);
     expect(originalOutline.actual).toEqual([originalOutline.original]);
-    await page.evaluate(() => (window as any).ClickStack.collapse());
-    await expect(page.locator('path.click-stack-map-focus').first()).toBeVisible();
     await expect(page.locator('#click-stack .click-stack__section[data-kind="parcels"]')).toHaveClass(/is-selected/);
     await page.locator('#click-stack .click-stack__section[data-kind="parcels"] .click-stack__row').click();
     await panel.locator('[data-parcel-tab-id="propose-tab"]').click();

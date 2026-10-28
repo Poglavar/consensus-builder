@@ -1,6 +1,7 @@
 // Environment backend routing and per-dataset request builders
 (function () {
     const CityConfigManager = window.CityConfigManager || null;
+    const localStorage = window.BrowserWorkspace?.storage || window.localStorage;
     // Prefer localhost:3000 explicitly for dev/file protocols
     const LOCAL_BASE = (function () {
         try {

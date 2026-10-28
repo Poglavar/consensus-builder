@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1157",
+  "name": "Bruxelles (Brussels), Belgium",
+  "point": [
+    50.8478596081583,
+    4.36059490398924
+  ],
+  "bindings": [
+    {
+      "appCityId": "bruxelles_brussels",
+      "runtimeConfig": {
+        "id": "bruxelles_brussels",
+        "wupCityCode": "1157",
+        "label": "Bruxelles (Brussels), Belgium",
+        "currency": {
+          "locale": "nl-BE",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            50.8478596081583,
+            4.36059490398924
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            50.8478596081583,
+            4.36059490398924
+          ],
+          "fallbackDataset": [
+            4.36059490398924,
+            50.8478596081583
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "be-fps-finances-cadgis-cadastral-parcels",
+          "idPrefix": "BE-FPS-CADGIS:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "FPS Finance — GAPD, CadGIS cadastral plan · CC BY 4.0 · WGS84 service output"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "be-fps-finances-cadgis-cadastral-parcels",
+      "name": "FPS Finance CadGIS cadastral parcels — Brussels live companion",
+      "adapter": "be-cadgis",
+      "endpoint": "https://opendata.fin.belgium.be/download/datasets/1d797df0-c988-11ed-abc3-0050569393d1_20260807_shp_31370_04000.zip",
+      "liveEndpoint": "https://ccff02.minfin.fgov.be/geoservices/arcgis/rest/services/WMS/Cadastral_LayersWFS/MapServer/11",
+      "operator": "FPS Finance — General Administration of Patrimonial Documentation (GAPD)",
+      "countryCode": "BE",
+      "cityIds": [
+        "bruxelles_brussels"
+      ],
+      "scope": "Brussels Capital Region; live federal cadastral plan. Only bounded availability is verified.",
+      "sourceLayer": "Cadastral_parcel",
+      "sourceCrs": "EPSG:3812",
+      "archiveCrs": "EPSG:31370",
+      "metricSrid": 32631,
+      "idPrefix": "BE-FPS-CADGIS:",
+      "idField": "CaPaKey",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^\\d{5}[A-Z]\\d{4}/\\d{2}[A-Z_]\\d{3}$",
+      "outFields": [
+        "CaPaKey",
+        "OBJECTID"
+      ],
+      "pageSize": 250,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "timeoutMs": 20000,
+      "maxConcurrentQueries": 2,
+      "attribution": "FPS Finance — GAPD, CadGIS cadastral plan · CC BY 4.0 · WGS84 service output",
+      "license": "CC BY 4.0",
+      "metadataUrl": "https://publish.geo.be/geonetwork/srv/api/records/1d797df0-c988-11ed-abc3-0050569393d1",
+      "supportsAreaQuery": true,
+      "defaultForCity": true
+    }
+  ]
+}

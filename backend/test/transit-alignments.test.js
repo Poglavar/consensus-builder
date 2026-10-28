@@ -13,8 +13,9 @@ describe('transit reference alignment normalization', () => {
     it('loads the registry before station placement and rail builder before the 3D consumer', () => {
         const index = readFrontendIndex();
         const modelScripts = mapModeModelScripts();
-        expect(index.indexOf("'js/transit-alignments.js'")).toBeLessThan(index.indexOf("'js/transit-stations.js'"));
-        expect(index).toContain("'js/map-mode-loader.js'");
+        expect(index.indexOf("'js/transit-alignments.js'")).toBeGreaterThan(-1);
+        expect(index.indexOf("'js/transit-alignments.js'")).toBeLessThan(index.indexOf("'js/transit-stations.js"));
+        expect(index).toMatch(/'js\/map-mode-loader\.js(\?[^']*)?'/);
         expect(modelScripts.indexOf('js/elevated-rail-3d.js')).toBeGreaterThan(-1);
         expect(modelScripts.indexOf('js/elevated-rail-3d.js'))
             .toBeLessThan(modelScripts.indexOf('js/three-mode.js'));

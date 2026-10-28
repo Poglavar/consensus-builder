@@ -14,7 +14,7 @@ drifting (`design-tokens.test.js`, `i18n-style.test.js`, `page-chrome.test.js`,
 | The product | **Consensus Builder** | app, guides, every `<title>` ("Page · Consensus Builder"; the landing pages may put the product first) |
 | The organisation | **Urban Game Theory** | one byline per page, the social handles, the API host |
 | The hackathon campaign | **Hyperstition: Markets for Possible Cities** | only `deck.html` and `hackathon-demo.html` |
-| The betting surface | **Bets**, tagline **Bet on cities** | the Bets sheet and every place the pools are sold to a person; "hyperstition" and "prediction market" stay campaign and API words |
+| The betting surface | **Bets**, tagline **Bet on cities** | dated agreement questions, YES/NO shares and buy/sell quotes; "hyperstition" and "prediction market" stay campaign and API words |
 
 Every non-map page carries the same header: logo, "Back to the map", language. No page is a dead end.
 
@@ -71,6 +71,10 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
   (`backend/test/ui-vocabulary.test.js`): a component class beside `btn` may position
   (width, grid, order), never colour. No gold, teal or gradient buttons; the only highlight is
   `cb-shimmer`, on at most one control per surface.
+- **Action groups** use `cb-actions`: buttons keep their shared centered appearance and natural
+  width. `cb-actions--grid` pairs related actions in equal columns, stacking on narrow phones;
+  `cb-actions--stack` explicitly requests full-width rows. Panels must not turn every button into
+  a left-aligned menu row or override the button family's type size and selected appearance.
 - **Links** are `cb-link`: primary colour, underlined, on an `<a>` or on a `<button class="cb-link">`
   when the click runs script (never `href="#"`). `cb-link--external` adds the one ↗ mark and goes
   with `target="_blank" rel="noopener"`; the mark is never typed into a string. `cb-link--quiet`
@@ -107,6 +111,10 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 - **Breakpoint:** phones are `max-width: 767.98px`, desktop `min-width: 768px`. No other edge.
 - **Stacking:** `--cb-z-*` ladder only. No 13001, no 100001, no `!important` z-index.
 - **Icons:** Font Awesome only; no emoji in labels or chrome, no raster icons.
+- **Concept icons:** a design, a plan and an agreement each have one glyph wherever they are named
+  (click stack, lists, search, commands, buttons): `fas cb-icon-design` (compass-drafting),
+  `fas cb-icon-plan` (book-atlas) and `fas cb-icon-agreement` (handshake), defined once in
+  primitives.css. Those three glyphs are not used for anything else.
 - **View buttons:** map, geometric-shape and aerial thumbnails sit behind the 2D/3D labels; the two
   3D buttons have distinct tooltips and accessible names. The selected border preserves the image.
 - **Motion:** every animation sits under `prefers-reduced-motion: no-preference`.
@@ -126,6 +134,40 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 - The list hides what nothing can be done with (agreements without a pool fold under a count), orders
   contests by money, and filters All · Open · Settled · Mine. On desktop it is wider than the
   control sheets and centred on its dock button.
+
+## Click-stack sections
+
+The 2D and 3D click stacks use the same section cards, accordion headings, selectors and
+relationship lists. Ground, selected parcels, cadastral parcels, formed parcels, built stock,
+permitted buildings, designs, plans and plan-scoped agreements use this frame. Native headings
+contain the expand/collapse buttons; labelled regions contain expanded content. Measurements
+use definition lists or tables with row and column headers, and sliders have associated labels.
+
+The typography scale is `--cb-text-lg` for item titles, `--cb-text-base` for body text, values
+and actions, and `--cb-text-sm` for captions, source notes and measurement labels. Actions use
+`btn` and its shared variants, tabs use `cb-tabs`, and status/type pills use `cb-badge`.
+Relationships use the same action family, with layout supplied by `click-stack__chip`.
+
+`tokens.css` is the theme entrypoint. `map.css` owns the shared section frame and hosted-panel
+insets; provider stylesheets own internal layout without duplicating a panel frame. Static
+presentation belongs in these external stylesheets, including generated design and parcel
+content. Visibility uses `hidden` or semantic state classes. Map geometry and renderer pane
+ordering are separate from stack presentation; they are not UI-style escape hatches.
+The owner-approval meter's percentage width is the sole allowlisted inline style in hosted
+content; `click-stack-semantics.test.js` checks that interface and rejects other inline styling.
+
+This presentation pass changes no authoring operation or saved record. MCP parity was checked
+against the existing parcel, design, plan and agreement editing primitives; no MCP schema or
+operation change is required.
+
+## Map highlights
+
+Map-object selection and hover use the model view's yellow (`#ffdd00`) in 2D, model and aerial
+views, in both themes. `MapHighlight` in `shared-utils.js` supplies Leaflet and Three.js colours;
+`--cb-map-highlight` and its halo tokens supply CSS. A dark halo keeps outlines visible over light
+surfaces. Solid versus dashed boundaries and filled versus hollow shapes distinguish the selected
+design from its source parcels. Ownership, planning roles and invalid geometry retain their own
+meaningful colours when they are not selected.
 
 ## Messages
 

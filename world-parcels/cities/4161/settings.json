@@ -59,7 +59,7 @@
           "attribution": "Office of the Chief Surveyor General (CSG); Department of Land Reform and Rural Development"
         },
         "buildings": {
-          "source": "overture-tiles"
+          "source": "osm"
         },
         "sidebar": {
           "disabledSections": [

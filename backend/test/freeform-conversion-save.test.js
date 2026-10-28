@@ -31,7 +31,12 @@ function block(extra = {}, buildings = [{ type: 'Feature', properties: { height:
         proposalId: 'own-block', goal: 'buildings', typologyType: 'block', title: 'Courtyard block', titleOrigin: 'generated', applied: true,
         cadastreParcelIds: ['HR-1', 'HR-2'], createdAt: '2026-10-01T10:00:00.000Z',
         buildingProposal: { typologyType: 'block', parameters: { mode: 'parametric', typology: 'block', setback: 2 } },
-        geometry: { buildings, blockMassing: buildings[0] },
+        // A Block stores its per-parcel pieces beside the complete authored massing; several pieces
+        // here stand for a ring in separate parts, so the massing is their MultiPolygon.
+        geometry: { buildings, ruleMassing: buildings.length === 1 ? buildings[0] : {
+            type: 'Feature', properties: { height: 15 },
+            geometry: { type: 'MultiPolygon', coordinates: buildings.map(feature => feature.geometry.coordinates) }
+        } },
         ...extra
     };
 }

@@ -1,4 +1,6 @@
 import { test, expect } from '../helpers/fixtures';
+import { selectNativeOption } from '../helpers/controls';
+import { openCity } from '../helpers/runtime';
 
 test('feedback form sends the reviewed report and shows its private receipt', async ({ page }) => {
   let sent: Record<string, string> = {};
@@ -10,7 +12,8 @@ test('feedback form sends the reviewed report and shows its private receipt', as
   const privatePage = 'https://urbangametheory.xyz/designs?city=birmingham&token=private#draft=private';
   await page.goto(`/feedback.html?lang=en&page=${encodeURIComponent(privatePage)}`);
   await expect(page.getByLabel('Page or plan link (optional)')).toHaveValue('https://urbangametheory.xyz/designs?city=birmingham');
-  await page.getByLabel('Report type').selectOption('feedback');
+  await selectNativeOption(page.getByLabel('Report type'), 'feedback');
+  await page.getByLabel('Page or plan link (optional)').fill('https://urbangametheory.xyz/?city=new_york');
   await page.getByLabel('Your report', { exact: true }).fill('Please make full-plan sharing clearer.');
   await page.getByRole('button', { name: 'Send report', exact: true }).click();
   await expect(page.getByRole('status')).toContainText('Your report was received');
@@ -34,18 +37,28 @@ test('a failed report keeps its text and reuses its receipt ID on retry in the s
   await page.getByRole('button', { name: 'Pošalji prijavu' }).click();
   await expect(page.getByRole('status')).toContainText('Vaša je prijava zaprimljena');
   expect(sent[1].reportId).toBe(sent[0].reportId);
-  await page.locator('#feedback-language').selectOption('es-ES');
+  await selectNativeOption(page.locator('#feedback-language'), 'es-ES');
   await expect(page.getByRole('button', { name: 'Enviar informe' })).toBeVisible();
 });
 
 test('the map contact section links to the feedback form', async ({ mockApi: page }) => {
-  await page.goto('/?city=new_york');
+  await openCity(page);
+  const backend = await page.evaluate(() => {
+    const w = window as any, url = new URL(location.href);
+    url.searchParams.set('backend', 'http://localhost:4199'); history.replaceState(null, '', url);
+    return w.getBackendBase();
+  });
   await expect(page.locator('[data-feedback-link]')).toHaveAttribute('href', '/feedback.html', { timeout: 30_000 });
   await expect(page.locator('[data-feedback-link]')).toContainText('Feedback');
   await page.locator('#settings-button').click();
-  const info = page.locator('#settings-sheet details.accordion-section[data-section="info"]');
-  if (!(await info.evaluate((details: HTMLDetailsElement) => details.open))) await info.locator(':scope > summary').click();
+  const info = page.locator('#settings-sheet [data-section="help"]');
   await info.locator('[data-feedback-link]').click();
   await expect(page).toHaveURL(/\/feedback\.html\?/);
+  await expect(page.locator('#feedback-message')).toBeVisible();
+  expect(new URL(page.url()).searchParams.get('backend')).toBe(backend);
+  expect(await page.evaluate(() => (window as any).getBackendBase())).toBe(backend);
+  const alias = new URL(page.url()); alias.pathname = '/feedback';
+  await page.goto(alias.href);
+  await expect(page.getByRole('heading', { name: 'Feedback & bug reports', exact: true })).toBeVisible();
   await expect(page.locator('#feedback-message')).toBeVisible();
 });

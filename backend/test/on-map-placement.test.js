@@ -32,7 +32,7 @@ function runtime() {
 }
 
 describe('physical proposal placement', () => {
-    it('allows leaving the original parcel and warns without cropping or relocating the design', () => {
+    it('allows leaving the original parcel without warning, cropping or relocating the design', () => {
         const { controller, content } = runtime();
         const outside = rectangle({ lat: center.lat, lng: center.lng + 0.002 }, 20);
         const before = JSON.stringify(outside);
@@ -40,8 +40,8 @@ describe('physical proposal placement', () => {
         expect(controller.accepts(outside)).toBe(true);
         controller.update(outside);
         const warning = content.children[0];
-        expect(warning.hidden).toBe(false);
-        expect(warning.textContent).toContain('recalculated');
+        expect(warning.hidden).toBe(true);
+        expect(warning.textContent).toBe('');
         expect(controller.setLocked(true)).toBe(false);
         expect(controller.locked).toBe(false);
         expect(warning.textContent).toContain('before locking');

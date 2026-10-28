@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "969",
+  "name": "Kakamega, Kenya",
+  "point": [
+    0.287014404891848,
+    34.7488417467106
+  ],
+  "bindings": [
+    {
+      "appCityId": "kakamega",
+      "runtimeConfig": {
+        "id": "kakamega",
+        "wupCityCode": "969",
+        "label": "Kakamega, Kenya",
+        "currency": {
+          "locale": "en-KE",
+          "code": "KES"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            0.287014404891848,
+            34.7488417467106
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            0.287014404891848,
+            34.7488417467106
+          ],
+          "fallbackDataset": [
+            34.7488417467106,
+            0.287014404891848
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ke-kakamega-arcgis-kmz-parcels",
+          "idPrefix": "ke-kakamega-arcgis-kmz-parcels:OBJECTID_1=",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Kakamega Parcels / Kakamega Land Information, ArcGIS Online publisher Ombuitau. Official county custody unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ke-kakamega-arcgis-kmz-parcels",
+      "name": "Kakamega Old Town parcel snapshot",
+      "countryCode": "KE",
+      "adapter": "kml-kmz",
+      "endpoint": "https://www.arcgis.com/sharing/rest/content/items/b739b11826f74ea6b12edce54e7d718c/data",
+      "cityIds": [
+        "kakamega"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "ke-kakamega-arcgis-kmz-parcels:OBJECTID_1=",
+      "idFields": [
+        "OBJECTID_1"
+      ],
+      "idField": "OBJECTID_1",
+      "outFields": [
+        "OBJECTID_1"
+      ],
+      "kmlMember": "doc.kml",
+      "sourceCrs": "EPSG:4326",
+      "sourceAxisOrder": "longitude,latitude",
+      "metricSrid": 32636,
+      "returnsWGS84": true,
+      "bbox": [
+        34.7429,
+        0.2669,
+        34.7724,
+        0.2975
+      ],
+      "maxBboxKm2": 25,
+      "maxSnapshotBytes": 8388608,
+      "maxDecompressedBytes": 8388608,
+      "maxSnapshotFeatures": 3000,
+      "expectedSnapshotFeatures": 2245,
+      "maxFeatures": 3000,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "attribution": "Kakamega Parcels / Kakamega Land Information, ArcGIS Online publisher Ombuitau. Official county custody unverified.",
+      "scope": "Bounded Old Town snapshot within Kakamega Municipality; citywide/countywide completeness and current cadastral status unestablished.",
+      "licenceNote": "Public access observed; publisher accessInformation and licenseInfo are empty. Reuse terms remain unverified.",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=a9350fe62a46410c9c907fae594650be",
+      "discovery": {
+        "jurisdiction": {
+          "basis": "Publisher Kakamega Parcels app links Web Map 7514fdab47dd45b98cd9405c464821fb and KML b739b11826f74ea6b12edce54e7d718c; land-parcel purpose and systematic registration/block/plot schema. The document is Old_Town."
+        }
+      }
+    }
+  ]
+}

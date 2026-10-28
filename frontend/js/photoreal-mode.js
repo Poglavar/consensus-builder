@@ -120,6 +120,15 @@
     let bootstrapRevision = -1;
     let seatDebugAccumS = 0;
     let lastFrameNow = 0;
+    let lastCameraWorld = null;   // the camera's world matrix at the last frame hook run
+    let settledFrames = 0;        // frames in a row with nothing streaming and the camera still
+    const SETTLED_FRAMES = 3;     // the tiles renderer gets this many quiet updates before the hook parks
+    const CAMERA_STILL_EPS = 1e-4; // scene metres; below this the camera counts as still
+    function matricesNearlyEqual(a, b, eps) {
+        const ea = a.elements, eb = b.elements;
+        for (let i = 0; i < 16; i++) if (Math.abs(ea[i] - eb[i]) > eps) return false;
+        return true;
+    }
     let sinceAnyLoadS = 0;
     let profT = null; // transition profile timestamps (activate -> lib -> setup -> stream -> seat)
     let statusRemovalTimer = null;
@@ -2066,7 +2075,7 @@
     };
 
     function pickPhotoSurface(event) {
-        if (!tiles || !grounded) return null;
+        if (!active || !internals || !tiles || !grounded) return null;
         const rect = internals.renderer.domElement.getBoundingClientRect();
         const ray = new window.THREE.Raycaster();
         ray.setFromCamera(new window.THREE.Vector2(
@@ -2074,7 +2083,7 @@
             -(event.clientY - rect.top) / rect.height * 2 + 1), internals.camera);
         internals.scene.updateMatrixWorld(true);
         const hit = ray.intersectObject(tiles.group, true).find(hit => googleSourceHitVisibility(hit) === true);
-        return hit?.point || null;
+        return hit ? { point: hit.point, distance: hit.distance } : null;
     }
 
     // -- tile material patch (onBeforeCompile; all patched shaders share corridorUniforms) --
@@ -2285,7 +2294,7 @@
 
     // ---- per-frame hook (registered with three-mode's render loop) ----
     function onFrame(now) {
-        if (!tiles || !internals) return;
+        if (!tiles || !internals) return false;
         parcelOverlay?.update();
         const dtS = lastFrameNow ? Math.min(0.25, (now - lastFrameNow) / 1000) : 0.016;
         lastFrameNow = now;
@@ -2305,6 +2314,15 @@
         }
         tiles.setResolutionFromRenderer(camera, renderer);
         camera.updateMatrixWorld();
+        // Nothing streaming and the camera still: after a few quiet updates the hook parks (returns
+        // false) and three-mode's loop stops. A camera change or any invalidation brings the next
+        // frame, on which the hook runs again.
+        // OrbitControls recomputes the position from its spherical state on every update, so a still
+        // camera's matrix differs by float noise from frame to frame: compare with a tolerance.
+        const cameraMoved = !lastCameraWorld || !matricesNearlyEqual(lastCameraWorld, camera.matrixWorld, CAMERA_STILL_EPS);
+        if (cameraMoved) lastCameraWorld = (lastCameraWorld || camera.matrixWorld.clone()).copy(camera.matrixWorld);
+        settledFrames = (cameraMoved || tilesStillLoading() || seatDebugActive()) ? 0 : settledFrames + 1;
+        if (settledFrames > SETTLED_FRAMES) return false;
         tiles.update();
         const prog = Number(tiles.loadProgress);
         updateLoader(Number.isFinite(prog) ? prog : 1);
@@ -2445,7 +2463,7 @@
             if (meshSeamCapsActive() && !window.__photorealSeam) throw new Error('photoreal-seam helper missing');
             mercatorK = frame.mercatorScaleFactor(anchor.lat);
             parcelOverlay = window.__photorealParcels.create({ root: window, internals: internals,
-                pickSurface: pickPhotoSurface, uniforms: parcelUniforms });
+                uniforms: parcelUniforms });
 
             // URL-driven entry (frameProposal): hide the abstract 3D behind a loading cover until
             // the composed scene is ready. Skip it when reusing an already-seated session (instant).
@@ -2477,6 +2495,8 @@
                     attributionDirty = true;
                 }
                 lastFrameNow = 0;
+                lastCameraWorld = null;
+                settledFrames = 0;
                 sinceAnyLoadS = 0;
                 // A reused session that never seated gets to report again on this entry.
                 reportedProbeFamine = false;
@@ -2569,6 +2589,8 @@
             bootstrapAttempts = 0;
             bootstrapRevision = -1;
             lastFrameNow = 0;
+            lastCameraWorld = null;
+            settledFrames = 0;
             sinceAnyLoadS = 0;
             if (new URLSearchParams(window.location.search || '').get('fps')) {
                 fpsEl = document.createElement('div');
@@ -2718,6 +2740,14 @@
         isActive: function () { return active; },
         isLoading: function () { return loading; },
         getViewer: function () { return tiles; },
+        pickSurface: pickPhotoSurface,
+        sourceParcelsAt: function (point) { return parcelOverlay?.at(point.x, point.y) || []; },
+        selectionHeightAt: function (x, y, kind, id) {
+            const authored = kind === 'designs' ? window.corridorTerrainHeightAtForProposal?.(id, x, y) : null;
+            if (typeof authored === 'number' && Number.isFinite(authored)) return authored;
+            const terrain = terrainZAt(x, y);
+            return typeof terrain === 'number' && Number.isFinite(terrain) ? terrain : sampleTileSurfaceZ(x, y);
+        },
         getLoadDiagnostics: function () {
             return { grounded: grounded, bootstrapAttempts: bootstrapAttempts,
                 terrainElevationM: seatNode ? -seatNode.position.z : null,

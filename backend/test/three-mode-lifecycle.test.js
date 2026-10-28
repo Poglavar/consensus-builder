@@ -43,6 +43,29 @@ function threeModeListenerRegistration(eventName) {
     return threeModeSource.slice(registration.start, registration.end);
 }
 
+it('Escape ends the scene view and clears the shared design selection', () => {
+    const calls = [];
+    const context = loadInContext(threeModeDeclarations(['handleThreeModeKeyboardContext', 'deselectScene', 'endSelectionView']), {
+        window: {
+            ThreeClickStack: { isOpen: () => true, close: options => calls.push(['close', options.silent]) },
+            ProposalSelection: { clear: () => calls.push('deselect') }
+        },
+        clearIsolation: () => calls.push('clear-isolation'),
+        keyboardContext: { classifyThreeModeKeydown: () => 'clear-isolation' },
+        pendingIntroAutoRotate: false, controls: null, manualAutoRotateActive: false, noteInput: () => {},
+        isActive: true, walkPickActive: false, isolatedParcelId: null, isolatedProposalId: null, viewedParcelId: null,
+        document: { body: { classList: { contains: () => false } } }
+    });
+    context.handleThreeModeKeyboardContext({
+        key: 'Escape', preventDefault: () => calls.push('prevent-default'),
+        stopImmediatePropagation: () => calls.push('stop-propagation')
+    });
+    expect(calls).toEqual([['close', true], 'clear-isolation', 'deselect', 'prevent-default', 'stop-propagation']);
+    calls.length = 0;
+    context.endSelectionView();
+    expect(calls).toEqual([['close', true], 'clear-isolation']);
+});
+
 it('resolves an obsolete mode request as false after a pending scene entry is cancelled', async () => {
     const calls = [];
     let finishSceneEntry;
@@ -194,13 +217,15 @@ it('leaves photo and model synchronously on a photo-to-2D transition without re-
 
 it('does not reschedule an inactive render frame', () => {
     const scheduled = [];
-    const context = loadInContext(threeModeDeclarations(['invalidateThreeView', 'queueThreeFrame', 'renderFrame']), {
+    const context = loadInContext(threeModeDeclarations(['invalidateThreeView', 'queueThreeFrame', 'scheduleThreeFrame', 'renderFrame']), {
         isActive: false,
         loopRunning: true,
         document: { hidden: false },
         frameId: 17,
         renderInvalidated: false,
         sceneVisualRevision: 0,
+        hooksParked: false,
+        lastInputAt: 0,
         requestAnimationFrame(callback) { scheduled.push(callback); return scheduled.length; },
         cancelAnimationFrame() {}
     });
@@ -216,6 +241,7 @@ it('does not reschedule an inactive render frame', () => {
 it('marks pending uploaded-model loads incomplete before the exit path clears their counter', () => {
     let aborted = false;
     const context = loadInContext(threeModeDeclarations(['stopSceneWork']), {
+        buildingRefreshQueue: { pending: false, cancel() {} },
         sceneAbort: { abort() { aborted = true; } },
         buildingBuildPending: false,
         pendingModelLoads: 2,
@@ -328,6 +354,7 @@ function warmEnterFixture() {
         windowMapShell: null,
         MapShell: { closeSheets() {}, syncModeAvailability() { calls.syncModeAvailability += 1; } },
         scheduleViewAngleHint() {},
+        stopIntroAutoRotate() {},
         updateModeButtonStates() {},
         getWalkUrlBase: () => null,
         showRenderingOverlay() {},
@@ -343,8 +370,8 @@ function warmEnterFixture() {
         buildingWorkIncomplete: false,
         applyRetainedBuildingDisplay() { calls.retained += 1; return true; },
         rebuild3DBuildingsOnly: async () => { calls.rebuild += 1; },
-        // Shared display policy moved to PlanningViews; enter3D refreshes this view on resume.
-        syncPlanningView3D() { calls.syncPlanningView += 1; },
+        applyModeVisibility() { calls.syncPlanningView += 1; },
+        rebuildPlanningSources3D() {},
         activeProposalDraftComparison: null,
         console,
         clearTimeout() {},

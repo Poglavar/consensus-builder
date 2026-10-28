@@ -1,72 +1,47 @@
+// Load English and the selected dictionary, sharing successful and in-flight requests across features.
 (function () {
-    const SOURCES = [
-        { lang: 'en', url: 'i18n/en.json' },
-        { lang: 'es', url: 'i18n/es.json' },
-        { lang: 'sr', url: 'i18n/sr.json' },
-        { lang: 'hr', url: 'i18n/hr.json' }
-    ];
+    const api = window.i18n;
+    if (!api) return;
+    const pending = new Map();
+    // One token per page, including retries. A new request must not invent a different cache identity.
+    const cacheBust = window.getCacheBustToken?.() || window.APP_VERSIONS?.[0]?.version_number || Date.now();
 
-    function getCacheBuster() {
-        if (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function') {
-            try {
-                const token = window.getCacheBustToken();
-                if (token) {
-                    return token;
-                }
-            } catch (_) { }
-        }
-        try {
-            if (typeof window !== 'undefined' && Array.isArray(window.APP_VERSIONS) && window.APP_VERSIONS.length > 0) {
-                const latest = window.APP_VERSIONS[0];
-                if (latest && latest.version_number) {
-                    return latest.version_number;
-                }
-            }
-        } catch (_) { }
-        return Date.now();
-    }
-
-    function flattenTranslations(node, prefix = '', out = {}) {
-        if (!node || typeof node !== 'object' || Array.isArray(node)) {
-            return out;
-        }
-        Object.entries(node).forEach(([key, value]) => {
+    function flattenTranslations(node, prefix = '', out = Object.create(null)) {
+        if (!node || typeof node !== 'object' || Array.isArray(node)) throw new Error('Dictionary must be an object');
+        for (const [key, value] of Object.entries(node)) {
             const path = prefix ? `${prefix}.${key}` : key;
             if (value && typeof value === 'object' && !Array.isArray(value)) {
                 flattenTranslations(value, path, out);
             } else {
+                if (typeof value !== 'string' || Object.hasOwn(out, path)) throw new Error(`Invalid translation: ${path}`);
                 out[path] = value;
             }
-        });
+        }
         return out;
     }
 
-    async function loadJson(url) {
-        const cacheBust = getCacheBuster();
-        const urlWithBust = `${url}?v=${cacheBust}`;
-        const response = await fetch(urlWithBust, { credentials: 'same-origin', signal: AbortSignal.timeout(15000) });
-        if (!response.ok) {
-            throw new Error(`Failed to load ${url}: ${response.status} ${response.statusText}`);
-        }
-        return response.json();
-    }
-
-    const api = window.i18n;
-    if (!api) return;
-    const pending = new Map();
-    function loadLanguage(lang) {
-        if (!pending.has(lang)) pending.set(lang, (async () => {
-            const source = SOURCES.find(source => source.lang === lang);
-            if (!source) return;
-            try {
-                api.registerTranslations(lang, flattenTranslations(await loadJson(source.url)));
-            } catch (error) {
+    function loadLanguage(language) {
+        const lang = api.getSupportedLanguages().find(candidate => candidate === language);
+        if (!lang) return Promise.resolve(false);
+        if (!pending.has(lang)) {
+            const request = (async () => {
+                const url = `i18n/${lang}.json?v=${encodeURIComponent(cacheBust)}`;
+                const response = await fetch(url, { credentials: 'same-origin', signal: AbortSignal.timeout(15000) });
+                if (!response.ok) throw new Error(`Failed to load ${lang}: ${response.status} ${response.statusText}`);
+                const entries = flattenTranslations(await response.json());
+                api.registerTranslations(lang, entries);
+                return true;
+            })().catch(error => {
                 pending.delete(lang);
-                console.warn('[i18n] Failed to load ' + lang, error);
-            }
-        })());
+                console.warn(`[i18n] Failed to load ${lang}`, error);
+                return false;
+            });
+            pending.set(lang, request);
+        }
         return pending.get(lang);
     }
+    api.loadLanguage = loadLanguage;
+
     function apply() {
         api.applyTranslations();
         window.dispatchEvent(new CustomEvent('i18n:translationsLoaded'));
@@ -83,6 +58,7 @@
     }).finally(() => document.body?.classList.remove('i18n-loading'));
     api.onChange(async lang => {
         await loadLanguage(lang);
-        apply();
+        // An older request may finish after a later language choice.
+        if (lang === api.getLanguage()) apply();
     });
 })();

@@ -3,7 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { demolishBuildingsUnderFootprint } = require('../../frontend/js/corridor-tunnel.js');
+const { demolishBuildingsUnderFootprint, collectLoadedCorridorBuildings } = require('../../frontend/js/corridor-tunnel.js');
+const { demolishedBuildingRecordsFrom } = require('../../frontend/js/corridor-carve.js');
 
 const REGION = {
     type: 'Polygon',
@@ -37,7 +38,8 @@ const GLOBAL_KEYS = [
     'proposedBuildings',
     'proposalStorage',
     'ProposalManager',
-    'ensureBuildingFootprintsForBounds'
+    'ensureBuildingFootprintsForBounds',
+    'demolishedBuildingRecordsFrom'
 ];
 
 describe('demolition during canonical replay', () => {
@@ -51,6 +53,7 @@ describe('demolition during canonical replay', () => {
         globalThis.proposalStorage = { getAllProposals: () => [] };
         globalThis.ensureBuildingFootprintsForBounds = vi.fn(async () => true);
         globalThis.ProposalManager = { unapplyProposal: vi.fn(async () => true) };
+        globalThis.demolishedBuildingRecordsFrom = demolishedBuildingRecordsFrom;
     });
 
     afterEach(() => {
@@ -78,6 +81,43 @@ describe('demolition during canonical replay', () => {
                 _parcelMutation: mutation
             })
         );
+    });
+
+    it('re-derives removals from the transaction state rather than the still-visible source it replaces', async () => {
+        const stock = { ...structuredClone(BUILDING), properties: { id: 'observed-1' } };
+        globalThis.proposedBuildings = [];
+        globalThis.proposalStorage = { getAllProposals: () => [{ proposalId: 'source', applied: true,
+            buildingProposal: { demolishedBuildings: [{ id: 'observed-1', geometry: stock.geometry }] } }] };
+        expect(collectLoadedCorridorBuildings({ extraPool: [stock], includeLoadedSurveyPool: false })).toEqual([]);
+        const transaction = { proposals: { getAllProposals: () => [] }, collections: { proposedBuildings: [] } };
+        const records = await demolishBuildingsUnderFootprint(REGION, {
+            proposalId: 'edited', _parcelMutation: transaction, preloadedBuildings: [stock]
+        });
+        expect(records).toMatchObject([{ id: 'observed-1', geometry: stock.geometry }]);
+        // The editor uses the same stock view when reviewing a replacement, before commit.
+        expect(collectLoadedCorridorBuildings({ extraPool: [stock], includeLoadedSurveyPool: false, excludeProposalId: 'source' }))
+            .toMatchObject([{ properties: { id: 'observed-1' } }]);
+        expect(globalThis.proposalStorage.getAllProposals()[0].applied).toBe(true);
+    });
+
+    it('keeps removals made by other applied designs while reviewing or replacing a source', async () => {
+        const stock = ['source-stock', 'other-stock'].map(id => ({
+            ...structuredClone(BUILDING), properties: { id }
+        }));
+        const source = { proposalId: 'source', applied: true,
+            buildingProposal: { demolishedBuildings: [{ id: 'source-stock', geometry: stock[0].geometry }] } };
+        const other = { proposalId: 'other', applied: true,
+            buildingProposal: { demolishedBuildings: [{ id: 'other-stock', geometry: stock[1].geometry }] } };
+        globalThis.proposedBuildings = [];
+        globalThis.proposalStorage = { getAllProposals: () => [source, other] };
+        const pool = collectLoadedCorridorBuildings({ extraPool: stock, includeLoadedSurveyPool: false,
+            excludeProposalId: 'source' });
+        expect(pool.map(feature => feature.properties.id)).toEqual(['source-stock']);
+        const records = await demolishBuildingsUnderFootprint(REGION, {
+            proposalId: 'edited', preloadedBuildings: stock,
+            _parcelMutation: { proposals: { getAllProposals: () => [other] }, collections: { proposedBuildings: [] } }
+        });
+        expect(records.map(record => record.id)).toEqual(['source-stock']);
     });
 
     it('does not treat a stale copy of the taker as its own obstacle', async () => {

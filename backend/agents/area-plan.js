@@ -2,7 +2,8 @@
 // day), which of the persona's areas this run visits, the small window inside it, and the parcels it
 // may plan on (a live parcel source's features, or the rival's parcels taken from other agents'
 // proposed agreements). Pure: no network, no database; run.mjs fetches and passes the results in.
-import { hash32 } from './algorithmic-picker.js';
+import { isEligible, hash32 } from './algorithmic-picker.js';
+import { buildingBaseline } from './building-baseline.js';
 
 const M_PER_DEG_LAT = 110_540;
 const M_PER_DEG_LNG_EQUATOR = 111_320;
@@ -56,7 +57,7 @@ function finiteNumber(value) {
 /**
  * Planner parcels from a live parcel source's FeatureCollection (GET /parcel-sources/:id?bbox=).
  * These sources carry no buildings and no zoning, so both are left unknown (`builtKnown: false`,
- * `rule: null`) rather than invented; the candidate says so in its rationale.
+ * `rule: null`) rather than invented. Generic previews cannot enter automatic uplift selection.
  */
 export function parcelsFromSource(featureCollection, { turf, place, minAreaM2 = 250, maxAreaM2 = 3000 } = {}) {
     if (!turf) throw new Error('parcelsFromSource: turf must be injected.');
@@ -79,10 +80,7 @@ export function parcelsFromSource(featureCollection, { turf, place, minAreaM2 = 
             areaM2,
             centroid: { lng, lat },
             geometry: feature.geometry,
-            buildingCount: 0,
-            builtFootprintM2: 0,
-            builtGfaM2: 0,
-            builtKnown: false,
+            ...buildingBaseline(),
             rule: null
         });
     }
@@ -135,9 +133,9 @@ export function rivalAgreementCids(runs, { persona, runDay, withinDays = 3 } = {
 /**
  * The rival's parcels: land other proposers proposed an agreement on in the last `withinDays` days and
  * whose agreement is still open (its deadline ahead of the run day, neither executed nor cancelled nor
- * expired), as planner parcels carrying the stored geometry and what was measured there. An agreement
- * on the same parcels puts both into one contest, which is how the Bets list groups competing
- * agreements. `floorCap` builds lower than the ceiling (planner.js keeps the ceiling as
+ * expired, and still in the current index contract), as planner parcels carrying the stored geometry
+ * and what was measured there. An agreement on the same parcels puts both into one contest, which is
+ * how the Bets list groups competing agreements. `floorCap` builds lower than the ceiling (planner.js keeps the ceiling as
  * `allowedFloors`), so the rival offers a different build-out, never a copy.
  *
  * Whether a rival is closed comes from two places: the chain status its index row records
@@ -154,7 +152,7 @@ export function contestParcels(runs, { persona, runDay, withinDays = 3, floorCap
     const closed = new Set((runs || []).flatMap(run => Object.entries(run?.summary?.settlements || {})
         .filter(([, record]) => record?.execution || record?.expiry).map(([account]) => account)));
     for (const { run, summary, pick, agreement } of recentRivalPicks(runs, { persona, runDay, withinDays })) {
-        if (CLOSED_CHAIN_STATUSES.includes(indexStatuses[agreement.cid])) continue;
+        if (indexStatuses[agreement.cid] === 'retired' || CLOSED_CHAIN_STATUSES.includes(indexStatuses[agreement.cid])) continue;
         if (closed.has(summary.mints?.[pick.candidateId]?.account)) continue;
         const candidate = (summary.candidates || []).find(item => item.candidateId === pick.candidateId);
         if (!candidate?.geometry || byParcel.has(candidate.parcelId)) continue;
@@ -169,18 +167,49 @@ export function contestParcels(runs, { persona, runDay, withinDays = 3, floorCap
             areaM2: candidate.areaM2,
             centroid: candidate.centroid ?? null,
             geometry: candidate.geometry,
-            buildingCount: candidate.buildingCount ?? 0,
-            builtFootprintM2: candidate.builtFootprintM2 ?? 0,
-            builtGfaM2: candidate.builtGfaM2 ?? 0,
-            builtKnown: candidate.builtKnown !== false,
+            ...buildingBaseline(candidate),
+            ...(candidate.buildingObservations ? { buildingObservations: { ...candidate.buildingObservations } } : {}),
             rival: { agreementCid: agreement.cid, persona: run.persona, name: pick.name },
             // The same rule origin as the agreement it answers: a parcel planned under a mapped
             // urban rule stays rule-backed, a default-envelope one stays default.
             rule: candidate.rule?.source === 'urban-rule'
-                ? { maxFloors: finiteNumber(candidate.rule?.maxFloors), minSetbackM: finiteNumber(candidate.rule?.minSetbackM) }
+                ? { maxFloors: candidate.rule.controls?.floors === 'assumed' ? null : finiteNumber(candidate.rule?.maxFloors), minSetbackM: candidate.rule.controls?.setback === 'assumed' ? null : finiteNumber(candidate.rule?.minSetbackM) }
                 : null,
             floorCap
         });
     }
     return Array.from(byParcel.values());
+}
+
+// Try a bounded rotation rather than spending a whole run on one empty or unavailable area.
+export async function findProposalPlan(areas, runKey, personaName, planArea, { maxAreas = 3, log = () => {} } = {}) {
+    const list = (areas || []).filter(Boolean);
+    if (!list.length) throw new Error(`${personaName} has no planning areas`);
+    const first = chooseArea(list, runKey, personaName);
+    const start = list.indexOf(first);
+    const ordered = [...list.slice(start), ...list.slice(0, start)].slice(0, maxAreas);
+    const areaAttempts = [];
+    const errors = [];
+    let empty;
+    for (const area of ordered) {
+        const city = area.city || area.mode;
+        try {
+            const plan = await planArea(area);
+            const eligible = plan.preflight.candidates.filter(isEligible).length;
+            areaAttempts.push({ city, outcome: eligible ? 'selected' : 'no-eligible-candidates', eligible });
+            if (eligible) return { ...plan, areaAttempts };
+            empty ??= plan;
+            log(`${personaName} ${city}: no eligible candidates; trying another area`);
+        } catch (error) {
+            errors.push(error);
+            areaAttempts.push({ city, outcome: 'error', error: error.message });
+            log(`${personaName} ${city}: area failed; trying another area — ${error.stack || error}`);
+        }
+    }
+    if (errors.length) {
+        const error = new AggregateError(errors, `${personaName} exhausted ${ordered.length} areas without eligible candidates; ${errors.length} source failure(s)`);
+        error.areaAttempts = areaAttempts;
+        throw error;
+    }
+    return { ...empty, areaAttempts };
 }

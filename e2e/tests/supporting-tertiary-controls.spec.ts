@@ -1,42 +1,71 @@
-// Verify multi-tab protection and auxiliary page controls through their visible UI outcomes.
+// A city change does not open a second editable map in the same browser profile.
 import { test, expect } from '../helpers/fixtures';
-import { createSpace, openCity } from '../helpers/runtime';
+import { createSpace, openCity, stubBasemapTiles } from '../helpers/runtime';
 import { waitForMapReady } from '../helpers/app';
 import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
 
 test.describe('Supporting tertiary controls @core', () => {
-  test('multi-tab Dismiss hides the warning but preserves read-only protection and recoverable work', async ({ mockApi: primary, context }) => {
-    test.setTimeout(60_000);
-    await openCity(primary);
+  test('a different-city tab stays blocked until the profile workspace owner closes', async ({ mockApi: owner, context }) => {
+    test.setTimeout(90_000);
+    await stubBasemapTiles(owner);
+    await openCity(owner);
+    const proposalId = await createSpace(owner, 'park');
+    const saved = await owner.evaluate(async id => {
+      const w = window as any;
+      const record = w.proposalStorage.getProposal(id);
+      record.title = 'Saved Zagreb park';
+      await w.proposalStorage.save();
+      const draft = w.proposalDraftStore.createDraft({ goal: 'park', fields: { name: 'Saved agreement draft' } });
+      await w.PersistentStorage.atomicWrite({ puts: { workspaceProbe: 'owner-data' } });
+      return { workspace: w.BrowserWorkspace.id, draftId: draft.id };
+    }, proposalId);
+    const workspace = saved.workspace;
 
-    const secondary = await context.newPage();
-    await mockAllApiRoutes(secondary);
-    await secondary.goto('/?city=zg&reduceMotion=1', { waitUntil: 'domcontentloaded' });
-    await waitForMapReady(secondary);
+    const newYork = await context.newPage();
+    try {
+      await mockAllApiRoutes(newYork);
+      await stubBasemapTiles(newYork);
+      const incomingUrl = '/?city=new_york&reduceMotion=1';
+      await newYork.goto(incomingUrl, { waitUntil: 'domcontentloaded' });
+      await expect.poll(() => newYork.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('blocked');
+      const screen = newYork.locator('#workspace-screen');
+      await expect(screen).toBeVisible();
+      await expect(screen.getByRole('heading', { name: 'Already open in another tab' })).toBeVisible();
+      await expect(screen.getByRole('button', { name: 'Try again' })).toHaveAttribute('id', 'workspace-retry');
+      expect(new URL(newYork.url()).pathname + new URL(newYork.url()).search).toBe(incomingUrl);
+      await expect(newYork.locator('#proposal-details-panel')).toBeHidden();
+      expect(await owner.evaluate(({ proposalId, draftId }) => ({
+        probe: (window as any).PersistentStorage.getItem('workspaceProbe'),
+        title: (window as any).proposalStorage.getProposal(proposalId)?.title,
+        draft: (window as any).proposalDraftStore.getDraft(draftId)?.fields.name,
+      }), { proposalId, draftId: saved.draftId })).toEqual({ probe: 'owner-data', title: 'Saved Zagreb park', draft: 'Saved agreement draft' });
 
-    const banner = secondary.locator('#cb-multitab-banner');
-    const isSecondary = (page: import('@playwright/test').Page) => page.evaluate(() => !!(window as any).__cbSecondaryTab);
-    await expect(banner).toBeVisible({ timeout: 15_000 });
-    expect(await isSecondary(secondary)).toBe(true);
+      await owner.close();
+      await newYork.locator('#workspace-retry').click();
+      await expect.poll(() => newYork.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('ready');
+      await waitForMapReady(newYork);
+      expect(await newYork.evaluate(() => ({
+        workspace: (window as any).BrowserWorkspace.id,
+        city: (window as any).CityConfigManager.getCurrentCityId(),
+        draft: (window as any).proposalDraftStore.getActiveDraft()?.fields.name,
+        probe: (window as any).PersistentStorage.getItem('workspaceProbe'),
+        proposalCount: (window as any).proposalStorage.getAllProposals().length,
+      }))).toEqual({
+        workspace, city: 'new_york', draft: 'Saved agreement draft', probe: null, proposalCount: 0
+      });
 
-    await banner.getByRole('button', { name: 'Close' }).click();
-    await expect(banner).toHaveCount(0);
-    expect(await isSecondary(secondary)).toBe(true);
-
-    // A real creation through the click stack's parcel section attempts persistence. The secondary tab parks the
-    // proposal for recovery, keeps it out of the primary tab's store, and restores the warning.
-    const proposalId = await createSpace(secondary, 'park');
-    await expect(banner).toBeVisible({ timeout: 5_000 });
-    await expect(banner).toContainText('already open in another tab');
-    await expect(banner).toContainText('recovery copy');
-    // The banner is the one message: no toast repeats it.
-    await expect(secondary.locator('#ephemeral-message-container', { hasText: 'another tab' })).toHaveCount(0);
-    expect(await isSecondary(secondary)).toBe(true);
-    expect(await secondary.evaluate(id => (window as any).proposalStorage.getAllProposals().some((p: any) => String(p.proposalId) === id), proposalId)).toBe(true);
-    expect(await primary.evaluate(id => (window as any).proposalStorage.getAllProposals().some((p: any) => String(p.proposalId) === id), proposalId)).toBe(false);
-    expect(await secondary.evaluate(id => {
-      const saved = JSON.parse((window as any).PersistentStorage.getItem('cadastre_proposals_recovery') || '{}');
-      return Array.isArray(saved.records) && saved.records.some((p: any) => String(p.proposalId || p.id) === id);
-    }, proposalId)).toBe(true);
+      // The profile draft is global; authored plans and IndexedDB rows remain partitioned by city.
+      await newYork.goto('/?city=zg&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+      await waitForMapReady(newYork);
+      expect(await newYork.evaluate(id => ({
+        workspace: (window as any).BrowserWorkspace.id,
+        city: (window as any).CityConfigManager.getCurrentCityId(),
+        proposal: (window as any).proposalStorage.getProposal(id)?.title,
+        draft: (window as any).proposalDraftStore.getActiveDraft()?.fields.name,
+        probe: (window as any).PersistentStorage.getItem('workspaceProbe'),
+      }), proposalId)).toEqual({
+        workspace, city: 'zagreb', proposal: 'Saved Zagreb park', draft: 'Saved agreement draft', probe: 'owner-data'
+      });
+    } finally { await newYork.close(); }
   });
 });

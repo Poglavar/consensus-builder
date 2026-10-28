@@ -65,6 +65,15 @@ async function hammer(expressApp, path, body, times) {
 const served = codes => codes.filter(code => code !== 403 && code !== 429).length;
 
 describe('read-only POSTs are not rationed as writes', () => {
+    it('leaves ballot authentication to its dedicated limits without consuming the authoring budget', async () => {
+        const instance = createApp({ env: { ...process.env, NODE_ENV: 'test' }, pool: stubPool, writeRateLimit: 1 }).app;
+        for (const action of ['access', 'ballot']) {
+            const body = action === 'access' ? { code: 'ABC' }
+                : { code: 'ABC', choice: 'support', expectedVersion: 0, requestId: '11111111-1111-4111-8111-111111111111' };
+            const codes = await hammer(instance, `/agreements/${DESIGN_CID}/voting/${action}`, body, 3);
+            expect(codes).toEqual([404, 404, 404]);
+        }
+    });
     it('serves /parcels/under well past the write budget', async () => {
         const geometry = { type: 'Polygon', coordinates: [[[15.9, 43.73], [15.91, 43.73], [15.91, 43.74], [15.9, 43.73]]] };
         const codes = await hammer(app(), '/parcels/under', { geometry }, WRITE_LIMIT + 10);

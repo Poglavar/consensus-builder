@@ -408,7 +408,7 @@
         content.append(note);
         if (p.proposedStreets) {
             const proposed = doc.createElement('p'); proposed.className = 'urban-block-info-note';
-            proposed.textContent = t('proposedStreetsNote', 'Bounded in part by streets from applied proposals.');
+            proposed.textContent = t('proposedStreetsNote', 'Bounded in part by streets from applied designs.');
             content.append(proposed);
         }
         return content;

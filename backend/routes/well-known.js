@@ -7,6 +7,14 @@ import { MCP_READ_PATHS } from './mcp-openapi.js';
 import { FEEDBACK_PATHS } from './feedback-openapi.js';
 import { readX402OracleConfig } from '../utils/x402-payment.js';
 import { publicBase } from './agent-discovery.js';
+import { createRequire } from 'node:module';
+
+const publicationDefinitions = createRequire(import.meta.url)('./agent-recipe-schema.json').$defs;
+const COMMUNITY_REPORT_CONTENT = {
+    $id: 'urn:ugt:community-result:v1',
+    ...publicationDefinitions.communityReport,
+    $defs: Object.fromEntries(['cid', 'instant', 'organiserDid', 'httpsUrl'].map(key => [key, publicationDefinitions[key]]))
+};
 
 // RFC 9116 security contact: the project mailbox.
 export const SECURITY_CONTACT = 'mailto:urbangametheory@gmail.com';
@@ -361,7 +369,7 @@ export function buildOpenApi(base, env) {
                         { name: 'q', in: 'query', required: false, schema: { type: 'string', maxLength: 200 }, description: 'Matches the title or the author.' },
                         { name: 'limit', in: 'query', required: false, schema: { type: 'integer', minimum: 1, maximum: 1000 } }
                     ],
-                    responses: { 200: { description: '{ designs: [design row], count }' }, 400: { description: 'Invalid filter.' } }
+                    responses: { 200: { description: '{ designs: [design row without content], count }; read the content by CID with GET /designs/{cid}.' }, 400: { description: 'Invalid filter.' } }
                 },
                 post: {
                     summary: 'Index a pinned design/v1 object: the server checks its CID and shape and derives its city and binding. A parcel layout is indexed only with its agreement. Needs an Origin header of the app',
@@ -435,6 +443,21 @@ export function buildOpenApi(base, env) {
                     parameters: [{ name: 'cid', in: 'path', required: true, schema: { type: 'string' } }],
                     requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['receipt'], properties: { receipt: { type: 'object' } } } } } },
                     responses: { 201: { description: '{ stored: true, duplicate: false }' }, 200: { description: '{ stored: true, duplicate: true }' }, 400: { description: 'The receipt does not verify or is not admitted, with its code.' } }
+                }
+            },
+            '/agreements/{cid}/community-reports': {
+                get: {
+                    summary: 'Append-only signed NGO reports, ordered by postedAt then CID; no-store. Browsers must resolve live DID Web authorization on every read',
+                    operationId: 'getCommunityReports',
+                    parameters: [{ name: 'cid', in: 'path', required: true, schema: { type: 'string' } }],
+                    responses: { 200: { description: '{ agreementCid, reports: [{ cid, content }] }; snapshot signatures alone do not establish current website authorization.' }, 404: { description: 'agreement-not-found.' } }
+                },
+                post: {
+                    summary: 'Pin and append a community-result/v1 signed by the named community organiser, including after the deadline; server checks snapshot without fetching websites',
+                    operationId: 'postCommunityReport',
+                    parameters: [{ name: 'cid', in: 'path', required: true, schema: { type: 'string' } }],
+                    requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['cid', 'content'], additionalProperties: false, properties: { cid: CID_PROPERTY, content: COMMUNITY_REPORT_CONTENT } } } } },
+                    responses: { 201: { description: '{ stored: true, duplicate: false, cid }' }, 200: { description: '{ stored: true, duplicate: true, cid }' }, 400: { description: 'Invalid shape or CID.' }, 403: { description: 'Signature or organiser not authorized.' }, 404: { description: 'agreement-not-found.' }, 413: { description: 'Report exceeds 96 KiB.' }, 429: { description: 'Upload rate limit.' }, 502: { description: 'Pin failed.' }, 503: { description: 'Pinning unconfigured.' } }
                 }
             },
             '/agreements/{cid}/onchain': {

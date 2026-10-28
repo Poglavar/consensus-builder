@@ -5,7 +5,7 @@
 // place within 40 km of the current city counted as "here". Either kept the user in one city while
 // authoring on another's land, with the first city's parcels — none — loaded.
 import { describe, it, expect, beforeAll } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -18,7 +18,7 @@ beforeAll(() => {
     // city-config.js is a classic script that assigns window.CityConfigManager (same realm, as
     // parcel-deep-link-city.test.js does)
     globalThis.window = globalThis;
-    (0, eval)(readFileSync(new URL('../../frontend/js/city-config.js', import.meta.url), 'utf8'));
+    (0, eval)(cityConfigSource());
     manager = globalThis.window.CityConfigManager;
     // what map-search.js configuredCities() hands the model
     cities = manager.getAvailableCities().map(config => ({

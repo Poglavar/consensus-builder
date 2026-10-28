@@ -54,6 +54,10 @@ describe('camera-flight records', () => {
         expect(Flight.validate(record)).toMatch(/designs/);
     });
 
+    it('accepts every app language in the saved view', () => {
+        for (const language of ['en', 'hr', 'es', 'sr', 'ar', 'fr', 'pt']) expect(Flight.validate({ ...flight(), view: { ...flight().view, language } })).toBeNull();
+    });
+
     it.each([
         ['null record', () => null], ['unknown top-level field', r => ({ ...r, backend: 'https://example.test' })],
         ['old schema', r => ({ ...r, schema: 'camera-flight/v1' })],
@@ -62,6 +66,7 @@ describe('camera-flight records', () => {
         ['empty coordinate', r => ({ ...r, view: { ...r.view, at: ',0,18' } })],
         ['out of range coordinate', r => ({ ...r, view: { ...r.view, at: '90,0,18' } })],
         ['unknown view field', r => ({ ...r, view: { ...r.view, backend: 'x' } })],
+        ['map auto-rotate flag', r => ({ ...r, view: { ...r.view, rotate: false } })],
         ['unknown language', r => ({ ...r, view: { ...r.view, language: 'unknown' } })],
         ['null settings', r => ({ ...r, view: { ...r.view, settings: null } })],
         ['numeric setting', r => ({ ...r, view: { ...r.view, settings: { xray: 1 } } })],

@@ -1,6 +1,6 @@
 // Exercise every action of the site's proposal panel ("Propose here") through its real UI handlers.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, publishOn, PARCEL_ID, runParcelCommand } from '../helpers/runtime';
+import { clickMapPoint, openCity, placeFreeformBuilding, publishOn, PARCEL_ID, runParcelCommand } from '../helpers/runtime';
 
 const SECOND_PARCEL_ID = 'HR-335754-1235';
 
@@ -61,10 +61,13 @@ async function expectFreeformDraftSite(page: import('@playwright/test').Page, au
         w.turf.feature(guideGeometry),
         w.turf
       ));
+    const sameFootprint = !!draft?.fields?.site && !!buildingsSite
+      && w.turf.booleanEqual(w.turf.feature(draft.fields.site), w.turf.feature(buildingsSite));
     return {
       guideGeometry,
       draftSite: draft?.fields?.site || null,
       buildingsSite,
+      sameFootprint,
       placement: draft?.editorPayload?.placement || null,
       insideGuide,
       groundTreatment: draft?.editorPayload?.context?.groundSurface?.treatment || 'none',
@@ -74,10 +77,11 @@ async function expectFreeformDraftSite(page: import('@playwright/test').Page, au
   expect(state.guideGeometry).toEqual(authoredSite);
   expect(state.insideGuide).toBe(true);
   expect(state.placement?.free).toBe(true);
-  expect(state.groundTreatment).toBe('paved');
+  expect(state.groundTreatment).toBe('none');
   expect(state.takeWholeParcels).toBe(false);
-  // Paving surrounds the footprint within the authored site; the material footprint is smaller.
-  expect(state.draftSite).toEqual(authoredSite);
+  // The authored site stays a placement guide; the footprint alone defines land take.
+  expect(state.sameFootprint).toBe(true);
+  expect(state.draftSite).not.toEqual(authoredSite);
 }
 
 test.describe('Site proposals already on its parcels @core', () => {
@@ -86,15 +90,23 @@ test.describe('Site proposals already on its parcels @core', () => {
     await openCity(page);
     await runParcelCommand(page, 15.9822, 45.80025, 'parcel.useAsSite');
     const card = page.locator('#site-panel');
-    await expect(card.locator('.site-panel__existing')).toContainText('1 proposal already on these parcels');
+    await expect(card.locator('.site-panel__existing')).toContainText('1 design already on these parcels');
     await card.locator('[data-site-action="show-proposals"]').click();
     const panel = page.locator('#site-info-panel');
     await expect(panel.locator('[data-site-tab="proposals"]')).toHaveAttribute('aria-selected', 'true');
     await expect(panel.locator('[data-site-tab="proposals"] .parcel-tab-count')).toHaveText('1');
     await expect(panel.locator(`[data-site-tab-panel="proposals"] [data-server-id="${publishedCid}"]`)).toContainText('Published park');
-    await panel.locator('[data-site-tab="info"]').click();
+    const infoTab=panel.getByRole('tab',{name:'Info',exact:true});
+    await expect(infoTab.locator('.fa-circle-info')).toBeVisible();
+    await expect(infoTab).toHaveAttribute('title','Info');
+    await expect(infoTab).toHaveText('');
+    await infoTab.click();
     await expect(panel.locator('[data-site-tab-panel="info"]')).toContainText('Bound parcels (1)');
-    await panel.locator('[data-site-tab="propose"]').click();
+    const designTab=panel.getByRole('tab',{name:'Design',exact:true});
+    await expect(designTab.locator('.fa-pen')).toBeVisible();
+    await expect(designTab).toHaveAttribute('title','Design');
+    await expect(designTab).toHaveText('');
+    await designTab.click();
     await expect(panel.locator('[data-site-tab-panel="propose"] .parcel-build-btn--park')).toBeVisible();
   });
 });
@@ -107,7 +119,11 @@ test.describe('Site build palette controls @core', () => {
     const { panel, site } = await beginParcelSite(page);
     await panel.locator(`.parcel-build-btn--${item.key}`).click();
     await expect(page.locator(item.surface).locator('.on-map-editor__panel')).toBeVisible();
-    if (item.key === 'single') await expectFreeformDraftSite(page, site);
+    if (item.key === 'single') {
+      await placeFreeformBuilding(page);
+      await expect(page.locator('#single-land-take [data-land-status]')).toContainText('m²');
+      await expectFreeformDraftSite(page, site);
+    }
     else await expectActiveDraftSite(page, site, item.adapter);
   });
 
@@ -207,9 +223,21 @@ test.describe('Site build palette controls @core', () => {
   for (const item of [
     { key: 'road', status: '#road-drawing-controls', label: 'Road' },
     { key: 'track', status: '#road-drawing-controls', label: 'Track' },
-  ]) test(`${item.label} opens the real corridor drawing tool from the site palette`, async ({ mockApi: page }) => {
+  ]) test(`${item.label} opens the real corridor drawing tool from the site palette`, async ({ mockApi: page }, testInfo) => {
     const { panel } = await beginParcelSite(page);
-    await panel.locator(`.parcel-transport-btn--${item.key}`).click();
+    if (item.key === 'track') {
+      const track=panel.locator('.parcel-transport-btn--track');
+      await expect(track.locator('.cb-icon-track')).toHaveCSS('mask-image', /track\.svg/);
+      await track.scrollIntoViewIfNeeded();
+      await page.screenshot({path:testInfo.outputPath('track-icon.png')});
+    }
+    await panel.locator(`.parcel-transport-btn--${item.key === 'bus' ? 'roadStation' : 'trackStation'}`).click();
+    if (item.key !== 'bus') {
+      const chooser = page.getByRole('dialog', { name: 'Track station', exact: true });
+      await expect(chooser).toBeVisible();
+      await chooser.locator(`[data-station-level="${item.key}"]`).click();
+      await expect(chooser).toBeHidden();
+    }
     if (item.key === 'track') {
       await expect(page.locator('#track-speed-confirm-btn')).toBeVisible();
       await page.locator('#track-speed-confirm-btn').click();
@@ -227,7 +255,13 @@ test.describe('Site build palette controls @core', () => {
     { key: 'elevated' },
   ]) test(`${item.key} station starts real placement mode from the site palette`, async ({ mockApi: page }) => {
     const { panel } = await beginParcelSite(page);
-    await panel.locator(`.parcel-transport-btn--${item.key}`).click();
+    await panel.locator(`.parcel-transport-btn--${item.key === 'bus' ? 'roadStation' : 'trackStation'}`).click();
+    if (item.key !== 'bus') {
+      const chooser = page.getByRole('dialog', { name: 'Track station', exact: true });
+      await expect(chooser).toBeVisible();
+      await chooser.locator(`[data-station-level="${item.key}"]`).click();
+      await expect(chooser).toBeHidden();
+    }
     const toolbar = page.locator('#station-placement-toolbar');
     await expect(toolbar).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).transitStationPlacementMode)).toBe(true);

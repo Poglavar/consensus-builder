@@ -13,7 +13,7 @@ const read = rel => readFileSync(path.join(REPO, rel), 'utf8');
 const registry = JSON.parse(read('world-parcels/registry.json'));
 const sourceReviews = JSON.parse(read('world-parcels/country-coverage-reviews.json')).reviews;
 const countries = JSON.parse(read('world-parcels/countries.geojson'));
-const cityConfigSource = read('frontend/js/city-config.js');
+const cityConfigSource = read('frontend/data/city-configs.js');
 const built = buildCoverage({ registry, countryReviews: sourceReviews, countries, cityConfigSource });
 const require = createRequire(import.meta.url);
 const WorldCoverage = require(path.join(REPO, 'frontend/js/world/world-coverage.js'));

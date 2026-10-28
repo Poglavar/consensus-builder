@@ -34,7 +34,7 @@ GATES = REQUIRED_CHECKS
 OPTIONAL = ("evidence/initial-review.json", "evidence/alignment-report.json", "evidence/independent-alignment-report.json",
             "evidence/alignment-evidence.json", "evidence/alignment-metadata.json", "evidence/alignment-native.json")
 ADMISSION_FILES = (
-    "frontend/data/source-catalog.json", "frontend/js/city-config.js", "world-parcels/registry.json",
+    "frontend/data/source-catalog.json", "frontend/data/city-configs.js", "frontend/data/city-index.js", "world-parcels/registry.json",
     "world-parcels/report/city-demographics.json", "frontend/data/parcel-coverage-report.json",
     "frontend/data/world-coverage.json", "frontend/data/boot-coverage.js", "frontend/i18n/en.json", "frontend/i18n/es.json",
     "frontend/i18n/hr.json", "frontend/i18n/sr.json",
@@ -106,7 +106,7 @@ def _run(command: list[str], *, cwd: Path, timeout: int = 180) -> subprocess.Com
 def _existing_bindings(root: Path) -> list[dict[str, Any]]:
     script = """import fs from 'node:fs';
 import { parseCityConfigs } from './scripts/build-world-coverage.mjs';
-const rows = parseCityConfigs(fs.readFileSync('frontend/js/city-config.js', 'utf8'));
+const rows = parseCityConfigs(fs.readFileSync('frontend/data/city-configs.js', 'utf8'));
 process.stdout.write(JSON.stringify(rows.map(({id,wupCityCode,sourceId,countryCode})=>({id,wupCityCode,sourceId,countryCode}))));
 """
     result = _run(["node", "--input-type=module", "-e", script], cwd=root, timeout=30)

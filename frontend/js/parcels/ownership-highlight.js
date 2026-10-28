@@ -31,15 +31,23 @@
     let ownershipHighlightDebounceTimer = null;
     const OWNERSHIP_HIGHLIGHT_DEBOUNCE_MS = 150;
 
-    function ownershipCacheKey(parcelId) {
+    // The current city|revision cache scope; a changed scope empties the cache. A loop over the
+    // fabric computes it once per pass and builds each key with ownershipCacheKeyIn.
+    function ownershipCacheScope() {
         const city = global.CityConfigManager?.getCurrentCityId?.() || 'default';
-        const revision = global.LiveParcelFabric?.snapshot?.().revision ?? 'none';
+        const revision = global.LiveParcelFabric?.revision?.() ?? 'none';
         const scope = `${city}|${revision}`;
         if (scope !== ownershipTypeCacheScope) {
             ownershipTypeCache.clear();
             ownershipTypeCacheScope = scope;
         }
-        return `${scope}\u0000${parcelId}`;
+        return scope;
+    }
+
+    const ownershipCacheKeyIn = (scope, parcelId) => `${scope}\u0000${parcelId}`;
+
+    function ownershipCacheKey(parcelId) {
+        return ownershipCacheKeyIn(ownershipCacheScope(), parcelId);
     }
 
     const isEditableTarget = (target) => {
@@ -195,11 +203,12 @@
         }
 
         const parcels = [];
+        const scope = ownershipCacheScope();
         fabric.list().forEach(feature => {
             const parcelId = fabric.featureId(feature);
             if (!parcelId) return;
             const parcelIdStr = String(parcelId);
-            const cacheKey = ownershipCacheKey(parcelIdStr);
+            const cacheKey = ownershipCacheKeyIn(scope, parcelIdStr);
             if (ownershipTypeCache.has(cacheKey)) return;
             if (feature.properties?.ownershipType) {
                 ownershipTypeCache.set(cacheKey, feature.properties.ownershipType);

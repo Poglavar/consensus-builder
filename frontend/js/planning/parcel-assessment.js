@@ -55,7 +55,7 @@
     }
     function direct(source, quantity, unit) {
         const value = source.constraints?.find(c => c.quantity === quantity && c.unit === unit);
-        return value?.evidence === 'direct' && finite(value.value) && value.value >= 0 ? value.value : null;
+        return ['direct', 'literal'].includes(value?.evidence) && finite(value.value) && value.value >= 0 ? value.value : null;
     }
     function derive(context, frontEdge = 0, geometryOps) {
         const local = frame(context.parcel.geometry);

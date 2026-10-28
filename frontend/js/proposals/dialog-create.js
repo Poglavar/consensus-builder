@@ -471,14 +471,14 @@ function showProposalDialog(overrides = null) {
     // full-property dialog, only reframed: the source id is staged in pendingProposalReplacementSource.
     const isEditingExisting = !!(typeof window !== 'undefined' && window.pendingProposalReplacementSource && window.pendingProposalReplacementSource.proposalId);
     const modalTitle = isEditingExisting
-        ? t('modal.createProposal.editTitle', 'Proposal')
-        : t('modal.createProposal.title', 'Create Proposal');
-    const closeAriaLabel = t('modal.createProposal.closeAria', 'Close proposal dialog');
+        ? t('modal.createProposal.editTitle', 'Design')
+        : t('modal.createProposal.title', 'Create design');
+    const closeAriaLabel = t('modal.createProposal.closeAria', 'Close design dialog');
     const authorLabel = t('modal.createProposal.authorLabel', 'Author');
     const authorPlaceholder = t('modal.createProposal.authorPlaceholder', 'Your name');
     const authorAvatarAlt = t('modal.createProposal.authorAvatarAlt', 'Author avatar');
-    const proposalTypeLabel = t('modal.createProposal.proposalTypeLabel', 'Proposal type');
-    const proposalGoalLabel = t('modal.createProposal.proposalGoalLabel', 'Proposal goal');
+    const proposalTypeLabel = t('modal.createProposal.proposalTypeLabel', 'Design type');
+    const proposalGoalLabel = t('modal.createProposal.proposalGoalLabel', 'Design goal');
     const proposalTypologyLabel = t('modal.createProposal.typologyLabel', 'Typology');
     const acquisitionLabel = t('modal.createProposal.acquisitionLabel', 'Acquisition strategy');
     const acquisitionOptions = {
@@ -494,7 +494,7 @@ function showProposalDialog(overrides = null) {
     const nameLabel = t('modal.createProposal.nameLabel', 'Name');
     // Epoha plana: koje desetljeće ovaj prijedlog gradi (vremenska crta u listi).
     const epochLabel = t('modal.roadWidth.proposalList.epoch.rowLabel', 'Plan epoch');
-    const namePlaceholder = t('modal.createProposal.namePlaceholderProposal', 'Proposal name');
+    const namePlaceholder = t('modal.createProposal.namePlaceholderProposal', 'Design name');
     const unknownParcelLabel = t('modal.createProposal.unknownParcel', 'Unknown');
     const unknownOwnerLabel = t('modal.createProposal.ownerUnknown', 'Unknown');
     const formatOwnerTooltip = (name) => t('modal.createProposal.ownerTooltip', 'Owner: {{name}}', { name });
@@ -548,22 +548,22 @@ function showProposalDialog(overrides = null) {
         parcelBased: t('modal.createProposal.typologyOptions.parcelBased', 'Parcel-based')
     };
     const descriptionLabel = t('modal.createProposal.descriptionLabel', 'Description');
-    const descriptionPlaceholder = t('modal.createProposal.descriptionPlaceholder', 'Describe your proposal…');
+    const descriptionPlaceholder = t('modal.createProposal.descriptionPlaceholder', 'Describe your design…');
     // Title for the collapsible "Options" section: the site tolerance, the summary and similar proposals.
     const optionsSectionTitle = t('modal.createProposal.optionsSectionTitle', 'Options');
-    const summaryTitle = t('modal.createProposal.summary.title', 'Proposal Summary');
+    const summaryTitle = t('modal.createProposal.summary.title', 'Design summary');
     const summaryParcelsLabel = t('modal.createProposal.summary.parcels', 'Parcels Selected:');
     const summaryAreaLabel = t('modal.createProposal.summary.area', 'Total Area:');
     const summaryOwnersLabel = t('modal.createProposal.summary.owners', 'Total owners:');
     const summarySelectedLabel = t('modal.createProposal.summary.selected', 'Selected Parcels:');
-    const similarTitle = t('modal.createProposal.similar.title', 'Similar proposals:');
-    const similarUnknownTitle = t('modal.createProposal.similar.unknownTitle', 'Untitled proposal');
+    const similarTitle = t('modal.createProposal.similar.title', 'Similar designs:');
+    const similarUnknownTitle = t('modal.createProposal.similar.unknownTitle', 'Untitled design');
     const similarUnknownAuthor = t('modal.createProposal.similar.unknownAuthor', 'Unknown');
     const lensTooltip = t('modal.createProposal.lensTooltip', 'Open lens modal');
     const submitLabel = isEditingExisting
         ? window.ProposalLineage.forkSubmitLabel(window.pendingProposalReplacementSource.proposalId,
             { fork: window.pendingProposalReplacementSource.fork === true })
-        : t('modal.createProposal.submit', 'Create Proposal');
+        : t('modal.createProposal.submit', 'Create design');
     const cancelLabel = t('common.cancel', 'Cancel');
 
     const overrideGoal = normalizeGoalKey(proposalDialogOverrides?.goal) || null;
@@ -613,7 +613,7 @@ function showProposalDialog(overrides = null) {
         ? t('modal.createProposal.site.bound', 'Site of {{area}} m², bound parcels: {{count}}. Publishing checks the binding against the full cadastre.', { area: CbFormat.formatNumber(siteArea, { maxFractionDigits: 0 }), count: siteParcelIds.length })
         : t('modal.createProposal.site.unbound', 'Site of {{area}} m² without bound parcel records. Ownership is unknown. On-chain execution requires an authority verdict.', { area: CbFormat.formatNumber(siteArea, { maxFractionDigits: 0 }) })}</p>` : '';
     const toleranceLabel = t('modal.createProposal.tolerance.label', 'Parcel intrusion tolerance (m)');
-    const toleranceHelp = t('modal.createProposal.tolerance.help', 'A parcel joins the proposal when the site reaches into it by more than this width (linear, not area). In cities keep 0: you cannot take any of a neighbour\'s parcel. Use it only for measurement error; max 1 m.');
+    const toleranceHelp = t('modal.createProposal.tolerance.help', 'A parcel joins the design when the site reaches into it by more than this width (linear, not area). In cities keep 0: you cannot take any of a neighbour\'s parcel. Use it only for measurement error; max 1 m.');
     const toleranceValue = siteContext && Number(siteContext.toleranceM) > 0 ? Number(siteContext.toleranceM) : 0;
     const ownershipMode = ownershipStats.mode;
     currentOwnershipMode = ownershipMode;

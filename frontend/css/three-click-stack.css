@@ -2,56 +2,13 @@
    frame is the 2D stack's (css/map.css, #click-stack and #three-click-stack share it): no panel,
    only the section cards floating over the scene. */
 
-/* Fit short sections to their contents. When content is long, only the expanded body gives up
-   height: the other sections' headings remain visible within the available dock height. */
-#three-click-stack {
-    bottom: auto;
-    max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--cb-space-2) - var(--right-dock-bottom));
-    overflow: hidden;
-}
-
-#three-click-stack .click-stack__sections,
-#three-click-stack .click-stack__section.is-expanded,
-#three-click-stack .click-stack__card,
-#three-click-stack .click-stack__body {
-    flex: 0 1 auto;
-    min-height: 0;
-}
-
-#three-click-stack .click-stack__heading,
-#three-click-stack .click-stack__choices,
-#three-click-stack .click-stack__body > *,
-#three-click-stack #planning-inspector.is-hosted {
-    flex: 0 0 auto;
-}
-
-/* Built is a compact source record rather than a standalone inspector's headline figures. */
-#three-click-stack [data-kind="built"] .planning-metrics {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--cb-space-2);
-    margin: var(--cb-space-2) 0;
-    padding: var(--cb-space-2) 0;
-}
-
-#three-click-stack [data-kind="built"] .planning-metrics div:first-child {
-    grid-column: auto;
-}
-
-#three-click-stack [data-kind="built"] .planning-metrics dd,
-#three-click-stack [data-kind="built"] .planning-metrics div:first-child dd {
-    font-size: var(--cb-text-base);
-    font-weight: var(--cb-weight-normal);
-}
-
 @media (max-width: 767.98px) {
-    #three-click-stack {
-        bottom: auto;
-        max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--cb-space-2) - var(--map-visible-bottom));
+    /* A 3D source record can be long, but unlike the 2D hosted editing panels it has no controls
+       that must travel with the sheet. Let its body scroll so the other hit headings remain
+       available in the phone sheet. */
+    #three-click-stack .click-stack__section.is-expanded {
+        flex: 0 1 auto;
     }
-}
-
-#three-click-stack .three-mode-parcel-panel {
-    padding: var(--cb-space-1) var(--cb-space-3) var(--cb-space-3);
 }
 
 #three-click-stack .three-mode-parcel-panel .parcel-id-text {

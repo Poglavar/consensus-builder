@@ -7,17 +7,20 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
-import { createRequire } from 'node:module';
+import vm from 'node:vm';
+import { dictionary, testI18n } from './helpers/i18n.js';
 import { load } from 'cheerio';
 import { FRONTEND } from './helpers/design-audit.mjs';
 
-const require = createRequire(import.meta.url);
-const PageHeader = require('../../frontend/js/ui/page-header.js');
+const root = { i18n: testI18n() };
+vm.runInNewContext(readFileSync(new URL('../../frontend/js/ui/page-header.js', import.meta.url), 'utf8'), { window: root });
+const PageHeader = root.CbPageHeader;
 
 const EXEMPT = new Set(['index.html', 'deck.html', 'deck2.html', 'deck3.html', 'hackathon-demo.html']);
 const pages = readdirSync(FRONTEND).filter(f => f.endsWith('.html') && !EXEMPT.has(f)).sort();
 const html = Object.fromEntries(pages.map(p => [p, readFileSync(path.join(FRONTEND, p), 'utf8')]));
-const backWords = new Set(Object.values(PageHeader.STRINGS.backToMap));
+const languages = testI18n().getSupportedLanguages();
+const backWords = new Set(languages.map(lang => dictionary(lang).pageHeader.backToMap));
 const textOf = value => value.replace(/\s+/g, ' ').trim();
 
 describe('satellite page header', () => {
@@ -59,7 +62,7 @@ describe('satellite page header', () => {
         const back = backs.first();
         const href = back.attr('href');
         expect({ page, href }).toEqual({ page, href: expect.stringMatching(/^\/(\?lang=[a-z]{2})?$/) });
-        expect(back.find('i.fa-solid.fa-arrow-left[aria-hidden="true"]')).toHaveLength(1);
+        expect(back.find('i.fa-solid.fa-arrow-left[aria-hidden="true"], svg.cb-back-link__icon[aria-hidden="true"]')).toHaveLength(1);
         expect(backWords.has(textOf(back.text()))).toBe(true);
         expect($('a.cb-back-link')).toHaveLength(1);
     });
@@ -73,19 +76,17 @@ describe('satellite page header', () => {
 });
 
 describe('page-header.js strings', () => {
-    it('has "Back to the map" in every UI language and falls back to English', () => {
-        expect(['en', 'es', 'hr', 'sr'].map(lang => PageHeader.text('backToMap', lang)))
-            .toEqual(['Back to the map', 'Volver al mapa', 'Natrag na kartu', 'Nazad na mapu']);
-        expect(PageHeader.text('backToMap', 'de')).toBe('Back to the map');
-    });
-
-    it('refuses a key it does not have instead of printing the key', () => {
-        expect(() => PageHeader.text('backToTheApp', 'en')).toThrow(/no string "backToTheApp"/);
-    });
-
-    it('rewrites every element that names a header string', () => {
-        const nodes = [{ getAttribute: () => 'backToMap', textContent: 'Back to the map' }, { getAttribute: () => 'backToMap', textContent: '' }];
-        PageHeader.apply('hr', { querySelectorAll: selector => (selector === '[data-page-header-key]' ? nodes : []) });
-        expect(nodes.map(node => node.textContent)).toEqual(['Natrag na kartu', 'Natrag na kartu']);
+    it('uses the shared selected dictionary and its English fallback', () => {
+        for (const language of languages) {
+            root.i18n = testI18n(language);
+            expect(PageHeader.text('backToMap')).toBe(dictionary(language).pageHeader.backToMap);
+        }
+        root.i18n = testI18n();
+        const nodes = [{ getAttribute: () => 'backToMap', textContent: '' }];
+        PageHeader.apply({ querySelectorAll: () => nodes });
+        expect(nodes[0].textContent).toBe('Back to the map');
+        root.i18n = testI18n('hr');
+        PageHeader.apply({ querySelectorAll: () => nodes });
+        expect(nodes[0].textContent).toBe('Natrag na kartu');
     });
 });

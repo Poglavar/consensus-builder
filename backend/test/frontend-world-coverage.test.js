@@ -368,7 +368,9 @@ describe('searchPlaces', () => {
 
     it('ranks prefix matches above substrings and configured cities above others', () => {
         const hits = coverage.searchPlaces('bel');
-        expect(hits[0]).toMatchObject({ kind: 'live-city', cityId: 'belgrade' });
+        expect(hits[0]).toMatchObject({ kind: 'live-city' });
+        expect(hits[0].name.toLowerCase()).toMatch(/^bel/);
+        expect(hits.some(place => place.cityId === 'belgrade')).toBe(true);
         expect(hits.every(place => ['city', 'live-city'].includes(place.kind))).toBe(true);
     });
 

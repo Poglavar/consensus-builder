@@ -21,7 +21,7 @@ const record = (proposalId: string, extra: Record<string, unknown> = {}) => ({
   proposalId, title: proposalId, description: 'Ground rebase fixture',
   city: 'zg', goal: 'buildings', lifecycleStatus: 'Active', applied: false,
   cadastreParcelIds: ['HR-335754-1236'],
-  geometry: { buildings: [massing], blockMassing: massing },
+  geometry: { buildings: [massing], ruleMassing: massing },
   buildingProposal: { typologyType: 'block', parameters: { rule: { kind: 'max', maxHeightM: 15 } } },
   ...extra
 });
@@ -62,7 +62,7 @@ test.describe('re-applying a proposal to changed ground', () => {
     expect(await page.evaluate(() => (window as any).proposalStorage.getProposal('e2e-rebase-published').cadastreParcelIds))
       .toEqual(['HR-335754-1236']);
 
-    await notice.getByRole('button', { name: 'New proposal with same geometry' }).click();
+    await notice.getByRole('button', { name: 'New design with same geometry' }).click();
     await expect.poll(() => page.evaluate(() => (window as any).pendingProposalReplacementSource?.proposalId || null)).toBe('e2e-rebase-published');
     const draft = await page.evaluate(() => (window as any).proposalDraftStore.listDrafts()
       .filter((d: any) => d.sourceLocalProposalId === 'e2e-rebase-published').map((d: any) => d.fields.cadastreParcelIds));

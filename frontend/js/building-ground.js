@@ -52,7 +52,7 @@
     }
 
     // The surround polygon: the authored ground boundary minus every building footprint on it.
-    // The freeform editor moves this boundary with the design; the starting parcels are optional guides.
+    // Building drags leave this boundary and its authored furniture in place.
     function computeSurfacePolygon(blockFeature, buildingFeatures) {
         if (typeof turf === 'undefined' || typeof turf.difference !== 'function') return null;
         let surface = asFeature(blockFeature);
@@ -78,6 +78,19 @@
         const polygon = computeSurfacePolygon(blockFeature, buildingFeatures);
         if (!polygon) return null;
         return { treatment: normalized, polygon, ...(decorationDesign ? { decorationDesign: JSON.parse(JSON.stringify(decorationDesign)) } : {}) };
+    }
+
+    // Surroundings consume land too. A footprint-only take leaves no surface to author.
+    function clipSurfaceToLandTake(surface, take, turfApi) {
+        if (!surface || !take) return null;
+        const land = asFeature(take.geometry || take), ground = asFeature(surface.polygon);
+        if (!land || !ground) return null;
+        let clipped;
+        try { clipped = turfApi.intersect(ground, land); } catch (error) {
+            throw clipFailureOf('intersect', error, 'building-ground.clipSurfaceToLandTake', [ground, land]);
+        }
+        if (!clipped || turfApi.area(clipped) < MIN_SURFACE_AREA_M2) return null;
+        return { ...surface, polygon: clipped.geometry };
     }
 
     function surfaceOf(proposal) {
@@ -125,7 +138,7 @@
     }
 
     // Every applied proposal that paves or greens its visible surroundings, as
-    // { proposalId, treatment, geometry }. `isAppliedFn(proposal, sub)` is the caller's applied
+    // { proposalId, treatment, buildings, geometry }. `isAppliedFn(proposal, sub)` is the caller's applied
     // predicate (each renderer already has one) so this module stays free of lifecycle knowledge.
     function appliedSurfaces(proposals, isAppliedFn) {
         const out = [];
@@ -148,6 +161,7 @@
                 proposalId: proposal.proposalId != null ? String(proposal.proposalId) : null,
                 treatment: surface.treatment,
                 ...(surface.decorationDesign ? { decorationDesign: surface.decorationDesign } : {}),
+                buildings: (proposal.geometry?.buildings || []).map(asFeature).filter(Boolean),
                 geometry
             });
         });
@@ -186,6 +200,64 @@
         });
     }
 
+    // Parcels are private ground. A design's open ground (paved or green alike) is fenced along every
+    // parcel boundary that crosses it, the street edge included, but never along a building wall. A
+    // courtyard is shared only when the parcel layout makes it a parcel of its own: then no boundary
+    // crosses it, and its edges against private yards are fenced like any other. `ground` is the
+    // visible surface, `parcels` the live parcels around it, `buildings` the design's footprints.
+    // Returns line segments as [[lng, lat], ...] coordinate arrays. turfApi is turf 6.
+    const FENCE_WALL_TOLERANCE_M = 0.3;
+    const FENCE_MIN_LENGTH_M = 0.5;
+
+    function fenceLines(ground, parcels, buildings, turfApi) {
+        const surface = asFeature(ground);
+        if (!surface) return [];
+        const linesOf = feature => {
+            const out = [];
+            turfApi.flattenEach(turfApi.polygonToLine(feature), line => out.push(line));
+            return out;
+        };
+        const near = (point, lines) => lines.some(line =>
+            turfApi.pointToLineDistance(point, line, { units: 'meters' }) <= FENCE_WALL_TOLERANCE_M);
+        const edgeOfGround = linesOf(surface);
+        const walls = (Array.isArray(buildings) ? buildings : []).map(asFeature).filter(Boolean).flatMap(linesOf);
+        const [west, south, east, north] = turfApi.bbox(surface);
+        const key = point => `${point[0].toFixed(7)},${point[1].toFixed(7)}`;
+        const seen = new Set();
+        const out = [];
+        for (const parcel of Array.isArray(parcels) ? parcels : []) {
+            const feature = asFeature(parcel);
+            if (!feature) continue;
+            const box = turfApi.bbox(feature);
+            if (box[0] > east || box[2] < west || box[1] > north || box[3] < south) continue;
+            const polygons = feature.geometry.type === 'Polygon' ? [feature.geometry.coordinates] : feature.geometry.coordinates;
+            for (const ring of polygons.flat()) {
+                for (let i = 1; i < ring.length; i++) {
+                    const a = ring[i - 1], b = ring[i];
+                    // Neighbouring parcels share their boundary: one fence, not two.
+                    const edgeKey = [key(a), key(b)].sort().join('|');
+                    if (seen.has(edgeKey)) continue;
+                    seen.add(edgeKey);
+                    const edge = turfApi.lineString([a, b]);
+                    if (turfApi.length(edge, { units: 'meters' }) < FENCE_MIN_LENGTH_M) continue;
+                    let pieces;
+                    try { pieces = turfApi.lineSplit(edge, surface).features; } catch (error) {
+                        throw clipFailureOf('lineSplit', error, 'building-ground.fenceLines', [edge, surface]);
+                    }
+                    for (const piece of pieces.length ? pieces : [edge]) {
+                        const length = turfApi.length(piece, { units: 'meters' });
+                        if (length < FENCE_MIN_LENGTH_M) continue;
+                        const middle = turfApi.along(piece, length / 2, { units: 'meters' });
+                        if (!turfApi.booleanPointInPolygon(middle, surface) && !near(middle, edgeOfGround)) continue;
+                        if (near(middle, walls)) continue;
+                        out.push(piece.geometry.coordinates);
+                    }
+                }
+            }
+        }
+        return out;
+    }
+
     return {
         TREATMENTS: TREATMENTS,
         MIN_SURFACE_AREA_M2: MIN_SURFACE_AREA_M2,
@@ -193,10 +265,12 @@
         normalizeTreatment: normalizeTreatment,
         computeSurfacePolygon: computeSurfacePolygon,
         buildSurface: buildSurface,
+        clipSurfaceToLandTake,
         surfaceOf: surfaceOf,
         treatmentOf: treatmentOf,
         moveDecorationDesign,
         vacantPlots,
+        fenceLines,
         appliedSurfaces: appliedSurfaces
     };
 });

@@ -1224,10 +1224,10 @@
     }
 
     // ---- Track curvature constraints (moved out of road-drawing.js) --------------------------
-    // A track vertex must not create a turn tighter than its speed allows. Measured in a frame on the
-    // gesture's own points (a bounded gesture, projections.md §2); the audio feedback stays in the UI.
+    // Drawing radius targets are measured in a frame on the gesture's own points
+    // (a bounded gesture, projections.md §2), independently of operating-speed certification.
 
-    // Track speed (km/h) → minimum curvature radius (m), from railway engineering standards.
+    // Picker design-speed options (km/h) → authored minimum-radius targets (m).
     const TRACK_SPEED_TO_MIN_RADIUS = {
         50: 300, 80: 500, 120: 1000, 160: 2000, 200: 3500, 250: 5000
     };
@@ -1261,6 +1261,20 @@
             return ab[0] * bc[0] + ab[1] * bc[1] < 0 ? 0 : Infinity;
         }
         return (abLen * bcLen * acLen) / (4 * area);
+    }
+
+    // A polyline diagnostic, not an engineered transition-curve or operating-speed assessment.
+    // Keep segment/vertex addresses so the author can locate the tight bends without moving them.
+    function measureCorridorCurvature(segments, minimumRadiusM) {
+        if (typeof minimumRadiusM !== 'number' || !Number.isFinite(minimumRadiusM) || minimumRadiusM <= 0) return [];
+        const violations = [];
+        (segments || []).forEach((points, segmentIndex) => {
+            for (let i = 1; i < points.length - 1; i += 1) {
+                const radiusM = calculateCurvatureRadius(points[i - 1], points[i], points[i + 1]);
+                if (radiusM < minimumRadiusM) violations.push({ segmentIndex, vertexIndex: i, radiusM });
+            }
+        });
+        return violations;
     }
 
     // Would appending newPoint after `points` violate the minimum radius? Returns
@@ -1469,6 +1483,7 @@
     const api = {
         getMinCurvatureRadius,
         calculateCurvatureRadius,
+        measureCorridorCurvature,
         checkCurvatureConstraint,
         projectPointOnPixelSegment,
         pickSnapTarget,

@@ -204,7 +204,7 @@
             parameters: { typology: 'single', height: tallest || DEFAULT_HEIGHT_M, rotation: 0, footprintMode: 'polygon' },
             buildingFeature: clone(list[0] || null),
             buildings: list,
-            blockMassing: null,
+            ruleMassing: null,
             ineligibleParcels: [],
             groundSurface: null,
             groundBoundary: null,

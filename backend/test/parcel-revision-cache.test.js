@@ -27,7 +27,7 @@ describe('fabric-revision-scoped parcel caches', () => {
             Set,
             module: { exports: {} },
             CityConfigManager: { getCurrentCityId: () => city },
-            LiveParcelFabric: { snapshot: () => ({ revision }), get },
+            LiveParcelFabric: { revision: () => revision, get },
             CadastralParcelRepository: { get: vi.fn(() => null) }
         };
         context.window = context;
@@ -58,7 +58,7 @@ describe('fabric-revision-scoped parcel caches', () => {
             document: { addEventListener: vi.fn() },
             CityConfigManager: { getCurrentCityId: () => 'sibenik' },
             LiveParcelFabric: {
-                snapshot: () => ({ revision }),
+                revision: () => revision,
                 queryBounds: () => []
             },
             proposalStorage: { getAllProposals: () => [proposal] },
@@ -95,7 +95,7 @@ describe('fabric-revision-scoped parcel caches', () => {
         const context = {
             Map,
             blockStorage: { load },
-            LiveParcelFabric: { snapshot: () => ({ revision }) },
+            LiveParcelFabric: { revision: () => revision },
             CityConfigManager: { getCurrentCityId: () => city }
         };
         context.window = context;

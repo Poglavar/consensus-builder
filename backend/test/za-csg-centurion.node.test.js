@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createParcelSource } from '../parcels/sources.js';
+import { nativeGeometryHash } from '../parcels/arcgis-source.js';
 
 const fixture = JSON.parse(readFileSync(new URL('./fixtures/za-csg-centurion.json', import.meta.url)));
 
@@ -73,4 +74,34 @@ test('Centurion changed geometry is explicit absence for its previous immutable 
     assert.equal(result.complete, true);
     assert.deepEqual(result.features, []);
     assert.deepEqual(result.absentIds, [fixture.expectedIds[0]]);
+});
+
+test('Centurion keeps different unchanged outlines under one native key as distinct references', async () => {
+    const { source, rows } = provider({ pageSize: 1 });
+    // Simulate a provider repeating a cadastral key; retain both original fixture geometries.
+    rows[1].properties.PRCL_KEY = rows[0].properties.PRCL_KEY;
+    const selected = rows.slice(0, 2);
+    const ids = selected.map(row => fixture.descriptor.idPrefix + row.properties.PRCL_KEY + '-' + nativeGeometryHash(row.geometry));
+    const result = await source.queryIds(ids);
+    assert.equal(result.complete, true);
+    assert.deepEqual(result.absentIds, []);
+    assert.deepEqual(result.features.map(feature => feature.id).sort(), [...ids].sort());
+    for (const row of selected) {
+        const feature = result.features.find(item => item.properties.sourceGeometryHash === nativeGeometryHash(row.geometry));
+        assert.equal(feature.properties.sourceNativeParcelId, row.properties.PRCL_KEY);
+        assert.deepEqual(feature.geometry, row.geometry);
+    }
+});
+
+test('Centurion preserves identical geometry belonging to different native keys for quality review', async () => {
+    const { source, rows } = provider();
+    rows[1].geometry = structuredClone(rows[0].geometry);
+    const selected = rows.slice(0, 2);
+    const ids = selected.map(row => fixture.descriptor.idPrefix + row.properties.PRCL_KEY + '-' + nativeGeometryHash(row.geometry));
+    const result = await source.queryIds(ids);
+    assert.equal(result.complete, true);
+    assert.deepEqual(result.absentIds, []);
+    assert.deepEqual(result.features.map(feature => feature.id).sort(), [...ids].sort());
+    assert.equal(new Set(result.features.map(feature => feature.properties.sourceNativeParcelId)).size, 2);
+    assert.deepEqual(result.features[0].geometry, result.features[1].geometry);
 });

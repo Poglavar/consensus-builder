@@ -1,16 +1,58 @@
-<!-- Design of record for the plan / design / agreement rework: what a design, an agreement and a plan are, what replaces named plans and decision kinds, and the open questions still being settled. -->
+<!-- Current plan/design/agreement contract, followed by historical design notes and unresolved findings. -->
 
 # Plan, design, agreement
 
-**Current addition (2026-10-24): named map snapshots.** “Name this plan” in Designs → Share
-saves a `plan/v1` record containing the title, selected published design CIDs and map view.
-Its `/plans/<cid>` link opens those exact designs through the ordinary shared-design flow.
-Renaming or changing the selection or view creates a different snapshot; old links retain their
-content. Agreements still own land allocations, money and decision rules. This is a small new
-record, independent of the former named-plan machinery removed in M2. The milestone descriptions
-below remain the historical implementation record. See [named-plan validation and release notes](docs/named-plans-validation.md).
+## Current agreement authoring contract
 
-**Status (2026-10-22): M1, M2 and M3 built and tested; M3 committed, nothing pushed or deployed.**
+Create a named plan independently before creating an agreement. Agreement creation belongs to the plan’s actions. The Input parcels tab selects an existing exact plan revision; its designs are read-only. Neither the editor nor MCP agreement editing creates or edits a plan.
+
+The editor has Rules, Input parcels, Output parcels and Persons tabs. Each output of an owners’ agreement has exactly one explicit input party, Proposer or Public recipient. Output parcels can be assigned individually or all to Proposer/Public land; bulk assignment writes the same explicit allocation lines and disables per-parcel controls. Proposer can receive land without owning inputs, while the sponsor funds the derived compensation. Input co-ownership remains valid; joint output allocation and implicit carried holdings are retired. When input owners are unknown, an abstract “Owner(s) of parcel X” party supports allocation and accounting; ownership rights and lens settings are separate dialogs.
+
+Rules state an area compensation rate in the city’s fiat currency and, where allowed by the selected scheme, a proportional land contribution. Cash is computed in whole cents from entitlement minus allocated area. Persons shows contributed/received land and cash, including the balancing sponsor; it has no cash editing. Input and output land areas and the derived cash schedule must balance before saving or publication. A no-cash rule records no transfers. Community agreements retain no allocations or financial settlement.
+
+This intentionally breaks older experimental joint-output, implicit-holder and manually entered cash agreements. Recreate those agreements from an existing plan; no compatibility reader or migration is supplied. Historical implementation notes below do not override this current contract.
+
+## Current contract
+
+| Record | Meaning | Relationships |
+|---|---|---|
+| **Design** | An authored change: a road, building, park, parcel layout or rule. Published revisions have immutable content identities. | The same design revision can appear in multiple plans. Agreement membership follows the plans. |
+| **Plan** | A named spatial collection of design CIDs and a saved map view, recorded as `plan/v1`. | Contains one or more designs; can exist without an agreement. |
+| **Agreement** | A decision rule and any land allocations, payments and deadline concerning a specific plan. | `agreement/v1.planCid` references exactly one immutable plan revision. Several agreements may reference the same plan. |
+
+The app uses **Plans**, **Designs** and **Agreements**. “Proposal” remains informal language and an
+internal local-record identifier, not a public entity label. Nonbinding and binding describe kinds
+of agreement; “consultation” is not a separate UI noun. The existing `consultation` metadata field
+continues to store optional organiser and participation details.
+
+The click stack contains Agreements above Plans, followed by Designs and source objects. Agreements
+are scoped to the selected exact Plan revision and share a selector when there are several. Their
+expanded section contains the full scrollable agreement properties and actions. The Plan button
+selects the referenced Plan in the current stack without loading or applying it. The stack displays
+only the selected level and the nearest available level above and below it, without a coordinate footer.
+Plans and Agreements retain separate share URLs. Execution markets and bets remain attached to
+eligible binding Agreements, so agreements concerning the same plan retain independent markets.
+
+Publication verifies the Plan CID and its exact member set. A local agreement's `designs` field is
+an editing/replay projection; it is not published. `POST /agreements` accepts a carried
+`plan: {cid, content}` and missing designs, indexing all three atomically. The index's `design_cids`
+is derived from the verified Plan solely for reverse lookup. Changing membership or terms creates
+new content identifiers; existing decisions and markets never move to a new revision.
+
+This intentionally breaks the former experimental `agreement/v1` contract that inlined `designs`.
+Old records are left untouched and must be recreated with a Plan reference; there is no compatibility
+reader or automatic conversion of signed or published records. Plan and Design records are unchanged.
+
+Named snapshots were added on 2026-10-24. “Name this plan” in Designs → Share saves the selected
+published designs and view, with a permanent `/plans/<cid>` link. Changing its title, selection or
+view creates a new snapshot; existing links retain their content. See
+[named-plan validation and release notes](docs/named-plans-validation.md).
+
+The notes below preserve historical reasoning, implementation milestones and unresolved findings.
+The current glossary is [vocabulary.md](vocabulary.md); the contract above supersedes the former
+independent Plan/Agreement design-membership model.
+
+**Historical status (recorded 2026-10-22): M1, M2 and M3 built and tested; M3 committed, nothing pushed or deployed at that time.**
 "Lay out parcels" (M1 a) and the local agreement with its dialog, panel and list (M1 b) came first.
 M2 (the "M2 build contract" below) publishes designs and agreements as CIDv1 UnixFS files with raw leaves, pinned
 through `POST /pins` and indexed in `consensus.design` / `consensus.agreement`; share links are
@@ -21,7 +63,7 @@ program (create, fund, attest, execute, cancel, expire; the lens attests `Agreem
 `satisfied` only; non-binding agreements are never minted and have no markets), the agreement panel's
 Mint / Propose again / Fund / Record decision / Execute / Cancel / Expire and the Minted agreements
 list, `POST /agreements/:cid/onchain` and `GET /agreements?minted=1`, markets, bets and pledges on
-agreement accounts (`agreement-execution-v1`; LMSR cancelled settles void, parimutuel NO), the
+agreement accounts (the original `agreement-execution-v1` contract; LMSR cancelled settles void, parimutuel NO), the
 lifecycle oracle writing `agreement_lifecycle` / `agreement_executed` land events and the observed
 status and end time onto the index row, agents proposing binding owners' agreements as devnet owners
 of their parcels (stages planned → chosen → designed → proposed → minted → recorded → staked, then
@@ -51,12 +93,12 @@ entrypoint; the production `.env` still carries unused Canton variables.
 
 A rework of what sits above a single authored change. Started 2026-10-21 on branch
 `plan-design-agreement` (off `colosseum-worlds-fair` at 3a62b4a7e, which includes the Schelling plan
-layer). Design discussion only so far; nothing below is implemented. This is the living plan:
-decisions are appended as they are made and the open list shrinks.
+layer). These notes preserve the discussion and implementation milestones; the current contract
+above supersedes historical statements where indicated.
 
-## Decisions (user, 2026-10-21)
+## Historical decisions (user, 2026-10-21)
 
-### Two records and one informal word
+### Former two-record model (the no-plan-record position was superseded by `plan/v1`)
 
 | Term | What it is | Record? |
 |---|---|---|
@@ -75,8 +117,10 @@ decisions are appended as they are made and the open list shrinks.
 - Several agreements may cover the same designs at once. A counterproposal that changes only the
   terms is a **counter-agreement** over the same design records; one that changes geometry is a
   fork of the design. A design's hash is therefore pure geometry, site and rules; terms never move it.
-- Exclusivity is enforced only at execution, on the input land: two open agreements over the same
-  land are both allowed and form one market contest; only one can execute.
+- Agreements over shared land form one comparison group. Their execution bets are independent:
+  both, one or neither can execute. The group does not impose an exclusive winner or make the
+  agreements' YES prices sum to one. The current deadline and payout contract is described in
+  [Agreement betting: LMSR and points](docs/betting-lmsr-points.md).
 
 ### Consent and execution move to the agreement (pitfall 2, user 2026-10-21)
 
@@ -320,10 +364,13 @@ the `proposal:<id>` rows. It never takes part in `ParcelMutation`: an agreement 
 - **Inputs are derived, never typed.** For each design: its declared `cadastreParcelIds` plus the
   cadastral ids of the pieces the fabric says it produced. Area comes from the original cadastral
   feature; holders from the local owner records (`parcel_<id>_owner`; a joint-pool agent expands to
-  its members). Open ground is the sum of the layouts' `openGroundM2`.
-- **Outputs are read from the fabric**: `LiveParcelFabric.entriesForCadastre(inputIds, { includeCorridors: true })`,
-  so plots, remainders, corridor bodies, split parts and untouched parcels all appear; holders are
-  what the fabric carries. Outputs are sorted by `fromParcelIds`, then area descending, then hash.
+  its members). Open ground is measured from the union of qualifying design sites outside their
+  bound original parcel geometries; a binding's area summary cannot replace that geometry.
+- **Outputs include the current ground**: `LiveParcelFabric.entriesForCadastre(inputIds, { includeCorridors: true })`
+  supplies plots, remainders, corridor bodies, split parts and untouched parcels. Current fabric
+  pieces on the modeled open-ground hosts are included too; any unformed host remainder is an
+  unchanged geometry output without a claimed holder or cadastral identity. Outputs are sorted
+  by `fromParcelIds`, then area descending, then hash.
 - **Decision rule** = the existing approval engine, unchanged: `rule.approvalConfig` is a
   `proposal-approval/v1` config (rights, policy, regime) and the engine's `inspect`/`tally` take
   `{ cadastreParcelIds: input ids, approvalConfig, lens }`. The three decision kinds become
@@ -408,8 +455,8 @@ had to be made are marked **(call)**.
   (0x70, `bafybei…`). The publication budget is 10 MiB, independently of chunk size.
   Identical sole-building and whole-block features are stored once under `geometry.buildings`;
   affected older duplicate records require review and republication under this canonical contract.
-  Pinata files use `cidVersion: 1`; the courier compares its answer with the computed CID and refuses
-  on a difference, so a wrong assumption fails loudly at the first pin, never silently.
+  Provider adapters preserve this CID scheme: Filebase imports the exact CAR DAG and Pinata uses
+  `cidVersion: 1`. The courier compares the provider's answer with the computed CID and refuses a difference.
 - **Design object** `design/v1`: `{ schema, goal, title, description, author, city, site, toleranceM,
   roadProposal | buildingProposal | structureProposal | parcelLayout (cleaned
   as `proposalContentPayload` cleans them today), geometry, origin: { cid } | null, authoredAt }`.
@@ -432,8 +479,9 @@ had to be made are marked **(call)**.
 ### Courier and index (server)
 
 - `POST /pins` `{ kind: 'design' | 'agreement', cid, bytes (base64) }`: recompute the CID, pin the
-  exact bytes through Pinata with `cidVersion: 1`, compare, answer `{ cid, pinnedAt }` or 409
-  `cid-mismatch`. 1 MB per object. Walrus is removed entirely (storage module, route, scripts,
+  exact bytes through the configured provider adapter, compare, answer `{ cid, pinnedAt }` or 409
+  `cid-mismatch`. 10 MiB per object. Upload provider and HTTP read gateway are configured independently.
+  Walrus is removed entirely (storage module, route, scripts,
   frontend provider switch, CSP entry, tests).
 - Tables, one definition each under `backend/db/`: `design` (`cid` PK, `city`, `goal`, `title`,
   `author`, `site` geometry, `bounds`, `binding` JSONB = the parcels the server finds under the site,

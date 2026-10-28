@@ -1,7 +1,7 @@
 // The Bets sheet: the city's contests (published agreements over the same land) with each minted
-// agreement's yes/no pool, from GET /markets. A thin DOM layer over js/bets/bets-model.js: it fetches
+// agreement's YES/NO market, from GET /markets. A thin DOM layer over js/bets/bets-model.js: it fetches
 // when the sheet opens, renders the filter and the rows, and hands a bet to the bet's own dialog
-// (js/bets/bets-dialog.js) and a pool opening, settlement or collection to the market bridge
+// (js/bets/bets-dialog.js) and market seeding, settlement or collection to the trading bridge
 // (js/solana/market-bridge.js). The dialog reads its row from here (rowFor, positionsFor), and the
 // agreement panel's Bet action goes through window.AgreementBets, defined at the end.
 (function (root) {
@@ -18,7 +18,34 @@
     // readPositions); changed: the account a confirmed transaction just touched, marked on its row
     // after the next render; scrollTo: the contest a dialog sent the person back to;
     // filter: all | open | settled | mine (js/bets/bets-model.js filterRows).
-    const state = { city: null, loadedAt: 0, payload: null, loading: null, positions: {}, changed: null, scrollTo: null, filter: 'all' };
+    const state = { city: null, loadedAt: 0, payload: null, loading: null, positions: {}, changed: null, scrollTo: null, filter: 'all', discoveryPending: false, positionTracked: new Set() };
+
+    function trackBet(name, row = null, properties = {}) {
+        try {
+            root.BetsTelemetry?.track?.(name, {
+                ...(row?.account ? { agreementAccount: row.account } : {}),
+                ...(row?.cid ? { agreementCid: row.cid } : {}),
+                asset: root.BetsTrading?.asset() || 'points', entryPoint: 'sheet', ...properties
+            });
+        } catch (_) { console.warn(`[${new Date().toISOString()}] [bets] Journey event could not be captured`); }
+    }
+
+    function actionForBridge(method) {
+        return method === 'createMarket' ? 'create' : method === 'claim' ? 'claim' : 'resolve';
+    }
+
+    function finishDiscovery(result) {
+        if (!state.discoveryPending) return;
+        state.discoveryPending = false;
+        trackBet('discovery', null, { result, entryPoint: 'sheet' });
+    }
+
+    function errorCodeOf(error) {
+        const code = typeof error?.code === 'string' ? error.code.toLowerCase().replace(/[^a-z0-9_-]+/g, '_').replace(/^[_-]+|[_-]+$/g, '').slice(0, 80) : '';
+        return code || 'unknown';
+    }
+
+    const ACTION_STATUSES = new Set(['preparing', 'awaiting_signature', 'submitted', 'confirmed']);
 
     function interpolate(text, params) {
         return String(text || '').replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => (params && key in params ? params[key] : match));
@@ -48,8 +75,7 @@
     }
 
     function moneyText(amountText) {
-        const f = format();
-        return f && typeof f.formatMoney === 'function' ? f.formatMoney(Number(amountText), 'USDC') : `${amountText} USDC`;
+        return root.BetsUI.money(amountText);
     }
 
     function percentText(value) {
@@ -77,10 +103,10 @@
         return (row && row.label) || t('bets.row.untitledAgreement', 'Untitled agreement');
     }
 
-    // The question one agreement's pool answers, in the page's language (js/bets/market-question.js).
+    // The question names the agreement and its exact execution cutoff.
     function agreementQuestionText(row) {
-        const template = question() ? question().TEMPLATES['question.agreement'] : 'Will {{title}} execute on-chain?';
-        return t('bets.question.agreement', template, { title: labelText(row) });
+        return row.closesAt ? t('bets.trade.question', 'Will {{title}} execute by {{deadline}}?', { title: labelText(row), deadline: root.BetsUI.deadline(row.closesAt) })
+            : t('bets.question.agreement', 'Will {{title}} execute on-chain?', { title: labelText(row) });
     }
 
     function walletConnected() {
@@ -112,7 +138,7 @@
         if (!positions || !root.BetsModel) return '';
         const lines = ['yes', 'no']
             .filter(side => positions[side] && root.BetsModel.formatAtomic(positions[side].amount) !== '0')
-            .map(side => t('panel.proposal.market.betLine', '{{side}} {{amount}}', { side: sideWord(side), amount: moneyText(root.BetsModel.formatAtomic(positions[side].amount)) })
+            .map(side => t('panel.proposal.market.betLine', '{{side}} {{amount}}', { side: sideWord(side), amount: root.BetsUI.shares(root.BetsModel.formatAtomic(positions[side].amount)) })
                 + (positions[side].claimed ? ` (${t('panel.proposal.market.paidOut', 'paid out')})` : ''));
         return lines.length ? t('panel.proposal.market.yourBets', 'Your bets: {{lines}}', { lines: lines.join('; ') }) : '';
     }
@@ -155,13 +181,13 @@
     // rows already on screen (no re-render, so a press in progress is not lost); the "Mine" filter
     // is the one view that needs the rows drawn again.
     async function loadPositions(payload) {
-        const bridge = root.SolanaMarketBridge;
+        const bridge = root.BetsTrading;
         if (!bridge || typeof bridge.readPositions !== 'function') return;
         const accounts = (payload && payload.contests ? payload.contests : [])
             .flatMap(contest => contest.agreements || [])
             .filter(entry => entry.account && entry.market)
-            .map(entry => entry.account);
-        if (!walletConnected() || !accounts.length) { state.positions = {}; }
+            .map(entry => ({ account: entry.account, sponsor: entry.sponsor, marketAddress: entry.market.address }));
+        if ((bridge.needsWallet() && !walletConnected()) || !accounts.length) { state.positions = {}; }
         else {
             try {
                 state.positions = await bridge.readPositions(accounts);
@@ -175,6 +201,12 @@
         if (!container) return;
         if (state.filter === 'mine') { render(container, payload); return; }
         container.querySelectorAll('.bets-row[data-account]').forEach(li => renderMine(li, { account: li.dataset.account }));
+        container.querySelectorAll('.bets-row__mine').forEach(mine => {
+            const account = mine.closest('.bets-row')?.dataset.account;
+            if (!account || state.positionTracked.has(account)) return;
+            state.positionTracked.add(account);
+            trackBet('position_view', rowFor(account)?.row || { account }, { entryPoint: 'sheet' });
+        });
     }
 
     // The shareable link to one row's bet (js/bets/bets-link.js): this origin, the current city and
@@ -184,27 +216,41 @@
         if (!link || !account) return null;
         const manager = root.CityConfigManager;
         const city = manager && typeof manager.getCurrentCityId === 'function' ? manager.getCurrentCityId() : null;
-        let lang = null;
-        try { lang = new URL(root.location.href).searchParams.get('lang'); } catch (_) { lang = null; }
-        try { return link.build({ origin: root.location.origin, city, account, lang }); } catch (_) { return null; }
+        const params = new URL(root.location.href).searchParams;
+        try { return link.build({ origin: root.location.origin, city, account, lang: params.get('lang'),
+            asset: root.BetsTrading.asset(), backend: params.get('backend'), betTest: root.BetsTrading.simulationRun() }); } catch (_) { return null; }
     }
 
     // Put the row's link on the clipboard; the shared helper shows "Copied".
-    async function copyLink(account) {
+    async function copyLink(account, options = {}) {
         const href = linkFor(account);
         if (!href) return false;
-        if (typeof root.copyTextWithFeedback === 'function') return root.copyTextWithFeedback(href);
+        const row = rowFor(account)?.row || { account };
+        const entryPoint = options.entryPoint || 'sheet';
+        const record = result => trackBet('share', row, { entryPoint, result });
+        if (typeof root.copyTextWithFeedback === 'function') {
+            try {
+                const copied = await root.copyTextWithFeedback(href);
+                record(copied ? 'succeeded' : 'failed');
+                return copied;
+            } catch (error) {
+                record('failed');
+                return false;
+            }
+        }
         try {
             await root.navigator.clipboard.writeText(href);
+            record('succeeded');
             return true;
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [bets] link not copied`, error);
+            record('failed');
             return false;
         }
     }
 
     // The row a confirmed transaction just changed, brought into view and marked, so the chance,
-    // payout and pool are seen next to the person's own bet; or the contest a dialog pointed back to.
+    // payout and market are seen next to the person's own bet; or the contest a dialog pointed back to.
     function markChanged(container) {
         if (!container) return;
         if (state.scrollTo) {
@@ -227,7 +273,7 @@
 
     function contests(payload = state.payload) {
         if (!payload || !root.BetsModel) return [];
-        return (payload.contests || []).map(contest => root.BetsModel.contest(contest, { decimals: payload.stakeDecimals }));
+        return (payload.contests || []).map(contest => root.BetsModel.contest(contest, { decimals: payload.stakeDecimals, asset: payload.asset }));
     }
 
     // The contest and row of one agreement account in the loaded city, as the model shapes them.
@@ -257,39 +303,65 @@
     // ---- actions ----------------------------------------------------------------------------
 
     function placeBet(row, side) {
-        if (!walletConnected()) { askForWallet(); return; }
-        if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: row.account, side });
+        if (root.BetsTrading.needsWallet() && !walletConnected()) {
+            const context = { action: 'buy', side: side === 1 ? 'yes' : 'no', entryPoint: 'sheet' };
+            trackBet('action_start', row, { ...context, result: 'started' });
+            trackBet('action_end', row, { ...context, result: 'failed', errorCode: 'wallet_not_connected' });
+            askForWallet(); return;
+        }
+        if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: row.account, side, entryPoint: 'sheet' });
     }
 
     function openBet(row) {
-        if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: row.account });
+        if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: row.account, entryPoint: 'sheet' });
     }
 
     // Opening, settling or collecting from a pool is a single wallet transaction through the shared
     // bridge, whose `proposal` option is the market's subject account (here the agreement's); the row
     // shows the lifecycle words and the result, and the human action lands in the activity feed.
     async function marketTransaction(li, row, action, button, side = null) {
-        if (!walletConnected()) { askForWallet(); return; }
-        const bridge = root.SolanaMarketBridge;
-        const view = root.ProposalMarketView;
-        if (!bridge || typeof bridge[action] !== 'function') return;
+        const context = { entryPoint: 'sheet', action: actionForBridge(action), side: side === null ? null : side === 1 ? 'yes' : 'no' };
+        let finished = false;
+        const finish = (result, errorCode = null) => {
+            if (finished) return;
+            finished = true;
+            trackBet('action_end', row, { ...context, result, ...(errorCode ? { errorCode } : {}) });
+        };
+        if (root.BetsTrading.needsWallet() && !walletConnected()) {
+            trackBet('action_start', row, { ...context, result: 'started' });
+            finish('failed', 'wallet_not_connected');
+            askForWallet(); return;
+        }
+        const bridge = root.BetsTrading;
+        const view = root.BetsUI;
+        if (!bridge || typeof bridge[action] !== 'function') {
+            trackBet('action_start', row, { ...context, result: 'started' });
+            finish('failed', 'action_unavailable');
+            return;
+        }
+        trackBet('action_start', row, { ...context, result: 'started' });
         button.disabled = true;
         try {
             const result = await bridge[action]({
                 proposal: row.account,
                 ...(side === null ? {} : { side }),
-                onStatus: item => setNote(li, view && typeof view.statusText === 'function' ? view.statusText(item) : '')
+                onStatus: item => {
+                    setNote(li, view && typeof view.statusText === 'function' ? view.statusText(item) : '');
+                    if (ACTION_STATUSES.has(item?.state)) trackBet('action_status', row, { ...context, result: item.state });
+                }
             });
-            const done = action === 'createMarket' ? t('bets.row.opened', 'Pool opened')
+            finish(result?.replayed ? 'succeeded' : result?.receipt || result?.transactionHash || result?.transactionHashes?.length ? 'confirmed' : 'unknown');
+            const done = action === 'createMarket' ? t('bets.row.opened', 'Market opened')
                 : action === 'claim' ? t('panel.proposal.market.collectedMessage', 'Collected {{side}} winnings.', { side: sideWord(side === 1 ? 'yes' : 'no') })
-                    : t('bets.row.settled', 'Pool settled');
+                    : t('bets.row.settled', 'Market settled');
             setNote(li, done);
-            if (typeof root.recordHumanProposalSupport === 'function') {
+            if (root.BetsTrading.needsWallet() && !root.BetsTelemetry?.simulationRun && typeof root.recordHumanProposalSupport === 'function') {
                 const wallet = root.solanaWalletManager.getState().accounts[0];
                 await root.recordHumanProposalSupport({ wallet, action, proposalId: row.account, result, message: `${wallet.slice(0, 4)}…${wallet.slice(-4)}: ${done}` });
             }
             announceChange(row.account);
         } catch (error) {
+            finish(root.BetsTelemetry?.errorResult(error) || 'failed', errorCodeOf(error));
             console.error(`[${new Date().toISOString()}] [bets] ${action} failed`, error);
             setNote(li, view && typeof view.errorText === 'function' ? view.errorText(error) : t('bets.error.transaction', 'The transaction failed.'), 'error');
         } finally {
@@ -297,19 +369,23 @@
         }
     }
 
-    // The agreement itself: its panel from the local copy when this device has one (the record
-    // published as this CID), else read from the index, its designs applied and its panel opened.
-    async function openAgreement(row) {
+    // Open the published agreement through the shared-link path, which refreshes its local copy,
+    // applies its designs and reconstructs the land before opening the panel.
+    async function openAgreement(row, options = {}) {
+        trackBet('agreement_open', row, { entryPoint: options.entryPoint || 'sheet', result: 'started' });
         try {
             if (!row || !row.cid) throw new Error('the row names no agreement');
             if (root.MapShell && typeof root.MapShell.closeSheets === 'function') root.MapShell.closeSheets();
-            const store = root.AgreementStore;
-            const local = store && typeof store.list === 'function'
-                ? store.list().find(agreement => agreement && agreement.published && agreement.published.cid === row.cid) || null
-                : null;
-            if (local) await root.AgreementPanel.open(local.id);
-            else await root.AgreementSync.handleAgreementRoute(row.cid);
+            await root.AgreementSync.handleAgreementRoute(row.cid);
+            // The shared-link handler can catch a load error or cancel navigation. Observe the
+            // requested panel before counting a completed review entrance.
+            const openedId = root.AgreementPanel?.current?.();
+            const opened = root.AgreementStore?.get?.(openedId);
+            const visible = root.AgreementPanel?.isOpen?.()
+                && (opened?.published?.cid === row.cid || openedId === `published-${row.cid}`);
+            trackBet('agreement_open', row, { entryPoint: options.entryPoint || 'sheet', result: visible ? 'succeeded' : 'unknown' });
         } catch (error) {
+            trackBet('agreement_open', row, { entryPoint: options.entryPoint || 'sheet', result: 'failed', errorCode: errorCodeOf(error) });
             console.error(`[${new Date().toISOString()}] [bets] open agreement failed`, error);
             if (typeof root.showEphemeralMessage === 'function') {
                 root.showEphemeralMessage(t('bets.error.openAgreement', 'The agreement could not be opened.'), 6000, 'error');
@@ -343,23 +419,22 @@
             button.append(el('span', 'bets-bet__pays', t('bets.row.pays', 'Pays {{multiple}}×', { multiple: multiple.toFixed(2) })));
         }
         const paysTitle = multiple !== null && multiple !== undefined
-            ? ' ' + t('bets.row.paysTitle', '1 USDC on this side pays {{multiple}} USDC if it wins.', { multiple: multiple.toFixed(2) })
+            ? ' ' + t('bets.trade.referencePayout', 'A {{amount}} bet pays about {{payout}} if it wins.', { amount: moneyText('1'), payout: moneyText(multiple.toFixed(2)) })
             : '';
         button.title = (yes
-            ? t('bets.row.yesExecutes', 'Bet that the agreement executes on-chain.')
-            : t('bets.row.noExecutes', 'Bet that the agreement is cancelled or expires on-chain.')) + paysTitle;
+            ? t('bets.row.yesExecutes', 'Bet that the agreement executes on-chain by the deadline.')
+            : t('bets.row.noExecutes', 'Bet that the agreement expires or misses the execution deadline.')) + paysTitle;
         button.addEventListener('click', () => placeBet(row, side));
         return button;
     }
 
-    // A one-sided pool is not a chance worth printing: "100%" on one 0.25 USDC bet misleads.
+    // Render a marginal LMSR share price while trading, or the recorded terminal outcome.
     function chanceLabel(row) {
         if (row.state === 'resolved-yes') return t('bets.row.resolvedYes', 'Settled yes');
         if (row.state === 'resolved-no') return t('bets.row.resolvedNo', 'Settled no');
-        if (row.oneSided === 'yes') return t('bets.row.onlyYes', 'Only yes bets so far');
-        if (row.oneSided === 'no') return t('bets.row.onlyNo', 'Only no bets so far');
-        if (row.chanceYes === null || row.chanceYes === undefined) return t('bets.row.noBets', 'No bets yet');
-        return t('bets.row.yesPoolShare', 'Yes: {{percent}} of pool', { percent: percentText(row.chanceYes) });
+        if (row.state === 'resolved-void') return t('bets.trade.void', 'Voided · half paid per share');
+                if (row.chanceYes === null || row.chanceYes === undefined) return t('bets.row.noBets', 'No bets yet');
+        return root.BetsUI.price(row);
     }
 
     function renderRow(row) {
@@ -376,7 +451,7 @@
         head.append(title, el('span', 'bets-row__chance', chanceLabel(row)));
         li.append(head);
 
-        if (row.state === 'open' && row.chanceYes !== null && row.chanceYes !== undefined && !row.oneSided) {
+        if (row.state === 'open' && row.chanceYes !== null && row.chanceYes !== undefined) {
             const bar = el('div', 'bets-row__bar');
             const fill = el('span');
             fill.style.width = `${Math.max(0, Math.min(100, row.chanceYes))}%`;
@@ -389,15 +464,15 @@
         if (who) li.append(el('p', 'bets-row__who', who));
 
         const meta = el('div', 'bets-row__meta');
-        if (row.pool !== null && row.pool !== undefined) meta.append(el('span', null, t('bets.row.pool', 'Pool {{amount}}', { amount: moneyText(row.pool) })));
+        meta.append(el('span', null, t('bets.trade.playMoney', 'Play money')));
         // The agreement's own deadline: after it, it can no longer execute.
-        if (row.deadline) meta.append(el('span', null, t('bets.row.deadline', 'Deadline {{date}}', { date: dateText(row.deadline) })));
+        if (row.closesAt) meta.append(el('span', null, t('bets.row.deadline', 'Deadline {{date}}', { date: root.BetsUI.deadline(row.closesAt) })));
         if (row.account) {
             // Every bet has a link worth passing on, whatever state its pool is in: a quiet script
             // link in the meta line.
             const share = el('button', 'cb-link cb-link--quiet bets-row__link', t('bets.copyLink', 'Copy link'));
             share.type = 'button';
-            share.addEventListener('click', () => copyLink(row.account));
+            share.addEventListener('click', () => copyLink(row.account, { entryPoint: 'sheet' }));
             meta.append(share);
         }
         if (meta.childElementCount) li.append(meta);
@@ -406,19 +481,19 @@
         const actions = el('div', 'bets-row__actions');
         if (row.state === 'open') {
             actions.append(betButton(row, 1), betButton(row, 0));
-        } else if (row.state === 'needs-market') {
-            const open = el('button', 'btn', t('bets.row.openMarket', 'Open the pool'));
+        } else if (row.state === 'needs-market' && row.sponsor === root.solanaWalletManager?.getState?.()?.accounts?.[0]) {
+            const open = el('button', 'btn', t('bets.row.openMarket', 'Seed USDC market'));
             open.type = 'button';
             open.addEventListener('click', () => marketTransaction(li, row, 'createMarket', open));
             actions.append(open);
         } else if (row.state === 'settling') {
-            li.append(el('p', 'bets-row__note', t('bets.row.settling', 'Decided on-chain; anyone can settle the pool')));
-            const settle = el('button', 'btn', t('bets.row.settle', 'Settle the pool'));
+            li.append(el('p', 'bets-row__note', t('bets.row.settling', 'Trading closed; anyone can settle this bet')));
+            const settle = el('button', 'btn', t('bets.row.settle', 'Settle market'));
             settle.type = 'button';
             settle.addEventListener('click', () => marketTransaction(li, row, 'resolve', settle));
             actions.append(settle);
         } else if (row.state === 'not-minted') {
-            li.append(el('p', 'bets-row__note', t('bets.row.notMinted', 'Not minted yet, so no pool')));
+            li.append(el('p', 'bets-row__note', t('bets.row.notMinted', 'Agreement not minted yet')));
         } else if (row.state === 'closed') {
             li.append(el('p', 'bets-row__note', t('bets.row.closed', 'Not open for bets')));
         }
@@ -446,8 +521,7 @@
     // executes (js/bets/market-question.js).
     function contestQuestionText(contest) {
         if (contest.agreementCount === 1 && contest.rows.length) return agreementQuestionText(contest.rows[0]);
-        const template = question() ? question().TEMPLATES['question.contest'] : 'Which agreement over {{place}} will execute?';
-        return t('bets.question.contest', template, { place: landText(contest) });
+        return t('bets.trade.contest', 'Bets on agreements over {{place}}', { place: landText(contest) });
     }
 
     // A contest under the current filter: the rows with a pool, and the rest folded under a count.
@@ -465,11 +539,11 @@
         land.title = contest.parcelIds.join(', ');
         land.textContent = [
             landText(contest),
-            ...entriesText(contest),
-            t('bets.row.pool', 'Pool {{amount}}', { amount: moneyText(contest.pool) })
+            ...entriesText(contest)
         ].join(' · ');
         head.append(land);
         article.append(head);
+        if (contest.agreementCount > 1) article.append(el('p', 'bets-contest__independent', t('bets.trade.independent', 'Each agreement has its own YES/NO bet. Both, one or neither can execute.')));
         if (shown.length) {
             const list = el('ul', 'bets-rows');
             shown.forEach(row => list.append(renderRow(row)));
@@ -477,7 +551,7 @@
         }
         if (hidden.length) {
             const more = el('details', 'bets-more');
-            more.append(el('summary', null, t('bets.contest.withoutPool', 'Without a pool: {{count}}', { count: hidden.length })));
+            more.append(el('summary', null, t('bets.contest.withoutPool', 'Without a market: {{count}}', { count: hidden.length })));
             const list = el('ul', 'bets-rows');
             hidden.forEach(row => list.append(renderRow(row)));
             more.append(list);
@@ -518,24 +592,79 @@
         bar.querySelectorAll('.bets-filter__btn').forEach(button => button.setAttribute('aria-pressed', button.dataset.filter === state.filter ? 'true' : 'false'));
     }
 
+    function renderAccount() {
+        const container = doc.getElementById(CONTENT_ID);
+        if (!container) return;
+        let account = doc.getElementById('bets-account-controls');
+        if (!account) { account = el('div'); account.id = 'bets-account-controls'; container.before(account); }
+        account.replaceChildren(root.BetsUI.assetControl());
+        let standings = doc.getElementById('bets-standings');
+        if (!standings) {
+            standings = el('details', 'bets-standings'); standings.id = 'bets-standings';
+            standings.append(el('summary', null, t('bets.trade.standings', 'Points standings')));
+            const contents = el('div', 'bets-standings__content'); standings.append(contents); container.after(standings);
+            standings.addEventListener('toggle', async () => {
+                if (!standings.open) return;
+                contents.textContent = t('bets.loading', 'Loading bets…');
+                try {
+                    const result = await root.BetsTrading.leaderboard();
+                    trackBet('standings_view', null, { result: 'succeeded' });
+                    contents.replaceChildren();
+                    contents.append(el('p', 'bets-account__note', t('bets.trade.standingsBasis', 'Available points plus the current sell-back value of open shares, or uncollected payouts. These are browser profiles, not verified people.')));
+                    if (!result.leaderboard.length) { contents.append(el('p', null, t('bets.trade.noTraders', 'No trades recorded yet.'))); return; }
+                    const table = el('table', 'bets-standings__table');
+                    const head = el('tr');
+                    [t('bets.trade.rank', 'Rank'), t('bets.trade.forecaster', 'Forecaster'), t('bets.trade.points', 'Points')].forEach(text => { const cell = el('th', null, text); cell.scope = 'col'; head.append(cell); });
+                    const thead = el('thead'); thead.append(head); table.append(thead); const body = el('tbody'); table.append(body);
+                    result.leaderboard.forEach(item => {
+                        const row = el('tr'); row.append(el('td', null, item.rank));
+                        const name = el('td'); const inspect = el('button', 'cb-link', item.alias); inspect.type = 'button'; name.append(inspect);
+                        inspect.addEventListener('click', async () => {
+                            const panel = el('div', 'bets-standings__positions'); contents.querySelector('.bets-standings__positions')?.remove(); contents.append(panel);
+                            panel.textContent = t('bets.loading', 'Loading bets…');
+                            try {
+                                const result = await root.BetsTrading.publicPositions(item.account);
+                                trackBet('public_positions_view', null, { result: 'succeeded' });
+                                panel.replaceChildren(el('h4', null, item.alias));
+                                for (const position of result.positions) {
+                                    const found = rowFor(position.agreementAccount);
+                                    const line = el('p'); const open = el('button', 'cb-link', found ? labelText(found.row) : t('bets.trade.viewBet', 'View bet')); open.type = 'button';
+                                    open.addEventListener('click', () => root.openBetDialog({ account: position.agreementAccount }));
+                                    line.append(open, doc.createTextNode(` · ${t('bets.row.yes', 'Yes')} ${root.BetsUI.shares(root.BetsModel.formatAtomic(position.yes.amount))} · ${t('bets.row.no', 'No')} ${root.BetsUI.shares(root.BetsModel.formatAtomic(position.no.amount))}`)); panel.append(line);
+                                }
+                            } catch (error) { panel.textContent = root.BetsUI.errorText(error); }
+                        });
+                        row.append(name, el('td', null, root.BetsModel.formatAtomic(item.equity))); body.append(row);
+                    });
+                    contents.append(table);
+                } catch (error) { contents.textContent = root.BetsUI.errorText(error); }
+            });
+        }
+        standings.hidden = root.BetsTrading.asset() !== 'points';
+    }
+
     function render(container, payload) {
         if (!container || !root.BetsModel) return;
         const ordered = root.BetsModel.orderContests(contests(payload));
+        renderAccount();
         renderFilter(container);
         container.replaceChildren();
         if (!ordered.length) {
-            renderStatus(container, t('bets.emptyAgreements', 'No pools in this city yet. Mint an agreement to open the first one.'));
+            renderStatus(container, t('bets.emptyAgreements', 'No bets in this city yet. Mint an agreement with a deadline to start.'));
+            finishDiscovery('succeeded');
             return;
         }
         const articles = ordered.map(renderContest).filter(Boolean);
         if (!articles.length) {
-            renderStatus(container, state.filter === 'mine' && !walletConnected()
+            renderStatus(container, state.filter === 'mine' && root.BetsTrading.needsWallet() && !walletConnected()
                 ? t('panel.proposal.market.connectPosition', 'Connect a Solana wallet to see your bets.')
                 : t('bets.filter.empty', 'No bets match this filter.'));
+            finishDiscovery('succeeded');
             return;
         }
         articles.forEach(article => container.append(article));
         markChanged(container);
+        finishDiscovery('succeeded');
     }
 
     // ---- loading ----------------------------------------------------------------------------
@@ -544,17 +673,20 @@
         const container = doc.getElementById(CONTENT_ID);
         if (!container) return null;
         const city = cityCode();
-        const fresh = state.payload && state.city === city && Date.now() - state.loadedAt < FRESH_MS;
+        const selected = root.BetsTrading.asset();
+        const fresh = state.payload && state.payload.asset === selected && state.city === city && Date.now() - state.loadedAt < FRESH_MS;
         if (!options.force && fresh) { render(container, state.payload); loadPositions(state.payload); return state.payload; }
         if (state.fresh) { options = { ...options, fresh: true }; state.fresh = false; }
-        if (state.loading) return state.loading;
+        if (state.loading) {
+            await state.loading;
+            return selected === root.BetsTrading.asset() ? load(options) : null;
+        }
         if (!state.payload || state.city !== city) renderStatus(container, t('bets.loading', 'Loading bets…'));
         state.attemptedAt = Date.now();
         state.loading = (async () => {
             try {
-                const response = await fetch(`${backendBase()}/markets?city=${encodeURIComponent(city || '')}${options.fresh ? '&fresh=1' : ''}`);
-                if (!response.ok) throw new Error(`markets returned ${response.status}`);
-                const payload = await response.json();
+                const payload = await root.BetsTrading.loadCity(city, { fresh: options.fresh });
+                if (selected !== root.BetsTrading.asset()) return null;
                 state.payload = payload;
                 state.city = city;
                 state.loadedAt = Date.now();
@@ -564,6 +696,7 @@
             } catch (error) {
                 console.error(`[${new Date().toISOString()}] [bets] load failed`, error);
                 renderStatus(container, t('bets.error.load', 'Bets could not be loaded.'), 'error');
+                finishDiscovery('failed');
                 return null;
             } finally {
                 state.loading = null;
@@ -575,7 +708,7 @@
     // The payload for the current city, from cache when it is fresh; what the bet dialog reads from.
     function ensureLoaded() {
         const city = cityCode();
-        if (state.payload && state.city === city && Date.now() - state.loadedAt < FRESH_MS) return Promise.resolve(state.payload);
+        if (state.payload && state.payload.asset === root.BetsTrading.asset() && state.city === city && Date.now() - state.loadedAt < FRESH_MS) return Promise.resolve(state.payload);
         return load();
     }
 
@@ -586,6 +719,9 @@
         if (pill) pill.hidden = seen;
         doc.addEventListener('mapshell:sheetopened', event => {
             if (!event.detail || event.detail.id !== SHEET_ID) return;
+            state.discoveryPending = true;
+            state.positionTracked = new Set();
+            trackBet('entry', null, { entryPoint: 'sheet' });
             if (pill && !pill.hidden) {
                 pill.hidden = true;
                 try { root.localStorage.setItem(SEEN_KEY, '1'); } catch (_) { }
@@ -595,6 +731,11 @@
         const isOpen = () => !!(root.MapShell && typeof root.MapShell.isOpen === 'function' && root.MapShell.isOpen(SHEET_ID));
         // A confirmed pool transaction: re-read past the server's short cache, so the pool that was
         // just opened or bet on shows up at once.
+        doc.addEventListener('bets:asset', async () => {
+            state.payload = null; state.positions = {}; state.loadedAt = 0;
+            await state.loading;
+            if (isOpen()) load({ force: true, fresh: true });
+        });
         doc.addEventListener('bets:changed', event => {
             state.loadedAt = 0;
             state.fresh = true;
@@ -638,7 +779,10 @@
         if (!link) return;
         try {
             if (typeof root.whenAppBooted === 'function') await root.whenAppBooted();
-            if (typeof root.openBetDialog === 'function') root.openBetDialog({ account: link.account, ...(link.approval ? { side: link.approval.params.side, amount: link.approval.params.amount, approval: true } : {}) });
+            if (typeof root.openBetDialog === 'function') {
+                trackBet('entry', { account: link.account }, { entryPoint: 'deep-link' });
+                root.openBetDialog({ account: link.account, entryPoint: 'deep-link', ...(link.approval ? { side: link.approval.params.side, amount: link.approval.params.amount, approval: true } : {}) });
+            }
             else root.openBetsSheet({ account: link.account });
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [bets] the bet link could not open`, error);
@@ -691,12 +835,12 @@
             account = agreementAccount(agreement);
         }
         if (!account) {
-            if (typeof root.showEphemeralMessage === 'function') root.showEphemeralMessage(t('bets.row.notMinted', 'Not minted yet, so no pool'), 6000, 'info');
+            if (typeof root.showEphemeralMessage === 'function') root.showEphemeralMessage(t('bets.row.notMinted', 'Agreement not minted yet'), 6000, 'info');
             return null;
         }
         // Named as its row would be (bets-model.js labelOf) while the dialog reads the row.
         const title = root.BetsModel ? root.BetsModel.labelOf({ title: agreement.title, designTitles: (agreement.designs || []).map(design => design.title) }) : agreement.title;
-        return typeof root.openBetDialog === 'function' ? root.openBetDialog({ account, title: title || '' }) : null;
+        return typeof root.openBetDialog === 'function' ? root.openBetDialog({ account, title: title || '', entryPoint: 'agreement' }) : null;
     }
 
     root.AgreementBets = { available, open: openAgreementBet };

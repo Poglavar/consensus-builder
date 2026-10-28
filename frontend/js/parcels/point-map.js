@@ -89,6 +89,8 @@
             pane.style.pointerEvents = 'none';
             const options = { pane: 'pointParcelMap', attribution: raster.attribution || settings.attribution,
                 minZoom: config()?.map?.parcelZoomRange?.min ?? 17, maxZoom: 22, ...raster.params };
+            options.maxNativeZoom ??= options.maxZoom;
+            options.maxZoom = Math.max(23, options.maxZoom);
             layer = raster.layers
                 ? root.L.tileLayer.wms(raster.url, { ...options, layers: raster.layers, version: raster.version || '1.1.1',
                     format: 'image/png', transparent: true })

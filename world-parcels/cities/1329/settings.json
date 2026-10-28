@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "1329",
+  "name": "Ipoh, Malaysia",
+  "point": [
+    4.60296445909964,
+    101.095970212901
+  ],
+  "bindings": [
+    {
+      "appCityId": "ipoh",
+      "runtimeConfig": {
+        "id": "ipoh",
+        "wupCityCode": "1329",
+        "label": "Ipoh, Malaysia",
+        "currency": {
+          "locale": "en-MY",
+          "code": "MYR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            4.60296445909964,
+            101.095970212901
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            4.60296445909964,
+            101.095970212901
+          ],
+          "fallbackDataset": [
+            101.095970212901,
+            4.60296445909964
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "my-perak-forestry-cadastral-lots",
+          "idPrefix": "MY-PERAK-UPI-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Perak Forestry GIS / JUPEM · Lot Kadaster"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "my-perak-forestry-cadastral-lots",
+      "name": "Perak Forestry GIS / JUPEM Lot Kadaster",
+      "adapter": "arcgis",
+      "endpoint": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PERAK_SDE/MapServer/79",
+      "idField": "UPI",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPrefix": "MY-PERAK-UPI-",
+      "idPattern": "^[0-9]{1,32}$",
+      "outFields": [
+        "OBJECTID",
+        "UPI"
+      ],
+      "pageSize": 200,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "timeoutMs": 30000,
+      "maxResponseBytes": 16777216,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "maxConcurrentQueries": 2,
+      "caCertificate": "./certificates/globalsign-rsa-ov-ssl-ca-2018.pem",
+      "browserTransport": "relay",
+      "countryCode": "MY",
+      "metricSrid": 32647,
+      "cityIds": [
+        "ipoh"
+      ],
+      "defaultForCity": true,
+      "operator": "Perak Forestry GIS service host; cadastral survey data attributed to JUPEM in discovery evidence",
+      "catalogueUrl": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PERAK_SDE/MapServer/79",
+      "attribution": "Perak Forestry GIS / JUPEM · Lot Kadaster",
+      "licenceNote": "Anonymous public cadastral-reference queries. No explicit open-reuse licence established; JUPEM eBiz licensing and source attribution require second-pass review. Legal title and currentness unverified.",
+      "scope": "Bounded nearby central Ipoh cadastral-reference polygons with unchanged native UPI and full source geometry. No verified municipal boundary intersection or citywide completeness. Native WKID 102062; explicit server outSR=4326 is preserved without fitted offsets. Malformed published layer extent is not used. Certificate and hostname verification remain enabled with the official GlobalSign intermediate.",
+      "cityScopes": {
+        "ipoh": "Three previously observed central Ipoh UPI lots are the initial qualification probes, approximately 240 m east/southeast of the unchanged WUP locator. Exact locator absence is a point-level observation only. Additional outskirts, verified MBI/Kinta boundary coverage, datum operation, current/historical overlaps and reuse conditions remain follow-ups."
+      },
+      "minRequestIntervalMs": 1250
+    }
+  ]
+}

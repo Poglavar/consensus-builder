@@ -188,11 +188,6 @@
 .site-intro-actions .site-intro-skip { margin-right: auto; }
 
 .site-intro-reopen {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--cb-space-2);
     margin-top: var(--cb-space-3);
 }
 
@@ -394,7 +389,7 @@ body.site-intro-open { overflow: hidden; }
 .plan-stats-table td {
     padding: var(--cb-space-1) var(--cb-space-2);
     border-bottom: 1px solid var(--cb-line);
-    text-align: left;
+    text-align: start;
 }
 
 .plan-stats-table th {
@@ -403,8 +398,76 @@ body.site-intro-open { overflow: hidden; }
 }
 
 .plan-stats-table .plan-stats-table__number {
-    text-align: right;
+    text-align: end;
     font-variant-numeric: tabular-nums;
+}
+
+/* Compare plans (plan-stats.js comparePlans): the stats table with one column or row per plan,
+   scrolling sideways when many plans are compared on a narrow screen. */
+.plan-compare {
+    display: grid;
+    gap: var(--cb-space-3);
+}
+
+.plan-compare__swap {
+    justify-self: start;
+}
+
+.plan-compare__scroll {
+    overflow-x: auto;
+}
+
+.plan-compare__table th.plan-compare__plan {
+    color: var(--cb-text-strong);
+}
+
+.plan-compare__table th[scope="row"],
+.plan-compare__table th.plan-compare__plan {
+    min-width: 8rem;
+}
+
+.plan-compare__table td {
+    white-space: nowrap;
+}
+
+.plan-compare__table[data-plan-compare="plans-as-rows"] th[scope="col"] {
+    min-width: 6rem;
+    vertical-align: bottom;
+}
+
+.plan-compare__table[data-plan-compare="plans-as-columns"] th.plan-compare__plan {
+    text-align: end;
+}
+
+.plan-compare__basis {
+    max-width: 28rem;
+}
+
+/* The present state is the baseline the plans are read against. */
+.plan-compare__table th.plan-compare__plan--present {
+    color: var(--cb-text-muted);
+    font-style: italic;
+}
+
+/* "of which existing that remain" and "of which new" are parts of the Buildings row above them. */
+.plan-compare__table th[data-plan-compare-row="buildings-remaining"],
+.plan-compare__table th[data-plan-compare-row="buildings-new"] {
+    padding-inline-start: var(--cb-space-5);
+    font-weight: normal;
+}
+
+.plan-compare__status {
+    display: block;
+    font-weight: normal;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.plan-compare__error {
+    display: block;
+    font-weight: normal;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-danger);
 }
 
 .plan-stats-notes {
@@ -803,6 +866,12 @@ body.site-intro-open { overflow: hidden; }
 /* The lens button: btn btn-icon btn-sm lens-pattern-button, the active lens's colour stripes painted
    inline by js/lens.js (data, not a look). First in a dialog footer it sits left of the actions; in
    the agent dialog it is centred under the avatar. */
+.btn.btn-icon.lens-pattern-button {
+    width: var(--agent-avatar-outer, 70px);
+    min-width: var(--agent-avatar-outer, 70px);
+    height: var(--cb-control-height);
+}
+
 .cb-dialog__footer > .lens-pattern-button {
     align-self: center;
     margin-right: auto;
@@ -1955,7 +2024,7 @@ body.site-intro-open { overflow: hidden; }
 #parcelbased-sidebar .parameter-metrics .metric-row span:last-child {
     color: var(--cb-text-strong);
     font-weight: var(--cb-weight-semibold);
-    text-align: right;
+    text-align: end;
 }
 
 #blockify-sidebar .algorithm-description {
@@ -2511,13 +2580,20 @@ path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
 .land-take-review h3, .land-take-review p { margin: 0; }
 .land-take-review p { font-size: var(--cb-text-sm); }
 .land-take-rows { display: grid; gap: var(--cb-space-2); max-height: 12rem; overflow-y: auto; }
-.land-take-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(8rem, 1fr); align-items: center; gap: var(--cb-space-2); }
-.land-take-row span { overflow-wrap: anywhere; }
-.land-take-accept { display: flex; align-items: start; gap: var(--cb-space-2); }
-.land-take-accept input { flex: 0 0 auto; }
-.land-take-confirmation { display: grid; gap: var(--cb-space-2); }
+.land-take-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--cb-space-2); }
+.land-take-actions .btn { min-width: 0; white-space: normal; }
+.land-take-row {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center;
+    gap: var(--cb-space-2); margin: 0; padding: var(--cb-space-2);
+    border: 1px solid var(--cb-line-glass); border-radius: var(--cb-radius-sm);
+    cursor: pointer;
+}
+.land-take-row:hover, .land-take-row:focus-within, .land-take-row.is-highlighted { border-color: var(--land-focus); }
+.land-take-row select { min-width: 0; width: 100%; font-size: var(--cb-text-sm); }
+.land-take-parcel { display: flex; align-items: center; gap: var(--cb-space-2); min-width: 0; font-size: var(--cb-text-sm); }
+.land-take-parcel-id { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.land-take-percent { flex: none; font-size: var(--cb-text-xs); color: var(--cb-text-muted); }
 .land-take-error { color: var(--cb-danger); font-weight: 600; }
-.land-take-legend { color: var(--cb-text-muted); }
 /* City names can be long: the two choices keep equal tap areas on a phone. */
 @media (max-width: 767.98px) {
     .city-switch-dialog .cb-dialog__footer {

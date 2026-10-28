@@ -219,6 +219,28 @@ describe('junction corners', () => {
         const corner = destination(destination(n, 90, 3.5 + 2.5), 180, 3.5 + 2.5);
         expect(turf.booleanPointInPolygon(turf.point([corner[0], corner[1]]), withCorners)).toBe(true);
     });
+
+    it('adds corner land only when the crossing arms share a level', () => {
+        const [w, n, e] = lineFrom(PLACES.zagreb, [[90, 60], [90, 60]]);
+        const s = destination(n, 180, 60);
+        const frame = footprint.frameForDefinition(definitionOf([[latLng(w), latLng(n), latLng(e)]]));
+        const main = { points: [latLng(w, { level: 0 }), latLng(n, { level: 0 }), latLng(e, { level: 0 })], width: 10 };
+        const branch = level => ({ points: [latLng(n, { level }), latLng(s, { level })], width: 10 });
+        const plain = turf.union(
+            turf.feature(footprint.footprintOfArms([main], frame)),
+            turf.feature(footprint.footprintOfArms([branch(0)], frame))
+        );
+        const sameLevel = turf.feature(footprint.footprintOfArms([main, branch(0)], frame));
+        const differentLevel = turf.feature(footprint.footprintOfArms([main, branch(1)], frame));
+
+        expect(turf.area(sameLevel) - turf.area(plain)).toBeGreaterThan(1);
+        expect(turf.area(differentLevel) - turf.area(plain)).toBeCloseTo(0, 2);
+        // Level participates in node identity only; the resulting footprint remains planar GeoJSON.
+        const rings = differentLevel.geometry.type === 'Polygon'
+            ? differentLevel.geometry.coordinates
+            : differentLevel.geometry.coordinates.flat();
+        expect(rings.flat().every(position => Array.isArray(position) && position.length === 2)).toBe(true);
+    });
 });
 
 describe('junctions with other records', () => {

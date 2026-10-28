@@ -22,6 +22,19 @@
             boundsKeysOf: bounds => typeof global.getRequiredGridCells === 'function'
                 ? Array.from(global.getRequiredGridCells(bounds, 0))
                 : [],
+            // A grid cell's WGS84 [west, south, east, north] extent, from its four projected corners.
+            // The grid size is the one getRequiredGridCells reads (parcels/state.js publishes it).
+            cellBoundsOf: key => {
+                const size = Number(global.PARCELS_GRID_SIZE ?? global.CityConfigManager?.getParcelGridSize?.());
+                const toLatLng = global.CityConfigManager?.datasetToLatLng;
+                const [gridE, gridN] = String(key).split(',').map(Number);
+                if (!(size > 0) || typeof toLatLng !== 'function' || ![gridE, gridN].every(Number.isFinite)) return null;
+                const corners = [[gridE, gridN], [gridE + 1, gridN], [gridE, gridN + 1], [gridE + 1, gridN + 1]]
+                    .map(([e, n]) => toLatLng(e * size, n * size));
+                if (!corners.every(corner => Array.isArray(corner) && corner.length >= 2 && corner.every(Number.isFinite))) return null;
+                return [Math.min(...corners.map(c => c[1])), Math.min(...corners.map(c => c[0])),
+                    Math.max(...corners.map(c => c[1])), Math.max(...corners.map(c => c[0]))];
+            },
             onFeatures: async (features, context = {}) => {
                 if (!fabric || !features.length) return;
                 // A repository consumer may write only to the fabric draft it was
@@ -951,17 +964,24 @@
             if (typeof requestTransport.fetchRoadIds !== 'function') {
                 throw new Error('Road classification transport is unavailable.');
             }
-            const key = scoped(city, box.map(value => Number(value).toFixed(7)).join(','));
-            const cached = roadIdsByBounds.get(key);
-            if (cached) {
-                return { status: 'ready', city, ids: cached.slice(), cached: true, requestCount: 0 };
-            }
-            let task = roadIdsInFlight.get(key);
-            let requested = false;
-            if (!task) {
-                requested = true;
-                task = Promise.resolve()
-                    .then(() => requestTransport.fetchRoadIds(box, {
+            // Keyed by the repository's grid cells, as ensureBounds is, so ground already classified
+            // asks for nothing however the view moved. Only the cells not yet known (or in flight)
+            // are asked for, as one request covering them. Without a grid (or a cell's extent) the
+            // exact box is the key.
+            // The grid is the current city's, so another city's request keys by its exact box.
+            const cells = city === cityKey() ? roadCellsOf(box) : null;
+            const units = cells || [{ key: `bbox:${box.map(value => Number(value).toFixed(7)).join(',')}`, box }];
+            const keyOf = unit => scoped(city, unit.key);
+            const missing = units.filter(unit => !roadIdsByBounds.has(keyOf(unit)) && !roadIdsInFlight.has(keyOf(unit)));
+            const joined = new Set(units.map(unit => roadIdsInFlight.get(keyOf(unit))).filter(Boolean));
+            const requested = missing.length > 0;
+            if (requested) {
+                const requestBox = missing.length === 1 ? missing[0].box : [
+                    Math.min(...missing.map(unit => unit.box[0])), Math.min(...missing.map(unit => unit.box[1])),
+                    Math.max(...missing.map(unit => unit.box[2])), Math.max(...missing.map(unit => unit.box[3]))];
+                const missingKeys = missing.map(keyOf);
+                const task = Promise.resolve()
+                    .then(() => requestTransport.fetchRoadIds(requestBox, {
                         city,
                         onProgress: progress => emit(options.onProgress, progress)
                     }))
@@ -970,16 +990,32 @@
                             throw new Error('Road classification transport returned an invalid result.');
                         }
                         const ids = Array.from(new Set(result.ids.map(normalizeId).filter(Boolean)));
-                        roadIdsByBounds.set(key, ids);
+                        missingKeys.forEach(key => roadIdsByBounds.set(key, ids));
                         return ids;
                     })
                     .finally(() => {
-                        if (roadIdsInFlight.get(key) === task) roadIdsInFlight.delete(key);
+                        missingKeys.forEach(key => { if (roadIdsInFlight.get(key) === task) roadIdsInFlight.delete(key); });
                     });
-                roadIdsInFlight.set(key, task);
+                missingKeys.forEach(key => roadIdsInFlight.set(key, task));
+                joined.add(task);
             }
-            const ids = await task;
-            return { status: 'ready', city, ids: ids.slice(), cached: !requested, requestCount: requested ? 1 : 0 };
+            await Promise.all(joined);
+            const ids = Array.from(new Set(units.flatMap(unit => roadIdsByBounds.get(keyOf(unit)) || [])));
+            return { status: 'ready', city, ids, cached: !requested, requestCount: requested ? 1 : 0 };
+        }
+
+        // The repository grid cells under a WGS84 box, each with its own WGS84 extent; null when the
+        // grid or a cell's extent is unavailable.
+        function roadCellsOf(box) {
+            if (typeof dependencies.boundsKeysOf !== 'function' || typeof dependencies.cellBoundsOf !== 'function') return null;
+            const bounds = {
+                getSouthWest: () => ({ lat: box[1], lng: box[0] }),
+                getNorthEast: () => ({ lat: box[3], lng: box[2] })
+            };
+            const keys = Array.from(new Set((dependencies.boundsKeysOf(bounds) || []).map(normalizeId).filter(Boolean)));
+            if (!keys.length) return null;
+            const cells = keys.map(key => ({ key: `cell:${key}`, box: dependencies.cellBoundsOf(key) }));
+            return cells.every(cell => Array.isArray(cell.box) && cell.box.length === 4 && cell.box.every(Number.isFinite)) ? cells : null;
         }
 
         function reset() {

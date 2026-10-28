@@ -72,6 +72,7 @@ function previewHarness() {
         addDraftPreviewFeature3D,
         polygonFeatureToMeshes,
         polygonFeatureToBorderLines,
+        buildingSidewalkMaterial: () => ({}),
         markOwnedMaterial: vi.fn(),
         turf: {},
         buildParks3D: vi.fn((flat, furniture, features) => { calls.furniture = { kind: 'park', features }; }),
@@ -115,6 +116,7 @@ function buildingPreviewHarness() {
     const THREE = { MeshLambertMaterial: Material, LineBasicMaterial: Material, Float32BufferAttribute, DoubleSide: 'double' };
     const buildingFacades = {
         buildingKey: vi.fn((feature, city) => `${city}:${feature.properties.parcelId}`),
+        buildingIdentityKey: vi.fn((feature, city) => `${city}:${feature.properties.proposalId}`),
         buildingDesign: vi.fn((key, height, floorHeight) => ({ key, height, floorHeight })),
         configureMaterial: vi.fn((material, design, state) => {
             calls.configured.push({ material, design, state });

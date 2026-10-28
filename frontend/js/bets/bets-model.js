@@ -1,15 +1,16 @@
 // Pure view model for the Bets sheet: turns a GET /markets contest of agreements into rows with a
-// chance, a pool and a payout multiple, plus the state words the sheet shows. No DOM, no network,
-// exact integer math on atomic USDC (the market program stores u64 atomic units).
+// current LMSR prices, fixed shares and deadline state. No DOM or network. Both points and devnet
+// USDC use six decimal places and the same exact integer arithmetic.
 (function attachBetsModel(root, factory) {
-    const api = factory();
+    const api = factory(typeof module === 'object' && module.exports ? require('./lmsr.js') : root.Lmsr,
+        typeof module === 'object' && module.exports ? require('./betting-contract.js') : root.BettingContract);
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) root.BetsModel = api;
-})(typeof window !== 'undefined' ? window : globalThis, function betsModelFactory() {
+})(typeof window !== 'undefined' ? window : globalThis, function betsModelFactory(lmsr, contract) {
     'use strict';
 
     const USDC_DECIMALS = 6;
-    const REFERENCE_STAKE = 1_000_000n; // the "1 USDC pays…" line is quoted for a 1 USDC bet
+    const REFERENCE_STAKE = 1_000_000n; // Reference payout quotes use one whole unit of the selected asset.
 
     function atomic(value) {
         try { return BigInt(value ?? 0); } catch (_) { return 0n; }
@@ -24,79 +25,45 @@
         return fraction ? `${whole}.${fraction}` : whole.toString();
     }
 
-    // Pool share in percent, one decimal, exactly rounded; null while nobody has bet.
-    function chance(yesPool, noPool) {
-        const yes = atomic(yesPool);
-        const no = atomic(noPool);
-        const total = yes + no;
-        if (total <= 0n) return { yes: null, no: null };
-        const pct = part => Number((part * 1000n + total / 2n) / total) / 10;
-        return { yes: pct(yes), no: pct(no) };
+    // Quotes price the whole trade, including movement along the curve. A winning share always
+    // pays one unit; later traders never dilute shares already held.
+    function chance(market) {
+        return { yes: lmsr.chance(market.b, market.qYes, market.qNo, 'yes'),
+            no: lmsr.chance(market.b, market.qYes, market.qNo, 'no') };
     }
-
-    // What one reference bet on `side` would pay if that side wins, as a multiple of the bet, with
-    // the bet itself counted in the pool (parimutuel: stake × (yes + no + stake) / (side + stake)).
-    // Two decimals, floored, so the sheet never promises more than the program pays.
-    function payoutMultiple(side, yesPool, noPool, stake = REFERENCE_STAKE) {
-        const yes = atomic(yesPool);
-        const no = atomic(noPool);
-        const bet = atomic(stake);
-        if (bet <= 0n) return null;
-        const own = (side === 'yes' ? yes : no) + bet;
-        const total = yes + no + bet;
-        return Number((total * 100n) / own) / 100;
+    function payoutMultiple(side, market, stake = REFERENCE_STAKE) {
+        const quoted = contract.quote(market, side, atomic(stake));
+        return Number(quoted.shares * 100n / quoted.amount) / 100;
     }
-
-    // What a bet of `stake` atomic units on `side` collects if that side wins, in atomic units,
-    // floored like the program's payout: stake × (yes + no + stake) / (side + stake). The pool at
-    // settlement decides the real figure; this is the "to win" line the stake form shows live.
-    function toWin(side, yesPool, noPool, stake) {
-        const yes = atomic(yesPool);
-        const no = atomic(noPool);
-        const bet = atomic(stake);
-        if (bet <= 0n) return 0n;
-        const own = (side === 'yes' ? yes : no) + bet;
-        return (bet * (yes + no + bet)) / own;
-    }
-
-    // The stake chips of the stake form, in USDC text; the pools are small, so the steps are too.
+    const toWin = (side, market, stake) => contract.quote(market, side, atomic(stake)).shares;
     const QUICK_STAKES = ['0.1', '1', '5'];
+    const POINTS_STAKES = ['10', '50', '100'];
 
-    // 'yes' or 'no' when only that side holds bets (a "100% chance" that is one bet of 0.25 USDC is
-    // not a chance worth printing); null while the pool is empty or both sides are in.
-    function oneSided(yesPool, noPool) {
-        const yes = atomic(yesPool);
-        const no = atomic(noPool);
-        if (yes > 0n && no === 0n) return 'yes';
-        if (no > 0n && yes === 0n) return 'no';
-        return null;
-    }
-
-    // What a terminal chain status settles a pool to: the agreement-execution-v1 recipe
-    // (backend/oracle/market-recipe.js). Active, and a status nobody observed, settle nothing.
-    const SETTLEMENT = Object.freeze({ executed: 'yes', cancelled: 'no', expired: 'no' });
+    // Terminal status identifies a settlement opportunity. The dated oracle checks executedAt
+    // before choosing YES or NO; cancellation is VOID. This helper never pays a position.
+    const SETTLEMENT = Object.freeze({ executed: 'yes', cancelled: 'void', expired: 'no' });
     const settlementOf = status => (Object.prototype.hasOwnProperty.call(SETTLEMENT, status) ? SETTLEMENT[status] : null);
 
     // One word for where an agreement's bet stands. The server says whether a bet is open (the
     // agreement account Active on-chain, as the lifecycle oracle observed it, and its deadline still
-    // ahead). Only a known terminal chain status permits settlement; an unobserved status or a passed
-    // deadline supplies no such evidence.
+    // ahead). A known terminal status or Active observed after the cutoff permits settlement;
+    // an unobserved status supplies no such evidence.
     function rowState(entry) {
         if (!entry) return 'not-minted';
-        if (entry.market && entry.market.resolved) return entry.market.outcome === 'yes' ? 'resolved-yes' : 'resolved-no';
+        if (entry.market && entry.market.resolved) return `resolved-${entry.market.outcome}`;
         if (entry.bettable) return 'open';
+        if (entry.canSettle) return 'settling';
         if (entry.canOpenMarket) return 'needs-market';
         if (!entry.account) return 'not-minted';
-        // Not bettable and not terminal (its deadline passed while the account is still Active, or its
-        // status is unobserved): closed, rather than inviting a bet that cannot win or would fail.
+        // An unavailable or otherwise ineligible source never invites a trade or settlement.
         if (!settlementOf(entry.chainStatus)) return 'closed';
-        // The agreement left Active on-chain: the pool only needs someone to settle it.
+        // The agreement left Active on-chain: the market needs someone to settle it.
         return entry.market ? 'settling' : 'closed';
     }
 
     // Every word rowState can say.
-    const ROW_STATES = ['open', 'needs-market', 'settling', 'resolved-yes', 'resolved-no', 'closed', 'not-minted'];
-    // Rows still in play: a bet can go in, a pool can open, or a decided agreement awaits settlement.
+    const ROW_STATES = ['open', 'needs-market', 'settling', 'resolved-yes', 'resolved-no', 'resolved-void', 'closed', 'not-minted'];
+    // Rows still in play: shares can be traded, a market can open, or a decided agreement awaits settlement.
     const LIVE_STATES = ['open', 'needs-market', 'settling'];
     const stateOf = item => (ROW_STATES.includes(item.state) ? item.state : rowState(item));
 
@@ -113,7 +80,8 @@
     // One agreement's row. `contest` is the id of the contest it stands in.
     function row(entry, options = {}) {
         const market = entry && entry.market ? entry.market : null;
-        const odds = market ? chance(market.yesPool, market.noPool) : { yes: null, no: null };
+        if (market && market.model !== 'lmsr') throw new Error('The active betting UI requires an LMSR market');
+        const odds = market ? chance(market) : { yes: null, no: null };
         return {
             kind: 'agreement',
             cid: entry.cid || null,
@@ -123,9 +91,13 @@
             label: labelOf(entry),
             designTitles: Array.isArray(entry.designTitles) ? entry.designTitles : [],
             author: entry.author || null,
+            sponsor: entry.sponsor || null,
+            asset: market?.asset || options.asset || 'points',
+            market,
             createdAt: entry.createdAt || null,
             // The agreement's own deadline: after it the agreement can no longer execute.
             deadline: entry.deadline || null,
+            closesAt: market ? new Date(market.closesAt * 1000).toISOString() : entry.deadline || null,
             status: entry.status || null,
             chainStatus: entry.chainStatus || null,
             screenshotUrl: entry.screenshotUrl || null,
@@ -135,78 +107,66 @@
             state: stateOf(entry),
             chanceYes: odds.yes,
             chanceNo: odds.no,
-            oneSided: market ? oneSided(market.yesPool, market.noPool) : null,
-            pool: market ? formatAtomic(market.poolAtomic, options.decimals) : null,
-            poolAtomic: market ? atomic(market.poolAtomic) : 0n,
-            yesPoolAtomic: market ? atomic(market.yesPool) : 0n,
-            noPoolAtomic: market ? atomic(market.noPool) : 0n,
-            outcome: market && market.resolved ? (market.outcome === 'yes' ? 'yes' : 'no') : null,
-            paysYes: market ? payoutMultiple('yes', market.yesPool, market.noPool) : null,
-            paysNo: market ? payoutMultiple('no', market.yesPool, market.noPool) : null,
+            liquidity: market ? formatAtomic(market.b) : null,
+            sharesAtomic: market ? atomic(market.qYes) + atomic(market.qNo) : 0n,
+            yesSharesAtomic: market ? atomic(market.qYes) : 0n,
+            noSharesAtomic: market ? atomic(market.qNo) : 0n,
+            outcome: market && market.resolved ? market.outcome : null,
+            paysYes: market ? payoutMultiple('yes', market) : null,
+            paysNo: market ? payoutMultiple('no', market) : null,
             marketAddress: market ? market.address : null
         };
     }
 
     // A GET /markets-shaped entry for an agreement read straight from the chain (js/solana/
-    // market-bridge.js readSummary: the account's status and deadline, its pool), for the bet dialog's
+    // market-bridge.js readSummary: the account's status, deadline and market), for the bet dialog's
     // row when the city list does not carry the agreement yet, such as one just minted. It takes bets
     // by the rule GET /markets applies (backend/markets/contests.js agreementEntry): the account Active
-    // and its deadline, after which the agreement can no longer execute, not reached (or not set).
+    // and its required deadline not yet reached.
     function chainEntry(account, summary, nowMs = Date.now()) {
-        const market = summary && summary.market ? summary.market : null;
-        const chainStatus = summary && typeof summary.chainStatus === 'string' ? summary.chainStatus.toLowerCase() : null;
-        const deadline = summary && summary.deadline ? summary.deadline : null;
-        const deadlineMs = deadline ? Date.parse(deadline) : NaN;
-        const live = chainStatus === 'active' && !(Number.isFinite(deadlineMs) && deadlineMs <= nowMs);
-        return {
-            account,
-            chainStatus,
-            deadline,
-            bettable: Boolean(market && !market.resolved && live),
+        const market = summary?.market || null;
+        const chainStatus = typeof summary?.chainStatus === 'string' ? summary.chainStatus.toLowerCase() : null;
+        const deadline = summary?.deadline || null;
+        const live = chainStatus === 'active' && Date.parse(deadline) > nowMs;
+        return { account, chainStatus, deadline, sponsor: summary?.sponsor || null,
+            bettable: Boolean(market && !market.resolved && live && nowMs < market.closesAt * 1000),
             canOpenMarket: Boolean(account && !market && live),
-            market: market ? {
-                address: summary.marketAddress || null,
-                yesPool: market.yesPool,
-                noPool: market.noPool,
-                poolAtomic: atomic(market.yesPool) + atomic(market.noPool),
-                resolved: Boolean(market.resolved),
-                outcome: market.resolved ? (Number(market.outcome) === 1 ? 'yes' : 'no') : null
-            } : null
-        };
+            canSettle: Boolean(market && !market.resolved && (settlementOf(chainStatus) || chainStatus === 'active' && nowMs >= (market.closesAt + market.graceSeconds) * 1000)),
+            market };
     }
 
     // ---- order: one rule for GET /markets (backend/markets/contests.js) and the sheet ------------
-    // Both shapes sort with these: a sheet row carries its state and a BigInt pool, a GET /markets
-    // entry its market (pool as a decimal string) and the facts rowState reads.
+    // Both shapes sort with these: a sheet row carries its state and atomic share inventory;
+    // a GET /markets entry carries the market and the facts rowState reads.
 
     const timeOf = value => {
         const ms = Date.parse(value || '');
         return Number.isFinite(ms) ? ms : null;
     };
-    const poolOf = item => atomic(item.poolAtomic !== undefined ? item.poolAtomic : item.market && item.market.poolAtomic);
-    // In play first, settled after, then the rows nothing can be done with (no pool, never minted).
+    const sharesOf = item => item.market ? atomic(item.market.qYes) + atomic(item.market.qNo) : atomic(item.sharesAtomic);
+    // In play first, settled after, then the rows nothing can be done with (no market, never minted).
     function standing(item) {
         const state = stateOf(item);
         if (LIVE_STATES.includes(state)) return 0;
-        return state === 'resolved-yes' || state === 'resolved-no' ? 1 : 2;
+        return state.startsWith('resolved-') ? 1 : 2;
     }
 
     // Rows in a contest: rows in play first, the soonest agreement deadline leading (one without a
-    // deadline follows the dated ones), then the bigger pool; settled rows after them, the bigger
-    // pool first. Ties: the newest.
+    // deadline follows the dated ones), then more shares; settled rows after them, the larger
+    // share inventory first. Ties: the newest.
     function compareRows(a, b) {
         const rank = standing(a) - standing(b);
         if (rank) return rank;
         if (standing(a) === 0) {
-            const deadlineA = timeOf(a.deadline);
-            const deadlineB = timeOf(b.deadline);
+            const deadlineA = timeOf(a.closesAt || a.deadline);
+            const deadlineB = timeOf(b.closesAt || b.deadline);
             if (deadlineA !== deadlineB) {
                 if (deadlineA === null) return 1;
                 if (deadlineB === null) return -1;
                 return deadlineA - deadlineB;
             }
         }
-        const pool = poolOf(b) - poolOf(a);
+        const pool = sharesOf(b) - sharesOf(a);
         if (pool !== 0n) return pool > 0n ? 1 : -1;
         return (timeOf(b.createdAt) || 0) - (timeOf(a.createdAt) || 0);
     }
@@ -228,22 +188,20 @@
         } else if (rowsA.length !== rowsB.length) {
             return rowsA.length ? -1 : 1;
         }
-        const pool = atomic(b.poolAtomic) - atomic(a.poolAtomic);
+        const pool = sharesOf(b) - sharesOf(a);
         if (pool !== 0n) return pool > 0n ? 1 : -1;
         const count = (b.agreementCount || 0) - (a.agreementCount || 0);
         if (count) return count;
         return (timeOf(b.latestCreatedAt) || 0) - (timeOf(a.latestCreatedAt) || 0);
     }
 
-    // The sides of a settled pool the wallet can still collect from: the winning side's unclaimed
-    // bets, or every unclaimed bet when nobody backed the winner (the program refunds then).
+    // Claimable fixed shares: the winning side, or both sides for a cancellation's half payout.
     function claimSides(row, positions) {
         if (!row || row.outcome === null || row.outcome === undefined || !positions) return [];
-        const winningPool = row.outcome === 'yes' ? atomic(row.yesPoolAtomic) : atomic(row.noPoolAtomic);
         return ['yes', 'no'].filter(side => {
             const position = positions[side];
             if (!position || position.claimed || atomic(position.amount) <= 0n) return false;
-            return winningPool === 0n || side === row.outcome;
+            return contract.payout(side, atomic(position.amount), row.outcome) > 0n;
         });
     }
 
@@ -252,7 +210,7 @@
     const HIDDEN_STATES = ['not-minted', 'closed'];
     function splitRows(rows) {
         const list = Array.isArray(rows) ? rows : [];
-        const withoutPool = item => HIDDEN_STATES.includes(item.state) && item.pool == null;
+        const withoutPool = item => HIDDEN_STATES.includes(item.state) && item.market == null;
         return {
             shown: list.filter(item => !withoutPool(item)),
             hidden: list.filter(withoutPool)
@@ -269,7 +227,7 @@
         const list = Array.isArray(rows) ? rows : [];
         switch (filter) {
             case 'open': return list.filter(item => LIVE_STATES.includes(item.state));
-            case 'settled': return list.filter(item => item.state === 'resolved-yes' || item.state === 'resolved-no');
+            case 'settled': return list.filter(item => item.state.startsWith('resolved-'));
             case 'mine': return list.filter(item => Boolean(item.account && hasPosition(positionsByAccount[item.account])));
             default: return list;
         }
@@ -312,8 +270,7 @@
             land: landLabel(entry.parcelIds),
             agreementCount: rows.length,
             openCount: rows.filter(item => item.state === 'open').length,
-            pool: formatAtomic(entry.poolAtomic, options.decimals),
-            poolAtomic: atomic(entry.poolAtomic),
+            sharesAtomic: atomic(entry.sharesAtomic),
             latestCreatedAt: entry.latestCreatedAt || null,
             rows
         };
@@ -328,8 +285,8 @@
     }
 
     return {
-        USDC_DECIMALS, REFERENCE_STAKE, QUICK_STAKES, FILTERS, HIDDEN_STATES, ROW_STATES, LIVE_STATES, SETTLEMENT, formatAtomic, chance,
-        payoutMultiple, toWin, oneSided, settlementOf, rowState, labelOf, row, chainEntry, contest, compareRows, compareContests, orderContests, splitRows,
+        USDC_DECIMALS, REFERENCE_STAKE, QUICK_STAKES, POINTS_STAKES, FILTERS, HIDDEN_STATES, ROW_STATES, LIVE_STATES, SETTLEMENT, formatAtomic, chance,
+        payoutMultiple, toWin, quote: contract.quote, settlementOf, rowState, labelOf, row, chainEntry, contest, compareRows, compareContests, orderContests, splitRows,
         filterRows, claimSides, hasPosition, landLabel, parcelLabel, authorLabel
     };
 });

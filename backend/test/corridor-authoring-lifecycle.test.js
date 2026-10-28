@@ -28,7 +28,7 @@ describe('corridor authoring lifecycle', () => {
         expect(create).toContain('_runProposalMutationBoundary(');
         expect(create).toMatch(/result = await _runProposalMutationBoundary\([\s\S]*this\._createCorridorProposalTransactionBody/);
         expect(body).toContain('planCorridorAuthoring(');
-        expect(body).toContain('authoring.writeDefinition(target, change.definition)');
+        expect(body).toContain('authoring.writeDefinition(target, joined)');
         expect(body).toContain("addProposal(plan.proposal, { emitEvent: false })");
         expect(body).toContain('await this.rematerializeCorridorScope(');
         expect(body.indexOf('planCorridorAuthoring(')).toBeLessThan(body.indexOf('addProposal('));

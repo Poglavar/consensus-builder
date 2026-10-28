@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { readFileSync } from 'node:fs';
 import { parcelSourceCatalog } from '../parcels/sources.js';
 import { parcelSourceForCity, parcelSourceForIds } from './helpers/frontend-source-selection.js';
@@ -12,7 +13,7 @@ function upstream(){vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.strin
 function boot(search){
  const scopes=[];const storage={getItem:()=>null,setItem(){},setScope:id=>scopes.push(id)};
  const window={location:{search,href:'http://localhost/'+search,pathname:'/'},localStorage:storage,PersistentStorage:storage,dispatchEvent(){}};
- new Function('window','localStorage','PersistentStorage','URL','URLSearchParams',readFileSync(new URL('../../frontend/js/city-config.js',import.meta.url),'utf8'))(window,storage,storage,URL,URLSearchParams);
+ new Function('window','localStorage','PersistentStorage','URL','URLSearchParams',cityConfigSource())(window,storage,storage,URL,URLSearchParams);
  return {window,scopes};
 }
 afterEach(()=>{const i=parcelSourceCatalog.sources.indexOf(descriptor);if(i>=0)parcelSourceCatalog.sources.splice(i,1);vi.unstubAllGlobals();delete globalThis.CityConfigManager;});
@@ -65,7 +66,7 @@ describe('database defaults and explicit upstream alternatives',()=>{
  });
  it('keeps routing hints out of proposal data and alternate IDs out of default globe metadata',()=>{
   expect(stripLocalProposalState({parcelSourceId:descriptor.id,binding:{source:'server:'+descriptor.id}})).toEqual({binding:{source:'server:'+descriptor.id}});
-  const cities=parseCityConfigs(readFileSync(new URL('../../frontend/js/city-config.js',import.meta.url),'utf8'));
+  const cities=parseCityConfigs(readFileSync(new URL('../../frontend/data/city-configs.js',import.meta.url),'utf8'));
   expect(cities.find(c=>c.id==='new_york').sourceId).toBeUndefined();
   expect(cities.find(c=>c.id==='shenzhen').sourceId).toBe('cn-shenzhen-land-certain');
  });

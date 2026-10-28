@@ -10,7 +10,7 @@ const { buildParcelPriceEstimate } = require('../../frontend/js/financials.js');
 
 const birmingham = { id: 'birmingham', currency: { locale: 'en-GB', code: 'GBP' } };
 const UkLandRates = require('../../frontend/js/uk-land-rates.js');
-const cityConfigSource = require('node:fs').readFileSync(new URL('../../frontend/js/city-config.js', import.meta.url), 'utf8');
+const cityConfigSource = require('node:fs').readFileSync(new URL('../../frontend/data/city-configs.js', import.meta.url), 'utf8');
 const croatian = { currency: { locale: 'hr-HR', code: 'EUR' } };
 const mumbai = { currency: { locale: 'en-IN', code: 'INR' } };
 
@@ -46,7 +46,7 @@ describe('price assumptions follow the city currency', () => {
         expect(assumptions.sources).not.toHaveProperty('land');
     });
 
-    // The table is generated from city-config.js; rebuilding it keeps each configured authority's
+    // The table is generated from data/city-configs.js; rebuilding it keeps each configured authority's
     // evidence available. Median placeholders are retained as input metadata, not local rates.
     it('has a land rate for every UK city in the config', () => {
         const ukCities = [...cityConfigSource.matchAll(/\n {12}id: '([^']+)'[^\n]*\n {12}label: [^\n]*\n {12}currency: \{ locale: '[^']+', code: 'GBP' \}/g)].map(m => m[1]);

@@ -31,6 +31,19 @@
         return LANG.test(text) ? text : null;
     }
 
+    function contextOf(values = {}) {
+        const result = {};
+        if (['points', 'devnet-usdc'].includes(values.asset)) result.asset = values.asset;
+        if (/^[a-z0-9](?:[a-z0-9_-]{0,38}[a-z0-9])?$/.test(values.betTest || '')) result.betTest = values.betTest;
+        if (values.backend) {
+            try {
+                const url = new URL(values.backend);
+                if (['http:', 'https:'].includes(url.protocol) && !url.username && !url.password && !url.search && !url.hash) result.backend = url.href.replace(/\/+$/, '');
+            } catch (_) { /* An invalid preview URL does not become a link parameter. */ }
+        }
+        return result;
+    }
+
     function paramsOf(search) {
         try { return new URLSearchParams(String(search || '')); } catch (_) { return new URLSearchParams(); }
     }
@@ -49,7 +62,7 @@
         if (!account) return null;
         const codec = globalThis.ApprovalLink || (typeof require === 'function' ? require('../approval-link.js') : null);
         const intent = codec ? codec.parse(loc) : null;
-        return { account, city: cityOf(params.get('city')), lang: langOf(params.get('lang')), ...(intent ? { approval: intent } : {}) };
+        return { account, city: cityOf(params.get('city')), lang: langOf(params.get('lang')), ...contextOf(Object.fromEntries(params)), ...(intent ? { approval: intent } : {}) };
     }
 
     function query(entries) {
@@ -60,17 +73,17 @@
     }
 
     // The shareable link: /bets/<account>?city=<id>[&lang=<xx>] on the given origin.
-    function build({ origin = '', city, account, lang } = {}) {
+    function build({ origin = '', city, account, lang, ...context } = {}) {
         const subject = accountOf(account);
         if (!subject) throw new Error('A bet link needs the Solana account of a minted agreement');
-        return `${String(origin).replace(/\/+$/, '')}/bets/${subject}${query([['city', cityOf(city)], ['lang', langOf(lang)]])}`;
+        return `${String(origin).replace(/\/+$/, '')}/bets/${subject}${query([['city', cityOf(city)], ['lang', langOf(lang)], ...Object.entries(contextOf(context))])}`;
     }
 
     // The app form the server sends a browser to: /?city=<id>&bets=<account>[&lang=<xx>]. Without an
     // account it is the plain city link, for an account nobody has minted.
-    function appHref({ city, account, lang, approval = null } = {}) {
-        return `/${query([['city', cityOf(city)], [PARAM, accountOf(account)], ['lang', langOf(lang)], ...(approval ? [['act', 'bet'], ['side', approval.params.side], ['amount', approval.params.amount]] : [])])}`;
+    function appHref({ city, account, lang, approval = null, ...context } = {}) {
+        return `/${query([['city', cityOf(city)], [PARAM, accountOf(account)], ['lang', langOf(lang)], ...Object.entries(contextOf(context)), ...(approval ? [['act', 'bet'], ['side', approval.params.side], ['amount', approval.params.amount]] : [])])}`;
     }
 
-    return { PARAM, accountOf, cityOf, parse, build, appHref };
+    return { PARAM, accountOf, cityOf, contextOf, parse, build, appHref };
 });

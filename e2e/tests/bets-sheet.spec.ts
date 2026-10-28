@@ -2,8 +2,8 @@ import { test, expect } from '../helpers/fixtures';
 import type { Page } from '@playwright/test';
 import { openCity } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockSolanaWallet, waitForBlockchainRuntime } from '../helpers/blockchain';
-import { marketsPayload, pageIndex, MarketPool } from '../helpers/mocks/shared-server';
-import { fileIndexedAgreement, MINTED_ACCOUNT, OPEN_POOL } from '../helpers/agreements';
+import { marketsPayload, pageIndex, MarketFixture } from '../helpers/mocks/shared-server';
+import { fileIndexedAgreement, MINTED_ACCOUNT, OPEN_POOL, selectDevnetUsdc } from '../helpers/agreements';
 
 // The Bets sheet and the bet's own dialog (plan-design-agreement.md, M3: bets are on minted
 // agreements): the map button with its "New" word, the contests GET /markets returns (published
@@ -17,7 +17,7 @@ const SOLANA_WALLET = 'Cp886ML2Ja4FF3SMmyUeW16rRGsLrBcRW8kfWS1VfN7W';
 const TITLE = 'Plan-led infill';
 
 // The city's contest: the minted agreement with an open pool, and an unminted rival over the same land.
-function fileContest(page: Page, pool: MarketPool = OPEN_POOL, status = 'active'): { cid: string; rival: string; contest: string } {
+function fileContest(page: Page, pool: MarketFixture = OPEN_POOL, status = 'active'): { cid: string; rival: string; contest: string } {
   const index = pageIndex(page);
   const { cid } = fileIndexedAgreement(index, { title: TITLE, minted: { status }, pool });
   const { cid: rival } = fileIndexedAgreement(index, { title: 'Rival park', author: 'someone', createdAt: '2026-10-02T00:00:00.000Z' });
@@ -45,11 +45,12 @@ const addressWithoutView = (page: Page) => page.evaluate(() => {
   return `${location.pathname}?${params}`;
 });
 
-const expectedLink = (page: Page) => page.evaluate((account) => `${location.origin}/bets/${account}?city=${(window as any).CityConfigManager.getCurrentCityId()}`, ACCOUNT);
+const expectedLink = (page: Page) => page.evaluate((account) => `${location.origin}/bets/${account}?city=${(window as any).CityConfigManager.getCurrentCityId()}&asset=devnet-usdc&betTest=local-preview`, ACCOUNT);
 
-const QUESTION = `Will ${TITLE} execute on-chain?`;
+const QUESTION = new RegExp(`Will ${TITLE} execute by`);
 
 test.describe('Bets sheet @features', () => {
+  test.beforeEach(async ({ mockApi: page }) => { await selectDevnetUsdc(page); });
   test('an unknown chain status shows no bet or settle action even after the agreement deadline', async ({ mockApi: page }) => {
     // The index never observed the account's status, and the deadline has passed: nothing settles.
     fileIndexedAgreement(pageIndex(page), { title: TITLE, minted: { status: null }, pool: OPEN_POOL, deadline: '2026-10-01T00:00:00.000Z' });
@@ -64,13 +65,13 @@ test.describe('Bets sheet @features', () => {
     await expect(row.locator('.bets-row__actions')).toHaveCount(0);
     await expect(row).not.toContainText('Decided on-chain');
     await expect(row.locator('.bets-row__meta')).toContainText('Deadline');
-    await expect(sheet.locator('.bets-tagline')).toContainText('Executed means yes');
+    await expect(sheet.locator('.bets-how')).toContainText('YES if this agreement executes on-chain by');
     await row.locator('.bets-row__title').click();
     const dialog = page.locator('#proposalMarketOverlay');
     await expect(dialog).toBeVisible();
-    await expect(dialog.locator('.bets-dialog__facts')).toContainText('Agreement deadline');
+    await expect(dialog.locator('.bets-dialog__facts')).toContainText('Bet deadline');
     await expect(dialog.locator('.cb-dialog__footer .btn-market-yes, .cb-dialog__footer .btn-market-no')).toHaveCount(0);
-    await expect(dialog.getByRole('button', { name: 'Settle the pool', exact: true })).toHaveCount(0);
+    await expect(dialog.getByRole('button', { name: 'Settle bet', exact: true })).toHaveCount(0);
   });
 
   test('a bet dialog cannot use a passed deadline as evidence for chain settlement', async ({ mockApi: page }) => {
@@ -79,21 +80,23 @@ test.describe('Bets sheet @features', () => {
     await waitForBlockchainRuntime(page, ['SolanaMarketBridge', 'solanaWeb3']);
     await page.evaluate(async (account) => {
       (window as any).SolanaMarketBridge.readSummary = async () => ({
-        market: { yesPool: 1000000n, noPool: 1000000n, resolved: false },
-        marketAddress: 'test-market', chainStatus: null
+        market: { model: 'lmsr', asset: 'devnet-usdc', b: '100000000', qYes: '1000000', qNo: '1000000',
+          seed: '69314720', closesAt: 1798761600, graceSeconds: 0, maxPosition: '0', paidOut: '0',
+          creator: 'sponsor', resolved: false, outcome: null },
+        marketAddress: 'test-market', chainStatus: null, deadline: '2026-10-01T00:00:00Z'
       });
       await (window as any).openBetDialog({ account, title: 'Status unavailable' });
     }, ACCOUNT);
     const dialog = page.locator('#proposalMarketOverlay');
     await expect(dialog).toBeVisible();
-    await expect(dialog.locator('.cb-dialog__title')).toHaveText('Will Status unavailable execute on-chain?');
-    await expect(dialog.locator('.bets-dialog__rule')).toContainText('Not open for bets');
-    await expect(dialog.getByRole('button', { name: 'Settle the pool', exact: true })).toHaveCount(0);
+    await expect(dialog.locator('.cb-dialog__title')).toContainText('Will Status unavailable execute by');
+    await expect(dialog.locator('.bets-dialog__rule')).toContainText('YES if this agreement executes on-chain by');
+    await expect(dialog.getByRole('button', { name: 'Settle bet', exact: true })).toHaveCount(0);
     await expect(dialog.locator('.btn-market-yes, .btn-market-no')).toHaveCount(0);
     await expect(dialog).not.toContainText('Ready to settle');
   });
 
-  test('the Bets button wears "New" until the sheet is opened, which lists the contest with pool-less rows folded away', async ({ mockApi: page }) => {
+  test('the Bets button wears "New" until opened, and folds market-less rival agreements away', async ({ mockApi: page }) => {
     const { cid, rival } = fileContest(page);
     await openCity(page);
     const button = page.locator('#bets-button');
@@ -108,24 +111,25 @@ test.describe('Bets sheet @features', () => {
     await expect(sheet.locator('.bets-filter__btn[data-filter="all"]')).toHaveAttribute('aria-pressed', 'true');
     const contest = sheet.locator('.bets-contest');
     await expect(contest).toHaveCount(1, { timeout: 30_000 });
-    // Two agreements over one parcel: which of them executes.
-    await expect(contest.locator('.bets-contest__title')).toHaveText('Which agreement over Parcel 2311 will execute?');
+    // Agreements over one parcel share a contest, but their outcomes are independent.
+    await expect(contest.locator('.bets-contest__title')).toHaveText('Markets for agreements over Parcel 2311');
     // (The amount and its currency are joined by a no-break space.)
-    await expect(contest.locator('.bets-contest__land')).toHaveText(/^Parcel 2311 · 2 agreements · Pool 0\.30\sUSDC$/);
-    // The minted row is in the open; the unminted rival is folded under a count.
+    await expect(contest.locator('.bets-contest__land')).toContainText('2 agreements');
+    await expect(contest.locator('.bets-contest__land')).not.toContainText('Pool');
+    // The minted row has an LMSR market; the unminted rival is folded under a count.
     const rows = contest.locator('.bets-rows').first().locator('.bets-row');
     await expect(rows).toHaveCount(1);
     await expect(rows.nth(0)).toHaveAttribute('data-cid', cid);
     await expect(rows.nth(0)).toHaveAttribute('data-account', ACCOUNT);
-    await expect(rows.nth(0).locator('.bets-row__chance')).toHaveText('Yes: 83.3% of pool');
+    await expect(rows.nth(0).locator('.bets-row__chance')).toContainText('YES price');
     await expect(rows.nth(0).locator('.bets-row__who')).toContainText('densifier-01');
-    await expect(rows.nth(0).locator('.btn-market-yes')).toContainText('Pays 1.04×');
-    await expect(rows.nth(0).locator('.btn-market-no')).toContainText('Pays 1.23×');
+    await expect(rows.nth(0).locator('.btn-market-yes')).toContainText('Pays 1.');
+    await expect(rows.nth(0).locator('.btn-market-no')).toContainText('Pays 1.');
     const folded = contest.locator('details.bets-more');
     await expect(folded.locator('summary')).toHaveText('Without a pool: 1');
     await folded.locator('summary').click();
     await expect(folded.locator('.bets-row')).toHaveAttribute('data-cid', rival);
-    await expect(folded.locator('.bets-row')).toContainText('Not minted yet');
+    await expect(folded.locator('.bets-row')).toContainText('Agreement not minted yet');
     await expect(folded.locator('.bets-row__actions')).toHaveCount(0);
     // The filters: nothing is settled, and "Mine" without a wallet asks for one.
     await sheet.locator('.bets-filter__btn[data-filter="settled"]').click();
@@ -138,12 +142,12 @@ test.describe('Bets sheet @features', () => {
     expect(pageIndex(page).requests.some(request => request.method === 'GET' && /^\/markets\?city=zg\b/.test(request.path))).toBe(true);
   });
 
-  test('a city with no minted agreement says how to open the first pool', async ({ mockApi: page }) => {
+  test('a city with no minted agreement explains that a dated agreement is needed', async ({ mockApi: page }) => {
     // Proposed but never minted: a contest nobody can bet on is not a market.
     fileIndexedAgreement(pageIndex(page), { title: 'Unminted plan' });
     await openCity(page);
     await page.locator('#bets-button').click();
-    await expect(page.locator('#bets-sheet-content')).toContainText('No pools in this city yet. Mint an agreement to open the first one.', { timeout: 30_000 });
+    await expect(page.locator('#bets-sheet-content')).toContainText('No markets in this city yet. Mint an agreement with a deadline to open the first one.', { timeout: 30_000 });
     await expect(page.locator('#bets-sheet .bets-contest')).toHaveCount(0);
   });
 
@@ -165,11 +169,11 @@ test.describe('Bets sheet @features', () => {
     await expect(page.locator('#bets-button')).toHaveAttribute('aria-expanded', 'true');
     await expect(page.locator('#bets-button-new')).toBeHidden();
     await expect(sheet.locator('.bets-contest')).toHaveCount(1, { timeout: 30_000 });
-    await expect(sheet.locator('.bets-contest__title')).toHaveText('Which agreement over Parcel 2311 will execute?');
-    await expect(sheet.locator('.bets-row').first().locator('.bets-row__chance')).toHaveText('Yes: 83.3% of pool');
+    await expect(sheet.locator('.bets-contest__title')).toHaveText('Markets for agreements over Parcel 2311');
+    await expect(sheet.locator('.bets-row').first().locator('.bets-row__chance')).toContainText('YES price');
   });
 
-  test('a bet asks for a wallet first, then opens the stake form over the sheet with a live "to win"', async ({ mockApi: page }) => {
+  test('a devnet-USDC bet asks for a wallet first, then opens an LMSR buy form over the sheet', async ({ mockApi: page }) => {
     fileContest(page);
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
     await openCity(page);
@@ -194,12 +198,13 @@ test.describe('Bets sheet @features', () => {
       return !!(el && modal.contains(el));
     });
     expect(onTop).toBe(true);
-    // 1 USDC on yes into 0.25 yes / 0.05 no: (0.25 + 0.05 + 1) / 1.25 = 1.04× → 1.04 USDC.
+    // The LMSR quote prices all purchased shares at current inventory, with price impact.
     await dialog.locator('[data-market-amount]').fill('1');
-    await expect(dialog.locator('[data-market-towin]')).toContainText('To win about 1.04 USDC if yes wins');
+    await expect(dialog.locator('[data-market-towin]')).toContainText('Buy');
+    await expect(dialog.locator('[data-market-towin]')).toContainText('If yes wins');
     await dialog.locator('.bets-dialog__chip', { hasText: '5' }).first().click();
     await expect(dialog.locator('[data-market-amount]')).toHaveValue('5');
-    await expect(dialog.locator('[data-market-towin]')).toContainText('To win about 5.05 USDC');
+    await expect(dialog.locator('[data-market-towin]')).toContainText('If yes wins');
     // Back lands on the bet's overview (its question), the No button goes to the form again.
     await dialog.getByRole('button', { name: 'Back' }).click();
     await expect(dialog.locator('.cb-dialog__title')).toHaveText(QUESTION);
@@ -207,11 +212,11 @@ test.describe('Bets sheet @features', () => {
     await expect(dialog.locator('.cb-dialog__title')).toHaveText('Bet no');
   });
 
-  // The bet's receipt: the sheet stays open under the dialog, the dialog turns into "Bet placed" with
-  // the pool read back from the chain, and the row behind it is refreshed, marked and carries the
+  // The trade receipt: the sheet stays open under the dialog, the dialog shows confirmed shares
+  // and market data, and the row behind it is refreshed, marked and carries the
   // wallet's own bet. Before this, the first press in the dialog closed the sheet (an "outside click")
   // and the dialog removed itself 300 ms after confirming, so a bet ended on the bare map.
-  test('a confirmed bet shows its receipt over the sheet and the changed row behind it', async ({ mockApi: page }) => {
+  test('a confirmed LMSR buy shows its receipt over the sheet and the changed row behind it', async ({ mockApi: page }) => {
     fileContest(page);
     await captureClipboard(page);
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
@@ -221,15 +226,19 @@ test.describe('Bets sheet @features', () => {
     await waitForBlockchainRuntime(page, ['SolanaMarketBridge', 'solanaWeb3']);
     await page.evaluate((account) => {
       const bridge = (window as any).SolanaMarketBridge;
-      const market = { stakeMint: 'mint', yesPool: 250000n, noPool: 100000n, resolved: false, outcome: 0 };
-      (window as any).__staked = [];
-      bridge.stake = async (options: any) => {
-        (window as any).__staked.push({ proposal: options.proposal, side: options.side });
+      const market = { model: 'lmsr', asset: 'devnet-usdc', b: '100000000', qYes: '250000', qNo: '100000',
+        seed: '69314720', closesAt: Math.floor(Date.parse('2026-12-31T00:00:00Z') / 1000), graceSeconds: 0,
+        maxPosition: '0', paidOut: '0', creator: 'sponsor', resolved: false, outcome: null };
+      (window as any).__buys = [];
+      let noShares = 50000n;
+      bridge.buy = async (options: any) => {
+        (window as any).__buys.push({ proposal: options.proposal, side: options.side, shares: String(options.shares), maxCost: String(options.maxCost) });
+        noShares += BigInt(options.shares);
         options.onStatus?.({ state: 'confirmed', signature: 'sig', explorerUrl: 'https://explorer.solana.com/tx/sig?cluster=devnet' });
         return { transactionHash: 'sig', explorerUrl: 'https://explorer.solana.com/tx/sig?cluster=devnet' };
       };
-      bridge.readSummary = async () => ({ market, marketAddress: 'market', wallet: 'w', chainStatus: 'Active', yes: null, no: { side: 0, amount: 50000n, claimed: false } });
-      bridge.readPositions = async () => ({ [account]: { yes: null, no: { side: 0, amount: 50000n, claimed: false } } });
+      bridge.readSummary = async () => ({ market, marketAddress: 'market', wallet: 'w', chainStatus: 'active', deadline: '2026-12-31T00:00:00Z', sponsor: 'sponsor', yes: null, no: { side: 0, amount: 50000n, claimed: false } });
+      bridge.readPositions = async () => ({ [account]: { yes: null, no: { side: 0, amount: noShares, claimed: false } } });
       bridge.readStakeBalance = async () => 12_500_000n;
     }, ACCOUNT);
     const row = page.locator('#bets-sheet .bets-row').first();
@@ -240,16 +249,19 @@ test.describe('Bets sheet @features', () => {
     await dialog.locator('[data-market-amount]').fill('0.05');
     await dialog.locator('[data-market-submit]').click();
     await expect(dialog.locator('.cb-dialog__title')).toHaveText('Bet placed');
-    // The bet went into the agreement account's pool (the market's subject).
-    expect(await page.evaluate(() => (window as any).__staked)).toEqual([{ proposal: ACCOUNT, side: 0 }]);
-    await expect(dialog.locator('.proposal-boost-copy')).toHaveText('0.05 USDC on no is in the pool.');
-    await expect(dialog.locator('.proposal-market-placed__pool')).toContainText('71.4% of pool');
-    await expect(dialog.locator('.proposal-market-placed__mine')).toHaveText('Your bets: no 0.05 USDC');
+    // The contract receives exact atomic share quantity and the quoted maximum cost.
+    await expect.poll(() => page.evaluate(() => (window as any).__buys)).toHaveLength(1);
+    const buy = await page.evaluate(() => (window as any).__buys[0]);
+    expect(buy).toMatchObject({ proposal: ACCOUNT, side: 0, maxCost: '50000' });
+    expect(BigInt(buy.shares)).toBeGreaterThan(0n);
+    await expect(dialog.locator('.bets-dialog__facts')).toContainText('Shares');
+    await expect(dialog.locator('.bets-dialog__facts')).toContainText('Maximum cost');
+    await expect(dialog.locator('.bets-dialog__facts')).toContainText('Payout if this side wins');
     await expect(page.locator('#bets-sheet')).toBeVisible();
     await expect(row).toHaveClass(/is-updated/);
-    await expect(row.locator('.bets-row__mine')).toHaveText('Your bets: no 0.05 USDC');
+    await expect(row.locator('.bets-row__mine')).toContainText('Your bets: no 0.150074 shares');
     // The receipt carries the bet's link beside Done.
-    await dialog.locator('[data-market-link]').click();
+    await dialog.getByRole('button', { name: 'Copy link', exact: true }).click();
     await expect.poll(() => page.evaluate(() => (window as any).__copied)).toEqual([await expectedLink(page)]);
     await dialog.locator('[data-market-done]').click();
     await expect(dialog).toHaveCount(0);
@@ -296,8 +308,7 @@ test.describe('Bets sheet @features', () => {
     }
   });
 
-  // A shared bet link (js/bets/bets-link.js) opens the bet's own dialog: the question, the land, the
-  // chance, the pool and payouts, who proposed it, the links; the first-visit explainer stays out of
+  // A shared bet link opens the dated question, LMSR price and terms; the first-visit explainer stays out of
   // the way. "Copy link" there puts the same link (the shareable path form, with the city) on the
   // clipboard, and the rivals button leads back to the contest in the list.
   test('a bet link opens the bet dialog, which copies that link and leads back to its contest', async ({ mockApi: page }) => {
@@ -309,18 +320,18 @@ test.describe('Bets sheet @features', () => {
     await expect(page.locator('#site-intro-modal')).toBeHidden();
     await expect(dialog.locator('.cb-dialog__title')).toHaveText(QUESTION);
     await expect(dialog.locator('.bets-dialog__eyebrow')).toContainText('Parcel 2311');
-    await expect(dialog.locator('.bets-dialog__chance-word')).toHaveText('Yes: 83.3% of pool');
+    await expect(dialog.locator('.bets-dialog__chance-word')).toContainText('YES price');
     const facts = dialog.locator('.bets-dialog__facts');
-    await expect(facts).toContainText('0.30 USDC');
-    await expect(facts).toContainText('Yes 1.04× · No 1.23×');
-    await expect(facts).toContainText('No deadline set');
+    await expect(facts).toContainText('Liquidity setting');
+    await expect(facts).toContainText('Bet deadline');
+    await expect(facts).toContainText('Pays');
     await expect(facts).toContainText('densifier-01');
-    await expect(dialog.locator('.bets-dialog__rule')).toContainText('Open for bets');
+    await expect(dialog.locator('.bets-dialog__rule')).toContainText('YES if this agreement executes on-chain by');
     // The pool's account and the agreement's account on the explorer.
     const links = dialog.locator('.bets-dialog__links a');
-    await expect(links).toHaveCount(2);
+    await expect(links).toHaveCount(3);
     await expect(links.nth(1)).toHaveAttribute('href', `https://explorer.solana.com/address/${ACCOUNT}?cluster=devnet`);
-    await expect(dialog.locator('.bets-dialog__footer .btn-market-yes')).toContainText('Pays 1.04×');
+    await expect(dialog.locator('.bets-dialog__footer .btn-market-yes')).toContainText('Pays 1.');
     await expect(dialog.locator('.bets-dialog__footer').getByRole('button', { name: 'Open the agreement', exact: true })).toBeVisible();
     await dialog.locator('.bets-dialog__footer').getByRole('button', { name: 'Copy link' }).click();
     await expect.poll(() => page.evaluate(() => (window as any).__copied)).toEqual([await expectedLink(page)]);
@@ -346,19 +357,20 @@ test.describe('Bets sheet @features', () => {
     await expect(page.locator('#proposalMarketOverlay .cb-dialog__title')).toHaveText(QUESTION, { timeout: 30_000 });
   });
 
-  // A pool with bets on one side only never reads "100% chance".
-  test('a one-sided pool says so instead of printing a chance', async ({ mockApi: page }) => {
-    fileContest(page, { ...OPEN_POOL, noPool: '0' });
+  // LMSR prices remain defined even if no shares have yet been bought on the other side.
+  test('one-sided LMSR inventory keeps a finite quote instead of implying certainty', async ({ mockApi: page }) => {
+    fileContest(page, { ...OPEN_POOL, qNo: '0' });
     await page.goto(`/?city=zg&bets=${ACCOUNT}&reduceMotion=1`);
-    await expect(page.locator('#proposalMarketOverlay .bets-dialog__chance-word')).toHaveText('Only yes bets so far', { timeout: 30_000 });
+    await expect(page.locator('#proposalMarketOverlay .bets-dialog__chance-word')).toContainText('YES price', { timeout: 30_000 });
+    await expect(page.locator('#proposalMarketOverlay .bets-dialog__chance-word')).not.toContainText('100');
     await page.locator('#proposalMarketOverlay .close-circle-btn').click();
     await page.locator('#bets-button').click();
-    await expect(page.locator('#bets-sheet .bets-row__chance').first()).toHaveText('Only yes bets so far');
+    await expect(page.locator('#bets-sheet .bets-row__chance').first()).toContainText('YES price');
   });
 
-  // A settled pool the wallet can still collect from shows Collect on the row and in the dialog.
-  test('a settled pool offers Collect on the row and in the dialog', async ({ mockApi: page }) => {
-    fileContest(page, { ...OPEN_POOL, resolved: true, outcome: 'yes' }, 'executed');
+  // A VOID resolution makes both sides eligible for half-share claims.
+  test('a settled VOID market offers claims for both sides', async ({ mockApi: page }) => {
+    fileContest(page, { ...OPEN_POOL, resolved: true, outcome: 'void' }, 'cancelled');
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
     await openCity(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
@@ -366,18 +378,24 @@ test.describe('Bets sheet @features', () => {
     await page.evaluate((account) => {
       const bridge = (window as any).SolanaMarketBridge;
       (window as any).__claims = [];
-      bridge.readPositions = async () => ({ [account]: { yes: { side: 1, amount: 100000n, claimed: false }, no: null } });
+      const claimed = new Set<number>();
+      bridge.readPositions = async () => ({ [account]: {
+        yes: { side: 1, amount: 100000n, claimed: claimed.has(1) },
+        no: { side: 0, amount: 200000n, claimed: claimed.has(0) },
+      } });
       bridge.claim = async (options: any) => {
         (window as any).__claims.push([options.proposal, options.side]);
+        claimed.add(options.side);
         options.onStatus?.({ state: 'confirmed', signature: 'sig', explorerUrl: 'https://explorer.solana.com/tx/sig?cluster=devnet' });
         return { transactionHash: 'sig', explorerUrl: 'https://explorer.solana.com/tx/sig?cluster=devnet' };
       };
     }, ACCOUNT);
     await page.locator('#bets-button').click();
     const row = page.locator('#bets-sheet .bets-row').first();
-    await expect(row.locator('.bets-row__chance')).toHaveText('Settled yes', { timeout: 30_000 });
-    await expect(row.locator('.bets-row__mine')).toHaveText('Your bets: yes 0.10 USDC');
-    await expect(row.locator('.bets-row__collect .btn')).toHaveText('Collect yes winnings');
+    await expect(row.locator('.bets-row__chance')).toHaveText('VOID · half paid per share', { timeout: 30_000 });
+    await expect(row.locator('.bets-row__mine')).toContainText('Your bets: yes 0.1 shares');
+    await expect(row.locator('.bets-row__collect .btn').first()).toHaveText('Collect yes winnings');
+    await expect(row.locator('.bets-row__collect .btn')).toHaveCount(2);
     // "Mine" keeps the row; "Open" has nothing.
     await page.locator('#bets-sheet .bets-filter__btn[data-filter="mine"]').click();
     await expect(page.locator('#bets-sheet .bets-row')).toHaveCount(1);
@@ -386,10 +404,16 @@ test.describe('Bets sheet @features', () => {
     await page.locator('#bets-sheet .bets-filter__btn[data-filter="all"]').click();
     await page.locator('#bets-sheet .bets-row__title').first().click();
     const dialog = page.locator('#proposalMarketOverlay');
-    await expect(dialog.locator('.bets-dialog__chance-word')).toHaveText('Settled yes');
-    await expect(dialog.locator('.bets-dialog__mine')).toHaveText('Your bets: yes 0.10 USDC');
-    await dialog.locator('.bets-dialog__collect .btn').click();
-    await expect.poll(() => page.evaluate(() => (window as any).__claims)).toEqual([[ACCOUNT, 1]]);
-    await expect(dialog.locator('[data-market-dialog-status]')).toContainText('Collected yes winnings.');
+    await expect(dialog.locator('.bets-dialog__chance-word')).toHaveText('VOID · half paid per share');
+    await expect(dialog.locator('.bets-dialog__mine')).toContainText('Your bets: yes 0.1 shares');
+    const collectButtons = dialog.locator('.bets-dialog__collect .btn');
+    await expect(collectButtons).toHaveCount(2);
+    await collectButtons.nth(0).click();
+    await expect.poll(() => page.evaluate(() => (window as any).__claims)).toHaveLength(1);
+    await expect(dialog.locator('[data-market-dialog-status]')).toContainText('Collected');
+    await expect(collectButtons).toHaveCount(1);
+    await collectButtons.nth(0).click();
+    await expect.poll(() => page.evaluate(() => (window as any).__claims)).toHaveLength(2);
+    expect(await page.evaluate(() => (window as any).__claims)).toEqual([[ACCOUNT, 1], [ACCOUNT, 0]]);
   });
 });

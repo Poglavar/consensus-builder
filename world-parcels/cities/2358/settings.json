@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2358",
+  "name": "Shihezi, China",
+  "point": [
+    44.3214660405686,
+    86.0293797189704
+  ],
+  "bindings": [
+    {
+      "appCityId": "shihezi",
+      "runtimeConfig": {
+        "id": "shihezi",
+        "wupCityCode": "2358",
+        "label": "Shihezi, China",
+        "currency": {
+          "locale": "zh-CN",
+          "code": "CNY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            44.3214660405686,
+            86.0293797189704
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            44.3214660405686,
+            86.0293797189704
+          ],
+          "fallbackDataset": [
+            86.0293797189704,
+            44.3214660405686
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "cn-xj-tianditu-jsydzd-shihezi",
+          "idPrefix": "CN-XJ-JSYDZD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "新疆维吾尔自治区自然资源厅 / 新疆维吾尔自治区地理信息公共服务平台 · 建设用地宗地"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "cn-xj-tianditu-jsydzd-shihezi",
+      "name": "天地图·新疆 / 建设用地宗地 — Shihezi Old Street",
+      "adapter": "vector-tiles",
+      "endpoint": "https://xinjiang.tianditu.gov.cn/v/adf-web-mapservicepublishweb/vectortileoperations/pbf/jsydzd/{z}/{x}/{y}.pbf",
+      "countryCode": "CN",
+      "cityIds": [
+        "shihezi"
+      ],
+      "idPrefix": "CN-XJ-JSYDZD-",
+      "identityKind": "geometry-sha256-v1",
+      "tileMatrix": "geographic-2x1",
+      "geometryMode": "interior-only",
+      "zoom": 12,
+      "extent": 4096,
+      "layer": "zrzy_jjsydzd",
+      "outFields": [],
+      "idLookupBounds": [
+        86.01,
+        44.305,
+        86.035,
+        44.325
+      ],
+      "maxTiles": 1,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 4,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32645,
+      "sourceCrs": "EPSG:4326",
+      "browserTransport": "relay",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "scope": "Bounded partial Shihezi Old Street window only. Whole source-tile polygons wholly within [86.01,44.305,86.035,44.325]; tile-edge fragments are unresolved. No citywide or register completeness claim.",
+      "attribution": "新疆维吾尔自治区自然资源厅 / 新疆维吾尔自治区地理信息公共服务平台 · 建设用地宗地",
+      "catalogueUrl": "https://xinjiang.tianditu.gov.cn/",
+      "licenceNote": "Anonymous official public viewer. No explicit open redistribution licence found in inspected catalog/style; reuse terms remain a second-pass follow-up.",
+      "caveats": [
+        "Official construction-land parcel layer; not all land types or a title/ownership service.",
+        "Fixed z12 source-tile outlines may be generalized relative to cadastral master geometry. Source polygons remain unchanged after exact geographic conversion; no clipping, fitting, rounding or repair.",
+        "Tile/geometry-derived references change with edits, retiling, ring order or zoom; mvt_id is not a durable cadastral ID. Unknown references return unresolved rather than authoritative absence.",
+        "EPSG:4326 service declaration versus EPSG:4490 viewer datum remains unverified; no fitted offset applied.",
+        "Old Street belongs to Shihezi since 2017 according to public regional reporting; legacy Shawan labels and cadastral jurisdiction/version remain follow-ups.",
+        "Native tile transport cannot filter attributes; adapter discards all provider attributes immediately after decoding."
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

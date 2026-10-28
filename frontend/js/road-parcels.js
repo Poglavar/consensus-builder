@@ -50,6 +50,21 @@
         }
     }
 
+    // Marks arrive one id at a time (road detection marks each parcel it finds), and each save
+    // rewrites the whole registry. The in-memory set answers every read at once; the stored copy
+    // is written once per settled batch, in a microtask, which always runs before the page can
+    // unload, so no mark is lost.
+    let saveScheduled = false;
+    function scheduleSaveRoadParcels() {
+        if (saveScheduled) return;
+        saveScheduled = true;
+        Promise.resolve().then(() => {
+            if (!saveScheduled) return;
+            saveScheduled = false;
+            saveRoadParcels();
+        });
+    }
+
     /**
      * Check if a parcel is marked as a road
      * @param {string} parcelId
@@ -75,7 +90,7 @@
             roadParcelsSet.add(id);
             added.push(id);
         });
-        if (added.length) saveRoadParcels();
+        if (added.length) scheduleSaveRoadParcels();
         return added;
     }
 
@@ -98,7 +113,7 @@
         const id = String(parcelId);
         if (roadParcelsSet.has(id)) {
             roadParcelsSet.delete(id);
-            saveRoadParcels();
+            scheduleSaveRoadParcels();
         }
     }
 
@@ -106,6 +121,8 @@
      * Clear all road parcels
      */
     function clearAllRoadParcels() {
+        // A save still queued would write the old marks back after the removal.
+        saveScheduled = false;
         roadParcelsSet.clear();
         roadParcelsLoaded = true;
         global.PersistentStorage.removeItem(ROAD_PARCELS_KEY);
@@ -186,15 +203,32 @@
     }
 
     // Auto-run: parcels land in bursts per moveend, so debounce like the buildings viewport fetch.
+    function isTwoDimensionalViewportActive() {
+        const mode = global.__mapModeState;
+        if (mode && (mode.pending || mode.desired !== '2d')) return false;
+        return typeof global.isThreeModeActive !== 'function' || !global.isThreeModeActive();
+    }
+
     function scheduleCuratedRoadRefresh() {
-        if (!curatedRoadsAvailable()) return;
+        if (!isTwoDimensionalViewportActive() || !curatedRoadsAvailable()) return;
         if (curatedRoadFetchTimer) clearTimeout(curatedRoadFetchTimer);
         curatedRoadFetchTimer = setTimeout(() => {
             curatedRoadFetchTimer = null;
+            if (!isTwoDimensionalViewportActive()) return;
             fetchCuratedRoadParcels().catch(error => console.error('[curated-roads] background fetch failed', error));
         }, 800);
     }
     global.addEventListener('parcelDataLoaded', scheduleCuratedRoadRefresh);
+    global.addEventListener('mapmodechange', event => {
+        const mode = event.detail || global.__mapModeState;
+        if (mode?.desired !== '2d' || mode.pending) {
+            if (curatedRoadFetchTimer) clearTimeout(curatedRoadFetchTimer);
+            curatedRoadFetchTimer = null;
+            return;
+        }
+        // Refresh the viewport's road classification when Leaflet becomes the active view again.
+        scheduleCuratedRoadRefresh();
+    });
 
     const api = {
         addRoadParcel,

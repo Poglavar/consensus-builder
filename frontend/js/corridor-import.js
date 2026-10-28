@@ -2,8 +2,8 @@
 // and this is the one path from that form to applied road records — one record per road, built
 // and junctioned exactly as a drawn road is (ProposalManager.createCorridorProposalAtomically).
 // `recordsFromImport` is pure and node-tested; the browser half offers the formats in a chooser
-// (OpenStreetMap and OpenDRIVE live, four more named and greyed until asked for), picks the file,
-// places one that has no georeference at the map centre, and reports.
+// (OpenStreetMap, OpenDRIVE and GeoJSON live, three more named and greyed until asked for), picks
+// the file, places one that has no georeference at the map centre, and reports.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -24,29 +24,138 @@
         if (typeof require === 'function') return require(moduleId);
         throw new Error(`${moduleId} is not available`);
     }
-    // Every format the chooser offers, in its order. The two with a `parse` are supported; the rest
+    // ---- GeoJSON ---------------------------------------------------------------------------------
+    // Road centrelines as GeoJSON become the same OSM form the other adapters make. Each LineString,
+    // and each part of a MultiLineString, is one road; the feature's scalar properties are the way's
+    // tags, so `width`, `lanes`, `highway`, `railway`, `sidewalk`, `oneway`… read exactly as in an
+    // OSM import. `mode: 'rail'` means `railway=rail`; a line with neither class tag is
+    // `highway=road`, as a drawn road is. Points and polygons are not roads: they are counted and
+    // left out. Coordinates must be WGS84 longitude/latitude (RFC 7946).
+    const GEOJSON_GEOMETRIES = new Set(['Point', 'MultiPoint', 'LineString', 'MultiLineString', 'Polygon', 'MultiPolygon', 'GeometryCollection']);
+    const WGS84_CRS_NAME = /(CRS84|EPSG:+4326)$/i; // the legacy `crs` member, when a file still carries one
+    const GEOJSON_MAX_LINES = 500;
+    const COORD_DECIMALS = 7; // ~1 cm: two line ends this close are one node
+
+    // Which JSON road format a document is, by its content: OSM JSON has an `elements` list, GeoJSON
+    // a `type` that is a FeatureCollection, a Feature or a geometry. Null for anything else.
+    function jsonFormatOf(doc) {
+        if (!doc || typeof doc !== 'object') return null;
+        if (Array.isArray(doc.elements)) return 'osm';
+        if (doc.type === 'FeatureCollection' || doc.type === 'Feature' || GEOJSON_GEOMETRIES.has(doc.type)) return 'geojson';
+        return null;
+    }
+    function detectJsonFormat(text) {
+        const source = String(text || '').replace(/^\uFEFF/, '').trimStart();
+        if (!source.startsWith('{')) return null;
+        try { return jsonFormatOf(JSON.parse(source)); } catch (_) { return null; }
+    }
+
+    // parseGeoJson(text) -> { form, roads, placement, warnings, skipped }, `skipped` being the number
+    // of features that are not lines.
+    function parseGeoJson(text) {
+        let doc;
+        try { doc = JSON.parse(String(text || '').replace(/^\uFEFF/, '')); } catch (error) { throw new Error(`GeoJSON: not valid JSON (${error.message})`); }
+        if (jsonFormatOf(doc) !== 'geojson') throw new Error('GeoJSON: expected a FeatureCollection, a Feature or a geometry');
+        if (doc.crs) {
+            const crsName = doc.crs.properties && doc.crs.properties.name;
+            if (!(typeof crsName === 'string' && WGS84_CRS_NAME.test(crsName))) {
+                throw new Error(`GeoJSON: the file declares the coordinate system ${crsName || 'of another kind'}; only WGS84 longitude/latitude (EPSG:4326) is read. Reproject it first.`);
+            }
+        }
+        const features = doc.type === 'FeatureCollection' ? (Array.isArray(doc.features) ? doc.features : [])
+            : doc.type === 'Feature' ? [doc] : [{ type: 'Feature', geometry: doc, properties: {} }];
+        const warnings = [];
+        const nodeIds = new Map();
+        const formNodes = [];
+        const formWays = [];
+        const roads = [];
+        let skipped = 0;
+        let lines = 0;
+        const nodeOf = (position, featureNumber) => {
+            const [lon, lat] = Array.isArray(position) ? position : [];
+            if (!(typeof lon === 'number' && Number.isFinite(lon) && typeof lat === 'number' && Number.isFinite(lat))) {
+                throw new Error(`GeoJSON: feature ${featureNumber} has a position that is not [longitude, latitude]`);
+            }
+            if (Math.abs(lon) > 180 || Math.abs(lat) > 90) {
+                throw new Error(`GeoJSON: feature ${featureNumber} has the position [${lon}, ${lat}], outside WGS84 longitude/latitude; the file is probably in a projected coordinate system. Reproject it to EPSG:4326 first.`);
+            }
+            const key = `${lon.toFixed(COORD_DECIMALS)},${lat.toFixed(COORD_DECIMALS)}`;
+            if (!nodeIds.has(key)) {
+                const id = -(formNodes.length + 1);
+                nodeIds.set(key, id);
+                formNodes.push({ type: 'node', id, lat, lon });
+            }
+            return nodeIds.get(key);
+        };
+        features.forEach((feature, index) => {
+            const featureNumber = index + 1;
+            const geometry = feature && feature.geometry;
+            const type = geometry && geometry.type;
+            const parts = type === 'LineString' ? [geometry.coordinates] : (type === 'MultiLineString' ? geometry.coordinates : null);
+            if (!parts) { skipped += 1; return; }
+            if (!Array.isArray(parts) || parts.some(part => !Array.isArray(part))) throw new Error(`GeoJSON: feature ${featureNumber} has malformed coordinates`);
+            const properties = feature.properties && typeof feature.properties === 'object' ? feature.properties : {};
+            const tags = {};
+            Object.entries(properties).forEach(([key, value]) => {
+                if (typeof value === 'string' || typeof value === 'boolean' || (typeof value === 'number' && Number.isFinite(value))) tags[key] = String(value);
+            });
+            if (properties.mode === 'rail' && !tags.railway) tags.railway = 'rail';
+            if (!tags.highway && !tags.railway) tags.highway = 'road';
+            const name = tags.name ? tags.name.trim() : '';
+            const featureId = (feature.id !== undefined && feature.id !== null) ? String(feature.id) : `f${featureNumber}`;
+            parts.forEach((part, partIndex) => {
+                const nodes = part.map(position => nodeOf(position, featureNumber)).filter((id, i, all) => i === 0 || id !== all[i - 1]);
+                const label = parts.length > 1 ? `${featureId}.${partIndex + 1}` : featureId;
+                if (nodes.length < 2) {
+                    warnings.push(`feature ${featureNumber}${parts.length > 1 ? ` part ${partIndex + 1}` : ''} has fewer than two distinct positions and was left out`);
+                    return;
+                }
+                lines += 1;
+                if (lines > GEOJSON_MAX_LINES) return;
+                const id = -(formWays.length + 1);
+                formWays.push({ type: 'way', id, nodes, tags: { ...tags, 'cb:segment': `g${-id}` } });
+                roads.push({ id: label, name: name || null, wayIds: [id] });
+            });
+        });
+        if (lines > GEOJSON_MAX_LINES) warnings.push(`${lines} lines in the file; only the first ${GEOJSON_MAX_LINES} were imported`);
+        if (skipped) warnings.push(`${skipped} feature(s) that are not lines were left out`);
+        const used = new Set(formWays.flatMap(way => way.nodes));
+        return {
+            form: { version: 0.6, generator: 'consensus-builder', elements: [...formNodes.filter(node => used.has(node.id)), ...formWays] },
+            roads,
+            placement: 'georeference',
+            warnings,
+            skipped
+        };
+    }
+
+    // Every format the chooser offers, in its order. The three with a `parse` are supported; the rest
     // are named so the choice is visible and asked for, and get an adapter when someone needs one.
     const FORMATS = [
         { id: 'osm', label: 'OpenStreetMap', extensions: ['osm', 'json'], icon: 'fa-map', key: 'importOsm',
             parse: text => adapter('__corridorImportOsm', './corridor-import-osm.js').parseOsm(text) },
         { id: 'opendrive', label: 'OpenDRIVE', extensions: ['xodr'], icon: 'fa-road', key: 'importOpenDrive',
             parse: (text, options) => adapter('__corridorImportOpenDrive', './corridor-import-opendrive.js').parseOpenDrive(text, options) },
-        { id: 'landxml', label: 'LandXML', extensions: ['xml'], icon: 'fa-drafting-compass', key: 'importLandXml' },
+        { id: 'landxml', label: 'LandXML', extensions: ['xml'], icon: 'fa-file-import', key: 'importLandXml' },
         { id: 'streetmix', label: 'Streetmix', extensions: ['json'], icon: 'fa-street-view', key: 'importStreetmix' },
-        { id: 'geojson', label: 'GeoJSON', extensions: ['geojson', 'json'], icon: 'fa-code', key: 'importGeoJson' },
+        { id: 'geojson', label: 'GeoJSON', extensions: ['geojson', 'json'], icon: 'fa-code', key: 'importGeoJson',
+            parse: text => parseGeoJson(text) },
         { id: 'shapefile', label: 'Shapefile', extensions: ['zip', 'shp'], icon: 'fa-file-archive', key: 'importShapefile' }
     ];
     const extensionOf = name => String(name || '').toLowerCase().split('.').pop();
     const formatById = id => FORMATS.find(format => format.id === id) || null;
     // The format a file is read with: the one chosen in the dialog, else the first supported format
-    // that takes the file's extension.
-    function formatFor(fileName, chosenId) {
+    // that takes the file's extension. A JSON file is OSM JSON or GeoJSON by its content (`text`,
+    // when given), whichever of the two was chosen or the extension suggests.
+    function formatFor(fileName, chosenId, text) {
         const chosen = chosenId ? formatById(chosenId) : null;
-        if (chosen) return chosen.parse ? chosen : null;
         const extension = extensionOf(fileName);
-        return FORMATS.find(format => format.parse && format.extensions.includes(extension)) || null;
+        const candidate = chosen || FORMATS.find(format => format.parse && format.extensions.includes(extension)) || null;
+        if (!candidate || !candidate.parse) return null;
+        const detected = (text !== undefined && (candidate.id === 'osm' || candidate.id === 'geojson')) ? detectJsonFormat(text) : null;
+        return detected ? formatById(detected) : candidate;
     }
-    const supportedAccept = () => FORMATS.filter(format => format.parse).flatMap(format => format.extensions).map(ext => `.${ext}`).join(',');
+    const supportedAccept = () => [...new Set(FORMATS.filter(format => format.parse).flatMap(format => format.extensions))].map(ext => `.${ext}`).join(',');
 
     // The proposal records an import's OSM form makes: one per road (the ways tagged `cb:road`),
     // each a definition read back from that road's ways, shaped like a drawn road's record so the
@@ -205,24 +314,26 @@
     async function importCorridorFile(file, formatId) {
         if (!file) return null;
         const extension = extensionOf(file.name);
-        const chosen = formatFor(file.name, formatId);
+        const text = await file.text();
+        const chosen = formatFor(file.name, formatId, text);
         if (!chosen) {
-            status(t('panel.road.importUnsupported', 'Unsupported file type: {{ext}}. Supported: OpenStreetMap (.osm, .json) and OpenDRIVE (.xodr).', { ext: extension || '?' }), { transient: true });
+            status(t('panel.road.importUnsupported', 'Unsupported file type: {{ext}}. Supported: OpenStreetMap (.osm, .json), GeoJSON (.geojson) and OpenDRIVE (.xodr).', { ext: extension || '?' }), { transient: true });
             return null;
         }
         const map = global.map;
         const centre = map && typeof map.getCenter === 'function' ? map.getCenter() : null;
         let parsed;
         try {
-            parsed = chosen.parse(await file.text(), { anchor: centre ? { lat: centre.lat, lng: centre.lng, headingDeg: 0 } : undefined });
+            parsed = chosen.parse(text, { anchor: centre ? { lat: centre.lat, lng: centre.lng, headingDeg: 0 } : undefined });
         } catch (error) {
             status(t('panel.road.importFailed', 'Could not import {{file}}: {{reason}}', { file: file.name, reason: String(error && error.message || error) }));
             return null;
         }
         const author = (typeof global.getProposalAuthorValue === 'function' && global.getProposalAuthorValue()) || 'import';
         const records = recordsFromImport(parsed, { author, source: chosen.label.toLowerCase(), fallbackTitle: t('panel.road.importedRoad', 'Imported road') });
+        const skippedNote = parsed.skipped ? ' ' + t('panel.road.importSkippedFeatures', '{{count}} feature(s) that are not lines (points, polygons) were left out.', { count: parsed.skipped }) : '';
         if (!records.length) {
-            status(t('panel.road.importNone', '{{file}} holds no road this app can draw.', { file: file.name }));
+            status(t('panel.road.importNone', '{{file}} holds no road this app can draw.', { file: file.name }) + skippedNote);
             return null;
         }
         const { created, failed } = await createRoadRecords(records);
@@ -238,7 +349,7 @@
         const summary = t('panel.road.importStatus', 'Imported {{count}} of {{total}} roads from {{file}} ({{format}}).', { count: created.length, total: records.length, file: file.name, format: chosen.label });
         const placed = parsed.placement === 'anchor' ? ' ' + t('panel.road.importPlacedAtCentre', 'The file has no georeference, so the roads were placed at the map centre.') : '';
         const problems = failed.length ? ' ' + failed.filter(Boolean).join(' ') : '';
-        status(summary + placed + problems);
+        status(summary + placed + skippedNote + problems);
         if (parsed.warnings && parsed.warnings.length) console.warn('[corridor-import]', file.name, parsed.warnings);
         return { created, failed, placement: parsed.placement, warnings: parsed.warnings || [] };
     }
@@ -262,5 +373,5 @@
         global.openCorridorImportChooser = openCorridorImportChooser;
     }
 
-    return { recordsFromImport, createRoadRecords, importCorridorFile, openCorridorImportPicker, openCorridorImportChooser, FORMATS, formatFor, extensionOf };
+    return { recordsFromImport, createRoadRecords, importCorridorFile, openCorridorImportPicker, openCorridorImportChooser, FORMATS, formatFor, extensionOf, parseGeoJson, detectJsonFormat };
 });

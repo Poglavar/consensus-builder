@@ -593,6 +593,17 @@
         return result;
     }
 
+    // What a Block or Row design saves: the per-parcel pieces the editor drew, each carrying the rule
+    // and its own seed so every view realizes them as separate buildings, plus the complete massing
+    // they were cut from. Saving only the massing hands every view one seed for the whole ring or
+    // terrace, which draws one height where the editor showed a street of varied ones.
+    function ruleDesignGeometry(massing, pieces, rule, seed, deps) {
+        return {
+            buildings: JSON.parse(JSON.stringify((pieces || []).filter(Boolean))),
+            ruleMassing: massingWithRule(massing, rule, seed, deps)
+        };
+    }
+
     // Realize a stored massing feature from the rule and seed stamped on it. `salt` re-rolls the
     // variation without touching the stored seed — that is how the 3D view's Randomize can shuffle
     // the whole city without writing to a single proposal.
@@ -659,6 +670,7 @@
         realizeFromEnvelope,
         realizeBlockPiece,
         massingWithRule,
+        ruleDesignGeometry,
         realizeFeature,
         plannedDrawPlan
     };

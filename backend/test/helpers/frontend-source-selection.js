@@ -1,9 +1,9 @@
 // Consumer configuration fixtures for source-admission tests; backend services do not select by city.
-import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { parcelSourceCatalog, parcelSourceById } from '../../parcels/sources.js';
+import { cityConfigSource } from './city-config-source.js';
 const context = { URLSearchParams, console }; context.window = context;
-runInNewContext(readFileSync(new URL('../../../frontend/js/city-config.js', import.meta.url), 'utf8'), context);
+runInNewContext(cityConfigSource(), context);
 export const manager = context.CityConfigManager;
 export function consumerParcelSourceId(city) {
     const config = manager.getCityConfig(city);

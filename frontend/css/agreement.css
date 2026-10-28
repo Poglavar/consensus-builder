@@ -36,15 +36,12 @@
         left: 0;
         right: 0;
         bottom: var(--map-shell-dock-height);
-        height: 50dvh;
-        max-height: 50dvh;
         width: 100%;
         max-width: none;
         border-radius: var(--cb-radius-lg) var(--cb-radius-lg) 0 0;
     }
     #agreement-panel .panel-header { padding: var(--cb-space-2) var(--cb-space-3); }
     #agreement-panel [data-agreement-action="close"] { display: none; }
-    #agreement-panel .agreement-panel-actions { display: grid; grid-template-columns: 1fr; }
 }
 
 /* Approval links select an action visually even before its wallet is connected. */
@@ -199,7 +196,25 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--cb-space-2);
+    align-items: stretch;
 }
+
+.agreement-panel-actions > .btn { flex: 1 1 0; min-width: 0; white-space: normal; }
+.agreement-properties-tabs { flex-shrink: 0; }
+.agreement-properties-tabs > .cb-tab { min-width: 0; white-space: normal; padding-inline: var(--cb-space-1); }
+.agreement-properties-tabpanel:not([hidden]) { display: flex; flex-direction: column; gap: var(--cb-space-3); }
+.agreement-panel-object {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+    width: 100%;
+    text-align: left;
+}
+.agreement-panel-object[aria-pressed="true"] { outline: 2px solid var(--cb-primary); outline-offset: -2px; }
+.agreement-panel-allocation > .agreement-panel-object { align-items: baseline; }
+[data-agreement-row-inspect] { cursor: pointer; }
+[data-agreement-row-inspect]:hover, [data-agreement-row-inspect]:has([aria-pressed="true"]) { background: var(--cb-surface-2); }
 
 .agreement-panel-section {
     display: flex;
@@ -211,16 +226,18 @@
 .agreement-panel-heading {
     margin: 0;
     font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-semibold);
 }
 
 .agreement-panel-rule {
     margin: 0;
-    font-size: var(--cb-text-md);
+    font-size: var(--cb-text-base);
     line-height: var(--cb-leading);
 }
 
 /* ---- Designs: each a quiet button row (css/primitives.css), laid out as a list row ---- */
 .agreement-panel-designs,
+.agreement-panel-inputs,
 .agreement-panel-allocations {
     margin: 0;
     padding: 0;
@@ -415,4 +432,66 @@
     color: var(--cb-danger-soft-ink);
     font-size: var(--cb-text-sm);
     overflow-wrap: anywhere;
+}
+
+/* Consultation statements and setup use the shared sections, badges, form fields and actions. */
+.community-report,
+.community-report-form,
+.community-history,
+.community-setup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.community-history,
+.community-setup { display: block; }
+.community-history > *,
+.community-setup > * { margin-block: var(--cb-space-2); }
+.community-pictures { margin: 0; }
+.community-pictures img { display: block; width: 100%; height: auto; border-radius: var(--cb-radius-sm); }
+
+.community-report {
+    padding-block: var(--cb-space-2);
+    border-top: 1px solid var(--cb-line);
+}
+
+.community-report .cb-badge { white-space: normal; align-self: flex-start; }
+.community-report blockquote { margin: 0; white-space: pre-wrap; }
+.community-report-signer { font-family: var(--cb-font-mono); font-size: var(--cb-text-xs); }
+.community-report-form textarea { width: 100%; resize: vertical; }
+.community-setup pre { max-width: 100%; overflow-x: auto; font-size: var(--cb-text-xs); }
+.community-history summary,
+.community-setup summary { cursor: pointer; font-weight: var(--cb-weight-medium); }
+
+/* Agreement properties have one home: the expanded, scrolling agreement stack section. */
+#click-stack #agreement-panel.info-panel.right-dock-panel.is-hosted,
+#three-click-stack #agreement-panel.info-panel.right-dock-panel.is-hosted {
+    position: static;
+    inset: auto;
+    display: block;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    overflow: visible;
+}
+#click-stack #agreement-panel.is-hosted > .panel-header,
+#three-click-stack #agreement-panel.is-hosted > .panel-header { display: none; }
+#click-stack #agreement-panel.is-hosted > .panel-body,
+#three-click-stack #agreement-panel.is-hosted > .panel-body {
+    padding: 0;
+    max-height: none;
+    overflow: visible;
 }

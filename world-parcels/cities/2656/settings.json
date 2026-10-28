@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2656",
+  "name": "Gwangju, South Korea",
+  "point": [
+    35.1642250703976,
+    126.868931753415
+  ],
+  "bindings": [
+    {
+      "appCityId": "gwangju",
+      "runtimeConfig": {
+        "id": "gwangju",
+        "wupCityCode": "2656",
+        "label": "Gwangju, South Korea",
+        "currency": {
+          "locale": "ko-KR",
+          "code": "KRW"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            35.1642250703976,
+            126.868931753415
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            35.1642250703976,
+            126.868931753415
+          ],
+          "fallbackDataset": [
+            126.868931753415,
+            35.1642250703976
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "kr-jeonnam-gwangju-jijuk-lookup",
+          "idPrefix": "KR-JG-JIJUK-PNU-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Jeonnam-Gwangju integrated spatial-information portal / 전남광주통합특별시 · 국토지리정보원"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "kr-jeonnam-gwangju-jijuk-lookup",
+      "name": "Jeonnam-Gwangju Jijuk cadastral parcels",
+      "adapter": "gwangju-jijuk",
+      "endpoint": "https://map.jeonnam-gwangju.go.kr/map/getJijukByArea",
+      "exactEndpoint": "https://map.jeonnam-gwangju.go.kr/map/getJijukByPnu",
+      "idField": "pnu",
+      "idType": "string",
+      "idPattern": "^[0-9]{19}$",
+      "idPrefix": "KR-JG-JIJUK-PNU-",
+      "parcelNumberField": "pnu",
+      "geometryField": "geom",
+      "outFields": [
+        "pnu"
+      ],
+      "sourceCrs": "EPSG:5186",
+      "sourceProjection": "+proj=tmerc +lat_0=38 +lon_0=127 +k=1 +x_0=200000 +y_0=600000 +ellps=GRS80 +units=m +no_defs",
+      "wireCoordinateOrder": "xy",
+      "metricSrid": 32652,
+      "maxFeatures": 2000,
+      "maxResponseBytes": 4194304,
+      "maxBboxKm2": 0.25,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "countryCode": "KR",
+      "cityIds": [
+        "gwangju"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "queryGeometry": true
+      },
+      "operator": "Official Jeonnam-Gwangju integrated spatial-information portal",
+      "catalogueUrl": "https://map.jeonnam-gwangju.go.kr/",
+      "attribution": "Jeonnam-Gwangju integrated spatial-information portal / 전남광주통합특별시 · 국토지리정보원",
+      "scope": "Cadastral Jijuk parcels observed in bounded Seo-gu windows near the unchanged Gwangju city point. Full returned polygons; district-wide and citywide completeness and currentness unverified.",
+      "licenceNote": "Anonymous first-party viewer access observed. No explicit source-specific vector redistribution licence verified; preserve portal attribution. Reuse terms and custodian lineage require second-pass review."
+    }
+  ]
+}

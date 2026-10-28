@@ -46,6 +46,46 @@ function loadActions(overrides = {}) {
 }
 
 describe('whole-block fresh-proposal suggestion', () => {
+    it('marks only Row houses unavailable for one parcel and enables it for two', () => {
+        const window = loadActions();
+        const one = window.buildProposalPaletteHtml({ selectionCount: 1 });
+        const buttons = [...one.matchAll(/<button\b[\s\S]*?<\/button>/g)].map(match => match[0]);
+        const unavailable = buttons.filter(button => button.includes('aria-disabled="true"'));
+        expect(unavailable).toHaveLength(1);
+        expect(unavailable[0]).toContain('parcel-build-btn--row');
+        expect(unavailable[0]).not.toMatch(/\sdisabled(?:\s|>)/);
+        expect(unavailable[0]).toContain('Select another parcel or use Detect block.');
+        expect(unavailable[0]).toContain('aria-describedby="parcel-row-selection-hint"');
+        expect(window.buildProposalPaletteHtml({ selectionCount: 2 })).not.toContain('aria-disabled="true"');
+        // Site palettes keep their own explicit restrictions and do not inherit parcel counts.
+        expect(window.buildProposalPaletteHtml()).not.toContain('aria-disabled="true"');
+        expect(window.buildProposalPaletteHtml({ disabled: { row: 'Choose a frontage first.' } }))
+            .toContain(' disabled aria-disabled="true"');
+    });
+
+    it.each([false, true])('a one-parcel Row request guides selection without launching or leaving active mode (%s)', async active => {
+        const selectedParcels = new Set(['parcel-1']);
+        const multi = { isActive: active, selectedParcels, toggle: vi.fn(() => { multi.isActive = true; }), showSelectionInPanel: vi.fn() };
+        const startInstantProposalDesign = vi.fn(), showStyledConfirm = vi.fn(), showEphemeralMessage = vi.fn();
+        const window = loadActions({ currentParcel: { id: 'parcel-1' }, multiParcelSelection: multi,
+            startInstantProposalDesign, showStyledConfirm, showEphemeralMessage });
+        await window.startParcelBuildTool('row');
+        expect(multi.isActive).toBe(true);
+        expect([...selectedParcels]).toEqual(['parcel-1']);
+        expect(multi.toggle).toHaveBeenCalledTimes(active ? 0 : 1);
+        expect(multi.showSelectionInPanel).toHaveBeenCalledOnce();
+        expect(showEphemeralMessage).toHaveBeenCalledWith(expect.stringContaining('Select another parcel'), 4000, 'info');
+        expect(startInstantProposalDesign).not.toHaveBeenCalled();
+        expect(showStyledConfirm).not.toHaveBeenCalled();
+    });
+
+    it('launches Row houses once two parcels are selected', async () => {
+        const startInstantProposalDesign = vi.fn();
+        const window = loadActions({ multiParcelSelection: { isActive: true, selectedParcels: new Set(['a', 'b']) }, startInstantProposalDesign });
+        await window.startParcelBuildTool('row');
+        expect(startInstantProposalDesign).toHaveBeenCalledWith('row', ['a', 'b']);
+    });
+
     it('renders transport icons with full station labels, and no Ownership group (M2: owner offers are gone)', () => {
         const container = { innerHTML: '' };
         const document = {
@@ -65,23 +105,21 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(html).toContain('parcel-transport-grid');
         expect(html).toContain('parcel-transport-btn--road');
         expect(html).toContain('parcel-transport-btn--track');
-        expect(html.match(/data-station-type=/g)).toHaveLength(4);
+        expect(html.match(/data-station-type=/g)).toHaveLength(2);
         expect(html).toContain('data-station-type="bus"');
-        expect(html).toContain('data-station-type="tram"');
-        expect(html).toContain('data-station-type="underground"');
-        expect(html).toContain('data-station-type="elevated"');
-        expect(html).toContain('Bus station');
-        expect(html).toContain('Tram station');
-        expect(html).toContain('Metro station');
-        expect(html).toContain('Elevated station');
+        expect(html).toContain('data-station-type="track"');
+        expect(html).toContain('Road station');
+        expect(html).toContain('Track station');
+        expect(html).not.toContain('Tram station');
+        expect(html).not.toContain('Metro station');
         expect(html).not.toContain('parcel-ownership-group');
         expect(html).not.toContain('parcel-build-btn--offer');
-        // The transport group closes the palette, after the construction tools.
+        // Transport follows the construction tools and parcel-layout section.
         expect(html.indexOf('parcel-build-btn--park')).toBeGreaterThan(-1);
         expect(html.indexOf('parcel-build-btn--park')).toBeLessThan(html.indexOf('parcel-transport-group'));
     });
 
-    it('offers Lay out parcels first and opens the parcel-layout design tool on the selection', async () => {
+    it('offers structures, rules, parcel layout and transport, and opens the layout tool', async () => {
         const container = { innerHTML: '' };
         const document = {
             querySelector: vi.fn(() => null),
@@ -95,7 +133,9 @@ describe('whole-block fresh-proposal suggestion', () => {
         expect(html).toContain('parcel-build-btn--parcel-layout');
         expect(html).toContain('Lay out parcels');
         expect(html).not.toContain('parcel-build-btn--reparcellization');
-        expect(html.indexOf('parcel-build-btn--parcel-layout')).toBeLessThan(html.indexOf('parcel-rules-group'));
+        expect([...html.matchAll(/<section class="(parcel-[\w-]+-group)">/g)].map(match => match[1]))
+            .toEqual(['parcel-structures-group', 'parcel-rules-group', 'parcel-layout-group', 'parcel-transport-group']);
+        expect(html.indexOf('parcel-build-btn--parcel-layout')).toBeGreaterThan(html.indexOf('parcel-layout-group'));
 
         await window.startParcelBuildTool('parcel-layout');
         expect(startInstantProposalDesign).toHaveBeenCalledWith('parcel-layout', ['parcel-1']);
@@ -105,24 +145,23 @@ describe('whole-block fresh-proposal suggestion', () => {
         const requestRoadDrawTool = vi.fn();
         const requestTrackDrawTool = vi.fn();
         const startTransitStationPlacement = vi.fn();
+        const chooseTrackStationType = vi.fn();
         const window = loadActions({
             requestRoadDrawTool,
             requestTrackDrawTool,
-            startTransitStationPlacement
+            startTransitStationPlacement,
+            chooseTrackStationType
         });
 
         window.startParcelTransportTool('road');
         window.startParcelTransportTool('track');
-        window.startParcelTransportTool('bus');
-        window.startParcelTransportTool('tram');
-        window.startParcelTransportTool('underground');
-        window.startParcelTransportTool('elevated');
+        window.startParcelTransportTool('roadStation');
+        window.startParcelTransportTool('trackStation');
 
         expect(requestRoadDrawTool).toHaveBeenCalledOnce();
         expect(requestTrackDrawTool).toHaveBeenCalledOnce();
-        expect(startTransitStationPlacement.mock.calls).toEqual([
-            ['bus'], ['tram'], ['underground'], ['elevated']
-        ]);
+        expect(startTransitStationPlacement).toHaveBeenCalledExactlyOnceWith('bus');
+        expect(chooseTrackStationType).toHaveBeenCalledOnce();
     });
 
     it('defines one goal policy for block-scale creation and excludes exact-parcel proposals', () => {

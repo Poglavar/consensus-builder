@@ -121,7 +121,7 @@ test.describe('Remaining UI controls @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(similarId);
     // Opening a similar proposal intentionally keeps the create dialog open; dismiss it before
     // the helper clicks Proposal actions in the inspector underneath.
-    await dialog.getByRole('button', { name: 'Close proposal dialog', exact: true }).click();
+    await dialog.getByRole('button', { name: 'Close design dialog', exact: true }).click();
     await expect(dialog).toBeHidden();
     await showProposal(page, similarId);
     await expect(details).toBeVisible();

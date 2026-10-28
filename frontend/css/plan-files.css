@@ -1,0 +1,5 @@
+.plan-file-guide { max-width: 760px; margin: var(--cb-space-5) auto; padding: 0 var(--cb-space-5); }
+.plan-file-guide code, .plan-file-guide pre { font-size: 0.9em; background: var(--cb-surface); padding: var(--cb-space-1); }
+.plan-file-guide pre { overflow: auto; padding: var(--cb-space-4); }
+.plan-file-guide table { border-collapse: collapse; }
+.plan-file-guide th, .plan-file-guide td { padding: var(--cb-space-3); border-bottom: 1px solid var(--cb-line); text-align: left; }

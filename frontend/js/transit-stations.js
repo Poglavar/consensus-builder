@@ -48,7 +48,10 @@
     function specFor(type) {
         const key = normalizeType(type);
         const library = models();
-        if (library && typeof library.specFor === 'function') return library.specFor(key);
+        if (library && typeof library.specFor === 'function') {
+            const spec = library.specFor(key);
+            return spec ? { ...spec, label: stationLabel(key, spec.label) } : null;
+        }
         const fallback = {
             bus: { key: 'bus', label: 'Bus station', icon: 'B', footprintWidthM: 5, footprintLengthM: 18, level: 0 },
             tram: { key: 'tram', label: 'Tram station', icon: 'T', footprintWidthM: 5, footprintLengthM: 18, level: 0 },
@@ -59,7 +62,47 @@
                 minPlatformHeightM: 3, maxPlatformHeightM: 40
             }
         };
-        return fallback[key] || null;
+        const spec = fallback[key];
+        return spec ? { ...spec, label: stationLabel(key, spec.label) } : null;
+    }
+
+    function stationLabel(type, fallback = 'Station') {
+        const keys = { bus: 'roadStation', tram: 'tramStation', elevated: 'elevatedStation', underground: 'undergroundStation' };
+        const defaults = { bus: 'Road station', tram: 'Ground-level station', elevated: 'Elevated station', underground: 'Underground station' };
+        const key = `panel.parcel.build.${keys[type]}`;
+        const translated = global.i18n?.t?.(key);
+        return translated && translated !== key ? translated : defaults[type] || fallback;
+    }
+
+    function chooseTrackStationType() {
+        if (!global.document || !global.CbDialog?.open) return Promise.resolve(false);
+        const body = global.document.createElement('div');
+        body.className = 'cb-tiles station-level-choices';
+        let dialog;
+        for (const [type, icon, labelKey, fallback] of [
+            ['tram', 'ground', 'groundLevel', 'Ground level'],
+            ['elevated', 'elevated', 'elevated', 'Elevated station'],
+            ['underground', 'underground', 'underground', 'Underground']
+        ]) {
+            const button = global.document.createElement('button');
+            button.type = 'button';
+            button.className = 'cb-tile';
+            button.dataset.stationLevel = type;
+            const symbol = global.document.createElement('i');
+            symbol.className = `cb-tile__icon cb-icon-station-${icon}`;
+            symbol.setAttribute('aria-hidden', 'true');
+            const label = global.document.createElement('span');
+            label.className = 'cb-tile__label';
+            label.textContent = stationEditorText(labelKey, fallback);
+            button.append(symbol, label);
+            button.addEventListener('click', () => dialog.close(type));
+            body.appendChild(button);
+        }
+        dialog = global.CbDialog.open({
+            title: stationEditorText('trackStation', 'Track station'), size: 'sm', body,
+            actions: [{ id: 'cancel', label: stationEditorText('cancel', 'Cancel'), value: null }]
+        });
+        return dialog ? dialog.closed.then(type => type && type !== 'cancel' ? startTransitStationPlacement(type) : false) : Promise.resolve(false);
     }
 
     function clone(value) {
@@ -766,8 +809,8 @@
             <div class="station-editor-body">
                 <label class="station-editor-field station-editor-bearing">
                     <span>${stationEditorText('rotation', 'Rotation')}</span>
-                    <input type="range" data-station-editor-bearing-range min="0" max="359" step="1" value="${stationEditor.bearing}">
-                    <span class="station-editor-input-with-unit"><input type="number" data-station-editor-bearing min="0" max="359" step="1" value="${stationEditor.bearing}"><span>°</span></span>
+                    <input type="range" data-station-editor-bearing-range aria-label="${stationEditorText('rotation', 'Rotation')}" min="0" max="359" step="1" value="${stationEditor.bearing}">
+                    <span class="station-editor-input-with-unit"><input type="number" data-station-editor-bearing aria-label="${stationEditorText('rotation', 'Rotation')}" min="0" max="359" step="1" value="${stationEditor.bearing}"><span>°</span></span>
                 </label>
                 ${heightControl}
             </div>
@@ -1015,7 +1058,6 @@
         if (!previous) return null;
         if (previous.move) endStationMove();
         try { previous.panel?.removeEventListener('click', previous.onClick); } catch (_) { }
-        try { previous.panel?.removeEventListener('input', previous.onInput); } catch (_) { }
         try { previous.history?.destroy?.(); } catch (_) { }
         previous.session?.close();
         try { global.map?.removeLayer(previous.layer); } catch (_) { }
@@ -1026,12 +1068,22 @@
         return previous;
     }
 
+    // Whether the station differs from what the editor opened with: an untouched editor closes
+    // without asking to discard (2026-10-28 retest).
+    function stationDiffers(initial, current) {
+        if (!initial || !current) return true;
+        return current.bearing !== initial.bearing
+            || current.platformHeightM !== initial.platformHeightM
+            || current.center[0] !== initial.center[0] || current.center[1] !== initial.center[1];
+    }
+    const stationEditorChanged = () => stationDiffers(stationEditor?.initial, stationEditor);
+
     async function cancelStationGeometryEditor() {
         if (!stationEditor) return false;
         const draftId = stationEditor.draftId;
         const isCommit = global.isProposalDesignCommitSession?.() === true;
         if (isCommit) {
-            const proceed = await global.confirmDiscardProposalDesignSession?.({ hasDesign: true });
+            const proceed = await global.confirmDiscardProposalDesignSession?.({ hasDesign: stationEditorChanged() });
             if (proceed === false) return false;
             global.discardProposalDraftDesignSession?.();
         }
@@ -1081,6 +1133,7 @@
             bearing: Math.round(normalizeBearing(structure.bearing)),
             platformHeightM: normalizePlatformHeight(structure.platformHeightM, type),
             sourceLocalProposalId,
+            initial: null,
             reselectKey: global.ProposalSelection?.getKey?.() || null,
             panel: null,
             layer: null,
@@ -1088,10 +1141,10 @@
             centerMarker: null,
             history: null,
             move: null,
-            onInput: null,
             onClick: null,
             onKey: null
         };
+        stationEditor.initial = { center: stationEditor.center.slice(), bearing: stationEditor.bearing, platformHeightM: stationEditor.platformHeightM };
         const session = global.OnMapEditor.open({
             owner: 'station-geometry-editor', id: 'station-geometry-editor',
             title: stationEditorText('title', 'Edit station geometry'),
@@ -1111,17 +1164,19 @@
         stationEditor.handleLayer = global.L.layerGroup().addTo(global.map);
         const panel = session.root;
         stationEditor.panel = panel;
-        stationEditor.onInput = event => {
-            if (event.target?.matches?.('[data-station-editor-bearing-range]')) updateStationEditorInputs('range');
-            else if (event.target?.matches?.('[data-station-editor-bearing]')) updateStationEditorInputs('number');
-            else if (event.target?.matches?.('[data-station-editor-height]')) updateStationEditorInputs('height');
-        };
+        const history = ensureStationEditorHistory();
+        [
+            ['[data-station-editor-bearing-range]', 'range'],
+            ['[data-station-editor-bearing]', 'number'],
+            ['[data-station-editor-height]', 'height']
+        ].forEach(([selector, source]) => {
+            history?.bindInput(panel.querySelector(selector), () => updateStationEditorInputs(source));
+        });
         stationEditor.onClick = event => {
             const action = event.target?.closest?.('[data-station-editor-action]')?.dataset.stationEditorAction;
             if (action === 'undo') return;
             else if (action === 'save') saveStationGeometryEditor();
         };
-        panel.addEventListener('input', stationEditor.onInput);
         panel.addEventListener('click', stationEditor.onClick);
         ensureStationEditorHistory()?.bindButton(panel.querySelector('[data-station-editor-action="undo"]'));
         global.transitStationGeometryEditorActive = true;
@@ -1134,7 +1189,7 @@
     }
 
     function placementParcelLayerVersion() {
-        const value = global.LiveParcelFabric?.snapshot?.().revision;
+        const value = global.LiveParcelFabric?.revision?.();
         return Number.isFinite(Number(value)) ? Number(value) : null;
     }
 
@@ -1517,7 +1572,7 @@
         global.map.on('mousemove', placement.onMove);
         global.addEventListener('keydown', placement.onKey, true);
         try { global.map._container.style.cursor = 'crosshair'; } catch (_) { }
-        global.document?.querySelectorAll?.(`[data-station-type="${type}"]`)
+        global.document?.querySelectorAll?.(`[data-station-type="${type}"]${type === 'bus' ? '' : ', [data-station-type="track"]'}`)
             .forEach(button => button.setAttribute('aria-pressed', 'true'));
         if (type !== 'bus') {
             const activePlacement = placement;
@@ -1548,6 +1603,7 @@
 
     initialise();
 
+    global.chooseTrackStationType = chooseTrackStationType;
     global.startTransitStationPlacement = startTransitStationPlacement;
     global.cancelTransitStationPlacement = cancelTransitStationPlacement;
     global.isTransitStationPlacementActive = isTransitStationPlacementActive;
@@ -1582,10 +1638,12 @@
         upsertStation,
         removeStationByProposalId,
         updateTransitStationsLayer,
+        chooseTrackStationType,
         startTransitStationPlacement,
         cancelTransitStationPlacement,
         openStationGeometryEditor,
         cancelStationGeometryEditor,
+        stationDiffers,
         saveStationGeometryEditor,
         isTransitStationPlacementActive
     });

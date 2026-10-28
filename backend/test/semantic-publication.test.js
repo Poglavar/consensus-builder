@@ -93,13 +93,14 @@ describe('a published agreement as JSON-LD', () => {
     const park = designContent();
     const layout = layoutContent();
 
-    it('lists its designs by CID in authored order, its rule, deadline and input parcels', async () => {
+    it('links its exact plan, rule, deadline and input parcels', async () => {
         const content = agreementContent([layout, park]);
         const cid = cidOf(content);
         const doc = agreementDocument(agreementRowOf(content), { baseUrl });
         expect(doc['@id']).toBe(`${baseUrl}/agreements/${cid}#agreement`);
         expect(doc['cb:cid']).toBe(cid);
-        expect(doc['cb:designs']).toEqual({ '@list': [cidOf(layout), cidOf(park)].map(designCid => ({ '@id': `${baseUrl}/designs/${designCid}#design` })) });
+        expect(doc['cb:plan']).toEqual({ '@id': `${baseUrl}/plans/${content.planCid}#plan` });
+        expect(doc).not.toHaveProperty('cb:designs');
         expect(doc['cb:decisionRule']).toEqual({ '@id': 'cb:rule-owner-deal' });
         expect(doc['cb:agreementDeadline']).toEqual({ '@value': '2099-01-01T00:00:00.000Z', '@type': 'xsd:dateTime' });
         expect(doc['cb:cadastreReference'].map(reference => [reference['@id'], reference['cb:declaredIdentifier']])).toEqual([
@@ -111,9 +112,8 @@ describe('a published agreement as JSON-LD', () => {
         const agreement = nodeWithType(nodes, `${NAMESPACE}Agreement`);
         expect(values(agreement, 'https://schema.org/name')).toEqual(['Riverside deal']);
         expect(values(agreement, 'https://schema.org/dateCreated')).toEqual([content.createdAt]);
-        const list = agreement[`${NAMESPACE}designs`][0]['@list'];
-        expect(list.map(item => item['@id'])).toEqual([cidOf(layout), cidOf(park)].map(designCid => `${baseUrl}/designs/${designCid}#design`));
-        expect(await jsonld.toRDF(doc, { format: 'application/n-quads' })).toContain(`${CONTEXT.rdf}first`);
+        expect(agreement[`${NAMESPACE}plan`]).toEqual([{ '@id': `${baseUrl}/plans/${content.planCid}#plan` }]);
+        expect(await jsonld.toRDF(doc, { format: 'application/n-quads' })).toContain(`${baseUrl}/plans/${content.planCid}#plan`);
     });
 
     it('takes its status from nothing but its content: the index\'s columns do not speak for it', async () => {
@@ -145,7 +145,7 @@ describe('a published agreement as JSON-LD', () => {
 
     it('refuses an agreement whose designs or input parcels are not identified', () => {
         const noCid = agreementContent([park]);
-        noCid.designs[0] = { ...noCid.designs[0], cid: 'design-1' };
+        noCid.planCid = 'plan-1';
         const noParcelId = agreementContent([park]);
         noParcelId.inputs.parcels[0] = { ...noParcelId.inputs.parcels[0], parcelId: '' };
         for (const content of [noCid, noParcelId]) {
@@ -184,7 +184,7 @@ describe('the published vocabulary', () => {
             expect(doc['cb:decisionRule']).toEqual({ '@id': `cb:rule-${rule.key}` });
             walk(await jsonld.expand(doc));
         }
-        for (const term of ['Design', 'Agreement', 'DesignSite', 'CadastreReference', 'cid', 'designs', 'decisionRule', 'DecisionRules', 'DesignGoals']) {
+        for (const term of ['Design', 'Agreement', 'Plan', 'DesignSite', 'CadastreReference', 'cid', 'plan', 'decisionRule', 'DecisionRules', 'DesignGoals']) {
             expect(defined.has(`${NAMESPACE}${term}`), term).toBe(true);
         }
         // The proposal, plan and lifecycle terms went with the proposal records.

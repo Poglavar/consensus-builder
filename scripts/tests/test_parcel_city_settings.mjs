@@ -43,7 +43,7 @@ assert.throws(() => buildCitySettings({ configs, catalog, codes: ['999'] }), /No
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'parcel-city-settings-'));
 try {
     for (const dir of ['frontend/js', 'frontend/data', 'backend/parcels', 'world-parcels/report']) fs.mkdirSync(path.join(root, dir), { recursive: true });
-    fs.writeFileSync(path.join(root, 'frontend/js/city-config.js'), `${configSource}\n// retained outside config`);
+    fs.writeFileSync(path.join(root, 'frontend/data/city-configs.js'), `${configSource}\n// retained outside config`);
     fs.writeFileSync(path.join(root, 'frontend/data/source-catalog.json'), JSON.stringify(catalog));
     fs.writeFileSync(path.join(root, 'world-parcels/report/city-demographics.json'), JSON.stringify({ cities: [] }));
     const cli = spawnSync(process.execPath, [fileURLToPath(new URL('../lib/parcel-city-settings.mjs', import.meta.url)), '--root', root, '123'], { encoding: 'utf8' });
@@ -58,13 +58,13 @@ try {
     fs.mkdirSync(path.join(root, 'world-parcels/cities/9999'), { recursive: true });
     fs.writeFileSync(path.join(root, 'world-parcels/cities/9999/failed-urls.json'), '[]');
     assert.deepEqual(applyCitySettings(root), { citySettings: 1, appCities: 1, sources: 1, databaseSources: 0 });
-    const appliedConfigs = parseCityConfigs(fs.readFileSync(path.join(root, 'frontend/js/city-config.js'), 'utf8'));
+    const appliedConfigs = parseCityConfigs(fs.readFileSync(path.join(root, 'frontend/data/city-configs.js'), 'utf8'));
     const appliedCatalog = JSON.parse(fs.readFileSync(path.join(root, 'frontend/data/source-catalog.json'), 'utf8'));
     assert.equal(appliedConfigs.test_city.parcels.gridSize, 77);
     assert.equal(appliedConfigs.test_city.map.parcelZoomRange.max, Infinity);
     assert.equal(appliedCatalog.sources[0].endpoint, 'https://example.test/updated');
     assert.equal(appliedCatalog.sources[0].evidenceFile, undefined);
-    const appliedText = fs.readFileSync(path.join(root, 'frontend/js/city-config.js'), 'utf8');
+    const appliedText = fs.readFileSync(path.join(root, 'frontend/data/city-configs.js'), 'utf8');
     assert.match(appliedText, /        test_city: \{/);
     assert.match(appliedText, /retained outside config/);
     assert.match(appliedText, /label: translateCityText\('city\.test', 'Test City'\)/);
@@ -93,7 +93,7 @@ try {
     const sharedCatalog = { sources: [{ id: 'shared-source', adapter: 'arcgis', endpoint: 'https://example.test/shared',
         cityIds: ['city_a', 'city_b', 'city_c'], metricSridByCity: { city_a: 26910, city_b: 26911, city_c: 26912 }, evidenceFile: 'research/archive.json' }] };
     const sharedConfigSource = `const CITY_CONFIGS = {\n        city_a: { id: 'city_a', wupCityCode: '11', label: 'City A', map: { defaultCenter: [1, 1] }, parcels: { source: 'parcel-source', sourceId: 'shared-source' } },\n        city_b: { id: 'city_b', wupCityCode: '12', label: 'City B', map: { defaultCenter: [2, 2] }, parcels: { source: 'parcel-source', sourceId: 'shared-source' } }\n};`;
-    fs.writeFileSync(path.join(sharedRoot, 'frontend/js/city-config.js'), sharedConfigSource);
+    fs.writeFileSync(path.join(sharedRoot, 'frontend/data/city-configs.js'), sharedConfigSource);
     fs.writeFileSync(path.join(sharedRoot, 'frontend/data/source-catalog.json'), JSON.stringify(sharedCatalog));
     fs.writeFileSync(path.join(sharedRoot, 'world-parcels/report/city-demographics.json'), JSON.stringify({ cities: [] }));
     exportCitySettings(sharedRoot);

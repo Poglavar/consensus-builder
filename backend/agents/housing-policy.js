@@ -1,5 +1,6 @@
 // Affordabot research policy: real courtyard geometry, explicit evidence gaps, no invented rent or zoning.
 import { massingFor } from './housing-massing.js';
+import { buildingBaseline } from './building-baseline.js';
 
 export function chooseHousingArea(areas, day) {
     const ranked = [...areas].sort((a,b) => b.medianMultiple-a.medianMultiple);
@@ -29,8 +30,8 @@ export function planHousingCandidates(parcels, persona, { turf, money, limit = 8
             evidenceGaps:['Current zoning and exact amendments','Ownership and availability','Complete building/road inventory and existing occupants',
                 'Heritage, flood, ecology and utilities','Walking routes and transit frequency','Local construction/land/finance costs','Funded long-term affordability covenant'] };
         candidates.push({...parcel, candidateId:`${persona.name}:${parcel.parcelId}`, massing:variant.shape.massing,
-            proposedGfaM2:variant.shape.gfaM2, builtGfaM2:0, builtKnown:false,
-            plannedFloors:6, allowedFloors:6, currency:money?.currency ?? null, gain:0, offer:0,
+            proposedGfaM2:variant.shape.gfaM2, ...buildingBaseline(),
+            plannedFloors:6, allowedFloors:6, currency:money?.currency ?? null, gain:null, offer:null,
             rule:{source:'housing-research'}, normalizedRule:null, housing,
             score: (1-distance/1000) + Math.min(homes/100,1) + (variant.form==='courtyard'?0.5:0)});
     }

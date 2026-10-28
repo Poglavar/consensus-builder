@@ -364,7 +364,7 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
     const declared = (declaredIds || []).map(String);
     const parts = footprintParts(proposal);
     if (parts.invalid) {
-        return { ok: false, status: 400, code: INVALID_FOOTPRINT, error: `Proposal geometry is invalid: ${parts.invalid}.` };
+        return { ok: false, status: 400, code: INVALID_FOOTPRINT, error: `Design geometry is invalid: ${parts.invalid}.` };
     }
     const withSite = site ? { ...proposal, site } : proposal;
     const needsParcels = requiresParcels(withSite);
@@ -373,7 +373,7 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
             ok: false,
             status: 400,
             code: BINDING_CODES.parcelsRequired,
-            error: 'This proposal acts on parcels (offer, ownership transfer, vote, road designation, or no geometry of its own): cadastreParcelIds must name them.'
+            error: 'This design acts on parcels (offer, ownership transfer, vote, road designation, or no geometry of its own): cadastreParcelIds must name them.'
         };
     }
 
@@ -389,14 +389,18 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
             const floorM = Math.max(toleranceM, INTRUSION_NOISE_M);
             const [polygons, lines] = footprintQueryParams(parts);
             const frame = bindingFrame({ site });
-            const outside = Number((await db.query(FOOTPRINT_OUTSIDE_SITE_SQL,
-                [polygons, lines, JSON.stringify(normalizeSiteGeometry(site)), floorM, frame.proj])).rows[0]?.outside_m2 || 0);
+            const row = (await db.query(FOOTPRINT_OUTSIDE_SITE_SQL,
+                [polygons, lines, JSON.stringify(normalizeSiteGeometry(site)), floorM, frame.proj])).rows[0];
+            const outside = Number(row?.outside_m2 || 0);
             if (outside > 0) {
                 return {
                     ok: false,
                     status: 400,
                     code: BINDING_CODES.footprintOutsideSite,
-                    error: `The proposal's geometry reaches ${round(outside, 1)} m² outside its site. Keep the design inside the site, or widen the site.`
+                    error: `The design extends ${round(outside, 1)} m² beyond its saved land boundary. Edit the design's land boundary to include this area, or move the geometry inside it.`,
+                    outsideM2: round(outside, 1),
+                    outsideGeometry: row.outside_geojson ? JSON.parse(row.outside_geojson) : null,
+                    site: normalizeSiteGeometry(site)
                 };
             }
         }
@@ -443,7 +447,7 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
             ok: false,
             status: 400,
             code: BINDING_CODES.parcelsRequired,
-            error: 'This proposal acts on parcels, but its site lies on no cadastral parcel.'
+            error: 'This design acts on parcels, but its land boundary lies on no cadastral parcel.'
         };
     }
     if (derive && !needsParcels) {

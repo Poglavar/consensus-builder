@@ -1,0 +1,63 @@
+<!doctype html>
+<!-- Public privacy notice for the hosted MCP service, planning plugin, previews and feedback. -->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MCP privacy policy · Consensus Builder</title>
+    <meta name="description" content="How Urban Game Theory processes MCP requests, private drafts, published plans and feedback reports.">
+    <link rel="canonical" href="https://urbangametheory.xyz/mcp-privacy.html">
+    <link rel="icon" href="images/consensus-builder-logo-2.png">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/primitives.css?v=20261027-locales">
+    <link rel="stylesheet" href="css/page-chrome.css?v=20261027-style">
+    <link rel="stylesheet" href="css/mcp-privacy.css">
+    <script src="js/persistent-storage.js" defer></script>
+    <script src="js/i18n.js?v=20261027-locales" defer></script>
+    <script src="js/i18n-loader.js" defer></script>
+    <script src="js/mcp-privacy.js" defer></script>
+</head>
+<body class="cb-page">
+    <header class="cb-page-header">
+        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo-2.png" width="28" height="28" alt="">Consensus Builder</span>
+        <div class="cb-page-header__title"><h1 data-i18n-key="mcpPrivacy.title">MCP privacy policy</h1></div>
+        <a class="cb-link cb-back-link" href="/"><svg class="cb-back-link__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20z"/></svg><span data-i18n-key="mcpPrivacy.back">Back to the map</span></a>
+        <select id="privacy-language" data-i18n-locale-select="locale" class="cb-page-header__lang" aria-label="Language" data-i18n-key="language.switcher.label" data-i18n-attr="aria-label">
+            <option value="en-GB">English</option><option value="es-ES">Español</option><option value="hr-HR">Hrvatski</option><option value="sr-Latn-RS">Srpski</option>
+        </select>
+    </header>
+    <main class="privacy-page">
+        <p class="privacy-page__date" data-i18n-key="mcpPrivacy.updated">Updated 25 October 2026</p>
+        <p data-i18n-key="mcpPrivacy.intro">This notice covers the Urban Game Theory hosted MCP service, its planning plugin, private preview links and feedback reports. Urban Game Theory operates Consensus Builder. Your AI assistant provider has its own privacy policy for your conversations.</p>
+        <section aria-labelledby="privacy-requests">
+            <h2 id="privacy-requests" data-i18n-key="mcpPrivacy.requestsTitle">Requests and their purpose</h2>
+            <p data-i18n-key="mcpPrivacy.requests">We process the tool arguments your assistant sends: for example place searches, site coordinates, parcel or design identifiers, design geometry, titles and proposed changes. We use them to retrieve data, create and edit drafts, compare alternatives and return results. The MCP service does not request your full chat history or account credentials, and does not itself call a language model or train one.</p>
+        </section>
+        <section aria-labelledby="privacy-drafts">
+            <h2 id="privacy-drafts" data-i18n-key="mcpPrivacy.draftsTitle">Private drafts and preview links</h2>
+            <p data-i18n-key="mcpPrivacy.drafts">Draft content is kept in temporary server-side storage. References normally expire 24 hours after creation or refresh; expired records are removed when storage is pruned. Availability is not guaranteed. Anyone with the full private reference can read its content. These links are not account-protected or end-to-end encrypted: keep them private. Service administrators can access data held by the service.</p>
+        </section>
+        <section aria-labelledby="privacy-public">
+            <h2 id="privacy-public" data-i18n-key="mcpPrivacy.publicTitle">Public publication</h2>
+            <p data-i18n-key="mcpPrivacy.public">Publishing a design or plan requires explicit confirmation. Published content and any names, descriptions or other data you put in it become public. Content-addressed storage and third-party copies can persist; we cannot guarantee removal of every published copy. The hosted MCP does not sign wallet transactions or make payments.</p>
+        </section>
+        <section aria-labelledby="privacy-feedback">
+            <h2 id="privacy-feedback" data-i18n-key="mcpPrivacy.feedbackTitle">Feedback and Telegram notifications</h2>
+            <p data-i18n-key="mcpPrivacy.feedback">When you submit feedback, we store your report text, optional page link, report type, source, receipt identifier, timestamps and notification-delivery state in a private maintainer inbox. A report excerpt and optional page link are sent to the maintainer through Telegram. Feedback has no automatic expiry currently configured and may remain until a maintainer removes it. Include only information you want to share; do not submit passwords, wallet secrets or private chat transcripts.</p>
+        </section>
+        <section aria-labelledby="privacy-providers">
+            <h2 id="privacy-providers" data-i18n-key="mcpPrivacy.providersTitle">Infrastructure and other providers</h2>
+            <p data-i18n-key="mcpPrivacy.providers">Hosting, Cloudflare and other delivery infrastructure may process connection and diagnostic data such as IP addresses, requested URLs, timestamps, user-agent information and errors. Place and site queries can reach the configured geodata providers; opening a preview can contact map and imagery providers. Public publication uses the configured content-storage provider. Telegram processes feedback notifications under its own policies. The plugin package itself contains no analytics or executable hooks.</p>
+        </section>
+        <section aria-labelledby="privacy-retention">
+            <h2 id="privacy-retention" data-i18n-key="mcpPrivacy.retentionTitle">Logs and local preferences</h2>
+            <p data-i18n-key="mcpPrivacy.retention">Operational log and backup retention follows the infrastructure configuration; this notice does not promise a fixed deletion deadline for those copies. The privacy page stores its language preference locally in your browser. Your assistant provider may independently retain conversations and tool results according to its own settings and policies.</p>
+        </section>
+        <section aria-labelledby="privacy-contact">
+            <h2 id="privacy-contact" data-i18n-key="mcpPrivacy.contactTitle">Questions, access and deletion requests</h2>
+            <p data-i18n-key="mcpPrivacy.contact">Use the feedback form below to contact the maintainer about privacy, access, correction or deletion of data we control. Include a report receipt or other reference so we can identify the record. Requests are reviewed against the information available and the limits of public and third-party storage. Future changes to this notice will be dated on this page.</p>
+        </section>
+        <p><a class="cb-link" href="/feedback.html" data-i18n-key="mcpPrivacy.contactLink">Contact the maintainer / request data review</a></p>
+    </main>
+</body>
+</html>

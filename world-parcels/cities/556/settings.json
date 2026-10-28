@@ -49,11 +49,15 @@
         "parcels": {
           "strategy": "grid",
           "gridSize": 0.005,
-          "source": "parcel-bg",
+          "source": "parcel-source",
+          "sourceId": "rs-rgz-dkp-parcels",
+          "idPrefix": "SR-RGZ-DKP-",
+          "ownership": false,
+          "attribution": "Republički geodetski zavod (RGZ), cadastral parcels · adapted to WGS84",
           "requiresBackend": true
         },
         "buildings": {
-          "source": "overture"
+          "source": "osm"
         },
         "sidebar": {
           "disabledSections": [
@@ -73,17 +77,40 @@
   ],
   "sources": [
     {
-      "id": "parcel-bg",
-      "name": "Belgrade cadastral parcels in the app database (RGZ)",
+      "id": "rs-rgz-dkp-parcels",
+      "name": "RGZ cadastral parcels — Belgrade",
+      "adapter": "wfs",
+      "endpoint": "https://ogc-tmp.geosrbija.rs/regdkp/ows",
+      "proxyEndpoint": "https://portal.rgz.gov.rs/rga-portal-api/gis/wms/proxy",
+      "version": "1.1.0",
+      "featureType": "dkp:dkp_parcels_weekly_only_utm",
+      "idField": "source_parcel_id",
+      "idType": "integer",
+      "idPrefix": "SR-RGZ-DKP-",
+      "parcelNumberField": "parcel_num",
+      "outFields": [
+        "source_parcel_id",
+        "cadmun_code",
+        "parcel_num"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32634,
+      "countryCode": "RS",
       "cityIds": [
         "belgrade"
       ],
-      "idPrefix": "SR-",
-      "ownership": {
-        "adapter": "rs-bg",
-        "attribution": "Republički geodetski zavod (RGZ), digital cadastral plan parcels. The layer publishes no owners."
-      },
-      "sourceKind": "database"
+      "defaultForCity": true,
+      "catalogueUrl": "https://www.rgz.gov.rs/geo-srbija",
+      "attribution": "Republički geodetski zavod (RGZ), cadastral parcels. Adapted to WGS84.",
+      "scope": "Official RGZ cadastral WFS for Belgrade. Access is restricted to Serbian IP addresses; outside Serbia the app uses its no-parcels flow.",
+      "licenceNote": "Source conditions are informational. No owner or personal fields are retained.",
+      "knownLimit": {
+        "kind": "network-restricted",
+        "countryCode": "RS",
+        "evidence": "Serbian-IP restriction confirmed on 2026-10-23; probes from outside Serbia timed out. The official RGZ WFS and proxy were traced from the existing importer."
+      }
     }
   ]
 }

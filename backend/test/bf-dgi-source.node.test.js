@@ -43,13 +43,16 @@ test('factory reads exact native IDs across declared windows with no prior bound
     assert.equal(calls.length, 6, 'same and fresh instances must fetch every lookup window again');
 });
 
-test('bounds and geometry queries preserve full polygons while declining area completeness', async () => {
+test('bounds and geometry queries finish bounded transfers without claiming area completeness', async () => {
     const row = parcel(), adapter = source(collection([row]));
     const bounds = await adapter.queryBounds([-4.33895, 11.17602, -4.3389, 11.17607]);
-    assert.equal(bounds.complete, false);
+    assert.equal(bounds.complete, true);
+    assert.equal(bounds.areaComplete, false);
+    assert.equal(bounds.authoritativeAbsence, false);
     assert.deepEqual(bounds.features[0].geometry, row.geometry);
     const geometry = await adapter.queryGeometry(row.geometry);
-    assert.equal(geometry.complete, false);
+    assert.equal(geometry.complete, true);
+    assert.equal(geometry.areaComplete, false);
     assert.equal(geometry.features.length, 1);
 });
 
@@ -82,18 +85,71 @@ test('rejects native ID disagreement, duplicate IDs, invalid geometry and unexpe
     }
 });
 
-test('a response at the apparent ceiling never becomes a complete area result', async () => {
-    const rows = Array.from({ length: 1000 }, (_, index) => parcel(`Native${index}`));
-    const result = await source(collection(rows)).queryBounds(west);
+test('a capped transfer is subdivided with unchanged geometry and no city coverage claim', async () => {
+    const rows = Array.from({ length: 1000 }, (_, index) =>
+        parcel(`Native${index}`, -4.3399 + (index % 50) * 0.000115, 11.1751 + Math.floor(index / 50) * 0.0002));
+    const calls = [];
+    const result = await source(url => collection(rows.filter(row => {
+        const [x, y] = row.geometry.coordinates[0][0][0];
+        return x <= Number(url.searchParams.get('maxX')) && x + 0.0001 >= Number(url.searchParams.get('minX'))
+            && y <= Number(url.searchParams.get('maxY')) && y + 0.0001 >= Number(url.searchParams.get('minY'));
+    })), calls).queryBounds(west);
     assert.equal(result.features.length, 1000);
     assert.equal(result.apparentCeilingReached, true);
-    assert.equal(result.complete, false);
+    assert.equal(result.complete, true);
+    assert.equal(result.subdivided, true);
+    assert.equal(result.areaComplete, false);
+    assert.ok(calls.length > 1);
+    for (const feature of result.features) assert.deepEqual(feature.geometry,
+        rows.find(row => 'BF-ECADASTRE:' + row.id === feature.id).geometry);
+});
+
+test('persistently capped transfers fail instead of being published as complete', async () => {
+    const adapter = source(url => {
+        const x = (Number(url.searchParams.get('minX')) + Number(url.searchParams.get('maxX'))) / 2;
+        const y = (Number(url.searchParams.get('minY')) + Number(url.searchParams.get('maxY'))) / 2;
+        return collection(Array.from({ length: 1000 }, (_, index) => parcel(`Native${index}`, x, y)));
+    });
+    await assert.rejects(() => adapter.queryBounds(west), /remains capped at the subdivision limit/);
+});
+
+test('browser grid edge arithmetic stays in scope without changing request coordinates', async () => {
+    const calls = [], config = { ...descriptor, cityIds: ['ouagadougou'] };
+    const adapter = source(collection([]), calls, config);
+    const bounds = [-1533 * 0.001, 12.362, -1.532, 12.363];
+    await adapter.queryBounds(bounds);
+    assert.equal(calls[0].searchParams.get('minX'), String(bounds[0]));
+    await assert.rejects(() => adapter.queryBounds([-1.53300001, 12.362, -1.532, 12.363]), { status: 400 });
+    assert.equal(calls.length, 1);
+});
+
+test('admitted Ouagadougou bindings extend lookup scope and preserve Bobo-Dioulasso windows', async () => {
+    const calls = [], config = { ...descriptor, cityIds: ['bobo_dioulasso', 'ouagadougou'] };
+    const adapter = source(url => collection(Number(url.searchParams.get('minX')) > -2
+        ? [parcel('Ouaga', Number(url.searchParams.get('minX')) + 0.0001,
+            Number(url.searchParams.get('minY')) + 0.0001)] : [parcel()]), calls, config);
+    await adapter.queryBounds([-1.531, 12.362, -1.528, 12.365]);
+    assert.equal((await adapter.queryBounds(west)).features[0].id, 'BF-ECADASTRE:NativeA');
+    await assert.rejects(() => source(collection([])).queryBounds([-1.531, 12.362, -1.528, 12.365]), { status: 400 });
 });
 
 test('propagates provider HTTP access errors without treating them as empty geometry', async () => {
     const adapter = createParcelSource(descriptor, { fetchImpl: async () => new Response('', { status: 403 }) });
     await assert.rejects(() => adapter.queryIds(['BF-ECADASTRE:NativeA']),
         { code: 'parcel-source-blocked', upstreamStatus: 403 });
+});
+
+test('Bobo full edge-crossing parcels and browser grid cells can be requeried without clipping', async () => {
+    const calls = [], row = parcel('BoboNorth', -4.29135, 11.1913);
+    const adapter = source(collection([row]), calls, { ...descriptor, cityIds: ['bobo_dioulasso'] });
+    const exactBounds = [-4.29135, 11.1913, -4.29125, 11.1914];
+    const read = await adapter.queryBounds(exactBounds);
+    assert.deepEqual(read.features[0].geometry, row.geometry);
+    await adapter.queryBounds([-4292 * 0.001, 11.191, -4291 * 0.001, 11.192]);
+    assert.equal((await adapter.queryGeometry(row.geometry)).features[0].id, 'BF-ECADASTRE:BoboNorth');
+    assert.equal(calls[0].searchParams.get('minY'), String(exactBounds[1]));
+    await assert.rejects(() => adapter.queryBounds([-4.294, 11.194, -4.293, 11.195]), { status: 400 });
+    assert.equal(calls.length, 3);
 });
 
 test('enforces response byte limits', async () => {

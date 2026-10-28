@@ -17,13 +17,13 @@ const response = () => {
 const point = (lon, lat) => ({ type: 'Point', coordinates: [lon, lat] });
 
 describe('GET /decor/layers', () => {
-    it('lists the scenery found in the box, water everywhere', async () => {
+    it('lists the scenery found in the box, water and green areas everywhere', async () => {
         const pool = { query: vi.fn(async () => ({ rows: [{ kind: 'trees' }] })) };
         const server = app();
         setupDecorRoute(server, pool, { waterProvider: { near: vi.fn() } });
         const res = response();
         await server.routes['GET /decor/layers']({ query: { bbox: '15.96,45.80,15.98,45.82' } }, res);
-        expect(res.body).toEqual({ layers: ['trees', 'water'] });
+        expect(res.body).toEqual({ layers: ['trees', 'water', 'green'] });
         const [sql, params] = pool.query.mock.calls[0];
         expect(sql).toMatch(/ST_MakeEnvelope\(\$1, \$2, \$3, \$4, 4326\)/);
         expect(sql).not.toMatch(/city/);

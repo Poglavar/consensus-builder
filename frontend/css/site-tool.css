@@ -12,6 +12,15 @@ body.site-tool-drawing .leaflet-container {
     cursor: crosshair;
 }
 
+/* While a site is drawn, the map's own shapes (a selected block, parcels, designs) do not take the
+   clicks that place its corners; only the site tool's pane stays interactive. A selected block's
+   polygon stops its clicks from reaching the map, so without this its whole area swallowed the
+   corners. The :not() argument also outranks Leaflet's
+   `.leaflet-pane > svg path.leaflet-interactive { pointer-events: auto }` (as in corridor-editor.css). */
+body.site-tool-drawing .leaflet-interactive:not(.site-tool-pane .leaflet-interactive) {
+    pointer-events: none;
+}
+
 .site-outline {
     stroke: var(--cb-text-strong);
     stroke-width: 2.5px;
@@ -189,7 +198,7 @@ body.three-mode-active .site-panel {
     align-items: center;
     gap: var(--cb-space-2);
     box-sizing: border-box;
-    padding: 0 var(--cb-space-2) 0 var(--cb-space-3);
+    padding: var(--right-panel-padding, 0 var(--cb-space-2) 0 var(--cb-space-3));
     border-bottom: 1px solid var(--cb-line);
 }
 

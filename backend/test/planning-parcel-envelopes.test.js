@@ -35,6 +35,8 @@ const provider = (changes={}) => createAtlasProvider({type:'FeatureCollection',f
 const query = {city:'colorado',source:metadata.id,bbox};
 const options = (features=[parcel()],source=provider(),complete=true) => ({sources:[source],
     parcelProvider:() => ({queryBounds:vi.fn(async () => ({features,complete}))})});
+const streetData = (latitude=39.9999) => ({ type:'FeatureCollection', source:'overpass', partial:false, truncated:false,
+    features:[turf.lineString([[-105.002,latitude],[-105,latitude]],{osm_id:'street-one',name:'Example Street',highway:'residential'})] });
 
 describe('viewport parcel envelopes', () => {
     it('produces an outer bound plus every recorded configuration without creating a study or proposal', async () => {
@@ -82,6 +84,51 @@ describe('viewport parcel envelopes', () => {
             expect(outside ? turf.area(outside) : 0).toBeLessThan(0.01);
         }
         expect(turf.difference(turf.feature(envelope.geometry),parcel())).toBeNull();
+    });
+    it('orients every configuration from nearby streets and measures setbacks from the original lot lines', async () => {
+        const features = [parcel()], before = JSON.stringify(features);
+        const streetProvider = { near:vi.fn(async () => streetData()) };
+        const opts = { ...options(features,provider({family1_frontsetbackft_method:'direct_number'})),streetProvider };
+        const result = await loadParcelEnvelopes({...query,bbox:[-105.0009,40.0001,-105.0008,40.0002]},opts);
+        const item = result.items[0], config = item.configurations.find(c => c.id === 'family1');
+        expect(item.sourceEvidence).toMatchObject({frontEdge:0,envelopeMeaning:'outer-bound-across-configurations',
+            frontage:{basis:'street',source:'overpass',street:{name:'Example Street',id:'street-one'}}});
+        expect(item.derivation.frontEdges).toEqual([0]);
+        expect(item.configurations.every(c => c.edgeInterpretations === 1)).toBe(true);
+        const [w,s,e,n] = turf.bbox(turf.feature(config.volumes[0].geometry));
+        const distanceM = (a,b) => turf.distance(turf.point(a),turf.point(b),{units:'meters'});
+        expect(distanceM([w,bbox[1]],[w,s])).toBeCloseTo(20*0.3048,2);
+        expect(distanceM([e,n],[e,bbox[3]])).toBeCloseTo(10*0.3048,2);
+        // The lookup covers the complete source parcel and nearby roads, not only the viewport.
+        expect(streetProvider.near).toHaveBeenCalledTimes(1);
+        const lookup = streetProvider.near.mock.calls[0][0];
+        expect(lookup[0]).toBeLessThan(bbox[0]); expect(lookup[1]).toBeLessThan(bbox[1]);
+        expect(lookup[2]).toBeGreaterThan(bbox[2]); expect(lookup[3]).toBeGreaterThan(bbox[3]);
+        // Moving the road to the other side changes the front and both server-derived forms.
+        streetProvider.near.mockResolvedValue(streetData(40.0005));
+        const opposite = (await loadParcelEnvelopes(query,opts)).items[0];
+        expect(opposite.sourceEvidence.frontEdge).toBe(2);
+        expect(opposite.configurations[0].volumes[0].geometry).not.toEqual(config.volumes[0].geometry);
+        expect(opposite.volumes[0].geometry).not.toEqual(item.volumes[0].geometry);
+        expect(JSON.stringify(features)).toBe(before);
+    });
+    it.each(['partial','truncated','failure','no-street'])('retains an unoriented bound when streets are %s', async state => {
+        const streetProvider = {near:vi.fn(async () => {
+            if (state === 'failure') throw new Error('Street source unavailable');
+            return {...streetData(),features:state === 'no-street' ? [] : streetData().features,
+                partial:state === 'partial',truncated:state === 'truncated'};
+        })};
+        const item = (await loadParcelEnvelopes(query,{...options(),streetProvider})).items[0];
+        expect(item.sourceEvidence).toMatchObject({frontEdge:null,frontage:{basis:'unknown',
+            reason:state === 'no-street' ? 'no-facing-street' : 'street-data-unavailable'}});
+        expect(item.derivation.frontEdges).toEqual([0,1,2,3]);
+        expect(envelopes.frontEdgeFor(item,{variation:'2'})).toBeNull();
+        expect(item.volumes).toHaveLength(1);
+    });
+    it('skips street lookup when the parcel source returns no parcels', async () => {
+        const streetProvider = {near:vi.fn()};
+        expect((await loadParcelEnvelopes(query,{...options([]),streetProvider})).items).toEqual([]);
+        expect(streetProvider.near).not.toHaveBeenCalled();
     });
     it('lists a configuration whose height is estimated as unavailable rather than dropping or drawing it', async () => {
         const result = await loadParcelEnvelopes(query,options([parcel()],provider({family1_maxheightft_method:'estimation'})));
@@ -147,6 +194,7 @@ describe('viewport parcel envelopes', () => {
 });
 
 describe('configuration display logic', () => {
+    const realize = (entry, options = {}) => envelopes.realize(entry, { ...options, deps: { geometry: turf } });
     const item = (id='envelope:test:p1') => ({ id, role:'permitted', parcelEnvelope:true,
         spatialReference:{horizontal:'OGC:CRS84',vertical:'relative-ground',unit:'m'},
         volumes:[{id:'bound',geometry:turf.bboxPolygon(bbox).geometry,baseM:0,topM:13.716}],
@@ -155,11 +203,11 @@ describe('configuration display logic', () => {
             {id:'family2',treatment:'allowed',unavailableReason:null,volumes:[{id:'b',geometry:turf.bboxPolygon([-105.0009,40,-105.0005,40.0004]).geometry,baseM:0,topM:13.716}]},
             {id:'family4',treatment:'allowed',unavailableReason:'missing-direct-height',volumes:[]}],
         assessment:{meaning:'outer-bound'} });
-    it('rolls deterministically over drawable configurations and changes with the dice', () => {
+    it('selects drawable configurations deterministically while dice vary the building', () => {
         const first = envelopes.configurationFor(item(), { variation: '' });
         expect(first).toEqual(envelopes.configurationFor(item(), { variation: '' }));
         expect(['family1','family2']).toContain(first.id);
-        expect(envelopes.configurationFor(item(), { variation: '1' }).id).not.toBe(first.id);
+        expect(envelopes.configurationFor(item(), { variation: '1' }).id).toBe(first.id);
         expect(envelopes.configurationFor(item(), { variation: '2' }).id).toBe(first.id);
         // Different parcels do not all land on the same configuration.
         const picks = new Set(Array.from({length:12},(_,i) => envelopes.configurationFor(item(`envelope:test:p${i}`), {}).id));
@@ -170,7 +218,7 @@ describe('configuration display logic', () => {
         const rolls = (entry) => new Set(['', '1', '2', '3'].map(variation => envelopes.configurationFor(entry, { variation }).id));
         expect(rolls(flagged(['fail','pass','unknown']))).toEqual(new Set(['family2']));
         expect(rolls(flagged(['unknown','fail','pass']))).toEqual(new Set(['family1']));
-        expect(rolls(flagged(['fail','fail','fail']))).toEqual(new Set(['family1','family2']));
+        expect(rolls(flagged(['fail','fail','fail'])).size).toBe(1);
         // An explicit pin still shows a below-minimum type.
         expect(envelopes.configurationFor(flagged(['fail','pass','pass']), { scenario:'family1' }).id).toBe('family1');
     });
@@ -180,47 +228,83 @@ describe('configuration display logic', () => {
         expect(envelopes.configurationFor(item(), { scenario:'family2', pins:{ 'envelope:test:p1':'family1' } }).id).toBe('family1');
         expect(envelopes.configurationFor({ ...item(), configurations: [] }, {})).toBeNull();
     });
+    it('varies a fixed housing type inside its exact limits without changing source records', () => {
+        const source = item(), before = JSON.stringify(source);
+        const samples = [];
+        for (let roll = 0; roll < 12; roll++) {
+            const sample = realize(source, { selection: { scenario: 'family1', variation: String(roll) } });
+            expect(sample.configuration.id).toBe('family1');
+            expect(sample.body).toHaveLength(1);
+            expect(turf.difference(sample.body[0], turf.feature(source.configurations[0].volumes[0].geometry))).toBeNull();
+            expect(sample.body[0].properties.topM).toBeLessThanOrEqual(10.668);
+            expect(sample.body[0].properties.topM).toBeGreaterThan(0);
+            expect(sample.bound[0].geometry).toEqual(source.volumes[0].geometry);
+            samples.push(JSON.stringify(sample.body));
+        }
+        expect(new Set(samples).size).toBe(12);
+        expect(JSON.stringify(source)).toBe(before);
+    });
+    it('clips holes and concavities and caps stacked parts at one sample roof', () => {
+        const source = item();
+        const shape = turf.polygon([
+            [[0,0],[0.01,0],[0.01,0.003],[0.006,0.003],[0.006,0.01],[0,0.01],[0,0]],
+            [[0.001,0.001],[0.001,0.002],[0.002,0.002],[0.002,0.001],[0.001,0.001]]
+        ]).geometry;
+        source.configurations[0].volumes = [
+            { id:'lower', geometry:shape, baseM:0, topM:10 },
+            { id:'upper', geometry:shape, baseM:10, topM:20 }
+        ];
+        const sample = realize(source, { selection:{ scenario:'family1', variation:'1' } });
+        expect(sample.body).toHaveLength(2);
+        expect(sample.body[0].properties.topM).toBe(10);
+        expect(sample.body[1].properties.baseM).toBe(10);
+        expect(sample.body[1].properties.topM).toBeLessThan(20);
+        for (const feature of sample.body) {
+            const outside = turf.difference(feature, turf.feature(shape));
+            expect(outside ? turf.area(outside) : 0).toBeLessThan(0.00001);
+        }
+    });
     it('draws the bound as a hull around the shown configuration, and alone when asked', () => {
-        const both = envelopes.realize(item(), { form:'both', selection:{ scenario:'family1' } });
+        const both = realize(item(), { form:'both', selection:{ scenario:'family1' } });
         expect(both.bound.map(f => f.properties.geometryRole)).toEqual(['bound']);
         expect(both.body.map(f => [f.properties.geometryRole, f.properties.configurationId, f.properties.topM])).toEqual([['body','family1',10.668]]);
-        expect(envelopes.realize(item(), { form:'bound', selection:{ scenario:'family1' } }).body).toEqual([]);
-        const only = envelopes.realize(item(), { form:'configuration', selection:{ scenario:'family1' } });
+        expect(realize(item(), { form:'bound', selection:{ scenario:'family1' } }).body).toEqual([]);
+        const only = realize(item(), { form:'configuration', selection:{ scenario:'family1' } });
         expect(only.bound).toEqual([]); expect(only.body).toHaveLength(1);
         // A pinned type without a drawable volume falls back to showing the bound rather than nothing.
-        expect(envelopes.realize(item(), { form:'configuration', selection:{ scenario:'family4' } }).bound).toHaveLength(1);
+        expect(realize(item(), { form:'configuration', selection:{ scenario:'family4' } }).bound).toHaveLength(1);
         // One-option sources (no configurations) keep drawing their volumes as the body.
         const zagreb = { ...item(), configurations: undefined };
-        expect(envelopes.realize(zagreb)).toMatchObject({ bound: [], configuration: null });
-        expect(envelopes.realize(zagreb).body).toHaveLength(1);
+        expect(realize(zagreb)).toMatchObject({ bound: [], configuration: null });
+        expect(realize(zagreb).body).toHaveLength(1);
         const map = envelopes.mapFeatures(item(), { detail:'footprint', form:'both', selection:{ scenario:'family2' }, deps:{ geometry: turf } });
         expect(map.map(f => f.properties.geometryRole)).toEqual(['bound','body']);
         expect(map[1].properties.topM).toBeCloseTo(13.716, 6);
     });
-    it('rolls the assumed street side with the configuration and derives that side\'s body inside the parcel', () => {
-        const parcelGeometry = turf.bboxPolygon(bbox).geometry;
-        const constraints = [{quantity:'sideSetback',value:5,unit:'ft',evidence:'direct'},{quantity:'rearSetback',value:10,unit:'ft',evidence:'direct'},
-            {quantity:'height',value:35,unit:'ft',evidence:'direct'}];
-        const derived = { ...item(), derivation: { parcel: parcelGeometry, covered: parcelGeometry, frontEdges: [0,1,2,3] },
-            configurations: [{ id:'family1', treatment:'allowed', unavailableReason:null, constraints, volumes:[{id:'u',geometry:parcelGeometry,baseM:0,topM:10.668}] }] };
+    it('keeps source limits and frontage while sampling inside the selected configuration', async () => {
+        const derived = (await loadParcelEnvelopes(query,{...options(),streetProvider:{near:async () => streetData()}})).items[0];
+        const parcelGeometry = derived.derivation.parcel;
         const deps = { geometry: turf, assessment: core };
-        const first = envelopes.realize(derived, { form:'both', selection:{ variation:'' }, deps });
+        const first = realize(derived, { form:'both', selection:{ variation:'' }, deps });
         expect(first.body).toHaveLength(1);
-        expect([0,1,2,3]).toContain(first.frontEdge);
+        expect(first.frontEdge).toBe(0);
         expect(first.body[0].properties).toMatchObject({ geometryRole:'body', configurationId:'family1', frontEdge:first.frontEdge, topM:expect.closeTo(10.668, 6) });
         const footprint = turf.area(first.body[0]);
         expect(footprint).toBeLessThan(turf.area(turf.feature(parcelGeometry)));
         expect(turf.difference(first.body[0], turf.feature(parcelGeometry))).toBeNull();
-        const second = envelopes.realize(derived, { form:'both', selection:{ variation:'1' }, deps });
-        expect(second.frontEdge).not.toBe(first.frontEdge);
-        expect(JSON.stringify(second.body[0].geometry)).not.toBe(JSON.stringify(first.body[0].geometry));
-        // Without the evaluator the configuration's own all-sides volume is drawn and no side is claimed.
-        const plain = envelopes.realize(derived, { form:'both', selection:{ variation:'' } });
-        expect(plain.frontEdge).toBeNull(); expect(plain.body[0].geometry).toEqual(parcelGeometry);
+        for (const selection of [{variation:'1'},{variation:'2'},{scenario:'family2'},{pins:{[derived.id]:'family1'}}]) {
+            const result = realize(derived,{form:'both',selection,deps});
+            expect(result.frontEdge).toBe(0);
+            expect(turf.difference(result.body[0], turf.feature(result.configuration.volumes[0].geometry))).toBeNull();
+        }
+        // The source volume stays intact; repeated display requests reproduce the same sample.
+        const plain = realize(derived, { form:'both', selection:{ variation:'' } });
+        expect(plain.frontEdge).toBe(0); expect(plain.body[0].geometry).toEqual(first.body[0].geometry);
         expect(envelopes.mapFeatures(derived, { detail:'footprint', form:'both', selection:{ variation:'' }, deps })
             .map(f => [f.properties.geometryRole, f.properties.frontEdge])).toEqual([['bound', undefined], ['body', first.frontEdge]]);
         expect([0,1,2,3].map(edge => envelopes.edgeSide(parcelGeometry, edge))).toEqual(['s','e','n','w']);
         expect(envelopes.frontEdgeFor({ id:'x' }, {})).toBeNull();
+        expect(envelopes.frontEdgeFor({...derived,sourceEvidence:{frontEdge:3}})).toBeNull();
     });
     it('rerolls permitted and proposed variations independently and preserves settings and selection', () => {
         const store = scene.createStore({ permittedForm:'bound', proposedForm:'massing' });
@@ -239,6 +323,13 @@ describe('configuration display logic', () => {
         expect(store.get()).toBe(beforeInvalid);
         expect(store.reroll()).toBe(beforeInvalid);
         expect(store.get()).toBe(beforeInvalid);
+    });
+    it('labels a street edge by its outward direction despite uneven source digitization or reversed winding', () => {
+        const [w,s,e,n] = bbox;
+        const bottom = Array.from({length:21},(_,i) => [w+(e-w)*i/20,s]);
+        const ring = [...bottom,[e,n],[w,n],[w,s]];
+        expect(envelopes.edgeSide({type:'Polygon',coordinates:[ring]},22)).toBe('w');
+        expect(envelopes.edgeSide({type:'Polygon',coordinates:[ring.slice().reverse()]},0)).toBe('w');
     });
     it('shows a fixed Illustration control for a source with one calculated option', () => {
         const source = { id: 'cached-option', capabilities: { volumes: true } };

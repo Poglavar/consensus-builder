@@ -47,7 +47,7 @@ class Element {
     querySelectorAll() { return []; }
 }
 
-function renderParcelPanel(properties, { currency = 'EUR', id = 'test-city' } = {}) {
+function renderParcelPanel(properties, { currency = 'EUR', id = 'test-city', proposals = [] } = {}) {
     const cityConfig = { id, parcels: { ownership: false }, currency: { code: currency } };
     const ids = [
         'parcel-info-panel', 'parcel-info-title', 'info-content', 'propose-content', 'proposals-content',
@@ -70,6 +70,10 @@ function renderParcelPanel(properties, { currency = 'EUR', id = 'test-city' } = 
         __openGround: openGround,
         CityMoney: { currentLandPriceOptions: kind => CityMoney.landPriceOptions(cityConfig, kind) },
         ParcelPriceModel,
+        proposalStorage: { getProposalsForParcel: () => proposals },
+        proposalLadderBadgesHtml: () => '',
+        getProposalDisplayType: proposal => proposal.goal || 'other',
+        formatProposalTypeLabel: key => key,
         ClickStack: { isDriving: () => true },
         getParcelId: parcelIds.getParcelIdFromFeature,
         getParcelDisplayNumberFromProperties: parcelIds.getParcelDisplayNumberFromProperties,
@@ -89,6 +93,7 @@ function renderParcelPanel(properties, { currency = 'EUR', id = 'test-city' } = 
             parcelPlans: () => Promise.resolve({ plans: [] })
         },
         escapeHtml: text => String(text),
+        inlineJsArg: value => JSON.stringify(String(value ?? '')),
         resetParcelMintStatusState() {},
         window: null
     };
@@ -99,7 +104,8 @@ function renderParcelPanel(properties, { currency = 'EUR', id = 'test-city' } = 
         title: elements.get('parcel-info-title').textContent,
         titleElement: elements.get('parcel-info-title'),
         copied,
-        info: elements.get('info-content').innerHTML
+        info: elements.get('info-content').innerHTML,
+        proposals: elements.get('proposals-content').innerHTML
     };
 }
 
@@ -150,6 +156,18 @@ describe('geometry-derived parcel references', () => {
         expect(rendered.info).not.toContain('geometryReferenceNote');
     });
 
+    it('renders each parcel design as an article with a native opening button', () => {
+        const rendered = renderParcelPanel({ parcelId: 'native-123' }, {
+            proposals: [{ proposalId: 'design-1', title: 'Pocket park', goal: 'park' }]
+        });
+        expect(rendered.proposals).toContain('<article class="proposal-item" data-proposal-id="design-1">');
+        expect(rendered.proposals).toContain('<h3 class="proposal-item-title"><button type="button" class="cb-link"');
+        expect(rendered.proposals).toContain('Pocket park</button></h3>');
+        expect(rendered.proposals).not.toContain('<div class="proposal-item"');
+        expect(rendered.proposals).not.toMatch(/<article[^>]+onclick=/);
+        expect(rendered.proposals.match(/<button\b/g)).toHaveLength(1);
+    });
+
     it('labels unchanged source ground without asserting cadastral authority', () => {
         const rendered = renderParcelPanel({ parcelId: 'tax-123', cadastreParcelIds: ['tax-123'] });
         expect(rendered.title).toBe('Source parcel tax-123');
@@ -195,6 +213,7 @@ describe('geometry-derived parcel references', () => {
         });
         expect(rendered.title).toBe('Formed ground piece piece-A');
         expect(rendered.info).toContain('identity.formedNote');
+        expect(rendered.info).toContain('Ground formed by the applied design.');
         expect(rendered.info).not.toContain('geometryReferenceNote');
         const copyTarget = rendered.titleElement.children.find(child => child.className === 'parcel-title-id');
         copyTarget.listeners.click();

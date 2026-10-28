@@ -11,6 +11,8 @@ const ORIGIN = 'https://urbangametheory.xyz';
 const design = { schema: 'design/v1', goal: 'park', title: 'Riverside park', site: null };
 const layout = { schema: 'design/v1', goal: 'parcel-layout', title: 'Two plots', parcelLayout: { plots: [] } };
 const agreement = { schema: 'agreement/v1', title: 'Riverside deal', designs: [{ cid: cidOf(canonicalBytes(design)) }] };
+const planContent = { schema: 'plan/v1', title: 'Riverside plan', designCids: [cidOf(canonicalBytes(design))], view: { at: '45,15,17', mode: '2d' } };
+const plan = { cid: cidOf(canonicalBytes(planContent)), content: planContent };
 const ACCOUNT = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin';
 
 // The index as an in-memory emulator of the routes the client calls.
@@ -133,7 +135,7 @@ describe('publishing designs and agreements', () => {
             .rejects.toMatchObject({ code: 'cid-mismatch', expected: addressOf(design).cid, received: otherCid });
         const index = fakeIndex();
         await expect(clientOver(index).publishDesign(layout)).rejects.toMatchObject({ status: 422, code: 'layout-needs-agreement' });
-        await expect(clientOver(index).pin('plan', design)).rejects.toThrow(/kind must be design or agreement/);
+        await expect(clientOver(index).pin('invalid', design)).rejects.toThrow(/kind must be design, plan or agreement/);
         await expect(clientOver(index).indexDesign('not-a-cid', design)).rejects.toThrow(/must be a CIDv1/);
     });
 
@@ -149,6 +151,16 @@ describe('publishing designs and agreements', () => {
         const plain = { ...agreement, title: 'Plain' };
         await client.publishAgreement(plain);
         expect(index.calls.at(-1).body).toEqual({ cid: addressOf(plain).cid, content: plain });
+    });
+
+    it('pins the exact linked plan before pinning and indexing its agreement', async () => {
+        const index = fakeIndex();
+        const client = clientOver(index);
+        const linkedAgreement = { ...agreement, planCid: plan.cid };
+        const published = await client.publishAgreement(linkedAgreement, { plan });
+        expect(published.cid).toBe(addressOf(linkedAgreement).cid);
+        expect(index.calls.filter(call => call.path === '/pins').map(call => call.body.kind)).toEqual(['plan', 'agreement']);
+        expect(index.calls.at(-1).body.plan).toEqual(plan);
     });
 
     it('asks what a site binds without storing anything, and reads designs back', async () => {
@@ -238,5 +250,50 @@ describe('owner decisions and reads', () => {
         expect(listed.count).toBe(1);
         expect(index.calls.at(-1).query).toEqual({ city: 'zagreb', design: designCid, parcel: 'HR-1', limit: '5' });
         await expect(client.listAgreements({ design: 'agent-1' })).rejects.toThrow(/design must be a CIDv1/);
+    });
+});
+
+describe('upload pacing and rate-limit recovery', () => {
+    const answer = (status, body, headers = {}) => new Response(JSON.stringify(body), { status, headers });
+    it('waits the full server cooldown once without short 429 retries', async () => {
+        const calls = [], waits = [];
+        let clock = 0;
+        const client = createIndexClient({ apiBase: API, waitOnRateLimit: true, now: () => clock,
+            wait: async ms => { waits.push(ms); clock += ms; },
+            fetchImpl: async (_url, init) => {
+                calls.push(clock);
+                if (calls.length === 1) return answer(429, { code: 'upload-rate-limited', retryAfterSeconds: 900 }, { 'retry-after': '30' });
+                return answer(200, { cid: JSON.parse(init.body).cid });
+            } });
+        expect(await client.pin('design', design)).toMatchObject({ cid: addressOf(design).cid });
+        expect(waits).toEqual([900_000]); expect(calls).toEqual([0, 900_000]);
+    });
+    it('serializes concurrent pins and reuses already pinned CIDs', async () => {
+        let clock = 0;
+        const calls = [], waits = [];
+        const client = createIndexClient({ apiBase: API, pinIntervalMs: 31_000, now: () => clock,
+            wait: async ms => { waits.push(ms); clock += ms; },
+            fetchImpl: async (_url, init) => { calls.push(clock); return answer(200, { cid: JSON.parse(init.body).cid }); } });
+        await Promise.all([client.pin('design', design), client.pin('design', design), client.pin('plan', planContent)]);
+        expect(calls).toEqual([0, 31_000]); expect(waits).toEqual([31_000]);
+    });
+    it('honors date headers, backs off missing cooldowns and stops after four refusals', async () => {
+        let clock = Date.parse('2026-10-27T00:00:00Z');
+        const waits = [], calls = [];
+        const client = createIndexClient({ apiBase: API, waitOnRateLimit: true, now: () => clock,
+            wait: async ms => { waits.push(ms); clock += ms; },
+            fetchImpl: async () => { calls.push(clock); return answer(429, { code: 'upload-rate-limited' },
+                calls.length === 1 ? { 'retry-after': 'Tue, 27 Oct 2026 00:02:00 GMT' } : {}); } });
+        await expect(client.pin('design', design)).rejects.toMatchObject({ status: 429, code: 'upload-rate-limited' });
+        expect(waits).toEqual([120_000, 120_000, 240_000]); expect(calls).toHaveLength(4);
+    });
+    it('does not retry before an excessive cooldown or retry a deterministic rejection', async () => {
+        for (const status of [429, 400]) {
+            let calls = 0;
+            const client = createIndexClient({ apiBase: API, waitOnRateLimit: true,
+                wait: async () => { throw new Error('must not wait or retry'); },
+                fetchImpl: async () => { calls++; return answer(status, { retryAfterSeconds: 3600 }); } });
+            await expect(client.pin('design', design)).rejects.toMatchObject({ status }); expect(calls).toBe(1);
+        }
     });
 });

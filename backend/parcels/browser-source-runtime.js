@@ -1,3 +1,40 @@
+import { createArcgisHubParcelSource } from './arcgis-hub-source.js';
+import { createAsigWmsKmlParcelSource } from './asig-wms-kml-source.js';
+import { createChanghuaBrowserParcelSource } from './changhua-source.js';
+import { createCheongjuMapmoaParcelSource } from './cheongju-mapmoa-source.js';
+import { createCorrientesBrowserSource } from './corrientes-wms-source.js';
+import { createDiyarbakirBrowserSource } from './diyarbakir-eimar-source.js';
+import { createGeogeoEmapSource } from './geogeo-emap-source.js';
+import { createGeopixelBrowserSource } from './geopixel-source.js';
+import { createHuaibeiParcelSource } from './huaibei-source.js';
+import { createMersinBrowserSource } from './mersin-eimar-source.js';
+import { createNetgisParcelSource } from './netgis-runxml-source.js';
+import { createReestr54Source } from './reestr54-source.js';
+import { createRuCadastralReportSource } from './ru-cadastral-report-source.js';
+import { createSakaryaSbbSource } from './sakarya-sbb-source.js';
+import { createSaltilloVisorSource } from './saltillo-visor-source.js';
+import { createSisgranWmsSource } from './sisgran-wms-source.js';
+import { createTatarstanCadastreSource } from './tatarstan-cadastre-source.js';
+import { createToscanaCatastoSource } from './toscana-catasto-source.js';
+import { createKadastrParcelSource } from './ua-kadastr-source.js';
+import { createSupermapParcelSource } from './supermap-source.js';
+import { createTaichungBrowserParcelSource } from './taichung-source.js';
+import { createMojMapXmlParcelSource } from './moj-mapxml-source.js';
+import { createUgnlisBrowserParcelSource } from './ugnlis-source.js';
+import { createArcgisWebmapParcelSource } from './arcgis-webmap-source.js';
+import { createKmlKmzParcelSource } from './kml-kmz-source.js';
+import { createGwangjuJijukParcelSource } from './gwangju-jijuk-source.js';
+import { createCadgisParcelSource } from './be-cadgis-source.js';
+import { createGisarWmsParcelSource } from './kg-gisar-wms-source.js';
+import { createDncSnigParcelSource } from './uy-dnc-snig-source.js';
+import { createGeojsonRangeBrowserSource } from './geojson-range-source.js';
+import { createHuainanMapshineParcelSource } from './huainan-mapshine-source.js';
+import { createSofiaBrowserParcelSource } from './sofia-isofmap-source.js';
+import { createSantosBrowserSource } from './santos-lotes-source.js';
+import { createGlisParcelSource } from './pk-glis-source.js';
+import { createInterpiSigefParcelSource } from './interpi-sigef-source.js';
+import { createKartverketParcelSource } from './kartverket-source.js';
+import { createShapefileRangeBrowserSource } from './shapefile-range-source.js';
 // Runs the existing complete-source adapters in a worker, preferring provider fetch over a byte relay.
 import catalog from '../../frontend/data/source-catalog.json' with { type: 'json' };
 import { createArcgisParcelSource } from './arcgis-source.js';
@@ -39,6 +76,46 @@ function expectedEtagForUrl(descriptor, url) {
 }
 
 export const browserParcelFactories = Object.freeze({
+    'arcgis-hub': createArcgisHubParcelSource,
+    'asig-wms-kml': createAsigWmsKmlParcelSource,
+    'changhua-urbangis': createChanghuaBrowserParcelSource,
+    'cheongju-mapmoa': createCheongjuMapmoaParcelSource,
+    'corrientes-wms': createCorrientesBrowserSource,
+    'diyarbakir-eimar': createDiyarbakirBrowserSource,
+    'flatgeobuf-range': createGeojsonRangeBrowserSource,
+    'geogeo-emap': createGeogeoEmapSource,
+    'geopixel': createGeopixelBrowserSource,
+    'huaibei-cadastre': createHuaibeiParcelSource,
+    'mersin-eimar': createMersinBrowserSource,
+    'netgis-runxml': createNetgisParcelSource,
+    'reestr54-bounded': createReestr54Source,
+    'ru-cadastral-report': createRuCadastralReportSource,
+    'sakarya-sbb-bounded': createSakaryaSbbSource,
+    'saltillo-visor': createSaltilloVisorSource,
+    'sisgran-wms': createSisgranWmsSource,
+    'tatarstan-cadastre-bounded': createTatarstanCadastreSource,
+    'toscana-catasto': createToscanaCatastoSource,
+    'ua-kadastr-landuse': createKadastrParcelSource,
+    'supermap-map': createSupermapParcelSource,
+    'taichung-gismap': createTaichungBrowserParcelSource,
+    'moj-mapxml': (descriptor, options) => descriptor.archiveAccess === 'selected-range-v1'
+        ? createGeojsonRangeBrowserSource(descriptor, options) : createMojMapXmlParcelSource(descriptor, options),
+    'ugnlis-parcel-search': createUgnlisBrowserParcelSource,
+    'ecommunes-xml': createDivoEcommunesSource,
+    'arcgis-webmap': createArcgisWebmapParcelSource,
+    'kml-kmz': createKmlKmzParcelSource,
+    'gwangju-jijuk': createGwangjuJijukParcelSource,
+    'be-cadgis': createCadgisParcelSource,
+    'kg-gisar-wms': createGisarWmsParcelSource,
+    'uy-dnc-snig': createDncSnigParcelSource,
+    'geojson-range': createGeojsonRangeBrowserSource,
+    'huainan-mapshine': createHuainanMapshineParcelSource,
+    'sofia-isofmap': createSofiaBrowserParcelSource,
+    'santos-lotes': createSantosBrowserSource,
+    'pk-glis': createGlisParcelSource,
+    'interpi-sigef': createInterpiSigefParcelSource,
+    'kartverket-eiendom': createKartverketParcelSource,
+    'shapefile-range': createShapefileRangeBrowserSource,
     'hmlr-browser': async (descriptor, options) => (await import('./hmlr-browser-source.js')).createHmlrBrowserParcelSource(descriptor, options), arcgis: createArcgisParcelSource, wfs: createWfsParcelSource,
     'ogc-api': createOgcApiParcelSource, socrata: createSocrataParcelSource,
     'dda-public-plots': createDdaParcelSource, 'pulse-public': createPulsePublicParcelSource,

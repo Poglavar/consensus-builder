@@ -9,7 +9,7 @@ import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { Keypair } from '@solana/web3.js';
-import { STAGES, advancePick, operatedLens, parcelLand, pickIdFor, rivalIndexStatuses, settlementMessage, stageIndex } from '../agents/run.mjs';
+import { STAGES, advancePick, formatCandidateQuantity, operatedLens, parcelLand, pickIdFor, rivalIndexStatuses, settlementMessage, stageIndex } from '../agents/run.mjs';
 import { agreementAccountOf } from '../agents/agreement-minter.js';
 import { validateDesignContent } from '../routes/designs.js';
 import { validateAgreementContent } from '../routes/agreements.js';
@@ -33,6 +33,8 @@ let journal;
 
 const candidate = (overrides = {}) => ({
     candidateId: `densifier-01:${PARCEL_ID}`, parcelId: PARCEL_ID, parcelSourceId: null, geometry: PARCEL,
+    buildingSourceId: 'survey-fixture', buildingCoverage: 'complete', buildingCount: 0, builtFootprintM2: 0, builtGfaM2: 0, builtKnown: true,
+    score: 1, gain: 100000, proposedGfaM2: 500, allowedFloors: 4, rule: { source: 'urban-rule', maxFloors: 4, minSetbackM: 3 },
     massing: { type: 'Feature', properties: { floors: 4, height: 13 }, geometry: MASSING }, normalizedRule: null, ...overrides
 });
 const pick = { pickId: 'agent-densifier-01-2026-10-22-1', candidateId: `densifier-01:${PARCEL_ID}`, name: 'Four storeys on 1234/1', rationale: 'The rule allows four.' };
@@ -70,7 +72,6 @@ function harness({ state = freshState(), owners = [{ parcelUid: PARCEL_ID, owner
     const saves = [];
     const actions = [];
     const fundStake = vi.fn(async () => { journal.push('fundStake'); });
-    const stakeImpl = vi.fn(async ({ subject }) => { journal.push('stake'); return { marketPda: `market-of-${subject}`, created: true, stakeSignature: 'stake-sig' }; });
     const args = {
         pick, candidate: cand, tag: 'densifier-01 1/1 agent-densifier-01-2026-10-22-1',
         persona: { name: 'densifier-01', wallet: WALLET, agreement: { deadlineDays: 7, lamports: '1000' }, ...persona },
@@ -82,9 +83,9 @@ function harness({ state = freshState(), owners = [{ parcelUid: PARCEL_ID, owner
             return outcome;
         },
         save: async (stage, patch) => { journal.push(`save:${stage ?? '-'}`); saves.push({ stage, patch: JSON.parse(JSON.stringify(patch)) }); },
-        fundStake, stakeImpl, sendAndConfirm: chain.sendAndConfirm, now
+        sendAndConfirm: chain.sendAndConfirm, now
     };
-    return { args, pool, saves, actions, fundStake, stakeImpl, state, go: () => advancePick(args) };
+    return { args, pool, saves, actions, fundStake, state, go: () => advancePick(args) };
 }
 
 beforeEach(() => {
@@ -97,13 +98,43 @@ beforeEach(() => {
 });
 
 describe('the stages of one pick', () => {
-    it('designs, proposes, mints, records and stakes, checkpointing each before the next', async () => {
+    it('formats only finite candidate quantities as numbers', () => {
+        for (const value of [null, undefined, false, NaN]) expect(formatCandidateQuantity(value)).toBe('unknown');
+        expect(formatCandidateQuantity(0)).toBe('0');
+        expect(formatCandidateQuantity(1.2351, 3)).toBe('1.235');
+    });
+    it('rejects an unknown building baseline before any checkpoint or publication', async () => {
+        const h = harness({ cand: candidate({ buildingSourceId: null, buildingCoverage: 'unknown', builtGfaM2: 0, builtKnown: true }) });
+        await expect(h.go()).rejects.toThrow('Candidate has no supported planning basis; replan before publication or minting.');
+        expect(h.saves).toEqual([]);
+        expect(journal).toEqual([]);
+        expect(index.publishDesign).not.toHaveBeenCalled();
+        expect(index.publishAgreement).not.toHaveBeenCalled();
+    });
+    it('refuses to mint an already published checkpoint when its building baseline is unsupported', async () => {
+        const state = freshState();
+        await harness({ state, until: 'proposed' }).go();
+        expect(state.agreements[pick.candidateId].indexedAt).toBeTruthy();
+        journal.length = 0;
+        index.publishDesign.mockClear();
+        index.publishAgreement.mockClear();
+        const resumed = harness({ state, cand: candidate({ buildingCoverage: 'unknown' }) });
+        await expect(resumed.go()).rejects.toThrow(/no supported planning basis/);
+        expect(resumed.saves).toEqual([]);
+        expect(resumed.actions).toEqual([]);
+        expect(journal).toEqual([]);
+        expect(chain.transactions).toHaveLength(0);
+        expect(state.mints).toEqual({});
+        expect(index.publishDesign).not.toHaveBeenCalled();
+        expect(index.publishAgreement).not.toHaveBeenCalled();
+    });
+    it('designs, proposes, mints and records, checkpointing the forbidden own-market trade skip', async () => {
         const h = harness();
         expect(await h.go()).toEqual({});
         expect(h.saves.map(save => save.stage)).toEqual([null, 'designed', null, null, 'proposed', 'minted', 'recorded', 'staked']);
-        // Each CID is checkpointed before the object leaves the machine; funding precedes the stake.
+        // Each CID is checkpointed before the object leaves the machine; the sponsor never self-trades.
         expect(journal).toEqual(['save:-', 'publishDesign', 'save:designed', 'save:-', 'save:-', 'publishAgreement', 'save:proposed',
-            'save:minted', 'recordOnchain', 'save:recorded', 'fundStake', 'stake', 'save:staked']);
+            'save:minted', 'recordOnchain', 'save:recorded', 'save:staked']);
 
         const key = pick.candidateId;
         const design = h.state.designs[key];
@@ -114,29 +145,76 @@ describe('the stages of one pick', () => {
 
         const agreement = h.state.agreements[key];
         expect(agreement.cid).toBe(cidOf(canonicalBytes(agreement.content)));
+        expect(agreement.plan.content.designCids).toEqual([design.cid]);
         expect(agreement).toMatchObject({ title: pick.name, lamports: '1000', soleOwner: true, status: 'active', deadline: new Date(START_MS + 7 * 86400000).toISOString() });
+        expect(agreement.plan.content.view).toMatchObject({ at: '45.80015,15.9702,17', mode: '2d', city: h.args.city });
         expect(agreement.content).toMatchObject({
             sponsor: WALLET, author: 'densifier-01', city: 'zagreb', deadline: agreement.deadline,
-            designs: [{ cid: design.cid, goal: 'buildings', title: pick.name }],
+            planCid: agreement.plan.cid,
             inputs: { parcels: [{ parcelId: PARCEL_ID, holders: [{ ownerKey: WALLET, displayName: 'densifier-01', share: 1 }] }], openGroundM2: 0 },
             outputs: [{ hash: agreementRecord.outputHash(PARCEL), role: 'parcel', producedBy: null, fromParcelIds: [PARCEL_ID] }],
             rule: { electorate: 'owners', binding: true, lens: [LENS], approvalConfig: { policy: { type: 'unanimous' } } }
         });
+        expect(agreement.content).not.toHaveProperty('designs');
 
         const account = agreementAccountOf(agreement.cid, WALLET);
         expect(h.state.mints[key]).toMatchObject({ account, created: true, escrowLamports: '1000', cluster: 'devnet' });
         expect(chain.agreement(account)).toMatchObject({ cid: agreement.cid, authority: WALLET, lens: LENS, requiredLamports: 1000n, escrowLamports: 1000n });
         expect(index.recordOnchain).toHaveBeenCalledWith(agreement.cid, { cluster: 'devnet', account, signature: h.state.mints[key].createSignature });
         expect(h.state.onchain[key]).toMatchObject({ account, signature: h.state.mints[key].createSignature });
-        expect(h.stakeImpl).toHaveBeenCalledWith(expect.objectContaining({ subject: account, side: 1, amountAtomic: 250000n, stakeMint: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU' }));
-        expect(h.state.stakes[key]).toEqual({ marketPda: `market-of-${account}`, created: true, stakeSignature: 'stake-sig', amount: '0.25' });
+        expect(h.state.stakes[key]).toEqual({ skipped: true, skipReason: 'agreement-sponsor-cannot-trade-own-market', amount: '0.25' });
+        expect(h.fundStake).not.toHaveBeenCalled();
 
         expect(h.actions.map(item => [item.type, item.entity])).toEqual([
             ['design', { type: 'design', id: design.cid }], ['propose', { type: 'agreement', id: agreement.cid }],
-            ['mint', { type: 'agreement', id: agreement.cid }], ['stake', { type: 'agreement', id: agreement.cid }]
+            ['mint', { type: 'agreement', id: agreement.cid }]
         ]);
         expect(h.actions[2].action).toMatchObject({ lens: [LENS], lamports: '1000', pickId: pick.pickId });
         expect(h.actions[1].message).toBe(`densifier-01 proposed "${pick.name}" as a binding agreement on its own parcel ${PARCEL_ID}.`);
+    });
+
+    it('publishes and mints an explicit design without inventing a baseline or gain', async () => {
+        const h = harness({ cand: candidate({ builtKnown: false, builtGfaM2: null, buildingCoverage: 'unknown',
+            gain: null, offer: null, score: null, plannedFloors: 4,
+            designPolicy: { kind: 'proposed-design', ruleBasis: 'assumed', footprintM2: 125, openSpaceRatio: 0.5, score: 0.8 } }) });
+        expect(await h.go()).toEqual({});
+        expect(h.state.agreements[pick.candidateId].content.planCid).toEqual(expect.any(String));
+        expect(h.state.mints[pick.candidateId].account).toEqual(expect.any(String));
+        expect(h.args.candidate.builtGfaM2).toBeNull(); expect(h.args.candidate.gain).toBeNull();
+    });
+    it('checkpoints an explicitly funded sponsor market and never self-trades or opens it twice', async () => {
+        const h = harness();
+        const openMarketImpl = vi.fn(async options => {
+            expect(options.maxSeedAtomic).toBe(70_000_000n);
+            await options.ensureSeed(69_314_720n);
+            return { address: 'market-fixture', seedAtomic: '69314720', signature: 'market-signature' };
+        });
+        const fundMarketSeed = vi.fn(async () => ({ status: 'funded' }));
+        const args = { ...h.args, marketSeedCapUsdc: 70, openMarketImpl, fundMarketSeed };
+        await advancePick(args);
+        expect(h.state.markets[pick.candidateId].signature).toBe('market-signature');
+        expect(h.state.stakes[pick.candidateId].skipReason).toBe('agreement-sponsor-cannot-trade-own-market');
+        await advancePick(args);
+        expect(openMarketImpl).toHaveBeenCalledTimes(1); expect(fundMarketSeed).toHaveBeenCalledTimes(1);
+        expect(h.actions.map(a => a.type)).toContain('openMarket');
+    });
+
+    it('keeps seed-funding receipts when market confirmation is interrupted, then resumes by chain state', async () => {
+        const h = harness(); let landed = false;
+        const fundMarketSeed = vi.fn(async () => ({ status: 'funded', signature: 'seed-funding-signature' }));
+        const openMarketImpl = vi.fn(async options => {
+            if (landed) return { address: 'market-fixture', seedAtomic: '69314720', replayed: true, signature: null };
+            await options.ensureSeed(69_314_720n); landed = true;
+            throw new Error('confirmation interrupted');
+        });
+        const args = { ...h.args, marketSeedCapUsdc: 70, openMarketImpl, fundMarketSeed };
+        await expect(advancePick(args)).rejects.toThrow('confirmation interrupted');
+        expect(h.state.marketFunding[pick.candidateId].signature).toBe('seed-funding-signature');
+        expect(h.saves.some(save => save.patch.marketFunding)).toBe(true);
+        expect(h.state.markets[pick.candidateId]).toBeUndefined();
+        await advancePick(args);
+        expect(h.state.markets[pick.candidateId].replayed).toBe(true);
+        expect(fundMarketSeed).toHaveBeenCalledTimes(1);
     });
 
     it('resumes where it stopped: a rerun signs, publishes and saves nothing; --until stops after a stage', async () => {
@@ -157,7 +235,7 @@ describe('the stages of one pick', () => {
         const replay = harness({ state });
         await replay.go();
         expect(replay.saves).toEqual([]);
-        expect(replay.stakeImpl).not.toHaveBeenCalled();
+        expect(replay.state.stakes[pick.candidateId].skipReason).toBe('agreement-sponsor-cannot-trade-own-market');
         expect(chain.signed()).toHaveLength(1);
     });
 
@@ -181,7 +259,6 @@ describe('the stages of one pick', () => {
         await h.go();
         expect(h.saves.at(-1).stage).toBe('recorded');
         expect(h.fundStake).not.toHaveBeenCalled();
-        expect(h.stakeImpl).not.toHaveBeenCalled();
     });
 });
 
@@ -285,6 +362,18 @@ describe('run.mjs helpers', () => {
         expect(index.getAgreement).toHaveBeenCalledTimes(3);
         // An index that cannot answer fails the contest planning rather than guessing the rival open.
         await expect(rivalIndexStatuses({ getAgreement: async () => { throw new Error('index down'); } }, ['cid-executed'])).rejects.toThrow('index down');
+    });
+
+    it('marks only retired-agreement 410s as retired admission and propagates other lookup errors', async () => {
+        const retired = Object.assign(new Error('Old inline agreement'), { status: 410, code: 'retired-agreement-format' });
+        await expect(rivalIndexStatuses({ getAgreement: async () => { throw retired; } }, ['cid-old']))
+            .resolves.toEqual({ 'cid-old': 'retired' });
+        for (const error of [
+            Object.assign(new Error('broken row'), { status: 500, code: 'invalid-agreement-record' }),
+            Object.assign(new Error('gone'), { status: 410, code: 'other-410' })
+        ]) {
+            await expect(rivalIndexStatuses({ getAgreement: async () => { throw error; } }, ['cid-bad'])).rejects.toBe(error);
+        }
     });
 
     it('writes one activity line per settlement step', () => {

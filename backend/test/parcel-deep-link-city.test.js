@@ -7,10 +7,10 @@
 // from there gets filed under were all wrong.
 //
 // These tests drive the REAL city configs, not a restatement of them, so a new Croatian city is
-// covered the moment it is added to city-config.js.
+// covered the moment it is added to data/city-configs.js.
 
 import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -31,8 +31,7 @@ function citiesForParcelPrefix(parcelId) {
 
 beforeAll(() => {
     globalThis.window = globalThis;
-    const src = readFileSync(new URL('../../frontend/js/city-config.js', import.meta.url), 'utf8');
-    (0, eval)(src);
+    (0, eval)(cityConfigSource());
     CityConfigManager = globalThis.window.CityConfigManager;
     route = require('../../frontend/js/parcels/route.js');
 });

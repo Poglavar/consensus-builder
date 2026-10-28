@@ -53,7 +53,7 @@ describe('tier mapping', () => {
 
 describe('city config parsing', () => {
     it('reads every configured city with its centre from the source text', () => {
-        const cities = parseCityConfigs(read('frontend/js/city-config.js'));
+        const cities = parseCityConfigs(read('frontend/data/city-configs.js'));
         const zagreb = cities.find(c => c.id === 'zagreb');
         expect(zagreb).toMatchObject({ name: 'Zagreb', lat: 45.804503, lon: 15.978786 });
         expect(cities.find(c => c.id === 'colorado')).toMatchObject({ name: 'Denver' });
@@ -97,7 +97,7 @@ describe('buildCoverage', () => {
         regions: JSON.parse(read('world-parcels/regions.geojson')),
         regionReviews: JSON.parse(read('world-parcels/region-coverage-reviews.json')).reviews,
         catalog: JSON.parse(read('frontend/data/source-catalog.json')).sources,
-        cityConfigSource: read('frontend/js/city-config.js'),
+        cityConfigSource: read('frontend/data/city-configs.js'),
         demographics: JSON.parse(read('world-parcels/report/city-demographics.json')),
         // Historical task ledgers are deliberately absent from the current contract.
         outcomes: readCityChecks(REPO, {

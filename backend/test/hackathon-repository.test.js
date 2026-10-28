@@ -26,13 +26,13 @@ describe('hackathon repository documentation', () => {
 
     it('links the build, architecture, protocol, and scope from the root readme', () => {
         const readme = read('readme.md');
-        for (const target of ['HACKATHON.md', 'docs/architecture.md', 'docs/hackathon-build.md', 'docs/protocol.md']) {
+        for (const target of ['docs/HACKATHON.md', 'docs/architecture.md', 'docs/hackathon-build.md', 'docs/protocol.md']) {
             expect(readme).toContain(target);
         }
         expect(read('docs/architecture.md')).toContain('```mermaid');
         expect(read('docs/hackathon-build.md')).toContain('npm ci');
         expect(readme).toContain('https://x.com/UrbanGameTheory');
-        expect(read('HACKATHON.md')).toContain('@UrbanGameTheory');
+        expect(read('docs/HACKATHON.md')).toContain('@UrbanGameTheory');
         expect(read('backend/routes/hackathon-proof.js')).toContain("handle: '@UrbanGameTheory'");
     });
 

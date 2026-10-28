@@ -38,7 +38,7 @@ describe('ground menu actions', () => {
 
     it('offers Draw a site first, then the transport tools, in menu order', () => {
         expect(Model.availableActions(facts()))
-            .toEqual(['drawSite', 'road', 'track', 'busStation', 'tramStation', 'undergroundStation', 'elevatedStation']);
+            .toEqual(['drawSite', 'road', 'track', 'roadStation', 'trackStation']);
     });
 
     it('drops roads where road tools are off, stations where they are, and everything on unloaded ground', () => {
@@ -74,6 +74,17 @@ describe('ground menu and site commands', () => {
         expect(() => UiCommands.runCommand('ground.road', { global: {}, ground })).toThrow(/GroundMenu/);
     });
 
+    it('offers the two station groups and dispatches their selected actions', () => {
+        const groundFacts = { kind: 'bare', roadToolsEnabled: true, stationsEnabled: true };
+        expect(UiCommands.commandsFor('ground-menu', ctx({ ground: groundFacts })).map(c => c.id))
+            .toEqual(['ground.drawSite', 'ground.road', 'ground.track', 'ground.roadStation', 'ground.trackStation']);
+        const runAction = vi.fn();
+        const global = { GroundMenu: { runAction } };
+        UiCommands.runCommand('ground.roadStation', { global, ground: groundFacts });
+        UiCommands.runCommand('ground.trackStation', { global, ground: groundFacts });
+        expect(runAction.mock.calls).toEqual([['roadStation', groundFacts], ['trackStation', groundFacts]]);
+    });
+
     it('offers Draw site in the palette while the site tool is idle, and starts it', () => {
         const start = vi.fn();
         const idle = { SiteTool: { isActive: () => false, start } };
@@ -84,11 +95,12 @@ describe('ground menu and site commands', () => {
         expect(start).toHaveBeenCalledOnce();
     });
 
-    it('offers Use as site on a parcel and on a selection while the site tool is idle', () => {
+    it('keeps Use as site available in the palette, not on parcel or selection panels', () => {
         const parcel = { parcelId: 'HR-1-1', siteToolAvailable: true };
         expect(ParcelMenuModel.isActionAvailable('useAsSite', parcel)).toBe(true);
         expect(ParcelMenuModel.isActionAvailable('useAsSite', { parcelId: 'HR-1-1' })).toBe(false);
-        expect(UiCommands.commandsFor('parcel-menu', ctx({ parcel })).map(c => c.id)).toContain('parcel.useAsSite');
+        expect(UiCommands.commandsFor('parcel-menu', ctx({ parcel })).map(c => c.id)).not.toContain('parcel.useAsSite');
+        expect(UiCommands.commandsFor('palette', ctx({ parcel })).map(c => c.id)).toContain('parcel.useAsSite');
 
         const startFromSelection = vi.fn();
         const selectedParcels = new Set(['parcel-1', 'parcel-2']);
@@ -100,6 +112,8 @@ describe('ground menu and site commands', () => {
         global.multiParcelSelection = { isActive: true, selectedParcels };
         const context = UiCommands.createBrowserContext(global, { mode: '2d' });
         expect(UiCommands.commandsFor('parcel-selection', ctx({ global, selection: { active: true, count: 2 } })).map(c => c.id))
+            .not.toContain('selection.useAsSite');
+        expect(UiCommands.commandsFor('palette', ctx({ global, selection: { active: true, count: 2 } })).map(c => c.id))
             .toContain('selection.useAsSite');
         expect(UiCommands.commandsFor('parcel-selection', ctx({ global, selection: { active: true, count: 0 } })).map(c => c.id))
             .not.toContain('selection.useAsSite');

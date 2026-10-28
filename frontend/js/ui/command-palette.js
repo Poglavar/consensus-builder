@@ -1,5 +1,5 @@
-// ui/command-palette.js — the command palette: Ctrl/Cmd-K (or Settings → Command palette, or the
-// search box's "Commands…" row) opens a centred list of every UiCommands capability, grouped,
+// ui/command-palette.js — Ctrl/Cmd-K or the map search opens the app's shortcuts,
+// grouped by capability,
 // filtered as you type, keyboard navigable; unavailable commands are shown greyed with the reason
 // when the registry knows it. A bottom sheet under 768px. groupPaletteItems is pure and exported
 // for backend/test/frontend-command-palette.test.js; window.CommandPalette in the browser.
@@ -99,10 +99,12 @@
             section.appendChild(heading);
             items.forEach(item => {
                 const option = el('div', 'command-palette__item', { id: `command-palette-option-${optionIndex++}`, role: 'option', 'aria-selected': 'false' });
+                option.dataset.command = item.entry.id;
                 const iconNode = el('i', `command-palette__icon ${item.entry.icon}`, { 'aria-hidden': 'true' });
                 const text = el('div', 'command-palette__text');
                 const label = el('div', 'command-palette__label');
-                label.textContent = item.label;
+                const on = toggleStateOf(item.entry, id => doc.getElementById(id));
+                label.textContent = commands.actionLabel(item.label, on, tKey);
                 text.appendChild(label);
                 if (!item.available) {
                     option.setAttribute('aria-disabled', 'true');
@@ -122,14 +124,8 @@
                 }
                 option.appendChild(iconNode);
                 option.appendChild(text);
-                const on = toggleStateOf(item.entry, id => doc.getElementById(id));
                 if (on !== null) {
                     option.setAttribute('aria-checked', on ? 'true' : 'false');
-                    if (on) {
-                        const badge = el('span', 'command-palette__state');
-                        badge.textContent = t('commandPalette.state.on', 'On');
-                        option.appendChild(badge);
-                    }
                 }
                 section.appendChild(option);
             });
@@ -288,8 +284,6 @@
         // The translations arriving after boot, and a live language switch.
         win.addEventListener('i18n:translationsLoaded', syncTexts);
         if (win.i18n && typeof win.i18n.onChange === 'function') win.i18n.onChange(syncTexts);
-        const button = doc.getElementById('command-palette-button');
-        if (button) button.addEventListener('click', () => open(''));
     }
 
     return Object.assign({}, pure, { initialize, open, close: () => close({ restoreFocus: true }), isOpen });

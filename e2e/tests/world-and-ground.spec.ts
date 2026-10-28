@@ -1,3 +1,4 @@
+import { openPlanActions } from '../helpers/plan-actions';
 // The world globe and the ground around a city: the Proposals pill, the globe's search, location and
 // city picks, its activity feed (agreements proposed and decided, bets on them: plan-design-agreement.md
 // M3) and city counts, wheel-out to the globe, data-source requests and open ground.
@@ -34,14 +35,8 @@ const designOf = (page: Page, id: string) => page.evaluate(id => {
   return JSON.parse(JSON.stringify(w.DesignRecord.published(w.proposalStorage.getProposal(id))));
 }, id);
 
-async function openWorldFromSettings(page: Page): Promise<void> {
-  await page.locator('#settings-button').click();
-  const navigation = page.locator('#settings-sheet details[data-section="navigation"]');
-  if (!(await navigation.evaluate(element => (element as HTMLDetailsElement).open))) {
-    await navigation.locator(':scope > summary').click();
-  }
-  await expect(page.locator('#world-view-button')).toBeVisible();
-  await page.locator('#world-view-button').click();
+async function openWorldFromCity(page: Page): Promise<void> {
+  await page.locator('.map-search__chip').click();
 }
 
 test.describe('World navigation and open ground @features', () => {
@@ -82,7 +77,7 @@ test.describe('World navigation and open ground @features', () => {
   test('the world globe searches a live city and opens its configured map', async ({ mockApi: page }) => {
     test.setTimeout(90_000);
     await openCity(page);
-    await openWorldFromSettings(page);
+    await openWorldFromCity(page);
     const world = page.locator('#world-view');
     await expect(world).toBeVisible({ timeout: 45_000 });
     await expect(world.locator('canvas')).toBeVisible();
@@ -106,7 +101,7 @@ test.describe('World navigation and open ground @features', () => {
     await page.context().grantPermissions(['geolocation']);
     await page.context().setGeolocation(null);
     await openCity(page);
-    await openWorldFromSettings(page);
+    await openWorldFromCity(page);
     const world = page.locator('#world-view');
     await expect(world.locator('canvas')).toBeVisible({ timeout: 45_000 });
     const locate = world.getByRole('button', { name: 'Show my location', exact: true });
@@ -121,7 +116,7 @@ test.describe('World navigation and open ground @features', () => {
 
   test('the world globe excludes province destinations and opens a clicked point at street level', async ({ mockApi: page }) => {
     await openCity(page);
-    await openWorldFromSettings(page);
+    await openWorldFromCity(page);
     const world = page.locator('#world-view');
     await world.getByRole('combobox', { name: 'Search cities' }).fill('Ontario');
     await expect(world.getByRole('option')).toHaveCount(0);
@@ -146,7 +141,7 @@ test.describe('World navigation and open ground @features', () => {
   test('Back to map closes the world globe and restores the current city map', async ({ mockApi: page }) => {
     await openCity(page);
     const cityBefore = await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId());
-    await openWorldFromSettings(page);
+    await openWorldFromCity(page);
     const world = page.locator('#world-view');
     await expect(world).toBeVisible();
     await world.getByRole('button', { name: 'Back to map' }).click();
@@ -176,7 +171,7 @@ test.describe('World navigation and open ground @features', () => {
         cid = fileDesign(pageIndex(page), content);
       }
       await page.evaluate(() => (window as any).map.setView([45.85, 16.05], 12, { animate: false }));
-      await openWorldFromSettings(page);
+      await openWorldFromCity(page);
       const world = page.locator('#world-view');
       await world.locator('.world-search__input').fill('Zagreb');
       await world.getByRole('option').filter({ hasText: 'Zagreb' }).first().click();
@@ -214,7 +209,7 @@ test.describe('World navigation and open ground @features', () => {
     }));
     await page.route('**/activity/recent?*', route => route.fulfill({ json: { events } }));
     await page.goto('/?city=zg&lang=en'); await waitForMapReady(page);
-    await openWorldFromSettings(page);
+    await openWorldFromCity(page);
     const activity = page.locator('.world-activity');
     await expect(activity.getByRole('link')).toHaveCount(5, { timeout: 15000 });
     await expect(activity.getByRole('button')).toHaveCount(0);
@@ -258,7 +253,7 @@ test.describe('World navigation and open ground @features', () => {
       expect(await isApplied()).toBe(applied);
       await page.route('**/activity/recent?*', route => route.fulfill({ json: { events: [agreementEvent('park-event', 'propose', cid, { agreementName: title })] } }));
       await page.evaluate(() => (window as any).map.setView([45.85, 16.05], 12, { animate: false }));
-      await openWorldFromSettings(page);
+      await openWorldFromCity(page);
       const link = page.locator('.world-activity a').first();
       await expect(link).toBeVisible({ timeout: 15000 });
       await expect(link).toHaveAttribute('href', `/agreements/${cid}?city=zagreb&reduceMotion=1`);
@@ -293,7 +288,7 @@ test.describe('World navigation and open ground @features', () => {
     const { cid } = await proposeOverPark(page, { title, author: 'Globe fixture' });
     await page.route('**/activity/recent?*', route => route.fulfill({ json: { events: [agreementEvent('remote-park', 'propose', cid, { agreementName: title })] } }));
     await page.goto('/?city=explore&at=44.8,20.4,14&reduceMotion=1&lang=en'); await waitForMapReady(page);
-    await openWorldFromSettings(page);
+    await openWorldFromCity(page);
     const link = page.locator('.world-activity a').first();
     await expect(link).toBeVisible({ timeout: 15000 });
     await expect(link).toHaveAttribute('href', `/agreements/${cid}?city=zagreb&lang=en&reduceMotion=1`);
@@ -315,7 +310,7 @@ test.describe('World navigation and open ground @features', () => {
     fileIndexedAgreement(index, { title: 'First agreement', createdAt: '2026-10-20T09:00:00.000Z', community: true, author: 'Globe fixture' });
     fileIndexedAgreement(index, { title: 'Second agreement', createdAt: '2026-10-20T09:00:00.000Z', community: true, author: 'Globe fixture' });
     await openCity(page);
-    await openWorldFromSettings(page);
+    await openWorldFromCity(page);
     const world = page.locator('#world-view');
     await expect(world.locator('canvas')).toBeVisible({ timeout: 45_000 });
     await expect.poll(() => index.requests.some(request => request.method === 'GET' && request.path === '/activity/cities')).toBe(true);
@@ -332,7 +327,7 @@ test.describe('World navigation and open ground @features', () => {
     await page.route('**/activity/recent?*', route => route.fulfill({ json: { events: [
       agreementEvent('phone', 'execute', cid, { agreementName: 'Community park', cityId: 'explore', location: { lat: 44.3, lon: 16.2 } }),
     ] } }));
-    await openCity(page); await openWorldFromSettings(page);
+    await openCity(page); await openWorldFromCity(page);
     const activity = page.locator('.world-activity'); await expect(activity.getByRole('link')).toHaveCount(1, { timeout: 15000 });
     await expect(activity.getByRole('link')).toContainText('in Croatia');
     await expect(activity.getByRole('button')).toHaveCount(0);
@@ -370,7 +365,7 @@ test.describe('World navigation and open ground @features', () => {
       return route.fulfill({ status: ++attempts === 1 ? 503 : 200, json: { ok: true } });
     });
     await openCity(page);
-    await openWorldFromSettings(page);
+    await openWorldFromCity(page);
     const world = page.locator('#world-view');
     await world.locator('.world-search__input').fill('Dhaka');
     await world.getByRole('option').filter({ hasText: 'Dhaka' }).first().click();
@@ -391,6 +386,24 @@ test.describe('World navigation and open ground @features', () => {
     await page.evaluate(() => (window as any).map.setView([45.8008, 15.9817], 18, { animate: false }));
     await clickMapPoint(page, 15.9817, 45.8008);
     await expect(page.locator('#click-stack .click-stack__section[data-kind="ground"]')).toBeVisible();
+    const ground = page.locator('#click-stack .click-stack__section[data-kind="ground"]');
+    await expect(ground.getByRole('button', { name: 'Draw a parcel', exact: true })).toBeVisible();
+    await expect(ground.locator('.click-stack__facts')).toHaveText('Unsurveyed ground or a gap between parcels.');
+    for (const width of [1280, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      const boxes = await ground.locator('.click-stack__actions > button').evaluateAll(buttons => buttons.map(button => {
+        const { x, y, width } = button.getBoundingClientRect(); return { x, y, width };
+      }));
+      expect(boxes).toHaveLength(7);
+      expect(boxes[0].width).toBeGreaterThan(boxes[1].width * 1.9);
+      for (const i of [1, 3, 5]) {
+        expect(Math.abs(boxes[i].width - boxes[i + 1].width)).toBeLessThan(1);
+        expect(Math.abs(boxes[i].y - boxes[i + 1].y)).toBeLessThan(1);
+        expect(boxes[i + 1].x).toBeGreaterThan(boxes[i].x);
+        expect(boxes[i].y).toBeGreaterThan(boxes[i - 1].y);
+      }
+    }
+    await page.setViewportSize({ width: 1280, height: 844 });
     await page.locator('#click-stack [data-command="ground.drawSite"]').click();
     await expect(page.locator('#site-panel')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).SiteTool.isActive())).toBe(true);
@@ -404,7 +417,7 @@ test.describe('World navigation and open ground @features', () => {
     await createSpace(page, 'park');
     await page.locator('#proposals-button').click();
     // Plan-wide actions sit in the collapsed "Plan actions" group (fbe3758d).
-    await page.locator('#roosterScoreButton').click();
+    await (await openPlanActions(page)).getByRole('button', { name: 'Urban rooster', exact: true }).click();
     const panel = page.locator('#grain-score-panel');
     await expect(panel).toBeVisible();
     await expect(panel.locator('[data-grain-role="result"]')).toBeVisible({ timeout: 20000 });

@@ -58,20 +58,27 @@ export function onchainNames(row, account) {
 
 /**
  * @param {{ apiBase: string, origin?: string|null, fetchImpl?: Function, timeoutMs?: number,
- *           waitOnRateLimit?: boolean, wait?: Function, log?: Function }} options
+ *           waitOnRateLimit?: boolean, pinIntervalMs?: number, now?: Function, wait?: Function, log?: Function }} options
  *   origin: sent on writes (the API's write guard admits the app's origins; a headless caller names one).
  *   waitOnRateLimit: wait out a 429 (Retry-After, at most MAX_RATE_LIMIT_WAIT_MS) instead of failing.
  */
 export function createIndexClient({
     apiBase, origin = null, fetchImpl = globalThis.fetch, timeoutMs = 60_000,
-    waitOnRateLimit = false, wait = delay, log = () => {}
+    waitOnRateLimit = false, pinIntervalMs = 0, now = Date.now, wait = delay, log = () => {}
 } = {}) {
     const base = cleanApiBase(apiBase);
+    if (!Number.isFinite(pinIntervalMs) || pinIntervalMs < 0) throw new Error('pinIntervalMs must be non-negative');
     // POST is replayed only on transport failures and 5xx: every write here is keyed by a CID.
     const retrying = createRetryingFetch({
         fetchImpl, timeoutMs, retryMethods: new Set(['GET', 'POST']),
+        // This client owns 429 cooldowns: the generic short retry loop must not replay them first.
+        shouldRetryResponse: response => response.status !== 429, wait,
         requestLabel: ({ method }) => `index-${method.toLowerCase()}`
     });
+
+    const pinned = new Map();
+    let pinQueue = Promise.resolve();
+    let nextPinAt = 0;
 
     async function call(method, path, body) {
         for (let round = 1; ; round += 1) {
@@ -85,8 +92,14 @@ export function createIndexClient({
             let json = null;
             try { json = text ? JSON.parse(text) : null; } catch (_) { json = null; }
             if (response.status === 429 && waitOnRateLimit && round < RATE_LIMIT_ROUNDS) {
-                const seconds = Number(json?.retryAfterSeconds ?? response.headers.get('retry-after'));
-                const ms = Math.min(MAX_RATE_LIMIT_WAIT_MS, Number.isFinite(seconds) && seconds > 0 ? seconds * 1000 : 60_000);
+                const header = response.headers.get('retry-after');
+                const headerSeconds = Number(header);
+                const headerMs = Number.isFinite(headerSeconds) ? headerSeconds * 1000 : Date.parse(header) - now();
+                const bodyMs = Number(json?.retryAfterSeconds) * 1000;
+                const declared = Math.max(Number.isFinite(headerMs) ? headerMs : 0, Number.isFinite(bodyMs) ? bodyMs : 0);
+                const ms = declared > 0 ? declared : 60_000 * 2 ** (round - 1);
+                // Never retry earlier than a server cooldown that exceeds our bounded wait.
+                if (ms > MAX_RATE_LIMIT_WAIT_MS) return { status: response.status, ok: response.ok, body: json, text };
                 log(`${method} ${path.split('?')[0]}: rate limited; waiting ${Math.round(ms / 1000)} s (round ${round}/${RATE_LIMIT_ROUNDS - 1})`);
                 await wait(ms);
                 continue;
@@ -97,12 +110,24 @@ export function createIndexClient({
 
     /** POST /pins: { cid, pinnedAt } of exactly these canonical bytes. */
     async function pin(kind, object) {
-        if (!['design', 'agreement'].includes(kind)) throw new Error('kind must be design or agreement');
+        if (!['design', 'plan', 'agreement'].includes(kind)) throw new Error('kind must be design, plan or agreement');
         const { cid, bytes } = addressOf(object);
-        const result = await call('POST', '/pins', { kind, cid, bytes: bytes.toString('base64') });
-        if (!result.ok) throw refusal(`pin ${kind} ${cid}`, result);
-        if (result.body?.cid !== cid) throw mismatch(`pin ${kind}`, cid, result.body?.cid);
-        return { cid, pinnedAt: result.body.pinnedAt ?? null };
+        if (pinned.has(cid)) return pinned.get(cid);
+        const queued = pinQueue.then(async () => {
+            if (pinned.has(cid)) return pinned.get(cid);
+            const pause = nextPinAt - now();
+            if (pause > 0) await wait(pause);
+            nextPinAt = now() + pinIntervalMs;
+            const result = await call('POST', '/pins', { kind, cid, bytes: bytes.toString('base64') });
+            nextPinAt = now() + pinIntervalMs;
+            if (!result.ok) throw refusal(`pin ${kind} ${cid}`, result);
+            if (result.body?.cid !== cid) throw mismatch(`pin ${kind}`, cid, result.body?.cid);
+            const receipt = { cid, pinnedAt: result.body.pinnedAt ?? null };
+            pinned.set(cid, receipt);
+            return receipt;
+        });
+        pinQueue = queued.catch(() => {});
+        return queued;
     }
 
     /** POST /designs: { row, created } (created false: the CID was indexed already). */
@@ -116,9 +141,13 @@ export function createIndexClient({
 
     /** Pin and index one design/v1 object: { cid, row, created }. A parcel layout is refused by the index: pin it and send it with its agreement. */
     async function publishDesign(content, { parcelSourceId = null } = {}) {
-        const { cid } = await pin('design', content);
-        const { row, created } = await indexDesign(cid, content, { parcelSourceId });
-        return { cid, row, created };
+        const { cid } = addressOf(content);
+        let stage = 'pin-design'; const pinnedCids = [];
+        try {
+            await pin('design', content); pinnedCids.push(cid); stage = 'index-design';
+            const { row, created } = await indexDesign(cid, content, { parcelSourceId });
+            return { cid, row, created };
+        } catch (error) { throw Object.assign(error, { cid, stage, pinnedCids, indexed: false }); }
     }
 
     /** POST /designs/binding: what a design on this site would bind ({ city, parcelSourceId, binding }); nothing is stored. */
@@ -158,9 +187,9 @@ export function createIndexClient({
      * POST /agreements: { row, created }. `designs` carries [{ cid, content }] of linked designs the index
      * does not hold yet (a parcel layout is indexed only with its agreement).
      */
-    async function indexAgreement(cid, content, { designs = [] } = {}) {
+    async function indexAgreement(cid, content, { plan, designs = [] } = {}) {
         requireCid(cid);
-        const body = designs.length ? { cid, content, designs } : { cid, content };
+        const body = { cid, content, ...(plan ? { plan } : {}), ...(designs.length ? { designs } : {}) };
         const result = await call('POST', '/agreements', body);
         if (result.status !== 201 && result.status !== 409) throw refusal(`index agreement ${cid}`, result);
         if (result.body?.cid !== cid) throw mismatch('index agreement', cid, result.body?.cid);
@@ -168,10 +197,21 @@ export function createIndexClient({
     }
 
     /** Pin and index one agreement/v1 object: { cid, row, created }. */
-    async function publishAgreement(content, { designs = [] } = {}) {
-        const { cid } = await pin('agreement', content);
-        const { row, created } = await indexAgreement(cid, content, { designs });
-        return { cid, row, created };
+    async function publishAgreement(content, { plan, designs = [] } = {}) {
+        const { cid } = addressOf(content);
+        let stage = plan ? 'pin-plan' : 'pin-agreement'; const pinnedCids = [];
+        try {
+            if (plan) {
+                if (!plan.content || plan.cid !== content.planCid || addressOf(plan.content).cid !== plan.cid) {
+                    throw mismatch('agreement plan', content.planCid, plan.cid);
+                }
+                await pin('plan', plan.content); pinnedCids.push(plan.cid);
+            }
+            stage = 'pin-agreement';
+            await pin('agreement', content); pinnedCids.push(cid); stage = 'index-agreement';
+            const { row, created } = await indexAgreement(cid, content, { plan, designs });
+            return { cid, row, created };
+        } catch (error) { throw Object.assign(error, { cid, stage, pinnedCids, indexed: false }); }
     }
 
     /**

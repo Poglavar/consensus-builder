@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "2354",
+  "name": "Shymkent, Kazakhstan",
+  "point": [
+    42.3369257073586,
+    69.5992009029268
+  ],
+  "bindings": [
+    {
+      "appCityId": "shymkent",
+      "runtimeConfig": {
+        "id": "shymkent",
+        "wupCityCode": "2354",
+        "label": "Shymkent, Kazakhstan",
+        "currency": {
+          "locale": "ru-KZ",
+          "code": "KZT"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            42.3369257073586,
+            69.5992009029268
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            42.3369257073586,
+            69.5992009029268
+          ],
+          "fallbackDataset": [
+            69.5992009029268,
+            42.3369257073586
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "kz-shymkent-rgis-aisgzk-merge1",
+          "idPrefix": "KZ-SHYMKENT-AISGZK:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "<a href=\"https://geo-shym.kz/\">Shymkent RGIS / AISGZK cadastral parcels</a> · bounded coverage verified; currentness unestablished"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "kz-shymkent-rgis-aisgzk-merge1",
+      "name": "Shymkent RGIS AISGZK cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://geo-shym.kz/geoserver/gis_shymkent/ows",
+      "catalogueUrl": "https://geo-shym.kz/",
+      "viewerUrl": "https://geo-shym.kz/map/",
+      "version": "1.1.0",
+      "featureType": "gis_shymkent:aisgzk_shymkent_merge1",
+      "geometryField": "geom",
+      "idField": "cad_number",
+      "idType": "string",
+      "idPrefix": "KZ-SHYMKENT-AISGZK:",
+      "idPattern": "^[0-9]+$",
+      "parcelNumberField": "cad_number",
+      "outFields": [
+        "cad_number"
+      ],
+      "requestProperties": true,
+      "pageSize": 200,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 2,
+      "maxResponseBytes": 1048576,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "countryCode": "KZ",
+      "metricSrid": 32642,
+      "cityIds": [
+        "shymkent"
+      ],
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "operator": "Shymkent Regional GIS / AISGZK",
+      "attribution": "<a href=\"https://geo-shym.kz/\">Shymkent RGIS / AISGZK cadastral parcels</a> · bounded coverage verified; currentness unestablished",
+      "scope": "Public AISGZK cadastral parcel layer in Shymkent. Three central sample parcels and a bounded central bbox are verified; neither layer extent nor samples establish municipal completeness.",
+      "licenceNote": "Anonymous public HTTPS reads work. Explicit reuse licence and currentness are unestablished; confirm with custodian during second-pass review.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "KZ",
+          "basis": "First-party Shymkent RGIS cadastral layer and native cad_number schema; national NSDI publishes this GeoServer.",
+          "evidence": [
+            "https://geo-shym.kz/map/",
+            "https://map.gov.kz/services/"
+          ]
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

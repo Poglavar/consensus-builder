@@ -33,7 +33,6 @@ afterEach(() => {
 function bootStore() {
     const persisted = new Map();
     install('window', globalThis);
-    install('__cbSecondaryTab', false);
     install('__formationDepth', formationDepth);
     install('__planOrder', planOrder);
     install('ProposalOrigin', require('../../frontend/js/proposals/origin.js'));
@@ -62,6 +61,57 @@ function bootStore() {
 }
 
 describe('proposalStorage authored-log persistence', () => {
+    it('preserves explicit null building parameters and a published CID through import and reload', () => {
+        const { storage } = bootStore();
+        const DesignRecord = require('../../frontend/js/design-record.js');
+        const DesignSync = require('../../frontend/js/proposals/design-sync.js');
+        const shape = { type:'Polygon', coordinates:[[[15,45],[15.001,45],[15.001,45.001],[15,45.001],[15,45]]] };
+        const design = { proposalId:'source-building', goal:'buildings', title:'Courtyard building', site:shape,
+            createdAt:'2026-10-27T09:00:00.000Z',
+            geometry:{ buildings:[{ type:'Feature', geometry:shape, properties:{ height:12, floors:4 } }] },
+            buildingProposal:{ typologyType:'single', parameters:{ height:12, floors:4, rule:null } } };
+        const content = DesignRecord.published(design), cid = DesignRecord.cidOf(design);
+        const incoming = DesignSync.localDesignFromRow({ content, cid, binding:{ parcels:[{ parcelId:'source-parcel' }] } },
+            { apiBase:'https://api.example.test' });
+        const stored = storage.importProposal(incoming, { overwrite:true });
+        expect(stored.buildingProposal.parameters).toHaveProperty('rule', null);
+        expect(DesignRecord.cidOf(stored)).toBe(cid);
+        storage.save(); storage.load();
+        const reloaded = storage.getProposal(stored.proposalId);
+        expect(DesignRecord.published(reloaded)).toEqual(content);
+        expect(DesignRecord.cidOf(reloaded)).toBe(cid);
+    });
+    it('rolls back both definitions and imported plan membership if atomic storage fails, and permits retry', async () => {
+        const File = require('../../frontend/js/plan-file.js');
+        const UI = require('../../frontend/js/plan-file-ui.js');
+        const { ParcelMutation } = require('../../frontend/js/proposals/apply/transaction.js');
+        const { storage, persisted } = bootStore();
+        install('ProposalManager', { runParcelMutation: (kind, proposalId, work) => ParcelMutation.run({ kind, proposalId }, context => work({ _parcelMutation: context }),
+            { runtime: globalThis, proposalStore: storage, storage: PersistentStorage, agentStore: null, fabric: null }) });
+        const site = { type: 'Polygon', coordinates: [[[15,45],[15.001,45],[15.001,45.001],[15,45.001],[15,45]]] };
+        const file = await File.create([{ goal: 'park', title: 'Atomic park', site, structureProposal: { kind: 'park', geometry: site } }], { title: 'Atomic plan', view: { at: '45,15,17', mode: '2d' } });
+        const write = PersistentStorage.atomicWrite;
+        PersistentStorage.atomicWrite = async () => { throw new Error('disk full'); };
+        await expect(UI.browser(globalThis).commitImport(file)).rejects.toThrow('disk full');
+        expect(storage.getAllProposals()).toEqual([]); expect(persisted.size).toBe(0);
+        PersistentStorage.atomicWrite = write;
+        const plan = await UI.browser(globalThis).commitImport(file);
+        expect(storage.getAllProposals()).toHaveLength(1);
+        expect(JSON.parse(persisted.get(UI.PREFIX + plan.cid))).toEqual(plan);
+    });
+    it('restores a portable plan through the real normalizer and reloads with identical authored content', async () => {
+        const File = require('../../frontend/js/plan-file.js');
+        const { storage } = bootStore();
+        const site = { type: 'Polygon', coordinates: [[[15,45],[15.001,45],[15.001,45.001],[15,45.001],[15,45]]] };
+        const file = await File.create([{ goal: 'park', title: 'Portable park', site,
+            createdAt: '2026-10-25T10:00:00.000Z', structureProposal: { kind: 'park', geometry: site } }],
+            { title: 'Portable plan', view: { at: '45,15,17', mode: '2d' } });
+        const result = File.importInto(file, storage, { id: () => 'file-park' });
+        storage.save(); storage.load();
+        const record = storage.getProposal(result.memberIds[0]);
+        expect(record.applied).toBe(false); expect(record).not.toHaveProperty('published');
+        expect(await File.create([record], { title: result.content.title, view: result.content.view })).toEqual(file);
+    });
     it('keeps local keys and design CIDs in separate namespaces', () => {
         const { storage } = bootStore();
         // A design read back from the index is kept under its own local key (DesignSync.importDesign);
@@ -97,15 +147,6 @@ describe('proposalStorage authored-log persistence', () => {
         persisted.set('proposal:stored-record', JSON.stringify({ ...record, proposalId: 'stored-record' }));
         storage.load();
         expect(storage.getProposal('stored-record').lifecycleStatus).toBe('Unknown');
-    });
-
-    it('restores parked records without assigning them a new initial lifecycle', () => {
-        const { storage, persisted } = bootStore();
-        persisted.set('cadastre_proposals_recovery', JSON.stringify({ records: [
-            { proposalId: 'parked-record', goal: 'as-is', cadastreParcelIds: ['HR-1'] }
-        ] }));
-        expect(storage.restoreRecovery()).toBe(1);
-        expect(storage.getProposal('parked-record').lifecycleStatus).toBe('Unknown');
     });
 
     it('keeps an imported record\'s creation time as it arrives and invents none', () => {

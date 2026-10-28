@@ -291,7 +291,7 @@
                 if (Array.isArray(ring) && ring.length >= 3) blocked.push({ rings: [ring.map(c => project(c[0], c[1]))] });
             });
             ringsFromFeature(feature, project).forEach(rings => {
-                fills.push({ rings, zcode: ZCODE.PLAZA, kind: 'park' });
+                fills.push({ rings, zcode: ZCODE.PLAZA, kind: 'park', authored: true });
                 addArea(rings, 'park');
             });
             obstaclesOf(deco, project).forEach(o => blocked.push(o));
@@ -301,7 +301,7 @@
         function addSquare(feature, project) {
             const deco = feature && feature.properties && feature.properties.decorations;
             ringsFromFeature(feature, project).forEach(rings => {
-                fills.push({ rings, zcode: ZCODE.PLAZA, kind: 'square' });
+                fills.push({ rings, zcode: ZCODE.PLAZA, kind: 'square', authored: true });
                 addArea(rings, 'square');
             });
             obstaclesOf(deco, project).forEach(o => blocked.push(o));
@@ -383,7 +383,8 @@
                 }
                 way.bands.forEach(band => {
                     const pts = offsetPolyline(way.points, band.offset);
-                    if (pts) bands.push({ pts, halfWidth: band.halfWidth, zcode: band.zcode || 0 });
+                    if (pts) bands.push({ pts, halfWidth: band.halfWidth, zcode: band.zcode || 0,
+                        authored: way.source === 'corridor' || way.source === 'park' });
                 });
                 if (!way.lanes.length) return;
                 // Cut the centreline into edges between junction vertices.

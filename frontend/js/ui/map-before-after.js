@@ -94,8 +94,9 @@
             return el;
         });
 
+        // The phone stack owns its padding as a hit target too, including gaps between cards.
         const occluders = container.id === 'map' ? Array.from(doc.querySelectorAll(
-            '.on-map-editor__tools, .on-map-editor__panel, #click-stack .click-stack__card, #click-stack > .mobile-dock-sheet-handle, .map-shell-slot, .map-shell-cluster, .map-shell-button'
+            '.on-map-editor__tools, .on-map-editor__panel, #click-stack, .map-shell-slot, .map-shell-cluster, .map-shell-button'
         )) : [];
         function positionGrip() {
             if (container.id !== 'map') return;
@@ -124,8 +125,11 @@
 
         const divider = control.create({
             container, handle: handleEl, value: percent, label: options.sliderLabel || 'Before and after comparison',
-            onChange: next => { percent = clampPercent(next); applyClip(); }
+            onChange: next => { percent = clampPercent(next); applyClip(); options.onChange?.(percent); }
         });
+        // Image dimensions arrive after mount; dialogs and maps can also resize while open.
+        const sizeObserver = typeof root.ResizeObserver === 'function' ? new root.ResizeObserver(applyClip) : null;
+        sizeObserver?.observe(container);
         applyClip();
 
         return {
@@ -138,6 +142,7 @@
                 if (disposed) return;
                 disposed = true;
                 divider.dispose();
+                sizeObserver?.disconnect();
                 gripObserver?.disconnect();
                 [handleEl].concat(labelEls).forEach(el => { try { el.remove(); } catch (_) { /* detached */ } });
             }

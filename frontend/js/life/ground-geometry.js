@@ -290,6 +290,18 @@
         return len;
     }
 
+    // Ground coverage is independent of the bounded street/population data. Extending the four
+    // outer corners adds no triangles; keep openings in this same surface rather than filling
+    // lakes with a second background plane. Reach is in true metres, like the input bounds.
+    function pavementBounds(bounds, ...reaches) {
+        if (!Array.isArray(bounds) || bounds.length !== 4 || !bounds.every(Number.isFinite)
+            || bounds[2] <= bounds[0] || bounds[3] <= bounds[1]) return null;
+        // OrbitControls has an infinite zoom limit until framing completes. It must not erase
+        // the finite initial camera reach supplied alongside it.
+        const pad = Math.max(0, ...reaches.filter(Number.isFinite));
+        return [bounds[0] - pad, bounds[1] - pad, bounds[2] + pad, bounds[3] + pad];
+    }
+
     // The same openings as the parcel ground, cut into the pavement itself. Work in the local
     // metric frame; subtraction and triangulation are supplied by the scene's geometry libraries.
     function buildPavementGeometry(bounds, openings, { difference, triangulate }) {
@@ -434,7 +446,7 @@
     }
 
     return {
-        buildGroundGeometry, buildPavementGeometry, ribbonEdges, splitAtSharpBends, nodeKey,
+        buildGroundGeometry, buildPavementGeometry, pavementBounds, ribbonEdges, splitAtSharpBends, nodeKey,
         NODE_SNAP_M, MITRE_LIMIT, DISC_SEGMENTS, KERB_TOL_M, MARK_HALF_M, MARK_DASH_M, MARK_GAP_M, MARK_LIFT_M
     };
 });

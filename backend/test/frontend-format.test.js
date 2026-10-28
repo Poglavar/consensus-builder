@@ -162,6 +162,18 @@ describe('the viewer locale', () => {
         });
     });
 
+    it('uses registry locales for a newly supported language without a formatting-code change', () => {
+        withLocale('de', 'de-AT', () => {
+            window.i18n.getSupportedLanguages = () => ['en', 'de'];
+            window.i18n.getSupportedLocales = () => ['en-GB', 'en-US', 'de-DE', 'de-AT'];
+            expect(CbFormat.currentLanguage()).toBe('de');
+            expect(CbFormat.localeFor()).toBe('de-AT');
+            expect(CbFormat.localeFor('en')).toBe('en-GB');
+            window.i18n.getLocale = () => 'en-GB';
+            expect(CbFormat.localeFor('de')).toBe('de-DE');
+        });
+    });
+
     it('writes sterling as amount then code, whole pounds, in any locale', () => {
         withLocale('en', 'en-US', () => {
             expect(CbFormat.formatMoney(431000.4, 'GBP')).toBe('431,000 GBP');

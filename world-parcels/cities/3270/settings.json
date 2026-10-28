@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "3270",
+  "name": "Durango, Mexico",
+  "point": [
+    24.0275652358912,
+    -104.648631083189
+  ],
+  "bindings": [
+    {
+      "appCityId": "durango",
+      "runtimeConfig": {
+        "id": "durango",
+        "wupCityCode": "3270",
+        "label": "Durango, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            24.0275652358912,
+            -104.648631083189
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            24.0275652358912,
+            -104.648631083189
+          ],
+          "fallbackDataset": [
+            -104.648631083189,
+            24.0275652358912
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-sedatu-ran-pit10-parcelas-2020-wfs",
+          "idPrefix": "MEX-RAN-PIT10-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Registro Agrario Nacional (RAN) / SEDATU IDE, PIT10 Parcelas Durango 2020. Historical partial ejido/community parcel coverage; source geometry unchanged."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-sedatu-ran-pit10-parcelas-2020-wfs",
+      "name": "SEDATU / RAN PIT10 Durango agrarian parcels (2020)",
+      "adapter": "wfs",
+      "endpoint": "https://ide.sedatu.gob.mx/geoserver/wfs",
+      "featureType": "geonode:a__10_PARCELAS_RAN_2020",
+      "version": "2.0.0",
+      "idField": "CLAVE",
+      "idType": "string",
+      "idPrefix": "MEX-RAN-PIT10-",
+      "idPattern": "^[0-9]{8}-[0-9]{19}$",
+      "outFields": [
+        "CLAVE"
+      ],
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "attributeNotNull": [
+        "CLAVE"
+      ],
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 1,
+      "minRequestIntervalMs": 150,
+      "countryCode": "MX",
+      "metricSrid": 32613,
+      "cityIds": [
+        "durango"
+      ],
+      "defaultForCity": true,
+      "scope": "Historical 2020 RAN social/agrarian parcels with populated native CLAVE identity in Durango state. Positive bounded northern Durango fringe sample; null-CLAVE rows excluded. Urban/private coverage, municipal boundary relationship and citywide completeness unestablished.",
+      "attribution": "Registro Agrario Nacional (RAN) / SEDATU IDE, PIT10 Parcelas Durango 2020. Historical partial ejido/community parcel coverage; source geometry unchanged.",
+      "metadataUrl": "https://ide.sedatu.gob.mx/api/v2/datasets/1670",
+      "catalogueUrl": "https://ide.sedatu.gob.mx/showmetadata/xsl/1670",
+      "nativeCrs": "EPSG:4326",
+      "responseCrs": "EPSG:4326",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometryQuery": true
+      },
+      "browserTransport": "relay",
+      "ownership": false,
+      "operator": "Registro Agrario Nacional (RAN) / SEDATU IDE",
+      "licenceNote": "First-party dataset API license.identifier is blank. No CC BY assertion adopted; reuse terms remain a follow-up."
+    }
+  ]
+}

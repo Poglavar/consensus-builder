@@ -1,39 +1,10 @@
-// proposals/plan-stats.js — statistics for the proposals currently applied in this browser.
-//
-// The arithmetic is NOT here. It is in proposals/plan-yield.js, which is pure and unit-tested, and
-// which backend/scripts/plan-yield.js runs over the database — so a figure read off this dialog and
-// a figure quoted from the command line come from the same code. This file is the thin part: pick
-// the applied proposals, resolve the geometry of parcels the composition leaves standing,
-// and draw the result.
-//
-// The old resulting-parcel count read Leaflet's current viewport, so a large plan could report four
-// parcels. The current count reads the authoritative LiveParcelFabric over the plan's complete
-// cadastral scope. Proposal records supply that scope; they never store generated parcel ids.
+// Statistics for one exact saved plan, independently of the displayed map.
 (function () {
     // The sales price is in the city's currency and starts at the city's default (city-money.js).
     const salesPrice = () => window.CityMoney.currentAssumptions();
 
     let latestStats = null;
     let epochView = 'added';
-    let planStatsBusy = false;
-
-    function updatePlanStatsButtonState() {
-        const button = document.getElementById('planStatsButton');
-        if (!button) return;
-        let appliedCount = 0;
-        try {
-            const proposals = typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function'
-                ? proposalStorage.getAllProposals() : [];
-            const isApplied = typeof isProposalCurrentlyApplied === 'function'
-                ? isProposalCurrentlyApplied
-                : proposal => proposal && proposal.applied === true;
-            appliedCount = (Array.isArray(proposals) ? proposals : []).filter(isApplied).length;
-        } catch (_) { /* storage may not be ready yet; the empty state is safe */ }
-        const disabled = appliedCount === 0 || planStatsBusy;
-        button.disabled = disabled;
-        button.setAttribute('aria-disabled', String(disabled));
-    }
-
     function yieldApi() {
         return (typeof window !== 'undefined' && window.__planYield) ? window.__planYield : null;
     }
@@ -92,16 +63,6 @@
         return CbFormat.formatMoney(Number(value), salesPrice().currency, { missing: '—' });
     }
 
-    // Current output comes from the live fabric; an untouched cadastral result comes from the
-    // immutable repository. There is no third parcel store and Leaflet is never queried for data.
-    function getParcelFeature(parcelId) {
-        if (!parcelId) return null;
-        const id = parcelId.toString();
-        return window.LiveParcelFabric?.get?.(id)
-            || window.CadastralParcelRepository?.get?.(id)
-            || null;
-    }
-
     function readAssumptionsFromModal(modal, { normalizeInput = null } = {}) {
         const api = yieldApi();
         const defaults = api ? api.DEFAULTS : {};
@@ -126,74 +87,43 @@
         };
     }
 
-    function computePlanStatsSync(assumptions) {
+    function computePlanStatsSync(snapshot, assumptions) {
         const api = yieldApi();
-        const all = (typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function')
-            ? proposalStorage.getAllProposals()
-            : [];
-        if (!api) {
-            return { unavailable: true, proposalsTotal: all.length };
-        }
-
-        const applied = all.filter(p => p && p.applied === true);
-        // Open space as it stands on the map: parks/squares/lakes carved by later roads.
-        const appliedBodies = new Map();
-        ['parks', 'squares', 'lakes'].forEach(name => {
-            (Array.isArray(window[name]) ? window[name] : []).forEach(feature => {
-                const id = feature && feature.properties && feature.properties.proposalId;
-                if (id !== undefined && id !== null && feature.geometry) appliedBodies.set(String(id), feature);
-            });
-        });
+        const { records, materializedFeatures, cadastralFeatures, plan } = snapshot;
         const openSpaceAreaOf = proposal => {
-            const feature = appliedBodies.get(String(proposal && proposal.proposalId));
-            if (!feature || !window.turf) return null;
-            try { return window.turf.area(feature); } catch (_) { return null; }
+            const pieces = materializedFeatures.filter(f => f.properties?.producedByProposalId === proposal.proposalId
+                && f.properties?.structureType === proposal.structureProposal?.kind);
+            return pieces.length ? pieces.reduce((sum, f) => sum + api.geometryAreaM2(f), 0) : null;
         };
-        const result = api.planYield(applied, { ...assumptions, openSpaceAreaOf });
-        const cadastreIds = Array.from(new Set(applied.flatMap(proposal => (
-            Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds.map(String) : []
-        ))));
-        const materializedFeatures = window.LiveParcelFabric?.entriesForCadastre
-            ? window.LiveParcelFabric.entriesForCadastre(cadastreIds, { includeCorridors: false })
-            : [];
-        const parcels = api.resultingParcels(applied, { materializedFeatures });
-
-        // Only the AREA needs the map. Count what we could measure so the average carries its own
-        // confidence instead of pretending the parcels it could not reach do not exist.
-        let measuredArea = 0;
-        let measuredCount = 0;
+        const result = api.planYield(records, { ...assumptions, openSpaceAreaOf });
+        const parcels = api.resultingParcels(records, { materializedFeatures });
+        const byId = new Map([...cadastralFeatures, ...materializedFeatures].map(f => [String(f.properties?.parcelId ?? f.id), f]));
+        let measuredArea = 0, measuredCount = 0;
         parcels.resulting.forEach(id => {
-            const feature = getParcelFeature(id);
+            const feature = byId.get(id);
             const area = feature ? api.geometryAreaM2(feature) : 0;
-            if (area > 0) {
-                measuredArea += area;
-                measuredCount += 1;
-            }
+            if (area > 0) { measuredArea += area; measuredCount += 1; }
         });
-
-        // Parcel figures are binding metrics: a plan whose proposals bind no cadastral parcel (all
-        // on open ground) has none, and says so with null rather than a count of 0.
-        const noParcels = applied.length > 0 && parcels.bound === false;
-        const ground = siteStatsApi() ? siteStatsApi().planGround(applied) : null;
-
-        return {
-            unavailable: false,
-            proposalsTotal: all.length,
-            proposalsCounted: applied.length,
-            yield: result,
+        const noParcels = parcels.bound === false;
+        const ground = siteStatsApi()?.planGround(records);
+        // The land the plan covers: every parcel its designs stand on, once, plus open ground.
+        const parcelAreas = cadastralFeatures.map(feature => api.geometryAreaM2(feature));
+        const openGround = ground && finiteNumber(ground.openGroundM2) ? ground.openGroundM2 : 0;
+        const planAreaM2 = parcelAreas.every(area => finiteNumber(area)) ? parcelAreas.reduce((sum, area) => sum + area, 0) + openGround : null;
+        return { unavailable: false, planTitle: plan.content.title,
+            proposalsTotal: records.length, proposalsCounted: records.length, yield: result,
             parcelCount: noParcels ? null : parcels.resulting.length,
             parcelProduced: noParcels ? null : parcels.produced.length,
             parcelConsumed: noParcels ? null : parcels.consumed.length,
             parcelMeasuredCount: noParcels ? null : measuredCount,
             parcelMeasuredArea: noParcels ? null : measuredArea,
-            openGroundM2: ground && finiteNumber(ground.openGroundM2) ? ground.openGroundM2 : null
-        };
-    }
-
-    function computePlanStatsAsync(assumptions) {
-        return new Promise(resolve => {
-            requestAnimationFrame(() => resolve(computePlanStatsSync(assumptions)));
-        });
+            openGroundM2: ground && finiteNumber(ground.openGroundM2) ? ground.openGroundM2 : null, planAreaM2,
+            // Filled by PresentState.groundOf when it has read the roads, parks, squares and existing
+            // buildings (or why not): the land split, and the existing buildings the plan leaves standing.
+            publicLandM2: snapshot.land ? snapshot.land.publicLandM2 : null,
+            privateLandM2: snapshot.land ? snapshot.land.privateLandM2 : null,
+            remainingYield: Array.isArray(snapshot.remaining) ? api.planYield(snapshot.remaining, assumptions) : null,
+            groundError: snapshot.groundError || null };
     }
 
     // Looks live in css/modals.css (.plan-stats-*) and css/primitives.css, never inline.
@@ -205,10 +135,15 @@
     }
 
     const SUMMARY_ROWS = [
+        { key: 'plan-area', i18nKey: 'sidebar.proposals.planStats.planArea', label: 'Plan area (m²)' },
         { key: 'resulting-parcels', i18nKey: 'sidebar.proposals.planStats.resultingParcels', label: 'Resulting parcels (avg m²)' },
         { key: 'buildings', i18nKey: 'sidebar.proposals.planStats.buildings', label: 'Buildings (footprint m²)' },
+        { key: 'buildings-remaining', i18nKey: 'sidebar.proposals.planStats.buildingsRemaining', label: 'of which existing that remain (floor area m²)' },
+        { key: 'buildings-new', i18nKey: 'sidebar.proposals.planStats.buildingsNew', label: 'of which new (floor area m²)' },
         { key: 'floor-area', i18nKey: 'sidebar.proposals.planStats.floorArea', label: 'Gross floor area (m²)' },
         { key: 'open-space', i18nKey: 'sidebar.proposals.planStats.openSpace', label: 'Open space — parks, squares, water (m²)' },
+        { key: 'public-land', i18nKey: 'sidebar.proposals.planStats.publicLand', label: 'Public land — roads, parks, squares (m²)' },
+        { key: 'private-land', i18nKey: 'sidebar.proposals.planStats.privateLand', label: 'Private land (m²)' },
         { key: 'apartments', i18nKey: 'sidebar.proposals.planStats.apartments', label: 'Apartments' },
         { key: 'people', i18nKey: 'sidebar.proposals.planStats.people', label: 'People' },
         { key: 'jobs', i18nKey: 'sidebar.proposals.planStats.jobs', label: 'Jobs' },
@@ -224,7 +159,7 @@
     ];
 
     const EPOCH_COLUMNS = [
-        { i18nKey: 'sidebar.proposals.planStats.colProposals', label: 'proposals', get: b => formatNumber(b.proposals) },
+        { i18nKey: 'sidebar.proposals.planStats.colProposals', label: 'designs', get: b => formatNumber(b.proposals) },
         { i18nKey: 'sidebar.proposals.planStats.colBuildings', label: 'buildings', get: b => formatNumber(b.buildings) },
         { i18nKey: 'sidebar.proposals.planStats.colFloorArea', label: 'GFA m²', get: b => formatNumber(b.grossFloorAreaM2) },
         { i18nKey: 'sidebar.proposals.planStats.colApartments', label: 'apartments', get: b => formatNumber(b.apartments) },
@@ -251,7 +186,7 @@
         dialog.tabIndex = -1;
 
         const header = el('div', 'cb-dialog__header');
-        const title = el('h2', 'cb-dialog__title', tPlanStats('sidebar.proposals.planStats.modalTitle', 'Applied proposal stats'));
+        const title = el('h2', 'cb-dialog__title', tPlanStats('sidebar.proposals.planStats.modalTitle', 'Plan stats'));
         title.id = 'plan-stats-title';
         title.setAttribute('data-i18n-key', 'sidebar.proposals.planStats.modalTitle');
         header.appendChild(title);
@@ -259,7 +194,7 @@
         const closeBtn = el('button', 'close-circle-btn', '×');
         closeBtn.type = 'button';
         closeBtn.setAttribute('data-plan-stats-close', '');
-        closeBtn.setAttribute('aria-label', tPlanStats('sidebar.proposals.planStats.closeAria', 'Close applied proposal stats'));
+        closeBtn.setAttribute('aria-label', tPlanStats('sidebar.proposals.planStats.closeAria', 'Close plan stats'));
         closeBtn.addEventListener('click', () => hidePlanStatsModal());
         header.appendChild(closeBtn);
 
@@ -416,6 +351,42 @@
         host.appendChild(table);
     }
 
+    // Everything standing after the plan: its new buildings and the existing ones it leaves, with
+    // apartments, people and jobs derived once from their summed floor area (plan-yield).
+    function standingTotal(stats) {
+        return stats.remainingYield
+            ? yieldApi().combinedTotal([stats.yield.total, stats.remainingYield.total], stats.yield.assumptions)
+            : stats.yield.total;
+    }
+
+    // The summary figures of one plan's stats as text, by SUMMARY_ROWS key: the dialog and the plan
+    // comparison show the same words. price: sales price per m² in the city's currency.
+    function summaryTexts(stats, price) {
+        // A figure that was not measured reads "—", never a 0 (formatNumber(null) would print 0).
+        const measured = value => (finiteNumber(value) ? formatNumber(value) : '—');
+        const total = standingTotal(stats);
+        const built = (count, floorArea) => `${formatNumber(count)} (${formatSquareMetres(floorArea)})`;
+        const remaining = stats.remainingYield ? stats.remainingYield.total : null;
+        const noParcels = !finiteNumber(stats.parcelCount);
+        const avgParcel = !noParcels && stats.parcelMeasuredCount > 0 ? stats.parcelMeasuredArea / stats.parcelMeasuredCount : null;
+        return {
+            'plan-area': measured(stats.planAreaM2),
+            'resulting-parcels': noParcels ? tPlanStats('groundStats.noParcels', 'No parcels here')
+                : avgParcel === null ? formatNumber(stats.parcelCount) : `${formatNumber(stats.parcelCount)} (${formatSquareMetres(avgParcel)})`,
+            buildings: `${formatNumber(total.buildings)} (${formatSquareMetres(total.footprintM2)})`,
+            'buildings-remaining': remaining ? built(remaining.buildings, remaining.grossFloorAreaM2) : '—',
+            'buildings-new': built(stats.yield.total.buildings, stats.yield.total.grossFloorAreaM2),
+            'floor-area': formatNumber(total.grossFloorAreaM2),
+            'open-space': formatNumber(total.openSpaceM2),
+            'public-land': measured(stats.publicLandM2),
+            'private-land': measured(stats.privateLandM2),
+            apartments: formatNumber(total.apartments),
+            people: formatNumber(total.people),
+            jobs: formatNumber(total.jobs),
+            'sales-value': formatSalesValue(total.grossFloorAreaM2 * price)
+        };
+    }
+
     function renderPlanStatsModal(stats) {
         const modal = ensureModal();
         if (!modal) return;
@@ -432,30 +403,31 @@
             return;
         }
 
-        const total = stats.yield.total;
+        const total = standingTotal(stats);
         const noParcels = !finiteNumber(stats.parcelCount);
-        const avgParcel = !noParcels && stats.parcelMeasuredCount > 0 ? stats.parcelMeasuredArea / stats.parcelMeasuredCount : null;
+        const priceInput = modal.querySelector('#plan-stats-price');
+        const price = Math.max(0, Number(priceInput && priceInput.value) || 0);
+        const figures = summaryTexts(stats, price);
 
         set('scope', tPlanStats(
             'sidebar.proposals.planStats.scope',
-            '{{counted}} applied proposals counted of {{total}} on this map.',
-            { counted: formatNumber(stats.proposalsCounted), total: formatNumber(stats.proposalsTotal) }
+            '{{title}} · Designs: {{counted}}',
+            { title: stats.planTitle, counted: formatNumber(stats.proposalsCounted) }
         ));
 
-        if (noParcels) set('resulting-parcels', tPlanStats('groundStats.noParcels', 'No parcels here'));
-        else set('resulting-parcels', avgParcel === null
-            ? formatNumber(stats.parcelCount)
-            : `${formatNumber(stats.parcelCount)} (${formatSquareMetres(avgParcel)})`);
-        set('buildings', `${formatNumber(total.buildings)} (${formatSquareMetres(total.footprintM2)})`);
-        set('floor-area', formatNumber(total.grossFloorAreaM2));
-        set('open-space', formatNumber(total.openSpaceM2));
-        set('apartments', formatNumber(total.apartments));
-        set('people', formatNumber(total.people));
-        set('jobs', formatNumber(total.jobs));
-
-        const priceInput = modal.querySelector('#plan-stats-price');
-        const price = Math.max(0, Number(priceInput && priceInput.value) || 0);
-        set('sales-value', formatSalesValue(total.grossFloorAreaM2 * price));
+        set('plan-area', figures['plan-area']);
+        set('resulting-parcels', figures['resulting-parcels']);
+        set('buildings', figures.buildings);
+        set('buildings-remaining', figures['buildings-remaining']);
+        set('buildings-new', figures['buildings-new']);
+        set('floor-area', figures['floor-area']);
+        set('open-space', figures['open-space']);
+        set('public-land', figures['public-land']);
+        set('private-land', figures['private-land']);
+        set('apartments', figures.apartments);
+        set('people', figures.people);
+        set('jobs', figures.jobs);
+        set('sales-value', figures['sales-value']);
 
         const notes = [];
         if (total.unmeasuredBuildings > 0) {
@@ -480,6 +452,9 @@
                 { area: formatNumber(stats.openGroundM2) }
             ));
         }
+        if (stats.groundError) {
+            notes.push(tPlanStats('sidebar.proposals.planStats.groundFailed', 'Existing buildings and public land could not be read: {{reason}}', { reason: stats.groundError }));
+        }
         set('notes', notes.join(' '));
 
         renderEpochTable(modal, stats);
@@ -497,17 +472,6 @@
         if (modal) modal.hidden = true;
     }
 
-    function setPlanStatsButtonBusy(busy) {
-        planStatsBusy = !!busy;
-        const button = document.getElementById('planStatsButton');
-        if (!button) return;
-        const label = button.querySelector('.plan-stats-label');
-        const spinner = button.querySelector('.plan-stats-spinner');
-        if (label) label.style.display = busy ? 'none' : '';
-        if (spinner) spinner.style.display = busy ? 'inline-flex' : 'none';
-        updatePlanStatsButtonState();
-    }
-
     // Changing an assumption re-derives EVERY figure, not just the one beside the input: apartments
     // feed people, and both appear per period as well as in total, so a partial update is how two
     // numbers on one screen come to disagree. Nothing is measured again — the geometry did not move
@@ -516,9 +480,11 @@
         const modal = document.getElementById('plan-stats-modal');
         const api = yieldApi();
         if (!modal || !latestStats || latestStats.unavailable || !api) return;
+        const assumptions = readAssumptionsFromModal(modal);
         renderPlanStatsModal({
             ...latestStats,
-            yield: api.rederive(latestStats.yield, readAssumptionsFromModal(modal))
+            yield: api.rederive(latestStats.yield, assumptions),
+            remainingYield: latestStats.remainingYield ? api.rederive(latestStats.remainingYield, assumptions) : null
         });
     }
 
@@ -538,150 +504,161 @@
         });
     }
 
-    async function openPlanStats() {
-        setPlanStatsButtonBusy(true);
-        try {
-            const modal = ensureModal();
-            bindAssumptionInputs(modal);
-            const stats = await computePlanStatsAsync(readAssumptionsFromModal(modal));
-            renderPlanStatsModal(stats);
-        } catch (error) {
-            console.warn('Failed to compute plan stats', error);
-        } finally {
-            setPlanStatsButtonBusy(false);
+    // The plan's ground read with its roads, parks, squares and existing buildings:
+    // { land, remaining } or { groundError }.
+    async function withGround(snapshot, assumptions) {
+        try { return { ...snapshot, ...(await window.PresentState.groundOf(snapshot, assumptions)) }; }
+        catch (error) {
+            console.error(`[${new Date().toISOString()}] [PlanStats] the land of ${snapshot.plan?.content?.title || 'a plan'} could not be split`, error);
+            return { ...snapshot, groundError: error && error.message ? error.message : String(error) };
         }
     }
 
-    // ?planStats=1 opens this dialog on load, so a document can CITE the figures with a
-    // URL instead of telling the reader to find a button. Anything but 0/false counts as on.
-    const PLAN_STATS_URL_KEYS = ['planStats', 'plan-stats'];
-    const PLAN_STATS_WAIT_MS = 30000;      // how long to wait for the first applied proposal
-    const PLAN_STATS_QUIET_MS = 20000;     // stop following once the plan has not moved for this long
-    const PLAN_STATS_RERENDER_MS = 10000;  // floor between re-renders while the plan is still applying
-    const PLAN_STATS_FOLLOW_MS = 300000;   // hard ceiling on following, whatever happens
-    const PLAN_STATS_POLL_MS = 250;
-
-    function planStatsRequestedByUrl() {
-        let params;
-        try {
-            params = new URLSearchParams(window.location.search);
-        } catch (_) {
-            return false;
-        }
-        return PLAN_STATS_URL_KEYS.some(key => {
-            const value = params.get(key);
-            return value !== null && value !== '0' && value !== 'false';
-        });
+    let openedPlan = 0;
+    async function openPlanStats(plan) {
+        const snapshot = await window.PlanAnalysis.prepare(plan);
+        const modal = ensureModal();
+        bindAssumptionInputs(modal);
+        const token = ++openedPlan;
+        renderPlanStatsModal(computePlanStatsSync(snapshot, readAssumptionsFromModal(modal)));
+        // Public and private land needs OpenStreetMap's parks and squares, which can take a while:
+        // the other figures show first, these follow while the dialog still shows this plan.
+        const land = await withGround(snapshot, readAssumptionsFromModal(modal));
+        if (token === openedPlan && !modal.hidden) renderPlanStatsModal(computePlanStatsSync(land, readAssumptionsFromModal(modal)));
     }
 
-    function planSnapshot() {
-        if (typeof proposalStorage === 'undefined' || typeof proposalStorage.getAllProposals !== 'function') {
-            return { total: 0, applied: 0 };
-        }
-        const all = proposalStorage.getAllProposals() || [];
-        return { total: all.length, applied: all.filter(p => p && p.applied === true).length };
-    }
+    // ── Plan comparison (Lists → Plans → Compare plans) ─────────────────────────────────────────
+    // Each chosen plan is measured as Plan stats measures one, without applying it, at the default
+    // assumptions, and shown in one table. Swap turns it between plans as columns and plans as rows.
+    // A plan that cannot be measured keeps its place and says why.
+    let comparePlansAsColumns = true;
 
-    function planStatsModalIsOpen() {
-        const modal = document.getElementById('plan-stats-modal');
-        return !!modal && modal.hidden === false;
-    }
-
-    // A plan does not arrive at once. The dialog counts only APPLIED proposals and computes
-    // once, and on the real Šibenik plan the applied flags resolve over more than a minute
-    // (measured: 138 → 149 across 35 s, long after all 299 proposals were in). Opening on the
-    // first sighting therefore quotes a fraction of the plan, and opening on "nothing yet"
-    // quotes a plan of zeros indistinguishable from a genuinely empty one.
-    //
-    // Waiting for the stream to "settle" cannot be made sound either — a quiet gap between two
-    // polls looks exactly like the end of it. So: never open on nothing, then keep watching and
-    // RE-RENDER whenever the plan moves under us, until it goes quiet or the reader closes the
-    // dialog. The figures converge on the truth instead of freezing part-way. Re-rendering
-    // preserves whatever assumptions the reader typed, because openPlanStats reads them back
-    // out of the modal first.
-    function openPlanStatsWhenPlanIsLoaded() {
-        const waitUntil = Date.now() + PLAN_STATS_WAIT_MS;
-        const followUntil = Date.now() + PLAN_STATS_FOLLOW_MS;
-        let shown = null;        // what the dialog currently displays
-        let previous = null;     // what the previous poll saw
-        let lastChangeAt = Date.now();
-        let lastRenderAt = 0;
-
-        (function attempt() {
-            const now = planSnapshot();
-
-            // "Quiet" means the PLAN stopped moving, which is not the same as "nothing new to
-            // draw". The store briefly empties and refills while proposals are applied, and
-            // measuring quiet against the rendered snapshot let that lull count as the end of
-            // loading: the follower gave up at 0 applied and never saw the 159 that followed.
-            if (!previous || now.total !== previous.total || now.applied !== previous.applied) {
-                lastChangeAt = Date.now();
-            }
-            previous = now;
-
-            // Re-rendering is not free — it re-runs plan-yield and walks every resulting parcel's
-            // geometry — and the plan is at its most expensive exactly while it is applying:
-            // a 299-proposal plan applies one proposal at a time, ~3.6 s each, for about 18
-            // minutes, on this same main thread. Following it change-for-change would put a full
-            // recompute into every one of those gaps. The first render is immediate; after that
-            // the figures refresh on a floor, and the final state is guaranteed by the quiet rule
-            // below rather than by catching every intermediate value.
-            const changed = !shown || now.total !== shown.total || now.applied !== shown.applied;
-            const dueForRender = !shown || (Date.now() - lastRenderAt) >= PLAN_STATS_RERENDER_MS;
-            if (now.applied > 0 && changed && dueForRender) {
-                // Opened once already and the reader closed it — their call, stop following.
-                if (shown && !planStatsModalIsOpen()) return;
-                shown = now;
-                lastRenderAt = Date.now();
-                openPlanStats();
-            } else if (!shown && Date.now() >= waitUntil) {
-                console.warn(`[plan-stats] ?planStats: nothing applied after ${PLAN_STATS_WAIT_MS} ms `
-                    + `(${now.applied} of ${now.total}) — opening with what is loaded`);
-                openPlanStats();
-                return;
-            }
-
-            const quiet = shown && (Date.now() - lastChangeAt) >= PLAN_STATS_QUIET_MS;
-            const givingUp = quiet || Date.now() >= followUntil;
-            if (givingUp) {
-                // The throttle above means the LAST change is the one most likely to have been
-                // skipped — and stopping here on a stale figure is precisely the quotable-but-wrong
-                // number this whole path exists to avoid. Draw the final state before letting go.
-                //
-                // Unreachable while RERENDER_MS < QUIET_MS, because the render floor is then always
-                // crossed before the quiet window expires and the normal path above has already
-                // redrawn. It is the backstop for someone changing those constants: set the floor
-                // above the quiet window and this becomes the only thing standing between the
-                // reader and a stale number. Its test fails when both are gone.
-                const stale = now.applied > 0
-                    && (!shown || now.total !== shown.total || now.applied !== shown.applied);
-                if (stale && planStatsModalIsOpen()) {
-                    shown = now;
-                    openPlanStats();
-                }
-                return;
-            }
-            setTimeout(attempt, PLAN_STATS_POLL_MS);
-        })();
-    }
-
-    function initializePlanStatsUi() {
-        const button = document.getElementById('planStatsButton');
-        if (button && !button.dataset.planStatsBound) {
-            button.dataset.planStatsBound = '1';
-            button.addEventListener('click', event => {
-                if (event) event.preventDefault();
-                openPlanStats();
+    // entries: [{ title, figures (summaryTexts) } | { title, error }] → the table element.
+    function compareTable(entries, plansAsColumns) {
+        const table = el('table', 'plan-stats-table plan-compare__table');
+        table.dataset.planCompare = plansAsColumns ? 'plans-as-columns' : 'plans-as-rows';
+        const metrics = SUMMARY_ROWS.map(row => ({ key: row.key, label: tPlanStats(row.i18nKey, row.label) }));
+        const planHeader = (entry, scope) => {
+            const th = el('th', 'plan-compare__plan', entry.title);
+            th.setAttribute('scope', scope);
+            if (entry.present) th.className += ' plan-compare__plan--present';
+            if (entry.measuring) th.appendChild(el('span', 'plan-compare__status', tPlanStats('planCompare.measuring', 'Measuring…')));
+            if (entry.error) th.appendChild(el('span', 'plan-compare__error',
+                tPlanStats('planCompare.failed', 'Not measured: {{reason}}', { reason: entry.error })));
+            else if (entry.groundError) th.appendChild(el('span', 'plan-compare__error',
+                tPlanStats('sidebar.proposals.planStats.groundFailed', 'Existing buildings and public land could not be read: {{reason}}', { reason: entry.groundError })));
+            return th;
+        };
+        const value = (entry, key) => el('td', 'plan-stats-table__number', entry.figures ? entry.figures[key] : '—');
+        const head = document.createElement('tr');
+        head.appendChild(el('th', null, plansAsColumns ? '' : tPlanStats('plan.label', 'Plan')));
+        if (plansAsColumns) entries.forEach(entry => head.appendChild(planHeader(entry, 'col')));
+        else metrics.forEach(metric => { const th = el('th', 'plan-stats-table__number', metric.label); th.setAttribute('scope', 'col'); head.appendChild(th); });
+        table.appendChild(head);
+        if (plansAsColumns) {
+            metrics.forEach(metric => {
+                const tr = document.createElement('tr');
+                const th = el('th', null, metric.label); th.setAttribute('scope', 'row'); th.dataset.planCompareRow = metric.key; tr.appendChild(th);
+                entries.forEach(entry => tr.appendChild(value(entry, metric.key)));
+                table.appendChild(tr);
+            });
+        } else {
+            entries.forEach(entry => {
+                const tr = document.createElement('tr');
+                tr.appendChild(planHeader(entry, 'row'));
+                metrics.forEach(metric => tr.appendChild(value(entry, metric.key)));
+                table.appendChild(tr);
             });
         }
-        updatePlanStatsButtonState();
-        if (planStatsRequestedByUrl()) openPlanStatsWhenPlanIsLoaded();
+        return table;
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        initializePlanStatsUi();
-    });
+    async function comparePlans(plans) {
+        const assumptions = readAssumptionsFromModal(null);
+        const price = salesPrice().salesPerSqm;
+        const entries = [];
+        const prepared = [];
+        for (const plan of plans) {
+            const title = plan?.content?.title || '';
+            try {
+                const snapshot = await withGround(await window.PlanAnalysis.prepare(plan), assumptions);
+                const stats = computePlanStatsSync(snapshot, assumptions);
+                prepared.push({ title: stats.planTitle || title, cid: plan?.cid || null, snapshot });
+                entries.push({ title: stats.planTitle || title, figures: summaryTexts(stats, price), groundError: stats.groundError });
+            } catch (error) {
+                console.error(`[${new Date().toISOString()}] [PlanCompare] ${title || plan?.cid} could not be measured`, error);
+                entries.push({ title, error: error && error.message ? error.message : String(error) });
+            }
+        }
+        // The present state: what stands on a chosen plan's land today, as a column of its own.
+        const present = { title: tPlanStats('planCompare.presentState', 'Present state'), present: true, measuring: false };
+        const city = window.normalizeCityCodeForApi(window.resolveCurrentCityCode());
+        const compared = new Set(prepared.map(row => row.cid));
+        const saved = new Map(window.NamedPlans.list({ storedOnly: true })
+            .filter(row => !compared.has(row.cid) && (!row.content.view.city || window.normalizeCityCodeForApi(row.content.view.city) === city))
+            .map(row => [`saved:${row.cid}`, row]));
+
+        const body = el('div', 'plan-compare');
+        const basisField = el('label', 'proposal-editor-field plan-compare__basis');
+        basisField.appendChild(el('span', null, tPlanStats('planCompare.basis', 'Present state over the land of')));
+        const basis = el('select');
+        basis.dataset.planCompareBasis = '';
+        const option = (value, text) => { const node = el('option', null, text); node.value = value; basis.appendChild(node); };
+        if (prepared.length > 1) option('compared', tPlanStats('planCompare.basisCompared', 'All compared plans'));
+        prepared.forEach((row, index) => option(`plan:${index}`, row.title));
+        saved.forEach((row, value) => option(value, row.content.title));
+        basisField.appendChild(basis);
+        const swap = el('button', 'btn btn-sm plan-compare__swap', tPlanStats('planCompare.swap', 'Swap rows and columns'));
+        swap.type = 'button';
+        swap.dataset.planCompareSwap = '';
+        const scroll = el('div', 'plan-compare__scroll');
+        const draw = () => {
+            scroll.innerHTML = '';
+            scroll.appendChild(compareTable([present, ...entries], comparePlansAsColumns));
+            swap.setAttribute('aria-pressed', String(!comparePlansAsColumns));
+        };
+        let measuring = 0;
+        async function measurePresent(value) {
+            const token = ++measuring;
+            Object.assign(present, { measuring: true, error: null, figures: null });
+            draw();
+            try {
+                const basisPlans = value === 'compared' ? prepared.map(row => row.snapshot)
+                    : value.startsWith('plan:') ? [prepared[Number(value.slice(5))].snapshot]
+                    : [await window.PlanAnalysis.prepare(saved.get(value))];
+                const stats = await window.PresentState.measure({ title: present.title, basis: basisPlans, assumptions });
+                if (token !== measuring) return;
+                present.figures = summaryTexts(stats, price);
+            } catch (error) {
+                if (token !== measuring) return;
+                console.error(`[${new Date().toISOString()}] [PlanCompare] the present state could not be measured`, error);
+                present.error = error && error.message ? error.message : String(error);
+            }
+            present.measuring = false;
+            draw();
+        }
+        basis.addEventListener('change', () => { void measurePresent(basis.value); });
+        swap.addEventListener('click', () => { comparePlansAsColumns = !comparePlansAsColumns; draw(); });
+        const note = el('p', 'sheet-note', tPlanStats('planCompare.assumptions',
+            'At the default assumptions and {{price}} per m². Plan stats on one plan lets you change them.',
+            { price: formatSalesValue(price) }));
+        const definition = el('p', 'sheet-note', tPlanStats('planCompare.landDefinition',
+            'Public land is roads and OpenStreetMap parks and squares; private land is the rest of the parcels. The present state counts every existing building on that land.'));
+        body.appendChild(basisField);
+        body.appendChild(swap);
+        body.appendChild(scroll);
+        body.appendChild(note);
+        body.appendChild(definition);
+        draw();
+        const dialog = window.CbDialog.open({ title: tPlanStats('planCompare.title', 'Compare plans'), size: 'lg', className: 'plan-compare-dialog', body });
+        if (basis.children.length) {
+            basis.value = basis.children[0].value;
+            void measurePresent(basis.value);
+        } else present.error = tPlanStats('planCompare.noBasis', 'No saved plan to take the land from.');
+        draw();
+        return dialog;
+    }
 
     window.showPlanStatsModal = openPlanStats;
-    window.updatePlanStatsButtonState = updatePlanStatsButtonState;
+    window.comparePlanStats = comparePlans;
 })();

@@ -149,18 +149,5 @@ body.realistic-mode-active #mode-walk-toggle {
     top: 8px;
 }
 
-/* Photo source selection is the Parcel section's read-only body in the click panel.
-   Renderer ink reads the --cb-photo-parcel-* roles in tokens.css. */
-.photoreal-parcel-card {
-    box-sizing: border-box;
-    color: var(--cb-text);
-    font: var(--cb-text-base)/var(--cb-leading) var(--cb-font-sans);
-    overflow-wrap: anywhere;
-}
-.photoreal-parcel-card[hidden] { display: none; }
-.photoreal-parcel-card-heading { display: none; }
-.photoreal-parcel-card h2 { margin: 0; font-size: var(--cb-text-base); }
-.photoreal-parcel-card p { margin: var(--cb-space-2) 0 0; }
-.photoreal-parcel-reference { font-weight: var(--cb-weight-semibold); }
 .photoreal-parcel-note { color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
 .photoreal-parcel-note:empty { display: none; }

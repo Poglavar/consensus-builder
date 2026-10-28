@@ -17,7 +17,7 @@ test('direct Apply explains an unloaded proposal without attempting a map mutati
   });
   expect(result.applied).toBe(false);
   expect(result.calls).toBe(0);
-  expect(result.failure).toBe('This proposal is not loaded in this browser. Open it from the proposals list, then try again.');
+  expect(result.failure).toBe('This design is not loaded in this browser. Open it from the designs list, then try again.');
   await expect(page.locator('#ephemeral-message-container')).toContainText(result.failure);
   await expect(page.locator('#ephemeral-message-container')).not.toContainText('does not support map application');
 });

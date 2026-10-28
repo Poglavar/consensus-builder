@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "345",
+  "name": "Managua, Nicaragua",
+  "point": [
+    12.1262758109836,
+    -86.2552053666942
+  ],
+  "bindings": [
+    {
+      "appCityId": "managua",
+      "runtimeConfig": {
+        "id": "managua",
+        "wupCityCode": "345",
+        "label": "Managua, Nicaragua",
+        "currency": {
+          "locale": "es-NI",
+          "code": "NIO"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            12.1262758109836,
+            -86.2552053666942
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            12.1262758109836,
+            -86.2552053666942
+          ],
+          "fallbackDataset": [
+            -86.2552053666942,
+            12.1262758109836
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ni-ineter-dgcf-nc-managua-wfs",
+          "idPrefix": "NI-INETER-NC-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "INETER · Dirección General de Catastro Físico. Public cadastral consultation; publisher conditions apply."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ni-ineter-dgcf-nc-managua-wfs",
+      "adapter": "wfs",
+      "name": "INETER DGCF — Managua cadastral parcels",
+      "operator": "Instituto Nicaragüense de Estudios Territoriales · Dirección General de Catastro Físico",
+      "countryCode": "NI",
+      "cityIds": [
+        "managua"
+      ],
+      "defaultForCity": true,
+      "endpoint": "https://mapserveride.ineter.gob.ni/geoserver/wfs",
+      "featureType": "wsINETER-DGCF:nc-managua",
+      "version": "2.0.0",
+      "idField": "nc",
+      "idType": "string",
+      "idPattern": "^[0-9]{14}$",
+      "idPrefix": "NI-INETER-NC-",
+      "outFields": [
+        "nc"
+      ],
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "minRequestIntervalMs": 100,
+      "sourceCrs": "EPSG:32616",
+      "outputCrs": "OGC:CRS84",
+      "returnsWGS84": true,
+      "supportsPagination": true,
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true
+      },
+      "browserTransport": "relay",
+      "ownership": false,
+      "scope": "Bounded Managua cadastral parcel reads only; municipal completeness and source currency unverified.",
+      "attribution": "INETER · Dirección General de Catastro Físico. Public cadastral consultation; publisher conditions apply.",
+      "license": "Anonymous public WFS consultation is available. An explicit external-reuse licence and applicability of IDEC terms to this WFS remain unverified; publisher clarification is a follow-up.",
+      "licenseUrl": "https://idec.ineter.gob.ni/agrimensuras/terminos/",
+      "website": "https://consultacf.ineter.gob.ni/",
+      "metricSridByCity": {
+        "managua": 32616
+      },
+      "metricSrid": 32616
+    }
+  ]
+}

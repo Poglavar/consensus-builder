@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7505",
+  "name": "Santos, Brazil",
+  "point": [
+    -23.960626979388,
+    -46.3330720622846
+  ],
+  "bindings": [
+    {
+      "appCityId": "santos",
+      "runtimeConfig": {
+        "id": "santos",
+        "wupCityCode": "7505",
+        "label": "Santos, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -23.960626979388,
+            -46.3330720622846
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -23.960626979388,
+            -46.3330720622846
+          ],
+          "fallbackDataset": [
+            -46.3330720622846,
+            -23.960626979388
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-santos-prefeitura-mapa-lotes-2026",
+          "idPrefix": "BR-SANTOS-MAPA-LOTES-2026:LOTE:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Prefeitura Municipal de Santos · Mapa de Lotes 2026 · SIRGAS 2000 / UTM 23S converted to WGS84"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-santos-prefeitura-mapa-lotes-2026",
+      "name": "Santos Prefeitura Mapa de Lotes 2026",
+      "adapter": "santos-lotes",
+      "endpoint": "https://www.santos.sp.gov.br/static/files_www/files/portal_files/SEDURB/COINURB/Mapas_Aux/lotes_2026-sir.zip",
+      "countryCode": "BR",
+      "countryName": "Brazil",
+      "cityIds": [
+        "santos"
+      ],
+      "defaultForCity": true,
+      "idPrefix": "BR-SANTOS-MAPA-LOTES-2026:LOTE:",
+      "idField": "LOTE",
+      "idType": "string",
+      "parcelNumberField": "LOTE",
+      "outFields": [
+        "LOTE"
+      ],
+      "sourceCrs": "EPSG:31983",
+      "projection": "EPSG:31983",
+      "metricSrid": 32723,
+      "returnsWGS84": true,
+      "sourceLayer": "LOTES_2026-SIR",
+      "browserTransport": "relay",
+      "maxFeatures": 10000,
+      "maxRecordPoints": 100000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 1,
+      "expectedArchiveBytes": 4046406,
+      "expectedEtag": "\"3dbe46-64caca3bb0900\"",
+      "expectedSnapshotFeatures": 44278,
+      "prjSha256": "9ecb93a63f0561f69281402099c3d4ef8713de9c48bd4627354724f8a6a6bcee",
+      "operator": "Prefeitura Municipal de Santos · SEDURB/COINURB",
+      "attribution": "Prefeitura Municipal de Santos · Mapa de Lotes 2026 · SIRGAS 2000 / UTM 23S converted to WGS84",
+      "catalogueUrl": "https://www.santos.sp.gov.br/?q=institucional/mapas-de-santos",
+      "licenceNote": "Public municipal download; an explicit reuse licence has not been located. Attribution retained. Publisher confirmation remains a follow-up.",
+      "scope": "Municipal fiscal/cadastral lot reference polygons. Bounded availability at the unchanged Santos city locator; municipal completeness, legal title and survey accuracy are not established.",
+      "capabilities": {
+        "bounds": true,
+        "ids": true,
+        "geometry": true,
+        "areaEnumeration": true
+      },
+      "zipMembers": {
+        "prj": {
+          "name": "LOTES_2026-SIR.prj",
+          "crc": 504241921,
+          "compressedBytes": 264,
+          "bytes": 418,
+          "localOffset": 151515,
+          "dataOffset": 151595
+        },
+        "dbf": {
+          "name": "LOTES_2026-SIR.dbf",
+          "crc": 3333084030,
+          "compressedBytes": 311625,
+          "bytes": 5313490,
+          "localOffset": 151875,
+          "dataOffset": 151955
+        },
+        "shp": {
+          "name": "LOTES_2026-SIR.shp",
+          "crc": 3075437436,
+          "compressedBytes": 3582164,
+          "bytes": 10640092,
+          "localOffset": 463596,
+          "dataOffset": 463676
+        }
+      },
+      "exactReadHints": {
+        "BR-SANTOS-MAPA-LOTES-2026:LOTE:55044022:GEOMSHA256:72d171c56d2ea53fcc342569d1e2b1588dce70d138bff2a1316ec8d9d441792c": 13809
+      }
+    }
+  ]
+}

@@ -36,6 +36,7 @@
         let unbindKeyboard = null;
         let boundButtons = [];
         let boundRedoButtons = [];
+        const inputCleanups = [];
 
         function announce() {
             if (typeof options.onChange === 'function') {
@@ -67,12 +68,52 @@
             if (typeof options.isEqual === 'function' && stack.length) {
                 try { if (options.isEqual(stack[stack.length - 1], snapshot)) return false; } catch (_) { }
             }
+            return appendSnapshot(snapshot);
+        }
+
+        function appendSnapshot(snapshot) {
             stack.push(snapshot);
             while (stack.length > limit) stack.shift();
             // A new edit starts a new branch: what was undone before it can no longer be redone.
             redoStack.length = 0;
             announce();
             return true;
+        }
+
+        // Group range drags and held adjustment keys, while retaining ordinary input events
+        // (including assistive technology). Compare captured model state so rejected/no-op values
+        // never enable Undo. Text entry groups until change or blur.
+        function bindInput(element, apply) {
+            if (!element) return () => {};
+            let recorded = false;
+            let pointer = false;
+            let key = false;
+            const finish = () => { recorded = false; pointer = false; key = false; };
+            const handlers = {
+                pointerdown: () => { finish(); pointer = true; },
+                pointerup: finish,
+                pointercancel: finish,
+                keydown: event => {
+                    if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(event.key)) return;
+                    if (!key) recorded = false;
+                    key = true;
+                },
+                keyup: event => { if (key) finish(); },
+                blur: finish,
+                change: () => { if (!pointer && !key) finish(); },
+                input: event => {
+                    const before = recorded ? undefined : capture();
+                    apply(event);
+                    if (!recorded && before !== undefined && JSON.stringify(before) !== JSON.stringify(capture())) {
+                        appendSnapshot(before);
+                        recorded = true;
+                    }
+                }
+            };
+            Object.entries(handlers).forEach(([type, handler]) => element.addEventListener(type, handler));
+            const cleanup = () => Object.entries(handlers).forEach(([type, handler]) => element.removeEventListener(type, handler));
+            inputCleanups.push(cleanup);
+            return cleanup;
         }
 
         function undo() {
@@ -172,13 +213,14 @@
 
         function destroy() {
             if (unbindKeyboard) { try { unbindKeyboard(); } catch (_) { } unbindKeyboard = null; }
+            inputCleanups.splice(0).forEach(cleanup => cleanup());
             boundButtons = [];
             boundRedoButtons = [];
             stack.length = 0;
             redoStack.length = 0;
         }
 
-        return { record, undo, redo, discardLast, clear, canUndo, canRedo, depth, bindKeyboard, bindButton, bindRedoButton, destroy };
+        return { record, undo, redo, discardLast, clear, canUndo, canRedo, depth, bindInput, bindKeyboard, bindButton, bindRedoButton, destroy };
     }
 
     return { create, DEFAULT_LIMIT };

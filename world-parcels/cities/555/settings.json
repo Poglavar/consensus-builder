@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "555",
+  "name": "Helsinki (Helsingfors), Finland",
+  "point": [
+    60.2151504892048,
+    24.9229563703619
+  ],
+  "bindings": [
+    {
+      "appCityId": "helsinki_helsingfors",
+      "runtimeConfig": {
+        "id": "helsinki_helsingfors",
+        "wupCityCode": "555",
+        "label": "Helsinki (Helsingfors), Finland",
+        "currency": {
+          "locale": "fi-FI",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            60.2151504892048,
+            24.9229563703619
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            60.2151504892048,
+            24.9229563703619
+          ],
+          "fallbackDataset": [
+            24.9229563703619,
+            60.2151504892048
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "fi-helsinki-city-kiinteisto-alue-wfs",
+          "idPrefix": "FI-HEL-KIINTEISTO-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Data and maps (c) City of Helsinki, City Survey Services"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "fi-helsinki-city-kiinteisto-alue-wfs",
+      "name": "Helsinki cadastral property areas (Kiinteisto_alue)",
+      "adapter": "wfs",
+      "endpoint": "https://kartta.hel.fi/ws/geoserver/avoindata/wfs",
+      "version": "1.1.0",
+      "featureType": "avoindata:Kiinteisto_alue",
+      "geometryField": "geom",
+      "idField": "id",
+      "idType": "integer",
+      "idPrefix": "FI-HEL-KIINTEISTO-",
+      "outFields": [
+        "id"
+      ],
+      "requestProperties": true,
+      "filterBoundsGeometry": true,
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 4,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 30000,
+      "countryCode": "FI",
+      "metricSrid": 32635,
+      "nativeCrs": "EPSG:3879",
+      "operator": "City of Helsinki, Urban Environment Division, City Survey Services",
+      "attribution": "Data and maps (c) City of Helsinki, City Survey Services",
+      "licenceNote": "Open WFS published under City Survey Services default CC BY 4.0 unless otherwise stated. Broader register metadata has mixed access terms; exact-layer clarification remains a follow-up.",
+      "scope": "Municipal Helsinki property-area records; bounded checks only, wider metropolitan area and complete municipality coverage unverified.",
+      "capabilities": {
+        "bbox": true,
+        "exactId": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "cityIds": [
+        "helsinki_helsingfors"
+      ],
+      "defaultForCity": true
+    }
+  ]
+}

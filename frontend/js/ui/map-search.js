@@ -1,6 +1,6 @@
 // ui/map-search.js — the map search box (omnibox) top-left, with the city chip: one input whose
 // grouped, keyboard-navigable results cover cities (configured + the world coverage registry, "Use
-// my location"), parcel ids (locateParcelById), published designs (GET /designs?q=), addresses
+// my location"), parcel ids (locateParcelById), plans and designs (GET /search?q=), addresses
 // (Photon geocoder) and commands (UiCommands). The decisions live in js/ui/search-model.js; this
 // file only renders and wires them. window.MapSearch: initialize, focus, showCities, refreshChip, close.
 (function (win) {
@@ -11,7 +11,7 @@
     const Model = win.SearchModel;
     const RECENT_KEY = 'cb_map_search_recent';
     const PLACE_DEBOUNCE_MS = 350;
-    const PROPOSAL_DEBOUNCE_MS = 250;
+    const CATALOG_DEBOUNCE_MS = 120;
 
     const state = {
         initialized: false,
@@ -29,10 +29,11 @@
         selectable: [],
         activeIndex: -1,
         notes: new Map(),        // item key -> { kind: 'pending' | 'error' | 'info', text }
-        proposals: { query: '', status: 'idle', items: [], timer: null, abort: null },
-        places: { query: '', status: 'idle', items: [], timer: null, abort: null },
+        catalog: { query: '', status: 'idle', results: null, timer: null, abort: null, cache: Model.createQueryCache() },
+        places: { query: '', status: 'idle', results: null, timer: null, abort: null, cache: Model.createQueryCache() },
         coverage: null,
         coverageRequested: false,
+        cityCatalog: null,
         marker: null,
         enterPendingFor: null    // the query a bare Enter was pressed on while results were loading
     };
@@ -48,8 +49,6 @@
     };
 
     const log = (...args) => console.info(`[${new Date().toISOString()}] [map-search]`, ...args);
-    const isMac = () => /Mac|iPhone|iPad/.test((win.navigator && (win.navigator.platform || win.navigator.userAgent)) || '');
-    const paletteShortcut = () => (isMac() ? '⌘K' : 'Ctrl K');
 
     // ---- city data ----
     const manager = () => win.CityConfigManager || null;
@@ -61,27 +60,38 @@
     function configuredCities() {
         const m = manager();
         if (!m || typeof m.getAvailableCities !== 'function') return [];
+        const language = win.i18n?.getLanguage();
+        const backend = win.getBackendBase();
+        if (state.cityCatalog?.manager === m && state.cityCatalog.language === language
+            && state.cityCatalog.backend === backend) return state.cityCatalog.cities;
         // The label in the UI language (city.labels.<id>); the configured English label stays an
         // alias, so "Belgrade" still finds Beograd in a Serbian UI.
-        return m.getAvailableCities().map(config => ({
+        const cities = m.getAvailableCities().map(config => ({
             id: config.id,
             label: cityLabel(config.id, config.label || config.id),
             aliases: config.label && cityLabel(config.id, config.label) !== config.label ? [config.label] : [],
             center: typeof m.getCityCenter === 'function' ? m.getCityCenter(config) : null,
             // the location data the city reads (cadastre and buildings): an in-place move stays
-            // only within the same
-            parcelSource: m.getPlaceDataKey(config.id)
+            // only within the same parcel and building sources.
+            // Only the current and nearest cities need their source settings compared. Resolving
+            // every city's settings here made each keystroke perform thousands of storage reads.
+            get parcelSource() { return m.getPlaceDataKey(config.id); }
         }));
+        state.cityCatalog = { manager: m, language, backend, cities, codes: null };
+        return cities;
     }
 
     function cityCodeMap() {
         const m = manager();
         const out = {};
         if (!m || typeof m.getCityCodeForCityId !== 'function') return out;
-        configuredCities().forEach(city => {
+        const cities = configuredCities();
+        if (state.cityCatalog.codes) return state.cityCatalog.codes;
+        cities.forEach(city => {
             const code = m.getCityCodeForCityId(city.id);
             if (code) out[code] = city.id;
         });
+        state.cityCatalog.codes = out;
         return out;
     }
 
@@ -140,7 +150,7 @@
         if (shell && typeof shell.openWorldView === 'function') {
             close({ blur: true });
             const opening = win.BusyControl.track(state.chip, () => shell.openWorldView(opts));
-            opening.catch(error => console.error(`[${new Date().toISOString()}] [map-search] the world view failed to open`, error));
+            opening.catch(error => win.WorldEntry.reportOpenFailure(error));
             return true;
         }
         return false;
@@ -154,7 +164,7 @@
 
     function citiesGroup(query, withLocation) {
         const current = currentCityId();
-        const items = Model.rankCities(query, configuredCities(), current).map(city => item({
+        const items = Model.rankCities(query, configuredCities(), current).slice(0, Model.GROUP_LIMITS.cities).map(city => item({
             key: `city:${city.id}`,
             kind: 'city',
             rank: city.rank,
@@ -240,8 +250,25 @@
         return null;
     }
 
+    function plansGroup(query) {
+        const source = state.catalog;
+        const fresh = source.query === query ? source.results?.plans || [] : [];
+        const saved = [win.NamedPlans?.current, ...(win.AgreementStore?.list?.() || []).map(agreement => agreement.plan)]
+            .filter(record => record?.cid && record.content)
+            .map(record => ({ cid: record.cid, title: record.content.title, city: record.content.view.city,
+                designCount: record.content.designCids.length }));
+        const items = Model.rankPlans([...saved, ...fresh], query).map(plan => item({
+            key: `plan:${plan.cid}`, kind: 'plan', rank: plan.rank, icon: 'fas cb-icon-plan', label: plan.title,
+            sublabel: t('mapSearch.planDesignCount', '{{count}} designs', { count: plan.designCount }),
+            run: () => { close({ blur: true }); win.location.assign(win.NamedPlans.link(plan.cid)); }
+        }));
+        const status = statusOf(source, query, t('mapSearch.plansLoading', 'Searching plans…'),
+            t('mapSearch.plansError', 'Could not search plans'));
+        return { id: 'plans', label: t('mapSearch.groups.plans', 'Plans'), items, status: items.length ? null : status };
+    }
+
     function proposalsGroup(query) {
-        const source = state.proposals;
+        const source = state.catalog;
         const current = currentCityId();
         const cityIds = configuredCities().map(city => city.id);
         // Explore is deliberately absent from the city picker, but server results can be authored
@@ -250,7 +277,7 @@
         const exploreId = manager()?.EXPLORE_CITY_ID || 'explore';
         if (!cityIds.includes(exploreId)) cityIds.push(exploreId);
         const codes = cityCodeMap();
-        const fresh = source.query === query ? source.items : [];
+        const fresh = source.query === query ? source.results?.designs || [] : [];
         const local = localProposals(query);
         const withCity = fresh
             .map(raw => Object.assign({}, raw, { cityId: Model.resolveProposalCityId(raw.city, cityIds, codes) }));
@@ -262,8 +289,8 @@
                 key: `proposal:${id}`,
                 kind: 'proposal',
                 rank: Number.isFinite(raw.searchRank) ? raw.searchRank : 2,
-                icon: 'fas fa-file-signature',
-                label: raw.title || raw.name || t('mapSearch.untitledProposal', 'Proposal {{id}}', { id }),
+                icon: 'fas cb-icon-design',
+                label: raw.title || raw.name || t('mapSearch.untitledProposal', 'Design {{id}}', { id }),
                 sublabel: [raw.author, raw.localOnly ? t('mapSearch.localProposal', 'On this device') : '',
                     otherCity ? t('mapSearch.inCity', 'In {{city}}', { city: shortCityLabel(manager().getCityLabel(raw.cityId)) }) : '']
                     .filter(Boolean).join(' · '),
@@ -271,9 +298,9 @@
             });
         });
         const status = statusOf(source, query,
-            t('mapSearch.proposalsLoading', 'Searching proposals…'),
-            t('mapSearch.proposalsError', 'Could not search proposals'));
-        return { id: 'proposals', label: t('mapSearch.groups.proposals', 'Proposals'), items, status: items.length ? null : status };
+            t('mapSearch.proposalsLoading', 'Searching designs…'),
+            t('mapSearch.proposalsError', 'Could not search designs'));
+        return { id: 'proposals', label: t('mapSearch.groups.proposals', 'Designs'), items, status: items.length ? null : status };
     }
 
     function localProposals(query) {
@@ -297,7 +324,7 @@
         const source = state.places;
         const cities = configuredCities();
         const current = currentCityId();
-        const fresh = source.query === query ? source.items : [];
+        const fresh = source.query === query ? source.results || [] : [];
         const items = fresh.map(place => {
             const coverageTier = state.coverage ? state.coverage.tierAt(place.lat, place.lon) : null;
             const where = Model.classifyPlaceLocation(place, cities, current, { liveCityId: coverageTier && coverageTier.cityId });
@@ -340,7 +367,8 @@
             kind: 'command',
             rank: entry.rank,
             icon: entry.entry.icon,
-            label: entry.label,
+            label: commands.actionLabel(entry.label, entry.entry.kind === 'toggle'
+                ? doc.getElementById(entry.entry.control)?.checked : null, tFn),
             sublabel: '',
             run: () => runCommand(entry.entry.id)
         }));
@@ -359,20 +387,6 @@
         return { id: 'recent', label: t('mapSearch.groups.recent', 'Recent searches'), items };
     }
 
-    function hintItem() {
-        return item({
-            key: 'hint:palette',
-            kind: 'hint',
-            icon: 'fas fa-terminal',
-            label: t('mapSearch.commandsHint', 'Commands…'),
-            shortcut: paletteShortcut(),
-            run: () => {
-                close({ blur: true });
-                if (win.CommandPalette) win.CommandPalette.open();
-            }
-        });
-    }
-
     function buildGroups() {
         const cls = Model.classifyQuery(state.query, parcelQueryOptions());
         let groups;
@@ -386,36 +400,44 @@
             const all = [];
             if (cls.kinds.includes('city')) all.push(citiesGroup(cls.text, false));
             if (cls.kinds.includes('parcel')) all.push(parcelsGroup(cls.text));
+            if (cls.kinds.includes('plan')) all.push(plansGroup(cls.text));
             if (cls.kinds.includes('proposal')) all.push(proposalsGroup(cls.text));
             if (cls.kinds.includes('address')) all.push(placesGroup(cls.text));
             if (cls.kinds.includes('command')) all.push(commandsGroup(cls.text));
             groups = Model.orderGroups(all);
         }
-        groups.push({ id: 'hint', items: [hintItem()] });
         return groups;
     }
 
     // ---- fetching (debounced, aborted when superseded) ----
     function scheduleFetches() {
         const cls = Model.classifyQuery(state.query, parcelQueryOptions());
-        const wantsProposals = state.mode === 'search' && cls.kinds.includes('proposal');
+        const wantsCatalog = state.mode === 'search' && cls.kinds.includes('proposal');
         const wantsPlaces = state.mode === 'search' && cls.kinds.includes('address');
-        schedule(state.proposals, wantsProposals ? cls.text : '', PROPOSAL_DEBOUNCE_MS, fetchProposals);
+        schedule(state.catalog, wantsCatalog ? cls.text : '', CATALOG_DEBOUNCE_MS, fetchCatalog);
         schedule(state.places, wantsPlaces ? cls.text : '', PLACE_DEBOUNCE_MS, fetchPlaces);
     }
 
     function schedule(source, query, delay, fetcher) {
+        const centre = source === state.places ? win.map?.getCenter() : null;
+        const key = [win.getBackendBase(), win.i18n?.getLanguage(), centre?.lat.toFixed(5), centre?.lng.toFixed(5), query.toLowerCase()].join('|');
+        if (source.key === key && source.query === query && ['loading', 'done'].includes(source.status)) return;
         if (source.timer) win.clearTimeout(source.timer);
         source.timer = null;
-        if (source.query === query && source.status !== 'idle') return;
         if (source.abort) source.abort.abort();
         source.abort = null;
+        source.key = key;
+        source.query = query;
+        source.results = null;
         if (!query) {
             source.query = '';
             source.status = 'idle';
-            source.items = [];
+            source.results = null;
             return;
         }
+        const cached = source.cache.get(key);
+        if (cached !== undefined) { source.results = cached; source.status = 'done'; return; }
+        source.status = 'loading';
         // Debounce: wait for typing to pause before asking a remote service.
         source.timer = win.setTimeout(() => {
             source.timer = null;
@@ -423,12 +445,13 @@
             source.abort = controller;
             source.query = query;
             source.status = 'loading';
-            source.items = [];
+            source.results = null;
             render();
-            fetcher(query, controller.signal)
+            fetcher(query, win.AbortSignal.any([controller.signal, win.AbortSignal.timeout(8000)]))
                 .then(items => {
                     if (controller.signal.aborted) return;
-                    source.items = items;
+                    source.results = items;
+                    source.cache.set(key, items);
                     source.status = 'done';
                 })
                 .catch(error => {
@@ -446,14 +469,14 @@
         }, delay);
     }
 
-    async function fetchProposals(query, signal) {
-        if (typeof win.getBackendBase !== 'function') throw new Error('getBackendBase() is not defined');
-        const base = String(win.getBackendBase() || '').replace(/\/+$/, '');
-        const url = `${base}/designs?q=${encodeURIComponent(query)}&limit=${Model.GROUP_LIMITS.proposals}`;
+    async function fetchCatalog(query, signal) {
+        const base = String(win.getBackendBase()).replace(/\/+$/, '');
+        const url = `${base}/search?q=${encodeURIComponent(query)}&limit=${Math.max(Model.GROUP_LIMITS.plans, Model.GROUP_LIMITS.proposals)}`;
         const response = await win.fetch(url, { signal, headers: { Accept: 'application/json' } });
         if (!response.ok) throw new Error(`HTTP ${response.status} from ${url}`);
         const payload = await response.json();
-        return Array.isArray(payload && payload.designs) ? payload.designs : [];
+        if (!Array.isArray(payload?.plans) || !Array.isArray(payload?.designs)) throw new Error('Invalid plan/design search response');
+        return payload;
     }
 
     async function fetchPlaces(query, signal) {
@@ -472,7 +495,13 @@
 
     // ---- Enter before the remote results arrive ----
     const isPending = source => !!source.timer || source.status === 'loading';
-    const searchesPending = () => state.mode === 'search' && (isPending(state.places) || isPending(state.proposals));
+    const searchesPending = () => {
+        if (state.mode !== 'search') return false;
+        const first = state.selectable[Model.defaultEnterIndex(state.selectable)];
+        if (first?.kind === 'plan') return false;
+        if (isPending(state.catalog)) return true;
+        return first?.kind === 'proposal' ? false : isPending(state.places);
+    };
     const enterOptions = () => ({ pending: searchesPending(), defaultIndex: Model.defaultEnterIndex(state.selectable) });
 
     // A bare Enter pressed while the searches were still running: run the default result now that
@@ -563,15 +592,15 @@
             const status = text => { if (typeof win.updateStatus === 'function') win.updateStatus(text); };
             status(t('mapSearch.proposalDownloading', 'Downloading…'));
             try {
-                // The index row carries the design itself (GET /designs returns whole rows).
-                proposal = await win.DesignSync.importDesign(raw);
+                // Suggestions contain metadata; only the chosen design downloads its full record.
+                proposal = await win.DesignSync.importDesign(await win.DesignSync.fetchDesign(cid));
             } catch (error) {
                 if (error?.code === 'proposal-in-other-city') {
                     await openInItsCity(error.cityId);
                     return;
                 }
                 console.error('[map-search] could not download design', cid, error);
-                status(t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
+                status(t('modal.roadWidth.proposalList.downloadError', 'Failed to download design'));
                 return;
             }
         }
@@ -722,6 +751,9 @@
     }
 
     function openList() {
+        // Source choices may have changed since the previous search. Reuse this snapshot across
+        // keystrokes and remote responses, then refresh it when the search is reopened.
+        if (!state.open) state.cityCatalog = null;
         state.open = true;
         state.root.classList.add('is-open');
         ensureCoverage();
@@ -847,22 +879,28 @@
         }
         state.chip.classList.toggle('is-explore', exploring);
         // The globe icon says where the chip goes (the world view), as on the World view button.
-        state.chipIcon.className = exploring ? 'fas fa-compass' : 'fas fa-earth-europe';
+        state.chipIcon.className = `map-search__planet ${exploring ? 'fas fa-compass' : 'fas fa-earth-europe'}`;
         state.chipLabel.textContent = label;
         state.chipShortLabel.textContent = shortLabel;
-        const title = t('mapSearch.cityChip', 'Current city: {{city}}. Open the globe to choose another place', { city: label });
+        const shareState = win.MapShare.compositionStatus(win);
+        state.chip.dataset.shareState = shareState;
+        const shareHint = shareState === 'local'
+            ? t('mapSearch.sharing.local', 'Local changes — use Share to include them in a link.')
+            : shareState === 'shared' ? t('mapSearch.sharing.shared', 'This view is ready to share.') : '';
+        const title = [t('mapSearch.cityChip', 'Current city: {{city}}. Open the globe to choose another place', { city: label }), shareHint].filter(Boolean).join(' ');
         state.chip.title = title;
         state.chip.setAttribute('aria-label', title);
     }
 
     function syncTexts() {
+        state.cityCatalog = null;
         if (!state.input) return;
         // Without a cadastre (explore) there are no parcels to find.
         const config = manager();
         const parcels = !(config && typeof config.hasParcelData === 'function') || config.hasParcelData();
         state.input.placeholder = parcels
-            ? t('mapSearch.placeholder', 'Search places, parcels, proposals…')
-            : t('mapSearch.placeholderNoParcels', 'Search places, proposals…');
+            ? t('mapSearch.placeholder', 'Search places, parcels, designs…')
+            : t('mapSearch.placeholderNoParcels', 'Search places, designs…');
         state.input.setAttribute('aria-label', t('mapSearch.label', 'Search the map'));
         state.searchButton.setAttribute('aria-label', t('mapSearch.open', 'Search'));
         state.searchButton.title = t('mapSearch.open', 'Search');
@@ -912,6 +950,9 @@
         root.appendChild(field);
         root.appendChild(list);
         slot.prepend(root);
+        // Let the result list scroll, without zooming or dragging the map underneath it.
+        root.addEventListener('wheel', event => event.stopPropagation(), { passive: true });
+        root.addEventListener('pointerdown', event => event.stopPropagation());
         Object.assign(state, { root, input, list, chip, chipIcon, chipLabel, chipShortLabel, clear, back, searchButton });
 
         input.addEventListener('focus', () => { expand(); openList(); });
@@ -929,6 +970,8 @@
 
     // ---- public API ----
     function focus() {
+        // In 3D this control is just the planet; search remains a 2D interaction.
+        if (win.__mapModeState?.desired !== '2d' && win.__mapModeState) return;
         if (!state.input) return;
         expand();
         state.input.focus();
@@ -961,6 +1004,8 @@
         win.addEventListener('i18n:translationsLoaded', syncTexts);
         if (win.i18n && typeof win.i18n.onChange === 'function') win.i18n.onChange(syncTexts);
         win.addEventListener('cityChanged', syncChip);
+        doc.addEventListener('proposalStorageChanged', syncChip);
+        win.addEventListener('mapmodechange', () => { close({ blur: true }); syncChip(); });
     }
 
     win.MapSearch = { initialize, focus, showCities, refreshChip: () => syncChip(), close: () => close({ blur: true, clearMarker: true }) };

@@ -61,6 +61,8 @@ function loadMapModeLoader({ roadDrawingMode, OnMapEditor } = {}) {
         OnMapEditor,
         location: { search: '' },
         appendBuildToken: path => path,
+        MapShare: require('../../frontend/js/map-share.js'),
+        addEventListener: vi.fn(),
         dispatchEvent: vi.fn(),
         updateModeButtonStates: vi.fn(),
         __mapModeTransition: { createController: vi.fn(() => controller) },
@@ -265,6 +267,25 @@ describe('road and track drawing mode guard', () => {
         const allowed = rejected.editor.open({ owner: 'corridor-editor', modes: ['2d'] });
         expect(allowed).not.toBeNull();
         allowed.close();
+    });
+
+    it.each(['model', 'photo'])('does not change building layers or preload the hidden map in %s', async mode => {
+        const preload = vi.fn(async () => {});
+        const rebuild = vi.fn();
+        const currentBuildingLayerState = vi.fn(() => ({ gdi: true }));
+        env = loadRoadDrawing({ globals: {
+            __mapModeState: { desired: mode, pending: true },
+            ensureBuildingFootprintsForBounds: preload,
+            rebuildBuildingLayerFromPool: rebuild,
+            BuildingLayersDialog: { currentBuildingLayerState }
+        } });
+        await env.api.ensureRoadOperationBuildings({});
+        expect(currentBuildingLayerState).not.toHaveBeenCalled();
+        expect(rebuild).not.toHaveBeenCalled();
+        expect(preload).not.toHaveBeenCalled();
+        globalThis.__mapModeState = { desired: '2d', pending: false };
+        await env.api.ensureRoadOperationBuildings({});
+        expect(preload).toHaveBeenCalledTimes(1);
     });
 
     it('blocks road drawing while a shared map editor or edit lock is active', async () => {

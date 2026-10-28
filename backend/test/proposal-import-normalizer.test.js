@@ -39,7 +39,7 @@ describe('importing a published design', () => {
     });
 
     it('keeps authored block membership and block-wide courtyard geometry', () => {
-        const blockMassing = {
+        const ruleMassing = {
             type: 'Feature',
             properties: {},
             geometry: {
@@ -50,15 +50,18 @@ describe('importing a published design', () => {
                 ]
             }
         };
-        const ineligibleParcels = [{ status: 'below-min-plot', geometry: blockMassing.geometry, wouldBe: blockMassing }];
+        const ineligibleParcels = [{ status: 'below-min-plot', geometry: ruleMassing.geometry, wouldBe: ruleMassing }];
         const row = rowOf({
             proposalId: 'shared-block', goal: 'buildings', title: 'Block 1', createdAt: '2026-10-20T09:00:00.000Z',
-            geometry: { buildings: [blockMassing], blockMassing },
+            geometry: { buildings: [ruleMassing] },
             buildingProposal: { typologyType: 'block', blockName: 'Block 1', ineligibleParcels }
         });
         const record = localDesignFromRow(row, { apiBase: API });
         expect(record.buildingProposal).toMatchObject({ typologyType: 'block', blockName: 'Block 1', ineligibleParcels });
-        expect(record.geometry.blockMassing.geometry.coordinates).toHaveLength(2);
+        expect(record.geometry.buildings).toHaveLength(1);
+        expect(record.geometry.buildings[0].geometry.coordinates).toHaveLength(2);
+        expect(row.content.geometry.buildings[0].geometry.coordinates).toEqual(ruleMassing.geometry.coordinates);
+        expect(record.geometry.buildings[0].geometry.coordinates).toEqual(ruleMassing.geometry.coordinates);
         expect(DesignRecord.cidOf(record)).toBe(row.cid);
     });
 

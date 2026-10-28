@@ -53,29 +53,33 @@ mcp-publisher publish server.json
 
 Read the published version back and compare its endpoint, description, version and identity. Publication receipts alone are insufficient.
 
-## Glama — sign-in required
+## Glama — public, ownership verified, healthy
 
-- [Connector catalogue and Add Server](https://glama.ai/mcp/connectors)
+- [Public connector listing](https://glama.ai/mcp/connectors/xyz.urbangametheory/urban-game-theory)
+- [Public badge](https://glama.ai/mcp/connectors/xyz.urbangametheory/urban-game-theory/badges/score.svg)
 - [Submission and ownership requirements](https://glama.ai/mcp/faq)
 
-The browser's Add Server action currently requires sign-in. Submit the endpoint as a **Connector**, using the copy above and No Auth. Check for an imported Registry listing before submitting a duplicate. Verify the endpoint passes Glama's health check, then record its actual listing URL here.
+Verified in the user's existing signed-in Chrome profile on **2026-10-24**. Glama automatically imported the official Registry entry with the correct title, description, Streamable HTTP transport and endpoint; no duplicate submission was made. The connector is public and its badge returns valid SVG. The listing now displays **Ownership verified**, **Healthy**, **MCP 2025-11-25**, and **30 available tools**. Its displayed last-tested time is **2026-10-24 18:46**; the tool-definition score is still being calculated.
 
-For ownership, use the exact token issued by the signed-in Glama account. Put only its public claim JSON in `frontend/.well-known/glama.json` and serve it at `https://urbangametheory.xyz/.well-known/glama.json`; the exact route is already installed. Do not invent a claim token or use an account/session credential as proof.
+The signed-in account's public ownership proof is [`frontend/.well-known/glama.json`](../frontend/.well-known/glama.json), already served at `https://urbangametheory.xyz/.well-known/glama.json` and byte-verified against the file. It is a public claim token, not an account/session credential. Keep it published for verification to remain valid.
 
-## Awesome Remote MCP Servers — depends on Glama
+After the user's explicit approval, **Check HTTP file** completed and the public UI confirmed ownership. The earlier automatic approval rejection is resolved. No private credential, payment, new sign-in, or additional permission change was required. Keep the public claim file published to retain verification.
+
+## Awesome Remote MCP Servers — submitted for review
 
 - [Contribution requirements](https://github.com/punkpeye/awesome-remote-mcp-servers/blob/main/CONTRIBUTING.md)
-- Suggested category: **Real Estate**, alphabetically under Urban Game Theory.
+- [Submission PR #2810](https://github.com/punkpeye/awesome-remote-mcp-servers/pull/2810)
+- Category: **Real Estate**, alphabetically under Urban Game Theory.
 
-Prepare the following entry only after the actual Glama connector URL exists. Replace `ACTUAL_CONNECTOR_PATH` with its real namespace/name before submission; the list checks that the badge resolves.
+Submitted on **2026-10-24**. The pull request adds exactly three lines to `README.md`, with no deletions. Its automated **check-submission** check passed and applied **endpoint-ok** and **has-connector** labels. The submitting account starred the repository as required. The PR is open, not merged.
 
 ```md
 - [Urban Game Theory — Consensus Builder](https://urbangametheory.xyz) `https://urbangametheory.xyz/mcp`
-  [![Urban Game Theory MCP connector](https://glama.ai/mcp/connectors/ACTUAL_CONNECTOR_PATH/badges/score.svg)](https://glama.ai/mcp/connectors/ACTUAL_CONNECTOR_PATH)
+  [![Urban Game Theory MCP connector](https://glama.ai/mcp/connectors/xyz.urbangametheory/urban-game-theory/badges/score.svg)](https://glama.ai/mcp/connectors/xyz.urbangametheory/urban-game-theory)
   🔓 - Inspect real parcels, draft and edit urban plans, compare alternatives, and share 2D/3D designs.
 ```
 
-The submitting GitHub account must star the upstream repository. Fork it, add one entry, open the pull request, and verify its handshake and badge checks. Record the pull request URL and distinguish submitted from merged.
+The contribution commit is `c379ca81396aa9e29c7d059425850dfa31e782f1` on the dedicated `add-urban-game-theory-mcp` branch of the directory fork. Do not create a duplicate PR while review is pending.
 
 ## mcpservers.org — submitted for review
 
@@ -97,6 +101,72 @@ The source branch is intentional: the public MCP implementation is on `colosseum
 
 - The `wong2/awesome-mcp-servers` README directs submissions to mcpservers.org and explicitly declines pull requests. Use the website form above.
 
+## Docker MCP Catalog — submitted for review
+
+Submitted on **2026-10-25** as [PR #6080](https://github.com/docker/mcp-registry/pull/6080). The dedicated fork branch `add-urban-game-theory-mcp` adds only `servers/urban-game-theory/server.yaml`, `tools.json` and `readme.md`; its contribution commit is `658b9ffb8ee2c178d8f6e4c0eb158321c4bb79d0`. It uses the documented remote-server contract: Streamable HTTP, no OAuth, and no container build. The local source files are in [`directory-submissions/docker/urban-game-theory`](../directory-submissions/docker/urban-game-theory).
+
+The PR is open, not approved or published. At the last check no CI results were attached. A stock MCP client discovered all 30 tools and successfully called `ugt_explain`. The public documentation and actual PNG icon were fetched successfully. The repository Go validator and a Docker gateway import were not run locally; the PR states that limitation rather than claiming they passed.
+
+## Public plugin source — published
+
+[Urban Game Theory plugin repository](https://github.com/Poglavar/urban-game-theory-plugin), latest prepared commit `1a9056246092b9a74c10f5550499774b51043dfd`, including the published privacy-policy link.
+
+The package in [`plugins/urban-game-theory`](../plugins/urban-game-theory) is a public copy of the existing private planning plugin, with brand-only authorship, the same hosted endpoint, one planning skill and its references, the existing logo, and the project's Apache-2.0 license. The original private installation was not modified. Portable Agent Plugins clients use `mcp.json`; Open Plugins clients use `.mcp.json`. Both configurations identify exactly the same endpoint. No private app bindings, personal contact details, credentials, telemetry or executable hooks are included.
+
+The GitHub file inventory was read back after publication. JSON, relative skill links, the square PNG and the identity scan passed. Marketplace installation and acceptance are separate from publishing this source; no Cursor IDE installation is claimed.
+
+## Claude Connectors Directory — submitted, user confirmed
+
+On **2026-10-25**, the user confirmed that they submitted the prepared application. This records the user's confirmation; an agent-observed receipt or public approval has not been verified. Do not resubmit.
+
+Before submission, the user's existing signed-in account connected to `https://urbangametheory.xyz/mcp` without authentication and discovered **30 tools, 12 resources and five prompts**. The ten-step form was prepared with the listing, categories, three use cases, business contact, authentication, data handling and Inspector evidence entered. Reusable public values are in [`directory-submissions/claude/listing.json`](../directory-submissions/claude/listing.json); account/contact details remain outside this repository.
+
+The published [MCP privacy policy](https://urbangametheory.xyz/mcp-privacy.html) has been added to the form and the listing step now passes validation. The notice describes actual tool inputs, temporary bearer references, public publication, the private feedback inbox and Telegram notifications, infrastructure processing, retention limits and privacy requests. It does not invent a fixed retention period for operational logs or feedback. It is available in English, Spanish, Croatian and Serbian.
+
+The agent handed the existing [submission form](https://claude.ai/directory/manage/new/connector) to the maintainer at **step 9, Compliance** for seven policy acknowledgements and final review. The user's subsequent confirmation supersedes that earlier pending state.
+
+The portal flags `annotations.title` as missing on every hosted tool. A local server change now supplies matching top-level and annotation titles, including names generated for companion tools. Targeted headless unit tests (`test/mcp-server.test.js` and `test/mcp-http.test.js`) passed: **2 files / 18 tests**. This server metadata change has **not been deployed**, so the saved live scan still contains its original suggestions.
+
+## Cursor Marketplace — submitted for review
+
+Submitted on **2026-10-25** through the official [publisher application](https://cursor.com/marketplace/publish), after the user explicitly accepted the [Publisher Terms](https://cursor.com/marketplace-publisher-terms) and authorized the final click. The form used Urban Game Theory, the dedicated public plugin repository, the existing public logo, homepage and the business contact supplied by the user. Reusable listing values are in [`directory-submissions/cursor/listing.json`](../directory-submissions/cursor/listing.json); account/contact details remain outside this repository.
+
+The browser displayed **“Thanks for applying”** and **“We've received your submission.”** This confirms receipt, not marketplace approval. The earlier form became responsive again without reloading; the automatic-review rejection of a reload was not bypassed. Do not submit a duplicate while review is pending.
+
+## Cursor Directory community listing — submitted, security scan pending
+
+Submitted on **2026-10-25** through the [community form](https://cursor.directory/plugins/new). The user granted the requested GitHub read-only email access. The expired initial sign-in was restarted through the ordinary sign-in flow; no extra grant was accepted by the agent. The importer detected exactly **one MCP server and one planning skill** from the public plugin repository. The submitted name and description match the shared listing copy.
+
+The resulting [listing](https://cursor.directory/plugins/urban-game-theory-consensus-builder) currently says **“Scanning your plugin… it will appear publicly once the security agent finishes”** and **“This plugin is unpublished and hidden from the directory.”** Treat it as submitted, not publicly published. Optional logo upload was omitted because the Chrome extension requires an additional file-URL access setting; no browser permission setting was changed. Do not submit a duplicate while scanning is pending.
+
+## Privacy-page publication on 2026-10-25
+
+The user authorized creating a policy and adding its live URL to Claude. The three new static files from commit `4cba22ef3` were published to the existing website independently of the application release. The production vhost and served destination were verified first; the live MCP still used temporary server-side previews with the default 24-hour expiry when the notice was prepared. No private draft content or feedback rows were inspected.
+
+Public HTML, CSS and translation JavaScript were read back and matched the committed bytes exactly, with the expected content types. The published page and all four language selections were verified in Chrome. Static checks confirmed translation-key parity, resolved page strings and no inline styles or scripts. This low-impact content change did not add or run a full test suite. The plugin README now links the live notice for reviewers and users.
+
+## Grok — direct installation documented, catalogue submission unconfirmed
+
+The official [connector documentation](https://docs.x.ai/grok/connectors) allows users to add a custom public MCP URL at `grok.com/connectors` → New Connector → Custom. No public catalogue-submission route was verified, so no listing or application was submitted. Do not describe a custom personal connection as a public directory listing.
+
+## Verification on 2026-10-25
+
+- Targeted headless MCP Inspector checks exercised all **30 hosted tools** against the public endpoint. **27 read/draft checks succeeded** and the **three external-write tools refused `confirm:false`**. No public content or feedback report was created.
+- The first verified-fact check used an active agreement and correctly returned that no terminal fact existed. Retesting with an executed agreement returned the x402 challenge successfully, without paying it. This makes 31 Inspector invocations, not 31 distinct tools.
+- No LLM API calls, payments, paid listings or full test suites ran. There was no application push or application release; only the requested privacy-page files were published to the website. Docker and plugin-source publication used GitHub API operations containing only the prepared public files.
+- OpenAI remains explicitly deferred. The user resumed free Chinese directory submissions later on this date; see the checks below.
+
+## Chinese directories — preparation and account requirements
+
+The user authorized continuing free Chinese submissions on **2026-10-25**. No Chinese application has been submitted yet. Reusable Simplified Chinese copy is in [`directory-submissions/chinese/listing.json`](../directory-submissions/chinese/listing.json); this is preparation, not a receipt or a claim of Chinese cadastral coverage.
+
+- **ModelScope / 魔搭:** the live [MCP Plaza](https://modelscope.cn/mcp) exposes **Create MCP**, which opens a sign-in dialog in the intended Chrome profile. The embedded login panel was blank during inspection. Publication fields and any account-verification requirements remain unverified until sign-in; do not invent a phone-number or real-name requirement. The previously known direct create URL redirected to the homepage. Use the visible Create MCP control after signing in.
+- **Baidu Qianfan / 百度千帆:** the official [MCP server centre](https://console.bce.baidu.com/ai_apaas/mcpServerCenter) redirects to Baidu Cloud sign-in and a Qianfan tools-centre destination. The live form offers SMS/account and QR-code sign-in. No phone number, OTP or agreement acceptance was entered. Existing remote-endpoint publication eligibility and any subsequent verification remain unverified behind login.
+- **Tencent:** its [official MCP documentation](https://cloud.tencent.com/document/product/1212/123193), updated 2026-08-13, explicitly says third-party MCP listing and update services are currently unavailable. No application or account was created.
+- **Higress:** its [marketplace contribution route](https://github.com/higress-group/higress/issues/2113) requests gateway configuration and documentation under `plugins/wasm-go/mcp-servers`, rather than a simple endpoint-listing form. The [current upstream agent-assisted contribution policy](https://github.com/higress-group/higress/blob/main/docs/developers/agent-assisted-contributions.md) requires maintainer approval of Proposal and Design issues before substantive implementation. No configuration, fork, issue or PR has been submitted. Do not describe this route as an already submitted listing.
+
+Only existing public endpoint and listing material may be submitted. Do not purchase hosting, activate paid plans, duplicate the backend, claim unsupported geographic coverage, or treat account creation and legal attestations as completed. Account sign-in is the next dependency for ModelScope and Baidu.
+
 ## Excluded
 
 - MCP.so: its submission form currently requires payment; do not submit.
@@ -110,4 +180,6 @@ The source branch is intentional: the public MCP implementation is on `colosseum
 - Official Registry API returned the exact manifest as active, latest version 0.3.0; browser search displayed the published entry.
 - MCP.Directory's browser form confirmed receipt of the submission; publication remains pending review.
 - mcpservers.org's browser form confirmed successful submission on the Free plan; publication remains pending review.
+- Glama's public listing confirms ownership verified and Healthy, with all 30 hosted tools indexed; the tool-definition score remains pending calculation.
+- Community directory PR #2810 adds exactly one three-line entry; its automated submission check passed.
 - No paid evaluation, paid listing, application release, or full test suite was run for this metadata-only change.

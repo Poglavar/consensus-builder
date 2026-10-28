@@ -18,7 +18,8 @@
             return url.href.length <= 2048 ? url.href : '';
         } catch { return ''; }
     }
-    function init(global) {
+    async function init(global) {
+        await global.i18n.translationsReady;
         const doc = global.document, form = doc.getElementById('feedback-form');
         if (!form || form.dataset.ready) return;
         form.dataset.ready = 'true';

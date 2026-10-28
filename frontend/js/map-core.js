@@ -120,6 +120,9 @@ const AT_VIEW = (() => {
 // on the address is a plain location (location-first.md), and a stale label can't contradict it.
 let dropCityParam = !!(window.CityConfigManager?.getBootEntry?.()?.dropCityParam);
 map.on('moveend', () => {
+    // The hidden Leaflet map is a data anchor in 3D; its camera owns the live address instead.
+    if (window.__mapModeState && window.__mapModeState.desired !== '2d') return;
+    if (window.BrowserWorkspace && window.BrowserWorkspace.status !== 'ready') return;
     if (!window.WorldEntryModel) return;
     try {
         const center = map.getCenter();
@@ -342,7 +345,7 @@ function hasFootprintProvider(bounds) {
 // The GDI bbox layer: EPSG:3765 out of the backend, so it is declared and converted.
 async function loadGdiFootprints(req) {
     const response = await fetch(req.url);
-    if (!response.ok) throw new Error('Failed to fetch building data');
+    if (!response.ok) throw Object.assign(new Error('Failed to fetch building data'), { status: response.status });
     const data = await response.json();
     const converted = typeof convertGeoJSON === 'function' ? convertGeoJSON(data, { sourceSrid: 3765 }) : data;
     return { features: (converted && converted.features) || [], truncated: data && data.truncated === true };
@@ -385,7 +388,7 @@ async function loadProviderFootprints(bounds) {
 // out the upstream's own retry time instead of asking again on every pan.
 let buildingsRetryAt = 0;
 // `fromOsm` marks a failure of the OpenStreetMap reference layer, which is OSM whatever the city uses.
-function reportBuildingsUnavailable(retryAfter, retry, fromOsm = false) {
+function reportBuildingsUnavailable(retryAfter, retry, fromOsm = false, status = null) {
     const seconds = Number(retryAfter);
     if (Number.isFinite(seconds) && seconds > 0) buildingsRetryAt = Date.now() + seconds * 1000;
     console.warn(`[${new Date().toISOString()}] [buildings] building data unavailable${seconds > 0 ? `; retry in ${seconds}s` : ''}`);
@@ -398,7 +401,7 @@ function reportBuildingsUnavailable(retryAfter, retry, fromOsm = false) {
         else if (manager?.getCurrentCityConfig?.()?.buildings?.source === 'custom') origin = 'custom';
         else if (manager?.getCurrentCityConfig?.()?.buildings?.source === 'osm') origin = 'osm';
     } catch (_) { /* the generic wording is still true */ }
-    settings.reportFailure(window, settings.buildingFailureMessage(window, { retryAfter: seconds > 0 ? seconds : null, origin }), 'building', retry);
+    settings.reportFailure(window, settings.buildingFailureMessage(window, { retryAfter: seconds > 0 ? seconds : null, origin, status }), 'building', retry);
 }
 window.reportBuildingsUnavailable = reportBuildingsUnavailable;
 function clearBuildingsUnavailable() {
@@ -543,7 +546,7 @@ async function fetchBuildings(boundsOverride = null, options = {}) {
         reportBuildingsUnavailable(error && error.retryAfter, () => {
             buildingsRetryAt = 0;
             fetchBuildings(boundsOverride, { announce: true });
-        });
+        }, false, error?.status);
     }
 }
 
@@ -642,12 +645,12 @@ async function fetchOsmBuildings(boundsOverride = null) {
             const body = await response.json().catch(() => ({}));
             const seconds = Number(body.retryAfter) > 0 ? Number(body.retryAfter) : 60;
             osmBuildingsRetryAt = Date.now() + seconds * 1000;
-            console.warn(`[buildings] OSM reference is rate-limited upstream; not asking again for ${seconds}s`);
+            console.warn(`[buildings] OSM reference request returned HTTP 503; not asking again for ${seconds}s`);
             showFetchedOsmBuildingLayer();
-            reportBuildingsUnavailable(seconds, () => { osmBuildingsRetryAt = 0; fetchOsmBuildings(boundsOverride); }, true);
+            reportBuildingsUnavailable(seconds, () => { osmBuildingsRetryAt = 0; fetchOsmBuildings(boundsOverride); }, true, response.status);
             return;
         }
-        if (!response.ok) throw new Error(`Failed to fetch OSM building data (HTTP ${response.status})`);
+        if (!response.ok) throw Object.assign(new Error(`Failed to fetch OSM building data (HTTP ${response.status})`), { status: response.status });
         const data = await response.json();
 
         if (osmBuildingLayer) {
@@ -665,7 +668,7 @@ async function fetchOsmBuildings(boundsOverride = null) {
         clearBuildingsUnavailable();
     } catch (error) {
         console.error('Error fetching OSM building data:', error);
-        reportBuildingsUnavailable(null, () => fetchOsmBuildings(boundsOverride), true);
+        reportBuildingsUnavailable(null, () => fetchOsmBuildings(boundsOverride), true, error?.status);
     }
 }
 window.fetchOsmBuildings = fetchOsmBuildings;
@@ -868,7 +871,7 @@ function buildingLayerOptions() {
             // A building click is a map click like any other: the click stack collects everything
             // under the point (click-stack.md), the building being one of its sections.
             layer.on('click', event => {
-                if (window.__mapEditLock?.isHeld()) return;
+                if (window.roadDrawingMode || window.__mapEditLock?.isHeld()) return;
                 L.DomEvent.stopPropagation(event);
                 window.ClickStack.handleClick(event.latlng);
             });
@@ -964,10 +967,17 @@ function updateTotalSpentDisplay() {
 
 let buildingFollowTimer = null;
 
+function isTwoDimensionalViewportActive() {
+    const mode = window.__mapModeState;
+    if (mode && (mode.pending || mode.desired !== '2d')) return false;
+    return typeof window.isThreeModeActive !== 'function' || !window.isThreeModeActive();
+}
+
 // Set up map event handlers
 function setupMapEventHandlers() {
     // Map movement handlers
-    map.on('moveend', () => {
+    const handleMoveEnd = () => {
+        if (!isTwoDimensionalViewportActive()) return;
         if (!isMapMoving) return;
         if (typeof ParcelFetchController !== 'undefined' && ParcelFetchController && typeof ParcelFetchController.handleMoveEnd === 'function') {
             ParcelFetchController.handleMoveEnd(map, {
@@ -981,9 +991,16 @@ function setupMapEventHandlers() {
         // panning with GDI or DGU ticked showed whatever had been fetched when the box was ticked
         // and nothing more — a toggle that looked broken because its layer never grew. Each fetch is
         // zoom-gated and cached (per bbox for GDI/DGU, per grid cell for OSM), so a pan is cheap and
-        // a repeat view is free.
+        // a repeat view is free. The existing-buildings pool records the areas it holds completely
+        // (buildingFetchCoverage), so a view inside one is not asked for again.
+        const fetchBuildingsUnlessCovered = typeof fetchBuildings === 'function' ? () => {
+            let view = null;
+            try { view = map.getBounds(); } catch (_) { view = null; }
+            if (view && boundsCoveredByBuildingFetch(view)) return;
+            fetchBuildings();
+        } : null;
         const followMap = [
-            ['showBuildings', typeof fetchBuildings === 'function' ? fetchBuildings : null],
+            ['showBuildings', fetchBuildingsUnlessCovered],
             ['showBuildingsDgu', typeof fetchDguBuildings === 'function' ? fetchDguBuildings : null],
             ['showBuildingsOsm', typeof fetchOsmBuildings === 'function' ? fetchOsmBuildings : null]
         ];
@@ -993,6 +1010,7 @@ function setupMapEventHandlers() {
         const debounceMs = (parcelFetchConfig && typeof parcelFetchConfig.getDebounce === 'function') ? parcelFetchConfig.getDebounce() : 500;
         buildingFollowTimer = setTimeout(() => {
             buildingFollowTimer = null;
+            if (!isTwoDimensionalViewportActive()) return;
             followMap.forEach(([id, fetcher]) => {
                 const box = document.getElementById(id);
                 if (box && box.checked && fetcher) fetcher();
@@ -1000,15 +1018,18 @@ function setupMapEventHandlers() {
         }, debounceMs);
 
         isMapMoving = false;
-    });
+    };
+    map.on('moveend', handleMoveEnd);
 
     // Add handlers for map movement start
     map.on('movestart', () => {
+        if (!isTwoDimensionalViewportActive()) return;
         isMapMoving = true;
     });
 
     // Add event listener for zoom
-    map.on('zoomend', () => {
+    const handleZoomEnd = () => {
+        if (!isTwoDimensionalViewportActive()) return;
         // No cadastre in the explore city: only a chosen session plan has parcel layers to show or hide.
         if (MapCityConfigManager && typeof MapCityConfigManager.hasParcelData === 'function'
             && !MapCityConfigManager.hasParcelData()
@@ -1041,10 +1062,34 @@ function setupMapEventHandlers() {
         if (typeof updateVisibleParcelsCount === 'function') {
             updateVisibleParcelsCount();
         }
+    };
+    map.on('zoomend', handleZoomEnd);
+
+    window.addEventListener('mapmodechange', event => {
+        const mode = event.detail || window.__mapModeState;
+        if (mode?.desired !== '2d' || mode.pending) {
+            if (buildingFollowTimer) clearTimeout(buildingFollowTimer);
+            buildingFollowTimer = null;
+            if (typeof window.buildingsTimeout !== 'undefined') {
+                clearTimeout(window.buildingsTimeout);
+                window.buildingsTimeout = null;
+            }
+            if (typeof window.parcelsTimeout !== 'undefined') {
+                clearTimeout(window.parcelsTimeout);
+                window.parcelsTimeout = null;
+            }
+            return;
+        }
+        // The Leaflet viewport is parked while model/photo is active. Reapply its zoom visibility
+        // and fetch the current view when it becomes the active map again.
+        handleZoomEnd();
+        isMapMoving = true;
+        handleMoveEnd();
     });
 
     // Add map click handler to close visualization and panels
     map.on('click', () => {
+        if (!isTwoDimensionalViewportActive()) return;
         if (typeof hideParcelInfoPanel === 'function') {
             hideParcelInfoPanel();
         }
@@ -1072,6 +1117,7 @@ function setupMapEventHandlers() {
     const booted = Promise.all([windowLoaded, mapCoreReady]).then(() => undefined);
     let reported = false;
     const watchdog = setTimeout(() => {
+        if (window.BrowserWorkspace && window.BrowserWorkspace.status !== 'ready') return;
         reported = true;
         console.error(`[${new Date().toISOString()}] [map-core] App boot did not complete within ${APP_BOOT_WATCHDOG_MS} ms (load: ${document.readyState}, map core ready: ${!!window.__mapCoreReady}); URL routes are still waiting.`);
     }, APP_BOOT_WATCHDOG_MS);

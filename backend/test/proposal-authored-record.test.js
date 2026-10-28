@@ -16,12 +16,12 @@ const oneBuilding = () => ({
     }
 });
 
-function blockRecord(buildings, blockMassing, geometryMetadata = {}) {
+function blockRecord(buildings, ruleMassing, geometryMetadata = {}) {
     return {
         proposalId: 'single-block',
         goal: 'buildings',
         buildingProposal: { typologyType: 'block' },
-        geometry: { ...geometryMetadata, buildings, blockMassing }
+        geometry: { ...geometryMetadata, buildings, ruleMassing }
     };
 }
 
@@ -35,7 +35,7 @@ describe('proposal authored building geometry compaction', () => {
         const before = JSON.stringify(input);
         const cleaned = authored.cleanFeatureContainers(input);
 
-        expect(cleaned.geometry).not.toHaveProperty('blockMassing');
+        expect(cleaned.geometry).not.toHaveProperty('ruleMassing');
         expect(cleaned.geometry).toMatchObject({ layoutVersion: 2, source: 'authoring' });
         expect(cleaned.geometry.buildings).toEqual([feature]);
         expect(cleaned.geometry.buildings[0].geometry.coordinates).toHaveLength(2);
@@ -53,7 +53,7 @@ describe('proposal authored building geometry compaction', () => {
 
         for (const massing of [differentProperties, differentShape]) {
             const cleaned = authored.cleanFeatureContainers(blockRecord([feature], massing));
-            expect(cleaned.geometry.blockMassing).toEqual(massing);
+            expect(cleaned.geometry.ruleMassing).toEqual(massing);
         }
     });
 
@@ -63,16 +63,16 @@ describe('proposal authored building geometry compaction', () => {
         second.properties.height = 24;
         const cleaned = authored.cleanFeatureContainers(blockRecord([first, second], first));
         expect(cleaned.geometry.buildings).toHaveLength(2);
-        expect(cleaned.geometry.blockMassing).toEqual(first);
+        expect(cleaned.geometry.ruleMassing).toEqual(first);
     });
 
     it('is a pure shallow-copy projection and leaves unrelated geometry unchanged', () => {
         const feature = oneBuilding();
-        const geometry = { buildings: [feature], blockMassing: JSON.parse(JSON.stringify(feature)), metadata: { keep: true } };
+        const geometry = { buildings: [feature], ruleMassing: JSON.parse(JSON.stringify(feature)), metadata: { keep: true } };
         const compacted = authored.compactBuildingGeometry(geometry);
         expect(compacted).not.toBe(geometry);
         expect(compacted).toEqual({ buildings: [feature], metadata: { keep: true } });
-        expect(geometry).toHaveProperty('blockMassing');
+        expect(geometry).toHaveProperty('ruleMassing');
         const unrelated = { groundSurface: feature };
         expect(authored.compactBuildingGeometry(unrelated)).toBe(unrelated);
     });

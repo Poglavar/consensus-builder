@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { parcelSourceCatalog, resolveParcelSourceDescriptor } from '../parcels/sources.js';
 import { agreementAccountOf } from '../agreements/onchain.js';
-import { marketOutcome } from '../oracle/market-recipe.js';
+const terminalStatus = status => ['executed', 'cancelled', 'expired'].includes(status);
 
 const require = createRequire(import.meta.url);
 // The sheet's own model (frontend/js/bets/bets-model.js): the same state words and the same order,
@@ -120,16 +120,15 @@ function timeOf(value) {
 function marketEntry(decoded) {
     if (!decoded || !decoded.market) return null;
     const market = decoded.market;
-    const yesPool = atomic(market.yesPool);
-    const noPool = atomic(market.noPool);
     const resolved = Boolean(market.resolved);
     return {
         address: decoded.address || null,
-        yesPool: yesPool.toString(),
-        noPool: noPool.toString(),
-        poolAtomic: (yesPool + noPool).toString(),
+        model: 'lmsr', asset: 'devnet-usdc', creator: market.creator,
+        b: String(market.b), qYes: String(market.qYes), qNo: String(market.qNo), seed: String(market.seed),
+        closesAt: Number(market.closesAt), graceSeconds: market.graceSeconds,
+        maxPosition: String(market.maxPosition), paidOut: String(market.paidOut),
         resolved,
-        outcome: resolved ? (Number(market.outcome) === 1 ? 'yes' : 'no') : null
+        outcome: resolved ? ['no', 'yes', 'void'][Number(market.outcome)] : null
     };
 }
 
@@ -142,21 +141,24 @@ function marketEntry(decoded) {
  */
 function agreementEntry(agreement, markets, nowMs) {
     const account = agreement.account || null;
-    const market = marketEntry(account ? markets.get(account) : null);
-    const chainStatus = account ? agreement.chainStatus || null : null;
-    const deadlineMs = agreement.deadline ? Date.parse(agreement.deadline) : NaN;
+    const decoded = account ? markets.get(account) : null;
+    const market = marketEntry(decoded);
+    const chainStatus = account ? decoded?.chainStatus || agreement.chainStatus || null : null;
+    const deadline = decoded?.deadline !== undefined ? decoded.deadline : agreement.deadline;
+    const deadlineMs = deadline ? Date.parse(deadline) : NaN;
     const deadlinePassed = Number.isFinite(deadlineMs) && deadlineMs <= nowMs;
-    const live = chainStatus === 'active' && !deadlinePassed;
+    const live = chainStatus === 'active' && Number.isFinite(deadlineMs) && !deadlinePassed;
     return {
         kind: 'agreement',
         cid: agreement.cid,
         account,
         title: agreement.title || null,
         author: agreement.author || null,
+        sponsor: agreement.sponsor || null,
         city: agreement.city || null,
-        status: marketOutcome(chainStatus) ? chainStatus : deadlinePassed ? 'expired' : 'active',
+        status: terminalStatus(chainStatus) ? chainStatus : deadlinePassed ? 'expired' : 'active',
         chainStatus,
-        deadline: agreement.deadline || null,
+        deadline: deadline || null,
         createdAt: agreement.createdAt || null,
         designTitles: Array.isArray(agreement.designTitles) ? agreement.designTitles : [],
         screenshotUrl: agreement.screenshotUrl || null,
@@ -165,7 +167,8 @@ function agreementEntry(agreement, markets, nowMs) {
         parcelIds: normalizeParcelIds(agreement.inputParcelIds),
         parcelRefs: parcelRefsOf(agreement),
         market,
-        bettable: Boolean(market && !market.resolved && live),
+        bettable: Boolean(market && !market.resolved && live && nowMs < market.closesAt * 1000),
+        canSettle: Boolean(market && !market.resolved && (terminalStatus(chainStatus) || chainStatus === 'active' && nowMs >= (market.closesAt + market.graceSeconds) * 1000)),
         canOpenMarket: Boolean(account && !market && live)
     };
 }
@@ -196,7 +199,7 @@ export function buildContests({ city, agreements, markets = new Map(), now = new
             mintedCount: entries.filter(entry => entry.account).length,
             marketCount: withMarket.length,
             openMarketCount: entries.filter(entry => entry.bettable).length,
-            poolAtomic: withMarket.reduce((sum, entry) => sum + atomic(entry.market.poolAtomic), 0n).toString(),
+            sharesAtomic: withMarket.reduce((sum, entry) => sum + atomic(entry.market.qYes) + atomic(entry.market.qNo), 0n).toString(),
             latestCreatedAt: entries.reduce((latest, entry) => (timeOf(entry.createdAt) > timeOf(latest) ? entry.createdAt : latest), null),
             agreements: entries
         };
@@ -208,8 +211,8 @@ export function buildContests({ city, agreements, markets = new Map(), now = new
         agreements: acc.agreements + contest.agreementCount,
         markets: acc.markets + contest.marketCount,
         openMarkets: acc.openMarkets + contest.openMarketCount,
-        poolAtomic: (atomic(acc.poolAtomic) + atomic(contest.poolAtomic)).toString()
-    }), { contests: 0, agreements: 0, markets: 0, openMarkets: 0, poolAtomic: '0' });
+        sharesAtomic: (atomic(acc.sharesAtomic) + atomic(contest.sharesAtomic)).toString()
+    }), { contests: 0, agreements: 0, markets: 0, openMarkets: 0, sharesAtomic: '0' });
 
     return { city, generatedAt: now.toISOString(), summary, contests };
 }

@@ -170,7 +170,7 @@
             inParcelLayer: layer ? 1 : 0,
             total: layer ? 1 : 0,
             duplicatePathsInDOM: 0,
-            presenterRevision: global.LiveParcelFabric ? global.LiveParcelFabric.snapshot().revision : null
+            presenterRevision: global.LiveParcelFabric ? global.LiveParcelFabric.revision() : null
         };
     }
 

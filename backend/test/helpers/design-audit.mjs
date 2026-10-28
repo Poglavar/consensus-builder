@@ -222,7 +222,7 @@ export function flattenJson(obj, prefix = '', out = {}) {
 }
 
 const PROTECTED_WORDS = new Set(['OSM', 'DGU', 'GUP', 'GDI', 'NFT', 'AI', '2D', '3D', 'USDC', 'USDT', 'ETH', 'SOL', 'EUR', 'IPFS',
-    'URL', 'JSON', 'API', 'ID', 'GPS', 'HR', 'EN', 'ES', 'SR', 'X', 'YES', 'NO', 'OK', 'I', 'A', 'Schelling', 'Solana']);
+    'URL', 'JSON', 'GeoJSON', 'API', 'ID', 'GPS', 'HR', 'EN', 'ES', 'SR', 'X', 'YES', 'NO', 'OK', 'I', 'A', 'Schelling', 'Solana']);
 
 function isCapitalised(word) {
     return /^[A-Z][a-z]/.test(word);
@@ -233,7 +233,8 @@ function isCapitalised(word) {
  * and are not protected: the Title Case habit of the legacy surfaces. Proper nouns inside a label are
  * reported too; the baseline absorbs the ones that are legitimate.
  */
-const PROPER_NOUN_KEY_PREFIXES = ['city.labels.', 'languages.'];
+// Language-switch labels contain proper language names, just like the language-name catalog.
+const PROPER_NOUN_KEY_PREFIXES = ['city.labels.', 'languages.', 'language.switcher.to_'];
 
 export function titleCaseLabels(flat) {
     const out = [];
@@ -249,7 +250,9 @@ export function titleCaseLabels(flat) {
 }
 
 export function normaliseValue(value) {
-    return String(value).toLowerCase().replace(/\{\{[^}]+\}\}/g, '{}').replace(/[^\p{L}\p{N}{} ]+/gu, ' ').replace(/\s+/g, ' ').trim();
+    // Case conflicts differ only in letter case, not punctuation or parameter identity.
+    return String(value).trim().split(/(\{\{[^}]+\}\})/g)
+        .map((part, index) => index % 2 ? part : part.replace(/\s+/g, ' ').toLowerCase()).join('');
 }
 
 /** Groups of values that are the same words with different capitalisation ("Create Proposal" / "Create proposal"). */
@@ -260,7 +263,7 @@ export function caseConflicts(flat) {
         const norm = normaliseValue(value);
         if (!byNorm.has(norm)) byNorm.set(norm, new Map());
         const variants = byNorm.get(norm);
-        const exact = value.trim();
+        const exact = value.trim().replace(/\s+/g, ' ');
         if (!variants.has(exact)) variants.set(exact, []);
         variants.get(exact).push(key);
     });
@@ -275,15 +278,18 @@ export function threeDotValues(flat) {
     return Object.entries(flat).filter(([, v]) => typeof v === 'string' && v.includes('...')).map(([k]) => k).sort();
 }
 
-export function duplicateValueGroups(flat) {
-    const byNorm = new Map();
+/** Reusable copies must match exactly in every locale: identical English can carry different
+ * meanings (or grammatical genders) in other languages and cannot safely share a key. */
+export function duplicateValueGroups(flat, translations = []) {
+    const groups = new Map();
     Object.entries(flat).forEach(([key, value]) => {
-        if (typeof value !== 'string' || normaliseValue(value).length < 3) return;
-        const norm = normaliseValue(value);
-        if (!byNorm.has(norm)) byNorm.set(norm, []);
-        byNorm.get(norm).push(key);
+        if (typeof value !== 'string' || value.trim().length < 3) return;
+        if (translations.some(locale => typeof locale[key] !== 'string')) return;
+        const identity = JSON.stringify([value, ...translations.map(locale => locale[key])]);
+        if (!groups.has(identity)) groups.set(identity, []);
+        groups.get(identity).push(key);
     });
-    return [...byNorm.values()].filter(keys => keys.length > 1).length;
+    return [...groups.values()].filter(keys => keys.length > 1).length;
 }
 
 // ---------- hardcoded UI strings in JS ----------
@@ -332,11 +338,14 @@ export function auditNow() {
     const conflicts = conflictingSelectors(coLoaded, f => readFileSync(path.join(FRONTEND, f), 'utf8'));
 
     const en = flattenJson(JSON.parse(readFileSync(path.join(FRONTEND, 'i18n', 'en.json'), 'utf8')));
+    const translations = listFiles(path.join(FRONTEND, 'i18n'), '.json').sort()
+        .filter(file => path.basename(file) !== 'en.json')
+        .map(file => flattenJson(JSON.parse(readFileSync(file, 'utf8'))));
     const i18n = {
         titleCaseLabels: titleCaseLabels(en).length,
         caseConflicts: caseConflicts(en).length,
         threeDots: threeDotValues(en).length,
-        duplicateGroups: duplicateValueGroups(en)
+        duplicateGroups: duplicateValueGroups(en, translations)
     };
 
     const js = {};

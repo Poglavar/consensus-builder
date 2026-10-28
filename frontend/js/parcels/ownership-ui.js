@@ -481,7 +481,7 @@
                 ? `<span class="parcel-owner-share"${safeDetail ? ` title="${safeDetail}"` : ''}>${safeShare}</span>`
                 : '';
             return `
-            <div class="owner-row" style="display: flex; justify-content: space-between; gap: 8px;">
+            <div class="owner-row">
                 <span>${safeName || (tParcel('common.unknownOwner', {}, 'Unknown owner'))}</span>
                 ${shareHtml}
             </div>
@@ -786,8 +786,8 @@
         }
 
         if (!supportsParcelOwnership()) {
-            const unknownOwner = tParcel('common.unknownOwner', {}, 'Unknown owner');
-            target.innerHTML = `<span data-i18n-key="common.unknownOwner">${unknownOwner}</span>`;
+            const unknownOwner = tParcel('common.unknown', {}, 'Unknown');
+            target.innerHTML = `<span data-i18n-key="common.unknown">${unknownOwner}</span>`;
             const countElement = document.getElementById('parcel-owners-count');
             if (countElement) {
                 countElement.removeAttribute('role');
@@ -795,7 +795,7 @@
                 countElement.textContent = tParcel('common.unknown', {}, 'Unknown');
             }
             const typeLabel = document.querySelector('.parcel-ownership-type-label');
-            if (typeLabel) typeLabel.style.display = 'none';
+            if (typeLabel) typeLabel.hidden = true;
             return;
         }
 
@@ -818,7 +818,7 @@
                 return;
             }
             if (!Array.isArray(owners) || owners.length === 0) {
-                ownershipTypeLabelEl.style.display = 'none';
+                ownershipTypeLabelEl.hidden = true;
                 return;
             }
             const types = owners.map(owner => getOwnershipType(owner)).filter(Boolean);
@@ -837,7 +837,7 @@
 
             if (typeLabel) {
                 ownershipTypeLabelEl.textContent = typeLabel;
-                ownershipTypeLabelEl.style.display = 'inline-block';
+                ownershipTypeLabelEl.hidden = false;
 
                 // Add color class based on ownership type
                 // Remove any existing ownership type classes
@@ -855,7 +855,7 @@
                     ownershipTypeLabelEl.classList.add(`ownership-type-${normalizedType}`);
                 }
             } else {
-                ownershipTypeLabelEl.style.display = 'none';
+                ownershipTypeLabelEl.hidden = true;
             }
         };
 

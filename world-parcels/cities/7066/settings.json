@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "7066",
+  "name": "Americana, Brazil",
+  "point": [
+    -22.7403656033961,
+    -47.3575438232552
+  ],
+  "bindings": [
+    {
+      "appCityId": "americana",
+      "runtimeConfig": {
+        "id": "americana",
+        "wupCityCode": "7066",
+        "label": "Americana, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -22.7403656033961,
+            -47.3575438232552
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -22.7403656033961,
+            -47.3575438232552
+          ],
+          "fallbackDataset": [
+            -47.3575438232552,
+            -22.7403656033961
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-sp-cati-sigef-brasil-sp3",
+          "idPrefix": "BR-SP-CATI-SIGEF-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "CATI / Governo do Estado de São Paulo · INCRA SIGEF · rural georeferenced parcels; indicative boundaries."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-sp-cati-sigef-brasil-sp3",
+      "name": "CATI / São Paulo — SIGEF rural parcels (Americana)",
+      "operator": "CATI, Governo do Estado de São Paulo; INCRA SIGEF",
+      "adapter": "arcgis",
+      "endpoint": "https://geo.cati.sp.gov.br/server/rest/services/Hosted/Sigef_Brasil_SP3/FeatureServer/0",
+      "idField": "parcela_co",
+      "idType": "string",
+      "idPattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "objectIdField": "fid",
+      "idPrefix": "BR-SP-CATI-SIGEF-",
+      "outFields": [
+        "fid",
+        "parcela_co",
+        "municipio_",
+        "uf_id"
+      ],
+      "attributeFilters": {
+        "municipio_": 3501608,
+        "uf_id": 35
+      },
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 3,
+      "idBatchSize": 3,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 30000,
+      "maxResponseBytes": 16777216,
+      "countryCode": "BR",
+      "metricSrid": 32723,
+      "scope": "Partial rural SIGEF parcel coverage tagged municipio_=3501608, uf_id=35 (Americana). Positive retained samples are east/northeast of the immutable WUP locator. Not the municipal urban-lot cadastre; neither citywide completeness nor current legal status is established.",
+      "licenceNote": "Public official service; explicit extracted-polygon reuse terms not established. Preserve attribution; legal reuse/currentness are second-pass follow-ups.",
+      "catalogueUrl": "https://geo.cati.sp.gov.br/server/rest/services/Hosted/Sigef_Brasil_SP3/FeatureServer/0",
+      "attribution": "CATI / Governo do Estado de São Paulo · INCRA SIGEF · rural georeferenced parcels; indicative boundaries.",
+      "cityIds": [
+        "americana"
+      ],
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "BR",
+          "admin1": [
+            "BR-SP"
+          ],
+          "basis": "Official CATI state-hosted SIGEF parcels filtered by municipality code 3501608 and state code 35.",
+          "evidence": [
+            "https://geo.cati.sp.gov.br/server/rest/services/Hosted/Sigef_Brasil_SP3/FeatureServer/0",
+            "https://www.ibge.gov.br/cidades-e-estados/sp/americana.html"
+          ]
+        }
+      },
+      "defaultForCity": true
+    }
+  ]
+}

@@ -54,11 +54,12 @@ function proposerJob(name, persona, cron) {
     env: {
       NODE_ENV: 'production',
       ...botEnv,
-      // A pick takes at most 3 signed actions (create+fund, market, stake), each settled agreement at
+      // A pick takes at most 3 signed actions (create+fund, seed top-up, market), each settled agreement at
       // most 4 (attest, execute or expire, resolve, claim): 3 + 3 × 4.
       AGENT_DAILY_ACTION_CAP: '15',
       AGENT_SETTLE_MAX_PER_RUN: '3',
       AGENT_DAILY_USDC_CAP: '0.35',
+      AGENT_MARKET_SEED_USDC_CAP: '70',
       AGENT_API_BASE: 'https://api.urbangametheory.xyz'
     },
     ...LOGS
@@ -104,11 +105,12 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       ...botEnv,
-      // 3 for the day's pick (create+fund, market, stake) + up to 3 settled agreements × 4 (attest,
-      // execute or expire, resolve, claim). Settlements spend no USDC; the USDC cap bounds the stake.
+      // 3 for the day's pick (create+fund, seed top-up, market) + up to 3 settled agreements × 4 (attest,
+      // execute or expire, resolve, claim). Market seed has a separate bounded devnet allowance.
       AGENT_DAILY_ACTION_CAP: '15',
       AGENT_SETTLE_MAX_PER_RUN: '3',
       AGENT_DAILY_USDC_CAP: '0.35',
+      AGENT_MARKET_SEED_USDC_CAP: '70',
       // The settlement's decision steps go through the operated lifecycle-01 member (consensus-builder-
       // lifecycle-member): AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN must be in backend/.env on the host, or
       // the live run refuses to start.

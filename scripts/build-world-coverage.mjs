@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Compiles world parcel research, optional UN WUP 2025 city demographics, and the app's configured
-// cities (frontend/js/city-config.js, read as TEXT, never imported) into the compact
+// cities (frontend/data/city-configs.js, read as TEXT, never imported) into the compact
 // frontend/data/world-coverage.json that the globe (frontend/js/world/) paints and queries.
 // Region outlines (world-parcels/regions.geojson, from scripts/extract-world-regions.mjs), region
 // reviews and the parcel source catalog add a region layer painted over the country fills.
@@ -71,7 +71,7 @@ const DEFAULTS = {
     regionReviews: path.join(REPO, 'world-parcels/region-coverage-reviews.json'),
     catalog: path.join(REPO, 'frontend/data/source-catalog.json'),
     demographics: path.join(REPO, 'world-parcels/report/city-demographics.json'),
-    cityConfig: path.join(REPO, 'frontend/js/city-config.js'),
+    cityConfig: path.join(REPO, 'frontend/data/city-configs.js'),
     out: path.join(REPO, 'frontend/data/world-coverage.json'),
     tolerance: 0.06,
     // Region fills are clipped to the country land on the globe, so their coast detail is never
@@ -209,12 +209,12 @@ const PROBE_NOTES = {
     temporarily_unavailable: 'Check could not complete (service unreachable)'
 };
 
-// Parses CITY_CONFIGS out of city-config.js source text: each top-level `<key>: {` entry's id, label
+// Parses CITY_CONFIGS out of data/city-configs.js source text: each top-level `<key>: {` entry's id, label
 // (a string literal, or translateCityText's fallback argument) and map.defaultCenter (else
-// projection.fallbackLatLng). Deliberately not an import: the file is a browser classic script.
+// projection.fallbackLatLng). Deliberately not an import: the file is a classic script.
 export function parseCityConfigs(source) {
     const start = source.indexOf('const CITY_CONFIGS = {');
-    if (start < 0) throw new Error('CITY_CONFIGS not found in city-config.js');
+    if (start < 0) throw new Error('CITY_CONFIGS not found in city-configs.js');
     // Walk braces to the end of the object literal.
     let depth = 0; let end = -1;
     for (let i = source.indexOf('{', start); i < source.length; i++) {
@@ -646,7 +646,7 @@ Builds frontend/data/world-coverage.json from world-parcels/registry.json,
 world-parcels/country-coverage-reviews.json, world-parcels/countries.geojson,
 world-parcels/regions.geojson, world-parcels/region-coverage-reviews.json,
 world-parcels/research/qualification-outcomes/*.json, frontend/data/source-catalog.json, world-parcels/report/city-demographics.json
-and frontend/js/city-config.js.
+and frontend/data/city-configs.js.
 
 Options:
   --run               actually build (without it, this help is printed)

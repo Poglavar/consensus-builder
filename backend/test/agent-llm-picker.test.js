@@ -69,6 +69,10 @@ function candidate(n, extra = {}) {
         geometry: { type: 'Polygon', coordinates: [[[15.93, 45.79], [15.94, 45.79], [15.94, 45.8], [15.93, 45.79]]] },
         buildingCount: 2,
         builtGfaM2: 295.34,
+        builtKnown: true,
+        buildingSourceId: 'survey-fixture',
+        buildingCoverage: 'complete',
+        rule: { source: 'urban-rule', maxFloors: 4, minSetbackM: 3 },
         allowedFloors: 4,
         envelope: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [] } },
         massing: { type: 'Feature', properties: { floors: 3, height: 9 }, geometry: { type: 'Polygon', coordinates: [] } },
@@ -160,6 +164,11 @@ describe('buildPickRequests', () => {
             areaM2: 422,
             buildingCount: 2,
             builtGfaM2: 295,
+            builtKnown: true,
+            buildingSourceId: 'survey-fixture',
+            buildingCoverage: 'complete',
+            designPolicy: null,
+            ruleSource: 'urban-rule',
             allowedFloors: 4,
             proposedGfaM2: 900,
             gain: 2418801,
@@ -175,6 +184,15 @@ describe('buildPickRequests', () => {
         expect(buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [{ persona: PERSONA, candidates: [] }] })).toEqual([]);
         expect(buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [] })).toEqual([]);
         expect(buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: null })).toEqual([]);
+    });
+
+    it('filters candidates without complete named building evidence, including forged zero stock', () => {
+        const unknown = candidate(7, { buildingSourceId: null, buildingCoverage: 'unknown', builtKnown: false, builtGfaM2: 0 });
+        const forged = candidate(8, { buildingSourceId: null, buildingCoverage: 'unknown', builtKnown: true, builtGfaM2: 0 });
+        const reqs = buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [{ persona: PERSONA, candidates: [unknown, forged] }] });
+        expect(reqs).toEqual([]);
+        const eligible = JSON.parse(buildPickRequests({llm:LLM,runId:RUN_ID,day:DAY,entries:[{persona:PERSONA,candidates:[candidate(1)]}]})[0].params.messages[0].content[0].text).candidates[0];
+        expect(eligible).toMatchObject({builtKnown:true,buildingSourceId:'survey-fixture',buildingCoverage:'complete'});
     });
 
     it('builds one request per persona for a multi-persona run', () => {
@@ -200,6 +218,14 @@ describe('parsePicks', () => {
             { candidateId: id(1), name: 'Name 1', rationale: 'Because 1.' }
         ]);
         expect(rejected).toEqual([]);
+    });
+
+    it('rejects unsupported candidates even when zero stock is claimed', () => {
+        for (const c of [candidate(1,{buildingSourceId:null,buildingCoverage:'unknown',builtKnown:false,builtGfaM2:0}), candidate(1,{buildingSourceId:null,buildingCoverage:'unknown',builtKnown:true,builtGfaM2:0})]) {
+            const result = parsePicks(JSON.stringify({picks:[pick(1)]}), [c], 1);
+            expect(result.picks).toEqual([]);
+            expect(result.rejected).toEqual([{candidateId:id(1),reason:'unsupported planning basis'}]);
+        }
     });
 
     it('drops a candidateId that was never planned', () => {
@@ -452,4 +478,19 @@ describe('runPickBatch through the shared layer', () => {
             expect(src, file).not.toMatch(/AGENT_LLM_MODEL|DEFAULT_MODEL/);
         }
     });
+});
+
+it('uses declared design weights and preserves control provenance in the LLM request', () => {
+    const actor = { name: 'test-builder', planningPolicy: 'proposed-design', dailyProposals: 1,
+        designWeights: { floorArea: 0.2, openSpace: 0.8 }, weights: { density: 1 } };
+    const planned = candidate(1, { score: null, gain: null, builtKnown: false, builtGfaM2: null, plannedFloors: 4,
+        designPolicy: { kind: 'proposed-design', ruleBasis: 'assumed', footprintM2: 200, openSpaceRatio: 0.5, score: 0.6,
+            controls: { floors: { value: 4, basis: 'assumed' }, setback: { value: 3, basis: 'mapped' } } } });
+    const [request] = buildPickRequests({ llm: LLM, runId: RUN_ID, day: DAY, entries: [{ persona: actor, candidates: [planned] }] });
+    expect(request.params.system).toContain('proposed floor area — weight 0.2');
+    expect(request.params.system).toContain('ground outside the proposed footprint — weight 0.8');
+    expect(request.params.system).not.toContain('the value a design creates');
+    const payload = JSON.parse(request.params.messages[0].content[0].text);
+    expect(payload.candidates[0].designPolicy.controls.floors.basis).toBe('assumed');
+    expect(payload.candidates[0].gain).toBeNull();
 });

@@ -177,7 +177,8 @@ describe('road drawing finalization contract', () => {
         const placing = env.click(at(200, 0));
         while (loads.length <= before) await new Promise(resolve => setTimeout(resolve, 0));
         expect(env.session.roadSegmentPlacementInProgress).toBe(true);
-        // F is ignored outright; a finish reaching the gate another way is refused with a reason.
+        // F waits for the placement, as the Finish button and a double-click do; a finish reaching
+        // the gate directly meanwhile is refused with a reason.
         env.key('f');
         expect(env.session.roadFinalizationGate.isRunning()).toBe(false);
         await expect(env.api.finishRoadDrawing()).resolves.toBe(false);
@@ -185,8 +186,10 @@ describe('road drawing finalization contract', () => {
         expect(built()).toBe(0);
         loads.forEach(resolve => resolve());
         await placing;
-        expect(env.session.roadSegmentPlacementInProgress).toBe(false);
-        expect(env.session.roadSegments[0]).toHaveLength(3);
+        await env.idle();
+        // The queued F built the road once, with the point that was being placed.
+        expect(built()).toBe(1);
+        expect(globalThis.pendingRoadDrawingProposal.centerline[0]).toHaveLength(3);
     });
 });
 

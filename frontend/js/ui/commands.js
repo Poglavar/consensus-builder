@@ -27,7 +27,7 @@
         'gameCheckbox', 'game-datetime', 'game-turns', 'turn-interval-slider', 'turn-interval-value',
         'turn-progress-fill', 'turn-progress-time', 'game-play-pause-btn',
         // Proposals sheet
-        'showProposalsButton', 'planStatsButton', 'roosterScoreButton',
+        'showProposalsButton',
         'shareAppliedProposalsButton',
         // Layers sheet: parcels
         'parcelsCheckbox', 'showAdParcelsCheckbox', 'showParcelNumbers', 'showOwnerCounts',
@@ -245,12 +245,16 @@
     const selectionNonEmpty = ctx => ctx.selection.count > 0;
 
     function stationContextAvailable(type, ctx) {
-        if (!ctx || !ctx.global || typeof ctx.global.startTransitStationPlacement !== 'function') return false;
+        if (!ctx || !ctx.global) return false;
+        const available = type === 'track'
+            ? typeof ctx.global.chooseTrackStationType === 'function'
+            : typeof ctx.global.startTransitStationPlacement === 'function';
+        if (!available) return false;
         const parcel = ctx.parcel;
         if (parcel && parcel.parcelId !== undefined && parcel.parcelId !== null && parcel.parcelId !== ''
             && parcel.isGround !== true && parcel.isRoad !== true) return true;
         const ground = ctx.ground;
-        const action = ({ bus: 'busStation', tram: 'tramStation', underground: 'undergroundStation', elevated: 'elevatedStation' })[type];
+        const action = type === 'bus' ? 'roadStation' : 'trackStation';
         return !!(ground && action && groundMenuModel().isActionAvailable(action, ground));
     }
 
@@ -265,7 +269,7 @@
         control('showOwnerCounts', { id: 'layers.ownerCounts', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'sidebar.parcels.showOwnerCounts', fallbackLabel: 'Show number of owners (O)', icon: 'fas fa-users' }),
         control('showProposalCounts', { id: 'layers.proposalCounts', group: 'layers', kind: 'toggle', surfaces: ['layers'],
-            labelKey: 'sidebar.parcels.showProposalCounts', fallbackLabel: 'Show proposals count (P)', icon: 'fas fa-comment-dots' }),
+            labelKey: 'sidebar.parcels.showProposalCounts', fallbackLabel: 'Show designs count (P)', icon: 'fas fa-comment-dots' }),
         control('markMintedCheckbox', { id: 'layers.markMinted', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'sidebar.parcels.markMinted', fallbackLabel: 'Mark minted', icon: 'fas fa-certificate' }),
         control('highlightOwnershipGovernment', { id: 'layers.ownership.government', group: 'layers', kind: 'toggle', surfaces: ['layers'],
@@ -294,7 +298,7 @@
         control('showUrbanBlocks', { id: 'layers.urbanBlocks', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'urbanBlocks.toggle', fallbackLabel: 'Detect and analyse blocks', icon: 'fas fa-shapes' }),
         control('showSchellingPlan', { id: 'layers.schellingPlan', group: 'layers', kind: 'toggle', surfaces: ['layers'], modes: ['2d'],
-            labelKey: 'schellingPlan.toggle', fallbackLabel: 'Show the Schelling plan', icon: 'fas fa-handshake' }),
+            labelKey: 'schellingPlan.toggle', fallbackLabel: 'Show the Schelling plan', icon: 'fas fa-bullseye' }),
         control('urban-blocks-refresh', { id: 'urbanBlocks.refresh', group: 'blocks', section: 'urban-blocks', surfaces: ['layers'],
             labelKey: 'urbanBlocks.refresh', fallbackLabel: 'Refresh this area', icon: 'fas fa-rotate' }),
         control('urban-blocks-browse', { id: 'urbanBlocks.browse', group: 'blocks', section: 'urban-blocks', surfaces: ['layers'],
@@ -348,14 +352,10 @@
             labelKey: 'sidebar.blocks.showListButton', fallbackLabel: 'Show Block List', icon: 'fas fa-list' }),
         { id: 'blocks.clear', group: 'blocks', surfaces: ['settings'], modes: ['2d'], debugOnly: true, when: controlAvailable('parcelBlocksCheckbox'), run: callGlobal('clearBlocks'),
             labelKey: 'sidebar.blocks.clearButton', fallbackLabel: 'Clear Blocks From Local Storage', icon: 'fas fa-trash' },
-        { id: 'stations.bus', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('bus', ctx), run: callGlobal('startTransitStationPlacement', 'bus'),
-            labelKey: 'sidebar.stations.bus', fallbackLabel: 'Bus station', icon: 'fas fa-bus' },
-        { id: 'stations.tram', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('tram', ctx), run: callGlobal('startTransitStationPlacement', 'tram'),
-            labelKey: 'sidebar.stations.tram', fallbackLabel: 'Tram station', icon: 'fas fa-train-tram' },
-        { id: 'stations.underground', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('underground', ctx), run: callGlobal('startTransitStationPlacement', 'underground'),
-            labelKey: 'sidebar.stations.underground', fallbackLabel: 'Underground station', icon: 'fas fa-train-subway' },
-        { id: 'stations.elevated', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('elevated', ctx), run: callGlobal('startTransitStationPlacement', 'elevated'),
-            labelKey: 'sidebar.stations.elevated', fallbackLabel: 'Elevated train station', icon: 'fas fa-train' },
+        { id: 'stations.road', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('bus', ctx), run: callGlobal('startTransitStationPlacement', 'bus'),
+            labelKey: 'panel.parcel.build.roadStation', fallbackLabel: 'Road station', icon: 'fas fa-bus' },
+        { id: 'stations.track', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('track', ctx), run: callGlobal('chooseTrackStationType'),
+            labelKey: 'panel.parcel.build.trackStation', fallbackLabel: 'Track station', icon: 'cb-icon-track' },
         { id: 'stations.cancel', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => !!(ctx && ctx.global && typeof ctx.global.isTransitStationPlacementActive === 'function' && ctx.global.isTransitStationPlacementActive()), run: callGlobal('cancelTransitStationPlacement'),
             labelKey: 'sidebar.stations.cancel', fallbackLabel: 'Cancel placement', icon: 'fas fa-xmark' },
         control('detectExistingRoadsButton', { id: 'roads.detectExisting', group: 'roads', surfaces: ['layers'],
@@ -388,17 +388,11 @@
 
         // ---- Proposals sheet ----
         { id: 'proposals.list', group: 'proposals', surfaces: ['proposals'], run: callGlobal('showAllProposalsModal'),
-            labelKey: 'mapShell.commands.proposalsList', fallbackLabel: 'Open Designs', icon: 'fas fa-list-ul' },
-        control('designs-agreements-button', { id: 'proposals.agreements', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'sidebar.proposals.agreementsButton', fallbackLabel: 'Agreements', icon: 'fas fa-file-signature' }),
-        control('planStatsButton', { id: 'proposals.planStats', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'sidebar.proposals.planStats.buttonLabel', fallbackLabel: 'Applied proposal stats', icon: 'fas fa-chart-pie' }),
-        control('roosterScoreButton', { id: 'proposals.grainScore', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'sidebar.proposals.grainScore.buttonLabel', fallbackLabel: 'Urban rooster', icon: 'fas fa-crow' }),
-        control('shareAppliedProposalsButton', { id: 'proposals.sharePlan', group: 'proposals', surfaces: ['proposals'],
-            labelKey: 'mapShell.shareMap', fallbackLabel: 'Share this map', icon: 'fas fa-share-alt' }),
-        { id: 'proposals.clearLocal', group: 'proposals', surfaces: ['settings'], debugOnly: true, run: callGlobal('clearLocalProposalData'),
-            labelKey: 'sidebar.proposals.clearButton', fallbackLabel: 'Clear Proposals From Local Storage', icon: 'fas fa-trash' },
+            labelKey: 'lists.title', fallbackLabel: 'Lists', icon: 'fas fa-list-ul' },
+        control('shareAppliedProposalsButton', { id: 'proposals.plans', group: 'proposals', surfaces: ['proposals'],
+            labelKey: 'lists.plans', fallbackLabel: 'Plans', icon: 'fas cb-icon-plan' }),
+        control('designs-agreements-tab', { id: 'proposals.agreements', group: 'proposals', surfaces: ['proposals'],
+            labelKey: 'sidebar.proposals.agreementsButton', fallbackLabel: 'Agreements', icon: 'fas cb-icon-agreement' }),
 
         // ---- Activity panel views and Settings > Diagnostics simulation controls ----
         { id: 'activity.events', group: 'activity', surfaces: ['activity'], run: callGlobal('openActivityPanel', { view: 'events' }),
@@ -430,22 +424,20 @@
         parcelCommand('propose', { surfaces: [], modes: ['2d'], labelKey: 'parcelMenu.actions.propose', fallbackLabel: 'Propose here', icon: 'fas fa-pen-ruler' }),
         parcelCommand('selectMore', { surfaces: [], labelKey: 'parcelMenu.actions.selectMore', fallbackLabel: 'Select more', icon: 'fas fa-object-group' }),
         parcelCommand('details', { surfaces: [], labelKey: 'parcelMenu.actions.details', fallbackLabel: 'Details', icon: 'fas fa-circle-info' }),
-        parcelCommand('proposals', { surfaces: [], labelKey: 'panel.parcel.tabProposals', fallbackLabel: 'Proposals', icon: 'fas fa-layer-group' }),
+        parcelCommand('proposals', { surfaces: [], labelKey: 'panel.parcel.tabProposals', fallbackLabel: 'Designs', icon: 'fas cb-icon-design' }),
         parcelCommand('history', { surfaces: [], labelKey: 'parcelMenu.actions.history', fallbackLabel: 'History', icon: 'fas fa-clock-rotate-left' }),
         parcelCommand('tools', { surfaces: [], labelKey: 'parcelMenu.actions.tools', fallbackLabel: 'Tools', icon: 'fas fa-screwdriver-wrench' }),
         parcelCommand('detectBlock', { surfaces: [], modes: ['2d'], labelKey: 'parcelMenu.actions.detectBlock', fallbackLabel: 'Detect block', icon: 'fas fa-fill-drip' }),
         // What the panel does not offer: shown as the parcel section's buttons.
         parcelCommand('compare', { labelKey: 'parcelMenu.actions.compare', fallbackLabel: 'Compare designs', icon: 'fas fa-code-compare' }),
-        parcelCommand('useAsSite', { modes: ['2d'], labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Custom site', icon: 'fas fa-draw-polygon' }),
+        parcelCommand('useAsSite', { surfaces: [], modes: ['2d'], labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Custom site', icon: 'fas fa-draw-polygon' }),
 
         // ---- Ground menu (a click where there is no parcel), in menu order ----
-        groundCommand('drawSite', { labelKey: 'groundMenu.actions.drawSite', fallbackLabel: 'Draw a site here', icon: 'fas fa-draw-polygon' }),
+        groundCommand('drawSite', { labelKey: 'groundMenu.actions.drawSite', fallbackLabel: 'Draw a parcel', icon: 'fas fa-draw-polygon' }),
         groundCommand('road', { labelKey: 'panel.parcel.build.road', fallbackLabel: 'Road', icon: 'fas fa-road' }),
-        groundCommand('track', { labelKey: 'panel.parcel.build.track', fallbackLabel: 'Track', icon: 'fas fa-train' }),
-        groundCommand('busStation', { labelKey: 'panel.parcel.build.busStation', fallbackLabel: 'Bus station', icon: 'fas fa-bus' }),
-        groundCommand('tramStation', { labelKey: 'panel.parcel.build.tramStation', fallbackLabel: 'Tram station', icon: 'fas fa-tram' }),
-        groundCommand('undergroundStation', { labelKey: 'panel.parcel.build.undergroundStation', fallbackLabel: 'Metro station', icon: 'fas fa-train-subway' }),
-        groundCommand('elevatedStation', { labelKey: 'panel.parcel.build.elevatedStation', fallbackLabel: 'Elevated station', icon: 'fas fa-train' }),
+        groundCommand('track', { labelKey: 'panel.parcel.build.track', fallbackLabel: 'Track', icon: 'cb-icon-track' }),
+        groundCommand('roadStation', { labelKey: 'panel.parcel.build.roadStation', fallbackLabel: 'Road station', icon: 'fas fa-bus' }),
+        groundCommand('trackStation', { labelKey: 'panel.parcel.build.trackStation', fallbackLabel: 'Track station', icon: 'cb-icon-track' }),
         // ---- Selected road (the proposal card a road click opens; palette) ----
         roadCommand('crossSection', { labelKey: 'panel.road.crossSectionButton', fallbackLabel: 'Edit cross-section', icon: 'fas fa-road' }),
         // The site tool from anywhere (the palette): draw a site with nothing selected.
@@ -454,7 +446,7 @@
             labelKey: 'siteTool.commands.draw', fallbackLabel: 'Draw site', icon: 'fas fa-draw-polygon' },
 
         // ---- Selected parcels section in the click panel ----
-        { id: 'selection.useAsSite', group: 'selection', surfaces: ['parcel-selection'], modes: ['2d'],
+        { id: 'selection.useAsSite', group: 'selection', surfaces: [], modes: ['2d'],
             when: ctx => selectionNonEmpty(ctx) && siteToolIdle(ctx),
             run: ctx => ctx.global.SiteTool.startFromSelection(),
             labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Custom site', icon: 'fas fa-draw-polygon' },
@@ -466,6 +458,12 @@
             labelKey: 'selectedParcels.actions.done', fallbackLabel: 'Done selecting', icon: 'fas fa-check' },
 
         // ---- Settings sheet ----
+        control('economic-source-settings-button', { id: 'settings.economics', group: 'settings', surfaces: ['settings'], labelKey: 'economicSources.title', fallbackLabel: 'Valuation & costs', icon: 'fas fa-coins' }),
+        control('settings-credits-button', { id: 'settings.credits', group: 'settings', surfaces: ['settings'], labelKey: 'mapCredits.title', fallbackLabel: 'Sources & software', icon: 'fas fa-book' }),
+        control('settings-contact-button', { id: 'settings.contact', group: 'settings', surfaces: ['settings'], labelKey: 'sidebar.info.contactTitle', fallbackLabel: 'Contact', icon: 'fas fa-envelope' }),
+        control('settings-about-button', { id: 'settings.about', group: 'settings', surfaces: ['settings'], labelKey: 'sidebar.info.aboutTitle', fallbackLabel: 'About', icon: 'fas fa-circle-info' }),
+        control('app-update-check', { id: 'settings.checkUpdates', group: 'settings', surfaces: ['settings'],
+            labelKey: 'appUpdates.check', fallbackLabel: 'Check for updates', icon: 'fas fa-arrows-rotate' }),
         control('parcel-source-notice-button', { id: 'settings.parcelSourceNotice', group: 'settings', surfaces: ['settings'],
             labelKey: 'parcelSourceNotice.title', fallbackLabel: 'Parcel source information', icon: 'fas fa-info-circle' }),
         control('parcel-source-settings-button', { id: 'settings.parcelSourceSettings', group: 'settings', surfaces: ['layers'], modes: ['2d'],
@@ -478,15 +476,12 @@
         { id: 'settings.detectCity', group: 'settings', surfaces: [], run: detectNearestCity,
             labelKey: 'sidebar.city.detectTooltip', fallbackLabel: 'Use my location to pick the closest city', icon: 'fas fa-crosshairs' },
         // The globe (js/ui/world-entry.js): choose a city, or explore a place without parcels.
-        control('world-view-button', { id: 'world.open', group: 'settings', surfaces: ['settings'],
-            labelKey: 'mapShell.commands.worldView', fallbackLabel: 'World view', icon: 'fas fa-earth-europe' }),
-        // Opens the palette itself, so it is not listed in it.
-        control('command-palette-button', { id: 'settings.commandPalette', group: 'settings', surfaces: ['settings'], palette: false,
-            labelKey: 'commandPalette.open', fallbackLabel: 'Command palette', icon: 'fas fa-terminal' }),
+        { id: 'world.open', group: 'settings', surfaces: [], run: ctx => ctx.clickSelector('.map-search__chip'),
+            labelKey: 'mapShell.commands.worldView', fallbackLabel: 'World view', icon: 'fas fa-earth-europe' },
         control('tile-source-select', { id: 'settings.baseMap', group: 'settings', kind: 'input', surfaces: ['layers'], modes: ['2d'],
             labelKey: 'mapShell.commands.baseMap', fallbackLabel: 'Base map', icon: 'fas fa-map' }),
         control('wipeLocalDataButton', { id: 'settings.wipeLocalData', group: 'settings', surfaces: ['settings'],
-            labelKey: 'sidebar.info.wipeDataButton', fallbackLabel: 'Wipe ALL Local Data', icon: 'fas fa-skull-crossbones' }),
+            labelKey: 'settingsPanel.resetBrowserData', fallbackLabel: 'Reset browser data', icon: 'fas fa-skull-crossbones' }),
         control('debugModeCheckbox', { id: 'settings.debugMode', group: 'settings', kind: 'toggle', surfaces: ['settings'],
             labelKey: 'sidebar.info.debugToggle', fallbackLabel: 'Enable debug mode', icon: 'fas fa-bug' }),
         { id: 'settings.siteIntro', group: 'settings', surfaces: ['settings'],
@@ -548,7 +543,7 @@
     // unavailable too, so the palette is not a way around the lock. Layers and Measure stay.
     const EDIT_LOCKED_SURFACES = Object.freeze(['proposals', 'activity', 'settings']);
     const EDIT_LOCKED_GROUPS = Object.freeze(['proposals', 'activity', 'bets', 'game']);
-    const EDIT_LOCKED_COMMANDS = Object.freeze(['parcels.locate', 'settings.city', 'settings.detectCity']);
+    const EDIT_LOCKED_COMMANDS = Object.freeze(['parcels.locate', 'settings.city', 'settings.detectCity', 'world.open']);
     function lockedWhileEditing(entry, ctx) {
         if (!ctx || typeof ctx.isEditing !== 'function') return false;
         let editing = false;
@@ -632,15 +627,23 @@
             const translated = typeof t === 'function' ? t(groupKey, entry.group) : null;
             const groupLabel = translated && translated !== groupKey ? translated : '';
             const rank = needle ? matchRank(normalize(label), normalize(entry.id), needle, normalize(`${entry.group} ${groupLabel}`)) : 0;
+            if (rank === null) return null;
             const available = isAvailable(entry, ctx);
             return { entry, label, rank, available, reason: available ? null : unavailableReason(entry, ctx) };
-        }).filter(item => item.rank !== null);
+        }).filter(Boolean);
         scored.sort((a, b) => (a.rank - b.rank) || a.label.localeCompare(b.label));
         return scored;
     }
 
     function searchCommands(query, ctx, t) {
         return rankCommands(query, ctx, t).filter(item => item.available).map(item => item.entry);
+    }
+
+    function actionLabel(label, on, t) {
+        if (typeof on !== 'boolean') return label;
+        const key = `commandPalette.actions.${on ? 'turnOff' : 'turnOn'}`;
+        const translated = t?.(key);
+        return `${translated && translated !== key ? translated : on ? 'Turn off' : 'Turn on'} · ${label}`;
     }
 
     // The ctx the browser passes to when()/run(). Everything DOM-shaped goes through here, so a
@@ -775,6 +778,7 @@
         isAvailable,
         commandsFor,
         searchCommands,
+        actionLabel,
         rankCommands,
         labelOf,
         runCommand,

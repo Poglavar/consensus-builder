@@ -1,0 +1,9 @@
+Click a parcel, open Design, and choose Park.
+
+Open Edit geometry to add trees, flowerbeds, ponds and paths directly on the map.
+
+Place trees and water, then draw a footpath through the park.
+
+Finish the path, then save the design to apply it on the map.
+
+Tilt, rotate and zoom to inspect the planting, paths and water in 3D.

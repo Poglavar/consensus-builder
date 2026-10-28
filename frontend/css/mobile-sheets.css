@@ -5,15 +5,15 @@
     #map-container .mobile-sheet-ready:not(.is-minimized):not(.is-hosted):not(.is-folded):not([hidden]),
     .on-map-editor__panel.mobile-sheet-ready:not(.is-minimized):not([hidden]),
     .cb-dialog.mobile-sheet-ready {
-        top: auto !important;
+        top: auto;
         bottom: calc(var(--mobile-visual-bottom, 0px) + var(--map-shell-dock-height, 0px));
-        left: 0 !important;
-        right: 0 !important;
+        left: 0;
+        right: 0;
         width: 100%;
         max-width: 100%;
-        height: var(--mobile-sheet-height, var(--mobile-sheet-initial-height, 50dvh)) !important;
+        height: var(--mobile-sheet-layout-height, auto);
         min-height: 0;
-        max-height: calc(var(--mobile-visual-height, 100dvh) - var(--map-shell-dock-height, 0px)) !important;
+        max-height: min(var(--mobile-sheet-height, var(--mobile-sheet-initial-height, 50dvh)), calc(var(--mobile-visual-height, 100dvh) - var(--map-shell-dock-height, 0px)));
         box-sizing: border-box;
         padding: 0;
         border-radius: var(--cb-radius-lg) var(--cb-radius-lg) 0 0;
@@ -25,15 +25,31 @@
         --mobile-sheet-initial-height: calc(var(--mobile-visual-height, 100dvh) - var(--map-shell-dock-height, 0px));
     }
 
+    /* Navigation lists allocate a scrolling viewport to their nested tabs and cards. Context
+       sheets above fit their contents; these list screens keep the height chosen by the handle. */
+    #map-container .map-sheet--dock.mobile-sheet-ready {
+        --mobile-sheet-layout-height: var(--mobile-sheet-height, var(--mobile-sheet-initial-height, 50dvh));
+    }
+
     .cb-dialog.mobile-sheet-ready {
         position: fixed;
         bottom: var(--mobile-visual-bottom, 0px);
         margin: 0;
-        max-height: var(--mobile-visual-height, 100dvh) !important;
+        max-height: min(var(--mobile-sheet-height, var(--mobile-sheet-initial-height, 50dvh)), var(--mobile-visual-height, 100dvh));
         padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     .cb-dialog.mobile-sheet-expanded { --mobile-sheet-initial-height: var(--mobile-visual-height, 100dvh); }
+
+    /* Desktop stacks have transparent gaps between cards. On a phone the whole frame is a
+       sheet, including the resize handle, so its glass needs one continuous backing. */
+    #map-container .click-stack.mobile-sheet-ready {
+        background: var(--cb-glass-sheet);
+        backdrop-filter: blur(var(--cb-panel-blur));
+        -webkit-backdrop-filter: blur(var(--cb-panel-blur));
+        box-shadow: var(--cb-shadow-md);
+        pointer-events: auto;
+    }
 
     .mobile-sheet-ready > .mobile-dock-sheet-handle {
         display: block;
@@ -52,15 +68,15 @@
     .mobile-sheet-ready > .mobile-dock-sheet-handle::after {
         content: '';
         display: block;
-        width: 40px;
-        height: 4px;
+        width: 48px;
+        height: 5px;
         margin: auto;
         border-radius: var(--cb-radius-pill);
         background: var(--cb-text-muted);
     }
 
     /* Keep dismissal available to keyboard/assistive navigation without a second visible X. */
-    .mobile-sheet-ready > :is(.panel-header, .map-sheet-header, .cb-dialog__header, .share-plan-panel-header, .on-map-editor__header, .grain-score-panel__header, .road-panel-header, .site-panel__head, .urban-block-panel-header) .close-circle-btn {
+    .mobile-sheet-ready > :is(.panel-header, .map-sheet-header, .cb-dialog__header, .on-map-editor__header, .grain-score-panel__header, .road-panel-header, .site-panel__head, .urban-block-panel-header) .close-circle-btn {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -79,9 +95,11 @@
 
     .mobile-sheet-ready > :is(.map-sheet-body, .cb-dialog__body, .panel-body) {
         min-height: 0;
-        flex: 1 1 0;
+        flex: 0 1 auto;
         overscroll-behavior: contain;
     }
+
+    .map-sheet--dock.mobile-sheet-ready > .map-sheet-body { flex: 1 1 0; }
 
     .mobile-sheet-ready :is(.map-sheet-header, .cb-dialog__header) {
         padding: var(--cb-space-2) var(--cb-space-3);
@@ -91,19 +109,19 @@
     .mobile-sheet-ready .cb-dialog__footer:has(> [data-action-id="close"]:only-child) { display: none; }
     #parcel-coverage-modal .cb-dialog__footer > #parcel-coverage-close-btn,
     #status-log-modal .cb-dialog__footer > #status-log-modal-close { display: none; }
-    .share-plan-panel.mobile-sheet-ready { display: flex; flex-direction: column; }
-    .share-plan-panel.mobile-sheet-ready > .share-plan-panel-content { flex: 1 1 0; min-height: 0; height: auto; }
-    .mobile-sheet-ready .on-map-editor__content { flex: 1 1 0; }
+    .mobile-sheet-ready .on-map-editor__content { flex: 0 1 auto; }
     #grain-score-panel.mobile-sheet-ready { display: flex; flex-direction: column; }
-    #grain-score-panel.mobile-sheet-ready > .grain-score-result { flex: 1 1 0; min-height: 0; overflow: auto; }
+    #grain-score-panel.mobile-sheet-ready > .grain-score-result { flex: 0 1 auto; min-height: 0; overflow: auto; }
     #grain-score-panel .grain-score-panel__header img { width: 36px; height: 36px; }
     #grain-score-panel .grain-score-panel__header { padding: var(--cb-space-2) var(--cb-space-3); }
     .mobile-sheet-ready .on-map-editor__toggle { display: none; }
     body :is(.mobile-sheet-ready, .cb-page) :is(.btn, button.btn-quiet, .cb-segmented__option, .cb-tab) { min-height: 44px; }
     body :is(.mobile-sheet-ready, .cb-page) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]),
     body :is(.mobile-sheet-ready, .cb-page) select { min-height: 44px; }
-    :is(#area-monitor-detail-panel, #urban-block-panel, .site-panel).mobile-sheet-ready:not([hidden]):not(.is-minimized) { display: flex; flex-direction: column; }
-    .mobile-sheet-ready > :is(.site-panel__body, .urban-block-info, #urban-block-list-view, #urban-block-details-view) { min-height: 0; flex: 1 1 0; overflow: auto; }
+    #area-monitor-detail-panel.mobile-sheet-ready:not([hidden]):not(.is-minimized),
+    .urban-block-panel.mobile-sheet-ready:not([hidden]):not(.is-minimized),
+    .site-panel.mobile-sheet-ready:not([hidden]):not(.is-minimized) { display: flex; flex-direction: column; }
+    .mobile-sheet-ready > :is(.site-panel__body, .urban-block-info, .urban-block-list-view, .urban-block-details-view) { min-height: 0; flex: 0 1 auto; overflow: auto; }
     .mobile-sheet-ready > :is(.site-panel__head, .site-panel__actions, .urban-block-panel-header) { flex-shrink: 0; }
     body .mobile-sheet-ready button[aria-label] { min-width: 44px; }
     .cb-page-header .cb-back-link { min-height: 44px; display: inline-flex; align-items: center; }

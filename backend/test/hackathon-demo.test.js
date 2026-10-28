@@ -307,7 +307,7 @@ describe('hackathon demo evidence model', () => {
         });
         expect(model.canonicalCase).toMatchObject({
             tone: 'waiting', state: 'in_progress', label: 'Three-parcel courtyard', lifecycle: 'active',
-            detail: '3 real cadastral parcels · 2/7 independently verified stages'
+            detail: '3 cadastral parcels · outcome proof incomplete'
         });
     });
 });
@@ -333,7 +333,7 @@ describe('hackathon demo executed case card', () => {
     const action = (type, extra = {}) => ({ type, agreementCid: EXECUTED, ...extra });
     // One case of routes/hackathon-cases.js: an agreement by its CID, its stages and its activity.
     const executed = {
-        id: EXECUTED, state: 'complete',
+        id: EXECUTED, state: 'complete', outcomeProof: { state: 'verified' },
         agreement: { cid: EXECUTED, name: 'Two-parcel infill', status: 'executed' },
         parcelSet: { parcelCount: 2 }, progress: { complete: 7, total: 7 },
         branches: { forecast: { exists: true, resolved: true, outcome: 'YES' } },
@@ -358,9 +358,9 @@ describe('hackathon demo executed case card', () => {
 
     it('lists only signed, successful agreement and settlement actions, in lifecycle order, as devnet Explorer links', () => {
         const txs = demo.caseTransactions(executed);
-        expect(txs.map(tx => tx.signature)).toEqual(['tx-mint', 'tx-fund', 'tx-attest', 'tx-execute', 'tx-resolve', 'tx-release', 'tx-fulfil', 'tx-claim']);
+        expect(txs.map(tx => tx.signature)).toEqual(['tx-mint', 'tx-fund', 'tx-stake', 'tx-attest', 'tx-execute', 'tx-resolve', 'tx-release', 'tx-fulfil', 'tx-claim']);
         expect(txs[0]).toMatchObject({ type: 'mint', label: 'Agreement minted', url: 'https://explorer.solana.com/tx/tx-mint?cluster=devnet' });
-        expect(txs.map(tx => tx.label).slice(1, 4)).toEqual(['Escrow funded', 'Decision recorded', 'Execution']);
+        expect(txs.map(tx => tx.label).slice(1, 4)).toEqual(['Escrow funded', 'YES stake', 'Decision recorded']);
         expect(txs.at(-1).label).toBe('YES claim');
         // A cancelled or expired agreement lists its end the same way.
         const expired = { activity: [{ action: action('expire'), transaction: 'tx-expire' }, { action: action('cancel'), transaction: 'tx-cancel' }] };
@@ -374,9 +374,9 @@ describe('hackathon demo executed case card', () => {
         const model = demo.buildDemoModel({ docs: {}, executedCase: executed, proofManifest: { publicProof: { executedCase: 'https://api/x' } } });
         expect(model.executedCase).toMatchObject({
             tone: 'success', state: 'complete', label: 'Two-parcel infill', lifecycle: 'executed', marketOutcome: 'YES',
-            detail: '2 real cadastral parcels · 7/7 independently verified stages'
+            detail: '2 cadastral parcels · outcome and winning claim verified'
         });
-        expect(model.executedCase.transactions).toHaveLength(8);
+        expect(model.executedCase.transactions).toHaveLength(9);
     });
 
     it("links a case to every action on its agreement in the map's explorer", () => {
@@ -390,8 +390,17 @@ describe('hackathon demo executed case card', () => {
         expect(links.filter(link => link.textContent === 'Agreement minted').map(link => link.href)).toEqual(['https://explorer.solana.com/tx/tx-mint?cluster=devnet']);
     });
 
+    it('shows cancellation, NO resolution and winning claim outside the evidence fold', () => {
+        const cancelled = { ...executed, agreement: { ...executed.agreement, status: 'cancelled' },
+            branches: { forecast: { exists: true, resolved: true, outcome: 'NO' } },
+            activity: ['cancel', 'resolve', 'claim'].map(type => ({ action: { type }, ok: true, transaction: `tx-${type}` })) };
+        const element = renderInto(demo.buildDemoModel({ canonicalCase: cancelled }));
+        const path = element.all().find(node => node.className === 'hd-outcome-path');
+        expect(path.all().filter(node => node.tagName === 'A').map(node => node.textContent)).toEqual(['Cancellation', 'Market resolution', 'NO claim']);
+    });
+
     it('keeps an incomplete executed case pending rather than successful', () => {
-        const partial = { ...executed, state: 'in_progress', branches: { forecast: { exists: true, resolved: false } } };
+        const partial = { ...executed, state: 'in_progress', outcomeProof: { state: 'incomplete' }, branches: { forecast: { exists: true, resolved: false } } };
         const model = demo.buildDemoModel({ docs: {}, executedCase: partial });
         expect(model.executedCase).toMatchObject({ tone: 'waiting', state: 'in_progress', marketOutcome: 'Unresolved' });
     });
@@ -415,10 +424,11 @@ describe('hackathon demo executed case card', () => {
             return { ok: true, json: async () => body };
         };
         try {
-            const { values } = await demo.fetchEvidence('https://api');
+            const { values, errors } = await demo.fetchEvidence('https://api');
             expect(requested).toContain('https://api/cases/golden');
             expect(requested.some(url => url.includes('executed'))).toBe(false);
             expect(values.executedCase).toBeUndefined();
+            expect(errors.executedCase).toContain('missing its executed agreement evidence link');
         } finally { globalThis.fetch = previous; }
     });
 
@@ -430,10 +440,11 @@ describe('hackathon demo executed case card', () => {
             return { ok: true, json: async () => (url.endsWith('/hackathon/proof.json') ? { publicProof: {} } : {}) };
         };
         try {
-            const { values } = await demo.fetchEvidence('https://api');
+            const { values, errors } = await demo.fetchEvidence('https://api');
             expect(requested).toContain('https://api/hackathon/proof.json');
             expect(requested.some(url => url.includes('/cases/'))).toBe(false);
             expect(values.canonicalCase).toBeUndefined();
+            expect(errors.canonicalCase).toContain('missing its cancelled agreement evidence link');
         } finally { globalThis.fetch = previous; }
     });
 });
@@ -450,5 +461,14 @@ describe('hackathon demo API base', () => {
         expect(withLocation({ hostname: 'localhost', search: '' }, demo.backendBase)).toBe('http://localhost:3000');
         expect(withLocation({ hostname: 'localhost', search: '?backend=https://evil.example' }, demo.backendBase)).toBe('http://localhost:3000');
         expect(withLocation({ hostname: 'urbangametheory.xyz', search: '?backend=http://localhost:4680' }, demo.backendBase)).toBe('https://api.urbangametheory.xyz');
+    });
+
+    it('honours the explicit local preview backend even when the page declares its production API', () => {
+        const previous = globalThis.document;
+        globalThis.document = { querySelector: () => ({ content: 'https://api.urbangametheory.xyz' }) };
+        try {
+            expect(withLocation({ hostname: 'localhost', search: '?backend=http://localhost:4682' }, demo.backendBase)).toBe('http://localhost:4682');
+            expect(withLocation({ hostname: 'urbangametheory.xyz', search: '?backend=http://localhost:4682' }, demo.backendBase)).toBe('https://api.urbangametheory.xyz');
+        } finally { globalThis.document = previous; }
     });
 });

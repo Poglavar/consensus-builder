@@ -15,6 +15,18 @@ const record = require('../../frontend/js/agreement-record.js');
 const format = require('../../frontend/js/format.js');
 const bridge = require('../../frontend/js/solana/agreement-bridge.js');
 const client = require('../../frontend/js/solana/agreement-client.js');
+const PlanRecord = require('../../frontend/js/plan-record.js');
+const Cid = require('../../frontend/js/cid.js');
+
+describe('agreement panel tabs', () => {
+    it('shows how many input parcels, output parcels and persons the agreement has', () => {
+        const html = panel.tabbedHtml({ overview: '', inputs: '', outputs: '', persons: '', rules: '' }, 'overview', (_key, fallback) => fallback, { inputs: 4, outputs: 9, persons: 3 });
+        expect(html).toContain('data-agreement-properties-tab="inputs">Input parcels (4)</button>');
+        expect(html).toContain('data-agreement-properties-tab="outputs">Output parcels (9)</button>');
+        expect(html).toContain('data-agreement-properties-tab="persons">Persons (3)</button>');
+        expect(html).toContain('data-agreement-properties-tab="overview">Overview</button>');
+    });
+});
 
 // A translator that shows which key was asked for, and with what count.
 const keys = (key, _fallback, params = {}) => (params.count === undefined ? key : `${key}#${params.count}`);
@@ -30,8 +42,7 @@ function output(pieceId, geometry, areaM2, holders, fromParcelIds = ['k9']) {
     return { hash: record.outputHash(geometry), pieceId, areaM2, fromParcelIds, producedBy: 'layout-1', role: 'plot', holders, geometry };
 }
 
-// A layout over k9 (Ana's) and k10 (Boris's): four pieces, one to the public, one to Boris, one
-// jointly, one left with its holders; Ana is paid 1,000.50 EUR.
+// A layout over k9 (Ana's) and k10 (Boris's): four pieces with one explicit recipient each.
 function agreement(overrides = {}) {
     const outputs = [
         output('k9-p1', rect(0, 0, 1, 2), 400, [ana]),
@@ -39,7 +50,9 @@ function agreement(overrides = {}) {
         output('k10-p1', rect(3, 0, 4, 2), 200, [boris], ['k10']),
         output('k10-p2', rect(4, 0, 5, 2), 100, [], ['k10'])
     ];
-    return {
+    const designCids = ['bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku'];
+    const planContent = PlanRecord.create('Courtyard plan', designCids, { at: '45.8,15.96,16', mode: '2d' });
+    const raw = {
         schema: 'agreement/v1',
         id: 'ag-1',
         title: null,
@@ -47,24 +60,42 @@ function agreement(overrides = {}) {
         createdAt: '2026-10-21T10:00:00.000Z',
         updatedAt: '2026-10-21T10:00:00.000Z',
         designs: [{ proposalId: 'layout-1', title: 'Courtyard layout', goal: 'parcel-layout', cid: 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku' }],
+        plan: { cid: Cid.cidOfObject(planContent), content: planContent },
         inputs: {
             parcels: [{ parcelId: 'k9', areaM2: 700, holders: [ana] }, { parcelId: 'k10', areaM2: 300, holders: [boris] }],
-            openGroundM2: 12.5
+            openGroundM2: 0
         },
         outputs,
         allocations: [
             { output: outputs[0].hash, to: { kind: 'public' } },
             { output: outputs[1].hash, to: { kind: 'party', ownerKey: 'agent-boris' } },
-            { output: outputs[2].hash, to: { kind: 'joint', shares: [{ ownerKey: 'agent-ana', share: 0.5 }, { ownerKey: 'agent-boris', share: 0.5 }] } }
+            { output: outputs[2].hash, to: { kind: 'party', ownerKey: 'agent-ana' } },
+            { output: outputs[3].hash, to: { kind: 'party', ownerKey: 'agent-ana' } }
         ],
-        money: { currency: 'EUR', lines: [{ ownerKey: 'agent-ana', amountCents: 100050 }] },
+        money: { currency: 'EUR', lines: [] },
         rule: { electorate: 'owners', binding: true, approvalConfig: null, lens: [] },
         deadline: null,
         ...overrides
     };
+    return overrides.rule === null ? raw : record.settle(raw);
 }
 
 describe('statusOf', () => {
+    it('inspects exact input, output and person geometry without changing ownership or records', () => {
+        const value = agreement(), original = { type: 'Feature', properties: { parcelId: 'k9' }, geometry: rect(0, 0, 3, 2) };
+        const context = { designOf: id => id === 'layout-1' ? { proposalId: id } : null,
+            inputOf: id => id === 'k9' ? original : null, outlineOf: () => [original] };
+        const before = JSON.stringify(value);
+        expect(panel.inspectionFeatures(value, 'input', 'k9', context)).toEqual([original]);
+        expect(panel.inspectionFeatures(value, 'design', 'layout-1', context)).toEqual([original]);
+        expect(panel.inspectionFeatures(value, 'output', value.outputs[0].hash, context)[0].geometry).toEqual(value.outputs[0].geometry);
+        const person = panel.inspectionFeatures(value, 'person', 'agent-ana', context);
+        expect(person[0]).toEqual(original);
+        expect(person.slice(1).map(feature => feature.geometry)).toEqual(value.outputs.slice(2).map(output => output.geometry));
+        expect(panel.inspectionFeatures(value, 'public', 'public', context).map(feature => feature.geometry)).toEqual([value.outputs[0].geometry]);
+        expect(panel.inspectionFeatures(value, 'output', 'missing', context)).toEqual([]);
+        expect(JSON.stringify(value)).toBe(before);
+    });
     it('says the agreement matches the map when the check is current', () => {
         expect(panel.statusOf({ current: true, reasons: [] })).toEqual({ current: true, tone: 'success', label: 'Matches the map', reasons: [] });
     });
@@ -95,7 +126,7 @@ describe('statusOf', () => {
 
 describe('landSummary', () => {
     it('counts the input parcels, adds their area and counts the resulting pieces', () => {
-        expect(panel.landSummary(agreement())).toEqual({ parcels: 2, areaM2: 1000, pieces: 4, openGroundM2: 12.5 });
+        expect(panel.landSummary(agreement())).toEqual({ parcels: 2, areaM2: 1000, pieces: 4, openGroundM2: 0 });
     });
 
     it('leaves the area unknown, never 0, when one input area is unknown', () => {
@@ -107,11 +138,11 @@ describe('landSummary', () => {
 });
 
 describe('allocationLines', () => {
-    it('words who receives each piece: the public, a party, joint shares, or the carried-over holders', () => {
+    it('words the explicit recipient of each piece', () => {
         const lines = panel.allocationLines(agreement());
         expect(lines.map(line => line.label)).toEqual(['Piece 1', 'Piece 2', 'Piece 3', 'Piece 4']);
-        expect(lines.map(line => line.kind)).toEqual(['public', 'party', 'joint', 'holders']);
-        expect(lines.map(line => line.to)).toEqual(['Public', 'Boris', 'Ana 50%, Boris 50%', 'No recorded owner']);
+        expect(lines.map(line => line.kind)).toEqual(['public', 'party', 'party', 'party']);
+        expect(lines.map(line => line.to)).toEqual(['Public', 'Boris', 'Ana', 'Ana']);
         expect(lines[0].area).toBe(format.formatArea(400));
         expect(lines[0].hash).toBe(agreement().outputs[0].hash);
     });
@@ -147,13 +178,22 @@ describe('ledgerRows', () => {
         expect(panel.ledgerRows(null)).toEqual([]);
     });
 
+    it('shows proposer acquisition land and its balancing cash in saved agreement rows', () => {
+        const rows = panel.ledgerRows({ parties: [], proposerM2: 2000, publicM2: 0, currency: 'EUR', money: { sponsorCents: -20000000 } });
+        expect(rows).toHaveLength(1);
+        expect(rows[0]).toMatchObject({ name: 'Proposer', contributes: format.formatArea(0), receives: format.formatArea(2000),
+            cash: `−${format.formatMoney(200000, 'EUR', { maxFractionDigits: 0, minFractionDigits: 0 })}` });
+        const raw = agreement(); raw.allocations[0].to = { kind: 'proposer' };
+        expect(panel.allocationLines(raw)[0]).toMatchObject({ kind: 'proposer', to: 'Proposer' });
+    });
+
     it('reads the ledger AgreementRecord computes', () => {
         const rows = panel.ledgerRows(record.ledger(agreement()));
         expect(rows.map(row => row.name)).toEqual(['Ana', 'Boris', 'Public']);
         // Ana put in k9 (700 m²) and receives half of piece 3; Boris put in k10 and receives piece 2
         // and the other half of piece 3; piece 1 goes to the public.
-        expect(rows[0]).toMatchObject({ contributes: format.formatArea(700), receives: format.formatArea(100), change: `−${format.formatArea(600)}` });
-        expect(rows[1]).toMatchObject({ contributes: format.formatArea(300), receives: format.formatArea(400), change: `+${format.formatArea(100)}`, cash: '—' });
+        expect(rows[0]).toMatchObject({ contributes: format.formatArea(700), receives: format.formatArea(300), change: `−${format.formatArea(400)}` });
+        expect(rows[1]).toMatchObject({ contributes: format.formatArea(300), receives: format.formatArea(300), change: format.formatArea(0), cash: '—' });
         expect(rows[2].receives).toBe(format.formatArea(400));
     });
 });
@@ -185,7 +225,7 @@ describe('the rule, the title and the designs', () => {
         ] }), { designOf: id => held[id] || null, isApplied: r => r.applied === true, typeLabel: r => `type:${r.goal}` });
         expect(rows).toEqual([
             { proposalId: 'layout-1', title: 'Courtyard layout', type: 'type:parcel-layout', missing: false, applied: true },
-            { proposalId: 'road-9', title: 'Untitled proposal', type: 'type:road-track', missing: true, applied: false }
+            { proposalId: 'road-9', title: 'Untitled design', type: 'type:road-track', missing: true, applied: false }
         ]);
     });
 
@@ -213,7 +253,7 @@ describe('panel HTML', () => {
         expect(panel.actionsHtml({ canCompare: false })).toMatch(/data-agreement-action="compare" aria-pressed="false" disabled/);
         expect(panel.actionsHtml({ canCompare: true, comparing: true })).toMatch(/data-agreement-action="compare" aria-pressed="true">/);
         expect(panel.actionsHtml()).toContain('data-agreement-action="edit"');
-        expect(panel.actionsHtml()).toMatch(/class="btn btn-quiet" data-agreement-action="delete"/);
+        expect(panel.actionsHtml()).not.toContain('data-agreement-action="delete"');
     });
 
     it('offers Propose only for a current agreement not yet proposed, and no Edit once proposed', () => {
@@ -228,10 +268,10 @@ describe('panel HTML', () => {
         expect(proposed).not.toContain('data-agreement-action="propose"');
         expect(proposed).not.toContain('data-agreement-action="edit"');
         expect(proposed).toMatch(/class="btn btn-primary" data-agreement-action="compare"/);
-        expect(proposed).toContain('data-agreement-action="delete"');
+        expect(proposed).not.toContain('data-agreement-action="delete"');
     });
 
-    it('renders a secondary-tab agreement as content only, without edit, delete, chain, vote or design actions', () => {
+    it('keeps published inspection read-only while allowing spatial previews', () => {
         const actions = panel.actionsHtml({ published: true, readOnly: true, canCompare: true, canBet: true });
         expect(actions).toContain('data-agreement-action="compare" aria-pressed="false" disabled');
         expect(actions).not.toContain('data-agreement-action="edit"');
@@ -240,10 +280,23 @@ describe('panel HTML', () => {
         expect(actions).not.toContain('data-agreement-action="bet"');
         expect(panel.publishedHtml({ published: PUBLISHED, readOnly: true })).toContain('data-agreement-read-only');
         expect(panel.publishedHtml({ published: PUBLISHED, readOnly: true })).not.toContain('data-approval-card-slot');
-        expect(panel.designsHtml([{ proposalId: 'd1', title: 'Layout', type: 'Layout', missing: false }], undefined, true))
-            .toContain('data-agreement-design="d1" disabled');
+        expect(panel.designsHtml([{ proposalId: 'd1', title: 'Layout', type: 'Layout', missing: false }]))
+            .toContain('data-agreement-inspect="design"');
         expect(panel.chainHtml({ published: true, readOnly: true, ref: null, actions: { canMint: true } }))
             .not.toContain('data-agreement-action="mint"');
+    });
+
+    it('gives the Rules tab the scheme guide for an owners’ rule and a counter-agreement button', () => {
+        const summary = { electorate: 'Decided by the owners', binding: 'Non-binding', detail: '' };
+        const owners = panel.ruleHtml(summary, '', undefined, { owners: true, scheme: true, counter: true });
+        expect(owners).toContain('data-agreement-action="scheme-guide"');
+        expect(owners).toContain('How this scheme works…');
+        expect(owners).toContain('data-agreement-action="counter"');
+        expect(panel.ruleHtml(summary, '', undefined, { owners: true, scheme: false, counter: true })).toContain('Compare with a scheme…');
+        const community = panel.ruleHtml(summary, '', undefined, { owners: false, counter: true });
+        expect(community).not.toContain('data-agreement-action="scheme-guide"');
+        expect(community).toContain('data-agreement-action="counter"');
+        expect(panel.ruleHtml(summary, '')).not.toContain('agreement-panel-actions');
     });
 
     it('opens an in-memory published record without reading or writing the local agreement store', async () => {
@@ -269,6 +322,7 @@ describe('panel HTML', () => {
             AgreementStore: store,
             AgreementRecord: record,
             AgreementDialog: { sponsorLine: () => null, inputParcelIds: () => [], originalsById: () => [] },
+            NamedPlans: { link: cid => `/plans/${cid}` },
             AgreementGround: {
                 check: async () => ({ current: false, reasons: [] }), localHolders: () => () => null, areaOf: () => null
             },
@@ -286,7 +340,7 @@ describe('panel HTML', () => {
             rule: { electorate: 'owners', binding: false, approvalConfig: null, lens: [] } }));
         const browser = panel.browserPanel(win);
 
-        await browser.openReadOnly(viewRecord);
+        await browser.mount({ replaceChildren: vi.fn(), isConnected: true }, { agreement: viewRecord, readOnly: true });
         await Promise.resolve();
         await Promise.resolve();
 
@@ -296,6 +350,8 @@ describe('panel HTML', () => {
         expect(title.textContent).toBe('Read-only view');
         expect(panelBody.innerHTML).toContain('data-agreement-read-only');
         expect(panelBody.innerHTML).toContain('data-agreement-read-only-status');
+        expect(panelBody.innerHTML).toContain('data-agreement-action="plan"');
+        expect(panelBody.innerHTML).toContain('Designs in this plan');
         expect(panelBody.innerHTML).not.toContain('Reading the land under the designs');
         expect(panelBody.innerHTML).not.toContain('data-agreement-action="edit"');
         expect(panelBody.innerHTML).not.toContain('data-agreement-action="delete"');
@@ -331,11 +387,11 @@ describe('panel HTML', () => {
         expect(community).toContain('cb-badge--danger');
     });
 
-    it('makes every design a button that selects it, and every piece a line', () => {
+    it('makes designs and output pieces inspectable rows, disabling missing geometry', () => {
         const designs = panel.designsHtml([{ proposalId: 'layout-1', title: 'Layout', type: 'Parcel layout', missing: false, applied: true },
             { proposalId: 'gone', title: 'Gone', type: '', missing: true, applied: false }]);
-        expect(designs).toContain('<button type="button" class="btn btn-quiet agreement-panel-design" data-agreement-design="layout-1">');
-        expect(designs).toContain('data-agreement-design="gone" disabled');
+        expect(designs).toMatch(/<button[^>]+data-agreement-design="layout-1"[^>]+data-agreement-inspect="design"[^>]*>/);
+        expect(designs).toMatch(/data-agreement-design="gone"[^>]+ disabled/);
         expect(designs.match(/cb-badge--applied/g)).toHaveLength(1);
         const pieces = panel.allocationHtml(panel.allocationLines(agreement()));
         expect(pieces.match(/data-agreement-piece=/g)).toHaveLength(4);
@@ -558,14 +614,14 @@ describe('Minted agreements rows', () => {
     // A row of GET /agreements?minted=1: the index's agreement with its chain account.
     const minted = (extra = {}) => ({
         cid: CID, title: 'Block 7', createdAt: '2026-10-21T12:00:00.000Z',
-        content: { title: 'Block 7', createdAt: '2026-10-21T10:00:00.000Z', designs: [{ cid: CID }, { cid: CID }] },
+        content: { title: 'Block 7', createdAt: '2026-10-21T10:00:00.000Z', planCid: CID }, designCids: [CID, 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku'],
         onchain: { chain: 'solana', cluster: 'devnet', account: ACCOUNT, status: 'active' },
         ...extra
     });
 
     it('words a minted agreement: its title, its designs, its status on chain and its account', () => {
         expect(list.mintedRowLabel(minted())).toEqual({ title: 'Block 7', meta: `2 designs · Active · ${panel.shortKey(ACCOUNT)}` });
-        const untitled = minted({ title: null, content: { title: null, createdAt: '2026-10-21T10:00:00.000Z', designs: [{ cid: CID }] },
+        const untitled = minted({ title: null, content: { title: null, createdAt: '2026-10-21T10:00:00.000Z', planCid: CID }, designCids: [CID],
             onchain: { ...minted().onchain, status: 'executed' } });
         expect(list.mintedRowLabel(untitled)).toEqual({
             title: `Agreement of ${format.formatDate('2026-10-21T10:00:00.000Z')}`, meta: `1 design · Executed · ${panel.shortKey(ACCOUNT)}`

@@ -112,6 +112,28 @@ describe('production static frontend build', () => {
         rmSync(temp, { recursive: true, force: true });
     });
 
+    it('minifies every fragment with esbuild and hashes the minified bundle', () => {
+        const temp = makeTempRoot('cb-static-minify-');
+        const source = path.join(temp, 'source');
+        const output = path.join(temp, 'stage');
+        mkdirSync(source);
+        fixtureFrontend(source);
+        writeFileSync(path.join(source, 'js/a.js'), `/* a long explanation that never ships */\n(function () {\n    const longLocalName = 'a';\n    window.trace.push(longLocalName);\n    window.a = 1;\n})();\n`);
+        const built = buildStatic(source, output);
+        const bundled = readFileSync(path.join(output, built.bundles[0]), 'utf8');
+        expect(bundled).not.toContain('a long explanation');
+        expect(bundled).not.toContain('longLocalName');
+        expect(bundled).not.toMatch(/function \(\) \{/);
+        expect(bundled).toContain('/* source: js/a.js */');
+        const stagedPaths = findScriptArrays(readFileSync(path.join(output, 'index.html'), 'utf8'))
+            .flatMap(array => array.items.map(item => item.value));
+        expect(runScripts(output, stagedPaths).trace).toEqual(['a', 'new-safe:1', 'b:1', 'global', 'current']);
+        // Only a change that survives minification changes the bundle name: a reworded comment does not.
+        writeFileSync(path.join(source, 'js/a.js'), readFileSync(path.join(source, 'js/a.js'), 'utf8').replace('never ships', 'is dropped'));
+        expect(buildStatic(source, output).bundles).toEqual(built.bundles);
+        rmSync(temp, { recursive: true, force: true });
+    });
+
     it('rejects a newly added unsafe script in a marked index run', () => {
         const temp = makeTempRoot('cb-static-unsafe-inventory-');
         const source = path.join(temp, 'source');
@@ -136,6 +158,21 @@ describe('production static frontend build', () => {
             .toThrow(/document\.currentScript\/document\.write/);
     });
 
+    it('stops the build when esbuild cannot be resolved instead of shipping unminified bundles', () => {
+        const temp = makeTempRoot('cb-static-no-esbuild-');
+        const source = path.join(temp, 'source');
+        const output = path.join(temp, 'stage');
+        mkdirSync(source);
+        fixtureFrontend(source);
+        // A copy of the builder with no backend/ beside it, so esbuild has nowhere to resolve from.
+        const builderDir = path.join(temp, 'frontend');
+        mkdirSync(builderDir);
+        writeFileSync(path.join(builderDir, 'build-static.cjs'), read('../../frontend/build-static.cjs'));
+        const isolated = require(path.join(builderDir, 'build-static.cjs'));
+        expect(() => isolated.buildStatic(source, output)).toThrow(/esbuild is required to minify the static bundles/);
+        rmSync(temp, { recursive: true, force: true });
+    });
+
     it('refuses to replace an unowned non-empty output directory and preserves its contents', () => {
         const temp = makeTempRoot('cb-static-unowned-');
         const source = path.join(temp, 'source');
@@ -152,13 +189,18 @@ describe('production static frontend build', () => {
         rmSync(temp, { recursive: true, force: true });
     });
 
-    it('derives the seven marked production bundles and full ordered inventory from the real index.html', () => {
+    it('derives the marked production bundles and full ordered inventory from the real index.html', () => {
         const index = readFileSync(new URL('../../frontend/index.html', import.meta.url), 'utf8');
         const arrays = findScriptArrays(index);
         const groups = findBundleGroups(index, arrays);
         expect(groups.map(({ name }) => name)).toEqual([
-            'foundation', 'environment-before-city', 'environment-after-city', 'chain-clients',
-            'parcel-data-clients', 'map-ui', 'proposal-geometry'
+            'theme-motion', 'foundation', 'environment-before-city', 'environment-after-city',
+            'proposal-evidence-routing', 'proposal-display-state', 'chain-clients', 'parcel-data-clients',
+            'map-ui', 'proposal-geometry', 'proposal-sync', 'proposal-panel-text', 'proposal-map-actions',
+            'proposal-inspection', 'parcel-compare', 'proposal-drafts', 'proposal-editor', 'plans-agreements',
+            'plan-analysis', 'lens-corridor-apply', 'proposal-apply', 'reparcellization', 'agent-tools',
+            'activity-structures-transit', 'corridor-core', 'corridor-structures', 'local-frame-context',
+            'site-drawing', 'view-limits-roads', 'map-mode', 'area-monitor'
         ]);
         expect(groups.every(group => group.paths.length >= 2)).toBe(true);
     });

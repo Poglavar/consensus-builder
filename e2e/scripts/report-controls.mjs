@@ -41,7 +41,7 @@ for (const control of summary.uncovered.filter(control => control.required)) byS
 console.log(`Unexercised required source sites:${bySource.size ? '' : ' none.'}`);
 for (const [source, count] of [...bySource.entries()].sort((a, b) => b[1] - a[1])) console.log(`  ${String(count).padStart(3)} ${source}`);
 if (check) {
-  const sources = new Map(sourceFiles().map(filename => [path.relative(frontendRoot, filename), fs.readFileSync(filename, 'utf8')]));
+  const sources = new Map(sourceFiles(frontendRoot, { includeStyles: true }).map(filename => [path.relative(frontendRoot, filename), fs.readFileSync(filename, 'utf8')]));
   const errors = [...checkControlCoverage(summary, contract), ...checkExemptionGuards(contract, sources)];
   if (errors.length) {
     console.error(`Control coverage failed with ${errors.length} gaps. First 20:`);

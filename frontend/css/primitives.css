@@ -142,8 +142,8 @@
    .btn-sm       the small size · .btn-block the full-width row · .btn-icon a square icon-only button
    [aria-pressed="true"]  the one selected look of every toggle: primary-soft fill, primary border.
    No other class paints a button (backend/test/ui-vocabulary.test.js); a surface may lay its
-   buttons out (width, grid, order) but takes the look from here. Sheets lay theirs out as rows
-   (css/map-shell.css). Everything is a token, so a theme changes the whole family at once. ---- */
+   buttons out (width, grid, order) but takes the look from here. Everything is a token, so a
+   theme changes the whole family at once. ---- */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -239,6 +239,41 @@
     gap: var(--cb-space-1);
     border-radius: var(--cb-radius-sm);
     font-size: var(--cb-text-sm);
+}
+
+/* Monochrome authoring icons inherit the control colour. */
+.cb-icon-track,
+.cb-icon-freeform,
+.cb-icon-station-ground,
+.cb-icon-station-elevated,
+.cb-icon-station-underground {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-color: currentColor;
+    mask-position: center;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+}
+
+.cb-icon-track {
+    mask-image: url('../assets/icons/track.svg');
+}
+
+.cb-icon-freeform {
+    mask-image: url('../assets/icons/freeform.svg');
+}
+
+.cb-icon-station-ground {
+    mask-image: url('../assets/icons/station-ground.svg');
+}
+
+.cb-icon-station-elevated {
+    mask-image: url('../assets/icons/station-elevated.svg');
+}
+
+.cb-icon-station-underground {
+    mask-image: url('../assets/icons/station-underground.svg');
 }
 
 .btn-block {
@@ -678,7 +713,7 @@ button.cb-link {
     background: none;
     font: inherit;
     line-height: inherit;
-    text-align: left;
+    text-align: start;
 }
 
 .cb-link:hover {
@@ -918,7 +953,7 @@ button.cb-link {
     background: var(--cb-surface);
     color: var(--cb-text);
     font: inherit;
-    text-align: left;
+    text-align: start;
     cursor: pointer;
     transition: background-color 0.15s ease, border-color 0.15s ease;
 }
@@ -1042,7 +1077,7 @@ button.cb-link {
 
 /* ---- Actions row ----
    A line of buttons: one gap, wrapping on narrow widths. --end aligns them right (a dialog's own
-   footer does this already); --stack puts every button on its own full-width row. */
+   footer does this already); --stack uses full-width rows; --grid pairs related actions. */
 .cb-actions {
     display: flex;
     flex-wrap: wrap;
@@ -1061,6 +1096,23 @@ button.cb-link {
 
 .cb-actions--stack .btn {
     width: 100%;
+}
+
+.cb-actions--grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+}
+
+.cb-actions--grid > .btn {
+    width: 100%;
+    min-width: 0;
+}
+
+@media (max-width: 359.98px) {
+    .cb-actions--grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 /* ---- Dialog: message, choice and prompt forms (js/ui/dialogs.js) ----
@@ -1100,6 +1152,14 @@ button.cb-link {
 .cb-dialog__header .close-circle-btn {
     margin-left: auto;
 }
+
+/* ---- Concept icons ----
+   One glyph per domain concept, used wherever the concept is named: click stack, lists, search,
+   commands and buttons. <i class="fas cb-icon-design" aria-hidden="true"></i>. Change a
+   concept's glyph here only (Font Awesome 6 free solid codepoints). */
+.cb-icon-design::before { content: "\f568"; }    /* compass-drafting */
+.cb-icon-plan::before { content: "\f558"; }      /* book-atlas */
+.cb-icon-agreement::before { content: "\f2b5"; } /* handshake */
 
 /* ---- Shimmer ----
    A soft highlight that sweeps across a featured control once in a while: the one main action a
@@ -1141,4 +1201,23 @@ button.cb-link {
     .cb-dialog__footer > .btn { flex: 1 1 0; }
     .cb-dialog__body, .cb-page { overflow-wrap: anywhere; }
     input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]), select, textarea { font-size: max(16px, 1em); }
+}
+
+/* Preserve spatial map coordinates, attribution corners and numeric scales in either interface
+   direction. Popup copy below follows the selected language. */
+:root[dir="rtl"] .leaflet-map-pane,
+:root[dir="rtl"] .leaflet-control-container,
+:root[dir="rtl"] :is(canvas, .maplibregl-canvas-container) {
+    direction: ltr;
+}
+
+/* URLs, addresses and code stay readable within either interface direction. */
+:is(input[type="url"], input[type="email"], code, pre) {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+:root[dir="rtl"] :is(.leaflet-popup-content, .leaflet-tooltip) {
+    direction: rtl;
+    text-align: start;
 }

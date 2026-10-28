@@ -3,6 +3,8 @@
   "personas": [
     {
       "name": "densifier-01",
+      "planningPolicy": "proposed-design",
+      "designWeights": { "floorArea": 0.8, "openSpace": 0.2 },
       "role": "proposer",
       "wallet": "G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg",
       "keypairPath": "~/.config/solana/ugt-persona-01.json",
@@ -108,6 +110,8 @@
     },
     {
       "name": "builder-02",
+      "planningPolicy": "proposed-design",
+      "designWeights": { "floorArea": 0.65, "openSpace": 0.35 },
       "role": "proposer",
       "wallet": "4EXtquCoNRBXvfVgDRfBSXSWzrBctcqLwwUau96Umeqk",
       "keypairPath": "~/.config/solana/ugt-builder-02.json",
@@ -129,6 +133,8 @@
     },
     {
       "name": "gentle-01",
+      "planningPolicy": "proposed-design",
+      "designWeights": { "floorArea": 0.2, "openSpace": 0.8 },
       "role": "proposer",
       "wallet": "5MQKHNHQu2hZU2nVKJqfNfuvAN7tNpCudLR1TFX8Azw7",
       "keypairPath": "~/.config/solana/ugt-gentle-01.json",

@@ -1,6 +1,6 @@
 // One agreement's bet: the dialog a bet link opens, a Bets row opens, and the agreement panel's Bet
 // action opens (window.AgreementBets in js/bets/bets-sheet.js). Three states in one cb-dialog: the
-// overview (the question, chance, pool, payouts, deadline, rule, your bets, links), the stake form
+// overview (the question, share price, deadline, rule, positions and links), the trade form
 // (amount, quick stakes, a live "to win") and the receipt after a confirmed bet. The numbers come
 // from js/bets/bets-model.js, the row from the Bets sheet (js/bets/bets-sheet.js), the chain reads
 // and transactions from js/solana/market-bridge.js, whose `proposal` option is the market's subject
@@ -13,8 +13,32 @@
     const doc = root.document;
     const OVERLAY_ID = 'proposalMarketOverlay';
     const EXPLORER = 'https://explorer.solana.com';
-    const state = { overlay: null, account: null, row: null, contest: null, positions: null, opener: null, unregisterEscape: null, compare: null };
+    const state = { overlay: null, account: null, row: null, contest: null, positions: null, opener: null, unregisterEscape: null, compare: null, entryPoint: 'dialog', positionTrackedAccount: null, quotedAmount: null };
     const inFlight = new Set();
+    const ACTION_STATUSES = new Set(['preparing', 'awaiting_signature', 'submitted', 'confirmed']);
+
+    function trackBet(name, row = state.row, properties = {}) {
+        try {
+            root.BetsTelemetry?.track?.(name, {
+                ...(row?.account ? { agreementAccount: row.account } : {}),
+                ...(row?.cid ? { agreementCid: row.cid } : {}),
+                asset: row?.asset || root.BetsTrading?.asset() || 'points', entryPoint: state.entryPoint || 'dialog', ...properties
+            });
+        } catch (_) { console.warn(`[${new Date().toISOString()}] [bets] Journey event could not be captured`); }
+    }
+
+    function actionFor(method) { return method === 'createMarket' ? 'create' : method; }
+
+    function errorCodeOf(error) {
+        const code = typeof error?.code === 'string' ? error.code.toLowerCase().replace(/[^a-z0-9_-]+/g, '_').replace(/^[_-]+|[_-]+$/g, '').slice(0, 80) : '';
+        return code || 'unknown';
+    }
+
+    function actionAttempt(name, row, properties, errorCode) {
+        const common = { ...properties, action: name };
+        trackBet('action_start', row, { ...common, result: 'started' });
+        trackBet('action_end', row, { ...common, result: 'failed', errorCode });
+    }
 
     function interpolate(text, params) {
         return String(text || '').replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => (params && key in params ? params[key] : match));
@@ -45,14 +69,13 @@
 
     const format = () => root.CbFormat || null;
     const model = () => root.BetsModel || null;
-    const view = () => root.ProposalMarketView || null;
-    const bridge = () => root.SolanaMarketBridge || null;
+    const view = () => root.BetsUI || null;
+    const bridge = () => root.BetsTrading || null;
     const sheet = () => root.BetsSheet || null;
     const backendBase = () => (typeof root.getBackendBase === 'function' ? root.getBackendBase().replace(/\/$/, '') : 'https://api.urbangametheory.xyz');
 
     function money(amountText) {
-        const f = format();
-        return f && typeof f.formatMoney === 'function' ? f.formatMoney(Number(amountText), 'USDC') : `${amountText} USDC`;
+        return root.BetsUI.money(amountText, state.row?.asset || bridge().asset());
     }
     const moneyAtomic = atomic => money(model().formatAtomic(atomic));
 
@@ -83,7 +106,7 @@
         if (typeof root.handleWalletButtonClick === 'function') root.handleWalletButtonClick();
     }
 
-    // A confirmed pool transaction: the Bets sheet re-reads its pools past the server's cache.
+    // A confirmed transaction: the Bets sheet re-reads its market and positions.
     function announceChange(account) {
         try { doc.dispatchEvent(new root.CustomEvent('bets:changed', { detail: { account } })); } catch (_) { }
     }
@@ -97,7 +120,7 @@
         return wallet ? `${wallet.slice(0, 4)}…${wallet.slice(-4)}` : 'Wallet user';
     }
 
-    // The row's name and the question its pool answers (js/bets/market-question.js, through the sheet).
+    // The row's name and dated agreement question, shared with the sheet.
     function labelOf(row) {
         const bets = sheet();
         return bets && typeof bets.labelText === 'function' ? bets.labelText(row) : (row.label || t('bets.row.untitledAgreement', 'Untitled agreement'));
@@ -112,7 +135,7 @@
     // ---- data ---------------------------------------------------------------------------------
 
     // The row from the Bets sheet's city payload; without one (an agreement the city list does not
-    // carry yet, such as one just minted), the pool and the account's status and deadline straight
+    // carry yet, such as one just minted), the market and the account's status and deadline straight
     // from the chain, judged by GET /markets' rule (BetsModel.chainEntry).
     async function loadRow(account, options) {
         const bets = sheet();
@@ -125,8 +148,8 @@
         const fallback = { contest: null, row: {
             kind: 'agreement', cid: null, account, contest: null, title: options.title || '', label: options.title || '', designTitles: [],
             author: null, createdAt: null, deadline: null, status: null, chainStatus: null, screenshotUrl: null, screenshotBeforeUrl: null,
-            parcelIds: [], state: 'closed', chanceYes: null, chanceNo: null, oneSided: null, pool: null, poolAtomic: 0n, yesPoolAtomic: 0n,
-            noPoolAtomic: 0n, outcome: null, paysYes: null, paysNo: null, marketAddress: null, fromChain: true
+            parcelIds: [], state: 'closed', chanceYes: null, chanceNo: null, market: null, asset: bridge().asset(),
+            sharesAtomic: 0n, liquidity: null, outcome: null, paysYes: null, paysNo: null, marketAddress: null, fromChain: true
         } };
         const chain = bridge();
         if (!chain || typeof chain.readSummary !== 'function' || !model()) return fallback;
@@ -136,7 +159,7 @@
                 const entry = model().chainEntry(account, summary);
                 fallback.row = { ...fallback.row, ...model().row({ ...entry, title: fallback.row.title }), fromChain: true };
             }
-            if (summary && summary.wallet) state.positions = { yes: summary.yes || null, no: summary.no || null };
+            if (summary) state.positions = { yes: summary.yes || null, no: summary.no || null };
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [bets] pool unreadable for ${account}`, error);
         }
@@ -149,9 +172,9 @@
         const known = bets && typeof bets.positionsFor === 'function' ? bets.positionsFor(account) : null;
         if (known) return known;
         const chain = bridge();
-        if (!walletConnected() || !chain || typeof chain.readPositions !== 'function') return null;
+        if ((bridge().needsWallet() && !walletConnected()) || !chain || typeof chain.readPositions !== 'function') return null;
         try {
-            const all = await chain.readPositions([account]);
+            const all = await chain.readPositions([{ account, sponsor: state.row?.sponsor, marketAddress: state.row?.marketAddress }]);
             return all && all[account] ? all[account] : null;
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [bets] positions unreadable`, error);
@@ -217,11 +240,16 @@
         disposeCompare();
         const overlay = state.overlay;
         if (!overlay) return;
+        const dialogState = overlay.querySelector('.bets-dialog')?.dataset.state;
+        trackBet('close', state.row || { account: state.account }, {
+            entryPoint: dialogState === 'stake' ? 'stake' : state.entryPoint,
+            ...(dialogState === 'stake' ? { action: state.tradeAction || 'buy' } : {})
+        });
         if (typeof state.unregisterEscape === 'function') state.unregisterEscape();
         overlay.remove();
         showAppAddress();
         const opener = state.opener;
-        state.overlay = null; state.row = null; state.contest = null; state.positions = null; state.opener = null; state.unregisterEscape = null;
+        state.overlay = null; state.row = null; state.contest = null; state.positions = null; state.opener = null; state.unregisterEscape = null; state.positionTrackedAccount = null;
         // Focus goes back where the dialog came from (a Bets row, the agreement panel); the sheet or
         // panel behind stayed open the whole time, so the person lands on the pool, not the bare map.
         const target = opener && opener.isConnected ? opener : doc.querySelector('.map-sheet:not([hidden])');
@@ -271,13 +299,12 @@
     function chanceLabel(row) {
         if (row.state === 'resolved-yes') return t('bets.row.resolvedYes', 'Settled yes');
         if (row.state === 'resolved-no') return t('bets.row.resolvedNo', 'Settled no');
-        if (row.state === 'not-minted') return t('bets.row.notMinted', 'Not minted yet, so no pool');
-        if (row.state === 'needs-market') return t('panel.proposal.market.state.needsPool', 'No pool yet');
+        if (row.state === 'not-minted') return t('bets.row.notMinted', 'Agreement not minted yet');
+        if (row.state === 'needs-market') return t('panel.proposal.market.state.needsPool', 'No USDC market yet');
         if (row.state === 'closed' && !row.marketAddress) return t('bets.row.closed', 'Not open for bets');
-        if (row.oneSided === 'yes') return t('bets.row.onlyYes', 'Only yes bets so far');
-        if (row.oneSided === 'no') return t('bets.row.onlyNo', 'Only no bets so far');
+        if (row.state === 'resolved-void') return t('bets.trade.void', 'Voided · half paid per share');
         if (row.chanceYes === null || row.chanceYes === undefined) return t('bets.row.noBets', 'No bets yet');
-        return t('bets.row.yesPoolShare', 'Yes: {{percent}} of pool', { percent: percentText(row.chanceYes) });
+        return root.BetsUI.price(row);
     }
 
     function landLine(row, contest) {
@@ -294,16 +321,11 @@
     // The pool's lifecycle words (js/proposals/market-view.js lifecycle), from the account's status;
     // a row the model closed (its deadline passed while the account is still Active) reads as closed.
     function lifecycleWords(row) {
-        const v = view();
-        if (!v || typeof v.lifecycle !== 'function') return null;
-        const marketModel = row.marketAddress ? {
-            exists: true, resolved: row.outcome !== null, outcome: row.outcome, yesPool: row.yesPoolAtomic, noPool: row.noPoolAtomic
-        } : { exists: false };
-        const words = v.lifecycle(row.state === 'closed' ? 'closed' : (row.chainStatus || 'unknown'), marketModel);
+        if (!row.closesAt) return { state: chanceLabel(row), next: '', rule: t('bets.trade.needsDeadline', 'A dated agreement market is needed before betting opens.') };
         return {
-            state: t(`panel.proposal.market.state.${words.stateKey}`, words.state),
-            next: t(`bets.dialog.next.${words.nextKey}`, words.next),
-            rule: t('bets.dialog.rule', words.rule)
+            state: chanceLabel(row),
+            next: t('bets.trade.sharePayout', 'Each winning share pays 1. You can sell before trading closes.'),
+            rule: t('bets.trade.rule', 'YES if this agreement executes on-chain by {{deadline}}. NO if it expires or misses that deadline. Cancellation voids the bet and pays 0.5 per share. Execution does not mean construction.', { deadline: root.BetsUI.deadline(row.closesAt) })
         };
     }
 
@@ -311,7 +333,7 @@
         if (!positions || !model()) return [];
         return ['yes', 'no']
             .filter(side => positions[side] && model().formatAtomic(positions[side].amount) !== '0')
-            .map(side => t('panel.proposal.market.betLine', '{{side}} {{amount}}', { side: sideWord(side), amount: moneyAtomic(positions[side].amount) })
+            .map(side => t('panel.proposal.market.betLine', '{{side}} {{amount}}', { side: sideWord(side), amount: root.BetsUI.shares(model().formatAtomic(positions[side].amount)) })
                 + (positions[side].claimed ? ` (${t('panel.proposal.market.paidOut', 'paid out')})` : ''));
     }
 
@@ -337,7 +359,7 @@
         eyebrow.append(el('span', null, t('bets.tagline', 'Bet on cities')));
         const land = landLine(row, contest);
         if (land) eyebrow.append(el('span', null, ` · ${land}`));
-        p.body.append(eyebrow);
+        p.body.append(eyebrow, root.BetsUI.assetControl());
 
         // Rival agreements over the same land: back to the contest in the Bets sheet.
         if (contest && contest.agreementCount > 1) {
@@ -346,6 +368,7 @@
                 : t('bets.contest.agreementCount', contest.agreementCount === 1 ? '{{count}} agreement' : '{{count}} agreements', { count: contest.agreementCount });
             const rivals = button('cb-link bets-dialog__contest', t('bets.dialog.onThisLandCount', '{{entries}} on this land', { entries: counted }), () => {
                 const id = contest.id;
+                trackBet('return', row, { entryPoint: 'dialog' });
                 close();
                 if (typeof root.openBetsSheet === 'function') root.openBetsSheet({ contestId: id });
             });
@@ -365,9 +388,11 @@
                 compare.append(img, before);
                 p.body.append(compare);
                 state.compare = root.__MapBeforeAfter.attachDivider(compare, before, {
+                    percent: 25,
                     labels: { before: t('mapCompare.before', 'Before'), after: t('mapCompare.after', 'After') },
                     sliderLabel: t('mapCompare.sliderLabel', 'Before and after comparison')
                 });
+                trackBet('comparison_view', row, { entryPoint: state.entryPoint });
             } else {
                 p.body.append(img);
             }
@@ -375,7 +400,7 @@
 
         const chance = el('div', `bets-dialog__chance is-${row.state}`);
         chance.append(el('strong', 'bets-dialog__chance-word', chanceLabel(row)));
-        if (row.state === 'open' && row.chanceYes !== null && row.chanceYes !== undefined && !row.oneSided) {
+        if (row.state === 'open' && row.chanceYes !== null && row.chanceYes !== undefined) {
             const bar = el('div', 'bets-row__bar');
             const fill = el('span');
             fill.style.width = `${Math.max(0, Math.min(100, row.chanceYes))}%`;
@@ -386,13 +411,13 @@
 
         const facts = el('dl', 'bets-dialog__facts');
         const fact = (label, value) => { if (!value) return; facts.append(el('dt', null, label), el('dd', null, value)); };
-        if (row.pool !== null && row.pool !== undefined) fact(t('bets.dialog.poolLabel', 'Pool'), money(row.pool));
+        if (row.liquidity !== null) fact(t('bets.trade.liquidity', 'Liquidity setting'), money(row.liquidity));
         if (row.state === 'open' && row.paysYes !== null) {
             fact(t('bets.dialog.paysLabel', 'Pays'), `${t('bets.dialog.yesPays', 'Yes {{multiple}}×', { multiple: row.paysYes.toFixed(2) })} · ${t('bets.dialog.noPays', 'No {{multiple}}×', { multiple: row.paysNo.toFixed(2) })}`);
         }
         if (row.outcome === null) {
             // The agreement's deadline ends its chance to execute; it is not a promised settlement time.
-            if (row.deadline) fact(t('bets.dialog.agreementDeadline', 'Agreement deadline'), dateText(row.deadline));
+            if (row.closesAt) fact(t('bets.trade.deadline', 'Bet deadline'), root.BetsUI.deadline(row.closesAt));
             else fact(t('bets.dialog.settlesLabel', 'Settlement'), t('bets.dialog.noDeadline', 'No deadline set; settlement follows a terminal on-chain status'));
         }
         const author = model() ? model().authorLabel(row.author) : row.author;
@@ -403,10 +428,19 @@
         const mine = el('p', 'bets-dialog__mine');
         const lines = mineLines(row, positions);
         if (lines.length) mine.textContent = t('panel.proposal.market.yourBets', 'Your bets: {{lines}}', { lines: lines.join('; ') });
-        else if (walletConnected()) mine.textContent = t('bets.dialog.noBets', 'You have no bets on this agreement.');
+        else if (!bridge().needsWallet() || walletConnected()) mine.textContent = t('bets.dialog.noBets', 'You have no bets on this agreement.');
         else mine.textContent = t('panel.proposal.market.connectPosition', 'Connect a Solana wallet to see your bets.');
         p.body.append(mine);
+        if (lines.length && state.positionTrackedAccount !== row.account) {
+            state.positionTrackedAccount = row.account;
+            trackBet('position_view', row, { entryPoint: state.entryPoint });
+        }
 
+        if (row.state === 'open' && positions) {
+            const selling = el('div', 'bets-dialog__collect');
+            ['yes', 'no'].filter(side => positions[side] && BigInt(positions[side].amount) > 0n && !positions[side].claimed).forEach(side => selling.append(button('btn btn-quiet', t('bets.trade.sellSide', 'Sell {{side}} shares', { side: sideWord(side) }), () => renderStake(side, 'sell'))));
+            if (selling.childElementCount) p.body.append(selling);
+        }
         const claimable = model() ? model().claimSides(row, positions) : [];
         if (claimable.length) {
             const collect = el('div', 'bets-dialog__collect');
@@ -427,16 +461,24 @@
         p.body.append(note);
 
         const links = el('p', 'cb-link-row bets-dialog__links');
-        if (row.marketAddress) links.append(explorerLink(t('panel.proposal.market.poolAccount', 'Pool account'), row.marketAddress));
+        if (row.marketAddress && row.asset === 'devnet-usdc') links.append(explorerLink(t('panel.proposal.market.poolAccount', 'Market account'), row.marketAddress));
         links.append(explorerLink(t('bets.dialog.agreementAccount', 'Agreement account'), row.account));
+        const terms = el('a', 'cb-link cb-link--external', t('bets.trade.terms', 'Settlement terms'));
+        terms.href = `${root.getBackendBase().replace(/\/$/, '')}/oracle/recipes/agreement-execution-by-deadline-v1?agreement=${encodeURIComponent(row.account)}`;
+        terms.target = '_blank'; terms.rel = 'noopener noreferrer'; links.append(terms);
         p.body.append(links);
 
         // Footer: pass it on, go to the agreement, and the bet itself.
         if (linkFor(row.account)) {
-            p.footer.append(button('btn btn-quiet', t('bets.copyLink', 'Copy link'), () => sheet().copyLink(row.account)));
+            p.footer.append(button('btn btn-quiet', t('bets.copyLink', 'Copy link'), () => sheet().copyLink(row.account, { entryPoint: 'dialog' })));
             if (typeof root.navigator.share === 'function') {
                 p.footer.append(button('btn btn-quiet', t('panel.proposal.actions.share', 'Share'), async () => {
-                    try { await root.navigator.share({ title: questionOf(row), url: linkFor(row.account) }); } catch (_) { /* dismissed */ }
+                    try {
+                        await root.navigator.share({ title: questionOf(row), url: linkFor(row.account) });
+                        trackBet('share', row, { entryPoint: 'dialog', result: 'succeeded' });
+                    } catch (error) {
+                        trackBet('share', row, { entryPoint: 'dialog', result: error?.name === 'AbortError' ? 'cancelled' : 'failed' });
+                    }
                 }));
             }
         }
@@ -444,7 +486,7 @@
             p.footer.append(button('btn', t('bets.dialog.openAgreement', 'Open the agreement'), () => {
                 const target = row;
                 close();
-                sheet().openAgreement(target);
+                sheet().openAgreement(target, { entryPoint: 'dialog' });
             }));
         }
         if (row.state === 'open') {
@@ -452,10 +494,10 @@
             const sides = el('div', 'bets-dialog__sides');
             sides.append(betButton(row, 1), betButton(row, 0));
             p.footer.append(sides);
-        } else if (row.state === 'needs-market') {
-            p.footer.append(button('btn btn-primary', t('bets.row.openMarket', 'Open the pool'), event => transact('createMarket', null, event.currentTarget)));
+        } else if (row.state === 'needs-market' && row.sponsor === walletAddress()) {
+            p.footer.append(button('btn btn-primary', t('bets.row.openMarket', 'Seed USDC market'), event => transact('createMarket', null, event.currentTarget)));
         } else if (row.state === 'settling') {
-            p.footer.append(button('btn btn-primary', t('bets.row.settle', 'Settle the pool'), event => transact('resolve', null, event.currentTarget)));
+            p.footer.append(button('btn btn-primary', t('bets.row.settle', 'Settle market'), event => transact('resolve', null, event.currentTarget)));
         }
     }
 
@@ -465,41 +507,59 @@
         const yes = side === 1;
         const multiple = yes ? row.paysYes : row.paysNo;
         const node = button(`btn ${yes ? 'btn-yes btn-market-yes' : 'btn-no btn-market-no'} bets-dialog__bet`, null, () => {
-            if (!walletConnected()) { askForWallet(); return; }
+            if (bridge().needsWallet() && !walletConnected()) { askForWallet(); return; }
             renderStake(side);
         });
         node.append(el('strong', 'bets-bet__side', yes ? t('bets.row.yes', 'Yes') : t('bets.row.no', 'No')));
         if (multiple !== null && multiple !== undefined) node.append(el('span', 'bets-bet__pays', t('bets.row.pays', 'Pays {{multiple}}×', { multiple: multiple.toFixed(2) })));
-        node.title = yes ? t('bets.row.yesExecutes', 'Bet that the agreement executes on-chain.') : t('bets.row.noExecutes', 'Bet that the agreement is cancelled or expires on-chain.');
+        node.title = yes ? t('bets.row.yesExecutes', 'Bet that the agreement executes on-chain by the deadline.') : t('bets.row.noExecutes', 'Bet that the agreement expires or misses the execution deadline.');
         return node;
     }
 
     // Opening, settling or collecting from the pool: one wallet transaction, the result in the
     // note under the facts, then the overview re-read.
     async function transact(action, side, trigger) {
-        if (!walletConnected()) { askForWallet(); return; }
+        const row = state.row;
+        const account = state.account;
+        const overlay = state.overlay;
+        const selected = row.asset;
+        const visible = () => state.account === account && state.overlay === overlay && bridge().asset() === selected;
+        const actionName = actionFor(action);
+        const context = { action: actionName, ...(side === null ? {} : { side: sideName(side) }), entryPoint: state.entryPoint };
+        let finished = false;
+        const finish = (result, errorCode) => {
+            if (finished) return;
+            finished = true;
+            trackBet('action_end', row, { ...context, result, ...(errorCode ? { errorCode } : {}) });
+        };
+        if (bridge().needsWallet() && !walletConnected()) { actionAttempt(actionName, row || { account }, context, 'wallet_not_connected'); askForWallet(); return; }
         const chain = bridge();
         const v = view();
-        const account = state.account;
-        if (!chain || typeof chain[action] !== 'function') return;
+        if (!chain || typeof chain[action] !== 'function') { actionAttempt(actionName, row || { account }, context, 'action_unavailable'); return; }
         const key = `${action}:${account}:${side ?? ''}`;
         if (inFlight.has(key)) return;
         inFlight.add(key);
         if (trigger) trigger.disabled = true;
+        trackBet('action_start', row, { ...context, result: 'started' });
         try {
-            const result = await chain[action]({ proposal: account, ...(side === null ? {} : { side: sideValue(side) }), onStatus: item => setStatus(v ? v.statusText(item) : '', item.explorerUrl) });
-            setStatus(v ? v.confirmedText() : '', result.explorerUrl);
+            const result = await chain[action]({ proposal: account, ...(side === null ? {} : { side: sideValue(side) }), onStatus: item => {
+                if (visible()) setStatus(v ? v.statusText(item) : '', item.explorerUrl);
+                if (ACTION_STATUSES.has(item?.state)) trackBet('action_status', row, { ...context, result: item.state });
+            } });
+            finish(result?.replayed ? 'succeeded' : result?.receipt || result?.transactionHash || result?.transactionHashes?.length ? 'confirmed' : 'unknown');
+            if (visible()) setStatus(t('bets.trade.confirmed', 'Confirmed'), result.explorerUrl);
             const wallet = walletAddress();
             const message = action === 'claim' ? t('panel.proposal.market.collectedMessage', 'Collected {{side}} winnings.', { side: sideWord(side) })
-                : action === 'createMarket' ? t('panel.proposal.market.historyOpened', 'Opened the pool')
+                : action === 'createMarket' ? t('panel.proposal.market.historyOpened', 'Seeded USDC market')
                     : t('bets.dialog.settledMessage', "Settled from the agreement's on-chain status.");
-            await recordSupport({ wallet, action, proposalId: account, result, message: `${actorName(wallet)}: ${message}` });
+            if (selected === 'devnet-usdc' && !root.BetsTelemetry?.simulationRun) await recordSupport({ wallet, action, proposalId: account, result, message: `${actorName(wallet)}: ${message}` });
             announceChange(account);
-            await refresh();
-            setStatus(message, result.explorerUrl);
+            if (visible()) await refresh();
+            if (visible()) setStatus(message, result.explorerUrl);
         } catch (error) {
+            finish(root.BetsTelemetry?.errorResult(error) || 'failed', errorCodeOf(error));
             console.error(`[${new Date().toISOString()}] [bets] ${action} failed`, error);
-            setStatus(v ? v.errorText(error) : t('bets.error.transaction', 'The transaction failed.'), error && error.explorerUrl);
+            if (visible()) setStatus(v ? v.errorText(error) : t('bets.error.transaction', 'The transaction failed.'), error && error.explorerUrl);
         } finally {
             inFlight.delete(key);
             if (trigger && trigger.isConnected) trigger.disabled = false;
@@ -510,191 +570,144 @@
     // collection, or when something else changed the pool while the dialog is open).
     async function refresh() {
         const account = state.account;
+        const overlay = state.overlay, asset = bridge().asset();
+        const visible = () => state.account === account && state.overlay === overlay && bridge().asset() === asset;
         const bets = sheet();
         if (bets && typeof bets.load === 'function') { try { await bets.load({ force: true, fresh: true }); } catch (_) { /* the row below says so */ } }
-        if (state.account !== account || !state.overlay) return;
+        if (!visible() || !overlay) return;
         const found = await loadRow(account, { title: state.row ? state.row.title : '' });
-        if (state.account !== account || !state.overlay) return;
+        if (!visible()) return;
         state.row = found.row; state.contest = found.contest;
-        state.positions = await loadPositions(account) || state.positions;
-        if (state.account === account && state.overlay && state.overlay.querySelector('.bets-dialog').dataset.state === 'overview') renderOverview();
+        const positions = await loadPositions(account);
+        if (!visible()) return;
+        state.positions = positions || state.positions;
+        if (overlay.querySelector('.bets-dialog').dataset.state === 'overview') renderOverview();
     }
 
     // ---- stake form ---------------------------------------------------------------------------
 
-    function renderStake(side) {
-        const p = parts();
-        const row = state.row;
-        if (!p || !row) return;
-        const yes = sideValue(side) === 1;
-        const m = model();
+    function renderStake(side, action = 'buy') {
+        const p = parts(), row = state.row;
+        if (!p || !row?.market) return;
+        const name = sideName(side), yes = name === 'yes', buying = action === 'buy';
+        state.tradeAction = action; state.quotedAmount = null;
         p.dialog.dataset.state = 'stake';
-        p.title.textContent = t('panel.proposal.market.dialogTitle', 'Bet {{side}}', { side: sideWord(side) });
-        disposeCompare();
-        p.body.replaceChildren();
-        p.footer.replaceChildren();
-
+        p.title.textContent = buying ? t('panel.proposal.market.dialogTitle', 'Bet {{side}}', { side: sideWord(side) })
+            : t('bets.trade.sellSide', 'Sell {{side}} shares', { side: sideWord(side) });
+        disposeCompare(); p.body.replaceChildren(); p.footer.replaceChildren();
         p.body.append(el('p', 'bets-dialog__lead', questionOf(row)));
-        p.body.append(el('p', 'bets-dialog__copy', yes ? t('bets.row.yesExecutes', 'Bet that the agreement executes on-chain.') : t('bets.row.noExecutes', 'Bet that the agreement is cancelled or expires on-chain.')));
-
+        p.body.append(el('p', 'bets-dialog__copy', t('bets.trade.priceMoves', 'The price changes as you trade. Review the whole trade below.')));
         const field = el('label', 'bets-dialog__amount');
-        field.append(el('span', 'bets-dialog__amount-label', t('bets.dialog.amount', 'Amount')));
-        const input = el('input');
-        input.type = 'text'; input.inputMode = 'decimal'; input.autocomplete = 'off'; input.placeholder = '1.00';
+        field.append(el('span', 'bets-dialog__amount-label', buying ? t('bets.dialog.amount', 'Amount') : t('bets.trade.sharesToSell', 'Shares to sell')));
+        const input = el('input'); input.type = 'text'; input.inputMode = 'decimal'; input.autocomplete = 'off'; input.placeholder = '1';
         input.setAttribute('data-market-amount', '');
-        field.append(input, el('span', 'proposal-market-currency', 'USDC'));
+        field.append(input, el('span', 'proposal-market-currency', buying ? row.asset === 'points' ? t('bets.trade.points', 'Points') : 'USDC' : t('bets.trade.shares', 'Shares')));
         p.body.append(field);
-
-        // Quick stakes: a cb-segmented row of amounts that fill the field (bets-dialog__chip stays as
-        // the hook the specs find them by).
         const chips = el('div', 'cb-segmented bets-dialog__chips');
-        chips.setAttribute('role', 'group');
-        chips.setAttribute('aria-label', t('bets.dialog.amount', 'Amount'));
-        (m ? m.QUICK_STAKES : ['0.1', '1', '5']).forEach(amount => chips.append(button('cb-segmented__option bets-dialog__chip', amount, () => { input.value = amount; update(); input.focus(); })));
-        const max = button('cb-segmented__option bets-dialog__chip', t('bets.dialog.max', 'Max'), () => { if (max.dataset.amount) { input.value = max.dataset.amount; update(); input.focus(); } });
-        max.hidden = true;
-        chips.append(max);
-        p.body.append(chips);
-
-        const toWin = el('p', 'bets-dialog__towin');
-        toWin.setAttribute('data-market-towin', '');
-        toWin.setAttribute('aria-live', 'polite');
-        p.body.append(toWin);
-
-        const status = el('div', 'proposal-market-status');
-        status.setAttribute('data-market-dialog-status', '');
-        status.setAttribute('aria-live', 'polite');
-        p.body.append(status);
-
-        // The live "to win": the stake with itself in the pool, so the number is what the program
-        // would pay now; the pool at settlement decides the real one.
+        chips.setAttribute('role', 'group'); chips.setAttribute('aria-label', t('bets.dialog.amount', 'Amount'));
+        if (buying) (row.asset === 'points' ? model().POINTS_STAKES : model().QUICK_STAKES).forEach(amount => chips.append(button('cb-segmented__option bets-dialog__chip', amount, () => { input.value = amount; update(); recordQuote(); })));
+        const max = button('cb-segmented__option bets-dialog__chip', t('bets.dialog.max', 'Max'), () => { if (max.dataset.amount) { input.value = max.dataset.amount; update(); recordQuote(); } });
+        max.hidden = true; chips.append(max); p.body.append(chips);
+        const toWin = el('div', 'bets-dialog__towin'); toWin.setAttribute('data-market-towin', ''); toWin.setAttribute('aria-live', 'polite'); p.body.append(toWin);
+        const status = el('p', 'proposal-market-status'); status.setAttribute('data-market-dialog-status', ''); status.setAttribute('aria-live', 'polite'); p.body.append(status);
+        const quoted = () => model().quote(row.market, name, root.BettingContract.parseAmount(input.value), action);
         const update = () => {
-            toWin.replaceChildren();
-            if (!m || !row.marketAddress) return;
-            const v = view();
-            let amount;
-            try { amount = v ? v.parseUsdc(input.value) : null; } catch (_) { amount = null; }
-            if (!amount) return;
-            const prize = m.toWin(sideName(side), row.yesPoolAtomic, row.noPoolAtomic, amount);
-            const multiple = m.payoutMultiple(sideName(side), row.yesPoolAtomic, row.noPoolAtomic, amount);
-            toWin.append(el('strong', null, t('bets.dialog.toWin', 'To win about {{amount}} if {{side}} wins', { amount: moneyAtomic(prize), side: sideWord(side) })));
-            toWin.append(el('span', null, ` (${t('bets.row.pays', 'Pays {{multiple}}×', { multiple: multiple === null ? '—' : multiple.toFixed(2) })}). ${t('bets.dialog.toWinNote', 'The final payout follows the pool at settlement.')}`));
+            toWin.replaceChildren(); submit.disabled = true;
+            if (!input.value.trim()) return;
+            try {
+                const quote = quoted();
+                if (!buying && quote.shares > BigInt(state.positions?.[name]?.amount || 0)) throw new Error('Too many shares');
+                toWin.append(el('strong', null, buying
+                    ? t('bets.trade.buyQuote', 'Buy {{shares}} for at most {{amount}}', { shares: root.BetsUI.shares(model().formatAtomic(quote.shares)), amount: moneyAtomic(quote.amount) })
+                    : t('bets.trade.sellQuote', 'Sell {{shares}} for at least {{amount}}', { shares: root.BetsUI.shares(model().formatAtomic(quote.shares)), amount: moneyAtomic(quote.amount) })));
+                if (buying) toWin.append(el('p', null, t('bets.trade.winQuote', 'If {{side}} wins, these shares pay {{amount}}. Later trades do not change that payout.', { side: sideWord(side), amount: moneyAtomic(quote.shares) })));
+                toWin.append(el('p', null, t('bets.trade.quoteGuard', 'If the price moves against this quote, the trade is rejected.')));
+                submit.disabled = false;
+            } catch (_) { toWin.append(el('p', null, t('bets.trade.invalidAmount', 'Enter a valid positive amount within your balance or shares.'))); }
         };
-        input.addEventListener('input', update);
-        input.addEventListener('keydown', event => { if (event.key !== 'Enter') return; event.preventDefault(); submitStake(side); });
-
-        const back = button('btn', t('proposalDrafts.actions.back', 'Back'), () => renderOverview());
-        const submit = button(`btn ${yes ? 'btn-yes btn-market-yes' : 'btn-no btn-market-no'}`, t('panel.proposal.market.dialogTitle', 'Bet {{side}}', { side: sideWord(side) }), () => submitStake(side));
-        submit.setAttribute('data-market-submit', '');
-        p.footer.append(back, submit);
+        const recordQuote = () => {
+            let quote; try { quote = quoted(); } catch (_) { return; }
+            const key = `${action}:${name}:${quote.shares}:${quote.amount}`;
+            if (key === state.quotedAmount) return;
+            state.quotedAmount = key; trackBet('quote', row, { action, side: name, entryPoint: state.entryPoint });
+        };
+        const submit = button(`btn ${yes ? 'btn-yes btn-market-yes' : 'btn-no btn-market-no'}`, buying
+            ? t('bets.trade.buy', 'Buy shares') : t('bets.trade.sell', 'Sell shares'), () => submitTrade(side, action, quoted));
+        submit.disabled = true; submit.setAttribute('data-market-submit', '');
+        p.footer.append(button('btn', t('proposalDrafts.actions.back', 'Back'), () => renderOverview()), submit);
+        input.addEventListener('input', update); input.addEventListener('blur', recordQuote);
+        input.addEventListener('keydown', event => { if (event.key === 'Enter' && !submit.disabled) { event.preventDefault(); submit.click(); } });
         input.focus();
-
-        // The wallet's balance fills "Max"; a slow or failed read just leaves the chip hidden.
-        const chain = bridge();
-        if (chain && typeof chain.readStakeBalance === 'function' && m) {
-            Promise.resolve(chain.readStakeBalance()).then(balance => {
-                if (typeof balance !== 'bigint' || balance <= 0n || !max.isConnected) return;
-                max.dataset.amount = m.formatAtomic(balance);
-                max.textContent = `${t('bets.dialog.max', 'Max')} ${moneyAtomic(balance)}`;
-                max.hidden = false;
-            }).catch(() => { });
-        }
+        const available = buying ? bridge().readStakeBalance() : Promise.resolve(BigInt(state.positions?.[name]?.amount || 0));
+        Promise.resolve(available).then(balance => {
+            if (typeof balance !== 'bigint' || balance <= 0n || !max.isConnected) return;
+            max.dataset.amount = model().formatAtomic(balance);
+            max.textContent = `${t('bets.dialog.max', 'Max')} ${buying ? moneyAtomic(balance) : root.BetsUI.shares(model().formatAtomic(balance))}`; max.hidden = false;
+        }).catch(error => { if (status.isConnected) status.textContent = root.BetsUI.errorText(error); });
     }
 
-    async function submitStake(side) {
-        const p = parts();
-        const v = view();
-        const row = state.row;
-        if (!p || !row || !v) return;
-        const input = p.body.querySelector('[data-market-amount]');
-        const submit = p.footer.querySelector('[data-market-submit]');
-        const rawAmount = input ? input.value : '';
-        let amount;
-        try { amount = v.parseUsdc(rawAmount); } catch (error) { setStatus(error.message); return; }
-        const account = state.account;
-        const wallet = walletAddress() || 'wallet';
-        const key = `stake:${account}:${wallet}:${sideValue(side)}`;
+    async function submitTrade(side, action, quoted) {
+        const p = parts(), row = state.row;
+        if (!p || !row) return;
+        let quote; try { quote = quoted(); } catch (_) { return; }
+        const account = state.account, overlay = state.overlay, chosen = row.asset;
+        const context = { action, side: sideName(side), asset: chosen, entryPoint: state.entryPoint };
+        const key = `${action}:${account}:${chosen}:${sideName(side)}`;
         if (inFlight.has(key)) return;
+        if (bridge().needsWallet() && !walletConnected()) { actionAttempt(action, row, context, 'wallet_not_connected'); askForWallet(); return; }
         inFlight.add(key);
-        if (submit) submit.disabled = true;
+        const submit = p.footer.querySelector('[data-market-submit]'); submit.disabled = true;
+        const stillHere = () => state.overlay === overlay && state.account === account && bridge().asset() === chosen;
+        const status = item => {
+            if (stillHere()) setStatus(view().statusText(item), item.explorerUrl);
+            if (ACTION_STATUSES.has(item?.state)) trackBet('action_status', row, { ...context, result: item.state });
+        };
+        trackBet('quote', row, context); trackBet('action_start', row, { ...context, result: 'started' });
+        let confirmed = false;
         try {
-            const result = await bridge().stake({ proposal: account, side: sideValue(side), amount, onStatus: item => setStatus(v.statusText(item), item.explorerUrl) });
-            setStatus(v.confirmedText(), result.explorerUrl);
-            // The receipt first, then everything behind it: the Bets sheet re-reads its pools, the
-            // status bar keeps the line, the activity feed gets the bet.
-            renderPlaced(side, amount, v.confirmedText(), result.explorerUrl);
+            const result = await bridge()[action]({ proposal: account, side: sideValue(side), shares: quote.shares,
+                ...(action === 'buy' ? { maxCost: quote.maxCost } : { minReturn: quote.minReturn }), onStatus: status });
+            confirmed = Boolean(result?.receipt || result?.transactionHash);
+            trackBet('action_end', row, { ...context, result: confirmed ? 'confirmed' : 'unknown' });
+            if (stillHere()) renderPlaced(row, side, quote, result);
             announceChange(account);
-            const placedLine = t('panel.proposal.market.placedLine', '{{amount}} on {{side}} is in the pool.', { amount: moneyAtomic(amount), side: sideWord(side) });
-            if (typeof root.updateStatus === 'function') root.updateStatus(placedLine);
-            await recordSupport({ wallet, action: 'stake', proposalId: account, amount: rawAmount, result, message: `${actorName(wallet)} bet ${rawAmount} USDC on ${sideWord(side)}.` });
         } catch (error) {
-            setStatus(v.errorText(error), error && error.explorerUrl);
-        } finally {
-            inFlight.delete(key);
-            if (submit && submit.isConnected) submit.disabled = false;
-        }
+            if (!confirmed) trackBet('action_end', row, { ...context, result: root.BetsTelemetry?.errorResult(error) || 'failed', errorCode: errorCodeOf(error) });
+            if (stillHere()) {
+                setStatus(view().errorText(error), error.explorerUrl);
+                if (error.code === 'STALE_QUOTE' || error.code === 'SLIPPAGE_EXCEEDED') {
+                    const note = p.body.querySelector('[data-market-dialog-status]');
+                    note.append(button('btn btn-quiet', t('bets.trade.refreshQuote', 'Review a fresh quote'), async () => { await refresh(); renderStake(side, action); }));
+                }
+            }
+        } finally { inFlight.delete(key); if (submit.isConnected) submit.disabled = false; }
     }
 
-    // ---- receipt ------------------------------------------------------------------------------
-
-    // After a confirmed bet the dialog becomes the receipt: what went in, the pool as it now stands
-    // (read back from the chain, not assumed), the wallet's bets on this agreement, the bet's link
-    // and Done. It stays until the person closes it; the surfaces behind it have already refreshed.
-    function renderPlaced(side, amount, confirmedText, explorerUrl) {
-        const p = parts();
-        const row = state.row;
-        const v = view();
-        const m = model();
-        if (!p || !row || !v) return;
+    // A points receipt reports the ledger's actual amount. A chain trade shows its signed cost
+    // limit and fixed shares until the transaction's explorer supplies the executed token transfer.
+    function renderPlaced(row, side, quote, result) {
+        const p = parts(); if (!p) return;
         p.dialog.dataset.state = 'placed';
-        p.title.textContent = t('panel.proposal.market.placedTitle', 'Bet placed');
-        disposeCompare();
-        p.body.replaceChildren();
-        p.footer.replaceChildren();
-        p.body.append(el('p', 'proposal-boost-copy', t('panel.proposal.market.placedLine', '{{amount}} on {{side}} is in the pool.', { amount: moneyAtomic(amount), side: sideWord(side) })));
-        const pool = el('div', 'proposal-market-placed', t('panel.proposal.market.poolReading', 'Reading the pool…'));
-        pool.setAttribute('aria-live', 'polite');
-        p.body.append(pool);
-        const status = el('div', 'proposal-market-status');
-        status.setAttribute('data-market-dialog-status', '');
-        status.setAttribute('aria-live', 'polite');
-        p.body.append(status);
-        setStatus(confirmedText, explorerUrl);
-
-        if (linkFor(row.account)) {
-            const share = button('btn', t('bets.copyLink', 'Copy link'), () => sheet().copyLink(row.account));
-            share.setAttribute('data-market-link', '');
-            p.footer.append(share);
-        }
-        const done = button('btn btn-primary', t('panel.proposal.market.done', 'Done'), close);
-        done.setAttribute('data-market-done', '');
-        p.footer.append(done);
-        done.focus();
-
-        Promise.resolve(bridge().readSummary(row.account)).then(summary => {
-            if (!pool.isConnected) return;
-            const marketModel = v.model(summary && summary.market, { yes: summary && summary.yes, no: summary && summary.no });
-            if (!marketModel.exists) { pool.remove(); return; }
-            const pays = s => (m && typeof m.payoutMultiple === 'function' ? m.payoutMultiple(s, marketModel.yesPool, marketModel.noPool) : null);
-            const chance = value => (value === null ? t('bets.row.noBets', 'No bets yet') : t('bets.row.poolShare', '{{percent}} of pool', { percent: percentText(value) }));
-            pool.replaceChildren(el('p', 'proposal-market-placed__title', t('panel.proposal.market.poolNow', 'The pool after your bet')));
-            const list = el('dl', 'proposal-market-placed__pool');
-            [['yes', t('panel.proposal.market.yesSide', 'Yes · executed on-chain'), marketModel.yesPool, marketModel.yesOdds], ['no', t('panel.proposal.market.noSide', 'No · cancelled or expired'), marketModel.noPool, marketModel.noOdds]]
-                .forEach(([key, sideLabel, sidePool, odds]) => {
-                    list.append(el('dt', null, sideLabel));
-                    const value = el('dd');
-                    value.append(el('strong', null, chance(odds)));
-                    const multiple = pays(key);
-                    value.append(el('span', null, [moneyAtomic(sidePool), multiple === null ? null : t('bets.row.pays', 'Pays {{multiple}}×', { multiple: multiple.toFixed(2) })].filter(Boolean).join(' · ')));
-                    list.append(value);
-                });
-            pool.append(list);
-            const lines = mineLines(row, { yes: marketModel.yesPosition, no: marketModel.noPosition });
-            if (lines.length) pool.append(el('p', 'proposal-market-placed__mine', t('panel.proposal.market.yourBets', 'Your bets: {{lines}}', { lines: lines.join('; ') })));
-        }).catch(error => {
-            console.warn(`[${new Date().toISOString()}] [bets] pool unreadable after the bet on ${row.account}:`, error);
-            pool.remove();
-        });
+        p.title.textContent = quote.action === 'buy' ? t('panel.proposal.market.placedTitle', 'Bet placed') : t('bets.trade.sold', 'Shares sold');
+        disposeCompare(); p.body.replaceChildren(); p.footer.replaceChildren();
+        p.body.append(el('p', 'bets-dialog__lead', questionOf(row)));
+        const facts = el('dl', 'bets-dialog__facts');
+        facts.append(el('dt', null, t('bets.trade.shares', 'Shares')), el('dd', null, `${sideWord(side)} · ${model().formatAtomic(quote.shares)}`));
+        const amount = result.receipt ? BigInt(result.receipt.amount) : quote.amount;
+        const moneyLabel = result.receipt ? quote.action === 'buy' ? t('bets.trade.cost', 'Cost') : t('bets.trade.returned', 'Returned')
+            : quote.action === 'buy' ? t('bets.trade.maximumCost', 'Maximum cost') : t('bets.trade.minimumReturn', 'Minimum return');
+        facts.append(el('dt', null, moneyLabel), el('dd', null, root.BetsUI.money(model().formatAtomic(amount), row.asset)));
+        if (quote.action === 'buy') facts.append(el('dt', null, t('bets.trade.payoutIfWin', 'Payout if this side wins')), el('dd', null, root.BetsUI.money(model().formatAtomic(quote.shares), row.asset)));
+        if (result.receipt) facts.append(el('dt', null, t('bets.trade.receipt', 'Receipt')), el('dd', 'bets-receipt-id', result.receipt.id));
+        p.body.append(facts);
+        const status = el('p', 'proposal-market-status'); status.setAttribute('data-market-dialog-status', ''); p.body.append(status);
+        setStatus(t('bets.trade.confirmed', 'Confirmed'), result.explorerUrl);
+        const balance = el('p', 'bets-account__balance'); p.body.append(balance);
+        bridge().readStakeBalance().then(value => { if (balance.isConnected && value !== null) balance.textContent = t('bets.trade.balance', 'Available: {{amount}}', { amount: moneyAtomic(value) }); })
+            .catch(() => { if (balance.isConnected) balance.textContent = t('bets.trade.balanceUnavailable', 'Balance unavailable. Try again before trading.'); });
+        if (linkFor(row.account)) p.footer.append(button('btn', t('bets.copyLink', 'Copy link'), () => sheet().copyLink(row.account, { entryPoint: 'receipt' })));
+        p.footer.append(button('btn', t('bets.trade.yourPosition', 'Your position'), async () => { p.dialog.dataset.state = 'overview'; await refresh(); }));
+        const done = button('btn btn-primary', t('panel.proposal.market.done', 'Done'), close); done.setAttribute('data-market-done', ''); p.footer.append(done); done.focus();
     }
 
     // ---- open ---------------------------------------------------------------------------------
@@ -706,9 +719,15 @@
         const account = options && options.account ? String(options.account) : null;
         if (!account) return null;
         const side = options.side === undefined || options.side === null ? null : sideValue(options.side);
-        if (side !== null && !walletConnected() && !options.approval) { askForWallet(); return null; }
+        if (side !== null && bridge().needsWallet() && !walletConnected() && !options.approval) {
+            actionAttempt('buy', { account }, { side: sideName(side), entryPoint: options.entryPoint || 'dialog' }, 'wallet_not_connected');
+            askForWallet(); return null;
+        }
         const overlay = mount(options.title || t('panel.proposal.market.historyBet', 'Bet'));
         state.account = account;
+        state.entryPoint = options.entryPoint || 'dialog';
+        state.positionTrackedAccount = null;
+        state.quotedAmount = null;
         state.row = null; state.contest = null; state.positions = null;
         showBetAddress(account);
         const p = parts();
@@ -722,14 +741,22 @@
         if (state.overlay !== overlay) return overlay;
         // Only an open pool takes a new bet: a link with a side to a pool that is settling or settled
         // lands on its overview.
+        trackBet('market_open', state.row, { entryPoint: state.entryPoint });
         if (side !== null && state.row.state === 'open') {
             renderStake(side);
             const input = parts().body.querySelector('[data-market-amount]');
             if (input && options.amount) { input.value = options.amount; input.dispatchEvent(new Event('input', { bubbles: true })); }
-        } else renderOverview();
+        } else {
+            renderOverview();
+        }
         return overlay;
     }
 
+    doc.addEventListener('bets:asset', async () => {
+        if (!state.overlay) return;
+        const p = parts(); p.dialog.dataset.state = 'overview'; p.body.replaceChildren(el('p', 'bets-status', t('bets.loading', 'Loading bets…'))); p.footer.replaceChildren();
+        await refresh();
+    });
     root.openBetDialog = openBetDialog;
     root.BetsDialog = { open: openBetDialog, close, OVERLAY_ID };
 })(typeof window !== 'undefined' ? window : null);

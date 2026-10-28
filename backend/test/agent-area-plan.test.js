@@ -27,7 +27,7 @@ function run({
         summary: {
             city,
             candidates: [{
-                candidateId, parcelId, koName: 'San Francisco', areaM2: 900, geometry: square(-122.42, 37.77), builtGfaM2: 0, builtKnown: false, rule,
+                candidateId, parcelId, koName: 'San Francisco', areaM2: 900, geometry: square(-122.42, 37.77), builtGfaM2: null, builtKnown: false, buildingCount: null, builtFootprintM2: null, buildingSourceId: null, buildingCoverage: 'unknown', rule,
                 ...(parcelSourceId !== undefined ? { parcelSourceId } : {})
             }],
             picks: [{ candidateId, pickId: `agent-${persona}-${day}-1`, name: `5-storey infill on parcel ${parcelId}` }],
@@ -78,13 +78,14 @@ describe('live parcel-source parcels', () => {
         ] };
         const parcels = parcelsFromSource(fc, { turf, place: 'San Francisco' });
         expect(parcels.map(parcel => parcel.parcelId)).toEqual(['US-CA-SF-3513080']);
-        expect(parcels[0]).toMatchObject({ parcelNumber: '3513080', koName: 'San Francisco', builtKnown: false, builtGfaM2: 0, rule: null });
+        expect(parcels[0]).toMatchObject({ parcelNumber: '3513080', koName: 'San Francisco', builtKnown: false, builtGfaM2: null, buildingCount: null, builtFootprintM2: null, buildingSourceId: null, buildingCoverage: 'unknown', rule: null });
         expect(parcels[0].areaM2).toBeGreaterThan(250);
         const [candidate] = planCandidates(parcels, { name: 'p', weights: { density: 1 } }, { turf, money: { currency: 'EUR', salePricePerM2: 4000 }, limit: 1 });
-        expect(candidate).toMatchObject({ rule: { source: 'default' }, builtKnown: false, parcelNumber: '3513080' });
+        expect(candidate).toMatchObject({ rule: { source: 'default' }, builtKnown: false, builtGfaM2: null, buildingSourceId: null, buildingCoverage: 'unknown', parcelNumber: '3513080' });
+        expect(selectAlgorithmicPicks({day:'2026-10-11',persona:{name:'p'},candidates:[candidate]}).picks).toEqual([]);
     });
 
-    it('carries geometry identity through planning and names it without exposing its coordinates or hash', () => {
+    it('preserves geometry identity through an unranked preview', () => {
         const parcelId = `KE-NAIROBI-NM-g1~368402797~-12643572~${'a'.repeat(64)}`;
         const fc = { type: 'FeatureCollection', features: [{
             type: 'Feature', id: parcelId,
@@ -96,18 +97,16 @@ describe('live parcel-source parcels', () => {
         }] };
         const [sourceParcel] = parcelsFromSource(fc, { turf, place: 'Nairobi' });
         const [candidate] = planCandidates([sourceParcel], { name: 'densifier-01', weights: { density: 1 } }, { turf, money: { currency: 'EUR', salePricePerM2: 4000 }, limit: 1 });
-        const [pick] = selectAlgorithmicPicks({
+        const result = selectAlgorithmicPicks({
             day: '2026-10-11', persona: { name: 'densifier-01' }, candidates: [candidate]
-        }).picks;
+        });
 
         expect(candidate.candidateId).toBe(`densifier-01:${parcelId}`);
         expect(candidate).toMatchObject({
             parcelId, parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: `G1-${'a'.repeat(12)}`
         });
-        expect(pick.name).toBe(`5-storey infill on parcel G1-${'a'.repeat(8)}, Nairobi`);
-        expect(pick.rationale).toContain(`parcel G1-${'a'.repeat(8)}`);
-        expect(pick.name).not.toContain('12643572');
-        expect(pick.name).not.toContain('a'.repeat(20));
+        expect(result.picks).toEqual([]);
+        expect(candidate).toMatchObject({builtGfaM2:null,buildingSourceId:null,buildingCoverage:'unknown'});
     });
 });
 
@@ -175,6 +174,9 @@ describe('parcels a persona has used and rival parcels', () => {
         for (const status of ['active', null, undefined]) {
             expect(contestParcels([open], { persona: 'gentle-01', runDay: '2026-10-11', indexStatuses: { [cid]: status } }), String(status)).toHaveLength(1);
         }
+        // This index admission state is not a chain lifecycle status; the retired record is excluded
+        // from contest candidates without being described as expired, executed or cancelled.
+        expect(contestParcels([open], { persona: 'gentle-01', runDay: '2026-10-11', indexStatuses: { [cid]: 'retired' } })).toEqual([]);
     });
 
     it('carries the rival candidate\'s own parcel source into contest planning', () => {

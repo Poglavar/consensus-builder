@@ -120,6 +120,7 @@ function movementHarness({ moveTogether = true, treatment = 'paved', locked = fa
             const [lng, lat] = turf.centroid(value).geometry.coordinates;
             return { lng, lat };
         },
+        currentGroundSurface: () => null,
         updateGroundPreview: renderEvents.ground,
         updateSingleBuildingPreview: renderEvents.preview,
         refreshBuildingSelector: renderEvents.selectors,
@@ -255,7 +256,7 @@ describe('single-building whole-proposal placement', () => {
         });
     });
 
-    it('moves both buildings and the take-whole boundary freely, records one undo step, and restores all geometry', () => {
+    it('moves the active footprint, keeps its neighbor and ground anchored, and restores one drag with Undo', () => {
         const h = movementHarness({ moveTogether: true, treatment: 'paved' });
         const start = h.context.prepareDrag();
         const original = clone(h.context.state());
@@ -268,14 +269,12 @@ describe('single-building whole-proposal placement', () => {
         const moved = h.context.state();
         expect(h.context.getHistory().depth()).toBe(1);
         expect(center(moved.buildingEntries[0].feature).lng).toBeGreaterThan(start.lng + 0.01);
-        expect(center(moved.buildingEntries[1].feature).lng).toBeGreaterThan(start.lng + 0.01);
-        expect(center(moved.singleGroundBoundary).lng).toBeGreaterThan(center(h.groundBoundary).lng + 0.01);
+        expect(moved.buildingEntries[1]).toEqual(original.buildingEntries[1]);
+        expect(moved.singleGroundBoundary).toEqual(original.singleGroundBoundary);
         const movedSite = h.context.site();
         expect(movedSite.type).toBe('MultiPolygon');
-        expect(movedSite.coordinates).toHaveLength(1);
-        const movedSitePolygon = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: movedSite.coordinates[0] } };
-        expect(turf.booleanWithin(movedSitePolygon, moved.singleGroundBoundary)).toBe(true);
-        expect(turf.booleanWithin(moved.singleGroundBoundary, movedSitePolygon)).toBe(true);
+        expect(movedSite.coordinates).toHaveLength(2);
+        expect(turf.area(turf.feature(movedSite))).toBeCloseTo(moved.buildingEntries.reduce((sum, entry) => sum + turf.area(entry.feature), 0), 2);
         expect(h.sourceSnapshot).toEqual({ site: original.singleGroundBoundary.geometry, buildings: original.buildingEntries.map(entry => entry.feature) });
 
         expect(h.context.getHistory().undo()).toBe(true);

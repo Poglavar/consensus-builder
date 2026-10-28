@@ -479,15 +479,19 @@
     // ---- collecting arms from polylines --------------------------------------------------------
 
     function nodeKey(point) {
-        return `${Math.round(point[0] / NODE_KEY_M)},${Math.round(point[1] / NODE_KEY_M)}`;
+        // A point's level is topology, never a z value in the planar junction geometry. Missing
+        // levels mean ground level, as in corridor-authoring.sameNode.
+        const level = finite(point && point[2]) ? point[2] : 0;
+        return `${Math.round(point[0] / NODE_KEY_M)},${Math.round(point[1] / NODE_KEY_M)}@${level}`;
     }
 
     // Every node where polylines meet, with one arm per distinct direction. `entries` are
     // [{ points: [[x,y]…], …anything }]; each arm carries `entryIndex`, `vertexIndex`, `step` (+1
     // towards the polyline's end, −1 towards its start), `reversed` (true when the arm runs against
     // the polyline direction) and the entry itself as `entry`. When two polylines leave a node in the
-    // same direction the wider one (by `entry.width`, when given) keeps the arm. Arm `length` is the
-    // polyline distance from the node to the next node of degree ≥ 3 or to the polyline's end.
+    // same direction the wider one (by `entry.width`, when given) keeps the arm; equal widths use
+    // an optional opaque caller priority to break ties independently of entry order. Arm `length`
+    // is the polyline distance from the node to the next node of degree ≥ 3 or to the polyline's end.
     function collectNodes(entries, options = {}) {
         const minDegree = finite(options.minDegree) ? options.minDegree : 2;
         const nodes = new Map();
@@ -495,15 +499,23 @@
             const dir = normalize([other[0] - point[0], other[1] - point[1]]);
             if (!dir) return;
             const key = nodeKey(point);
-            if (!nodes.has(key)) nodes.set(key, { point: [point[0], point[1]], arms: [] });
+            if (!nodes.has(key)) nodes.set(key, { point: [point[0], point[1], finite(point[2]) ? point[2] : 0], arms: [] });
             const node = nodes.get(key);
             const entry = entries[entryIndex];
             const width = finite(entry && entry.width) ? entry.width : 0;
+            const suppliedPriority = entry && entry.junctionPriority;
+            const junctionPriority = (suppliedPriority && typeof suppliedPriority === 'object')
+                ? suppliedPriority[step < 0 ? 'reverse' : 'forward']
+                : suppliedPriority;
             const existing = node.arms.find(arm => arm.dir[0] * dir[0] + arm.dir[1] * dir[1] > 0.9999);
-            const arm = { dir, entryIndex, vertexIndex, step, reversed: step < 0, entry, width };
+            const arm = { dir, entryIndex, vertexIndex, step, reversed: step < 0, entry, width, junctionPriority };
             if (existing) {
                 existing.duplicates = (existing.duplicates || []).concat([arm]);
-                if (width > existing.width) Object.assign(existing, arm, { duplicates: existing.duplicates });
+                const equalWidthTieWins = width === existing.width
+                    && typeof junctionPriority === 'string'
+                    && typeof existing.junctionPriority === 'string'
+                    && junctionPriority < existing.junctionPriority;
+                if (width > existing.width || equalWidthTieWins) Object.assign(existing, arm, { duplicates: existing.duplicates });
                 return;
             }
             node.arms.push(arm);

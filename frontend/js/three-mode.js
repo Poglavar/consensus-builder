@@ -152,12 +152,18 @@
     let buildingsWorkGeneration = 0;
     let buildingDisplaySnapshot = null;
     let renderedBuildingDisplaySnapshot = null;
-    let sceneVisualRevision = 0;
+    let sceneVisualRevision = 0;   // bumped when something in the scene changes (invalidateThreeView)
     let renderedSceneVisualRevision = -1;
+    // When the person last touched the view (pointer, wheel, keyboard, camera). Frame hooks that only
+    // decorate (people and vehicles) park themselves after LIFE_IDLE_MS without input.
+    let lastInputAt = 0;
+    let hooksParked = false;       // the last frame found every hook idle: the next input wakes them
+    const LIFE_IDLE_MS = 20000;
     let nearbyDataScope = null;
     const WARM_SCENE_TTL_MS = 60000;
     const WARM_SCENE_MAX_BYTES = 128 * 1024 * 1024;
     const sceneWork = window.__threeSceneWork;
+    const buildingRefreshQueue = sceneWork.createRefreshQueue(family => build3DBuildingFamilies(family));
     function currentSceneKey() {
         const center = map.getCenter();
         return JSON.stringify([window.CityConfigManager?.getCurrentCityId?.(),
@@ -166,7 +172,8 @@
     }
     function stopSceneWork() {
         sceneAbort?.abort();
-        if (buildingBuildPending || pendingModelLoads > 0) buildingWorkIncomplete = true;
+        if (buildingRefreshQueue.pending || buildingBuildPending || pendingModelLoads > 0) buildingWorkIncomplete = true;
+        buildingRefreshQueue.cancel();
         buildingsWorkGeneration++;
         buildingsRenderGeneration++;
         nearbyProposalBuildingsFetching = nearbyTreesFetching = nearbyWaterFetching = false;
@@ -228,6 +235,7 @@
     let existingTransitAlignmentGroup = null; // immutable tram/heavy-rail snapshot (city-gated)
     let treesGroup = null; // real-world OSM trees (Overture base/land), toggleable scenery
     let waterGroup = null; // real-world sea, lakes and rivers (OpenFreeMap tiles), toggleable scenery
+    let greenGroup = null; // real-world lawns, parks, meadows and woods (OpenFreeMap tiles), toggleable scenery
     let proposalInteractionGroup = null; // selectable applied/unapplied proposal surfaces
     let proposalDraftGroup = null; // source-vs-draft comparison overlay; never mutates proposal state
     let latestProposalDraftPreviewDetail = null;
@@ -495,6 +503,7 @@
     // without dimming the city. Isolation (isolatedParcelId) is the deliberate second click.
     let viewedParcelId = null;
     let parcelPointerDownHandler = null;
+    let inputHandler = null;      // pointermove/wheel on the canvas: noteInput
     let proposalSelectionUnsubscribe = null;
     // Pointer-down position, used to tell a short click apart from an orbit/tilt drag.
     let clickDownXY = null;
@@ -560,8 +569,8 @@
         clearGroupChildren(planningSourcesGroup);
         const view = window.PlanningViews.getPolicy();
         const inspected = window.PlanningViews.getSelected();
-        const builtSelection = inspected?.role === 'existing' && view.existing !== 'off';
-        planningSourcesGroup.visible = hasVisiblePlanningRepresentations() && !realisticLayerActive;
+        const builtSelection = inspected?.role === 'existing' && view.existing !== 'off' && !realisticLayerActive;
+        planningSourcesGroup.visible = hasVisiblePlanningRepresentations();
         if (!planningSourcesGroup.visible) { invalidateThreeView(); return; }
         const selectedId = window.PlanningViews.getState()?.selectedId;
         for (const item of window.PlanningViews.getItems()) {
@@ -624,6 +633,7 @@
                 material.dispose();
             }
         }
+        sunLayer?.syncObjects(planningSourcesGroup);
         invalidateThreeView();
     }
 
@@ -702,13 +712,14 @@
     }
 
     function getParcelFeatureById(parcelId) {
-        return window.LiveParcelFabric?.get?.(String(parcelId)) || null;
+        return window.LiveParcelFabric?.get?.(String(parcelId))
+            || window.CadastralParcelRepository?.get?.(String(parcelId)) || null;
     }
 
     function applyParcelEmphasis() {
         const emphasis = window.ThreeParcelEmphasis;
         if (!emphasis || !scene) return;
-        parcelEmphasisOriginals = emphasis.apply(scene, isolatedParcelId || viewedParcelId, parcelEmphasisOriginals,
+        parcelEmphasisOriginals = emphasis.apply(scene, isolatedParcelId, parcelEmphasisOriginals,
             { dimOthers: isolatedParcelId !== null });
     }
 
@@ -820,7 +831,7 @@
 
     function proposalDisplayTitle(p) {
         if (!p) return '';
-        return p.title || p.name || p.proposalName || ('Proposal ' + (p.proposalId || p.id || ''));
+        return p.title || p.name || p.proposalName || ('Design ' + (p.proposalId || p.id || ''));
     }
 
     function proposalIdOf(p) {
@@ -920,22 +931,27 @@
         const columns = ['built', 'planned', 'proposed'];
         const off = column => (m[column] ? '' : ' class="is-unavailable"');
         const cells = (render, column) => (m[column] ? render(m[column]) : '—');
-        const row = (label, render) => `<tr><td>${label}</td>${columns.map(c => `<td${off(c)}>${cells(render, c)}</td>`).join('')}</tr>`;
-        const moneyRow = (label, key, hint = '') => `<tr><td${hint ? ` title="${escapeHtml(hint)}"` : ''}>${label}</td>${columns.map(c => `<td data-cell="${key}:${c}"${off(c)}>—</td>`).join('')}</tr>`;
-        const slider = (role, labelRole, price) => `
-            <label class="parcel-panel-slider-label" data-role="${labelRole}"></label>
-            <input type="range" class="parcel-panel-price-slider" data-role="${role}"
+        const row = (label, render) => `<tr><th scope="row">${label}</th>${columns.map(c => `<td${off(c)}>${cells(render, c)}</td>`).join('')}</tr>`;
+        const moneyRow = (label, key, hint = '') => `<tr><th scope="row"${hint ? ` title="${escapeHtml(hint)}"` : ''}>${label}</th>${columns.map(c => `<td data-cell="${key}:${c}"${off(c)}>—</td>`).join('')}</tr>`;
+        const slider = (role, labelRole, price) => {
+            const id = `parcel-panel-${role}`;
+            return `
+            <label for="${id}" class="parcel-panel-slider-label" data-role="${labelRole}"></label>
+            <input id="${id}" type="range" class="parcel-panel-price-slider" data-role="${role}"
                 min="${price.min}" max="${price.max}" step="${price.step}" value="${price.perSqm ?? price.min}"${price.perSqm === null ? ' disabled' : ''}>`;
+        };
         return `
             <table class="parcel-panel-table">
-                <tr><th></th>${columns.map(c => `<th${off(c)}>${L[c]}</th>`).join('')}</tr>
-                ${row(L.volume, v => `${formatInt(v.volume)} m³`)}
-                ${row(L.floorArea, v => CbFormat.formatArea(Number(v.floorArea) || 0))}
-                ${moneyRow(L.value, 'value')}
-                ${moneyRow(L.constructionCost, 'constructionCost')}
-                ${moneyRow(L.profit, 'profit', L.profitNote)}
+                <thead><tr><th scope="col"></th>${columns.map(c => `<th scope="col"${off(c)}>${L[c]}</th>`).join('')}</tr></thead>
+                <tbody>
+                    ${row(L.volume, v => `${formatInt(v.volume)} m³`)}
+                    ${row(L.floorArea, v => CbFormat.formatArea(Number(v.floorArea) || 0))}
+                    ${moneyRow(L.value, 'value')}
+                    ${moneyRow(L.constructionCost, 'constructionCost')}
+                    ${moneyRow(L.profit, 'profit', L.profitNote)}
+                </tbody>
             </table>
-            <div class="parcel-panel-note">${L.floorNote} · ${escapeHtml(threeI18n('threeMode.parcelPanel.amountsIn', 'amounts in {{currency}}', { currency: prices.currency }))}</div>
+            <p class="parcel-panel-note">${L.floorNote} · ${escapeHtml(threeI18n('threeMode.parcelPanel.amountsIn', 'amounts in {{currency}}', { currency: prices.currency }))}</p>
             ${slider('sale-slider', 'sale-label', prices.sale)}
             ${slider('construction-slider', 'construction-label', prices.construction)}`;
     }
@@ -970,10 +986,10 @@
         const L = panelLabels();
         const suggestedText = suggestedParcelPanelText(parcelId);
         const suggestedRow = suggestedText ? `
-            <div class="parcel-panel-subnote parcel-panel-suggested">${escapeHtml(threeI18n('threeMode.parcelPanel.suggestedLayout', 'Suggested layout'))}: ${escapeHtml(suggestedText)}</div>` : '';
+            <p class="parcel-panel-subnote parcel-panel-suggested">${escapeHtml(threeI18n('threeMode.parcelPanel.suggestedLayout', 'Suggested layout'))}: ${escapeHtml(suggestedText)}</p>` : '';
         // The full cadastral id: the stack's row shows the short number.
         panel.innerHTML = `
-            <div class="parcel-panel-subnote parcel-id-text">${escapeHtml(String(parcelId))}</div>
+            <p class="parcel-panel-subnote parcel-id-text">${escapeHtml(String(parcelId))}</p>
             ${suggestedRow}
             ${metricsTableHtml(L, {
                 built: { volume: m.builtVolume, floorArea: m.builtFloorArea },
@@ -1037,7 +1053,7 @@
         const suggestedLine = suggestedProposalPanelText(proposal);
         if (suggestedLine) lines.push(suggestedLine);
         panel.innerHTML = `
-            ${lines.map(line => `<div class="parcel-panel-subnote">${escapeHtml(line)}</div>`).join('')}
+            ${lines.map(line => `<p class="parcel-panel-subnote">${escapeHtml(line)}</p>`).join('')}
             ${metricsTableHtml(L, {
                 built: { volume: summary.builtVolume, floorArea: summary.builtFloorArea },
                 planned,
@@ -1293,6 +1309,13 @@
         clearIsolation();
     }
 
+    // A user dismissing the scene selection also clears the shared design selection. An outside
+    // inspector change only ends the old view, so it can retain the selection it just made.
+    function deselectScene() {
+        endSelectionView();
+        window.ProposalSelection?.clear?.();
+    }
+
     // Inspector selection follows stack sections; those changes must not end the scene selection.
     let stackDriving = false;
     let stackInspector = null;   // { el, parent, next, selectedId } while the stack hosts the inspector
@@ -1304,7 +1327,7 @@
 
     function hostInspector(body) {
         const el = document.getElementById('planning-inspector');
-        if (!el || el.hidden || !body) return;
+        if (!el || !body) return;
         if (stackInspector?.el !== el) stackInspector = { el, parent: el.parentNode, next: el.nextSibling };
         stackInspector.selectedId = window.PlanningViews?.getSelected()?.id || null;
         el.classList.add('is-hosted');
@@ -1312,9 +1335,20 @@
     }
 
     let stackFocusGroup = null;
+    let stackFocusPulseStart = 0;
+    const STACK_PULSE_MS = 1400;
+    const STACK_PULSES = 3;   // the outline pulses this many times, then rests bright
     function pulseStackFocus(now) {
-        const opacity = 0.55 + 0.45 * (1 + Math.cos(now * Math.PI * 2 / 1400)) / 2;
-        stackFocusGroup?.traverse(object => { if (object.material) object.material.opacity = opacity; });
+        if (!stackFocusPulseStart) stackFocusPulseStart = now;
+        const done = now - stackFocusPulseStart >= STACK_PULSE_MS * STACK_PULSES;
+        const strength = done ? 1 : (1 + Math.cos((now - stackFocusPulseStart) * Math.PI * 2 / STACK_PULSE_MS)) / 2;
+        stackFocusGroup?.traverse(object => {
+            if (object.material?.isLineMaterial && object.userData.selectionStroke === 'yellow') {
+                object.material.opacity = 0.75 + 0.25 * strength;
+                object.material.linewidth = 3 + strength;
+            }
+        });
+        return !done;
     }
     function clearStackFocus() {
         const index = frameHooks.indexOf(pulseStackFocus);
@@ -1325,36 +1359,146 @@
         stackFocusGroup = null;
         invalidateThreeView();
     }
-    function highlightStackObject(kind, instance) {
-        clearStackFocus();
-        const features = window.ClickStackHits.featuresFor(kind, instance);
-        if (!scene || !features.length) return;
-        stackFocusGroup = new THREE.Group();
-        stackFocusGroup.name = 'click-stack-focus';
-        stackFocusGroup.userData = { kind, id: instance.id };
-        const material = new THREE.LineBasicMaterial({ color: 0x0284c7, linewidth: 3,
-            transparent: true, opacity: 1, depthTest: false, depthWrite: false });
+    // Use the drawn volume, including its roof and vertical edges. Parcel provenance is not
+    // the building's shape. Ground-only designs fall back to their authored boundary instead.
+    function stackVolumeSegments(kind, instance) {
+        if (!['built', 'designs', 'permitted'].includes(kind)) return [];
+        const segments = [];
+        scene.updateMatrixWorld(true);
+        scene.traverseVisible(object => {
+            if (!object.isMesh || !object.geometry || object.isInstancedMesh) return;
+            let matches = false;
+            for (let owner = object; owner && owner !== scene; owner = owner.parent) {
+                const data = owner.userData || {};
+                if (kind === 'designs' && String(data.proposalId || '') === String(instance.id)) matches = true;
+                if (kind === 'permitted' && data.planningRepresentationId === instance.id) matches = true;
+                if (kind === 'built' && data.planningBuiltFeature
+                    && clickedBuildingId(data.planningBuiltFeature) === String(instance.id)) matches = true;
+            }
+            if (!matches) return;
+            object.geometry.computeBoundingBox();
+            const box = object.geometry.boundingBox;
+            // Ignore the interaction slab and flat ground surfaces, even for a building design.
+            if (!box || box.max.z - box.min.z < 0.5) return;
+            const edges = new THREE.EdgesGeometry(object.geometry, 25);
+            const positions = edges.attributes.position;
+            const point = new THREE.Vector3();
+            for (let i = 0; i < positions.count; i++) {
+                point.fromBufferAttribute(positions, i).applyMatrix4(object.matrixWorld);
+                segments.push(point.x, point.y, point.z);
+            }
+            edges.dispose();
+        });
+        return segments;
+    }
+    // Ground designs show intent across their surface; parcel selection names only the land
+    // boundary, even when both objects have exactly the same geometry. Gaps remain transparent.
+    function addStackGroundHatching(group, features, instance) {
+        const material = new THREE.ShaderMaterial({
+            uniforms: { pixelRatio: { value: renderer.getPixelRatio() },
+                selectionColor: { value: new THREE.Vector3(...window.MapHighlight.rgb()) },
+                selectionHalo: { value: new THREE.Vector3(...window.MapHighlight.rgb(window.MapHighlight.halo)) } },
+            vertexShader: `void main() {
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }`,
+            fragmentShader: `uniform float pixelRatio;
+                uniform vec3 selectionColor;
+                uniform vec3 selectionHalo;
+                void main() {
+                    float phase = mod((gl_FragCoord.x + gl_FragCoord.y) / pixelRatio, 12.0);
+                    float distanceToStripe = min(phase, 12.0 - phase);
+                    float halo = 1.0 - smoothstep(1.6, 2.4, distanceToStripe);
+                    if (halo < 0.01) discard;
+                    float stripe = 1.0 - smoothstep(0.6, 1.2, distanceToStripe);
+                    gl_FragColor = vec4(mix(selectionHalo, selectionColor, stripe), halo * 0.7);
+                }`,
+            transparent: true, depthTest: false, depthWrite: false,
+            side: THREE.DoubleSide, toneMapped: false
+        });
+        let count = 0;
         for (const feature of features) {
-            const objects = ['Polygon', 'MultiPolygon'].includes(feature.geometry.type)
-                ? polygonFeatureToBorderLines(feature, material, 0.6) : [lineFeatureToLine(feature, material, 0.6)].filter(Boolean);
-            for (const object of objects) {
-                object.traverse(child => {
-                    if (child.material) markOwnedMaterial(child, material);
-                    child.renderOrder = 9999;
-                    child.raycast = () => {};
-                });
-                stackFocusGroup.add(object);
+            for (const mesh of polygonFeatureToMeshes(feature, material, 0.55)) {
+                if (realisticLayerActive) {
+                    const positions = mesh.geometry.attributes.position;
+                    let complete = true;
+                    for (let i = 0; i < positions.count; i++) {
+                        const height = window.PhotorealMode.selectionHeightAt(positions.getX(i), positions.getY(i), 'designs', instance.id);
+                        if (typeof height !== 'number' || !Number.isFinite(height)) { complete = false; break; }
+                        positions.setZ(i, positions.getZ(i) + height);
+                    }
+                    if (!complete) { mesh.geometry.dispose(); continue; }
+                    mesh.geometry.computeBoundingSphere();
+                }
+                markOwnedMaterial(mesh, material);
+                mesh.userData.selectionHatch = true;
+                mesh.renderOrder = 9997;
+                mesh.raycast = () => {};
+                mesh.onBeforeRender = () => { material.uniforms.pixelRatio.value = renderer.getPixelRatio(); };
+                group.add(mesh);
+                count++;
             }
         }
-        if (!stackFocusGroup.children.length) { material.dispose(); stackFocusGroup = null; return; }
+        if (!count) material.dispose();
+        return count > 0;
+    }
+    function highlightStackObject(kind, instance) {
+        clearStackFocus();
+        if (!scene || !instance) return;
+        let segments = stackVolumeSegments(kind, instance);
+        const representation = segments.length ? 'volume' : 'ground';
+        const groundFeatures = representation === 'ground' ? window.ClickStackHits.featuresFor(kind, instance) : [];
+        if (!segments.length) {
+            const temporaryMaterial = new THREE.LineBasicMaterial();
+            for (const feature of groundFeatures) {
+                const lines = ['Polygon', 'MultiPolygon'].includes(feature.geometry.type)
+                    ? polygonFeatureToBorderLines(feature, temporaryMaterial, 0.6)
+                    : [lineFeatureToLine(feature, temporaryMaterial, 0.6)].filter(Boolean);
+                for (const line of lines) {
+                    const positions = line.geometry.attributes.position;
+                    for (let i = 1; i < positions.count; i++) {
+                        for (const index of [i - 1, i]) segments.push(positions.getX(index), positions.getY(index), positions.getZ(index));
+                    }
+                    line.geometry.dispose();
+                }
+            }
+            temporaryMaterial.dispose();
+        }
+        if (realisticLayerActive && representation === 'ground') {
+            segments = window.__threeClickPlan.drapeSegments(segments,
+                (x, y) => window.PhotorealMode.selectionHeightAt(x, y, kind, instance.id),
+                8 / Math.cos(xyToLatLng(0, 0).lat * Math.PI / 180));
+        }
+        if (!segments.length) return;
+        stackFocusGroup = new THREE.Group();
+        stackFocusGroup.name = 'click-stack-focus';
+        stackFocusGroup.userData = { kind, id: instance.id, representation };
+        // Screen-space widths work on phones and at any zoom, unlike WebGL linewidth on
+        // LineBasicMaterial. The dark halo keeps yellow legible over bright roofs and paving.
+        for (const [stroke, color, linewidth] of [['halo', window.MapHighlight.haloHex, 7], ['yellow', window.MapHighlight.colorHex, 4]]) {
+            const geometry = new THREE.LineSegmentsGeometry();
+            geometry.setPositions(segments);
+            const material = new THREE.LineMaterial({ color, linewidth, transparent: true,
+                opacity: 1, depthTest: false, depthWrite: false, toneMapped: false });
+            const outline = new THREE.LineSegments2(geometry, material);
+            markOwnedGeometry(outline, geometry);
+            markOwnedMaterial(outline, material);
+            outline.userData.selectionStroke = stroke;
+            outline.renderOrder = stroke === 'halo' ? 9998 : 9999;
+            outline.raycast = () => {};
+            stackFocusGroup.add(outline);
+        }
+        const hatched = kind === 'designs' && representation === 'ground'
+            && addStackGroundHatching(stackFocusGroup, groundFeatures, instance);
+        stackFocusGroup.userData.pattern = hatched ? 'hatch' : 'outline';
         scene.add(stackFocusGroup);
+        stackFocusPulseStart = 0;
         if (!window.__reducedMotion) frameHooks.push(pulseStackFocus);
         invalidateThreeView();
     }
 
     // What each section means in the scene, and what fills its body.
     const clickStackAdapter = {
-        activate(kind, instance, body, { fromCycle = false } = {}) {
+        activate(kind, instance, body) {
             if (!instance || !body) return;
             if (kind !== 'designs') withStackDriving(() => {
                 clearIsolation();
@@ -1363,32 +1507,28 @@
             });
             if (kind === 'designs') {
                 body.replaceChildren();
-                if (instance.preserveView || fromCycle) {
-                    clearIsolation();
-                    withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
-                } else if (isolatedProposalId !== instance.id) {
-                    withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
-                    isolateProposal(instance.id);
-                }
+                clearIsolation();
+                withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
                 const proposal = window.proposalStorage?.getProposal?.(instance.id);
                 if (proposal && updateProposalInfoPanel(proposal, getProposalParcelIdSet(proposal))) body.appendChild(parcelInfoPanelEl);
                 // Editing actions use the same Design section in the map view, never a second
                 // inspector floating beside this scene's figures.
                 const actions = document.createElement('button');
                 actions.type = 'button';
-                actions.className = 'btn btn-sm';
+                actions.className = 'btn';
                 actions.textContent = threeI18n('planningViews.proposalActions', 'Design actions');
                 actions.addEventListener('click', async () => {
                     await window.requestMapMode('2d');
                     window.ClickStack.showDesign(instance.id);
                 });
                 body.appendChild(actions);
-            } else if (kind === 'parcels') {
+            } else if (kind === 'parcels' || kind === 'formed') {
                 if (viewedParcelId !== instance.id) viewParcel(instance.id);
                 if (updateParcelInfoPanel(instance.id)) body.appendChild(parcelInfoPanelEl);
             } else if (kind === 'built') {
-                withStackDriving(() => window.PlanningViews.inspectBuilding(instance.feature));
                 hostInspector(body);
+                withStackDriving(() => window.PlanningViews.inspectBuilding(instance.feature, instance.id, { hosted: true }));
+                stackInspector.selectedId = window.PlanningViews.getSelected()?.id || null;
             } else if (kind === 'permitted') {
                 withStackDriving(() => window.PlanningViews.select(instance.id));
                 hostInspector(body);
@@ -1398,6 +1538,13 @@
         // The section closes: its figures leave, and the inspector goes home, deselected only when
         // it still shows what the stack chose (a selection made elsewhere is that surface's).
         focus(kind, instance) { highlightStackObject(kind, instance); },
+        // The Focus button: move in or out until the object fills the view, keeping heading and tilt.
+        frame(kind, instance) {
+            const features = window.ClickStackHits.featuresFor(kind, instance);
+            if (!features.length) return false;
+            frameIsolatedFeatures(features);
+            return true;
+        },
         release({ keepSelection = false } = {}) {
             clearStackFocus();
             parcelInfoPanelEl?.remove();
@@ -1405,6 +1552,7 @@
             if (!hosted) return;
             stackInspector = null;
             hosted.el.classList.remove('is-hosted');
+            if (window.PlanningViews?.getSelected()?.role === 'existing') hosted.el.hidden = true;
             hosted.parent?.insertBefore(hosted.el, hosted.next && hosted.next.parentNode === hosted.parent ? hosted.next : null);
             if (keepSelection) hosted.el.hidden = true;
             else if (hosted.selectedId && window.PlanningViews?.getSelected()?.id === hosted.selectedId) {
@@ -1412,8 +1560,14 @@
             }
         },
         closed() {
-            endSelectionView();
-            try { window.ProposalSelection?.clear?.(); } catch (_) { }
+            deselectScene();
+        },
+        // The neighbour rule reads buildings and designs the way this scene keys them.
+        lookups: {
+            builtOnParcel: feature => buildingsOnParcel(feature).map(builtInstance),
+            designsOnParcel: id => getProposalsForParcel(id).map(p => ({ id: String(proposalIdOf(p)), proposal: p })),
+            parcelLabel: id => window.ThreeClickStack.parcelLabel(id),
+            designLabel: proposal => proposalDisplayTitle(proposal)
         }
     };
 
@@ -1425,12 +1579,26 @@
         } catch (_) { return null; }
     }
 
+    function observedBuildingFeatures() {
+        const observed = new Map((window.buildingFeaturePool || []).map(feature => [clickedBuildingId(feature), feature]));
+        for (const building of nearbyProposalBuildings) {
+            const feature = window.PlanningRepresentations.observedMeshFeature(building, observed.get(String(building.object_id)));
+            if (['Polygon', 'MultiPolygon'].includes(feature?.geometry?.type)) observed.set(clickedBuildingId(feature), feature);
+        }
+        return [...observed.values()].filter(feature => ['Polygon', 'MultiPolygon'].includes(feature?.geometry?.type));
+    }
+
     // The existing buildings standing on a parcel, by footprint centre (as isolation decides what
     // stays visible), each once: the Built section of a click on the parcel or a design on it.
-    function buildingsOnParcel(parcelId) {
-        const parcel = parcelId ? getParcelFeatureById(parcelId) : null;
+    function buildingsOnParcel(parcelOrId) {
+        const parcel = parcelOrId && typeof parcelOrId === 'object' ? parcelOrId : parcelOrId ? getParcelFeatureById(parcelOrId) : null;
         if (!parcel || !existingBuildingsGroup || typeof turf === 'undefined') return [];
         const found = new Map();
+        if (realisticLayerActive) {
+            for (const feature of observedBuildingFeatures()) {
+                if (turf.booleanPointInPolygon(turf.centroid(feature), parcel)) found.set(clickedBuildingId(feature), feature);
+            }
+        }
         existingBuildingsGroup.traverse(object => {
             const data = object.userData || {};
             if (!data.planningBuiltFeature || !data.footprintLatLng) return;
@@ -1447,37 +1615,58 @@
     function builtInstance({ id, feature }) {
         let label = window.ThreeClickStack.buildingLabel(feature);
         if (!label) { try { label = CbFormat.formatArea(turf.area(feature), { maxFractionDigits: 0 }); } catch (_) { label = ''; } }
-        return { id, label, feature };
+        const outcomes = window.currentBuildingOutcomeState?.();
+        return { id, label, feature, demolition: outcomes?.demolishedById.get(String(id)) || null };
     }
 
     function clickedBuildingId(feature) {
         return feature ? String((typeof buildingPoolFeatureKey === 'function' && buildingPoolFeatureKey(feature)) || feature.id || 'built') : null;
     }
 
+    // The ground a click reaches, as the stack lists it: formed land (a live piece a design made,
+    // or a piece cut from a cadastral parcel) under Formed, else the cadastral parcel under Parcel.
+    function groundInstance(parcelId) {
+        const stackApi = window.ThreeClickStack;
+        const feature = getParcelFeatureById(parcelId);
+        const props = feature?.properties || {};
+        const producerId = props.producedByProposalId != null && String(props.producedByProposalId) !== '' ? String(props.producedByProposalId) : null;
+        const sources = Array.isArray(props.cadastreParcelIds) ? props.cadastreParcelIds.map(String) : [];
+        const instance = { id: String(parcelId), label: stackApi.parcelLabel(parcelId), feature };
+        if (!producerId && !(sources.length && !sources.includes(String(parcelId)))) return { kind: 'parcels', instance };
+        const producer = producerId ? window.proposalStorage?.getProposal?.(producerId) : null;
+        return { kind: 'formed', instance: { ...instance, designId: producerId, designLabel: producer ? proposalDisplayTitle(producer) : producerId } };
+    }
+
     // After a click has done its scene work: the stack for what it stood on, the clicked thing open.
-    function showClickStack(picked, plan, click = null) {
+    function showClickStack(picked, plan, click = null, hits = null) {
         const stackApi = window.ThreeClickStack;
         if (!stackApi) return;
         const store = window.proposalStorage;
         const parcelId = plan.parcel?.id || null;
+        const ground = parcelId ? groundInstance(parcelId) : null;
         const designs = [];
         if (plan.proposal) { const clicked = store?.getProposal?.(plan.proposal.id); if (clicked) designs.push(clicked); }
         if (parcelId) designs.push(...getProposalsForParcel(parcelId));
-        const massingIds = [picked?.planningId, parcelId ? parcelMassingItem(parcelId)?.id : null].filter(Boolean);
+        for (const hit of hits?.designs || []) {
+            const proposal = store?.getProposal?.(hit.id);
+            if (proposal) designs.push(proposal);
+        }
+        const massingIds = [picked?.planningId, parcelId ? parcelMassingItem(parcelId)?.id : null,
+            ...(hits?.permitted || []).map(item => item.id)].filter(Boolean);
         const items = window.PlanningViews?.getItems?.() || [];
         const built = picked?.builtFeature || null;
         const builtId = clickedBuildingId(built);
-        const builtList = [...(built ? [{ id: builtId, feature: built }] : []), ...buildingsOnParcel(parcelId)];
+        const builtList = [...(built ? [{ id: builtId, feature: built }] : []), ...buildingsOnParcel(parcelId), ...(hits?.built || [])];
         const input = {
             built: builtList.map(builtInstance),
             designs: designs.map(p => ({ id: String(proposalIdOf(p)), label: proposalDisplayTitle(p), proposal: p,
                 preserveView: plan.preserveView === true })),
-            agreements: (window.AgreementStore?.list() || []).filter(agreement => agreement.designs.some(design => designs.some(proposal => String(proposalIdOf(proposal)) === String(design.proposalId))))
-                .map(agreement => ({ id: agreement.id, label: agreement.title || agreement.id, agreement })),
             permitted: massingIds.map(id => ({ id, label: items.find(item => item.id === id)?.title || '' })),
-            parcels: parcelId ? [{ id: parcelId, label: stackApi.parcelLabel(parcelId), feature: getParcelFeatureById(parcelId) }] : []
+            formed: ground?.kind === 'formed' ? [ground.instance] : [],
+            parcels: [...(ground?.kind === 'parcels' ? [ground.instance] : []), ...(hits?.parcels || [])]
         };
-        const focus = plan.proposal ? 'designs' : stackApi.focusOf(picked && picked.proposalId ? null : picked);
+        const focus = plan.proposal ? 'designs'
+            : stackApi.focusOf({ ...(picked && !picked.proposalId ? picked : {}), formed: ground?.kind === 'formed' });
         const selected = { ...(plan.proposal ? { designs: plan.proposal.id } : {}), ...(builtId ? { built: builtId } : {}) };
         stackApi.show(input, { focus, selected, click, container: document.getElementById('map-container') || document.body }, clickStackAdapter);
     }
@@ -1494,16 +1683,31 @@
         return true;
     }
 
+    function showThreeModePlan(instance, { agreement = null } = {}) {
+        if (!isActive) return false;
+        window.AgreementPanel?.close();
+        window.ThreeClickStack.show({ plans: [instance], planContext: instance, designs: instance.members, agreements: agreement ? [agreement] : [], agreementContext: agreement },
+            { focus: agreement ? 'agreements' : 'plans', selected: { plans: instance.id, ...(agreement ? { agreements: agreement.id } : {}) }, container: document.getElementById('map-container') || document.body }, clickStackAdapter);
+        return agreement ? window.ThreeClickStack.ready() : true;
+    }
+
     function showThreeModeParcel(parcelId) {
         if (!isActive || !parcelId) return false;
         withStackDriving(() => showClickStack(null, { parcel: { id: String(parcelId) } }));
         return true;
     }
 
+    function showThreeModeBuilding(feature, key = null) {
+        if (!isActive || !feature?.geometry) return false;
+        const id = String(key || clickedBuildingId(feature));
+        withStackDriving(() => showClickStack({ builtFeature: feature }, { inspectBuilding: feature, builtId: id }));
+        return true;
+    }
+
     // The scene rebuilt under an open Design or Parcel section: its figures may have changed.
     function refreshClickStackFigures() {
         const expanded = window.ThreeClickStack?.expanded?.();
-        if (expanded === 'designs' || expanded === 'parcels') window.ThreeClickStack.refresh();
+        if (['designs', 'parcels', 'formed'].includes(expanded)) window.ThreeClickStack.refresh();
     }
 
     // Isolation is entered by a click, but exited by clicking "somewhere else" — which nothing on
@@ -1522,7 +1726,7 @@
         close.className = 'close-circle-btn isolation-banner-close';
         close.innerHTML = '&times;';
         close.setAttribute('aria-label', threeI18n('threeMode.isolation.exitAria', 'Exit this view'));
-        close.addEventListener('click', () => endSelectionView());
+        close.addEventListener('click', () => deselectScene());
         isolationBannerEl.appendChild(close);
         threeContainer.appendChild(isolationBannerEl);
         return isolationBannerEl;
@@ -1632,7 +1836,7 @@
         facadeStyleSelect.id = 'three-mode-facade-style';
         facadeStyleSelect.className = 'three-mode-display-select';
         facadeStyleSelect.setAttribute('aria-label', threeI18n('threeMode.controls.facadeStyle', 'Facade style'));
-        facadeStyleSelect.title = threeI18n('threeMode.controls.facadeStyleTooltip', 'Choose the illustrative material palette used on proposed building facades');
+        facadeStyleSelect.title = threeI18n('threeMode.controls.facadeStyleTooltip', 'Mixed assigns a style independently to each building; glass is used only at 10+ storeys. Other presets apply to every building.');
         ['mixed', ...buildingFacades.STYLES.map(style => style.id)].forEach(id => {
             const option = document.createElement('option');
             option.value = id;
@@ -1688,7 +1892,10 @@
             'Also show typical layouts by era for the existing buildings around: a guess from footprint and height, not a survey.');
         suggestedExistingRow.setAttribute('aria-label', suggestedExistingRow.title);
         suggestedExistingRow.append(suggestedExistingCheckbox, suggestedExistingText);
-        xrayRow.appendChild(suggestedExistingRow);
+        const suggestedExistingHost = document.createElement('div');
+        suggestedExistingHost.setAttribute('data-map-modes', '3d');
+        suggestedExistingHost.appendChild(suggestedExistingRow);
+        xrayRow.appendChild(suggestedExistingHost);
         floorCutawayControl = document.createElement('label');
         floorCutawayControl.className = 'three-mode-floor-cutaway';
         const cutawayLabel = document.createElement('span');
@@ -1792,10 +1999,17 @@
         buildingsSourceNoteEl = document.createElement('p');
         buildingsSourceNoteEl.className = 'three-mode-source-note';
         buildingsSourceNoteEl.hidden = true;
-        buildingModeControlsEl.appendChild(buildingsSourceNoteEl);
+        const sourceNoteHost = document.createElement('div');
+        sourceNoteHost.setAttribute('data-map-modes', '3d');
+        sourceNoteHost.appendChild(buildingsSourceNoteEl);
+        buildingModeControlsEl.appendChild(sourceNoteHost);
         updateBuildingsSourceNote();
         // Keep X-ray as a clearly separated final section after scenery and plot diagnostics.
         buildingModeControlsEl.appendChild(xrayRow);
+
+        // These layers describe the flat model context. Google supplies its own ground and
+        // existing scenery; proposed-building appearance and inspection work in both views.
+        [radiusRow, decorTogglesEl, lifeRow, groundRow].forEach(row => row.setAttribute('data-map-modes', '3d'));
 
         layersHost.appendChild(buildingModeControlsEl);
         updateIsolationButton();
@@ -1927,7 +2141,9 @@
         };
 
         const outer = toCleanVecs(rings[0]);
-        if (outer.length < 3) return null;
+        // A bent clipping ribbon can survive vertex cleanup and extrude into duplicate walls.
+        const hasArea = points => meshSanitize.hasRenderableArea(points.map(v => [v.x, v.y, 0]), EPS);
+        if (!hasArea(outer)) return null;
         // A self-intersecting outer ring (a bowtie strip from a sharp bend, or a degenerate footprint
         // from a dragged node) triangulates into overlapping faces with degenerate normals — the flat
         // black area + radiating spikes seen in 3D. It renders fine in 2D, so the guard is HERE (3D
@@ -1941,7 +2157,7 @@
         const shape = new THREE.Shape(outer);
         for (let i = 1; i < rings.length; i++) {
             const holePts = toCleanVecs(rings[i]);
-            if (holePts.length >= 3) shape.holes.push(new THREE.Path(holePts));
+            if (hasArea(holePts)) shape.holes.push(new THREE.Path(holePts));
         }
         return shape;
     }
@@ -2366,20 +2582,33 @@
         applyParcelEmphasis();
     }
 
+    // Park lawns and green proposal ground: the procedural grass pattern (three-grass.js), in true
+    // metres over the Mercator-inflated scene XY.
+    function lawnMaterial() {
+        const grass = window.__threeGrass;
+        if (!grass) throw new Error('three-grass.js is not loaded');
+        return grass.grassTexture(new THREE.MeshLambertMaterial({
+            color: grass.COLORS.lawn, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
+        }), 1 / lifeMercatorK(), 'lawn');
+    }
+
     function buildParks3D(flatTarget, decoTarget, features = null) {
         const parks = features || ((typeof window !== 'undefined' && Array.isArray(window.parks)) ? window.parks : []);
         if (!parks || parks.length === 0) return;
         // Use polygonOffset to float slightly over base to avoid z-fighting and flicker
-        const grassMat = new THREE.MeshLambertMaterial({ color: 0x1b5e20, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+        const grassMat = lawnMaterial();
         const waterMat = new THREE.MeshPhongMaterial({ color: 0x2b6cb0, specular: 0x1f3a60, shininess: 40, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
         const pathLineMat = new THREE.LineBasicMaterial({ color: 0xdfe8d6, depthTest: true, depthWrite: false });
 
+        const isCurrentModel = startStructureModels(decoTarget);
         parks.forEach(p => {
             try {
                 if (!p || !p.geometry) return;
-                // Ground at slight z offset
-                const groundMeshes = polygonFeatureToMeshes(p, grassMat, 0.06, 0);
-                groundMeshes.forEach(m => { markOwnedMaterial(m, grassMat); m.userData.isParkGround = true; flatTarget.add(m); });
+                // Ground at slight z offset (an uploaded model replaces it)
+                placeStructureModel(p, decoTarget, isCurrentModel, () => {
+                    const groundMeshes = polygonFeatureToMeshes(p, grassMat, 0.06, 0);
+                    groundMeshes.forEach(m => { markOwnedMaterial(m, grassMat); m.userData.isParkGround = true; flatTarget.add(m); });
+                });
 
                 // Draw ponds (slightly above ground)
                 const deco = (p.properties && p.properties.decorations) ? p.properties.decorations : null;
@@ -2427,18 +2656,14 @@
                     });
                 }
 
-                // Benches: user-placed first-class objects (same as trees).
+                // Benches: user-placed first-class objects (same as trees); an uploaded bench model
+                // replaces the default bench for all of them.
+                const models = deco?.models || null;
                 if (deco && Array.isArray(deco.benches)) {
-                    deco.benches.forEach(bench => {
-                        try {
-                            const coord = Array.isArray(bench?.coordinate) ? bench.coordinate : bench;
-                            if (!Array.isArray(coord) || coord.length < 2) return;
-                            addBench3D(decoTarget, coord[0], coord[1], Number(bench?.bearing) || 0);
-                        } catch (_) { }
-                    });
+                    placeFurniture3D('bench', deco.benches, models, decoTarget, isCurrentModel, spots => addProceduralBenches3D(decoTarget, spots));
                 }
-
-                const addTreeAt = (lng, lat) => addTree3D(decoTarget, [lng, lat]);
+                if (deco) placeFurniture3D('stall', deco.stalls, models, decoTarget, isCurrentModel, spots => addMarketStalls3D(decoTarget, spots));
+                placeLamps3D(deco?.lamps, models, decoTarget, isCurrentModel);
 
                 // Trees: the STORED trees are the truth — auto-generated and user-placed alike
                 // (the old random sampling ignored edits, so a repositioned tree never moved in
@@ -2450,14 +2675,15 @@
                     try { return turf.booleanPointInPolygon(turf.point(coord), p); } catch (_) { return true; }
                 }) : [];
                 if (storedTrees.length) {
-                    storedTrees.forEach(entry => addTree3D(decoTarget, entry));
+                    placeFurniture3D('tree', storedTrees, models, decoTarget, isCurrentModel, spots => addParkTrees3D(decoTarget, spots.map(spot => spot.item)));
                 } else {
                     let area = 0; try { area = turf.area(p); } catch (_) { }
                     const count = Math.max(3, Math.min(60, Math.round(area / 2000)));
                     let bbox = null; try { bbox = turf.bbox(p); } catch (_) { }
                     if (!bbox) return;
-                    let placed = 0, safety = 0;
-                    while (placed < count && safety < count * 20) {
+                    const sampled = [];
+                    let safety = 0;
+                    while (sampled.length < count && safety < count * 20) {
                         safety++;
                         const rnd = turf.randomPoint(1, { bbox }).features[0];
                         try { if (!turf.booleanPointInPolygon(rnd, p)) continue; } catch (_) { continue; }
@@ -2473,9 +2699,9 @@
                                 if (inPond) continue;
                             }
                         } catch (_) { }
-                        addTreeAt(rnd.geometry.coordinates[0], rnd.geometry.coordinates[1]);
-                        placed++;
+                        sampled.push([rnd.geometry.coordinates[0], rnd.geometry.coordinates[1]]);
                     }
+                    addParkTrees3D(decoTarget, sampled);
                 }
             } catch (_) { }
         });
@@ -2487,10 +2713,7 @@
         if (!furnitureMats) {
             furnitureMats = {
                 wood: new THREE.MeshLambertMaterial({ color: 0x8a5a2b }),
-                trunk: new THREE.MeshLambertMaterial({ color: 0x6d4c41 }),
-                crown: new THREE.MeshLambertMaterial({ color: 0x2e7d32 }),
-                stone: new THREE.MeshLambertMaterial({ color: 0xc9c9c2 }),
-                table: new THREE.MeshLambertMaterial({ color: 0xf5f5f0 })
+                stone: new THREE.MeshLambertMaterial({ color: 0xc9c9c2 })
             };
         }
         return furnitureMats;
@@ -2502,44 +2725,171 @@
         return api;
     }
 
-    // Crown colours per tree kind (park-planting.js treeShape palette).
-    const TREE_CROWN_COLORS = { broadleaf: 0x2e7d32, conifer: 0x1d4a2c, columnar: 0x4a7a2c, blossom: 0xf0a8c8 };
-    let treeCrownMats = null;
-    function treeCrownMaterial(palette) {
-        if (!treeCrownMats) {
-            treeCrownMats = {};
-            Object.entries(TREE_CROWN_COLORS).forEach(([key, color]) => { treeCrownMats[key] = new THREE.MeshLambertMaterial({ color }); });
-        }
-        return treeCrownMats[palette] || treeCrownMats.broadleaf;
+    // ---- Tree species (tree-species.js): every tree in the model view is one of eight procedural
+    // species, one shared unit-height geometry each, drawn as one InstancedMesh per species per group.
+    function treeSpeciesApi() {
+        const api = window.TreeSpecies;
+        if (!api) throw new Error('tree-species.js is not loaded');
+        return api;
     }
 
-    // One tree as its stored look draws it: a trunk and crown pieces (park-planting.js treeShape).
-    // `entry` is a stored tree, { coordinate, kind, heightM } or a bare [lng, lat].
-    function addTree3D(target, entry) {
-        const shape = parkPlanting().treeShape(entry);
-        if (!shape) return;
-        const [lng, lat] = parkPlanting().treeCoordinate(entry);
-        const [x, y] = latLngToXY(lat, lng);
-        const trunkGeo = new THREE.CylinderGeometry(shape.trunk.radiusM * 0.8, shape.trunk.radiusM, shape.trunk.heightM, 8);
-        trunkGeo.rotateX(Math.PI / 2); // stand upright along Z
-        trunkGeo.translate(x, y, shape.trunk.heightM / 2);
-        const trunk = new THREE.Mesh(trunkGeo, furnitureMaterials().trunk);
-        markOwnedGeometry(trunk, trunkGeo);
-        target.add(trunk);
-        const crownMat = treeCrownMaterial(shape.palette);
-        shape.crown.forEach(piece => {
-            let geo;
-            if (piece.shape === 'cone') {
-                geo = new THREE.ConeGeometry(piece.radiusM, piece.heightM, 10);
-                geo.rotateX(Math.PI / 2);
-            } else {
-                geo = new THREE.SphereGeometry(1, 12, 9);
-                geo.scale(piece.radiusM, piece.radiusM, piece.heightM / 2);
+    // Shared, never disposed: the species geometries and their one vertex-coloured material.
+    let speciesAssets = null;
+    function ensureSpeciesAssets() {
+        if (speciesAssets) return speciesAssets;
+        const api = treeSpeciesApi();
+        const geometries = {};
+        api.SPECIES_IDS.forEach(id => {
+            const data = api.buildSpecies(id);
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.BufferAttribute(data.positions, 3));
+            geometry.setAttribute('normal', new THREE.BufferAttribute(data.normals, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(data.colors, 3));
+            geometry.setIndex(new THREE.BufferAttribute(data.indices, 1));
+            geometry.computeBoundingSphere();
+            geometries[id] = geometry;
+        });
+        speciesAssets = { geometries, shared: new Set(Object.values(geometries)), material: new THREE.MeshLambertMaterial({ vertexColors: true }) };
+        return speciesAssets;
+    }
+
+    // Writes one tree look ({ x, y, z, heightM, yaw, tint }, scene XY, metric Z) into slot `index`.
+    const speciesDummy = { object: null, color: null };
+    function setSpeciesInstance(mesh, index, look, k) {
+        const dummy = speciesDummy.object || (speciesDummy.object = new THREE.Object3D());
+        const color = speciesDummy.color || (speciesDummy.color = new THREE.Color());
+        dummy.position.set(look.x, look.y, look.z || 0);
+        dummy.rotation.set(0, 0, look.yaw);
+        dummy.scale.set(look.heightM * k, look.heightM * k, look.heightM);
+        dummy.updateMatrix();
+        mesh.setMatrixAt(index, dummy.matrix);
+        mesh.setColorAt(index, color.setRGB(look.tint[0], look.tint[1], look.tint[2], THREE.LinearSRGBColorSpace));
+    }
+
+    // Species meshes sized for `looks` (one per species present), each with every look of its species
+    // written in. Returns { [species]: InstancedMesh }; the caller adds and owns them.
+    function speciesTreeMeshes(looks) {
+        const assets = ensureSpeciesAssets();
+        const k = lifeMercatorK();
+        const bySpecies = new Map();
+        looks.forEach(look => {
+            if (!bySpecies.has(look.species)) bySpecies.set(look.species, []);
+            bySpecies.get(look.species).push(look);
+        });
+        const meshes = {};
+        bySpecies.forEach((list, species) => {
+            const mesh = new THREE.InstancedMesh(assets.geometries[species], assets.material, list.length);
+            list.forEach((look, index) => setSpeciesInstance(mesh, index, look, k));
+            mesh.count = list.length;
+            mesh.instanceMatrix.needsUpdate = true;
+            if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+            mesh.userData.decorationKind = 'tree';
+            mesh.userData.treeSpecies = species;
+            meshes[species] = mesh;
+        });
+        return meshes;
+    }
+
+    // Park and square trees as their stored look names them (park-planting.js treeOf: kind, height);
+    // the region chooses the species of that kind. `entries` are stored trees or bare [lng, lat].
+    function addParkTrees3D(target, entries, z = FURNITURE_GROUND_Z) {
+        const species = treeSpeciesApi();
+        const looks = [];
+        entries.forEach(entry => {
+            const tree = parkPlanting().treeOf(entry);
+            if (!tree) return;
+            const [lng, lat] = tree.coordinate;
+            const [x, y] = latLngToXY(lat, lng);
+            looks.push({ x, y, z, ...species.treeInstance(lng, lat, { kind: tree.kind, heightM: tree.heightM }) });
+        });
+        Object.values(speciesTreeMeshes(looks)).forEach(mesh => target.add(ownInstances(mesh)));
+    }
+
+    // Pavement trees' pits (park-planting.js TREE_PITS): per square, one merged mesh per pit kind,
+    // just above the paving and laid square to the square's longest edge. A grille is a cast-iron
+    // grate with soil showing through; grass and soil pits get a stone edge.
+    const TREE_PIT_LIFT_M = 0.012;          // above the paving (FURNITURE_GROUND_Z, declared further down)
+    const TREE_PIT_EDGE_M = 0.1;
+    let treePitAssets = null; // shared, never disposed: the grille, soil and edge materials
+    function ensureTreePitAssets() {
+        if (treePitAssets) return treePitAssets;
+        const size = 128, mid = size / 2;
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = size;
+        const c = canvas.getContext('2d');
+        c.fillStyle = '#4a3a2c';
+        c.fillRect(0, 0, size, size);
+        c.strokeStyle = '#34373b';
+        c.lineWidth = 10;
+        c.strokeRect(5, 5, size - 10, size - 10);
+        c.lineWidth = 4;
+        [24, 38, 52].forEach(r => c.strokeRect(mid - r, mid - r, r * 2, r * 2));
+        for (let i = 0; i < 8; i++) {
+            const a = i * Math.PI / 4;
+            c.beginPath();
+            c.moveTo(mid + Math.cos(a) * 16, mid + Math.sin(a) * 16);
+            c.lineTo(mid + Math.cos(a) * 60, mid + Math.sin(a) * 60);
+            c.stroke();
+        }
+        c.lineWidth = 5;
+        c.beginPath();
+        c.arc(mid, mid, 17, 0, Math.PI * 2);
+        c.stroke();
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.anisotropy = 4;
+        treePitAssets = {
+            grille: new THREE.MeshLambertMaterial({ map: texture }),
+            soil: new THREE.MeshLambertMaterial({ color: 0x5b4332 }),
+            edge: new THREE.MeshLambertMaterial({ color: 0x9c978b })
+        };
+        return treePitAssets;
+    }
+
+    function addTreePits3D(target, trees, site) {
+        const planting = parkPlanting();
+        const pits = (Array.isArray(trees) ? trees : []).map(entry => planting.treeOf(entry)).filter(tree => tree?.pit);
+        if (!pits.length) return;
+        const geometry = site?.geometry;
+        const ring = geometry?.type === 'Polygon' ? geometry.coordinates[0] : (geometry?.type === 'MultiPolygon' ? geometry.coordinates[0]?.[0] : null);
+        const bearing = planting.longestEdgeBearing(ring);
+        const k = lifeMercatorK();
+        const half = planting.PIT_SIZE_M / 2 * k;
+        const quads = { grille: [], grass: [], soil: [], edge: [] };
+        const square = (list, corners) => list.push(corners);
+        pits.forEach(tree => {
+            const [x, y] = latLngToXY(tree.coordinate[1], tree.coordinate[0]);
+            square(quads[tree.pit], planting.pitCorners(x, y, half, bearing));
+            if (tree.pit === 'grille') return;
+            // The stone edge: four strips just outside the pit.
+            const outer = planting.pitCorners(x, y, half + TREE_PIT_EDGE_M * k, bearing);
+            const inner = planting.pitCorners(x, y, half, bearing);
+            for (let i = 0; i < 4; i++) {
+                const j = (i + 1) % 4;
+                square(quads.edge, [outer[i], outer[j], inner[j], inner[i]]);
             }
-            geo.translate(x, y, piece.baseM + piece.heightM / 2);
-            const crown = new THREE.Mesh(geo, crownMat);
-            markOwnedGeometry(crown, geo);
-            target.add(crown);
+        });
+        Object.entries(quads).forEach(([kind, list]) => {
+            if (!list.length) return;
+            const positions = new Float32Array(list.length * 12);
+            const uvs = new Float32Array(list.length * 8);
+            const indices = [];
+            list.forEach((corners, q) => {
+                corners.forEach(([x, y], i) => positions.set([x, y, FURNITURE_GROUND_Z + TREE_PIT_LIFT_M], q * 12 + i * 3));
+                uvs.set([0, 0, 1, 0, 1, 1, 0, 1], q * 8);
+                indices.push(q * 4, q * 4 + 1, q * 4 + 2, q * 4, q * 4 + 2, q * 4 + 3);
+            });
+            const buffer = new THREE.BufferGeometry();
+            buffer.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            buffer.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+            buffer.setIndex(indices);
+            buffer.computeVertexNormals();
+            const material = kind === 'grass' ? lawnMaterial() : ensureTreePitAssets()[kind];
+            const mesh = new THREE.Mesh(buffer, material);
+            markOwnedGeometry(mesh, buffer);
+            if (kind === 'grass') markOwnedMaterial(mesh, material);
+            mesh.userData.treePit = kind;
+            target.add(mesh);
         });
     }
 
@@ -2623,49 +2973,85 @@
         }
     }
 
-    // A bench: seat slab + backrest + legs, rotated to `bearing` (degrees from north).
-    function addBench3D(target, lng, lat, bearingDeg = 0) {
-        const [x, y] = latLngToXY(lat, lng);
-        const wood = furnitureMaterials().wood;
-        const group = new THREE.Group();
-        const seatGeo = new THREE.BoxGeometry(1.7, 0.55, 0.1);
-        seatGeo.translate(0, 0, 0.45);
-        const seat = new THREE.Mesh(seatGeo, wood);
-        markOwnedGeometry(seat, seatGeo);
-        group.add(seat);
-        const backGeo = new THREE.BoxGeometry(1.7, 0.08, 0.5);
-        backGeo.translate(0, -0.28, 0.75);
-        const back = new THREE.Mesh(backGeo, wood);
-        markOwnedGeometry(back, backGeo);
-        group.add(back);
-        [-0.7, 0.7].forEach(offset => {
-            const legGeo = new THREE.BoxGeometry(0.08, 0.45, 0.45);
-            legGeo.translate(offset, 0, 0.22);
-            const leg = new THREE.Mesh(legGeo, wood);
-            markOwnedGeometry(leg, legGeo);
-            group.add(leg);
+    // The default bench: seat slab + backrest + legs, each part one InstancedMesh for all benches of
+    // a structure, every bench turned to its bearing (degrees from north; furniturePlacements).
+    let benchParts = null;
+    function addProceduralBenches3D(target, spots) {
+        if (!benchParts) {
+            // Shared, never disposed, like the flowerbed and lamp assets.
+            const part = (w, d, h, x, y, z) => { const geometry = new THREE.BoxGeometry(w, d, h); geometry.translate(x, y, z); return geometry; };
+            benchParts = [
+                part(1.7, 0.55, 0.1, 0, 0, 0.45),
+                part(1.7, 0.08, 0.5, 0, -0.28, 0.75),
+                part(0.08, 0.45, 0.45, -0.7, 0, 0.22),
+                part(0.08, 0.45, 0.45, 0.7, 0, 0.22)
+            ];
+        }
+        const placements = furniturePlacements(spots);
+        benchParts.forEach(geometry => {
+            const mesh = ownInstances(new THREE.InstancedMesh(geometry, furnitureMaterials().wood, placements.length));
+            placements.forEach((matrix, index) => mesh.setMatrixAt(index, matrix));
+            mesh.instanceMatrix.needsUpdate = true;
+            target.add(mesh);
         });
-        group.position.set(x, y, 0.06);
-        group.rotation.z = ((90 - (Number(bearingDeg) || 0)) * Math.PI) / 180;
-        target.add(group);
     }
 
-    // A restaurant/terrace table (the 2D "plate" stall): round top on a centre leg.
-    function addTable3D(target, lng, lat) {
-        const [x, y] = latLngToXY(lat, lng);
-        const mats = furnitureMaterials();
-        const legGeo = new THREE.CylinderGeometry(0.07, 0.07, 0.72, 8);
-        legGeo.rotateX(Math.PI / 2);
-        legGeo.translate(x, y, 0.06 + 0.36);
-        const leg = new THREE.Mesh(legGeo, mats.stone);
-        markOwnedGeometry(leg, legGeo);
-        target.add(leg);
-        const topGeo = new THREE.CylinderGeometry(0.75, 0.75, 0.06, 20);
-        topGeo.rotateX(Math.PI / 2);
-        topGeo.translate(x, y, 0.06 + 0.75);
-        const top = new THREE.Mesh(topGeo, mats.table);
-        markOwnedGeometry(top, topGeo);
-        target.add(top);
+    // The default market stall (furniture-models.js): four posts, a counter on the side its bearing
+    // faces (the model's +X) and a striped canopy. Per structure that is one InstancedMesh each for the
+    // posts, the counters and the canopies; each canopy takes its stall's colour (stallColor) as an
+    // instance colour multiplied over one shared white/grey stripe texture, so every colour is one draw.
+    let marketStallAssets = null;
+    const MARKET_STALL_POSTS = [[-0.75, -1.15], [-0.75, 1.15], [0.75, -1.15], [0.75, 1.15]];
+    function ensureMarketStallAssets() {
+        if (marketStallAssets) return marketStallAssets;
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 8;
+        const context = canvas.getContext('2d');
+        for (let stripe = 0; stripe < 8; stripe++) {
+            context.fillStyle = stripe % 2 ? '#d9d9d9' : '#ffffff';
+            context.fillRect(stripe * 8, 0, 8, 8);
+        }
+        const stripes = new THREE.CanvasTexture(canvas);
+        stripes.colorSpace = THREE.SRGBColorSpace;
+        stripes.magFilter = THREE.NearestFilter;
+        const post = new THREE.BoxGeometry(0.07, 0.07, 2.4);
+        post.translate(0, 0, 1.2);
+        const counter = new THREE.BoxGeometry(0.6, 2.4, 0.95);
+        counter.translate(0.5, 0, 0.475);
+        // The canopy slopes down toward the counter side.
+        const canopy = new THREE.BoxGeometry(1.95, 2.6, 0.05);
+        canopy.rotateY(0.2);
+        canopy.translate(0, 0, 2.45);
+        marketStallAssets = {
+            post, counter, canopy,
+            postMat: new THREE.MeshLambertMaterial({ color: 0x5b4636 }),
+            counterMat: new THREE.MeshLambertMaterial({ color: 0xb08a5c }),
+            canopyMat: new THREE.MeshLambertMaterial({ color: 0xffffff, map: stripes, side: THREE.DoubleSide })
+        };
+        return marketStallAssets;
+    }
+
+    function addMarketStalls3D(target, spots) {
+        const assets = ensureMarketStallAssets();
+        const placements = furniturePlacements(spots);
+        const posts = ownInstances(new THREE.InstancedMesh(assets.post, assets.postMat, placements.length * MARKET_STALL_POSTS.length));
+        const counters = ownInstances(new THREE.InstancedMesh(assets.counter, assets.counterMat, placements.length));
+        const canopies = ownInstances(new THREE.InstancedMesh(assets.canopy, assets.canopyMat, placements.length));
+        const offset = new THREE.Matrix4();
+        const matrix = new THREE.Matrix4();
+        const color = new THREE.Color();
+        placements.forEach((placement, index) => {
+            MARKET_STALL_POSTS.forEach(([x, y], post) => {
+                posts.setMatrixAt(index * MARKET_STALL_POSTS.length + post, matrix.multiplyMatrices(placement, offset.makeTranslation(x, y, 0)));
+            });
+            counters.setMatrixAt(index, placement);
+            canopies.setMatrixAt(index, placement);
+            canopies.setColorAt(index, color.set(furnitureApi().stallColor(spots[index].item, index)));
+        });
+        [posts, counters, canopies].forEach(mesh => { mesh.instanceMatrix.needsUpdate = true; });
+        if (canopies.instanceColor) canopies.instanceColor.needsUpdate = true;
+        target.add(posts, counters, canopies);
     }
 
     // A statue: stone pedestal + simple standing figure.
@@ -2724,45 +3110,43 @@
         const rimMat = squareMats.rim;
         const waterMat = squareMats.water;
 
+        const isCurrentModel = startStructureModels(decoTarget);
         squares.forEach(sq => {
             try {
                 if (!sq || !sq.geometry) return;
-                // Ground slightly above base to avoid z-fighting
-                const groundMeshes = polygonFeatureToMeshes(sq, stoneMat, 0.06, 0);
-                groundMeshes.forEach(m => {
-                    if (surfaceMaterial) markOwnedMaterial(m, surfaceMaterial);
-                    m.userData.isSquareGround = true; flatTarget.add(m);
+                // Ground slightly above base to avoid z-fighting (an uploaded model replaces it)
+                placeStructureModel(sq, decoTarget, isCurrentModel, () => {
+                    const groundMeshes = polygonFeatureToMeshes(sq, stoneMat, 0.06, 0);
+                    groundMeshes.forEach(m => {
+                        if (surfaceMaterial) markOwnedMaterial(m, surfaceMaterial);
+                        m.userData.isSquareGround = true; flatTarget.add(m);
+                    });
+                    const borderLines = polygonFeatureToBorderLines(sq, squareMats.border, 0.075);
+                    borderLines.forEach(line => { line.userData.isSquarePavingBorder = true; flatTarget.add(line); });
                 });
-                const borderLines = polygonFeatureToBorderLines(sq, squareMats.border, 0.075);
-                borderLines.forEach(line => { line.userData.isSquarePavingBorder = true; flatTarget.add(line); });
 
                 const dec = sq.properties && sq.properties.decorations;
                 if (!dec) return;
 
-                // Furniture from the geometry editor (all first-class objects there).
-                (Array.isArray(dec.trees) ? dec.trees : []).forEach(entry => {
-                    try { addTree3D(decoTarget, entry); } catch (_) { }
-                });
-                (Array.isArray(dec.benches) ? dec.benches : []).forEach(bench => {
-                    try {
-                        const coord = Array.isArray(bench?.coordinate) ? bench.coordinate : bench;
-                        if (Array.isArray(coord)) addBench3D(decoTarget, coord[0], coord[1], Number(bench?.bearing) || 0);
-                    } catch (_) { }
-                });
-                (Array.isArray(dec.stalls) ? dec.stalls : []).forEach(coord => {
-                    try { if (Array.isArray(coord)) addTable3D(decoTarget, coord[0], coord[1]); } catch (_) { }
-                });
-                (Array.isArray(dec.statues) ? dec.statues : []).forEach(coord => {
-                    try { if (Array.isArray(coord)) addStatue3D(decoTarget, coord[0], coord[1]); } catch (_) { }
-                });
+                // Furniture from the geometry editor (all first-class objects there). A kind with an
+                // uploaded model (decorations.models) draws that model for every item instead.
+                const models = dec.models || null;
+                placeFurniture3D('tree', dec.trees, models, decoTarget, isCurrentModel, spots => addParkTrees3D(decoTarget, spots.map(spot => spot.item)));
+                // Pavement trees' pits draw under any tree, default or uploaded model.
+                addTreePits3D(decoTarget, dec.trees, sq);
+                placeFurniture3D('bench', dec.benches, models, decoTarget, isCurrentModel, spots => addProceduralBenches3D(decoTarget, spots));
+                placeFurniture3D('stall', dec.stalls, models, decoTarget, isCurrentModel, spots => addMarketStalls3D(decoTarget, spots));
+                placeFurniture3D('statue', dec.statues, models, decoTarget, isCurrentModel, spots => spots.forEach(spot => {
+                    try { addStatue3D(decoTarget, spot.lng, spot.lat); } catch (_) { }
+                }));
+                placeLamps3D(dec.lamps, models, decoTarget, isCurrentModel);
 
                 // Fountains: edited squares store an ARRAY; legacy squares a single `fountain`.
                 const fountains = (Array.isArray(dec.fountains) && dec.fountains.length)
                     ? dec.fountains
                     : (Array.isArray(dec.fountain) ? [dec.fountain] : []);
-                fountains.forEach(fountainCoord => {
-                if (!Array.isArray(fountainCoord) || fountainCoord.length < 2) return;
-                const [lng, lat] = fountainCoord;
+                placeFurniture3D('fountain', fountains, models, decoTarget, isCurrentModel, spots => spots.forEach(spot => {
+                const { lng, lat } = spot;
                 const [x, y] = latLngToXY(lat, lng);
 
                 // Simple fountain: pedestal + basin + water disk + small spout
@@ -2811,9 +3195,255 @@
                 group.add(spout);
 
                 decoTarget.add(group);
-                });
+                }));
             } catch (_) { }
         });
+    }
+
+    // ---- Furniture models and lamps (furniture-models.js) ----
+    // A park or square may give one uploaded model to every item of a furniture kind. The model is
+    // loaded once (loadGltfScene's cache) and drawn as one InstancedMesh per mesh inside it, so a
+    // kind costs as many draw calls as its model has meshes, however many items there are.
+    const FURNITURE_GROUND_Z = 0.06;      // the park/square surface the furniture stands on
+    const LAMP_HEIGHT_M = 4;              // the default lamp's pole
+    const LAMP_HEAD_Z = LAMP_HEIGHT_M + 0.12;
+    const LAMP_POOL_RADIUS_M = 5;         // the pool of light on the ground under a lit lamp
+
+    function furnitureApi() {
+        const api = window.FurnitureModels;
+        if (!api) throw new Error('furniture-models.js is not loaded');
+        return api;
+    }
+
+    // Where each item stands: { lng, lat, bearing, item }; items without a valid point are skipped.
+    function furnitureSpots(kind, items) {
+        return (Array.isArray(items) ? items : []).map(item => {
+            const coord = kind === 'tree' ? parkPlanting().treeCoordinate(item)
+                : (Array.isArray(item?.coordinate) ? item.coordinate : item);
+            if (!Array.isArray(coord) || coord.length < 2) return null;
+            const lng = Number(coord[0]), lat = Number(coord[1]);
+            if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
+            return { lng, lat, bearing: Number(item?.bearing) || 0, item };
+        }).filter(Boolean);
+    }
+
+    // One matrix per spot: position, bearing (the model's +X faces it) and the Mercator (k, k, 1)
+    // scale that turns a model in metres into scene units (FurnitureModels.instanceTransform).
+    function furniturePlacements(spots) {
+        const k = lifeMercatorK();
+        const dummy = new THREE.Object3D();
+        return spots.map(spot => {
+            const [x, y] = latLngToXY(spot.lat, spot.lng);
+            const transform = furnitureApi().instanceTransform({ x, y, z: FURNITURE_GROUND_Z, bearingDeg: spot.bearing, k });
+            dummy.position.set(...transform.position);
+            dummy.rotation.set(0, 0, transform.rotationZ);
+            dummy.scale.set(...transform.scale);
+            dummy.updateMatrix();
+            return dummy.matrix.clone();
+        });
+    }
+
+    // An InstancedMesh owns its per-instance buffers; dispose them with the structure's rebuild.
+    function ownInstances(mesh) {
+        threeResources.markOwned(mesh, 'geometries', { dispose: () => mesh.dispose() });
+        return mesh;
+    }
+
+    // Each mesh of a loaded model with its matrix inside the model after the glTF Y-up -> scene Z-up
+    // turn, centred on its footprint and standing on z = 0. Cached per source scene.
+    const furnitureModelLayouts = new WeakMap();
+    function furnitureModelLayout(source) {
+        if (furnitureModelLayouts.has(source)) return furnitureModelLayouts.get(source);
+        source.updateMatrixWorld(true);
+        const upright = new THREE.Matrix4().makeRotationX(Math.PI / 2);
+        const box = new THREE.Box3();
+        const meshes = [];
+        source.traverse(node => {
+            if (!node.isMesh || !node.geometry?.attributes?.position || !node.material) return;
+            const local = new THREE.Matrix4().multiplyMatrices(upright, node.matrixWorld);
+            if (!node.geometry.boundingBox) node.geometry.computeBoundingBox();
+            box.union(node.geometry.boundingBox.clone().applyMatrix4(local));
+            meshes.push({ node, local });
+        });
+        let layout = null;
+        if (meshes.length && !box.isEmpty()) {
+            const center = box.getCenter(new THREE.Vector3());
+            const ground = new THREE.Matrix4().makeTranslation(-center.x, -center.y, -box.min.z);
+            meshes.forEach(entry => entry.local.premultiply(ground));
+            layout = { meshes, height: box.max.z - box.min.z };
+        }
+        furnitureModelLayouts.set(source, layout);
+        return layout;
+    }
+
+    // Draws every spot of one kind with the model at modelUrl. Resolves with the model's layout, or
+    // null when the structure was rebuilt meanwhile; rejects when the model cannot be drawn.
+    function placeFurnitureInstances(kind, spots, modelUrl, decoTarget, isCurrent) {
+        const url = (typeof resolveBackendAssetUrl === 'function' && resolveBackendAssetUrl(modelUrl)) || modelUrl;
+        return loadGltfScene(url).then(source => {
+            if (!isActive || !isCurrent()) return null;
+            const layout = source ? furnitureModelLayout(source) : null;
+            if (!layout) throw new Error('The furniture model has no meshes');
+            const placements = furniturePlacements(spots);
+            const group = new THREE.Group();
+            group.userData.furnitureKind = kind;
+            const matrix = new THREE.Matrix4();
+            layout.meshes.forEach(({ node, local }) => {
+                // Clones keep the model's textures; the source materials stay with the cache.
+                const materials = (Array.isArray(node.material) ? node.material : [node.material]).map(material => material.clone());
+                const material = Array.isArray(node.material) ? materials : materials[0];
+                const mesh = ownInstances(new THREE.InstancedMesh(node.geometry, material, placements.length));
+                placements.forEach((placement, index) => mesh.setMatrixAt(index, matrix.multiplyMatrices(placement, local)));
+                mesh.instanceMatrix.needsUpdate = true;
+                markOwnedMaterial(mesh, material);
+                group.add(mesh);
+            });
+            decoTarget.add(group);
+            sunLayer?.syncObjects(group);
+            invalidateThreeView();
+            return layout;
+        });
+    }
+
+    // One furniture kind of one structure: its uploaded model when it has one, otherwise (or when the
+    // model fails to load) `procedural(spots)`, the default look. `onModel(spots, layout)` adds what goes
+    // with a drawn model (a lamp's glow at the model's height).
+    function placeFurniture3D(kind, items, models, decoTarget, isCurrent, procedural, onModel = null) {
+        const spots = furnitureSpots(kind, items);
+        if (!spots.length) return;
+        const url = typeof models?.[kind]?.url === 'string' ? models[kind].url : '';
+        if (!url) { procedural(spots); return; }
+        placeFurnitureInstances(kind, spots, url, decoTarget, isCurrent).then(layout => {
+            if (layout && onModel) onModel(spots, layout);
+        }, error => {
+            if (!isActive || !isCurrent()) return;
+            console.warn('[3D] furniture model failed to load; drawing the default', kind, url, error);
+            procedural(spots);
+            invalidateThreeView();
+        });
+    }
+
+    // Shared, never disposed: the default lamp and the glow every lamp shares. The structure display
+    // mode draws each object with its own scoped copy of a material (three-structure-refresh.js), so
+    // night and day are applied to the drawn objects' materials, listed in lampGlowObjects.
+    let lampAssets = null;
+    const lampGlowObjects = new Set();   // pools, halos and default lamp heads in the scene
+    function ensureLampAssets() {
+        if (lampAssets) return lampAssets;
+        const pole = new THREE.CylinderGeometry(0.06, 0.09, LAMP_HEIGHT_M, 8);
+        pole.rotateX(Math.PI / 2);
+        pole.translate(0, 0, LAMP_HEIGHT_M / 2);
+        const head = new THREE.SphereGeometry(0.22, 12, 8);
+        head.translate(0, 0, LAMP_HEAD_Z - FURNITURE_GROUND_Z);
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 64;
+        const context = canvas.getContext('2d');
+        const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(0.35, 'rgba(255, 255, 255, 0.45)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, 64, 64);
+        const glow = new THREE.CanvasTexture(canvas);
+        glow.colorSpace = THREE.SRGBColorSpace;
+        lampAssets = {
+            pole, head,
+            poleMat: new THREE.MeshLambertMaterial({ color: 0x33383d }),
+            headMat: new THREE.MeshLambertMaterial({ color: 0xf2ead8, emissive: 0xffd28a, emissiveIntensity: 0 }),
+            pool: new THREE.CircleGeometry(1, 32),
+            poolMat: new THREE.MeshBasicMaterial({
+                map: glow, color: 0xffc46b, transparent: true, opacity: 0, visible: false, depthWrite: false,
+                blending: THREE.AdditiveBlending, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4
+            }),
+            haloMat: new THREE.PointsMaterial({
+                map: glow, color: 0xffd9a0, size: 2.4, sizeAttenuation: true, transparent: true, opacity: 0,
+                visible: false, depthWrite: false, blending: THREE.AdditiveBlending
+            })
+        };
+        return lampAssets;
+    }
+
+    // The default lamp: a pole and a head, each one InstancedMesh for all lamps of a structure.
+    function addProceduralLamps3D(decoTarget, spots) {
+        const assets = ensureLampAssets();
+        const poles = ownInstances(new THREE.InstancedMesh(assets.pole, assets.poleMat, spots.length));
+        const heads = ownInstances(new THREE.InstancedMesh(assets.head, assets.headMat, spots.length));
+        furniturePlacements(spots).forEach((matrix, index) => {
+            poles.setMatrixAt(index, matrix);
+            heads.setMatrixAt(index, matrix);
+        });
+        poles.instanceMatrix.needsUpdate = true;
+        heads.instanceMatrix.needsUpdate = true;
+        heads.userData.lampGlow = 'head';
+        lampGlowObjects.add(heads);
+        decoTarget.add(poles, heads);
+    }
+
+    // The night glow of a structure's lamps: one Points for every head (a halo) and one InstancedMesh
+    // of flat discs for the light pools on the ground. No lights; additive, never written to depth,
+    // never picked.
+    function addLampGlow3D(decoTarget, spots, headHeightM) {
+        const assets = ensureLampAssets();
+        const k = lifeMercatorK();
+        const positions = new Float32Array(spots.length * 3);
+        const pools = ownInstances(new THREE.InstancedMesh(assets.pool, assets.poolMat, spots.length));
+        const dummy = new THREE.Object3D();
+        spots.forEach((spot, index) => {
+            const [x, y] = latLngToXY(spot.lat, spot.lng);
+            positions[index * 3] = x;
+            positions[index * 3 + 1] = y;
+            positions[index * 3 + 2] = FURNITURE_GROUND_Z + headHeightM;
+            dummy.position.set(x, y, FURNITURE_GROUND_Z + 0.02);
+            dummy.scale.set(LAMP_POOL_RADIUS_M * k, LAMP_POOL_RADIUS_M * k, 1);
+            dummy.updateMatrix();
+            pools.setMatrixAt(index, dummy.matrix);
+        });
+        pools.instanceMatrix.needsUpdate = true;
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const halos = new THREE.Points(geometry, assets.haloMat);
+        markOwnedGeometry(halos, geometry);
+        pools.userData.lampGlow = 'pool';
+        halos.userData.lampGlow = 'halo';
+        [pools, halos].forEach(object => {
+            object.raycast = () => { };
+            lampGlowObjects.add(object);
+        });
+        pools.renderOrder = 9400;
+        halos.renderOrder = 9500;
+        decoTarget.add(pools, halos);
+    }
+
+    function placeLamps3D(items, models, decoTarget, isCurrent) {
+        placeFurniture3D('lamp', items, models, decoTarget, isCurrent, spots => {
+            addProceduralLamps3D(decoTarget, spots);
+            addLampGlow3D(decoTarget, spots, LAMP_HEAD_Z - FURNITURE_GROUND_Z);
+        }, (spots, layout) => addLampGlow3D(decoTarget, spots, layout.height * 0.92));
+    }
+
+    // Before each render: lamps glow with the night (FurnitureModels.lampGlowStrength of the sun's
+    // altitude; none while the sun layer is off). A material is written only when its value differs,
+    // and this never schedules a frame of its own: the sun's own changes already invalidate the view.
+    // Objects a rebuild removed (no parent) leave the list here.
+    function updateLampGlow() {
+        if (!lampGlowObjects.size) return;
+        const altitude = window.__threeSun?.currentAltitudeDeg?.();
+        const strength = furnitureApi().lampGlowStrength(typeof altitude === 'number' ? altitude : null);
+        const level = Math.round(strength * 50) / 50;
+        for (const object of lampGlowObjects) {
+            if (!object.parent) { lampGlowObjects.delete(object); continue; }
+            const role = object.userData.lampGlow;
+            (Array.isArray(object.material) ? object.material : [object.material]).forEach(material => {
+                if (!material) return;
+                if (role === 'head') {
+                    if (material.emissiveIntensity !== 1.2 * level) material.emissiveIntensity = 1.2 * level;
+                    return;
+                }
+                const opacity = (role === 'pool' ? 0.55 : 0.9) * level;
+                if (material.opacity !== opacity) material.opacity = opacity;
+                if (material.visible !== level > 0) material.visible = level > 0;
+            });
+        }
     }
 
     function buildingSidewalkMaterial() {
@@ -2825,7 +3455,8 @@
     // Merely choosing a treatment never generates a furniture layout. See building-ground.js.
     function buildProposalGrounds3D(flatTarget) {
         window.__threeSiteGround.buildVacantPlots({
-            THREE, features: window.vacantLayoutPlots(), target: flatTarget,
+            THREE, target: flatTarget,
+            features: window.vacantLayoutPlots({ features: sceneParcelSnapshot, existingBuildings: standingBuildingFootprints3D() }),
             polygonMeshes: polygonFeatureToMeshes, project: coordsToXY, metresPerUnit: 1 / lifeMercatorK(),
             ownMaterial: markOwnedMaterial, ownGeometry: markOwnedGeometry
         });
@@ -2843,12 +3474,18 @@
         if (!surfaces.length) return;
 
         const pavingMat = buildingSidewalkMaterial();
-        const grassMat = new THREE.MeshLambertMaterial({
-            color: 0x1b5e20, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
-        });
+        const grassMat = lawnMaterial();
         surfaces.forEach(surface => {
             try {
                 const feature = { type: 'Feature', properties: {}, geometry: surface.geometry };
+                // Parcels are private: their boundaries across the open ground are fenced.
+                const fences = window.buildingGroundFences?.(surface) || [];
+                if (fences.length) {
+                    const fence = window.__threeSiteGround.buildFence({ THREE, geometry: { type: 'MultiLineString', coordinates: fences },
+                        project: coordsToXY, metresPerUnit: 1 / lifeMercatorK(), ownMaterial: markOwnedMaterial, ownGeometry: markOwnedGeometry });
+                    fence.userData.isProposalGroundFence = true;
+                    flatTarget.add(fence);
+                }
                 if (surface.decorationDesign) {
                     feature.properties.decorations = window.ProposalApplyStructures.decorationsOnGround(surface.decorationDesign, surface.geometry, turf);
                     if (surface.treatment === 'green') buildParks3D(flatTarget, flatTarget, [feature]);
@@ -2867,6 +3504,34 @@
         });
     }
 
+    // The existing buildings this scene draws, as ground footprints for the vacant-plot rule: the
+    // same /buildings/near band and the same demolition verdicts as the meshes, never the 2D pool,
+    // which holds only what earlier 2D viewports happened to fetch.
+    function standingBuildingFootprints3D() {
+        const carveRecords = window.collectCarveRecords(
+            (typeof proposalStorage !== 'undefined' && proposalStorage.getAllProposals()) || [],
+            {
+                consolidateCorridorRecords: (records, region) =>
+                    window.consolidateCorridorDemolitionRecords(records, region, window.turf),
+                consolidateBuildingRecords: records =>
+                    window.consolidateBuildingDemolitionRecords(records, window.turf)
+            }
+        );
+        const structureRegions = collectAppliedStructureClearanceRegions();
+        return window.__threeSiteGround.standingBuildingFootprints(nearbyProposalBuildings,
+            bld => window.carveBuildingByObjectId(bld.object_id, carveRecords) || structureClearanceCarve(bld, structureRegions), turf);
+    }
+
+    // The vacant-plot ground depends on which existing buildings stand in the band, so it follows
+    // the nearby-buildings response. Before the scene is ready, initScene's own build sees the data.
+    function rebuildProposalGrounds3D() {
+        if (!isActive || !sceneReady || !proposalGroundGroup) return;
+        clearGroupChildren(proposalGroundGroup);
+        try { buildProposalGrounds3D(proposalGroundGroup); } catch (error) { console.error('[three-mode] proposal grounds rebuild failed', error); }
+        applyModeVisibility();
+        invalidateThreeView();
+    }
+
     // Build Lakes (shore + water + fish)
     function buildLakes3D(flatTarget, decoTarget) {
         const lakes = (typeof window !== 'undefined' && Array.isArray(window.lakes)) ? window.lakes : [];
@@ -2877,71 +3542,80 @@
         const waterMat = new THREE.MeshPhongMaterial({ color: 0x3fa7f5, specular: 0x1b6fa8, shininess: 50, transparent: true, opacity: 0.88 });
         const fishMat = new THREE.MeshLambertMaterial({ color: 0xffa500 });
 
+        const isCurrentModel = startStructureModels(decoTarget);
         lakes.forEach(lake => {
             try {
                 if (!lake || !lake.geometry) return;
 
-                // Ensure lake graphics are generated
-                try {
-                    if (typeof ensureLakeGraphics === 'function') ensureLakeGraphics(lake);
-                } catch (_) { }
+                // An uploaded model replaces the basin (shore, shelf, water and fish).
+                const buildBasin = () => {
+                    // Ensure lake graphics are generated
+                    try {
+                        if (typeof ensureLakeGraphics === 'function') ensureLakeGraphics(lake);
+                    } catch (_) { }
 
-                const graphics = lake.properties && lake.properties.lakeGraphics;
-                const shoreGeom = graphics && graphics.shore ? graphics.shore : lake.geometry;
-                const waterGeom = graphics && graphics.water ? graphics.water : null;
-                const transitionGeom = graphics && graphics.transition ? graphics.transition : null;
+                    const graphics = lake.properties && lake.properties.lakeGraphics;
+                    let basin;
+                    try {
+                        basin = window.__threeLakeBasin.partitionLakeBasin(lake.geometry, graphics,
+                            (operation, a, b) => window.__parcelArrangement.clip(operation, a, b,
+                                { site: 'three-mode.lakeBasin', proposalId: lake.properties?.proposalId }));
+                    } catch (error) {
+                        reportThreeClip('difference', error, 'three-mode.lakeBasin', [lake]);
+                        return;
+                    }
+                    const shoreGeom = basin.shore;
+                    const waterGeom = basin.water;
+                    const transitionGeom = basin.transition;
 
-                // RECESSED basin: the parcel ground has the lake footprint cut out (see
-                // buildParcels3D), so the lake digs below grade instead of floating above it.
-                const SHELF_Z = -0.7;   // shallow shelf
-                const WATER_Z = -1.4;   // water surface depth
-                // Sandy beach stays at grade, as a solid going down to the water depth so its
-                // outer face closes the pit wall where it meets the surrounding ground.
-                if (shoreGeom) {
-                    const shoreFeature = { type: 'Feature', geometry: shoreGeom, properties: {} };
-                    const shoreMeshes = polygonFeatureToMeshes(shoreFeature, shoreMat, WATER_Z - 0.2, 0.26 - (WATER_Z - 0.2));
-                    shoreMeshes.forEach(m => { markOwnedMaterial(m, shoreMat); m.userData.isLakeShore = true; flatTarget.add(m); });
-                }
+                    // RECESSED basin: the parcel ground has the lake footprint cut out (see
+                    // buildParcels3D), so the lake digs below grade instead of floating above it.
+                    const SHELF_Z = -0.7;   // shallow shelf
+                    const WATER_Z = -1.4;   // water surface depth
+                    // Sandy beach stays at grade, as a solid going down to the water depth so its
+                    // outer face closes the pit wall where it meets the surrounding ground.
+                    if (shoreGeom) {
+                        const shoreFeature = { type: 'Feature', geometry: shoreGeom, properties: {} };
+                        const shoreMeshes = polygonFeatureToMeshes(shoreFeature, shoreMat, WATER_Z - 0.2, 0.26 - (WATER_Z - 0.2));
+                        shoreMeshes.forEach(m => { markOwnedMaterial(m, shoreMat); m.userData.isLakeShore = true; flatTarget.add(m); });
+                    }
 
-                // Shallow shelf: a solid band from the deep floor up to the shelf level — its
-                // sides close the step down to the open water.
-                if (transitionGeom) {
-                    const transitionFeature = { type: 'Feature', geometry: transitionGeom, properties: {} };
-                    const transitionMeshes = polygonFeatureToMeshes(transitionFeature, transitionMat, WATER_Z - 0.2, (SHELF_Z - (WATER_Z - 0.2)));
-                    transitionMeshes.forEach(m => { markOwnedMaterial(m, transitionMat); flatTarget.add(m); });
-                }
+                    // Shallow shelf: a solid band from the deep floor up to the shelf level — its
+                    // sides close the step down to the open water.
+                    if (transitionGeom) {
+                        const transitionFeature = { type: 'Feature', geometry: transitionGeom, properties: {} };
+                        const transitionMeshes = polygonFeatureToMeshes(transitionFeature, transitionMat, WATER_Z - 0.2, (SHELF_Z - (WATER_Z - 0.2)));
+                        transitionMeshes.forEach(m => { markOwnedMaterial(m, transitionMat); flatTarget.add(m); });
+                    }
 
-                // Open water surface, below grade, over a dark lake bed (the water is slightly
-                // transparent, so the bed is what reads as depth).
-                const bedMat = new THREE.MeshLambertMaterial({ color: 0x14324a });
-                if (waterGeom) {
+                    // Open water surface, below grade, over a dark lake bed (the water is slightly
+                    // transparent, so the bed is what reads as depth).
+                    const bedMat = new THREE.MeshLambertMaterial({ color: 0x14324a });
                     const waterFeature = { type: 'Feature', geometry: waterGeom, properties: {} };
                     polygonFeatureToMeshes(waterFeature, bedMat, WATER_Z - 0.2, 0).forEach(m => { markOwnedMaterial(m, bedMat); flatTarget.add(m); });
                     const waterMeshes = polygonFeatureToMeshes(waterFeature, waterMat, WATER_Z, 0);
                     waterMeshes.forEach(m => { markOwnedMaterial(m, waterMat); flatTarget.add(m); });
-                } else {
-                    // Fallback: render entire lake as water if no water geometry
-                    polygonFeatureToMeshes(lake, bedMat, WATER_Z - 0.2, 0).forEach(m => { markOwnedMaterial(m, bedMat); flatTarget.add(m); });
-                    const waterMeshes = polygonFeatureToMeshes(lake, waterMat, WATER_Z, 0);
-                    waterMeshes.forEach(m => { markOwnedMaterial(m, waterMat); flatTarget.add(m); });
-                }
 
-                // Render fish as small decorative elements
-                const fishCoords = (graphics && Array.isArray(graphics.fish)) ? graphics.fish : [];
-                fishCoords.forEach(([lng, lat]) => {
-                    try {
-                        const [x, y] = latLngToXY(lat, lng);
-                        // Simple fish: small ellipsoid
-                        const fishGeo = new THREE.SphereGeometry(0.15, 8, 8);
-                        const fish = new THREE.Mesh(fishGeo, fishMat);
-                        markOwnedGeometry(fish, fishGeo);
-                        markOwnedMaterial(fish, fishMat);
-                        fish.scale.set(1.5, 0.6, 0.4); // Make it fish-shaped
-                        fish.position.set(x, y, -1.32); // just above the recessed water surface
-                        decoTarget.add(fish);
-                    } catch (_) { }
-                });
-            } catch (_) { }
+                    // Render fish as small decorative elements
+                    const fishCoords = (graphics && Array.isArray(graphics.fish)) ? graphics.fish : [];
+                    fishCoords.forEach(([lng, lat]) => {
+                        try {
+                            const [x, y] = latLngToXY(lat, lng);
+                            // Simple fish: small ellipsoid
+                            const fishGeo = new THREE.SphereGeometry(0.15, 8, 8);
+                            const fish = new THREE.Mesh(fishGeo, fishMat);
+                            markOwnedGeometry(fish, fishGeo);
+                            markOwnedMaterial(fish, fishMat);
+                            fish.scale.set(1.5, 0.6, 0.4); // Make it fish-shaped
+                            fish.position.set(x, y, -1.32); // just above the recessed water surface
+                            decoTarget.add(fish);
+                        } catch (_) { }
+                    });
+                };
+                placeStructureModel(lake, decoTarget, isCurrentModel, buildBasin);
+            } catch (error) {
+                console.error('[three-mode] failed to build a lake basin', error);
+            }
         });
     }
 
@@ -4047,34 +4721,15 @@
         });
 
         if (!treePoints.length) return;
-        ensureTreeAssets();
-        const trunks = new THREE.InstancedMesh(treeTrunkGeo, treeTrunkMat, treePoints.length);
-        const crowns = new THREE.InstancedMesh(treeCrownGeo, treeCrownMat, treePoints.length);
-        const dummy = new THREE.Object3D();
-        treePoints.forEach((item, index) => {
+        const species = treeSpeciesApi();
+        const looks = treePoints.map(item => {
             const [x, y] = latLngToXY(item.lat, item.lng);
-            const random = treeRng(item.lng, item.lat);
-            const totalHeight = 5 + random * 3;
-            const trunkHeight = totalHeight * 0.48;
-            const crownRadius = totalHeight * 0.2 + 0.4;
-            const terrainZ = terrainHeightOrZero(terrainHeightAt, x, y);
-            dummy.position.set(x, y, terrainZ + CORRIDOR_STRIP_Z + 0.15 + trunkHeight / 2);
-            dummy.scale.set(1, 1, trunkHeight);
-            dummy.rotation.set(0, 0, 0);
-            dummy.updateMatrix();
-            trunks.setMatrixAt(index, dummy.matrix);
-            dummy.position.set(x, y, terrainZ + CORRIDOR_STRIP_Z + 0.15 + trunkHeight + crownRadius * 0.65);
-            dummy.scale.set(crownRadius, crownRadius, crownRadius * 1.15);
-            dummy.updateMatrix();
-            crowns.setMatrixAt(index, dummy.matrix);
+            return { x, y, z: terrainHeightOrZero(terrainHeightAt, x, y) + CORRIDOR_STRIP_Z + 0.15, ...species.treeInstance(item.lng, item.lat) };
         });
-        trunks.instanceMatrix.needsUpdate = true;
-        crowns.instanceMatrix.needsUpdate = true;
-        trunks.userData.isCorridorDecoration = true;
-        trunks.userData.decorationKind = 'tree';
-        crowns.userData.isCorridorDecoration = true;
-        crowns.userData.decorationKind = 'tree';
-        targetGroup.add(trunks, crowns);
+        Object.values(speciesTreeMeshes(looks)).forEach(mesh => {
+            mesh.userData.isCorridorDecoration = true;
+            targetGroup.add(ownInstances(mesh));
+        });
     }
 
     // A junction in 3D (corridor-profile.js junctionTreatmentFor): the carriageway surface as a
@@ -5479,9 +6134,11 @@
                 const dupCount = rawBuildings.length - nearbyProposalBuildings.length;
                 console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${sceneLoadGeometrySource}+${buffer}m${dupCount > 0 ? `, dropped ${dupCount} coincident duplicate${dupCount === 1 ? '' : 's'}` : ''})`);
                 if (isActive) rebuild3DBuildingsOnly({ family: 'existing' });
+                rebuildProposalGrounds3D();
                 refreshLifeSurface();
                 updateBuildingsLoader();
                 ensureNearbyWater();
+                ensureNearbyGreen();
             })
             .catch(err => {
                 if (!current() || err.name === 'AbortError') return;
@@ -5489,17 +6146,18 @@
                 nearbyProposalBuildingsFetching = false;
                 nearbyBuildingsOutcome = 'failed';
                 updateBuildingsLoader();
-                reportNearbyBuildingsUnavailable(null);
+                reportNearbyBuildingsUnavailable(null, err.status);
                 ensureNearbyWater();
+                ensureNearbyGreen();
             });
     }
 
     // Said in the building banner (map-core.js), whose Retry asks for this scene's band again.
-    function reportNearbyBuildingsUnavailable(retryAfter) {
+    function reportNearbyBuildingsUnavailable(retryAfter, status = null) {
         window.reportBuildingsUnavailable?.(retryAfter, () => {
             nearbyProposalBuildingsKey = null;
             ensureNearbyProposalBuildings();
-        });
+        }, false, status);
     }
 
     // --- Real-world OSM trees (Overture base/land) ---
@@ -5522,72 +6180,148 @@
         return true; // default ON
     }
 
-    // Deterministic [0,1) hash from a tree's lng/lat so each tree's height/jitter is stable across
-    // rebuilds (no flicker) without storing per-tree attributes.
-    function treeRng(lng, lat) {
-        let h = Math.imul(((lng * 1e6) | 0) ^ 0x9e3779b9, 0x85ebca6b);
-        h ^= Math.imul(((lat * 1e6) | 0) ^ 0x165667b1, 0xc2b2ae35);
-        h = (h ^ (h >>> 15)) >>> 0;
-        return (h % 100000) / 100000;
-    }
-
-    // Shared base geometries (unit-sized; per-tree size comes from the instance matrix). The trunk
-    // cylinder is rotated so its length runs along +Z to match the Z-up scene.
-    let treeTrunkGeo = null, treeCrownGeo = null, treeTrunkMat = null, treeCrownMat = null;
+    // Shared, never disposed: the far tier's blob (unit trunk + unit crown; per-tree size and the
+    // species' crown colour come from the instance), the cylinder rotated to run along +Z.
+    // The shadow stand-ins' material writes neither colour nor depth: drawn, unseen, still casting
+    // (three's shadow pass tests layers against the main camera, so a shadow-only layer cannot do it).
+    let treeTrunkGeo = null, treeCrownGeo = null, treeTrunkMat = null, treeCrownMat = null, treeShadowMat = null;
     function ensureTreeAssets() {
         if (treeTrunkGeo) return;
+        treeShadowMat = new THREE.MeshLambertMaterial({ colorWrite: false, depthWrite: false });
         treeTrunkGeo = new THREE.CylinderGeometry(0.12, 0.18, 1, 5);
         treeTrunkGeo.rotateX(Math.PI / 2); // Y-length → Z-length (scene is Z-up)
         treeCrownGeo = new THREE.SphereGeometry(1, 6, 5);
         treeTrunkMat = new THREE.MeshLambertMaterial({ color: 0x5c3d1e });
-        treeCrownMat = new THREE.MeshLambertMaterial({ color: 0x3a6b35 });
+        treeCrownMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
     }
 
+    // Two tiers over the loaded trees: those within NEAR_TIER_RADIUS_M of the camera (at most
+    // nearTierSize(), nearest first) are species meshes (one InstancedMesh per species, sized for
+    // every tree of it), the rest blobs (two InstancedMeshes). Neither casts a shadow: blobs for
+    // every tree, drawn invisibly, do: written once, so the shadow pass costs what the blobs always
+    // cost. Each tree's look is rolled once per load; when the camera has moved
+    // TREE_RETIER_M, renderScene (retierTreesIfMoved) recomputes the near set and rewrites the slots
+    // only if it changed. From an orbit high above, nothing is near and nothing is rewritten.
+    const TREE_RETIER_M = 25;
+    let treeTiers = null; // { looks, points, mask, camera, species: { id: mesh }, trunks, crowns }
+
     function disposeTreesGroup() {
+        treeTiers = null;
         if (!treesGroup) return;
         for (let i = treesGroup.children.length - 1; i >= 0; i--) {
             const c = treesGroup.children[i];
             treesGroup.remove(c);
             if (c.isInstancedMesh) { try { c.dispose(); } catch (_) { } }
-            if (c.geometry && c.geometry !== treeTrunkGeo && c.geometry !== treeCrownGeo) c.geometry.dispose();
+            if (c.geometry && c.geometry !== treeTrunkGeo && c.geometry !== treeCrownGeo && !speciesAssets?.shared.has(c.geometry)) c.geometry.dispose();
         }
+    }
+
+    // A blob for `look` written into slot `index` of a trunk and a crown mesh; `crownScale` shrinks
+    // the shadow stand-ins' crowns inside the species crowns they cast for.
+    function setBlobInstance(trunks, crowns, index, look, k, crownScale = 1) {
+        const dummy = speciesDummy.object || (speciesDummy.object = new THREE.Object3D());
+        const color = speciesDummy.color || (speciesDummy.color = new THREE.Color());
+        const blob = treeSpeciesApi().blobOf(look);
+        dummy.rotation.set(0, 0, 0);
+        dummy.position.set(look.x, look.y, blob.trunkHeight / 2);
+        dummy.scale.set(k * look.heightM / 10, k * look.heightM / 10, blob.trunkHeight);
+        dummy.updateMatrix();
+        trunks.setMatrixAt(index, dummy.matrix);
+        dummy.position.set(look.x, look.y, blob.crownZ);
+        dummy.scale.set(blob.crownRadius * k * crownScale, blob.crownRadius * k * crownScale, blob.crownHeight * crownScale);
+        dummy.updateMatrix();
+        crowns.setMatrixAt(index, dummy.matrix);
+        crowns.setColorAt(index, color.setRGB(blob.color[0], blob.color[1], blob.color[2], THREE.LinearSRGBColorSpace));
     }
 
     function buildTreesGroup() {
         if (!treesGroup || !Array.isArray(nearbyTrees) || nearbyTrees.length === 0 || !origin3857) return;
+        const visibleTrees = window.__threeSiteGround.contextTreesOutsideCorridors(nearbyTrees,
+            proposalStorage.getAllProposals(), {
+                isAppliedCorridor: isAppliedCorridorProposal, featureSets: collectProposalFeatureSets, turf
+            });
+        if (!visibleTrees.length) return;
         ensureTreeAssets();
-        const n = nearbyTrees.length;
-        const trunkMesh = new THREE.InstancedMesh(treeTrunkGeo, treeTrunkMat, n);
-        const crownMesh = new THREE.InstancedMesh(treeCrownGeo, treeCrownMat, n);
-        const dummy = new THREE.Object3D();
-        let placed = 0;
-        for (let i = 0; i < n; i++) {
-            const t = nearbyTrees[i];
-            if (!t || t.length < 2) continue;
+        const api = treeSpeciesApi();
+        const looks = [];
+        visibleTrees.forEach(t => {
+            if (!t || t.length < 2) return;
             const [x, y] = latLngToXY(t[1], t[0]);
-            const r = treeRng(t[0], t[1]);
-            const totalH = 5 + r * 8;          // ~5–13 m, deterministic per tree
-            const trunkH = totalH * 0.48;
-            const crownR = totalH * 0.20 + 0.5;
+            looks.push({ x, y, z: 0, ...api.treeInstance(t[0], t[1]) });
+        });
+        if (!looks.length) return;
+        const assets = ensureSpeciesAssets();
+        const capacity = {};
+        looks.forEach(look => { capacity[look.species] = (capacity[look.species] || 0) + 1; });
+        const species = {};
+        Object.keys(capacity).forEach(id => {
+            const mesh = new THREE.InstancedMesh(assets.geometries[id], assets.material, capacity[id]);
+            mesh.count = 0;
+            mesh.userData.treeSpecies = id;
+            species[id] = mesh;
+        });
+        const trunks = new THREE.InstancedMesh(treeTrunkGeo, treeTrunkMat, looks.length);
+        const crowns = new THREE.InstancedMesh(treeCrownGeo, treeCrownMat, looks.length);
+        [...Object.values(species), trunks, crowns].forEach(mesh => { mesh.userData.noShadowCast = true; });
+        const shadowTrunks = new THREE.InstancedMesh(treeTrunkGeo, treeShadowMat, looks.length);
+        const shadowCrowns = new THREE.InstancedMesh(treeCrownGeo, treeShadowMat, looks.length);
+        const k = lifeMercatorK();
+        looks.forEach((look, i) => setBlobInstance(shadowTrunks, shadowCrowns, i, look, k, 0.85));
+        [shadowTrunks, shadowCrowns].forEach(mesh => {
+            mesh.userData.treeShadowStandIn = true;
+            mesh.instanceMatrix.needsUpdate = true;
+        });
+        treeTiers = { looks, points: looks.map(look => [look.x, look.y]), mask: null, camera: null, species, trunks, crowns };
+        retierTrees(treeTierCamera());
+        Object.values(species).forEach(mesh => treesGroup.add(mesh));
+        treesGroup.add(trunks, crowns, shadowTrunks, shadowCrowns);
+    }
 
-            dummy.position.set(x, y, trunkH / 2);
-            dummy.scale.set(1, 1, trunkH);
-            dummy.rotation.set(0, 0, 0);
-            dummy.updateMatrix();
-            trunkMesh.setMatrixAt(placed, dummy.matrix);
+    // The camera position the near tier is measured from (scene XY, metric Z).
+    function treeTierCamera() {
+        return camera ? [camera.position.x, camera.position.y, camera.position.z] : [0, 0, 1e6];
+    }
 
-            dummy.position.set(x, y, trunkH + crownR * 0.65);
-            dummy.scale.set(crownR, crownR, crownR * 1.15);
-            dummy.updateMatrix();
-            crownMesh.setMatrixAt(placed, dummy.matrix);
-            placed++;
-        }
-        trunkMesh.count = placed;
-        crownMesh.count = placed;
-        trunkMesh.instanceMatrix.needsUpdate = true;
-        crownMesh.instanceMatrix.needsUpdate = true;
-        treesGroup.add(trunkMesh);
-        treesGroup.add(crownMesh);
+    // Recomputes the near set for a camera position; rewrites the slots and returns true only when it
+    // changed.
+    function retierTrees(position) {
+        const tiers = treeTiers;
+        const api = treeSpeciesApi();
+        const k = lifeMercatorK();
+        const coarse = typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches;
+        const mask = api.nearTierMask(tiers.points, position[0], position[1], Math.max(0, position[2]) * k,
+            api.NEAR_TIER_RADIUS_M * k, api.nearTierSize({ coarsePointer: coarse }));
+        tiers.camera = position;
+        if (tiers.mask && tiers.mask.every((value, i) => value === mask[i])) return false;
+        tiers.mask = mask;
+        const filled = {};
+        let far = 0;
+        tiers.looks.forEach((look, i) => {
+            if (!mask[i]) { setBlobInstance(tiers.trunks, tiers.crowns, far++, look, k); return; }
+            const slot = filled[look.species] || 0;
+            setSpeciesInstance(tiers.species[look.species], slot, look, k);
+            filled[look.species] = slot + 1;
+        });
+        Object.entries(tiers.species).forEach(([id, mesh]) => { mesh.count = filled[id] || 0; });
+        tiers.trunks.count = far;
+        tiers.crowns.count = far;
+        [...Object.values(tiers.species), tiers.trunks, tiers.crowns].forEach(mesh => {
+            mesh.instanceMatrix.needsUpdate = true;
+            if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+            mesh.boundingSphere = null;
+        });
+        return true;
+    }
+
+    // Before a render: re-tier once the camera has moved TREE_RETIER_M real metres since the last
+    // check. True when the tiers changed (the scene changed).
+    function retierTreesIfMoved() {
+        if (!treeTiers || !treesGroup?.visible || !camera) return false;
+        const position = treeTierCamera();
+        const k = lifeMercatorK();
+        const last = treeTiers.camera;
+        if (last && Math.hypot((position[0] - last[0]) / k, (position[1] - last[1]) / k, position[2] - last[2]) < TREE_RETIER_M) return false;
+        return retierTrees(position);
     }
 
     function rebuildTreesOnly() {
@@ -5744,8 +6478,8 @@
         groundLayer = window.__threeGround.create({ THREE, k: lifeMercatorK() });
         groundLayer.group.visible = false;
         // The parcel slabs are pavement level too: they get the same holes over the sunk roadbed.
-        groundLayer.cutHoles(materials.parcels);
-        groundLayer.cutHoles(materials.roads);
+        groundLayer.parcelSurface(materials.parcels);
+        groundLayer.parcelSurface(materials.roads);
         // A cadastral road parcel outside its asphalt is sidewalk: paved like the pavement plane. Its
         // meshes are in scene units (Mercator-inflated), so the slab grid is scaled back to metres.
         groundLayer.paveTexture(materials.roads, 1 / lifeMercatorK());
@@ -5770,7 +6504,12 @@
         try {
             const t0 = performance.now();
             const source = graph || buildLifeGraph();
-            const bounds = lifeSurfaceBounds(lifeProjector());
+            // Cover the camera's full rendering reach, not just the fetched street square. The
+            // initial far plane is 200 km; orbit zoom can extend it to 10 × distance (plus margin).
+            // Only pavement expands: road geometry, population and source requests stay bounded.
+            const k = lifeMercatorK();
+            const bounds = window.__groundGeometry.pavementBounds(lifeSurfaceBounds(lifeProjector()),
+                200000 / k, (camera?.far || 0) / k, (controls?.maxDistance || 0) * 12 / k);
             const result = source ? window.__groundGeometry.buildGroundGeometry({ carriageways: source.surface.carriageways, bounds }) : null;
             const cuts = groundCutFootprintFeatures();
             if (result?.plane && cuts.length) {
@@ -5944,7 +6683,13 @@
 
     function setLifeHook(on) {
         if (on && !lifeFrameHook && lifeLayer) {
-            lifeFrameHook = (now) => { lifeLayer.onFrame(now); };
+            // People and vehicles are decoration: they park after LIFE_IDLE_MS without input (the hook
+            // reports nothing to animate, so the loop stops) and walk on at the next touch of the view.
+            lifeFrameHook = (now) => {
+                if (now - lastInputAt > LIFE_IDLE_MS) return false;
+                lifeLayer.onFrame(now);
+                return true;
+            };
             window.registerThreeModeFrameHook(lifeFrameHook);
         } else if (!on && lifeFrameHook) {
             window.unregisterThreeModeFrameHook(lifeFrameHook);
@@ -6179,20 +6924,21 @@
         return Number.isFinite(w) && e > w && n > s ? [w, s, e, n] : null;
     }
 
+    // The area tile-based scenery (water, green areas) covers: the loaded buildings' box, or with no
+    // buildings (none here, or they failed) the radius around the scene anchor.
+    function sceneryQuery() {
+        const extent = loadedBuildingsExtent();
+        if (extent) {
+            const [w, s, e, n] = extent;
+            return { queryGeometry: { type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] }, buffer: 0 };
+        }
+        return { queryGeometry: sceneTreeLoadGeometry, buffer: buildingLoadRadiusM };
+    }
+
     function ensureNearbyWater() {
         // Wait for the buildings: their extent is the area to cover.
         if (!waterEnabled || nearbyWaterFetching || nearbyProposalBuildingsFetching) return;
-        const extent = loadedBuildingsExtent();
-        let queryGeometry, buffer;
-        if (extent) {
-            const [w, s, e, n] = extent;
-            queryGeometry = { type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] };
-            buffer = 0;
-        } else {
-            // No buildings (none here, or they failed): the radius around the scene anchor.
-            queryGeometry = sceneTreeLoadGeometry;
-            buffer = buildingLoadRadiusM;
-        }
+        const { queryGeometry, buffer } = sceneryQuery();
         if (!queryGeometry) return;
         const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
         if (key === nearbyWaterKey) return;
@@ -6235,13 +6981,143 @@
         invalidateThreeView();
     }
 
+    // --- Real-world green areas (lawns and parks, meadows and farmland, woods) ---
+    // Fetched via POST /decor/green for the same area as the water (OpenFreeMap landcover, every city)
+    // and merged into one mesh per look with the grass pattern (three-grass.js): three draw calls
+    // however many pieces. Just above the parcel slabs (0), below water (0.04), corridor strips (0.05)
+    // and planned parks and squares (0.06), which all cover it.
+    const GREEN_STORAGE_KEY = 'cb_3d_green_enabled';
+    const GREEN_Z = 0.03;
+    const GREEN_VARIANT = { lawn: 'lawn', meadow: 'wild', forest: 'forest' }; // look → grass pattern
+    let nearbyGreen = [];           // [{ geometry, kind }] from the backend
+    let nearbyGreenKey = null;
+    let nearbyGreenFetching = false;
+    let greenEnabled = true;
+
+    function loadGreenEnabledPref() {
+        try {
+            if (PersistentStorage.getItem(GREEN_STORAGE_KEY) === '0') return false;
+        } catch (_) { }
+        return true; // default ON
+    }
+
+    function disposeGreenGroup() {
+        if (!greenGroup) return;
+        for (let i = greenGroup.children.length - 1; i >= 0; i--) {
+            const child = greenGroup.children[i];
+            greenGroup.remove(child);
+            child.geometry?.dispose();
+            child.material?.dispose();
+        }
+    }
+
+    // Every polygon of `pieces` triangulated flat at `z`, as one indexed geometry.
+    function mergedFlatGeometry(pieces, z) {
+        const parts = [];
+        for (const piece of pieces) {
+            const polygons = piece.geometry.type === 'Polygon' ? [piece.geometry.coordinates] : piece.geometry.coordinates;
+            for (const rings of polygons) {
+                const shape = arrayOfLngLatRingsToShape(rings);
+                if (shape) parts.push(new THREE.ShapeGeometry(shape));
+            }
+        }
+        let vertices = 0, indices = 0;
+        parts.forEach(part => { vertices += part.attributes.position.count; indices += part.index.count; });
+        const position = new Float32Array(vertices * 3);
+        const index = vertices > 65535 ? new Uint32Array(indices) : new Uint16Array(indices);
+        let v = 0, i = 0;
+        parts.forEach(part => {
+            const source = part.attributes.position.array;
+            for (let k = 0; k < source.length; k += 3) position.set([source[k], source[k + 1], z], (v * 3) + k);
+            const partIndex = part.index.array;
+            for (let k = 0; k < partIndex.length; k++) index[i++] = partIndex[k] + v;
+            v += part.attributes.position.count;
+            part.dispose();
+        });
+        const normal = new Float32Array(vertices * 3);
+        for (let k = 2; k < normal.length; k += 3) normal[k] = 1;
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(position, 3));
+        geometry.setAttribute('normal', new THREE.BufferAttribute(normal, 3));
+        geometry.setIndex(new THREE.BufferAttribute(index, 1));
+        geometry.computeBoundingSphere();
+        return geometry;
+    }
+
+    function rebuildGreenOnly() {
+        if (!isActive || !greenGroup) return;
+        disposeGreenGroup();
+        if (!greenEnabled || !nearbyGreen.length || !origin3857) return;
+        const grass = window.__threeGrass;
+        for (const [kind, variant] of Object.entries(GREEN_VARIANT)) {
+            const pieces = nearbyGreen.filter(piece => piece.kind === kind);
+            if (!pieces.length) continue;
+            try {
+                const material = grass.grassTexture(new THREE.MeshLambertMaterial({ color: grass.COLORS[variant],
+                    polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }), 1 / lifeMercatorK(), variant);
+                const mesh = new THREE.Mesh(mergedFlatGeometry(pieces, GREEN_Z), material);
+                mesh.userData.green = kind;
+                greenGroup.add(mesh);
+            } catch (error) {
+                console.warn('[3D] green areas skipped', kind, error);
+            }
+        }
+        invalidateThreeView();
+    }
+
+    function ensureNearbyGreen() {
+        // Wait for the buildings, like the water: their extent is the area to cover.
+        if (!greenEnabled || nearbyGreenFetching || nearbyProposalBuildingsFetching) return;
+        const { queryGeometry, buffer } = sceneryQuery();
+        if (!queryGeometry) return;
+        const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
+        if (key === nearbyGreenKey) return;
+        nearbyGreenFetching = true;
+        const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+        const signal = sceneAbort?.signal;
+        const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
+        fetch(`${base}/decor/green`, {
+            signal,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ geometry: queryGeometry, buffer_meters: buffer })
+        })
+            .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+            .then(payload => {
+                if (!current()) return;
+                nearbyGreen = (payload && Array.isArray(payload.areas)) ? payload.areas : [];
+                nearbyGreenKey = key;
+                nearbyGreenFetching = false;
+                console.log(`[3D] Loaded ${nearbyGreen.length} nearby green areas (${sceneTreeLoadGeometrySource}+${buffer}m)`);
+                rebuildGreenOnly();
+            })
+            .catch(err => {
+                if (!current() || err.name === 'AbortError') return;
+                // Scenery: the scene stands without it, so this is a log line, not a banner.
+                console.warn('Failed to fetch nearby green areas:', err);
+                nearbyGreenFetching = false;
+            });
+    }
+
+    function setGreenEnabled(on) {
+        greenEnabled = !!on;
+        try { PersistentStorage.setItem(GREEN_STORAGE_KEY, greenEnabled ? '1' : '0'); } catch (_) { }
+        if (greenGroup) greenGroup.visible = greenEnabled && !realisticLayerActive;
+        if (greenEnabled) {
+            ensureNearbyGreen();
+            rebuildGreenOnly();
+        }
+        invalidateThreeView();
+    }
+
     // Registry of renderable scenery layers: maps an osm_decor `kind` to its panel label and
     // enable/disable hooks. The 3D panel renders a checkbox per layer that BOTH appears here AND is
     // reported available by GET /decor/layers for the current city. Add a layer's renderer + an entry
     // here and it shows up automatically wherever it's been ingested.
     const DECOR_LAYERS = {
         trees: { label: 'Trees', isEnabled: () => treesEnabled, setEnabled: (on) => setTreesEnabled(on) },
-        water: { label: 'Water', isEnabled: () => waterEnabled, setEnabled: (on) => setWaterEnabled(on) }
+        water: { label: 'Water', isEnabled: () => waterEnabled, setEnabled: (on) => setWaterEnabled(on) },
+        green: { label: 'Green areas', isEnabled: () => greenEnabled, setEnabled: (on) => setGreenEnabled(on) }
     };
 
     // Render one checkbox per available scenery layer (intersection of DECOR_LAYERS and `available`).
@@ -6427,7 +7303,7 @@
         const gen = buildingsRenderGeneration;
         const isCurrent = typeof options.isCurrent === 'function' ? options.isCurrent : () => true;
         const buildingOpacity = buildingOpacityOf(buildingMaterial);
-        const isProposedBuilding = targetGroup === proposedBuildingsGroup;
+        const isProposedBuilding = targetGroup === proposedBuildingsGroup || targetGroup.userData?.buildingFamily === 'planned';
         const stale = () => !isActive || !isCurrent() || (isProposedBuilding && gen !== buildingsRenderGeneration);
         // The scene's XY is Web-Mercator (EPSG:3857), which inflates horizontal distance by
         // ~1/cos(lat) vs real meters, while extrude heights use raw meters. The glTF model is in
@@ -6501,8 +7377,16 @@
             targetGroup.add(wrapper);
             invalidateThreeView();
         }).catch((err) => {
-            // Fall back to the extruded box so the building is still visible.
             if (stale()) return;
+            // A caller with its own fallback (a structure's procedural ground) draws that instead.
+            if (typeof options.onLoadError === 'function') {
+                try { options.onLoadError(err); } catch (fallbackError) {
+                    console.warn('Model fallback failed:', url, fallbackError);
+                }
+                if (typeof console !== 'undefined') console.warn('Model load failed, used procedural fallback:', url, err);
+                return;
+            }
+            // Fall back to the extruded box so the building is still visible.
             try {
                 const height = estimateBuildingHeightMeters(feat);
                 const fallbackMaterial = isProposedBuilding ? buildingMaterial : cloneBuildingMaterial(buildingMaterial);
@@ -6516,6 +7400,27 @@
             }
             if (!stale()) invalidateThreeView();
         });
+    }
+
+    // A park, square or lake with an uploaded model (feature.properties.structureModel, from
+    // ProposalApplyStructures.structureModelFeature) shows the model fitted to its authored
+    // footprint instead of its procedural ground; its furniture still renders. buildGround draws
+    // that procedural ground: at once without a model, or when the model fails to load.
+    const structureModelGenerations = new WeakMap();
+    function startStructureModels(decoTarget) {
+        const generation = (structureModelGenerations.get(decoTarget) || 0) + 1;
+        structureModelGenerations.set(decoTarget, generation);
+        return () => structureModelGenerations.get(decoTarget) === generation;
+    }
+
+    function placeStructureModel(feature, decoTarget, isCurrent, buildGround) {
+        const model = feature?.properties?.structureModel;
+        if (!model?.geometry || typeof model.properties?.modelUrl !== 'string') {
+            buildGround();
+            return false;
+        }
+        placeUploadedModel(model, decoTarget, buildingMaterials.solid, { isCurrent, onLoadError: buildGround });
+        return true;
     }
 
     function stringToColor(str) {
@@ -6588,9 +7493,10 @@
         targetGroup.add(lines);
     }
 
-    function prepareProceduralFacadeMeshes(meshes, owner, height, floorHeight, metresPerUnit, city, ownsMaterial = false) {
+    function prepareProceduralFacadeMeshes(meshes, owner, height, floorHeight, metresPerUnit, city, ownsMaterial = false, building = owner) {
         if (!owner || !meshes.length) return meshes;
-        const design = buildingFacades.buildingDesign(buildingFacades.buildingKey(owner, city), height, floorHeight);
+        const design = buildingFacades.buildingDesign(buildingFacades.buildingKey(owner, city), height, floorHeight,
+            buildingFacades.buildingIdentityKey(building, city));
         const facadeMaterial = buildingFacades.configureMaterial(
             ownsMaterial ? meshes[0].material : cloneBuildingMaterial(meshes[0].material), design, facadeState, THREE);
         meshes.forEach(mesh => {
@@ -6619,14 +7525,16 @@
                 if (buildingFeature.properties?.proposalId) mesh.userData.proposalId = String(buildingFeature.properties.proposalId);
             }
             if (!hasFacade || !meshes.length) return meshes;
-            // Use the actual intersected parcel, not the source volume's parcel hint. This
-            // changes the skin at ownership seams and keeps separate volumes on one parcel alike.
-            return prepareProceduralFacadeMeshes(meshes, owner, height, floorHeight, metresPerUnit, city, ownsMaterial);
+            // Each building keeps its style and glass tint; ownership seams vary only the shade.
+            return prepareProceduralFacadeMeshes(meshes, owner, height, floorHeight, metresPerUnit, city, ownsMaterial, buildingFeature);
         };
+        // A building keeps its own hue; parcel slices vary its shade rather than its planning role.
+        const baseColor = new THREE.Color(stringToColor(JSON.stringify(buildingFeature.geometry.coordinates[0][0])));
         const drawUnsliced = () => {
-            const tint = window.PlanningViews && targetGroup === proposedBuildingsGroup && material !== buildingMaterials.massing;
+            const tint = (targetGroup === proposedBuildingsGroup || targetGroup.userData?.buildingFamily === 'planned')
+                && material !== buildingMaterials.massing;
             const surface = tint ? cloneBuildingMaterial(material) : material;
-            if (tint) surface.color.set(window.PlanningViews.color('proposed'));
+            if (tint) surface.color.copy(baseColor);
             const meshes = prepareFacades(polygonFeatureToMeshes(buildingFeature, surface, 0, height), facadeSource, !!tint);
             if (tint && !meshes.length) surface.dispose();
             meshes.forEach(mesh => { if (tint && !hasFacade) markOwnedMaterial(mesh, surface); targetGroup.add(mesh); });
@@ -6653,22 +7561,18 @@
         try { totalBuildingArea = turf.area(buildingFeature); } catch (_) { }
         let slicedArea = 0;
 
-        let buildingId;
-        try {
-            buildingId = JSON.stringify(buildingFeature.geometry.coordinates[0][0]);
-        } catch (e) {
-            buildingId = Math.random().toString();
-        }
-        const baseColor = new THREE.Color(window.PlanningViews && targetGroup === proposedBuildingsGroup
-            ? window.PlanningViews.color('proposed') : stringToColor(buildingId));
-
         // Intersect the building with each candidate parcel and keep only the parcels it
         // actually covers (a bbox overlap is not enough — non-intersecting candidates would
         // otherwise desync the light/dark alternation). Each kept entry is one slice.
         const sliceData = [];
         candidateParcels.forEach((parcelFeature) => {
             let intersection = null;
-            try { intersection = turf.intersect(buildingFeature, parcelFeature); } catch (error) {
+            try {
+                // Parcel cuts use this grid too. Raw authored coordinates against a rounded
+                // remainder invent microscopic overlaps along an otherwise shared edge.
+                intersection = window.__parcelArrangement.clip('intersect', buildingFeature, parcelFeature,
+                    { site: 'three-mode.createBuildingSlices', parcelId: parcelFeature.properties?.parcelId });
+            } catch (error) {
                 // That parcel's slice is not drawn.
                 reportThreeClip('intersect', error, 'three-mode.createBuildingSlices', [buildingFeature, parcelFeature]);
             }
@@ -7391,11 +8295,97 @@
         return false;
     }
 
-    function renderScene() {
+    function renderScene(fullFrame = true, { shadowsPerPass = false } = {}) {
+        // Entry tilt, restored cameras and captures need the same lighting as the steady loop.
+        // `sceneChanged`: something in the scene changed since the last render (a rebuild, a proposal, a
+        // selection), which is when the shadow map is re-rendered; a frame that only orbits the camera
+        // or animates a hook keeps it.
+        // Tree tiers follow the camera; their shadows come from fixed stand-ins, so no shadow redraw.
+        retierTreesIfMoved();
+        sunLayer?.beforeRender({ fullFrame, sceneChanged: renderedSceneVisualRevision !== sceneVisualRevision });
+        // A comparison pass shows a different set of objects: its shadows are its own.
+        if (shadowsPerPass && renderer.shadowMap.enabled) renderer.shadowMap.needsUpdate = true;
+        updateLampGlow();
         floorPlanRenderer.renderCutaway(renderer, scene, camera, externalCameraOwner?.floorRoot || floorPlanGroup,
             xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
         renderedSceneVisualRevision = sceneVisualRevision;
+    }
+
+    // ── Side by side comparison (three-compare.js) ─────────────────────────────────────────────
+    // The canvas splits at the divider; each half draws one chosen state of this scene from the
+    // same camera. Only objects the two sides disagree on are switched between the passes.
+    let compareSplit = null;
+
+    function compareDesignIdOf(object) {
+        let found = null;
+        object.traverse(node => { if (!found && node.userData?.proposalId != null) found = String(node.userData.proposalId); });
+        return found;
+    }
+
+    // Every scene object a side may hide, with what it stands for. Objects hidden anyway (a display
+    // setting, isolation) are left out, so a pass never shows what the person switched off.
+    function compareDescriptors() {
+        const descriptors = [];
+        const outcomes = window.currentBuildingOutcomeState?.();
+        const designIdOfRecord = record => {
+            const by = record?.proposalKey || record?.proposalId;
+            if (!by) return null;
+            const proposal = window.getProposalByIdOrHash?.(by) || window.proposalStorage?.getProposal?.(by);
+            return proposal ? String(proposalIdOf(proposal)) : String(by);
+        };
+        const each = (group, make) => {
+            if (!group || group.visible === false) return;
+            for (const child of group.children) {
+                if (child.visible === false) continue;
+                const descriptor = make(child);
+                if (descriptor) descriptors.push({ object: child, ...descriptor });
+            }
+        };
+        each(existingBuildingsGroup, child => {
+            let feature = null;
+            child.traverse(node => { if (!feature && node.userData?.planningBuiltFeature) feature = node.userData.planningBuiltFeature; });
+            const record = feature ? outcomes?.demolishedById.get(clickedBuildingId(feature)) : null;
+            return { role: 'existing', demolishedBy: record ? designIdOfRecord(record) : null };
+        });
+        each(planningSourcesGroup, () => ({ role: 'permitted' }));
+        for (const group of [proposedBuildingsGroup, ineligibleBuildingsGroup, floorPlanGroup, plannedFlatGroup, parkGroundGroup,
+            squareGroundGroup, lakeGroundGroup, proposalGroundGroup, parcelLayoutGroup, parkGroup, squareGroup, lakeGroup,
+            stationGroup, corridorGroup, terrainCorridorGroup]) {
+            each(group, child => ({ role: 'proposed', designId: compareDesignIdOf(child) }));
+        }
+        return descriptors;
+    }
+
+    function renderComparePasses(fullFrame) {
+        const compare = window.ThreeCompare;
+        const { left, right, percent } = compare.sides();
+        if (!compareSplit || compareSplit.revision !== sceneVisualRevision) {
+            compareSplit = { revision: sceneVisualRevision, ...compare.splitDescriptors(left, right, compareDescriptors()) };
+        }
+        const size = renderer.getSize(new THREE.Vector2());
+        const rects = compare.scissorRects(size.x, size.y, percent);
+        const switched = [...compareSplit.leftOnly, ...compareSplit.rightOnly, ...compareSplit.hidden];
+        compareSplit.hidden.forEach(item => { item.object.visible = false; });
+        renderer.setScissorTest(true);
+        try {
+            for (const side of ['left', 'right']) {
+                compareSplit.leftOnly.forEach(item => { item.object.visible = side === 'left'; });
+                compareSplit.rightOnly.forEach(item => { item.object.visible = side === 'right'; });
+                renderer.setScissor(...rects[side]);
+                renderScene(fullFrame, { shadowsPerPass: !!sunLayer });
+            }
+        } finally {
+            renderer.setScissorTest(false);
+            renderer.setScissor(0, 0, size.x, size.y);
+            switched.forEach(item => { item.object.visible = true; });
+        }
+    }
+
+    // One frame of the scene: the comparison's two passes when it is on, else the whole view.
+    function drawFrame(fullFrame) {
+        if (window.ThreeCompare?.isActive?.()) renderComparePasses(fullFrame);
+        else { compareSplit = null; renderScene(fullFrame); }
     }
 
     function setFloorCutaway(level) {
@@ -7457,7 +8447,7 @@
         if (floorPlanErrors) lines.push(threeI18n('threeMode.controls.xrayError',
             'Some floor plans could not be displayed.'));
         if (suggestedPlansEnabled) {
-            lines.push(threeI18n('threeMode.controls.suggestedNote', 'Suggested layouts are generated defaults, not part of the proposal.'));
+            lines.push(threeI18n('threeMode.controls.suggestedNote', 'Suggested layouts are generated defaults, not part of the design.'));
             const buildings = suggestedPlanTotals.slices - suggestedPlanTotals.flagged;
             if (buildings) lines.push(threeI18n('threeMode.controls.suggestedCount',
                 `Suggested: ${buildings} buildings · ${suggestedPlanTotals.apartments} apartments per floor`,
@@ -7509,16 +8499,27 @@
 
     async function rebuild3DBuildingsOnly(options = {}) {
         if (!isActive || !buildingGroup) return;
-        const family = buildingBuildPending || xrayEnabled ? 'all' : (options.family || 'all');
+        return buildingRefreshQueue.request(options.family || 'all');
+    }
+
+    async function build3DBuildingFamilies(requestedFamily) {
+        if (!isActive || !buildingGroup) return;
+        const family = xrayEnabled ? 'all' : requestedFamily;
         const rebuildExisting = family !== 'planned';
         const rebuildProposed = family !== 'existing';
         const previous = buildingDisplaySnapshot;
         buildingBuildPending = true;
         buildingDisplaySnapshot = null;
         restoreParcelEmphasis();
-        if (rebuildExisting) clearGroupChildren(existingBuildingsGroup);
+        // Build replacements off-scene. Cooperative work yields between buildings; clearing
+        // the displayed groups first would expose an empty or partially rebuilt city each time.
+        const nextExisting = rebuildExisting ? new THREE.Group() : existingBuildingsGroup;
+        const nextProposed = rebuildProposed ? new THREE.Group() : proposedBuildingsGroup;
+        nextExisting.name = 'ExistingBuildings';
+        nextProposed.name = 'ProposedBuildings';
+        nextProposed.userData.buildingFamily = 'planned';
+        let committed = false;
         if (rebuildProposed) {
-            clearGroupChildren(proposedBuildingsGroup);
             clearGroupChildren(ineligibleBuildingsGroup);
             buildingsRenderGeneration++;
             pendingModelLoads = 0;
@@ -7532,22 +8533,34 @@
         const showProposed = realisticLayerActive || plannedDisplay !== 'off';
         const existingDataRevision = nearbyBuildingsRevision;
         let existingBuildFailures = rebuildExisting ? 0 : (previous?.existingBuildFailures || 0);
-        existingBuildingsGroup.visible = showExisting;
-        proposedBuildingsGroup.visible = showProposed;
+        nextExisting.visible = showExisting;
+        nextProposed.visible = showProposed;
         if (existingTransitAlignmentGroup) existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail && !realisticLayerActive;
         const existingMaterial = builtPolicy.material === 'solid' ? buildingMaterials.solid : buildingMaterials.ghost;
         const proposedMaterial = plannedDisplay === 'solid' ? buildingMaterials.solid : buildingMaterials.ghost;
         try {
             if (showExisting && rebuildExisting) {
-                const result = await buildNearbyProposalBuildings3D(existingBuildingsGroup, existingMaterial, {
+                const result = await buildNearbyProposalBuildings3D(nextExisting, existingMaterial, {
                     showSurviving: builtPolicy.showSurviving,
                     showDemolished: builtPolicy.showDemolished
                 }, isCurrent);
                 existingBuildFailures = result?.failures || 0;
                 if (!isCurrent()) return;
             }
-            if (showProposed && rebuildProposed) await buildProposedBuildings3D(proposedBuildingsGroup, proposedMaterial, isCurrent);
+            if (showProposed && rebuildProposed) await buildProposedBuildings3D(nextProposed, proposedMaterial, isCurrent);
             if (!isCurrent()) return;
+            const replace = (previousGroup, nextGroup) => {
+                if (previousGroup === nextGroup) return;
+                buildingGroup.remove(previousGroup);
+                buildingGroup.add(nextGroup);
+                clearGroupChildren(previousGroup);
+                sunLayer?.syncObjects(nextGroup);
+            };
+            replace(existingBuildingsGroup, nextExisting);
+            replace(proposedBuildingsGroup, nextProposed);
+            existingBuildingsGroup = nextExisting;
+            proposedBuildingsGroup = nextProposed;
+            committed = true;
             if (showExisting) appendSuggestedExistingFloorPlans(existingMaterial);
             if (showIneligibleParcels && rebuildProposed) buildIneligibleParcels3D(ineligibleBuildingsGroup);
             buildingDisplaySnapshot = {
@@ -7560,12 +8573,17 @@
             ensureNearbyProposalBuildings();
             ensureNearbyTrees();
             ensureNearbyWater();
+            ensureNearbyGreen();
             if (isolatedParcelId !== null) applyParcelEmphasis();
             else if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
             refreshClickStackFigures();
             updateXrayControls();
             invalidateThreeView();
         } finally {
+            if (!committed) {
+                if (rebuildExisting) clearGroupChildren(nextExisting);
+                if (rebuildProposed) clearGroupChildren(nextProposed);
+            }
             if (generation === buildingsWorkGeneration) buildingBuildPending = false;
         }
     }
@@ -7617,6 +8635,7 @@
         disposeScene();
         // Restore the flag after dispose
         pendingIntroAutoRotate = preserveAutoRotate;
+        if (pendingIntroAutoRotate) watchIntroAutoRotateStop(null);
         isTransitioning3D = true;
         sceneAbort = new AbortController();
         const signal = sceneAbort.signal;
@@ -7697,10 +8716,12 @@
         stationGroup = new THREE.Group();
         treesGroup = new THREE.Group();
         waterGroup = new THREE.Group();
+        greenGroup = new THREE.Group();
         proposalInteractionGroup = new THREE.Group();
         proposalDraftGroup = new THREE.Group();
         treesEnabled = loadTreesEnabledPref();
         waterEnabled = loadWaterEnabledPref();
+        greenEnabled = loadGreenEnabledPref();
         plannedRepresentation = window.PlanningViews.getState().proposedForm;
         buildOutDisplaySalt = window.PlanningViews.getState().proposedVariation;
         try {
@@ -7709,6 +8730,7 @@
         } catch (_) { }
         treesGroup.visible = treesEnabled && !realisticLayerActive;
         waterGroup.visible = waterEnabled && !realisticLayerActive;
+        greenGroup.visible = greenEnabled && !realisticLayerActive;
         scene.add(flatGroup);
         scene.add(corridorGroup);
         scene.add(plannedFlatGroup);
@@ -7720,6 +8742,7 @@
         scene.add(stationGroup);
         scene.add(treesGroup);
         scene.add(waterGroup);
+        scene.add(greenGroup);
         scene.add(proposalInteractionGroup);
         scene.add(proposalDraftGroup);
         existingTransitAlignmentGroup = null; // rebuilt from the cached city sources below
@@ -7741,6 +8764,7 @@
             nearbyBuildingsRevision++;
             nearbyTrees = []; nearbyTreesKey = null;
             nearbyWater = []; nearbyWaterKey = null;
+            nearbyGreen = []; nearbyGreenKey = null;
             nearbyDataScope = dataScope;
         }
         captureSceneLoadGeometry();
@@ -7800,6 +8824,7 @@
         buildingWorkIncomplete = false;
         rebuildTreesOnly();
         rebuildWaterOnly();
+        rebuildGreenOnly();
         try { rebuildLifeOnly(); } catch (error) { console.warn('[3D life] build failed', error); }
         rebuildProposalInteraction3D();
         rebuildProposalDraftPreview3D();
@@ -7908,12 +8933,16 @@
         window.addEventListener('resize', handleResize, { passive: true });
         resizeObserver = new ResizeObserver(handleResize);
         resizeObserver.observe(threeContainer);
-        controls?.addEventListener('change', invalidateThreeView);
-        controls?.addEventListener('start', invalidateThreeView);
+        controls?.addEventListener('change', onCameraChange);
+        controls?.addEventListener('change', () => window.dispatchEvent(new Event('threecamerachange')));
+        controls?.addEventListener('start', onCameraChange);
+        inputHandler = noteInput;
+        renderer.domElement.addEventListener('pointermove', inputHandler, { passive: true });
+        renderer.domElement.addEventListener('wheel', inputHandler, { passive: true });
 
         // Parcel selection emphasizes it in place; click empty/again or Escape to reset.
         // pointerdown records the press position so a click that ends a drag is ignored.
-        parcelPointerDownHandler = (e) => { if (e.button === 0) clickDownXY = { x: e.clientX, y: e.clientY }; };
+        parcelPointerDownHandler = (e) => { noteInput(); if (e.button === 0) clickDownXY = { x: e.clientX, y: e.clientY }; };
         renderer.domElement.addEventListener('pointerdown', parcelPointerDownHandler);
         parcelClickHandler = handleParcelClick;
         renderer.domElement.addEventListener('click', parcelClickHandler);
@@ -7991,12 +9020,12 @@
         } catch (_) { }
     }
 
-    function stopIntroAutoRotate() {
+    function stopIntroAutoRotate(suppressClick = false) {
         try {
             // The pointerdown that stops an ACTIVE intro rotation must not double as a map
             // click: it isolated whichever proposal sat under the cursor, hiding all others
             // (and, in realistic mode, gaping their carve holes open).
-            if ((controls && controls.autoRotate) || manualAutoRotateActive) {
+            if (suppressClick && ((controls && controls.autoRotate) || manualAutoRotateActive)) {
                 suppressClickAfterRotateStop = true;
             }
             const wasPending = pendingIntroAutoRotate;
@@ -8035,12 +9064,21 @@
             console.warn('[3D] Failed to enable auto-rotate:', err);
         }
 
-        const stop = () => { stopIntroAutoRotate(); };
+        watchIntroAutoRotateStop(controlsInstance);
+    }
+
+    function watchIntroAutoRotateStop(controlsInstance = controls) {
+        const stop = event => {
+            const canvasPress = ['pointerdown', 'mousedown', 'touchstart'].includes(event?.type)
+                && event.target === renderer?.domElement;
+            stopIntroAutoRotate(canvasPress);
+        };
 
         // Stop as soon as the user clicks/touches/presses anywhere.
         try { document.addEventListener('pointerdown', stop, { passive: true, capture: true }); } catch (_) { }
         try { document.addEventListener('mousedown', stop, { passive: true, capture: true }); } catch (_) { }
         try { document.addEventListener('touchstart', stop, { passive: true, capture: true }); } catch (_) { }
+        try { document.addEventListener('wheel', stop, { passive: true, capture: true }); } catch (_) { }
         try {
             if (controlsInstance && typeof controlsInstance.addEventListener === 'function') {
                 controlsInstance.addEventListener('start', stop);
@@ -8051,6 +9089,7 @@
             try { document.removeEventListener('pointerdown', stop, true); } catch (_) { }
             try { document.removeEventListener('mousedown', stop, true); } catch (_) { }
             try { document.removeEventListener('touchstart', stop, true); } catch (_) { }
+            try { document.removeEventListener('wheel', stop, true); } catch (_) { }
             try {
                 if (controlsInstance && typeof controlsInstance.removeEventListener === 'function') {
                     controlsInstance.removeEventListener('start', stop);
@@ -8093,8 +9132,15 @@
         sceneVisualRevision++;
         queueThreeFrame(delayMs);
     }
+    // A frame that must redraw the view: the camera moved or something asked for a redraw.
     function queueThreeFrame(delayMs) {
         renderInvalidated = true;
+        scheduleThreeFrame(delayMs);
+    }
+    // The loop's own next step while hooks animate: nothing asked for a redraw, so the frame keeps
+    // the shadow map. Keeping this apart from queueThreeFrame is what makes hooks-only frames cheap;
+    // when the loop rescheduled itself through queueThreeFrame, every frame counted as invalidated.
+    function scheduleThreeFrame(delayMs) {
         if (!isActive || !loopRunning || document.hidden || frameId) return;
         if (frameTimer) {
             if (delayMs > 0) return; // a paced frame is already on its way
@@ -8109,6 +9155,24 @@
         } else {
             frameId = requestAnimationFrame(renderFrame);
         }
+    }
+    function onCameraChange() {
+        noteInput();
+        queueThreeFrame();
+    }
+    // Why the loop is running (or not): the last frame's live hooks, camera motion and invalidation.
+    // Read it from the console (window.__threeFrameDebug()) when an idle view keeps drawing frames.
+    const lastFrameDebug = { live: new Set(), moving: false, wasInvalidated: false, at: 0 };
+    window.__threeFrameDebug = () => ({
+        hooks: frameHooks.map(hook => hook.name || 'anonymous'), live: [...lastFrameDebug.live],
+        moving: lastFrameDebug.moving, wasInvalidated: lastFrameDebug.wasInvalidated, hooksParked,
+        idleMs: Math.round(performance.now() - lastInputAt), autoRotate: !!controls?.autoRotate || manualAutoRotateActive,
+        frameAgeMs: Math.round(performance.now() - lastFrameDebug.at), loopRunning, frameId: frameId !== null, frameTimer: !!frameTimer
+    });
+    // Input keeps the decorative hooks awake; once they have parked, the first input restarts the loop.
+    function noteInput() {
+        lastInputAt = performance.now();
+        if (hooksParked) scheduleThreeFrame(0);
     }
     // `?fps=1`: a model-mode frame-time readout (photo mode has its own). It keeps the WORST frame of
     // each one-second window rather than the mean, because an isolated stall vanishes in an average.
@@ -8146,6 +9210,7 @@
         if (!isActive || !loopRunning || document.hidden) return;
         const wasInvalidated = renderInvalidated;
         renderInvalidated = false;
+        lastFrameDebug.live.clear();
         const perfT0 = perfReadout ? performance.now() : 0;
         if (!externalCameraOwner) stepManualAutoRotate(now);
         const moving = !externalCameraOwner && controls ? controls.update() : false;
@@ -8158,26 +9223,41 @@
                 lastPlaneDist = dist;
             }
         }
+        // A hook returns false when it has nothing to animate right now (people parked after idle,
+        // photo tiles settled); only live hooks keep the loop running. A live hook may answer with the
+        // milliseconds until it next needs a frame (the sun between two steps); anything else means
+        // every hook frame (HOOK_IDLE_FPS).
+        let liveHooks = 0;
+        let hookDelayMs = Infinity;
         for (const hook of frameHooks) {
-            try { hook(now); } catch (error) { console.error('[3D] frame hook failed', error); }
+            try {
+                const answer = hook(now);
+                if (answer === false) continue;
+                liveHooks++;
+                lastFrameDebug.live.add(hook.name || 'anonymous');
+                hookDelayMs = Math.min(hookDelayMs, typeof answer === 'number' && answer >= 0 ? answer : 0);
+            } catch (error) { console.error('[3D] frame hook failed', error); }
         }
+        hooksParked = frameHooks.length > 0 && liveHooks === 0;
+        lastFrameDebug.moving = moving; lastFrameDebug.wasInvalidated = wasInvalidated; lastFrameDebug.at = now;
         const perfT1 = perfReadout ? performance.now() : 0;
         // Frames that only advance the life layer reuse the last shadow map.
-        sunLayer?.beforeRender({ fullFrame: wasInvalidated || renderInvalidated || moving || !!controls?.autoRotate
-            || manualAutoRotateActive || frameHooks.length === 0 });
-        renderScene();
+        drawFrame(wasInvalidated || renderInvalidated || moving || !!controls?.autoRotate
+            || manualAutoRotateActive || liveHooks === 0);
         if (perfReadout) recordPerfFrame(now, perfT0, perfT1, performance.now());
-        const hooksOnly = !renderInvalidated && !moving && !controls?.autoRotate && !manualAutoRotateActive && frameHooks.length > 0;
-        if (renderInvalidated || moving || controls?.autoRotate || manualAutoRotateActive || frameHooks.length) {
-            queueThreeFrame(hooksOnly ? Math.max(0, Math.round(1000 / HOOK_IDLE_FPS) - 4) : 0);
+        const hooksOnly = !renderInvalidated && !moving && !controls?.autoRotate && !manualAutoRotateActive && liveHooks > 0;
+        if (renderInvalidated || moving || controls?.autoRotate || manualAutoRotateActive || liveHooks) {
+            scheduleThreeFrame(hooksOnly ? Math.max(Math.round(1000 / HOOK_IDLE_FPS) - 4, hookDelayMs) : 0);
         }
     }
     function startLoop() {
         cancelLoop();
         loopRunning = true;
+        lastInputAt = performance.now();
         sceneReady = true;
         resolveSceneReady?.(true);
         resolveSceneReady = null;
+        window.ThreeCompare?.attach?.({ container: threeContainer, invalidate: invalidateThreeView });
         // We are ready: hide overlay and settle the mode buttons.
         hideRenderingOverlay();
         isTransitioning3D = false;
@@ -8186,16 +9266,16 @@
         // (e.g. realistic-from-2D) can proceed once the abstract scene is actually up.
         try { window.dispatchEvent(new Event('threeModeReady')); } catch (_) { }
         console.log('[3D] startLoop() called, pendingIntroAutoRotate:', pendingIntroAutoRotate);
-        if (pendingIntroAutoRotate) {
-            pendingIntroAutoRotate = false;
-            // Reduced motion keeps the framed view still: no orbit.
-            if (!window.__reducedMotion) {
-                console.log('[3D] Starting intro auto-rotate');
-                startIntroAutoRotate();
-            }
-        }
+        // Keep the Google view still while tiles refine and the terrain establishes its height.
+        if (window.__mapModeState?.desired !== 'photo') startPendingIntroAutoRotate();
         lastPlaneDist = 0;
         invalidateThreeView();
+    }
+
+    function startPendingIntroAutoRotate() {
+        if (!pendingIntroAutoRotate) return;
+        pendingIntroAutoRotate = false;
+        if (!window.__reducedMotion) startIntroAutoRotate();
     }
 
     function cancelLoop() {
@@ -8243,6 +9323,7 @@
             window.dispatchEvent(new Event('threecameradispose'));
             externalCameraOwner?.release();
         }
+        lampGlowObjects.clear();
         clearTimeout(warmSceneTimer);
         warmSceneTimer = null;
         warmSceneKey = null;
@@ -8276,7 +9357,12 @@
         if (renderer && renderer.domElement) {
             if (parcelClickHandler) { try { renderer.domElement.removeEventListener('click', parcelClickHandler); } catch (_) { } }
             if (parcelPointerDownHandler) { try { renderer.domElement.removeEventListener('pointerdown', parcelPointerDownHandler); } catch (_) { } }
+            if (inputHandler) {
+                try { renderer.domElement.removeEventListener('pointermove', inputHandler); } catch (_) { }
+                try { renderer.domElement.removeEventListener('wheel', inputHandler); } catch (_) { }
+            }
         }
+        inputHandler = null;
         parcelClickHandler = null;
         parcelPointerDownHandler = null;
         if (proposalSelectionUnsubscribe) {
@@ -8312,10 +9398,12 @@
         sceneTreeLoadGeometry = null;
         sceneTreeLoadGeometrySource = 'camera';
         waterGroup = null;
+        greenGroup = null;
         treesGroup = null;
         existingTransitAlignmentGroup = null;
         sceneParcelSnapshot = [];
         nearbyWaterKey = null;
+        nearbyGreenKey = null;
         flatGroup = null;
         corridorGroup = null;
         terrainCorridorGroup = null;
@@ -8494,12 +9582,12 @@
             : null;
         console.log('[3D] enter3D focus ids:', focusProposalIds ? focusProposalIds.size : 0,
             focusProposalIds ? Array.from(focusProposalIds).slice(0, 4) : '(none — framing all applied)');
-        pendingIntroAutoRotate = !!(options && options.fromUrl);
-        // A shared render carries the exact camera pose it was shot from: reproduce it instead of
-        // auto-framing, and suppress the intro spin so the follower lands on the same view.
+        stopIntroAutoRotate();
+        pendingIntroAutoRotate = options.fromUrl === true && options.rotate === true && !window.__reducedMotion;
+        // A saved pose sets the starting view and its orbit target. Rotation is an explicit choice.
         pendingRestoreView = (options && options.restoreView) ? options.restoreView : null;
-        if (pendingRestoreView) pendingIntroAutoRotate = false;
         if (pendingIntroAutoRotate) {
+            watchIntroAutoRotateStop();
             console.log('[3D] URL-driven entry detected, will start auto-rotate after tilt animation');
         }
         try { document.body.classList.add('three-mode-active'); } catch (_) { }
@@ -8535,8 +9623,12 @@
             ensureNearbyProposalBuildings();
             ensureNearbyTrees();
             ensureNearbyWater();
+            ensureNearbyGreen();
         } else if (!await initScene()) return false;
-        syncPlanningView3D();
+        // initScene/reuse already applied the building policy. A late context refresh may still
+        // be pending here; re-syncing it would enqueue another full proposal rebuild.
+        applyModeVisibility();
+        rebuildPlanningSources3D();
         if (window.activeProposalDraftComparison?.draftId && typeof window.renderProposalDraftComparison === 'function') {
             window.renderProposalDraftComparison(
                 window.activeProposalDraftComparison.draftId,
@@ -8566,6 +9658,8 @@
             xyToLatLng
         );
         isActive = false;
+        window.ThreeCompare?.detach?.();
+        compareSplit = null;
         // The click stack is the 3D view's; the 2D map has its own.
         try { window.ThreeClickStack?.close({ silent: true }); } catch (_) { }
         focusProposalIds = null; // reset shared-link focus; a manual re-entry frames all proposals
@@ -8617,6 +9711,8 @@
     for (const event of ['parcelFabricCommitted', 'buildingsLayerUpdated', 'proposedBuildingsUpdated', 'parksUpdated', 'squaresUpdated', 'lakesUpdated', 'stationsUpdated', 'buildingGroundsUpdated']) {
         window.addEventListener(event, () => { sceneRevision++; });
     }
+
+    window.addEventListener('parcelFabricCommitted', rebuildTreesOnly);
 
     window.addEventListener('buildingsLayerUpdated', () => {
         if (!isActive) return;
@@ -8775,29 +9871,33 @@
         if (flatGroup) targets.push(flatGroup);
         if (plannedFlatGroup) targets.push(plannedFlatGroup);
         if (stationGroup) targets.push(stationGroup);
-        const hits = raycaster.intersectObjects(targets, true);
-        for (const h of hits) {
-            let obj = h.object;
-            if (!obj || obj.visible === false) continue;
-            let proposalId = null;
-            let parcelId = null;
-            let planningId = null;
-            let builtFeature = null;
-            let visible = true;
-            while (obj) {
-                if (obj.visible === false) visible = false;
-                if (obj.userData?.planningRepresentationId) planningId = obj.userData.planningRepresentationId;
-                if (obj.userData?.planningBuiltFeature) builtFeature = obj.userData.planningBuiltFeature;
-                if (!proposalId && obj.userData?.proposalId) proposalId = String(obj.userData.proposalId);
-                if (!parcelId && obj.userData?.parcelId) parcelId = String(obj.userData.parcelId);
-                obj = obj.parent;
-            }
-            if (!visible) continue;
-            if (planningId) return { planningId };
-            if (builtFeature && !proposalId) return { builtFeature, parcelId };
-            if (proposalId || parcelId) return { proposalId, parcelId };
-        }
-        return null;
+        return window.__threeClickPlan.subjectHit(raycaster.intersectObjects(targets, true));
+    }
+
+    // Google tiles identify a visible surface point; source footprints give that point a building
+    // identity. Hidden abstract meshes never act as stand-ins for the Google city.
+    function photoScenePick(evt) {
+        const photo = window.PhotorealMode;
+        const surface = photo.pickSurface(evt);
+        const authored = pickMapSubjectFromEvent(evt);
+        const sourcePoint = surface?.point || authored?.point;
+        if (!sourcePoint) return { picked: null, groundParcelId: null, hits: null };
+        const recordsAt = point => {
+            const latlng = xyToLatLng(point.x, point.y);
+            const hits = window.ClickStackHits.hitsAt(latlng);
+            const location = turf.point([latlng.lng, latlng.lat]);
+            const built = observedBuildingFeatures().filter(feature => turf.booleanPointInPolygon(location, feature))
+                .map(feature => ({ id: clickedBuildingId(feature), feature }));
+            hits.built = [...built, ...hits.built];
+            const source = photo.sourceParcelsAt(point).map(parcel => ({ id: parcel.id,
+                feature: parcel.feature, label: window.ThreeClickStack.parcelLabel(parcel.id), live: false }));
+            hits.parcels = [...(hits.formed || []), ...source, ...hits.parcels];
+            return hits;
+        };
+        let hits = recordsAt(sourcePoint);
+        const hit = window.__threeClickPlan.photoHit({ authored, surface, designs: hits.designs, built: hits.built });
+        if (hit?.point && hit.point !== sourcePoint) hits = recordsAt(hit.point);
+        return { picked: hit?.picked || null, groundParcelId: hits.parcels[0]?.id || null, hits };
     }
 
     function handleParcelClick(evt) {
@@ -8806,57 +9906,53 @@
         // An on-map editor owns map clicks while its edit lock is held. OrbitControls remain
         // untouched, so users can still rotate and pan the 3D view around the live design.
         if (mapSelectionBlockedByEditor()) { clickDownXY = null; return; }
-        // Photo mode is view-only: clicks still pan/tilt the camera (orbit controls), but never
-        // select a parcel or proposal — no isolation, no "Proposal info" panel. Model 3D keeps
-        // full click interaction.
-        if (realisticLayerActive) return;
         if (suppressClickAfterRotateStop) { suppressClickAfterRotateStop = false; return; }
         // Walk-pick owns clicks while it's active.
         if (walkPickActive) return;
         // Ignore the click that ends a camera drag (orbit/tilt) — only a near-stationary
-        // press-and-release should isolate.
+        // press-and-release should select.
         if (clickDownXY) {
             const moved = Math.hypot(evt.clientX - clickDownXY.x, evt.clientY - clickDownXY.y);
             clickDownXY = null;
             if (moved > 6) return;
         }
+        const resolved = realisticLayerActive ? photoScenePick(evt)
+            : { picked: pickMapSubjectFromEvent(evt)?.picked || null, groundParcelId: parcelUnderClick(evt) };
+        const { picked, groundParcelId } = resolved;
         if (window.multiParcelSelection?.isActive) {
-            const id = parcelUnderClick(evt);
-            const layer = id && window.LiveParcelFabric?.get(id) && window.ParcelPresenter?.getLayer(id);
+            const layer = groundParcelId && window.LiveParcelFabric?.get(groundParcelId) && window.ParcelPresenter?.getLayer(groundParcelId);
             if (layer) window.multiParcelSelection.toggleParcel(layer);
             return;
         }
-        const picked = pickMapSubjectFromEvent(evt);
         const proposal = picked?.proposalId ? (window.proposalStorage?.getProposal?.(picked.proposalId) || null) : null;
-        const groundParcelId = parcelUnderClick(evt);
+        const clickParcelId = proposal && picked.parcelId ? String(picked.parcelId) : groundParcelId || picked?.parcelId || null;
         const click = { key: window.__threeClickPlan.clickKey({ picked, groundParcelId,
             builtId: clickedBuildingId(picked?.builtFeature), proposalKnown: !!proposal }),
-            parcelId: proposal && picked.parcelId ? String(picked.parcelId) : groundParcelId || picked?.parcelId || null,
-            point: { x: evt.clientX, y: evt.clientY } };
-        if (window.ThreeClickStack?.cycleForClick(click)) return;
+            parcelId: clickParcelId, point: { x: evt.clientX, y: evt.clientY },
+            // The section the click means: a click always selects the topmost object under it.
+            focus: proposal ? 'designs' : window.ThreeClickStack?.focusOf({ ...(picked && !picked.proposalId ? picked : {}),
+                formed: !!groundParcelId && groundInstance(groundParcelId).kind === 'formed' }) };
+        if (window.ThreeClickStack?.retainClick(click)) return;
         // Every click is also a parcel click (three-click-plan.js): the parcel under the point comes
         // into view, and what the ray hit keeps its own meaning on top.
         const plan = window.__threeClickPlan.planThreeClick({
             picked, groundParcelId, viewedParcelId, isolatedParcelId, isolatedProposalId, proposalKnown: !!proposal
         });
-        if (plan.selectMassing) window.PlanningViews.select(plan.selectMassing);
-        if (plan.inspectBuilding) window.PlanningViews.inspectBuilding(plan.inspectBuilding);
         if (plan.clearSelection) window.PlanningViews?.select(null);
         if (plan.proposal) {
             const parcelId = picked.parcelId || proposal?.cadastreParcelIds?.[0] || null;
             // The scene presents this selection; no separate 2D details panel is opened.
             window.selectAndHighlightProposal?.(plan.proposal.id, parcelId, false, false, true);
-            if (plan.proposal.action !== 'retain') isolateProposal(plan.proposal.id);
         }
-        if (plan.parcel?.action === 'clear') { endSelectionView(); return; }
+        if (plan.parcel?.action === 'clear') { deselectScene(); return; }
         // A parcel's massing is opened from its section, not on every click.
         if (plan.parcel) viewParcel(plan.parcel.id);
         // A click on nothing closes the stack, as in 2D (it has no close button of its own).
         if (!plan.parcel && !plan.proposal && !plan.selectMassing && !plan.inspectBuilding) {
-            if (window.ThreeClickStack?.isOpen?.()) endSelectionView();
+            if (window.ThreeClickStack?.isOpen?.()) deselectScene();
             return;
         }
-        showClickStack(picked, plan, click);
+        showClickStack(picked, plan, click, resolved.hits);
     }
 
     // The parcel under a click, through whatever stands on it: the ray against the parcel slabs alone.
@@ -8876,6 +9972,9 @@
     // still pass through; modifier combinations retain their browser/OS default without reaching
     // application-level 2D listeners.
     function handleThreeModeKeyboardContext(evt) {
+        // This window capture handler can consume keys before document listeners see them.
+        if (isActive) noteInput();
+        if (pendingIntroAutoRotate || controls?.autoRotate || manualAutoRotateActive) stopIntroAutoRotate();
         if (externalCameraOwner) return;
         const action = keyboardContext.classifyThreeModeKeydown({
             active: isActive,
@@ -8893,7 +9992,7 @@
         });
         if (action === 'pass') return;
         if (action === 'cancel-walk') cancelWalkPick();
-        else if (action === 'clear-isolation') endSelectionView();
+        else if (action === 'clear-isolation') deselectScene();
         if (action !== 'block-2d-native') evt.preventDefault();
         evt.stopImmediatePropagation();
     }
@@ -9131,7 +10230,7 @@
             existingBuilt: buildingDisplaySnapshot?.existingReady === true,
             existingDataCurrent: buildingDisplaySnapshot?.existingDataRevision === nearbyBuildingsRevision,
             existingBuildFailures: buildingDisplaySnapshot?.existingBuildFailures || 0,
-            building: buildingBuildPending,
+            building: buildingBuildPending || buildingRefreshQueue.pending,
             incomplete: buildingWorkIncomplete,
             dirty: buildingViewDirty,
             pendingModels: pendingModelLoads,
@@ -9215,26 +10314,25 @@
     // proposals, corridor cross-sections and planned structures stay, standing on the mesh.
     window.setRealisticLayerActive = function (on, options = {}) {
         realisticLayerActive = !!on;
-        if (planningSourcesGroup) planningSourcesGroup.visible = !realisticLayerActive
-            && hasVisiblePlanningRepresentations();
+        rebuildPlanningSources3D();
         if (flatGroup) flatGroup.visible = !realisticLayerActive;
         if (treesGroup) treesGroup.visible = treesEnabled && !realisticLayerActive;
         if (waterGroup) waterGroup.visible = waterEnabled && !realisticLayerActive;
+        if (greenGroup) greenGroup.visible = greenEnabled && !realisticLayerActive;
         syncLifeVisibility();
         syncGroundVisibility();
-        // Photo mode is view-only: hide the model-mode building controls (radius / built / proposed)
-        // and drop any isolation + the "Proposal info" panel, so the whole cut scene and all its
-        // proposals are shown. Restored on return to model 3D.
+        // Shared proposal controls remain available; flat context controls are model-only.
         window.MapShell?.syncModeAvailability();
         if (realisticLayerActive) {
             stopBuildingRadiusPreview?.();
             isolatedParcelId = null;
             isolatedProposalId = null;
             try { updateIsolationButton(); } catch (_) { }
-            try { window.ThreeClickStack?.close({ silent: true }); } catch (_) { }
         }
         if (options.exiting) buildingViewDirty = true;
         else if (isActive && !applyRetainedBuildingDisplay()) rebuild3DBuildingsOnly();
+        if (realisticLayerActive) startPendingIntroAutoRotate();
+        if (!options.exiting && window.ThreeClickStack?.isOpen?.()) window.ThreeClickStack.refresh();
         invalidateThreeView();
     };
     window.invalidateThreeView = invalidateThreeView;
@@ -9351,6 +10449,7 @@
         return {
             scene: scene, camera: camera, renderer: renderer, controls: controls,
             latLngToXY: latLngToXY, xyToLatLng: xyToLatLng,
+            pickGroundLatLng: pickGroundLatLngFromEvent,
             originLatLng: function () { const ll = xyToLatLng(0, 0); return { lat: ll.lat, lng: ll.lng }; },
             groundStats: function () { return groundLayer ? groundLayer.stats() : null; },
             // Generated camera flights fly around a design's outline when it has no buildings.
@@ -9364,8 +10463,16 @@
     window.scheduleViewAngleHint = scheduleViewAngleHint;
     window.isThreeModeActive = function () { return isActive; };
     window.focusThreeModeOnProposals = focusThreeModeOnProposals;
+    window.inspectThreeModeFeatures = (features, { zoom = false } = {}) => {
+        if (!isActive) return false;
+        highlightStackObject('agreements', { id: 'agreement-inspection', features });
+        if (zoom) frameIsolatedFeatures(features);
+        return true;
+    };
     window.showThreeModeDesign = showThreeModeDesign;
     window.showThreeModeParcel = showThreeModeParcel;
+    window.showThreeModeBuilding = showThreeModeBuilding;
+    window.showThreeModePlan = showThreeModePlan;
     window.getThree3DGeoView = getGeoCameraView;
     window.getThreeInteriorView = () => ({ xray: xrayEnabled ? '1' : '0', suggested: suggestedPlansEnabled ? '1' : '0',
         suggestedExisting: suggestedExistingEnabled ? '1' : '0', cutaway: floorCutawayLevel === null ? 'all' : String(floorCutawayLevel) });

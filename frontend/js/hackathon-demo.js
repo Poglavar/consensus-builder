@@ -30,6 +30,10 @@
     const CASE_ACTIONS = [
         { type: 'mint', label: 'Agreement minted' },
         { type: 'fund', label: 'Escrow funded' },
+        { type: 'donate', label: 'Donation' },
+        { type: 'pledge', label: 'Pledge' },
+        { type: 'stake', side: 'yes', label: 'YES stake' },
+        { type: 'stake', side: 'no', label: 'NO stake' },
         { type: 'attest', label: 'Decision recorded' },
         { type: 'execute', label: 'Execution' },
         { type: 'cancel', label: 'Cancellation' },
@@ -37,7 +41,9 @@
         { type: 'resolve', label: 'Market resolution' },
         { type: 'releaseDonations', label: 'Donation release' },
         { type: 'fulfillPledge', label: 'Pledge fulfilment' },
-        { type: 'claim', side: 'yes', label: 'YES claim' }
+        { type: 'refundMyDonations', label: 'Donation refund' },
+        { type: 'voidPledge', label: 'Pledge voided' },
+        { type: 'claim', label: 'Winning claim' }
     ];
 
     function explorerTx(signature) {
@@ -48,18 +54,21 @@
         const activity = Array.isArray(caseRecord?.activity) ? caseRecord.activity : [];
         return CASE_ACTIONS.flatMap(spec => activity
             .filter(event => event?.ok !== false && event?.transaction && event.action?.type === spec.type
-                && (!spec.side || event.action?.side === spec.side))
+                && (!spec.side || event.action?.side === spec.side)
+                && (spec.type !== 'claim' || !caseRecord.branches?.forecast?.resolved || !event.action?.side
+                    || String(event.action.side).toUpperCase() === caseRecord.branches.forecast.outcome))
             .map(event => ({
                 type: spec.type,
-                label: spec.label,
+                label: spec.type === 'claim' && caseRecord.branches?.forecast?.resolved
+                    ? `${caseRecord.branches.forecast.outcome} claim` : spec.label,
                 signature: event.transaction,
                 url: explorerTx(event.transaction)
             })));
     }
 
     // One card model for any aggregate case (a cancelled agreement, an executed YES counterpart): a case
-    // is an agreement by its CID (routes/hackathon-cases.js). Success is earned only by the server's own
-    // `state: complete`; a missing record stays pending/unavailable.
+    // is an agreement by its CID (routes/hackathon-cases.js). Outcome verification is distinct from
+    // optional support-branch progress; a missing record stays explicitly unavailable.
     function caseCardModel(caseRecord, { error = null, name = 'Case', missing = 'No aggregate case record was returned.' } = {}) {
         if (!caseRecord) return {
             tone: error ? 'error' : 'waiting',
@@ -72,10 +81,10 @@
         const forecast = caseRecord.branches?.forecast;
         const transactions = caseTransactions(caseRecord);
         return {
-            tone: caseRecord.state === 'complete' ? 'success' : 'waiting',
+            tone: caseRecord.outcomeProof?.state === 'verified' ? 'success' : 'waiting',
             state: caseRecord.state || 'unknown',
             label: caseRecord.agreement?.name || caseRecord.id || name,
-            detail: `${caseRecord.parcelSet?.parcelCount || 0} real cadastral parcel${caseRecord.parcelSet?.parcelCount === 1 ? '' : 's'} · ${caseRecord.progress?.complete || 0}/${caseRecord.progress?.total || 0} independently verified stages`,
+            detail: `${caseRecord.parcelSet?.parcelCount || 0} cadastral parcel${caseRecord.parcelSet?.parcelCount === 1 ? '' : 's'} · ${caseRecord.outcomeProof?.state === 'verified' ? 'outcome and winning claim verified' : 'outcome proof incomplete'}`,
             lifecycle: caseRecord.agreement?.status || null,
             marketOutcome: forecast?.resolved ? (forecast.outcome || 'Resolved') : (forecast?.exists ? 'Unresolved' : null),
             transactions,
@@ -311,7 +320,8 @@
             },
             errors,
             proofManifest,
-            canonicalCase: caseCardModel(canonicalCase, { error: errors.canonicalCase, name: 'Canonical case' }),
+            canonicalCase: caseCardModel(canonicalCase, { error: errors.canonicalCase, name: 'Cancelled case',
+                missing: 'The proof manifest does not declare a current cancellation case.' }),
             executedCase: caseCardModel(executedCase, {
                 error: errors.executedCase,
                 name: 'Executed case',
@@ -325,12 +335,12 @@
 
     function backendBase() {
         const configured = root?.document?.querySelector?.('meta[name="consensus-api-base"]')?.content;
-        if (configured) return String(configured).replace(/\/$/, '');
         const host = root?.location?.hostname || '';
         const local = host === 'localhost' || host === '127.0.0.1';
         // dev.sh starts each worktree's backend on its own port and passes it as ?backend=; localhost only.
         const override = local ? new URLSearchParams(root?.location?.search || '').get('backend') : null;
         if (override && /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(override)) return override;
+        if (configured) return String(configured).replace(/\/$/, '');
         return local ? 'http://localhost:3000' : 'https://api.urbangametheory.xyz';
     }
 
@@ -388,7 +398,7 @@
         const head = node(doc, 'div', null, 'hd-case__head');
         head.append(
             node(doc, 'h3', card.case ? card.label : fallbackTitle),
-            node(doc, 'span', card.marketOutcome ? `Resolved ${card.marketOutcome}` : String(card.state || 'pending').replaceAll('_', ' '), 'hd-pill')
+            node(doc, 'span', card.marketOutcome && card.marketOutcome !== 'Unresolved' ? `Resolved ${card.marketOutcome}` : String(card.state || 'pending').replaceAll('_', ' '), 'hd-pill')
         );
         article.append(head);
         article.append(node(doc, 'p', card.case ? `${card.lifecycle || 'No lifecycle recorded'} · ${card.detail}` : card.detail, 'hd-muted'));
@@ -402,8 +412,16 @@
             article.append(stages);
         }
         if (card.case) {
+            const path = node(doc, 'ol', null, 'hd-outcome-path');
+            card.transactions.filter(tx => ['execute', 'cancel', 'expire', 'resolve', 'claim'].includes(tx.type)).forEach(tx => {
+                const item = node(doc, 'li');
+                item.append(link(doc, tx.label, tx.url));
+                path.append(item);
+            });
+            article.append(path);
             article.append(linkRow(doc, [
                 { label: 'Open on the map', href: card.case.links?.map },
+                { label: 'View the market', href: card.case.links?.market },
                 // Same `?activity=agreement:<cid>` deep link the map explorer parses (AgentActionEngine.parseActivityLink).
                 { label: 'Every action in the explorer', href: card.case.id ? `/?activity=${encodeURIComponent(`agreement:${card.case.id}`)}` : null }
             ]));
@@ -439,8 +457,8 @@
         [
             ['Propose', 'A person or an agent proposes an agreement over real cadastral parcels.'],
             ['Back', 'Supporters donate or pledge devnet USDC to the agreement.'],
-            ['Forecast', 'Anyone stakes YES or NO on whether it will happen.'],
-            ['Settle', 'A public record says what happened. The market resolves and pays out.']
+            ['Forecast', 'Anyone stakes YES or NO on the agreement’s chain execution.'],
+            ['Settle', 'Recorded execution settles YES; cancellation or expiry settles NO. Winners can claim.']
         ].forEach(([title, text]) => {
             const item = node(doc, 'li');
             item.append(node(doc, 'strong', title), node(doc, 'span', text));
@@ -451,7 +469,7 @@
 
         // Each card reports the evidence currently supplied for its intended outcome.
         const cases = section(doc, 'Two agreements, followed end to end',
-            'Follow a cancellation case (NO) and an execution case (YES). Each card shows the available Solana devnet evidence; PENDING means the complete outcome has not been recorded here.');
+            'Follow cancellation (NO) and execution (YES), with their source transactions and winning claims. These are Solana devnet demonstrations; chain execution does not establish legal registration or construction.');
         cases.id = 'judge-path';
         const caseGrid = node(doc, 'div', null, 'hd-cases');
         caseGrid.append(caseCard(doc, model.canonicalCase, 'Cancelled case'), caseCard(doc, model.executedCase, 'Executed case'));
@@ -601,12 +619,14 @@
             if (result.status === 'fulfilled') values[key] = result.value;
             else errors[key] = result.reason?.message || String(result.reason);
         });
-        // A case exists only when the manifest declares it (an agreement CID); there is no hardcoded
-        // fallback id.
+        // Missing headline pointers are an error, not an indefinitely pending demonstration.
         const caseUrls = {
             canonicalCase: values.proofManifest?.publicProof?.canonicalCase || null,
             executedCase: values.proofManifest?.publicProof?.executedCase || null
         };
+        for (const [key, url] of Object.entries(caseUrls)) {
+            if (!url) errors[key] = `The proof manifest is missing its ${key === 'canonicalCase' ? 'cancelled' : 'executed'} agreement evidence link.`;
+        }
         await Promise.all(Object.entries(caseUrls).filter(([, url]) => url).map(async ([key, url]) => {
             try {
                 values[key] = await fetchJson(url);

@@ -118,7 +118,7 @@ ugt-agent-tools mint/submit/accept, agent-proposals.js:54. Thumbnails geometry-f
 fallback (backend/thumbnails/proposal-thumbnail.js:85-195).
 
 ## 8. Explore
-city-config.js:507-551 explore: parcels.source 'none', disabledSections incl. stations, proposals, game;
+data/city-configs.js `explore` entry: parcels.source 'none', disabledSections incl. stations, proposals, game;
 `hasParcelData()` false stops fetches; no explicit "can propose" flag — blocked indirectly (no parcel
 context → no palette; hidden sections). Test frontend-world-entry.test.js:218.
 

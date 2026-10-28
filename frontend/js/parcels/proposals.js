@@ -66,6 +66,7 @@
         if (!activeButton) {
             return;
         }
+        if (tabId !== 'info-tab') global.multiParcelSelection?.clearInfoListHighlight?.();
 
         // The selected tab is an ARIA state (cb-tabs, css/primitives.css), never a class.
         const tabButtons = panel.querySelectorAll('.parcel-tab-btn');

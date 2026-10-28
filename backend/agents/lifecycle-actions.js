@@ -8,14 +8,19 @@
 import { createRequire } from 'node:module';
 import { donationIdBytes } from './donor.js';
 import { AGREEMENT_STATUS, executeAgreement, expireAgreement, readAgreementAccount, recordAgreementDecision } from './agreement-minter.js';
+import { readAgreementMarket } from './bettor.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
+const splToken = require('@solana/spl-token');
 const supportClient = require('../../frontend/js/solana/pledge-client.js');
 const marketClient = require('../../frontend/js/solana/market-client.js');
+const lmsrClient = require('../../frontend/js/solana/lmsr-client.js');
 const agreementClient = require('../../frontend/js/solana/agreement-client.js');
+const bettingContract = require('../../frontend/js/bets/betting-contract.js');
 supportClient.configure({ web3 });
 marketClient.configure({ web3 });
+lmsrClient.configure({ web3 });
 agreementClient.configure({ web3 });
 
 // Signers are de-duplicated by key; the first pays fees.
@@ -24,7 +29,7 @@ async function sendInstruction(connection, instruction, signerOrSigners, sendAnd
     for (const signer of [signerOrSigners].flat()) {
         if (signer && !signers.some(existing => existing.publicKey.equals(signer.publicKey))) signers.push(signer);
     }
-    const transaction = new web3.Transaction().add(instruction);
+    const transaction = new web3.Transaction().add(...(Array.isArray(instruction) ? instruction : [instruction]));
     transaction.feePayer = signers[0].publicKey;
     return sendAndConfirm(connection, transaction, signers, { commitment: 'confirmed' });
 }
@@ -133,16 +138,18 @@ export async function resolveAgreementMarket({
     sendAndConfirm = web3.sendAndConfirmTransaction
 } = {}) {
     if (!resolverKeypair?.publicKey) throw new Error('resolverKeypair is required');
-    const market = await marketClient.readMarket(connection, subject);
-    if (!market) throw new Error('agreement market does not exist');
-    if (market.resolved) {
-        return { replayed: true, signature: null, outcome: market.outcome === marketClient.constants.SIDE_YES ? 'YES' : 'NO' };
-    }
-    const signature = await sendInstruction(connection, marketClient.buildResolveIx({ proposal: subject }), resolverKeypair, sendAndConfirm);
-    const resolved = await marketClient.readMarket(connection, subject);
+    const context = await readAgreementMarket(connection, subject);
+    const market = context.market;
+    if (!market) throw Object.assign(new Error('The sponsor has not opened the canonical agreement market.'), { code: 'MARKET_NOT_OPEN' });
+    const outcomeName = value => ['NO', 'YES', 'VOID'][Number(value)] || 'UNKNOWN';
+    if (market.resolved) return { replayed: true, signature: null, outcome: outcomeName(market.outcome) };
+    const signature = await sendInstruction(context.connection, lmsrClient.buildResolveLmsrIx({
+        market: context.address, proposal: subject, schema: market.schema
+    }), resolverKeypair, sendAndConfirm);
+    const resolved = (await readAgreementMarket(context.connection, subject)).market;
     return {
         replayed: false, signature,
-        outcome: resolved?.outcome === marketClient.constants.SIDE_YES ? 'YES' : 'NO'
+        outcome: outcomeName(resolved?.outcome)
     };
 }
 
@@ -151,20 +158,26 @@ export async function claimAgreementMarket({
     sendAndConfirm = web3.sendAndConfirmTransaction
 } = {}) {
     if (!claimerKeypair?.publicKey) throw new Error('claimerKeypair is required');
-    const sideText = typeof side === 'string' ? String(side).toLowerCase() : null;
-    if (sideText && !['yes', 'no'].includes(sideText)) throw new Error('side must be yes or no');
-    const normalizedSide = sideText
-        ? sideText === 'yes' ? marketClient.constants.SIDE_YES : marketClient.constants.SIDE_NO
-        : side;
-    const market = await marketClient.readMarket(connection, subject);
+    const sideText = String(side || '').toLowerCase();
+    if (!['yes', 'no'].includes(sideText)) throw new Error('side must be yes or no');
+    const normalizedSide = sideText === 'yes' ? lmsrClient.constants.SIDE_YES : lmsrClient.constants.SIDE_NO;
+    const context = await readAgreementMarket(connection, subject);
+    const market = context.market;
     if (!market?.resolved) throw new Error('agreement market is not resolved');
-    const position = await marketClient.readPosition(connection, subject, claimerKeypair.publicKey, normalizedSide);
+    const position = await lmsrClient.readPosition(context.connection, context.address, claimerKeypair.publicKey, normalizedSide);
     if (!position) throw new Error('market position does not exist');
     if (position.claimed) return { replayed: true, signature: null, claimed: true };
-    const signature = await sendInstruction(connection, marketClient.buildClaimIx({
-        proposal: subject, stakeMint: market.stakeMint,
-        claimer: claimerKeypair.publicKey, side: normalizedSide
-    }), claimerKeypair, sendAndConfirm);
+    const outcome = ['no', 'yes', 'void'][Number(market.outcome)];
+    if (bettingContract.payout(sideText, position.amount, outcome) <= 0n) throw new Error('This position has no claimable payout.');
+    const ata = lmsrClient.getAssociatedTokenAddress(claimerKeypair.publicKey, market.stakeMint);
+    const instructions = [];
+    if (!await context.connection.getAccountInfo(ata, 'confirmed')) {
+        instructions.push(splToken.createAssociatedTokenAccountIdempotentInstruction(
+            claimerKeypair.publicKey, ata, claimerKeypair.publicKey, new web3.PublicKey(market.stakeMint)));
+    }
+    instructions.push(lmsrClient.buildClaimLmsrIx({ market: context.address, stakeMint: market.stakeMint,
+        owner: claimerKeypair.publicKey, side: normalizedSide }));
+    const signature = await sendInstruction(context.connection, instructions, claimerKeypair, sendAndConfirm);
     return { replayed: false, signature, claimed: true };
 }
 
@@ -229,18 +242,21 @@ export const SIGNED_SETTLEMENT_STEPS = Object.freeze(['attest', 'execute', 'expi
 
 const SETTLEMENT_READERS = {
     readAgreement: (connection, account) => readAgreementAccount(connection, { account }),
-    readMarket: (connection, account) => marketClient.readMarket(connection, account),
-    readPosition: (connection, account, owner) => marketClient.readPosition(connection, account, owner, marketClient.constants.SIDE_YES)
+    readMarket: async (connection, account) => (await readAgreementMarket(connection, account)).market,
+    readPosition: async (connection, account, owner) => {
+        const context = await readAgreementMarket(connection, account);
+        return context.market ? lmsrClient.readPosition(context.connection, context.address, owner, lmsrClient.constants.SIDE_YES) : null;
+    }
 };
 
-const SIDE_OF = Object.freeze({ YES: marketClient.constants.SIDE_YES, NO: marketClient.constants.SIDE_NO });
+const OUTCOME_OF = Object.freeze({ 0: 'no', 1: 'yes', 2: 'void' });
 
-// What the owner's YES position pays once the market settles `outcome` (a resolved market's own outcome
-// wins): YES returns the stake and a share of the NO pool; NO refunds it in full only when nobody staked NO.
+// Each winning share pays one unit; a VOID market pays half per share on either side.
 function yesPayout(market, position, outcome) {
     if (!market || !position || position.claimed) return 0n;
-    const side = market.resolved ? market.outcome : SIDE_OF[outcome];
-    return marketClient.payoutAmount(marketClient.constants.SIDE_YES, position.amount, market.yesPool, market.noPool, side);
+    const result = market.resolved ? OUTCOME_OF[market.outcome] : String(outcome || '').toLowerCase();
+    if (!['yes', 'no', 'void'].includes(result)) return 0n;
+    return bettingContract.payout('yes', position.amount, result);
 }
 
 /**
@@ -255,6 +271,9 @@ function yesPayout(market, position, outcome) {
 export async function inspectSettlement({ connection, owner, agreement, lensKey = null, nowSeconds = Math.floor(Date.now() / 1000), readers = {} } = {}) {
     if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
     if (!owner) throw new Error('owner is required');
+    // Retired experimental content cannot be decided by the current contract. Keep its chain
+    // state untouched; the runner records a terminal automation skip, not an execution.
+    if (agreement.retired) return { ...agreement, state: 'retired', outcome: null, steps: [] };
     const read = { ...SETTLEMENT_READERS, ...readers };
     const ownerKey = new web3.PublicKey(owner);
     const state = await read.readAgreement(connection, agreement.account);
@@ -282,7 +301,9 @@ export async function inspectSettlement({ connection, owner, agreement, lensKey 
         outcome = 'NO';
     } else {
         label = state.status.toLowerCase();
-        outcome = state.status === AGREEMENT_STATUS.executed ? 'YES' : 'NO';
+        if (state.status === AGREEMENT_STATUS.executed) outcome = state.executedAt <= state.deadline ? 'YES' : 'NO';
+        else if (state.status === AGREEMENT_STATUS.cancelled) outcome = 'VOID';
+        else outcome = 'NO';
     }
     const [market, position] = await Promise.all([
         read.readMarket(connection, agreement.account),
@@ -296,10 +317,10 @@ export async function inspectSettlement({ connection, owner, agreement, lensKey 
         state: steps.length ? label : 'closed',
         outcome,
         steps,
-        market: market ? { resolved: market.resolved, yesPool: String(market.yesPool), noPool: String(market.noPool) } : null,
+        market: market ? { resolved: market.resolved, qYes: String(market.qYes), qNo: String(market.qNo), b: String(market.b), outcome: OUTCOME_OF[market.outcome] ?? null } : null,
         position: position ? { amount: String(position.amount), claimed: position.claimed } : null,
         expectedPayout: String(payout),
-        ...(position && !position.claimed && payout === 0n ? { note: 'YES stake lost: the NO pool is not empty' } : {})
+        ...(position && !position.claimed && payout === 0n ? { note: 'The YES shares have no payout for this outcome.' } : {})
     };
 }
 

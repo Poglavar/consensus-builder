@@ -94,12 +94,12 @@ describe('reparcellization plan utilities', () => {
         const remote = square(20, 20, 22, 22);
         const noHole = square(3, 3, 4, 4);
         const candidates = utils.buildingCourtyardCandidates([
-            { applied: false, proposalId: 'block-proposal', title: 'Block title', buildingProposal: {}, geometry: { blockMassing: turf.feature(block.geometry), buildings: [{ geometry: square(20, 20, 24, 24).geometry }, { geometry: square(24, 20, 28, 28).geometry }] } },
+            { applied: false, proposalId: 'block-proposal', title: 'Block title', buildingProposal: {}, geometry: { ruleMassing: turf.feature(block.geometry), buildings: [{ geometry: square(20, 20, 24, 24).geometry }, { geometry: square(24, 20, 28, 28).geometry }] } },
             { applied: false, buildingProposal: { blockGeometry: noHole.geometry }, geometry: { buildings: [{ geometry: noHole.geometry }] } },
             { applied: false, geometry: { buildings: [{ geometry: remote.geometry }] } }
         ], pool, turf);
         expect(candidates).toHaveLength(1);
-        expect(candidates[0].proposal.geometry.blockMassing.geometry).toEqual(block.geometry);
+        expect(candidates[0].proposal.geometry.ruleMassing.geometry).toEqual(block.geometry);
         // A design never depends on another design: the derivation names the block, it does not point at it.
         expect(candidates[0].derivation).toEqual({
             kind: 'building-courtyard', sourceTitle: 'Block title', sourceFootprint: block.geometry
@@ -110,11 +110,11 @@ describe('reparcellization plan utilities', () => {
         const pool = square(0, 0, 10, 10);
         const footprint = turf.polygon([[[20, 20], [28, 20], [28, 28], [20, 28], [20, 20]], [[3, 3], [3, 7], [7, 7], [7, 3], [3, 3]]]);
         const proposal = { proposalId: 'building-7', title: 'Original title', buildingProposal: {},
-            geometry: { blockMassing: turf.feature(footprint.geometry) } };
+            geometry: { ruleMassing: turf.feature(footprint.geometry) } };
         const candidate = utils.buildingCourtyardCandidates([proposal], pool, turf)[0];
         const originalFootprint = JSON.parse(JSON.stringify(footprint.geometry));
         proposal.title = 'Edited title';
-        proposal.geometry.blockMassing.geometry.coordinates[0][0][0] = 99;
+        proposal.geometry.ruleMassing.geometry.coordinates[0][0][0] = 99;
 
         expect(candidate.derivation).toEqual({
             kind: 'building-courtyard', sourceTitle: 'Original title', sourceFootprint: originalFootprint

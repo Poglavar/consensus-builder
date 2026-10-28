@@ -1,7 +1,7 @@
 // The command palette (frontend/js/ui/command-palette.js) over the command registry: every palette
 // command is listed, grouped in registry order, filtered by the query; commands whose when() is
 // false stay visible but unavailable, with the reason when the registry can tell.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -47,7 +47,7 @@ describe('command palette', () => {
 
     it('leaves out the command that opens the palette itself', () => {
         expect(view('').flatMap(g => g.items).map(i => i.entry.id)).not.toContain('settings.commandPalette');
-        expect(UiCommands.findCommand('settings.commandPalette').surfaces).toEqual(['settings']);
+        expect(UiCommands.findCommand('settings.commandPalette')).toBeNull();
     });
 
     it('filters by the query and puts the group with the best match first', () => {
@@ -98,5 +98,18 @@ describe('command palette', () => {
         UiCommands.runCommand('settings.detectCity', ctx);
         expect(calls).toEqual(['focus', 'cities', 'detect']);
         expect(() => UiCommands.runCommand('parcels.locate', { global: {} })).toThrow(/MapSearch\.focus/);
+    });
+});
+
+describe('command search cost and action labels', () => {
+    it('never checks control availability for a query with no command matches', () => {
+        const isControlAvailable = vi.fn(() => true);
+        expect(UiCommands.rankCommands('unmatched-unique-place-name', { global: {}, isControlAvailable }, tEn)).toEqual([]);
+        expect(isControlAvailable).not.toHaveBeenCalled();
+    });
+    it('states what clicking an enabled or disabled layer will do', () => {
+        expect(UiCommands.actionLabel('Parks', true, tEn)).toBe('Turn off · Parks');
+        expect(UiCommands.actionLabel('Parks', false, tEn)).toBe('Turn on · Parks');
+        expect(UiCommands.actionLabel('Measure', null, tEn)).toBe('Measure');
     });
 });

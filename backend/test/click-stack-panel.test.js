@@ -10,6 +10,8 @@ import { makeDocument } from './helpers/fake-dom.js';
 
 const require = createRequire(import.meta.url);
 const model = require('../../frontend/js/click-stack/click-stack-model.js');
+const relations = require('../../frontend/js/click-stack/click-stack-relations.js');
+const neighbours = require('../../frontend/js/click-stack/click-stack-neighbours.js');
 const panelSource = readFileSync(new URL('../../frontend/js/click-stack/click-stack-panel.js', import.meta.url), 'utf8');
 const editLockSource = readFileSync(new URL('../../frontend/js/map-edit-lock.js', import.meta.url), 'utf8');
 
@@ -18,11 +20,13 @@ const SPOT_B = { lat: 45.82, lng: 15.98 };
 const SPOT_EMPTY = { lat: 45.83, lng: 15.99 };
 const parcelFeature = { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [] } };
 const HITS_A = {
-    designs: [{ id: 'd1', label: 'Park', createdAt: '2026-10-01', proposal: { proposalId: 'd1' } },
-        { id: 'd2', label: 'School', createdAt: '2026-09-01', proposal: { proposalId: 'd2' } }],
+    designs: [{ id: 'd1', label: 'Park', createdAt: '2026-10-01', proposal: { proposalId: 'd1', goal: 'park' } },
+        { id: 'd2', label: 'School', createdAt: '2026-09-01', proposal: { proposalId: 'd2', goal: 'single' } }],
     parcels: [{ id: 'p1', label: '12', feature: parcelFeature, live: true }]
 };
 const HITS_B = { parcels: [{ id: 'p2', label: '13', feature: parcelFeature, live: true }] };
+const BUILT_FEATURE = { type: 'Feature', id: 'building-1', properties: { object_id: 'building-1' }, geometry: parcelFeature.geometry };
+const HITS_BUILT = { built: [{ id: 'building-1', feature: BUILT_FEATURE, label: 'House' }] };
 // A design opens its actions panel in the section directly, not the planning inspector's summary.
 const DESIGN_PANEL = { hosted: true, presentation: 'details' };
 
@@ -58,10 +62,11 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
     const storage = new Map(memory ? [['cb.clickStack.expanded', memory]] : []);
     const clock = { now: 1_000_000 };
     class ClockDate extends Date { static now() { return clock.now; } }
-    const hitsBySpot = new Map([[SPOT_A.lat, HITS_A], [SPOT_B.lat, HITS_B]]);
+    const hitsBySpot = new Map([[SPOT_A.lat, HITS_A], [SPOT_B.lat, HITS_B], [SPOT_A.lat + 1, HITS_BUILT]]);
     // The real collaborators find their panel by id, as the browser does.
     const byId = id => doc.getElementById(id);
     const context = {
+        MapHighlight: require('../../frontend/js/shared-utils.js').MapHighlight,
         console: { info: () => {}, error: console.error, warn: console.warn, log: () => {} },
         Date: ClockDate,
         document: doc,
@@ -70,22 +75,34 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
         addEventListener: vi.fn(),
         navigator: {},
         __clickStackModel: model,
-        ClickStackHits: { hitsAt: vi.fn(latlng => hitsBySpot.get(latlng.lat) || {}), featuresFor: vi.fn((_kind, item) => item.feature ? [item.feature] : []) },
+        ClickStackRelations: relations,
+        MapHighlight: { style: vi.fn(options => ({ ...options, color: '#0284c7', dashArray: null, fillOpacity: 0 })) },
+        ProposalDesignGoals: require('../../frontend/js/proposals/design-goals.js'),
+        DesignSync: { publishedCid: proposal => proposal?.cid || null },
+        DesignMemberships: { mountSection: (body, kind, instance, _session, win, options) => {
+            for (const group of model.visibleContextFor(kind, instance, options?.hits || {})) {
+                body.appendChild(relations.renderGroup(group, doc, win));
+            }
+        } },
+        ClickStackNeighbours: neighbours,
+        ClickStackHits: { hitsAt: vi.fn(latlng => hitsBySpot.get(latlng.lat) || {}), withNeighbours: vi.fn(hits => ({ hits, added: {} })), featuresFor: vi.fn((_kind, item) => item.feature ? [item.feature] : []), buildingLabel: vi.fn(() => 'House') },
         __drillUi: { stackAt: vi.fn(() => [{ kind: 'parcel', id: 'p1', depth: 0 }, { kind: 'proposal', key: 'd1' }]) },
         MapPick: { active: () => false, pick: vi.fn() },
-        highlightFeaturesForHover: vi.fn(),
+        highlightFeaturesForInspection: vi.fn(),
         selectAndHighlightProposal: vi.fn(() => byId('proposal-details-panel')?.classList.add('visible')),
         hideProposalDetailsPanel: vi.fn(() => byId('proposal-details-panel')?.classList.remove('visible')),
         hideParcelInfoPanel: vi.fn(() => byId('parcel-info-panel')?.classList.remove('visible')),
         ProposalSelection: { clear: vi.fn() },
         LiveParcelFabric: { get: id => (String(id).startsWith('p') ? parcelFeature : null) },
-        turf: { area: () => 120 },
+        turf: { area: () => 120, pointOnFeature: vi.fn(() => ({ geometry: { coordinates: [SPOT_A.lng, SPOT_A.lat + 1] } })) },
         CbFormat: { formatArea: area => `${area} m²` },
         ParcelsUISelection: { selectParcelFromStack: vi.fn(() => byId('parcel-info-panel')?.classList.add('visible')) },
         ParcelMenu: { factsFor: vi.fn(() => ({ parcelId: 'p1' })), factsLine: () => '120 m²' },
         UiCommands: { commandsFor: () => [], createBrowserContext: () => ({}), labelOf: entry => entry.id, runCommand: vi.fn() },
         PlanningViews: { select: vi.fn(id => { if (id === null) inspector.hidden = true; }), isInspecting: () => !inspector.hidden,
-            inspectBuilding: vi.fn(() => { inspector.hidden = false; }), selectAt: vi.fn(() => { inspector.hidden = false; }) },
+            inspectBuilding: vi.fn((_feature, _id, options) => { expect(options).toEqual({ hosted: true }); expect(inspector.classList.contains('is-hosted')).toBe(true); inspector.hidden = false; }), selectAt: vi.fn(() => { inspector.hidden = false; }) },
+        L: { latLng: (lat, lng) => ({ lat, lng }) },
+        buildingPoolFeatureKey: feature => feature.properties?.object_id,
         AgreementPanel: { isOpen: () => agreementOpen, close: vi.fn(), open: vi.fn() }
     };
     context.window = context;
@@ -102,11 +119,46 @@ function loadPanel({ memory = null, withEditLock = false } = {}) {
         observe(target = null) { observers.forEach(observer => observer.callback(target ? [{ target }] : [])); },
         blockInfo, agreementPanel,
         setAgreementOpen(value) { agreementOpen = value; },
+        showBuilding(feature = BUILT_FEATURE, key = 'building-1') { return api.showBuilding(feature, key); },
         kinds: () => [...(stackEl()?.querySelectorAll('.click-stack__section') || [])].map(el => el.dataset.kind)
     };
 }
 
 describe('click stack selected objects and contextual navigation', () => {
+    it('routes a building inspection through Built and hosts the inspector before rendering it', () => {
+        const h = loadPanel();
+        expect(h.showBuilding()).toBe(true);
+        expect(h.api.current().expanded).toBe('built');
+        expect(h.inspector.parentNode).toBe(h.section('built').querySelector('.click-stack__body'));
+        expect(h.inspector.classList.contains('is-hosted')).toBe(true);
+        expect(h.context.PlanningViews.inspectBuilding).toHaveBeenCalledWith(BUILT_FEATURE, 'building-1', { hosted: true });
+        h.api.close();
+        expect(h.inspector.hidden).toBe(true);
+        expect(h.inspector.parentNode).toBe(h.dock);
+    });
+    it('keeps the collapsed design header to Design and restores its count, type, and selector when expanded', () => {
+        const h = loadPanel(); h.click(SPOT_A);
+        const row = () => h.section('designs').querySelector('.click-stack__row');
+        const title = () => row().querySelector('.click-stack__row-title');
+        const detail = () => row().querySelector('.click-stack__row-detail');
+        const pill = () => row().querySelector('.proposal-type-badge');
+        expect(title().textContent).toBe('Design (2)');
+        expect(detail().textContent).toBe('Park');
+        expect(pill().dataset.designGoal).toBe('park');
+        expect(pill().classList.contains('cb-badge--success')).toBe(true);
+        expect(pill().textContent).toContain('Park');
+        expect(h.section('designs').querySelector('.click-stack__selector')).not.toBeNull();
+        h.api.collapse();
+        expect(title().textContent).toBe('Design');
+        expect(detail().textContent).toBe('Park');
+        expect(pill()).toBeNull();
+        expect(h.section('designs').querySelector('.click-stack__selector')).toBeNull();
+        row().click();
+        expect(title().textContent).toBe('Design (2)');
+        expect(detail().textContent).toBe('Park');
+        expect(pill().dataset.designGoal).toBe('park');
+        expect(h.section('designs').querySelector('.click-stack__selector')).not.toBeNull();
+    });
     it('opens a replaced cadastral source on Info rather than its unavailable design palette', () => {
         const h = loadPanel();
         h.context.ClickStackHits.hitsAt.mockReturnValue({ parcels: [{ id: 'source', feature: parcelFeature, live: false }] });
@@ -131,30 +183,130 @@ describe('click stack selected objects and contextual navigation', () => {
         expect(h.stackEl().querySelector('.click-stack__choices')).toBeNull();
         expect(h.stackEl().querySelector('.click-stack__copy-reference')).toBeNull();
         expect(h.api.holdsHighlight()).toBe(true);
-        expect(h.context.highlightFeaturesForHover).toHaveBeenLastCalledWith([parcelFeature], expect.objectContaining({ className: 'click-stack-map-focus' }));
+        expect(h.context.highlightFeaturesForInspection).toHaveBeenLastCalledWith([parcelFeature], expect.objectContaining({ className: 'click-stack-map-focus' }));
         h.api.close();
         expect(h.api.isOpen()).toBe(false);
-        expect(h.context.highlightFeaturesForHover).toHaveBeenLastCalledWith([]);
+        expect(h.context.highlightFeaturesForInspection).toHaveBeenLastCalledWith([]);
     });
 
-    it("moves from agreement designs to the selected design's agreement links", () => {
+    it('keeps agreements out of spatial sections and shows parcel designs directly', () => {
         const h = loadPanel();
-        const agreement = { id: 'a1', title: 'Neighbourhood', designs: [{ proposalId: 'd1', title: 'Park' }, { proposalId: 'd2', title: 'School' }] };
-        h.context.ClickStackHits.hitsAt.mockReturnValue({ ...HITS_A, agreements: [{ id: 'a1', label: agreement.title, agreement, designIds: ['d1', 'd2'] }] });
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ ...HITS_A, agreements: [{ id: 'a1', label: 'Neighbourhood' }],
+            designs: HITS_A.designs.map(item => ({ ...item, proposal: { ...item.proposal, cadastreParcelIds: ['p1'] } })) });
         h.click(SPOT_A);
-        const child = h.section('agreements').querySelector('.click-stack__choices');
-        expect(child.dataset.kind).toBe('designs');
-        expect(child.querySelector('.click-stack__choice-count').textContent).toBe('(2)');
-        child.querySelector('[data-id="d2"]').click();
+        expect(h.kinds()).toEqual(['designs', 'parcels']);
+        expect(h.section('agreements')).toBeNull();
+        h.section('parcels').querySelector('.click-stack__row').click();
+        const parcelBody = h.section('parcels').querySelector('.click-stack__body');
+        expect(parcelBody.querySelector('.click-stack__choices[data-kind="designs"]')).not.toBeNull();
+    });
+
+    it('adds loaded plans above the design without stealing focus, and keeps the multi-design selector working', async () => {
+        const h = loadPanel();
+        const pending = [];
+        const mounted = [];
+        h.context.DesignMemberships = { mountSection: vi.fn((body, ...args) => {
+            Object.defineProperty(body, 'isConnected', { value: true, configurable: true });
+            mounted.push([body, ...args]);
+        }) };
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ ...HITS_A, designs: HITS_A.designs.map(item => ({
+            ...item, proposal: { ...item.proposal, cid: 'cid-d1' }
+        })) });
+        h.context.loadDesignMemberships = vi.fn((proposal, callback) => new Promise(resolve => pending.push({ proposal, callback, resolve })));
+        h.click(SPOT_A);
+        expect(pending).toHaveLength(1);
+        expect(h.api.current()).toMatchObject({ expanded: 'designs', selectedKind: 'designs' });
+        const session = {
+            cid: 'cid-d1', proposalId: 'd1', dispose: vi.fn(),
+            instances(kind) { return kind === 'plans'
+                ? [{ id: 'plan-1', label: 'Shared plan', designCids: ['cid-d1'] }, { id: 'plan-2', label: 'Alternative plan', designCids: ['cid-d1'] }]
+                : []; }
+        };
+        pending[0].callback(session);
+        pending[0].resolve(session);
+        await Promise.resolve();
+        expect(h.kinds()).toEqual(['plans', 'designs', 'parcels']);
+        expect(h.api.current()).toMatchObject({ expanded: 'designs', selectedKind: 'designs' });
+        expect(h.context.selectAndHighlightProposal).toHaveBeenCalledTimes(1);
+        expect(h.section('designs').querySelector('.click-stack__choices[data-kind="plans"]')).not.toBeNull();
+        expect(h.section('designs').querySelector('.click-stack__choices[data-kind="plans"]')).not.toBeNull();
+        expect(h.section('agreements')).toBeNull();
+
+        h.section('plans').querySelector('.click-stack__row').click();
+        expect(h.context.DesignMemberships.mountSection).toHaveBeenCalled();
+        const planSelector = h.section('plans').querySelector('.click-stack__selector');
+        planSelector.value = 'plan-2';
+        planSelector.dispatchEvent({ type: 'change', target: planSelector });
+        expect(h.api.current().sections.find(section => section.kind === 'plans').instances[1].id).toBe('plan-2');
+        const planFocus = mounted[0][5].onFocus;
+        planFocus({ id: 'plan-2', feature: parcelFeature });
+        expect(h.context.highlightFeaturesForInspection).toHaveBeenLastCalledWith([parcelFeature], expect.objectContaining({ className: 'click-stack-map-focus' }));
+        h.section('plans').querySelector('.click-stack__row').click();
+        const afterCollapse = h.context.highlightFeaturesForInspection.mock.calls.length;
+        planFocus({ id: 'plan-2', feature: parcelFeature });
+        expect(h.context.highlightFeaturesForInspection).toHaveBeenCalledTimes(afterCollapse + 1);
+        h.api.expand('designs');
+        const afterSwitch = h.context.highlightFeaturesForInspection.mock.calls.length;
+        planFocus({ id: 'plan-2', feature: parcelFeature });
+        expect(h.context.highlightFeaturesForInspection).toHaveBeenCalledTimes(afterSwitch);
+
+        const select = h.section('designs').querySelector('.click-stack__selector');
+        expect(select).not.toBeNull();
+        select.value = 'd2';
+        select.dispatchEvent({ type: 'change', target: select });
         expect(h.api.current()).toMatchObject({ selectedKind: 'designs', expanded: 'designs' });
+        expect(h.api.current().sections.find(section => section.kind === 'designs').instances[1].id).toBe('d2');
         expect(h.context.selectAndHighlightProposal).toHaveBeenLastCalledWith('d2', null, false, true, false, DESIGN_PANEL);
-        expect(h.section('agreements').querySelector('.click-stack__choices')).toBeNull();
-        const parent = h.section('designs').querySelector('.click-stack__choices');
-        expect(parent.dataset.kind).toBe('agreements');
-        expect(parent.nextSibling).toBe(h.section('designs').querySelector('.click-stack__card'));
-        expect(h.section('designs').querySelector('.click-stack__choices[data-kind="designs"]')).toBeNull();
-        parent.querySelector('[data-id="a1"]').click();
-        expect(h.api.current().selectedKind).toBe('agreements');
+    });
+
+    it('retains a collapsed design while memberships arrive and ignores stale callbacks after a new selection or close', async () => {
+        const h = loadPanel();
+        const pending = [];
+        h.context.loadDesignMemberships = vi.fn((proposal, callback) => new Promise(resolve => pending.push({ proposal, callback, resolve })));
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ ...HITS_A, designs: HITS_A.designs.map(item => ({
+            ...item, proposal: { ...item.proposal, cid: 'cid-d1' }
+        })) });
+        h.click(SPOT_A);
+        h.api.collapse();
+        pending[0].callback({ cid: 'cid-d1', proposalId: 'd1', dispose: vi.fn(), instances: kind => kind === 'plans' ? [{ id: 'late-plan', label: 'Late plan', designCids: ['cid-d1'] }] : [] });
+        pending[0].resolve({ dispose: vi.fn() });
+        await Promise.resolve();
+        expect(h.api.current()).toMatchObject({ expanded: null, selectedKind: 'designs' });
+        expect(h.kinds()).toEqual(['plans', 'designs', 'parcels']);
+
+        h.api.expand('designs');
+        const select = h.section('designs').querySelector('.click-stack__selector');
+        select.value = 'd2';
+        select.dispatchEvent({ type: 'change', target: select });
+        expect(pending).toHaveLength(2);
+        const sectionsBeforeStale = h.kinds();
+        pending[0].callback({ cid: 'stale-cid', proposalId: 'd1', dispose: vi.fn(), instances: () => [{ id: 'stale-agreement', label: 'Stale' }] });
+        expect(h.kinds()).toEqual(sectionsBeforeStale);
+
+        h.api.close();
+        expect(h.api.isOpen()).toBe(false);
+        pending[1].callback({ cid: 'closed-cid', proposalId: 'd2', dispose: vi.fn(), instances: () => [{ id: 'closed-agreement', label: 'Closed' }] });
+        expect(h.api.isOpen()).toBe(false);
+    });
+
+    it('rejects a pending result for an outdated CID on the same local design and resyncs', () => {
+        const h = loadPanel();
+        const proposal = { proposalId: 'd1', cid: 'current' };
+        const pending = [];
+        h.context.ClickStackHits.hitsAt.mockReturnValue({ designs: [{ id: 'd1', label: 'Road', proposal }] });
+        h.context.loadDesignMemberships = vi.fn((record, callback) => new Promise(resolve => pending.push({ record, callback, resolve })));
+        h.click(SPOT_A);
+        expect(pending).toHaveLength(1);
+        proposal.cid = 'revised';
+        const stale = { cid: 'current', dispose: vi.fn(), instances: () => [{ id: 'stale-plan', label: 'Stale' }] };
+        pending[0].callback(stale);
+        pending[0].resolve(stale);
+        expect(stale.dispose).toHaveBeenCalled();
+        expect(pending).toHaveLength(2);
+        expect(h.kinds()).not.toContain('plans');
+        const current = { cid: 'revised', dispose: vi.fn(), instances: kind => kind === 'plans' ? [{ id: 'current-plan', label: 'Current' }] : [] };
+        pending[1].callback(current);
+        expect(h.kinds()).toContain('plans');
     });
 });
 
@@ -193,7 +345,7 @@ describe('click stack panel: a click opens, the same click closes', () => {
         change();
         expect(h.api.isOpen()).toBe(false);
     });
-    it('keeps selected parcels aside for agreement details, then restores them when they close', () => {
+    it('keeps selected parcels aside for the Agreement dialog, then restores them when it closes', () => {
         const h = loadPanel();
         const multi = { isActive: true, selectedParcels: new Set(['p1']),
             showSelectionInPanel: vi.fn(() => h.parcelPanel.classList.add('visible')) };
@@ -375,14 +527,26 @@ describe('click stack panel: a click opens, the same click closes', () => {
         expect(h.stackEl().classList.contains('is-folded')).toBe(false);
     });
 
-    it('retains the selected object when it is clicked again, including while collapsed', () => {
+    it('retains the selected object when it is clicked again, re-opening its section after a collapse', () => {
         const h = loadPanel();
         h.click(SPOT_A);
         h.api.collapse();
         h.click(SPOT_A);
         expect(h.api.isOpen()).toBe(true);
-        expect(h.api.current()).toMatchObject({ selectedKind: 'designs', expanded: null });
+        expect(h.api.current()).toMatchObject({ selectedKind: 'designs', expanded: 'designs' });
         expect(h.context.ProposalSelection.clear).not.toHaveBeenCalled();
+    });
+
+    it('re-expands the topmost section on a repeat click after another section was expanded', () => {
+        const h = loadPanel();
+        h.click(SPOT_A);
+        h.api.expand('parcels');
+        expect(h.api.current().expanded).toBe('parcels');
+        h.click(SPOT_A);
+        expect(h.api.isOpen()).toBe(true);
+        expect(h.api.current()).toMatchObject({ selectedKind: 'designs', expanded: 'designs' });
+        expect(h.section('designs').classList.contains('is-expanded')).toBe(true);
+        expect(h.proposalPanel.parentNode).toBe(h.section('designs').querySelector('.click-stack__body'));
     });
 
     it('treats one physical click reaching two layers as one click', () => {
@@ -528,6 +692,80 @@ describe('click stack panel: other surfaces and the dock', () => {
         expect(h.context.hideParcelInfoPanel).toHaveBeenCalled();
         expect(h.context.PlanningViews.select).toHaveBeenCalledWith(null);
         expect(h.api.isOpen()).toBe(true);
+    });
+});
+
+describe('observed building context', () => {
+    it('disposes an old design membership and never revives its plans during a building refresh', async () => {
+        const h = loadPanel(), pending = [];
+        h.context.loadDesignMemberships = vi.fn((proposal, callback) => new Promise(resolve => pending.push({ callback, resolve })));
+        const designHits = { ...HITS_A, designs: HITS_A.designs.map(row => ({ ...row, proposal: { ...row.proposal, cid: 'cid-d1' } })) };
+        const buildingHits = { built: [{ id: 'house', feature: parcelFeature }], ...HITS_B };
+        h.context.ClickStackHits.hitsAt.mockImplementation(spot => spot === SPOT_A ? designHits : buildingHits);
+        h.click(SPOT_A);
+        const session = { cid: 'cid-d1', proposalId: 'd1', dispose: vi.fn(), instances: () => [{ id: 'old-plan', label: 'Old plan' }] };
+        pending[0].callback(session); pending[0].resolve(session); await Promise.resolve();
+        expect(h.api.current().sections.some(row => row.kind === 'plans')).toBe(true);
+        h.click(SPOT_B);
+        const refresh = h.context.ClickStackHits.hitsAt.mock.lastCall[1].onPublished;
+        expect(session.dispose).toHaveBeenCalled();
+        refresh(); pending[0].callback(session);
+        expect(h.kinds()).toEqual(['built', 'parcels']);
+        expect(h.api.current().sections.map(row => row.kind)).toEqual(['built', 'parcels']);
+        expect(h.api.current().expanded).toBe('built');
+    });
+
+    it('invalidates a pending plan lookup before it resolves over a building selection', async () => {
+        const h = loadPanel(), pending = [];
+        h.context.loadDesignMemberships = vi.fn((proposal, callback) => new Promise(resolve => pending.push({ callback, resolve })));
+        h.context.ClickStackHits.hitsAt.mockImplementation(spot => spot === SPOT_A ? HITS_A : { built: [{ id: 'house', feature: parcelFeature }], ...HITS_B });
+        h.click(SPOT_A); h.click(SPOT_B);
+        const session = { cid: null, proposalId: 'd1', dispose: vi.fn(), instances: () => [{ id: 'late-plan' }] };
+        pending[0].callback(session); pending[0].resolve(session); await Promise.resolve();
+        expect(session.dispose).toHaveBeenCalled(); expect(h.kinds()).toEqual(['built', 'parcels']);
+    });
+});
+
+describe('plan member ground context', () => {
+    // The real merge (click-stack-neighbours.js) over lookups for two plan members, each with its
+    // own formed piece and cadastral source.
+    const memberNeighbours = (hits, kind, instance) => neighbours.withNeighbours(hits, kind, instance, {
+        formedByDesign: proposal => [{ id: `piece-${proposal.proposalId}`, feature: parcelFeature }],
+        parcelFeature: () => parcelFeature,
+        isLive: () => false
+    });
+    const twoDesignPlan = async h => {
+        h.context.map = { getCenter: () => SPOT_A };
+        h.context.DesignMemberships.inspect = vi.fn(async () => ({ members: HITS_A.designs.map(item => ({ ...item,
+            proposal: { ...item.proposal, cadastreParcelIds: [`source-${item.id}`] } })), features: [] }));
+        h.context.ClickStackHits.withNeighbours.mockImplementation(memberNeighbours);
+        await h.api.showPlan({ cid: 'plan-one', content: { title: 'Two designs', designCids: [] } });
+    };
+
+    it('builds a plan member\'s land from the selected design outward', async () => {
+        const h = loadPanel();
+        await twoDesignPlan(h);
+        expect(h.api.current().sections.map(section => section.kind)).toEqual(['plans', 'designs']);
+        h.api.expand('designs');
+        expect(h.api.current().sections.map(section => section.kind)).toEqual(['plans', 'designs', 'formed', 'parcels']);
+        expect(h.kinds()).toEqual(['plans', 'designs', 'formed']);
+        expect(model.selectedInstance(h.api.current(), 'formed').id).toBe('piece-d1');
+        expect(model.selectedInstance(h.api.current(), 'parcels')).toMatchObject({ id: 'source-d1', live: false });
+        expect(h.context.ClickStackHits.withNeighbours).toHaveBeenCalledWith(expect.anything(), 'designs',
+            expect.objectContaining({ id: 'd1' }), expect.objectContaining({ onPublished: expect.any(Function) }));
+    });
+
+    // A selector swap within one section replaces that object's neighbours below it.
+    it('swaps the formed and cadastral sections when the design selector picks another member', async () => {
+        const h = loadPanel();
+        await twoDesignPlan(h);
+        h.api.expand('designs');
+        const selector = h.section('designs').querySelector('.click-stack__selector');
+        selector.value = 'd2'; selector.dispatchEvent({ type: 'change', target: selector });
+        expect(model.selectedInstance(h.api.current(), 'designs').id).toBe('d2');
+        expect(model.selectedInstance(h.api.current(), 'formed').id).toBe('piece-d2');
+        expect(model.selectedInstance(h.api.current(), 'parcels').id).toBe('source-d2');
+        expect(model.selectedInstance(h.api.current(), 'plans').id).toBe('plan-one');
     });
 });
 

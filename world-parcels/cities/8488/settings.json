@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "8488",
+  "name": "Campina Grande, Brazil",
+  "point": [
+    -7.23215231967948,
+    -35.8983934975757
+  ],
+  "bindings": [
+    {
+      "appCityId": "campina_grande",
+      "runtimeConfig": {
+        "id": "campina_grande",
+        "wupCityCode": "8488",
+        "label": "Campina Grande, Brazil",
+        "currency": {
+          "locale": "pt-BR",
+          "code": "BRL"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            -7.23215231967948,
+            -35.8983934975757
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            -7.23215231967948,
+            -35.8983934975757
+          ],
+          "fallbackDataset": [
+            -35.8983934975757,
+            -7.23215231967948
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "br-sfb-consulta-car-public-wfs",
+          "idPrefix": "BR-CAR-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Serviço Florestal Brasileiro / SICAR, Consulta Pública — declared rural-property environmental cadastral polygons."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "br-sfb-consulta-car-public-wfs",
+      "name": "SICAR Consulta Pública — declared rural-property polygons",
+      "operator": "Serviço Florestal Brasileiro / Sistema de Cadastro Ambiental Rural (SICAR)",
+      "adapter": "wfs",
+      "endpoint": "https://consulta.car.gov.br/geoserver/wfs",
+      "version": "2.0.0",
+      "featureType": "consulta_publica:iru",
+      "geometryField": "geom",
+      "idField": "cod_imovel",
+      "idType": "string",
+      "idPattern": "^[A-Z]{2}-[0-9]{7}-[A-F0-9]{32}$",
+      "idPrefix": "BR-CAR-",
+      "outFields": [
+        "cod_imovel"
+      ],
+      "requestProperties": true,
+      "paginationIdentity": "native-id",
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "countryCode": "BR",
+      "metricSrid": 32725,
+      "cityIds": [
+        "campina_grande"
+      ],
+      "defaultForCity": true,
+      "scope": "Bounded Campina Grande observations of declared CAR rural environmental cadastral property perimeters. Does not establish municipal urban fiscal-lot coverage, citywide completeness, legal title, survey accuracy or currentness. National service endpoint; only the admitted city is enabled.",
+      "attribution": "Serviço Florestal Brasileiro / SICAR, Consulta Pública — declared rural-property environmental cadastral polygons.",
+      "catalogueUrl": "https://consulta.car.gov.br/",
+      "authorityUrls": [
+        "https://consulta.car.gov.br/",
+        "https://www.gov.br/gestao/pt-br/assuntos/meu-imovel-rural/como-funciona-1/visualizar-poligonos-car-sigef"
+      ],
+      "sourceCrs": "EPSG:4674",
+      "wireCrs": "CRS:84",
+      "reuseTerms": "WFS capabilities advertise Fees NONE / AccessConstraints NONE. No explicit redistribution licence established; publisher terms require second-pass confirmation.",
+      "refresh": "Live WFS reads; publisher update cadence and record currentness unverified."
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "6013",
+  "name": "Colorado Springs, United States",
+  "point": [
+    38.8771089520909,
+    -104.758837050009
+  ],
+  "bindings": [
+    {
+      "appCityId": "colorado_springs",
+      "runtimeConfig": {
+        "id": "colorado_springs",
+        "wupCityCode": "6013",
+        "label": "Colorado Springs, United States",
+        "currency": {
+          "locale": "en-US",
+          "code": "USD"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            38.8771089520909,
+            -104.758837050009
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            38.8771089520909,
+            -104.758837050009
+          ],
+          "fallbackDataset": [
+            -104.758837050009,
+            38.8771089520909
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "us-co-elpaso-spatialest-geoserver-parcels1foot-wfs",
+          "idPrefix": "US-CO-EPC-PARCEL:",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "El Paso County Assessor / El Paso County, Colorado; Spatialest public property-search service."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "us-co-elpaso-spatialest-geoserver-parcels1foot-wfs",
+      "name": "El Paso County Assessor Spatialest parcels1foot WFS",
+      "operator": "El Paso County Assessor / Spatialest",
+      "adapter": "wfs",
+      "endpoint": "https://geo-wc1.spatialest.com/geoserver/wfs",
+      "version": "2.0.0",
+      "featureType": "el-paso-co:parcels1foot",
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "outFields": [
+        "PARCEL"
+      ],
+      "idField": "PARCEL",
+      "idType": "string",
+      "idPattern": "^[0-9]{10}$",
+      "idPrefix": "US-CO-EPC-PARCEL:",
+      "omitSortBy": true,
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 1048576,
+      "timeoutMs": 30000,
+      "maxConcurrentQueries": 2,
+      "countryCode": "US",
+      "metricSrid": 32613,
+      "cityIds": [
+        "colorado_springs"
+      ],
+      "defaultForCity": true,
+      "scope": "Bounded Colorado Springs observations in the El Paso County assessor parcel layer. Municipal clipping, parcel-class coverage, historic records and city/county completeness are unverified.",
+      "catalogueUrl": "https://property.spatialest.com/co/elpaso/",
+      "attribution": "El Paso County Assessor / El Paso County, Colorado; Spatialest public property-search service.",
+      "licenceNote": "Public anonymous WFS; discovery capabilities report Fees NONE and AccessConstraints NONE. No explicit reuse licence verified; attribution retained.",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "US",
+          "basis": "Official El Paso County Assessor links the Spatialest CO ElPaso property-search tenant, whose Parcel Layer is el-paso-co:parcels1foot with native PARCEL identifier.",
+          "evidence": [
+            "https://assessor.elpasoco.com/",
+            "https://assessor.elpasoco.com/assessordata/",
+            "https://property.spatialest.com/co/elpaso/"
+          ]
+        }
+      }
+    }
+  ]
+}

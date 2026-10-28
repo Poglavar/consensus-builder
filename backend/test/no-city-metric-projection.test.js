@@ -4,6 +4,7 @@
 // in Zagreb 13.65 m wide whenever New York was the active city. This guard fails if any comes back:
 // everything measured or built in metres takes an explicit frame (metric-frame.js).
 import { describe, it, expect } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -31,7 +32,7 @@ describe('no city-wide metric projection', () => {
     });
 
     it('no city declares a metric projection', () => {
-        const config = readFileSync(join(frontendJs, 'city-config.js'), 'utf8');
+        const config = cityConfigSource();
         expect(config).not.toMatch(/metricCrs\s*:/);
         expect(config).not.toMatch(/metricDefinition\s*:/);
         expect(config).not.toMatch(/exploreProjection/);

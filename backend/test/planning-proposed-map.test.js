@@ -21,7 +21,7 @@ function render(form, fail = false) {
         PROPOSED_BUILDING_STYLE: { fillOpacity: 0.35 }, console: { error: vi.fn() },
         translateBuildingText: (_key, text) => text, showErrorPopup: vi.fn(),
         L: { featureGroup: () => ({ addTo() {} }), geoJSON: (feature, options) => ({ addTo() { rendered.push({ feature, options }); } }) },
-        window: { PlanningViews: { getState: () => ({ proposedForm: form, variation: '7' }), color: () => '#c26336' },
+        window: { PlanningViews: { getState: () => ({ proposedForm: form, proposedVariation: '7' }), color: () => '#c26336' },
             UrbanRuleVariation: { plannedDrawPlan: planner } }
     };
     vm.runInNewContext(draw, context);

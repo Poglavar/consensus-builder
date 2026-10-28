@@ -1,56 +1,22 @@
-const PINATA_JSON_ENDPOINT = 'https://api.pinata.cloud/pinning/pinJSONToIPFS';
-
 import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
 import { createUploadRateLimiter, decodeUploadImage, validateNftMetadata } from '../utils/nft-asset-upload.js';
-import { pinataCredentials, pinFileToPinata } from '../storage/pinning.js';
+import { pinFile, ipfsGatewayUrl } from '../storage/pinning.js';
+import { canonicalBytes } from '../cid.js';
 
 const MAX_FILE_NAME_LENGTH = 255;
 
-export async function uploadImageToPinata({ buffer, fileName, contentType }) {
-    const { cid: ipfsHash } = await pinFileToPinata({ bytes: buffer, fileName, contentType: contentType || 'application/octet-stream' });
-    return {
-        ipfsUri: `ipfs://${ipfsHash}`,
-        gatewayUrl: `https://gateway.pinata.cloud/ipfs/${ipfsHash}`,
-        ipfsHash
-    };
+async function uploadFile(input) {
+    const { cid } = await pinFile(input);
+    return { ipfsUri: `ipfs://${cid}`, gatewayUrl: ipfsGatewayUrl(cid), ipfsHash: cid };
 }
 
-export async function uploadMetadataToPinata(metadata, pinName) {
-    const { apiKey, apiSecret } = pinataCredentials();
+export function uploadImage({ buffer, fileName, contentType }) {
+    return uploadFile({ bytes: buffer, fileName, contentType: contentType || 'application/octet-stream' });
+}
 
-    const body = {
-        pinataContent: metadata,
-        pinataMetadata: {
-            name: `${pinName || metadata?.name || 'proposal-nft'}-metadata.json`
-        }
-    };
-
-    const response = await fetch(PINATA_JSON_ENDPOINT, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'pinata_api_key': apiKey,
-            'pinata_secret_api_key': apiSecret
-        },
-        body: JSON.stringify(body)
-    });
-
-    if (!response.ok) {
-        const errorBody = await response.text();
-        throw new Error(`Failed to upload metadata to Pinata: ${response.status} ${errorBody}`);
-    }
-
-    const result = await response.json();
-    const ipfsHash = result?.IpfsHash;
-    if (!ipfsHash) {
-        throw new Error('Pinata response did not include IpfsHash for metadata upload.');
-    }
-
-    return {
-        ipfsUri: `ipfs://${ipfsHash}`,
-        gatewayUrl: `https://gateway.pinata.cloud/ipfs/${ipfsHash}`,
-        ipfsHash
-    };
+export function uploadMetadata(metadata, pinName) {
+    const name = `${pinName || metadata?.name || 'proposal-nft'}-metadata.json`;
+    return uploadFile({ bytes: canonicalBytes(metadata), fileName: name, contentType: 'application/json', name });
 }
 
 const ipfsUploadBodyValidator = createJsonBodyValidator({
@@ -82,7 +48,7 @@ const ipfsUploadBodyValidator = createJsonBodyValidator({
     }
 });
 
-// This route pins on OUR Pinata account and used to be an open relay (origin check only, 15 MB of
+// This route pins on OUR configured storage account and used to be an open relay (origin check only, 15 MB of
 // anything). It now takes exactly what the mint flows send — see utils/nft-asset-upload.js.
 export function setupIpfsRoute(app) {
     const uploadRateLimiter = createUploadRateLimiter();
@@ -104,7 +70,7 @@ export function setupIpfsRoute(app) {
                 .replace(/\.[A-Za-z0-9]{1,5}$/, '');
             const safeFileName = `${baseName}.${image.extension}`;
 
-            const imageUpload = await uploadImageToPinata({
+            const imageUpload = await uploadImage({
                 buffer: image.buffer,
                 fileName: safeFileName,
                 contentType: image.contentType
@@ -117,7 +83,7 @@ export function setupIpfsRoute(app) {
                 enrichedMetadata.external_url = imageUpload.gatewayUrl;
             }
 
-            const metadataUpload = await uploadMetadataToPinata(enrichedMetadata, metadata?.name || safeFileName);
+            const metadataUpload = await uploadMetadata(enrichedMetadata, metadata?.name || safeFileName);
 
             res.json({
                 imageUri: imageUpload.ipfsUri,

@@ -1,4 +1,4 @@
-// Projects immutable source-parcel boundaries onto streamed photo tiles; no mesh heights become cadastral facts.
+// Draws immutable cadastral boundaries on photo tiles and supplies source geometry to shared 3D selection.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -77,7 +77,7 @@ if (uParcelOn > 0.5) {
 }`);
     }
 
-    function create({ root, internals, pickSurface, uniforms }) {
+    function create({ root, internals, uniforms }) {
         const { THREE, document: doc } = root;
         const size = 2048;
         const k = root.__photorealFrame.mercatorScaleFactor(internals.originLatLng().lat);
@@ -97,16 +97,10 @@ if (uParcelOn > 0.5) {
         uniforms.uParcelOn.value = 0;
         const toggle = doc.getElementById('photo-parcels-visible');
         const status = doc.getElementById('photo-parcels-status');
-        const card = doc.getElementById('photo-parcel-selection');
-        const cardHome = card?.parentNode;
-        let ownsStack = false;
-        const close = doc.getElementById('photo-parcel-close');
-        const element = internals.renderer.domElement;
         let enabled = toggle?.checked === true;
         let disposed = false, busy = false, dirty = true;
-        let bounds = null, parcels = [], selected = null, down = null, request = null;
+        let bounds = null, parcels = [], request = null;
         let requestedCenter = null, requestedSpan = null, statusSpec = null;
-        let matches = [], matchIndex = 0;
         const t = (key, fallback, params) => {
             const value = root.i18n?.t?.('threeMode.photoParcels.' + key, params);
             return value && value !== 'threeMode.photoParcels.' + key ? value : fallback;
@@ -119,8 +113,7 @@ if (uParcelOn > 0.5) {
             const style = root.getComputedStyle(doc.documentElement);
             return {
                 edge: style.getPropertyValue('--cb-photo-parcel-boundary').trim(),
-                halo: style.getPropertyValue('--cb-photo-parcel-halo').trim(),
-                selected: style.getPropertyValue('--cb-photo-parcel-selected').trim()
+                halo: style.getPropertyValue('--cb-photo-parcel-halo').trim()
             };
         }
         function path(parcel) {
@@ -144,55 +137,13 @@ if (uParcelOn > 0.5) {
                 context.strokeStyle = color;
                 parcels.forEach(parcel => { path(parcel); context.stroke(); });
             }
-            if (selected) {
-                path(selected);
-                context.fillStyle = colors.selected;
-                context.globalAlpha = 0.22;
-                context.fill('evenodd');
-                context.globalAlpha = 1;
-                context.strokeStyle = colors.selected;
-                context.lineWidth = 6;
-                context.stroke();
-            }
             texture.needsUpdate = true;
             uniforms.uParcelOn.value = enabled && parcels.length ? 1 : 0;
             root.invalidateThreeView?.();
         }
-        function showSelection(parcel) {
-            selected = parcel;
-            if (card) {
-                card.hidden = !parcel || !enabled;
-                if (parcel) {
-                    doc.getElementById('photo-parcel-reference').textContent = parcel.id;
-                    const area = root.turf.area(parcel.feature);
-                    doc.getElementById('photo-parcel-area').textContent = new Intl.NumberFormat(root.i18n?.getLanguage?.() || 'en',
-                        { maximumFractionDigits: 0 }).format(area) + ' m²';
-                    doc.getElementById('photo-parcel-overlap').textContent = matches.length > 1
-                        ? t('overlap', 'Overlapping source outlines: {{index}} / {{count}}. Click again to cycle.',
-                            { index: matchIndex + 1, count: matches.length }) : '';
-                }
-            }
-            if (parcel && enabled && card) {
-                ownsStack = true;
-                root.ThreeClickStack.show({ parcels: [{ id: parcel.id, label: root.ThreeClickStack.parcelLabel(parcel.id) }] },
-                    { focus: 'parcels', container: doc.getElementById('map-container') || doc.body }, {
-                        activate(_kind, _instance, body) {
-                            card.hidden = false;
-                            body.appendChild(card);
-                        },
-                        release() { card.hidden = true; cardHome?.appendChild(card); },
-                        closed() { ownsStack = false; clearSelection(); }
-                    });
-            } else if (ownsStack) {
-                ownsStack = false;
-                root.ThreeClickStack.close({ silent: true });
-            }
-            draw();
-        }
         function rebuild(features) {
             parcels = projectFeatures(features, internals.latLngToXY, bounds);
-            matches = [];
-            showSelection(selected ? parcels.find(p => p.id === selected.id) || null : null);
+            draw();
         }
         async function load(x, y, nextSpan) {
             busy = true;
@@ -216,13 +167,13 @@ if (uParcelOn > 0.5) {
             } catch (error) {
                 if (disposed || request.signal.aborted) return;
                 console.error(`[${new Date().toISOString()}] [photo-parcels] Source boundaries unavailable`, error);
-                bounds = null; parcels = []; showSelection(null);
+                bounds = null; parcels = []; draw();
                 uniforms.uParcelOn.value = 0;
                 setStatus('failed', 'Parcel boundaries could not load. Toggle the layer to retry.');
             } finally { busy = false; }
         }
         function update() {
-            if (disposed || !enabled || busy) return;
+            if (disposed || busy) return;
             const target = internals.controls.target;
             const nextSpan = windowSpan(internals.camera.position.distanceTo(target), k);
             if (dirty || requestedSpan !== nextSpan || !requestedCenter || Math.hypot(target.x - requestedCenter[0], target.y - requestedCenter[1]) > requestedSpan / 4) {
@@ -233,44 +184,25 @@ if (uParcelOn > 0.5) {
         function onToggle() {
             enabled = toggle.checked;
             uniforms.uParcelOn.value = enabled && parcels.length ? 1 : 0;
-            showSelection(selected);
             if (status) status.hidden = !enabled;
             if (enabled) { dirty = true; update(); }
             root.invalidateThreeView?.();
         }
-        function onDown(event) { down = event.button === 0 ? [event.clientX, event.clientY] : null; }
-        function onClick(event) {
-            if (!enabled || !down || event.button !== 0 || !bounds) return;
-            const moved = Math.hypot(event.clientX - down[0], event.clientY - down[1]);
-            down = null;
-            if (moved > 6 || root.__mapEditLock?.blocksSelection?.()) return;
-            const point = pickSurface(event);
-            const nextMatches = point ? parcelsAt(parcels, point.x, point.y) : [];
-            matchIndex = nextMatches.length > 1 && nextMatches.map(p => p.id).join('|') === matches.map(p => p.id).join('|')
-                ? (matchIndex + 1) % nextMatches.length : 0;
-            matches = nextMatches;
-            showSelection(matches[matchIndex] || null);
-        }
-        function clearSelection() { matches = []; showSelection(null); }
-        function onKey(event) { if (event.key === 'Escape') clearSelection(); }
         const themeObserver = new root.MutationObserver(() => draw());
         themeObserver.observe(doc.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
         const unsubscribeLanguage = root.i18n?.onChange?.(() => {
             if (statusSpec) setStatus(...statusSpec);
-            showSelection(selected);
         });
         toggle?.addEventListener('change', onToggle);
-        close?.addEventListener('click', clearSelection);
-        element.addEventListener('pointerdown', onDown);
-        element.addEventListener('click', onClick);
-        root.addEventListener('keydown', onKey, true);
         if (status) status.hidden = !enabled;
         update();
         return {
             uniforms, update,
+            at: (x, y) => parcelsAt(parcels, x, y),
             dispose() {
-                if (ownsStack) { ownsStack = false; root.ThreeClickStack.close({ silent: true }); }
                 disposed = true;
+                parcels = [];
+                bounds = null;
                 request?.abort();
                 themeObserver.disconnect();
                 unsubscribeLanguage?.();
@@ -278,11 +210,6 @@ if (uParcelOn > 0.5) {
                 uniforms.uParcelOn.value = 0;
                 uniforms.uParcelOverlay.value = null;
                 toggle?.removeEventListener('change', onToggle);
-                close?.removeEventListener('click', clearSelection);
-                element.removeEventListener('pointerdown', onDown);
-                element.removeEventListener('click', onClick);
-                root.removeEventListener('keydown', onKey, true);
-                if (card) card.hidden = true;
             }
         };
     }

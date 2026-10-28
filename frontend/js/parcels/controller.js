@@ -1,8 +1,14 @@
 (function (global) {
     'use strict';
 
+    function isTwoDimensionalViewportActive() {
+        var mode = global.__mapModeState;
+        if (mode && (mode.pending || mode.desired !== '2d')) return false;
+        return typeof global.isThreeModeActive !== 'function' || !global.isThreeModeActive();
+    }
+
     function handleMoveEnd(map, options) {
-        if (!map) return;
+        if (!map || !isTwoDimensionalViewportActive()) return;
         if (!map._loaded || typeof map.getBounds !== 'function') {
             return;
         }
@@ -19,16 +25,8 @@
             return;
         }
 
-        // Handle buildings update
-        try {
-            var showBuildings = document.getElementById('showBuildings');
-            if (showBuildings && showBuildings.checked && typeof global.fetchBuildings === 'function') {
-                if (typeof global.buildingsTimeout !== 'undefined') {
-                    clearTimeout(global.buildingsTimeout);
-                }
-                global.buildingsTimeout = setTimeout(global.fetchBuildings, 1000);
-            }
-        } catch (_) { /* ignore */ }
+        // Buildings follow the map from map-core.js's moveend handler (one debounced fetch per pan
+        // for every survey switched on); this controller handles parcels only.
 
         // No cadastre here (the explore city): only a chosen session plan needs viewport updates.
         if (global.CityConfigManager && typeof global.CityConfigManager.hasParcelData === 'function'
@@ -53,6 +51,7 @@
             ? parcelFetchConfig.getDebounce()
             : 500;
         global.parcelsTimeout = setTimeout(function () {
+            if (!isTwoDimensionalViewportActive()) return;
             if (typeof global.fetchParcelData !== 'function') return;
             // No cache inspection here. The repository returns immediately when this exact ground
             // is already retained and joins an existing request when another consumer got there first.

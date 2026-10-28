@@ -1,0 +1,439 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Urban Game Theory portable plan file v1",
+  "$comment": "Structural schema. Full validation additionally requires PlanFile: canonical CID equality and exact ordered membership, geographic coordinate/ring validation, embedded self-contained model checks, private-field exclusions and bounded bytes/depth/nodes/vertices. Payload parameters retain the design/v1 open authored contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan",
+    "designs",
+    "designSources"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ugt-plan-file/v1"
+    },
+    "plan": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Named plan/v1",
+      "$comment": "Acceptance also requires ugt-map-location format, x-ugt-ascending and x-ugt-utf16-maxLength (JavaScript string lengths). These semantic extensions use PlanRecord.semanticRules, the same helpers as PlanRecord.validate. Clients ignoring extensions must not claim full validation.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "plan/v1"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "x-ugt-utf16-maxLength": 160,
+          "pattern": "^\\S(?:[\\s\\S]*\\S)?(?![\\s\\S])"
+        },
+        "designCids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1000,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^baf(?:krei[a-z2-7]{52}|ybei[a-z2-7]{52})$"
+          },
+          "x-ugt-ascending": true,
+          "description": "Published design CIDs in strictly ascending lexical order; private artifacts may carry unpublished member content until publication."
+        },
+        "view": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "at": {
+              "type": "string",
+              "format": "ugt-map-location",
+              "description": "Comma-separated latitude,longitude,zoom; finite numbers, latitude ±85.0511, longitude ±180, zoom 3–22."
+            },
+            "mode": {
+              "enum": [
+                "2d",
+                "model",
+                "photo"
+              ]
+            },
+            "city": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100,
+                  "x-ugt-utf16-maxLength": 100
+                }
+              ]
+            },
+            "language": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "enum": [
+                    "en",
+                    "hr",
+                    "es",
+                    "sr"
+                  ]
+                }
+              ]
+            },
+            "camera": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "targetLat": {
+                      "type": "number",
+                      "minimum": -85.0511,
+                      "maximum": 85.0511
+                    },
+                    "targetLng": {
+                      "type": "number",
+                      "minimum": -180,
+                      "maximum": 180
+                    },
+                    "headingDeg": {
+                      "type": "number"
+                    },
+                    "pitchRad": {
+                      "type": "number",
+                      "minimum": -1.5707963267948966,
+                      "maximum": 0
+                    },
+                    "range": {
+                      "type": "number",
+                      "minimum": 1
+                    }
+                  },
+                  "required": [
+                    "targetLat",
+                    "targetLng",
+                    "headingDeg",
+                    "pitchRad",
+                    "range"
+                  ]
+                }
+              ]
+            },
+            "rotate": {
+              "type": "boolean",
+              "description": "Orbit the saved focal point on arrival until the first user action; reduced motion remains still."
+            },
+            "settings": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "existing": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200,
+                      "x-ugt-utf16-maxLength": 200
+                    },
+                    "permitted": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200,
+                      "x-ugt-utf16-maxLength": 200
+                    },
+                    "proposed": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200,
+                      "x-ugt-utf16-maxLength": 200
+                    },
+                    "existingScope": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200,
+                      "x-ugt-utf16-maxLength": 200
+                    },
+                    "proposedForm": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200,
+                      "x-ugt-utf16-maxLength": 200
+                    },
+                    "permittedForm": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200,
+                      "x-ugt-utf16-maxLength": 200
+                    },
+                    "permittedMap": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200,
+                      "x-ugt-utf16-maxLength": 200
+                    },
+                    "zoningAreas": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200,
+                      "x-ugt-utf16-maxLength": 200
+                    },
+                    "planningSource": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200,
+                      "x-ugt-utf16-maxLength": 200
+                    },
+                    "planningScenario": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 200,
+                      "x-ugt-utf16-maxLength": 200
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "at",
+            "mode"
+          ]
+        }
+      },
+      "required": [
+        "schema",
+        "title",
+        "designCids",
+        "view"
+      ]
+    },
+    "designs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cid",
+          "content"
+        ],
+        "properties": {
+          "cid": {
+            "type": "string",
+            "pattern": "^baf(?:krei[a-z2-7]{52}|ybei[a-z2-7]{52})$"
+          },
+          "content": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "schema": {
+                "const": "design/v1"
+              },
+              "goal": {
+                "type": "string",
+                "minLength": 1
+              },
+              "title": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "author": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "city": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "site": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              },
+              "toleranceM": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                ]
+              },
+              "geometry": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              },
+              "origin": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "cid"
+                    ],
+                    "properties": {
+                      "cid": {
+                        "type": "string",
+                        "pattern": "^baf(?:krei[a-z2-7]{52}|ybei[a-z2-7]{52})$"
+                      }
+                    }
+                  }
+                ]
+              },
+              "authoredAt": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                ]
+              },
+              "roadProposal": {
+                "type": "object"
+              },
+              "buildingProposal": {
+                "type": "object"
+              },
+              "structureProposal": {
+                "type": "object"
+              },
+              "parcelLayout": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "schema",
+              "goal",
+              "title",
+              "description",
+              "author",
+              "city",
+              "site",
+              "toleranceM",
+              "geometry",
+              "origin",
+              "authoredAt"
+            ],
+            "oneOf": [
+              {
+                "required": [
+                  "roadProposal"
+                ]
+              },
+              {
+                "required": [
+                  "buildingProposal"
+                ]
+              },
+              {
+                "required": [
+                  "structureProposal"
+                ]
+              },
+              {
+                "required": [
+                  "parcelLayout"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    "designSources": {
+      "type": "object",
+      "maxProperties": 1000,
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^baf(?:krei[a-z2-7]{52}|ybei[a-z2-7]{52})$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceId",
+          "snapshotId"
+        ],
+        "properties": {
+          "sourceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "snapshotId": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "maxLength": 200
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

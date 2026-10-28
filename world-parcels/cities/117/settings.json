@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "117",
+  "name": "Khan Yunis, Palestine",
+  "point": [
+    31.3236029378949,
+    34.2957923854112
+  ],
+  "bindings": [
+    {
+      "appCityId": "khan_yunis",
+      "runtimeConfig": {
+        "id": "khan_yunis",
+        "wupCityCode": "117",
+        "label": "Khan Yunis, Palestine",
+        "currency": {
+          "locale": "ar-PS",
+          "code": "ILS"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            31.3236029378949,
+            34.2957923854112
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            31.3236029378949,
+            34.2957923854112
+          ],
+          "fallbackDataset": [
+            34.2957923854112,
+            31.3236029378949
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "ps-geomolg-parcelsregistered-11",
+          "idPrefix": "PS-GEOMOLG-PARCELSREGISTERED11-OBJECTID-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "GeoMOLG / Palestinian Ministry of Local Government, registered cadastral parcels. Native OBJECTID references; bounded Gaza availability only. Completeness, currentness, survey alignment and reuse terms remain unverified."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "ps-geomolg-parcelsregistered-11",
+      "name": "GeoMOLG ParcelsRegistered_11 registered cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://orthophotos.geomolg.ps/adaptor/rest/services/ParcelsRegistered_11/MapServer/0",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "PS-GEOMOLG-PARCELSREGISTERED11-OBJECTID-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "timeoutMs": 45000,
+      "maxResponseBytes": 16777216,
+      "maxConcurrentQueries": 1,
+      "countryCode": "PS",
+      "sourceCrs": "EPSG:28191",
+      "metricSrid": 32636,
+      "cityIds": [
+        "khan_yunis"
+      ],
+      "operator": "Palestinian Ministry of Local Government / GeoMOLG",
+      "attribution": "GeoMOLG / Palestinian Ministry of Local Government, registered cadastral parcels. Native OBJECTID references; bounded Gaza availability only. Completeness, currentness, survey alignment and reuse terms remain unverified.",
+      "licenceNote": "Anonymous public query access observed; no explicit reuse licence in first-party layer metadata. Permission and exact dataset supplier lineage remain second-pass follow-ups.",
+      "scope": "Registered/settlement cadastral parcel polygons. Three bounded Gaza samples; no citywide, Gaza Strip or national completeness claim. Geographic extent does not define political boundaries.",
+      "defaultForCity": true,
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "PS",
+          "basis": "Official GeoMOLG layer declares registered/settlement parcels, polygon geometry and cadastral block/parcel schema.",
+          "evidence": [
+            "https://orthophotos.geomolg.ps/adaptor/rest/services/ParcelsRegistered_11/MapServer/0"
+          ]
+        }
+      }
+    }
+  ]
+}

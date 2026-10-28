@@ -64,6 +64,12 @@ function borsh(type, value) {
         buf.writeBigUInt64LE(BigInt(value));
         return buf;
     }
+    if (type === 'i64') {
+        const buf = Buffer.alloc(8);
+        buf.writeBigInt64LE(BigInt(value));
+        return buf;
+    }
+    if (type === 'u32') { const buf = Buffer.alloc(4); buf.writeUInt32LE(Number(value)); return buf; }
     if (type === 'bool') return Buffer.from([value ? 1 : 0]);
     if (type === 'string') {
         const bytes = Buffer.from(String(value), 'utf8');
@@ -502,54 +508,54 @@ describe('decodeParsedTransaction: failed transaction', () => {
 // --- proposal_market instructions (no devnet history yet, so built from the IDL) -----------------
 
 describe('decodeParsedTransaction: proposal_market instructions', () => {
-    it('summarises a stake with its side and the inner token transfer', () => {
-        const decoded = decode(marketTx('stake', {
-            values: { side: 1, amount: '300000' },
+    it('summarises an LMSR buy with its share quantity and payment', () => {
+        const decoded = decode(marketTx('buy', {
+            values: { side: 1, shares: '250000', max_cost: '300000' },
             accounts: [MARKET, SUBJECT, POSITION, VAULT, PERSONA_USDC, PERSONA_WALLET, TOKEN_PROGRAM, SYSTEM_PROGRAM],
             inner: [tokenTransferChecked({ source: PERSONA_USDC, destination: VAULT, authority: PERSONA_WALLET, atomic: '300000', ui: '0.3' })]
         }));
 
         const anchor = decoded.instructions[0];
-        expect(anchor.discriminator).toBe(idlDiscriminatorHex('proposal_market', 'stake'));
-        expect(anchor.action).toBe('stake');
-        expect(anchor.args).toEqual({ side: 1, amount: '300000' });
+        expect(anchor.discriminator).toBe(idlDiscriminatorHex('proposal_market', 'buy'));
+        expect(anchor.action).toBe('buy');
+        expect(anchor.args).toEqual({ side: 1, shares: '250000', max_cost: '300000' });
         expect(anchor.accounts.map((account) => account.role)).toEqual([
-            'market', 'proposal', 'position', 'vault', 'staker_token_account', 'staker', 'token_program', 'system_program'
+            'market', 'proposal', 'position', 'vault', 'trader_token_account', 'trader', 'token_program', 'system_program'
         ]);
-        expect(decoded.summary).toBe('agent densifier-01 staked 0.3 USDC on YES in market LU6E…Aim9');
+        expect(decoded.summary).toBe('agent densifier-01 bought 250000 YES shares for 0.3 USDC in market LU6E…Aim9');
         expect(decoded.amounts).toHaveLength(1);
         expect(decoded.amounts[0].amount).toBe('0.3');
     });
 
-    it('says NO for side 0 and falls back to the arg when there is no inner transfer', () => {
-        const decoded = decode(marketTx('stake', {
-            values: { side: 0, amount: '250000' },
+    it('says NO for side 0 and falls back to max_cost without an inner transfer', () => {
+        const decoded = decode(marketTx('buy', {
+            values: { side: 0, shares: '200000', max_cost: '250000' },
             accounts: [MARKET, SUBJECT, POSITION, VAULT, PERSONA_USDC, PERSONA_WALLET, TOKEN_PROGRAM, SYSTEM_PROGRAM]
         }));
 
-        expect(decoded.summary).toBe('agent densifier-01 staked 0.25 USDC on NO in market LU6E…Aim9');
+        expect(decoded.summary).toBe('agent densifier-01 bought 200000 NO shares with a maximum cost of 0.25 USDC in market LU6E…Aim9');
         expect(decoded.amounts).toEqual([]);
     });
 
-    it('summarises create_market with its agreement and the vault', () => {
-        const decoded = decode(marketTx('create_market', {
-            accounts: [MARKET, SUBJECT, USDC, VAULT, TREASURY, TOKEN_PROGRAM, 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL', SYSTEM_PROGRAM]
+    it('summarises create_lmsr_market with its agreement and the vault', () => {
+        const decoded = decode(marketTx('create_lmsr_market', {
+            values: { b: '100000000', closes_at: '1800000000', grace_seconds: 0, max_position: '0' },
+            accounts: [MARKET, SUBJECT, USDC, VAULT, PERSONA_USDC, TREASURY, TOKEN_PROGRAM, 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL', SYSTEM_PROGRAM]
         }));
 
-        expect(decoded.instructions[0].action).toBe('create_market');
-        expect(decoded.instructions[0].args).toEqual({});
+        expect(decoded.instructions[0].action).toBe('create_lmsr_market');
         expect(decoded.summary).toBe('treasury wallet opened a market on agreement Gsvt…Q6UT (vault EVFp…iiwB)');
     });
 
-    it('summarises resolve', () => {
-        const decoded = decode(marketTx('resolve', { accounts: [MARKET, SUBJECT] }));
+    it('summarises resolve_lmsr', () => {
+        const decoded = decode(marketTx('resolve_lmsr', { accounts: [MARKET, SUBJECT, SYSTEM_PROGRAM] }));
 
-        expect(decoded.instructions[0].action).toBe('resolve');
+        expect(decoded.instructions[0].action).toBe('resolve_lmsr');
         expect(decoded.summary).toBe('market LU6E…Aim9 resolved');
     });
 
     it('summarises a claim with the amount from the inner transfer', () => {
-        const decoded = decode(marketTx('claim', {
+        const decoded = decode(marketTx('claim_lmsr', {
             accounts: [MARKET, POSITION, VAULT, PERSONA_USDC, PERSONA_WALLET, TOKEN_PROGRAM],
             inner: [tokenTransferChecked({ source: VAULT, destination: PERSONA_USDC, authority: MARKET, atomic: '900000', ui: '0.9' })]
         }));

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "100",
+  "name": "Sofia, Bulgaria",
+  "point": [
+    42.6825011865908,
+    23.3243038707047
+  ],
+  "bindings": [
+    {
+      "appCityId": "sofia",
+      "runtimeConfig": {
+        "id": "sofia",
+        "wupCityCode": "100",
+        "label": "Sofia, Bulgaria",
+        "currency": {
+          "locale": "bg-BG",
+          "code": "EUR"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            42.6825011865908,
+            23.3243038707047
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            42.6825011865908,
+            23.3243038707047
+          ],
+          "fallbackDataset": [
+            23.3243038707047,
+            42.6825011865908
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "bg-sofia-isofmap-cad-immovable-wfs",
+          "idPrefix": "BG-SOFIA-ISOFMAP-CAD-IMMOVABLE|cadnumber|",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "GIS-Sofia EOOD / SOFCAR · Sofia Municipality"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "bg-sofia-isofmap-cad-immovable-wfs",
+      "name": "Sofia GIS-Sofia iSofMap cadastral immovable parcels",
+      "adapter": "sofia-isofmap",
+      "endpoint": "http://www.isofmap.bg/owsmap",
+      "version": "1.1.0",
+      "boundsVersion": "2.0.0",
+      "featureType": "cad_immovable",
+      "idField": "cadnumber",
+      "geometryField": "msGeometry",
+      "idType": "string",
+      "idPrefix": "BG-SOFIA-ISOFMAP-CAD-IMMOVABLE|cadnumber|",
+      "parcelNumberField": "cadnumber",
+      "outFields": [
+        "cadnumber"
+      ],
+      "responseCrs": "EPSG:7801",
+      "axisOrder": "northing-easting",
+      "metricSrid": 32634,
+      "countryCode": "BG",
+      "cityIds": [
+        "sofia"
+      ],
+      "pageSize": 1,
+      "maxFeatures": 500,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 1048576,
+      "maxTotalResponseBytes": 16777216,
+      "timeoutMs": 15000,
+      "maxConcurrentQueries": 2,
+      "browserTransport": "relay",
+      "capabilities": {
+        "bounds": true,
+        "exactIds": true,
+        "areaEnumeration": true
+      },
+      "operator": "GIS-Sofia EOOD / SOFCAR, Sofia Municipality",
+      "attribution": "GIS-Sofia EOOD / SOFCAR · Sofia Municipality",
+      "catalogueUrl": "https://www.gis-sofia.bg/en/services/isofmap",
+      "scope": "Municipal current cad_immovable layer. Initial qualification uses three bounded native-ID samples near Sofia; citywide completeness is unknown.",
+      "licenceNote": "First-party free public online cadastral access. An explicit geometry redistribution licence, current/historic semantics and survey accuracy remain unverified. Published HTTP endpoint used without disabling TLS verification.",
+      "defaultForCity": true
+    }
+  ]
+}

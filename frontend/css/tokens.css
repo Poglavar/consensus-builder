@@ -54,8 +54,12 @@
     --cb-parcel-preview-boundary: #7c8aa5;
     --cb-photo-parcel-boundary: #fff3a6;
     --cb-photo-parcel-halo: #282418;
-    --cb-photo-parcel-selected: #48e4f1;
-    --cb-map-pick-highlight: #00e5ff; /* a design picked on the map (js/map-pick.js): the agreement editor's designs */
+    /* Map-object interaction keeps the model view's yellow in both themes and renderers. */
+    --cb-map-highlight: #ffdd00;
+    --cb-map-highlight-halo: #292000;
+    --cb-map-highlight-soft: #fff8cc;
+    --cb-map-highlight-ink: #292000;
+    --cb-map-pick-highlight: var(--cb-map-highlight);
 
     --cb-warning: #b45309;
     --cb-warning-soft: #fffbeb;
@@ -89,7 +93,6 @@
     --cb-planning-permitted: #168b87;
     --cb-planning-proposed: #c26336;
     --cb-planning-control-width: 440px;
-    --cb-planning-inspector-width: 330px;
 
     /* The night-sky artwork stays dark; its controls use the shared dark theme below. */
     --cb-scene-sky: #87ceeb;
@@ -209,7 +212,6 @@
     --cb-z-map-chrome: 1000;        /* floating buttons, search, tray */
     --cb-z-popover: 1050;           /* parcel menu, dropdowns over the map */
     --cb-z-map-raised: 1100;        /* over a map's own chrome: the expanded status log, a screenshot's goal badge */
-    --cb-z-dev-overlay: 1400;       /* developer readouts (the memory monitor), under the docked panels */
     --cb-z-panel: 1500;             /* right-dock panels (parcel, proposal, road) */
     --cb-z-sheet: 1600;             /* sheets go over the docked panels: the person just asked for one */
     --cb-z-editor: 1650;            /* docked editors (proposal editor shell, cross-section, geometry): over sheets */

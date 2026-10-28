@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "9770",
+  "name": "Xuchang, China",
+  "point": [
+    34.0244453311886,
+    113.813220912291
+  ],
+  "bindings": [
+    {
+      "appCityId": "xuchang",
+      "runtimeConfig": {
+        "id": "xuchang",
+        "wupCityCode": "9770",
+        "label": "Xuchang, China",
+        "currency": {
+          "locale": "zh-CN",
+          "code": "CNY"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            34.0244453311886,
+            113.813220912291
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            34.0244453311886,
+            113.813220912291
+          ],
+          "fallbackDataset": [
+            113.813220912291,
+            34.0244453311886
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "cn-xuchang-xcbdc-yituchafang",
+          "idPrefix": "CN-XUCHANG-ZD-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "许昌市不动产登记交易中心 · xcbdc.org.cn · cadastral parcels"
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "cn-xuchang-xcbdc-yituchafang",
+      "adapter": "arcgis",
+      "endpoint": "http://www.xcbdc.org.cn:7878/estate/forward/arcgis/rest/services/YTCF/ZD_DBZD/MapServer/0/query",
+      "idPrefix": "CN-XUCHANG-ZD-",
+      "idField": "ZDTYBM",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{12}GB[0-9]{5}$",
+      "outFields": [
+        "OBJECTID",
+        "ZDTYBM"
+      ],
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "single-equality",
+      "pageSize": 20,
+      "idBatchSize": 1,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 2,
+      "timeoutMs": 45000,
+      "maxResponseBytes": 16777216,
+      "name": "Xuchang cadastral registered land parcels",
+      "operator": "许昌市不动产登记交易中心 / Xuchang Real Estate Registration and Transaction Center",
+      "catalogueUrl": "https://www.xcbdc.org.cn/",
+      "attribution": "许昌市不动产登记交易中心 · xcbdc.org.cn · cadastral parcels",
+      "countryCode": "CN",
+      "cityIds": [
+        "xuchang"
+      ],
+      "metricSrid": 32649,
+      "scope": "Bounded central-Xuchang cadastral parcel sample. No citywide, district, rural, current-only, legal title or survey accuracy claim.",
+      "licenceNote": "Anonymous public registration map. No explicit open-data licence or production reuse permission found; reuse terms and rate limits remain second-pass follow-ups.",
+      "sourceCrs": "EPSG:4490",
+      "discovery": {
+        "jurisdiction": {
+          "countryCode": "CN",
+          "city": "Xuchang",
+          "basis": "Official registration portal and layer ZD_DBZD identify polygon registered land records; native ZDTYBM alias 宗地代码. See attempt-local evidence/source-metadata.json."
+        },
+        "purpose": "cadastral-parcels"
+      },
+      "browserTransport": "relay",
+      "minRequestIntervalMs": 1100,
+      "maxConcurrentQueries": 2,
+      "defaultForCity": true
+    }
+  ]
+}

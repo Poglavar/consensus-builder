@@ -81,11 +81,11 @@ class CityIntegrationTests(unittest.TestCase):
         self.assertEqual(packet.read_text(), 'original')
 
     def test_private_app_check_restores_generated_configuration_but_keeps_evidence(self):
-        config = self.root / "frontend/js/city-config.js"
+        config = self.root / "frontend/data/city-configs.js"
         config.parent.mkdir(parents=True)
         config.write_text('existing cities')
         boot = self.root / "frontend/data/boot-coverage.js"
-        boot.parent.mkdir(parents=True)
+        boot.parent.mkdir(parents=True, exist_ok=True)
         boot.write_text('existing boot coverage')
         setting = self.root / "world-parcels/cities/42/settings.json"
         def admit(*args):
@@ -107,7 +107,7 @@ class CityIntegrationTests(unittest.TestCase):
         self.assertTrue((self.artifact / "evidence/integration-review.json").is_file())
 
     def test_app_failure_does_not_leave_a_partially_integrated_city(self):
-        config = self.root / "frontend/js/city-config.js"
+        config = self.root / "frontend/data/city-configs.js"
         config.parent.mkdir(parents=True)
         config.write_text('existing cities')
         def admit(*args):

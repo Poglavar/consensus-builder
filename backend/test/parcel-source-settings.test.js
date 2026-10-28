@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
+import { cityConfigSource } from './helpers/city-config-source.js';
 import { createRequire } from 'node:module';
-import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 import { area, bboxPolygon } from '@turf/turf';
 import { encodeCustomSource, decodeCustomSource } from '../parcels/custom-source-config.js';
@@ -22,7 +22,7 @@ function bootCity(city, global) {
     const window = { ...global, ParcelSourceSettings: settings, PersistentStorage: persistent, dispatchEvent() {} };
     window.location = { ...global.location, search: '?city=' + city + (global.location.search ? '&' + global.location.search.slice(1) : '') };
     const context = createContext({ window, localStorage: window.localStorage, PersistentStorage: persistent, URL, URLSearchParams });
-    runInContext(readFileSync(new URL('../../frontend/js/city-config.js', import.meta.url), 'utf8'), context);
+    runInContext(cityConfigSource(), context);
     return { manager: window.CityConfigManager, scopes };
 }
 
@@ -53,6 +53,16 @@ describe('recent custom source checks', () => {
 });
 
 describe('browser-owned portable source choices', () => {
+    it('uses workspace storage for source choices when available', () => {
+        const global = globalFor();
+        const workspace = storage();
+        global.BrowserWorkspace = { storage: workspace };
+        const selected = choice('test_city');
+        settings.saveChoice('test_city', { id: selected.id }, global);
+        expect(global.localStorage.getItem(settings.storageKey('test_city', global))).toBeNull();
+        expect(settings.choiceForCity('test_city', global)).toMatchObject({ id: selected.id });
+    });
+
     // In the app getBackendBase() reads the city config, and the city config asks for this choice, so
     // the key lookup re-enters choiceForCity. That once spun every page load without ?backend= (the
     // try/catch swallowed each stack overflow and the callers retried).
@@ -184,7 +194,7 @@ describe('building source choices', () => {
         expect(manager.getCityConfig('zagreb').buildings).toMatchObject({ source: 'custom', sourceId: id, defaultSource: 'gdi' });
         expect(manager.getBuildingSourceId()).toBe(id);
         const plain = bootCity('zagreb', globalFor()).manager;
-        expect(plain.getBuildingSourceId()).toBeUndefined();
+        expect(plain.getBuildingSourceId()).toBe('gdi-3d');
     });
 });
 
@@ -214,13 +224,28 @@ describe('building failure banner', () => {
         return { body, createElement: make, getElementById: id => byId.get(id) || null };
     }
 
-    it('says whose data failed and when to try again, and always offers a source of your own', () => {
+    it('uses cautious source wording and defaults to a generic failure', () => {
         const global = {};
         expect(settings.buildingFailureMessage(global, { origin: 'osm', retryAfter: 90 }))
-            .toBe('Building data could not be loaded right now: the OpenStreetMap server is busy. Try again in about 2 min, or plug in your own mirror or source.');
+            .toBe('OpenStreetMap building data could not be loaded through our server. Try again in about 2 min, or plug in your own mirror or source.');
         expect(settings.buildingFailureMessage(global, { origin: 'custom' }))
-            .toBe('Your building source did not answer, so buildings could not be loaded here. Try again later, or plug in your own mirror or source.');
-        expect(settings.buildingFailureMessage(global, { origin: 'other' })).toMatch(/^Building data could not be loaded right now\. Try again later/);
+            .toBe('Building data from your selected source could not be loaded. Try again later, or plug in your own mirror or source.');
+        expect(settings.buildingFailureMessage(global))
+            .toBe('Building data could not be loaded right now. Try again later, or plug in your own mirror or source.');
+    });
+
+    it.each([
+        ['osm', 405], ['custom', 503]
+    ])('reports an %s request failure using HTTP %i', (origin, status) => {
+        expect(settings.buildingFailureMessage({}, { origin, status, retryAfter: 90 }))
+            .toBe(`Our server could not complete the building-data request (HTTP ${status}). Try again in about 2 min, or plug in your own mirror or source.`);
+    });
+
+    it('uses translated HTTP failure wording and interpolates its status', () => {
+        const global = { i18n: { t: (key, params) => key === 'buildingSources.requestFailed'
+            ? `Translated request failed (${params.status})` : key } };
+        expect(settings.buildingFailureMessage(global, { origin: 'osm', status: 405 }))
+            .toBe('Translated request failed (405) Try again later, or plug in your own mirror or source.');
     });
 
     it('keeps one building banner in the corner stack, updates it in place, and retries with the latest callback', () => {

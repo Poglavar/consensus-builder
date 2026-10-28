@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import sys
 import tempfile
 import types
 import unittest
@@ -11,6 +12,7 @@ from unittest.mock import patch
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "lib/parcel_source_stage.py"
+sys.path.insert(0, str(SCRIPT.parent))
 spec = importlib.util.spec_from_file_location("parcel_source_stage_tested", SCRIPT)
 stage = importlib.util.module_from_spec(spec)
 assert spec.loader

@@ -1,8 +1,7 @@
-// proposals/sharing-routes.js — sharing designs and opening shared designs (plan-design-agreement.md,
-// M2 "Browser"). Share on a design publishes it (DesignSync.publishDesign) and copies its
-// /designs/<cid> link; the sidebar's share panel (dialog-share.js) publishes a selection and links
-// /designs/<cid>,<cid>. handleSharedDesignRoute opens such a link: it reads the designs from the index,
-// imports them, applies them in replay order, frames them and opens the latest one's details
+// proposals/sharing-routes.js — sharing designs and opening shared designs. Share on a design
+// publishes that exact design (DesignSync.publishDesign) and copies its /designs/<cid> link; saved
+// plans have a separate sharing flow. handleSharedDesignRoute opens a shared design link: it reads
+// designs from the index, imports them, applies them in replay order, frames them and opens the latest one's details
 // (core.js handleProposalRouteFromUrl dispatches the path here; agreement-sync.js reuses it).
 
 function getSharedGroundService() {
@@ -113,52 +112,12 @@ function focusMapOnSharedProposal(proposal, payload) {
     return false;
 }
 
-/** Spinner on the sidebar's "Share applied proposals" button. The label/subtext give way to it so the
-    button keeps its size, and the busy flag survives updateShowProposalsButton re-enabling it. */
-function setSharePlanButtonBusy(busy) {
-    const button = document.getElementById('shareAppliedProposalsButton');
-    if (!button) return;
-    const label = button.querySelector('.share-plan-label');
-    const subtext = button.querySelector('.share-plan-subtext');
-    const spinner = button.querySelector('.share-plan-spinner');
-    if (busy) button.dataset.sharePlanBusy = '1';
-    else delete button.dataset.sharePlanBusy;
-    // Tabs keep keyboard focus while their contents load.
-    button.disabled = !!busy && button.getAttribute?.('role') !== 'tab';
-    if (label) label.hidden = !!busy;
-    if (subtext) subtext.hidden = !!busy;
-    if (spinner) spinner.hidden = !busy;
-}
-
-// Resolves when the panel is ready to look at, so a caller that opened this from its own dialog
-// can keep that dialog up meanwhile. `options` is passed straight through (see showSharePlanPanel).
-function shareAppliedProposals(options) {
-    // Reading or copying an existing publication needs no profile; publishing asks for an author.
-    if (typeof setSharePlanButtonBusy === 'function') setSharePlanButtonBusy(true);
-    // Opening the panel starts with a long SYNCHRONOUS block: a row per applied proposal, plus one
-    // map overlay each (turf intersections + a Leaflet layer), plus fitting the map. Starting it in
-    // this same task would freeze the page before the spinner ever painted, so yield two frames —
-    // one to apply the style, one to be sure it reached the screen.
-    return new Promise((resolve) => {
-        const open = () => {
-            let ready = null;
-            try {
-                // Switching tabs or closing Designs cancels an opening deferred by two frames.
-                if (!options?.isCurrent || options.isCurrent()) ready = showSharePlanPanel(options);
-            } finally {
-                // Release the tab spinner on success, cancellation and failure.
-                if (typeof setSharePlanButtonBusy === 'function') setSharePlanButtonBusy(false);
-            }
-            // A thenable is adopted; an older build that returns nothing resolves right away, which
-            // is the previous behaviour rather than a hang.
-            resolve(ready);
-        };
-        if (typeof requestAnimationFrame === 'function') {
-            requestAnimationFrame(() => requestAnimationFrame(open));
-        } else {
-            open();
-        }
-    });
+// Context callers choose one explicit action: share a saved snapshot, or compose a new plan.
+function shareAppliedProposals(options = {}) {
+    if (options.isCurrent && !options.isCurrent()) return Promise.resolve(null);
+    return options.plan
+        ? window.PlanDialog.share(options.plan, options.members || [])
+        : window.PlanDialog.create({ members: options.members || proposalStorage.getAllProposals().filter(isProposalCurrentlyApplied) });
 }
 
 // The design a Share action names: the object given, the design open in the details panel, or a
@@ -200,7 +159,7 @@ async function shareSingleProposal(proposalIdOrProposal) {
     const t = getProposalI18nHelper();
     const proposal = resolveDesignToShare(proposalIdOrProposal);
     if (!proposal) {
-        showEphemeralMessage(t('ephemeral.messages.cannot_share_this_proposal_right_now', 'Cannot share this proposal right now.'), 4000, 'error');
+        showEphemeralMessage(t('ephemeral.messages.cannot_share_this_proposal_right_now', 'Cannot share this design right now.'), 4000, 'error');
         return null;
     }
     const refusal = window.DesignSync.publishedCid(proposal) ? null : window.ProposalPublishTerms.publishRefusal(proposal);
@@ -231,11 +190,12 @@ async function shareSingleProposal(proposalIdOrProposal) {
     }
 }
 
-function shareProposalFromDetails() {
-    if (currentProposalDetailsContext) return shareSingleProposal(currentProposalDetailsContext);
+async function shareProposalFromDetails() {
     const panel = document.getElementById('proposal-details-content');
     const idElement = panel ? panel.querySelector('[data-proposal-id]') : null;
-    return shareSingleProposal(idElement ? idElement.getAttribute('data-proposal-id') : null);
+    const proposal = resolveDesignToShare(currentProposalDetailsContext || idElement?.getAttribute('data-proposal-id'));
+    if (!proposal) return null;
+    return shareSingleProposal(proposal);
 }
 
 function sharedMaterializationPhase(record) {
@@ -295,14 +255,14 @@ function sharedCorridorCountPhrase(roads, tracks, tShare) {
 // describes them.
 function sharedPlanProgressView(event, tShare) {
     if (!event || typeof tShare !== 'function') return null;
-    const title = tShare('plan.applyingAllTitle', 'Applying shared proposals');
+    const title = tShare('plan.applyingAllTitle', 'Applying shared designs');
     const count = () => sharedCorridorCountPhrase(event.roads, event.tracks, tShare);
     switch (event.phase) {
         case 'ground-check':
             return {
                 title,
                 status: tShare('plan.progress.groundCheck',
-                    'Checking cadastral ground for {{count}} proposals…', { count: event.members })
+                    'Checking cadastral ground for {{count}} designs…', { count: event.members })
             };
         case 'ground-check-ids':
             return {
@@ -350,7 +310,7 @@ function sharedPlanProgressView(event, tShare) {
             return {
                 title,
                 status: tShare('plan.progress.groundFootprintLoad',
-                    'Loading footprint ground for {{members}} proposals in {{batches}} batches…', event),
+                    'Loading footprint ground for {{members}} designs in {{batches}} batches…', event),
                 progress: { done: 0, total: event.batches || 0 }
             };
         case 'ground-load-footprints-progress':
@@ -365,9 +325,9 @@ function sharedPlanProgressView(event, tShare) {
                 title,
                 status: event.unavailableMembers
                     ? tShare('plan.progress.groundIncomplete',
-                        'Ground check finished: {{unavailableMembers}} proposals still have unavailable parcels.', event)
+                        'Ground check finished: {{unavailableMembers}} designs still have unavailable parcels.', event)
                     : tShare('plan.progress.groundReady',
-                        'Cadastral ground ready: {{cachedMembers}} proposals reused loaded ground; {{loadedMembers}} needed loading.', event)
+                        'Cadastral ground ready: {{cachedMembers}} designs reused loaded ground; {{loadedMembers}} needed loading.', event)
             };
         case 'building-ground-load':
             return {
@@ -434,7 +394,7 @@ function sharedPlanProgressView(event, tShare) {
                 progress: { done: event.done || 0, total: event.total || 0 }
             };
         case 'save':
-            return { title, status: tShare('plan.progress.saving', 'Saving applied proposals…') };
+            return { title, status: tShare('plan.progress.saving', 'Saving applied designs…') };
         case 'corridor-ready':
             return {
                 title,
@@ -443,7 +403,7 @@ function sharedPlanProgressView(event, tShare) {
         case 'rollback':
             return { title, status: tShare('plan.progress.rollback', 'Restoring the parcel fabric after an error…') };
         case 'presentation':
-            return { title, status: tShare('plan.progress.presentation', 'Refreshing the map and proposal list…') };
+            return { title, status: tShare('plan.progress.presentation', 'Refreshing the map and designs list…') };
         case 'corridor-strips':
             return { title, status: tShare('plan.progress.corridorStrips', 'Refreshing road and track surfaces…') };
         default:
@@ -745,7 +705,7 @@ function urlFocusNeedsBuildings(ids) {
     }
 }
 
-function enterUrlDrivenViewWhenReady(focusIds) {
+function enterUrlDrivenViewWhenReady(focusIds, viewOptions = {}) {
     const ids = (Array.isArray(focusIds) ? focusIds : []).filter(Boolean).map(String);
     const deadline = Date.now() + 8000;
     const attempt = () => {
@@ -756,7 +716,7 @@ function enterUrlDrivenViewWhenReady(focusIds) {
             ready = ready || feats.some(f => f && f.properties && ids.includes(String(f.properties.proposalId)));
         } catch (_) { ready = true; }
         if (ready || Date.now() > deadline) {
-            enterUrlDrivenView(ids.length ? ids : undefined);
+            enterUrlDrivenView(ids.length ? ids : undefined, viewOptions);
             return;
         }
         setTimeout(attempt, 200);
@@ -817,7 +777,8 @@ function latestAuthoredDesignId(proposalIds) {
  * no existing design is unapplied without that choice. A different city asks to switch first.
  * @param cids the link's design CIDs
  * @param options { openDetails = true, frame = true, enter3D = true, summary = true } — the agreement
- *   route (agreement-sync.js) applies its designs and opens the agreement instead.
+ *   route (agreement-sync.js) applies its designs and opens the agreement instead. Confirming a
+ *   replacement frames the complete incoming plan, superseding a previous URL view.
  * @returns {Promise<{ applied: string[], skipped: string[], omitted: string[], failed: { id, label, reason }[],
  *   blocked: boolean, localIds: Map<string, string> }>} local proposal ids; localIds maps CID → local id
  */
@@ -850,12 +811,12 @@ async function handleSharedDesignRoute(cids, options = {}) {
             result.failed.push({ id: cid, label: cid, reason: t('proposals.share.errors.notFound', 'This design is not on the server.') });
         });
 
-        // The designs know their city. The first one that belongs to another city's store asks to
-        // switch there; staying drops the link.
+        // A bound design may need another cadastral source at its geometry. City text is
+        // descriptive metadata and cannot trigger a context switch or block a shared plan.
         const cityManager = window.CityConfigManager;
-        const foreign = [...fetched.rows.values()].find(row => cityManager.foreignCityFor(row.city));
-        if (foreign && await promptCityMismatchForProposal(String(foreign.city))) {
-            log('the designs belong to another city; the link was dropped or reloads there');
+        const foreignContext = [...fetched.rows.values()].map(row => cityManager.foreignGroundContextFor(row)).find(Boolean);
+        if (foreignContext && await promptCityMismatchForProposal(foreignContext)) {
+            log('the designs need another ground source; the link was dropped or reloads there');
             hideProposalLoadOverlay();
             result.blocked = true;
             return result;
@@ -966,12 +927,12 @@ async function handleSharedDesignRoute(cids, options = {}) {
                 result.omitted.push(...toApply.filter(id => conflictingIncoming.has(id)));
                 toApply = toApply.filter(id => !conflictingIncoming.has(id));
             }
-            showProposalLoadOverlay(tShare('plan.materializing', 'Starting proposal materialization…'), {
+            showProposalLoadOverlay(tShare('plan.materializing', 'Starting design preparation…'), {
                 total: toApply.length, title: t('proposals.share.route.title', 'Shared designs')
             });
         }
         if (replaceConflicts) {
-            updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting proposal materialization…') });
+            updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting design preparation…') });
             const members = [...result.localIds.values()];
             const chosen = await ProposalManager.applyProposalPlan(members, {
                 silent: true, onProgress: reportSharedPlanProgress
@@ -997,7 +958,7 @@ async function handleSharedDesignRoute(cids, options = {}) {
             updateProposalLayer();
             updateShowProposalsButton();
         } else if (toApply.length) {
-            updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting proposal materialization…') });
+            updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting design preparation…') });
             const scoped = await materializeQueuedSharedProposals(toApply, {
                 planMemberIds: new Set([...result.skipped, ...toApply]),
                 recordFetchProfile: { batchRequests: Math.ceil(valid.length / 1000), individualRequests: 0, batchSupported: true }
@@ -1022,11 +983,17 @@ async function handleSharedDesignRoute(cids, options = {}) {
         const standing = [...result.applied, ...result.skipped];
         const focusId = latestAuthoredDesignId(standing);
         const userTookOver = () => !!(replayTakeover && replayTakeover.tookOver());
-        if (focusId && options.frame !== false && !userTookOver()) {
+        const replacedPlan = replaceConflicts && result.applied.length > 0 && !result.failed.length;
+        if (focusId && (replacedPlan || options.frame !== false) && !userTookOver()) {
+            const focusIds = replacedPlan ? standing : [focusId];
             if (typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()) {
-                window.focusThreeModeOnProposals([focusId]);
+                window.focusThreeModeOnProposals(focusIds);
             } else {
-                const bounds = calculateBoundsForLastAppliedProposal(focusId);
+                const bounds = focusIds.reduce((combined, id) => {
+                    const candidate = calculateBoundsForLastAppliedProposal(id);
+                    if (!candidate?.isValid()) return combined;
+                    return combined ? combined.extend(candidate) : candidate;
+                }, null);
                 if (bounds && bounds.isValid()) map.fitBounds(bounds, { padding: [80, 80], maxZoom: 18, animate: false });
             }
         }
@@ -1053,13 +1020,13 @@ async function handleSharedDesignRoute(cids, options = {}) {
             }
         }
 
-        if (sharedView && !userTookOver()) {
+        if (sharedView && !replacedPlan && !userTookOver()) {
             map.setView([sharedView.lat, sharedView.lon], sharedView.zoom ?? map.getZoom(), { animate: false });
         }
         // A link that asks for 3D restores its captured camera when supplied.
         if (options.enter3D !== false && !url3DModeHandled && is3DModeRequestedFromUrl() && standing.length) {
             url3DModeHandled = true;
-            enterUrlDrivenViewWhenReady(standing);
+            enterUrlDrivenViewWhenReady(standing, replacedPlan ? { restoreView: null } : {});
         }
         return result;
     } catch (error) {

@@ -336,6 +336,7 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
                 missingIds: error?.parcelIds || []
             });
         }
+        // The owning operation reports with its specific context and cancellation semantics.
         throw error;
     }
 }
@@ -717,15 +718,12 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures, options 
 // epsilon. A percentage threshold rejects tiny valid footprints more harshly than large ones.
 const FLAT_GROUND_AREA_EPSILON_M2 = 0.01;
 
-// Whether a record belongs to the city being shown. Cadastral ids name their city; a record on open
-// ground only (no ids) is matched by the city it was authored in. A record with neither is shown
-// everywhere, as before.
-function _recordInCity(record, currentCityId) {
+// Bound cadastral references determine the source needed for reconstruction. Parcel-free
+// designs carry their own geography; their descriptive city text never gates live output.
+function _recordInGroundContext(record, currentCityId) {
     if (!currentCityId || typeof isInCity !== 'function') return true;
     const ids = proposalClaims.cadastreParcelIdsOf(record);
-    if (ids.length) return ids.some(id => isInCity(id, currentCityId));
-    const authoredCity = record && record.city ? String(record.city) : '';
-    return !authoredCity || authoredCity === String(currentCityId);
+    return !ids.length || ids.some(id => isInCity(id, currentCityId));
 }
 
 function _flatGroundCoverageIsComplete(declaredCount, resolvedCount, coverage, footprintArea) {
@@ -739,7 +737,7 @@ function _flatGroundCoverageIsComplete(declaredCount, resolvedCount, coverage, f
 
 const _PROPOSAL_APPLY_FAILURE_TEXT = {
     'proposal-footprint-outside-cadastre': ['outsideCadastre', 'The proposal geometry extends beyond its selected cadastral parcels. Keep it within the selected land, or create a proposal that includes the additional parcels.'],
-    'proposal-footprint-outside-site': ['outsideSite', 'The proposal geometry extends beyond its site. Keep it inside the site, or edit the site before applying.'],
+    'proposal-footprint-outside-site': ['outsideSite', 'The design geometry extends beyond its saved land boundary. Update the land boundary or move the geometry inside it before applying.'],
     'cadastral-ground-unavailable': ['groundUnavailable', 'Cadastral parcel data could not be loaded. Check your connection and try applying again.'],
     'cadastral-ground-absent': ['groundMissing', 'Cadastral parcel data is unavailable for: {{parcels}}. This proposal cannot be applied until those parcels can be loaded.'],
     'proposal-needs-parcels': ['needsParcels', 'This proposal acts on cadastral parcels or has no geometry of its own. Load its parcels before applying.'],
@@ -910,6 +908,7 @@ const ProposalManager = {
             result.topology.changedProposalIds.forEach(id => {
                 try { this._refreshUIAfterProposalChange?.(_getProposalRecord(id)); } catch (_) { }
             });
+            this._reportJunctionRevisions(result.topology.revisedProposalIds.map(id => _getProposalRecord(id)));
             try { this._refreshUIAfterProposalChange?.(_getProposalRecord(result.proposalId)); } catch (_) { }
             try { browserRoot.refreshRoadNodeHandles?.(); } catch (_) { }
         }
@@ -961,26 +960,43 @@ const ProposalManager = {
 
         const recordsStarted = _now();
         const changedRecords = [];
+        // Published roads the junction gave a new version (see reviseRoadForJunction).
+        const revisedRecords = [];
         const changedAt = new Date().toISOString();
+        const lineage = browserRoot.ProposalLineage || require('./proposals/lineage.js');
         for (const change of plan.existingChanges) {
             const target = _getProposalRecord(change.proposalId, options);
             if (!target?.roadProposal?.definition) {
                 fail(`A road needed by this junction disappeared (${change.proposalId}).`);
             }
-            authoring.writeDefinition(target, change.definition);
             // The joined road's LAND changes with the junction (the corner land its kerb returns
             // need, a zone widening back to the new road — corridor-footprint.js reads the
-            // junction the plan just wrote into the definition): rebuild it and declare the
-            // parcels it now reaches, or the record keeps the land it had before the junction.
-            const joined = target.roadProposal.definition;
+            // junction the plan wrote into the definition): rebuild it and declare the parcels it
+            // now reaches, or the record keeps the land it had before the junction.
+            const joined = authoring.cloneValue(change.definition);
             if (typeof rebuildRoadDefinitionFootprint === 'function') rebuildRoadDefinitionFootprint(joined);
+            // A published road is immutable: the junction becomes its new version, which takes its
+            // place on the map. One's own unpublished road is edited in place.
+            if (lineage.isPublished(target)) {
+                if (typeof reviseRoadForJunction !== 'function') fail('Saving a new version of a published road is unavailable.');
+                const revision = reviseRoadForJunction(store, target, joined);
+                changedRecords.push(target, revision);
+                revisedRecords.push(revision);
+                continue;
+            }
+            authoring.writeDefinition(target, joined);
             if (typeof declareParcelsUnderRoadLand === 'function') declareParcelsUnderRoadLand(target, joined.polygon);
-            authoring.detachPublishedIdentity(target);
             target.updatedAt = changedAt;
             store._indexProposal?.(target);
             changedRecords.push(target);
         }
 
+        // Junction corner land belongs to the newly authored road too. Its site must describe
+        // the rebuilt footprint, rather than the pre-junction ribbon copied into the planner.
+        const newDefinition = plan.proposal.roadProposal.definition;
+        if (typeof rebuildRoadDefinitionFootprint === 'function') rebuildRoadDefinitionFootprint(newDefinition);
+        authoring.writeDefinition(plan.proposal, newDefinition);
+        if (typeof declareParcelsUnderRoadLand === 'function') declareParcelsUnderRoadLand(plan.proposal, newDefinition.polygon);
         const proposalId = store.addProposal(plan.proposal, { emitEvent: false });
         if (!proposalId) fail('Could not save the new corridor.');
         const stored = _getProposalRecord(proposalId, options);
@@ -988,6 +1004,20 @@ const ProposalManager = {
 
         try { setProposalApplied(stored, true); } catch (_) { stored.applied = true; }
         store._indexProposal?.(stored);
+        // A saved revision is a deliberate choice of occupied ground. Keep the same measured,
+        // geometry-first rival rule as an explicit Apply: an overlapping published source leaves
+        // the map, while a moved/disjoint source remains available alongside its revision.
+        const stoodDownRecords = this._standDownAppliedRivals(stored, {
+            ...options,
+            replaceOccupiedGround: true
+        }) || [];
+        const changedIds = new Set(changedRecords.map(record => String(record.proposalId)));
+        stoodDownRecords.forEach(record => {
+            const id = String(record?.proposalId || '');
+            if (!id || changedIds.has(id)) return;
+            changedIds.add(id);
+            changedRecords.push(record);
+        });
         const recordsMs = _now() - recordsStarted;
 
         const label = stored.title || stored.name || (plan.isTrack ? 'the new track' : 'the new road');
@@ -1049,7 +1079,8 @@ const ProposalManager = {
             applied: true,
             topology: {
                 junctionRecords: plan.junctionRecords,
-                changedProposalIds: changedRecords.map(record => String(record.proposalId))
+                changedProposalIds: changedRecords.map(record => String(record.proposalId)),
+                revisedProposalIds: revisedRecords.map(record => String(record.proposalId))
             },
             timings: {
                 topologyMs,
@@ -1089,7 +1120,7 @@ const ProposalManager = {
 
                 if (!applied.length) return undefined;
 
-                // Only reapply proposals belonging to the active city. Applied proposals are
+                // Only reapply proposals eligible for the active ground context. Applied proposals are
                 // stored globally (not per-city), so without this an NYC session would try to
                 // reapply Zagreb proposals — fetching HR-* ids from the NYC parcel endpoint (400)
                 // and poisoning the nearby-3D-buildings query with cross-city geometry (→ "loaded
@@ -1098,7 +1129,7 @@ const ProposalManager = {
                         && typeof window.CityConfigManager.getCurrentCityId === 'function')
                     ? window.CityConfigManager.getCurrentCityId()
                     : null;
-                const appliedInCity = applied.filter(p => _recordInCity(p, currentCityId));
+                const appliedInCity = applied.filter(p => _recordInGroundContext(p, currentCityId));
 
                 if (!appliedInCity.length) return undefined;
 
@@ -1197,7 +1228,7 @@ const ProposalManager = {
                     && typeof window.CityConfigManager.getCurrentCityId === 'function')
                 ? window.CityConfigManager.getCurrentCityId()
                 : null;
-            const inCity = p => _recordInCity(p, currentCityId);
+            const inCity = p => _recordInGroundContext(p, currentCityId);
             // §15c derivation order = the immutable record order. An edit is a new proposal, so
             // replay cannot change merely because a record was opened on this browser.
             const appliedNow = () => {
@@ -1293,7 +1324,7 @@ const ProposalManager = {
                     .join('; ');
                 try {
                     if (typeof showEphemeralMessage === 'function') {
-                        showEphemeralMessage(`Rebuild: ${summary.failed.length} proposal(s) could not re-apply and were set aside: ${names}`, 12000, 'warning');
+                        showEphemeralMessage(`Rebuild: ${summary.failed.length} design(s) could not be reapplied and were set aside: ${names}`, 12000, 'warning');
                     }
                 } catch (_) { }
             }
@@ -1344,7 +1375,7 @@ const ProposalManager = {
             ? window.CityConfigManager.getCurrentCityId()
             : null;
         const records = proposalStorage.getAllProposals().filter(record => (
-            !!record && isProposalCurrentlyApplied(record) && _recordInCity(record, currentCityId)
+            !!record && isProposalCurrentlyApplied(record) && _recordInGroundContext(record, currentCityId)
         ));
         const order = (typeof window !== 'undefined') ? window.__planOrder : null;
         if (order && typeof order.orderFormations === 'function') return order.orderFormations(records);
@@ -3019,7 +3050,7 @@ const ProposalManager = {
             const alternatives = proposalClaims.appliedRivals(proposalData, records, {
                 planOrder: runtime.__planOrder || null,
                 isApplied: appliedOf,
-                replaceLayoutGround: options.replaceLayoutGround === true
+                replaceOccupiedGround: options.replaceOccupiedGround === true
             });
             // Each alternative is about to be parked (applied=false, re-indexed): hand back the
             // draft's own copy so the edit is journaled, persisted and restorable.
@@ -3031,7 +3062,7 @@ const ProposalManager = {
     },
 
     // Choosing a plan is one explicit edit of the working composition. Collect every rival
-    // before changing any flags, then derive the resulting composition once. A refused member
+    // before changing any flags, then derive the affected ground once. A refused member
     // rolls back both the incoming plan and the released rivals through ParcelMutation.
     async applyProposalPlan(proposalIds, options = {}) {
         const ids = Array.from(new Set((proposalIds || []).map(String).filter(Boolean)));
@@ -3059,7 +3090,7 @@ const ProposalManager = {
         for (let i = 0; i < members.length; i += 1) {
             const member = members[i];
             this._clearLastApplyFailure?.(member.proposalId);
-            this._collectAppliedAlternativesForExplicitApply(member, candidates, { ...options, replaceLayoutGround: true })
+            this._collectAppliedAlternativesForExplicitApply(member, candidates, { ...options, replaceOccupiedGround: true })
                 .forEach(record => released.set(String(record.proposalId), record));
             _emitProposalProgress(options.onProgress, {
                 phase: 'proposal-apply', label: member.title || member.proposalId,
@@ -3077,12 +3108,14 @@ const ProposalManager = {
             setProposalApplied(record, true);
             store._indexProposal?.(record);
         });
-        const summary = await this.rebuildAppliedFabric({
+        // A replacement is local: the incoming records and released rivals name its ground.
+        // The declared-scope resolver accepts corridor ribbons across cadastral gaps, while the
+        // local fold still validates each formation. Its dependency closure preserves surrounding
+        // work without replaying distant designs (including retired experimental records).
+        const affected = [...members, ...released.values()];
+        const scope = await this._corridorScopeSeeds(affected, [], options);
+        const summary = await this._rematerializeResolvedScope(affected, scope, {
             ...options,
-            resetProposalIds: Array.from(new Set([
-                ...(Array.isArray(options.resetProposalIds) ? options.resetProposalIds : []),
-                ...released.keys()
-            ])),
             silent: true,
             statusMode: 'apply'
         });
@@ -3104,7 +3137,7 @@ const ProposalManager = {
         const inPlan = (membership && typeof membership.has === 'function')
             ? id => membership.has(id)
             : () => false;
-        const blockers = this._collectAppliedAlternativesForExplicitApply(proposal, candidateRecords, { ...options, replaceLayoutGround: true })
+        const blockers = this._collectAppliedAlternativesForExplicitApply(proposal, candidateRecords, { ...options, replaceOccupiedGround: true })
             .filter(alternative => !inPlan(String(alternative.proposalId || '')));
         if (!blockers.length) return { ok: true, blockers: [] };
 
@@ -3114,7 +3147,7 @@ const ProposalManager = {
         try {
             this._setLastApplyFailure(proposalId, {
                 code: 'ground-held-by-proposal',
-                message: `The ground is held by ${blockers.length} applied proposal(s): ${names}. `
+                message: `The ground is held by ${blockers.length} applied design(s): ${names}. `
                     + 'Apply this one directly to choose it over them.',
                 conflictTitles: blockers.map(alternative => alternative.title || alternative.name || '').filter(Boolean),
                 conflictProposalIds: blockers.map(alternative => String(alternative.proposalId || '')).filter(Boolean)
@@ -3173,7 +3206,12 @@ const ProposalManager = {
 
         // Standing rivals down is what an explicit Apply click means: "this design, not that one".
         // Shared-plan application validates with validateSharedProposalGround instead.
-        const switchedAlternatives = this._standDownAppliedRivals(proposal, applyOptions);
+        const switchedAlternatives = this._standDownAppliedRivals(proposal, {
+            ...applyOptions,
+            // An explicit Apply chooses this proposal's occupied ground, just like a confirmed
+            // plan replacement. Replay and edit derivation do not enter this branch.
+            replaceOccupiedGround: true
+        });
         setProposalApplied(proposal, true);
         store._indexProposal?.(proposal);
         const derived = await this.deriveForNewProposal(proposal, {
@@ -3208,13 +3246,34 @@ const ProposalManager = {
         return rivals;
     },
 
+    // Says which published roads a junction gave a new version: the change the user made reaches a
+    // road they did not select, so it is named rather than left to be discovered.
+    _reportJunctionRevisions(records) {
+        const names = (Array.isArray(records) ? records : []).filter(Boolean)
+            .map(record => record.title || record.name || String(record.proposalId));
+        if (!names.length) return;
+        const root = typeof window !== 'undefined' ? window : globalThis;
+        const key = 'proposalApplyStatus.junctionRevisions';
+        const params = { count: names.length, names: names.join('; ') };
+        let message = '';
+        try { message = root.i18n?.t?.(key, params) || ''; } catch (_) { }
+        if (!message || message === key) {
+            message = 'Saved as a new version, because the published design stays as it is: {{names}}'
+                .replace('{{names}}', params.names);
+        }
+        try {
+            if (typeof root.showEphemeralMessage === 'function') root.showEphemeralMessage(message, 10000, 'info');
+            else if (typeof root.updateStatus === 'function') root.updateStatus(message);
+        } catch (_) { }
+    },
+
     // Says which records came off the map because the applied one stands on their ground.
     _reportStoodDownRivals(rivals) {
         if (!Array.isArray(rivals) || !rivals.length) return;
         const names = rivals
             .map(alternative => alternative.title || alternative.name || String(alternative.proposalId))
             .join('; ');
-        const message = `${rivals.length} proposal(s) taken off the map — they stand on the same ground: ${names}`;
+            const message = `${rivals.length} design(s) taken off the map — they stand on the same ground: ${names}`;
         try {
             if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 10000, 'warning');
             else if (typeof updateStatus === 'function') updateStatus(message);
@@ -3688,7 +3747,7 @@ const ProposalManager = {
                 }
             } catch (_) { }
             this._refreshUIAfterProposalChange(null);
-            if (typeof updateStatus === 'function') updateStatus('Proposal \"' + title + '\" deleted');
+            if (typeof updateStatus === 'function') updateStatus('Design \"' + title + '\" deleted');
         });
         return true;
     },

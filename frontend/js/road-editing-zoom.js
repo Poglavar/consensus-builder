@@ -9,7 +9,7 @@
 (function (global) {
     'use strict';
 
-    const DEEP_ZOOM = 22;
+    const DEEP_ZOOM = 23;
 
     // What a tile layer needs so it keeps drawing above its own range: its declared maximum IS its
     // native tile limit, so Leaflet should keep requesting tiles at that zoom and upscale them past

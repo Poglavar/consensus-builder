@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "cityCode": "4530",
+  "name": "Irapuato, Mexico",
+  "point": [
+    20.6729572371031,
+    -101.356085008183
+  ],
+  "bindings": [
+    {
+      "appCityId": "irapuato",
+      "runtimeConfig": {
+        "id": "irapuato",
+        "wupCityCode": "4530",
+        "label": "Irapuato, Mexico",
+        "currency": {
+          "locale": "es-MX",
+          "code": "MXN"
+        },
+        "map": {
+          "initialView": {
+            "type": "center",
+            "zoom": 19
+          },
+          "defaultCenter": [
+            20.6729572371031,
+            -101.356085008183
+          ],
+          "defaultZoom": 19,
+          "parcelZoomRange": {
+            "min": 17,
+            "max": {
+              "$number": "Infinity"
+            }
+          },
+          "latLngPadding": 0.08
+        },
+        "projection": {
+          "datasetCrs": "EPSG:4326",
+          "definition": "+proj=longlat +datum=WGS84 +no_defs",
+          "fallbackLatLng": [
+            20.6729572371031,
+            -101.356085008183
+          ],
+          "fallbackDataset": [
+            -101.356085008183,
+            20.6729572371031
+          ]
+        },
+        "parcels": {
+          "strategy": "grid",
+          "gridSize": 0.001,
+          "source": "parcel-source",
+          "sourceId": "mx-sedatu-pit11-parcelas-ran-2020-wfs",
+          "idPrefix": "MX-RAN-PIT11-",
+          "requiresBackend": true,
+          "ownership": false,
+          "liveRadiusKm": 8,
+          "attribution": "Registro Agrario Nacional (RAN) / SEDATU IDE, PIT11 Parcelas Guanajuato 2020, CC BY 4.0 per catalog metadata. Historical partial social-property parcels; canonical IDs adapted, source geometry unchanged."
+        },
+        "buildings": {
+          "source": "overture-tiles"
+        },
+        "sidebar": {
+          "disabledSections": [
+            "parcelBlocks",
+            "roads",
+            "areaMonitor"
+          ]
+        },
+        "parcelBuilder": {
+          "url": "https://urbangametheory.xyz/codechecker/"
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "mx-sedatu-pit11-parcelas-ran-2020-wfs",
+      "name": "SEDATU / RAN PIT11 Guanajuato agrarian parcels (2020)",
+      "adapter": "wfs",
+      "endpoint": "https://ide.sedatu.gob.mx/geoserver/ows",
+      "featureType": "geonode:a__11_PARCELAS_RAN_2020",
+      "version": "2.0.0",
+      "idField": "CLAVE",
+      "idType": "string",
+      "idPrefix": "MX-RAN-PIT11-",
+      "outFields": [
+        "CLAVE"
+      ],
+      "geometryField": "the_geom",
+      "requestProperties": true,
+      "pageSize": 100,
+      "idBatchSize": 3,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxResponseBytes": 16777216,
+      "timeoutMs": 45000,
+      "maxConcurrentQueries": 1,
+      "minRequestIntervalMs": 150,
+      "countryCode": "MX",
+      "metricSrid": 32614,
+      "cityIds": [
+        "irapuato"
+      ],
+      "defaultForCity": true,
+      "scope": "Historical Guanajuato RAN ejido/community social-property parcels, with bounded observations near Irapuato. Partial agrarian coverage; private urban cadastre, currentness and citywide completeness are unestablished.",
+      "attribution": "Registro Agrario Nacional (RAN) / SEDATU IDE, PIT11 Parcelas Guanajuato 2020, CC BY 4.0 per catalog metadata. Historical partial social-property parcels; canonical IDs adapted, source geometry unchanged.",
+      "catalogueUrl": "https://ide.sedatu.gob.mx/catalogue/#/dataset/1669",
+      "metadataUrl": "https://ide.sedatu.gob.mx/catalogue/csw_to_extra_format/a0feb968-5460-11ec-8072-005056b8fa85/a__11_PARCELAS_RAN_2020.html",
+      "nativeCrs": "EPSG:4326",
+      "responseCrs": "EPSG:4326",
+      "capabilities": {
+        "areaEnumeration": true,
+        "exactIds": true,
+        "geometryQuery": true
+      },
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "license": "CC BY 4.0",
+      "browserTransport": "relay",
+      "ownership": false,
+      "operator": "Registro Agrario Nacional (RAN) / SEDATU SITU",
+      "idPattern": "^[0-9]{8}-[0-9]{19}$",
+      "licenceNote": "CC BY 4.0 per first-party metadata. SEDATU disclaims responsibility for use. Preserve RAN/SEDATU attribution and link to source and licence; canonical identifiers adapted, source coordinates unchanged.",
+      "paginationIdentity": "native-id"
+    }
+  ]
+}

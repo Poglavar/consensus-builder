@@ -1,4 +1,4 @@
-# Editing designs and plans through MCP
+# Editing designs, named plans and agreements through MCP
 
 The agent translates a person's request into edits of the same authored records used by the site.
 The interface is a set of editing primitives, not a catalogue of possible sentences. Public and
@@ -20,10 +20,10 @@ browser decorations, their positions are not in its canonical record: explain th
 explicit layout rather than pretending to preserve unknown positions.
 
 “Make the parcels north of that road three-storey row houses.” Inspect the road and land pieces,
-select the relevant pieces, draft row envelopes on their exact geometries, then remove or replace
+select the relevant pieces from an agreement inventory or use source-qualified cadastral ground, draft row envelopes on their exact geometries, then remove or replace
 the designs the user wants changed and add the new designs. There is no special “rezone” plan
 operation. The rule remains an authored proposal, not an enacted planning restriction. Select
-`piece` inventory entries for current plan ground, and source-qualified cadastral IDs for source
+`piece` entries from `ugt_inspect_agreement` for derived agreement ground, and source-qualified cadastral IDs for source
 ground. Compass filtering includes only objects whose whole bounding box lies beyond the reference
 box; it excludes boundary-straddling objects.
 
@@ -35,12 +35,16 @@ votes, signatures, funding or execution state. Publication remains a separate co
 
 | Tool | Purpose |
 | --- | --- |
-| `ugt_inspect_plan` | Inventory designs, individual buildings and derived land pieces; filter, page and obtain exact object refs and JSON paths. |
+| `ugt_inspect_plan` | Inventory a named plan’s member designs and buildings; filter, page and obtain explicit refs and JSON paths. |
+| `ugt_inspect_agreement` | Inventory an agreement’s designs, buildings and derived land pieces. Ground is rederived and checked against its commitments. |
 | `ugt_inspect_design` | Read a whole canonical design or selected RFC 6901 JSON Pointer paths, including private drafts. `untrustedValue` preserves the exact JSON. |
 | `ugt_edit_design` | Atomically patch one revision with RFC 6902 `test`, `add`, `replace`, `remove`, `copy`, `move`, plus geometry operations. |
 | `ugt_modify_design` | Optional conveniences for floors, height, use, rotation, movement, tree count and road profiles. These are not the limits of editing. |
-| `ugt_edit_plan` | Add, remove, replace or edit designs in an agreement composition; edit terms; rebuild all ground and validate the result. |
+| `ugt_draft_plan`, `ugt_get_plan` | Create or retrieve a named `plan/v1` snapshot: title, design membership and saved map view. |
+| `ugt_edit_plan` | Revise named-plan membership, designs, title or view; return a new private snapshot. It carries no agreement terms or derived land pieces. |
+| `ugt_edit_agreement` | Revise agreement terms against the same named plan. Use `ugt_edit_plan` to change membership or designs, then draft a new agreement. |
 | `ugt_draft_*` | Generate a new design, which can then be added or used as a replacement. |
+| `ugt_validate_plan` | Check authored geometry, retained constraints, building overlaps and station attachment presence; source coverage and statutory compliance remain explicit unknowns. |
 | `ugt_compare` | Compare revisions and expose absent source measurements as unknown. |
 
 Use the CID returned by inspection as `expectedCid`. Array indices are valid within that exact
@@ -74,44 +78,68 @@ For example, after inspecting a building design:
 
 The resulting draftRef can replace the original design through `ugt_edit_plan`, or the same edits
 can run inside its `edit` operation. Small typed building edits can also target building refs
-directly. Replacing a design preserves its authored position in the agreement's design order.
+directly. Named-plan membership is a sorted set of CIDs; an agreement retains its authored design order.
 Plan refs address objects in the inspected starting revision. Prepare a new design's edits before
 adding it, or inspect the returned revision before editing its new refs. Replacing a design or
 patching its building array invalidates its old child refs. Remove a building with the plan's
 `remove` operation; the last building removes its design from the composition.
 
-Trees use `{coordinate:[longitude,latitude], kind, heightM}`. Supported kinds and height ranges
+Trees use `{coordinate:[longitude,latitude], kind, heightM, pit?}`. Supported kinds and height ranges
 are broadleaf (6–14 m), conifer (7–18 m), columnar (9–20 m) and ornamental (3.5–6 m). Change kind
-and height together when the old height is outside the new range. Paths are coordinate arrays;
+and height together when the old height is outside the new range; the editor's Taller and Shorter
+step `heightM` by 1 m. A square's tree may stand in a pit in the paving: `pit` is `grille`, `grass`
+or `soil` (a 1.4 m square, drawn square to the square's longest edge); omit it for a tree straight
+out of the paving. The same holds for paved building surroundings
+(`/geometry/groundSurface/decorationDesign/trees`); trees on green ground (parks, green
+surroundings) take no `pit` (`invalid-tree`), so remove pits before switching surroundings to green. Paths are coordinate arrays;
 ponds and flowerbeds are closed coordinate rings; benches have `coordinate` and `bearing` in
 degrees. These are the same records read by the site's map and model renderer.
 
+Parks and squares also carry lamps and per-kind furniture models in `decorationDesign`. Lamps are
+`lamps: [{coordinate:[longitude,latitude], bearing}]`; the bearing is degrees from north, stored in
+[0, 360). `models` maps a furniture kind to one uploaded GLB used for every placement of that kind:
+`models: {bench: {url, name}}`. Market stalls are `stalls: [{coordinate:[longitude,latitude], bearing,
+color}]` on parks and squares; `color` is an optional six-digit hex canopy colour such as `#2f9e6b`
+(stored lower-case; an invalid colour is dropped and the stall takes the site's palette colour by
+position). A park offers `bench`, `stall`, `tree` and `lamp`; a square offers `bench`, `statue`,
+`fountain`, `stall`, `tree` and `lamp`; a lake has none of them. Edits are normalized with the
+site's own rules (`frontend/js/furniture-models.js`): names are trimmed to 120 characters, an empty
+`models` object is removed, and a kind the structure does not offer fails with
+`furniture-kind-not-allowed`. A model entry without a `url`, or a lamp or stall without a valid
+coordinate, fails with `invalid-decoration`. Upload the asset with `ugt_import_model` `kind: 'furniture'`
+(at most 5000 triangles, textures at most 1024 px a side, 4 MiB; failures are `furniture-triangles`,
+`furniture-texture`, `furniture-bytes` or `furniture-empty`). It returns only
+`asset: {modelUrl, name, public, durable, kind: 'furniture', limits}`; then patch the design:
+
+```json
+[{ "op": "add", "path": "/structureProposal/decorationDesign/models", "value": { "bench": { "url": "<asset.modelUrl>", "name": "Oak bench" } } },
+ { "op": "add", "path": "/structureProposal/decorationDesign/lamps", "value": [{ "coordinate": [15.9772, 45.8131], "bearing": 90 }] }]
+```
+
+Use `add` with a path below `models` (`/structureProposal/decorationDesign/models/statue`) when
+the object already exists, and `remove` to drop one kind's model.
+
 ## Site editor parity and coupled fields
 
-`ugt_draft_road` creates an independent street. When those designs are assembled with
-`ugt_draft_agreement`, their same-level crossings are authored as shared junctions using the map
-editor's geometry engine. Every participating street stores its split stretches, neighbouring arms
-and rebuilt footprint, including corner land. Bridges, tunnels and unsnapped near-misses remain
-separate. `roadChanges` maps original to revised design CIDs; publish the **returned designs** with
-the returned agreement. The original designs are unchanged.
+`ugt_draft_agreement` requires an existing named plan and preserves its exact membership. It does
+not create a plan or revise member designs. Edit roads and other designs through `ugt_edit_plan`
+first, then draft the agreement against that named plan.
 
-`ugt_edit_plan` performs the same step after its edits, so a moved, removed or resized road also
-updates the neighbouring junction records and land. Those additional revisions appear in `changes`.
-The composition supplies the complete authored road network; references to foreign arms are rebuilt
-from its included roads. Inspection and comparison replay the exact supplied records without
-authoring junctions or changing a published commitment. An existing unconnected road plan therefore
-needs a new draft/revision and separate publication; merely opening its old link does not repair it.
+Agreement revisions change terms only and keep the exact named plan fixed. To change the design
+composition or geometry, revise the named plan and draft a new agreement.
 
 | Human editor | Editable canonical fields | Required consistency |
 | --- | --- | --- |
 | Building form, facade/material/model, use and dimensions | `/geometry/buildings/*/geometry`, `/geometry/buildings/*/properties`, `/buildingProposal/parameters` | Height/floors are kept consistent when only one changes. A geometry-affecting parameter edit must include its actual geometry change. Model/material fields retain the site's own schema; a new property name does not create a renderer feature. |
-| Block/row/detached envelopes and example form | `/geometry/blockMassing`, building feature rules, `/buildingProposal/parameters/rule` | Rule height/floors and provenance are synchronized. A separately authored block envelope must be explicitly updated with footprint changes to its building pieces. Setback or plot-eligibility edits require corresponding envelope geometry. Use atomic patches for coupled fields. |
-| Building surroundings and land take | `/geometry/groundSurface`, `/geometry/landTake`, `/geometry/groundBoundary`, `/site` | Moving buildings updates holes in existing surroundings. Enlarging a footprint beyond its site requires explicitly editing the site. |
+| Block/row/detached envelopes and example form | `/geometry/ruleMassing`, building feature rules, `/buildingProposal/parameters/rule` | Rule height/floors and provenance are synchronized. A Block or Row stores one building per parcel, cut from its authored massing in `/geometry/ruleMassing`; a height, floors or use intent applied to all its buildings re-stamps that massing, while a footprint, removal or single-building edit must explicitly update `/geometry/ruleMassing` too. Setback or plot-eligibility edits require corresponding envelope geometry. Use atomic patches for coupled fields. |
+| Building surroundings and land take | `/geometry/groundSurface`, `/geometry/landTake`, `/geometry/groundBoundary`, `/site` | A building-only transform leaves surroundings anchored and updates their footprint holes. Surroundings are clipped to taken land; changing land take to the exact footprint removes the surface and its furniture. Whole source parcels require positive building overlap. When moving off a parcel, edit `/geometry/landTake` and `/site` with the moved footprint to release that parcel and its surroundings; the browser recomputes this from source parcels. Edit `/geometry/landTake` to choose footprint cuts, occupied whole source parcels or a mixture. Enlarging a footprint beyond its site requires explicitly editing the site. |
 | Road/track nodes, segments and lanes | `/roadProposal/definition/osm/elements` and other authored corridor fields | Canonical OSM node/way/relation references are checked. OSM edits rebuild the footprint and site through the app materializer. Coordinate/profile changes across neighbouring roads need edits to all affected designs. |
-| Park/square/lake/station form and furniture | `/structureProposal/geometry`, `/structureProposal/decorationDesign`, authored graphics under `/geometry` | Goal and structure kind must agree. Trees, paths, ponds, flowerbeds and furniture can be individually added, copied, moved or removed. |
+| Park/square/lake/station form and furniture | `/structureProposal/geometry`, `/structureProposal/decorationDesign`, `/structureProposal/modelUrl`, `/structureProposal/modelName`, `/structureProposal/rotation`, `/structureProposal/source`, authored graphics under `/geometry` | Goal and structure kind must agree. An uploaded park/square/lake model (`source: 'upload'`) is drawn stretched onto the structure polygon's bounds in its `rotation` frame (degrees) at the model's own height, so rotating it needs a matching geometry `transform`. Replacing park/square/lake geometry updates its site when the site is not explicitly edited. The browser offers direct area dragging and boundary vertex insertion, removal and movement for the same stored geometry. Park/square furniture outside the edited boundary is removed using the same ground-scoping helper as the browser; Undo or editing an earlier revision can restore it. Trees, paths, ponds, flowerbeds and furniture can be individually added, copied, moved or removed. |
 | Parcel borders/layout | `/parcelLayout/plots`, pool/site and authored layout settings | Plots must be valid, nonoverlapping polygons covering their pool; edit shared vertices on both neighbouring plots atomically. |
 | Design details | Title, description, author, city, tolerance and goal/payload | Exactly one supported authored payload; valid canonical identity and current parcel binding. |
-| Agreement composition and terms | Plan membership operations; `terms.title`, `author`, `sponsor`, `deadline`, `rule`, `rights`, `allocations`, `money` | Inputs/outputs are rederived. Changed rights or allocated output hashes require explicit reviewed replacements. |
+| Named plan selection and view | `title`, `view`, membership operations | Named plans require no allocations, decision rule, ownership snapshot or complete cadastral ground. Title/view/membership edits retain the selected designs exactly. |
+| Counter-agreement, scheme comparison | `ugt_inspect_agreement`, then `ugt_draft_agreement` on the same `planCid` with the inspected terms and the changed `rule` (another `approvalConfig.regime` from `ugt://schemes`) | The browser's Rules tab guide reads an agreement against any scheme and drafts a counter-agreement under it; through MCP the draft's reported `scheme` check is that reading. No link to the answered agreement is stored. |
+| Agreement terms | `ugt_edit_agreement` `terms.title`, `author`, `sponsor`, `deadline`, full `rule` (including policy/regime and lens), `rights`, `allocations`, `settlement`, `valuation` | Plan membership is fixed. Each owner output has one explicit recipient or public designation; joint recipients are unsupported. Balancing cash is derived from the settlement: by area from the per-m² rate and contribution, by value from `valuation` (a unit value per input parcel and output hash) and the pinned scheme's value-gain share. A pinned scheme's distribution rules (caps, basis, party count, no proposer under authority-led schemes; `ugt://schemes`) are enforced on draft, edit and publication and reported by `ugt_inspect_agreement` as `scheme`. Rights changes update the input holder snapshot. |
 
 Existing holders and rights can be carried into a private revision over the same input parcels,
 but the result labels them `carried-unverified`: this does not refresh or verify ownership.
@@ -124,7 +152,28 @@ state are not authored fields. They are not edited by JSON Patch. Schema, revisi
 are maintained by the tool. A new feature is added by appending its ordinary authored record; a
 whole new design is created through a draft tool or supplied as canonical content to plan `add`.
 
-The interface covers portable authored records. It does not control a person's open browser,
-access unsaved local edits or upload a local model file. The caller must provide the saved design
-or plan, or use the site's existing asset upload workflow and reference the resulting asset as the
-site does. These boundaries are explicit rather than treating unknown browser state as empty.
+The interface covers saved authored records; it does not read a person's open browser or unsaved local composition. `ugt_import_design` accepts GeoJSON, OSM XML and OpenDRIVE through the app parsers. `ugt_import_model` accepts a self-contained GLB/glTF payload or supported public URL; `confirmAssetUpload: true` authorizes a durable public asset upload, while its resulting design remains private. Its `kind` is `building` (default) or `park`, `square` or `lake`: the model's projected footprint, placed at `center` with `rotation`, becomes the building footprint or the structure polygon. `kind: 'furniture'` uploads a furniture asset within the furniture limits and returns no design (no `city`, `center` or `rotation` needed); see the furniture models above. A building keeps the model in its feature properties; a space keeps `modelUrl`, `modelName` (at most 120 characters), `rotation` and `source: 'upload'` on `/structureProposal`. GeoJSON LineString and MultiLineString centrelines go through the site's own GeoJSON road import (`parseGeoJson`, then the same records as an OSM import): one road per line or part, every scalar property an OSM way tag (`name`, `width`, `highway`, `lanes`, `railway`; `mode: 'rail'` means `railway=rail`, and a line with neither class tag is `highway=road`). GeoJSON polygons become buildings, or with `kind: 'space'` and `spaceKind` a park, square or lake; the result lists polygon designs first, then roads. A model URL or uploaded filename alone is not proof of a matching geographic footprint.
+
+Typed constructors cover freeform, block, row and detached building forms, road, track, bus/tram/underground/elevated stations, park, square, lake and parcel layout. Use `ugt_help` with the exact tool name for current parameter constraints. Row creation requires two distinct selected parcels; for an outline it uses the shared site plot cutter and requires at least two plots. Row dimensions omitted by the caller use the shared site-fitting defaults. Blocks expose shared `gapPositions`, `gapWidthM`, `wingPositions`, `wingLengthM` and `chamferM` geometry rather than retaining those fields as unrendered intent. Track edits retain speed/gauge/radius evidence and recheck authored curvature. Station construction resolves compatible corridor references rather than inventing an attachment.
+
+The browser's local ownership and recipient facets are not part of `design/v1`. MCP cannot inspect or edit those local facets; agreement allocation primitives edit separate agreement terms. This is an outstanding editing-parity gap.
+
+`ugt_render_preview` returns an actual private 2D PNG as an MCP image and a `ready` result. It does not prove that a person's separate browser or a 3D tile stream is ready. Generic model 3D rendering is unavailable through this tool's current public schema.
+
+Private `draftRef` links are opaque bearer references backed by persisted storage and an explicit expiry time. Keep prior revisions for undo, and call `ugt_export_draft { draftRef }` to retain the exact artifact and member designs beyond expiry. The current store supports one service process per storage directory; its directory is not a shared multi-process database. MCP request handling is stateless, while private object retention is durable. Exported named fields are at `artifact.untrusted.plan`/`.design`/`.agreement`; canonical array members are at `artifact.designs[i].untrusted.content`. Keep the complete artifact and its source map for restoration; trust envelopes are not canonical content and are not included in a record CID.
+
+Publish only the reviewed reference with its inspected `expectedCid` and `confirm: true`: `ugt_publish_design`, `ugt_publish_plan` or `ugt_propose_agreement`. A changed CID requires another inspection and review. A plan publishes its unindexed design dependencies first, retaining each source identity; an unpublished parcel layout must first travel through an agreement. Success includes a verified permanent URL. Publication errors report observed `stage`, `cid`, `pinnedCids`, `indexed` and a locally authored retry instruction; retry the same immutable revision. A failed readback does not establish that the preceding index write failed.
+
+In version 0.4, `ugt_inspect_plan`/`ugt_edit_plan` intentionally mean named `plan/v1` operations. Existing callers editing agreement compositions must use `ugt_inspect_agreement`/`ugt_edit_agreement`; there is no dual interpretation of the plan tools.
+
+Use `ugt_help { topic: "schemas/plan" }` or `ugt://schemas/plan` for the named-plan schema generated by `PlanRecord`. Location-string bounds, strict CID ordering and JavaScript UTF-16 length limits are explicit semantic extensions backed by the same validator helpers. Descriptive city text and display language do not establish source coverage or legal authority. Source operations appear in each source’s `operations` list. `includeConfiguration` places exact configuration under `items[].untrusted.config`. `includeContract` requires `sourceId` or `adapterId`; compact family metadata and only the selected adapter contract remain source data under `abstractions[].untrusted.contract` and `abstractions[].untrusted.adapters`.
+
+Community code voting uses the existing agreement `consultation` field in `ugt_draft_agreement`
+and `ugt_edit_agreement`. `consultation.voting` fixes the list identifier and sorted code verifiers
+before publication. Use the shared local `CommunityVoting` helper to generate codes and assignment
+files; send only its `configuration()` projection. Names, contacts and assignment files never belong
+in hosted tool arguments. Changing eligibility creates a new agreement with separate ballots.
+`ugt_voting_status` reads totals, or private history when the user authorizes use of their code.
+`ugt_cast_community_vote` accepts the reviewed version and a retry-stable UUID, with explicit
+confirmation. The tools call the same API as the browser, including its persistent guessing limits.
+See [community consultations](community-consultations.md#voting-on-the-site) for the complete contract.

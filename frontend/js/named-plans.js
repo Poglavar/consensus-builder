@@ -22,12 +22,40 @@
         const routeCid = parsePath(win.location.pathname);
         let current = null;
         const t = (key, fallback, params) => win.getProposalI18nHelper()(key, fallback, params);
+        const observe = (operation, options, action) => {
+            const observation = { ...options, context: { surface: 'named-plan' } };
+            return win.AppDiagnostics
+                ? win.AppDiagnostics.run(operation, observation, () => action(observation)) : action(observation);
+        };
         const backend = () => win.resolveBackendBaseUrl().replace(/\/$/, '');
         const verify = (row, cid) => {
             const error = win.PlanRecord.validate(row?.content);
             if (error || row?.cid !== cid || win.Cid.cidOfObject(row.content) !== cid) throw new Error(error || 'The saved plan does not match its link.');
             return row;
         };
+        // Local named snapshots exist independently of agreements, including unpublished layouts.
+        function remember(plan, memberIds = []) {
+            verify(plan, plan.cid);
+            const stored = win.PersistentStorage.getItem?.(`plan:${plan.cid}`);
+            const previous = stored ? JSON.parse(stored) : {};
+            const row = { ...previous, ...plan, cid: plan.cid, content: plan.content,
+                memberIds: [...(memberIds.length ? memberIds : plan.memberIds || previous.memberIds || [])] };
+            win.PersistentStorage.setItem(`plan:${row.cid}`, JSON.stringify(row));
+            return row;
+        }
+        function list({ storedOnly = false } = {}) {
+            const rows = new Map();
+            win.PersistentStorage.forEach((raw, key) => {
+                if (!String(key).startsWith('plan:') && !String(key).startsWith('ugt-imported-plan:')) return;
+                try { const row = JSON.parse(raw); verify(row, row.cid); rows.set(row.cid, row); }
+                catch (error) { win.console.warn('[NamedPlans] Invalid local plan', key, error.message); }
+            });
+            for (const agreement of storedOnly ? [] : win.AgreementStore?.list?.() || []) {
+                if (agreement.plan && !rows.has(agreement.plan.cid)) rows.set(agreement.plan.cid, { ...agreement.plan, memberIds: agreement.designs.map(row => row.proposalId) });
+            }
+            if (current && !storedOnly) rows.set(current.cid, { ...rows.get(current.cid), ...current });
+            return [...rows.values()].sort((a, b) => a.content.title.localeCompare(b.content.title));
+        }
         async function request(method, path, body) {
             const response = await win.fetch(backend() + path, { method,
                 ...(body ? { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {}),
@@ -59,24 +87,41 @@
         }).catch(error => ({ error })) : null;
         return {
             link,
+            fetchPlan,
+            remember,
+            list,
+            remove(cid) {
+                win.PersistentStorage.removeItem(`plan:${cid}`);
+                win.PersistentStorage.removeItem(`ugt-imported-plan:${cid}`);
+                if (current?.cid === cid) current = null;
+                win.dispatchEvent(new win.CustomEvent('planschange'));
+            },
             get current() { return current; },
             async save(content) {
+                return observe('save', { entity: 'plan', code: 'plan-save-failed' }, async observation => {
                 const error = win.PlanRecord.validate(content);
                 if (error) throw new Error(error);
+                // Use stable content identity for diagnostics, but only after validation and
+                // hashing succeed inside the observed action. Object identity changes on clones.
                 const cid = win.Cid.cidOfObject(content);
+                observation.planKey = cid;
                 verify(await request('POST', '/plans', { content }), cid);
                 // Read back the durable record before presenting its link as saved.
                 current = await fetchPlan(cid);
+                remember(current);
                 return { ...current, link: link(cid) };
+                });
             },
             async open() {
                 const result = await arrive();
                 if (!result || result.redirecting) return;
                 if (result.error) {
-                    win.showStyledAlert(result.error.message, { title: t('proposals.share.named.openFailed', 'The named plan could not be opened') });
+                    const diagnostic = win.AppDiagnostics?.report(result.error, { code: 'plan-open-failed', context: { surface: 'named-plan' } });
+                    win.showStyledAlert(diagnostic?.message || 'The named plan could not be opened. Check the link and retry.', { title: t('proposals.share.named.openFailed', 'The named plan could not be opened') });
                     return;
                 }
                 current = result.record;
+                remember(current);
                 win.document.title = `${current.content.title} · Consensus Builder`;
                 const loaded = await win.handleSharedDesignRoute(current.content.designCids, { frame: false, openDetails: false });
                 if (!loaded.blocked && !loaded.failed.length) {

@@ -128,7 +128,7 @@
         return `${counts} · ${t('modal.lens.picker.coverageSelected', 'Attests {{covered}} of {{total}} selected parcels', { covered: stats.covered, total: parcelCount })}`;
     }
 
-    function renderBody(container) {
+    function renderBody(container, entries) {
         const core = root.LensCore;
         const parcelIds = selectedParcelIds();
         const chosen = new Set(entries.map(entry => entry.address));
@@ -203,10 +203,10 @@
             ${parcelsHtml}
             <p class="${entries.length ? 'lens-picker-note' : 'lens-picker-error'}" data-lens-summary>${escapeText(entries.length
                 ? t('modal.lens.picker.chosenCount', '{{count}} lens member(s) chosen', { count: entries.length })
-                : t('modal.lens.picker.required', 'Choose at least one lens member; a Solana proposal cannot be minted without one.'))}</p>`;
+                : t('modal.lens.picker.required', 'Choose at least one lens member; a Solana design cannot be published without one.'))}</p>`;
     }
 
-    function wire(container, rerender) {
+    function wire(container, rerender, { getEntries, setEntries }) {
         container.querySelectorAll('[data-lens-member]').forEach(input => {
             input.addEventListener('change', () => {
                 const key = input.getAttribute('data-lens-member');
@@ -250,17 +250,24 @@
     // stay as hooks for scripts and tests.
     let pickerDialog = null;
 
-    function show() {
+    function show(options = {}) {
         if (typeof root.closeLensModal === 'function') root.closeLensModal();
         if (pickerDialog) pickerDialog.close();
+        const initial = Array.isArray(options.entries) ? options.entries : getEntries();
+        const keys = root.LensCore.validateSolanaLens(initial).keys;
+        let workingEntries = keys.map(address => ({ address, name: initial.find(entry => entry.address === address)?.name || '' }));
+        const selection = { getEntries: () => workingEntries.map(entry => ({ ...entry })), setEntries: next => {
+            setEntries(next); workingEntries = getEntries(); options.onChange?.(selection.getEntries());
+        } };
         const subtitle = document.createElement('p');
         subtitle.className = 'lens-modal-subtitle';
-        subtitle.textContent = t('modal.lens.picker.subtitle', 'Pick the lens members whose ownership attestations this proposal will accept. The lens is fixed at mint.');
+        subtitle.textContent = t('modal.lens.picker.subtitle', 'Choose the trusted members of your lens. Changes become your default; saved agreements keep their own lens.');
         const body = document.createElement('div');
         body.className = 'lens-picker-body';
         body.setAttribute('data-lens-picker-body', '');
         const dialogApi = root.CbDialog.open({
-            title: t('modal.lens.picker.title', 'Lens for this proposal'),
+            title: t('modal.lens.title', 'The lens through which I see the world'),
+            parent: options.parent,
             size: 'lg',
             top: true,
             className: 'lens-modal lens-picker',
@@ -271,7 +278,7 @@
             closeLabel: t('modal.lens.closeLabel', 'Close lens modal'),
             body: [subtitle, body],
             actions: [{ id: 'done', label: t('modal.lens.picker.done', 'Done'), role: 'primary' }],
-            onClose: () => { if (pickerDialog === dialogApi) pickerDialog = null; }
+            onClose: () => { if (pickerDialog === dialogApi) pickerDialog = null; options.onClose?.(selection.getEntries()); }
         });
         if (!dialogApi) return;
         pickerDialog = dialogApi;
@@ -283,8 +290,8 @@
 
         const rerender = () => {
             if (!overlay.isConnected) return;
-            renderBody(body);
-            wire(body, rerender);
+            renderBody(body, selection.getEntries());
+            wire(body, rerender, selection);
         };
         rerender();
         loadDirectory().then(() => {
@@ -296,6 +303,7 @@
             directory.error = error && error.message ? error.message : String(error);
             rerender();
         });
+        return dialogApi;
     }
 
     function hydrate() {

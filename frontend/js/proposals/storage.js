@@ -132,7 +132,7 @@ function guestPolicyBlocks(action) {
     if (verdict.allowed) return null;
     const t = getProposalI18nHelper();
     const messages = {
-        publish: ['ephemeral.messages.name_to_publish', 'Choose a profile name to publish: published proposals carry their author. Everything kept on this device works without one.'],
+        publish: ['ephemeral.messages.name_to_publish', 'Choose a profile name to publish: published designs carry their author. Everything kept on this device works without one.'],
         share: ['ephemeral.messages.name_to_share', 'Choose a profile name to share: a share link carries its author. Everything kept on this device works without one.']
     };
     const [key, fallback] = messages[action];
@@ -237,7 +237,7 @@ function deleteProposal(proposalId) {
     try {
         const proposal = proposalStorage.getProposal(proposalId);
         if (!proposal) {
-            updateStatus(t('status.messages.error_proposal_not_found', 'Error: Proposal not found'));
+        updateStatus(t('status.messages.error_proposal_not_found', 'Error: Design not found'));
             return;
         }
 
@@ -258,8 +258,7 @@ function deleteProposal(proposalId) {
             || !!proposal.parcelLayout
         );
         if (managedByProposalManager && typeof ProposalManager !== 'undefined' && ProposalManager.deleteProposal) {
-            ProposalManager.deleteProposal(proposalId);
-            return;
+            return ProposalManager.deleteProposal(proposalId);
         }
 
         // Remove the proposal from storage
@@ -288,7 +287,7 @@ function deleteProposal(proposalId) {
             }
         }
 
-        updateStatus(t('status.messages.proposal_deleted', 'Proposal "{{title}}" deleted', { title: proposal.title }));
+        updateStatus(t('status.messages.proposal_deleted', 'Design "{{title}}" deleted', { title: proposal.title }));
 
     } catch (error) {
         console.error('Error deleting proposal:', error);
@@ -368,42 +367,6 @@ function initialiseProposalStorage() {
     // Update the button count after loading proposals
     if (typeof updateShowProposalsButton === 'function') {
         updateShowProposalsButton();
-    }
-    offerBlockedWorkRecovery();
-}
-
-// Work made in a read-only tab is parked rather than dropped (see proposals/data.js). Offer it back
-// once, here, where the user can see the map it belongs to. Asked rather than merged silently: by
-// the time you reload you have often redrawn the thing already, and a proposal reappearing on its
-// own is its own kind of surprise. Declining keeps the parked copy — only restoring clears it, so
-// saying "not now" can never be the thing that finally loses the work.
-async function offerBlockedWorkRecovery() {
-    try {
-        if (typeof proposalStorage.readRecovery !== 'function') return;
-        const parked = proposalStorage.readRecovery();
-        if (!parked) return;
-
-        const count = parked.proposals.length;
-        const when = parked.savedAt ? CbFormat.formatDateTime(parked.savedAt, { missing: 'earlier' }) : 'earlier';
-        const message = (typeof window.i18n?.t === 'function'
-            && window.i18n.t('proposals.recovery.offer') !== 'proposals.recovery.offer')
-            ? window.i18n.t('proposals.recovery.offer', { count, when })
-            : `${count} proposal${count !== 1 ? 's' : ''} you made ${when} could not be saved, because the app was`
-              + ` open in another tab at the time.\n\nRestore ${count !== 1 ? 'them' : 'it'} now?`;
-
-        const confirmFn = window.showStyledConfirm;
-        if (typeof confirmFn !== 'function') return;
-        const proceed = await confirmFn(message, { okText: 'Restore', cancelText: 'Not now' });
-        if (!proceed) return;
-
-        const restored = proposalStorage.restoreRecovery();
-        if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
-        if (typeof updateStatus === 'function') {
-            updateStatus(`Restored ${restored} proposal${restored !== 1 ? 's' : ''} that could not be saved earlier`);
-        }
-        if (typeof refreshProposalsLayer === 'function') refreshProposalsLayer();
-    } catch (error) {
-        console.error('[proposalStorage] recovery offer failed', error);
     }
 }
 

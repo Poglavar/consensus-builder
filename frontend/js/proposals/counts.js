@@ -37,11 +37,29 @@
         return typeof query !== 'string' || query.trim() === '';
     }
 
-    function proposalIntersectsBounds(proposal, bounds) {
-        if (!proposal || !bounds) return false;
-        const { west, south, east, north } = bounds;
+    // A proposal's lon/lat extent [minLon, minLat, maxLon, maxLat], or null when it has no
+    // geometry. Walking every coordinate of every local record on each map pan was the cost of the
+    // sidebar count, so each record's extent is kept until the record changes: the same object
+    // with the same updatedAt/revision has the same geometry (records are replaced or stamped when
+    // edited).
+    const boundsMemo = new Map();
+    const BOUNDS_MEMO_LIMIT = 10000;
+    function proposalBounds(proposal) {
+        if (!proposal || typeof proposal !== 'object') return null;
+        const id = proposal.id ?? proposal.proposalId;
+        const stamp = `${proposal.updatedAt ?? ''}|${proposal.revision ?? ''}`;
+        const memo = id == null ? null : boundsMemo.get(id);
+        if (memo && memo.record === proposal && memo.stamp === stamp) return memo.bounds;
+        const bounds = computeProposalBounds(proposal);
+        if (id != null) {
+            if (boundsMemo.size >= BOUNDS_MEMO_LIMIT && !boundsMemo.has(id)) boundsMemo.clear();
+            boundsMemo.set(id, { record: proposal, stamp, bounds });
+        }
+        return bounds;
+    }
+
+    function computeProposalBounds(proposal) {
         const finite = value => typeof value === 'number' && Number.isFinite(value);
-        if (![west, south, east, north].every(finite)) return false;
         const geometries = [proposal.geometry, proposal.site, proposal.data?.geometry,
             proposal.siteProposal?.geometry, proposal.structureProposal?.geometry,
             proposal.roadProposal?.geometry, proposal.roadProposal?.definition?.polygon,
@@ -84,10 +102,21 @@
                 [minLon, minLat, maxLon, maxLat] = values;
             }
         }
-        return minLon !== Infinity && maxLon >= west && minLon <= east && maxLat >= south && minLat <= north;
+        return minLon === Infinity ? null : [minLon, minLat, maxLon, maxLat];
     }
 
-    const api = { unionProposalCount, serverCountIsStale, summaryUpdatesAreaCount, proposalIntersectsBounds };
+    function proposalIntersectsBounds(proposal, bounds) {
+        if (!proposal || !bounds) return false;
+        const { west, south, east, north } = bounds;
+        const finite = value => typeof value === 'number' && Number.isFinite(value);
+        if (![west, south, east, north].every(finite)) return false;
+        const extent = proposalBounds(proposal);
+        if (!extent) return false;
+        const [minLon, minLat, maxLon, maxLat] = extent;
+        return maxLon >= west && minLon <= east && maxLat >= south && minLat <= north;
+    }
+
+    const api = { unionProposalCount, serverCountIsStale, summaryUpdatesAreaCount, proposalBounds, proposalIntersectsBounds };
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (typeof window !== 'undefined') global.__proposalCounts = api;
 }(typeof globalThis !== 'undefined' ? globalThis : this));
