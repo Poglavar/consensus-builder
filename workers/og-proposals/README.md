@@ -6,7 +6,7 @@ static `<head>` makes every share preview identical. This Worker injects per-lin
 `twitter:card` meta **before the crawler sees the HTML**, so pasted links unfurl into the right
 image — including shared AI renders (`?scene=<slug>`), whose card is the AI image itself.
 
-Built per `../../OG-IMAGE-PLAN.md`, extended for `?scene`.
+Built per `../../docs/OG-IMAGE-PLAN.md`, extended for `?scene`.
 
 ## What it does
 
