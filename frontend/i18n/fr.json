@@ -7964,6 +7964,25 @@
         "whyLocal": "Les rues locales divisent chaque super-îlot de manière régulière ; vous choisissez leur espacement, leur largeur et la taille des lots."
     },
     "planningViews": {
+        "tabs": {
+            "display": "Affichage",
+            "compare": "Comparer"
+        },
+        "compare": {
+            "enable": "Comparer côte à côte",
+            "left": "Gauche",
+            "right": "Droite",
+            "swap": "Inverser les côtés",
+            "sliderLabel": "Séparateur de comparaison",
+            "modelOnly": "Ouvrez la vue modèle pour dessiner la comparaison.",
+            "options": {
+                "built": "Bâti existant",
+                "permitted": "Volumétrie autorisée",
+                "proposed": "Proposé (tous les projets appliqués)",
+                "design": "Projet : {{title}}",
+                "plan": "Plan : {{title}}"
+            }
+        },
         "bound": "Enveloppe maximale",
         "configuration": "Illustration",
         "proposalActions": "Actions sur le projet",

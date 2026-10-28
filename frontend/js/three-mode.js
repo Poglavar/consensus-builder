@@ -8152,7 +8152,7 @@
         return false;
     }
 
-    function renderScene(fullFrame = true) {
+    function renderScene(fullFrame = true, { shadowsPerPass = false } = {}) {
         // Entry tilt, restored cameras and captures need the same lighting as the steady loop.
         // `sceneChanged`: something in the scene changed since the last render (a rebuild, a proposal, a
         // selection), which is when the shadow map is re-rendered; a frame that only orbits the camera
@@ -8160,11 +8160,89 @@
         // Tree tiers follow the camera; their shadows come from fixed stand-ins, so no shadow redraw.
         retierTreesIfMoved();
         sunLayer?.beforeRender({ fullFrame, sceneChanged: renderedSceneVisualRevision !== sceneVisualRevision });
+        // A comparison pass shows a different set of objects: its shadows are its own.
+        if (shadowsPerPass && renderer.shadowMap.enabled) renderer.shadowMap.needsUpdate = true;
         updateLampGlow();
         floorPlanRenderer.renderCutaway(renderer, scene, camera, floorPlanGroup,
             xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
         renderedSceneVisualRevision = sceneVisualRevision;
+    }
+
+    // ── Side by side comparison (three-compare.js) ─────────────────────────────────────────────
+    // The canvas splits at the divider; each half draws one chosen state of this scene from the
+    // same camera. Only objects the two sides disagree on are switched between the passes.
+    let compareSplit = null;
+
+    function compareDesignIdOf(object) {
+        let found = null;
+        object.traverse(node => { if (!found && node.userData?.proposalId != null) found = String(node.userData.proposalId); });
+        return found;
+    }
+
+    // Every scene object a side may hide, with what it stands for. Objects hidden anyway (a display
+    // setting, isolation) are left out, so a pass never shows what the person switched off.
+    function compareDescriptors() {
+        const descriptors = [];
+        const outcomes = window.currentBuildingOutcomeState?.();
+        const designIdOfRecord = record => {
+            const by = record?.proposalKey || record?.proposalId;
+            if (!by) return null;
+            const proposal = window.getProposalByIdOrHash?.(by) || window.proposalStorage?.getProposal?.(by);
+            return proposal ? String(proposalIdOf(proposal)) : String(by);
+        };
+        const each = (group, make) => {
+            if (!group || group.visible === false) return;
+            for (const child of group.children) {
+                if (child.visible === false) continue;
+                const descriptor = make(child);
+                if (descriptor) descriptors.push({ object: child, ...descriptor });
+            }
+        };
+        each(existingBuildingsGroup, child => {
+            let feature = null;
+            child.traverse(node => { if (!feature && node.userData?.planningBuiltFeature) feature = node.userData.planningBuiltFeature; });
+            const record = feature ? outcomes?.demolishedById.get(clickedBuildingId(feature)) : null;
+            return { role: 'existing', demolishedBy: record ? designIdOfRecord(record) : null };
+        });
+        each(planningSourcesGroup, () => ({ role: 'permitted' }));
+        for (const group of [proposedBuildingsGroup, ineligibleBuildingsGroup, floorPlanGroup, plannedFlatGroup, parkGroundGroup,
+            squareGroundGroup, lakeGroundGroup, proposalGroundGroup, parcelLayoutGroup, parkGroup, squareGroup, lakeGroup,
+            stationGroup, corridorGroup, terrainCorridorGroup]) {
+            each(group, child => ({ role: 'proposed', designId: compareDesignIdOf(child) }));
+        }
+        return descriptors;
+    }
+
+    function renderComparePasses(fullFrame) {
+        const compare = window.ThreeCompare;
+        const { left, right, percent } = compare.sides();
+        if (!compareSplit || compareSplit.revision !== sceneVisualRevision) {
+            compareSplit = { revision: sceneVisualRevision, ...compare.splitDescriptors(left, right, compareDescriptors()) };
+        }
+        const size = renderer.getSize(new THREE.Vector2());
+        const rects = compare.scissorRects(size.x, size.y, percent);
+        const switched = [...compareSplit.leftOnly, ...compareSplit.rightOnly, ...compareSplit.hidden];
+        compareSplit.hidden.forEach(item => { item.object.visible = false; });
+        renderer.setScissorTest(true);
+        try {
+            for (const side of ['left', 'right']) {
+                compareSplit.leftOnly.forEach(item => { item.object.visible = side === 'left'; });
+                compareSplit.rightOnly.forEach(item => { item.object.visible = side === 'right'; });
+                renderer.setScissor(...rects[side]);
+                renderScene(fullFrame, { shadowsPerPass: !!sunLayer });
+            }
+        } finally {
+            renderer.setScissorTest(false);
+            renderer.setScissor(0, 0, size.x, size.y);
+            switched.forEach(item => { item.object.visible = true; });
+        }
+    }
+
+    // One frame of the scene: the comparison's two passes when it is on, else the whole view.
+    function drawFrame(fullFrame) {
+        if (window.ThreeCompare?.isActive?.()) renderComparePasses(fullFrame);
+        else { compareSplit = null; renderScene(fullFrame); }
     }
 
     function setFloorCutaway(level) {
@@ -9012,7 +9090,7 @@
         lastFrameDebug.moving = moving; lastFrameDebug.wasInvalidated = wasInvalidated; lastFrameDebug.at = now;
         const perfT1 = perfReadout ? performance.now() : 0;
         // Frames that only advance the life layer reuse the last shadow map.
-        renderScene(wasInvalidated || renderInvalidated || moving || !!controls?.autoRotate
+        drawFrame(wasInvalidated || renderInvalidated || moving || !!controls?.autoRotate
             || manualAutoRotateActive || liveHooks === 0);
         if (perfReadout) recordPerfFrame(now, perfT0, perfT1, performance.now());
         const hooksOnly = !renderInvalidated && !moving && !controls?.autoRotate && !manualAutoRotateActive && liveHooks > 0;
@@ -9027,6 +9105,7 @@
         sceneReady = true;
         resolveSceneReady?.(true);
         resolveSceneReady = null;
+        window.ThreeCompare?.attach?.({ container: threeContainer, invalidate: invalidateThreeView });
         // We are ready: hide overlay and settle the mode buttons.
         hideRenderingOverlay();
         isTransitioning3D = false;
@@ -9420,6 +9499,8 @@
             xyToLatLng
         );
         isActive = false;
+        window.ThreeCompare?.detach?.();
+        compareSplit = null;
         // The click stack is the 3D view's; the 2D map has its own.
         try { window.ThreeClickStack?.close({ silent: true }); } catch (_) { }
         focusProposalIds = null; // reset shared-link focus; a manual re-entry frames all proposals

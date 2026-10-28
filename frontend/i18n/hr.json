@@ -7854,6 +7854,25 @@
         }
     },
     "planningViews": {
+        "tabs": {
+            "display": "Prikaz",
+            "compare": "Usporedba"
+        },
+        "compare": {
+            "enable": "Usporedi jedno uz drugo",
+            "left": "Lijevo",
+            "right": "Desno",
+            "swap": "Zamijeni strane",
+            "sliderLabel": "Razdjelnik usporedbe",
+            "modelOnly": "Otvorite prikaz modela da se usporedba iscrta.",
+            "options": {
+                "built": "Izgrađeno danas",
+                "permitted": "Dopuštena građevna masa",
+                "proposed": "Predloženo (svi primijenjeni dizajni)",
+                "design": "Dizajn: {{title}}",
+                "plan": "Plan: {{title}}"
+            }
+        },
         "reroll": {
             "proposed": "Bacite kocku za drugu predloženu ilustraciju. Ne mijenja ništa u zapisima.",
             "permitted": "Prikaži drugi primjer zgrade unutar dopuštenih granica. Ne mijenja zapise."

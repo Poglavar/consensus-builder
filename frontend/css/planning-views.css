@@ -116,3 +116,12 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
 .planning-layer-row.is-unavailable { opacity: 0.45; }
 .planning-layer-row.is-unavailable select { cursor: not-allowed; }
 .planning-map-context { margin: 0 0 var(--cb-space-3); }
+
+/* Compare tab: two sides of the model view, drawn either side of a divider (js/three-compare.js). */
+.planning-compare { display: grid; gap: var(--cb-space-3); }
+.planning-compare-toggle { display: flex; align-items: center; gap: var(--cb-space-2); font-size: var(--cb-text-sm); font-weight: var(--cb-weight-semibold); }
+.planning-compare-sides { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: var(--cb-space-2); align-items: end; }
+.planning-compare-sides .planning-source-field { flex-direction: column; align-items: stretch; margin-top: 0; }
+.planning-compare-swap { width: var(--cb-control-height); height: var(--cb-control-height); }
+.planning-compare-note { margin: 0; }
+.planning-compare-note[hidden] { display: none; }

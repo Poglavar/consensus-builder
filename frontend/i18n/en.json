@@ -7808,6 +7808,25 @@
         }
     },
     "planningViews": {
+        "tabs": {
+            "display": "Display",
+            "compare": "Compare"
+        },
+        "compare": {
+            "enable": "Compare side by side",
+            "left": "Left",
+            "right": "Right",
+            "swap": "Swap sides",
+            "sliderLabel": "Comparison divider",
+            "modelOnly": "Open the model view to draw the comparison.",
+            "options": {
+                "built": "Built today",
+                "permitted": "Permitted massing",
+                "proposed": "Proposed (all applied designs)",
+                "design": "Design: {{title}}",
+                "plan": "Plan: {{title}}"
+            }
+        },
         "reroll": {
             "proposed": "Roll another proposed illustration. Changes nothing in the records.",
             "permitted": "Roll another sample building within the permitted limits. Changes nothing in the records."

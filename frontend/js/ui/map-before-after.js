@@ -125,7 +125,7 @@
 
         const divider = control.create({
             container, handle: handleEl, value: percent, label: options.sliderLabel || 'Before and after comparison',
-            onChange: next => { percent = clampPercent(next); applyClip(); }
+            onChange: next => { percent = clampPercent(next); applyClip(); options.onChange?.(percent); }
         });
         // Image dimensions arrive after mount; dialogs and maps can also resize while open.
         const sizeObserver = typeof root.ResizeObserver === 'function' ? new root.ResizeObserver(applyClip) : null;

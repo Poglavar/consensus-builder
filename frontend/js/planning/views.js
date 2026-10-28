@@ -739,7 +739,8 @@
         store = core.createStore(saved);
         panel = document.getElementById('planning-views');
         inspector = document.getElementById('planning-inspector');
-        const body = panel.querySelector('.map-sheet-body');
+        // The Display tab holds the layer controls; the Compare tab is three-compare.js's.
+        const body = panel.querySelector('[data-planning-tab-panel="display"]') || panel.querySelector('.map-sheet-body');
         body.prepend(element('p', 'planning-map-context'));
         const sourceField = element('label', 'planning-source-field');
         sourceField.append(element('span', 'planning-source-label'));

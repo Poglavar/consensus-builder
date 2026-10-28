@@ -7964,6 +7964,25 @@
         "whyLocal": "As ruas locais dividem cada superquarteirão de forma uniforme; pode escolher o seu espaçamento e largura, bem como a dimensão dos lotes."
     },
     "planningViews": {
+        "tabs": {
+            "display": "Visualização",
+            "compare": "Comparar"
+        },
+        "compare": {
+            "enable": "Comparar lado a lado",
+            "left": "Esquerda",
+            "right": "Direita",
+            "swap": "Trocar lados",
+            "sliderLabel": "Divisor de comparação",
+            "modelOnly": "Abra a vista de modelo para desenhar a comparação.",
+            "options": {
+                "built": "Edificado hoje",
+                "permitted": "Volumetria permitida",
+                "proposed": "Proposto (todos os projetos aplicados)",
+                "design": "Projeto: {{title}}",
+                "plan": "Plano: {{title}}"
+            }
+        },
         "bound": "Envolvente máxima",
         "configuration": "Ilustração",
         "proposalActions": "Ações do projeto",

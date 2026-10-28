@@ -7836,6 +7836,25 @@
         }
     },
     "planningViews": {
+        "tabs": {
+            "display": "Vista",
+            "compare": "Comparar"
+        },
+        "compare": {
+            "enable": "Comparar lado a lado",
+            "left": "Izquierda",
+            "right": "Derecha",
+            "swap": "Intercambiar lados",
+            "sliderLabel": "Divisor de comparación",
+            "modelOnly": "Abre la vista de modelo para dibujar la comparación.",
+            "options": {
+                "built": "Construido hoy",
+                "permitted": "Volumen permitido",
+                "proposed": "Propuesto (todos los diseños aplicados)",
+                "design": "Diseño: {{title}}",
+                "plan": "Plan: {{title}}"
+            }
+        },
         "reroll": {
             "proposed": "Genera otra ilustración diseño. No cambia nada en los registros.",
             "permitted": "Generar otro edificio de ejemplo dentro de los límites permitidos. No modifica los registros."

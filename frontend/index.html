@@ -485,16 +485,44 @@
                 <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
                     aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>
+            <div class="cb-tabs cb-tabs--fill planning-tabs" role="tablist">
+                <button type="button" id="planning-tab-display" class="cb-tab" role="tab" aria-selected="true" aria-controls="planning-views-display"
+                    data-planning-tab="display" data-i18n-key="planningViews.tabs.display">Display</button>
+                <button type="button" id="planning-tab-compare" class="cb-tab" role="tab" aria-selected="false" aria-controls="planning-views-compare"
+                    data-planning-tab="compare" data-i18n-key="planningViews.tabs.compare">Compare</button>
+            </div>
             <div class="map-sheet-body">
-                <div class="planning-layer-controls">
-                    <button type="button" id="planning-reroll-permitted" class="btn btn-icon planning-reroll" data-planning-reroll="permitted"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
-                    <button type="button" id="planning-reroll" class="btn btn-icon planning-reroll" data-planning-reroll="proposed"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
+                <div id="planning-views-display" role="tabpanel" data-planning-tab-panel="display">
+                    <div class="planning-layer-controls">
+                        <button type="button" id="planning-reroll-permitted" class="btn btn-icon planning-reroll" data-planning-reroll="permitted"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
+                        <button type="button" id="planning-reroll" class="btn btn-icon planning-reroll" data-planning-reroll="proposed"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
+                    </div>
+                    <p class="planning-view-status"></p>
+                    <button type="button" id="planning-view-retry" class="cb-link planning-view-retry" hidden></button>
+                    <p class="planning-inspect-hint"></p>
+                    <details class="planning-coverage"><summary></summary><p></p><p class="planning-cache-summary"></p><dl class="planning-result-counts"></dl></details>
+                    <button type="button" id="planning-open-model" class="cb-link planning-open-model" hidden></button>
                 </div>
-                <p class="planning-view-status"></p>
-                <button type="button" id="planning-view-retry" class="cb-link planning-view-retry" hidden></button>
-                <p class="planning-inspect-hint"></p>
-                <details class="planning-coverage"><summary></summary><p></p><p class="planning-cache-summary"></p><dl class="planning-result-counts"></dl></details>
-                <button type="button" id="planning-open-model" class="cb-link planning-open-model" hidden></button>
+                <!-- Side by side comparison in the model view (js/three-compare.js). -->
+                <div id="planning-views-compare" class="planning-compare" role="tabpanel" data-planning-tab-panel="compare" hidden>
+                    <label class="planning-compare-toggle">
+                        <input type="checkbox" id="planning-compare-enable">
+                        <span data-i18n-key="planningViews.compare.enable">Compare side by side</span>
+                    </label>
+                    <div class="planning-compare-sides">
+                        <label class="planning-source-field">
+                            <span data-i18n-key="planningViews.compare.left">Left</span>
+                            <select id="planning-compare-left" class="planning-layer-select"></select>
+                        </label>
+                        <button type="button" id="planning-compare-swap" class="btn btn-icon planning-compare-swap" title="Swap sides" aria-label="Swap sides"
+                            data-i18n-key="planningViews.compare.swap" data-i18n-attr="title,aria-label"><i class="fa-solid fa-right-left" aria-hidden="true"></i></button>
+                        <label class="planning-source-field">
+                            <span data-i18n-key="planningViews.compare.right">Right</span>
+                            <select id="planning-compare-right" class="planning-layer-select"></select>
+                        </label>
+                    </div>
+                    <p class="planning-compare-note sheet-note" data-i18n-key="planningViews.compare.modelOnly">Open the model view to draw the comparison.</p>
+                </div>
             </div>
         </section>
         <aside id="planning-inspector" class="right-screen-panel planning-inspector" aria-label="Planning source details" data-i18n-key="planningViews.detailsLabel" data-i18n-attr="aria-label" hidden></aside>
@@ -2132,6 +2160,7 @@
             'js/click-stack/click-stack-neighbours.js?v=20261028-neighbours',
             'js/click-stack/click-stack-hits.js?v=20261028-neighbours',
             'js/click-stack/click-stack-panel.js?v=20261028-neighbours',
+            'js/three-compare.js?v=20261028-compare',
             'js/proposals/market-view.js?v=20261019-market-evidence',
             'js/proposals/parcel-set-relations.js?v=20261020-reference-relations',
             'js/proposals/approval-panel.js?v=20261027-experimental',
