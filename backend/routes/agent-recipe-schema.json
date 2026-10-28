@@ -290,11 +290,11 @@
               "oneOf": [
                 { "type": "null" },
                 { "type": "object", "required": ["method", "rateCentsPerM2", "contributionBasisPoints"], "properties": {
-                  "method": { "enum": ["area", "none"] },
+                  "method": { "enum": ["area", "value", "none"], "description": "area: (land put in after the contribution − land received) × rate; value: land values per m² in `valuation`, each party entitled to its value share, rate and contribution 0; none: no cash." },
                   "rateCentsPerM2": { "type": "integer", "minimum": 0 },
                   "contributionBasisPoints": { "type": "integer", "minimum": 0, "maximum": 10000 }
                 }, "additionalProperties": false }
-              ], "description": "Controlled EUR/m² compensation and allowed land contribution; cash lines are derived automatically."
+              ], "description": "Controlled compensation by area (EUR/m² and allowed land contribution) or by value (valuation); cash lines are derived automatically. A pinned scheme (approvalConfig.regime) caps the contribution and rules the distribution."
             }
           },
           "allOf": [
@@ -303,6 +303,16 @@
               "then": { "properties": { "binding": { "const": false }, "approvalConfig": { "type": "null" }, "settlement": { "type": "null" } } }
             }
           ]
+        },
+        "valuation": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "object", "required": ["inputs", "outputs"], "properties": {
+              "inputs": { "type": "array", "items": { "type": "object", "required": ["parcelId", "unitValueCents"], "properties": { "parcelId": { "$ref": "#/$defs/text" }, "unitValueCents": { "type": "integer", "minimum": 0 } }, "additionalProperties": false } },
+              "outputs": { "type": "array", "items": { "type": "object", "required": ["output", "unitValueCents"], "properties": { "output": { "type": "string" }, "unitValueCents": { "type": "integer", "minimum": 0 } }, "additionalProperties": false } }
+            }, "additionalProperties": false }
+          ],
+          "description": "Settlement by value only: a whole-cent value per m² for every input parcel (before) and every output hash (after). null otherwise."
         },
         "consultation": {
           "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/consultation" }],

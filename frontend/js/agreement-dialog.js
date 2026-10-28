@@ -1,7 +1,10 @@
 // Plan-first agreement editor: rules, input parcels, single-recipient output parcels and a
 // read-only persons tally. Ground comes from one exact saved plan; compensation comes from its
-// agreement rules. Ownership rights and lens settings open separate shared dialogs. Pure helpers
-// are exercised by the targeted agreement accounting/store tests; open() connects them to the dock.
+// agreement rules: by area (a rate per m²) or by value (a value per m² typed for every input parcel
+// and resulting piece). A scheme chosen in Rules is checked live against the plan: the dropdown
+// marks schemes the plan breaks, the scheme card lists the check, and a broken rule blocks saving.
+// Ownership rights and lens settings open separate shared dialogs. Pure helpers are exercised by
+// the targeted agreement accounting/store tests; open() connects them to the dock.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -181,14 +184,36 @@
         (agreement && agreement.money && Array.isArray(agreement.money.lines) ? agreement.money.lines : []).forEach(line => {
             if (line && idOf(line.ownerKey) && isNumber(line.amountCents)) cash[idOf(line.ownerKey)] = centsText(line.amountCents);
         });
-        return { allocations, cash };
+        const valuation = { inputs: {}, outputs: {} };
+        const stored = agreement && agreement.valuation;
+        (stored && Array.isArray(stored.inputs) ? stored.inputs : []).forEach(row => {
+            if (row && idOf(row.parcelId) && isNumber(row.unitValueCents)) valuation.inputs[idOf(row.parcelId)] = row.unitValueCents;
+        });
+        (stored && Array.isArray(stored.outputs) ? stored.outputs : []).forEach(row => {
+            if (row && idOf(row.output) && isNumber(row.unitValueCents)) valuation.outputs[idOf(row.output)] = row.unitValueCents;
+        });
+        return { allocations, cash, valuation };
+    }
+
+    // The typed land values as the record's valuation: one row per input parcel and resulting piece
+    // that has a value (a missing one is reported by the validation, never invented).
+    function valuationRows(valuation = {}, parcels = [], outputs = []) {
+        const inputs = valuation.inputs || {}, pieces = valuation.outputs || {};
+        return {
+            inputs: parcels.filter(parcel => isNumber(inputs[idOf(parcel.parcelId)])).map(parcel => ({ parcelId: idOf(parcel.parcelId), unitValueCents: inputs[idOf(parcel.parcelId)] })),
+            outputs: outputs.filter(output => isNumber(pieces[output.hash])).map(output => ({ output: output.hash, unitValueCents: pieces[output.hash] }))
+        };
     }
 
     // What survives a new derivation of the land: allocations of pieces that still exist, to parties
     // that still hold input land, and the readable cash of those parties. The rest is dropped.
-    function keptTerms({ allocations = {}, cash = {} } = {}, land) {
+    function keptTerms({ allocations = {}, cash = {}, valuation = {} } = {}, land) {
         const hashes = new Set((land && Array.isArray(land.outputs) ? land.outputs : []).map(output => output && output.hash));
         const parties = new Set(partiesOf(land && land.inputs).map(party => party.ownerKey));
+        const parcelIds = new Set((land && land.inputs && Array.isArray(land.inputs.parcels) ? land.inputs.parcels : []).map(parcel => parcel && idOf(parcel.parcelId)));
+        const keptValuation = { inputs: {}, outputs: {} };
+        Object.keys((valuation && valuation.inputs) || {}).forEach(id => { if (parcelIds.has(id) && isNumber(valuation.inputs[id])) keptValuation.inputs[id] = valuation.inputs[id]; });
+        Object.keys((valuation && valuation.outputs) || {}).forEach(hash => { if (hashes.has(hash) && isNumber(valuation.outputs[hash])) keptValuation.outputs[hash] = valuation.outputs[hash]; });
         const keptAllocations = {};
         Object.keys(allocations || {}).forEach(hash => {
             const to = allocationTo(allocations[hash]);
@@ -201,7 +226,7 @@
             const cents = cashCents(cash[ownerKey]);
             if (parties.has(ownerKey) && cents !== null && !Number.isNaN(cents)) keptCash[ownerKey] = cash[ownerKey];
         });
-        return { allocations: keptAllocations, cash: keptCash };
+        return { allocations: keptAllocations, cash: keptCash, valuation: keptValuation };
     }
 
     // The sponsor's line of a money schedule (AgreementRecord.ledger(...).money, the schedule of
@@ -260,7 +285,8 @@
      *   fingerprints (Map proposalId → design CID), land ({ inputs, outputs } from AgreementGround.derive),
      *   approvalConfig, lens, currency (the agreement's city's money) }
      * values: { allocations ({ outputHash: select value }), cash ({ ownerKey: typed amounts }),
-     *   electorate ('owners' | 'community'), binding, title, deadline (the date field's day),
+     *   valuation ({ inputs: { parcelId: cents per m² }, outputs: { outputHash: cents per m² } }),
+     *   settlement, electorate ('owners' | 'community'), binding, title, deadline (the date field's day),
      *   organiser (website or did:web), participationUrl (HTTPS) }
      */
     function recordFromForm(state = {}, values = {}) {
@@ -274,6 +300,7 @@
         const title = String(values.title ?? '').trim();
         const plan = state.plan || null;
         const recordApi = root.AgreementRecord || (typeof require === 'function' ? require('./agreement-record.js') : null);
+        const settlement = values.settlement || { ...recordApi.DEFAULT_SETTLEMENT };
         const raw = {
             schema: SCHEMA,
             id: idOf(state.id),
@@ -294,8 +321,9 @@
             outputs,
             allocations: owners ? outputs.map(output => ({ output: output.hash, to: allocationTo(chosen[output.hash]) })).filter(line => line.to) : [],
             money: { currency: state.currency || null, lines: [] },
+            valuation: owners && settlement.method === 'value' ? valuationRows(values.valuation, inputs.parcels || [], outputs) : null,
             rule: owners
-                ? { electorate: 'owners', binding: values.binding === true, approvalConfig: state.approvalConfig || null, lens: Array.isArray(state.lens) ? state.lens.slice() : [], settlement: values.settlement || { ...recordApi.DEFAULT_SETTLEMENT } }
+                ? { electorate: 'owners', binding: values.binding === true, approvalConfig: state.approvalConfig || null, lens: Array.isArray(state.lens) ? state.lens.slice() : [], settlement }
                 : { electorate: 'community', binding: false, approvalConfig: null, lens: [] },
             consultation: owners ? null : { organiser: values.organiser || null, participationUrl: values.participationUrl || null,
                 ...(values.voting ? { voting: values.voting } : {}) },
@@ -315,6 +343,15 @@
         'input-shares': () => t('agreement.errors.inputShares', 'Input owners must hold 100% of each parcel.'),
         'allocation-required': () => t('agreement.errors.allocationRequired', 'Choose one recipient for every output parcel.'),
         'settlement-invalid': () => t('agreement.errors.settlementInvalid', 'Set compensation within the scheme’s limits.'),
+        'valuation-missing': () => t('agreement.errors.valuationMissing', 'Settlement by value needs a value per m² for every input parcel and every resulting piece.'),
+        'valuation-invalid': () => t('agreement.errors.valuationInvalid', 'A value per m² must be an amount of at least 0.'),
+        'valuation-unknown': () => t('agreement.errors.valuationUnknown', 'A value per m² names a parcel or piece that is not in this agreement.'),
+        'valuation-zero': () => t('agreement.errors.valuationZero', 'The input land needs a value above zero to settle by value.'),
+        'valuation-unused': () => t('agreement.errors.valuationUnused', 'Land values apply to settlement by value only.'),
+        'scheme-basis': reason => t('agreement.errors.schemeRule', '{{reason}}', { reason }),
+        'scheme-cap': reason => t('agreement.errors.schemeRule', '{{reason}}', { reason }),
+        'scheme-parties': reason => t('agreement.errors.schemeRule', '{{reason}}', { reason }),
+        'scheme-proposer': reason => t('agreement.errors.schemeRule', '{{reason}}', { reason }),
         'money-unbalanced': () => t('agreement.errors.moneyUnbalanced', 'Cash must match the compensation calculated from the rules.'),
         'no-designs': () => t('agreement.errors.noDesigns', 'Choose at least one design.'),
         'design-not-applied': () => t('agreement.errors.designNotApplied', 'Every design must be applied to the map.'),
@@ -347,11 +384,24 @@
         'authority-is-holder': () => t('proposalDrafts.approval.reason.authorityIsHolder', 'An authority id is also a rights holder; give the authority its own id.')
     };
 
+    // A distribution rule of the chosen scheme the plan breaks (AgreementRecord.settlementIssues
+    // 'scheme-*'): the scheme's name and the rule's own line (ProposalApprovalText.checkLines), the
+    // owner by display name. The validator's English message when those modules are not loaded.
+    function schemeIssueText(issue) {
+        const regimes = root.ProposalApprovalRegimes || (typeof require === 'function' ? require('./proposals/approval-regimes.js') : null);
+        const words = root.ProposalApprovalText || (typeof require === 'function' ? require('./proposals/approval-text.js') : null);
+        const template = regimes && issue.scheme ? regimes.get(issue.scheme, issue.version) : null;
+        const line = words && issue.rule ? words.checkLines({ rules: [issue.rule] }, t, () => issue.ownerName || issue.ownerKey || '')[0] : null;
+        if (!template || !line) return idOf(issue.message) || idOf(issue.code);
+        return `${t(`proposalApproval.schemes.${template.id}.name`, template.text.name)}: ${line}`;
+    }
+
     // An error or warning of AgreementRecord.validate ({ code, message, reason? }) in the UI language.
     // A code this dialog does not know shows the validator's own message.
     function issueText(issue) {
         const code = idOf(issue && issue.code);
         const word = ISSUE_TEXT[code];
+        if (code.startsWith('scheme-')) return word(schemeIssueText(issue));
         if (!word) return idOf(issue && issue.message) || code;
         if (!NEEDS_REASON.has(code)) return word();
         // The engine's readiness code when there is one (rule-not-ready), else the validator's own
@@ -438,6 +488,22 @@
         return `<label class="proposal-editor-field"><span>${esc(t('agreement.allocation.allOutputs', 'Allocate output parcels'))}</span><select data-agreement-allocation-mode>${modes.map(([value, label]) => `<option value="${value}"${mode === value ? ' selected' : ''}>${esc(label)}</option>`).join('')}</select></label><ul class="agreement-allocation-list">${rows}</ul>`;
     }
 
+    // Land values per m² for settlement by value: one number field per input parcel ('inputs') or
+    // resulting piece ('outputs'), and one that sets them all. rows: [{ id, title, facts }].
+    function valuationHtml(kind, rows, values = {}, currency = '') {
+        if (!rows.length) return '';
+        const unit = t('agreement.workflow.unitValue', 'Value per m² ({{currency}})', { currency });
+        const all = kind === 'inputs'
+            ? t('agreement.workflow.unitValueAllInputs', 'Value per m² for all input parcels ({{currency}})', { currency })
+            : t('agreement.workflow.unitValueAllOutputs', 'Value per m² for all resulting pieces ({{currency}})', { currency });
+        const heading = kind === 'inputs' ? t('agreement.workflow.valuationInputs', 'Land values of the input parcels') : t('agreement.workflow.valuationOutputs', 'Land values of the resulting pieces');
+        const items = rows.map(row => `<li class="agreement-valuation-row"><span class="agreement-valuation-row__title">${esc(row.title)}</span><span class="agreement-valuation-row__facts">${esc(row.facts)}</span>`
+            + `<input type="number" min="0" step="0.01" value="${esc(centsText(values[row.id]))}" data-agreement-value-kind="${kind}" data-agreement-value-id="${esc(row.id)}" aria-label="${esc(`${row.title}: ${unit}`)}"></li>`).join('');
+        return `<section class="agreement-valuation" data-agreement-valuation="${kind}"><h4 class="agreement-object-heading">${esc(heading)}</h4>`
+            + `<label class="proposal-editor-field"><span>${esc(all)}</span><input type="number" min="0" step="0.01" data-agreement-value-all="${kind}"></label>`
+            + `<ul class="agreement-valuation-list">${items}</ul></section>`;
+    }
+
     // Who decides, whether it binds, and the owners' rules (filled by the browser layer).
     function ruleHtml({ electorate = 'owners', binding = true } = {}) {
         const owners = electorate !== 'community';
@@ -476,15 +542,24 @@
         const api = root.AgreementRecord || (typeof require === 'function' ? require('./agreement-record.js') : null);
         const ledger = api.ledger(record);
         const terms = record.rule.settlement;
-        const cell = (land, cash) => esc(areaText(land)) + (cash > 0 ? `<br><span class="agreement-persons-cash">${esc(moneyText(cash, ledger.currency))}</span>` : '');
-        const rows = ledger.parties.map(party => `<tr><th scope="row">${esc(party.displayName)}</th><td>${cell(party.areaUnknown ? null : party.contributedM2, Math.max(0, -party.cashCents))}</td><td>${cell(party.assignedM2, Math.max(0, party.cashCents))}</td></tr>`).join('');
-        const publicRow = ledger.publicM2 > 0 ? `<tr><th scope="row">${esc(t('agreement.allocation.public', 'Public'))}</th><td>${cell(0, 0)}</td><td>${cell(ledger.publicM2, 0)}</td></tr>` : '';
+        const byValue = terms?.method === 'value' && ledger.valued;
+        const money = cents => moneyText(cents, ledger.currency);
+        const cell = (land, cash, value = null, entitled = null) => esc(areaText(land))
+            + (byValue && isNumber(value) ? `<br><span class="agreement-persons-value">${esc(money(value))}</span>` : '')
+            + (byValue && isNumber(entitled) ? `<br><span class="agreement-persons-entitled">${esc(t('agreement.workflow.entitled', 'entitled to {{value}}', { value: money(entitled) }))}</span>` : '')
+            + (cash > 0 ? `<br><span class="agreement-persons-cash">${esc(money(cash))}</span>` : '');
+        const rows = ledger.parties.map(party => `<tr><th scope="row">${esc(party.displayName)}</th><td>${cell(party.areaUnknown ? null : party.contributedM2, Math.max(0, -party.cashCents), party.contributedValueCents)}</td><td>${cell(party.assignedM2, Math.max(0, party.cashCents), party.assignedValueCents, party.entitlementValueCents)}</td></tr>`).join('');
+        const publicRow = ledger.publicM2 > 0 ? `<tr><th scope="row">${esc(t('agreement.allocation.public', 'Public'))}</th><td>${cell(0, 0)}</td><td>${cell(ledger.publicM2, 0, ledger.publicValueCents)}</td></tr>` : '';
         const sponsor = ledger.money.sponsorCents;
-        const sponsorRow = sponsor || ledger.proposerM2 > 0 ? `<tr><th scope="row">${esc(ledger.proposerM2 > 0 ? t('agreement.allocation.proposer', 'Proposer') : t('agreement.workflow.sponsor', 'Sponsor'))}</th><td>${cell(0, Math.max(0, -sponsor))}</td><td>${cell(ledger.proposerM2, Math.max(0, sponsor))}</td></tr>` : '';
+        const sponsorRow = sponsor || ledger.proposerM2 > 0 ? `<tr><th scope="row">${esc(ledger.proposerM2 > 0 ? t('agreement.allocation.proposer', 'Proposer') : t('agreement.workflow.sponsor', 'Sponsor'))}</th><td>${cell(0, Math.max(0, -sponsor))}</td><td>${cell(ledger.proposerM2, Math.max(0, sponsor), ledger.proposerValueCents)}</td></tr>` : '';
         const balance = api.landBalance(record);
-        return (terms?.method === 'area' ? `<p class="agreement-hint">${esc(t('agreement.workflow.rateReadOnly', 'Compensation: {{rate}} per m². Change it in Rules.', { rate: moneyText(terms.rateCentsPerM2, ledger.currency) }))}</p>` : '')
+        const hint = terms?.method === 'area' ? t('agreement.workflow.rateReadOnly', 'Compensation: {{rate}} per m². Change it in Rules.', { rate: money(terms.rateCentsPerM2) })
+            : terms?.method === 'value' ? t('agreement.workflow.valueReadOnly', 'Compensation by land value: each person is entitled to the share of the resulting land’s value that matches the value they put in. Change it in Rules.') : '';
+        const totals = byValue ? ' · ' + t('agreement.workflow.valueTotals', 'Value in: {{input}} · Value out: {{output}}', {
+            input: money(ledger.contributedValueCents), output: money(ledger.distributableValueCents + ledger.publicValueCents) }) : '';
+        return (hint ? `<p class="agreement-hint">${esc(hint)}</p>` : '')
             + `<table class="agreement-persons-table"><thead><tr><th scope="col">${esc(t('agreement.workflow.person', 'Person'))}</th><th scope="col">${esc(t('agreement.workflow.putsIn', 'Puts in'))}</th><th scope="col">${esc(t('agreement.workflow.receives', 'Receives'))}</th></tr></thead><tbody>${rows}${publicRow}${sponsorRow}</tbody></table>`
-            + `<p class="agreement-hint" data-agreement-balance>${esc(t('agreement.workflow.landTotals', 'Land in: {{input}} · Land out: {{output}}', { input: areaText(balance.inputM2), output: areaText(balance.outputM2) }))}</p>`;
+            + `<p class="agreement-hint" data-agreement-balance>${esc(t('agreement.workflow.landTotals', 'Land in: {{input}} · Land out: {{output}}', { input: areaText(balance.inputM2), output: areaText(balance.outputM2) }) + totals)}</p>`;
     }
     function bodyHtml(view) {
         const values = view.values || {};
@@ -647,7 +722,9 @@
             if (state.closed || state.loading) return;
             try {
                 const checked = api.validate(draft(), { designOf: id => root.proposalStorage.getProposal(id), isApplied: root.isApplied });
-                part('[data-agreement-errors]').innerHTML = issuesHtml(state.attempted ? checked.errors : []);
+                // A scheme rule the plan breaks or a land value that is missing follows a choice the
+                // person made, so it is shown at once; the rest waits for a save attempt.
+                part('[data-agreement-errors]').innerHTML = issuesHtml(checked.errors.filter(row => state.attempted || /^(scheme|valuation)-/.test(row.code)));
                 // Advanced ownership/lens readiness lives behind its own controls.
                 part('[data-agreement-warnings]').innerHTML = issuesHtml(checked.warnings.filter(row => row.section === 'land'));
                 saveButton.disabled = !state.plan || !!state.landError || !checked.valid || (state.values.electorate === 'community' && rosterPending);
@@ -661,7 +738,12 @@
             const terms = state.values.settlement, limit = api.contributionLimit({ approvalConfig: state.approvalConfig });
             terms.contributionBasisPoints = Math.min(terms.contributionBasisPoints, limit);
             const enabled = terms.method === 'area';
-            return `<label class="proposal-editor-field"><span>${esc(t('agreement.workflow.compensation', 'Compensation'))}</span><select data-agreement-compensation><option value="area"${enabled ? ' selected' : ''}>${esc(t('agreement.workflow.byArea', 'Balance land differences in money'))}</option><option value="none"${!enabled ? ' selected' : ''}>${esc(t('agreement.workflow.noCash', 'No cash compensation'))}</option></select></label>`
+            const methods = [['area', t('agreement.workflow.byArea', 'Balance land differences in money')], ['value', t('agreement.workflow.byValue', 'Balance land value differences in money')], ['none', t('agreement.workflow.noCash', 'No cash compensation')]];
+            const scheme = api.schemeOf({ approvalConfig: state.approvalConfig }), gain = api.valueGainOf({ approvalConfig: state.approvalConfig });
+            const valueHint = terms.method !== 'value' ? '' : `<p class="agreement-hint" data-agreement-value-hint>${esc(t('agreement.workflow.valueHint', 'Each person is entitled to the share of the resulting land’s value that matches the value they put in; differences are settled in money. Enter a value per m² for every input parcel and resulting piece.'))
+                + (scheme && gain > 0 ? ' ' + t('agreement.workflow.valueGainHint', '{{scheme}} settles {{percent}}% of each person’s value gain in money.', { scheme: t(`proposalApproval.schemes.${scheme.id}.name`, scheme.text.name), percent: Math.round(gain * 1000) / 10 }) : '')}</p>`;
+            return `<label class="proposal-editor-field"><span>${esc(t('agreement.workflow.compensation', 'Compensation'))}</span><select data-agreement-compensation>${methods.map(([value, label]) => `<option value="${value}"${terms.method === value ? ' selected' : ''}>${esc(label)}</option>`).join('')}</select></label>`
+                + valueHint
                 + `<label class="proposal-editor-field"${enabled ? '' : ' hidden'}><span>${esc(t('agreement.workflow.rate', 'Compensation per m² ({{currency}})', { currency: state.currency }))}</span><input type="range" min="0" max="${Math.max(100000, terms.rateCentsPerM2)}" step="100" value="${terms.rateCentsPerM2}" data-agreement-rate-slider><input type="number" min="0" max="100000000" step="0.01" value="${terms.rateCentsPerM2 / 100}" data-agreement-rate aria-label="${esc(t('agreement.workflow.rate', 'Compensation per m² ({{currency}})', { currency: state.currency }))}"></label>`
                 + (enabled && limit ? `<label class="proposal-editor-field"><span>${esc(t('agreement.workflow.contribution', 'Land contribution (%)'))}</span><input type="range" min="0" max="${limit}" step="1" value="${terms.contributionBasisPoints}" data-agreement-contribution><output data-agreement-contribution-value>${terms.contributionBasisPoints / 100}%</output></label><p class="agreement-hint">${esc(t('agreement.workflow.contributionHint', 'Compensation covers differences from the remaining land entitlement after this contribution.'))}</p>` : '');
         }
@@ -673,10 +755,30 @@
             part('[data-agreement-action="lens"]').dataset.lensEntries = JSON.stringify(state.lens.map(address => ({ address })));
             root.refreshLensPatternPreviews();
         }
+        // Which schemes the plan meets (every scheme, for the dropdown) and how the chosen one reads
+        // against it (the card), from the record's own check; nothing when the draft cannot be built.
+        function schemeView() {
+            const regimes = root.ProposalApprovalRegimes, words = root.ProposalApprovalText;
+            if (state.values.electorate !== 'owners' || !regimes || !words) return {};
+            let record;
+            try { record = draft(); } catch (_) { return {}; }
+            const names = new Map(partiesOf(state.land.inputs).map(party => [party.ownerKey, party.displayName]));
+            const label = key => names.get(key) || key;
+            const schemeStatus = {};
+            regimes.list().forEach(regime => {
+                try { schemeStatus[regime.id] = api.schemeCheck(record, regime).check.ok; } catch (_) { /* unmarked: the validation names the problem */ }
+            });
+            let schemeCheck = null;
+            try {
+                const result = api.schemeCheck(record);
+                if (result) schemeCheck = { ok: result.check.ok, lines: result.check.rules.map(rule => ({ ok: rule.ok, text: words.checkLines({ rules: [rule] }, t, label)[0] })) };
+            } catch (_) { /* as above */ }
+            return { schemeStatus, schemeCheck };
+        }
         function renderRule() {
             const owners = state.values.electorate === 'owners';
             const source = doc.createElement('div');
-            source.innerHTML = setup().html({ config: state.approvalConfig, lens: state.lens, cadastreParcelIds: state.land.inputs.parcels.map(p => p.parcelId), heading: false });
+            source.innerHTML = setup().html({ config: state.approvalConfig, lens: state.lens, cadastreParcelIds: state.land.inputs.parcels.map(p => p.parcelId), heading: false, ...schemeView() });
             const container = part('[data-agreement-rule-form]'); container.replaceChildren(); container.hidden = !owners;
             const rules = source.querySelector('[data-approval-rules-card]'); if (owners && rules) container.appendChild(rules);
             part('[data-agreement-settlement]').innerHTML = owners ? settlementHtml() : '';
@@ -685,14 +787,22 @@
             part('[data-agreement-binding]').disabled = !owners;
             part('[data-agreement-section="consultation"]').hidden = owners;
         }
+        const byValue = () => state.values.electorate === 'owners' && state.values.settlement.method === 'value';
+        function valuationSection(kind) {
+            if (!byValue()) return '';
+            const rows = kind === 'inputs'
+                ? state.land.inputs.parcels.map(parcel => ({ id: parcel.parcelId, title: parcel.parcelId, facts: areaText(parcel.areaM2) }))
+                : state.land.outputs.map((output, index) => ({ id: output.hash, title: `${t('agreement.land.piece', 'Piece')} ${index + 1}`, facts: areaText(output.areaM2) }));
+            return valuationHtml(kind, rows, state.values.valuation[kind], state.currency);
+        }
         function renderLand() {
             clearInspection();
             const target = part('[data-agreement-land]');
             if (state.loading) target.innerHTML = landHtml({ loading: true });
             else if (state.landError) target.innerHTML = `<p class="agreement-alert">${esc(state.landError)}</p><button type="button" class="btn" data-agreement-action="apply-plan">${esc(t('agreement.workflow.applyPlan', 'Apply plan designs'))}</button>`;
-            else target.innerHTML = inputsTableHtml(state.land.inputs.parcels);
+            else target.innerHTML = inputsTableHtml(state.land.inputs.parcels) + valuationSection('inputs');
             part('[data-agreement-plan-designs]').innerHTML = inputDesignsHtml(state.designs);
-            part('[data-agreement-allocations]').innerHTML = allocationHtml(state.land, state.values.allocations, state.allocationMode);
+            part('[data-agreement-allocations]').innerHTML = allocationHtml(state.land, state.values.allocations, state.allocationMode) + valuationSection('outputs');
             if (state.values.electorate === 'community') part('[data-agreement-allocations]').querySelectorAll('select').forEach(select => { select.disabled = true; });
             renderPersons(); issues();
         }
@@ -709,10 +819,25 @@
             });
         }
         function reconcileAllocations() {
-            const kept = keptTerms(state.values, state.land).allocations;
+            const kept = keptTerms(state.values, state.land);
             const defaults = Object.fromEntries(api.defaultAllocations(state.land.inputs, state.land.outputs).map(row => [row.output, allocationValue(row.to)]));
-            state.values.allocations = state.allocationMode === 'individual' ? { ...defaults, ...kept }
+            state.values.allocations = state.allocationMode === 'individual' ? { ...defaults, ...kept.allocations }
                 : Object.fromEntries(state.land.outputs.map(output => [output.hash, state.allocationMode]));
+            // A parcel or piece without a land value takes the city's land price per m² (CityMoney),
+            // so a plan can be valued at once and corrected row by row.
+            const fallback = defaultUnitValueCents();
+            const inputs = { ...kept.valuation.inputs }, outputs = { ...kept.valuation.outputs };
+            if (fallback !== null) {
+                state.land.inputs.parcels.forEach(parcel => { if (!isNumber(inputs[parcel.parcelId])) inputs[parcel.parcelId] = fallback; });
+                state.land.outputs.forEach(output => { if (!isNumber(outputs[output.hash])) outputs[output.hash] = fallback; });
+            }
+            state.values.valuation = { inputs, outputs };
+        }
+        function defaultUnitValueCents() {
+            try {
+                const price = root.CityMoney?.currentLandPriceOptions?.('land')?.areaPricePerSqm;
+                return isNumber(price) && price >= 0 ? Math.round(price * 100) : null;
+            } catch (_) { return null; }
         }
         async function deriveLand() {
             const sequence = ++state.sequence;
@@ -843,6 +968,14 @@
                 }).catch(report);
             }
             const action = button.dataset.editorAction;
+            if (action === 'approval-scheme-guide') {
+                const regimes = root.ProposalApprovalRegimes;
+                const template = regimes?.get(button.dataset.schemeId, button.dataset.schemeVersion) || regimes?.latest(button.dataset.schemeId);
+                let ledger = null, rules = [];
+                try { const record = draft(); ledger = api.ledger(record); rules = api.schemeCheck(record, template)?.check.rules || []; } catch (_) { /* the guide reads without a tally */ }
+                auxiliary = setup().openSchemeGuide({ parent: modal, template, regime: state.approvalConfig?.regime || null, check: schemeView().schemeCheck, rules, ledger, currency: state.currency });
+                return;
+            }
             if (action && button.closest('[data-agreement-rule-form]')) {
                 try { state.approvalConfig = setup().withRuleAction(part('[data-agreement-rule-form]'), state.approvalConfig, action, button.dataset.testIndex); renderRule(); issues(); }
                 catch (error) { report(error); }
@@ -865,15 +998,18 @@
                 if (target.matches('[data-agreement-allocation-mode]')) {
                     state.allocationMode = target.value; reconcileAllocations(); renderLand(); return;
                 }
-                if (target.matches('[data-agreement-allocation]')) state.values.allocations[target.dataset.agreementAllocation] = target.value;
+                if (target.matches('[data-agreement-allocation]')) { state.values.allocations[target.dataset.agreementAllocation] = target.value; readRule(); renderRule(); }
                 if (target.matches('[data-agreement-binding]')) state.values.binding = target.checked;
                 if (target.matches('[data-agreement-electorate]')) {
                     readRule(); state.values.electorate = target.value; state.values.binding = false; renderRule(); renderLand();
                 }
                 if (target.matches('[data-agreement-compensation]')) {
-                    state.values.settlement.method = target.value;
-                    if (target.value === 'none') state.values.settlement.contributionBasisPoints = 0;
-                    renderRule();
+                    const terms = state.values.settlement;
+                    terms.method = target.value;
+                    if (terms.method !== 'area') terms.contributionBasisPoints = 0;
+                    if (terms.method === 'value') terms.rateCentsPerM2 = 0;
+                    else if (terms.method === 'area' && !(terms.rateCentsPerM2 > 0)) terms.rateCentsPerM2 = api.DEFAULT_SETTLEMENT.rateCentsPerM2;
+                    renderRule(); renderLand(); return;
                 }
                 renderPersons(); issues();
             } catch (error) { report(error); }
@@ -887,6 +1023,21 @@
                 part('[data-agreement-rate-slider]').value = terms.rateCentsPerM2;
             } else if (target.matches('[data-agreement-contribution]')) {
                 terms.contributionBasisPoints = Number(target.value); part('[data-agreement-contribution-value]').value = `${terms.contributionBasisPoints / 100}%`;
+            } else if (target.matches('[data-agreement-value-all]')) {
+                // One amount for every parcel or piece of the tab; each row can still be changed after.
+                const cents = cashCents(target.value);
+                if (cents !== null && !Number.isNaN(cents) && cents >= 0) {
+                    const kind = target.dataset.agreementValueAll;
+                    const rows = kind === 'inputs' ? state.land.inputs.parcels.map(parcel => parcel.parcelId) : state.land.outputs.map(output => output.hash);
+                    rows.forEach(id => { state.values.valuation[kind][id] = cents; });
+                    body.querySelectorAll(`[data-agreement-value-kind="${kind}"]`).forEach(input => { input.value = centsText(cents); });
+                }
+            } else if (target.matches('[data-agreement-value-kind]')) {
+                // An amount being typed that is not one yet is kept out, so the validation names it.
+                const cents = cashCents(target.value);
+                const kind = target.dataset.agreementValueKind, id = target.dataset.agreementValueId;
+                if (cents === null || Number.isNaN(cents) || cents < 0) delete state.values.valuation[kind][id];
+                else state.values.valuation[kind][id] = cents;
             } else if (target.matches('[data-agreement-title]')) state.values.title = target.value;
             else if (target.matches('[data-agreement-deadline]')) state.values.deadline = target.value;
             else if (target.matches('[data-agreement-organiser]')) state.values.organiser = target.value;
@@ -908,7 +1059,7 @@
         open, SCHEMA, LOCAL_RIGHTS_PROVIDER, appliedDesigns, designTitle, inputParcelIds, originalsById,
         partiesOf, allocationOptions, allocationValue, allocationTo, allocationMode, cashCents, cashInputText, termsOf,
         keptTerms, sponsorLine, ruleConfigAfterDerive, deadlineFromDate, dateFromDeadline, recordFromForm,
-        issueText, holdersText, landHtml, allocationHtml, ruleHtml, detailsHtml,
+        issueText, holdersText, landHtml, allocationHtml, valuationHtml, valuationRows, ruleHtml, detailsHtml,
         consultationHtml, bodyHtml, personsHtml, planSelectorHtml, inputDesignsHtml
     };
 });

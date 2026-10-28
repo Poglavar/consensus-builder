@@ -50,7 +50,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
             const result = await groundFor(await resolveDesigns(designs, parcelSourceId));
             return result.land;
         },
-        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lens, allocations, settlement, currency = 'EUR', deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false }) {
+        async draftAgreement({ plan: value, rulePreset = 'owner-vote', rule: ruleOverride, rights, lens, allocations, settlement, valuation = null, currency = 'EUR', deadline = null, sponsor = null, title = null, author = null, createdAt = null, consultation = null, includeGround = false }) {
             if (!resolvePlan) throw fail('plan-resolver-unavailable', 'Named plan resolution is unavailable.');
             const selected = await resolvePlan(value);
             const resolved = await resolveDesigns(selected.designs, selected.designs[0]?.parcelSourceId);
@@ -75,7 +75,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
             const published = agreementObject({ title, author, sponsor, city, createdAt, plan,
                 designs: designs.map(d => ({ cid: d.cid, goal: d.content.goal, title: d.content.title })),
                 parcels, openGroundM2: land.inputs.openGroundM2, outputs: land.outputs, allocations: finalAllocations,
-                money: { currency, lines: [] }, rule, deadline, consultation });
+                money: { currency, lines: [] }, valuation: rule.electorate === 'community' ? null : valuation, rule, deadline, consultation });
             return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], groundEffects, ...(includeGround ? { ground: land } : {}), warnings: ['This agreement references the existing named plan. Review its derived ground and terms before publishing.',
                 ...(!effectiveRights && rule.electorate !== 'community' ? ['Parcel parties are abstract placeholders because no rights snapshot was supplied.'] : [])],
                 ...await previewArtifact({ origin: appOrigin, agreement: published.content, plan, designs: designs.map(d => d.content), parcelSourceId: source.parcelSourceId }),

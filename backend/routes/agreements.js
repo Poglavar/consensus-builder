@@ -196,6 +196,24 @@ export function validateAgreementContent(content, { now = Date.now(), designCids
         payees.add(line.ownerKey);
         if (!Number.isSafeInteger(line.amountCents)) return invalid('money', `The cash of ${line.ownerKey} is not a whole number of cents.`);
     }
+    // Land values (settlement by value): whole cents per m², one per input parcel and per output, or null.
+    const { valuation } = content;
+    if (valuation != null) {
+        if (!isPlainObject(valuation) || !Array.isArray(valuation.inputs) || !Array.isArray(valuation.outputs)
+            || Object.keys(valuation).some(key => !['inputs', 'outputs'].includes(key))) {
+            return invalid('money', 'Valuation is { inputs: [{ parcelId, unitValueCents }], outputs: [{ output, unitValueCents }] } or null.');
+        }
+        const valued = new Set();
+        for (const [rows, key, known] of [[valuation.inputs, 'parcelId', parcelIds], [valuation.outputs, 'output', outputs]]) {
+            for (const row of rows) {
+                if (!isPlainObject(row) || !isText(row[key], MAX_ID_LENGTH) || !known.has(row[key]) || valued.has(`${key}:${row[key]}`)) {
+                    return invalid('money', `Every valuation row names one ${key} of this agreement once.`);
+                }
+                valued.add(`${key}:${row[key]}`);
+                if (!Number.isSafeInteger(row.unitValueCents) || row.unitValueCents < 0) return invalid('money', `The value per m² of ${row[key]} is not a whole number of cents of at least 0.`);
+            }
+        }
+    }
 
     const { rule } = content;
     if (!isPlainObject(rule) || !ELECTORATES.includes(rule.electorate) || typeof rule.binding !== 'boolean') {
@@ -256,12 +274,14 @@ export function validateAgreementContent(content, { now = Date.now(), designCids
         if (content.allocations.some(line => line.to.kind === 'party' && !parties.has(line.to.ownerKey))) return invalid('allocation', 'A recipient must own input land.');
         if (money.lines.some(line => !parties.has(line.ownerKey))) return invalid('money', 'A cash party must own input land.');
         try {
-            const calculated = agreementRecord.settle({ ...content, id: 'publication-check', plan: null, designs: [],
-                outputs: content.outputs.map(output => ({ ...output, pieceId: output.hash, holders: [], geometry: null })) });
-            if (!agreementRecord.landBalance(calculated).balanced) return invalid('land', 'Input and output land areas must balance.');
-            const ordered = lines => [...lines].filter(line => line.amountCents !== 0).sort((a, b) => a.ownerKey < b.ownerKey ? -1 : a.ownerKey > b.ownerKey ? 1 : 0);
-            if (!canonicalBytes(ordered(calculated.money.lines)).equals(canonicalBytes(ordered(money.lines)))) return invalid('money', 'Cash must match the compensation calculated from the rules and allocations.');
-            if (calculated.money.lines.some(line => !Number.isSafeInteger(line.amountCents))) return invalid('money', 'Compensation exceeds the supported whole-cent range.');
+            // The record's own judgement of the terms, the land values, the named scheme's distribution
+            // rules and the derived cash (AgreementRecord.settlementIssues), so the index, the dialog
+            // and MCP refuse the same agreements for the same reasons.
+            const local = { ...content, id: 'publication-check', plan: null, designs: [],
+                outputs: content.outputs.map(output => ({ ...output, pieceId: output.hash, holders: [], geometry: null })) };
+            if (!agreementRecord.landBalance(agreementRecord.settle(local)).balanced) return invalid('land', 'Input and output land areas must balance.');
+            const [issue] = agreementRecord.settlementIssues(local);
+            if (issue) return invalid(issue.section, issue.message);
         } catch (error) { return invalid('money', error.message); }
     } else if (!agreementRecord.landBalance({ inputs, outputs: content.outputs }).balanced) return invalid('land', 'Input and output land areas must balance.');
 

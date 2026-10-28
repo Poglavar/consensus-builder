@@ -2529,6 +2529,16 @@
       "markup": "<input type=\"range\" min=\"0\" max=\"${limit}\" step=\"1\" value=\"${terms.contributionBasisPoints}\" data-agreement-contribution>"
     },
     {
+      "id": "control-86d84eeb544e6c-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"number\" min=\"0\" step=\"0.01\" value=\"${esc(centsText(values[row.id]))}\" data-agreement-value-kind=\"${kind}\" data-agreement-value-id=\"${esc(row.id)}\" aria-label=\"${esc(`${row.title}: ${unit}`)}\">"
+    },
+    {
+      "id": "control-d0585760578507-1",
+      "source": "js/agreement-dialog.js",
+      "markup": "<input type=\"number\" min=\"0\" step=\"0.01\" data-agreement-value-all=\"${kind}\">"
+    },
+    {
       "id": "control-6f58e3c4f41453-1",
       "source": "js/agreement-dialog.js",
       "markup": "<button type=\"button\" class=\"btn\" data-agreement-action=\"apply-plan\">"
@@ -6327,6 +6337,11 @@
       "markup": "<select data-approval-rule data-approval-regime>",
       "interaction": "change",
       "controlType": "select"
+    },
+    {
+      "id": "control-3736a067d21034-1",
+      "source": "js/proposals/approval-setup.js",
+      "markup": "<button type=\"button\" class=\"cb-link approval-setup__guide\" data-editor-action=\"approval-scheme-guide\" data-scheme-id=\"${esc(template.id)}\" data-scheme-version=\"${esc(template.version)}\">"
     },
     {
       "id": "control-bf79701bd9dee2-1",

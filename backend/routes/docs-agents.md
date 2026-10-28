@@ -333,8 +333,19 @@ lens member verifies that decision and attests it:
 - `allocations`: exactly one recipient for each owner output: `{ "output": <hash>, "to": { "kind": "party", "ownerKey" } }`
   or `{ "kind": "public" }`. Joint and implicit holder recipients are unsupported.
 - `money`: `{ "currency": "EUR", "lines": [{ "ownerKey", "amountCents" }] }`, derived from settlement,
-  not manually entered. `rule.settlement` chooses `area` or `none`, a whole-cent EUR/m² rate, and the allowed
-  land contribution in basis points. Zero lines are omitted.
+  not manually entered. `rule.settlement` chooses `area`, `value` or `none`. By `area`: a whole-cent EUR/m²
+  rate and the allowed land contribution in basis points; each party receives or pays (land put in after the
+  contribution − land received) × rate. By `value`: rate and contribution are 0 and `valuation` gives a
+  whole-cent value per m² for every input parcel (before) and every output (after); each party is entitled
+  to the share of the value of the land going to parties and the proposer that matches the value it put in,
+  receives that entitlement minus the value it got, and pays the scheme's share of its value gain (all of it
+  under a German Umlegung, half under a Gujarat scheme, none otherwise). Zero lines are omitted.
+- `valuation`: `null`, or `{ "inputs": [{ "parcelId", "unitValueCents" }], "outputs": [{ "output", "unitValueCents" }] }`
+  for settlement by value only.
+- A scheme pinned in `rule.approvalConfig.regime` (`{ "id", "version" }`, see `GET $(base)/agents/mcp` resource
+  `ugt://schemes`) also rules the distribution: a per-owner or pool cap on land given up, the area or value
+  basis, the fewest parties, and no proposer acquisition under an authority-led scheme. The index refuses an
+  agreement that breaks them with the same message the app shows.
 - `rule`: who decides and whether it binds. A **community vote** `{ "electorate": "community",
   "binding": false, "approvalConfig": null }` and an **owner vote** `{ "electorate": "owners", "binding":
   false, "approvalConfig": … }` are **polls**: they live in the index, are never minted and have no

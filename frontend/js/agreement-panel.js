@@ -189,24 +189,27 @@
     // is not known has no contribution or change to show.
     function ledgerRows(ledger, tr = t) {
         const area = value => format().formatArea(value, { missing: NO_VALUE });
+        // By value, the land and its value: "850 m² · 340,000 EUR".
+        const valued = !!(ledger && ledger.valued);
+        const withValue = (areaText, cents) => (valued && finite(cents) ? `${areaText} · ${moneyText(cents, ledger.currency)}` : areaText);
         const rows = (ledger && Array.isArray(ledger.parties) ? ledger.parties : []).map(party => ({
             ownerKey: idOf(party.ownerKey),
             recipientKind: 'party',
             name: party.displayName || idOf(party.ownerKey),
-            contributes: party.areaUnknown ? NO_VALUE : area(party.contributedM2),
-            receives: area(party.assignedM2),
+            contributes: party.areaUnknown ? NO_VALUE : withValue(area(party.contributedM2), party.contributedValueCents),
+            receives: withValue(area(party.assignedM2), party.assignedValueCents),
             change: party.areaUnknown ? NO_VALUE : signedArea(party.changeM2),
             cash: signedMoney(party.cashCents, ledger.currency)
         }));
         if (ledger && finite(ledger.proposerM2) && ledger.proposerM2 > 0) {
             rows.push({ ownerKey: null, recipientKind: 'proposer', name: tr('agreement.allocation.proposer', 'Proposer'),
-                contributes: area(0), receives: area(ledger.proposerM2), change: signedArea(ledger.proposerM2),
+                contributes: area(0), receives: withValue(area(ledger.proposerM2), ledger.proposerValueCents), change: signedArea(ledger.proposerM2),
                 cash: signedMoney(ledger.money?.sponsorCents || 0, ledger.currency) });
         }
         if (ledger && finite(ledger.publicM2) && ledger.publicM2 > 0) {
             rows.push({
                 ownerKey: null, recipientKind: 'public', name: tr('agreement.allocation.public', 'Public'),
-                contributes: NO_VALUE, receives: area(ledger.publicM2), change: signedArea(ledger.publicM2), cash: NO_VALUE
+                contributes: NO_VALUE, receives: withValue(area(ledger.publicM2), ledger.publicValueCents), change: signedArea(ledger.publicM2), cash: NO_VALUE
             });
         }
         return rows;

@@ -1,7 +1,7 @@
 // Plan-first agreement editing: tabs preserve the fixed plan, single allocations drive derived
 // money, abstract owners work without a rights import, and advanced controls stay in dialogs.
 import { test, expect } from '../helpers/fixtures';
-import { stubBasemapTiles, showProposal } from '../helpers/runtime';
+import { stubBasemapTiles, showProposal, PARCEL_ID } from '../helpers/runtime';
 import { applyLayout, agreementEditor, editorSave, storedAgreements } from '../helpers/agreements';
 import type { Page } from '@playwright/test';
 
@@ -297,4 +297,78 @@ test('agreement rules show one yellow experimental pill without research or lega
   await expect(editor).not.toContainText('Istraživački predložak');
   await expect(editor).not.toContainText('Usporedno istraživanje');
   await expect(editor).not.toContainText('ne pravni savjet');
+});
+
+test('a chosen scheme is checked against the plan, and settlement by value values every parcel and piece', async ({ mockApi: page }, testInfo) => {
+  const { layoutId, ownerKey } = await applyLayout(page);
+  const editor = await create(page, layoutId);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  // Both pieces go back to their owner, so the German scheme for developed land (10% cap) is met;
+  // a kavelruil needs three parties and one brings land in, which the dropdown says before it is chosen.
+  const scheme = editor.locator('[data-approval-regime]');
+  await scheme.selectOption('de-umlegung-developed');
+  const check = editor.locator('[data-approval-scheme-check]');
+  await expect(check).toHaveAttribute('data-approval-scheme-ok', 'true');
+  await expect(check.locator('li[data-check-ok="true"]').first()).toContainText('The most any owner gives up is 0% (Ana Owner); the cap is 10%.');
+  await expect(scheme.locator('option[value="nl-kavelruil"]')).toHaveAttribute('data-scheme-met', 'false');
+  await expect(scheme.locator('option[value="nl-kavelruil"]')).toHaveText(/not met by this plan/);
+  await expect(scheme.locator('option[value="de-umlegung-developed"]')).toHaveAttribute('data-scheme-met', 'true');
+  await editor.screenshot({ path: testInfo.outputPath('rules-scheme-met.png') });
+  // Giving a piece to public breaks the cap: the card, the dropdown and the save all say so.
+  await editor.getByRole('tab', { name: 'Output parcels', exact: true }).click();
+  await editor.locator('[data-agreement-allocation]').first().selectOption('public');
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await expect(check).toHaveAttribute('data-approval-scheme-ok', 'false');
+  await expect(check.locator('li[data-check-ok="false"]')).toContainText('Ana Owner gives up');
+  await expect(scheme.locator('option[value="de-umlegung-developed"]')).toHaveText(/not met by this plan/);
+  await expect(editorSave(editor)).toBeDisabled();
+  await expect(editor.locator('[data-agreement-issue="scheme-cap"]')).toContainText('Germany — Umlegung, already developed land: Ana Owner gives up');
+  await editor.screenshot({ path: testInfo.outputPath('rules-scheme-broken.png') });
+  // The guide explains the scheme and says what would meet it, with this plan's parties.
+  await editor.locator('[data-editor-action="approval-scheme-guide"]').click();
+  const guide = page.locator('.cb-dialog').filter({ has: page.locator('[data-scheme-guide="de-umlegung-developed"]') });
+  await expect(guide).toBeVisible();
+  await expect(guide.locator('.cb-dialog__title')).toHaveText('Germany — Umlegung, already developed land');
+  await expect(guide.locator('[data-scheme-guide-check] li[data-check-ok="false"]')).toContainText('Ana Owner gives up 50%');
+  await expect(guide.locator('[data-scheme-guide-fixes]')).toContainText('In Output parcels, give Ana Owner at least');
+  await expect(guide.locator('.scheme-guide__svg .scheme-guide__slice--public')).toHaveCount(1);
+  await expect(guide).toContainText('Set it up here');
+  await guide.screenshot({ path: testInfo.outputPath('scheme-guide.png') });
+  await guide.getByRole('button', { name: 'Close', exact: true }).last().click();
+  await expect(guide).toBeHidden();
+  await expect(editor).toBeVisible();
+  // By value: every parcel and piece gets a value per m², prefilled, settable for all and per row.
+  await scheme.selectOption('unanimous');
+  await editor.locator('[data-agreement-compensation]').selectOption('value');
+  await expect(editor.locator('[data-agreement-value-hint]')).toBeVisible();
+  await expect(editor.locator('[data-agreement-rate]')).toBeHidden();
+  await editor.getByRole('tab', { name: 'Input parcels', exact: true }).click();
+  const inputValues = editor.locator('[data-agreement-value-kind="inputs"]');
+  await expect(inputValues).toHaveCount(1);
+  await editor.locator('[data-agreement-value-all="inputs"]').fill('100');
+  await expect(inputValues).toHaveValue('100');
+  await editor.screenshot({ path: testInfo.outputPath('inputs-values.png') });
+  await editor.getByRole('tab', { name: 'Output parcels', exact: true }).click();
+  await editor.locator('[data-agreement-allocation]').first().selectOption('proposer');
+  const pieceValues = editor.locator('[data-agreement-value-kind="outputs"]');
+  await expect(pieceValues).toHaveCount(2);
+  await editor.locator('[data-agreement-value-all="outputs"]').fill('400');
+  await pieceValues.first().fill('300');
+  await editor.getByRole('tab', { name: 'Persons', exact: true }).click();
+  await expect(editor.locator('.agreement-persons-table')).toContainText('entitled to');
+  await expect(editor.locator('[data-agreement-balance]')).toContainText('Value in');
+  await editor.screenshot({ path: testInfo.outputPath('persons-values.png') });
+  await editorSave(editor).click();
+  await expect(editor).toBeHidden();
+  const [saved] = await storedAgreements(page);
+  expect(saved.rule.settlement).toEqual({ method: 'value', rateCentsPerM2: 0, contributionBasisPoints: 0 });
+  expect(saved.valuation.inputs).toEqual([{ parcelId: PARCEL_ID, unitValueCents: 10000 }]);
+  expect(saved.valuation.outputs.map((row: any) => row.unitValueCents).sort()).toEqual([30000, 40000]);
+  // The owner is entitled to the value of both pieces and got one: the proposer's piece is paid for.
+  const acquired = saved.outputs.find((o: any) => saved.allocations.some((a: any) => a.output === o.hash && a.to.kind === 'proposer'));
+  expect(saved.money.lines).toEqual([{ ownerKey, amountCents: Math.round(acquired.areaM2 * 30000) }]);
+  await page.evaluate(id => { void (window as any).AgreementDialog.open({ agreementId: id }); }, saved.id);
+  await expect(editor).toBeVisible();
+  await editor.getByRole('tab', { name: 'Output parcels', exact: true }).click();
+  await expect(pieceValues.first()).toHaveValue('300');
 });

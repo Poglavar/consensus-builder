@@ -104,6 +104,7 @@
             outputs,
             allocations: content.allocations,
             money: content.money,
+            valuation: content.valuation ?? null,
             rule: content.rule,
             consultation: content.consultation,
             deadline: content.deadline,

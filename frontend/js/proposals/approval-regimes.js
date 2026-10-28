@@ -3,7 +3,8 @@
 // how it differs (land-readjustmend.md §§7–8, §23):
 // - who decides and how: owner-support tests (approval.js) and how many authority decisions;
 // - the stage the support qualifies for;
-// - how land is distributed: by area, by value or either, and caps on land given up.
+// - how land is distributed: by area, by value or either, caps on land given up, how much of a
+//   value gain is settled in money, and how many parties the scheme needs.
 // A proposal pins a template by id and version (approvalConfig.regime), so a later revision never
 // changes rules people already signed. All templates are research: comparative findings checked on
 // the dates below, not legal advice; a real procedure also needs its notices, hearings and registry.
@@ -19,12 +20,19 @@
     // that changes a scheme adds a new entry with the new date and leaves the old one beside it
     // (backend/test/proposal-approval-regimes.test.js lists every shipped version).
     const CHECKED = '2026-10-11';
+    // 2026-10-28: value-basis settlement (valueGain) and party counts (minParties) were added to the
+    // schemes that state them; those schemes have a second version, the others are unchanged.
+    const CHECKED_VALUE = '2026-10-28';
     const atLeast = (numerator, denominator) => ({ numerator, denominator, strict: false });
     const moreThan = (numerator, denominator) => ({ numerator, denominator, strict: true });
     const test = (measure, of, scope, threshold) => ({ measure, of, scope, ...threshold });
 
     // family: 'voluntary' (the owners' agreement is the decision), 'support-and-authority' (owner
     // support, then an authority decides) or 'authority-led' (the authority decides; owners are heard).
+    // allocation: basis ('area', 'value' or 'either'); cap (land given up: per owner or per pool, and
+    // for which basis); valueGain (by value, the share of each owner's value gain that is settled in
+    // money: Germany settles all of it, Gujarat charges half the increment, the rest keep it in land).
+    // minParties: the fewest input parties the scheme takes (kavelruil needs three, Colombia two).
     // English text is the fallback for the `proposalApproval.schemes.<id>.*` i18n keys; `authority` is a noun phrase
     // ("the prefectural governor’s approval") that completes "…, and needs …".
     const REGIMES = [
@@ -32,6 +40,16 @@
             id: 'nl-kavelruil', version: CHECKED, family: 'voluntary', country: 'NL', stage: 'agreement',
             tests: [test('headcount', 'owners', 'all', atLeast(1, 1))], authorities: 0,
             allocation: { basis: 'either' },
+            sources: [{ label: 'IPLO — kavelruil', url: 'https://iplo.nl/thema/ruimtelijke-ontwikkelingen/instrumenten-grondbeleid/kavelruil/' }],
+            text: {
+                name: 'Netherlands — voluntary urban land exchange (kavelruil)',
+                note: 'Every party agrees. The exchange is then set down in a notarial deed and registered with the Kadaster; at least three parties take part.'
+            }
+        },
+        {
+            id: 'nl-kavelruil', version: CHECKED_VALUE, family: 'voluntary', country: 'NL', stage: 'agreement',
+            tests: [test('headcount', 'owners', 'all', atLeast(1, 1))], authorities: 0,
+            allocation: { basis: 'either' }, minParties: 3,
             sources: [{ label: 'IPLO — kavelruil', url: 'https://iplo.nl/thema/ruimtelijke-ontwikkelingen/instrumenten-grondbeleid/kavelruil/' }],
             text: {
                 name: 'Netherlands — voluntary urban land exchange (kavelruil)',
@@ -105,6 +123,17 @@
             }
         },
         {
+            id: 'co-readjustment', version: CHECKED_VALUE, family: 'support-and-authority', country: 'CO', stage: 'execution',
+            tests: [test('area', 'owners', 'all', atLeast(51, 100))], authorities: 1,
+            allocation: { basis: 'either' }, minParties: 2,
+            sources: [{ label: 'Ley 388 de 1997, arts. 44–46', url: 'https://www1.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=339' }],
+            text: {
+                name: 'Colombia — urban action unit / land readjustment',
+                authority: 'approval by the municipal planning authority',
+                note: 'Owners of 51% of the committed area; the project also needs more than one participant.'
+            }
+        },
+        {
             id: 'jp-association', version: CHECKED, family: 'support-and-authority', country: 'JP', stage: 'association',
             tests: [
                 test('headcount', 'owners', 'private', atLeast(2, 3)),
@@ -148,6 +177,20 @@
             }
         },
         {
+            id: 'de-umlegung-new', version: CHECKED_VALUE, family: 'authority-led', country: 'DE', stage: 'plan',
+            tests: [], authorities: 1,
+            allocation: { basis: 'either', cap: { numerator: 3, denominator: 10, per: 'owner', basis: 'area' }, valueGain: { numerator: 1, denominator: 1 } },
+            sources: [
+                { label: 'BauGB §§ 46–47', url: 'https://www.gesetze-im-internet.de/bbaug/__46.html' },
+                { label: 'BauGB §§ 56–58', url: 'https://www.gesetze-im-internet.de/bbaug/__58.html' }
+            ],
+            text: {
+                name: 'Germany — Umlegung, land developed for the first time',
+                authority: 'the Umlegung authority’s adoption of the readjustment plan',
+                note: 'No owner vote: the authority orders and decides, and owners are heard. Distributed by area, no owner gives up more than 30% of their land for public facilities (§58); by value, each owner is made whole to the value they put in and the whole gain is settled in money (§57).'
+            }
+        },
+        {
             id: 'de-umlegung-developed', version: CHECKED, family: 'authority-led', country: 'DE', stage: 'plan',
             tests: [], authorities: 1,
             allocation: { basis: 'either', cap: { numerator: 1, denominator: 10, per: 'owner', basis: 'area' } },
@@ -159,6 +202,20 @@
                 name: 'Germany — Umlegung, already developed land',
                 authority: 'the Umlegung authority’s decision on the readjustment plan',
                 note: 'No owner vote: the authority orders and decides, and owners are heard. Distributed by area, no owner gives up more than 10% of their land (§58).'
+            }
+        },
+        {
+            id: 'de-umlegung-developed', version: CHECKED_VALUE, family: 'authority-led', country: 'DE', stage: 'plan',
+            tests: [], authorities: 1,
+            allocation: { basis: 'either', cap: { numerator: 1, denominator: 10, per: 'owner', basis: 'area' }, valueGain: { numerator: 1, denominator: 1 } },
+            sources: [
+                { label: 'BauGB §§ 46–47', url: 'https://www.gesetze-im-internet.de/bbaug/__46.html' },
+                { label: 'BauGB §§ 56–58', url: 'https://www.gesetze-im-internet.de/bbaug/__58.html' }
+            ],
+            text: {
+                name: 'Germany — Umlegung, already developed land',
+                authority: 'the Umlegung authority’s decision on the readjustment plan',
+                note: 'No owner vote: the authority orders and decides, and owners are heard. Distributed by area, no owner gives up more than 10% of their land (§58); by value, each owner is made whole to the value they put in and the whole gain is settled in money (§57).'
             }
         },
         {
@@ -181,6 +238,20 @@
                 name: 'India, Gujarat — town planning scheme',
                 authority: 'the State government’s sanction of the scheme',
                 note: 'The authority prepares the scheme and hears written objections; final plots are reconstituted by valuation.'
+            }
+        },
+        {
+            id: 'in-gj-tps', version: CHECKED_VALUE, family: 'authority-led', country: 'IN', region: 'GJ', stage: 'plan',
+            tests: [], authorities: 1,
+            allocation: { basis: 'value', valueGain: { numerator: 1, denominator: 2 } },
+            sources: [
+                { label: 'Gujarat Town Planning and Urban Development Act', url: 'https://www.indiacode.nic.in/bitstream/123456789/4658/1/tpudact.pdf' },
+                { label: 'Surat TP scheme Form F (§79 contribution at 50% of the increment)', url: 'https://www.suratmunicipal.gov.in/Content/Documents/Departments/Draftschemes/TP23_KOSAD/TP23_KOSAD_FORM.pdf' }
+            ],
+            text: {
+                name: 'India, Gujarat — town planning scheme',
+                authority: 'the State government’s sanction of the scheme',
+                note: 'The authority prepares the scheme and hears written objections; final plots are reconstituted by valuation, and each owner contributes half of their value increment towards the scheme’s costs (§§78–79).'
             }
         }
     ];
@@ -220,9 +291,13 @@
      * A plan's distribution against a template's rules.
      * @param {object} regime a REGIMES entry
      * @param {{ basis: 'area'|'value', poolAreaM2: number|null,
-     *   owners: { ownerKey: string, contributedAreaM2: number|null, assignedAreaM2: number }[] }} facts
-     *   owners are the input owners (not public land, open ground or outside recipients).
-     * @returns {{ ok: boolean, rules: object[] }} one entry per rule: { kind, ok, ... }.
+     *   owners: { ownerKey: string, contributedAreaM2: number|null, assignedAreaM2: number }[],
+     *   partyCount?: number, proposerAreaM2?: number }} facts
+     *   owners are the input owners (not public land, open ground or outside recipients); partyCount is
+     *   how many parties bring land in; proposerAreaM2 is the land a proposer acquires. A fact that is
+     *   left out skips its rule.
+     * @returns {{ ok: boolean, rules: object[] }} one entry per rule: { kind, ok, ... } with kind
+     *   'basis', 'cap', 'parties' or 'proposer'.
      */
     function checkAllocation(regime, facts) {
         const rules = [];
@@ -248,8 +323,22 @@
                 rules.push({ kind: 'cap', per: 'pool', limit, given, ok: given !== null && given <= ratio(cap) + SLACK });
             }
         }
+        if (regime?.minParties && typeof facts.partyCount === 'number') {
+            rules.push({ kind: 'parties', required: regime.minParties, actual: facts.partyCount, ok: facts.partyCount >= regime.minParties });
+        }
+        // An authority-led readjustment returns the land to its owners or takes it for public use;
+        // nobody else acquires land through it.
+        if (regime?.family === 'authority-led' && typeof facts.proposerAreaM2 === 'number') {
+            rules.push({ kind: 'proposer', areaM2: facts.proposerAreaM2, ok: !(facts.proposerAreaM2 > 0) });
+        }
         return { ok: rules.every(rule => rule.ok), rules };
     }
 
-    return { CHECKED, FAMILIES, REGIMES, list, get, latest, policyOf, needs, checkAllocation };
+    // The share of an owner's value gain the scheme settles in money (0 to 1): none without a scheme.
+    function valueGainRatio(regime) {
+        const gain = regime?.allocation?.valueGain;
+        return gain ? gain.numerator / gain.denominator : 0;
+    }
+
+    return { CHECKED, CHECKED_VALUE, FAMILIES, REGIMES, list, get, latest, policyOf, needs, checkAllocation, valueGainRatio };
 });

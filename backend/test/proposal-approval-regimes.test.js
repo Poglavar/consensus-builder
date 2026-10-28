@@ -133,9 +133,13 @@ describe('rights with leases and public bodies', () => {
 // Every scheme version ever offered. A published proposal pins id@version, so removing or re-dating
 // one would make those proposals' approval rules unreadable: a re-check adds a version, and this
 // list only grows.
-const SHIPPED = ['nl-kavelruil', 'tw-owner-organized', 'kr-association', 'es-ct-basic', 'es-ct-concertacion',
-    'es-md-compensation', 'co-readjustment', 'jp-association', 'jp-joint', 'de-umlegung-new',
-    'de-umlegung-developed', 'tr-article-18', 'in-gj-tps'].map(id => `${id}@2026-10-11`);
+const SHIPPED = [
+    ...['nl-kavelruil', 'tw-owner-organized', 'kr-association', 'es-ct-basic', 'es-ct-concertacion',
+        'es-md-compensation', 'co-readjustment', 'jp-association', 'jp-joint', 'de-umlegung-new',
+        'de-umlegung-developed', 'tr-article-18', 'in-gj-tps'].map(id => `${id}@2026-10-11`),
+    // 2026-10-28: value-gain settlement (Germany, Gujarat) and party counts (kavelruil, Colombia).
+    ...['nl-kavelruil', 'co-readjustment', 'de-umlegung-new', 'de-umlegung-developed', 'in-gj-tps'].map(id => `${id}@2026-10-28`)
+];
 
 describe('scheme versions', () => {
     it('keeps every shipped version resolvable, so pinned proposals still read', () => {
@@ -307,7 +311,30 @@ describe('words for the rules', () => {
         expect(X.meterName(test('headcount', 'owners', 'all', 1, 2))).toBe('owners');
         expect(X.meterName(test('area', 'owners+leaseholders', 'private', 1, 2))).toBe('area-owners-and-leaseholders-private');
         expect(X.meterLabel(test('headcount', 'leaseholders', 'all', 1, 2), t)).toBe('Leaseholders');
-        expect(X.allocationLines(R.latest('tr-article-18'), t)).toEqual(['New plots are distributed by area.', 'No owner gives up more than 45% of their land.']);
+        expect(X.allocationLines(R.latest('tr-article-18'), t)).toEqual(['New plots are distributed by area.', 'No owner gives up more than 45% of their land.',
+            'Land returns to its owners or goes to public use; a proposer cannot acquire it.']);
+        expect(X.allocationLines(R.latest('de-umlegung-new'), t)[1]).toBe('Distributed by value, each owner is made whole to the value they put in; the whole value gain is settled in money.');
+        expect(X.allocationLines(R.latest('in-gj-tps'), t)[1]).toBe('Distributed by value, 50% of each owner’s value gain is settled in money.');
+        expect(X.allocationLines(R.latest('nl-kavelruil'), t)).toEqual(['At least 3 parties bring land in.']);
+        expect(X.allocationLines(R.get('nl-kavelruil', '2026-10-11'), t)).toEqual([]);
+    });
+
+    it('states the party count and proposer rules, and the share of a value gain each scheme settles in money', () => {
+        expect(R.valueGainRatio(R.latest('de-umlegung-developed'))).toBe(1);
+        expect(R.valueGainRatio(R.latest('in-gj-tps'))).toBe(0.5);
+        expect(R.valueGainRatio(R.latest('jp-association'))).toBe(0);
+        expect(R.valueGainRatio(R.get('de-umlegung-new', '2026-10-11'))).toBe(0);
+        expect(R.valueGainRatio(null)).toBe(0);
+        const few = R.checkAllocation(R.latest('nl-kavelruil'), { basis: 'area', poolAreaM2: 100, owners: [], partyCount: 2 });
+        expect(few).toEqual({ ok: false, rules: [{ kind: 'parties', required: 3, actual: 2, ok: false }] });
+        expect(R.checkAllocation(R.latest('co-readjustment'), { basis: 'value', poolAreaM2: 100, owners: [], partyCount: 2 }).ok).toBe(true);
+        // A fact that is left out skips its rule, so the older callers read as before.
+        expect(R.checkAllocation(R.latest('nl-kavelruil'), { basis: 'area', poolAreaM2: 100, owners: [] }).rules).toEqual([]);
+        const acquired = R.checkAllocation(R.latest('tr-article-18'), { basis: 'area', poolAreaM2: 100, owners: [], proposerAreaM2: 10 });
+        expect(acquired.rules.find(rule => rule.kind === 'proposer')).toEqual({ kind: 'proposer', areaM2: 10, ok: false });
+        expect(R.checkAllocation(R.latest('jp-association'), { basis: 'value', poolAreaM2: 100, owners: [], proposerAreaM2: 10 }).rules.some(rule => rule.kind === 'proposer')).toBe(false);
+        expect(X.checkLines(few, t)).toEqual(['Only 2 bring land in; the scheme needs at least 3 parties.']);
+        expect(X.checkLines(acquired, t)[2]).toBe('10 m² would go to a proposer; under this scheme land returns to its owners or goes to public use.');
     });
 });
 

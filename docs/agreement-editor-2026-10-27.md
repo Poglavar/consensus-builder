@@ -200,3 +200,71 @@ No full suites were run and no runs were stopped. The original browser tab was i
 its saved records; a later browser connection timeout prevented final verification on that exact
 tab. The automated check uses the real application with mocked source responses. Temporary
 diagnostic logging was removed. Mixed stack-panel and entry-point changes remain uncommitted.
+
+## Value-basis settlement and scheme distribution rules (2026-10-28)
+
+Rules offers three compensations. By area (as before): a rate per m² and a land contribution the
+scheme caps. By value: a whole-cent value per m² for every input parcel (before the designs) and
+every resulting piece (after them), entered in Input parcels and Output parcels, one field per row
+plus a field that sets them all, prefilled with the city's land price. Each party is entitled to
+the share of the value of the land distributed to parties and the proposer that matches the value
+it put in; it receives the entitlement minus the value it got and pays the scheme's share of its
+value gain (all of it under a German Umlegung, half under the Gujarat scheme, none otherwise). No
+cash: no money lines. Persons shows land and value side by side with each entitlement.
+
+The record stores `valuation: { inputs: [{ parcelId, unitValueCents }], outputs: [{ output,
+unitValueCents }] }` only when the settlement is by value; it is part of the published object and
+its CID. `rule.settlement.method` is `area`, `value` or `none`; by value the rate and contribution
+are 0. Schemes carry their distribution rules as data (`approval-regimes.js`): a cap per owner or per
+pool with its basis, the share of a value gain settled in money (`valueGain`), the fewest parties
+(`minParties`), and the family. A scheme whose rules changed got a second version dated 2026-10-28
+beside its 2026-10-11 version; agreements that pinned the older version keep reading as before.
+
+One shared judgement, `AgreementRecord.settlementIssues`, lists the settlement terms, the land
+values, the named scheme's rules (per-owner and pool caps, area or value basis, party count, no
+proposer acquisition under an authority-led scheme) and the derived cash against the stored lines.
+The dialog, the HTTP index (`validateAgreementContent`) and MCP (`agreementObject`) refuse the same
+agreements with the same message. The dropdown marks every scheme the current plan does not meet
+("— not met by this plan"), the scheme card lists the check line by line, and a broken rule is a
+save-blocking error; the selection itself is never refused, because the outputs are allocated
+after the rule is chosen and an agent has no dropdown to refuse.
+
+MCP parity: `ugt_draft_agreement` and `ugt_edit_agreement` take `settlement.method: 'value'` and
+`valuation`; `ugt_inspect_agreement` reports `valuation`, the value ledger and the scheme check
+(`scheme`); the help topic `schemes` lists every scheme with its rules and sources so an agent can
+pin one; the recipe JSON Schema and `docs-agents.md` describe `valuation`. The runtime test drafts,
+edits and inspects a value agreement, has an over-cap German edit and an area deal under a value
+scheme refused, and reads the catalogue.
+
+### Scheme guide
+
+The scheme card's "How this scheme works…" opens a dialog generated from the template's data
+(`ProposalApprovalSetup.schemeGuideHtml`, `openSchemeGuide`): who decides and what the support
+is for; how land is distributed, with a before/after schematic drawn from the scheme's cap and
+basis (the plan's own parties when one is open, else three example owners); this agreement against
+the scheme, with the parties' land and what would meet a broken rule, in the editor's own controls;
+how to set the scheme up here (Compensation, Land contribution, Output parcels, Parcel ownership
+rights, Authority, Persons); and the sources. Colours and type come from `proposal-editor.css`.
+
+### Verification (2026-10-28)
+
+Targeted headless unit runs, typed file paths from `backend/`, none stopped:
+
+| Run | Result |
+| --- | --- |
+| 9 agreement/scheme/route/MCP files | 214 tests, 8 failed: fixtures that gave all land away under Umlegung (now refused), a keptTerms shape, and 4 route failures from running 9 files at once |
+| `agreements-route` alone | 63 passed |
+| accounting, store, regimes, setup | 82 tests, 2 failed on the dialog's English wording in node (require fallback added) |
+| accounting, mcp-plan, mcp-discovery, agreement-objects | 43 tests, 2 failed: catalogue wrapper, a one-cent rounding of a single owner's entitlement (now rounded once from exact sums) |
+| 8 files after the fixes | 152 tests, 1 failed on a help call the plan tools do not expose (assertion moved to the discovery file) |
+| mcp-plan, mcp-discovery, sync, boundary, repository, lens registry, setup | all passed (8, 5, 48 and 15 tests) |
+| i18n style | Title Case 31 against a ceiling of 30 and duplicate groups 236 against 227, both failing at HEAD before this change; this change adds none |
+
+Targeted headless Playwright (`agreement-editor-map.spec.ts`): three existing cases passed with the
+new one, which checks the German scheme against the plan (met, then broken by a public allocation:
+card, dropdown mark, disabled save and error line), opens the guide and reads its check, fix and
+schematic, then settles by value (bulk and per-row values, Persons with values and entitlements,
+saved valuation and derived cash, reopening). Its screenshots of the Rules card, the guide, the
+input values and Persons were reviewed. The control contract gained the two value fields and the
+guide button. The preview `http://localhost:5680/?backend=http://localhost:4680&city=zagreb&at=45.8,15.96,17`
+resolved the local API, city zagreb, EUR, and returned one real cadastral parcel.

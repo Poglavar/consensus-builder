@@ -196,12 +196,13 @@ export function parcelOutputs(parcels) {
  *   outputs   [{ hash, areaM2, fromParcelIds, role, producedBy (a linked design CID | null), geometry? }]
  *   rule      { electorate, binding, approvalConfig, lens, settlement } (ownersRule() for a binding owners' agreement, communityRule() for a poll)
  *   title, author, sponsor (base58 wallet that mints and funds it, or null), city, createdAt (ISO | null),
- *   deadline (ISO | null), openGroundM2 (default 0), allocations (defaulted when unambiguous), money (settlement-derived)
+ *   deadline (ISO | null), openGroundM2 (default 0), allocations (defaulted when unambiguous), money (settlement-derived),
+ *   valuation ({ inputs: [{ parcelId, unitValueCents }], outputs: [{ output, unitValueCents }] } for settlement by value, else null)
  * @returns {{ content: object, cid: string }}
  */
 export function agreementObject({
     title = null, author = null, sponsor = null, city = null, createdAt = null,
-    designs, plan, parcels, openGroundM2 = 0, outputs, allocations, money, rule, deadline = null, consultation = null
+    designs, plan, parcels, openGroundM2 = 0, outputs, allocations, money, valuation = null, rule, deadline = null, consultation = null
 } = {}) {
     if (!Array.isArray(designs) || !designs.length) throw fail('invalid-agreement', 'an agreement links at least one design');
     const designCids = new Set();
@@ -247,6 +248,7 @@ export function agreementObject({
         })),
         allocations: allocations ?? (rule?.electorate === 'owners' ? agreementRecord.defaultAllocations({ parcels: (parcels || []).map(parcel => ({ ...parcel, holders: parcel.holders?.length ? parcel.holders : [agreementRecord.abstractHolder(parcel.parcelId)] })) }, outputs || []) : []),
         money,
+        valuation,
         rule,
         consultation,
         deadline

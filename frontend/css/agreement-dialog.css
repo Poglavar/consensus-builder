@@ -22,6 +22,7 @@
 
 .agreement-section[hidden],
 [data-agreement-binding-control][hidden],
+.agreement-editor .proposal-editor-field[hidden],
 .agreement-editor [role="tabpanel"][hidden] { display: none; }
 
 .agreement-editor [role="tabpanel"] {
@@ -90,6 +91,26 @@
 .agreement-persons-table td { font-variant-numeric: tabular-nums; }
 .agreement-persons-table th:first-child { width: 40%; }
 .agreement-persons-table .agreement-persons-cash { display: inline-block; font-size: var(--cb-text-sm); }
+.agreement-persons-table .agreement-persons-value,
+.agreement-persons-table .agreement-persons-entitled { display: inline-block; font-size: var(--cb-text-sm); color: var(--cb-text-muted); }
+
+/* Land values for settlement by value: one amount per input parcel or resulting piece. */
+.agreement-valuation { display: grid; gap: var(--cb-space-3); min-width: 0; }
+.agreement-valuation-list { display: grid; gap: var(--cb-space-2); margin: 0; padding: 0; list-style: none; }
+.agreement-valuation-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "title input" "facts input";
+    align-items: center;
+    gap: var(--cb-space-1) var(--cb-space-3);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+}
+.agreement-valuation-row__title { grid-area: title; font-weight: var(--cb-weight-medium); color: var(--cb-text-strong); overflow-wrap: anywhere; }
+.agreement-valuation-row__facts { grid-area: facts; color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+.agreement-valuation-row input { grid-area: input; width: 8.5em; max-width: 40vw; }
 .agreement-allocation-row select:disabled { opacity: 0.55; cursor: not-allowed; background: var(--cb-surface-2); }
 .agreement-editor input[type="range"] { width: 100%; margin: 0; }
 

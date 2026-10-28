@@ -164,6 +164,25 @@ describe('the form', () => {
 });
 
 
+describe('the plan against the schemes', () => {
+    it('marks the schemes the plan does not meet in the dropdown and lists the chosen scheme’s check in its card', () => {
+        const config = Setup.withPolicyFromForm(form({ '[data-approval-regime]': 'de-umlegung-developed' }), null);
+        const html = Setup.html({ config, schemeStatus: { 'de-umlegung-developed': false, 'de-umlegung-new': true, 'nl-kavelruil': false },
+            schemeCheck: { ok: false, lines: [{ ok: false, text: 'Ana gives up 60% of their land; the cap is 10%.' }, { ok: true, text: 'No land goes to a proposer.' }] } });
+        expect(html).toContain('<option value="de-umlegung-developed" selected data-scheme-met="false">Germany — Umlegung, already developed land — not met by this plan</option>');
+        expect(html).toContain('<option value="de-umlegung-new" data-scheme-met="true">Germany — Umlegung, land developed for the first time</option>');
+        expect(html).toContain('<option value="nl-kavelruil" data-scheme-met="false">Netherlands — voluntary urban land exchange (kavelruil) — not met by this plan</option>');
+        // A scheme the host did not judge is offered as before.
+        expect(html).toContain('<option value="tr-article-18">Turkey — article 18 readjustment</option>');
+        expect(html).toContain('<ul class="approval-setup__check" data-approval-scheme-check data-approval-scheme-ok="false">');
+        expect(html).toContain('<li data-check-ok="false">Ana gives up 60% of their land; the cap is 10%.</li>');
+        expect(html).toContain('<li data-check-ok="true">No land goes to a proposer.</li>');
+        expect(html).toContain('This plan against the scheme');
+        const plain = Setup.html({ config });
+        expect(plain).not.toContain('data-scheme-met'); expect(plain).not.toContain('data-approval-scheme-check');
+    });
+});
+
 describe('agreement scheme presentation', () => {
     it('shows one experimental pill beside the rules control and keeps scheme facts and sources without disclaimers', () => {
         const config = Setup.withPolicyFromForm(form({ '[data-approval-regime]': 'de-umlegung-new' }), null);
@@ -173,5 +192,65 @@ describe('agreement scheme presentation', () => {
         expect(html.indexOf('data-approval-experimental')).toBeLessThan(html.indexOf('<select data-approval-rule data-approval-regime>'));
         expect(html).toContain('Germany — Umlegung'); expect(html).toContain('gesetze-im-internet.de');
         expect(html).not.toMatch(/Research template|Comparative research|not legal advice|approval-setup__caveat|approval-setup__research/);
+    });
+});
+
+describe('the scheme guide', () => {
+    const regimes = () => require('../../frontend/js/proposals/approval-regimes.js');
+    it('explains a scheme from its own data: who decides, the distribution with a schematic, the setup steps and the sources', () => {
+        const html = Setup.schemeGuideHtml({ template: regimes().latest('de-umlegung-developed') });
+        expect(html).toContain('data-scheme-guide="de-umlegung-developed"');
+        expect(html).toContain('Rules checked 2026-10-28');
+        expect(html).toContain('Configured approval rules require only the Umlegung authority’s decision on the readjustment plan.');
+        expect(html).toContain('Owners are heard; the authority decides.');
+        expect(html).toContain('Distributed by area, no owner gives up more than 10% of their land.');
+        // The schematic: three example owners above, the public take and the owners' plots below.
+        expect(html).toContain('<svg class="scheme-guide__svg"');
+        expect(html.match(/scheme-guide__slice--owner-/g)).toHaveLength(6);
+        expect(html).toContain('scheme-guide__slice--public');
+        expect(html).toContain('Each owner gives up at most 10% of their land for public use without compensation and gets a plot back');
+        expect(html).toContain('Three example owners');
+        expect(html).toContain('Rules › Land contribution: the slider stops at 10%');
+        expect(html).toContain('Proposer is not available under this scheme.');
+        expect(html).toContain('Rules › Authority: an id for the Umlegung authority’s decision on the readjustment plan');
+        expect(html).toContain('gesetze-im-internet.de');
+        expect(html).not.toContain('This agreement against the scheme');
+        // A voluntary exchange: no public slice, every party agrees, the party count.
+        const exchange = Setup.schemeGuideHtml({ template: regimes().latest('nl-kavelruil') });
+        expect(exchange).not.toContain('scheme-guide__slice--public');
+        expect(exchange).toContain('The parties agree what each gets back; the scheme sets no cap on public land');
+        expect(exchange).toContain('At least 3 parties bring land in.');
+        expect(exchange).toContain('Rules › Compensation: by area (a rate per m²) or by value');
+        // A value scheme with leases in its tests: the rights file and the value compensation step.
+        const japan = Setup.schemeGuideHtml({ template: regimes().latest('jp-association') });
+        expect(japan).toContain('Rules › Compensation: “Balance land value differences in money”');
+        expect(japan).toContain('Parcel ownership rights: import a rights file (parcel-rights/v2) that lists every lease and its holders and which holders are public bodies.');
+        expect(japan).toContain('at least 2/3 of the private owners');
+        expect(Setup.schemeGuideHtml({})).toBe('');
+    });
+
+    it('shows the host’s agreement against the scheme, with the parties and what would meet a broken rule', () => {
+        const template = regimes().latest('de-umlegung-developed');
+        const ledger = { valued: false, parties: [
+            { ownerKey: 'o-a', displayName: 'Ana', contributedM2: 1000, assignedM2: 400, areaUnknown: false },
+            { ownerKey: 'o-b', displayName: 'Ben', contributedM2: 500, assignedM2: 500, areaUnknown: false }
+        ] };
+        const rules = [{ kind: 'cap', per: 'owner', limit: { numerator: 1, denominator: 10 }, worst: { ownerKey: 'o-a', given: 0.6 }, ok: false }, { kind: 'proposer', areaM2: 0, ok: true }];
+        const html = Setup.schemeGuideHtml({ template, ledger, rules, check: { ok: false, lines: [{ ok: false, text: 'Ana gives up 60% of their land; the cap is 10%.' }, { ok: true, text: 'No land goes to a proposer.' }] } });
+        expect(html).toContain('<li data-check-ok="false">Ana gives up 60% of their land; the cap is 10%.</li>');
+        expect(html).toContain('<th scope="row">Ana</th>');
+        expect(html).toContain('<td>60%</td>'); expect(html).toContain('<td>0%</td>');
+        // Ana put in 1000 and may give up 100: 500 m² have to come back.
+        expect(html).toContain('In Output parcels, give Ana at least 500 m² more land back, or lower the Land contribution');
+        // The real parties replace the example owners in the schematic, largest first.
+        expect(html.match(/scheme-guide__slice--owner-/g)).toHaveLength(4);
+        expect(html).not.toContain('Three example owners');
+        expect(html.indexOf('>Ana<')).toBeLessThan(html.indexOf('>Ben<'));
+        const value = Setup.schemeGuideHtml({ template: regimes().latest('jp-association'), ledger: { ...ledger, valued: true, parties: ledger.parties.map(party => ({ ...party, contributedValueCents: 1000000, assignedValueCents: 2500000 })) },
+            rules: [{ kind: 'basis', required: 'value', actual: 'area', ok: false }], check: { ok: false, lines: [{ ok: false, text: 'basis' }] }, currency: 'EUR' });
+        expect(value).toContain('10000 EUR'); expect(value).toContain('25000 EUR');
+        expect(value).toContain('set Compensation to “Balance land value differences in money”');
+        const few = Setup.schemeGuideHtml({ template: regimes().latest('nl-kavelruil'), ledger, rules: [{ kind: 'parties', required: 3, actual: 2, ok: false }], check: { ok: false, lines: [{ ok: false, text: 'few' }] } });
+        expect(few).toContain('2 parties bring land in and this scheme needs 3');
     });
 });

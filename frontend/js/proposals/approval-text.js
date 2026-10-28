@@ -123,6 +123,15 @@
                     ? t('proposalApproval.regime.capOwnerWhenArea', 'Distributed by area, no owner gives up more than {{percent}}% of their land.', { percent })
                     : t('proposalApproval.regime.capOwner', 'No owner gives up more than {{percent}}% of their land.', { percent }));
         }
+        const gain = allocation.valueGain;
+        if (gain) {
+            const percent = Math.round((gain.numerator / gain.denominator) * 1000) / 10;
+            lines.push(percent >= 100
+                ? t('proposalApproval.regime.valueGainAll', 'Distributed by value, each owner is made whole to the value they put in; the whole value gain is settled in money.')
+                : t('proposalApproval.regime.valueGainShare', 'Distributed by value, {{percent}}% of each owner’s value gain is settled in money.', { percent }));
+        }
+        if (template?.minParties > 1) lines.push(t('proposalApproval.regime.minParties', 'At least {{count}} parties bring land in.', { count: template.minParties }));
+        if (template?.family === 'authority-led') lines.push(t('proposalApproval.regime.noProposer', 'Land returns to its owners or goes to public use; a proposer cannot acquire it.'));
         return lines;
     }
 
@@ -134,6 +143,15 @@
                 return rule.ok ? t('proposalApproval.regime.check.basisOk', 'Distributed by {{basis}}, as the scheme requires.', { basis: t(`proposalApproval.regime.basis.${rule.required}`, rule.required === 'area' ? 'surface area' : 'land value') })
                     : t('proposalApproval.regime.check.basisWrong', 'The scheme distributes by {{basis}}, but this plan distributes by {{actual}}.', {
                         basis: t(`proposalApproval.regime.basis.${rule.required}`, rule.required === 'area' ? 'surface area' : 'land value'), actual: t(`proposalApproval.regime.basis.${rule.actual}`, rule.actual === 'area' ? 'surface area' : 'land value') });
+            }
+            if (rule.kind === 'parties') {
+                const params = { actual: rule.actual, required: rule.required };
+                return rule.ok ? t('proposalApproval.regime.check.partiesOk', '{{actual}} parties bring land in; the scheme needs at least {{required}}.', params)
+                    : t('proposalApproval.regime.check.partiesFew', 'Only {{actual}} bring land in; the scheme needs at least {{required}} parties.', params);
+            }
+            if (rule.kind === 'proposer') {
+                return rule.ok ? t('proposalApproval.regime.check.proposerNone', 'No land goes to a proposer.')
+                    : t('proposalApproval.regime.check.proposerOver', '{{area}} m² would go to a proposer; under this scheme land returns to its owners or goes to public use.', { area: Math.round(rule.areaM2) });
             }
             const limit = percent(rule.limit.numerator / rule.limit.denominator);
             if (rule.per === 'owner') {

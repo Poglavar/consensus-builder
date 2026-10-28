@@ -239,12 +239,20 @@ describe('allocation and money', () => {
         const terms = Dialog.termsOf(stored);
         expect(terms).toEqual({
             allocations: { 'piece1-sha256:aa': 'party:agent-ben', 'piece1-sha256:gone': 'public', 'piece1-sha256:bb': 'party:agent-left' },
-            cash: { 'agent-ana': '-12.5', 'agent-left': '5' }
+            cash: { 'agent-ana': '-12.5', 'agent-left': '5' },
+            valuation: { inputs: {}, outputs: {} }
         });
         expect(Dialog.keptTerms({ ...terms, cash: { ...terms.cash, 'agent-ben': 'invalid' } }, land)).toEqual({
             allocations: { 'piece1-sha256:aa': 'party:agent-ben' },
-            cash: { 'agent-ana': '-12.5' }
+            cash: { 'agent-ana': '-12.5' },
+            valuation: { inputs: {}, outputs: {} }
         });
+        // Land values follow the parcels and pieces that still exist, as the allocations do.
+        const valued = Dialog.termsOf({ ...stored, valuation: { inputs: [{ parcelId: 'P-1', unitValueCents: 12000 }, { parcelId: 'P-gone', unitValueCents: 1 }],
+            outputs: [{ output: 'piece1-sha256:aa', unitValueCents: 30000 }, { output: 'piece1-sha256:gone', unitValueCents: 1 }] } });
+        expect(valued.valuation).toEqual({ inputs: { 'P-1': 12000, 'P-gone': 1 }, outputs: { 'piece1-sha256:aa': 30000, 'piece1-sha256:gone': 1 } });
+        const landWithParcel = { ...land, inputs: { ...land.inputs, parcels: [...land.inputs.parcels, { parcelId: 'P-1', areaM2: 10, holders: [] }] } };
+        expect(Dialog.keptTerms(valued, landWithParcel).valuation).toEqual({ inputs: { 'P-1': 12000 }, outputs: { 'piece1-sha256:aa': 30000 } });
     });
 
     it('words the sponsor line of the real money schedule', () => {
