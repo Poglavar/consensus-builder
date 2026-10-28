@@ -762,7 +762,9 @@
                 peek: id => peekFrom(draft.data, id),
                 getMany: (ids, query) => getManyFrom(draft.data, ids, query),
                 list: () => Array.from(draft.data.byId.values(), clone),
-                snapshot: () => ({ revision: committed.revision + 1, parcelIds: Array.from(draft.data.byId.keys()) })
+                snapshot: () => ({ revision: committed.revision + 1, parcelIds: Array.from(draft.data.byId.keys()) }),
+                // The revision this draft commits as, without copying the parcel ids.
+                revision: () => committed.revision + 1
             });
         }
 
@@ -933,6 +935,8 @@
                     featureCount: draft.data.byId.size,
                     parcelIds: Array.from(draft.data.byId.keys())
                 }),
+                // The draft's revision alone, without copying the parcel ids.
+                revision: () => (assertActive(draft), draft.data.revision),
                 // `options.slicer` (the boot replay's) is handed to every participant's prepare.
                 async prepare(options = {}) {
                     assertActive(draft);
@@ -1039,6 +1043,7 @@
             participants.add(participant);
             return () => participants.delete(participant);
         }
+        // Revision, feature count and every parcel id (a copy): for callers that need the ids.
         function snapshot() {
             return {
                 revision: committed.revision,
@@ -1046,6 +1051,8 @@
                 parcelIds: Array.from(committed.byId.keys())
             };
         }
+        // The committed revision alone, O(1): memo keys read this, not snapshot().
+        function revision() { return committed.revision; }
         function diagnostics() { return { ...metrics }; }
 
         return Object.freeze({
@@ -1066,6 +1073,7 @@
             subscribe,
             addCommitParticipant,
             snapshot,
+            revision,
             diagnostics,
             featureId,
             explicitCadastreIds,

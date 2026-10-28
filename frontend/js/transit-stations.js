@@ -1177,7 +1177,7 @@
     }
 
     function placementParcelLayerVersion() {
-        const value = global.LiveParcelFabric?.snapshot?.().revision;
+        const value = global.LiveParcelFabric?.revision?.();
         return Number.isFinite(Number(value)) ? Number(value) : null;
     }
 

@@ -15,28 +15,30 @@
 
     function currentFabricScope() {
         const city = global.CityConfigManager?.getCurrentCityId?.() || 'default';
-        const revision = global.LiveParcelFabric?.snapshot?.().revision ?? 'none';
+        const revision = global.LiveParcelFabric?.revision?.() ?? 'none';
         return `${city}|${revision}`;
     }
 
-    function scopedFootprintKey(key) {
+    // The current scope; a changed scope empties the cache. A loop over proposals takes it
+    // once per pass and hands it to footprintFor.
+    function footprintScope() {
         const scope = currentFabricScope();
         if (scope !== footprintCacheScope) {
             footprintCache.clear();
             footprintCacheScope = scope;
         }
-        return `${scope}\u0000${key}`;
+        return scope;
     }
 
     function stampOf(proposal) {
         return `${proposal.updatedAt || ''}|${proposal.appliedAt || ''}`;
     }
 
-    function footprintFor(proposal, key) {
+    function footprintFor(proposal, key, scope = footprintScope()) {
         const planOrder = global.__planOrder;
         if (!planOrder || typeof planOrder.footprintOf !== 'function') return null;
         const stamp = stampOf(proposal);
-        const cacheKey = scopedFootprintKey(key);
+        const cacheKey = `${scope}\u0000${key}`;
         const cached = footprintCache.get(cacheKey);
         if (cached && cached.stamp === stamp) return cached;
         let footprint = null;
@@ -69,11 +71,12 @@
         const proposals = [];
         const storage = global.proposalStorage;
         const all = (storage && typeof storage.getAllProposals === 'function') ? storage.getAllProposals() : [];
+        const scope = footprintScope();
         all.forEach(proposal => {
             if (typeof global.isProposalApplied === 'function' && !global.isProposalApplied(proposal)) return;
             const key = (typeof global.getProposalKey === 'function' && global.getProposalKey(proposal)) || proposal.proposalId;
             if (!key) return;
-            const cached = footprintFor(proposal, String(key));
+            const cached = footprintFor(proposal, String(key), scope);
             if (!cached || !cached.footprint) return;
             if (!bboxContains(cached.bbox, latlng.lng, latlng.lat)) return;
             proposals.push({ key: String(key), proposal, footprint: cached.footprint });

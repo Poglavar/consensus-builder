@@ -426,7 +426,7 @@
         boxesById.clear();
         replacements.forEach((layer, id) => addPresented(id, layer));
         city = currentCity();
-        revision = fabric.snapshot().revision;
+        revision = fabric.revision();
         addGroupToMapIfAppropriate();
         restoreSelectionStyles();
         return true;

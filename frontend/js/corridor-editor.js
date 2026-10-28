@@ -43,7 +43,7 @@ const CORRIDOR_CLEARANCE_DISPLAY_CAP = 30;
 
 function corridorEditorFabricScope() {
     const city = window.CityConfigManager?.getCurrentCityId?.() || 'default';
-    const revision = window.LiveParcelFabric?.snapshot?.().revision ?? 'none';
+    const revision = window.LiveParcelFabric?.revision?.() ?? 'none';
     return `${city}|${revision}`;
 }
 

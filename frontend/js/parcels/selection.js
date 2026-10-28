@@ -7,7 +7,7 @@
 
     function currentPresentationScope() {
         const city = global.CityConfigManager?.getCurrentCityId?.() || 'default';
-        const revision = global.LiveParcelFabric?.snapshot?.().revision ?? 'none';
+        const revision = global.LiveParcelFabric?.revision?.() ?? 'none';
         return `${city}|${revision}`;
     }
 
