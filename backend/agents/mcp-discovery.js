@@ -24,12 +24,12 @@ function schemeCatalogue() {
 const steps = [
     'Find the place with ugt_find_place; choose a candidate instead of guessing a site.',
     'Use ugt_list_sources for the relevant location and abstraction. Coverage, source identity and missing evidence stay explicit.',
-    'Create designs privately, then ugt_draft_plan with their references and a title. A named plan does not need agreement terms.',
+    'Work in a plan: it is your applied map. Every draft and design edit takes plan (omit it once to start one, or start one from existing designs with ugt_draft_plan) and returns the new plan revision; pass that draftRef to the next call. A named plan does not need agreement terms.',
+    'Read each result’s placement and consequences and tell the person: designs it would take off the plan (refused until they agree, then retry with displace), roads it joins, ground roads cut.',
     'Inspect objects with ugt_inspect_plan, then edit explicit refs with expectedCid. Retain the prior draftRef for undo.',
     'Portable ugt-plan-file/v1 JSON can be passed as plan to ugt_get_plan, ugt_inspect_plan and ugt_edit_plan. It embeds canonical plan/v1 and design/v1 content; importing conveys no publication or consent.',
     'Validate and compare the result, render a preview, and show its URL. An unavailable source is not evidence of empty land.',
     'When publication is authorized, publish the exact reviewed reference and expectedCid. Return the verified permanent URL.',
-    'Name the roads a new or edited road meets in its corridors; neighbours whose junctions change return as revisedCorridors. Replace them in the plan with ugt_edit_plan.',
     'Use agreement tools only for allocations and decision rules. An agreement uses its named plan exactly and revises no design.'
 ];
 export const MCP_FEATURES = Object.freeze([
@@ -47,8 +47,8 @@ export const MCP_FEATURES = Object.freeze([
         furnitureKinds: FurnitureModels.KINDS_BY_STRUCTURE },
     { feature: 'parcel-layout', create: 'ugt_draft_parcel_layout', algorithms: ['equal', 'schelling'] },
     { feature: 'corridors', create: ['ugt_draft_road', 'ugt_draft_track'],
-        junctions: { tools: ['ugt_draft_road', 'ugt_draft_track', 'ugt_import_design', 'ugt_edit_design', 'ugt_modify_design'], input: 'corridors', output: ['revisedCorridors', 'changes'],
-            rule: 'Same-level crossings and touches with the named road/track designs become junctions on both, as in the map editor. A changed neighbour is a new revision with origin.cid; replace it in the plan with ugt_edit_plan. An edit with corridors re-derives its junctions against exactly those roads.' } },
+        junctions: { tools: ['ugt_draft_road', 'ugt_draft_track', 'ugt_import_design', 'ugt_edit_design', 'ugt_modify_design'], input: 'plan', output: ['consequences.junctions'],
+            rule: 'Same-level crossings and touches with the plan’s roads and tracks become junctions on both, as in the map editor. A changed neighbour is replaced in the returned plan revision by a new revision with origin.cid.' } },
     { feature: 'stations', create: 'ugt_draft_station', kinds: ['bus', 'tram', 'underground', 'elevated'],
         categories: { road: ['bus'], track: ['tram', 'elevated', 'underground'] },
         trackPlacement: { ground: 'tram', elevated: 'elevated', underground: 'underground' } },

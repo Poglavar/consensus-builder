@@ -1,11 +1,10 @@
 // MCP road drafts and edits must commit the same shared junctions and land as the map editor.
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 import { appTurf as turf, intentDesign, corridorRuntime } from '../agents/mcp-geometry.js';
 import { joinEditedRoad, joinNewRoads } from '../agents/mcp-road-network.js';
 import { cidOfObject, designObject } from '../agents/agreement-objects.js';
-import { createMcpDraftTools } from '../agents/mcp-drafts.js';
-import { createMcpAssetTools } from '../agents/mcp-assets.js';
+import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { resultSchemaFor } from '../agents/mcp-contracts.js';
 import { markUntrusted } from '../agents/mcp-results.js';
 
@@ -154,61 +153,70 @@ describe('MCP road junctions on edit', () => {
     });
 });
 
-describe('MCP road tools join the named corridors', () => {
-    const read = { siteOfDesign: content => content.site, request: vi.fn(async path => {
-        if (path === '/designs/binding') return { parcelSourceId: 'ground', binding: { coverage: 'complete', unknownM2: 0, parcels: [] } };
-        throw new Error('Unexpected request');
-    }) };
-    const drafts = createMcpDraftTools({ read, appOrigin: 'https://app.example' });
-    const draft = (points, title, corridors) => drafts.draftRoad({ city: 'birmingham', points, title, width: 7.5, authoredAt: time, ...(corridors ? { corridors } : {}) });
+describe('MCP authoring tools place designs into the working plan', () => {
+    const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {}, fetchImpl: async url => {
+        if (new URL(url).pathname === '/designs/binding') return Response.json({ parcelSourceId: 'ground', binding: { coverage: 'complete', unknownM2: 0, parcels: [] } });
+        throw new Error(`Unexpected request ${url}`);
+    } });
+    const draft = (points, title, plan) => tools.draftRoad({ city: 'birmingham', points, title, width: 7.5, authoredAt: time, ...(plan ? { plan } : {}) });
     const checked = (tool, answer) => resultSchemaFor(tool).parse(markUntrusted(answer));
+    const members = answer => answer.plan.designs.map(member => member.cid);
 
-    it('ugt_draft_road returns the joined road, its revised neighbour and the change', async () => {
-        const spine = (await draft(spinePoints, 'Spine Street')).design;
-        const answer = await draft(gardenPoints, 'Garden Street', [spine]);
+    it('a first draft starts a private plan; a road drafted into it joins the plan road it crosses', async () => {
+        const first = await draft(spinePoints, 'Spine Street');
+        expect(first.placement).toEqual({ status: 'placed' });
+        expect(members(first)).toEqual([first.cid]);
+        expect(first.plan.plan.title).toBe('Spine Street');
+        const answer = await draft(gardenPoints, 'Garden Street', first.plan);
         expect(view(answer.design).junctions).toHaveLength(1);
-        const [neighbour] = answer.revisedCorridors;
-        expect(neighbour.design.origin).toEqual({ cid: cidOfObject(spine) });
-        expect(view(neighbour.design).junctions).toHaveLength(1);
-        expect(neighbour.cid).toBe(cidOfObject(neighbour.design));
-        expect(answer.changes).toEqual([{ type: 'road-junctions', beforeCid: cidOfObject(spine), afterCid: neighbour.cid, title: 'Spine Street' }]);
-        expect(checked('ugt_draft_road', answer).revisedCorridors[0].untrusted.design.origin.cid).toBe(cidOfObject(spine));
-        const apart = await draft([[-1.89, 52.47], [-1.889, 52.47]], 'Far Street', [spine]);
-        expect(apart).toMatchObject({ changes: [], revisedCorridors: [] });
-        const park = (await drafts.draftSpace({ city: 'birmingham', outline: spine.site, spaceKind: 'park', authoredAt: time })).design;
-        await expect(draft(gardenPoints, 'Garden Street', [park])).rejects.toMatchObject({ code: 'corridor-road-required' });
+        const [junction] = answer.consequences.junctions;
+        expect(junction).toMatchObject({ beforeCid: first.cid, title: 'Spine Street' });
+        expect(members(answer)).toEqual(expect.arrayContaining([junction.afterCid, answer.cid]));
+        expect(members(answer)).not.toContain(first.cid);
+        expect(answer.plan.previousCid).toBe(first.plan.cid);
+        expect(answer.changes).toBeUndefined();
+        checked('ugt_draft_road', answer);
+        const apart = await draft([[-1.89, 52.47], [-1.889, 52.47]], 'Far Street', answer.plan);
+        expect(apart.consequences).toEqual({ removed: [], junctions: [], cuts: [] });
     });
 
-    it('ugt_import_design joins imported roads to the named corridors and to each other', async () => {
-        const spine = (await draft(spinePoints, 'Spine Street')).design;
-        const tools = createMcpAssetTools({ read, drafts, appOrigin: 'https://app.example', apiBase: 'https://api.example' });
+    it('refuses a building on a plan road until the person agrees to displace it', async () => {
+        const street = await draft(spinePoints, 'Spine Street');
+        const outline = turf.bboxPolygon([-1.88012, 52.47960, -1.87990, 52.47980]).geometry;
+        const house = { city: 'birmingham', outline, typology: 'freeform', height: 12, title: 'Corner house', authoredAt: later };
+        const refused = await tools.draftBuilding({ ...house, plan: street.plan });
+        expect(refused.placement).toMatchObject({ status: 'refused', code: 'ground-occupied', conflicts: [expect.objectContaining({ cid: street.cid })] });
+        expect(refused.plan).toEqual({ cid: street.plan.cid, status: 'unchanged' });
+        checked('ugt_draft_building', refused);
+        const placed = await tools.draftBuilding({ ...house, plan: street.plan, displace: true });
+        expect(placed.consequences.removed.map(member => member.cid)).toEqual([street.cid]);
+        expect(members(placed)).toEqual([placed.cid]);
+    });
+
+    it('ugt_import_design places imported roads in turn: joined to the plan road and to each other', async () => {
+        const street = await draft(spinePoints, 'Spine Street');
         const line = (coordinates, name) => ({ type: 'Feature', properties: { name, highway: 'residential' }, geometry: { type: 'LineString', coordinates } });
-        const answer = await tools.importDesign({ format: 'geojson', city: 'birmingham', authoredAt: time, corridors: [spine],
+        const answer = await tools.importDesign({ format: 'geojson', city: 'birmingham', authoredAt: time, plan: street.plan,
             data: { type: 'FeatureCollection', features: [line(gardenPoints, 'Garden Street'), line(northPoints, 'North Street')] } });
         expect(answer.designs.map(row => view(row.design).junctions.length)).toEqual([1, 1]);
-        expect(answer.changes).toHaveLength(1);
-        expect(view(answer.revisedCorridors[0].design).junctions).toHaveLength(2);
-        expect(answer.revisedCorridors[0].design.origin).toEqual({ cid: cidOfObject(spine) });
+        const spine = answer.plan.designs.find(member => member.content.title === 'Spine Street');
+        expect(view(spine.content).junctions).toHaveLength(2);
+        expect(answer.plan.designs).toHaveLength(3);
         checked('ugt_import_design', answer);
     });
 
-    it('ugt_edit_design with corridors joins a road moved onto a named neighbour; without them it leaves junctions alone', async () => {
-        const spine = (await draft(spinePoints, 'Spine Street')).design;
-        const north = (await draft([[-1.8797, 52.480216], [-1.8794034296804665, 52.48021570313436]], 'North Street', [spine])).design;
+    it('ugt_edit_design replaces the edited member and re-derives its junctions against the plan roads', async () => {
+        const street = await draft(spinePoints, 'Spine Street');
+        const north = await draft([[-1.8797, 52.480216], [-1.8794034296804665, 52.48021570313436]], 'North Street', street.plan);
+        expect(north.consequences.junctions).toEqual([]);
         const edits = [{ op: 'replace', path: '/roadProposal/definition/osm/elements/0/lon', value: northPoints[0][0] },
             { op: 'replace', path: '/roadProposal/definition/osm/elements/0/lat', value: northPoints[0][1] }];
-        const plain = await drafts.editDesign({ design: north, expectedCid: cidOfObject(north), edits });
-        expect(view(plain.design).junctions).toBeUndefined();
-        expect(plain.revisedCorridors).toBeUndefined();
-        const answer = await drafts.editDesign({ design: north, expectedCid: cidOfObject(north), edits, corridors: [spine] });
+        const answer = await tools.editDesign({ design: north.design, expectedCid: north.cid, edits, plan: north.plan });
         expect(view(answer.design).junctions).toHaveLength(1);
-        expect(answer.design.origin).toEqual({ cid: cidOfObject(north) });
-        expect(answer.revisedCorridors[0].design.origin).toEqual({ cid: cidOfObject(spine) });
-        expect(answer.changes).toHaveLength(1);
+        expect(answer.design.origin).toEqual({ cid: north.cid });
+        expect(answer.consequences.junctions).toEqual([expect.objectContaining({ beforeCid: street.cid })]);
+        expect(members(answer)).not.toContain(north.cid);
+        expect(members(answer)).toHaveLength(2);
         checked('ugt_edit_design', answer);
-        const park = { city: 'birmingham', outline: spine.site, spaceKind: 'park', authoredAt: time };
-        const space = (await drafts.draftSpace(park)).design;
-        await expect(drafts.modifyDesign({ design: space, changes: [{ type: 'retitle', value: 'Park' }], corridors: [spine] }))
-            .rejects.toMatchObject({ code: 'corridors-road-only' });
     });
 });

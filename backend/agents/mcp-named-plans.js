@@ -7,6 +7,7 @@ import { validateTrackDesign } from './mcp-constructors.js';
 import { previewArtifact } from './mcp-preview.js';
 import { trustedMetadata } from './mcp-results.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
+import { placeInPlan } from './mcp-plan-placement.js';
 const require = createRequire(import.meta.url);
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const PlanFile = require('../../frontend/js/plan-file.js');
@@ -98,6 +99,31 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         try { plan = PlanRecord.create(title, designs.map(row => row.cid), view || defaultView(designs)); }
         catch (error) { fail('invalid-plan', error.message); }
         return privateResult(plan, designs);
+    }
+    // An agent's working plan (docs/agent-working-plan.md): authored designs are placed in turn with the
+    // browser's apply rules. Without a plan they start a new private one. A refusal places nothing and
+    // leaves the plan as it was, so the agent can ask the person before anything leaves the plan.
+    // designs: [{ cid, content, parcelSourceId, before? }], before naming the member an edit revises.
+    async function placeDesigns({ plan: value, designs: incoming, displace = false }) {
+        const original = value === undefined || value === null ? null : await resolvePlan(value);
+        let members = original ? original.designs : [];
+        const placed = [], consequences = { removed: [], junctions: [], cuts: [] };
+        for (const { before = null, ...row } of incoming) {
+            const member = before && members.some(other => other.cid === before) ? before : null;
+            const result = placeInPlan({ members, incoming: row, before: member, displace });
+            if (result.placement.status === 'refused') {
+                return { placement: { ...result.placement, designCid: row.cid, designTitle: row.content.title || null },
+                    designs: [], consequences: { removed: [], junctions: [], cuts: [] },
+                    plan: original ? { cid: original.cid, status: 'unchanged' } : null };
+            }
+            members = result.members; placed.push(result.design);
+            for (const key of Object.keys(consequences)) consequences[key].push(...result.consequences[key]);
+        }
+        let plan;
+        try { plan = PlanRecord.create(original?.plan.title || incoming[0]?.content.title || 'Working plan', members.map(row => row.cid), original?.plan.view || defaultView(members)); }
+        catch (error) { fail('invalid-plan', error.message); }
+        return { placement: { status: 'placed' }, designs: placed, consequences,
+            plan: await privateResult(plan, members, original ? { previousCid: original.cid } : {}) };
     }
     async function getPlan({ plan: value }) {
         const resolved = await resolvePlan(value);
@@ -264,5 +290,5 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
                     : { tool: 'ugt_publish_plan', arguments: { plan: value, expectedCid, confirm }, action: 'Retry this same confirmed immutable named plan revision; published members retain their CIDs.' } });
         }
     }
-    return { draftPlan, getPlan, inspectPlan, editPlan, publishPlan, resolvePlan };
+    return { draftPlan, getPlan, inspectPlan, editPlan, publishPlan, resolvePlan, placeDesigns };
 }

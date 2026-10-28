@@ -735,6 +735,30 @@ export function createUrbanGameTheoryTools({
     agreements.setPlanResolver(namedPlanTools.resolvePlan);
     Object.assign(actions, namedPlanTools);
     Object.assign(actions, createMcpAssetTools({ read: companion, drafts, plans: actions, appOrigin, apiBase, fetchImpl, resolveDraftReference }));
+    // Every authored design is placed in the agent's working plan, its applied map (docs/agent-working-plan.md).
+    // The result keeps the design's own fields and adds the plan revision, the placement and its consequences.
+    const placing = (method, beforeOf = () => null) => {
+        const author = actions[method];
+        return async ({ plan, displace = false, ...args }) => {
+            const drafted = await author(args);
+            const rows = drafted.designs || [drafted];
+            const placed = await namedPlanTools.placeDesigns({ plan, displace,
+                designs: rows.map(row => ({ cid: row.cid, content: row.design, parcelSourceId: row.parcelSourceId, before: beforeOf(row, args) })) });
+            // Joining the plan's roads can revise the placed design itself; its preview follows the placed revision.
+            const final = placed.placement.status === 'placed'
+                ? await Promise.all(rows.map((row, index) => placed.designs[index].cid === row.cid ? row
+                    : drafts.designResult(placed.designs[index].content, row.parcelSourceId)))
+                : rows;
+            // Junctions are the plan's now: neighbours revised by this placement are in consequences.junctions.
+            const own = ({ changes, revisedCorridors, ...row }) => row;
+            const { designs, ...rest } = own(drafted);
+            return { ...(designs ? { ...rest, designs: final.map(own) } : own(final[0])),
+                plan: placed.plan, placement: placed.placement, consequences: placed.consequences };
+        };
+    };
+    for (const method of ['draftRoad', 'draftTrack', 'draftStation', 'draftBuilding', 'draftSpace', 'draftParcelLayout', 'draftUrbanRule', 'importDesign']) actions[method] = placing(method);
+    actions.editDesign = placing('editDesign', (_row, args) => args.expectedCid);
+    actions.modifyDesign = placing('modifyDesign', row => row.design.origin?.cid || null);
     Object.assign(actions, createMcpValidationTools({ read: companion, drafts, plans: actions }));
     actions.compare = createMcpComparison({ read: companion, resolveDesign: drafts.resolveDesign, plans: actions, appOrigin, resolveDraftReference });
     return actions;

@@ -6,7 +6,6 @@ import { appTurf as turf, corridorRuntime } from './mcp-geometry.js';
 import { cidOfObject, designObject } from './agreement-objects.js';
 import { previewArtifact } from './mcp-preview.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
-import { joinNewRoads } from './mcp-road-network.js';
 import { createMcpNamedPlanTools } from './mcp-named-plans.js';
 import { createPublicSourceFetch, validatePublicSourceUrl } from '../parcels/public-source-fetch.js';
 import { renderMapPreview, PREVIEW_WIDTH, PREVIEW_HEIGHT } from '../thumbnails/map-preview.js';
@@ -207,11 +206,9 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
                 warnings = parsed.warnings || [];
             }
         } else fail('import-format-unsupported', 'Use geojson, osm or opendrive.');
-        // Imported roads are finished in turn, as the site applies them: joined to the named corridors and each other.
-        const joined = joinNewRoads(roads, await drafts.roadCorridors(args.corridors), createdAt);
-        for (const content of joined.designs) designs.push(await privateResult(content, args.parcelSourceId));
-        const { changes, revisedCorridors } = await drafts.junctionResult({}, joined);
-        return { designs, changes, revisedCorridors, publication: 'private', warnings, import: { format, placement, count: designs.length, parser: format === 'geojson' ? 'app-intent-builders+app-corridor-import' : 'app-corridor-import' } };
+        // Imported roads are placed in the working plan in turn (agent-working-plan.md), so they join its roads and each other.
+        for (const content of roads) designs.push(await privateResult(content, args.parcelSourceId));
+        return { designs, publication: 'private', warnings, import: { format, placement, count: designs.length, parser: format === 'geojson' ? 'app-intent-builders+app-corridor-import' : 'app-corridor-import' } };
     }
     async function upload(bytes, args) {
         const uploaded = await read.request('/models', {}, { fileName: args.fileName || 'model.glb', modelData: `data:model/gltf-binary;base64,${bytes.toString('base64')}` });

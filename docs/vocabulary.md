@@ -287,7 +287,7 @@ A shared same-level centerline node and its incident street arms, with the cross
 
 A level is a discrete topology label, with omitted levels treated as ground level zero; it is not an elevation in metres. Editing a participating road refreshes the affected neighbouring arm definitions. Drawing a road that joins an existing one, or editing a participating road, updates a neighbour that is still the author's own unpublished design in place; a published neighbour is immutable, so its updated junction is saved as a new revision that names it by CID and replaces it on the map, and the person is told which roads were revised. The junction owns its shared visible surface, including during drawing previews, so participating road strips do not paint over that surface.
 
-An MCP road draft, import or edit is joined to the road and track designs the agent names, by the same junction planning as the map editor; a named neighbour whose junctions change becomes a revised design naming it by `origin.cid`. Agreement drafting does not revise designs. Reading, applying or comparing published records does not rewrite their topology.
+An MCP road draft, import or edit is joined to the roads and tracks of the agent's working plan, by the same junction planning as the map editor; a neighbour whose junctions change is replaced in the plan by a revised design naming it by `origin.cid`. Agreement drafting does not revise designs. Reading, applying or comparing published records does not rewrite their topology.
 
 ### Map share
 
@@ -326,6 +326,10 @@ Plan stats and Compare plans evaluate one exact saved plan revision, including u
 A private named-plan draft can reference unpublished design revisions carried with it. Publishing that draft first publishes its missing designs, then the named snapshot, and verifies the same content identifiers. Drafting and editing a named plan do not derive agreement ground or reconnect roads.
 
 A plan contains one or more designs and can exist without an agreement. Each agreement references one exact plan revision; any number of agreements may reference that revision. Editing a plan never changes an existing agreement’s subject. Plans and agreements have separate share links. The map click stack orders Agreements above Plans, scoped to the selected exact plan revision, followed by Designs and source objects; it displays the selected level and its nearest available neighbours. Whatever opened the stack, the selected object's own references supply the sections above and below it. Agreements inherit their plan’s extent for inspection; they are not independent spatial picks. Multiple agreements share a selector. The expanded Agreement section contains the full scrollable properties and actions. Its Plan button selects that exact plan in the current view without navigation, importing or applying its designs.
+
+### Working plan
+
+The private plan an MCP agent authors in, standing in for the map a person applies designs to. Each agent draft or design edit is placed into it with the map's explicit Apply rules and makes a new plan revision: roads join its roads, and ground another member holds is refused until the person agrees to displace that member. Without a named plan the first design starts one. A working plan is an ordinary plan; it is not a shared applied state.
 
 ### Plan area
 

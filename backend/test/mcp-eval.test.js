@@ -151,7 +151,7 @@ describe('paid evaluation orchestration without a paid API', () => {
         const design = builder.build({ ...args, kind: 'road' }, { turf });
         const directory = mkdtempSync(join(tmpdir(), 'ugt-mcp-eval-'));
         const service = createMcpHttpService({ env: {}, storeDirectory: join(directory, 'drafts'), factory: () => createUrbanGameTheoryMcpServer({ mode: 'hosted', env: {}, tools: {
-            draftRoad: () => ({ design, cid: cidOfObject(design), takes: ['A'], changes: [], revisedCorridors: [], previewUrl: 'https://app.example/designs?draft=https%3A%2F%2Fmcp.example%2Fmcp%2Fpreviews%2Faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', previewStatus: 'private-link' })
+            draftRoad: () => ({ design, cid: cidOfObject(design), takes: ['A'], plan: null, placement: { status: 'placed' }, consequences: { removed: [], junctions: [], cuts: [] }, previewUrl: 'https://app.example/designs?draft=https%3A%2F%2Fmcp.example%2Fmcp%2Fpreviews%2Faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', previewStatus: 'private-link' })
         } }) });
         service.http.listen(0); await once(service.http, 'listening');
         const requests = [];

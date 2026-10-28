@@ -62,7 +62,7 @@ Each document describes a current contract, an open plan or research. Verificati
 
 **Agents and MCP**
 
-- [MCP design of record](mcp.md), [workflow](mcp-workflow.md), [editing contract](mcp-editing.md), [directory listings](mcp-directory-submissions.md).
+- [MCP design of record](mcp.md), [workflow](mcp-workflow.md), [editing contract](mcp-editing.md), [agent working plan](agent-working-plan.md) (open plan), [directory listings](mcp-directory-submissions.md).
 
 **Hackathon and plans**
 
