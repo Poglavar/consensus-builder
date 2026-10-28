@@ -229,7 +229,12 @@
     // Run a two-operand turf clip on the shared grid, coarsening it if the clipper still gives up.
     // `context` ({ site, parcelId, takeId, proposalId }) names what the clip was for when it fails.
     function clip(operation, a, b, context) {
-        const t = T();
+        return clipWith(T(), operation, a, b, context);
+    }
+
+    // The same clip with the caller's own turf, for modules handed one (parcel-layout-validation.js
+    // also runs under node, where this file cannot resolve turf for itself).
+    function clipWith(t, operation, a, b, context) {
         clipTrouble.clips += 1;
         try {
             return t[operation](onClipGrid(a), onClipGrid(b));
@@ -819,6 +824,7 @@
         // The clipper's own surface, exported so its grid and its failure handling can be tested
         // directly rather than inferred from whatever the arrangement happened to produce.
         clip,
+        clipWith,
         onClipGrid,
         clipHealth,
         // One failure type and one report for every polygon clip in the app (see ClipFailure).

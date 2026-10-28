@@ -1189,6 +1189,25 @@
         return opened;
     }
 
+    // "Courtyard as a parcel" on a block design. A courtyard is private ground split by its
+    // parcels' fences until the layout makes it a parcel of its own: this opens Parcel layout on
+    // the block's parcels with their borders kept and the block's courtyard already carved.
+    async function startCourtyardParcelLayout(proposalKey) {
+        const proposal = global.getProposalByIdOrHash?.(proposalKey) || global.proposalStorage?.getProposal?.(proposalKey);
+        const ids = (proposal?.cadastreParcelIds || []).map(String).filter(Boolean);
+        if (!proposal || !ids.length) {
+            global.updateStatus?.(tDraft('proposalDrafts.design.unavailable', 'This design editor is unavailable.'));
+            return false;
+        }
+        global.pendingCourtyardLayout = { proposalId: String(proposal.proposalId) };
+        let opened = false;
+        try { opened = await startInstantProposalDesign('parcel-layout', ids); } finally {
+            if (!opened) global.pendingCourtyardLayout = null;
+        }
+        return opened;
+    }
+    global.startCourtyardParcelLayout = startCourtyardParcelLayout;
+
     // ---- Site-first creation (js/site-drawing.js, PARCEL-OPTIONAL.md phase 2) ----
     // siteContext: { site (MultiPolygon), toleranceM, binding (preview or server), selectionIds? }. The draft carries the site; its declaration starts as the binding's parcels
     // and is replaced by the server binding at publish.

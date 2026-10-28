@@ -361,6 +361,8 @@ An authored paving or green treatment of the land around proposed buildings, rep
 
 Its visible geometry excludes applied corridor footprints in every map view, including its furniture and planting. The authored surface remains unchanged; removing a corridor restores the surrounding treatment.
 
+A ground surface does not make land shared. Every parcel boundary that crosses its open ground is shown as a fence, along the street edge too but never along a building wall, whether the surface is paved or green. A courtyard is shared ground only when the parcel layout makes it a parcel of its own; a block's **Courtyard as a parcel** action opens that layout with the courtyard carved.
+
 ### Corridor
 
 Transport land and its authored road or track design. Its alignment and cross-section describe its form; its footprint describes the land occupied.

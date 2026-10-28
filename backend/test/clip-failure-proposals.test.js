@@ -80,6 +80,14 @@ const calledFrom = file => () => {
     return !!caller && caller.includes(file);
 };
 
+// The same, for a clip `file` makes through the shared clip (parcel-arrangement.js clip/clipWith):
+// the first caller outside that module.
+const calledThroughClipFrom = file => () => {
+    const frames = String(new Error().stack).split('\n').slice(1)
+        .filter(line => !/clip-failure-proposals\.test\.js/.test(line) && !/parcel-arrangement\.js/.test(line));
+    return !!frames[0] && frames[0].includes(file);
+};
+
 // Fails the call with a ClipFailure from `site`, and counts it there once.
 function expectClipFailure(run, site) {
     const before = siteCount(site);
@@ -437,13 +445,13 @@ describe('apply/parcels.js _applyParcelLayoutProposal', () => {
 
     it('the plots\' union refuses instead of minting a plot back as a remainder', async () => {
         installApplyGlobals();
-        globalThis.turf = failingTurf(['union'], calledFrom('apply/parcels.js'));
+        globalThis.turf = failingTurf(['union'], calledThroughClipFrom('apply/parcels.js'));
         await expectClipRejection(self()._applyParcelLayoutProposal('p-layout', data(), {}), 'apply-parcels.plotsUnion');
     });
 
     it('a remainder that cannot be computed refuses instead of orphaning the owner\'s leftover', async () => {
         installApplyGlobals();
-        globalThis.turf = failingTurf(['difference'], calledFrom('apply/parcels.js'));
+        globalThis.turf = failingTurf(['difference'], calledThroughClipFrom('apply/parcels.js'));
         const failure = await expectClipRejection(self()._applyParcelLayoutProposal('p-layout', data(), {}), 'apply-parcels.remainder');
         expect(failure.parcelId).toBe('HR-A');
     });

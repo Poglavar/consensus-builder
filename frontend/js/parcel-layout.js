@@ -3642,6 +3642,41 @@
         state.openSignature = layoutSignature();
         if (state.historyCtl) state.historyCtl.clear();
         updateUndoAffordance();
+        // Opened from a block's "Courtyard as a parcel" action (proposal-editor-shell.js): the
+        // request is consumed once, whether or not the carve succeeds.
+        const courtyardRequest = window.pendingCourtyardLayout;
+        window.pendingCourtyardLayout = null;
+        if (courtyardRequest) await carveCourtyardOfDesign(courtyardRequest.proposalId);
+        return true;
+    }
+
+    // Keep the existing borders and carve one building design's courtyard out as a plot of its
+    // own. Switching the starting layout is part of opening, not an edit; the carve is (undoable).
+    async function carveCourtyardOfDesign(proposalId) {
+        const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal(String(proposalId)) : null;
+        if (state.algorithm !== 'amend') {
+            const option = getAlgorithmOptionByKey('amend');
+            if (!option || option.disabled) {
+                setStatus(t('parcelLayout.editor.status.courtyardNeedsBorders',
+                    'A courtyard can be carved only while keeping the existing borders.'), 'warning');
+                return false;
+            }
+            setAlgorithmKey('amend');
+            await refreshPreview();
+            state.openSignature = layoutSignature();
+        }
+        let candidate = null;
+        try {
+            [candidate] = proposal ? window.ReparcellizationPlanUtils.buildingCourtyardCandidates([proposal], state.superParcel, turf) : [];
+        } catch (error) {
+            log('error', 'building courtyard lookup failed', error);
+        }
+        if (!candidate) {
+            setStatus(t('reparcellization.modal.status.noBlockProposals',
+                'No building block with an enclosed courtyard overlaps these parcels.'), 'warning');
+            return false;
+        }
+        applyCourtyard(candidate.courtyard, candidate.derivation);
         return true;
     }
 
@@ -3653,7 +3688,7 @@
         applyTranslations, updateSubtitle, getAlgorithmOptions, getAlgorithmOptionByKey, buildAlgorithmRadios,
         plotCountFieldHtml, updateCountField, setStatus, updateActiveModeHint, closeChoicePopup, destroyMap,
         layoutSignature, isDirty, cancelModal, confirmDiscard, closeModal, buildModalStructure, setPlotCount,
-        initMap, formatArea, cadastreIdOf, buildAmendSlices, applyCourtyard, openBuiltFormPicker,
+        initMap, formatArea, cadastreIdOf, buildAmendSlices, applyCourtyard, carveCourtyardOfDesign, openBuiltFormPicker,
         validateLayout, validationText, updateCommitState, updateLegend, inputParcelFeatures,
         inputParcelLabel, setPlotsTab, clearInputHighlight, highlightInputParcel, updateOldPlotsList,
         computeRingCentroidAndAreaXY, getSuperParcelCentroidLngLat, makePlot, hydratePlots,

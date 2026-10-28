@@ -86,3 +86,15 @@ describe('parcel-layout validation', () => {
         expect(codes(validate({ pool: POOL, plots: plots(POOL) }, { turf: {} }))).toEqual(['geometry-unavailable']);
     });
 });
+
+// A real Zagreb block (32 cadastral parcels, Keep existing borders) with its courtyard carved out as a
+// plot of its own. In the page's turf bundle a raw union of these plots produced a three-point sliver
+// ring and refused the layout as "The pool outline could not be checked"; the shared parcel clip's
+// grid handles it. Node's turf build happens to union them either way, so this guards acceptance,
+// not the browser-only failure (verified in the browser, 2026-10-28).
+it('accepts a block layout with its courtyard carved out as a plot', () => {
+    const layout = require('./fixtures/parcel-layout-courtyard-carve.json');
+    const result = validate(layout, { turf });
+    expect(result.errors.map(error => error.code)).not.toContain('invalid-pool');
+    expect(result.metrics.poolAreaM2).toBeGreaterThan(0);
+});

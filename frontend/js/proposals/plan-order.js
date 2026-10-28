@@ -102,9 +102,13 @@
         if (!polys.length) return { footprint: null, complete };
         // Every part or none: keeping "what we have" after a failed union is a partial footprint
         // that looks whole.
+        // The shared parcel clip (parcel-arrangement.js, loaded later and read at call time): a raw
+        // union of a layout's plots with a carved courtyard left a three-point sliver ring and threw.
+        const arrangement = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
         let acc = polys[0];
         for (let i = 1; i < polys.length; i++) {
-            const next = t.union(acc, polys[i]);
+            const next = arrangement.clipWith(t, 'union', acc, polys[i], { site: 'plan-order.footprint' });
             if (!next) throw new Error('plan-order: the footprint union of a proposal failed');
             acc = next;
         }

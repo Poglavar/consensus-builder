@@ -496,6 +496,21 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     `
         : '';
 
+    // A block with an enclosed courtyard: its parcels' ground stays private (fenced) until the
+    // parcel layout makes the courtyard a parcel of its own. This is the shortcut to that layout.
+    const courtyardOf = window.ReparcellizationPlanUtils?.deriveCourtyardFromFootprint;
+    const courtyardLayoutButtonHtml = (proposalKey && geometryEditable && courtyardOf
+        && typeof window.startCourtyardParcelLayout === 'function'
+        && courtyardOf((fullProposal || proposal)?.geometry?.ruleMassing))
+        ? `
+        <button type="button" class="btn btn-courtyard-layout"
+            onclick="BusyControl.track(this, () => startCourtyardParcelLayout(${inlineJsArg(proposalKey)}))"
+            title="${safeAgentText(tProposal('panel.proposal.actions.courtyardParcelHint', 'Parcels keep their own fenced ground. Lay out the courtyard as a parcel of its own to share it.'))}">
+            <i class="fas fa-vector-square" aria-hidden="true"></i> ${tProposal('panel.proposal.actions.courtyardParcel', 'Courtyard as a parcel')}
+        </button>
+    `
+        : '';
+
     // Before / after (dividers.md, M2): the ground without this proposal beside the map with it.
     // Only an applied record with a footprint has an "after" to show.
     const beforeAfter = (typeof window !== 'undefined') ? window.ProposalBeforeAfter : null;
@@ -540,7 +555,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         </button>
     `
         : '';
-    const additionalActionsHtml = crossSectionButtonHtml + editGeometryButtonHtml + convertToFreeformButtonHtml + compareButtonHtml + driveButtonHtml;
+    const additionalActionsHtml = crossSectionButtonHtml + editGeometryButtonHtml + courtyardLayoutButtonHtml + convertToFreeformButtonHtml + compareButtonHtml + driveButtonHtml;
     // Map actions remain available in the compact card and the reader. Details is an explicit
     // transition into the reader; Fork and the contextual design editors keep distinct labels.
     const primaryActionsHtml = `
