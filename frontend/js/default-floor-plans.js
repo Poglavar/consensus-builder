@@ -183,6 +183,30 @@
     }
     const midpoint = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
 
+    // Where neighbours stand right outside an edge, as merged [s0, s1] metre runs along it from `a`.
+    // A shared wall rarely covers a whole edge, so windows and entrances keep to the free stretches.
+    function partyRunsOf(t, a, b, d, inward, lengthM, neighboursM) {
+        const out = [-inward[0], -inward[1]];
+        const band = t.polygon([[add(a, out, 0.05), add(b, out, 0.05), add(b, out, 0.7), add(a, out, 0.7), add(a, out, 0.05)]]);
+        const runs = [];
+        for (const neighbour of neighboursM) {
+            for (const rings of polygonsOf(intersectOrNull(t, band, neighbour))) {
+                let s0 = Infinity, s1 = -Infinity;
+                for (const p of rings[0]) { const s = (p[0] - a[0]) * d[0] + (p[1] - a[1]) * d[1]; s0 = Math.min(s0, s); s1 = Math.max(s1, s); }
+                s0 = Math.max(0, s0); s1 = Math.min(lengthM, s1);
+                if (s1 - s0 > 0.05) runs.push([s0, s1]);
+            }
+        }
+        runs.sort((x, y) => x[0] - y[0]);
+        const merged = [];
+        for (const run of runs) {
+            const last = merged[merged.length - 1];
+            if (last && run[0] <= last[1] + 0.3) last[1] = Math.max(last[1], run[1]);
+            else merged.push(run.slice());
+        }
+        return merged;
+    }
+
     // Risers divide the storey as evenly as the maximum riser allows; two flights share them.
     function stairRun(storeyHeightM, rules) {
         const risers = Math.max(2, Math.ceil(storeyHeightM / rules.maxRiserM - 1e-9));
@@ -316,9 +340,11 @@
             const b = ringM[(index + 1) % ringM.length];
             const d = unit(vec(a, b));
             const inward = leftNormal(d);
-            const probe = t.point(add(midpoint(a, b), inward, -0.35)); // just outside this edge
-            const party = neighboursM.some(polygon => { try { return t.booleanPointInPolygon(probe, polygon); } catch (_) { return false; } });
-            return { index, a, b, d, inward, lengthM: len(vec(a, b)), party, blind: false, sun: sunSign * inward[1] };
+            const lengthM = len(vec(a, b));
+            // A party wall is an edge mostly against a neighbour: it takes no entrance and no end ramp.
+            const partyRuns = partyRunsOf(t, a, b, d, inward, lengthM, neighboursM);
+            const party = partyRuns.reduce((sum, run) => sum + run[1] - run[0], 0) >= lengthM / 2;
+            return { index, a, b, d, inward, lengthM, party, partyRuns, blind: false, sun: sunSign * inward[1] };
         });
         for (const hint of input.blindEdges || []) {
             const edge = matchEdge(edges, hint, frame);
@@ -387,12 +413,14 @@
         // a jogged or stepped street facade is several of them, each with its own building line. The
         // cores are spread evenly along their total length, so an end bump-out past the facade does
         // not claim a core of its own, and one core cannot stand on another.
-        const spans = edgesUV.filter(edge => !edge.party && !edge.blind && edge.inward[1] > Math.cos(30 * Math.PI / 180) && edge.lengthM >= core.widthM)
-            .map(edge => {
-                const [p, q] = edge.a[0] <= edge.b[0] ? [edge.a, edge.b] : [edge.b, edge.a];
+        // Only the stretches no neighbour stands against can take an entrance.
+        const spans = edgesUV.filter(edge => !edge.blind && edge.inward[1] > Math.cos(30 * Math.PI / 180))
+            .flatMap(edge => rooms.freeRuns(edge, [0, edge.lengthM], core.widthM).map(([s0, s1]) => {
+                const ends = [add(edge.a, edge.d, s0), add(edge.a, edge.d, s1)];
+                const [p, q] = ends[0][0] <= ends[1][0] ? ends : [ends[1], ends[0]];
                 return { index: edge.index, from: p[0], to: q[0], length: q[0] - p[0],
                     vAt: u => p[1] + (u - p[0]) * (q[1] - p[1]) / Math.max(1e-9, q[0] - p[0]) };
-            }).sort((a, b) => a.from - b.from);
+            })).sort((a, b) => a.from - b.from);
         const frontLengthM = spans.reduce((sum, span) => sum + span.length, 0);
         if (!spans.length) return noCoreFits({ frontLengthM });
         const byFrontage = Math.max(1, Math.floor(frontLengthM / (core.widthM + 2 * rules.minApartmentWidthM)));
@@ -555,7 +583,7 @@
 
         // --- furnish each apartment on the typical floor and on the ground floor ------------------
         const facades = edgesUV.map(edge => ({ index: edge.index, a: edge.a, b: edge.b, d: edge.d, inward: edge.inward, lengthM: edge.lengthM,
-            party: edge.party, blind: edge.blind, isFront: edge.isFront, sun: edge.sun }));
+            party: edge.party, partyRuns: edge.partyRuns, blind: edge.blind, isFront: edge.isFront, sun: edge.sun }));
         const wallHeightM = storeyHeightM - rules.slabThicknessM;
         function furnish(isGround) {
             const result = { partitions: [], openings: [], cuts: [], balconySlabs: [], railings: [], units: [], rooms: 0 };
