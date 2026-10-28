@@ -106,6 +106,9 @@ Four classic scripts, three of them pure and node-tested:
    simulation with the real dt clamped to 0.1 s and writes matrices straight into the instance
    attribute arrays. The hook is unregistered when the layer is off, hidden (photo mode) or the scene
    is disposed, so the loop goes back to on-demand.
+   At dusk and night (`setNight`, the lamps' darkness from the sun's altitude) two more draws switch
+   on: unlit headlamps and red tail lamps (four per vehicle, two on a motorcycle) and an additive
+   pool of headlight on the road ahead of each vehicle. By day both are hidden and not rewritten.
 
 Streets come from OSM everywhere, through one endpoint: `/osm-road` answers from the ingested
 `osm_road` table where the city has rows, and otherwise (a scene-sized bbox with no rows) from the
@@ -127,7 +130,7 @@ ms and render ms, worst frame per second window) so the cost is measured, not as
 |---|---|
 | People cap | 64 |
 | Vehicle cap | 100 |
-| Draw calls added | 7 |
+| Draw calls added | 7 (9 at dusk and night) |
 | Target CPU per frame | under 1 ms on a quiet laptop |
 
 ## Phases

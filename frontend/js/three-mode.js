@@ -3481,7 +3481,9 @@
     function updateSkyAndWindows() {
         const sun = window.__threeSun?.currentSun?.() || null;
         sky?.update(sun, !!window.PhotorealMode?.isActive?.());
-        nightWindows.setState(nightWindowState, furnitureApi().lampGlowStrength(sun ? sun.altitudeDeg : null), lifeMercatorK());
+        const night = furnitureApi().lampGlowStrength(sun ? sun.altitudeDeg : null);
+        nightWindows.setState(nightWindowState, night, lifeMercatorK());
+        lifeLayer?.setNight(night);
     }
 
     function buildingSidewalkMaterial() {

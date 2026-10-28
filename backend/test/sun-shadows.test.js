@@ -9,6 +9,7 @@ const core = require('../../frontend/js/sun-shadows.js');
 const threeSun = require('../../frontend/js/three-sun.js');
 const SunCalc = require('../../frontend/vendor/suncalc-1.9.0/suncalc.js');
 const tzlookup = require('../../frontend/vendor/tz-lookup-11.7.0/tz.js');
+const THREE = require('three');
 
 const ZAGREB = { lat: 45.8131, lng: 15.9775, timeZone: 'Europe/Zagreb' };
 const DEG = Math.PI / 180;
@@ -182,6 +183,32 @@ describe('shadow flags', () => {
     });
 });
 
+describe('the sky light', () => {
+    it('is the plain daytime sky light with the sun up, and dims steadily through dusk', () => {
+        const day = core.skyLight(40);
+        expect(day.intensity).toBe(1);
+        expect(day.sky).toEqual([1, 1, 1]);
+        const intensities = [40, 10, 5, 2, 0, -2, -4, -6, -9, -12, -30].map(a => core.skyLight(a).intensity);
+        intensities.slice(1).forEach((value, i) => expect(value).toBeLessThanOrEqual(intensities[i]));
+    });
+
+    it('is a dim blue at night, with a dark ground bounce', () => {
+        const night = core.skyLight(-20);
+        expect(night.intensity).toBeCloseTo(0.3, 9);
+        expect(night.sky[2]).toBeGreaterThan(night.sky[0]);
+        expect(Math.max(...night.ground)).toBeLessThan(0.25);
+    });
+
+    it('is warm with the sun on the horizon', () => {
+        const sunset = core.skyLight(2);
+        expect(sunset.sky[0]).toBeGreaterThan(sunset.sky[2]);
+    });
+
+    it('keeps the plain daytime light without an altitude, as with the sun layer off', () => {
+        for (const off of [null, undefined, NaN]) expect(core.skyLight(off)).toEqual(core.skyLight(40));
+    });
+});
+
 describe('the sun in the scene', () => {
     let scene, light, hemi, renderer, camera, target, origin, photo, invalidations, handle, hooks;
 
@@ -197,7 +224,7 @@ describe('the sun in the scene', () => {
             target: { position: new Vec3(), parent: null, updateMatrixWorld() {} },
             shadow: { mapSize: { set(w, h) { this.w = w; this.h = h; } }, camera: { updateProjectionMatrix() {} } }
         };
-        hemi = { intensity: 1.9 };
+        hemi = { intensity: 1.9, color: new THREE.Color(0xffffff), groundColor: new THREE.Color(0x888888) };
         renderer = { shadowMap: {}, capabilities: { maxTextureSize: 16384 } };
         camera = { position: new Vec3(0, -300, 300) };
         target = new Vec3(0, 0, 0);
@@ -210,7 +237,7 @@ describe('the sun in the scene', () => {
 
     function attach() {
         return threeSun.attach({
-            THREE: { PCFShadowMap: 1 }, scene, renderer, light, hemi,
+            THREE: { PCFShadowMap: 1, SRGBColorSpace: THREE.SRGBColorSpace }, scene, renderer, light, hemi,
             getOrigin: () => origin, getK: () => 1 / Math.cos(ZAGREB.lat * DEG),
             getCamera: () => camera, getTarget: () => target,
             isPhotoActive: () => photo, invalidate: () => { invalidations++; }, excludedRoots: () => [],
@@ -299,7 +326,10 @@ describe('the sun in the scene', () => {
         handle.beforeRender({ fullFrame: true }, new Date('2026-06-21T22:00:00Z'));
         expect(light.castShadow).toBe(false);
         expect(light.intensity).toBe(0);
-        expect(hemi.intensity).toBeCloseTo(1.9 * 0.6, 6);
+        // The sky's light is dim and moonlit blue, so flat ground goes dark with the sky.
+        expect(hemi.intensity).toBeCloseTo(1.9 * 0.3, 6);
+        expect(hemi.color.b).toBeGreaterThan(hemi.color.r);
+        expect(hemi.groundColor.getHex()).toBe(0x262a36);
     });
 
     it('restores the fixed light when switched off or in photo view', () => {
@@ -315,6 +345,8 @@ describe('the sun in the scene', () => {
         handle.beforeRender({ fullFrame: true }, new Date('2026-06-21T10:00:00Z'));
         expect(light.castShadow).toBe(false);
         expect(hemi.intensity).toBe(1.9);
+        expect(hemi.color.getHex()).toBe(0xffffff);
+        expect(hemi.groundColor.getHex()).toBe(0x888888);
     });
 
     it('follows the scene to another place and its time zone', () => {
