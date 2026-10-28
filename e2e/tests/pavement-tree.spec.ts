@@ -1,7 +1,9 @@
 // The square editor's Pavement tree tool and the selected tree's card: plant a tree in a pit, make
-// it taller, change its pit, and the saved square carries the tree record the 2D map draws.
+// it taller, change its pit, and the saved square carries the tree record the 2D map draws and the
+// model view opens over it.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, clickMapPoint, createSpace, showProposal } from '../helpers/runtime';
+import { mockBuildingScene } from '../helpers/mocks/building-data';
 
 test('plants a pavement tree on a square and edits its height and pit from the tree card', async ({ mockApi: page }) => {
   await openCity(page);
@@ -38,4 +40,10 @@ test('plants a pavement tree on a square and edits its height and pit from the t
   const trees = await page.evaluate(id => (window as any).getProposalByIdOrHash(id).structureProposal.decorationDesign.trees, proposalId);
   expect(trees).toContainEqual(expect.objectContaining({ pit: 'grass', heightM: edited }));
   await expect(page.locator('.park-tree-glyph.is-pit-grass')).toHaveCount(1);
+
+  // The model view draws the square with its pits; any error loading or building it fails the test.
+  await mockBuildingScene(page);
+  await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator('body')).toHaveClass(/three-mode-active/);
 });

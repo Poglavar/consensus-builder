@@ -2805,7 +2805,7 @@
     // Pavement trees' pits (park-planting.js TREE_PITS): per square, one merged mesh per pit kind,
     // just above the paving and laid square to the square's longest edge. A grille is a cast-iron
     // grate with soil showing through; grass and soil pits get a stone edge.
-    const TREE_PIT_Z = FURNITURE_GROUND_Z + 0.012;
+    const TREE_PIT_LIFT_M = 0.012;          // above the paving (FURNITURE_GROUND_Z, declared further down)
     const TREE_PIT_EDGE_M = 0.1;
     let treePitAssets = null; // shared, never disposed: the grille, soil and edge materials
     function ensureTreePitAssets() {
@@ -2872,7 +2872,7 @@
             const uvs = new Float32Array(list.length * 8);
             const indices = [];
             list.forEach((corners, q) => {
-                corners.forEach(([x, y], i) => positions.set([x, y, TREE_PIT_Z], q * 12 + i * 3));
+                corners.forEach(([x, y], i) => positions.set([x, y, FURNITURE_GROUND_Z + TREE_PIT_LIFT_M], q * 12 + i * 3));
                 uvs.set([0, 0, 1, 0, 1, 1, 0, 1], q * 8);
                 indices.push(q * 4, q * 4 + 1, q * 4 + 2, q * 4, q * 4 + 2, q * 4 + 3);
             });
