@@ -9,7 +9,7 @@
         "dev": "nodemon server.js",
         "test": "npm run test:unit && npm run test:node",
         "test:unit": "vitest run --pool=threads --maxWorkers=4",
-        "test:node": "node --test --test-concurrency=2 test/*.node.test.js",
+        "test:node": "node scripts/run-node-tests.mjs --all",
         "test:watch": "vitest --pool=threads --maxWorkers=4",
         "test:coverage": "vitest run --coverage --pool=threads --maxWorkers=4",
         "demo:oracle-fact": "node scripts/oracle-fact-demo.mjs",

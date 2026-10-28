@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { readControlResults, summarizeControlCoverage, checkControlCoverage, checkExemptionGuards } from '../helpers/control-report.mjs';
+import { readControlResults, summarizeControlCoverage, checkControlCoverage, checkExemptionGuards, controlReportFromLedger } from '../helpers/control-report.mjs';
 
 test('only clicks from passing tests cover a source site', () => {
   const sites = ['passed', 'failed', 'observed', 'never-rendered'].map(id => ({ id, source: 'example.js' }));
@@ -170,4 +170,20 @@ test('only a declared opt-in skip is accepted and it never covers a button', () 
   assert.deepEqual(checkControlCoverage(clickedBeforeSkip, { ...contract, controls: sites }), [
     'No passing click: external.js:1 send',
   ]);
+});
+
+test('a continued controls run reads back from its ledger like a JSON report, latest result per test', () => {
+  const entry = (status, outcome, events) => ({
+    id: '[chromium] › menu.spec.ts:4:3 › menu › opens', project: 'chromium', file: 'menu.spec.ts', line: 4, column: 3,
+    titles: ['menu', 'opens'], status, outcome, durationMs: 120, expectedStatus: 'passed',
+    annotations: [{ type: 'issue', description: 'x' }], controlEvents: events,
+  });
+  const clicked = [{ sourceId: 'menu-button', kind: 'clicked', label: 'Menu', attrs: {} }];
+  const filename = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'control-ledger-')), 'results.json');
+  fs.writeFileSync(filename, JSON.stringify(controlReportFromLedger([entry('failed', 'unexpected', []), entry('passed', 'expected', clicked)])));
+  assert.deepEqual(readControlResults([filename]), [{
+    key: 'menu.spec.ts › chromium › menu.spec.ts › menu › opens', title: 'opens', file: 'menu.spec.ts', line: 4,
+    status: 'passed', duration: 120, events: clicked, projectName: 'chromium', expectedStatus: 'passed',
+    outcome: 'expected', annotations: [{ type: 'issue', description: 'x' }],
+  }]);
 });

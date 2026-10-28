@@ -112,12 +112,34 @@ potentially expensive run; choose it deliberately rather than treating it as a q
 
 | Layer | Tooling and location | Targeted run | Whole suite |
 | --- | --- | --- | --- |
-| Backend API and frontend characterization | Vitest and Supertest in `backend/test/`; Node test runner for `*.node.test.js` | `cd backend && npx vitest run test/<file>.test.js` | `cd backend && npm test` |
+| Backend API and frontend characterization | Vitest and Supertest in `backend/test/`; Node test runner for `*.node.test.js` (`backend/scripts/run-node-tests.mjs`, two files at a time) | `cd backend && npx vitest run test/<file>.test.js` | `cd backend && npm test` |
 | Browser | Playwright in `e2e/tests/`, local frontend with fixture-backed API responses | `cd e2e && npx playwright test tests/<file>.spec.ts` | `cd e2e && npm test` (headless) or `npm run test:headed`; tagged subsets `test:smoke`, `test:core`, `test:features` |
 | Feature and control inventories | `e2e/feature-inventory.json`, `e2e/control-contract.json` | `cd e2e && npm run check:features`, `npm run check:controls` | |
 | EVM contracts | Foundry in `blockchain/forge-test/` (Hardhat tooling remains but holds no regression coverage) | | `cd blockchain && forge test` |
 | Solana programs | Anchor and TypeScript in `blockchain/solana/tests/`, against a local validator | | `cd blockchain/solana && yarn test` |
 | Production parcel smoke | `backend/scripts/smoke-production-bbox.mjs`, read-only | `cd backend && npm run smoke:prod:parcels` | |
+
+### Resumable test runs
+
+A whole-suite run can be named, and then continues instead of starting over when it is killed:
+the runner records every finished unit as it ends, and running it again under the same name skips
+what is recorded. Name every whole-suite run.
+
+| Suite | Named run | Unit recorded | Ledger |
+| --- | --- | --- | --- |
+| Vitest | `cd backend && TEST_RUN=<name> npm run test:unit` | test file | `backend/test-runs/<name>/vitest.jsonl` |
+| Node test runner | `cd backend && TEST_RUN=<name> npm run test:node` | test file | `backend/test-runs/<name>/node.jsonl` |
+| Playwright | `cd e2e && node scripts/run-resumable.mjs <name> [playwright args]` | test | `e2e/test-runs/<name>/playwright.jsonl` |
+| Controls coverage | `cd e2e && TEST_RUN=<name> npm run test:controls` | test, with its control events | `e2e/test-runs/<name>/playwright.controls.jsonl` |
+
+- A unit counts as finished when it passed, failed, timed out or was skipped. A unit that was
+  running when the run was killed is not recorded and runs again; failures are not rerun (use a new
+  name, or Playwright's `--last-failed`, for that).
+- Every part ends with a summary across all parts, and its exit code is non-zero when any part
+  had a failure. The controls report is built from the ledger, so it covers every part.
+- Playwright runs need the wrapper, which passes the finished tests back as `--test-list-invert`;
+  `TEST_RUN` without it is refused. An explicit `--reporter=<name>` keeps the ledger reporter.
+- A new name starts a fresh run. Delete `test-runs/<name>/` to reuse a name from the start.
 
 ### What the tests do not establish
 
