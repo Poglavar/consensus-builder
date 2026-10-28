@@ -51,7 +51,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
         { query: z.string().min(1).max(200), city: city.optional(), parcelSourceId: z.string().max(3507).optional(), bbox: bbox.optional(), limit: z.number().int().min(1).max(20).default(5) }, 'findPlace');
     add('ugt_parcel_context', 'Read one parcel or WGS84 point: source ground, area, planning sources and studies, buildings, nearby designs, agreements, markets and history. Provide parcelId or point.',
         { city, parcelSourceId: z.string().max(3507).optional(), parcelId: z.string().min(1).max(250).optional(), point: point.optional(), buildingSourceId: z.string().max(3507).optional(), planningSourceIds: z.array(z.string().max(100)).max(20).optional() }, 'parcelContext');
-    add('ugt_list_designs', 'List designs by city, WGS84 bbox or text.',
+    add('ugt_list_designs', 'List designs by city, WGS84 bbox or text. Rows are summaries without the design content; read one whole with ugt_get_design.',
         { city: city.optional(), bbox: bbox.optional(), q: z.string().max(200).optional(), limit: z.number().int().min(1).max(100).default(20) }, 'listDesigns');
     add('ugt_get_design', 'Read a design by CID and return its map link.', { designCid: cid }, 'getDesign');
     add('ugt_markets', 'Read city contests, pools and devnet USDC stakes.', { city }, 'markets');
