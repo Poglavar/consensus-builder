@@ -77,14 +77,16 @@
 
     // Lit meshes receive shadows; lit meshes with height cast them, ghosted ones included. Unlit
     // overlays (labels, highlights, symbols, depth pre-passes) and the excluded roots (moving life,
-    // whose shadow map is not re-rendered on its animation-only frames) take no part.
+    // whose shadow map is not re-rendered on its animation-only frames) take no part. A mesh marked
+    // `userData.noShadowCast` receives but does not cast: a cheaper stand-in casts for it (the trees'
+    // invisible blobs in three-mode.js).
     function applyShadowFlags(object, enabled, skip) {
         if (skip.has(object)) return;
         if (object.isMesh) {
             const materials = materialsOf(object);
             const lit = materials.length > 0 && materials.every(isLit);
             object.receiveShadow = enabled && lit;
-            object.castShadow = enabled && lit && materials.every(isSolidEnough) && isTall(object);
+            object.castShadow = enabled && lit && !object.userData?.noShadowCast && materials.every(isSolidEnough) && isTall(object);
         }
         const children = object.children;
         for (let i = 0; i < children.length; i++) applyShadowFlags(children[i], enabled, skip);

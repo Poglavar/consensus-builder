@@ -2556,11 +2556,21 @@
         applyParcelEmphasis();
     }
 
+    // Park lawns and green proposal ground: the procedural grass pattern (three-grass.js), in true
+    // metres over the Mercator-inflated scene XY.
+    function lawnMaterial() {
+        const grass = window.__threeGrass;
+        if (!grass) throw new Error('three-grass.js is not loaded');
+        return grass.grassTexture(new THREE.MeshLambertMaterial({
+            color: grass.COLORS.lawn, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
+        }), 1 / lifeMercatorK(), 'lawn');
+    }
+
     function buildParks3D(flatTarget, decoTarget, features = null) {
         const parks = features || ((typeof window !== 'undefined' && Array.isArray(window.parks)) ? window.parks : []);
         if (!parks || parks.length === 0) return;
         // Use polygonOffset to float slightly over base to avoid z-fighting and flicker
-        const grassMat = new THREE.MeshLambertMaterial({ color: 0x1b5e20, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+        const grassMat = lawnMaterial();
         const waterMat = new THREE.MeshPhongMaterial({ color: 0x2b6cb0, specular: 0x1f3a60, shininess: 40, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
         const pathLineMat = new THREE.LineBasicMaterial({ color: 0xdfe8d6, depthTest: true, depthWrite: false });
 
@@ -2629,8 +2639,6 @@
                 if (deco) placeFurniture3D('stall', deco.stalls, models, decoTarget, isCurrentModel, spots => addMarketStalls3D(decoTarget, spots));
                 placeLamps3D(deco?.lamps, models, decoTarget, isCurrentModel);
 
-                const addTreeAt = (lng, lat) => addTree3D(decoTarget, [lng, lat]);
-
                 // Trees: the STORED trees are the truth — auto-generated and user-placed alike
                 // (the old random sampling ignored edits, so a repositioned tree never moved in
                 // 3D), each with its stored look. Random sampling remains only for legacy parks
@@ -2641,16 +2649,15 @@
                     try { return turf.booleanPointInPolygon(turf.point(coord), p); } catch (_) { return true; }
                 }) : [];
                 if (storedTrees.length) {
-                    placeFurniture3D('tree', storedTrees, models, decoTarget, isCurrentModel, spots => spots.forEach(spot => {
-                        try { addTree3D(decoTarget, spot.item); } catch (_) { }
-                    }));
+                    placeFurniture3D('tree', storedTrees, models, decoTarget, isCurrentModel, spots => addParkTrees3D(decoTarget, spots.map(spot => spot.item)));
                 } else {
                     let area = 0; try { area = turf.area(p); } catch (_) { }
                     const count = Math.max(3, Math.min(60, Math.round(area / 2000)));
                     let bbox = null; try { bbox = turf.bbox(p); } catch (_) { }
                     if (!bbox) return;
-                    let placed = 0, safety = 0;
-                    while (placed < count && safety < count * 20) {
+                    const sampled = [];
+                    let safety = 0;
+                    while (sampled.length < count && safety < count * 20) {
                         safety++;
                         const rnd = turf.randomPoint(1, { bbox }).features[0];
                         try { if (!turf.booleanPointInPolygon(rnd, p)) continue; } catch (_) { continue; }
@@ -2666,9 +2673,9 @@
                                 if (inPond) continue;
                             }
                         } catch (_) { }
-                        addTreeAt(rnd.geometry.coordinates[0], rnd.geometry.coordinates[1]);
-                        placed++;
+                        sampled.push([rnd.geometry.coordinates[0], rnd.geometry.coordinates[1]]);
                     }
+                    addParkTrees3D(decoTarget, sampled);
                 }
             } catch (_) { }
         });
@@ -2680,10 +2687,7 @@
         if (!furnitureMats) {
             furnitureMats = {
                 wood: new THREE.MeshLambertMaterial({ color: 0x8a5a2b }),
-                trunk: new THREE.MeshLambertMaterial({ color: 0x6d4c41 }),
-                crown: new THREE.MeshLambertMaterial({ color: 0x2e7d32 }),
-                stone: new THREE.MeshLambertMaterial({ color: 0xc9c9c2 }),
-                table: new THREE.MeshLambertMaterial({ color: 0xf5f5f0 })
+                stone: new THREE.MeshLambertMaterial({ color: 0xc9c9c2 })
             };
         }
         return furnitureMats;
@@ -2695,45 +2699,84 @@
         return api;
     }
 
-    // Crown colours per tree kind (park-planting.js treeShape palette).
-    const TREE_CROWN_COLORS = { broadleaf: 0x2e7d32, conifer: 0x1d4a2c, columnar: 0x4a7a2c, blossom: 0xf0a8c8 };
-    let treeCrownMats = null;
-    function treeCrownMaterial(palette) {
-        if (!treeCrownMats) {
-            treeCrownMats = {};
-            Object.entries(TREE_CROWN_COLORS).forEach(([key, color]) => { treeCrownMats[key] = new THREE.MeshLambertMaterial({ color }); });
-        }
-        return treeCrownMats[palette] || treeCrownMats.broadleaf;
+    // ---- Tree species (tree-species.js): every tree in the model view is one of eight procedural
+    // species, one shared unit-height geometry each, drawn as one InstancedMesh per species per group.
+    function treeSpeciesApi() {
+        const api = window.TreeSpecies;
+        if (!api) throw new Error('tree-species.js is not loaded');
+        return api;
     }
 
-    // One tree as its stored look draws it: a trunk and crown pieces (park-planting.js treeShape).
-    // `entry` is a stored tree, { coordinate, kind, heightM } or a bare [lng, lat].
-    function addTree3D(target, entry) {
-        const shape = parkPlanting().treeShape(entry);
-        if (!shape) return;
-        const [lng, lat] = parkPlanting().treeCoordinate(entry);
-        const [x, y] = latLngToXY(lat, lng);
-        const trunkGeo = new THREE.CylinderGeometry(shape.trunk.radiusM * 0.8, shape.trunk.radiusM, shape.trunk.heightM, 8);
-        trunkGeo.rotateX(Math.PI / 2); // stand upright along Z
-        trunkGeo.translate(x, y, shape.trunk.heightM / 2);
-        const trunk = new THREE.Mesh(trunkGeo, furnitureMaterials().trunk);
-        markOwnedGeometry(trunk, trunkGeo);
-        target.add(trunk);
-        const crownMat = treeCrownMaterial(shape.palette);
-        shape.crown.forEach(piece => {
-            let geo;
-            if (piece.shape === 'cone') {
-                geo = new THREE.ConeGeometry(piece.radiusM, piece.heightM, 10);
-                geo.rotateX(Math.PI / 2);
-            } else {
-                geo = new THREE.SphereGeometry(1, 12, 9);
-                geo.scale(piece.radiusM, piece.radiusM, piece.heightM / 2);
-            }
-            geo.translate(x, y, piece.baseM + piece.heightM / 2);
-            const crown = new THREE.Mesh(geo, crownMat);
-            markOwnedGeometry(crown, geo);
-            target.add(crown);
+    // Shared, never disposed: the species geometries and their one vertex-coloured material.
+    let speciesAssets = null;
+    function ensureSpeciesAssets() {
+        if (speciesAssets) return speciesAssets;
+        const api = treeSpeciesApi();
+        const geometries = {};
+        api.SPECIES_IDS.forEach(id => {
+            const data = api.buildSpecies(id);
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.BufferAttribute(data.positions, 3));
+            geometry.setAttribute('normal', new THREE.BufferAttribute(data.normals, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(data.colors, 3));
+            geometry.setIndex(new THREE.BufferAttribute(data.indices, 1));
+            geometry.computeBoundingSphere();
+            geometries[id] = geometry;
         });
+        speciesAssets = { geometries, shared: new Set(Object.values(geometries)), material: new THREE.MeshLambertMaterial({ vertexColors: true }) };
+        return speciesAssets;
+    }
+
+    // Writes one tree look ({ x, y, z, heightM, yaw, tint }, scene XY, metric Z) into slot `index`.
+    const speciesDummy = { object: null, color: null };
+    function setSpeciesInstance(mesh, index, look, k) {
+        const dummy = speciesDummy.object || (speciesDummy.object = new THREE.Object3D());
+        const color = speciesDummy.color || (speciesDummy.color = new THREE.Color());
+        dummy.position.set(look.x, look.y, look.z || 0);
+        dummy.rotation.set(0, 0, look.yaw);
+        dummy.scale.set(look.heightM * k, look.heightM * k, look.heightM);
+        dummy.updateMatrix();
+        mesh.setMatrixAt(index, dummy.matrix);
+        mesh.setColorAt(index, color.setRGB(look.tint[0], look.tint[1], look.tint[2], THREE.LinearSRGBColorSpace));
+    }
+
+    // Species meshes sized for `looks` (one per species present), each with every look of its species
+    // written in. Returns { [species]: InstancedMesh }; the caller adds and owns them.
+    function speciesTreeMeshes(looks) {
+        const assets = ensureSpeciesAssets();
+        const k = lifeMercatorK();
+        const bySpecies = new Map();
+        looks.forEach(look => {
+            if (!bySpecies.has(look.species)) bySpecies.set(look.species, []);
+            bySpecies.get(look.species).push(look);
+        });
+        const meshes = {};
+        bySpecies.forEach((list, species) => {
+            const mesh = new THREE.InstancedMesh(assets.geometries[species], assets.material, list.length);
+            list.forEach((look, index) => setSpeciesInstance(mesh, index, look, k));
+            mesh.count = list.length;
+            mesh.instanceMatrix.needsUpdate = true;
+            if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+            mesh.userData.decorationKind = 'tree';
+            mesh.userData.treeSpecies = species;
+            meshes[species] = mesh;
+        });
+        return meshes;
+    }
+
+    // Park and square trees as their stored look names them (park-planting.js treeOf: kind, height);
+    // the region chooses the species of that kind. `entries` are stored trees or bare [lng, lat].
+    function addParkTrees3D(target, entries, z = FURNITURE_GROUND_Z) {
+        const species = treeSpeciesApi();
+        const looks = [];
+        entries.forEach(entry => {
+            const tree = parkPlanting().treeOf(entry);
+            if (!tree) return;
+            const [lng, lat] = tree.coordinate;
+            const [x, y] = latLngToXY(lat, lng);
+            looks.push({ x, y, z, ...species.treeInstance(lng, lat, { kind: tree.kind, heightM: tree.heightM }) });
+        });
+        Object.values(speciesTreeMeshes(looks)).forEach(mesh => target.add(ownInstances(mesh)));
     }
 
     // Shared, never disposed: unit shapes the flowerbed instances scale (like the OSM tree assets).
@@ -2974,9 +3017,7 @@
                 // Furniture from the geometry editor (all first-class objects there). A kind with an
                 // uploaded model (decorations.models) draws that model for every item instead.
                 const models = dec.models || null;
-                placeFurniture3D('tree', dec.trees, models, decoTarget, isCurrentModel, spots => spots.forEach(spot => {
-                    try { addTree3D(decoTarget, spot.item); } catch (_) { }
-                }));
+                placeFurniture3D('tree', dec.trees, models, decoTarget, isCurrentModel, spots => addParkTrees3D(decoTarget, spots.map(spot => spot.item)));
                 placeFurniture3D('bench', dec.benches, models, decoTarget, isCurrentModel, spots => addProceduralBenches3D(decoTarget, spots));
                 placeFurniture3D('stall', dec.stalls, models, decoTarget, isCurrentModel, spots => addMarketStalls3D(decoTarget, spots));
                 placeFurniture3D('statue', dec.statues, models, decoTarget, isCurrentModel, spots => spots.forEach(spot => {
@@ -3317,9 +3358,7 @@
         if (!surfaces.length) return;
 
         const pavingMat = buildingSidewalkMaterial();
-        const grassMat = new THREE.MeshLambertMaterial({
-            color: 0x1b5e20, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
-        });
+        const grassMat = lawnMaterial();
         surfaces.forEach(surface => {
             try {
                 const feature = { type: 'Feature', properties: {}, geometry: surface.geometry };
@@ -4566,34 +4605,15 @@
         });
 
         if (!treePoints.length) return;
-        ensureTreeAssets();
-        const trunks = new THREE.InstancedMesh(treeTrunkGeo, treeTrunkMat, treePoints.length);
-        const crowns = new THREE.InstancedMesh(treeCrownGeo, treeCrownMat, treePoints.length);
-        const dummy = new THREE.Object3D();
-        treePoints.forEach((item, index) => {
+        const species = treeSpeciesApi();
+        const looks = treePoints.map(item => {
             const [x, y] = latLngToXY(item.lat, item.lng);
-            const random = treeRng(item.lng, item.lat);
-            const totalHeight = 5 + random * 3;
-            const trunkHeight = totalHeight * 0.48;
-            const crownRadius = totalHeight * 0.2 + 0.4;
-            const terrainZ = terrainHeightOrZero(terrainHeightAt, x, y);
-            dummy.position.set(x, y, terrainZ + CORRIDOR_STRIP_Z + 0.15 + trunkHeight / 2);
-            dummy.scale.set(1, 1, trunkHeight);
-            dummy.rotation.set(0, 0, 0);
-            dummy.updateMatrix();
-            trunks.setMatrixAt(index, dummy.matrix);
-            dummy.position.set(x, y, terrainZ + CORRIDOR_STRIP_Z + 0.15 + trunkHeight + crownRadius * 0.65);
-            dummy.scale.set(crownRadius, crownRadius, crownRadius * 1.15);
-            dummy.updateMatrix();
-            crowns.setMatrixAt(index, dummy.matrix);
+            return { x, y, z: terrainHeightOrZero(terrainHeightAt, x, y) + CORRIDOR_STRIP_Z + 0.15, ...species.treeInstance(item.lng, item.lat) };
         });
-        trunks.instanceMatrix.needsUpdate = true;
-        crowns.instanceMatrix.needsUpdate = true;
-        trunks.userData.isCorridorDecoration = true;
-        trunks.userData.decorationKind = 'tree';
-        crowns.userData.isCorridorDecoration = true;
-        crowns.userData.decorationKind = 'tree';
-        targetGroup.add(trunks, crowns);
+        Object.values(speciesTreeMeshes(looks)).forEach(mesh => {
+            mesh.userData.isCorridorDecoration = true;
+            targetGroup.add(ownInstances(mesh));
+        });
     }
 
     // A junction in 3D (corridor-profile.js junctionTreatmentFor): the carriageway surface as a
@@ -6042,35 +6062,58 @@
         return true; // default ON
     }
 
-    // Deterministic [0,1) hash from a tree's lng/lat so each tree's height/jitter is stable across
-    // rebuilds (no flicker) without storing per-tree attributes.
-    function treeRng(lng, lat) {
-        let h = Math.imul(((lng * 1e6) | 0) ^ 0x9e3779b9, 0x85ebca6b);
-        h ^= Math.imul(((lat * 1e6) | 0) ^ 0x165667b1, 0xc2b2ae35);
-        h = (h ^ (h >>> 15)) >>> 0;
-        return (h % 100000) / 100000;
-    }
-
-    // Shared base geometries (unit-sized; per-tree size comes from the instance matrix). The trunk
-    // cylinder is rotated so its length runs along +Z to match the Z-up scene.
-    let treeTrunkGeo = null, treeCrownGeo = null, treeTrunkMat = null, treeCrownMat = null;
+    // Shared, never disposed: the far tier's blob (unit trunk + unit crown; per-tree size and the
+    // species' crown colour come from the instance), the cylinder rotated to run along +Z.
+    // The shadow stand-ins' material writes neither colour nor depth: drawn, unseen, still casting
+    // (three's shadow pass tests layers against the main camera, so a shadow-only layer cannot do it).
+    let treeTrunkGeo = null, treeCrownGeo = null, treeTrunkMat = null, treeCrownMat = null, treeShadowMat = null;
     function ensureTreeAssets() {
         if (treeTrunkGeo) return;
+        treeShadowMat = new THREE.MeshLambertMaterial({ colorWrite: false, depthWrite: false });
         treeTrunkGeo = new THREE.CylinderGeometry(0.12, 0.18, 1, 5);
         treeTrunkGeo.rotateX(Math.PI / 2); // Y-length → Z-length (scene is Z-up)
         treeCrownGeo = new THREE.SphereGeometry(1, 6, 5);
         treeTrunkMat = new THREE.MeshLambertMaterial({ color: 0x5c3d1e });
-        treeCrownMat = new THREE.MeshLambertMaterial({ color: 0x3a6b35 });
+        treeCrownMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
     }
 
+    // Two tiers over the loaded trees: those within NEAR_TIER_RADIUS_M of the camera (at most
+    // nearTierSize(), nearest first) are species meshes (one InstancedMesh per species, sized for
+    // every tree of it), the rest blobs (two InstancedMeshes). Neither casts a shadow: blobs for
+    // every tree, drawn invisibly, do: written once, so the shadow pass costs what the blobs always
+    // cost. Each tree's look is rolled once per load; when the camera has moved
+    // TREE_RETIER_M, renderScene (retierTreesIfMoved) recomputes the near set and rewrites the slots
+    // only if it changed. From an orbit high above, nothing is near and nothing is rewritten.
+    const TREE_RETIER_M = 25;
+    let treeTiers = null; // { looks, points, mask, camera, species: { id: mesh }, trunks, crowns }
+
     function disposeTreesGroup() {
+        treeTiers = null;
         if (!treesGroup) return;
         for (let i = treesGroup.children.length - 1; i >= 0; i--) {
             const c = treesGroup.children[i];
             treesGroup.remove(c);
             if (c.isInstancedMesh) { try { c.dispose(); } catch (_) { } }
-            if (c.geometry && c.geometry !== treeTrunkGeo && c.geometry !== treeCrownGeo) c.geometry.dispose();
+            if (c.geometry && c.geometry !== treeTrunkGeo && c.geometry !== treeCrownGeo && !speciesAssets?.shared.has(c.geometry)) c.geometry.dispose();
         }
+    }
+
+    // A blob for `look` written into slot `index` of a trunk and a crown mesh; `crownScale` shrinks
+    // the shadow stand-ins' crowns inside the species crowns they cast for.
+    function setBlobInstance(trunks, crowns, index, look, k, crownScale = 1) {
+        const dummy = speciesDummy.object || (speciesDummy.object = new THREE.Object3D());
+        const color = speciesDummy.color || (speciesDummy.color = new THREE.Color());
+        const blob = treeSpeciesApi().blobOf(look);
+        dummy.rotation.set(0, 0, 0);
+        dummy.position.set(look.x, look.y, blob.trunkHeight / 2);
+        dummy.scale.set(k * look.heightM / 10, k * look.heightM / 10, blob.trunkHeight);
+        dummy.updateMatrix();
+        trunks.setMatrixAt(index, dummy.matrix);
+        dummy.position.set(look.x, look.y, blob.crownZ);
+        dummy.scale.set(blob.crownRadius * k * crownScale, blob.crownRadius * k * crownScale, blob.crownHeight * crownScale);
+        dummy.updateMatrix();
+        crowns.setMatrixAt(index, dummy.matrix);
+        crowns.setColorAt(index, color.setRGB(blob.color[0], blob.color[1], blob.color[2], THREE.LinearSRGBColorSpace));
     }
 
     function buildTreesGroup() {
@@ -6081,38 +6124,86 @@
             });
         if (!visibleTrees.length) return;
         ensureTreeAssets();
-        const n = visibleTrees.length;
-        const trunkMesh = new THREE.InstancedMesh(treeTrunkGeo, treeTrunkMat, n);
-        const crownMesh = new THREE.InstancedMesh(treeCrownGeo, treeCrownMat, n);
-        const dummy = new THREE.Object3D();
-        let placed = 0;
-        for (let i = 0; i < n; i++) {
-            const t = visibleTrees[i];
-            if (!t || t.length < 2) continue;
+        const api = treeSpeciesApi();
+        const looks = [];
+        visibleTrees.forEach(t => {
+            if (!t || t.length < 2) return;
             const [x, y] = latLngToXY(t[1], t[0]);
-            const r = treeRng(t[0], t[1]);
-            const totalH = 5 + r * 8;          // ~5–13 m, deterministic per tree
-            const trunkH = totalH * 0.48;
-            const crownR = totalH * 0.20 + 0.5;
+            looks.push({ x, y, z: 0, ...api.treeInstance(t[0], t[1]) });
+        });
+        if (!looks.length) return;
+        const assets = ensureSpeciesAssets();
+        const capacity = {};
+        looks.forEach(look => { capacity[look.species] = (capacity[look.species] || 0) + 1; });
+        const species = {};
+        Object.keys(capacity).forEach(id => {
+            const mesh = new THREE.InstancedMesh(assets.geometries[id], assets.material, capacity[id]);
+            mesh.count = 0;
+            mesh.userData.treeSpecies = id;
+            species[id] = mesh;
+        });
+        const trunks = new THREE.InstancedMesh(treeTrunkGeo, treeTrunkMat, looks.length);
+        const crowns = new THREE.InstancedMesh(treeCrownGeo, treeCrownMat, looks.length);
+        [...Object.values(species), trunks, crowns].forEach(mesh => { mesh.userData.noShadowCast = true; });
+        const shadowTrunks = new THREE.InstancedMesh(treeTrunkGeo, treeShadowMat, looks.length);
+        const shadowCrowns = new THREE.InstancedMesh(treeCrownGeo, treeShadowMat, looks.length);
+        const k = lifeMercatorK();
+        looks.forEach((look, i) => setBlobInstance(shadowTrunks, shadowCrowns, i, look, k, 0.85));
+        [shadowTrunks, shadowCrowns].forEach(mesh => {
+            mesh.userData.treeShadowStandIn = true;
+            mesh.instanceMatrix.needsUpdate = true;
+        });
+        treeTiers = { looks, points: looks.map(look => [look.x, look.y]), mask: null, camera: null, species, trunks, crowns };
+        retierTrees(treeTierCamera());
+        Object.values(species).forEach(mesh => treesGroup.add(mesh));
+        treesGroup.add(trunks, crowns, shadowTrunks, shadowCrowns);
+    }
 
-            dummy.position.set(x, y, trunkH / 2);
-            dummy.scale.set(1, 1, trunkH);
-            dummy.rotation.set(0, 0, 0);
-            dummy.updateMatrix();
-            trunkMesh.setMatrixAt(placed, dummy.matrix);
+    // The camera position the near tier is measured from (scene XY, metric Z).
+    function treeTierCamera() {
+        return camera ? [camera.position.x, camera.position.y, camera.position.z] : [0, 0, 1e6];
+    }
 
-            dummy.position.set(x, y, trunkH + crownR * 0.65);
-            dummy.scale.set(crownR, crownR, crownR * 1.15);
-            dummy.updateMatrix();
-            crownMesh.setMatrixAt(placed, dummy.matrix);
-            placed++;
-        }
-        trunkMesh.count = placed;
-        crownMesh.count = placed;
-        trunkMesh.instanceMatrix.needsUpdate = true;
-        crownMesh.instanceMatrix.needsUpdate = true;
-        treesGroup.add(trunkMesh);
-        treesGroup.add(crownMesh);
+    // Recomputes the near set for a camera position; rewrites the slots and returns true only when it
+    // changed.
+    function retierTrees(position) {
+        const tiers = treeTiers;
+        const api = treeSpeciesApi();
+        const k = lifeMercatorK();
+        const coarse = typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches;
+        const mask = api.nearTierMask(tiers.points, position[0], position[1], Math.max(0, position[2]) * k,
+            api.NEAR_TIER_RADIUS_M * k, api.nearTierSize({ coarsePointer: coarse }));
+        tiers.camera = position;
+        if (tiers.mask && tiers.mask.every((value, i) => value === mask[i])) return false;
+        tiers.mask = mask;
+        const filled = {};
+        let far = 0;
+        tiers.looks.forEach((look, i) => {
+            if (!mask[i]) { setBlobInstance(tiers.trunks, tiers.crowns, far++, look, k); return; }
+            const slot = filled[look.species] || 0;
+            setSpeciesInstance(tiers.species[look.species], slot, look, k);
+            filled[look.species] = slot + 1;
+        });
+        Object.entries(tiers.species).forEach(([id, mesh]) => { mesh.count = filled[id] || 0; });
+        tiers.trunks.count = far;
+        tiers.crowns.count = far;
+        [...Object.values(tiers.species), tiers.trunks, tiers.crowns].forEach(mesh => {
+            mesh.instanceMatrix.needsUpdate = true;
+            if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+            mesh.boundingSphere = null;
+        });
+        return true;
+    }
+
+    // Before a render: re-tier once the camera has moved TREE_RETIER_M real metres since the last
+    // check. True when the tiers changed (the scene changed).
+    function retierTreesIfMoved() {
+        if (!treeTiers || !treesGroup?.visible || !camera) return false;
+        const position = treeTierCamera();
+        const k = lifeMercatorK();
+        const last = treeTiers.camera;
+        if (last && Math.hypot((position[0] - last[0]) / k, (position[1] - last[1]) / k, position[2] - last[2]) < TREE_RETIER_M) return false;
+        return retierTrees(position);
     }
 
     function rebuildTreesOnly() {
@@ -7953,6 +8044,8 @@
         // `sceneChanged`: something in the scene changed since the last render (a rebuild, a proposal, a
         // selection), which is when the shadow map is re-rendered; a frame that only orbits the camera
         // or animates a hook keeps it.
+        // Tree tiers follow the camera; their shadows come from fixed stand-ins, so no shadow redraw.
+        retierTreesIfMoved();
         sunLayer?.beforeRender({ fullFrame, sceneChanged: renderedSceneVisualRevision !== sceneVisualRevision });
         updateLampGlow();
         floorPlanRenderer.renderCutaway(renderer, scene, camera, floorPlanGroup,

@@ -60,7 +60,7 @@ function harness({ request = vi.fn(async () => ({ buildings: [] })), build = vi.
         updateXrayControls: vi.fn(), updateBuildingsLoader: vi.fn(), updateBuildingsSourceNote: vi.fn(),
         refreshLifeSurface: vi.fn(), reportNearbyBuildingsUnavailable: vi.fn(),
         dedupeCoincidentBuildings: buildings => buildings,
-        floorPlanRenderer: { renderCutaway: vi.fn() }, floorPlanGroup: null, updateLampGlow: vi.fn(),
+        floorPlanRenderer: { renderCutaway: vi.fn() }, floorPlanGroup: null, updateLampGlow: vi.fn(), retierTreesIfMoved: vi.fn(), rebuildProposalGrounds3D: vi.fn(),
         document: { hidden: false }, loopRunning: true, renderInvalidated: false,
         frameTimer: null, frameId: null, hooksParked: false, lastInputAt: 0,
         requestAnimationFrame: vi.fn(() => 1), clearTimeout: vi.fn(), setTimeout: vi.fn(() => 1),

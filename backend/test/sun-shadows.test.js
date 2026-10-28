@@ -168,8 +168,11 @@ describe('shadow flags', () => {
         const veil = mesh({ isMeshPhongMaterial: true, transparent: true, opacity: 0.05 }, 20);
         const person = mesh(lit(), 1.8);
         const life = { children: [person] };
-        const scene = { children: [tower, ground, label, ghost, veil, life] };
+        const tree = mesh(lit(), 12);
+        tree.userData.noShadowCast = true;
+        const scene = { children: [tower, ground, label, ghost, veil, life, tree] };
         threeSun.applyShadowFlags(scene, true, new Set([life]));
+        expect([tree.castShadow, tree.receiveShadow]).toEqual([false, true]);
         expect([tower.castShadow, tower.receiveShadow]).toEqual([true, true]);
         expect([ground.castShadow, ground.receiveShadow]).toEqual([false, true]);
         expect([label.castShadow, label.receiveShadow]).toEqual([false, false]);

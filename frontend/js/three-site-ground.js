@@ -59,21 +59,17 @@
         return positions;
     }
 
+    // The wild-grass pattern (three-grass.js): the browser global, or required in node.
+    function grassApi() {
+        const scope = typeof window !== 'undefined' ? window : globalThis;
+        return scope.__threeGrass || require('./three-grass.js');
+    }
+
     function buildVacantPlots({ THREE, features, target, polygonMeshes, project, metresPerUnit, ownMaterial, ownGeometry }) {
         features.forEach(feature => {
-            const grass = new THREE.MeshLambertMaterial({
-                color: 0xadae75, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
-            });
-            grass.onBeforeCompile = shader => {
-                shader.uniforms.wildScale = { value: metresPerUnit };
-                shader.vertexShader = shader.vertexShader
-                    .replace('#include <common>', '#include <common>\nvarying vec2 wildXY;\nuniform float wildScale;')
-                    .replace('#include <begin_vertex>', '#include <begin_vertex>\nwildXY = transformed.xy * wildScale;');
-                shader.fragmentShader = shader.fragmentShader
-                    .replace('#include <common>', '#include <common>\nvarying vec2 wildXY;')
-                    .replace('#include <color_fragment>', '#include <color_fragment>\nfloat grassVariation = sin(wildXY.x * 0.7) * sin(wildXY.y * 0.9);\ndiffuseColor.rgb *= 0.9 + 0.13 * grassVariation;');
-            };
-            grass.customProgramCacheKey = () => 'vacant-wild-ground';
+            const grass = grassApi().grassTexture(new THREE.MeshLambertMaterial({
+                color: grassApi().COLORS.wild, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
+            }), metresPerUnit, 'wild');
             polygonMeshes(feature, grass, 0.08, 0).forEach(mesh => {
                 ownMaterial(mesh, grass);
                 mesh.userData.isVacantPlot = true;
