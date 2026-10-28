@@ -655,7 +655,11 @@
                 "stepOutputs": "Output parcels: Public land for roads and public spaces, the other pieces to the owners or to the Proposer.",
                 "stepRights": "Parcel ownership rights: import a rights file (parcel-rights/v2) that lists {{what}}.",
                 "stepAuthority": "Rules › Authority: an id for {{authority}}; a lens member confirms who acts for it and records its decision beside the owners’.",
-                "stepPersons": "Persons: what each person puts in and gets back, land and money; the scheme card in Rules shows this plan against the scheme as you go."
+                "stepPersons": "Persons: what each person puts in and gets back, land and money; the scheme card in Rules shows this plan against the scheme as you go.",
+                "title": "Schemes",
+                "pick": "Scheme",
+                "use": "Use this scheme",
+                "counterWith": "Counter-agreement with this scheme"
             }
         },
         "fields": {
@@ -7419,6 +7423,8 @@
         "dialog": {
             "titleCreate": "Create agreement",
             "titleEdit": "Edit agreement",
+            "titleCounter": "Counter-agreement",
+            "counterTitle": "Counter to {{title}}",
             "intro": "An agreement refers to one plan and sets who decides, who gets which land and what money moves. Nothing leaves this device yet.",
             "save": "Save agreement"
         },
@@ -7557,7 +7563,9 @@
             "actions": {
                 "bet": "Bet",
                 "edit": "Edit",
-                "removeLocal": "Remove from this device"
+                "removeLocal": "Remove from this device",
+                "schemes": "Compare with a scheme…",
+                "counter": "Counter-agreement"
             },
             "collapse": "Close agreement",
             "removeLocalConfirm": "Remove this agreement from this device? Its designs stay on the map. Any published agreement remains available through its link.",

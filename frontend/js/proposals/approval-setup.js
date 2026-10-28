@@ -380,15 +380,30 @@
         </div>`;
     }
 
-    // The guide as a dialog over the host (`parent`: the host's modal when it has one). Returns the
-    // dialog handle, or null without a document.
-    function openSchemeGuide({ parent = null, template, regime = null, check = null, rules = [], ledger = null, currency = '' } = {}) {
+    // The guide as a dialog over the host (`parent`: the host's modal when it has one). With
+    // `guideFor(template) → { check, rules, ledger }` the dialog carries a scheme picker and re-reads
+    // the host's agreement against whichever scheme is picked (`schemeStatus` marks the broken ones);
+    // `action: { label, run(template) }` is the host's button for the picked scheme (use it in the
+    // editor, counter with it in the panel). Returns the dialog handle, or null without a document.
+    function openSchemeGuide({ parent = null, template, regime = null, check = null, rules = [], ledger = null, currency = '', schemeStatus = null, guideFor = null, action = null } = {}) {
         const dialogs = root.CbDialog;
         if (!dialogs || !template || typeof root.document === 'undefined') return null;
         const container = root.document.createElement('div');
-        container.innerHTML = schemeGuideHtml({ template, regime, check, rules, ledger, currency });
-        return dialogs.open({ parent, size: 'lg', title: t(`proposalApproval.schemes.${template.id}.name`, template.text.name), body: container,
-            actions: [{ label: t('common.close', 'Close') }] });
+        let picked = template, facts = { check, rules, ledger };
+        const render = () => {
+            container.innerHTML = (guideFor ? schemePickerHtml(picked.id, schemeStatus) : '')
+                + schemeGuideHtml({ template: picked, regime, currency, ...facts });
+        };
+        render();
+        container.addEventListener('change', event => {
+            const select = event.target.closest('[data-scheme-guide-pick]');
+            if (!select || !guideFor) return;
+            picked = regimes().latest(select.value) || picked;
+            facts = guideFor(picked) || { check: null, rules: [], ledger: null };
+            render();
+        });
+        return dialogs.open({ parent, size: 'lg', title: guideFor ? t('proposalDrafts.approval.guide.title', 'Schemes') : t(`proposalApproval.schemes.${template.id}.name`, template.text.name), body: container,
+            actions: [action ? { label: action.label, primary: true, onClick: () => action.run(picked) } : null, { label: t('common.close', 'Close') }] });
     }
 
     // Custom rules: one row per test, "[at least] [2/3] of the [number] of [owners] [all]".
@@ -406,6 +421,25 @@
             <button type="button" class="btn btn-sm" data-editor-action="approval-test-add"${rules.tests.length >= approval().MAX_TESTS ? ' disabled' : ''}>${esc(t('proposalDrafts.approval.addTest', 'Add a test'))}</button></div>`;
     }
 
+    // The catalogue as <optgroup>s by family, `choice` selected. `schemeStatus` ({ schemeId: boolean })
+    // marks the schemes the host's plan breaks.
+    function schemeOptionsHtml(choice, schemeStatus = null) {
+        const notMet = t('proposalDrafts.approval.schemeNotMet', 'not met by this plan');
+        return regimes().FAMILIES.map(family => {
+            const entries = latestRegimes().filter(regime => regime.family === family);
+            return entries.length ? `<optgroup label="${esc(words().familyText({ family }, t))}">${entries.map(regime => {
+                const met = schemeStatus && Object.hasOwn(schemeStatus, regime.id) ? schemeStatus[regime.id] !== false : null;
+                const name = t(`proposalApproval.schemes.${regime.id}.name`, regime.text.name);
+                return `<option value="${esc(regime.id)}"${regime.id === choice ? ' selected' : ''}${met === null ? '' : ` data-scheme-met="${met}"`}>${esc(met === false ? `${name} — ${notMet}` : name)}</option>`;
+            }).join('')}</optgroup>` : '';
+        }).join('');
+    }
+
+    // The guide's scheme picker: the same catalogue, so any scheme can be read against the agreement.
+    function schemePickerHtml(choice, schemeStatus = null) {
+        return `<label class="proposal-editor-field scheme-guide__pick"><span>${esc(t('proposalDrafts.approval.guide.pick', 'Scheme'))}</span><select data-scheme-guide-pick>${schemeOptionsHtml(choice, schemeStatus)}</select></label>`;
+    }
+
     // `schemeStatus` ({ schemeId: boolean }): which schemes the host's plan meets, marked in the
     // dropdown so a scheme the plan breaks is visible before it is chosen; `schemeCheck`: the
     // chosen scheme's rules against the plan, listed in its card.
@@ -416,15 +450,7 @@
         try { rules = approval().policyRules(policy); } catch (_) { /* the config error is shown above */ }
         const template = choice !== 'unanimous' && choice !== 'custom'
             ? (normalized.regime ? regimes().get(normalized.regime.id, normalized.regime.version) : null) || regimes().latest(choice) : null;
-        const notMet = t('proposalDrafts.approval.schemeNotMet', 'not met by this plan');
-        const groups = regimes().FAMILIES.map(family => {
-            const entries = latestRegimes().filter(regime => regime.family === family);
-            return entries.length ? `<optgroup label="${esc(words().familyText({ family }, t))}">${entries.map(regime => {
-                const met = schemeStatus && Object.hasOwn(schemeStatus, regime.id) ? schemeStatus[regime.id] !== false : null;
-                const name = t(`proposalApproval.schemes.${regime.id}.name`, regime.text.name);
-                return `<option value="${esc(regime.id)}"${regime.id === choice ? ' selected' : ''}${met === null ? '' : ` data-scheme-met="${met}"`}>${esc(met === false ? `${name} — ${notMet}` : name)}</option>`;
-            }).join('')}</optgroup>` : '';
-        }).join('');
+        const groups = schemeOptionsHtml(choice, schemeStatus);
         const authorityIds = rules.authorities.map(row => row.authorityId);
         const authorityField = (index, value) => `<label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.authorityId', 'Authority (an abstract id; a lens member confirms who acts for it)'))}</span><input type="text" data-approval-rule data-approval-authority-id="${index}" value="${esc(value)}" autocomplete="off"></label>`;
         let authorityHtml = '';
@@ -479,8 +505,23 @@
         }
         const template = current?.regime?.id === choice ? regimes().get(choice, current.regime.version) : regimes().latest(choice);
         if (!template) throw new Error(t('proposalDrafts.approval.unknownRegime', 'Unknown agreement rules.'));
+        return schemeRules(template, authorityIds);
+    }
+
+    // A scheme's policy and pin, with the authority ids already typed (or the default one).
+    function schemeRules(template, authorityIds = []) {
         const ids = Array.from({ length: template.authorities }, (_, index) => authorityIds[index] || DEFAULT_AUTHORITY);
         return { policy: regimes().policyOf(template, ids), regime: { id: template.id, version: template.version } };
+    }
+
+    // The config with `template` as its scheme (the guide's "Use this scheme", a counter-agreement
+    // drafted under another scheme). Authority ids already in the config are kept.
+    function withScheme(config, template) {
+        const current = normalizedConfig(config);
+        let authorityIds = [];
+        try { authorityIds = approval().policyRules(current?.policy).authorities.map(row => row.authorityId); } catch (_) { /* the default id */ }
+        const { regime: _old, ...rest } = current;
+        return approval().normalizeConfig({ ...rest, ...schemeRules(template, authorityIds) });
     }
 
     // Add or remove a custom test. The new test is the first kind the rules do not count yet.
@@ -670,7 +711,7 @@
         return dialog;
     }
 
-    return { schemeGuideHtml, openSchemeGuide, schematicCaption,
+    return { schemeGuideHtml, schemePickerHtml, openSchemeGuide, schematicCaption, withScheme,
         openDialog,
         html, previewHtml, summaryText, policyText, fractionText, parseFraction, lensKeys, lensFromText,
         normalizedConfig, syncSourceControls, withPolicyFromForm, withRuleAction, ruleChoice, lensFromForm, importRights, withoutRights, downloadTemplate

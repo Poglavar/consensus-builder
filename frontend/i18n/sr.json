@@ -655,7 +655,11 @@
                 "stepOutputs": "Izlazne parcele: Javno zemljište za puteve i javne površine, a ostali delovi vlasnicima ili opciji Predlagač.",
                 "stepRights": "Prava vlasništva nad parcelama: uvezite datoteku prava (parcel-rights/v2) koja navodi {{what}}.",
                 "stepAuthority": "Pravila › Nadležni organ: ID organa koji odlučuje ({{authority}}); član sočiva potvrđuje ko deluje za njega i beleži njegovu odluku pored odluka vlasnika.",
-                "stepPersons": "Osobe: šta svaka osoba unosi i dobija nazad, u zemljištu i novcu; okvir šeme na kartici Pravila usput prikazuje usklađenost ovog plana sa šemom."
+                "stepPersons": "Osobe: šta svaka osoba unosi i dobija nazad, u zemljištu i novcu; okvir šeme na kartici Pravila usput prikazuje usklađenost ovog plana sa šemom.",
+                "title": "Modeli",
+                "pick": "Model",
+                "use": "Primeni ovaj model",
+                "counterWith": "Protivpredlog po ovom modelu"
             }
         },
         "fields": {
@@ -7460,6 +7464,8 @@
         "dialog": {
             "titleCreate": "Napravi sporazum",
             "titleEdit": "Uredi sporazum",
+            "titleCounter": "Protivpredlog sporazuma",
+            "counterTitle": "Protivpredlog za {{title}}",
             "intro": "Sporazum se odnosi na jedan plan i određuje ko odlučuje, ko dobija koje zemljište i koji se novac prenosi. Još ništa ne napušta ovaj uređaj.",
             "save": "Sačuvaj sporazum"
         },
@@ -7598,7 +7604,9 @@
             "actions": {
                 "bet": "Kladi se",
                 "edit": "Uredi",
-                "removeLocal": "Ukloni sa ovog uređaja"
+                "removeLocal": "Ukloni sa ovog uređaja",
+                "schemes": "Uporedi sa modelom…",
+                "counter": "Protivpredlog"
             },
             "collapse": "Zatvori sporazum",
             "removeLocalConfirm": "Ukloniti ovaj sporazum sa ovog uređaja? Njegova dizajni ostaju na mapi. Objavljeni sporazum ostaje dostupan putem veze.",

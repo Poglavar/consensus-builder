@@ -286,6 +286,19 @@ describe('panel HTML', () => {
             .not.toContain('data-agreement-action="mint"');
     });
 
+    it('gives the Rules tab the scheme guide for an owners’ rule and a counter-agreement button', () => {
+        const summary = { electorate: 'Decided by the owners', binding: 'Non-binding', detail: '' };
+        const owners = panel.ruleHtml(summary, '', undefined, { owners: true, scheme: true, counter: true });
+        expect(owners).toContain('data-agreement-action="scheme-guide"');
+        expect(owners).toContain('How this scheme works…');
+        expect(owners).toContain('data-agreement-action="counter"');
+        expect(panel.ruleHtml(summary, '', undefined, { owners: true, scheme: false, counter: true })).toContain('Compare with a scheme…');
+        const community = panel.ruleHtml(summary, '', undefined, { owners: false, counter: true });
+        expect(community).not.toContain('data-agreement-action="scheme-guide"');
+        expect(community).toContain('data-agreement-action="counter"');
+        expect(panel.ruleHtml(summary, '')).not.toContain('agreement-panel-actions');
+    });
+
     it('opens an in-memory published record without reading or writing the local agreement store', async () => {
         const panelBody = { innerHTML: '' };
         const title = { textContent: '' };

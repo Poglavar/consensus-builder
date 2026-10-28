@@ -1870,7 +1870,9 @@
             "actions": {
                 "edit": "Modifier",
                 "bet": "Pari",
-                "removeLocal": "Retirer de cet appareil"
+                "removeLocal": "Retirer de cet appareil",
+                "schemes": "Comparer avec un schéma…",
+                "counter": "Contre-proposition"
             },
             "title": "Accord",
             "untitled": "Accord du {{date}}",
@@ -1914,6 +1916,8 @@
         "dialog": {
             "titleCreate": "Créer un accord",
             "titleEdit": "Modifier l’accord",
+            "titleCounter": "Contre-proposition d’accord",
+            "counterTitle": "Contre-proposition à {{title}}",
             "intro": "Un accord se réfère à un plan et définit qui décide, qui reçoit quel terrain et quels transferts d’argent ont lieu. Rien ne quitte encore cet appareil.",
             "save": "Enregistrer l’accord"
         },
@@ -2257,7 +2261,11 @@
                 "stepOutputs": "Parcelles résultantes : Terrain public pour les voies et espaces publics, les autres portions aux propriétaires ou au Porteur du projet.",
                 "stepRights": "Droits de propriété des parcelles : importez un fichier des droits (parcel-rights/v2) qui répertorie {{what}}.",
                 "stepAuthority": "Règles › Autorité : un identifiant pour {{authority}} ; un membre du groupe de contrôle confirme qui agit en son nom et enregistre sa décision à côté de celles des propriétaires.",
-                "stepPersons": "Personnes : ce que chaque personne apporte et récupère, en terrains et en argent ; la carte du dispositif dans Règles montre au fur et à mesure ce plan au regard du dispositif."
+                "stepPersons": "Personnes : ce que chaque personne apporte et récupère, en terrains et en argent ; la carte du dispositif dans Règles montre au fur et à mesure ce plan au regard du dispositif.",
+                "title": "Schémas",
+                "pick": "Schéma",
+                "use": "Utiliser ce schéma",
+                "counterWith": "Contre-proposition avec ce schéma"
             }
         },
         "fields": {

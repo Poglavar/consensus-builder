@@ -148,6 +148,7 @@
 .scheme-guide__table td { font-variant-numeric: tabular-nums; }
 .scheme-guide__fix-title { font-weight: var(--cb-weight-semibold); color: var(--cb-text-strong); }
 .scheme-guide__sources { overflow-wrap: anywhere; }
+.scheme-guide__pick { margin-bottom: var(--cb-space-3); }
 
 .approval-setup__research {
     background: var(--cb-warning-soft);

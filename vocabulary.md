@@ -54,6 +54,10 @@ A new authored version of a design or agreement. Published content retains its o
 
 An arrangement referencing exactly one immutable plan revision, with input land and holders, output pieces, allocations, money, a decision rule and a deadline. Published `agreement/v1` content names the plan with `planCid` and its outputs by piece hash. The plan supplies all design membership; it must be created independently before it is selected for an agreement. The agreement has no independently authored spatial layout or design list. Several agreements can reference the same plan. A local editing record can cache design references for replay and preparation, but publication must match the referenced plan exactly.
 
+### Counter-agreement
+
+A new agreement drafted from an existing agreement's plan and terms, optionally under another scheme. It references the same plan revision and is an ordinary agreement once saved; no record field links it to the agreement it answers.
+
 ### Binding owners' agreement
 
 An agreement whose owners' decision rule is binding. This is the agreement kind eligible for a chain account, escrow, lens decision, execution and an execution market.

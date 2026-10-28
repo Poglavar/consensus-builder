@@ -253,4 +253,25 @@ describe('the scheme guide', () => {
         const few = Setup.schemeGuideHtml({ template: regimes().latest('nl-kavelruil'), ledger, rules: [{ kind: 'parties', required: 3, actual: 2, ok: false }], check: { ok: false, lines: [{ ok: false, text: 'few' }] } });
         expect(few).toContain('2 parties bring land in and this scheme needs 3');
     });
+
+    it('offers the whole catalogue in its picker, the current scheme selected and the broken ones marked', () => {
+        const html = Setup.schemePickerHtml('nl-kavelruil', { 'nl-kavelruil': true, 'de-umlegung-developed': false });
+        expect(html).toContain('<select data-scheme-guide-pick>');
+        expect(html).toMatch(/<option value="nl-kavelruil" selected data-scheme-met="true">/);
+        expect(html).toMatch(/<option value="de-umlegung-developed" data-scheme-met="false">[^<]*— not met by this plan</);
+        expect(html).toContain('<option value="jp-association">');
+        expect((html.match(/<optgroup /g) || []).length).toBeGreaterThan(1);
+    });
+
+    it('pins a scheme on a config with withScheme, keeping the authority id already typed', () => {
+        const regime = regimes().latest('de-umlegung-developed');
+        const pinned = Setup.withScheme(null, regime);
+        expect(pinned.regime).toEqual({ id: regime.id, version: regime.version });
+        expect(pinned.policy.type).toBe('rules');
+        const typed = Setup.withScheme({ ...pinned, policy: { ...pinned.policy, authorities: [{ authorityId: 'city-of-x' }] } }, regimes().latest('jp-association'));
+        expect(typed.regime.id).toBe('jp-association');
+        expect(typed.policy.authorities.map(row => row.authorityId)).toEqual(['city-of-x']);
+        const voluntary = Setup.withScheme(pinned, regimes().latest('nl-kavelruil'));
+        expect(require('../../frontend/js/proposals/approval.js').policyRules(voluntary.policy).authorities).toEqual([]);
+    });
 });

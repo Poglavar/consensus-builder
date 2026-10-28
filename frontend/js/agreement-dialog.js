@@ -677,29 +677,36 @@
 
     // A plan is selected before ground is read. Designs are a read-only projection of that exact
     // revision; changing a plan's membership is a separate plan-authoring operation.
-    async function open({ agreementId = null, electorate = 'owners', plan = null, preserveContext = false } = {}) {
+    // `from` (a stored id or an agreement record, published or not) starts a counter-agreement: a new
+    // draft with the same plan and terms; `scheme` (a catalogue template) then replaces its rule.
+    async function open({ agreementId = null, electorate = 'owners', plan = null, preserveContext = false, from = null, scheme = null } = {}) {
         const doc = root.document, api = root.AgreementRecord;
         const existing = agreementId ? root.AgreementStore.get(agreementId) : null;
         if (agreementId && !existing) throw new Error(`Agreement ${agreementId} is not on this device.`);
         if (existing?.published) throw publishedError();
+        const source = from ? (typeof from === 'string' ? root.AgreementStore.get(from) : from) : null;
+        if (from && !source) throw new Error(`Agreement ${from} is not on this device.`);
+        const base = existing || source;
         if (session) session.cancel();
         const plans = root.NamedPlans.list();
-        const requestedPlan = existing?.plan || plan || null;
+        const requestedPlan = base?.plan || plan || null;
         const initialPlan = plans.find(row => row.cid === requestedPlan?.cid) || requestedPlan;
         if (initialPlan && !plans.some(row => row.cid === initialPlan.cid)) plans.push(initialPlan);
+        const baseConfig = base?.rule.approvalConfig || null;
         const state = {
             id: existing?.id || api.newId(), createdAt: existing?.createdAt || null,
-            updatedAt: existing?.updatedAt || null, city: existing?.city || root.resolveCurrentCityCode?.() || null,
+            updatedAt: existing?.updatedAt || null, city: base?.city || root.resolveCurrentCityCode?.() || null,
             plans, plan: initialPlan, designs: [], fingerprints: new Map(), land: emptyLand(),
-            allocationMode: allocationMode(termsOf(existing).allocations),
-            currency: existing?.money.currency || root.CityMoney.currentCurrency(),
-            approvalConfig: existing?.rule.approvalConfig || null,
-            lens: existing ? [...existing.rule.lens] : setup().lensKeys(root.getLensEntries()),
-            values: { ...termsOf(existing), electorate: existing?.rule.electorate || electorate,
-                binding: existing?.rule.binding === true, title: existing?.title || '',
-                settlement: { ...(existing?.rule.settlement || api.DEFAULT_SETTLEMENT) },
-                deadline: dateFromDeadline(existing?.deadline), organiser: existing?.consultation?.organiser || '',
-                participationUrl: existing?.consultation?.participationUrl || '', voting: existing?.consultation?.voting || null },
+            allocationMode: allocationMode(termsOf(base).allocations),
+            currency: base?.money.currency || root.CityMoney.currentCurrency(),
+            approvalConfig: scheme ? setup().withScheme(baseConfig, scheme) : baseConfig,
+            lens: base ? [...base.rule.lens] : setup().lensKeys(root.getLensEntries()),
+            values: { ...termsOf(base), electorate: base?.rule.electorate || electorate,
+                binding: base?.rule.binding === true,
+                title: existing?.title || (source ? t('agreement.dialog.counterTitle', 'Counter to {{title}}', { title: source.title || t('agreement.panel.title', 'Agreement') }) : ''),
+                settlement: { ...(base?.rule.settlement || api.DEFAULT_SETTLEMENT) },
+                deadline: dateFromDeadline(base?.deadline), organiser: base?.consultation?.organiser || '',
+                participationUrl: base?.consultation?.participationUrl || '', voting: base?.consultation?.voting || null },
             loading: false, closed: false, sequence: 0, attempted: false, landError: null
         };
         const panels = root.AgreementPanel;
@@ -715,7 +722,8 @@
         modal.className = 'cb-dialog-overlay agreement-editor-modal';
         modal.setAttribute('aria-labelledby', 'agreement-editor-title');
         modal.appendChild(panel); doc.body.appendChild(modal);
-        panel.querySelector('#agreement-editor-title').textContent = t(existing ? 'agreement.dialog.titleEdit' : 'agreement.dialog.titleCreate', existing ? 'Edit agreement' : 'Create agreement');
+        panel.querySelector('#agreement-editor-title').textContent = existing ? t('agreement.dialog.titleEdit', 'Edit agreement')
+            : source ? t('agreement.dialog.titleCounter', 'Counter-agreement') : t('agreement.dialog.titleCreate', 'Create agreement');
         panel.querySelectorAll('[data-agreement-action="cancel"]').forEach(button => {
             button.setAttribute('aria-label', t('common.cancel', 'Cancel'));
             if (button.closest('.panel-footer')) button.textContent = t('common.cancel', 'Cancel');
@@ -1011,11 +1019,22 @@
             }
             const action = button.dataset.editorAction;
             if (action === 'approval-scheme-guide') {
-                const regimes = root.ProposalApprovalRegimes;
+                const regimes = root.ProposalApprovalRegimes, words = root.ProposalApprovalText;
                 const template = regimes?.get(button.dataset.schemeId, button.dataset.schemeVersion) || regimes?.latest(button.dataset.schemeId);
-                let ledger = null, rules = [];
-                try { const record = draft(); ledger = api.ledger(record); rules = api.schemeCheck(record, template)?.check.rules || []; } catch (_) { /* the guide reads without a tally */ }
-                auxiliary = setup().openSchemeGuide({ parent: modal, template, regime: state.approvalConfig?.regime || null, check: schemeView().schemeCheck, rules, ledger, currency: state.currency });
+                // The draft against any scheme the guide's picker lands on; without a tally the guide still reads.
+                const guideFor = chosen => {
+                    try {
+                        const record = draft(), ledger = api.ledger(record), result = api.schemeCheck(record, chosen);
+                        const names = new Map(partiesOf(state.land.inputs).map(party => [party.ownerKey, party.displayName]));
+                        const label = key => names.get(key) || key;
+                        return { ledger, rules: result?.check.rules || [], check: result ? { ok: result.check.ok, lines: result.check.rules.map(rule => ({ ok: rule.ok, text: words.checkLines({ rules: [rule] }, t, label)[0] })) } : null };
+                    } catch (_) { return { ledger: null, rules: [], check: null }; }
+                };
+                auxiliary = setup().openSchemeGuide({ parent: modal, template, regime: state.approvalConfig?.regime || null, ...guideFor(template), currency: state.currency,
+                    schemeStatus: schemeView().schemeStatus || null, guideFor,
+                    action: { label: t('proposalDrafts.approval.guide.use', 'Use this scheme'), run: chosen => {
+                        try { state.approvalConfig = setup().withScheme(state.approvalConfig, chosen); renderRule(); issues(); } catch (error) { report(error); }
+                    } } });
                 return;
             }
             if (action && button.closest('[data-agreement-rule-form]')) {

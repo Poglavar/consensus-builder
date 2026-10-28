@@ -655,7 +655,11 @@
                 "stepOutputs": "Izlazne čestice: Javno zemljište za ceste i javne površine, a ostali dijelovi vlasnicima ili opciji Predlagatelj.",
                 "stepRights": "Prava vlasništva nad česticama: uvezite datoteku prava (parcel-rights/v2) koja navodi {{what}}.",
                 "stepAuthority": "Pravila › Nadležno tijelo: ID tijela koje odlučuje ({{authority}}); član leće potvrđuje tko djeluje za njega i bilježi njegovu odluku uz odluke vlasnika.",
-                "stepPersons": "Osobe: što svaka osoba unosi i dobiva natrag, u zemljištu i novcu; okvir sheme na kartici Pravila usput prikazuje usklađenost ovog plana sa shemom."
+                "stepPersons": "Osobe: što svaka osoba unosi i dobiva natrag, u zemljištu i novcu; okvir sheme na kartici Pravila usput prikazuje usklađenost ovog plana sa shemom.",
+                "title": "Modeli",
+                "pick": "Model",
+                "use": "Primijeni ovaj model",
+                "counterWith": "Protuprijedlog po ovom modelu"
             }
         },
         "fields": {
@@ -7460,6 +7464,8 @@
         "dialog": {
             "titleCreate": "Stvori sporazum",
             "titleEdit": "Uredi sporazum",
+            "titleCounter": "Protuprijedlog sporazuma",
+            "counterTitle": "Protuprijedlog za {{title}}",
             "intro": "Sporazum se odnosi na jedan plan i određuje tko odlučuje, tko dobiva koje zemljište i koji se novac prenosi. Još ništa ne napušta ovaj uređaj.",
             "save": "Spremi sporazum"
         },
@@ -7598,7 +7604,9 @@
             "actions": {
                 "bet": "Kladi se",
                 "edit": "Uredi",
-                "removeLocal": "Ukloni s ovog uređaja"
+                "removeLocal": "Ukloni s ovog uređaja",
+                "schemes": "Usporedi s modelom…",
+                "counter": "Protuprijedlog"
             },
             "collapse": "Zatvori sporazum",
             "removeLocalConfirm": "Ukloniti ovaj sporazum s ovog uređaja? Njegova dizajni ostaju na karti. Objavljeni sporazum ostaje dostupan putem poveznice.",

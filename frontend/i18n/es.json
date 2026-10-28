@@ -655,7 +655,11 @@
                 "stepOutputs": "Parcelas resultantes: Suelo público para calles y espacios públicos, y las demás porciones a los propietarios o al Proponente.",
                 "stepRights": "Derechos de propiedad de parcelas: importa un archivo de derechos (parcel-rights/v2) que indique {{what}}.",
                 "stepAuthority": "Reglas › Autoridad: un ID para {{authority}}; un miembro de la lente confirma quién actúa por ella y registra su decisión junto a las de los propietarios.",
-                "stepPersons": "Personas: lo que cada persona aporta y recupera, en suelo y en dinero; la tarjeta del esquema en Reglas muestra este plan frente al esquema a medida que avanzas."
+                "stepPersons": "Personas: lo que cada persona aporta y recupera, en suelo y en dinero; la tarjeta del esquema en Reglas muestra este plan frente al esquema a medida que avanzas.",
+                "title": "Esquemas",
+                "pick": "Esquema",
+                "use": "Usar este esquema",
+                "counterWith": "Contrapropuesta con este esquema"
             }
         },
         "fields": {
@@ -7446,6 +7450,8 @@
         "dialog": {
             "titleCreate": "Crear acuerdo",
             "titleEdit": "Editar acuerdo",
+            "titleCounter": "Contrapropuesta de acuerdo",
+            "counterTitle": "Contrapropuesta a {{title}}",
             "intro": "Un acuerdo se refiere a un plan y establece quién decide, quién recibe cada terreno y qué dinero se transfiere. Todavía nada sale de este dispositivo.",
             "save": "Guardar acuerdo"
         },
@@ -7584,7 +7590,9 @@
             "actions": {
                 "bet": "Apostar",
                 "edit": "Editar",
-                "removeLocal": "Quitar de este dispositivo"
+                "removeLocal": "Quitar de este dispositivo",
+                "schemes": "Comparar con un esquema…",
+                "counter": "Contrapropuesta"
             },
             "collapse": "Cerrar acuerdo",
             "removeLocalConfirm": "¿Quitar este acuerdo de este dispositivo? Sus diseños permanecen en el mapa. El acuerdo publicado sigue disponible a través de su enlace.",

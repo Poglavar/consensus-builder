@@ -548,11 +548,17 @@
             + (sponsor ? `<p class="agreement-panel-meta">${esc(sponsor)}</p>` : ''));
     }
 
-    function ruleHtml(summary, deadline, tr = t) {
+    // `owners`: an owners' rule gets the scheme guide (its pinned scheme, or the catalogue to compare
+    // with); `counter`: a new draft from this agreement's plan and terms.
+    function ruleHtml(summary, deadline, tr = t, { owners = false, scheme = false, counter = false } = {}) {
+        const actions = (owners ? `<button type="button" class="btn btn-sm" data-agreement-action="scheme-guide"><i class="fas fa-book-open" aria-hidden="true"></i> ${esc(scheme
+                ? tr('proposalDrafts.approval.guide.open', 'How this scheme works…') : tr('agreement.panel.actions.schemes', 'Compare with a scheme…'))}</button>` : '')
+            + (counter ? `<button type="button" class="btn btn-sm" data-agreement-action="counter"><i class="fas fa-reply" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.counter', 'Counter-agreement'))}</button>` : '');
         return sectionHtml(tr('agreement.sections.rule', 'Decision rule'),
             `<p class="agreement-panel-rule">${esc(summary.electorate)} · ${esc(summary.binding)}</p>`
             + (summary.detail ? `<p class="agreement-panel-meta">${esc(summary.detail)}</p>` : '')
-            + (deadline ? `<p class="agreement-panel-meta">${esc(tr('agreement.panel.deadline', 'Deadline: {{date}}', { date: deadline }))}</p>` : ''));
+            + (deadline ? `<p class="agreement-panel-meta">${esc(tr('agreement.panel.deadline', 'Deadline: {{date}}', { date: deadline }))}</p>` : '')
+            + (actions ? `<div class="agreement-panel-actions">${actions}</div>` : ''));
     }
 
     function inputsHtml(agreement, tr = t) {
@@ -718,7 +724,7 @@
                 + designsHtml(designRows(agreement, { designOf, isApplied: win.isApplied, typeLabel }));
             const panels = { overview, inputs: landHtml(landSummary(agreement)) + inputsHtml(agreement),
                 ...(agreement.rule?.electorate === 'community' ? {} : { outputs: byHashOnly + allocationHtml(allocationLines(agreement)), persons: ledgerHtml(ledger) }),
-                rules: ruleHtml(rule, deadline) };
+                rules: ruleHtml(rule, deadline, t, { owners: agreement.rule?.electorate === 'owners', scheme: !!win.AgreementRecord.schemeOf(agreement.rule), counter: true }) };
             if (!(state.tab in panels)) state.tab = 'overview';
             return status
                 + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement), readOnly })
@@ -972,6 +978,44 @@
             if (state.id === id && isOpen()) refresh();
             if (win.ThreeClickStack?.isOpen()) win.ThreeClickStack.restoreFocus();
             else win.ClickStack?.restoreFocus();
+        }
+
+        // The scheme guide for this agreement: its pinned scheme (or the catalogue's first one to
+        // compare with); the picker reads the agreement against any other scheme, and the dialog's
+        // button drafts a counter-agreement under the picked one.
+        function schemeGuide() {
+            const agreement = state.agreement, api = win.AgreementRecord;
+            const regimes = win.ProposalApprovalRegimes, words = win.ProposalApprovalText, setup = win.ProposalApprovalSetup;
+            if (!agreement || !regimes || !words || !setup) return;
+            const template = api.schemeOf(agreement.rule) || regimes.latest(regimes.list()[0].id);
+            const guideFor = scheme => {
+                try {
+                    const ledger = api.ledger(agreement), result = api.schemeCheck(agreement, scheme);
+                    const label = key => ledger.parties.find(party => party.ownerKey === key)?.displayName || key;
+                    return { ledger, rules: result?.check.rules || [], check: result ? { ok: result.check.ok, lines: result.check.rules.map(rule => ({ ok: rule.ok, text: words.checkLines({ rules: [rule] }, t, label)[0] })) } : null };
+                } catch (error) {
+                    log(`the scheme check of ${state.id} against ${scheme.id} failed: ${error.message}`);
+                    return { ledger: null, rules: [], check: null };
+                }
+            };
+            const schemeStatus = {};
+            regimes.list().forEach(scheme => { try { schemeStatus[scheme.id] = api.schemeCheck(agreement, scheme).check.ok; } catch (_) { /* unmarked */ } });
+            setup.openSchemeGuide({ template, regime: agreement.rule?.approvalConfig?.regime || null, ...guideFor(template), currency: agreement.money?.currency || '',
+                schemeStatus, guideFor, action: { label: t('proposalDrafts.approval.guide.counterWith', 'Counter-agreement with this scheme'), run: scheme => counter(scheme) } });
+        }
+
+        // A counter-agreement: a new draft from this agreement's plan and terms (AgreementDialog
+        // `from`), under `scheme` when the guide chose one; the saved draft opens in the stack.
+        async function counter(scheme = null) {
+            const id = state.id;
+            let saved;
+            try {
+                saved = await win.AgreementDialog.open({ from: state.agreement, scheme, preserveContext: true });
+            } catch (error) {
+                report(`countering ${id} failed`, error);
+                return;
+            }
+            if (saved?.id) await win.ClickStack.showAgreement(store().get(saved.id) || saved);
         }
 
         // Propose (agreement-sync.js): publishes the designs and the agreement, then copies the link.
@@ -1293,7 +1337,7 @@
             const action = event.target.closest('[data-agreement-action]');
             if (!action || action.disabled) return;
             const actionName = action.getAttribute('data-agreement-action');
-            if (state.readOnlyAgreement && !['close', 'link', 'plan'].includes(actionName)) return;
+            if (state.readOnlyAgreement && !['close', 'link', 'plan', 'scheme-guide', 'counter'].includes(actionName)) return;
             switch (actionName) {
                 case 'close': close(); break;
                 case 'plan': win.BusyControl.track(action, () => win.ClickStack.showPlan(state.agreement.plan, { designs: state.agreement.designs, draft: !state.agreement.published })).catch(error => win.showStyledAlert(error.message)); break;
@@ -1309,6 +1353,8 @@
                 case 'expire': expire(); break;
                 case 'bet': bet(); break;
                 case 'edit': edit(); break;
+                case 'scheme-guide': schemeGuide(); break;
+                case 'counter': win.BusyControl.track(action, () => counter()); break;
                 default: break;
             }
         }

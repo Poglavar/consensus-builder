@@ -1870,7 +1870,9 @@
             "actions": {
                 "edit": "Editar",
                 "bet": "Apostou",
-                "removeLocal": "Remover deste dispositivo"
+                "removeLocal": "Remover deste dispositivo",
+                "schemes": "Comparar com um esquema…",
+                "counter": "Contraproposta"
             },
             "title": "Acordo",
             "untitled": "Acordo de {{date}}",
@@ -1914,6 +1916,8 @@
         "dialog": {
             "titleCreate": "Criar acordo",
             "titleEdit": "Editar acordo",
+            "titleCounter": "Contraproposta de acordo",
+            "counterTitle": "Contraproposta a {{title}}",
             "intro": "Um acordo refere-se a um plano e define quem decide, quem recebe cada terreno e que dinheiro é transferido. Por enquanto, nada sai deste dispositivo.",
             "save": "Guardar acordo"
         },
@@ -2257,7 +2261,11 @@
                 "stepOutputs": "Parcelas resultantes: Terreno público para ruas e espaços públicos, as restantes porções aos proprietários ou ao Proponente.",
                 "stepRights": "Direitos de propriedade das parcelas: importe um ficheiro de direitos (parcel-rights/v2) que liste {{what}}.",
                 "stepAuthority": "Regras › Autoridade: um id para {{authority}}; um membro da lente confirma quem atua em seu nome e regista a sua decisão ao lado das dos proprietários.",
-                "stepPersons": "Pessoas: o que cada pessoa contribui e recebe de volta, em terreno e em dinheiro; o cartão do regime em Regras mostra este plano face ao regime à medida que avança."
+                "stepPersons": "Pessoas: o que cada pessoa contribui e recebe de volta, em terreno e em dinheiro; o cartão do regime em Regras mostra este plano face ao regime à medida que avança.",
+                "title": "Esquemas",
+                "pick": "Esquema",
+                "use": "Usar este esquema",
+                "counterWith": "Contraproposta com este esquema"
             }
         },
         "fields": {
