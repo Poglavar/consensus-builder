@@ -129,8 +129,7 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
                     scoped.push({ content: design, cid: cidOfObject(design), parcelIds: ids });
                 }
                 takes = [...parcels.keys()].sort();
-                const holders = new Map((isAgreement ? content.inputs.parcels : []).map(p => [p.parcelId, p.holders]));
-                ground = await deriveWithApp({ designs: scoped, parcels: [...parcels.values()], ownerOf: id => holders.get(id) || [] });
+                ground = await deriveWithApp({ designs: scoped, parcels: [...parcels.values()] });
                 if (isAgreement) {
                     if (JSON.stringify([...content.inputs.parcels.map(p => p.parcelId)].sort()) !== JSON.stringify(takes)
                         || ground.outputs.length !== content.outputs.length || ground.outputs.some(o => !content.outputs.some(p => p.hash === o.hash))) throw fail('agreement-ground-changed', 'This agreement no longer matches the current source ground.');

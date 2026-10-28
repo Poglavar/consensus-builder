@@ -41,16 +41,17 @@ const road = () => ({
     createdAt: '2026-10-21T09:30:00.000Z', applied: true, roadProposal: { definition: { widthM: 9 } }
 });
 const holder = (ownerKey, share = 1) => ({ ownerKey, displayName: ownerKey, share });
-function output(pieceId, geometry, areaM2, fromParcelIds, producedBy, role, holders) {
-    return { hash: AgreementRecord.outputHash(geometry), pieceId, areaM2, fromParcelIds, producedBy, role, holders, geometry };
+const LOCAL_OWNERS = { k9: [holder('agent-ana')], k10: [holder('agent-ben')] };
+function output(pieceId, geometry, areaM2, fromParcelIds, producedBy, role) {
+    return { hash: AgreementRecord.outputHash(geometry), pieceId, areaM2, fromParcelIds, producedBy, role, geometry };
 }
 // The local agreement the dialog saved over those designs.
 function agreement(extra = {}) {
-    const inputs = { parcels: [{ parcelId: 'k9', areaM2: 500, holders: [holder('agent-ana')] }, { parcelId: 'k10', areaM2: 500, holders: [holder('agent-ben')] }], openGroundM2: 0 };
+    const inputs = { parcels: [{ parcelId: 'k9', areaM2: 500 }, { parcelId: 'k10', areaM2: 500 }], openGroundM2: 0 };
     const outputs = [
-        output('k9-p1', rect(0, 0, 1, 2), 300, ['k9'], 'layout-1', 'plot', [holder('agent-ana')]),
-        output('k9-p2', rect(1, 0, 3, 2), 600, ['k9'], 'layout-1', 'plot', [holder('agent-ana')]),
-        output('road-1#1', rect(0, 2, 5, 2.2), 100, ['k9', 'k10'], 'road-1', 'corridor', [])
+        output('k9-p1', rect(0, 0, 1, 2), 300, ['k9'], 'layout-1', 'plot'),
+        output('k9-p2', rect(1, 0, 3, 2), 600, ['k9'], 'layout-1', 'plot'),
+        output('road-1#1', rect(0, 2, 5, 2.2), 100, ['k9', 'k10'], 'road-1', 'corridor')
     ];
     const designs = [
         { proposalId: 'layout-1', title: 'Lay out k9', goal: 'parcel-layout', cid: DesignRecord.cidOf(layout()) },
@@ -63,13 +64,13 @@ function agreement(extra = {}) {
         plan: { cid: Cid.cidOfObject(planContent), content: planContent }, designs,
         inputs, outputs,
         allocations: [
-            { output: outputs[0].hash, to: { kind: 'party', ownerKey: 'agent-ana' } },
-            { output: outputs[1].hash, to: { kind: 'party', ownerKey: 'agent-ben' } },
+            { output: outputs[0].hash, to: { kind: 'party', ownerKey: 'parcel-owner:k9' } },
+            { output: outputs[1].hash, to: { kind: 'party', ownerKey: 'parcel-owner:k10' } },
             { output: outputs[2].hash, to: { kind: 'public' } }
         ],
         money: { currency: 'EUR', lines: [] },
         rule: { electorate: 'owners', binding: true, lens: ['lens-member-1'],
-            approvalConfig: { schema: 'proposal-approval/v1', rights: AgreementRecord.rightsFromInputs(inputs), policy: { type: 'unanimous' } } },
+            approvalConfig: { schema: 'proposal-approval/v1', rights: AgreementRecord.rightsFromInputs(inputs, id => LOCAL_OWNERS[id] || []), policy: { type: 'unanimous' } } },
         deadline: null, published: null, ...extra
     };
     return AgreementRecord.settle(raw);
@@ -145,20 +146,20 @@ describe('recordFromPublished', () => {
         expect(AgreementRecord.publishedCid(imported)).toBe(cid);
     });
 
-    it('carries unchanged land holdings from the published inputs regardless of this browser’s owner cache', () => {
+    it('keeps the published parcel parties and allocations whatever this browser derives or records about owners', () => {
         const raw = agreement();
         raw.outputs = raw.inputs.parcels.map((parcel, index) => output(parcel.parcelId, rect(index * 3, 0, index * 3 + 3, 2),
-            parcel.areaM2, [parcel.parcelId], null, 'parcel', parcel.holders));
-        raw.allocations = raw.outputs.map((piece, index) => ({ output: piece.hash, to: { kind: 'party', ownerKey: index === 0 ? 'agent-ana' : 'agent-ben' } }));
+            parcel.areaM2, [parcel.parcelId], null, 'parcel'));
+        raw.allocations = raw.outputs.map(piece => ({ output: piece.hash, to: { kind: 'party', ownerKey: AgreementRecord.partyKey(piece.fromParcelIds[0]) } }));
         raw.money = AgreementRecord.settle(raw).money;
         const content = AgreementRecord.published(raw);
+        expect(content.inputs.parcels.some(parcel => Object.hasOwn(parcel, 'holders'))).toBe(false);
         const cid = Cid.cidOfObject(content);
-        const foreign = raw.outputs.map(piece => ({ ...piece, holders: [holder('unrelated-local-owner')] }));
-        for (const derived of [null, { outputs: raw.outputs.map(piece => ({ ...piece, holders: [] })) }, { outputs: foreign }]) {
+        for (const derived of [null, { outputs: raw.outputs }]) {
             const imported = AgreementSync.recordFromPublished({ cid, content, plan: raw.plan }, { id: 'ag-imported', apiBase: API, localIdOf, derived });
             const parties = AgreementRecord.ledger(imported).parties;
             expect(parties.map(party => [party.ownerKey, party.contributedM2, party.assignedM2, party.changeM2]))
-                .toEqual([['agent-ana', 500, 500, 0], ['agent-ben', 500, 500, 0]]);
+                .toEqual([['parcel-owner:k10', 500, 500, 0], ['parcel-owner:k9', 500, 500, 0]]);
             expect(AgreementRecord.publishedCid(imported)).toBe(cid);
         }
     });
@@ -169,7 +170,7 @@ describe('recordFromPublished', () => {
             const record = AgreementSync.recordFromPublished(row, { id: 'ag-imported', apiBase: API, localIdOf, derived });
             expect(record.outputs).toEqual(content.outputs.map(piece => ({
                 hash: piece.hash, pieceId: piece.hash, areaM2: piece.areaM2, fromParcelIds: piece.fromParcelIds,
-                producedBy: piece.producedBy === roadCid ? 'design-road' : 'design-layout', role: piece.role, holders: [], geometry: null
+                producedBy: piece.producedBy === roadCid ? 'design-road' : 'design-layout', role: piece.role, geometry: null
             })));
             expect(() => AgreementRecord.normalize(record)).not.toThrow();
         }

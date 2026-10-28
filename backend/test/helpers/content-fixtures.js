@@ -112,8 +112,8 @@ export function planForAgreement(content) { return agreementPlans.get(content.pl
 
 /**
  * An owner deal over the parcels the designs take, in its published form (AgreementRecord.published):
- * one output per design splitting the input land evenly, each output allocated to one input party in
- * turn, and the cash derived from the default area settlement. `overrides` replace whole fields of
+ * one output per design splitting the input land evenly, each output allocated in turn to one input
+ * parcel's abstract owners' party, and the cash derived from the default area settlement. `overrides` replace whole fields of
  * the published object afterwards, as given.
  * @param designs design/v1 objects (linked by CID in this order)
  */
@@ -123,15 +123,15 @@ export function agreementContent(designs, overrides = {}) {
     const planCid = cidOfObject(plan);
     const inputs = {
         parcels: [
-            { parcelId: 'HR-335649-100', parcelSourceId: 'oss-wfs', areaM2: 600, holders: [{ ownerKey: 'owner-a', displayName: 'Ana', share: 1 }] },
-            { parcelId: 'HR-335649-101', parcelSourceId: 'oss-wfs', areaM2: 400, holders: [{ ownerKey: 'owner-b', displayName: 'Boris', share: 0.5 }, { ownerKey: 'owner-c', displayName: 'Cvita', share: 0.5 }] }
+            { parcelId: 'HR-335649-100', parcelSourceId: 'oss-wfs', areaM2: 600 },
+            { parcelId: 'HR-335649-101', parcelSourceId: 'oss-wfs', areaM2: 400 }
         ],
         openGroundM2: 0
     };
-    const parties = ['owner-a', 'owner-b', 'owner-c'];
+    const parties = inputs.parcels.map(parcel => AgreementRecord.partyKey(parcel.parcelId));
     const outputs = cids.map((cid, index) => ({
         pieceId: pieceHash(`piece-${index}`), hash: pieceHash(`piece-${index}`), areaM2: 1000 / cids.length,
-        fromParcelIds: ['HR-335649-100', 'HR-335649-101'], role: 'plot', producedBy: cid, holders: [], geometry: null
+        fromParcelIds: ['HR-335649-100', 'HR-335649-101'], role: 'plot', producedBy: cid, geometry: null
     }));
     const local = AgreementRecord.settle({
         schema: AgreementRecord.SCHEMA, id: 'content-fixture', title: 'Riverside deal', author: 'Studio North', sponsor: null, city: 'zagreb',

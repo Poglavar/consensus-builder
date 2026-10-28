@@ -63,19 +63,18 @@ describe('MCP comparison measurements', () => {
         const ground = require('../../frontend/js/agreement-ground.js');
         const agreementDesign = designObject({ ...park, createdAt: park.authoredAt });
         const designCid = agreementDesign.cid, hash = outputHash(site), areaM2 = ground.areaOf(parcel);
+        // Parcel A is its owners' party; the proposer acquires the plot and the party is paid for its land.
         const { content, plan } = agreementObject({ city: 'london', plan: planForDesigns('Agreement plan', [agreementDesign], mapViewFromGeometry([site], 'london')), designs: [{ cid: designCid }],
-            parcels: [{ parcelId: 'A', areaM2, holders: [{ ownerKey: 'party-A', share: 0.5 }, { ownerKey: 'party-B', share: 0.5 }] }],
+            parcels: [{ parcelId: 'A', areaM2 }],
             outputs: [{ hash, areaM2, fromParcelIds: ['A'], role: 'parcel', producedBy: designCid, geometry: site }],
-            allocations: [{ output: hash, to: { kind: 'party', ownerKey: 'party-A' } }],
-            // Cash is derived from the area settlement: party-A takes the whole plot and pays party-B for its half.
+            allocations: [{ output: hash, to: { kind: 'proposer' } }],
             money: { currency: 'GBP', lines: [] }, rule: { ...communityRule(), electorate: 'owners', settlement: { method: 'area', rateCentsPerM2: 100, contributionBasisPoints: 0 } } });
-        const halfCents = Math.round(areaM2 / 2 * 100);
+        const cents = Math.round(areaM2 * 100);
         const { tools } = toolsFor();
         const result = await tools.compare({ buildingSourceId:'osm', targets: [{ agreement: content, plan, designs: [agreementDesign.content] }, park], parcelSourceId: 'test' });
-        expect(content.money.lines).toEqual([{ ownerKey: 'party-A', amountCents: -halfCents }, { ownerKey: 'party-B', amountCents: halfCents }]);
-        expect(result.alternatives[0].ledger).toMatchObject({ currency: 'GBP', parties: [
-            { ownerKey: 'party-A', contributedM2: areaM2 / 2, assignedM2: areaM2, changeM2: areaM2 / 2, cashCents: -halfCents },
-            { ownerKey: 'party-B', contributedM2: areaM2 / 2, assignedM2: 0, changeM2: -areaM2 / 2, cashCents: halfCents }] });
+        expect(content.money.lines).toEqual([{ ownerKey: 'parcel-owner:A', amountCents: cents }]);
+        expect(result.alternatives[0].ledger).toMatchObject({ currency: 'GBP', proposerM2: areaM2, parties: [
+            { ownerKey: 'parcel-owner:A', parcelId: 'A', contributedM2: areaM2, assignedM2: 0, changeM2: -areaM2, cashCents: cents }] });
         expect(result.alternatives[0].measurementErrors).toEqual([]);
         expect(result.alternatives[0].draftArtifact.agreement).toEqual(content);
         expect(result.alternatives[0].draftArtifact.plan).toEqual(plan.content);

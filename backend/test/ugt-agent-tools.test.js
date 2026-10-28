@@ -11,7 +11,7 @@ import { Keypair } from '@solana/web3.js';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import {
-    agreementObject, communityRule, designObject, holdersFromRights, noMoney, ownersRule, parcelOutputs, planForDesigns, registryRights
+    agreementObject, communityRule, designObject, noMoney, ownersRule, parcelOutputs, planForDesigns, registryRights
 } from '../agents/agreement-objects.js';
 import { agreementAccountOf, AGREEMENT_PROGRAM_ID } from '../agents/agreement-minter.js';
 import { canonicalBytes, cidOfObject } from '../cid.js';
@@ -45,7 +45,7 @@ function agreementOf({ sponsor = AGENT, rule = null, title = 'Six storeys on the
         title, author: 'agent-01', sponsor, city: 'zagreb', createdAt: '2026-10-22T09:05:00.000Z',
         plan: planForDesigns(title, [design], { at: '45.8132,15.97725,17', mode: '2d', city: 'zagreb' }),
         designs: [{ cid: design.cid, goal: design.content.goal, title: design.content.title }],
-        parcels: [{ parcelId: PARCEL, areaM2: 612.4, holders: holdersFromRights(rights, PARCEL) }],
+        parcels: [{ parcelId: PARCEL, areaM2: 612.4 }],
         outputs: parcelOutputs([{ parcelId: PARCEL, geometry: box(15.977, 45.813, 15.9775, 45.8133), areaM2: 612.4 }]),
         rule: rule || ownersRule({ lens: LENS, rights }), deadline, money: noMoney('EUR')
     });

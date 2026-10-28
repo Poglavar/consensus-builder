@@ -146,7 +146,6 @@ export function planAgreement(plan, objects, ground) {
         parcels: ground.inputs.map(parcel => ({
             parcelId: parcel.parcelId,
             areaM2: parcel.areaM2,
-            holders: [],
             ...(plan.parcelSourceId ? { parcelSourceId: plan.parcelSourceId } : {})
         })),
         openGroundM2: ground.openGroundM2,
@@ -374,7 +373,6 @@ export function capturePageScript(config) {
             designs: records,
             fabric,
             originals: window.AgreementDialog.originalsById(features, fabric && fabric.featureId),
-            ownerOf: window.AgreementGround.localHolders({ storage: window.PersistentStorage, agents: window.agentStorage }),
             area: feature => window.turf.area(feature)
         });
         const outputs = derived.outputs.map(output => {

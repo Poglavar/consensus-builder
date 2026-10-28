@@ -7805,7 +7805,12 @@
         "plan": {
             "untitled": "Plan sin título"
         },
+        "party": {
+            "parcelOwners": "Propietario(s) de la parcela {{parcelId}}"
+        },
         "workflow": {
+            "personsByRights": "Personas según los derechos de propiedad",
+            "personsUnresolved": "Sin derechos de propiedad completos, los propietarios de {{count}} parcela(s) siguen siendo una sola parte.",
             "choosePlan": "Elegir un plan guardado",
             "noPlans": "Primero crea un plan. Abre Planes y elige Crear plan.",
             "savePlan": "Guardar plan en este dispositivo",

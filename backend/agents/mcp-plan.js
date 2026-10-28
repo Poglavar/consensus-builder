@@ -1,6 +1,6 @@
 // Inspect the exact named plan behind an agreement and revise its terms without changing membership.
 import { appTurf as turf } from './mcp-geometry.js';
-import { abstractHolder, agreementObject, cidOfObject, holdersFromRights, isCid } from './agreement-objects.js';
+import { agreementObject, cidOfObject, isCid, personPositions } from './agreement-objects.js';
 import { previewArtifact } from './mcp-preview.js';
 import { trustedMetadata } from './mcp-results.js';
 import { createRequire } from 'node:module';
@@ -61,7 +61,7 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             designs.push({ cid: linked.cid, content: resolved.content });
         }
         const localAgreement = { ...content, id: `mcp-${cid}`, updatedAt: null, plan,
-            outputs: content.outputs.map(output => ({ ...output, pieceId: output.hash, holders: [], geometry: null })),
+            outputs: content.outputs.map(output => ({ ...output, pieceId: output.hash, geometry: null })),
             designs: designs.map(row => ({ proposalId: row.cid, cid: row.cid, title: row.content.title, goal: row.content.goal })) };
         return { agreement: localAgreement, plan, cid, parcelSourceId, designs };
     }
@@ -121,12 +121,15 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
         });
         const recipients = new Map(plan.agreement.allocations.map(row => [row.output, row.to]));
         const ledger = AgreementRecord.ledger(plan.agreement);
+        // Parties are abstract (one per input parcel); with a rights snapshot in the rule, what each
+        // person holds of them is derived, never stored.
+        const rights = plan.agreement.rule?.approvalConfig?.rights;
         return { cid: plan.cid, parcelSourceId: plan.parcelSourceId, title: plan.agreement.title,
             items: matched.slice(offset, offset + limit).map(({ geometry, ...item }) => {
                 const value = item.kind === 'piece' ? { ...item, recipient: recipients.get(item.ref.slice(6)) || null } : item;
                 return includeGeometry ? { ...value, geometry } : value;
             }),
-            parties: ledger.parties, publicM2: ledger.publicM2, proposerM2: ledger.proposerM2, settlement: plan.agreement.rule.settlement,
+            parties: ledger.parties, persons: rights ? personPositions(plan.agreement, rights) : null, publicM2: ledger.publicM2, proposerM2: ledger.proposerM2, settlement: plan.agreement.rule.settlement,
             valuation: plan.agreement.valuation ?? null, valued: ledger.valued, contributedValueCents: ledger.contributedValueCents,
             distributableValueCents: ledger.distributableValueCents, publicValueCents: ledger.publicValueCents, proposerValueCents: ledger.proposerValueCents,
             scheme: schemeReport(plan.agreement),
@@ -168,10 +171,9 @@ export function createMcpPlanTools({ read, drafts, agreements, appOrigin, resolv
             rule.electorate = 'owners'; rule.binding = terms.rulePreset === 'owner-deal';
             if (terms.rights) rule.approvalConfig = { schema: 'proposal-approval/v1', rights: terms.rights, policy: { type: 'unanimous' } };
         }
-        const rights = terms.rights ?? rule.approvalConfig?.rights;
-        if (terms.rights && rule.approvalConfig) rule.approvalConfig.rights = terms.rights;
-        const parcels = previous.inputs.parcels.map(parcel => ({ ...parcel, holders: rights?.parcels?.some(row => row.parcelId === parcel.parcelId)
-            ? holdersFromRights(rights, parcel.parcelId) : rights ? [abstractHolder(parcel.parcelId)] : parcel.holders }));
+        // Ownership rights live only in the rule: the parties stay one per input parcel.
+        if (terms.rights && rule.electorate === 'owners') rule.approvalConfig = { ...(rule.approvalConfig || { schema: 'proposal-approval/v1', policy: { type: 'unanimous' } }), rights: terms.rights };
+        const parcels = previous.inputs.parcels;
         const outputs = previous.outputs.map(output => ({ ...output, geometry: null }));
         const checked = agreementObject({ ...previous, plan: original.plan, designs: original.designs.map(row => ({ cid: row.cid, title: row.content.title, goal: row.content.goal })),
             parcels, openGroundM2: previous.inputs.openGroundM2, outputs,

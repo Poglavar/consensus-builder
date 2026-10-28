@@ -54,23 +54,17 @@ export const DESIGN_CID = Cid.cidOfObject({ schema: 'design/v1', goal: 'parcel-l
 // The named plan/v1 the agreement references by CID: the one design above.
 export const PLAN = { schema: 'plan/v1', title: 'Lay out the block', designCids: [DESIGN_CID], view: { at: '45.8,15.97,17', mode: '2d' } };
 export const PLAN_CID = Cid.cidOfObject(PLAN);
-const shareOf = text => {
-    const [numerator, denominator] = text.split('/').map(Number);
-    return numerator / denominator;
-};
 
-// The published agreement/v1 object (AgreementRecord.published): its plan CID, the input land with its
-// holders, and the owners' rule with the lens. What the index stores as the row's content.
+// The published agreement/v1 object (AgreementRecord.published): its plan CID, the input land (each
+// parcel its owners' abstract party; the owners themselves only in the rule's rights), and the owners'
+// rule with the lens. What the index stores as the row's content.
 export function agreementContent(overrides = {}) {
     return JSON.parse(JSON.stringify({
         schema: 'agreement/v1', title: 'Block readjustment', author: 'Test author', sponsor: null, city: 'test-city',
         createdAt: '2026-10-21T10:00:00.000Z',
         planCid: PLAN_CID,
         inputs: {
-            parcels: parcels.map(parcel => ({
-                parcelId: parcel.parcelId, areaM2: parcel.areaM2,
-                holders: parcel.owners.map(owner => ({ ownerKey: owner.ownerId, displayName: owner.ownerId, share: shareOf(owner.share) }))
-            })),
+            parcels: parcels.map(parcel => ({ parcelId: parcel.parcelId, areaM2: parcel.areaM2 })),
             openGroundM2: 0
         },
         outputs: [], allocations: [], money: { currency: 'EUR', lines: [] },
@@ -81,7 +75,7 @@ export function agreementContent(overrides = {}) {
 }
 export const AGREEMENT_CID = Cid.cidOfObject(agreementContent());
 // The same land and rule under other terms: another object, so another CID.
-export const COUNTER_AGREEMENT_CID = Cid.cidOfObject(agreementContent({ title: 'Counter-agreement', money: { currency: 'EUR', lines: [{ ownerKey: 'owner-b', amountCents: 50000 }] } }));
+export const COUNTER_AGREEMENT_CID = Cid.cidOfObject(agreementContent({ title: 'Counter-agreement', money: { currency: 'EUR', lines: [{ ownerKey: `parcel-owner:${parcels[1].parcelId}`, amountCents: 50000 }] } }));
 
 // The agreement-like object the decision functions take (approval.js, approval-relay.js,
 // approval-anchor.js): the engine's subject plus the CID decisions sign and the lifecycle.

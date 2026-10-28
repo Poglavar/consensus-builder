@@ -2015,7 +2015,12 @@
         "plan": {
             "untitled": "Plan sans titre"
         },
+        "party": {
+            "parcelOwners": "Propriétaire(s) de la parcelle {{parcelId}}"
+        },
         "workflow": {
+            "personsByRights": "Personnes selon les droits de propriété",
+            "personsUnresolved": "Sans droits de propriété complets, les propriétaires de {{count}} parcelle(s) restent une seule partie.",
             "choosePlan": "Choisir un plan enregistré",
             "noPlans": "Créez d’abord un plan. Ouvrez Plans et choisissez Créer un plan.",
             "savePlan": "Enregistrer le plan sur cet appareil",

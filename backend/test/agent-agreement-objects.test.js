@@ -7,7 +7,7 @@ import { createRequire } from 'node:module';
 import { Keypair } from '@solana/web3.js';
 import {
     AGREEMENT_SCHEMA, DESIGN_SCHEMA, noMoney, REGISTRY_RIGHTS_PROVIDER, agreementObject, boundParcelIds, cidOfObject, communityRule,
-    deadlineAfterDays, designObject, holdersFromRights, isParcelLayout, mapViewFromGeometry, ownersRule, parcelOutputs, registryRights
+    deadlineAfterDays, designObject, isParcelLayout, mapViewFromGeometry, ownersRule, parcelOutputs, partyKey, personPositions, registryRights
 } from '../agents/agreement-objects.js';
 import { buildDesignRecord } from '../agents/record-builder.js';
 import { validateDesignContent } from '../routes/designs.js';
@@ -43,13 +43,13 @@ const design = designObject(buildDesignRecord({
 }));
 const namedPlan = PlanRecord.create('Agreement plan', [design.cid], { at: '45.8,15.97,17', mode: '2d', city: 'zagreb' });
 
-function ownersAgreement(overrides = {}) {
-    const rights = registryRights([{ parcelId: 'HR-335550-1234/1', owners: [{ owner, ownerCount: 1 }] }]);
+function ownersAgreement(overrides = {}, registryOwners = [{ owner, ownerCount: 1 }]) {
+    const rights = registryRights([{ parcelId: 'HR-335550-1234/1', owners: registryOwners }]);
     return agreementObject({
         title: 'Six storeys on the corner lot', author: 'densifier-01', sponsor: owner, city: 'zagreb', createdAt: '2026-10-22T09:00:00.000Z',
         designs: [{ cid: design.cid, goal: design.content.goal, title: design.content.title }],
         plan: { content: namedPlan, cid: cidOfObject(namedPlan) },
-        parcels: [{ parcelId: 'HR-335550-1234/1', areaM2: 612.4, holders: holdersFromRights(rights, 'HR-335550-1234/1', { [owner]: 'densifier-01' }) }],
+        parcels: [{ parcelId: 'HR-335550-1234/1', areaM2: 612.4 }],
         outputs: parcelOutputs([{ parcelId: 'HR-335550-1234/1', geometry: PARCEL, areaM2: 612.4 }]),
         rule: ownersRule({ lens: LENS, rights }),
         deadline: deadlineAfterDays(NOW_MS, 7),
@@ -84,17 +84,11 @@ describe('rights from the devnet owner registry', () => {
             expect.objectContaining({ parcelId: 'HR-1', complete: true, areaM2: null, owners: [{ ownerId: owner, share: '1/1' }] }),
             expect.objectContaining({ parcelId: 'HR-2', complete: true, areaM2: null, owners: expect.arrayContaining([{ ownerId: owner, share: '1/2' }, { ownerId: coOwner, share: '1/2' }]) })
         ]);
-        expect(holdersFromRights(rights, 'HR-2', { [owner]: 'densifier-01' })).toEqual(expect.arrayContaining([
-            { ownerKey: owner, displayName: 'densifier-01', share: 0.5 },
-            { ownerKey: coOwner, displayName: coOwner, share: 0.5 }
-        ]));
     });
 
-    it('refuses a parcel without owners, an owner count the rows contradict, and an unknown parcel', () => {
+    it('refuses a parcel without owners and an owner count the rows contradict', () => {
         expect(() => registryRights([{ parcelId: 'HR-1', owners: [] }])).toThrow(/has no owner in the devnet owner registry/);
         expect(() => registryRights([{ parcelId: 'HR-1', owners: [{ owner, ownerCount: 2 }] }])).toThrow(/lists 1 owner\(s\) of parcel HR-1 but counts 2/);
-        const rights = registryRights([{ parcelId: 'HR-1', owners: [{ owner, ownerCount: 1 }] }]);
-        expect(() => holdersFromRights(rights, 'HR-9')).toThrow(/has no parcel HR-9/);
     });
 
     it('is exactly what the lens member attests: the same snapshot passes, one that names another owner does not', async () => {
@@ -160,8 +154,8 @@ describe('the agreement object', () => {
         expect(validateAgreementContent(content, { now: NOW_MS })).toMatchObject({ ok: true });
         expect(cid).toBe(cidOf(canonicalBytes(content)));
         expect(content).toMatchObject({
-            sponsor: owner, deadline: '2026-10-29T09:00:00.000Z', money: noMoney('EUR'), allocations: [{ output: agreementRecord.outputHash(PARCEL), to: { kind: 'party', ownerKey: owner } }],
-            inputs: { parcels: [{ parcelId: 'HR-335550-1234/1', areaM2: 612.4, holders: [{ ownerKey: owner, displayName: 'densifier-01', share: 1 }] }], openGroundM2: 0 },
+            sponsor: owner, deadline: '2026-10-29T09:00:00.000Z', money: noMoney('EUR'), allocations: [{ output: agreementRecord.outputHash(PARCEL), to: { kind: 'party', ownerKey: 'parcel-owner:HR-335550-1234/1' } }],
+            inputs: { parcels: [{ parcelId: 'HR-335550-1234/1', areaM2: 612.4 }], openGroundM2: 0 },
             rule: { electorate: 'owners', binding: true, lens: [LENS] }
         });
         expect(content.planCid).toBe(plan.cid);
@@ -170,6 +164,20 @@ describe('the agreement object', () => {
         // The same parts are the same agreement; other terms are another one over the same design.
         expect(ownersAgreement().cid).toBe(cid);
         expect(ownersAgreement({ deadline: deadlineAfterDays(NOW_MS, 8) }).cid).not.toBe(cid);
+    });
+
+    it('gives a co-owned parcel back to its owners\' party, which its co-owners hold in their registered shares', () => {
+        const { content } = ownersAgreement({}, [{ owner, ownerCount: 2 }, { owner: coOwner, ownerCount: 2 }]);
+        expect(validateAgreementContent(content, { now: NOW_MS })).toMatchObject({ ok: true });
+        expect(content.allocations).toEqual([{ output: agreementRecord.outputHash(PARCEL), to: { kind: 'party', ownerKey: partyKey('HR-335550-1234/1') } }]);
+        expect(JSON.stringify(content.inputs)).not.toContain(owner);
+        const persons = personPositions(content, content.rule.approvalConfig.rights);
+        expect(persons.persons.map(person => [person.personId, person.outputs.map(row => row.share), person.landM2])).toEqual(
+            [[owner, coOwner].sort()].flat().map(id => [id, ['1/2'], 306.2]));
+        expect(persons.totals).toMatchObject({ partyLandM2: 612.4, balanced: true });
+        // A named holder on an input parcel is refused, never dropped.
+        expect(() => ownersAgreement({ parcels: [{ parcelId: 'HR-335550-1234/1', areaM2: 612.4, holders: [{ ownerKey: owner, share: 1 }] }] }))
+            .toThrow(expect.objectContaining({ code: 'invalid-agreement', message: expect.stringMatching(/names holders/) }));
     });
 
     it('builds a poll over the same design', () => {

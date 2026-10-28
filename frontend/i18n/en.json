@@ -7777,7 +7777,12 @@
         "plan": {
             "untitled": "Untitled plan"
         },
+        "party": {
+            "parcelOwners": "Owner(s) of parcel {{parcelId}}"
+        },
         "workflow": {
+            "personsByRights": "Persons by ownership rights",
+            "personsUnresolved": "Without complete ownership rights, the owners of {{count}} parcel(s) stay one party.",
             "choosePlan": "Choose a saved plan",
             "noPlans": "Create a plan first. Open Plans and choose Create plan.",
             "savePlan": "Save plan on this device",

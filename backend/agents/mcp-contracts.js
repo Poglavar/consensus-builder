@@ -33,12 +33,19 @@ const privatePreview = {
     previewUrl: z.string().url().nullable()
 };
 const designDraft = mcpResultSchema.extend({ cid, untrusted: authored('design/v1'), ...privatePreview });
+// A road joined to named corridors returns the neighbours whose junctions changed as new revisions.
+const junctionChange = z.object({ type: z.literal('road-junctions'), beforeCid: cid, afterCid: cid }).passthrough();
+const corridorJoins = { changes: z.array(junctionChange), revisedCorridors: z.array(designDraft) };
+const joinedRoad = designDraft.extend(corridorJoins);
+const editedDesign = designDraft.extend({ changes: corridorJoins.changes.optional(), revisedCorridors: corridorJoins.revisedCorridors.optional() });
 const agreementDraft = mcpResultSchema.extend({ cid, untrusted: authored('agreement/v1'), designs: z.array(object), ...privatePreview });
 const planResult = mcpResultSchema.extend({ cid, untrusted: authored('plan/v1'), designs: z.array(z.object({ cid }).passthrough()).min(1), publication: z.enum(['private', 'published']) });
 const inventory = mcpResultSchema.extend({ cid, items: z.array(z.object({ ref: z.string(), kind: z.enum(['design', 'building', 'piece']) }).passthrough()), total: count, offset: count, truncated: z.boolean() });
 const shapes = new Map();
 const assign = (names, schema) => { for (const name of names) shapes.set(name, schema); };
-assign(['ugt_draft_building', 'ugt_draft_road', 'ugt_draft_track', 'ugt_draft_station', 'ugt_draft_space', 'ugt_draft_parcel_layout', 'ugt_draft_urban_rule', 'ugt_modify_design', 'ugt_edit_design'], designDraft);
+assign(['ugt_draft_building', 'ugt_draft_station', 'ugt_draft_space', 'ugt_draft_parcel_layout', 'ugt_draft_urban_rule'], designDraft);
+assign(['ugt_draft_road', 'ugt_draft_track'], joinedRoad);
+assign(['ugt_modify_design', 'ugt_edit_design'], editedDesign);
 assign(['ugt_draft_agreement', 'ugt_edit_agreement'], agreementDraft);
 assign(['ugt_draft_plan', 'ugt_get_plan', 'ugt_edit_plan'], planResult);
 assign(['ugt_inspect_plan', 'ugt_inspect_agreement'], inventory);
@@ -49,7 +56,7 @@ assign(['ugt_capabilities'], mcpResultSchema.extend({ version: z.string(), mode:
 assign(['ugt_help'], mcpResultSchema.extend({ topic: z.string() }));
 assign(['ugt_list_sources'], mcpResultSchema.extend({ items: z.array(z.object({ id: z.string(), abstraction: z.string() }).passthrough()), total: count, offset: count, truncated: z.boolean(), abstractions: z.array(object) }));
 assign(['ugt_export_draft'], mcpResultSchema.extend({ cid, artifact: object, publication: z.literal('private') }));
-assign(['ugt_import_design'], mcpResultSchema.extend({ designs: z.array(designDraft).min(1), publication: z.literal('private'), import: z.object({ format: z.enum(['geojson', 'osm', 'opendrive']), placement: z.string(), count: count, parser: z.string() }) }));
+assign(['ugt_import_design'], mcpResultSchema.extend({ designs: z.array(designDraft).min(1), ...corridorJoins, publication: z.literal('private'), import: z.object({ format: z.enum(['geojson', 'osm', 'opendrive']), placement: z.string(), count: count, parser: z.string() }) }));
 // A building or space model returns its private design; a furniture asset returns only the uploaded
 // asset (its name arrives as untrusted prose) for a park or square to reference in decorationDesign.models.
 const modelAsset = { modelUrl: z.string().url(), public: z.literal(true), durable: z.literal(true) };

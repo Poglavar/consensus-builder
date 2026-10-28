@@ -6,6 +6,7 @@ import { appTurf as turf, corridorRuntime } from './mcp-geometry.js';
 import { cidOfObject, designObject } from './agreement-objects.js';
 import { previewArtifact } from './mcp-preview.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
+import { joinNewRoads } from './mcp-road-network.js';
 import { createMcpNamedPlanTools } from './mcp-named-plans.js';
 import { createPublicSourceFetch, validatePublicSourceUrl } from '../parcels/public-source-fetch.js';
 import { renderMapPreview, PREVIEW_WIDTH, PREVIEW_HEIGHT } from '../thumbnails/map-preview.js';
@@ -160,7 +161,7 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
         const bytes = await dataOf(args), text = bytes.toString('utf8'), format = args.format;
         const createdAt = args.authoredAt || new Date().toISOString();
         if (args.kind === 'space' && !SPACE_KINDS.includes(args.spaceKind)) fail('space-kind-required', 'A space import needs spaceKind park, square or lake.');
-        const designs = []; let warnings = [], placement = 'georeference';
+        const designs = [], roads = []; let warnings = [], placement = 'georeference';
         // Road files, and GeoJSON centrelines, go through the site's own corridor import: the format's
         // parser makes the OSM form and recordsFromImport makes one record per road.
         async function corridorDesigns(parsed, source) {
@@ -175,8 +176,7 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
                 record.city = args.city;
                 record.toleranceM = args.toleranceM;
                 record.roadProposal.definition = corridorRuntime.osm.toRecord(definition);
-                const content = designObject(record).content;
-                designs.push(await privateResult(content, args.parcelSourceId));
+                roads.push(designObject(record).content);
             }
         }
         if (['osm', 'opendrive'].includes(format)) {
@@ -207,7 +207,11 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
                 warnings = parsed.warnings || [];
             }
         } else fail('import-format-unsupported', 'Use geojson, osm or opendrive.');
-        return { designs, publication: 'private', warnings, import: { format, placement, count: designs.length, parser: format === 'geojson' ? 'app-intent-builders+app-corridor-import' : 'app-corridor-import' } };
+        // Imported roads are finished in turn, as the site applies them: joined to the named corridors and each other.
+        const joined = joinNewRoads(roads, await drafts.roadCorridors(args.corridors), createdAt);
+        for (const content of joined.designs) designs.push(await privateResult(content, args.parcelSourceId));
+        const { changes, revisedCorridors } = await drafts.junctionResult({}, joined);
+        return { designs, changes, revisedCorridors, publication: 'private', warnings, import: { format, placement, count: designs.length, parser: format === 'geojson' ? 'app-intent-builders+app-corridor-import' : 'app-corridor-import' } };
     }
     async function upload(bytes, args) {
         const uploaded = await read.request('/models', {}, { fileName: args.fileName || 'model.glb', modelData: `data:model/gltf-binary;base64,${bytes.toString('base64')}` });

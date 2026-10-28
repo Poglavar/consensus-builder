@@ -307,8 +307,7 @@ describe('planAgreement', () => {
         expect(content.planCid).toBe(verifiedPlan.cid);
         expect(verifiedPlan.content.designCids).toEqual(objects.map(object => object.cid).sort());
         // Owners are unknown to a restatement, so each parcel stands for its abstract owner party.
-        expect(content.inputs.parcels).toEqual(ground.inputs.map(parcel => ({ parcelId: parcel.parcelId, parcelSourceId: 'hr-cadastre', areaM2: parcel.areaM2,
-            holders: [{ ownerKey: `parcel-owner:${parcel.parcelId}`, displayName: `Owner(s) of parcel ${parcel.parcelId}`, share: 1 }] })));
+        expect(content.inputs.parcels).toEqual(ground.inputs.map(parcel => ({ parcelId: parcel.parcelId, parcelSourceId: 'hr-cadastre', areaM2: parcel.areaM2 })));
         expect(content.outputs.map(output => [output.hash, output.producedBy])).toEqual(ground.outputs.map(output => [output.hash, output.producedBy]));
         expect(cid).toBe(cidOf(canonicalBytes(content)));
         expect(bytes).toBe(canonicalBytes(content).length);
@@ -361,9 +360,8 @@ describe('capturePageScript (the job --capture runs in the app)', () => {
             CadastralParcelRepository: { ensureIds: async ids => ({ features: ids.map(id => ({ id })) }) },
             AgreementDialog: { inputParcelIds: () => ['A', 'B', 'C'], originalsById: features => new Map(features.map(feature => [feature.id, feature])) },
             AgreementGround: {
-                localHolders: () => () => [],
                 derive: ({ designs, originals, area }) => ({
-                    inputs: { parcels: [...originals.keys()].map(parcelId => ({ parcelId, areaM2: area({}), holders: [{ ownerKey: 'local-owner' }] })), openGroundM2: 0 },
+                    inputs: { parcels: [...originals.keys()].map(parcelId => ({ parcelId, areaM2: area({}) })), openGroundM2: 0 },
                     outputs: [
                         { hash: piece('a'), areaM2: 100, fromParcelIds: ['A'], role: 'parcel', producedBy: null, geometry: {} },
                         { hash: piece('b'), areaM2: 75, fromParcelIds: ['B', 'C'], role: 'plot', producedBy, geometry: {} }

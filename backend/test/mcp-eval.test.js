@@ -111,7 +111,7 @@ describe('MCP agent evaluation artifacts', () => {
         const sourceId='eval-parcels',parcel={type:'Feature',id:'A',properties:{parcelId:'A'},geometry:site};
         const existingDesign=builder.build({kind:'space',spaceKind:'park',site,city:'london',authoredAt:'2026-10-25T00:00:00.000Z'},{turf});
         const agreement=agreementObject({title:'Existing',city:'london',createdAt:'2026-10-25T00:00:00.000Z',plan:planForDesigns('Existing',[{cid:cidOfObject(existingDesign)}],mapViewFromGeometry([site],'london')),designs:[{cid:cidOfObject(existingDesign),goal:'park'}],
-            parcels:[{parcelId:'A',parcelSourceId:sourceId,areaM2:turf.area(parcel),holders:[]}],outputs:parcelOutputs([{parcelId:'A',geometry:site,areaM2:turf.area(parcel)}]),rule:communityRule([]),money:noMoney('GBP')});
+            parcels:[{parcelId:'A',parcelSourceId:sourceId,areaM2:turf.area(parcel)}],outputs:parcelOutputs([{parcelId:'A',geometry:site,areaM2:turf.area(parcel)}]),rule:communityRule([]),money:noMoney('GBP')});
         const paths=[];
         const fetchImpl=async(url,init={})=>{
             const path=new URL(url).pathname;paths.push(path);
@@ -151,7 +151,7 @@ describe('paid evaluation orchestration without a paid API', () => {
         const design = builder.build({ ...args, kind: 'road' }, { turf });
         const directory = mkdtempSync(join(tmpdir(), 'ugt-mcp-eval-'));
         const service = createMcpHttpService({ env: {}, storeDirectory: join(directory, 'drafts'), factory: () => createUrbanGameTheoryMcpServer({ mode: 'hosted', env: {}, tools: {
-            draftRoad: () => ({ design, cid: cidOfObject(design), takes: ['A'], previewUrl: 'https://app.example/designs?draft=https%3A%2F%2Fmcp.example%2Fmcp%2Fpreviews%2Faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', previewStatus: 'private-link' })
+            draftRoad: () => ({ design, cid: cidOfObject(design), takes: ['A'], changes: [], revisedCorridors: [], previewUrl: 'https://app.example/designs?draft=https%3A%2F%2Fmcp.example%2Fmcp%2Fpreviews%2Faaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', previewStatus: 'private-link' })
         } }) });
         service.http.listen(0); await once(service.http, 'listening');
         const requests = [];

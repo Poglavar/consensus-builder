@@ -162,15 +162,10 @@
         { "properties": { "geometry": { "type": "object" } } }
       ]
     },
-    "holder": {
-      "type": "object",
-      "required": ["ownerKey", "share"],
-      "properties": {
-        "ownerKey": { "$ref": "#/$defs/text" },
-        "displayName": { "type": "string", "description": "The published form carries it: the owner key when there is no name." },
-        "share": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
-      },
-      "description": "One holder of an input parcel; each key at most once per parcel."
+    "party": {
+      "type": "string",
+      "pattern": "^parcel-owner:.+$",
+      "description": "An abstract party: the owner(s) of one input parcel, parcel-owner:<parcelId>. Agreements name no people; with ownership rights in rule.approvalConfig.rights, each person's position is derived from the parties linearly by their shares."
     },
     "agreement": {
       "type": "object",
@@ -195,15 +190,15 @@
               "type": "array",
               "items": {
                 "type": "object",
-                "required": ["parcelId", "holders"],
+                "required": ["parcelId"],
                 "properties": {
                   "parcelId": { "$ref": "#/$defs/text" },
                   "parcelSourceId": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/text" }], "description": "The parcel source the id belongs to; one source per agreement." },
-                  "areaM2": { "type": ["number", "null"], "minimum": 0 },
-                  "holders": { "type": "array", "items": { "$ref": "#/$defs/holder" } }
-                }
+                  "areaM2": { "type": ["number", "null"], "minimum": 0 }
+                },
+                "not": { "required": ["holders"] }
               },
-              "description": "Exactly the parcels the named plan's design sites take (binding.parcels[].parcelId of each member design, united), each once, with a snapshot of their holders. When ownership is unavailable, the agreement uses an abstract Owner(s) of parcel <id> party."
+              "description": "Exactly the parcels the named plan's design sites take (binding.parcels[].parcelId of each member design, united), each once. Each parcel is one abstract party, parcel-owner:<parcelId> (Owner(s) of parcel <id>); input parcels name no holders."
             },
             "openGroundM2": { "type": ["number", "null"], "minimum": 0, "description": "Land the designs take on no parcel. The account records open_ground = openGroundM2 > 0." }
           },
@@ -243,14 +238,14 @@
               "output": { "type": "string", "description": "The hash of one of the outputs; one line per output at most." },
               "to": {
                 "oneOf": [
-                  { "type": "object", "required": ["kind", "ownerKey"], "properties": { "kind": { "const": "party" }, "ownerKey": { "$ref": "#/$defs/text" } } },
+                  { "type": "object", "required": ["kind", "ownerKey"], "properties": { "kind": { "const": "party" }, "ownerKey": { "$ref": "#/$defs/party" } } },
                   { "type": "object", "required": ["kind"], "properties": { "kind": { "const": "public" } } },
                   { "type": "object", "required": ["kind"], "properties": { "kind": { "const": "proposer" } } }
                 ]
               }
             }
           },
-          "description": "Exactly one recipient per owner output: one input party, proposer or public. Proposer receives land independently of input ownership; the sponsor balances the compensation schedule. Bulk allocation uses one explicit line per output. Joint and implicit holder allocations are not supported."
+          "description": "Exactly one recipient per owner output: one input parcel's party, proposer or public. That party's co-owners hold the output in their ownership shares. Proposer receives land independently of input ownership; the sponsor balances the compensation schedule. Bulk allocation uses one explicit line per output."
         },
         "money": {
           "type": "object",
@@ -263,7 +258,7 @@
                 "type": "object",
                 "required": ["ownerKey", "amountCents"],
                 "properties": {
-                  "ownerKey": { "$ref": "#/$defs/text" },
+                  "ownerKey": { "$ref": "#/$defs/party" },
                   "amountCents": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991, "description": "Whole cents: + receives, − pays." }
                 }
               },

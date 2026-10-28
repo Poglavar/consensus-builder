@@ -28,7 +28,8 @@ const steps = [
     'Portable ugt-plan-file/v1 JSON can be passed as plan to ugt_get_plan, ugt_inspect_plan and ugt_edit_plan. It embeds canonical plan/v1 and design/v1 content; importing conveys no publication or consent.',
     'Validate and compare the result, render a preview, and show its URL. An unavailable source is not evidence of empty land.',
     'When publication is authorized, publish the exact reviewed reference and expectedCid. Return the verified permanent URL.',
-    'Use agreement tools only for allocations and decision rules. Assemble agreements before publication because roads may be reconnected.'
+    'Name the roads a new or edited road meets in its corridors; neighbours whose junctions change return as revisedCorridors. Replace them in the plan with ugt_edit_plan.',
+    'Use agreement tools only for allocations and decision rules. An agreement uses its named plan exactly and revises no design.'
 ];
 export const MCP_FEATURES = Object.freeze([
     { feature: 'community-code-voting', prepare: 'ugt_draft_agreement', edit: 'ugt_edit_agreement', inspect: 'ugt_voting_status', vote: 'ugt_cast_community_vote',
@@ -43,7 +44,9 @@ export const MCP_FEATURES = Object.freeze([
         furniture: 'Park/square decorationDesign: lamps [{coordinate, bearing}], stalls [{coordinate, bearing, color?}] and models {kind: {url, name}} per furniture kind (upload with ugt_import_model kind furniture).',
         furnitureKinds: FurnitureModels.KINDS_BY_STRUCTURE },
     { feature: 'parcel-layout', create: 'ugt_draft_parcel_layout', algorithms: ['equal', 'schelling'] },
-    { feature: 'corridors', create: ['ugt_draft_road', 'ugt_draft_track'] },
+    { feature: 'corridors', create: ['ugt_draft_road', 'ugt_draft_track'],
+        junctions: { tools: ['ugt_draft_road', 'ugt_draft_track', 'ugt_import_design', 'ugt_edit_design', 'ugt_modify_design'], input: 'corridors', output: ['revisedCorridors', 'changes'],
+            rule: 'Same-level crossings and touches with the named road/track designs become junctions on both, as in the map editor. A changed neighbour is a new revision with origin.cid; replace it in the plan with ugt_edit_plan. An edit with corridors re-derives its junctions against exactly those roads.' } },
     { feature: 'stations', create: 'ugt_draft_station', kinds: ['bus', 'tram', 'underground', 'elevated'],
         categories: { road: ['bus'], track: ['tram', 'elevated', 'underground'] },
         trackPlacement: { ground: 'tram', elevated: 'elevated', underground: 'underground' } },

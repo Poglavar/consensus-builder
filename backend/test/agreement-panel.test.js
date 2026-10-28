@@ -35,20 +35,21 @@ function rect(x0, y0, x1, y1) {
     const at = (x, y) => [15.96 + x * 1e-3, 45.8 + y * 1e-3];
     return { type: 'Polygon', coordinates: [[at(x0, y0), at(x1, y0), at(x1, y1), at(x0, y1), at(x0, y0)]] };
 }
-const ana = { ownerKey: 'agent-ana', displayName: 'Ana', share: 1 };
-const boris = { ownerKey: 'agent-boris', displayName: 'Boris', share: 1 };
+// Each input parcel is one abstract party, its owner(s).
+const K9 = 'parcel-owner:k9', K10 = 'parcel-owner:k10';
+const K9_NAME = 'Owner(s) of parcel k9', K10_NAME = 'Owner(s) of parcel k10';
 
-function output(pieceId, geometry, areaM2, holders, fromParcelIds = ['k9']) {
-    return { hash: record.outputHash(geometry), pieceId, areaM2, fromParcelIds, producedBy: 'layout-1', role: 'plot', holders, geometry };
+function output(pieceId, geometry, areaM2, fromParcelIds = ['k9']) {
+    return { hash: record.outputHash(geometry), pieceId, areaM2, fromParcelIds, producedBy: 'layout-1', role: 'plot', geometry };
 }
 
-// A layout over k9 (Ana's) and k10 (Boris's): four pieces with one explicit recipient each.
+// A layout over k9 and k10: four pieces with one explicit recipient each.
 function agreement(overrides = {}) {
     const outputs = [
-        output('k9-p1', rect(0, 0, 1, 2), 400, [ana]),
-        output('k9-p2', rect(1, 0, 3, 2), 300, [ana]),
-        output('k10-p1', rect(3, 0, 4, 2), 200, [boris], ['k10']),
-        output('k10-p2', rect(4, 0, 5, 2), 100, [], ['k10'])
+        output('k9-p1', rect(0, 0, 1, 2), 400),
+        output('k9-p2', rect(1, 0, 3, 2), 300),
+        output('k10-p1', rect(3, 0, 4, 2), 200, ['k10']),
+        output('k10-p2', rect(4, 0, 5, 2), 100, ['k10'])
     ];
     const designCids = ['bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku'];
     const planContent = PlanRecord.create('Courtyard plan', designCids, { at: '45.8,15.96,16', mode: '2d' });
@@ -62,15 +63,15 @@ function agreement(overrides = {}) {
         designs: [{ proposalId: 'layout-1', title: 'Courtyard layout', goal: 'parcel-layout', cid: 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku' }],
         plan: { cid: Cid.cidOfObject(planContent), content: planContent },
         inputs: {
-            parcels: [{ parcelId: 'k9', areaM2: 700, holders: [ana] }, { parcelId: 'k10', areaM2: 300, holders: [boris] }],
+            parcels: [{ parcelId: 'k9', areaM2: 700 }, { parcelId: 'k10', areaM2: 300 }],
             openGroundM2: 0
         },
         outputs,
         allocations: [
             { output: outputs[0].hash, to: { kind: 'public' } },
-            { output: outputs[1].hash, to: { kind: 'party', ownerKey: 'agent-boris' } },
-            { output: outputs[2].hash, to: { kind: 'party', ownerKey: 'agent-ana' } },
-            { output: outputs[3].hash, to: { kind: 'party', ownerKey: 'agent-ana' } }
+            { output: outputs[1].hash, to: { kind: 'party', ownerKey: K10 } },
+            { output: outputs[2].hash, to: { kind: 'party', ownerKey: K9 } },
+            { output: outputs[3].hash, to: { kind: 'party', ownerKey: K9 } }
         ],
         money: { currency: 'EUR', lines: [] },
         rule: { electorate: 'owners', binding: true, approvalConfig: null, lens: [] },
@@ -89,7 +90,7 @@ describe('statusOf', () => {
         expect(panel.inspectionFeatures(value, 'input', 'k9', context)).toEqual([original]);
         expect(panel.inspectionFeatures(value, 'design', 'layout-1', context)).toEqual([original]);
         expect(panel.inspectionFeatures(value, 'output', value.outputs[0].hash, context)[0].geometry).toEqual(value.outputs[0].geometry);
-        const person = panel.inspectionFeatures(value, 'person', 'agent-ana', context);
+        const person = panel.inspectionFeatures(value, 'person', K9, context);
         expect(person[0]).toEqual(original);
         expect(person.slice(1).map(feature => feature.geometry)).toEqual(value.outputs.slice(2).map(output => output.geometry));
         expect(panel.inspectionFeatures(value, 'public', 'public', context).map(feature => feature.geometry)).toEqual([value.outputs[0].geometry]);
@@ -145,17 +146,17 @@ describe('landSummary', () => {
 });
 
 describe('ownerOutcomes and piecesHtml', () => {
-    it('counts the pieces each input owner receives, and names who gets none or several', () => {
+    it('counts the pieces each input parcel\'s party receives, and names who gets none or several', () => {
         const value = agreement();
         expect(panel.ownerOutcomes(value)).toEqual({ owners: 2, none: [],
-            several: [{ ownerKey: 'agent-ana', name: 'Ana', pieces: 2 }] });
-        // Boris's only piece goes public; a joint piece counts for each co-owner; kept holders count too.
+            several: [{ ownerKey: K9, name: K9_NAME, pieces: 2 }] });
+        // k10's only piece goes public; a proposer piece counts for nobody.
         value.allocations[1] = { output: value.outputs[1].hash, to: { kind: 'public' } };
-        expect(panel.ownerOutcomes(value).none).toEqual([{ ownerKey: 'agent-boris', name: 'Boris', pieces: 0 }]);
-        value.allocations[3] = { output: value.outputs[3].hash, to: { kind: 'joint', shares: [{ ownerKey: 'agent-ana', share: 0.5 }, { ownerKey: 'agent-boris', share: 0.5 }] } };
-        expect(panel.ownerOutcomes(value)).toMatchObject({ none: [], several: [{ ownerKey: 'agent-ana', pieces: 2 }] });
+        expect(panel.ownerOutcomes(value).none).toEqual([{ ownerKey: K10, name: K10_NAME, pieces: 0 }]);
+        value.allocations[3] = { output: value.outputs[3].hash, to: { kind: 'proposer' } };
+        expect(panel.ownerOutcomes(value)).toMatchObject({ several: [], none: [{ ownerKey: K10 }] });
         value.allocations = [];
-        expect(panel.ownerOutcomes(value)).toMatchObject({ none: [], several: [{ ownerKey: 'agent-ana', pieces: 2 }] });
+        expect(panel.ownerOutcomes(value)).toMatchObject({ owners: 2, several: [], none: [{ ownerKey: K9 }, { ownerKey: K10 }] });
         expect(panel.ownerOutcomes(null)).toEqual({ owners: 0, none: [], several: [] });
     });
 
@@ -166,8 +167,8 @@ describe('ownerOutcomes and piecesHtml', () => {
         const html = panel.piecesHtml({ ...panel.landSummary(value), openGroundM2: 59.6 }, panel.ownerOutcomes(value));
         expect(html).toContain('Resulting pieces');
         expect(html).toContain('Open ground');
-        expect(html).toMatch(/data-agreement-owners="none">No piece: <button[^>]+data-agreement-object-id="agent-boris"[^>]*>Boris<\/button>/);
-        expect(html).toMatch(/data-agreement-owners="several">Several pieces: <button[^>]+>Ana \(2\)<\/button>/);
+        expect(html).toMatch(/data-agreement-owners="none">No piece: <button[^>]+data-agreement-object-id="parcel-owner:k10"[^>]*>Owner\(s\) of parcel k10<\/button>/);
+        expect(html).toMatch(/data-agreement-owners="several">Several pieces: <button[^>]+>Owner\(s\) of parcel k9 \(2\)<\/button>/);
         const land = panel.landHtml(panel.landSummary(value));
         expect(land).not.toContain('Resulting pieces');
         expect(panel.landHtml(panel.landSummary(value), undefined, { outputs: true })).toContain('Resulting pieces');
@@ -179,16 +180,15 @@ describe('allocationLines', () => {
         const lines = panel.allocationLines(agreement());
         expect(lines.map(line => line.label)).toEqual(['Piece 1', 'Piece 2', 'Piece 3', 'Piece 4']);
         expect(lines.map(line => line.kind)).toEqual(['public', 'party', 'party', 'party']);
-        expect(lines.map(line => line.to)).toEqual(['Public', 'Boris', 'Ana', 'Ana']);
+        expect(lines.map(line => line.to)).toEqual(['Public', K10_NAME, K9_NAME, K9_NAME]);
         expect(lines[0].area).toBe(format.formatArea(400));
         expect(lines[0].hash).toBe(agreement().outputs[0].hash);
     });
 
-    it('names the holders a piece keeps when no line allocates it', () => {
+    it('names no recipient for a piece no line allocates', () => {
         const lines = panel.allocationLines(agreement({ allocations: [] }), keys);
-        expect(lines[0].kind).toBe('holders');
-        expect(lines[0].to).toBe('agreement.allocation.holders (Ana 100%)');
-        expect(lines[3].to).toBe('agreement.land.unowned');
+        expect(lines[0].kind).toBeNull();
+        expect(lines[0].to).toBe('—');
         expect(lines[0].label).toBe('agreement.land.piece 1');
     });
 });
@@ -226,12 +226,34 @@ describe('ledgerRows', () => {
 
     it('reads the ledger AgreementRecord computes', () => {
         const rows = panel.ledgerRows(record.ledger(agreement()));
-        expect(rows.map(row => row.name)).toEqual(['Ana', 'Boris', 'Public']);
-        // Ana put in k9 (700 m²) and receives half of piece 3; Boris put in k10 and receives piece 2
-        // and the other half of piece 3; piece 1 goes to the public.
-        expect(rows[0]).toMatchObject({ contributes: format.formatArea(700), receives: format.formatArea(300), change: `−${format.formatArea(400)}` });
-        expect(rows[1]).toMatchObject({ contributes: format.formatArea(300), receives: format.formatArea(300), change: format.formatArea(0), cash: '—' });
+        expect(rows.map(row => row.name)).toEqual([K10_NAME, K9_NAME, 'Public']);
+        // k10's owners put in 300 m² and receive piece 2; k9's put in 700 m² and receive pieces 3
+        // and 4; piece 1 goes to the public.
+        expect(rows[1]).toMatchObject({ ownerKey: K9, contributes: format.formatArea(700), receives: format.formatArea(300), change: `−${format.formatArea(400)}` });
+        expect(rows[0]).toMatchObject({ ownerKey: K10, contributes: format.formatArea(300), receives: format.formatArea(300), change: format.formatArea(0), cash: '—' });
         expect(rows[2].receives).toBe(format.formatArea(400));
+    });
+
+    it('derives person rows only from ownership rights that name people', () => {
+        const value = agreement();
+        expect(panel.personRows(value, 'EUR')).toBeNull();
+        expect(panel.personsHtml(null)).toBe('');
+        // Ana owns k9 alone; Ana and Ben own k10 half each. k9's party pays for the 400 m² it gives up.
+        const rights = { schema: 'parcel-rights/v1', source: { provider: 'upload' }, parcels: [
+            { parcelId: 'k9', complete: true, areaM2: null, owners: [{ ownerId: 'ana', share: '1/1' }] },
+            { parcelId: 'k10', complete: true, areaM2: null, owners: [{ ownerId: 'ana', share: '1/2' }, { ownerId: 'ben', share: '1/2' }] }
+        ] };
+        const named = record.settle({ ...value, rule: { electorate: 'owners', binding: true, lens: [], settlement: { method: 'area', rateCentsPerM2: 101, contributionBasisPoints: 0 },
+            approvalConfig: { schema: 'proposal-approval/v1', rights, policy: { type: 'unanimous' } } } });
+        const derived = panel.personRows(named, 'EUR', new Map([['ana', 'Ana']]));
+        expect(derived.unresolved).toBe(0);
+        expect(derived.rows.map(row => [row.personId, row.name, row.receives])).toEqual([
+            ['ana', 'Ana', format.formatArea(300 + 150)], ['ben', 'ben', format.formatArea(150)]]);
+        // k9 receives 400 × 1.01 = 404 EUR; Ana holds all of it.
+        expect(derived.rows[0].cash).toBe(`+${format.formatMoney(404, 'EUR', { maxFractionDigits: 0, minFractionDigits: 0 })}`);
+        const html = panel.personsHtml(derived);
+        expect(html).toContain('data-agreement-derived-persons');
+        expect(html).toContain('<tr data-agreement-person="ben"><th scope="row">ben</th>');
     });
 });
 

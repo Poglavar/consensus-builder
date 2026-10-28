@@ -316,11 +316,12 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                 agreement: {
                     schema: 'agreement/v1',
                     jsonSchema: '#/schema/$defs/agreement',
-                    inputs: 'exactly the parcels the designs take (the union of their server bindings), with a holders snapshot, plus openGroundM2',
+                    inputs: 'exactly the parcels the designs take (the union of their server bindings) with parcelId, parcelSourceId and areaM2, plus openGroundM2; each input parcel is one abstract party, parcel-owner:<parcelId> ("Owner(s) of parcel X"), and names no people',
                     outputs: 'every piece on the input land after the designs are applied, by hash (piece1-sha256:…), with areaM2, fromParcelIds, role and producedBy',
                     outputRoles: ['plot', 'remainder', 'corridor', 'part', 'parcel'],
-                    allocations: { holders: 'the carried-over holding (no line means the same)', party: 'one holder of the input land', public: 'the public', joint: 'shares summing to 1' },
-                    money: '{ currency: "EUR", lines: [{ ownerKey, amountCents }] }: + receives, − pays',
+                    allocations: { party: 'the owners of one input parcel: { kind: "party", ownerKey: "parcel-owner:<parcelId>" }', proposer: 'the proposer', public: 'the public', rule: 'an owners\' agreement gives every output exactly one recipient' },
+                    money: '{ currency: "EUR", lines: [{ ownerKey: "parcel-owner:<parcelId>", amountCents }] }: + receives, − pays; derived from the settlement rule',
+                    persons: 'never stored: with the rule\'s ownership rights (rule.approvalConfig.rights), person k with share s in parcel i co-owns every output allocated to that parcel\'s party at s and receives s of its cash, rounded per parcel to whole cents by largest remainder',
                     rules: {
                         ownerDeal: { electorate: 'owners', binding: true },
                         ownerVote: { electorate: 'owners', binding: false },

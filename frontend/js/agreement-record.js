@@ -3,7 +3,8 @@
 // land value when the agreement settles by value), the settlement issues every path refuses the
 // same way (settlement terms, land values, the named scheme's distribution rules, the derived cash),
 // and the subject and default rights snapshot the approval engine counts; and its published
-// agreement/v1 object with that object's CID (M2).
+// agreement/v1 object with that object's CID (M2). Parties are abstract: each input parcel is one
+// party, its owner(s); real people live only in the rule's rights snapshot (agreement-persons.js).
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -24,10 +25,13 @@
     const regimes = () => root.ProposalApprovalRegimes
         || (typeof require === 'function' ? require('./proposals/approval-regimes.js') : null);
 
-    // A parcel's unidentified owners remain one abstract party until an ownership source is supplied.
-    function abstractHolder(parcelId) {
-        return { ownerKey: `parcel-owner:${parcelId}`, displayName: `Owner(s) of parcel ${parcelId}`, share: 1 };
-    }
+    // Every input parcel is one abstract party, "Owner(s) of parcel X". An agreement never names real
+    // people: allocations and cash go to these parties, and a rights snapshot only derives what each
+    // person holds of them (agreement-persons.js).
+    const PARTY_PREFIX = 'parcel-owner:';
+    const partyKey = parcelId => PARTY_PREFIX + String(parcelId);
+    const parcelOfParty = key => (typeof key === 'string' && key.startsWith(PARTY_PREFIX) ? key.slice(PARTY_PREFIX.length) : null);
+    const partyName = parcelId => `Owner(s) of parcel ${parcelId}`;
     // Money is counted in the agreement's city's currency (city-money.js: London GBP, Zagreb EUR).
     const cityMoney = () => root.CityMoney || (typeof require === 'function' ? require('./city-money.js') : null);
     const sha256 = () => root.__consentSha256
@@ -118,21 +122,6 @@
         return 'ag-' + Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
     }
 
-    function holdersOf(list, where) {
-        if (!Array.isArray(list)) fail(`${where} needs a holders list.`);
-        const seen = new Set();
-        return list.map(holder => {
-            if (!isObject(holder)) fail(`${where} has an invalid holder.`);
-            const ownerKey = idOf(holder.ownerKey, `A holder of ${where}`);
-            if (seen.has(ownerKey)) fail(`${where} lists holder ${ownerKey} twice.`);
-            seen.add(ownerKey);
-            if (!finite(holder.share) || holder.share <= 0 || holder.share > 1) {
-                fail(`The share of ${ownerKey} in ${where} must be above 0 and at most 1.`);
-            }
-            return { ownerKey, displayName: textOf(holder.displayName) || ownerKey, share: holder.share };
-        });
-    }
-
     function areaOf(value, what, nullable) {
         if (nullable && (value === undefined || value === null)) return null;
         if (!finite(value) || value < 0) fail(`${what} needs a finite area of at least 0${nullable ? ' or null' : ''}.`);
@@ -166,11 +155,13 @@
             const parcelId = idOf(parcel.parcelId, 'An input parcel');
             if (seen.has(parcelId)) fail(`Input parcel ${parcelId} is listed twice.`);
             seen.add(parcelId);
+            if (Object.hasOwn(parcel, 'holders')) {
+                fail(`Input parcel ${parcelId} names holders. Agreement parties are abstract: the parcel is represented by ${partyKey(parcelId)}; put its owners in the rule's ownership rights.`);
+            }
             return {
                 parcelId,
                 ...(parcel.parcelSourceId == null ? {} : { parcelSourceId: idOf(parcel.parcelSourceId, 'The parcel source') }),
-                areaM2: areaOf(parcel.areaM2, `Input parcel ${parcelId}`, true),
-                holders: holdersOf(Array.isArray(parcel.holders) && !parcel.holders.length ? [abstractHolder(parcelId)] : parcel.holders, `input parcel ${parcelId}`)
+                areaM2: areaOf(parcel.areaM2, `Input parcel ${parcelId}`, true)
             };
         });
         return { parcels, openGroundM2: raw.openGroundM2 == null ? 0 : areaOf(raw.openGroundM2, 'The open ground') };
@@ -207,7 +198,6 @@
                 fromParcelIds: output.fromParcelIds.map(id => idOf(id, `A parcel under output ${pieceId}`)),
                 producedBy: output.producedBy == null || output.producedBy === '' ? null : idOf(output.producedBy, `The design of output ${pieceId}`),
                 role: output.role,
-                holders: holdersOf(output.holders, `output ${pieceId}`),
                 geometry
             };
         });
@@ -408,11 +398,15 @@
         };
     }
 
-    // The default rights snapshot: the inputs' local holders as parcel-rights/v1, shares in basis
-    // points with the last holder taking the remainder; a parcel without holders is incomplete.
-    function rightsFromInputs(inputs) {
+    // The default rights snapshot as parcel-rights/v1: each input parcel's owners from the local owner
+    // records (`ownerOf(parcelId)` → [{ ownerKey, share }], AgreementGround.localHolders), shares in
+    // basis points with the last holder taking the remainder. A parcel nobody is recorded for keeps
+    // its abstract party as its one owner and is incomplete.
+    function rightsFromInputs(inputs, ownerOf = () => []) {
         const parcels = ((inputs && inputs.parcels) || []).map(parcel => {
-            const holders = Array.isArray(parcel.holders) ? parcel.holders : [];
+            const recorded = ownerOf(String(parcel.parcelId));
+            const named = Array.isArray(recorded) && recorded.length > 0;
+            const holders = named ? recorded : [{ ownerKey: partyKey(parcel.parcelId), share: 1 }];
             let given = 0;
             const owners = holders.map((holder, index) => {
                 const points = index === holders.length - 1 ? BASIS_POINTS - given : Math.round(holder.share * BASIS_POINTS);
@@ -422,27 +416,23 @@
             // Whole square metres: the rights file is read by people, and the engine's area tests
             // need no more than that; a sub-metre parcel still counts as one.
             const areaM2 = finite(parcel.areaM2) && parcel.areaM2 > 0 ? Math.max(1, Math.round(parcel.areaM2)) : null;
-            return { parcelId: String(parcel.parcelId), complete: holders.length > 0 && !holders.some(holder => holder.ownerKey.startsWith('parcel-owner:')), areaM2, owners };
+            return { parcelId: String(parcel.parcelId), complete: named, areaM2, owners };
         });
         return { schema: approval().RIGHTS_SCHEMA, source: { provider: 'local-owners' }, parcels };
     }
 
-    // Only input-land parties may receive output parcels or balancing cash.
+    // Only input-land parties (one per input parcel) may receive output parcels or balancing cash.
     function landParties(agreement) {
-        return new Set(agreement.inputs.parcels
-            .flatMap(row => row.holders.map(holder => holder.ownerKey)));
+        return new Set(agreement.inputs.parcels.map(parcel => partyKey(parcel.parcelId)));
     }
 
-    // Only unambiguous single holders are preselected. A mixed plot requires an explicit choice.
+    // A piece standing on one input parcel goes back to that parcel's party by default. A piece on
+    // several parcels requires an explicit choice.
     function defaultAllocations(inputs, outputs) {
-        const parcels = new Map((inputs?.parcels || []).map(parcel => [parcel.parcelId,
-            parcel.holders?.length ? parcel.holders : [abstractHolder(parcel.parcelId)]]));
-        const inputParties = new Set([...parcels.values()].flat().map(holder => holder.ownerKey));
+        const parcelIds = new Set((inputs?.parcels || []).map(parcel => String(parcel.parcelId)));
         return (outputs || []).flatMap(output => {
-            const holders = output.holders?.length ? output.holders
-                : (output.fromParcelIds?.length === 1 ? parcels.get(output.fromParcelIds[0]) || [] : []);
-            if (holders.length === 1 && inputParties.has(holders[0].ownerKey)) return [{ output: output.hash, to: { kind: 'party', ownerKey: holders[0].ownerKey } }];
-            return [];
+            const from = output.fromParcelIds?.length === 1 ? String(output.fromParcelIds[0]) : null;
+            return from !== null && parcelIds.has(from) ? [{ output: output.hash, to: { kind: 'party', ownerKey: partyKey(from) } }] : [];
         });
     }
 
@@ -587,7 +577,7 @@
         }
         const scheme = schemeCheck(agreement);
         if (scheme) {
-            const ownerNames = new Map(agreement.inputs.parcels.flatMap(parcel => parcel.holders.map(holder => [holder.ownerKey, holder.displayName])));
+            const ownerNames = new Map(agreement.inputs.parcels.map(parcel => [partyKey(parcel.parcelId), partyName(parcel.parcelId)]));
             scheme.check.rules.filter(rule => !rule.ok).forEach(rule => issues.push(schemeIssue(scheme.template, rule, ownerNames)));
         }
         if (valuesReady) {
@@ -634,11 +624,6 @@
         const balance = landBalance(agreement);
         if (!balance.balanced) add(errors, 'land', 'land-unbalanced', balance.inputM2 === null
             ? 'Measure all input parcels before saving the agreement.' : 'The input and output land areas do not balance.');
-        parcels.forEach(parcel => {
-            if (Math.abs(parcel.holders.reduce((sum, holder) => sum + holder.share, 0) - 1) > 1e-8) {
-                add(errors, 'land', 'input-shares', 'The owners of each input parcel must hold 100% of it.');
-            }
-        });
 
         const parties = landParties(agreement);
         const hashes = new Set(agreement.outputs.map(output => output.hash));
@@ -705,7 +690,7 @@
     }
 
     /**
-     * Per input party: contributed land by its input shares, whole output parcels assigned to it,
+     * Per input party (one per input parcel): its parcel's land, whole output parcels assigned to it,
      * entitlement and change, and cash (+ receives, − pays). Public and proposer land and the balancing sponsor
      * are separate. Cash that is not whole cents throws (code 'invalid-agreement').
      * With a valuation, also the land value each party put in and got (contributedValueCents,
@@ -720,21 +705,21 @@
         const party = (ownerKey, displayName) => {
             let entry = parties.get(ownerKey);
             if (!entry) {
-                entry = { ownerKey, displayName: '', contributedM2: 0, assignedM2: 0, changeM2: 0, cashCents: 0, areaUnknown: false,
+                entry = { ownerKey, parcelId: parcelOfParty(ownerKey), displayName: '', contributedM2: 0, assignedM2: 0, changeM2: 0, cashCents: 0, areaUnknown: false,
                     contributedValueCents: 0, assignedValueCents: 0, valueUnknown: !values };
                 parties.set(ownerKey, entry);
             }
             if (!entry.displayName && displayName) entry.displayName = displayName;
             return entry;
         };
-        agreement.inputs.parcels.forEach(parcel => parcel.holders.forEach(holder => {
-            const entry = party(holder.ownerKey, holder.displayName);
+        agreement.inputs.parcels.forEach(parcel => {
+            const entry = party(partyKey(parcel.parcelId), partyName(parcel.parcelId));
             if (parcel.areaM2 === null) entry.areaUnknown = true;
-            else entry.contributedM2 += parcel.areaM2 * holder.share;
+            else entry.contributedM2 += parcel.areaM2;
             const unit = values ? values.inputs.get(parcel.parcelId) : null;
             if (parcel.areaM2 === null || unit === null || unit === undefined) entry.valueUnknown = true;
-            else entry.contributedValueCents += parcel.areaM2 * holder.share * unit;
-        }));
+            else entry.contributedValueCents += parcel.areaM2 * unit;
+        });
         agreement.allocations.forEach(({ to }) => {
             if (to.kind === 'party') party(to.ownerKey);
         });
@@ -787,11 +772,11 @@
     }
 
     /**
-     * The published agreement/v1 object: one exact plan CID, the input land with its holders
-     * snapshot, the output pieces without geometry
+     * The published agreement/v1 object: one exact plan CID, the input land (each parcel standing for
+     * its abstract owners' party; no people), the output pieces without geometry
      * (each hash commits to it, and a reader re-derives the pieces by applying the designs), the
      * allocations, money and rule as stored, and the details. No local id, update time, piece ids,
-     * output holders or fingerprints. Builds without judging: validate the record first.
+     * or fingerprints. Builds without judging: validate the record first.
      * The stored record retains author, sponsor and input parcel source identity; a publisher may
      * explicitly override author or sponsor on the object passed to this function.
      * @param designCidOf (proposalId) → that design's CID (DesignRecord.cidOf of its local record);
@@ -835,8 +820,8 @@
                 parcels: agreement.inputs.parcels.map((parcel, index) => {
                     const parcelSourceId = sourceOf(index);
                     return parcelSourceId
-                        ? { parcelId: parcel.parcelId, parcelSourceId, areaM2: parcel.areaM2, holders: parcel.holders }
-                        : { parcelId: parcel.parcelId, areaM2: parcel.areaM2, holders: parcel.holders };
+                        ? { parcelId: parcel.parcelId, parcelSourceId, areaM2: parcel.areaM2 }
+                        : { parcelId: parcel.parcelId, areaM2: parcel.areaM2 };
                 }),
                 openGroundM2: agreement.inputs.openGroundM2
             },
@@ -862,7 +847,7 @@
     return {
         SCHEMA, PUBLISHED_SCHEMA, OUTPUT_HASH_PREFIX, ROLES, newId, outputHash, normalize, validate, ledger,
         rightsFromInputs, approvalSubject, stableStringify, published, publishedCid, consultationOf, participationUrl,
-        planReference, matchesPlan, abstractHolder, defaultAllocations, settle, landBalance, contributionLimit, settlementValid, DEFAULT_SETTLEMENT,
+        planReference, matchesPlan, PARTY_PREFIX, partyKey, parcelOfParty, partyName, landParties, defaultAllocations, settle, landBalance, contributionLimit, settlementValid, DEFAULT_SETTLEMENT,
         METHODS, schemeOf, schemeCheck, settlementIssues, valueGainOf
     };
 });

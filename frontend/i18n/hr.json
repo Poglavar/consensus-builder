@@ -7823,7 +7823,12 @@
         "plan": {
             "untitled": "Plan bez naziva"
         },
+        "party": {
+            "parcelOwners": "Vlasnik/ci čestice {{parcelId}}"
+        },
         "workflow": {
+            "personsByRights": "Osobe prema vlasničkim pravima",
+            "personsUnresolved": "Bez potpunih vlasničkih prava, vlasnici {{count}} čestica ostaju jedna strana.",
             "choosePlan": "Odaberi spremljeni plan",
             "noPlans": "Najprije izradite plan. Otvorite Planovi i odaberite Izradi plan.",
             "savePlan": "Spremi plan na ovom uređaju",

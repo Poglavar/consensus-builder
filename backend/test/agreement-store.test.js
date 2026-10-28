@@ -150,16 +150,15 @@ const square = (x, y) => ({ type: 'Polygon', coordinates: [[[x, y], [x + 1, y], 
 const land = {
     inputs: {
         parcels: [
-            { parcelId: '335/2', areaM2: 400, holders: [{ ownerKey: 'agent-ana', displayName: 'Ana', share: 0.5 }, { ownerKey: 'agent-ben', displayName: 'Ben', share: 0.5 }] },
-            { parcelId: '335/10', areaM2: 600, holders: [{ ownerKey: 'agent-ana', displayName: 'Ana', share: 1 }] },
-            { parcelId: '336', areaM2: null, holders: [] }
+            { parcelId: '335/2', areaM2: 400 },
+            { parcelId: '335/10', areaM2: 600 },
+            { parcelId: '336', areaM2: null }
         ],
         openGroundM2: 0
     },
     outputs: [
-        { hash: 'piece1-sha256:aa', pieceId: 'p1#1', areaM2: 520, fromParcelIds: ['335/10', '335/2'], producedBy: 'p1', role: 'plot',
-            holders: [{ ownerKey: 'agent-ana', displayName: 'Ana', share: 0.8 }, { ownerKey: 'agent-ben', displayName: 'Ben', share: 0.2 }], geometry: square(0, 0) },
-        { hash: 'piece1-sha256:bb', pieceId: 'p1#2', areaM2: 480, fromParcelIds: ['335/2'], producedBy: 'p1', role: 'plot', holders: [], geometry: square(1, 0) }
+        { hash: 'piece1-sha256:aa', pieceId: 'p1#1', areaM2: 520, fromParcelIds: ['335/10', '335/2'], producedBy: 'p1', role: 'plot', geometry: square(0, 0) },
+        { hash: 'piece1-sha256:bb', pieceId: 'p1#2', areaM2: 480, fromParcelIds: ['335/2'], producedBy: 'p1', role: 'plot', geometry: square(1, 0) }
     ]
 };
 
@@ -193,25 +192,30 @@ describe('choosing the designs', () => {
 });
 
 describe('allocation and money', () => {
-    it('offers the current holders, each input party once, and the public', () => {
-        expect(Dialog.partiesOf(land.inputs)).toEqual([{ ownerKey: 'agent-ana', displayName: 'Ana' }, { ownerKey: 'agent-ben', displayName: 'Ben' }]);
+    it('offers the proposer, one abstract party per input parcel, and the public', () => {
+        expect(Dialog.partiesOf(land.inputs)).toEqual([
+            { ownerKey: 'parcel-owner:335/2', displayName: 'Owner(s) of parcel 335/2' },
+            { ownerKey: 'parcel-owner:335/10', displayName: 'Owner(s) of parcel 335/10' },
+            { ownerKey: 'parcel-owner:336', displayName: 'Owner(s) of parcel 336' }
+        ]);
         expect(Dialog.allocationOptions(land.inputs)).toEqual([
             { value: '', label: 'Choose recipient' },
             { value: 'proposer', label: 'Proposer' },
-            { value: 'party:agent-ana', label: 'Ana' },
-            { value: 'party:agent-ben', label: 'Ben' },
+            { value: 'party:parcel-owner:335/2', label: 'Owner(s) of parcel 335/2' },
+            { value: 'party:parcel-owner:335/10', label: 'Owner(s) of parcel 335/10' },
+            { value: 'party:parcel-owner:336', label: 'Owner(s) of parcel 336' },
             { value: 'public', label: 'Public' }
         ]);
     });
 
-    it('turns a select value into an allocation line and back; current holders is no line', () => {
+    it('turns a select value into an allocation line and back; no choice is no line', () => {
         expect(Dialog.allocationTo('party:agent:with:colons')).toEqual({ kind: 'party', ownerKey: 'agent:with:colons' });
         expect(Dialog.allocationTo('public')).toEqual({ kind: 'public' });
         expect(Dialog.allocationTo('holders')).toBeNull();
         expect(Dialog.allocationTo('party:')).toBeNull();
         expect(Dialog.allocationValue({ kind: 'party', ownerKey: 'agent-ana' })).toBe('party:agent-ana');
         expect(Dialog.allocationValue({ kind: 'public' })).toBe('public');
-        expect(Dialog.allocationValue(null)).toBe('holders');
+        expect(Dialog.allocationValue(null)).toBe('');
     });
 
     it('reads typed euros as cents, empty as no line, and anything else as unreadable', () => {
@@ -230,28 +234,28 @@ describe('allocation and money', () => {
     it('keeps the terms whose piece and party survive a new derivation, and drops the rest', () => {
         const stored = {
             allocations: [
-                { output: 'piece1-sha256:aa', to: { kind: 'party', ownerKey: 'agent-ben' } },
+                { output: 'piece1-sha256:aa', to: { kind: 'party', ownerKey: 'parcel-owner:335/2' } },
                 { output: 'piece1-sha256:gone', to: { kind: 'public' } },
-                { output: 'piece1-sha256:bb', to: { kind: 'party', ownerKey: 'agent-left' } }
+                { output: 'piece1-sha256:bb', to: { kind: 'party', ownerKey: 'parcel-owner:999' } }
             ],
-            money: { currency: 'EUR', lines: [{ ownerKey: 'agent-ana', amountCents: -1250 }, { ownerKey: 'agent-left', amountCents: 500 }] }
+            money: { currency: 'EUR', lines: [{ ownerKey: 'parcel-owner:335/10', amountCents: -1250 }, { ownerKey: 'parcel-owner:999', amountCents: 500 }] }
         };
         const terms = Dialog.termsOf(stored);
         expect(terms).toEqual({
-            allocations: { 'piece1-sha256:aa': 'party:agent-ben', 'piece1-sha256:gone': 'public', 'piece1-sha256:bb': 'party:agent-left' },
-            cash: { 'agent-ana': '-12.5', 'agent-left': '5' },
+            allocations: { 'piece1-sha256:aa': 'party:parcel-owner:335/2', 'piece1-sha256:gone': 'public', 'piece1-sha256:bb': 'party:parcel-owner:999' },
+            cash: { 'parcel-owner:335/10': '-12.5', 'parcel-owner:999': '5' },
             valuation: { inputs: {}, outputs: {} }
         });
-        expect(Dialog.keptTerms({ ...terms, cash: { ...terms.cash, 'agent-ben': 'invalid' } }, land)).toEqual({
-            allocations: { 'piece1-sha256:aa': 'party:agent-ben' },
-            cash: { 'agent-ana': '-12.5' },
+        expect(Dialog.keptTerms({ ...terms, cash: { ...terms.cash, 'parcel-owner:335/2': 'invalid' } }, land)).toEqual({
+            allocations: { 'piece1-sha256:aa': 'party:parcel-owner:335/2' },
+            cash: { 'parcel-owner:335/10': '-12.5' },
             valuation: { inputs: {}, outputs: {} }
         });
         // Land values follow the parcels and pieces that still exist, as the allocations do.
         const valued = Dialog.termsOf({ ...stored, valuation: { inputs: [{ parcelId: 'P-1', unitValueCents: 12000 }, { parcelId: 'P-gone', unitValueCents: 1 }],
             outputs: [{ output: 'piece1-sha256:aa', unitValueCents: 30000 }, { output: 'piece1-sha256:gone', unitValueCents: 1 }] } });
         expect(valued.valuation).toEqual({ inputs: { 'P-1': 12000, 'P-gone': 1 }, outputs: { 'piece1-sha256:aa': 30000, 'piece1-sha256:gone': 1 } });
-        const landWithParcel = { ...land, inputs: { ...land.inputs, parcels: [...land.inputs.parcels, { parcelId: 'P-1', areaM2: 10, holders: [] }] } };
+        const landWithParcel = { ...land, inputs: { ...land.inputs, parcels: [...land.inputs.parcels, { parcelId: 'P-1', areaM2: 10 }] } };
         expect(Dialog.keptTerms(valued, landWithParcel).valuation).toEqual({ inputs: { 'P-1': 12000 }, outputs: { 'piece1-sha256:aa': 30000 } });
     });
 
@@ -313,11 +317,11 @@ describe('the record the form describes', () => {
     const outputs = land.outputs.map(output => ({ ...output, hash: Record.outputHash(output.geometry) }));
     const state = { id: 'ag-form', currency: 'EUR', designs: [{ proposalId: 'layout', title: 'Plots', city: 'zagreb' }],
         fingerprints: new Map([['layout', designCid]]), plan, land: { inputs, outputs }, lens: [] };
-    const allocations = Object.fromEntries(outputs.map(output => [output.hash, 'party:agent-ana']));
+    const allocations = Object.fromEntries(outputs.map(output => [output.hash, 'party:parcel-owner:335/10']));
     it('retains the selected plan and computes cash from land rather than manual amounts', () => {
-        const result = Dialog.recordFromForm(state, { allocations, cash: { 'agent-ana': '99999' }, title: ' Terms ' });
+        const result = Dialog.recordFromForm(state, { allocations, cash: { 'parcel-owner:335/10': '99999' }, title: ' Terms ' });
         expect(result.plan).toEqual(plan); expect(result.title).toBe('Terms');
-        expect(result.money.lines).toEqual([{ ownerKey: 'agent-ana', amountCents: -2000000 }, { ownerKey: 'agent-ben', amountCents: 2000000 }]);
+        expect(result.money.lines).toEqual([{ ownerKey: 'parcel-owner:335/10', amountCents: -4000000 }, { ownerKey: 'parcel-owner:335/2', amountCents: 4000000 }]);
         expect(result.allocations).toHaveLength(2);
     });
     it('does not create or revise plans when the form has different designs or a typed plan name', () => {
@@ -369,8 +373,9 @@ describe('the sections as HTML (the hooks the browser spec targets)', () => {
         expect(html).toContain('data-agreement-outputs');
         expect(html).toContain('<li data-agreement-input="335/10">');
         expect(html).toContain('<tr data-agreement-output="piece1-sha256:aa"><th scope="row">Piece 1</th><td class="agreement-table__from" data-label="From">');
-        expect(html).toContain('Ana 50%, Ben 50%');
-        expect(html).toContain('No recorded owner');
+        // Without ownership rights each parcel shows its abstract party.
+        expect(html).toContain('Owner(s) of parcel 335/2');
+        expect(html).not.toContain('Holders');
         expect(html).toContain('335/10, 335/2');
         expect(html).not.toContain('data-agreement-open-ground');
         const open = Dialog.landHtml({ land: { inputs: { parcels: [], openGroundM2: 120 }, outputs: [] }, selectedCount: 1 });
@@ -379,9 +384,9 @@ describe('the sections as HTML (the hooks the browser spec targets)', () => {
     });
 
     it('gives every resulting piece one select, the stored choice selected, an unknown one requires a choice', () => {
-        const html = Dialog.allocationHtml(land, { 'piece1-sha256:aa': 'party:agent-ben', 'piece1-sha256:bb': 'party:agent-gone' });
+        const html = Dialog.allocationHtml(land, { 'piece1-sha256:aa': 'party:parcel-owner:335/10', 'piece1-sha256:bb': 'party:parcel-owner:999' });
         expect(html.match(/<select data-agreement-allocation=/g)).toHaveLength(2);
-        expect(html).toContain('<select data-agreement-allocation="piece1-sha256:aa"><option value="">Choose recipient</option><option value="proposer">Proposer</option><option value="party:agent-ana">Ana</option><option value="party:agent-ben" selected>Ben</option><option value="public">Public</option></select>');
+        expect(html).toContain('<select data-agreement-allocation="piece1-sha256:aa"><option value="">Choose recipient</option><option value="proposer">Proposer</option><option value="party:parcel-owner:335/2">Owner(s) of parcel 335/2</option><option value="party:parcel-owner:335/10" selected>Owner(s) of parcel 335/10</option><option value="party:parcel-owner:336">Owner(s) of parcel 336</option><option value="public">Public</option></select>');
         expect(html).toContain('<select data-agreement-allocation="piece1-sha256:bb"><option value="" selected>');
         expect(Dialog.allocationHtml({ inputs: land.inputs, outputs: [] })).toBe('');
     });

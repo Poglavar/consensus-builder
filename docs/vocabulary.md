@@ -98,11 +98,11 @@ Land represented by the included designs, with source-qualified cadastral refere
 
 A land piece standing on the input land after the included designs are applied. Outputs include materialized fabric pieces and any remaining modeled open-ground host that has no materialized piece. Such a host is carried as geometry with no claimed holder or cadastral identity. Its committed identity is a `piece1-sha256:` hash of the defined output projection, not a permanent cadastral identifier.
 
-An unchanged whole cadastral parcel commits to its source geometry, including its Polygon or MultiPolygon type. Splits and designed pieces commit to their resulting geometry. Even an unchanged whole parcel needs an explicit single recipient in an owners’ agreement.
+An unchanged whole cadastral parcel commits to its source geometry, including its Polygon or MultiPolygon type. Splits and designed pieces commit to their resulting geometry. Even an unchanged whole parcel needs an explicit single recipient in an owners’ agreement; by default that is its own parcel party.
 
 ### Allocation
 
-The proposed assignment of an agreement output to exactly one input-land party, to the proposer or to the public. Every output in an owners’ agreement has an explicit allocation. Joint output ownership and implicit carried-holder allocations are not supported; separate recipients require separate output parcels. Input parcels can still have several owners with stated shares.
+The proposed assignment of an agreement output to exactly one recipient: an input parcel party (`parcel-owner:<parcelId>`), the proposer or the public. Every output in an owners’ agreement has an explicit allocation. An output allocated to a parcel party is held by that parcel's co-owners in their ownership shares; agreements never name persons as recipients.
 
 ### Proposer allocation
 
@@ -287,7 +287,7 @@ A shared same-level centerline node and its incident street arms, with the cross
 
 A level is a discrete topology label, with omitted levels treated as ground level zero; it is not an elevation in metres. Editing a participating road refreshes the affected neighbouring arm definitions. Drawing a road that joins an existing one, or editing a participating road, updates a neighbour that is still the author's own unpublished design in place; a published neighbour is immutable, so its updated junction is saved as a new revision that names it by CID and replaces it on the map, and the person is told which roads were revised. The junction owns its shared visible surface, including during drawing previews, so participating road strips do not paint over that surface.
 
-MCP agreement drafting and revision author the included roads as a complete network before parcel binding and agreement output calculation. Changed junctions produce revised road designs and CIDs. Reading, applying or comparing published records does not rewrite their topology.
+An MCP road draft, import or edit is joined to the road and track designs the agent names, by the same junction planning as the map editor; a named neighbour whose junctions change becomes a revised design naming it by `origin.cid`. Agreement drafting does not revise designs. Reading, applying or comparing published records does not rewrite their topology.
 
 ### Map share
 
@@ -573,7 +573,11 @@ The source-qualified building footprints considered by an operation, with any kn
 
 ### Party
 
-An agreement can name an abstract input party as `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”, when no ownership source is plugged in. This identifies the unknown owner group of that input parcel for allocation and accounting; it is not verified ownership. Imported ownership rights can replace the abstract group with identified holders and their shares. Abstract parties can draft allocations and compensation without a lens or names.
+Each input parcel of an agreement is exactly one party, `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”. Agreements name no persons: input parcels carry no holders, and allocations and money lines name a parcel party, the proposer or the public. The parcel party is the owner group of that parcel whoever its members are; it is not verified ownership.
+
+### Persons
+
+The people behind parcel parties, derived from a rights snapshot and never stored in an agreement. A person holding share s of parcel i co-owns every output allocated to that parcel's party at fraction s and receives s of its cash; each parcel's cash is split in minor currency units by largest remainder, so per-person totals equal per-party totals exactly. Parcels whose rights do not name complete holders stay one unresolved party. Owner approvals and lens decisions read the rights snapshot, not the agreement.
 
 A person, organization or authority identified for rights, allocations or decisions. A party can hold different rights in different parcels; the rights engine's `ownerId` is a party identifier, not an assertion of universal ownership.
 

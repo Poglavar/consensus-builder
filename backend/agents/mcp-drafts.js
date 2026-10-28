@@ -7,6 +7,7 @@ import { parcelSourceIdOf } from './mcp-read-tools.js';
 import { editedDesign, valueAt } from './mcp-edit.js';
 import { buildTypedDesign, validateTrackDesign } from './mcp-constructors.js';
 import { trustedMetadata } from './mcp-results.js';
+import { joinEditedRoad, joinNewRoads } from './mcp-road-network.js';
 import { cityDrivingSide } from '../scripts/lib/frontend-city-money.mjs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -35,10 +36,7 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
         if (kind === 'road' || kind === 'track') intent.drivingSide = cityDrivingSide(args.city);
         let parcelFeatures = [];
         if (kind === 'station') {
-            intent.corridors = await Promise.all((args.corridors || []).map(async input => {
-                const resolved = await resolveDesignSource(input);
-                return { cid: cidOfObject(resolved.content), content: resolved.content };
-            }));
+            intent.corridors = await roadCorridors(args.corridors);
         } else if ((kind === 'road' || kind === 'track') && !intent.points) {
             let bbox = args.bbox;
             if (!bbox && args.street) {
@@ -76,7 +74,29 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
         const design = ['building', 'station', 'track'].includes(kind)
             ? buildTypedDesign(intent, { parcels: parcelFeatures }) : builder.build(intent, { turf });
         const checked = designObject({ ...design, createdAt: design.authoredAt });
-        return result(checked.content, intent.parcelSourceId || args.parcelSourceId);
+        if (kind !== 'road' && kind !== 'track') return result(checked.content, intent.parcelSourceId || args.parcelSourceId);
+        // A drafted road is finished as the map editor finishes a drawn one: joined to the named corridors.
+        const joined = joinNewRoads([checked.content], await roadCorridors(args.corridors), checked.content.authoredAt);
+        return junctionResult(await result(joined.designs[0], intent.parcelSourceId || args.parcelSourceId), joined);
+    }
+    // Named road/track designs, resolved as immutable references; they stand in for the editor's applied corridors.
+    async function roadCorridors(inputs = []) {
+        return Promise.all(inputs.map(async input => {
+            const resolved = await resolveDesignSource(input);
+            if (!resolved.content.roadProposal) throw fail('corridor-road-required', 'Name only road or track designs in corridors.', { action: 'Remove designs that are not roads or tracks from corridors.' });
+            return { cid: cidOfObject(resolved.content), content: resolved.content, parcelSourceId: resolved.parcelSourceId };
+        }));
+    }
+    // Neighbours whose junctions changed come back as private revisions the agent can put in its plan.
+    async function junctionResult(primary, joined) {
+        return { ...primary, changes: joined.changes, revisedCorridors: await Promise.all(joined.revisions.map(row => result(row.design, row.parcelSourceId))) };
+    }
+    // With corridors, an edited road re-derives its junctions against exactly those roads, as the editor does on an edit.
+    async function joinedEdit(before, edited, corridors, parcelSourceId) {
+        if (corridors === undefined) return result(edited, parcelSourceId);
+        if (!edited.roadProposal) throw fail('corridors-road-only', 'Only a road or track edit joins corridors.', { action: 'Remove corridors from this edit.' });
+        const joined = joinEditedRoad(before, edited, await roadCorridors(corridors), edited.authoredAt);
+        return junctionResult(await result(joined.design, parcelSourceId), joined);
     }
     async function resolveDesignSource(value) {
         if (typeof value === 'string' && !isCid(value)) {
@@ -106,7 +126,7 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
     }
     const resolveDesign = async value => (await resolveDesignSource(value)).content;
     return {
-        resolveDesign, resolveDesignSource,
+        resolveDesign, resolveDesignSource, roadCorridors, junctionResult,
         draftRoad: args => draft('road', args), draftTrack: args => draft('track', args), draftStation: args => draft('station', args), draftBuilding: args => draft('building', args),
         draftSpace: args => draft('space', args), draftParcelLayout: args => draft('parcel-layout', args), draftUrbanRule: args => draft('urban-rule', args),
         async inspectDesign({ design, paths = [''] }) {
@@ -116,14 +136,14 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
                 editableRoots: Object.keys(content).filter(key => !['schema', 'origin', 'authoredAt'].includes(key)).map(key => `/${key}`),
                 next: trustedMetadata({ tool: 'ugt_edit_design', action: 'Use this CID as expectedCid. Patch the authored JSON with ordered JSON Pointer edits. Canonical OSM changes rebuild the road footprint; coupled building geometry must remain consistent.' }) };
         },
-        async editDesign({ design, expectedCid, edits, parcelSourceId }) {
+        async editDesign({ design, expectedCid, edits, parcelSourceId, corridors }) {
             const resolved = await resolveDesignSource(design);
             if (cidOfObject(resolved.content) !== expectedCid) throw Object.assign(new Error('Inspect the intended design revision before editing.'), {
                 code: 'design-revision-mismatch', currentCid: cidOfObject(resolved.content), expectedCid,
                 next: { tool: 'ugt_inspect_design', arguments: { design }, action: 'Inspect this reference and use its current CID as expectedCid.' } });
-            return result(editedDesign(resolved.content, expectedCid, edits), parcelSourceId || resolved.parcelSourceId);
+            return joinedEdit(resolved.content, editedDesign(resolved.content, expectedCid, edits), corridors, parcelSourceId || resolved.parcelSourceId);
         },
-        async modifyDesign({ design, changes, parcelSourceId }) {
+        async modifyDesign({ design, changes, parcelSourceId, corridors }) {
             const resolved = await resolveDesignSource(design), original = resolved.content;
             parcelSourceId ||= resolved.parcelSourceId;
             let modified = original;
@@ -140,7 +160,7 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
             modified.origin = { cid: cidOfObject(original) };
             modified.authoredAt = new Date().toISOString();
             validateTrackDesign(modified, original);
-            return result(modified, parcelSourceId);
+            return joinedEdit(original, modified, corridors, parcelSourceId);
         },
         compare: createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference })
     };

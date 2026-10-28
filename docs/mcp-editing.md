@@ -133,7 +133,7 @@ composition or geometry, revise the named plan and draft a new agreement.
 | Building form, facade/material/model, use and dimensions | `/geometry/buildings/*/geometry`, `/geometry/buildings/*/properties`, `/buildingProposal/parameters` | Height/floors are kept consistent when only one changes. A geometry-affecting parameter edit must include its actual geometry change. Model/material fields retain the site's own schema; a new property name does not create a renderer feature. |
 | Block/row/detached envelopes and example form | `/geometry/ruleMassing`, building feature rules, `/buildingProposal/parameters/rule` | Rule height/floors and provenance are synchronized. A Block or Row stores one building per parcel, cut from its authored massing in `/geometry/ruleMassing`; a height, floors or use intent applied to all its buildings re-stamps that massing, while a footprint, removal or single-building edit must explicitly update `/geometry/ruleMassing` too. Setback or plot-eligibility edits require corresponding envelope geometry. Use atomic patches for coupled fields. |
 | Building surroundings and land take | `/geometry/groundSurface`, `/geometry/landTake`, `/geometry/groundBoundary`, `/site` | A building-only transform leaves surroundings anchored and updates their footprint holes. Surroundings are clipped to taken land; changing land take to the exact footprint removes the surface and its furniture. Whole source parcels require positive building overlap. When moving off a parcel, edit `/geometry/landTake` and `/site` with the moved footprint to release that parcel and its surroundings; the browser recomputes this from source parcels. Edit `/geometry/landTake` to choose footprint cuts, occupied whole source parcels or a mixture. Enlarging a footprint beyond its site requires explicitly editing the site. |
-| Road/track nodes, segments and lanes | `/roadProposal/definition/osm/elements` and other authored corridor fields | Canonical OSM node/way/relation references are checked. OSM edits rebuild the footprint and site through the app materializer. Coordinate/profile changes across neighbouring roads need edits to all affected designs. |
+| Road/track nodes, segments and lanes | `/roadProposal/definition/osm/elements` and other authored corridor fields | Canonical OSM node/way/relation references are checked. OSM edits rebuild the footprint and site through the app materializer. Supply `corridors` naming the roads it meets to re-derive its junctions with them (see Road junctions below). |
 | Park/square/lake/station form and furniture | `/structureProposal/geometry`, `/structureProposal/decorationDesign`, `/structureProposal/modelUrl`, `/structureProposal/modelName`, `/structureProposal/rotation`, `/structureProposal/source`, authored graphics under `/geometry` | Goal and structure kind must agree. An uploaded park/square/lake model (`source: 'upload'`) is drawn stretched onto the structure polygon's bounds in its `rotation` frame (degrees) at the model's own height, so rotating it needs a matching geometry `transform`. Replacing park/square/lake geometry updates its site when the site is not explicitly edited. The browser offers direct area dragging and boundary vertex insertion, removal and movement for the same stored geometry. Park/square furniture outside the edited boundary is removed using the same ground-scoping helper as the browser; Undo or editing an earlier revision can restore it. Trees, paths, ponds, flowerbeds and furniture can be individually added, copied, moved or removed. |
 | Parcel borders/layout | `/parcelLayout/plots`, pool/site and authored layout settings | Plots must be valid, nonoverlapping polygons covering their pool; edit shared vertices on both neighbouring plots atomically. |
 | Design details | Title, description, author, city, tolerance and goal/payload | Exactly one supported authored payload; valid canonical identity and current parcel binding. |
@@ -155,6 +155,34 @@ whole new design is created through a draft tool or supplied as canonical conten
 The interface covers saved authored records; it does not read a person's open browser or unsaved local composition. `ugt_import_design` accepts GeoJSON, OSM XML and OpenDRIVE through the app parsers. `ugt_import_model` accepts a self-contained GLB/glTF payload or supported public URL; `confirmAssetUpload: true` authorizes a durable public asset upload, while its resulting design remains private. Its `kind` is `building` (default) or `park`, `square` or `lake`: the model's projected footprint, placed at `center` with `rotation`, becomes the building footprint or the structure polygon. `kind: 'furniture'` uploads a furniture asset within the furniture limits and returns no design (no `city`, `center` or `rotation` needed); see the furniture models above. A building keeps the model in its feature properties; a space keeps `modelUrl`, `modelName` (at most 120 characters), `rotation` and `source: 'upload'` on `/structureProposal`. GeoJSON LineString and MultiLineString centrelines go through the site's own GeoJSON road import (`parseGeoJson`, then the same records as an OSM import): one road per line or part, every scalar property an OSM way tag (`name`, `width`, `highway`, `lanes`, `railway`; `mode: 'rail'` means `railway=rail`, and a line with neither class tag is `highway=road`). GeoJSON polygons become buildings, or with `kind: 'space'` and `spaceKind` a park, square or lake; the result lists polygon designs first, then roads. A model URL or uploaded filename alone is not proof of a matching geographic footprint.
 
 Typed constructors cover freeform, block, row and detached building forms, road, track, bus/tram/underground/elevated stations, park, square, lake and parcel layout. Use `ugt_help` with the exact tool name for current parameter constraints. Row creation requires two distinct selected parcels; for an outline it uses the shared site plot cutter and requires at least two plots. Row dimensions omitted by the caller use the shared site-fitting defaults. Blocks expose shared `gapPositions`, `gapWidthM`, `wingPositions`, `wingLengthM` and `chamferM` geometry rather than retaining those fields as unrendered intent. Track edits retain speed/gauge/radius evidence and recheck authored curvature. Station construction resolves compatible corridor references rather than inventing an attachment.
+
+### Road junctions
+
+A road or track is joined to other roads when it is drafted or edited, as in the map editor, and
+only then: `ugt_draft_agreement` and `ugt_edit_plan` use their designs exactly. The caller names the
+existing road and track designs (CID, design URL, `draftRef` or canonical draft) in `corridors`; the
+server resolves them as immutable references, standing in for the corridors applied on the map.
+
+- `ugt_draft_road`, `ugt_draft_track` and the roads of `ugt_import_design` run the editor's
+  `planCorridorAuthoring` (`frontend/js/proposals/corridor-authoring.js`) against the named
+  corridors. Imported roads are finished in turn, so they also join each other. A self-crossing
+  stroke is noded even when nothing is named.
+- `ugt_edit_design` and `ugt_modify_design` with `corridors` on a road run the editor's
+  `planCorridorEdit`: junctions at the road's old and new nodes are re-derived against exactly the
+  named corridors, so a junction with a road that is not named is removed. Without `corridors` an
+  edit leaves the stored junctions as authored.
+- Same-level crossings and touching ends become a junction recorded on both roads, with the corner
+  land rebuilt by the shared materializer. Crossings at different levels and protected
+  tunnel/bridge edges stay separate.
+- A named neighbour whose junctions change is returned in `revisedCorridors` as a new private
+  revision with `origin.cid` of the named design, and listed in
+  `changes: [{ type: 'road-junctions', beforeCid, afterCid, title }]`. A neighbour whose canonical
+  road is unchanged is not revised. Replace each revised neighbour in the plan with `ugt_edit_plan`.
+
+Parity is checked by the headless unit tests in `backend/test/mcp-road-network.test.js`: junctions
+on both roads, neighbour revision by `origin.cid`, untouched roads unrevised, an edit joining and
+detaching a named neighbour, and the same through `ugt_draft_road`, `ugt_import_design` and
+`ugt_edit_design` with their result schemas; each case was confirmed red with its planner call removed.
 
 The browser's local ownership and recipient facets are not part of `design/v1`. MCP cannot inspect or edit those local facets; agreement allocation primitives edit separate agreement terms. This is an outstanding editing-parity gap.
 

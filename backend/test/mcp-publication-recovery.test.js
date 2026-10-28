@@ -12,7 +12,7 @@ import { cidOfObject } from '../cid.js';
 const APP='https://app.example';
 const site={type:'Polygon',coordinates:[[[15,45],[15.001,45],[15.001,45.001],[15,45.001],[15,45]]]};
 const design=designObject({goal:'park',title:'Garden',city:'london',site,createdAt:'2026-10-25T12:00:00.000Z',structureProposal:{kind:'park',geometry:site}});
-const agreement=agreementObject({title:'Garden consultation',city:'london',createdAt:'2026-10-25T12:00:00.000Z',plan:planForDesigns('Garden consultation',[design],mapViewFromGeometry([site],'london')),designs:[{cid:design.cid,goal:design.content.goal,title:design.content.title}],parcels:[{parcelId:'P',areaM2:100,holders:[]}],outputs:parcelOutputs([{parcelId:'P',areaM2:100,geometry:site}]),rule:communityRule([]),money:noMoney('EUR'),consultation:{organiser:'did:web:community.example',participationUrl:'https://community.example/join'}});
+const agreement=agreementObject({title:'Garden consultation',city:'london',createdAt:'2026-10-25T12:00:00.000Z',plan:planForDesigns('Garden consultation',[design],mapViewFromGeometry([site],'london')),designs:[{cid:design.cid,goal:design.content.goal,title:design.content.title}],parcels:[{parcelId:'P',areaM2:100}],outputs:parcelOutputs([{parcelId:'P',areaM2:100,geometry:site}]),rule:communityRule([]),money:noMoney('EUR'),consultation:{organiser:'did:web:community.example',participationUrl:'https://community.example/join'}});
 function fixture({failIndex=false,failReadback=false,failPin=false,failPinKind=null}={}) {
     const rows=new Map(), designs=new Map(), calls=[];
     const directory=mkdtempSync(join(tmpdir(),'mcp-publication-'));directories.push(directory);
