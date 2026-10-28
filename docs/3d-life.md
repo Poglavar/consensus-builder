@@ -57,7 +57,11 @@ Four classic scripts, three of them pure and node-tested:
    - OSM roads (the same feature shape whether they come from `/osm-road` or Overpass): driveable
      classes (motorway … residential and their `_link`s; no service) split at shared vertices (0.5 m
      snap key), lanes from `lanes` or a class default, `oneway` respected (yes/1/true/-1/reverse),
-     lane centres at 3.5 m with right-hand traffic, the carriageway as wide as `width` or lanes×3.5;
+     lane centres at 3.5 m on the city's side of the road, the carriageway as wide as `width` or lanes×3.5;
+     the side comes from `CityConfigManager.getDrivingSide()`: a city config's own `drivingSide`
+     (`'left'` or `'right'`), else left for the countries that drive on the left (read from the region
+     of the city's `currency.locale`: `en-GB`, `en-IN`, `ja-JP` and so on), else right. Applied
+     corridors keep the lane directions their profile records;
      a 4.5 m sidewalk band outside the carriageway on each side unless `sidewalk=no|none|separate`;
      footway/path/pedestrian/steps/cycleway/track/living_street as walking bands, closed
      `area=yes` pedestrian ways as walking polygons;

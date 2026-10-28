@@ -540,6 +540,21 @@
         return Boolean(getParcelSettings().requiresBackend);
     }
 
+    // The side of the road traffic keeps to (the 3D cars): a city's own `drivingSide` ('left' or
+    // 'right'), else its country's, read from the region of its currency locale (en-GB: GB). These
+    // countries and territories drive on the left; everywhere else drives on the right.
+    const LEFT_HAND_TRAFFIC = new Set(['GB', 'IE', 'IM', 'JE', 'GG', 'MT', 'CY', 'IN', 'PK', 'BD', 'LK', 'NP',
+        'BT', 'MV', 'JP', 'MY', 'SG', 'BN', 'ID', 'TH', 'TL', 'HK', 'MO', 'AU', 'NZ', 'PG', 'FJ', 'WS', 'TO',
+        'SB', 'KI', 'TV', 'NR', 'ZA', 'ZM', 'ZW', 'BW', 'NA', 'LS', 'SZ', 'MZ', 'MW', 'TZ', 'KE', 'UG', 'MU',
+        'SC', 'JM', 'TT', 'BS', 'BB', 'GY', 'SR', 'AG', 'DM', 'GD', 'KN', 'LC', 'VC', 'AI', 'BM', 'VG', 'KY',
+        'MS', 'TC', 'FK', 'SH', 'CK', 'NU']);
+    function getDrivingSide(cityId = null) {
+        const config = cityId ? configOf(resolveCityId(cityId) || cityId) : getCurrentCityConfig();
+        if (config?.drivingSide === 'left' || config?.drivingSide === 'right') return config.drivingSide;
+        const region = String(config?.currency?.locale || '').split('-')[1] || '';
+        return LEFT_HAND_TRAFFIC.has(region.toUpperCase()) ? 'left' : 'right';
+    }
+
     function getCurrencyConfig() {
         return getCurrentCityConfig().currency;
     }
@@ -1070,6 +1085,7 @@
         getParcelZoomRange,
         requiresBackendDataSource,
         getCurrencyConfig,
+        getDrivingSide,
         getMapConfig: () => getCurrentCityConfig().map || {},
         getSidebarConfig,
         getParcelBuilderConfig,

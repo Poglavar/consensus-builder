@@ -156,7 +156,13 @@
         return Math.abs(a[0] - b[0]) < 1e-9 && Math.abs(a[1] - b[1]) < 1e-9;
     }
 
-    function createGraphBuilder() {
+    // drivingSide: the side of the road traffic keeps to ('right' or 'left', the city's), which
+    // decides where a two-way street's forward and oncoming lanes lie.
+    function createGraphBuilder({ drivingSide = 'right' } = {}) {
+        if (drivingSide !== 'right' && drivingSide !== 'left') throw new Error(`life graph: unknown driving side "${drivingSide}"`);
+        // Offsets are positive to the left of travel: right-hand traffic keeps its forward lanes at
+        // negative offsets, left-hand traffic at positive ones.
+        const keep = drivingSide === 'left' ? 1 : -1;
         const ways = [];       // { id, points, lanes:[{offset, dir, speed, kind}], carriageway:{offset, halfWidth}|null, bands:[{offset, halfWidth, zcode}], source }
         const areas = [];
         const fills = [];      // preferred walking polygons: { rings, zcode, kind }
@@ -231,8 +237,8 @@
                         } else {
                             const forward = parseCount(tags['lanes:forward']) || Math.ceil(total / 2);
                             const backward = parseCount(tags['lanes:backward']) || Math.max(1, total - forward);
-                            for (let i = 0; i < forward; i++) lanes.push({ offset: -(i + 0.5) * laneWidth, dir: 1, speed, kind: 'driving' });
-                            for (let i = 0; i < backward; i++) lanes.push({ offset: (i + 0.5) * laneWidth, dir: -1, speed, kind: 'driving' });
+                            for (let i = 0; i < forward; i++) lanes.push({ offset: keep * (i + 0.5) * laneWidth, dir: 1, speed, kind: 'driving' });
+                            for (let i = 0; i < backward; i++) lanes.push({ offset: -keep * (i + 0.5) * laneWidth, dir: -1, speed, kind: 'driving' });
                         }
                         // The carriageway reaches the outer edge of the outermost lane actually laid
                         // out (an odd two-way lane count puts lanes past lanes×width/2), or the
