@@ -36,6 +36,17 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
         let parcelFeatures = [];
         if (kind === 'station') {
             intent.corridors = await roadCorridors(args.corridors);
+        } else if (kind === 'road' && !intent.points && (args.parcelIds?.length || args.outline)) {
+            // A road placed into a parcel (docs/road-in-parcel.md): the site is its land and its
+            // streets are read from the site's shape.
+            if (args.parcelIds?.length && args.outline) throw fail('site-ambiguous', 'Choose either source parcels or an outline, not both.', { action: 'Remove one of parcelIds or outline.' });
+            if (args.parcelIds?.length) {
+                const source = await read.parcels(args);
+                parcelFeatures = source.features;
+                intent.site = union(source.features);
+                intent.parcelSourceId = source.parcelSourceId;
+            } else intent.site = geometry(args.outline);
+            intent.bounded = true;
         } else if ((kind === 'road' || kind === 'track') && !intent.points) {
             let bbox = args.bbox;
             if (!bbox && args.street) {

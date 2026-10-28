@@ -399,6 +399,14 @@ Transport land and its authored road or track design. Its alignment and cross-se
 
 A corridor design's canonical stored form is `roadProposal.definition.osm`. Expanded drawing fields are a view of that form and do not independently determine the design's CID.
 
+### Bounded road
+
+A road placed into ground already left for it (`definition.bound.site`): its land is that site, not
+what its lanes cut, and it declares only the parcels the site covers. Its lanes (the core) are
+fitted along the middle of each street to the street's narrowest part; pavements up to 3 m and verges
+fill the rest. Edits keep the site: one that moves the road off it or leaves its lanes too little
+room is refused. See [road in a parcel](road-in-parcel.md).
+
 ### Alignment
 
 The ordered line or curve of a corridor, with its horizontal position and any stated levels or elevations. An alignment is distinct from the corridor's width and occupied polygon.

@@ -226,3 +226,15 @@ in hosted tool arguments. Changing eligibility creates a new agreement with sepa
 `ugt_cast_community_vote` accepts the reviewed version and a retry-stable UUID, with explicit
 confirmation. The tools call the same API as the browser, including its persistent guessing limits.
 See [community consultations](community-consultations.md#voting-on-the-site) for the complete contract.
+
+### Road in a parcel
+
+`ugt_draft_road` with `parcelIds` (and `parcelSourceId`) or an `outline`, and no `points`, drafts a
+bounded road ([road in a parcel](road-in-parcel.md)): the streets are read from the ground's straight
+grid, a `preset` or `lanes` is the core of every street (the automatic lanes per street width
+otherwise), and pavements and verges fill each street to its edges. The design's site and land are
+the ground. A site in separate parts, curved ground, or lanes wider than a street are refused with
+the widths. `ugt_modify_design` changes its lanes with `set_profile` only; JSON Patch edits of its
+OSM nodes re-fill the edges and are refused when a node leaves the ground or the lanes no longer fit,
+and `bound` is not editable. This is the agent's path to the parcel layout's "Make the street strips
+roads": draft the road with the layout's street-strip plots as the `outline`.

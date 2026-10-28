@@ -38,6 +38,12 @@
             titleKey: 'sidebar.roads.drawManualTooltip', titleFallback: 'Open the manual road drawing tool'
         },
         {
+            // A road fitted into the selected parcel(s): their land is its land (road-in-parcel.js).
+            key: 'roadInParcel', icon: 'cb-icon-road-in-parcel', labelKey: 'panel.parcel.build.roadInParcel', fallback: 'Road in parcel',
+            titleKey: 'panel.parcel.build.roadInParcelTooltip',
+            titleFallback: 'Fit a road into this parcel: its lanes fill the width and nothing outside it is taken'
+        },
+        {
             key: 'track', icon: 'cb-icon-track', labelKey: 'panel.parcel.build.track', fallback: 'Track',
             titleKey: 'sidebar.roads.drawTrackTooltip', titleFallback: 'Open the manual track drawing tool with curvature constraints'
         },
@@ -64,6 +70,11 @@
         const key = String(toolKey || '').trim();
         if (key === 'road') {
             global.requestRoadDrawTool?.();
+            return;
+        }
+        if (key === 'roadInParcel') {
+            // The parcels are read now: opening a map tool clears the selection.
+            global.RoadInParcel?.openForParcels(parcelBuildSelectionIds());
             return;
         }
         if (key === 'track') {

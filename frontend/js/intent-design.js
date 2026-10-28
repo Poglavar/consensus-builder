@@ -51,7 +51,34 @@
         if (!tags) fail('Road preset must be 2+2, 1+1 or 1+1 with cycle lanes');
         return d.profile.corridorProfileFromOsmTags(tags, undefined, drivingSideOf(intent));
     }
+    // A road placed into a parcel (docs/road-in-parcel.md): its land is the site, its streets are
+    // read from the site's shape, and the lanes asked for (or the automatic ones) are fitted to each
+    // street's width with pavements and verges to the edges. One connected site, one road.
+    function buildBoundedRoad(intent, d) {
+        const site = polygon(intent.site, d);
+        const inSite = load('__roadInSite', './proposals/road-in-site.js');
+        const fit = load('__corridorSiteFit', './proposals/corridor-site-fit.js');
+        const core = (intent.lanes || intent.preset) ? fit.coreOf(roadProfile(intent, d)) : null;
+        const plan = inSite.roadsInSite(site, { core: core && core.length ? core : null, turn: intent.turn === true, drivingSide: drivingSideOf(intent) });
+        const issue = inSite.blocking(plan.issues)[0];
+        if (issue) {
+            const group = plan.groups.find(g => g.key === issue.key);
+            fail(issue.code === 'not-a-grid' ? 'The site does not read as straight streets; supply points for this road instead'
+                : issue.code === 'disconnected' ? 'Parts of the site do not connect as one street network; draft one road per part'
+                    : issue.code === 'too-narrow' ? `A street of the site is ${issue.widthM} m wide, too narrow for a lane`
+                        : `The lanes need ${group ? group.requiredM : '?'} m with their pavements; a street of the site is ${issue.widthM} m wide`);
+        }
+        if (plan.roads.length !== 1) fail(`The site has ${plan.roads.length} separate parts; draft one road per part`);
+        const definition = inSite.boundedDefinition(plan.roads[0]);
+        Object.assign(definition, { kind: 'road', tunnels: [], drivingSide: drivingSideOf(intent) });
+        definition.metadata = { ...intent.metadata, mode: 'bounded', type: 'road', isRoad: true, isTrack: false, isCorridor: true };
+        const material = d.footprint.materialize(definition);
+        definition.polygon = material.polygon;
+        definition.constructionFrame = material.constructionFrame;
+        return { goal: 'road-track', site: material.polygon, geometry: null, roadProposal: { definition: d.osm.toRecord(definition) } };
+    }
     function buildRoad(intent, d) {
+        if (intent.bounded === true && intent.kind === 'road') return buildBoundedRoad(intent, d);
         if (!Array.isArray(intent.points) || intent.points.length < 2 || intent.points.length > 200
             || intent.points.some(p => !Array.isArray(p) || p.length !== 2 || !p.every(finite) || Math.abs(p[0]) > 180 || Math.abs(p[1]) > 85)) fail('A road needs 2–200 WGS84 [longitude, latitude] points');
         let profile = roadProfile(intent, d);
@@ -156,7 +183,13 @@
         for (const change of changes) {
             if (change.type === 'retitle') record.title = change.value;
             else if (change.type === 'redescribe') record.description = change.value;
-            else if (record.roadProposal) {
+            else if (record.roadProposal && d.osm.toView(record.roadProposal.definition).bound) {
+                // A road in a parcel keeps its ground: only its lanes change, fitted again to every
+                // street of the same site.
+                const view = d.osm.toView(record.roadProposal.definition);
+                if (change.type !== 'set_profile') fail('A road in a parcel keeps its parcel; change its lanes with set_profile');
+                Object.assign(record, buildBoundedRoad({ ...change, kind: 'road', bounded: true, site: view.bound.site, drivingSide: view.drivingSide, metadata: view.metadata }, d));
+            } else if (record.roadProposal) {
                 const view = d.osm.toView(record.roadProposal.definition);
                 const entries = d.profile.corridorSegmentEntries(view);
                 let points = streetPoints(entries, d);

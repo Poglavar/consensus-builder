@@ -492,11 +492,14 @@ if (typeof window !== 'undefined') {
 
 // Every geometry change re-derives the parcels the corridor now touches from the committed
 // fabric. Leaflet is only a projection and never participates in the intersection decision.
-function collectParcelsIntersectingFootprint(footprintGeometry) {
+// `options.minOverlapM2`: a parcel counts only when the land covers at least this much of it (a
+// road placed into a parcel shares whole borders with its neighbours, which touch it but give it
+// nothing; roadLandOverlapFloor).
+function collectParcelsIntersectingFootprint(footprintGeometry, options = {}) {
     if (!footprintGeometry || typeof turf === 'undefined') return [];
     const geometry = footprintGeometry.type ? footprintGeometry : { type: 'Polygon', coordinates: footprintGeometry };
     const roadFeature = { type: 'Feature', properties: {}, geometry };
-    return liveRoadDrawingParcelsIntersecting(roadFeature)
+    return liveRoadDrawingParcelsIntersecting(roadFeature, { minOverlapM2: options.minOverlapM2 })
         .map(getRoadDrawingParcelIdFromFeature)
         .filter(Boolean)
         .map(String);
@@ -622,7 +625,7 @@ function makeFreshRoadSnapshot(sourceProposal, definition, options = {}) {
     delete cleanDefinition.demolishedBuildings;
     delete cleanDefinition.demolitionScanned;
     const geometricHints = cleanDefinition.polygon
-        ? collectParcelsIntersectingFootprint(cleanDefinition.polygon)
+        ? collectParcelsIntersectingFootprint(cleanDefinition.polygon, { minOverlapM2: roadLandOverlapFloor(cleanDefinition) })
         : [];
     const fallbackHints = sourceProposal?.cadastreParcelIds || [];
     const cadastreParcelIds = baseRoadParentHints(geometricHints.length ? geometricHints : fallbackHints);
@@ -651,11 +654,21 @@ function makeFreshRoadSnapshot(sourceProposal, definition, options = {}) {
     return clone;
 }
 
+// The least area a road's land must cover of a parcel to declare it. A road placed into a parcel
+// (definition.bound) has the parcel's own boundary as its land, so every neighbour touches it: only
+// parcels it covers at least as much of as the arrangement keeps a piece for (parcel-arrangement.js
+// MIN_PIECE_M2) are declared. Other roads keep declaring every parcel their land reaches.
+const BOUNDED_ROAD_MIN_OVERLAP_M2 = 0.25;
+function roadLandOverlapFloor(definition) {
+    return definition && definition.bound && definition.bound.site ? BOUNDED_ROAD_MIN_OVERLAP_M2 : 0;
+}
+
 // Add every loaded parcel under `polygon` to the record's declared cadastre parcels (as base
 // parcel ids, like a fresh snapshot). Returns the ids that were newly declared.
 function declareParcelsUnderRoadLand(record, polygon) {
     if (!record || !polygon) return [];
-    const reached = baseRoadParentHints(collectParcelsIntersectingFootprint(polygon));
+    const floor = roadLandOverlapFloor(record.roadProposal && record.roadProposal.definition);
+    const reached = baseRoadParentHints(collectParcelsIntersectingFootprint(polygon, { minOverlapM2: floor }));
     const declared = new Set((Array.isArray(record.cadastreParcelIds) ? record.cadastreParcelIds : []).map(String).filter(Boolean));
     const added = reached.map(String).filter(id => id && !declared.has(id));
     if (!added.length) return [];
@@ -890,6 +903,15 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
             if (!liveIds.has(String(id))) delete workingDefinition.segmentProfiles[id];
         });
     }
+    // A road placed into a parcel keeps the parcel as its land (docs/road-in-parcel.md): its
+    // pavements and verges re-fill the room the edit leaves, and an edit that moves it off the
+    // parcel or leaves its lanes too little room is refused and rolled back.
+    const siteFit = (typeof window !== 'undefined') ? window.__corridorSiteFit : null;
+    if (siteFit && siteFit.isBounded(workingDefinition)) {
+        Object.assign(workingDefinition, siteFit.refitBounded(workingDefinition));
+        const issue = siteFit.boundedRoadIssues(workingDefinition)[0];
+        if (issue) throw Object.assign(new Error(`bounded road refused: ${issue.code}`), { userMessage: boundedRoadRefusal(issue) });
+    }
     rebuildRoadDefinitionFootprint(workingDefinition);
     if (!workingDefinition.polygon) return false;
 
@@ -902,6 +924,13 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     const componentIndexSets = (typeof window.__formationEdit?.corridorComponents === 'function')
         ? window.__formationEdit.corridorComponents(normalizedSegments)
         : [normalizedSegments.map((_, index) => index)];
+    // A road in a parcel holds the whole parcel; two pieces of it cannot both hold it.
+    if (componentIndexSets.length > 1 && siteFit && siteFit.isBounded(workingDefinition)) {
+        throw Object.assign(new Error('bounded road refused: split'), {
+            userMessage: translateRoadText('panel.road.boundedSplit',
+                'A road in a parcel stays one connected network: it holds the whole parcel. Undo, or delete the road and place it again.')
+        });
+    }
     const componentDefinitions = componentIndexSets.length > 1
         ? componentIndexSets.map(indices => {
             const definition = cloneRoadValue(workingDefinition);
@@ -2030,9 +2059,14 @@ function liveRoadDrawingParcelsIntersecting(queryFeature, options = {}) {
     } catch (_) {
         return [];
     }
+    const minOverlap = Number(options.minOverlapM2) > 0 ? Number(options.minOverlapM2) : 0;
     const hits = candidates.filter(feature => {
-        try { return turf.booleanIntersects(queryFeature, feature); }
-        catch (_) { return false; }
+        try {
+            if (!turf.booleanIntersects(queryFeature, feature)) return false;
+            if (!minOverlap) return true;
+            const shared = turf.intersect(queryFeature, feature);
+            return !!shared && turf.area(shared) >= minOverlap;
+        } catch (_) { return false; }
     });
     // Only cadastral parcels are returned: a piece formed on open ground joins no count, owner
     // tally or declaration. `options.groundInto` (a Map) collects those pieces for the open-ground stat.
@@ -2131,6 +2165,17 @@ function formatRoadText(template, params = {}) {
     return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
         return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
     });
+}
+
+// Why an edit of a road placed into a parcel was refused, in words for its author.
+function boundedRoadRefusal(issue) {
+    if (issue && issue.code === 'core-too-wide') {
+        return translateRoadText('panel.road.boundedTooWide',
+            'These lanes need {{required}} m, and the parcel leaves {{available}} m here. Choose fewer or narrower lanes.',
+            { required: Number(issue.requiredM).toFixed(1), available: Number(issue.availableM).toFixed(1) });
+    }
+    return translateRoadText('panel.road.boundedOutside',
+        'A road in a parcel stays inside that parcel. Move the point back onto it.');
 }
 
 function translateRoadText(key, fallback, params = {}) {

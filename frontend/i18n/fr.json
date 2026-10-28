@@ -2928,6 +2928,8 @@
                 "layOutParcels": "Dessiner le découpage parcellaire",
                 "lake": "Lac",
                 "transport": "Transports",
+                "roadInParcel": "Rue dans la parcelle",
+                "roadInParcelTooltip": "Ajuster une rue à cette parcelle : ses voies en occupent la largeur et rien n’est pris au-delà",
                 "undergroundStation": "Station souterraine",
                 "elevatedStation": "Station surélevée",
                 "selectParcelFirst": "Sélectionnez d’abord une parcelle.",
@@ -3412,6 +3414,9 @@
             "edgeActionsProtectedHint": "Impossible d’ajouter un nœud sur une rampe, un tunnel ou un tronçon dénivelé · × Supprimer ce tronçon",
             "addNodeProtectedStatus": "Impossible d’ajouter un nœud sur une rampe, un tunnel ou un tronçon dénivelé.",
             "editRevertedStatus": "Impossible d’effectuer cette modification de la route — modification annulée.",
+            "boundedSplit": "Une rue dans une parcelle reste un seul réseau connecté : elle occupe toute la parcelle. Annulez, ou supprimez la rue et placez-la à nouveau.",
+            "boundedTooWide": "Ces voies demandent {{required}} m et la parcelle laisse {{available}} m ici. Choisissez moins de voies ou des voies plus étroites.",
+            "boundedOutside": "Une rue dans une parcelle reste dans cette parcelle. Ramenez le point dessus.",
             "splitIntoStretches": "La modification a interrompu la continuité de la route — elle a été divisée en {{count}} projets de route distincts.",
             "buildingRoad": "Création de la route…",
             "closeDrawnRoadPrompt": "Cette route n’a pas encore été créée. Voulez-vous la créer ou abandonner le dessin ?",
@@ -4974,6 +4979,38 @@
             "badUrl": "Saisissez une URL http(s) de service d’un membre du prisme."
         }
     },
+    "roadInParcel": {
+        "hint": "Les voies suivent le milieu de chaque rue et tiennent dans sa partie la plus étroite ; trottoirs et bandes vertes remplissent le reste. Rien n’est pris hors de ce terrain.",
+        "turn": "Tourner de 90°",
+        "place": "Placer la rue",
+        "summary": "Rues : {{streets}} · parcelles : {{parcels}}",
+        "group": {
+            "label": "{{count}} × {{width}} m"
+        },
+        "preset": {
+            "automatic": "Automatique",
+            "label": "Voies : {{lanes}}, {{width}} m"
+        },
+        "issue": {
+            "notGrid": "Ce terrain ne se lit pas comme des rues droites. Dessinez la rue à la main avec l’outil Route.",
+            "disconnected": "Des parties de ce terrain ne forment pas un seul réseau de rues. Sélectionnez-les séparément.",
+            "tooNarrow": "Une rue mesure ici {{width}} m de large, trop peu pour une voie.",
+            "tooWide": "Les voies choisies pour les rues de {{width}} m demandent {{required}} m avec leurs trottoirs."
+        },
+        "failed": "Impossible de placer la rue : {{reason}}",
+        "done": "Rues placées dans la parcelle : {{count}}.",
+        "noParcel": "Sélectionnez d’abord la parcelle réservée à la rue.",
+        "taken": "Une route ou une voie ferrée occupe déjà ce terrain. Retirez-la de la carte d’abord, ou sélectionnez d’autres parcelles.",
+        "joinFailed": "Les parcelles sélectionnées n’ont pas pu être réunies en un seul terrain.",
+        "roadName": "Rues",
+        "description": "Rues ajustées au terrain réservé pour elles.",
+        "layoutNotPlaced": "Le découpage n’est pas sur la carte : aucune rue n’a été ajustée à ses bandes.",
+        "layoutPlacing": "Ajustement des rues aux bandes…",
+        "layoutRoadName": "Rues de {{layout}}",
+        "layoutFailed": "Le découpage est enregistré, mais aucune rue n’a pu être ajustée à ses bandes : {{reason}}",
+        "layoutDone": "Le découpage et les rues de ses bandes ({{count}}) sont sur la carte. Partagez-les ensemble comme un plan.",
+        "layoutDoneSkipped": "Le découpage et les rues de ses bandes ({{count}}) sont sur la carte ; les morceaux irréguliers en bordure ({{skipped}}) restent des parcelles. Partagez-les ensemble comme un plan."
+    },
     "parcelLayout": {
         "editor": {
             "algorithms": {
@@ -4999,6 +5036,8 @@
             "plotCount": "Nombre de lots",
             "courtyard": "Cour intérieure",
             "courtyardHint": "Détache la cour intérieure d’un îlot bâti prévu pour en faire un lot à part entière.",
+            "streetRoads": "Faire des bandes de rue des rues",
+            "streetRoadsHint": "À Terminé, une rue est ajustée aux bandes : voies au milieu, trottoirs jusqu’aux bords.",
             "saved": "La répartition parcellaire a été enregistrée dans ce projet.",
             "discardMessage": "Les modifications effectuées ici n’ont pas été enregistrées dans le projet. Si vous fermez maintenant, elles seront perdues.",
             "coverageComplete": "Les lots couvrent l’ensemble du terrain regroupé ({{area}}).",

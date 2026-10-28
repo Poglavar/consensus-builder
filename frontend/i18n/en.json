@@ -1521,6 +1521,8 @@
                 "lake": "Lake",
                 "transport": "Transport",
                 "road": "Road",
+                "roadInParcel": "Road in parcel",
+                "roadInParcelTooltip": "Fit a road into this parcel: its lanes fill the width and nothing outside it is taken",
                 "track": "Track",
                 "tramStation": "Ground-level station",
                 "undergroundStation": "Underground station",
@@ -1994,6 +1996,9 @@
             "edgeActionsProtectedHint": "A node cannot be added on a ramp, tunnel, or grade-separated stretch · × Bulldoze this stretch",
             "addNodeProtectedStatus": "A node cannot be added on a ramp, tunnel, or grade-separated stretch.",
             "editRevertedStatus": "Could not complete that road change — reverted.",
+            "boundedSplit": "A road in a parcel stays one connected network: it holds the whole parcel. Undo, or delete the road and place it again.",
+            "boundedTooWide": "These lanes need {{required}} m, and the parcel leaves {{available}} m here. Choose fewer or narrower lanes.",
+            "boundedOutside": "A road in a parcel stays inside that parcel. Move the point back onto it.",
             "splitIntoStretches": "The edit disconnected the road — it was split into {{count}} separate road designs.",
             "applyingEdit": "Applying…",
             "buildingRoad": "Building the road…",
@@ -3260,6 +3265,38 @@
             }
         }
     },
+    "roadInParcel": {
+        "hint": "The lanes run along the middle of each street and fit its narrowest part; pavements and verges fill the rest. Nothing outside this ground is taken.",
+        "turn": "Turn 90°",
+        "place": "Place road",
+        "summary": "Streets: {{streets}} · parcels: {{parcels}}",
+        "group": {
+            "label": "{{count}} × {{width}} m"
+        },
+        "preset": {
+            "automatic": "Automatic",
+            "label": "Lanes: {{lanes}}, {{width}} m"
+        },
+        "issue": {
+            "notGrid": "This ground does not read as straight streets. Draw the road by hand with the Road tool.",
+            "disconnected": "Parts of this ground do not connect as one street network. Select the parts separately.",
+            "tooNarrow": "A street here is {{width}} m wide, too narrow for a lane.",
+            "tooWide": "The lanes chosen for the {{width}} m streets need {{required}} m with their pavements."
+        },
+        "failed": "Could not place the road: {{reason}}",
+        "done": "Roads placed in the parcel: {{count}}.",
+        "noParcel": "Select the parcel left for the road first.",
+        "taken": "A road or track already holds this ground. Unapply it first, or select other parcels.",
+        "joinFailed": "The selected parcels could not be joined into one site.",
+        "roadName": "Streets",
+        "description": "Streets fitted into the ground left for them.",
+        "layoutNotPlaced": "The layout is not on the map, so no roads were fitted into its street strips.",
+        "layoutPlacing": "Fitting roads into the street strips…",
+        "layoutRoadName": "Streets of {{layout}}",
+        "layoutFailed": "The layout is saved, but no road could be fitted into its street strips: {{reason}}",
+        "layoutDone": "The layout and the roads in its street strips ({{count}}) are on the map. Share them together as a plan.",
+        "layoutDoneSkipped": "The layout and the roads in its street strips ({{count}}) are on the map; ragged pieces at the edge of the pool ({{skipped}}) stay plots. Share them together as a plan."
+    },
     "parcelLayout": {
         "publishWithAgreement": "A parcel layout is published with its agreement. Propose an agreement that includes it.",
         "editor": {
@@ -3274,6 +3311,8 @@
             "plotCount": "Number of plots",
             "courtyard": "Courtyard",
             "courtyardHint": "Carves the inner courtyard of a planned building block out as a plot of its own.",
+            "streetRoads": "Make the street strips roads",
+            "streetRoadsHint": "On Done, a road is fitted into the street strips: lanes along their middle, pavements to their edges.",
             "saved": "Saved the parcel layout to this design.",
             "discardMessage": "The edits you made here have not been saved to the design. Closing now discards them.",
             "coverageComplete": "The plots cover the whole pool ({{area}}).",

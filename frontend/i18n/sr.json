@@ -1516,6 +1516,8 @@
                 "lake": "Jezero",
                 "transport": "Saobraćaj",
                 "road": "Put",
+                "roadInParcel": "Put u parceli",
+                "roadInParcelTooltip": "Smesti put u ovu parcelu: trake ispunjavaju njenu širinu, a ništa van nje se ne zauzima",
                 "track": "Pruga",
                 "tramStation": "Stanica u nivou tla",
                 "undergroundStation": "Podzemna stanica",
@@ -2007,6 +2009,9 @@
             "edgeActionsProtectedHint": "Čvor se ne može dodati na rampi, tunelskoj ili denivelisanoj deonici · × Sruši ovu deonicu",
             "addNodeProtectedStatus": "Čvor se ne može dodati na rampi, tunelskoj ili denivelisanoj deonici.",
             "editRevertedStatus": "Tu promenu puta nije bilo moguće dovršiti — vraćeno.",
+            "boundedSplit": "Put u parceli ostaje jedna povezana mreža jer drži celu parcelu. Poništite promenu ili obrišite put i postavite ga ponovo.",
+            "boundedTooWide": "Ove trake traže {{required}} m, a parcela ovde ostavlja {{available}} m. Izaberite manje ili uže trake.",
+            "boundedOutside": "Put u parceli ostaje unutar te parcele. Vratite tačku na nju.",
             "splitIntoStretches": "Uređivanje je prekinulo put — podeljen je u {{count}} zasebnih dizajna puteva.",
             "applyingEdit": "Primenjujem…",
             "buildingRoad": "Gradim put…",
@@ -3292,6 +3297,38 @@
             }
         }
     },
+    "roadInParcel": {
+        "hint": "Trake idu sredinom svake ulice i staju u njen najuži deo; trotoari i zeleni pojasevi ispunjavaju ostatak. Ništa van ovog zemljišta se ne zauzima.",
+        "turn": "Okreni za 90°",
+        "place": "Postavi put",
+        "summary": "Ulice: {{streets}} · parcele: {{parcels}}",
+        "group": {
+            "label": "{{count}} × {{width}} m"
+        },
+        "preset": {
+            "automatic": "Automatski",
+            "label": "Trake: {{lanes}}, {{width}} m"
+        },
+        "issue": {
+            "notGrid": "Ovo zemljište ne čini prave ulice. Nacrtajte put ručno alatom Put.",
+            "disconnected": "Delovi ovog zemljišta se ne povezuju u jednu uličnu mrežu. Izaberite delove zasebno.",
+            "tooNarrow": "Ulica je ovde široka {{width}} m, preusko za traku.",
+            "tooWide": "Trake izabrane za ulice od {{width}} m traže {{required}} m sa trotoarima."
+        },
+        "failed": "Put nije bilo moguće postaviti: {{reason}}",
+        "done": "Putevi postavljeni u parcelu: {{count}}.",
+        "noParcel": "Najpre izaberite parcelu ostavljenu za put.",
+        "taken": "Ovo zemljište već drži put ili pruga. Najpre je uklonite sa mape ili izaberite druge parcele.",
+        "joinFailed": "Izabrane parcele nije bilo moguće spojiti u jedno zemljište.",
+        "roadName": "Ulice",
+        "description": "Ulice smeštene u zemljište ostavljeno za njih.",
+        "layoutNotPlaced": "Raspored nije na mapi, pa u njegove ulične pojaseve nije smešten nijedan put.",
+        "layoutPlacing": "Smeštanje puteva u ulične pojaseve…",
+        "layoutRoadName": "Ulice: {{layout}}",
+        "layoutFailed": "Raspored je sačuvan, ali u njegove ulične pojaseve nije bilo moguće smestiti put: {{reason}}",
+        "layoutDone": "Raspored i putevi u njegovim uličnim pojasevima ({{count}}) su na mapi. Podelite ih zajedno kao plan.",
+        "layoutDoneSkipped": "Raspored i putevi u njegovim uličnim pojasevima ({{count}}) su na mapi; nepravilni delovi na ivici obuhvata ({{skipped}}) ostaju parcele. Podelite ih zajedno kao plan."
+    },
     "parcelLayout": {
         "publishWithAgreement": "Raspored parcela objavljuje se sa svojim sporazumom. Predložite sporazum koji ga uključuje.",
         "editor": {
@@ -3306,6 +3343,8 @@
             "plotCount": "Broj parcela",
             "courtyard": "Dvorište",
             "courtyardHint": "Izdvaja unutrašnje dvorište planiranog građevinskog bloka kao zasebnu parcelu.",
+            "streetRoads": "Pretvori ulične pojaseve u puteve",
+            "streetRoadsHint": "Na Gotovo se u ulične pojaseve smešta put: trake po sredini, trotoari do ivica.",
             "saved": "Raspored parcela je sačuvan u ovaj dizajn.",
             "discardMessage": "Izmene koje ste ovde napravili nisu sačuvane u dizajn. Ako sada zatvorite, odbacuju se.",
             "coverageComplete": "Parcele pokrivaju ceo obuhvat ({{area}}).",

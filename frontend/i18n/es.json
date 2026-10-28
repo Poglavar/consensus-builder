@@ -1544,6 +1544,8 @@
                 "lake": "Lago",
                 "transport": "Transporte",
                 "road": "Carretera",
+                "roadInParcel": "Calle en parcela",
+                "roadInParcelTooltip": "Ajusta una calle a esta parcela: sus carriles llenan el ancho y no se toma nada fuera de ella",
                 "track": "Vía férrea",
                 "tramStation": "Estación a nivel del suelo",
                 "undergroundStation": "Estación subterránea",
@@ -2017,6 +2019,9 @@
             "edgeActionsProtectedHint": "No se puede añadir un nodo en una rampa, un túnel o un tramo a distinto nivel · × Demoler este tramo",
             "addNodeProtectedStatus": "No se puede añadir un nodo en una rampa, un túnel o un tramo a distinto nivel.",
             "editRevertedStatus": "No se pudo completar ese cambio de la vía — revertido.",
+            "boundedSplit": "Una calle en una parcela sigue siendo una sola red conectada: ocupa toda la parcela. Deshaz el cambio, o borra la calle y vuelve a colocarla.",
+            "boundedTooWide": "Estos carriles necesitan {{required}} m y la parcela deja {{available}} m aquí. Elige menos carriles o más estrechos.",
+            "boundedOutside": "Una calle en una parcela se queda dentro de esa parcela. Devuelve el punto a ella.",
             "splitIntoStretches": "La edición desconectó la vía — se dividió en {{count}} diseños de vía separadas.",
             "applyingEdit": "Aplicando…",
             "buildingRoad": "Construyendo la vía…",
@@ -3287,6 +3292,38 @@
             }
         }
     },
+    "roadInParcel": {
+        "hint": "Los carriles van por el centro de cada calle y caben en su parte más estrecha; aceras y franjas verdes llenan el resto. No se toma nada fuera de este terreno.",
+        "turn": "Girar 90°",
+        "place": "Colocar calle",
+        "summary": "Calles: {{streets}} · parcelas: {{parcels}}",
+        "group": {
+            "label": "{{count}} × {{width}} m"
+        },
+        "preset": {
+            "automatic": "Automático",
+            "label": "Carriles: {{lanes}}, {{width}} m"
+        },
+        "issue": {
+            "notGrid": "Este terreno no se lee como calles rectas. Dibuja la calle a mano con la herramienta Calle.",
+            "disconnected": "Partes de este terreno no se conectan como una sola red de calles. Selecciónalas por separado.",
+            "tooNarrow": "Aquí una calle mide {{width}} m de ancho, demasiado estrecha para un carril.",
+            "tooWide": "Los carriles elegidos para las calles de {{width}} m necesitan {{required}} m con sus aceras."
+        },
+        "failed": "No se pudo colocar la calle: {{reason}}",
+        "done": "Calles colocadas en la parcela: {{count}}.",
+        "noParcel": "Selecciona primero la parcela reservada para la calle.",
+        "taken": "Una calle o vía ya ocupa este terreno. Quítala del mapa primero o selecciona otras parcelas.",
+        "joinFailed": "Las parcelas seleccionadas no se pudieron unir en un solo terreno.",
+        "roadName": "Calles",
+        "description": "Calles ajustadas al terreno reservado para ellas.",
+        "layoutNotPlaced": "La distribución no está en el mapa, así que no se ajustó ninguna calle a sus franjas.",
+        "layoutPlacing": "Ajustando calles a las franjas…",
+        "layoutRoadName": "Calles de {{layout}}",
+        "layoutFailed": "La distribución está guardada, pero no se pudo ajustar ninguna calle a sus franjas: {{reason}}",
+        "layoutDone": "La distribución y las calles de sus franjas ({{count}}) están en el mapa. Compártelas juntas como un plan.",
+        "layoutDoneSkipped": "La distribución y las calles de sus franjas ({{count}}) están en el mapa; los trozos irregulares del borde ({{skipped}}) siguen siendo parcelas. Compártelas juntas como un plan."
+    },
     "parcelLayout": {
         "publishWithAgreement": "Una distribución de parcelas se publica con su acuerdo. Propón un acuerdo que la incluya.",
         "editor": {
@@ -3301,6 +3338,8 @@
             "plotCount": "Número de parcelas",
             "courtyard": "Patio",
             "courtyardHint": "Separa el patio interior de un bloque de edificios planificado como una parcela propia.",
+            "streetRoads": "Convertir las franjas de calle en calles",
+            "streetRoadsHint": "Al pulsar Hecho se ajusta una calle a las franjas: carriles por el centro y aceras hasta los bordes.",
             "saved": "El trazado de parcelas se guardó en este diseño.",
             "discardMessage": "Los cambios que hiciste aquí no se han guardado en el diseño. Si cierras ahora, se descartan.",
             "coverageComplete": "Las parcelas cubren todo el terreno agrupado ({{area}}).",

@@ -2928,6 +2928,8 @@
                 "layOutParcels": "Definir parcelamento",
                 "lake": "Lago",
                 "transport": "Transportes",
+                "roadInParcel": "Rua no lote",
+                "roadInParcelTooltip": "Encaixar uma rua neste lote: as faixas ocupam a largura e nada fora dele é tomado",
                 "undergroundStation": "Estação subterrânea",
                 "elevatedStation": "Estação elevada",
                 "selectParcelFirst": "Selecione primeiro uma parcela.",
@@ -3412,6 +3414,9 @@
             "edgeActionsProtectedHint": "Não é possível adicionar um nó numa rampa, num túnel ou num troço desnivelado · × Demolir este troço",
             "addNodeProtectedStatus": "Não é possível adicionar um nó numa rampa, num túnel ou num troço desnivelado.",
             "editRevertedStatus": "Não foi possível concluir essa alteração da estrada — foi revertida.",
+            "boundedSplit": "Uma rua num lote continua a ser uma só rede ligada: ocupa o lote inteiro. Desfaça, ou apague a rua e coloque-a de novo.",
+            "boundedTooWide": "Estas faixas precisam de {{required}} m e o lote deixa {{available}} m aqui. Escolha menos faixas ou faixas mais estreitas.",
+            "boundedOutside": "Uma rua num lote fica dentro desse lote. Volte a pôr o ponto sobre ele.",
             "splitIntoStretches": "A edição desligou partes da estrada — esta foi dividida em {{count}} projetos de estrada separados.",
             "buildingRoad": "A criar a estrada…",
             "closeDrawnRoadPrompt": "Esta estrada ainda não foi criada. Pretende criá-la ou descartar o desenho?",
@@ -4974,6 +4979,38 @@
             "badUrl": "Introduza um URL http(s) de um serviço de membro da lente."
         }
     },
+    "roadInParcel": {
+        "hint": "As faixas seguem o centro de cada rua e cabem na sua parte mais estreita; passeios e faixas verdes preenchem o resto. Nada fora deste terreno é tomado.",
+        "turn": "Rodar 90°",
+        "place": "Colocar rua",
+        "summary": "Ruas: {{streets}} · lotes: {{parcels}}",
+        "group": {
+            "label": "{{count}} × {{width}} m"
+        },
+        "preset": {
+            "automatic": "Automático",
+            "label": "Faixas: {{lanes}}, {{width}} m"
+        },
+        "issue": {
+            "notGrid": "Este terreno não se lê como ruas retas. Desenhe a rua à mão com a ferramenta Estrada.",
+            "disconnected": "Partes deste terreno não se ligam como uma só rede de ruas. Selecione-as em separado.",
+            "tooNarrow": "Aqui uma rua tem {{width}} m de largura, estreita demais para uma faixa.",
+            "tooWide": "As faixas escolhidas para as ruas de {{width}} m precisam de {{required}} m com os passeios."
+        },
+        "failed": "Não foi possível colocar a rua: {{reason}}",
+        "done": "Ruas colocadas no lote: {{count}}.",
+        "noParcel": "Selecione primeiro o lote reservado para a rua.",
+        "taken": "Uma estrada ou via-férrea já ocupa este terreno. Retire-a do mapa primeiro, ou selecione outros lotes.",
+        "joinFailed": "Não foi possível juntar os lotes selecionados num só terreno.",
+        "roadName": "Ruas",
+        "description": "Ruas encaixadas no terreno reservado para elas.",
+        "layoutNotPlaced": "O loteamento não está no mapa, por isso nenhuma rua foi encaixada nas suas faixas.",
+        "layoutPlacing": "A encaixar ruas nas faixas…",
+        "layoutRoadName": "Ruas de {{layout}}",
+        "layoutFailed": "O loteamento está guardado, mas não foi possível encaixar nenhuma rua nas suas faixas: {{reason}}",
+        "layoutDone": "O loteamento e as ruas das suas faixas ({{count}}) estão no mapa. Partilhe-os juntos como um plano.",
+        "layoutDoneSkipped": "O loteamento e as ruas das suas faixas ({{count}}) estão no mapa; os pedaços irregulares na margem ({{skipped}}) continuam lotes. Partilhe-os juntos como um plano."
+    },
     "parcelLayout": {
         "editor": {
             "algorithms": {
@@ -4999,6 +5036,8 @@
             "plotCount": "Número de lotes",
             "courtyard": "Pátio",
             "courtyardHint": "Destaca o pátio interior de um quarteirão edificado planeado como um lote autónomo.",
+            "streetRoads": "Tornar as faixas de rua em ruas",
+            "streetRoadsHint": "Ao Concluir, uma rua é encaixada nas faixas: vias ao centro, passeios até às margens.",
             "saved": "Disposição parcelar guardada neste projeto.",
             "discardMessage": "As edições que fez aqui não foram guardadas no projeto. Se fechar agora, serão descartadas.",
             "coverageComplete": "Os lotes cobrem todo o terreno agrupado ({{area}}).",

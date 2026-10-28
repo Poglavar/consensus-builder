@@ -243,6 +243,7 @@
 
 /* Monochrome authoring icons inherit the control colour. */
 .cb-icon-track,
+.cb-icon-road-in-parcel,
 .cb-icon-freeform,
 .cb-icon-station-ground,
 .cb-icon-station-elevated,
@@ -258,6 +259,10 @@
 
 .cb-icon-track {
     mask-image: url('../assets/icons/track.svg');
+}
+
+.cb-icon-road-in-parcel {
+    mask-image: url('../assets/icons/road-in-parcel.svg');
 }
 
 .cb-icon-freeform {

@@ -30,6 +30,9 @@
     'use strict';
 
     const ALGORITHM = 'corridor-footprint/3';
+    // A road placed into a parcel (docs/road-in-parcel.md): its land is the site it was given,
+    // whatever its lanes cut (definition.bound).
+    const BOUNDED_ALGORITHM = 'corridor-site/1';
     const SNAP_M = 1e-4;
     const DENSIFY_M = 50;
     const NUDGE_M = 0.1; // a zero-length edge is nudged this far due east, deterministically
@@ -332,9 +335,26 @@
         return { type: 'MultiPolygon', coordinates: geometry.coordinates.map(rings => rings.map(toLngLatRing)) };
     }
 
+    const boundSiteOf = definition => {
+        const site = definition && definition.bound && definition.bound.site;
+        return site && (site.type === 'Polygon' || site.type === 'MultiPolygon') ? site : null;
+    };
+
     // The footprint of `definition` in `frame`, as GeoJSON (Polygon, or MultiPolygon when tunnels
-    // split it). Throws on any point outside the frame, any non-finite input, or a failed union.
+    // split it). A bounded road's land is its site; every other road's is what its lanes cut.
+    // Throws on any point outside the frame, any non-finite input, or a failed union.
     function footprintIn(definition, frame, options = {}) {
+        const site = boundSiteOf(definition);
+        if (site) {
+            frame.assertWithin(site);
+            return JSON.parse(JSON.stringify(site));
+        }
+        return laneFootprintIn(definition, frame, options);
+    }
+
+    // What the lanes of `definition` cut, ignoring any bound: the land of an unbounded road, and
+    // for a bounded one the part of its site the lanes cover (the rest is drawn as pavement).
+    function laneFootprintIn(definition, frame, options = {}) {
         const entries = segmentEntries(definition);
         if (!entries.length) throw new Error('corridor-footprint: the definition has no centre line');
         entries.forEach(entry => {
@@ -424,8 +444,9 @@
         if (diameter > api.CONTRACT.MAX_FOOTPRINT_DIAMETER_M) {
             throw new Error(`corridor-footprint: footprint spans ${Math.round(diameter)} m, more than the ${api.CONTRACT.MAX_FOOTPRINT_DIAMETER_M} m allowed`);
         }
-        return { polygon, constructionFrame: { ...frame.provenance(), algorithm: ALGORITHM, ...versions() } };
+        const algorithm = boundSiteOf(definition) ? BOUNDED_ALGORITHM : ALGORITHM;
+        return { polygon, constructionFrame: { ...frame.provenance(), algorithm, ...versions() } };
     }
 
-    return Object.freeze({ ALGORITHM, SNAP_M, DENSIFY_M, rectangle, bendWedge, sharedNodeWedges, junctionLandCorners, densifyRing, baseStretchId, centerlinePositions, footprintOfArms, footprintIn, frameForDefinition, materialize });
+    return Object.freeze({ ALGORITHM, BOUNDED_ALGORITHM, SNAP_M, DENSIFY_M, rectangle, bendWedge, sharedNodeWedges, junctionLandCorners, densifyRing, baseStretchId, centerlinePositions, footprintOfArms, footprintIn, laneFootprintIn, frameForDefinition, materialize });
 });

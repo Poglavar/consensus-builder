@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- A road placed into a parcel: a road (kerbs and centre dashes) between brackets, the parcel's bounds. -->
+  <path d="M5 3H3v18h2M19 3h2v18h-2"/>
+  <path d="M8.5 5v14M15.5 5v14"/>
+  <path d="M12 6v1.5M12 11.25v1.5M12 16.5v1.5"/>
+</svg>

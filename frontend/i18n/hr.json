@@ -1531,6 +1531,8 @@
                 "lake": "Jezero",
                 "transport": "Promet",
                 "road": "Cesta",
+                "roadInParcel": "Cesta u čestici",
+                "roadInParcelTooltip": "Smjesti cestu u ovu česticu: trake ispunjavaju njezinu širinu, a ništa izvan nje se ne zauzima",
                 "track": "Pruga",
                 "tramStation": "Stanica u razini tla",
                 "undergroundStation": "Podzemna stanica",
@@ -2007,6 +2009,9 @@
             "edgeActionsProtectedHint": "Na rampi, tunelskoj ili deniveliranoj dionici nije moguće dodati čvor · × Sruši ovu dionicu",
             "addNodeProtectedStatus": "Na rampi, tunelskoj ili deniveliranoj dionici nije moguće dodati čvor.",
             "editRevertedStatus": "Tu promjenu ceste nije bilo moguće dovršiti — vraćeno.",
+            "boundedSplit": "Cesta u čestici ostaje jedna povezana mreža jer drži cijelu česticu. Poništite promjenu ili izbrišite cestu i postavite je ponovno.",
+            "boundedTooWide": "Ove trake trebaju {{required}} m, a čestica ovdje ostavlja {{available}} m. Odaberite manje ili uže trake.",
+            "boundedOutside": "Cesta u čestici ostaje unutar te čestice. Vratite točku na nju.",
             "splitIntoStretches": "Uređivanje je prekinulo cestu — podijeljena je u {{count}} zasebnih dizajna cesta.",
             "applyingEdit": "Primjenjujem…",
             "buildingRoad": "Gradim cestu…",
@@ -3292,6 +3297,38 @@
             }
         }
     },
+    "roadInParcel": {
+        "hint": "Trake idu sredinom svake ulice i stanu u njezin najuži dio; nogostupi i zeleni pojasevi ispunjavaju ostatak. Ništa izvan ovog zemljišta se ne zauzima.",
+        "turn": "Okreni za 90°",
+        "place": "Postavi cestu",
+        "summary": "Ulice: {{streets}} · čestice: {{parcels}}",
+        "group": {
+            "label": "{{count}} × {{width}} m"
+        },
+        "preset": {
+            "automatic": "Automatski",
+            "label": "Trake: {{lanes}}, {{width}} m"
+        },
+        "issue": {
+            "notGrid": "Ovo zemljište ne čini ravne ulice. Nacrtajte cestu ručno alatom Cesta.",
+            "disconnected": "Dijelovi ovog zemljišta ne povezuju se u jednu uličnu mrežu. Odaberite dijelove zasebno.",
+            "tooNarrow": "Ulica je ovdje široka {{width}} m, preusko za traku.",
+            "tooWide": "Trake odabrane za ulice od {{width}} m trebaju {{required}} m s nogostupima."
+        },
+        "failed": "Cestu nije bilo moguće postaviti: {{reason}}",
+        "done": "Ceste postavljene u česticu: {{count}}.",
+        "noParcel": "Najprije odaberite česticu ostavljenu za cestu.",
+        "taken": "Ovo zemljište već drži cesta ili pruga. Najprije je uklonite s karte ili odaberite druge čestice.",
+        "joinFailed": "Odabrane čestice nije bilo moguće spojiti u jedno zemljište.",
+        "roadName": "Ulice",
+        "description": "Ulice smještene u zemljište ostavljeno za njih.",
+        "layoutNotPlaced": "Raspored nije na karti pa u njegove ulične pojaseve nije smještena nijedna cesta.",
+        "layoutPlacing": "Smještanje cesta u ulične pojaseve…",
+        "layoutRoadName": "Ulice: {{layout}}",
+        "layoutFailed": "Raspored je spremljen, ali u njegove ulične pojaseve nije bilo moguće smjestiti cestu: {{reason}}",
+        "layoutDone": "Raspored i ceste u njegovim uličnim pojasevima ({{count}}) su na karti. Podijelite ih zajedno kao plan.",
+        "layoutDoneSkipped": "Raspored i ceste u njegovim uličnim pojasevima ({{count}}) su na karti; nepravilni komadi na rubu obuhvata ({{skipped}}) ostaju parcele. Podijelite ih zajedno kao plan."
+    },
     "parcelLayout": {
         "publishWithAgreement": "Raspored čestica objavljuje se sa svojim sporazumom. Predložite sporazum koji ga uključuje.",
         "editor": {
@@ -3306,6 +3343,8 @@
             "plotCount": "Broj čestica",
             "courtyard": "Dvorište",
             "courtyardHint": "Izdvaja unutarnje dvorište planiranog građevnog bloka kao zasebnu česticu.",
+            "streetRoads": "Pretvori ulične pojaseve u ceste",
+            "streetRoadsHint": "Na Gotovo se u ulične pojaseve smješta cesta: trake po sredini, nogostupi do rubova.",
             "saved": "Raspored čestica spremljen je u ovaj dizajn.",
             "discardMessage": "Izmjene koje ste ovdje napravili nisu spremljene u dizajn. Ako sada zatvorite, odbacuju se.",
             "coverageComplete": "Čestice pokrivaju cijeli obuhvat ({{area}}).",

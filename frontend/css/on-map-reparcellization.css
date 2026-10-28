@@ -138,6 +138,28 @@
     min-height: 40px;
 }
 
+/* "Make the street strips roads": a Schelling layout hands its street strips to the road tool. */
+.reparcel-street-roads {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    color: var(--cb-text);
+}
+
+.reparcel-street-roads-hint {
+    flex: 1 1 100%;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-xs);
+    line-height: 1.35;
+}
+
+.reparcel-street-roads[hidden],
+.reparcel-old-plots-view .reparcel-street-roads {
+    display: none;
+}
+
 .reparcel-edit-tools {
     margin-top: 8px;
 }
