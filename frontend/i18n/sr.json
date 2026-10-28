@@ -7526,6 +7526,13 @@
         "noContract": "Za ovu apstrakciju nije objavljen ugovor operacija."
     },
     "cameraFlight": {
+        "autoFlight": "Automatski let",
+        "autoSubject": "Leti oko",
+        "wholePlan": "Ceo plan ({{count}} projekata)",
+        "generate": "Napravi let",
+        "tryAnother": "Probaj drugi",
+        "generated": "Napravljeno {{views}} pogleda, {{seconds}} s. Poništi vraća tvoju putanju.",
+        "noDesigns": "Primeni projekat da bi napravio let.",
         "title": "Let kamere",
         "open": "Napravi let kamere",
         "close": "Zatvori uređivač leta",

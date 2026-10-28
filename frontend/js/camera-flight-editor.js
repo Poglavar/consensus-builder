@@ -124,7 +124,7 @@
         // One strip of time: numbered views, hold bars, looks between views, view changes and the playhead.
         function renderTimeline() {
             const record = edit.record, times = win.CameraFlight.timeline(record), duration = times.duration;
-            track.replaceChildren();
+            track.replaceChildren(); track.dataset.dense = String(record.route.length > 14);
             record.route.forEach((item, i) => {
                 if (item.holdSeconds > 0 && duration) {
                     const hold = element('span', 'flight-hold' + (item.turn ? ' flight-hold--turn' : '')); hold.setAttribute('aria-hidden', 'true');
@@ -203,6 +203,9 @@
             buttons.get('fly').disabled = walking || busy; buttons.get('fly').setAttribute('aria-pressed', String(session?.mode === 'fly'));
             buttons.get('frame-route').disabled = walking || busy; buttons.get('level').disabled = walking || busy;
             buttons.get('copy').hidden = !readOnly;
+            buttons.get('generate').disabled = locked() || !designs.length;
+            buttons.get('try-another').disabled = locked() || !designs.length || !generated;
+            fields.get('auto-subject').disabled = locked() || !designs.length;
             fields.get('title').disabled = locked();
             const restore = buttons.get('restore-draft'); if (restore) restore.disabled = busy || walking;
         }
@@ -240,6 +243,50 @@
         body.append(scrub, status, link);
         const restore = button(body, 'restore-draft', 'restoreDraft', () => open({ record: getDraft() })); restore.hidden = !getDraft() || readOnly;
         body.append(element('p', 'flight-hint', t('previewHint')), authoring);
+        // Automatic flight: one design gets a descending orbit; the whole plan gets a tour from its
+        // first to its last building. The result replaces the route as one undoable edit.
+        authoring.append(element('h3', '', t('autoFlight')));
+        const autoFields = element('div', 'flight-fields'), autoActions = element('div', 'flight-actions');
+        authoring.append(autoFields, autoActions);
+        const autoSubject = field(autoFields, 'auto-subject', 'autoSubject', 'select');
+        let designs = [], generated = false;
+        function refreshDesigns() {
+            const previous = autoSubject.value; designs = win.CameraFlightScene.appliedDesigns();
+            const plan = element('option', '', t('wholePlan', { count: designs.length })); plan.value = 'plan';
+            autoSubject.replaceChildren(plan, ...designs.map(design => { const option = element('option', '', design.title); option.value = design.id; return option; }));
+            const isolated = session?.internals.isolatedProposalId?.();
+            const choice = [previous, isolated == null ? null : String(isolated)].find(v => v && designs.some(d => d.id === v));
+            autoSubject.value = previous === 'plan' ? 'plan' : choice || 'plan';
+        }
+        autoSubject.addEventListener('focus', refreshDesigns);
+        const nextFrame = () => new Promise(resolve => (document.hidden ? resolve() : win.requestAnimationFrame(() => resolve())));
+        async function generate(seed, control) {
+            if (!designs.length) throw new Error(t('noDesigns'));
+            session.pause(); busy = true; render();
+            try {
+                await win.BusyControl.track(control, async () => {
+                    // The player shows every applied design, so the flight must avoid them all: leave a
+                    // design view first and wait for the scene to show the whole composition again.
+                    if (session.internals.isolatedProposalId?.() != null) {
+                        session.internals.endSelectionView(); await win.ThreeSceneReady.wait({ requireExisting: false });
+                    }
+                    await nextFrame();
+                    const ids = autoSubject.value === 'plan' ? designs.map(d => d.id) : [autoSubject.value];
+                    const internals = session.internals, frame = edit.record.frame;
+                    const subjects = win.CameraFlightScene.subjects(internals, frame, ids);
+                    if (!subjects.length) throw new Error(t('noDesigns'));
+                    const field = win.CameraFlightAuto.grid(win.CameraFlightScene.heights(internals, frame, win.CameraFlightAuto.bounds(subjects)));
+                    const result = win.CameraFlightAuto.generate({ subjects, field, seed });
+                    for (const id of [...thumbnails.keys()]) if (id.startsWith('auto-')) thumbnails.delete(id);
+                    changed(edit.transact(r => { r.route = result.route; r.looks = []; r.cues = []; r.speedMps = result.speedMps; }));
+                    selected = edit.record.route[0].id; generated = true;
+                    await session.seek(0);
+                    message(t('generated', { views: result.route.length, seconds: win.CameraFlight.duration(edit.record).toFixed(0) }));
+                });
+            } finally { busy = false; render(); }
+        }
+        const generateButton = button(autoActions, 'generate', 'generate', () => generate(0, generateButton));
+        const anotherButton = button(autoActions, 'try-another', 'tryAnother', () => generate(1 + Math.floor(Math.random() * 2147483646), anotherButton));
         const modes = element('div', 'flight-actions'); authoring.append(modes);
         const fly = button(modes, 'fly', 'freeCamera', () => session.setMode(fly.getAttribute('aria-pressed') === 'true' ? 'orbit' : 'fly'));
         button(modes, 'frame-route', 'showRoute', () => session.frameRoute());
@@ -339,7 +386,7 @@
                 onUndo: redo => { if (!locked()) changed(redo ? edit.redo() : edit.undo()); }, onEnd: () => { previewState = 'paused'; updateState(); }
             }, { orbit: !readOnly });
             active = { panel, session, getRecord: () => edit.record, seek: value => session.seek(value), close };
-            render(); refreshUnits(); message(readOnly ? t('readonly') : '');
+            refreshDesigns(); render(); refreshUnits(); message(readOnly ? t('readonly') : '');
             if (readOnly) await session.seek(0);
             return active;
         } catch (error) { await close(); throw error; }

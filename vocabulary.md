@@ -270,6 +270,13 @@ A stable-ID orientation anchored to the segment that departs a given route point
 
 Interior-view settings (x-ray, generated layouts, cutaway) applied from the arrival at a given route point onward; at most one per view.
 
+### Generated flight
+
+A route the editor writes from the applied designs rather than from captured views: a descending
+orbit around one design, or for a plan a tour from the first to the last of its two farthest-apart
+buildings. It is an ordinary flight record once written; obstacles are the scene's rendered heights
+at generation time, and the record keeps no reference to how it was generated.
+
 ### Camera mode
 
 Orbit mode uses the ordinary map controls to position the camera while editing; fly mode is the free camera with unrestricted pitch, yaw and roll. Adding a view captures the camera as it is in either mode. Playback, free-camera editing and walking share one host camera lease.

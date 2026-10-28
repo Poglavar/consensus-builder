@@ -35,7 +35,7 @@
             if (!await win.requestMapMode('model', { restoreView: options.record?.view.camera })) throw new Error('The model view could not be opened.');
         }
         await win.ensureCameraFlight();
-        if (!options.readOnly) await sequence(['js/camera-flight-edit.js', 'js/camera-flight-interiors.js', 'js/camera-flight-apartment.js', 'js/camera-flight-editor.js']);
+        if (!options.readOnly) await sequence(['js/camera-flight-edit.js', 'js/camera-flight-interiors.js', 'js/camera-flight-apartment.js', 'js/camera-flight-auto.js', 'js/camera-flight-scene.js', 'js/camera-flight-editor.js']);
         const task = opening.catch(() => {}).then(async () => {
             if (version !== openVersion) return null;
             await win.CameraFlightEditor?.active?.close();

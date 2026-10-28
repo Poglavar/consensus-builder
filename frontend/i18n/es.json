@@ -7502,6 +7502,13 @@
         "noContract": "No se ha publicado un contrato de operaciones para esta abstracción."
     },
     "cameraFlight": {
+        "autoFlight": "Vuelo automático",
+        "autoSubject": "Volar alrededor de",
+        "wholePlan": "Plan completo ({{count}} diseños)",
+        "generate": "Generar vuelo",
+        "tryAnother": "Probar otro",
+        "generated": "Se generaron {{views}} vistas, {{seconds}} s. Deshacer recupera tu recorrido.",
+        "noDesigns": "Aplica un diseño para generar un vuelo.",
         "title": "Vuelo de cámara",
         "open": "Crear un vuelo de cámara",
         "close": "Cerrar el editor de vuelo",

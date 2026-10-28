@@ -7474,6 +7474,13 @@
         "noContract": "No operation contract has been published for this abstraction."
     },
     "cameraFlight": {
+        "autoFlight": "Automatic flight",
+        "autoSubject": "Fly around",
+        "wholePlan": "Whole plan ({{count}} designs)",
+        "generate": "Generate flight",
+        "tryAnother": "Try another",
+        "generated": "Generated {{views}} views, {{seconds}} s. Undo brings back your route.",
+        "noDesigns": "Apply a design to generate a flight.",
         "title": "Camera flight",
         "open": "Create a camera flight",
         "close": "Close flight editor",

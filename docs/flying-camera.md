@@ -30,6 +30,32 @@ to be published already, then verifies publication and a durable readback before
 The read-only player restores exact design membership, settings and interior snapshots, with no
 autoplay. Edit a copy opens a private editable version.
 
+**Automatic flight** writes the route for you. *Fly around* chooses one applied design (the one in
+design view, when there is one) or the whole plan. **Generate flight** replaces the route, looks and
+view changes as one undoable edit; **Try another** reruns with a random seed.
+
+- One design: the camera starts well outside and flies in, then orbits 1¼ times from about
+  2.2× its height down to about half its height, every view aimed at the design's mid-height. A
+  design without buildings is orbited around its outline.
+- A plan: the first and last stops are the two buildings farthest apart (a random pair for Try
+  another). The camera orbits the first descending, follows a path to the last that passes the
+  plan's other designs in order, and orbits the last climbing. With fewer than two buildings,
+  designs stand in with their outline centres, and with none at all two points of the outline are
+  used.
+- Obstacles are whatever the scene draws, not a particular building source. The model scene is
+  rendered straight down with an orthographic camera into a 2-byte decimetre height map, reduced
+  to the top height per 2 m metric cell (`camera-flight-scene.js`). The path is A* over that grid
+  at a cruise altitude of 15 m, keeping 6 m from anything taller and paying extra within 16 m, so
+  it keeps to streets. If no path exists it climbs (25, 40, 60, 90, 130 m, then over everything).
+- The playback curve itself is checked, not only the views: every metre of every segment must clear
+  the 3 m-dilated heights by 2 m. A failing path segment takes back the grid cells it skipped;
+  anything else climbs. An orbit view also climbs until no neighbour hides its target.
+- Cruise speed is set so the flight lasts about 50 s (4–30 m/s). Generation leaves design view
+  first, because the player shows every applied design.
+
+The generator is DOM-free (`camera-flight-auto.js`); only the height render and building boxes
+read the live scene.
+
 Find interiors uses visible registered floor geometry. Select an apartment and Enter to place the
 camera inside it; Add view then also saves an x-ray cue at that view, so a flight can start or finish
 indoors. Explore apartment loads walking on demand. Back to flight restores the captured flight
@@ -141,5 +167,23 @@ cruise speed, timeline strip); the original delivery's checks are in the git his
   time with the orbit controls disabled and Pause stopped it; reloading and Restore draft brought
   back the same three views, look and cue with no page errors. Verified by reading state after
   each action, not by watching motion; smoothness of the actual flight is not asserted here.
+
+Automatic flights (2026-10-28):
+
+- Targeted headless unit file `backend/test/camera-flight-auto.test.js` (7 tests): level look-at,
+  design orbit (descends, stays on radius, aim within 3° throughout playback, no sample inside a
+  building), plan tour through the one street in a row of 80 m towers, the line-of-sight climb, the
+  no-building and seeded variants, and an obstructed straight route. Two mutation checks went red
+  and back to green: disabling obstacle avoidance failed the tower-row test; disabling the sight
+  climb failed the neighbour test.
+- The other camera-flight unit files and the guard files were rerun: no new failures. The i18n
+  ratchets and missing `feedback.*` keys are unchanged at the pre-existing counts above.
+- Targeted headless Playwright file `e2e/tests/camera-flight.spec.ts` (7 scenarios including the
+  new Generate flight one, which renders the real height grid and checks that the generated
+  curve clears it): all 7 passed.
+- Headed Chrome against this worktree's backend on a 17-design Birmingham plan: whole plan →
+  61 views, 53 s at 22 m/s; height grid 244×327 cells in 30 ms; orbit views lifted to 72 and 88 m
+  where a 54 m neighbour hid the 18 m first building; path at 15 m; final orbit centred on the last
+  building. Try another showed the busy spinner. Frames were checked at seeked times, not in motion.
 
 No full unit or browser suite, production publication, push or deployment was performed.

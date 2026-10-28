@@ -54,6 +54,8 @@
 .flight-marker { position: absolute; top: 50%; left: var(--at); transform: translate(-50%, -50%); padding: 0; border: 0; font: inherit; color: var(--cb-flight-text); cursor: pointer; }
 .flight-marker--view { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--cb-flight-node); background: var(--cb-flight-surface); font-size: 11px; font-weight: 700; line-height: 18px; z-index: 2; }
 .flight-marker--view[data-selected=true] { background: var(--cb-flight-node); color: white; }
+/* Generated routes have dozens of views: dots instead of numbered badges; the selected view stays numbered. */
+.flight-timeline-track[data-dense=true] .flight-marker--view:not([data-selected=true]) { width: 9px; height: 9px; border-width: 2px; font-size: 0; }
 .flight-marker--look { width: 10px; height: 10px; background: var(--cb-flight-path); transform: translate(-50%, -50%) rotate(45deg); z-index: 1; }
 /* A view change shares its view's time, so it flags above the track instead of hiding under the marker. */
 .flight-marker--cue { width: 8px; height: 10px; top: -10px; transform: translate(-50%, 0); border-radius: 3px 3px 0 0; background: var(--cb-flight-accent); z-index: 1; }

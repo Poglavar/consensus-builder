@@ -180,6 +180,32 @@ test.describe('camera flights in the actual model scene', () => {
     await action(page, 'undo').click();expect((await record(page)).cues).toHaveLength(1);
   });
 
+  test('Generate flight orbits the applied design from high to low over the rendered heights, and undo restores the route', async ({ mockApi: page }) => {
+    await prepare(page);await enterModel(page);await openEditor(page);
+    const original = (await record(page)).route;
+    await expect(field(page, 'auto-subject').locator('option')).toHaveCount(2);
+    await field(page, 'auto-subject').selectOption({ index: 1 });
+    await action(page, 'generate').click();
+    await expect.poll(async () => (await record(page)).route[0].id, { timeout: 30_000 }).toBe('auto-1');
+    await expect(action(page, 'generate')).not.toHaveClass(/cb-busy/);
+    await expect(panel(page).locator('[data-flight-status]')).toContainText(/Generated \d+ views/);
+    const generated = await record(page);
+    const scene = await page.evaluate(r => {
+      const w = window as any, internals = w.getThreeModeInternals(), ids = w.CameraFlightScene.appliedDesigns().map((d: any) => d.id);
+      const subjects = w.CameraFlightScene.subjects(internals, r.frame, ids);
+      const grid = w.CameraFlightScene.heights(internals, r.frame, w.CameraFlightAuto.bounds(subjects));
+      let top = 0;for (const h of grid.heights) top = Math.max(top, h);
+      return { invalid: w.CameraFlight.validate(r), tops: subjects.flatMap((s: any) => s.buildings.map((b: any) => b.top)), top,
+        clear: w.CameraFlightAuto.obstructions(r.route, w.CameraFlightAuto.grid(grid)).length };
+    }, generated);
+    // The fixture design is one 9 m building; the grid sees it and the playback curve clears everything.
+    expect(scene.invalid).toBeNull();expect(scene.tops).toHaveLength(1);expect(scene.tops[0]).toBeGreaterThan(8);
+    expect(scene.top).toBeGreaterThan(8);expect(scene.clear).toBe(0);
+    const heights = generated.route.slice(1).map((p: any) => p.position[2]);
+    expect(heights[0]).toBeGreaterThan(heights[heights.length - 1] + 20);
+    await action(page, 'undo').click();
+    expect((await record(page)).route).toEqual(original);
+  });
   test('play/pause and scrub apply exact poses, and closing restores ordinary orbit controls', async ({ mockApi: page }) => {
     await prepare(page);await enterModel(page);
     const enabledBefore = await page.evaluate(() => (window as any).getThreeModeInternals().controls.enabled);

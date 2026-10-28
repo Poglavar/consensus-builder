@@ -9352,7 +9352,11 @@
             scene: scene, camera: camera, renderer: renderer, controls: controls,
             latLngToXY: latLngToXY, xyToLatLng: xyToLatLng,
             originLatLng: function () { const ll = xyToLatLng(0, 0); return { lat: ll.lat, lng: ll.lng }; },
-            groundStats: function () { return groundLayer ? groundLayer.stats() : null; }
+            groundStats: function () { return groundLayer ? groundLayer.stats() : null; },
+            // Generated camera flights fly around a design's outline when it has no buildings.
+            proposalGround: function (id) { const proposal = resolveProposalForFocus(id); return proposal ? proposalGroundFeatures(proposal) : []; },
+            isolatedProposalId: function () { return isolatedProposalId; },
+            endSelectionView: function () { endSelectionView(); }
         };
     };
     window.__threeModeDriver = { enter: enter3D, exit: exit3D };
