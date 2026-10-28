@@ -62,6 +62,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
         plan: designInput.optional().describe('The working plan (draftRef, CID, /plans link or canonical plan) this design is placed in. Omit to start a new private plan. Use the plan draftRef each result returns for the next call.'),
         displace: z.boolean().optional().describe('Only after the person agrees: take the plan designs standing on this ground off the plan, as Apply does on the map. Without it such a placement is refused and lists them.')
     };
+    const { displace } = working;
     const site = { city, parcelSourceId: z.string().max(3507).optional(), parcelIds: z.array(z.string().min(1).max(250)).min(1).max(100).optional(), outline: z.record(z.string(), z.unknown()).optional(),
         title: z.string().max(200).optional(), description: z.string().max(2000).optional(), author: z.string().max(100).optional(), authoredAt: z.iso.datetime().optional(), ...working };
     const lane = z.object({ type: z.enum(laneTypes), width: z.number().min(0.25).max(20), direction: z.enum(['forward', 'backward', 'both']).optional(), landscape: z.enum(['trees', 'grass']).optional(), gauge: z.union([z.literal(1000), z.literal(1435)]).optional() }).strict();
@@ -124,9 +125,9 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
     const filter = z.object({ kind: z.enum(['design', 'building', 'piece']).optional(), goal: z.string().max(80).optional(), role: z.string().max(80).optional(), text: z.string().max(200).optional(), withinBbox: bbox.optional(), relativeTo: z.object({ ref, direction: side }).optional() }).default({});
     const inventory = { filter, includeGeometry: z.boolean().default(false), offset: z.number().int().min(0).default(0), limit: z.number().int().min(1).max(200).default(100) };
     const planOperations = z.array(z.discriminatedUnion('type', [
-        z.object({ type: z.literal('add'), design: designInput }), z.object({ type: z.literal('remove'), ref }),
-        z.object({ type: z.literal('replace'), ref, design: designInput }), z.object({ type: z.literal('edit'), ref, edits: editOperations }),
-        z.object({ type: z.literal('modify'), ref, changes: z.array(changes).min(1).max(20) })
+        z.object({ type: z.literal('add'), design: designInput, displace }), z.object({ type: z.literal('remove'), ref }),
+        z.object({ type: z.literal('replace'), ref, design: designInput, displace }), z.object({ type: z.literal('edit'), ref, edits: editOperations, displace }),
+        z.object({ type: z.literal('modify'), ref, changes: z.array(changes).min(1).max(20), displace })
     ])).max(100).default([]);
     add('ugt_inspect_agreement', 'Inventory an agreement composition by CID, /agreements link or draftRef. Returns exact design/building refs and derived land pieces. Derived pieces are read-only; edit their source designs.',
         { plan: designInput, ...inventory }, 'inspectAgreement');
@@ -140,7 +141,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
     add('ugt_get_plan', 'Open a named plan/v1 by CID, /plans URL, private draftRef or parsed ugt-plan-file/v1 JSON, with exact members and preview URL. Portable files are validated with the browser codec and remain private.', { plan: designInput }, 'getPlan');
     add('ugt_validate_plan', 'Validate canonical design geometry, retained constraints, building overlaps and station attachments in a named plan. Returns affected refs and issues. Source coverage, existing buildings and statutory compliance remain unknown unless separately assessed.', { plan: designInput }, 'validatePlan');
     add('ugt_inspect_plan', 'Inventory a named plan and its designs/buildings. Use returned explicit refs to select objects for edits. Filters do not mutate the plan.', { plan: designInput, ...inventory }, 'inspectPlan');
-    add('ugt_edit_plan', 'Create an immutable named-plan revision: add/remove/replace/edit/modify designs, rename the plan or replace its saved view. Use expectedCid and explicit inspected refs. Retain the old draftRef for undo.',
+    add('ugt_edit_plan', 'Create an immutable named-plan revision: add/remove/replace/edit/modify designs, rename the plan or replace its saved view. Added and revised designs are placed with the map’s apply rules: roads join the plan’s roads, and ground another member holds refuses the edit (ground-occupied) unless that operation has displace. Use expectedCid and explicit inspected refs. Retain the old draftRef for undo.',
         { plan: designInput, expectedCid: cid, operations: planOperations, title: z.string().trim().min(1).max(160).optional(), view: view.optional() }, 'editPlan');
     server.registerTool('ugt_publish_plan', { description: 'Publish the exact named plan revision and any unpublished member designs, then verify and return its permanent /plans URL. Existing links remain unchanged. Parcel layouts need prior agreement publication.',
         inputSchema: z.object({ plan: designInput, expectedCid: cid, confirm: z.literal(true) }).strict(),

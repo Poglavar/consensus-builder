@@ -200,6 +200,12 @@ holding just that design. The result adds `plan`, `placement` and `consequences`
   `appliedRivals`): a road crossing a park, square or lake cuts through it instead, reported in
   `consequences.cuts`.
 - An edit replaces its own earlier revision in the plan; a design that is not a member is added.
+  An edit is refused only for conflicts it creates: members its earlier revision already
+  overlapped stay as they were.
+- `ugt_edit_plan` add, replace, edit and modify operations place their designs the same way, with
+  `displace` per operation; a refusal fails the edit with `ground-occupied` and the conflicts, and
+  the result lists the plan's `consequences`. `ugt_draft_plan` assembles the designs it is given
+  as they are.
 
 Parity is checked by the headless unit tests in `backend/test/mcp-plan-placement.test.js` and
 `backend/test/mcp-road-network.test.js`, through `ugt_draft_road`, `ugt_draft_building`,

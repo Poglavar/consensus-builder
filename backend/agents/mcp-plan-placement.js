@@ -57,7 +57,10 @@ export function placeInPlan({ members, incoming, before = null, displace = false
 
     const incomingRecord = record(placed);
     const target = planOrder.footprintOf(incomingRecord);
-    const rivals = claims.appliedRivals(incomingRecord, membership.map(record), { replaceOccupiedGround: true, planOrder })
+    const rivalsOf = row => claims.appliedRivals(record(row), membership.map(record), { replaceOccupiedGround: true, planOrder });
+    // An edit answers only for conflicts it creates: members its earlier revision already overlapped stay as they were.
+    const standing = new Set(before ? rivalsOf(members.find(row => row.cid === before)).map(rival => rival.proposalId) : []);
+    const rivals = rivalsOf(placed).filter(rival => !standing.has(rival.proposalId))
         .map(rival => {
             const row = membership.find(member => member.cid === rival.proposalId);
             const footprint = planOrder.footprintOf(rival);

@@ -187,10 +187,33 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         const unique = (row, except) => {
             if ([...working.entries()].some(([key, other]) => key !== except && cidOfObject(other.content) === row.cid)) fail('duplicate-design', 'This design is already in the revised named plan.');
         };
+        // Each added or revised design is placed with the map's apply rules, as the authoring tools place theirs
+        // (docs/agent-working-plan.md): a refusal fails the edit, and members it revises or displaces follow.
+        const consequences = { removed: [], junctions: [], cuts: [] };
+        const place = (key, row, displace) => {
+            const before = working.get(key)?.cid || null;
+            const result = placeInPlan({ members: [...working.values()], incoming: row, before, displace: displace === true });
+            if (result.placement.status === 'refused') {
+                throw Object.assign(new Error(result.placement.message), { code: 'ground-occupied', conflicts: result.placement.conflicts, designCid: row.cid,
+                    next: { action: 'Tell the person which designs hold this ground. Move the design clear, or retry the operation with displace: true once they agree.' } });
+            }
+            const byCid = new Map(result.members.map(member => [member.cid, member]));
+            const revised = new Map(result.consequences.junctions.map(change => [change.beforeCid, change.afterCid]));
+            const removed = new Set(result.consequences.removed.map(member => member.cid));
+            for (const [other, member] of [...working]) {
+                if (other === key) continue;
+                if (removed.has(member.cid)) { working.delete(other); indices.delete(other); }
+                else if (revised.has(member.cid)) working.set(other, byCid.get(revised.get(member.cid)));
+            }
+            for (const name of Object.keys(consequences)) consequences[name].push(...result.consequences[name]);
+            working.set(key, result.design);
+            return result.design;
+        };
         for (const operation of operations) {
             if (operation.type === 'add') {
-                const row = await resolvedRow(operation.design); unique(row); working.set(row.cid, row);
-                changes.push({ type: 'add', afterCid: row.cid }); continue;
+                const row = await resolvedRow(operation.design); unique(row);
+                const placed = place(row.cid, row, operation.displace);
+                changes.push({ type: 'add', afterCid: placed.cid }); continue;
             }
             if (!['remove', 'replace', 'edit', 'modify'].includes(operation.type)) fail('invalid-operation', 'Use add, remove, replace, edit or modify.');
             const item = byRef.get(operation.ref);
@@ -206,8 +229,8 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
             if (operation.type === 'replace') {
                 if (item.kind !== 'design') fail('design-selection-required', 'Replace a whole design using its design reference.');
                 const replacement = await resolvedRow(operation.design); unique(replacement, item.designCid);
-                working.set(item.designCid, replacement); indices.set(item.designCid, null);
-                changes.push({ type: 'replace', ref: item.ref, beforeCid: row.cid, afterCid: replacement.cid }); continue;
+                const placed = place(item.designCid, replacement, operation.displace); indices.set(item.designCid, null);
+                changes.push({ type: 'replace', ref: item.ref, beforeCid: row.cid, afterCid: placed.cid }); continue;
             }
             let content, parcelSourceId = row.parcelSourceId;
             if (operation.type === 'edit') {
@@ -232,13 +255,14 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
             validateTrackDesign(content, row.content);
             const checked = designObject({ ...content, createdAt: content.authoredAt });
             const updated = { cid: checked.cid, content: checked.content, parcelSourceId };
-            unique(updated, item.designCid); working.set(item.designCid, updated);
-            changes.push({ type: operation.type, ref: item.ref, beforeCid: row.cid, afterCid: updated.cid });
+            unique(updated, item.designCid);
+            const placed = place(item.designCid, updated, operation.displace);
+            changes.push({ type: operation.type, ref: item.ref, beforeCid: row.cid, afterCid: placed.cid });
         }
         let plan;
         try { plan = PlanRecord.create(title ?? original.plan.title, [...working.values()].map(row => row.cid), view ?? original.plan.view); }
         catch (error) { fail('invalid-plan', error.message); }
-        return privateResult(plan, [...working.values()], { previousCid: original.cid, changes });
+        return privateResult(plan, [...working.values()], { previousCid: original.cid, changes, consequences });
     }
     async function publishPlan({ plan: value, expectedCid, confirm }) {
         if (confirm !== true) fail('confirmation-required', 'confirm must be true to publish a named plan.');

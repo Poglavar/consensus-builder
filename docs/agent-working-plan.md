@@ -60,7 +60,8 @@ still names the corridors it attaches to.
    space; layouts under a layout; overlapping revisions of the same road. A road crossing a park,
    square or lake is not a rival: it cuts through.
 4. Rivals without `displace` refuse the placement (`ground-occupied`); with `displace` they leave
-   the plan and are listed in `consequences.removed`.
+   the plan and are listed in `consequences.removed`. An edit counts only rivals its earlier
+   revision did not already have.
 5. `describeRoadCuts` over the new membership reports the cuts that involve the incoming design.
 
 ## Not covered yet
@@ -69,9 +70,8 @@ still names the corridors it attaches to.
   building stock; `ugt_compare` reports counts today.
 - Cadastral ground effects (agreement inputs and outputs) stay with `ugt_draft_agreement`.
 
-## Milestones
+## Remaining work
 
-1. Placement module with headless tests; draft and edit tools place into a plan; implicit plan;
-   `corridors` retired for roads; docs (`mcp-editing.md`, `mcp-workflow.md`, vocabulary).
-2. `ugt_edit_plan` operations place with the same rules.
-3. Demolition and tunnel consequences from the building stock.
+- Demolition and tunnel consequences from the building stock (see Not covered yet).
+- Placement lives in `backend/agents/mcp-plan-placement.js`; the authoring tools reach it through
+  `placeDesigns` in `mcp-named-plans.js`, wrapped in `ugt-agent-tools.js`.

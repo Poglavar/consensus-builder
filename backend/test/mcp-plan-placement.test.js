@@ -5,6 +5,8 @@ import { appTurf as turf, intentDesign, corridorRuntime } from '../agents/mcp-ge
 import { buildTypedDesign } from '../agents/mcp-constructors.js';
 import { cidOfObject, designObject } from '../agents/agreement-objects.js';
 import { placeInPlan } from '../agents/mcp-plan-placement.js';
+import { createMcpNamedPlanTools } from '../agents/mcp-named-plans.js';
+import { createMcpDraftTools } from '../agents/mcp-drafts.js';
 
 const time = '2026-10-24T00:00:00.000Z', later = '2026-10-25T00:00:00.000Z';
 const row = content => ({ cid: cidOfObject(content), content, parcelSourceId: null });
@@ -88,5 +90,45 @@ describe('placing a design into a working plan', () => {
         expect(result.placement.status).toBe('placed');
         expect(result.members.map(member => member.cid)).toEqual([taller.cid]);
         expect(() => placeInPlan({ members: [house], incoming: taller, before: 'bafkreinotamember' })).toThrow(/not a member/);
+    });
+
+    it('lets an edit keep an overlap its earlier revision already had, and refuses only the conflicts it creates', () => {
+        const spine = road(spinePoints, 'Spine Street');
+        const house = building(onSpine, 'Corner house');
+        const renamed = building(onSpine, 'Corner house, renamed', later);
+        expect(placeInPlan({ members: [spine, house], incoming: renamed, before: house.cid }).placement.status).toBe('placed');
+        const quiet = building(clear, 'Quiet house');
+        const moved = building(onSpine, 'Quiet house, moved', later);
+        expect(placeInPlan({ members: [spine, quiet], incoming: moved, before: quiet.cid }).placement).toMatchObject({ status: 'refused', code: 'ground-occupied' });
+    });
+});
+
+describe('ugt_edit_plan places its operations in the working plan', () => {
+    const read = { siteOfDesign: content => content.site, request: async path => { throw new Error(`Unexpected request ${path}`); } };
+    const drafts = createMcpDraftTools({ read, appOrigin: 'https://app.example' });
+    const tools = createMcpNamedPlanTools({ read, drafts, appOrigin: 'https://app.example' });
+    const start = async (...designs) => tools.draftPlan({ title: 'Working plan', designs: designs.map(row => row.content) });
+    const members = result => result.designs.map(member => member.cid);
+
+    it('refuses an added building on a plan road until the operation displaces it', async () => {
+        const spine = road(spinePoints, 'Spine Street');
+        const plan = await start(spine);
+        const house = building(onSpine, 'Corner house', later);
+        await expect(tools.editPlan({ plan, expectedCid: plan.cid, operations: [{ type: 'add', design: house.content }] }))
+            .rejects.toMatchObject({ code: 'ground-occupied', conflicts: [expect.objectContaining({ cid: spine.cid })] });
+        const placed = await tools.editPlan({ plan, expectedCid: plan.cid, operations: [{ type: 'add', design: house.content, displace: true }] });
+        expect(members(placed)).toEqual([house.cid]);
+        expect(placed.consequences.removed.map(member => member.cid)).toEqual([spine.cid]);
+    });
+
+    it('joins an added road to the plan road it crosses and carries the revised neighbour', async () => {
+        const spine = road(spinePoints, 'Spine Street');
+        const plan = await start(spine);
+        const placed = await tools.editPlan({ plan, expectedCid: plan.cid, operations: [{ type: 'add', design: road(gardenPoints, 'Garden Street', later).content }] });
+        const [junction] = placed.consequences.junctions;
+        expect(junction.beforeCid).toBe(spine.cid);
+        expect(members(placed)).toContain(junction.afterCid);
+        expect(members(placed)).not.toContain(spine.cid);
+        expect(placed.designs.every(member => junctionCount(member.content) === 1)).toBe(true);
     });
 });
