@@ -23,8 +23,7 @@
     },
     "workspace": {
         "blocked": {
-            "title": "Radni prostor već je otvoren u drugoj kartici",
-            "message": "Radni prostor karte otvoren je u drugoj kartici. Zatvorite tu karticu pa pokušajte ponovno ovdje. Spremljeni rad i dalje će biti ovdje."
+            "title": "Radni prostor već je otvoren u drugoj kartici"
         },
         "unsupported": {
             "title": "Ažurirajte preglednik za nastavak",

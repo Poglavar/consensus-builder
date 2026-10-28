@@ -23,8 +23,7 @@
     },
     "workspace": {
         "blocked": {
-            "title": "Already open in another tab",
-            "message": "Your map workspace is open in another tab. Close that tab, then try again here. Your saved work will still be here."
+            "title": "Already open in another tab"
         },
         "unsupported": {
             "title": "Update your browser to continue",

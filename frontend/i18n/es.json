@@ -23,8 +23,7 @@
     },
     "workspace": {
         "blocked": {
-            "title": "Ya está abierto en otra pestaña",
-            "message": "Tu espacio de trabajo del mapa está abierto en otra pestaña. Cierra esa pestaña y vuelve a intentarlo aquí. Tu trabajo guardado seguirá aquí."
+            "title": "Ya está abierto en otra pestaña"
         },
         "unsupported": {
             "title": "Actualiza el navegador para continuar",

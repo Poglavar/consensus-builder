@@ -26,6 +26,9 @@ for (const width of [390, 1280]) test(`a duplicate tab waits for the owner and r
     const screen = duplicate.locator('#workspace-screen');
     await expect(screen).toBeVisible();
     await expect(screen.getByRole('heading', { name: 'Already open in another tab' })).toBeVisible();
+    // One plain screen: it covers the whole viewport and carries only the title and Try again.
+    expect(await screen.boundingBox()).toEqual({ x: 0, y: 0, width, height: 844 });
+    await expect(screen.locator('p')).toHaveCount(0);
     await duplicate.screenshot({ path: testInfo.outputPath('workspace-blocked.png') });
     const retry = screen.getByRole('button', { name: 'Try again' });
     await expect(retry).toHaveAttribute('id', 'workspace-retry');

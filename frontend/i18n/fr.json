@@ -2062,8 +2062,7 @@
     },
     "workspace": {
         "blocked": {
-            "title": "Déjà ouvert dans un autre onglet",
-            "message": "Votre espace de travail cartographique est ouvert dans un autre onglet. Fermez cet onglet, puis réessayez ici. Votre travail enregistré sera toujours disponible."
+            "title": "Déjà ouvert dans un autre onglet"
         },
         "unsupported": {
             "title": "Mettez votre navigateur à jour pour continuer",

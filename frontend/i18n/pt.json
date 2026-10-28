@@ -2062,8 +2062,7 @@
     },
     "workspace": {
         "blocked": {
-            "title": "Já aberto noutro separador",
-            "message": "O seu espaço de trabalho do mapa está aberto noutro separador. Feche esse separador e tente novamente aqui. O seu trabalho guardado continuará aqui."
+            "title": "Já aberto noutro separador"
         },
         "unsupported": {
             "title": "Atualize o navegador para continuar",
