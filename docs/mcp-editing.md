@@ -89,7 +89,9 @@ are broadleaf (6–14 m), conifer (7–18 m), columnar (9–20 m) and ornamental
 and height together when the old height is outside the new range; the editor's Taller and Shorter
 step `heightM` by 1 m. A square's tree may stand in a pit in the paving: `pit` is `grille`, `grass`
 or `soil` (a 1.4 m square, drawn square to the square's longest edge); omit it for a tree straight
-out of the paving. A park's trees take no `pit` (`invalid-tree`). Paths are coordinate arrays;
+out of the paving. The same holds for paved building surroundings
+(`/geometry/groundSurface/decorationDesign/trees`); trees on green ground (parks, green
+surroundings) take no `pit` (`invalid-tree`), so remove pits before switching surroundings to green. Paths are coordinate arrays;
 ponds and flowerbeds are closed coordinate rings; benches have `coordinate` and `bearing` in
 degrees. These are the same records read by the site's map and model renderer.
 

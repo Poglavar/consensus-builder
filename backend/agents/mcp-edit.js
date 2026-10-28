@@ -133,10 +133,6 @@ export function normalizeSpaceFurniture(record) {
         if (Object.keys(models).length !== Object.keys(normalized || {}).length) fail('invalid-decoration', 'Each decorationDesign.models entry needs a url string; upload the asset with ugt_import_model kind furniture.');
         if (normalized) decorations.models = normalized; else delete decorations.models;
     }
-    // Pavement trees (a tree with a pit in the paving) belong to squares; a park's trees stand on lawn.
-    if (space.kind !== 'square' && Array.isArray(decorations.trees) && decorations.trees.some(tree => tree && !Array.isArray(tree) && tree.pit != null)) {
-        fail('invalid-tree', `A ${space.kind} has no paving for a tree pit; only a square's trees take pit.`);
-    }
     // Lamps {coordinate, bearing} and stalls {coordinate, bearing, color?}; an invalid stall colour is dropped.
     for (const [key, kind, normalize] of [['lamps', 'lamp', FurnitureModels.normalizeLamps], ['stalls', 'stall', FurnitureModels.normalizeStalls]]) {
         if (!Object.hasOwn(decorations, key)) continue;

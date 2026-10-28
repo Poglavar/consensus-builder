@@ -52,6 +52,20 @@ describe('granular authored editing', () => {
         expect(next.geometry.landTake.geometry).toEqual(site);
         expect(design).toEqual(before);
     });
+    it('takes pavement trees on paved building surroundings and refuses them on green ones', () => {
+        const design=make('building',{floors:4,coverage:.05});
+        const body=design.geometry.buildings[0];
+        design.geometry.groundBoundary=turf.feature(structuredClone(site));
+        design.geometry.groundSurface={treatment:'paved',polygon:turf.difference(turf.feature(site),body).geometry,
+            decorationDesign:{trees:[{coordinate:[-.099,51.501],kind:'broadleaf',heightM:8}]}};
+        const pitted=edit(design,[{op:'add',path:'/geometry/groundSurface/decorationDesign/trees/0/pit',value:'grille'},
+            {op:'replace',path:'/geometry/groundSurface/decorationDesign/trees/0/heightM',value:9}]);
+        expect(pitted.geometry.groundSurface.decorationDesign.trees[0]).toEqual({coordinate:[-.099,51.501],kind:'broadleaf',heightM:9,pit:'grille'});
+        expect(()=>edit(pitted,[{op:'replace',path:'/geometry/groundSurface/treatment',value:'green'}])).toThrow(expect.objectContaining({code:'invalid-tree'}));
+        const green=edit(pitted,[{op:'replace',path:'/geometry/groundSurface/treatment',value:'green'},
+            {op:'remove',path:'/geometry/groundSurface/decorationDesign/trees/0/pit'}]);
+        expect(green.geometry.groundSurface.decorationDesign.trees[0]).not.toHaveProperty('pit');
+    });
     it('a footprint-only land-take edit removes surrounding ground and furniture', () => {
         const design=make('building',{floors:4,coverage:.05});
         const body=design.geometry.buildings[0];

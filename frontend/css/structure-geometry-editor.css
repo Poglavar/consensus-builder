@@ -208,6 +208,8 @@
     border-radius: var(--cb-radius-md);
 }
 
+.structure-geometry-tree-card[hidden] { display: none; }
+
 .structure-geometry-tree-summary {
     margin: 0;
     font-size: var(--cb-text-sm);

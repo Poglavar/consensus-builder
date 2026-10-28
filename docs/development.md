@@ -168,7 +168,9 @@ look) and the square editor's Pavement tree tool write the same tree record an a
 `heightM`, and on squares `pit` (`grille`, `grass` or `soil`). No MCP tool was added:
 `ugt_edit_design` patches `/structureProposal/decorationDesign/trees/<i>/heightM` and `/pit`; the
 shared `intentEditing` validation refuses an unknown pit and an out-of-range height (`invalid-tree`),
-and `normalizeSpaceFurniture` refuses a pit on a park. Verified by headless unit tests
+and a pit on green ground: parks and green building surroundings (paved surroundings open the square
+editor, so they take pavement trees like squares; switching the treatment in the site clears the
+surroundings design). Verified by headless unit tests
 `backend/test/mcp-edit.test.js` (height, pit, refused pit and park pit; each check confirmed red with
 it removed), `backend/test/park-planting.test.js` and `backend/test/frontend-structure-edit-history.test.js`.
 

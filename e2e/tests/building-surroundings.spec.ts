@@ -54,6 +54,10 @@ async function cancelEditor(parent: any) {
   const close = parent.locator('.on-map-editor__header .close-circle-btn');
   await close.focus();
   await close.press('Enter');
+  // An editor with changes asks before throwing them away.
+  const discard = parent.page().locator('.cb-dialog-overlay:not([hidden])').getByRole('button', { name: 'Discard', exact: true });
+  await expect.poll(async () => (await discard.isVisible()) || (await parent.isHidden())).toBe(true);
+  if (await discard.isVisible()) await discard.click();
 }
 
 for (const [tool, typology, root, prefix, done] of [
@@ -152,6 +156,8 @@ for (const [tool, typology, root, prefix, done, treatment] of [
     await expect(page.locator('#mode-3d-toggle')).toBeDisabled();
     const points = await furniturePoints(page, surfaceForPoints);
     await expect(child.locator('[data-tool="move"]')).toHaveCount(0);
+    // Paved surroundings open as a square, with pavement trees; green ones as a park, without.
+    await expect(child.locator('[data-tool="pavementTree"]')).toHaveCount(treatment === 'paved' ? 1 : 0);
     await child.locator('[data-tool="tree"]').click();
     await page.mouse.click(points[0].x, points[0].y);
     await expect(page.locator('.structure-geometry-icon.is-tree')).toHaveCount(1);
@@ -163,7 +169,7 @@ for (const [tool, typology, root, prefix, done, treatment] of [
 
     await edit.click();
     await expect(page.locator('.structure-geometry-icon.is-tree')).toHaveCount(0);
-    await child.locator('[data-tool="tree"]').click();
+    await child.locator(`[data-tool="${treatment === 'paved' ? 'pavementTree' : 'tree'}"]`).click();
     await page.mouse.click(points[0].x, points[0].y);
     await child.locator('[data-tool="bench"]').click();
     await page.mouse.click(points[1].x, points[1].y);
@@ -174,6 +180,7 @@ for (const [tool, typology, root, prefix, done, treatment] of [
     const surface = await page.evaluate(() => (window as any).OnMapEditor.getPreview().groundSurface);
     await expect(page.locator('#mode-3d-toggle')).toBeEnabled();
     expect(surface.decorationDesign.trees).toHaveLength(1);
+    expect(surface.decorationDesign.trees[0].pit ?? null).toBe(treatment === 'paved' ? 'grille' : null);
     expect(surface.decorationDesign.benches).toHaveLength(1);
     expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(0);
     await finishEditor(page, parent, done);

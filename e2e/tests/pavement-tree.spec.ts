@@ -13,9 +13,11 @@ test('plants a pavement tree on a square and edits its height and pit from the t
   const editor = page.locator('#structure-geometry-editor');
   await expect(editor.locator('.on-map-editor__panel')).toBeVisible();
 
+  // The card shows only while a tree is selected.
+  const card = editor.locator('[data-role="tree-card"]');
+  await expect(card).toBeHidden();
   await editor.locator('[data-tool="pavementTree"]').click();
   await clickMapPoint(page, 15.98208, 45.80018);
-  const card = editor.locator('[data-role="tree-card"]');
   await expect(card).toBeVisible();
   await expect(card.locator('[data-tree-pit="grille"]')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('.structure-geometry-icon.is-tree.is-selected .park-tree-glyph.is-pit-grille')).toHaveCount(1);

@@ -202,7 +202,9 @@
                 record.site = material.polygon;
             }
         }
-        const validateDecorations = decorations => {
+        // `paved`: the ground is paving (a square, paved building surroundings), the only ground a
+        // tree pit can be cut into; parks and green surroundings stand on lawn.
+        const validateDecorations = (decorations, { paved }) => {
             const checkPoint = point => {
                 if (!Array.isArray(point) || point.length < 2 || !point.every(finite) || Math.abs(point[0]) > 180 || Math.abs(point[1]) > 90) fail('invalid-decoration', 'Authored decoration coordinates must be finite WGS84 positions.');
             };
@@ -217,6 +219,7 @@
                 const normalized = planting.treeOf(tree);
                 if (!normalized || (!Array.isArray(tree) && (tree.kind !== normalized.kind || tree.heightM !== normalized.heightM))) fail('invalid-tree', 'Use a supported tree kind and a heightM within its range; inspect ugt://editing for the tree schema.');
                 if (!Array.isArray(tree) && tree.pit != null && tree.pit !== normalized.pit) fail('invalid-tree', `A pavement tree's pit is one of ${planting.TREE_PITS.join(', ')}; omit pit for a tree without one.`);
+                if (!Array.isArray(tree) && tree.pit != null && !paved) fail('invalid-tree', 'Only trees on paving (a square, paved surroundings) take a pit; this ground is green. Remove pit.');
             }
             for (const path of decorations?.paths || []) if (!Array.isArray(path) || path.length < 2) fail('invalid-decoration', 'A path needs at least two coordinates.');
             for (const ring of [...(decorations?.ponds || []), ...(decorations?.flowerbeds || [])]) {
@@ -235,7 +238,7 @@
                 if (space.decorationDesign) space.decorationDesign = load('ProposalApplyStructures', './proposals/apply/structures.js')
                     .decorationsOnGround(space.decorationDesign, space.geometry, turf);
             }
-            validateDecorations(space.decorationDesign);
+            validateDecorations(space.decorationDesign, { paved: space.kind === 'square' });
         }
         if (record.buildingProposal) {
             const items = record.geometry?.buildings || [], oldItems = original.geometry?.buildings || [];
@@ -316,7 +319,7 @@
                 const ground = load('BuildingGround', './building-ground.js');
                 record.geometry.groundSurface = ground.clipSurfaceToLandTake(record.geometry.groundSurface, record.geometry.landTake, turf);
             }
-            validateDecorations(record.geometry?.groundSurface?.decorationDesign);
+            validateDecorations(record.geometry?.groundSurface?.decorationDesign, { paved: record.geometry?.groundSurface?.treatment !== 'green' });
         }
     }
     return { buildings, planting, rowEnvelope, transform, reconcile };
