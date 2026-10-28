@@ -445,7 +445,14 @@
         return a.sun.altitude * 180 / Math.PI;
     }
 
+    // The same sun with its azimuth (radians, SunCalc's: from south, positive toward west), or null
+    // as above. Read-only: the sky follows it.
+    function currentSun() {
+        const altitudeDeg = currentAltitudeDeg();
+        return altitudeDeg === null ? null : { altitudeDeg, azimuthRad: attached.sun.azimuth };
+    }
+
     bindSheet();
 
-    return { attach, detach, state, applyShadowFlags, resolveSun, placeOf, currentAltitudeDeg, DAY_CYCLE_MS };
+    return { attach, detach, state, applyShadowFlags, resolveSun, placeOf, currentAltitudeDeg, currentSun, DAY_CYCLE_MS };
 });

@@ -48,6 +48,9 @@
         return;
     }
     const facadeState = buildingFacades.createState(THREE);
+    // Lit windows at night on every building material (three-night-windows.js), through shared uniforms.
+    const nightWindows = window.__threeNightWindows;
+    const nightWindowState = nightWindows.createState();
     const floorPlanGeometry = window.__buildingFloorPlans;
     const floorPlanRenderer = window.__threeFloorPlans;
     if (!floorPlanGeometry || !floorPlanRenderer) {
@@ -328,6 +331,8 @@
     }
 
     function configureBuildingMaterial(material, opacity = 1) {
+        // First, so the ghost renderers and facades below keep the night-window hook as their prior.
+        nightWindows.configureMaterial(material, nightWindowState);
         const numericOpacity = Number(opacity);
         const normalizedOpacity = Number.isFinite(numericOpacity)
             ? Math.min(1, Math.max(0, numericOpacity))
@@ -3442,6 +3447,17 @@
                 if (material.visible !== level > 0) material.visible = level > 0;
             });
         }
+    }
+
+    // Before each render, like the lamps: the sky follows the sun (a neutral light gradient while the
+    // sun layer is off; hidden in photo view, whose tiles bring their own sky) and windows light up
+    // over the same dusk ramp as the lamps. Both write uniforms only when something changed, and
+    // never schedule a frame of their own.
+    let sky = null;   // three-sky.js dome and stars of the current scene
+    function updateSkyAndWindows() {
+        const sun = window.__threeSun?.currentSun?.() || null;
+        sky?.update(sun, !!window.PhotorealMode?.isActive?.());
+        nightWindows.setState(nightWindowState, furnitureApi().lampGlowStrength(sun ? sun.altitudeDeg : null), lifeMercatorK());
     }
 
     function buildingSidewalkMaterial() {
@@ -8297,6 +8313,7 @@
         // A comparison pass shows a different set of objects: its shadows are its own.
         if (shadowsPerPass && renderer.shadowMap.enabled) renderer.shadowMap.needsUpdate = true;
         updateLampGlow();
+        updateSkyAndWindows();
         floorPlanRenderer.renderCutaway(renderer, scene, camera, floorPlanGroup,
             xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
@@ -8649,6 +8666,8 @@
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, stencil: true });
         renderer.setSize(width, height);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        sky = window.__threeSky.createSky(THREE, { pixelRatio: renderer.getPixelRatio() });
+        scene.add(sky.group);
         threeContainer.innerHTML = '';
         threeContainer.appendChild(renderer.domElement);
         perfReadout = null;
@@ -9309,6 +9328,7 @@
 
     function disposeScene() {
         lampGlowObjects.clear();
+        sky = null;   // its dome and stars go with the scene below
         clearTimeout(warmSceneTimer);
         warmSceneTimer = null;
         warmSceneKey = null;
@@ -10258,7 +10278,10 @@
 
     function captureHeightMapDataURL() {
         if (!isActive || !renderer || !scene || !camera) return null;
+        // The sky leaves the scene for this draw: empty space must read as 0 m (black).
+        const skyGroup = sky?.group.parent === scene ? sky.group : null;
         try {
+            if (skyGroup) scene.remove(skyGroup);
             const box = new THREE.Box3().setFromObject(scene);
             if (!isFinite(box.max.z)) return null;
             const minZ = 0;                                          // ground plane
@@ -10273,9 +10296,12 @@
             const url = captureDownscaledDataURL('image/png');
             scene.overrideMaterial = prevOverride;
             scene.background = prevBg;
+            if (skyGroup) scene.add(skyGroup);
             renderScene();                         // restore the normal view in the buffer
             return { image: url, maxHeightM: Math.round(maxZ) };
-        } catch (_) { return null; }
+        } catch (_) { return null; } finally {
+            if (skyGroup && !skyGroup.parent) scene.add(skyGroup);
+        }
     }
     window.captureThreeHeightMapDataURL = captureHeightMapDataURL;
 

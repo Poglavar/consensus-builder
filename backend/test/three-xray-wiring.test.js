@@ -34,7 +34,8 @@ describe('three-mode Xray wiring', () => {
             clone() { return new Material({ ...this, userData: { ...this.userData } }); }
         }
         const smoothTransparency = require('../../frontend/js/three-smooth-transparency.js');
-        const context = { THREE: { MeshPhongMaterial: Material, LessDepth: 2, EqualDepth: 4 }, smoothTransparency };
+        const context = { THREE: { MeshPhongMaterial: Material, LessDepth: 2, EqualDepth: 4 }, smoothTransparency,
+            nightWindows: require('../../frontend/js/three-night-windows.js'), nightWindowState: {} };
         vm.runInNewContext(`
             const BUILDING_GHOST_STYLE = 'smooth', BUILDING_OPACITY_KEY = 'cbBuildingOpacity';
             ${['buildingOpacityOf', 'configureBuildingMaterial', 'makeBuildingMaterial', 'cloneBuildingMaterial'].map(name => declarations.get(name)).join('\n')}
