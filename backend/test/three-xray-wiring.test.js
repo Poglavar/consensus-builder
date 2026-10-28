@@ -160,7 +160,7 @@ describe('three-mode Xray wiring', () => {
             createBuildingSlices:draw, estimateBuildingHeightMeters:()=>9, sceneWork
         });
         await build(group,'solid');
-        expect(draw).toHaveBeenCalledExactlyOnceWith(ordinary,9,'solid',group,ordinary);
+        expect(draw).toHaveBeenCalledExactlyOnceWith(ordinary,9,'solid',group,ordinary,null);
     });
     it('disposeFloorPlans disposes every owned child, removes them, and resets bookkeeping', () => {
         const children = [{}, {}], remove = vi.fn(), dispose = vi.fn(), keys = new Set(['a']);

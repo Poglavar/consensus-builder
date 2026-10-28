@@ -48,6 +48,11 @@
         return;
     }
     const facadeState = buildingFacades.createState(THREE);
+    // Pitched roofs and balconies an urban rule asks for (three-rule-roofs.js).
+    const ruleRoofs = window.__threeRuleRoofs.create({ THREE, coordsToXY, finishMesh: (mesh, geometry) => {
+        markOwnedGeometry(mesh, geometry);
+        attachBuildingDepthPrepass(mesh);
+    } });
     // Lit windows at night on every building material (three-night-windows.js), through shared uniforms.
     const nightWindows = window.__threeNightWindows;
     const nightWindowState = nightWindows.createState();
@@ -2683,11 +2688,6 @@
                     });
                 }
 
-                // Benches: user-placed first-class objects (same as trees); an uploaded bench model
-                // replaces the default bench for all of them.
-                const models = deco?.models || null;
-                if (deco && Array.isArray(deco.benches)) {
-                    placeFurniture3D('bench', deco.benches, models, decoTarget, isCurrentModel, spots => addProceduralBenches3D(decoTarget, spots));
                 // Fenced areas: a dog or play area's ground, and every fence with its gates.
                 if (deco && Array.isArray(deco.enclosures) && deco.enclosures.length) {
                     try { addParkEnclosures3D(flatTarget, decoTarget, p, deco.enclosures); } catch (error) {
@@ -2695,19 +2695,24 @@
                     }
                 }
 
+                // Benches: user-placed first-class objects (same as trees); an uploaded bench model
+                // replaces the default bench for all of them.
+                const models = deco?.models || null;
+                if (deco && Array.isArray(deco.benches)) {
+                    placeFurniture3D('bench', deco.benches, models, decoTarget, isCurrentModel, spots => addProceduralBenches3D(decoTarget, spots));
                 }
                 if (deco) placeFurniture3D('stall', deco.stalls, models, decoTarget, isCurrentModel, spots => addMarketStalls3D(decoTarget, spots));
                 placeLamps3D(deco?.lamps, models, decoTarget, isCurrentModel);
-
-                // Trees: the STORED trees are the truth — auto-generated and user-placed alike
-                // (the old random sampling ignored edits, so a repositioned tree never moved in
-                // 3D), each with its stored look. Random sampling remains only for legacy parks
-                // without tree data.
                 if (deco) {
                     for (const [kind, key] of Object.entries(parkEnclosuresApi().EQUIPMENT)) {
                         if (Array.isArray(deco[key]) && deco[key].length) placeFurniture3D(kind, deco[key], models, decoTarget, isCurrentModel, spots => addPlayEquipment3D(decoTarget, kind, spots));
                     }
                 }
+
+                // Trees: the STORED trees are the truth — auto-generated and user-placed alike
+                // (the old random sampling ignored edits, so a repositioned tree never moved in
+                // 3D), each with its stored look. Random sampling remains only for legacy parks
+                // without tree data.
                 const storedTrees = (deco && Array.isArray(deco.trees)) ? deco.trees.filter(entry => {
                     const coord = parkPlanting().treeCoordinate(entry);
                     if (!coord) return false;
@@ -3035,11 +3040,6 @@
         });
     }
 
-    // The default market stall (furniture-models.js): four posts, a counter on the side its bearing
-    // faces (the model's +X) and a striped canopy. Per structure that is one InstancedMesh each for the
-    // posts, the counters and the canopies; each canopy takes its stall's colour (stallColor) as an
-    // instance colour multiplied over one shared white/grey stripe texture, so every colour is one draw.
-    let marketStallAssets = null;
     function parkEnclosuresApi() {
         const api = window.ParkEnclosures;
         if (!api) throw new Error('park-enclosures.js is not loaded');
@@ -3122,6 +3122,11 @@
         });
     }
 
+    // The default market stall (furniture-models.js): four posts, a counter on the side its bearing
+    // faces (the model's +X) and a striped canopy. Per structure that is one InstancedMesh each for the
+    // posts, the counters and the canopies; each canopy takes its stall's colour (stallColor) as an
+    // instance colour multiplied over one shared white/grey stripe texture, so every colour is one draw.
+    let marketStallAssets = null;
     const MARKET_STALL_POSTS = [[-0.75, -1.15], [-0.75, 1.15], [0.75, -1.15], [0.75, 1.15]];
     function ensureMarketStallAssets() {
         if (marketStallAssets) return marketStallAssets;
@@ -6295,7 +6300,7 @@
     }
 
     // --- Real-world OSM trees (Overture base/land) ---
-    // Toggleable scenery fetched via POST /decor/near using the SAME query geometry + radius as the
+    // Toggleable scenery fetched via GET /decor/near for the box of the SAME query geometry + radius as the
     // nearby buildings, then rendered as two InstancedMesh layers (trunk + crown) so a few thousand
     // trees cost two draw calls. Cities without ingested trees just get an empty list (no-op).
     const TREES_STORAGE_KEY = 'cb_3d_trees_enabled';
@@ -6491,15 +6496,9 @@
         if (key === nearbyTreesKey) return;
 
         nearbyTreesFetching = true;
-        const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
         const signal = sceneAbort?.signal;
         const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
-        fetch(`${base}/decor/near`, {
-            signal,
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ geometry, buffer_meters: buffer, kinds: ['trees'] })
-        })
+        fetch(sceneryUrl('/decor/near', geometry, buffer, { kinds: 'trees' }), { signal })
             .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
             .then(payload => {
                 if (!current()) return;
@@ -6993,7 +6992,7 @@
     }
 
     // --- Real-world water (sea, lakes, rivers, streams) ---
-    // Fetched via POST /decor/water for the same query geometry and radius as the trees, every piece
+    // Fetched via GET /decor/water for the same area and radius as the trees, every piece
     // already a polygon (the backend widens river and stream lines), drawn flat just above the ground
     // in one material. A scene holds a few dozen pieces at most, so it costs next to nothing.
     const WATER_STORAGE_KEY = 'cb_3d_water_enabled';
@@ -7069,6 +7068,14 @@
         return { queryGeometry: sceneTreeLoadGeometry, buffer: buildingLoadRadiusM };
     }
 
+    // A scenery read (GET /decor/near, /decor/water, /decor/green): the query area as its WGS84 box
+    // (a point's box is the point) and the buffer around it, so the request is cacheable.
+    function sceneryUrl(path, geometry, buffer, extra = {}) {
+        const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
+        const query = new URLSearchParams({ bbox: turf.bbox(geometry).join(','), buffer_meters: String(buffer), ...extra });
+        return `${base}${path}?${query}`;
+    }
+
     function ensureNearbyWater() {
         // Wait for the buildings: their extent is the area to cover.
         if (!waterEnabled || nearbyWaterFetching || nearbyProposalBuildingsFetching) return;
@@ -7077,15 +7084,9 @@
         const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
         if (key === nearbyWaterKey) return;
         nearbyWaterFetching = true;
-        const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
         const signal = sceneAbort?.signal;
         const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
-        fetch(`${base}/decor/water`, {
-            signal,
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ geometry: queryGeometry, buffer_meters: buffer })
-        })
+        fetch(sceneryUrl('/decor/water', queryGeometry, buffer), { signal })
             .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
             .then(payload => {
                 if (!current()) return;
@@ -7116,13 +7117,17 @@
     }
 
     // --- Real-world green areas (lawns and parks, meadows and farmland, woods) ---
-    // Fetched via POST /decor/green for the same area as the water (OpenFreeMap landcover, every city)
+    // Fetched via GET /decor/green for the same area as the water (OpenFreeMap landcover, every city)
     // and merged into one mesh per look with the grass pattern (three-grass.js): three draw calls
     // however many pieces. Just above the parcel slabs (0), below water (0.04), corridor strips (0.05)
     // and planned parks and squares (0.06), which all cover it.
     const GREEN_STORAGE_KEY = 'cb_3d_green_enabled';
     const GREEN_Z = 0.03;
     const GREEN_VARIANT = { lawn: 'lawn', meadow: 'wild', forest: 'forest' }; // look → grass pattern
+    // Green is layered over the parcels by stencil claims, not by its 3 cm lift (three-ground.js
+    // ORDER): a phone's depth buffer striped it through them. Where two looks overlap, the more
+    // specific one wins: a garden over a meadow, a clearing's meadow over the wood around it.
+    const GREEN_ORDER = { lawn: -7, meadow: -6, forest: -5 };
     let nearbyGreen = [];           // [{ geometry, kind }] from the backend
     let nearbyGreenKey = null;
     let nearbyGreenFetching = false;
@@ -7183,13 +7188,16 @@
         disposeGreenGroup();
         if (!greenEnabled || !nearbyGreen.length || !origin3857) return;
         const grass = window.__threeGrass;
+        ensureGroundLayer();
         for (const [kind, variant] of Object.entries(GREEN_VARIANT)) {
             const pieces = nearbyGreen.filter(piece => piece.kind === kind);
             if (!pieces.length) continue;
             try {
                 const material = grass.grassTexture(new THREE.MeshLambertMaterial({ color: grass.COLORS[variant],
                     polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }), 1 / lifeMercatorK(), variant);
+                groundLayer.parcelSurface(material);
                 const mesh = new THREE.Mesh(mergedFlatGeometry(pieces, GREEN_Z), material);
+                mesh.renderOrder = GREEN_ORDER[kind];
                 mesh.userData.green = kind;
                 greenGroup.add(mesh);
             } catch (error) {
@@ -7207,15 +7215,9 @@
         const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
         if (key === nearbyGreenKey) return;
         nearbyGreenFetching = true;
-        const base = (typeof window !== 'undefined' && typeof window.getBackendBase === 'function') ? window.getBackendBase() : '';
         const signal = sceneAbort?.signal;
         const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
-        fetch(`${base}/decor/green`, {
-            signal,
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ geometry: queryGeometry, buffer_meters: buffer })
-        })
+        fetch(sceneryUrl('/decor/green', queryGeometry, buffer), { signal })
             .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
             .then(payload => {
                 if (!current()) return;
@@ -7301,6 +7303,24 @@
         const arr = (typeof window !== 'undefined' && Array.isArray(window.proposedBuildings)) ? window.proposedBuildings : [];
         if (!arr || arr.length === 0) return;
         const variationDeps = { turf };
+        // Buildings of one design that share a wall: their party walls get no balconies or
+        // windows, and do not decide which way a roof's ridge runs.
+        const byProposal = new Map();
+        arr.forEach(f => {
+            const id = f?.properties?.proposalId;
+            if (id == null || !f.geometry) return;
+            if (!byProposal.has(id)) byProposal.set(id, []);
+            byProposal.get(id).push(f);
+        });
+        const ruleDetails = (drawn, height, feat) => {
+            if (!drawn?.properties?.urbanRule) return null;
+            try {
+                return ruleRoofs.planFor(drawn, height, (byProposal.get(feat.properties?.proposalId) || []).filter(f => f !== feat));
+            } catch (error) {
+                console.warn(`[${new Date().toISOString()}] [3D] Roof and balconies skipped`, feat.properties?.proposalId, error);
+                return null;
+            }
+        };
         await sceneWork.forEach(arr, feat => {
             if (!feat || !feat.geometry) return;
             // The architectural model owns this building's surfaces in Xray mode.
@@ -7319,12 +7339,14 @@
                 const plan = window.UrbanRuleVariation.plannedDrawPlan(
                     feat, plannedRepresentation, variationDeps, buildOutDisplaySalt);
                 if (plan.buildOut) {
-                    createBuildingSlices(plan.buildOut, estimateBuildingHeightMeters(plan.buildOut), buildingMaterial, targetGroup, feat);
+                    const height = estimateBuildingHeightMeters(plan.buildOut);
+                    createBuildingSlices(plan.buildOut, height, buildingMaterial, targetGroup, feat, ruleDetails(plan.buildOut, height, feat));
                 }
                 if (plan.massing) {
-                    const material = plan.massingStyle === 'envelope' ? buildingMaterials.massing : buildingMaterial;
-                    createBuildingSlices(plan.massing, estimateBuildingHeightMeters(plan.massing), material, targetGroup,
-                        plan.massingStyle === 'envelope' ? null : feat);
+                    const envelope = plan.massingStyle === 'envelope';
+                    const height = estimateBuildingHeightMeters(plan.massing);
+                    createBuildingSlices(plan.massing, height, envelope ? buildingMaterials.massing : buildingMaterial, targetGroup,
+                        envelope ? null : feat, envelope ? null : ruleDetails(plan.massing, height, feat));
                 }
             } catch (_) { }
         }, { isCurrent });
@@ -7643,8 +7665,10 @@
         return meshes;
     }
 
-    function createBuildingSlices(buildingFeature, height, material, targetGroup, facadeSource = null) {
+    // `ruleDetails` (ruleRoofs.planFor) adds a rule's pitched roof, attic and balconies.
+    function createBuildingSlices(buildingFeature, height, material, targetGroup, facadeSource = null, ruleDetails = null) {
         if (!buildingFeature?.geometry) return;
+        if (ruleDetails) ruleRoofs.detailMeshes(ruleDetails, material).forEach(mesh => targetGroup.add(mesh));
         const hasFacade = !!facadeSource;
         const city = window.CityConfigManager?.getCurrentCityId?.() || '';
         const ruleFloorHeight = buildingFeature.properties?.urbanRule?.floorHeightM;
@@ -7669,7 +7693,8 @@
                 && material !== buildingMaterials.massing;
             const surface = tint ? cloneBuildingMaterial(material) : material;
             if (tint) surface.color.copy(baseColor);
-            const meshes = prepareFacades(polygonFeatureToMeshes(buildingFeature, surface, 0, height), facadeSource, !!tint);
+            const meshes = prepareFacades(polygonFeatureToMeshes(buildingFeature, surface, 0, height)
+                .concat(ruleDetails ? ruleRoofs.atticMeshes(ruleDetails, buildingFeature, surface) : []), facadeSource, !!tint);
             if (tint && !meshes.length) surface.dispose();
             meshes.forEach(mesh => { if (tint && !hasFacade) markOwnedMaterial(mesh, surface); targetGroup.add(mesh); });
         };
@@ -7792,7 +7817,8 @@
                     if (cleaned && cleaned.geometry && turf.area(cleaned) > 0) sliceGeom = cleaned;
                 } catch (_) { }
 
-                const sliceMeshes = prepareFacades(polygonFeatureToMeshes(sliceGeom, sliceMaterial, 0, height), slice.parcelFeature, true);
+                const sliceMeshes = prepareFacades(polygonFeatureToMeshes(sliceGeom, sliceMaterial, 0, height)
+                    .concat(ruleDetails ? ruleRoofs.atticMeshes(ruleDetails, sliceGeom, sliceMaterial) : []), slice.parcelFeature, true);
 
                 // Tag the slice with its parcel so parcel-isolation can match the
                 // building footprint sitting on a clicked parcel.

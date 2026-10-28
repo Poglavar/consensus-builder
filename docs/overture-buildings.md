@@ -131,7 +131,7 @@ Files (under `backend/`):
 | `buildings/overture-cities.js` | **The generalization point.** One entry per city: the `region` it reads + height-extrusion fallbacks. Also `effectiveHeight()`. |
 | `buildings/overture-3d.js` | Buildings provider. `near()` → `{ object_id, z_min, z_max, faces[] }`. |
 | `decor/overture-trees.js` | Trees provider. `near()` → `{ trees: [[lng,lat], ...] }`. |
-| `routes/decor.js` | `POST /decor/near` (scenery near a point) + `GET /decor/layers?city=` (which scenery layers a city has). |
+| `routes/decor.js` | `GET /decor/near`, `/decor/water`, `/decor/green` (`?bbox=&buffer_meters=`: scenery near a box) + `GET /decor/layers?bbox=` (which scenery layers an area has). |
 | `scripts/copy-overture-to-prod.sh` | Push **one region's** buildings local → prod (prod has no DuckDB). |
 | `buildings/index.js` | Wires every `overture-cities.js` key to the buildings provider automatically. |
 
