@@ -2193,7 +2193,9 @@ function corridorEditorBindBody(body) {
             presetSelect.value = '';
             if (!preset) return;
             corridorEditorState.selected = 0;
-            corridorEditorApply(() => normalizeCorridorProfile(preset.map(strip => ({ ...strip }))));
+            // The presets are laid out for right-hand traffic; a city that keeps left gets them mirrored.
+            corridorEditorApply(() => normalizeCorridorProfile(corridorProfileForDrivingSide({ strips: preset.map(strip => ({ ...strip })) },
+                window.CityConfigManager.getDrivingSide())));
         });
     }
 }

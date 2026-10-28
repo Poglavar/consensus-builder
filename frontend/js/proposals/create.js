@@ -551,6 +551,9 @@ async function createProposal() {
                     gradeSeparations: safeClone(roadDrawingContext.gradeSeparations) || [],
                     segmentProfiles: safeClone(roadDrawingContext.segmentProfiles) || {},
                     polygon: roadDrawingContext.polygon ? safeClone(roadDrawingContext.polygon) : null,
+                    // The side of the road its traffic keeps to: the city's (the record's
+                    // `driving_side` tag), so its forward lanes lie on that side of the centre line.
+                    drivingSide: roadDrawingContext.drivingSide || window.CityConfigManager.getDrivingSide(),
                     metadata: resolvedMetadata
                 };
 

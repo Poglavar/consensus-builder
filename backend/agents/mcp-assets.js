@@ -11,6 +11,7 @@ import { createPublicSourceFetch, validatePublicSourceUrl } from '../parcels/pub
 import { renderMapPreview, PREVIEW_WIDTH, PREVIEW_HEIGHT } from '../thumbnails/map-preview.js';
 import { renderProposalThumbnailSet } from '../thumbnails/tile-stitch.js';
 import { trustedMetadata } from './mcp-results.js';
+import { cityDrivingSide } from '../scripts/lib/frontend-city-money.mjs';
 const require = createRequire(import.meta.url);
 const imports = require('../../frontend/js/corridor-import.js');
 const modelGeometry = require('../../frontend/js/building-model-geometry.js');
@@ -163,7 +164,9 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
         // Road files, and GeoJSON centrelines, go through the site's own corridor import: the format's
         // parser makes the OSM form and recordsFromImport makes one record per road.
         async function corridorDesigns(parsed, source) {
-            const records = imports.recordsFromImport(parsed, { author: args.author, description: args.description, createdAt, source, fallbackTitle: args.title || 'Imported road' });
+            // OSM and GeoJSON ways do not say which side their traffic keeps to: the city's.
+            const records = imports.recordsFromImport(parsed, { author: args.author, description: args.description, createdAt, source, fallbackTitle: args.title || 'Imported road',
+                drivingSide: ['osm', 'geojson'].includes(source) ? cityDrivingSide(args.city) : undefined });
             if (!records.length) fail('import-empty', 'The file contains no road supported by the app importer.');
             for (const record of records) {
                 const definition = record.roadProposal.definition;

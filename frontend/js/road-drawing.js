@@ -92,6 +92,9 @@ let roadSidewalkWidth = 1;
 // The corridor's cross-section. `roadWidth` is the sum of its strips — the profile is the truth, the
 // width a cache the rest of the pipeline still reads. See js/corridor-profile.js.
 let roadProfile = null;
+// The side of the road the corridor's traffic keeps to: the city's for a new road, the corridor's
+// own when one is reopened. It becomes the record's `driving_side` (js/corridor-osm-form.js).
+let roadDrivingSide = 'right';
 if (typeof window !== 'undefined') {
     window.roadSidewalkWidth = roadSidewalkWidth;
 }
@@ -1679,7 +1682,7 @@ function setRoadDrawingProfile(profile) {
     // cycle track cannot be. Only a ROAD's profile is remembered: a track is seeded from its gauge.
     if (!corridorDrawingIsTrack()) {
         try {
-            PersistentStorage.setItem('lastRoadProfile', JSON.stringify(roadProfile));
+            PersistentStorage.setItem('lastRoadProfile', JSON.stringify({ ...roadProfile, drivingSide: roadDrivingSide }));
         } catch (_) { }
     }
     const polygon = rebuildRoadGeometryFromSegments();
@@ -1708,11 +1711,15 @@ function syncRoadSidewalkWidthFromProfile() {
     if (typeof window !== 'undefined') window.roadSidewalkWidth = roadSidewalkWidth;
 }
 
-function rememberedRoadProfile() {
+// The last cross-section drawn, for the side of the road `drivingSide` keeps to: one remembered
+// from a city that keeps the other side is mirrored (its directed lanes swap forward and backward).
+function rememberedRoadProfile(drivingSide) {
     let stored = null;
     try { stored = JSON.parse(PersistentStorage.getItem('lastRoadProfile') || 'null'); } catch (_) { }
     const profile = normalizeCorridorProfile(stored);
-    return profile && !corridorProfileHasRail(profile) ? profile : null;
+    if (!profile || corridorProfileHasRail(profile)) return null;
+    const storedSide = stored.drivingSide === 'left' ? 'left' : 'right';
+    return storedSide === drivingSide ? profile : corridorProfileForDrivingSide(profile, 'left');
 }
 
 function updateRoadCrossSectionButton() {
@@ -1805,6 +1812,7 @@ function seedRoadDrawing(seed) {
     if (!segments.length) return false;
 
     if (Number.isFinite(Number(seed.width))) roadWidth = Number(seed.width);
+    roadDrivingSide = seed.drivingSide === 'left' ? 'left' : 'right';
     if (Number.isFinite(Number(seed.sidewalkWidth))) {
         roadSidewalkWidth = Number(seed.sidewalkWidth);
         if (typeof window !== 'undefined') window.roadSidewalkWidth = roadSidewalkWidth;
@@ -1816,7 +1824,7 @@ function seedRoadDrawing(seed) {
     // silently changes its footprint: the profile always sums back to the width it was drawn with. That
     // includes an old track — one rail lane as wide as the track was drawn.
     roadProfile = normalizeCorridorProfile(seed.profile)
-        || corridorProfileFromLegacy(roadWidth, roadSidewalkWidth, corridorDrawKind === 'track');
+        || corridorProfileFromLegacy(roadWidth, roadSidewalkWidth, corridorDrawKind === 'track', roadDrivingSide);
     if (roadProfile) roadWidth = corridorProfileWidth(roadProfile);
 
     roadSegments = [];
@@ -2468,7 +2476,8 @@ function toggleRoadDrawTool() {
         // No width modal for a road: drawing starts immediately with the last-used cross-section (the
         // narrowest preset, 7.5 m, on first use). It is edited any time — before or during the drawing —
         // via the Cross-section button in this panel's header.
-        roadProfile = rememberedRoadProfile() || corridorProfileFromLegacy(7.5, 1, false);
+        roadDrivingSide = window.CityConfigManager.getDrivingSide();
+        roadProfile = rememberedRoadProfile(roadDrivingSide) || corridorProfileFromLegacy(7.5, 1, false, roadDrivingSide);
         roadWidth = corridorProfileWidth(roadProfile);
         syncRoadSidewalkWidthFromProfile();
         roadLastValidatedWidth = roadWidth;
@@ -4551,6 +4560,7 @@ async function finishRoadDrawingOnce() {
         centerline: centerlineSegments,
         segmentIds: centerlineSegmentIds,
         profile: roadProfile ? { strips: roadProfile.strips.map(strip => ({ ...strip })) } : null,
+        drivingSide: roadDrivingSide,
         polygon: geoPolygon,
         polygonOrder: 'lnglat', // Explicit: geoPolygon is GeoJSON format [lng, lat]
         latLngPairs,

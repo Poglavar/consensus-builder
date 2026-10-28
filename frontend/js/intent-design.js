@@ -32,6 +32,9 @@
         if (bounds[0] < -180 || bounds[2] > 180 || bounds[1] < -85 || bounds[3] > 85 || d.turf.area(shape) > 1_000_000) fail('Draft area must be within one square kilometre and latitudes ±85°');
         return shape.geometry;
     }
+    // The side of the road the street's traffic keeps to: the city's, which the caller supplies
+    // (mcp-drafts from the city's config), or the record's own on an edit.
+    const drivingSideOf = intent => (intent.drivingSide === 'left' ? 'left' : 'right');
     function roadProfile(intent, d) {
         if (intent.lanes) {
             if (!intent.lanes.length || intent.lanes.length > 32 || intent.lanes.some(lane => !d.profile.CORRIDOR_LANE_TYPES[lane.type]
@@ -46,7 +49,7 @@
             : intent.preset === '1+1 with cycle lanes' ? { highway: 'residential', lanes: '2', sidewalk: 'both', cycleway: 'lane' }
                 : intent.preset === '1+1' || !intent.preset ? { highway: 'residential', lanes: '2', sidewalk: 'both' } : null;
         if (!tags) fail('Road preset must be 2+2, 1+1 or 1+1 with cycle lanes');
-        return d.profile.corridorProfileFromOsmTags(tags);
+        return d.profile.corridorProfileFromOsmTags(tags, undefined, drivingSideOf(intent));
     }
     function buildRoad(intent, d) {
         if (!Array.isArray(intent.points) || intent.points.length < 2 || intent.points.length > 200
@@ -60,7 +63,7 @@
         profile = d.osm.profileAtMillimetre(profile);
         if (d.profile.corridorProfileWidth(profile) > 100) fail('Road cross-section must be at most 100 metres');
         const points = intent.points.map(([lng, lat]) => ({ lat, lng }));
-        const definition = { kind: 'road', points: [points], segments: [points], segmentIds: ['intent-street'], profile, width: d.profile.corridorProfileWidth(profile), tunnels: [] };
+        const definition = { kind: 'road', points: [points], segments: [points], segmentIds: ['intent-street'], profile, width: d.profile.corridorProfileWidth(profile), tunnels: [], drivingSide: drivingSideOf(intent) };
         if (profile.strips.some(lane => lane.type === 'rail')) {
             const speed = intent.speed ?? intent.trackSpeed ?? 120;
             if (![50, 80, 120, 160, 200, 250].includes(speed)) fail('Track speed must be 50, 80, 120, 160, 200 or 250 km/h');
@@ -159,7 +162,7 @@
                 let points = streetPoints(entries, d);
                 let lanes = copy(view.profile.strips);
                 const oldWidth = d.profile.corridorProfileWidth(view.profile);
-                if (change.type === 'set_profile') lanes = roadProfile(change, d).strips;
+                if (change.type === 'set_profile') lanes = roadProfile({ ...change, drivingSide: view.drivingSide }, d).strips;
                 else if (change.type === 'shift') points = move(points, change.metres, change.toward, d);
                 else if (['widen', 'add_lane', 'remove_lane'].includes(change.type)) {
                     // Positive normal is the first strip. Reject a compass side parallel to the street.
@@ -184,7 +187,7 @@
                         lanes.splice(change.index, 1);
                     }
                 } else fail('This change does not apply to a road');
-                const built = buildRoad({ points, lanes, metadata: view.metadata, trackSpeed: view.metadata?.trackSpeed, trackMinRadius: view.metadata?.trackMinRadius, ...(view.metadata?.isTrack ? { kind: 'track' } : {}) }, d);
+                const built = buildRoad({ points, lanes, drivingSide: view.drivingSide, metadata: view.metadata, trackSpeed: view.metadata?.trackSpeed, trackMinRadius: view.metadata?.trackMinRadius, ...(view.metadata?.isTrack ? { kind: 'track' } : {}) }, d);
                 Object.assign(record, built);
             } else if (record.structureProposal && change.type === 'set_kind') {
                 if (!['park', 'square', 'lake'].includes(change.value)) fail('Unknown space kind');

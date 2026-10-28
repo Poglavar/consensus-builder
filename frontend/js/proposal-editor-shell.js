@@ -1693,6 +1693,7 @@
                 centerline: JSON.parse(JSON.stringify(points)),
                 segmentIds: JSON.parse(JSON.stringify(definition.segmentIds || [])),
                 profile: JSON.parse(JSON.stringify(definition.profile || null)),
+                drivingSide: definition.drivingSide,
                 width: definition.width,
                 sidewalkWidth: definition.sidewalkWidth,
                 tunnels: JSON.parse(JSON.stringify(definition.tunnels || [])),

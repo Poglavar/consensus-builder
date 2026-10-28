@@ -128,6 +128,7 @@ function seedPendingGeometryFromProposal(source, goalKey, selectedLiveParcelIds 
             centerline: copyDeepClone(centerline),
             segmentIds: Array.isArray(definition.segmentIds) ? definition.segmentIds.slice() : [],
             profile: copyDeepClone(definition.profile) || null,
+            drivingSide: definition.drivingSide,
             width: definition.width,
             sidewalkWidth: definition.sidewalkWidth,
             polygon: copyDeepClone(definition.polygon),

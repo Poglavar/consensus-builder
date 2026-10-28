@@ -7,6 +7,7 @@ import { parcelSourceIdOf } from './mcp-read-tools.js';
 import { editedDesign, valueAt } from './mcp-edit.js';
 import { buildTypedDesign, validateTrackDesign } from './mcp-constructors.js';
 import { trustedMetadata } from './mcp-results.js';
+import { cityDrivingSide } from '../scripts/lib/frontend-city-money.mjs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const DesignRecord = require('../../frontend/js/design-record.js');
@@ -30,6 +31,8 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
         // A new artifact needs its actual authoring time. A null time would be filled by browser
         // import, changing its CID as soon as the person opened the supposedly exact preview.
         let intent = { ...args, kind, authoredAt: args.authoredAt ?? new Date().toISOString() };
+        // A road keeps its traffic on the city's side, as one drawn in the app does.
+        if (kind === 'road' || kind === 'track') intent.drivingSide = cityDrivingSide(args.city);
         let parcelFeatures = [];
         if (kind === 'station') {
             intent.corridors = await Promise.all((args.corridors || []).map(async input => {
