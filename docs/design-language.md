@@ -111,6 +111,10 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 - **Breakpoint:** phones are `max-width: 767.98px`, desktop `min-width: 768px`. No other edge.
 - **Stacking:** `--cb-z-*` ladder only. No 13001, no 100001, no `!important` z-index.
 - **Icons:** Font Awesome only; no emoji in labels or chrome, no raster icons.
+- **Concept icons:** a design, a plan and an agreement each have one glyph wherever they are named
+  (click stack, lists, search, commands, buttons): `fas cb-icon-design` (compass-drafting),
+  `fas cb-icon-plan` (book-atlas) and `fas cb-icon-agreement` (handshake), defined once in
+  primitives.css. Those three glyphs are not used for anything else.
 - **View buttons:** map, geometric-shape and aerial thumbnails sit behind the 2D/3D labels; the two
   3D buttons have distinct tooltips and accessible names. The selected border preserves the image.
 - **Motion:** every animation sits under `prefers-reduced-motion: no-preference`.

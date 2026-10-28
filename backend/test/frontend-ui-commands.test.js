@@ -103,15 +103,18 @@ describe('command registry shape', () => {
             expect(entry.fallbackLabel, entry.id).toBeTruthy();
             expect(typeof entry.run, entry.id).toBe('function');
             expect(typeof entry.when, entry.id).toBe('function');
-            expect(entry.icon, entry.id).toMatch(/^(fas fa-[a-z0-9-]+|cb-icon-track)$/);
+            expect(entry.icon, entry.id).toMatch(/^(fas (fa|cb-icon)-[a-z0-9-]+|cb-icon-track)$/);
         }
     });
 
     it('uses only icons the vendored Font Awesome 6.4 has', () => {
         const css = fs.readFileSync(path.join(FRONTEND, 'vendor/fontawesome-6.4.0/css/all.min.css'), 'utf8');
+        const primitives = fs.readFileSync(path.join(FRONTEND, 'css/primitives.css'), 'utf8');
         for (const entry of commands) {
             if (entry.icon === 'cb-icon-track') continue;
             const name = entry.icon.split(' ')[1];
+            // Concept icons (design, plan, agreement) are defined once in primitives.css.
+            if (name.startsWith('cb-icon-')) { expect(primitives.includes(`.${name}::before`), `${entry.id}: ${name}`).toBe(true); continue; }
             expect(css.includes(`.${name}:before`) || css.includes(`.${name},`), `${entry.id}: ${name}`).toBe(true);
         }
     });

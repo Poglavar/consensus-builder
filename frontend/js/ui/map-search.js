@@ -258,7 +258,7 @@
             .map(record => ({ cid: record.cid, title: record.content.title, city: record.content.view.city,
                 designCount: record.content.designCids.length }));
         const items = Model.rankPlans([...saved, ...fresh], query).map(plan => item({
-            key: `plan:${plan.cid}`, kind: 'plan', rank: plan.rank, icon: 'fas fa-layer-group', label: plan.title,
+            key: `plan:${plan.cid}`, kind: 'plan', rank: plan.rank, icon: 'fas cb-icon-plan', label: plan.title,
             sublabel: t('mapSearch.planDesignCount', '{{count}} designs', { count: plan.designCount }),
             run: () => { close({ blur: true }); win.location.assign(win.NamedPlans.link(plan.cid)); }
         }));
@@ -289,7 +289,7 @@
                 key: `proposal:${id}`,
                 kind: 'proposal',
                 rank: Number.isFinite(raw.searchRank) ? raw.searchRank : 2,
-                icon: 'fas fa-file-signature',
+                icon: 'fas cb-icon-design',
                 label: raw.title || raw.name || t('mapSearch.untitledProposal', 'Design {{id}}', { id }),
                 sublabel: [raw.author, raw.localOnly ? t('mapSearch.localProposal', 'On this device') : '',
                     otherCity ? t('mapSearch.inCity', 'In {{city}}', { city: shortCityLabel(manager().getCityLabel(raw.cityId)) }) : '']

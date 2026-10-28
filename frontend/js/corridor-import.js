@@ -136,7 +136,7 @@
             parse: text => adapter('__corridorImportOsm', './corridor-import-osm.js').parseOsm(text) },
         { id: 'opendrive', label: 'OpenDRIVE', extensions: ['xodr'], icon: 'fa-road', key: 'importOpenDrive',
             parse: (text, options) => adapter('__corridorImportOpenDrive', './corridor-import-opendrive.js').parseOpenDrive(text, options) },
-        { id: 'landxml', label: 'LandXML', extensions: ['xml'], icon: 'fa-drafting-compass', key: 'importLandXml' },
+        { id: 'landxml', label: 'LandXML', extensions: ['xml'], icon: 'fa-file-import', key: 'importLandXml' },
         { id: 'streetmix', label: 'Streetmix', extensions: ['json'], icon: 'fa-street-view', key: 'importStreetmix' },
         { id: 'geojson', label: 'GeoJSON', extensions: ['geojson', 'json'], icon: 'fa-code', key: 'importGeoJson',
             parse: text => parseGeoJson(text) },

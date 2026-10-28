@@ -1153,6 +1153,14 @@ button.cb-link {
     margin-left: auto;
 }
 
+/* ---- Concept icons ----
+   One glyph per domain concept, used wherever the concept is named: click stack, lists, search,
+   commands and buttons. <i class="fas cb-icon-design" aria-hidden="true"></i>. Change a
+   concept's glyph here only (Font Awesome 6 free solid codepoints). */
+.cb-icon-design::before { content: "\f568"; }    /* compass-drafting */
+.cb-icon-plan::before { content: "\f558"; }      /* book-atlas */
+.cb-icon-agreement::before { content: "\f2b5"; } /* handshake */
+
 /* ---- Shimmer ----
    A soft highlight that sweeps across a featured control once in a while: the one main action a
    newcomer should see (Get started), a badge that says "new". Never on more than one thing per

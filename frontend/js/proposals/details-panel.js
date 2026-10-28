@@ -445,7 +445,7 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const addToPlanButtonHtml = proposalKey
         ? `
         <button type="button" class="btn btn-add-to-plan" onclick="BusyControl.track(this, () => window.PlanDialog.addDesign(${inlineJsArg(proposalKey)}))">
-            <i class="fas fa-list" aria-hidden="true"></i> ${tProposal('planDialog.addToPlan', 'Add to plan')}
+            <i class="fas cb-icon-plan" aria-hidden="true"></i> ${tProposal('planDialog.addToPlan', 'Add to plan')}
         </button>
     ` : '';
 

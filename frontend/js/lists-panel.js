@@ -24,7 +24,7 @@
             if (text !== undefined) el.textContent = text; return el;
         };
         const icon = name => {
-            const el = node('i', `fas fa-${name}`); el.setAttribute('aria-hidden', 'true'); return el;
+            const el = node('i', name.startsWith('cb-icon-') ? `fas ${name}` : `fas fa-${name}`); el.setAttribute('aria-hidden', 'true'); return el;
         };
         function button(label, action, cls = '', iconName = null) {
             const el = node('button', `btn btn-sm ${cls}`, label); el.type = 'button';
@@ -128,7 +128,7 @@
             const cancel = () => button(t('common.cancel'), () => { stopSelecting(); renderActions(); renderRows(); }, '', 'xmark');
             if (state.selecting === state.tab) actions.append(node('span', 'lists-selection-count', t('planDialog.selected', { count: state.selected.size })));
             if (state.tab === 'designs') {
-                if (state.selecting !== 'designs') actions.append(button(t('planDialog.createPlan'), startSelecting, 'btn-primary', 'layer-group'));
+                if (state.selecting !== 'designs') actions.append(button(t('planDialog.createPlan'), startSelecting, 'btn-primary', 'cb-icon-plan'));
                 else {
                     const next = button(t('lists.continue'), async () => {
                         const members = [...state.selected.values()];
@@ -141,7 +141,7 @@
                 if (state.selecting !== 'plans') {
                     actions.append(button(t('planDialog.createPlan'), () => {
                         win.MapShell.closeSheets(); return win.PlanDialog.create();
-                    }, 'btn-primary', 'layer-group'));
+                    }, 'btn-primary', 'cb-icon-plan'));
                     actions.append(button(t('planCompare.title'), startSelecting, '', 'table-columns'));
                 } else {
                     // Measured without applying, so plans that cannot stand on the map together compare.
@@ -169,13 +169,13 @@
                 const item = node('article', `lists-item${state.active === `${kind}:${row.key}` ? ' is-selected' : ''}`);
                 item.dataset.listId = row.key;
                 const goal = row.local?.goal || row.record.goal || row.record.content?.goal;
-                const appearance = kind === 'plans' ? ['layer-group', 'plan']
-                    : kind === 'agreements' ? ['handshake', 'agreement']
+                const appearance = kind === 'plans' ? ['cb-icon-plan', 'plan']
+                    : kind === 'agreements' ? ['cb-icon-agreement', 'agreement']
                     : ({ park: ['tree', 'nature'], lake: ['water', 'water'], square: ['border-all', 'place'],
                         station: ['train', 'place'], single: ['building', 'building'], buildings: ['building', 'building'],
                         row: ['building', 'building'], parcelBased: ['house', 'building'], 'road-track': ['road', 'place'],
                         'parcel-layout': ['draw-polygon', 'plan'], 'urban-rule': ['ruler-combined', 'plan'],
-                        'ownership-transfer': ['handshake', 'agreement'], 'as-is': ['location-dot', 'place'] }[goal] || ['pen-ruler', 'place']);
+                        'ownership-transfer': ['people-arrows', 'agreement'], 'as-is': ['location-dot', 'place'] }[goal] || ['cb-icon-design', 'place']);
                 item.dataset.listTone = appearance[1];
                 const heading = node('div', 'lists-item__heading');
                 if (state.selecting === kind) {
@@ -224,7 +224,7 @@
                     actions.append(button(t('planDialog.createAgreement'), async () => {
                         const plan = await win.PlanWorkspace.resolve(await planOf(row));
                         win.MapShell.closeSheets(); return win.AgreementDialog.open({ plan });
-                    }, '', 'handshake'));
+                    }, '', 'cb-icon-agreement'));
                 }
                 if (row.local) {
                     const trash = button('', () => remove(row, kind), 'btn-danger btn-icon lists-item__remove', 'trash-can');
@@ -281,7 +281,7 @@
             ready = true;
             const tabs = [...doc.querySelectorAll('[data-list-tab]')];
             tabs.forEach((tab, index) => {
-                tab.prepend(icon({ designs: 'pen-ruler', plans: 'layer-group', agreements: 'handshake' }[tab.dataset.listTab]));
+                tab.prepend(icon({ designs: 'cb-icon-design', plans: 'cb-icon-plan', agreements: 'cb-icon-agreement' }[tab.dataset.listTab]));
                 tab.addEventListener('click', () => win.BusyControl.track(tab, () => select(tab.dataset.listTab)));
                 tab.addEventListener('keydown', event => {
                     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;

@@ -37,7 +37,7 @@ test.describe('Map shell sheets @features', () => {
       'Base map', 'Parcels', 'Parcel blocks', 'Buildings', 'Parks and squares', 'Roads', 'Schelling plan'
     ]);
     await expect(sheet.locator('details.accordion-section[open]')).toHaveCount(0);
-    await expect(sheet.locator('[data-section="schelling-plan"] > summary .fa-handshake')).toHaveCount(1);
+    await expect(sheet.locator('[data-section="schelling-plan"] > summary .fa-bullseye')).toHaveCount(1);
     await page.screenshot({ path: testInfo.outputPath('layers-collapsed.png') });
     await sheet.locator('[data-section="base-map"] > summary').click();
     await expect(sheet.locator('#tile-source-select')).toBeVisible();

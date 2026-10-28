@@ -40,7 +40,7 @@ for (const width of [1280, 390]) {
     const planRow = sheet.locator('#designs-plans .lists-item').filter({ hasText: 'Residents plan' });
     await expect(sheet.locator('#designs-plans').getByRole('button', { name: 'Import plan file', exact: true })).toBeVisible();
     await expect(sheet.locator('#designs-plans [data-plan-file-action="import"] .fa-file-import')).toBeVisible();
-    await expect(planRow.locator('.lists-item__icon .fa-layer-group')).toBeVisible();
+    await expect(planRow.locator('.lists-item__icon .cb-icon-plan')).toBeVisible();
     await expect(planRow.getByRole('button', { name: 'Plan stats', exact: true })).toBeVisible();
     const rooster = planRow.getByRole('button', { name: 'Urban rooster', exact: true });
     await expect(rooster.locator('img')).toBeVisible();
@@ -63,7 +63,7 @@ for (const width of [1280, 390]) {
     await expect(sheet.locator('#designs-plans')).toBeHidden();
     const agreementRow = sheet.locator('#designs-agreements .lists-item').filter({ hasText: 'Residents agreement' });
     await expect(sheet.getByRole('button', { name: 'Import plan file', exact: true })).toBeHidden();
-    await expect(agreementRow.locator('.lists-item__icon .fa-handshake')).toBeVisible();
+    await expect(agreementRow.locator('.lists-item__icon .cb-icon-agreement')).toBeVisible();
     await expectInsets();
     await agreementRow.getByRole('button', { name: 'Residents agreement', exact: true }).click();
     await expect(page.locator('#click-stack')).toContainText('Residents agreement');

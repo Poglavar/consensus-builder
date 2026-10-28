@@ -16,7 +16,7 @@
 
     const model = typeof module === 'object' && module.exports ? require('./click-stack/click-stack-model.js') : global.__clickStackModel;
     const ORDER = Object.freeze(['built', 'agreements', 'plans', 'designs', 'permitted', 'parcels']);
-    const ICONS = Object.freeze({ agreements: 'fas fa-file-signature', plans: 'fas fa-layer-group', built: 'fas fa-building', designs: 'fas fa-drafting-compass', permitted: 'fas fa-cube', parcels: 'fas fa-border-all' });
+    const ICONS = Object.freeze({ agreements: 'fas cb-icon-agreement', plans: 'fas cb-icon-plan', built: 'fas fa-building', designs: 'fas cb-icon-design', permitted: 'fas fa-cube', parcels: 'fas fa-border-all' });
 
     // ── pure rules ────────────────────────────────────────────────────────────────────────────
 
