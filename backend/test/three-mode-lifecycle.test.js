@@ -52,7 +52,7 @@ it('Escape ends the scene view and clears the shared design selection', () => {
         },
         clearIsolation: () => calls.push('clear-isolation'),
         keyboardContext: { classifyThreeModeKeydown: () => 'clear-isolation' },
-        pendingIntroAutoRotate: false, controls: null, manualAutoRotateActive: false,
+        pendingIntroAutoRotate: false, controls: null, manualAutoRotateActive: false, noteInput: () => {},
         isActive: true, walkPickActive: false, isolatedParcelId: null, isolatedProposalId: null, viewedParcelId: null,
         document: { body: { classList: { contains: () => false } } }
     });
@@ -217,13 +217,15 @@ it('leaves photo and model synchronously on a photo-to-2D transition without re-
 
 it('does not reschedule an inactive render frame', () => {
     const scheduled = [];
-    const context = loadInContext(threeModeDeclarations(['invalidateThreeView', 'queueThreeFrame', 'renderFrame']), {
+    const context = loadInContext(threeModeDeclarations(['invalidateThreeView', 'queueThreeFrame', 'scheduleThreeFrame', 'renderFrame']), {
         isActive: false,
         loopRunning: true,
         document: { hidden: false },
         frameId: 17,
         renderInvalidated: false,
         sceneVisualRevision: 0,
+        hooksParked: false,
+        lastInputAt: 0,
         requestAnimationFrame(callback) { scheduled.push(callback); return scheduled.length; },
         cancelAnimationFrame() {}
     });

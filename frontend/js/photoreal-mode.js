@@ -120,6 +120,15 @@
     let bootstrapRevision = -1;
     let seatDebugAccumS = 0;
     let lastFrameNow = 0;
+    let lastCameraWorld = null;   // the camera's world matrix at the last frame hook run
+    let settledFrames = 0;        // frames in a row with nothing streaming and the camera still
+    const SETTLED_FRAMES = 3;     // the tiles renderer gets this many quiet updates before the hook parks
+    const CAMERA_STILL_EPS = 1e-4; // scene metres; below this the camera counts as still
+    function matricesNearlyEqual(a, b, eps) {
+        const ea = a.elements, eb = b.elements;
+        for (let i = 0; i < 16; i++) if (Math.abs(ea[i] - eb[i]) > eps) return false;
+        return true;
+    }
     let sinceAnyLoadS = 0;
     let profT = null; // transition profile timestamps (activate -> lib -> setup -> stream -> seat)
     let statusRemovalTimer = null;
@@ -2285,7 +2294,7 @@
 
     // ---- per-frame hook (registered with three-mode's render loop) ----
     function onFrame(now) {
-        if (!tiles || !internals) return;
+        if (!tiles || !internals) return false;
         parcelOverlay?.update();
         const dtS = lastFrameNow ? Math.min(0.25, (now - lastFrameNow) / 1000) : 0.016;
         lastFrameNow = now;
@@ -2305,6 +2314,15 @@
         }
         tiles.setResolutionFromRenderer(camera, renderer);
         camera.updateMatrixWorld();
+        // Nothing streaming and the camera still: after a few quiet updates the hook parks (returns
+        // false) and three-mode's loop stops. A camera change or any invalidation brings the next
+        // frame, on which the hook runs again.
+        // OrbitControls recomputes the position from its spherical state on every update, so a still
+        // camera's matrix differs by float noise from frame to frame: compare with a tolerance.
+        const cameraMoved = !lastCameraWorld || !matricesNearlyEqual(lastCameraWorld, camera.matrixWorld, CAMERA_STILL_EPS);
+        if (cameraMoved) lastCameraWorld = (lastCameraWorld || camera.matrixWorld.clone()).copy(camera.matrixWorld);
+        settledFrames = (cameraMoved || tilesStillLoading() || seatDebugActive()) ? 0 : settledFrames + 1;
+        if (settledFrames > SETTLED_FRAMES) return false;
         tiles.update();
         const prog = Number(tiles.loadProgress);
         updateLoader(Number.isFinite(prog) ? prog : 1);
@@ -2477,6 +2495,8 @@
                     attributionDirty = true;
                 }
                 lastFrameNow = 0;
+                lastCameraWorld = null;
+                settledFrames = 0;
                 sinceAnyLoadS = 0;
                 // A reused session that never seated gets to report again on this entry.
                 reportedProbeFamine = false;
@@ -2569,6 +2589,8 @@
             bootstrapAttempts = 0;
             bootstrapRevision = -1;
             lastFrameNow = 0;
+            lastCameraWorld = null;
+            settledFrames = 0;
             sinceAnyLoadS = 0;
             if (new URLSearchParams(window.location.search || '').get('fps')) {
                 fpsEl = document.createElement('div');

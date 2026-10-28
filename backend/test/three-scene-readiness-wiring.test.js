@@ -60,9 +60,9 @@ function harness({ request = vi.fn(async () => ({ buildings: [] })), build = vi.
         updateXrayControls: vi.fn(), updateBuildingsLoader: vi.fn(), updateBuildingsSourceNote: vi.fn(),
         refreshLifeSurface: vi.fn(), reportNearbyBuildingsUnavailable: vi.fn(),
         dedupeCoincidentBuildings: buildings => buildings,
-        floorPlanRenderer: { renderCutaway: vi.fn() }, floorPlanGroup: null,
+        floorPlanRenderer: { renderCutaway: vi.fn() }, floorPlanGroup: null, updateLampGlow: vi.fn(),
         document: { hidden: false }, loopRunning: true, renderInvalidated: false,
-        frameTimer: null, frameId: null,
+        frameTimer: null, frameId: null, hooksParked: false, lastInputAt: 0,
         requestAnimationFrame: vi.fn(() => 1), clearTimeout: vi.fn(), setTimeout: vi.fn(() => 1),
         frameHooks: [],
     };
@@ -70,7 +70,7 @@ function harness({ request = vi.fn(async () => ({ buildings: [] })), build = vi.
     context.buildingGroup.add(context.existingBuildingsGroup, context.proposedBuildingsGroup);
     const names = [
         'ensureNearbyProposalBuildings', 'rebuild3DBuildingsOnly', 'build3DBuildingFamilies', 'renderScene',
-        'getSceneReadiness', 'invalidateThreeView', 'queueThreeFrame'
+        'getSceneReadiness', 'invalidateThreeView', 'queueThreeFrame', 'scheduleThreeFrame'
     ];
     vm.createContext(context);
     vm.runInContext(`function renderFrame() {}\n${names.map(name => declarations.get(name)).join('\n')}\n${names.map(name => `this.${name}=${name};`).join('\n')}`, context);

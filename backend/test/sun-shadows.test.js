@@ -240,15 +240,25 @@ describe('the sun in the scene', () => {
         handle.beforeRender({ fullFrame: false }, new Date('2026-06-21T10:00:00Z'));
         const before = lightAt();
         handle.onFrame(1000);
-        handle.onFrame(1000 + 50);   // 50 ms of a 60 s day = 1.2 minutes
+        const wait = handle.onFrame(1000 + 50);   // 50 ms of a 60 s day = 1.2 minutes
         expect(threeSun.state.minutes).toBeCloseTo(600 + 50 * 1440 / threeSun.DAY_CYCLE_MS, 9);
+        // The hook asks for its next frame just past the next 3-minute step: 1.8 minutes = 75 ms, plus a
+        // one-frame margin.
+        expect(wait).toBe(95);
         renderer.shadowMap.needsUpdate = false;
         handle.beforeRender({ fullFrame: false }, new Date('2026-06-21T10:00:00Z'));
-        expect(lightAt().x).not.toBe(before.x);
-        // A frame that only advanced the day still re-renders the shadow map: the sun moved.
-        expect(renderer.shadowMap.needsUpdate).toBe(true);
-        handle.onFrame(1000 + 50 + 5000);  // a stalled tab moves the sun by at most one frame cap
+        // The clock runs every frame, but the light (and the shadow pass) moves in 3-minute steps:
+        // 601.2 is still in the step that began at 600.
+        expect(lightAt().x).toBe(before.x);
+        expect(renderer.shadowMap.needsUpdate).toBe(false);
+        handle.onFrame(1000 + 150);  // 603.6 minutes: into the next step
         expect(threeSun.state.minutes).toBeCloseTo(600 + 150 * 1440 / threeSun.DAY_CYCLE_MS, 9);
+        handle.beforeRender({ fullFrame: false }, new Date('2026-06-21T10:00:00Z'));
+        expect(lightAt().x).not.toBe(before.x);
+        // A frame that only advanced the day across a step re-renders the shadow map: the sun moved.
+        expect(renderer.shadowMap.needsUpdate).toBe(true);
+        handle.onFrame(1000 + 150 + 5000);  // a stalled tab moves the sun by at most one frame cap (500 ms)
+        expect(threeSun.state.minutes).toBeCloseTo(600 + 650 * 1440 / threeSun.DAY_CYCLE_MS, 9);
         threeSun.detach();
         expect(hooks.size).toBe(0);
     });

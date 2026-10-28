@@ -1,6 +1,7 @@
 // Sun and shadows in the 3D model view: the scene's directional light becomes the sun over the
 // scene's own location at a local date and time, and casts shadows. It is on by default and plays
-// the day — a full 24 h every DAY_CYCLE_MS, round and round — so the shadows move. The sun button
+// the day — a full 24 h every DAY_CYCLE_MS, round and round — so the shadows move; the light steps
+// every PLAY_STEP_MINUTES, and a view with nothing else moving draws only those frames. The sun button
 // (index.html #sun-button, slot 1 of the mode strip in model view) shows a sun whose colour follows
 // its height, or a moon at night, and opens #sun-sheet to switch it off, pause, or pick the time and
 // date. Times are the place's wall clock (its IANA zone from tz-lookup), not the viewer's.
@@ -17,7 +18,10 @@
     const FLAG_SWEEP_MS = 1000;          // new meshes pick up shadow flags within a second
     const MIN_CASTER_HEIGHT_M = 0.3;     // flat ground receives shadows but does not cast them
     const DAY_CYCLE_MS = 60000;          // one full day of sun per minute while playing
-    const MAX_FRAME_DT_MS = 100;         // a stalled tab never jumps the sun forward by hours
+    const MAX_FRAME_DT_MS = 500;         // a stalled tab never jumps the sun forward by hours
+    const PLAY_STEP_MINUTES = 3;         // while playing, the light and shadows move in steps this long (~7 Hz)
+    const STEP_MARGIN_MS = 20;           // asked on top of a step's wait, so the frame lands past the boundary
+    const NOW_REFRESH_MS = 60000;        // a sun standing at "now" follows the real clock this often
 
     // Browser globals, or the same files required in node tests.
     const core = () => (root && root.__sunShadows) || require('./sun-shadows.js');
@@ -245,19 +249,46 @@
 
     // ---- Playing the day ----
     // A frame hook keeps three-mode's loop running while the day plays, and only then: a paused or
-    // switched-off sun leaves the scene to render on demand.
+    // switched-off sun leaves the scene to render on demand. The clock advances every frame, but the
+    // light (and with it the shadow pass) moves only when it crosses a PLAY_STEP_MINUTES boundary, and
+    // the hook answers with the milliseconds until that next step: when nothing else animates, the
+    // loop draws only those frames (about 8 a second) instead of running at its hook rate.
     let lastTick = null;
     function onFrame(nowMs) {
         const a = attached;
         if (!a || !state.playing || !state.enabled || a.isPhotoActive() || state.minutes === null) {
             lastTick = null;
-            return;
+            return false;
         }
         const elapsed = lastTick === null ? 0 : Math.min(MAX_FRAME_DT_MS, Math.max(0, nowMs - lastTick));
         lastTick = nowMs;
-        if (elapsed <= 0) return;
-        state.minutes = core().advanceMinutes(state.minutes, elapsed, DAY_CYCLE_MS);
-        a.sunDirty = true;
+        const minutesPerMs = 1440 / DAY_CYCLE_MS;
+        if (elapsed > 0) {
+            const before = Math.floor(state.minutes / PLAY_STEP_MINUTES);
+            state.minutes = core().advanceMinutes(state.minutes, elapsed, DAY_CYCLE_MS);
+            if (Math.floor(state.minutes / PLAY_STEP_MINUTES) !== before) a.sunDirty = true;
+        }
+        const toNextStep = PLAY_STEP_MINUTES - (state.minutes % PLAY_STEP_MINUTES);
+        // One display frame past the boundary: the frame timestamp the hook is given can be a whole
+        // vsync earlier than the timer that scheduled it, and a clock that lands just short of the
+        // step costs a second frame.
+        return Math.max(1, Math.ceil(toNextStep / minutesPerMs) + STEP_MARGIN_MS);
+    }
+    // A sun standing at "now" follows the real clock: one re-read and one frame a minute.
+    let nowTimer = null;
+    function syncNowRefresh() {
+        const wanted = !!attached && state.enabled && !state.playing && state.minutes === null;
+        if (wanted && !nowTimer) {
+            nowTimer = setInterval(() => {
+                const a = attached;
+                if (!a || !state.enabled || state.playing || state.minutes !== null) return;
+                a.sunDirty = true;
+                a.invalidate();
+            }, NOW_REFRESH_MS);
+        } else if (!wanted && nowTimer) {
+            clearInterval(nowTimer);
+            nowTimer = null;
+        }
     }
 
     function syncPlayback() {
@@ -266,6 +297,7 @@
         const run = state.playing && state.enabled;
         if (run && !a.hooked) { a.addFrameHook(onFrame); a.hooked = true; }
         else if (!run && a.hooked) { a.removeFrameHook(onFrame); a.hooked = false; lastTick = null; }
+        syncNowRefresh();
     }
 
     // ---- The scene ----
@@ -315,6 +347,7 @@
         const { light, defaults, scene } = attached;
         if (attached.hooked) attached.removeFrameHook(onFrame);
         lastTick = null;
+        if (nowTimer) { clearInterval(nowTimer); nowTimer = null; }
         restoreDefaults(attached);
         if (!defaults.targetParent && light.target.parent === scene) scene.remove(light.target);
         attached = null;
@@ -330,9 +363,10 @@
         a.showingSun = false;
     }
 
-    // Called by three-mode before each render. `fullFrame` is false on frames that only animate the
-    // life layer: the shadow map is re-rendered on every other frame, and not on those.
-    function beforeRender({ fullFrame }, now = new Date()) {
+    // Called by three-mode before each render. The shadow map is re-rendered when the sun moves, when
+    // its frame follows the camera, and on `sceneChanged` frames (something in the scene changed);
+    // frames that only orbit the camera or animate a hook keep it. `fullFrame` is kept for callers.
+    function beforeRender({ fullFrame, sceneChanged = false }, now = new Date()) {
         const a = attached;
         if (!a) return;
         const wanted = state.enabled && !a.isPhotoActive();
@@ -398,10 +432,18 @@
             a.lastSweep = now.getTime();
             applyShadowFlags(a.scene, true, new Set((a.excludedRoots() || []).filter(Boolean)));
         }
-        if (fullFrame) a.renderer.shadowMap.needsUpdate = true;
+        if (sceneChanged) a.renderer.shadowMap.needsUpdate = true;
+    }
+
+    // The sun's altitude in degrees as the scene last resolved it, or null while the sun is off, photo
+    // mode is showing or nothing is attached. Read-only: lamps glow from it at night.
+    function currentAltitudeDeg() {
+        const a = attached;
+        if (!a || !state.enabled || a.isPhotoActive() || !a.sun) return null;
+        return a.sun.altitude * 180 / Math.PI;
     }
 
     bindSheet();
 
-    return { attach, detach, state, applyShadowFlags, resolveSun, placeOf, DAY_CYCLE_MS };
+    return { attach, detach, state, applyShadowFlags, resolveSun, placeOf, currentAltitudeDeg, DAY_CYCLE_MS };
 });

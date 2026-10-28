@@ -150,8 +150,13 @@
     let buildingsWorkGeneration = 0;
     let buildingDisplaySnapshot = null;
     let renderedBuildingDisplaySnapshot = null;
-    let sceneVisualRevision = 0;
+    let sceneVisualRevision = 0;   // bumped when something in the scene changes (invalidateThreeView)
     let renderedSceneVisualRevision = -1;
+    // When the person last touched the view (pointer, wheel, keyboard, camera). Frame hooks that only
+    // decorate (people and vehicles) park themselves after LIFE_IDLE_MS without input.
+    let lastInputAt = 0;
+    let hooksParked = false;       // the last frame found every hook idle: the next input wakes them
+    const LIFE_IDLE_MS = 20000;
     let nearbyDataScope = null;
     const WARM_SCENE_TTL_MS = 60000;
     const WARM_SCENE_MAX_BYTES = 128 * 1024 * 1024;
@@ -495,6 +500,7 @@
     // without dimming the city. Isolation (isolatedParcelId) is the deliberate second click.
     let viewedParcelId = null;
     let parcelPointerDownHandler = null;
+    let inputHandler = null;      // pointermove/wheel on the canvas: noteInput
     let proposalSelectionUnsubscribe = null;
     // Pointer-down position, used to tell a short click apart from an orbit/tilt drag.
     let clickDownXY = null;
@@ -1326,14 +1332,20 @@
     }
 
     let stackFocusGroup = null;
+    let stackFocusPulseStart = 0;
+    const STACK_PULSE_MS = 1400;
+    const STACK_PULSES = 3;   // the outline pulses this many times, then rests bright
     function pulseStackFocus(now) {
-        const strength = (1 + Math.cos(now * Math.PI * 2 / 1400)) / 2;
+        if (!stackFocusPulseStart) stackFocusPulseStart = now;
+        const done = now - stackFocusPulseStart >= STACK_PULSE_MS * STACK_PULSES;
+        const strength = done ? 1 : (1 + Math.cos((now - stackFocusPulseStart) * Math.PI * 2 / STACK_PULSE_MS)) / 2;
         stackFocusGroup?.traverse(object => {
             if (object.material?.isLineMaterial && object.userData.selectionStroke === 'yellow') {
                 object.material.opacity = 0.75 + 0.25 * strength;
                 object.material.linewidth = 3 + strength;
             }
         });
+        return !done;
     }
     function clearStackFocus() {
         const index = frameHooks.indexOf(pulseStackFocus);
@@ -1476,6 +1488,7 @@
             && addStackGroundHatching(stackFocusGroup, groundFeatures, instance);
         stackFocusGroup.userData.pattern = hatched ? 'hatch' : 'outline';
         scene.add(stackFocusGroup);
+        stackFocusPulseStart = 0;
         if (!window.__reducedMotion) frameHooks.push(pulseStackFocus);
         invalidateThreeView();
     }
@@ -2817,10 +2830,10 @@
             const leg = new THREE.Mesh(legGeo, wood);
             markOwnedGeometry(leg, legGeo);
             group.add(leg);
-        });
         group.position.set(x, y, 0.06);
         group.rotation.z = ((90 - (Number(bearingDeg) || 0)) * Math.PI) / 180;
         target.add(group);
+        });
     }
 
     // A restaurant/terrace table (the 2D "plate" stall): round top on a centre leg.
@@ -6139,7 +6152,13 @@
 
     function setLifeHook(on) {
         if (on && !lifeFrameHook && lifeLayer) {
-            lifeFrameHook = (now) => { lifeLayer.onFrame(now); };
+            // People and vehicles are decoration: they park after LIFE_IDLE_MS without input (the hook
+            // reports nothing to animate, so the loop stops) and walk on at the next touch of the view.
+            lifeFrameHook = (now) => {
+                if (now - lastInputAt > LIFE_IDLE_MS) return false;
+                lifeLayer.onFrame(now);
+                return true;
+            };
             window.registerThreeModeFrameHook(lifeFrameHook);
         } else if (!on && lifeFrameHook) {
             window.unregisterThreeModeFrameHook(lifeFrameHook);
@@ -7609,7 +7628,10 @@
 
     function renderScene(fullFrame = true) {
         // Entry tilt, restored cameras and captures need the same lighting as the steady loop.
-        sunLayer?.beforeRender({ fullFrame });
+        // `sceneChanged`: something in the scene changed since the last render (a rebuild, a proposal, a
+        // selection), which is when the shadow map is re-rendered; a frame that only orbits the camera
+        // or animates a hook keeps it.
+        sunLayer?.beforeRender({ fullFrame, sceneChanged: renderedSceneVisualRevision !== sceneVisualRevision });
         floorPlanRenderer.renderCutaway(renderer, scene, camera, floorPlanGroup,
             xrayEnabled && floorCutawayLevel !== null && floorCutawayLevel < 0);
         renderedBuildingDisplaySnapshot = buildingDisplaySnapshot;
@@ -8152,13 +8174,16 @@
         window.addEventListener('resize', handleResize, { passive: true });
         resizeObserver = new ResizeObserver(handleResize);
         resizeObserver.observe(threeContainer);
-        controls?.addEventListener('change', invalidateThreeView);
+        controls?.addEventListener('change', onCameraChange);
         controls?.addEventListener('change', () => window.dispatchEvent(new Event('threecamerachange')));
-        controls?.addEventListener('start', invalidateThreeView);
+        controls?.addEventListener('start', onCameraChange);
+        inputHandler = noteInput;
+        renderer.domElement.addEventListener('pointermove', inputHandler, { passive: true });
+        renderer.domElement.addEventListener('wheel', inputHandler, { passive: true });
 
         // Parcel selection emphasizes it in place; click empty/again or Escape to reset.
         // pointerdown records the press position so a click that ends a drag is ignored.
-        parcelPointerDownHandler = (e) => { if (e.button === 0) clickDownXY = { x: e.clientX, y: e.clientY }; };
+        parcelPointerDownHandler = (e) => { noteInput(); if (e.button === 0) clickDownXY = { x: e.clientX, y: e.clientY }; };
         renderer.domElement.addEventListener('pointerdown', parcelPointerDownHandler);
         parcelClickHandler = handleParcelClick;
         renderer.domElement.addEventListener('click', parcelClickHandler);
@@ -8348,8 +8373,15 @@
         sceneVisualRevision++;
         queueThreeFrame(delayMs);
     }
+    // A frame that must redraw the view: the camera moved or something asked for a redraw.
     function queueThreeFrame(delayMs) {
         renderInvalidated = true;
+        scheduleThreeFrame(delayMs);
+    }
+    // The loop's own next step while hooks animate: nothing asked for a redraw, so the frame keeps
+    // the shadow map. Keeping this apart from queueThreeFrame is what makes hooks-only frames cheap;
+    // when the loop rescheduled itself through queueThreeFrame, every frame counted as invalidated.
+    function scheduleThreeFrame(delayMs) {
         if (!isActive || !loopRunning || document.hidden || frameId) return;
         if (frameTimer) {
             if (delayMs > 0) return; // a paced frame is already on its way
@@ -8364,6 +8396,24 @@
         } else {
             frameId = requestAnimationFrame(renderFrame);
         }
+    }
+    function onCameraChange() {
+        noteInput();
+        queueThreeFrame();
+    }
+    // Why the loop is running (or not): the last frame's live hooks, camera motion and invalidation.
+    // Read it from the console (window.__threeFrameDebug()) when an idle view keeps drawing frames.
+    const lastFrameDebug = { live: new Set(), moving: false, wasInvalidated: false, at: 0 };
+    window.__threeFrameDebug = () => ({
+        hooks: frameHooks.map(hook => hook.name || 'anonymous'), live: [...lastFrameDebug.live],
+        moving: lastFrameDebug.moving, wasInvalidated: lastFrameDebug.wasInvalidated, hooksParked,
+        idleMs: Math.round(performance.now() - lastInputAt), autoRotate: !!controls?.autoRotate || manualAutoRotateActive,
+        frameAgeMs: Math.round(performance.now() - lastFrameDebug.at), loopRunning, frameId: frameId !== null, frameTimer: !!frameTimer
+    });
+    // Input keeps the decorative hooks awake; once they have parked, the first input restarts the loop.
+    function noteInput() {
+        lastInputAt = performance.now();
+        if (hooksParked) scheduleThreeFrame(0);
     }
     // `?fps=1`: a model-mode frame-time readout (photo mode has its own). It keeps the WORST frame of
     // each one-second window rather than the mean, because an isolated stall vanishes in an average.
@@ -8401,6 +8451,7 @@
         if (!isActive || !loopRunning || document.hidden) return;
         const wasInvalidated = renderInvalidated;
         renderInvalidated = false;
+        lastFrameDebug.live.clear();
         const perfT0 = perfReadout ? performance.now() : 0;
         stepManualAutoRotate(now);
         const moving = controls ? controls.update() : false;
@@ -8413,22 +8464,37 @@
                 lastPlaneDist = dist;
             }
         }
+        // A hook returns false when it has nothing to animate right now (people parked after idle,
+        // photo tiles settled); only live hooks keep the loop running. A live hook may answer with the
+        // milliseconds until it next needs a frame (the sun between two steps); anything else means
+        // every hook frame (HOOK_IDLE_FPS).
+        let liveHooks = 0;
+        let hookDelayMs = Infinity;
         for (const hook of frameHooks) {
-            try { hook(now); } catch (error) { console.error('[3D] frame hook failed', error); }
+            try {
+                const answer = hook(now);
+                if (answer === false) continue;
+                liveHooks++;
+                lastFrameDebug.live.add(hook.name || 'anonymous');
+                hookDelayMs = Math.min(hookDelayMs, typeof answer === 'number' && answer >= 0 ? answer : 0);
+            } catch (error) { console.error('[3D] frame hook failed', error); }
         }
+        hooksParked = frameHooks.length > 0 && liveHooks === 0;
+        lastFrameDebug.moving = moving; lastFrameDebug.wasInvalidated = wasInvalidated; lastFrameDebug.at = now;
         const perfT1 = perfReadout ? performance.now() : 0;
         // Frames that only advance the life layer reuse the last shadow map.
         renderScene(wasInvalidated || renderInvalidated || moving || !!controls?.autoRotate
-            || manualAutoRotateActive || frameHooks.length === 0);
+            || manualAutoRotateActive || liveHooks === 0);
         if (perfReadout) recordPerfFrame(now, perfT0, perfT1, performance.now());
-        const hooksOnly = !renderInvalidated && !moving && !controls?.autoRotate && !manualAutoRotateActive && frameHooks.length > 0;
-        if (renderInvalidated || moving || controls?.autoRotate || manualAutoRotateActive || frameHooks.length) {
-            queueThreeFrame(hooksOnly ? Math.max(0, Math.round(1000 / HOOK_IDLE_FPS) - 4) : 0);
+        const hooksOnly = !renderInvalidated && !moving && !controls?.autoRotate && !manualAutoRotateActive && liveHooks > 0;
+        if (renderInvalidated || moving || controls?.autoRotate || manualAutoRotateActive || liveHooks) {
+            scheduleThreeFrame(hooksOnly ? Math.max(Math.round(1000 / HOOK_IDLE_FPS) - 4, hookDelayMs) : 0);
         }
     }
     function startLoop() {
         cancelLoop();
         loopRunning = true;
+        lastInputAt = performance.now();
         sceneReady = true;
         resolveSceneReady?.(true);
         resolveSceneReady = null;
@@ -8526,7 +8592,12 @@
         if (renderer && renderer.domElement) {
             if (parcelClickHandler) { try { renderer.domElement.removeEventListener('click', parcelClickHandler); } catch (_) { } }
             if (parcelPointerDownHandler) { try { renderer.domElement.removeEventListener('pointerdown', parcelPointerDownHandler); } catch (_) { } }
+            if (inputHandler) {
+                try { renderer.domElement.removeEventListener('pointermove', inputHandler); } catch (_) { }
+                try { renderer.domElement.removeEventListener('wheel', inputHandler); } catch (_) { }
+            }
         }
+        inputHandler = null;
         parcelClickHandler = null;
         parcelPointerDownHandler = null;
         if (proposalSelectionUnsubscribe) {
@@ -9128,6 +9199,7 @@
     // application-level 2D listeners.
     function handleThreeModeKeyboardContext(evt) {
         // This window capture handler can consume keys before document listeners see them.
+        if (isActive) noteInput();
         if (pendingIntroAutoRotate || controls?.autoRotate || manualAutoRotateActive) stopIntroAutoRotate();
         const action = keyboardContext.classifyThreeModeKeydown({
             active: isActive,
