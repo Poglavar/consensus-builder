@@ -248,7 +248,7 @@ The model view's x-ray visibility, generated-layout visibility for proposed and 
 
 ### Camera flight
 
-An immutable `camera-flight/v2` presentation containing a title, published design CIDs, initial model view, metric frame, cruise speed, route, looks between views, optional interior snapshots and view cues. Its canonical content has its own CID and `/flights/<cid>` link. Editing and publishing creates a new version; a local draft is private browser state. Opening a flight restores its exact design membership and waits for an explicit Play action. The pre-release `camera-flight/v1` shape (absolute-time look keys, per-point travel times) was replaced before any flight was published; no reader for it exists.
+An immutable `camera-flight/v2` presentation containing a title, published design CIDs, initial model view, metric frame, cruise speed, route, looks between views, optional interior snapshots and view cues. Its canonical content has its own CID and `/flights/<cid>` link. Editing and publishing creates a new version; a local draft is private browser state. Opening a flight restores its exact design membership and waits for an explicit Play action. Flights are edited in the model view; the player can also play one over the photo view, where obstacles that exist only in the photo mesh are ignored. Playback carries a fixed score and voice lines that are not part of the record. The pre-release `camera-flight/v1` shape (absolute-time look keys, per-point travel times) was replaced before any flight was published; no reader for it exists.
 
 ### Flight metric frame
 

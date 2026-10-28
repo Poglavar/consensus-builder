@@ -81,8 +81,10 @@
                 if (!loaded || loaded.blocked || loaded.failed?.length || loaded.omitted?.length) {
                     throw new Error('The flight could not be opened because its selected designs were not fully restored.');
                 }
-                const ready = await win.requestMapMode('model', { restoreView: record.content.view.camera, fromUrl: true });
-                if (!ready) throw new Error('The model view could not be opened for this flight.');
+                // Flights are authored in the model view; a link carrying `photo` plays one over the photo view.
+                const mode = new URL(arrivalHref).searchParams.has('photo') ? 'photo' : 'model';
+                const ready = await win.requestMapMode(mode, { restoreView: record.content.view.camera, fromUrl: true });
+                if (!ready) throw new Error(`The ${mode} view could not be opened for this flight.`);
                 await win.openCameraFlightEditor({ record: record.content, readOnly: true, cid: record.cid });
                 current = record;
                 return record;

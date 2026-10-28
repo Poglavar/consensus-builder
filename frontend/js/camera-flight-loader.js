@@ -26,12 +26,13 @@
         return css;
     }
     const sequence = paths => paths.reduce((chain, path) => chain.then(() => script(path)), Promise.resolve());
-    win.ensureCameraFlight = () => Promise.all([styles(), sequence(['js/camera-flight.js', 'js/camera-flight-camera.js', 'js/camera-flight-session.js', 'js/camera-flight-player.js'])]);
+    win.ensureCameraFlight = () => Promise.all([styles(), sequence(['js/camera-flight.js', 'js/camera-flight-camera.js', 'js/camera-flight-session.js', 'js/camera-flight-preload.js', 'js/camera-flight-audio.js', 'js/camera-flight-presenter.js', 'js/camera-flight-player.js'])]);
     win.ensureCameraFlightApartment = () => sequence(['js/camera-flight-interiors.js', 'js/camera-flight-apartment.js']);
     win.ensureInteriorViewer = () => script('vendor/interior-viewer/interior-viewer.js');
     win.openCameraFlightEditor = async function (options = {}) {
         const version = ++openVersion;
-        if (!win.isThreeModeActive?.()) {
+        // Flights are edited in the model view; only the read-only player also plays over the photo view.
+        if (!win.isThreeModeActive?.() || (!options.readOnly && win.PhotorealMode?.isActive?.())) {
             if (!await win.requestMapMode('model', { restoreView: options.record?.view.camera })) throw new Error('The model view could not be opened.');
         }
         await win.ensureCameraFlight();

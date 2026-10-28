@@ -7474,6 +7474,13 @@
         "noContract": "No operation contract has been published for this abstraction."
     },
     "cameraFlight": {
+        "sound": "Sound",
+        "photoView": "Play in photo view",
+        "modelView": "Play in model view",
+        "viewUnavailable": "This view could not be opened.",
+        "loadingCity": "Loading the city… {{done}}/{{total}}",
+        "loadingCityHint": "Loading the city before the flight starts…",
+        "photoLink": "Photo view link",
         "autoFlight": "Automatic flight",
         "autoSubject": "Fly around",
         "wholePlan": "Whole plan ({{count}} designs)",

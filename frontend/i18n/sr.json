@@ -7526,6 +7526,13 @@
         "noContract": "Za ovu apstrakciju nije objavljen ugovor operacija."
     },
     "cameraFlight": {
+        "sound": "Zvuk",
+        "photoView": "Pusti u foto prikazu",
+        "modelView": "Pusti u prikazu modela",
+        "viewUnavailable": "Ovaj prikaz nije moguće otvoriti.",
+        "loadingCity": "Učitavam grad… {{done}}/{{total}}",
+        "loadingCityHint": "Učitavam grad pre početka leta…",
+        "photoLink": "Link za foto prikaz",
         "autoFlight": "Automatski let",
         "autoSubject": "Leti oko",
         "wholePlan": "Ceo plan ({{count}} projekata)",

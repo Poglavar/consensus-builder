@@ -7502,6 +7502,13 @@
         "noContract": "No se ha publicado un contrato de operaciones para esta abstracción."
     },
     "cameraFlight": {
+        "sound": "Sonido",
+        "photoView": "Reproducir en vista fotográfica",
+        "modelView": "Reproducir en vista de modelo",
+        "viewUnavailable": "No se pudo abrir esta vista.",
+        "loadingCity": "Cargando la ciudad… {{done}}/{{total}}",
+        "loadingCityHint": "Cargando la ciudad antes de que empiece el vuelo…",
+        "photoLink": "Enlace a la vista fotográfica",
         "autoFlight": "Vuelo automático",
         "autoSubject": "Volar alrededor de",
         "wholePlan": "Plan completo ({{count}} diseños)",

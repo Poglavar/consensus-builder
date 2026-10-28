@@ -56,6 +56,24 @@ view changes as one undoable edit; **Try another** reruns with a random seed.
 The generator is DOM-free (`camera-flight-auto.js`); only the height render and building boxes
 read the live scene.
 
+**Sound.** Every flight plays one looping CC0 score ("Scaling Up" by Ruskerdax), an intro voice
+line when it starts from the beginning and an outro line at the end, the score ducking under the
+voice and fading out after the outro. Lines exist for en, hr, es and sr; other languages use
+English. **Sound** in the player and editor toggles it, remembered on the device. Sources and
+licences: `frontend/audio/camera-flight/README.md`. Sound starts from the Play click, so browsers
+allow it; a refused start is logged and never stops the flight. Logic: `camera-flight-audio.js`
+(elements injected) and `camera-flight-presenter.js` (shared by player and editor preview).
+
+**Photo view.** Flights are always edited in the model view (opening the editor from photo view
+switches to it). The player can also play a flight over the photo view: **Play in photo view** in
+the player, or a link carrying `photo` (the editor shows a **Photo view link** after sharing).
+Heights are model-ground metres and the photo mesh is seated at about the same zero near the
+anchor; obstacles that exist only in the photo mesh are ignored. Before the first Play in photo
+view the camera visits the flight every 2 s behind a "Loading the city…" cover, waiting at each
+moment until the tile load progress stays complete (8 s per moment at most, 60 s in all), then
+returns to where Play was pressed; the score already plays during loading
+(`camera-flight-preload.js`). Any edit loads tiles again before the next play.
+
 Find interiors uses visible registered floor geometry. Select an apartment and Enter to place the
 camera inside it; Add view then also saves an x-ray cue at that view, so a flight can start or finish
 indoors. Explore apartment loads walking on demand. Back to flight restores the captured flight
@@ -185,5 +203,27 @@ Automatic flights (2026-10-28):
   61 views, 53 s at 22 m/s; height grid 244×327 cells in 30 ms; orbit views lifted to 72 and 88 m
   where a 54 m neighbour hid the 18 m first building; path at 15 m; final orbit centred on the last
   building. Try another showed the busy spinner. Frames were checked at seeked times, not in motion.
+
+Sound and photo-view playback (2026-10-28):
+
+- Targeted headless unit files `camera-flight-audio.test.js` (6), `camera-flight-preload.test.js`
+  (6) and `camera-flight-presenter.test.js` (3): all passed, and all 11 camera-flight unit files
+  passed together (187 tests before the presenter file). A mutation check went red: without the
+  presenter's start guard, Play's own seek paused the sound (two presenter tests failed), which
+  is exactly the bug the headed check had found ("play() request was interrupted by a call to
+  pause()").
+- Targeted headless Playwright `camera-flight.spec.ts` with its own static server
+  (`BASE_URL=http://localhost:8647`, which served this worktree's frontend; the default 8080 was
+  another session's server and went down mid-run twice): all 8 scenarios passed, including the new
+  sound one (score and intro play, Pause pauses the score, Sound mutes every element).
+- Headed Chrome, model view, 59-view generated tour: the score ran in step with the flight (4.8 s
+  of score at 5.1 s of flight), the 2 s intro played and the score returned to full volume, the
+  outro played over the ducked score at the end and the score faded and stopped.
+- Headed Chrome, photo view, under host load 150–170 from other sessions: the cover and
+  "Loading the city… k/28" appeared, the preload visited 28 moments in 71 s (7 timed out, 20
+  skipped by the budget) and the flight then played, but photo mode itself fell back to the model
+  view after its Birmingham terrain alignment timed out, so **playback over real photo tiles is
+  unverified**, as is the intro in that run (it did not play there). Not retried, to spare the
+  shared tile key.
 
 No full unit or browser suite, production publication, push or deployment was performed.

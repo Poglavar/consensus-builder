@@ -43,7 +43,7 @@
         const record = options.record ? clone(options.record) : initialRecord();
         const invalid = win.CameraFlight.validate(record, { draft: true }); if (invalid) throw new Error(invalid);
         const edit = win.CameraFlightEdit.create(record);
-        let readOnly = !!options.readOnly, selected = record.route[0].id, session, closed = false, busy = false, walking = false;
+        let readOnly = !!options.readOnly, selected = record.route[0].id, session, presenter, closed = false, busy = false, walking = false;
         let apartmentTools = null, closePromise = Promise.resolve();
         let units = [], pendingEntry = false, previewState = 'stopped', draftFailed = false;
         const thumbnails = new Map(), buttons = new Map(), fields = new Map();
@@ -60,6 +60,8 @@
         timelineStrip.setAttribute('role', 'group'); timelineStrip.setAttribute('aria-label', t('timeline')); timelineStrip.append(track);
         const playhead = element('span', 'flight-playhead'); playhead.setAttribute('aria-hidden', 'true');
         const link = element('a', 'flight-link'); link.dataset.flightLink = ''; link.hidden = true; link.target = '_blank'; link.rel = 'noopener';
+        // The same flight played over the photo view: the intro link for a city.
+        const photoLink = element('a', 'flight-link', t('photoLink')); photoLink.dataset.flightPhotoLink = ''; photoLink.hidden = true; photoLink.target = '_blank'; photoLink.rel = 'noopener';
         const draftKey = 'cb_camera_flight_draft:' + (record.view.city || 'world');
         const getDraft = () => {
             try { const value = JSON.parse(win.PersistentStorage.getItem(draftKey) || 'null'); return value && !win.CameraFlight.validate(value, { draft: true }) ? value : null; }
@@ -93,7 +95,7 @@
         function changed(next = edit.record) {
             if (closed) return;
             if (!next.route.some(p => p.id === selected)) selected = next.route[next.route.length - 1].id;
-            session.setRecord(next); render(); saveDraft(); link.hidden = true;
+            session.setRecord(next); presenter?.invalidate(); render(); saveDraft(); link.hidden = true; photoLink.hidden = true;
         }
         function point() { return edit.record.route.find(p => p.id === selected) || edit.record.route[0]; }
         const index = id => edit.record.route.findIndex(p => p.id === id);
@@ -185,6 +187,7 @@
         }
         function updateState(state = {}) {
             if (closed) return;
+            presenter?.sync(state);
             walking = !!state.walking;
             if (state.playing) previewState = 'playing'; else if (previewState === 'playing') previewState = 'paused';
             panel.dataset.flightState = previewState; panel.dataset.flightMode = session?.mode || 'orbit';
@@ -222,16 +225,18 @@
             captureThumbnail(selected); render(); if (!draftFailed) message(t('draftSaved'));
         }, true);
         button(actions, 'undo', 'undo', () => changed(edit.undo())); button(actions, 'redo', 'redo', () => changed(edit.redo()));
-        button(transport, 'play', 'play', async () => { previewState = 'playing'; await session.play(); updateState({ playing: session.playing }); }, true);
-        button(transport, 'pause', 'pause', () => { previewState = 'paused'; session.pause(); updateState(); });
-        button(transport, 'stop', 'stop', async () => { previewState = 'stopped'; session.pause(); await session.seek(0); updateState(); });
+        button(transport, 'play', 'play', async () => { previewState = 'playing'; await presenter.play(); updateState({ playing: session.playing }); }, true);
+        button(transport, 'pause', 'pause', () => { previewState = 'paused'; presenter.pause(); updateState(); });
+        button(transport, 'stop', 'stop', async () => { previewState = 'stopped'; presenter.stop(); session.pause(); await session.seek(0); updateState(); });
         button(transport, 'share', 'share', async () => {
-            session.pause(); busy = true; render(); link.hidden = true;
+            session.pause(); busy = true; render(); link.hidden = true; photoLink.hidden = true;
             try {
                 const designs = appliedDesigns(); if (designs.unpublished) throw new Error(t('publishDesignsFirst'));
                 const next = edit.transact(r => { r.designCids = designs.cids; r.interiors = session.snapshotFeatures({ live: !r.interiors.length }); });
                 changed(next); const saved = await win.CameraFlightSharing.save(next);
-                link.href = saved.link; link.textContent = saved.link; link.hidden = false; message(t('shareSaved'));
+                link.href = saved.link; link.textContent = saved.link; link.hidden = false;
+                const photo = new URL(saved.link); photo.searchParams.set('photo', '');
+                photoLink.href = photo.href; photoLink.hidden = false; message(t('shareSaved'));
             } finally { busy = false; render(); }
         });
         button(transport, 'copy', 'editorCopy', () => { readOnly = false; render(); message(t('ready')); });
@@ -240,7 +245,7 @@
         const scrub = element('div', 'flight-scrub'), timeLabel = element('output', 'flight-time');
         const timeline = element('input', 'flight-range'); timeline.id = 'camera-flight-time'; timeline.type = 'range'; timeline.min = '0'; timeline.step = '.01'; timeline.setAttribute('aria-label', t('lookTime'));
         timeline.addEventListener('input', () => run(() => session.seek(Number(timeline.value)))); scrub.append(timeline, timeLabel);
-        body.append(scrub, status, link);
+        body.append(scrub, status, link, photoLink);
         const restore = button(body, 'restore-draft', 'restoreDraft', () => open({ record: getDraft() })); restore.hidden = !getDraft() || readOnly;
         body.append(element('p', 'flight-hint', t('previewHint')), authoring);
         // Automatic flight: one design gets a descending orbit; the whole plan gets a tour from its
@@ -375,7 +380,7 @@
         panel.append(body); document.body.append(panel); document.body.classList.add('camera-flight-editing');
         function close() {
             if (closed) return closePromise; closed = true;
-            apartmentTools?.exit(); closePromise = Promise.resolve(session?.dispose()); panel.remove(); document.body.classList.remove('camera-flight-editing'); if (active?.panel === panel) active = null;
+            apartmentTools?.exit(); presenter?.dispose(); closePromise = Promise.resolve(session?.dispose()); panel.remove(); document.body.classList.remove('camera-flight-editing'); if (active?.panel === panel) active = null;
             win.document.getElementById('camera-flight-open')?.focus({ preventScroll: true });
             return closePromise;
         }
@@ -383,8 +388,10 @@
             session = win.CameraFlightSession.create(win, record, {
                 onUpdate: updateState, onError: failed, onClose: close, onSelect: id => selectPoint(id, { seek: false }),
                 onMove: (id, position) => { if (!locked()) run(() => changed(edit.updatePoint(id, { position }))); },
-                onUndo: redo => { if (!locked()) changed(redo ? edit.redo() : edit.undo()); }, onEnd: () => { previewState = 'paused'; updateState(); }
+                onUndo: redo => { if (!locked()) changed(redo ? edit.redo() : edit.undo()); }, onEnd: () => { previewState = 'paused'; presenter?.end(); updateState(); }
             }, { orbit: !readOnly });
+            presenter = win.CameraFlightPresenter.create({ session, getRecord: () => edit.record, onStatus: text => message(text) });
+            presenter.soundButton(transport);
             active = { panel, session, getRecord: () => edit.record, seek: value => session.seek(value), close };
             refreshDesigns(); render(); refreshUnits(); message(readOnly ? t('readonly') : '');
             if (readOnly) await session.seek(0);

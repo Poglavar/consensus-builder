@@ -206,6 +206,24 @@ test.describe('camera flights in the actual model scene', () => {
     await action(page, 'undo').click();
     expect((await record(page)).route).toEqual(original);
   });
+  test('Play starts the score and the intro voice, Pause silences them, and Sound mutes', async ({ mockApi: page }) => {
+    // Record every audio element the page makes, with the file it plays.
+    await page.addInitScript(() => {
+      const w = window as any, Native = w.Audio;w.__flightAudio = [];
+      w.Audio = function (src: string) { const a = new Native(src);w.__flightAudio.push(a);return a; };
+    });
+    await prepare(page);await enterModel(page);await openEditor(page);await addViews(page);await seek(page, 0);
+    const audio = () => page.evaluate(() => (window as any).__flightAudio.map((a: any) => ({ file: a.src.split('/').pop().split('?')[0], paused: a.paused, muted: a.muted, played: a.played.length })));
+    expect((await audio()).map(a => a.file)).toEqual(['score.mp3', 'intro-en.mp3', 'outro-en.mp3']);
+    await expect(action(page, 'sound')).toHaveAttribute('aria-pressed', 'true');
+    await action(page, 'play').click();
+    await expect.poll(async () => (await audio()).filter(a => a.played).map(a => a.file)).toEqual(['score.mp3', 'intro-en.mp3']);
+    expect((await audio())[0].paused).toBe(false);
+    await action(page, 'pause').click();
+    await expect.poll(async () => (await audio())[0].paused).toBe(true);
+    await action(page, 'sound').click();await expect(action(page, 'sound')).toHaveAttribute('aria-pressed', 'false');
+    expect((await audio()).every(a => a.muted)).toBe(true);
+  });
   test('play/pause and scrub apply exact poses, and closing restores ordinary orbit controls', async ({ mockApi: page }) => {
     await prepare(page);await enterModel(page);
     const enabledBefore = await page.evaluate(() => (window as any).getThreeModeInternals().controls.enabled);
