@@ -1737,6 +1737,8 @@ body.three-mode-active #agent-bubbles-container {
 
 .click-stack__heading { display: flex; align-items: center; margin: 0; font: inherit; }
 .click-stack__heading > .click-stack__row { flex: 1; min-width: 0; width: auto; }
+/* Focus: frames the expanded section's object on the map (2D and model view). */
+.click-stack__heading > .click-stack__focus { flex: 0 0 auto; margin-inline-end: var(--cb-space-2); }
 
 /* Agreement terms are context for the selected plan and share the stack's section rhythm. */
 .click-stack__body.click-stack__agreement { gap: var(--cb-space-3); padding: var(--cb-space-3); }

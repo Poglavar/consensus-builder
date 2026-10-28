@@ -7978,6 +7978,7 @@
         "proposals": "Diseños ({{count}})",
         "parcelReference": "Parcela catastral {{reference}}",
         "title": "En este punto",
+        "focusUnavailable": "Esto aún no tiene forma en el mapa.",
         "agreements": "Acuerdos ({{count}})",
         "designs": "Diseños ({{count}})",
         "builtMany": "Construido ({{count}})",

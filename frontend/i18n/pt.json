@@ -4512,6 +4512,7 @@
         "buildings": "Edifícios ({{count}})",
         "parcelReference": "Parcela cadastral {{reference}}",
         "title": "Neste local",
+        "focusUnavailable": "Isto ainda não tem forma no mapa.",
         "agreements": "Acordos ({{count}})",
         "builtMany": "Edificados ({{count}})",
         "formed": "Parcela constituída",

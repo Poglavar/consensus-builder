@@ -177,3 +177,14 @@ describe('click stack model', () => {
         expect(model.clickAction(null, empty)).toBe('none');
     });
 });
+
+it('frames an object opened from a list or link only when it is out of view or too small to see', () => {
+    const view = { left: 40, top: 40, right: 600, bottom: 700 };
+    expect(model.framingNeeded({ left: 100, top: 100, right: 200, bottom: 180 }, view)).toBe(false);
+    expect(model.framingNeeded({ left: 560, top: 100, right: 700, bottom: 180 }, view)).toBe(true);
+    expect(model.framingNeeded({ left: -900, top: -400, right: -800, bottom: -300 }, view)).toBe(true);
+    expect(model.framingNeeded({ left: 300, top: 300, right: 305, bottom: 304 }, view)).toBe(true);
+    expect(model.framingNeeded({ left: 300, top: 300, right: 305, bottom: 304 }, view, 4)).toBe(false);
+    expect(model.framingNeeded({ left: NaN, top: 0, right: 1, bottom: 1 }, view)).toBe(false);
+    expect(model.framingNeeded(null, view)).toBe(false);
+});

@@ -1535,6 +1535,13 @@
         // The section closes: its figures leave, and the inspector goes home, deselected only when
         // it still shows what the stack chose (a selection made elsewhere is that surface's).
         focus(kind, instance) { highlightStackObject(kind, instance); },
+        // The Focus button: move in or out until the object fills the view, keeping heading and tilt.
+        frame(kind, instance) {
+            const features = window.ClickStackHits.featuresFor(kind, instance);
+            if (!features.length) return false;
+            frameIsolatedFeatures(features);
+            return true;
+        },
         release({ keepSelection = false } = {}) {
             clearStackFocus();
             parcelInfoPanelEl?.remove();

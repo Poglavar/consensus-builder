@@ -7950,6 +7950,7 @@
         "proposals": "Designs ({{count}})",
         "parcelReference": "Cadastral parcel {{reference}}",
         "title": "At this spot",
+        "focusUnavailable": "This has no shape on the map yet.",
         "agreements": "Agreements ({{count}})",
         "designs": "Designs ({{count}})",
         "builtMany": "Built ({{count}})",

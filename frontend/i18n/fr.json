@@ -4512,6 +4512,7 @@
         "buildings": "Bâtiments ({{count}})",
         "parcelReference": "Parcelle cadastrale {{reference}}",
         "title": "À cet endroit",
+        "focusUnavailable": "Cet élément n'a pas encore de forme sur la carte.",
         "agreements": "Accords ({{count}})",
         "builtMany": "Bâtis ({{count}})",
         "formed": "Parcelle créée",

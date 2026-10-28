@@ -202,6 +202,18 @@
             const heading = doc.createElement('h2');
             heading.className = 'click-stack__heading';
             heading.appendChild(row);
+            // The model view frames through its adapter; the 2D stack has the same button.
+            if (expanded && state.adapter?.frame) {
+                const focus = button('btn btn-quiet btn-icon click-stack__focus', undefined, { action: 'focus', kind: section.kind });
+                const label = t('modal.roadWidth.polygonError.showOnMap', 'Show on map');
+                focus.title = label;
+                focus.setAttribute('aria-label', label);
+                const icon = doc.createElement('i');
+                icon.className = 'fas fa-crosshairs';
+                icon.setAttribute('aria-hidden', 'true');
+                focus.appendChild(icon);
+                heading.appendChild(focus);
+            }
             card.appendChild(heading);
             if (expanded) {
                 const body = keepBody || doc.createElement('div');
@@ -361,6 +373,12 @@
         const target = event.target.closest('[data-action]');
         if (!target || !state.el.contains(target)) return;
         const { action, kind, id } = target.dataset;
+        if (action === 'focus') {
+            const instance = selectedInstance(state.stack, kind);
+            state.adapter.focus?.(kind, instance);
+            if (!state.adapter.frame(kind, instance)) global.updateStatus?.(t('clickStack.focusUnavailable', 'This has no shape on the map yet.'));
+            return;
+        }
         if (action === 'row') {
             state.activationOptions = {};
             // The open section's row folds everything to rows; another row opens that section.

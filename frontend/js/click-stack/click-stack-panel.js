@@ -21,10 +21,12 @@
     const HOSTABLE = ['proposal-details-panel', 'planning-inspector', 'parcel-info-panel'];
     // Right-dock panels the stack never hosts: when one opens, the stack steps aside.
     const DOCKED_ELSEWHERE = ['block-info-panel', 'road-info-panel', 'road-analysis-panel'];
+    // Sections whose object has a shape on the map, so the Focus button can bring it into view.
+    const FRAMEABLE = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'selection']);
     const ICONS = Object.freeze({ agreements: 'fas fa-file-signature', plans: 'fas fa-layer-group', designs: 'fas fa-drafting-compass', built: 'fas fa-building',
         permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
-    const state = { el: null, stack: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null };
+    const state = { el: null, stack: null, frameRequest: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null };
 
     // A key with a dot is a full key shared with the rest of the app; a bare one is clickStack's own.
     function t(key, fallback, params = {}) {
@@ -170,6 +172,18 @@
         return global.ParcelMenuModel?.displayParcelId?.(instance?.feature?.properties || {}, instance?.id) || instance?.id || '';
     }
 
+    function focusButton(kind) {
+        const focus = button('btn btn-quiet btn-icon click-stack__focus', undefined, { action: 'focus', kind });
+        const label = t('modal.roadWidth.polygonError.showOnMap', 'Show on map');
+        focus.title = label;
+        focus.setAttribute('aria-label', label);
+        const icon = doc.createElement('i');
+        icon.className = 'fas fa-crosshairs';
+        icon.setAttribute('aria-hidden', 'true');
+        focus.appendChild(icon);
+        return focus;
+    }
+
     function rowTitle(section) {
         const instance = section.instances[section.selectedIndex];
         switch (section.kind) {
@@ -261,6 +275,7 @@
             const heading = doc.createElement('h2');
             heading.className = 'click-stack__heading';
             heading.appendChild(row);
+            if (expanded && FRAMEABLE.has(section.kind)) heading.appendChild(focusButton(section.kind));
             card.appendChild(heading);
             if (expanded) {
                 const body = keepBody || doc.createElement('div');
@@ -349,9 +364,52 @@
         return global.MapHighlight.style({ weight: 5, className: 'click-stack-map-focus' });
     }
 
+    // A section opened from a list or link asks for its object to be framed; the request waits
+    // here until the object's shape is known (a plan's member geometry arrives after it opens).
     function highlightSection(kind, instance) {
         const features = global.ClickStackHits.featuresFor?.(kind, instance) || [];
         global.highlightFeaturesForInspection?.(features, focusStyle());
+        if (state.frameRequest === kind && features.length) {
+            state.frameRequest = null;
+            frameFeatures(features);
+        }
+    }
+
+    // Brings an object into the part of the map the stack leaves visible. A scene click never
+    // moves the camera; the Focus button always frames (always: true); an object opened from a
+    // list or link is framed only when it is out of view or too small to make out (click-stack.md).
+    function frameFeatures(features, { always = false } = {}) {
+        const map = global.map;
+        if (!features.length || !map || doc.body.classList.contains('three-mode-active')) return false;
+        const bounds = global.L.geoJSON({ type: 'FeatureCollection', features }).getBounds();
+        if (!bounds.isValid()) return false;
+        const rect = isOpen() && !state.el.classList.contains('is-folded') ? state.el.getBoundingClientRect() : null;
+        const viewport = { width: global.innerWidth, height: global.innerHeight };
+        if (!always) {
+            const pad = global.proposalPanelFitPadding(rect, viewport, 16);
+            const size = map.getSize();
+            const northWest = map.latLngToContainerPoint(bounds.getNorthWest());
+            const southEast = map.latLngToContainerPoint(bounds.getSouthEast());
+            const box = { left: northWest.x, top: northWest.y, right: southEast.x, bottom: southEast.y };
+            const view = { left: pad.paddingTopLeft[0], top: pad.paddingTopLeft[1],
+                right: size.x - pad.paddingBottomRight[0], bottom: size.y - pad.paddingBottomRight[1] };
+            if (!model.framingNeeded(box, view)) return false;
+        }
+        const { paddingTopLeft, paddingBottomRight } = global.proposalPanelFitPadding(rect, viewport, 48);
+        log(`framing ${features.length} shape(s)${always ? ' (Focus)' : ''}`);
+        map.fitBounds(bounds, { paddingTopLeft, paddingBottomRight, maxZoom: 19 });
+        return true;
+    }
+
+    function focusSection(kind) {
+        const instance = model.selectedInstance(state.stack, kind);
+        const features = global.ClickStackHits.featuresFor?.(kind, instance) || [];
+        if (!features.length) {
+            global.updateStatus?.(t('focusUnavailable', 'This has no shape on the map yet.'));
+            return;
+        }
+        global.highlightFeaturesForInspection?.(features, focusStyle());
+        frameFeatures(features, { always: true });
     }
 
     // Selects what the expanded section shows (with its map highlight) and hosts its panel.
@@ -578,8 +636,10 @@
         highlightSection(state.stack.selectedKind, model.selectedInstance(state.stack, state.stack.selectedKind));
     }
 
-    function show(stack, latlng, hits) {
+    // frame: the stack was opened from a list or link, not a scene click (see frameFeatures).
+    function show(stack, latlng, hits, { frame = false } = {}) {
         observePanels();
+        state.frameRequest = frame ? stack.selectedKind : null;
         ensureElement().classList.remove('is-folded');
         state.expanding = true;
         try {
@@ -634,6 +694,7 @@
         state.membershipDesign = null;
         state.membershipVersion++;
         state.stack = null;
+        state.frameRequest = null;
         state.hits = null;
         state.latlng = null;
         state.el.hidden = true;
@@ -674,10 +735,13 @@
                 if (state.stack.expanded === kind) return;
             }
             if (state.stack.expanded === kind) collapse(); else expand(kind);
+        } else if (action === 'focus') {
+            focusSection(kind);
         } else if (action === 'related') {
             const section = state.stack.sections.find(section => section.kind === kind);
             if (section?.instances.some(instance => instance.id === id)) {
                 state.stack = model.selectInstance(state.stack, kind, id);
+                state.frameRequest = kind;
                 expand(kind);
             } else if (kind === 'designs') {
                 const related = model.selectedInstance(state.stack, state.stack.selectedKind)?.members?.find(item => item.id === id);
@@ -768,7 +832,7 @@
         log(`placed ${designKey}: ${stack.sections.map(section => `${section.kind}×${section.count}`).join(' ')}`);
         // No click opened this spot, so the first click on the design is a new one (it selects what
         // it hits, such as a road's stretch), not "the same spot again", which would close the stack.
-        show({ ...stack, topRef: null }, latlng, hits);
+        show({ ...stack, topRef: null }, latlng, hits, { frame: true });
     }
 
     async function showPlan(plan, { designs = [], draft = false } = {}) {
@@ -779,7 +843,7 @@
         const hits = { plans: [instance], planContext: instance, designs: instance.members };
         const stack = model.expand(model.buildClickStack(hits, { selected: { plans: instance.id } }), 'plans');
         state.lastClick = null;
-        show({ ...stack, topRef: null }, global.map.getCenter(), hits);
+        show({ ...stack, topRef: null }, global.map.getCenter(), hits, { frame: true });
     }
 
     async function showAgreement(agreement, { readOnly = false, designs = [] } = {}) {
@@ -798,7 +862,7 @@
         if (doc.body.classList.contains('three-mode-active')) return global.showThreeModePlan(plan, { agreement: instance });
         const hits = { plans: [plan], planContext: plan, agreements: [instance], agreementContext: instance, designs: plan.members };
         const stack = model.expand(model.buildClickStack(hits, { selected: { plans: plan.id, agreements: instance.id } }), 'agreements');
-        state.lastClick = null; show({ ...stack, topRef: null }, global.map.getCenter(), hits);
+        state.lastClick = null; show({ ...stack, topRef: null }, global.map.getCenter(), hits, { frame: true });
         return state.agreementReady;
     }
 
@@ -818,7 +882,7 @@
             label: global.ClickStackHits.parcelLabel(id, feature), live: !!global.LiveParcelFabric.get(id) });
         const stack = model.expand(model.buildClickStack(hits, { selected: { [kind]: id } }), kind);
         state.lastClick = null;
-        show({ ...stack, topRef: null }, latlng, hits);
+        show({ ...stack, topRef: null }, latlng, hits, { frame: true });
     }
 
     function showBuilding(feature, key = null) {
@@ -836,7 +900,7 @@
         else hits.built.unshift(supplied);
         const stack = model.expand(model.buildClickStack(hits, { selected: { built: id } }), 'built');
         state.lastClick = null;
-        show({ ...stack, topRef: null }, latlng, hits);
+        show({ ...stack, topRef: null }, latlng, hits, { frame: true });
         return true;
     }
 

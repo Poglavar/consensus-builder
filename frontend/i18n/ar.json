@@ -4689,6 +4689,7 @@
         "buildings": "المباني ({{count}})",
         "parcelReference": "قطعة أرض مساحية {{reference}}",
         "title": "في هذا الموضع",
+        "focusUnavailable": "لا يوجد لهذا شكل على الخريطة بعد.",
         "agreements": "الاتفاقات ({{count}})",
         "builtMany": "قائم ({{count}})",
         "formed": "قطعة أرض مشكلة",

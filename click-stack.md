@@ -169,8 +169,15 @@ nothing, or another selection. It replaced the floating top-left parcel /
   their displayed order, wrapping from Parcel to the first section. This works independently of
   double-click speed. A different object starts with its own section; clicking elsewhere or Escape
   dismisses the stack. A folded selection reopens before advancing. Header clicks still select a
-  section directly. All selections preserve the camera and keep the scene in context;
-  refreshes retain that viewing policy. A stack opened from a list or link starts a fresh scene-click sequence.
+  section directly. Scene clicks, header switches and refreshes preserve the camera and keep the
+  scene in context. A stack opened from a list or link (Lists, a relationship link, a plan or agreement panel, an
+  editor finishing, a restored selection) starts a fresh scene-click sequence and frames its
+  object when it is outside the map area the panels leave visible or too small to make out;
+  an object already in view keeps the camera (`framingNeeded` in `click-stack-model.js`).
+- The expanded card's header has a **Focus** button (crosshairs, “Show on map”) for every
+  section with a shape: it highlights the object and always fits the map to it, clear of the
+  stack. Ground has no Focus button. The model view's stack has the same button, which moves
+  the camera in or out over the object while keeping heading and tilt.
 - Expanded cards fit their content. Long content scrolls within the available dock height after
   reserving room for every other section header; a short Built record leaves Parcel visible below.
 - Design open: the composition stays visible and the section shows the whole design's info
@@ -201,7 +208,8 @@ nothing, or another selection. It replaced the floating top-left parcel /
 
 Google and model 3D use the same click handler, stack, section bodies, relationship links,
 selection colour, collapse behaviour, repeated-click cycling and Escape dismissal. Selecting
-an object retains the camera and surrounding composition in both views. Building/source
+an object retains the camera and surrounding composition in both views; only the Focus button
+moves it. Building/source
 inspectors and permitted representation choices are available in Google view too.
 
 The photo renderer supplies the visible surface hit and source cadastral geometry. Authored

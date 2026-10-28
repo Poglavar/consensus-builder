@@ -252,5 +252,16 @@
         });
     }
 
-    return Object.freeze({ ORDER, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance, visibleSections, contextFor, visibleContextFor });
+    // Whether an object opened from a list or link has to be brought into view. box is its screen
+    // extent and view the part of the map the panels leave visible, both { left, top, right, bottom }
+    // in map pixels. An object wholly inside the view and big enough to make out keeps the camera;
+    // one partly or wholly outside it, or smaller than minPx across, is framed. No box: nothing to frame.
+    function framingNeeded(box, view, minPx = 16) {
+        const sides = item => item && [item.left, item.top, item.right, item.bottom].every(Number.isFinite);
+        if (!sides(box) || !sides(view)) return false;
+        const inside = box.left >= view.left && box.right <= view.right && box.top >= view.top && box.bottom <= view.bottom;
+        return !inside || Math.max(box.right - box.left, box.bottom - box.top) < minPx;
+    }
+
+    return Object.freeze({ ORDER, framingNeeded, summarizeSelection, buildSelectionStack, buildClickStack, clickAction, expand, selectInstance, selectedInstance, visibleSections, contextFor, visibleContextFor });
 });

@@ -8002,6 +8002,7 @@
         "proposals": "Prijedlozi ({{count}})",
         "parcelReference": "Katastarska čestica {{reference}}",
         "title": "Na ovom mjestu",
+        "focusUnavailable": "Ovo još nema oblik na karti.",
         "agreements": "Sporazumi ({{count}})",
         "designs": "Dizajni ({{count}})",
         "builtMany": "Izgrađeno ({{count}})",
