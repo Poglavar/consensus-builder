@@ -26,6 +26,9 @@
     const RAILING_THICKNESS_M = 0.05;
     const WINDOW_SILL_M = 0.9;
     const WINDOW_HEADROOM_M = 0.3;      // between a window head and the roof above it
+    // Roof shades from dark red through reddish brown to brown. Quantised, so a street of roofs
+    // shares a handful of materials instead of one per building.
+    const ROOF_SHADES = 12;
 
     function openRing(ring) {
         const out = [];
@@ -303,6 +306,21 @@
         };
     }
 
+    // Each building's own roof shade, stable for its key (proposal, parcel, building). FNV-1a, as
+    // the rule seeds use, so every view and reload picks the same shade.
+    function roofShade(key) {
+        let h = 0x811c9dc5;
+        for (const char of String(key)) h = Math.imul(h ^ char.charCodeAt(0), 0x01000193);
+        // FNV's low bits barely move between similar keys; mix before taking a remainder.
+        h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13;
+        const step = (h >>> 0) % ROOF_SHADES;
+        const t = step / (ROOF_SHADES - 1);
+        const hue = 2 + t * 24;                                   // 2° dark red → 26° brown
+        const saturation = 58 - t * 20 + ((h >>> 8) % 3) * 3;      // browns are less saturated
+        const lightness = 30 - t * 6 + ((h >>> 12) % 3) * 2;
+        return { step, hue, saturation, lightness, css: `hsl(${hue.toFixed(1)}, ${saturation}%, ${lightness}%)` };
+    }
+
     // Everything one building needs, or null when the rule asks for neither balconies nor a roof.
     // `ring` is the footprint's outer ring; footprints with courtyards get balconies but no roof.
     function plan(rule, ring, options = {}) {
@@ -326,6 +344,6 @@
 
     return {
         ROOF_PITCH_DEG, ccw, signedArea, partyEdges, ridgeAxis, roofFrame, roofHeightAt, roofFaces, atticWalls,
-        gableWindows, balconies, prismPositions, balconyPrisms, windowPrisms, plan
+        gableWindows, balconies, prismPositions, balconyPrisms, windowPrisms, plan, roofShade
     };
 });

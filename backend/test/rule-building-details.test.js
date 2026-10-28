@@ -123,3 +123,16 @@ describe('plan', () => {
         expect((bx - ax) * (cy - ay) - (by - ay) * (cx - ax)).toBeGreaterThan(0);
     });
 });
+
+describe('roof shade', () => {
+    it('is stable per building and spans dark red to brown', () => {
+        expect(D.roofShade('a')).toEqual(D.roofShade('a'));
+        const shades = Array.from({ length: 200 }, (_, i) => D.roofShade(JSON.stringify(['p', 'parcel-' + i, i])));
+        expect(new Set(shades.map(s => s.step)).size).toBeGreaterThan(8);
+        for (const s of shades) {
+            expect(s.hue).toBeGreaterThanOrEqual(2);
+            expect(s.hue).toBeLessThanOrEqual(26);
+            expect(s.lightness).toBeLessThanOrEqual(34);
+        }
+    });
+});

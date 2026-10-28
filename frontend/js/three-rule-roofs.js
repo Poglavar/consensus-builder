@@ -9,7 +9,7 @@
 
     function create({ THREE, coordsToXY, finishMesh }) {
         let shingleTexture = null;
-        const roofMaterials = new Map(); // opacity → material, shared for the page's lifetime
+        const roofMaterials = new Map(); // shade + opacity → material, shared for the page's lifetime
         const materials = {
             slab: new THREE.MeshLambertMaterial({ color: 0xcfcac1 }),
             railing: new THREE.MeshLambertMaterial({ color: 0x3e444a }),
@@ -17,13 +17,14 @@
             glass: new THREE.MeshPhongMaterial({ color: 0x35525e, specular: 0x99aabb, shininess: 90 })
         };
 
-        // Terracotta shingles in staggered courses, drawn once.
+        // Shingles in staggered courses, drawn once in pale neutral tones; each roof's material
+        // colour gives it its own shade of red or brown.
         function shingles() {
             if (shingleTexture) return shingleTexture;
             const canvas = document.createElement('canvas');
             canvas.width = canvas.height = 256;
             const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#6e2318';
+            ctx.fillStyle = '#5a5a5a';
             ctx.fillRect(0, 0, 256, 256);
             const rows = 8, cols = 8, w = 256 / cols, h = 256 / rows;
             let seed = 7;
@@ -32,8 +33,7 @@
                 const shift = (r % 2) * w / 2;
                 for (let c = -1; c <= cols; c++) {
                     const x = c * w + shift, y = r * h;
-                    const light = 36 + rand() * 12;
-                    ctx.fillStyle = `hsl(${8 + rand() * 8}, ${62 + rand() * 12}%, ${light}%)`;
+                    ctx.fillStyle = `hsl(0, 0%, ${84 + rand() * 16}%)`;
                     ctx.beginPath();
                     ctx.moveTo(x + 1.5, y + 1);
                     ctx.lineTo(x + w - 1.5, y + 1);
@@ -52,15 +52,19 @@
             return shingleTexture;
         }
 
-        // The roof follows the building's own see-through setting, so a ghosted plan stays ghosted.
-        function roofMaterial(buildingMaterial) {
+        // Each building has its own roof shade, as it has its own facade. The roof follows the
+        // building's own see-through setting, so a ghosted plan stays ghosted.
+        function roofMaterial(buildingMaterial, feature) {
             const opacity = buildingMaterial && buildingMaterial.transparent ? buildingMaterial.opacity : 1;
-            if (!roofMaterials.has(opacity)) {
-                const material = new THREE.MeshLambertMaterial({ color: 0xffffff, map: shingles(), side: THREE.DoubleSide });
+            const p = feature.properties || {};
+            const shade = details.roofShade(JSON.stringify([p.proposalId, p.parcelId, p.buildingIndex, p.buildingId ?? feature.id]));
+            const key = shade.css + '|' + opacity;
+            if (!roofMaterials.has(key)) {
+                const material = new THREE.MeshLambertMaterial({ color: new THREE.Color(shade.css), map: shingles(), side: THREE.DoubleSide });
                 if (opacity < 1) Object.assign(material, { transparent: true, opacity, depthWrite: false });
-                roofMaterials.set(opacity, material);
+                roofMaterials.set(key, material);
             }
-            return roofMaterials.get(opacity);
+            return roofMaterials.get(key);
         }
 
         function outerRings(geometry) {
@@ -157,7 +161,7 @@
                     slabs.push(...prisms.slab); railings.push(...prisms.railing);
                 }
             }
-            if (roof.length) out.push(meshFrom(roof, roofMaterial(buildingMaterial), uv));
+            if (roof.length) out.push(meshFrom(roof, roofMaterial(buildingMaterial, plan.feature), uv));
             if (slabs.length) out.push(meshFrom(slabs, materials.slab));
             if (railings.length) out.push(meshFrom(railings, materials.railing));
             if (frames.length) out.push(meshFrom(frames, materials.frame));
