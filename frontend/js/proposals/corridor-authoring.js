@@ -434,26 +434,6 @@
         };
     }
 
-    // Author a complete isolated composition (MCP plans). Solve every crossing before recording
-    // foreign arms: a later street can split an earlier arm, changing its available corner length.
-    // Rebuild those references from the final graph so edits/removals cannot leave stale arms.
-    function planCorridorComposition(records, options = {}) {
-        const geometry = options.geometry || (global && global.CorridorGeometry);
-        if (!geometry || typeof geometry.normalizeCorridorNetwork !== 'function') {
-            throw new Error('Corridor topology engine is unavailable.');
-        }
-        const proposals = cloneValue(records);
-        const entries = proposals.map(record => entryFor(record, options));
-        if (entries.some(entry => !entry)) throw new Error('A corridor has no valid centerline.');
-        entries.forEach(entry => { delete entry.definition.junctions; });
-        geometry.normalizeCorridorNetwork(entries, { toleranceMeters: 0 });
-        entries.forEach((entry, index) => {
-            entries.slice(index + 1).forEach(other => recordSharedJunctions(entry, other));
-        });
-        entries.forEach(entry => writeDefinition(entry.record, definitionFromEntry(entry)));
-        return proposals;
-    }
-
     return {
         PUBLISHED_IDENTITY_KEYS: PUBLISHED_IDENTITY_KEYS.slice(),
         cloneValue,
@@ -462,7 +442,6 @@
         isTrackDefinition,
         planCorridorAuthoring,
         planCorridorEdit,
-        planCorridorComposition,
         writeDefinition
     };
 });
