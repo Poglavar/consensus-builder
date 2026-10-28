@@ -8,6 +8,10 @@ const path = require('node:path');
 const ledger = require('../../scripts/lib/test-run-ledger.cjs');
 
 const E2E_DIR = path.resolve(__dirname, '..');
+// Failure details must outlive the part that produced them: the list reporter prints them only at the
+// end of a run, and the next part empties the output folder of an earlier one that reused it.
+const MAX_ERROR_CHARS = 4000;
+const ANSI = /\u001b\[[0-9;]*m/g;
 
 // Where a test sits: file relative to its project's testDir, and its describe titles then its own title.
 function testPlace(test) {
@@ -55,6 +59,12 @@ class RunLedgerReporter {
       expectedStatus: test.expectedStatus,
       annotations: [...test.annotations, ...result.annotations],
       controlEvents: controlEvents(result),
+      ...(result.status !== 'passed' && result.status !== 'skipped' && {
+        errors: result.errors.map((error) => (error.stack || error.message || String(error.value))
+          .replace(ANSI, '').slice(0, MAX_ERROR_CHARS)),
+        artifacts: result.attachments.filter((item) => item.path)
+          .map((item) => path.relative(E2E_DIR, item.path).split(path.sep).join('/')),
+      }),
     });
   }
 

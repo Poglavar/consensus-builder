@@ -33,10 +33,16 @@ const file = ledger.ledgerFile(E2E_DIR, name, suite);
 const finished = [...ledger.finishedIds(ledger.readLedger(file))];
 // An explicit --reporter replaces the config's reporters, which would drop the ledger reporter.
 const LEDGER_REPORTER = './helpers/run-ledger-reporter.cjs';
-const args = ['playwright', 'test', ...playwrightArgs.map((arg) => (
-  arg.startsWith('--reporter=') ? `${arg},${LEDGER_REPORTER}` : arg))];
-if (playwrightArgs.includes('--reporter')) throw new Error('pass the reporter as --reporter=<name>');
 const stamp = () => new Date().toISOString();
+// Playwright empties its output folder when a run starts, so every part writes artefacts to its own.
+const part = stamp().replace(/[:.]/g, '-');
+const outputArg = playwrightArgs.find((arg) => arg.startsWith('--output='));
+const output = path.join(outputArg ? outputArg.slice('--output='.length) : path.relative(E2E_DIR, path.dirname(file)), `${suite}-${part}`);
+const args = ['playwright', 'test', ...playwrightArgs.filter((arg) => arg !== outputArg).map((arg) => (
+  arg.startsWith('--reporter=') ? `${arg},${LEDGER_REPORTER}` : arg)), `--output=${output}`];
+for (const flag of ['--reporter', '--output']) {
+  if (playwrightArgs.includes(flag)) throw new Error(`pass ${flag} as ${flag}=<value>`);
+}
 if (finished.length) {
   const skipList = path.join(path.dirname(file), `${suite}-finished.txt`);
   writeFileSync(skipList, `${finished.join('\n')}\n`);
@@ -46,6 +52,7 @@ if (finished.length) {
 } else {
   console.log(`[${stamp()}] test run ${name}: starting`);
 }
+console.log(`[${stamp()}] artefacts of this part: ${output}`);
 const child = spawnSync('npx', args, { cwd: E2E_DIR, env, stdio: 'inherit' });
 // The exit code covers the whole run, so a final part with nothing left still reports earlier failures.
 const earlierFailures = ledger.summary(ledger.readLedger(file)).failed.length;

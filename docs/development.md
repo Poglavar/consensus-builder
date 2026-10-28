@@ -139,6 +139,9 @@ what is recorded. Name every whole-suite run.
   had a failure. The controls report is built from the ledger, so it covers every part.
 - Playwright runs need the wrapper, which passes the finished tests back as `--test-list-invert`;
   `TEST_RUN` without it is refused. An explicit `--reporter=<name>` keeps the ledger reporter.
+- A failed Playwright test keeps its error messages and artefact paths in the ledger, and each part
+  writes artefacts to its own folder (`<output>/playwright-<start time>`), because Playwright empties
+  its output folder at the start of a run.
 - A new name starts a fresh run. Delete `test-runs/<name>/` to reuse a name from the start.
 
 ### What the tests do not establish
