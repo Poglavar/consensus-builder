@@ -13,7 +13,10 @@ it('navigates parcel → design → plan relationships without exposing agreemen
     const hits = { agreements: [{ id: 'a1' }], plans: [plan], designs, formed: [formed], parcels: [parcel] };
     const links = (kind, item) => model.contextFor(kind, item, hits).map(group => [group.position, group.kind, group.instances.map(item => item.id)]);
     expect(links('plans', plan)).toEqual([['below', 'designs', ['d1', 'd2']]]);
-    expect(links('designs', designs[0])).toEqual([['above', 'plans', ['pl1']], ['below', 'formed', ['piece']]]);
+    expect(links('designs', designs[0])).toEqual([['above', 'plans', ['pl1']], ['below', 'formed', ['piece', 'p1']]]);
+    // A design that both takes and forms parcels lists them as two tabs: what it forms, then what it takes.
+    expect(model.contextFor('designs', designs[0], hits)[1].tabs.map(tab => [tab.relation, tab.kind, tab.instances.map(item => item.id)]))
+        .toEqual([['formedParcels', 'formed', ['piece']], ['affectsParcels', 'parcels', ['p1']]]);
     expect(links('formed', formed)).toEqual([['above', 'designs', ['d1']], ['below', 'parcels', ['p1']]]);
     expect(links('parcels', parcel)).toEqual([['above', 'formed', ['piece']], ['above', 'designs', ['d1']]]);
     expect(model.contextFor('formed', formed, { ...hits, designs: [] })[0].instances).toEqual([{ id: 'd1', label: 'Street' }]);
@@ -47,6 +50,22 @@ it('shows an observed building with its parcel instead of an authored-plan chain
     expect(model.contextFor('built', { id: 'house' }, hits)).toEqual([]);
     const links = model.visibleContextFor('built', { id: 'house', demolition: { proposalKey: 'demolisher' } }, hits);
     expect(links.map(group => [group.relation, group.instances.map(row => row.id)])).toEqual([['affectedBy', ['demolisher']]]);
+});
+
+it('shows the design that formed a parcel above the buildings and massing standing on it', () => {
+    const formed = { id: 'piece', designId: 'layout', feature: { properties: { cadastreParcelIds: ['p1'] } } };
+    const design = { id: 'layout', label: 'Layout', proposal: { cadastreParcelIds: ['p1'] } };
+    const hits = { plans: [{ id: 'plan' }], designs: [design], built: [{ id: 'house' }], permitted: [{ id: 'm1' }], formed: [formed], parcels: [{ id: 'p1' }] };
+    const shown = (input, kind) => model.visibleSections({ ...model.buildClickStack(input), selectedKind: kind }).map(section => section.kind);
+    // Built and Permitted are not the authored chain: the design above them stays one step away.
+    expect(shown(hits, 'formed')).toEqual(['designs', 'built', 'permitted', 'formed', 'parcels']);
+    expect(shown({ ...hits, permitted: [] }, 'formed')).toEqual(['designs', 'built', 'formed', 'parcels']);
+    expect(shown({ ...hits, formed: [] }, 'parcels')).toEqual(['designs', 'built', 'permitted', 'parcels']);
+    // An authored level above keeps the one-step rule.
+    expect(shown({ ...hits, built: [], permitted: [] }, 'formed')).toEqual(['designs', 'formed', 'parcels']);
+    expect(shown(hits, 'designs')).toEqual(['plans', 'designs', 'built']);
+    // The design row is then on screen, so its single "Created by" strip would only repeat it.
+    expect(model.visibleContextFor('formed', formed, hits).filter(group => group.relation === 'createdBy')).toEqual([]);
 });
 
 describe('click stack model', () => {

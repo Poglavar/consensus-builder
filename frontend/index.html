@@ -435,7 +435,12 @@
             <button type="button" id="planning-views-button" class="map-shell-button" data-sheet-target="planning-views"
                 aria-controls="planning-views" aria-expanded="false" title="Buildings and massing" aria-label="Buildings and massing"
                 data-i18n-key="planningViews.title" data-i18n-attr="title,aria-label" hidden>
-                <i class="fas fa-cubes" aria-hidden="true"></i>
+                <!-- One cube per layer; a cube takes its layer's colour while that layer is on (css/planning-views.css). -->
+                <svg class="planning-cubes" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <g class="planning-cube planning-cube--existing"><polygon points="12,2.57 16.5,5.17 12,7.77 7.5,5.17"/><polygon class="planning-cube-left" points="7.5,5.17 12,7.77 12,12.81 7.5,10.21"/><polygon class="planning-cube-right" points="12,7.77 16.5,5.17 16.5,10.21 12,12.81"/></g>
+                    <g class="planning-cube planning-cube--proposed"><polygon points="7,11.06 11.5,13.65 7,16.25 2.5,13.65"/><polygon class="planning-cube-left" points="2.5,13.65 7,16.25 7,21.29 2.5,18.69"/><polygon class="planning-cube-right" points="7,16.25 11.5,13.65 11.5,18.69 7,21.29"/></g>
+                    <g class="planning-cube planning-cube--permitted"><polygon points="17,11.06 21.5,13.65 17,16.25 12.5,13.65"/><polygon class="planning-cube-left" points="12.5,13.65 17,16.25 17,21.29 12.5,18.69"/><polygon class="planning-cube-right" points="17,16.25 21.5,13.65 21.5,18.69 17,21.29"/></g>
+                </svg>
             </button>
         </div>
 
@@ -974,7 +979,7 @@
 
                 <details data-map-modes="2d" class="accordion-section" data-section="schelling-plan">
                     <summary class="sheet-section-title">
-                        <i class="fas fa-handshake" aria-hidden="true"></i>
+                        <i class="fas fa-bullseye" aria-hidden="true"></i>
                         <span data-i18n-key="schellingPlan.title">Schelling plan</span>
                     </summary>
                     <div class="sheet-section-body">
@@ -1100,6 +1105,7 @@
                 <p class="bets-tagline">
                     <strong data-i18n-key="bets.tagline">Bet on cities</strong>
                     <span data-i18n-key="bets.intro">Bet on whether agreements execute by a deadline. Use points without a wallet, or devnet USDC.</span>
+                    <a class="cb-link cb-link--external" href="/deck2.html" target="_blank" rel="noopener" data-i18n-key="bets.pitchLink">Read the Hyperstition pitch</a>
                 </p>
                 <div id="bets-sheet-content" class="bets-content" aria-live="polite"></div>
                 <details class="bets-how">
@@ -2221,6 +2227,7 @@
             'js/proposals/demolition-prefetch.js',
             'js/agreement-headless.js?v=20261028-abstract-parties',
             'js/plan-analysis.js',
+            'js/proposals/present-state.js',
             'js/proposals/grain-score.js',
             'js/proposals/plan-stats.js',
             'js/parcel-coverage-debug.js',

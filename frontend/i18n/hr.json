@@ -7062,6 +7062,7 @@
         "unsupportedCrs": "Ovaj WMS zahtijeva podržani geografski koordinatni sustav ili Web Mercator."
     },
     "parcelSourceHealth": {
+        "notIntegrated": "Čestice su stigle, ali ih nije bilo moguće dodati na kartu.",
         "countryRestricted": "Ovaj registar prihvaća samo veze iz ove države: {{country}}. Izvan nje nastavite bez čestica ili odaberite drugi izvor.",
         "requestTimedOut": "Zahtjev je istekao.",
         "offline": "Izgleda da nemaš internetsku vezu. Poveži se na internet i pokušaj ponovno.",

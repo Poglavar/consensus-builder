@@ -1668,9 +1668,9 @@
             formed: ground?.kind === 'formed' ? [ground.instance] : [],
             parcels: [...(ground?.kind === 'parcels' ? [ground.instance] : []), ...(hits?.parcels || [])]
         };
-        const focus = plan.proposal ? 'designs'
-            : stackApi.focusOf({ ...(picked && !picked.proposalId ? picked : {}), formed: ground?.kind === 'formed' });
-        const selected = { ...(plan.proposal ? { designs: plan.proposal.id } : {}), ...(builtId ? { built: builtId } : {}) };
+        const focus = plan.focus || (plan.proposal ? 'designs'
+            : stackApi.focusOf({ ...(picked && !picked.proposalId ? picked : {}), formed: ground?.kind === 'formed' }));
+        const selected = plan.selected || { ...(plan.proposal ? { designs: plan.proposal.id } : {}), ...(builtId ? { built: builtId } : {}) };
         stackApi.show(input, { focus, selected, click, container: document.getElementById('map-container') || document.body }, clickStackAdapter);
     }
 
@@ -1693,6 +1693,30 @@
             { focus: agreement ? 'agreements' : 'plans', selected: { plans: instance.id, ...(agreement ? { agreements: agreement.id } : {}) }, container: document.getElementById('map-container') || document.body }, clickStackAdapter);
         return agreement ? window.ThreeClickStack.ready() : true;
     }
+
+    // A reload for a new release reopens the stack the person had open, with the same instances,
+    // keeping the camera the address restored. False until the scene holds all of them again.
+    function resumeThreeModeStack({ selected, expanded }) {
+        if (!isActive || !sceneReady) return false;
+        const designId = selected.designs || null;
+        if (designId && !window.proposalStorage?.getProposal?.(designId)) return false;
+        const parcelId = selected.parcels || selected.formed || null;
+        if (parcelId && !getParcelFeatureById(parcelId)) return false;
+        let builtFeature = null;
+        if (selected.built) {
+            builtFeature = (window.buildingFeaturePool || []).find(feature => clickedBuildingId(feature) === selected.built) || null;
+            if (!builtFeature) return false;
+        }
+        const chosen = { ...selected };
+        if (chosen.formed) { chosen.parcels = chosen.formed; delete chosen.formed; }
+        const focus = expanded === 'formed' ? 'parcels' : expanded;
+        withStackDriving(() => showClickStack({ builtFeature, planningId: selected.permitted || null }, {
+            proposal: designId ? { id: designId } : null, parcel: parcelId ? { id: parcelId } : null,
+            preserveView: true, focus: focus || undefined, selected: chosen
+        }));
+        return true;
+    }
+    window.resumeThreeModeStack = resumeThreeModeStack;
 
     function showThreeModeParcel(parcelId) {
         if (!isActive || !parcelId) return false;
@@ -6635,7 +6659,7 @@
         if (!api || !origin3857) return null;
         const k = lifeMercatorK();
         const project = lifeProjector();
-        const builder = api.createGraphBuilder();
+        const builder = api.createGraphBuilder({ drivingSide: window.CityConfigManager.getDrivingSide() });
         if (typeof isAppliedCorridorProposal === 'function' && typeof corridorStripSpans === 'function'
             && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function') {
             proposalStorage.getAllProposals().filter(isAppliedCorridorProposal).forEach(proposal => {
@@ -9640,8 +9664,10 @@
                 window.activeProposalDraftComparison.mode || 'overlay'
             );
         }
-        const selectedDesign = window.ProposalSelection?.getKey?.();
-        const focusedDesign = focusProposalIds?.size ? [...focusProposalIds][0] : null;
+        // A reload for a new release reopens the person's own stack instead (app-updates.js).
+        const resuming = !!window.UpdateResume?.pending();
+        const selectedDesign = resuming ? null : window.ProposalSelection?.getKey?.();
+        const focusedDesign = !resuming && focusProposalIds?.size ? [...focusProposalIds][0] : null;
         if (focusedDesign || selectedDesign) {
             // An exact shared camera describes the whole map, not an isolated view of its first
             // design. Keep the selected section and outline without filtering or reframing it.

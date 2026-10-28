@@ -7052,6 +7052,7 @@
         "unsupportedCrs": "Este WMS necesita un sistema de coordenadas geográfico o Web Mercator compatible."
     },
     "parcelSourceHealth": {
+        "notIntegrated": "Las parcelas llegaron, pero no se pudieron añadir al mapa.",
         "countryRestricted": "Este registro solo acepta conexiones desde {{country}}. Fuera de ese país, continúa sin parcelas o elige otra fuente.",
         "requestTimedOut": "Se agotó el tiempo de espera de la solicitud.",
         "offline": "Parece que no tienes conexión. Conéctate a internet y vuelve a intentarlo.",

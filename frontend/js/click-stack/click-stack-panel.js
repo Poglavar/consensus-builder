@@ -23,7 +23,7 @@
     const DOCKED_ELSEWHERE = ['block-info-panel', 'road-info-panel', 'road-analysis-panel'];
     // Sections whose object has a shape on the map, so the Focus button can bring it into view.
     const FRAMEABLE = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'selection']);
-    const ICONS = Object.freeze({ agreements: 'fas fa-file-signature', plans: 'fas fa-layer-group', designs: 'fas fa-drafting-compass', built: 'fas fa-building',
+    const ICONS = Object.freeze({ agreements: 'fas cb-icon-agreement', plans: 'fas cb-icon-plan', designs: 'fas cb-icon-design', built: 'fas fa-building',
         permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
     const state = { el: null, stack: null, frameRequest: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null , baseHits: null, derived: {} };
@@ -960,6 +960,19 @@
         return true;
     }
 
+    // A reload for a new release reopens the spot the person had open with the same instances
+    // selected, leaving the map where the address put it. False until all of them are back there.
+    function resume(latlng, { selected, selectedKind, expanded }) {
+        if (!latlng || blocked({})) return false;
+        const hits = global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) });
+        let stack = model.buildClickStack(hits, { selected });
+        if (!Object.entries(selected).every(([kind, id]) => model.selectedInstance(stack, kind)?.id === id)) return false;
+        stack = expanded ? model.expand(stack, expanded) : { ...stack, expanded: null, selectedKind: selectedKind || stack.selectedKind };
+        state.lastClick = null;
+        show(stack, latlng, hits);
+        return true;
+    }
+
     // Every map click on the 2D map arrives here, whichever layer received it. One physical click
     // can reach several layers' handlers; only the first counts.
     function handleClick(latlng, { allowUrbanBlocks = false } = {}) {
@@ -1026,6 +1039,6 @@
 
     // Selection owns the map focus, including while its details are collapsed.
     const holdsHighlight = () => isOpen() && !!state.stack?.selectedKind;
-    global.ClickStack = Object.freeze({ handleClick, showDesign, showPlan, showAgreement, showParcel, showBuilding, restoreFocus, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
+    global.ClickStack = Object.freeze({ handleClick, resume, showDesign, showPlan, showAgreement, showParcel, showBuilding, restoreFocus, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
         current: () => state.stack, point: () => state.latlng });
 })(window);
