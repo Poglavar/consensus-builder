@@ -105,7 +105,8 @@
             const icon = doc.createElement('i'); icon.className = `fas fa-${name}`;
             icon.setAttribute('aria-hidden', 'true'); button.prepend(icon);
         }
-        function controls({ getRecords = null, getView = () => win.MapShare.capture(win), getTitle = () => 'My plan', getSources = () => ({}), getSchedule = () => null, importAllowed = true } = {}) {
+        // `extras`: further downloads, [{ label, hook, make: () => ({ text, name, type }) }].
+        function controls({ getRecords = null, getView = () => win.MapShare.capture(win), getTitle = () => 'My plan', getSources = () => ({}), getSchedule = () => null, importAllowed = true, extras = [] } = {}) {
             const group = doc.createElement('div'); group.className = 'plan-file-controls';
             let busy = false;
             const buttons = [];
@@ -116,11 +117,12 @@
                 b.addEventListener('click', async () => {
                     if (busy) return;
                     busy = true; buttons.forEach(c => { c.disabled = true; });
+                    const exporting = hook !== 'plans';
                     try { await win.BusyControl.track(b, async () => {
                         await new Promise(win.requestAnimationFrame);
-                        return ['json', 'geojson'].includes(hook)
+                        return exporting
                             ? observe('export', { entity: 'file', code: 'plan-export-failed', context: { format: hook } }, action) : action();
-                    }); } catch (e) { error(e, ['json', 'geojson'].includes(hook) ? 'plan-export-failed' : 'plan-open-failed'); }
+                    }); } catch (e) { error(e, exporting ? 'plan-export-failed' : 'plan-open-failed'); }
                     finally { busy = false; buttons.forEach(c => { c.disabled = false; }); }
                 });
                 buttons.push(b); group.appendChild(b); return b;
@@ -130,6 +132,7 @@
                 button(t('json', 'Download editable plan'), async () => download(win.PlanFile.stringify(await make()), `${fileStem(getTitle())}.ugt.json`, 'application/json'), 'json');
                 button(t('geojson', 'Download GeoJSON'), () => download(JSON.stringify(win.PlanFile.geojsonRecords(structuredClone(getRecords()), { title: getTitle(), view: structuredClone(getView()) }), null, 2) + '\n', `${fileStem(getTitle())}.geojson`, 'application/geo+json'), 'geojson');
             }
+            extras.forEach(extra => button(extra.label, () => { const file = extra.make(); download(file.text, file.name, file.type); }, extra.hook));
             if (!importAllowed) return group;
             const input = doc.createElement('input'); input.type = 'file'; input.accept = '.json,application/json'; input.hidden = true;
             input.setAttribute('aria-label', t('import', 'Import plan file'));
@@ -183,8 +186,14 @@
             const row = await win.PlanWorkspace.resolve(record, members);
             win.showSimpleShareModal({ title: t('plan', 'Download plan'), body: planControls(row), actions: [] });
         }
+        // A road also downloads as its OSM document (Road → Import reads it back) and a parcel layout
+        // as its plots (the layout editor's Upload GeoJSON reads them back).
+        const EXTRA_LABELS = { 'road-osm': ['roadOsm', 'Download road (OSM, for Import)'], 'layout-plots': ['layoutPlots', 'Download plots (GeoJSON)'] };
         function design(record) {
-            win.showSimpleShareModal({ title: t('design', 'Download design'), body: controls({ getRecords: () => [record], getTitle: () => record.title || 'My design', importAllowed: false }), actions: [] });
+            const title = () => record.title || 'My design';
+            const extras = win.DesignFileExports.downloadsFor(record).map(file => ({ label: t(...EXTRA_LABELS[file.id]), hook: file.id,
+                make: () => ({ text: file.text, name: fileStem(title()) + file.suffix, type: file.type }) }));
+            win.showSimpleShareModal({ title: t('design', 'Download design'), body: controls({ getRecords: () => [record], getTitle: title, importAllowed: false, extras }), actions: [] });
         }
         return { controls, planControls, plan, design, review, commitImport, openPlan };
     }

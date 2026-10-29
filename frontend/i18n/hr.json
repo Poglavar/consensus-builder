@@ -12,6 +12,8 @@
         "help": "Formati datoteka i ograničenja",
         "design": "Preuzmi dizajn",
         "plan": "Preuzmi plan",
+        "roadOsm": "Preuzmi cestu (OSM, za uvoz)",
+        "layoutPlots": "Preuzmi čestice (GeoJSON)",
         "review": "Pregled datoteke plana",
         "cancel": "Odustani",
         "importDrafts": "Uvezi kao nacrte",
@@ -3624,6 +3626,7 @@
             "colPlot": "Čestica",
             "newPlots": "Nove čestice",
             "uploadGeojson": "Prenesi GeoJSON",
+            "downloadGeojson": "Preuzmi čestice kao GeoJSON",
             "parcelCount": {
                 "one": "{{count}} čestica",
                 "few": "{{count}} čestice",

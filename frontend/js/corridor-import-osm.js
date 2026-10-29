@@ -48,18 +48,23 @@
         return elements;
     }
 
-    function elementsFromJson(text) {
+    // An OSM-JSON document's road elements, and the `cb:definition` extension a road this app wrote
+    // carries beside them (its tunnels, grade separations, bound…; design-file-exports.js).
+    function documentFromJson(text) {
         const parsed = JSON.parse(text);
         const elements = parsed && Array.isArray(parsed.elements) ? parsed.elements : null;
         if (!elements) throw new Error('OSM: a JSON document needs an `elements` list');
-        return elements.filter(element => element && (element.type === 'node' || element.type === 'way'));
+        const extension = parsed['cb:definition'];
+        return { elements: elements.filter(element => element && (element.type === 'node' || element.type === 'way')),
+            extension: extension && typeof extension === 'object' && !Array.isArray(extension) ? extension : null };
     }
+    const elementsFromJson = text => documentFromJson(text).elements;
 
     // parseOsm(text) -> { form, roads, placement, warnings }, the shape every import adapter returns.
     function parseOsm(text) {
         const source = String(text || '');
         const trimmed = source.trimStart();
-        const elements = trimmed.startsWith('{') ? elementsFromJson(source) : elementsFromXml(source);
+        const { elements, extension } = trimmed.startsWith('{') ? documentFromJson(source) : { elements: elementsFromXml(source), extension: null };
         const warnings = [];
         const nodes = new Map(elements.filter(element => element.type === 'node' && finite(element.lat) && finite(element.lon)).map(node => [node.id, node]));
         let ways = elements.filter(element => element.type === 'way' && Array.isArray(element.nodes) && isRoadWay(element));
@@ -79,7 +84,11 @@
             }
             if (present.length !== way.nodes.length) warnings.push(`way ${way.id}: ${way.nodes.length - present.length} node(s) missing from the file were skipped`);
             present.forEach(id => usedNodes.add(id));
-            formWays.push({ type: 'way', id: way.id, nodes: present, tags: { ...way.tags, 'cb:segment': `w${way.id}` } });
+            // A stretch id the file already gives (a road this app wrote) is kept, so what refers
+            // to it (a tunnel's segmentId) still does; any other way is named after its id.
+            const own = way.tags['cb:segment'];
+            const segment = typeof own === 'string' && own && !formWays.some(other => other.tags['cb:segment'] === own) ? own : `w${way.id}`;
+            formWays.push({ type: 'way', id: way.id, nodes: present, tags: { ...way.tags, 'cb:segment': segment } });
         });
         const formNodes = [...usedNodes].map(id => {
             const node = nodes.get(id);
@@ -99,7 +108,8 @@
             form: { version: 0.6, generator: 'consensus-builder', elements: [...formNodes, ...formWays] },
             roads: [...roadsByKey.values()],
             placement: 'georeference',
-            warnings
+            warnings,
+            ...(extension ? { extension } : {})
         };
     }
 

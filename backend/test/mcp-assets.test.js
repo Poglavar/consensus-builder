@@ -15,6 +15,7 @@ import { resultSchemaFor } from '../agents/mcp-contracts.js';
 import { markUntrusted } from '../agents/mcp-results.js';
 const require = createRequire(import.meta.url);
 const imports = require('../../frontend/js/corridor-import.js');
+const DesignFileExports = require('../../frontend/js/design-file-exports.js');
 const PlanRecord = require('../../frontend/js/plan-record.js');
 const modelGeometry = require('../../frontend/js/building-model-geometry.js');
 const FurnitureModels = require('../../frontend/js/furniture-models.js');
@@ -112,6 +113,18 @@ describe('MCP imports and ephemeral visual previews', () => {
         record.city = args.city; record.roadProposal.definition = corridorRuntime.osm.toRecord(record.roadProposal.definition);
         expect(canonicalBytes(answer.designs[0].design)).toEqual(canonicalBytes(designObject(record).content));
         expect(answer.import).toMatchObject({ parser: 'app-corridor-import', count: 1 });
+    });
+    it('imports a road file the site downloaded, with the tunnels its OSM ways cannot carry', async () => {
+        const { tools } = setup();
+        const parsed = imports.FORMATS.find(format => format.id === 'osm').parse(osm);
+        const [road] = imports.recordsFromImport(parsed, { author: 'import', createdAt: '2026-01-01T00:00:00.000Z' });
+        const tunnel = { id: 'building-tunnel:k', kind: 'building', edgeKey: 'k', from: { lat: 48, lng: 1 }, to: { lat: 48, lng: 1.001 }, segmentId: null, buildingIds: ['5'] };
+        road.title = 'Tunnel street'; road.roadProposal.definition.tunnels = [tunnel];
+        const data = DesignFileExports.downloadsFor(road)[0].text;
+        const answer = await tools.importDesign({ format: 'osm', data, city: 'place', author: 'import', parcelSourceId: 'ground' });
+        expect(answer.designs).toHaveLength(1);
+        expect(answer.designs[0].design.title).toBe('Tunnel street');
+        expect(answer.designs[0].design.roadProposal.definition.tunnels).toEqual([tunnel]);
     });
     it('imports the existing georeferenced OpenDRIVE fixture without a second parser', async () => {
         const { tools } = setup();
