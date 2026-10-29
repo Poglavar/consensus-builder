@@ -1521,7 +1521,6 @@
                 window.ProposalSelection?.clear?.();
             });
             if (kind === 'designs') {
-                body.replaceChildren();
                 clearIsolation();
                 withStackDriving(() => window.selectAndHighlightProposal?.(instance.id, null, false, false, true));
                 const proposal = window.proposalStorage?.getProposal?.(instance.id);
