@@ -20,26 +20,26 @@ const crossProject = [
 ];
 
 describe('Borongaj floor-plan archive', () => {
-    it('retains 54 sourced floors, differing layouts and 648 apartment references', () => {
+    it('retains 54 sourced storeys, differing layouts and 648 apartment references', () => {
         expect(source.map(b => b.properties.name)).toEqual(['A1', 'B1', 'B2', 'B3', 'B4', 'C1']);
         let apartmentCount = 0;
         for (const building of source) {
             const plans = building.properties.floorPlans;
             const evidence = manifest.buildings.find(b => b.id === building.properties.name);
             expect(validateFloorPlans(plans)).toEqual([]);
-            expect(plans.floors.map(f => f.level)).toEqual([0,1,2,3,4,5,6,7,8]);
+            expect(plans.storeys.map(f => f.level)).toEqual([0,1,2,3,4,5,6,7,8]);
             expect(plans.layouts.length).toBeGreaterThan(1);
-            expect(plans.layouts.length).toBeLessThan(plans.floors.length);
+            expect(plans.layouts.length).toBeLessThan(plans.storeys.length);
             expect(plans.registration.accuracy).toBe('approximate');
             expect(plans.registration.permitFeatureId).toBe(building.properties.sourceFeatureId);
             expect(plans.registration.northInDrawing).toBe(building.properties.name === 'B3' ? 'right' : 'up');
-            for (const floor of plans.floors) {
-                expect(floor.source).toEqual(evidence.floors.find(f => f.level === floor.level).source);
+            for (const floor of plans.storeys) {
+                expect(floor.source).toEqual(evidence.storeys.find(f => f.level === floor.level).source);
                 expect(floor.source.sha256).toMatch(/^[a-f0-9]{64}$/);
                 expect(floor.source.url).toMatch(/^https:\/\/pionir.hr\//);
                 expect(floor.elevationM).toBe(building.properties.name === 'A1' ? (floor.level === 0 ? 0 : floor.level * 3 + 0.7) : floor.level * 3);
                 expect(floor.elevationBasis).toBe('estimated');
-                apartmentCount += floor.apartments.length;
+                apartmentCount += floor.units.filter(unit => unit.kind === 'apartment').length;
             }
             for (const layout of plans.layouts) {
                 expect(layout.sourceVectorSha256).toMatch(/^[a-f0-9]{64}$/);
@@ -81,7 +81,7 @@ describe('Borongaj floor-plan archive', () => {
         const before = structuredClone(targets);
         const patch = attachBuildingFloorPlans(targets, source);
         expect(patch.changed).toBe(6);
-        expect(patch.floors).toBe(54);
+        expect(patch.storeys).toBe(54);
         expect(targets).toEqual(before);
         const stripped = structuredClone(patch.buildings);
         for (const b of stripped) delete b.properties.floorPlans;
@@ -113,11 +113,11 @@ describe('canonical cross-project floor-plan corpus', () => {
                 expect(b).toBeTruthy();
                 const plans = b.properties.floorPlans;
                 expect(validateFloorPlans(plans)).toEqual([]);
-                expect(plans.floors.map(f => f.level)).toEqual(expected[slug][name]);
+                expect(plans.storeys.map(f => f.level)).toEqual(expected[slug][name]);
                 expect(buildingSourceId(b)).toBeTruthy();
-                expect(plans.floors.every(f => f.source?.url && /^https:\/\//.test(f.source.url) && /^[a-f0-9]{64}$/.test(f.source.sha256))).toBe(true);
-                expect(plans.floors.every(f => Number.isFinite(f.elevationM))).toBe(true);
-                total += plans.floors.length;
+                expect(plans.storeys.every(f => f.source?.url && /^https:\/\//.test(f.source.url) && /^[a-f0-9]{64}$/.test(f.source.sha256))).toBe(true);
+                expect(plans.storeys.every(f => Number.isFinite(f.elevationM))).toBe(true);
+                total += plans.storeys.length;
                 owners.push(`${slug}:${name}`);
             }
         }
@@ -127,20 +127,20 @@ describe('canonical cross-project floor-plan corpus', () => {
 
     it('keeps shared basement ownership unique and preserves source structures', () => {
         const savicaFeatures = archive('savica-f1-f3').features;
-        expect(savicaFeatures.filter(f => f.properties.floorPlans?.floors.some(floor => floor.level === -1))).toHaveLength(1);
+        expect(savicaFeatures.filter(f => f.properties.floorPlans?.storeys.some(floor => floor.level === -1))).toHaveLength(1);
         const savica = savicaFeatures.find(f => f.properties.name === 'F3').properties.floorPlans;
-        expect(savica.floors.filter(f => f.level === -1)).toHaveLength(1);
-        const top = savica.floors.find(f => f.level === 7);
-        const lower = savica.floors.find(f => f.level === 6);
+        expect(savica.storeys.filter(f => f.level === -1)).toHaveLength(1);
+        const top = savica.storeys.find(f => f.level === 7);
+        const lower = savica.storeys.find(f => f.level === 6);
         const byId = new Map(savica.layouts.map(l => [l.id, l]));
         const topLayout = byId.get(top.layoutId).architecture;
         const lowerLayout = byId.get(lower.layoutId).architecture;
         expect(topLayout.railings?.length || 0).toBeGreaterThan(0);
         expect(topLayout.walls.length).toBeLessThan(lowerLayout.walls.length);
         const lov = archive('lovinciceva-4090-1').features.find(f => f.properties.name === 'C1').properties.floorPlans;
-        expect(lov.floors).toHaveLength(1);
-        expect(lov.floors[0].level).toBe(-1);
-        const lovLayout = lov.layouts.find(l => l.id === lov.floors[0].layoutId).architecture;
+        expect(lov.storeys).toHaveLength(1);
+        expect(lov.storeys[0].level).toBe(-1);
+        const lovLayout = lov.layouts.find(l => l.id === lov.storeys[0].layoutId).architecture;
         expect(lovLayout.stairs || []).toHaveLength(0);
         expect(lovLayout.openings.filter(opening => opening.kind === 'window' || opening.kind === 'glazedDoor')).toHaveLength(0);
     });

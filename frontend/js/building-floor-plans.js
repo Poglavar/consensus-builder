@@ -1,7 +1,9 @@
 // Pure validation and registration geometry for georeferenced architectural floor models.
 (function (global) {
     'use strict';
-    const SCHEMA = 'consensus-builder.building-floor-plans.v2';
+    const SCHEMA = 'consensus-builder.building-floor-plans.v3';
+    // Kinds of a storey's units (CityGML BuildingUnit function): apartments are counted as housing.
+    const UNIT_KINDS = ['apartment', 'shop', 'office', 'garage'];
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     const error = (path, message) => `${path}: ${message}`;
     function httpUrl(value) {
@@ -31,16 +33,16 @@
     // ordinary proxy where evidence is absent. Underground intervals never cover the proxy.
     function uncoveredFloorBands(feature, totalHeight) {
         if (!feature?.properties?.floorPlans || !finite(totalHeight) || totalHeight <= 0) return [];
-        // Floor elevations and architectural dimensions are independently rounded to millimetres.
-        // Their joins can differ by up to 2 mm; those are not missing floors to fill with a solid
+        // Storey elevations and architectural dimensions are independently rounded to millimetres.
+        // Their joins can differ by up to 2 mm; those are not missing storeys to fill with a solid
         // proxy (whose almost coincident caps would flicker and cover the interior).
         const joinToleranceM = 0.002;
         const plans = feature.properties.floorPlans;
         const layouts = new Map((Array.isArray(plans.layouts) ? plans.layouts : []).map(layout => [layout.id, layout]));
         const covered = [];
-        for (const floor of Array.isArray(plans.floors) ? plans.floors : []) {
-            const base = floor?.elevationM;
-            const architecture = layouts.get(floor?.layoutId)?.architecture;
+        for (const storey of Array.isArray(plans.storeys) ? plans.storeys : []) {
+            const base = storey?.elevationM;
+            const architecture = layouts.get(storey?.layoutId)?.architecture;
             const wallHeight = architecture?.wallHeightM;
             const slabThickness = architecture?.slabThicknessM;
             if (!finite(base) || !finite(wallHeight) || !finite(slabThickness)) continue;
@@ -110,34 +112,35 @@
                 if (typeof source.sha256 !== 'string' || !source.sha256) errors.push(error(`${path}.source.sha256`, 'must be a non-empty string'));
             }
         });
-        const floors = data.floors, floorIds = new Set(), levels = new Set();
-        if (!Array.isArray(floors)) errors.push(error('floorPlans.floors', 'must be an array'));
-        else if (floors.length > 100) errors.push(error('floorPlans.floors', 'must contain at most 100 floors'));
-        else floors.forEach((floor, fi) => {
-            const path = `floorPlans.floors[${fi}]`;
-            if (!floor || typeof floor !== 'object' || typeof floor.id !== 'string' || !floor.id || floorIds.has(floor.id)) errors.push(error(`${path}.id`, 'must be a unique non-empty string')); else floorIds.add(floor.id);
-            if (!finite(floor?.level) || !Number.isInteger(floor.level) || levels.has(floor.level)) errors.push(error(`${path}.level`, 'must be a unique integer')); else levels.add(floor.level);
-            if (!finite(floor?.elevationM)) errors.push(error(`${path}.elevationM`, 'must be finite'));
-            if (!['documented', 'estimated'].includes(floor?.elevationBasis)) errors.push(error(`${path}.elevationBasis`, 'must be documented or estimated'));
-            if (typeof floor?.layoutId !== 'string' || !layoutIds.has(floor.layoutId)) errors.push(error(`${path}.layoutId`, 'must reference a layout'));
-            if (floor?.apartments !== undefined && !Array.isArray(floor.apartments)) errors.push(error(`${path}.apartments`, 'must be an array'));
-            if (Array.isArray(floor?.apartments)) floor.apartments.forEach((apartment, ai) => {
-                const apartmentPath = `${path}.apartments[${ai}]`;
-                if (!apartment || typeof apartment.id !== 'string' || !apartment.id) {
-                    errors.push(error(`${apartmentPath}.id`, 'must be a non-empty string'));
+        const storeys = data.storeys, storeyIds = new Set(), levels = new Set();
+        if (!Array.isArray(storeys)) errors.push(error('floorPlans.storeys', 'must be an array'));
+        else if (storeys.length > 100) errors.push(error('floorPlans.storeys', 'must contain at most 100 storeys'));
+        else storeys.forEach((storey, si) => {
+            const path = `floorPlans.storeys[${si}]`;
+            if (!storey || typeof storey !== 'object' || typeof storey.id !== 'string' || !storey.id || storeyIds.has(storey.id)) errors.push(error(`${path}.id`, 'must be a unique non-empty string')); else storeyIds.add(storey.id);
+            if (!finite(storey?.level) || !Number.isInteger(storey.level) || levels.has(storey.level)) errors.push(error(`${path}.level`, 'must be a unique integer')); else levels.add(storey.level);
+            if (!finite(storey?.elevationM)) errors.push(error(`${path}.elevationM`, 'must be finite'));
+            if (!['documented', 'estimated'].includes(storey?.elevationBasis)) errors.push(error(`${path}.elevationBasis`, 'must be documented or estimated'));
+            if (typeof storey?.layoutId !== 'string' || !layoutIds.has(storey.layoutId)) errors.push(error(`${path}.layoutId`, 'must reference a layout'));
+            if (storey?.units !== undefined && !Array.isArray(storey.units)) errors.push(error(`${path}.units`, 'must be an array'));
+            if (Array.isArray(storey?.units)) storey.units.forEach((unit, ui) => {
+                const unitPath = `${path}.units[${ui}]`;
+                if (!unit || typeof unit.id !== 'string' || !unit.id) {
+                    errors.push(error(`${unitPath}.id`, 'must be a non-empty string'));
                 }
-                if (apartment?.areaM2 !== undefined && (!finite(apartment.areaM2) || apartment.areaM2 <= 0)) {
-                    errors.push(error(`${apartmentPath}.areaM2`, 'must be a positive finite number'));
+                if (!UNIT_KINDS.includes(unit?.kind)) errors.push(error(`${unitPath}.kind`, `must be one of ${UNIT_KINDS.join(', ')}`));
+                if (unit?.areaM2 !== undefined && (!finite(unit.areaM2) || unit.areaM2 <= 0)) {
+                    errors.push(error(`${unitPath}.areaM2`, 'must be a positive finite number'));
                 }
-                if (apartment?.url !== undefined && !httpUrl(apartment.url)) {
-                    errors.push(error(`${apartmentPath}.url`, 'must be a valid http(s) URL'));
+                if (unit?.url !== undefined && !httpUrl(unit.url)) {
+                    errors.push(error(`${unitPath}.url`, 'must be a valid http(s) URL'));
                 }
             });
         });
         if (!errors.length) {
             const layoutSizes = new Map(layouts.map(layout => [layout.id, estimateArchitectureParts(layout.architecture)]));
-            const count = floors.reduce((sum, floor) => sum + layoutSizes.get(floor.layoutId), 0);
-            if (count > 50000) errors.push(error('floorPlans.floors', 'expanded model must not exceed 50000 solid parts'));
+            const count = storeys.reduce((sum, storey) => sum + layoutSizes.get(storey.layoutId), 0);
+            if (count > 50000) errors.push(error('floorPlans.storeys', 'expanded model must not exceed 50000 solid parts'));
         }
         return errors;
     }
@@ -202,7 +205,7 @@
     }
 
     // Parts are plain polygon prisms in projected XY and metre Z; Three.js only
-    // triangulates these, shares their buffers, and applies each floor's elevation.
+    // triangulates these, shares their buffers, and applies each storey's elevation.
     function buildArchitectureParts(model, projectUv) {
         const [width, height] = model.dimensionsM;
         const metric = p => [p[0]*width, p[1]*height];
@@ -292,12 +295,12 @@
         const layouts = new Map(plans.layouts.map(layout => [layout.id, {
             source: layout.source, parts: buildArchitectureParts(layout.architecture, interpolate)
         }]));
-        return plans.floors.map(floor => ({
-            id: floor.id, level: floor.level, layoutId: floor.layoutId,
-            elevationM: floor.elevationM, elevationBasis: floor.elevationBasis,
-            parts: layouts.get(floor.layoutId).parts,
-            apartmentCount: (floor.apartments || []).length,
-            sourceUrl: floor.source?.url || layouts.get(floor.layoutId).source.url
+        return plans.storeys.map(storey => ({
+            id: storey.id, level: storey.level, layoutId: storey.layoutId,
+            elevationM: storey.elevationM, elevationBasis: storey.elevationBasis,
+            parts: layouts.get(storey.layoutId).parts,
+            apartmentCount: (storey.units || []).filter(unit => unit.kind === 'apartment').length,
+            sourceUrl: storey.source?.url || layouts.get(storey.layoutId).source.url
         }));
     }
     // Refresh presentation data on already materialized buildings without replaying
@@ -345,14 +348,14 @@
         ];
     }
 
-    // One floor of a model as plain WGS84 GeoJSON for 2D maps and thumbnails: wall and slab
+    // One storey of a model as plain WGS84 GeoJSON for 2D maps and thumbnails: wall and slab
     // polygons, opening and stair runs as lines, each tagged with its kind. No Three.js, no DOM.
     function floorPlanToGeoJSON(plans, level) {
         const errors = validateFloorPlans(plans);
         if (errors.length) throw new Error(`Invalid floorPlans: ${errors.join('; ')}`);
-        const floor = plans.floors.find(entry => entry.level === level);
-        if (!floor) return { type: 'FeatureCollection', features: [] };
-        const layout = plans.layouts.find(entry => entry.id === floor.layoutId);
+        const storey = plans.storeys.find(entry => entry.level === level);
+        if (!storey) return { type: 'FeatureCollection', features: [] };
+        const layout = plans.layouts.find(entry => entry.id === storey.layoutId);
         const toLngLat = registrationToLngLat(plans);
         const ring = points => points.map(p => toLngLat(p[0], p[1])).concat([toLngLat(points[0][0], points[0][1])]);
         const features = [];
@@ -373,7 +376,7 @@
         lineFeatures('railing', architecture.railings);
         return { type: 'FeatureCollection', features };
     }
-    const api = { buildLocalUnitParts, SCHEMA, ARCHITECTURE_SCHEMA, buildingSourceId, uncoveredFloorBands, validateArchitecture, validateFloorPlans, buildFloorPlanGeometry, refreshRegisteredFloorPlans, registrationToLngLat, floorPlanToGeoJSON };
+    const api = { buildLocalUnitParts, SCHEMA, UNIT_KINDS, ARCHITECTURE_SCHEMA, buildingSourceId, uncoveredFloorBands, validateArchitecture, validateFloorPlans, buildFloorPlanGeometry, refreshRegisteredFloorPlans, registrationToLngLat, floorPlanToGeoJSON };
     global.__buildingFloorPlans = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -4768,7 +4768,7 @@
             "proposed": "مقترح",
             "volume": "الحجم",
             "floorArea": "مساحة الطوابق",
-            "floorNote": "@ {{h}} m/floor",
+            "floorNote": "@ {{h}} m/طابق",
             "planned": "مخطط له",
             "plannedConditional": "المخطط له هو ما تمنحه القواعد؛ {{floorArea}} إضافية تتطلب: {{condition}}",
             "value": "القيمة",

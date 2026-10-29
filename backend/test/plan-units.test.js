@@ -26,8 +26,9 @@ describe('counting a building', () => {
         expect(counted.apartments % 5).toBe(0);
     });
     it('counts a building’s own floor plans, and leaves an uploaded model without them to the rule', () => {
-        const floorPlans = { floors: [{ apartments: [{}, {}], units: [{ kind: 'shop', areaM2: 80 }] }, { apartments: [{}, {}, {}], units: [] }] };
-        expect(units.countBuilding({ type: 'Feature', properties: { floorPlans }, geometry: null }, deps)).toEqual({ apartments: 5, shopNetM2: 80, workNetM2: 0 });
+        const apartment = { kind: 'apartment' };
+        const floorPlans = { storeys: [{ units: [apartment, apartment, { kind: 'shop', areaM2: 80 }] }, { units: [apartment, apartment, apartment, { kind: 'office', areaM2: 120 }] }] };
+        expect(units.countBuilding({ type: 'Feature', properties: { floorPlans }, geometry: null }, deps)).toEqual({ apartments: 5, shopNetM2: 80, workNetM2: 120 });
         expect(units.countBuilding(rectangle(0, 0, 24, 12, { modelUrl: 'tower.glb' }), { ...deps, heightM: 30 })).toEqual({ reason: 'uploaded-model' });
     });
     it('says why a footprint gets no layout', () => {

@@ -974,7 +974,7 @@
             profit: threeI18n('threeMode.parcelPanel.profit', 'Profit'),
             profitNote: threeI18n('threeMode.parcelPanel.profitNote', 'Profit = value − construction cost − built value'),
             floorArea: threeI18n('threeMode.parcelPanel.floorArea', 'Floor area'),
-            floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/floor', { h: FLOOR_HEIGHT_M }),
+            floorNote: threeI18n('threeMode.parcelPanel.floorNote', '@ {{h}} m/storey', { h: FLOOR_HEIGHT_M }),
             parcelsLabel: threeI18n('threeMode.proposalPanel.parcelsLabel', 'Parcels')
         };
     }
@@ -1894,7 +1894,7 @@
         xrayButton.className = 'btn three-mode-xray-button';
         xrayButton.textContent = threeI18n('threeMode.controls.xray', 'X-ray');
         xrayButton.title = threeI18n('threeMode.controls.xrayTooltip',
-            'Show modelled floors, walls, doors and windows.');
+            'Show modelled storeys, walls, doors and windows.');
         xrayButton.addEventListener('click', () => setXrayEnabled(!xrayEnabled));
         const xrayButtons = document.createElement('div');
         xrayButtons.className = 'three-mode-xray-buttons';
@@ -1936,7 +1936,7 @@
         floorCutawaySelect = document.createElement('select');
         floorCutawaySelect.id = 'three-mode-floor-cutaway';
         floorCutawaySelect.className = 'three-mode-display-select';
-        floorCutawaySelect.setAttribute('aria-label', threeI18n('threeMode.controls.floorCutawayTooltip', 'Choose which floors remain visible in X-ray view'));
+        floorCutawaySelect.setAttribute('aria-label', threeI18n('threeMode.controls.floorCutawayTooltip', 'Choose which storeys remain visible in X-ray view'));
         floorCutawaySelect.title = floorCutawaySelect.getAttribute('aria-label');
         floorCutawayControl.title = floorCutawaySelect.title;
         floorCutawaySelect.addEventListener('change', () => {
@@ -8570,7 +8570,7 @@
             totals.buildings++;
             totals.cores += result.summary.cores;
             totals.apartmentsPerFloor += result.summary.apartmentsPerFloor;
-            totals.apartments += result.floorPlans.floors.reduce((sum, floor) => sum + (floor.apartments || []).length, 0);
+            totals.apartments += result.floorPlans.storeys.reduce((sum, storey) => sum + (storey.units || []).filter(unit => unit.kind === 'apartment').length, 0);
         } else totals.flagged++;
         suggestedPlanByProposal.set(String(proposalId), totals);
     }
@@ -8588,14 +8588,14 @@
         const cores = planned.reduce((sum, slice) => sum + slice.result.summary.cores, 0);
         const apartments = planned.reduce((sum, slice) => sum + slice.result.summary.apartmentsPerFloor, 0);
         const rooms = planned.reduce((sum, slice) => sum + (slice.result.summary.rooms || 0), 0);
-        return threeI18n('threeMode.parcelPanel.suggestedSummary', `${cores} core(s) · ${apartments} apartments per floor · ${rooms} rooms`, { cores, apartments, rooms });
+        return threeI18n('threeMode.parcelPanel.suggestedSummary', `${cores} core(s) · ${apartments} apartments per storey · ${rooms} rooms`, { cores, apartments, rooms });
     }
     function suggestedProposalPanelText(proposal) {
         if (!suggestedPlansEnabled || !proposal) return '';
         const totals = suggestedPlanByProposal.get(String(proposal.proposalId ?? proposal.id));
         if (!totals || (!totals.buildings && !totals.flagged)) return '';
         const line = threeI18n('threeMode.proposalPanel.suggestedTotals',
-            `Suggested layouts: ${totals.buildings} buildings · ${totals.apartmentsPerFloor} apartments per floor · ${totals.apartments} in total`,
+            `Suggested layouts: ${totals.buildings} buildings · ${totals.apartmentsPerFloor} apartments per storey · ${totals.apartments} in total`,
             { buildings: totals.buildings, apartmentsPerFloor: totals.apartmentsPerFloor, apartments: totals.apartments });
         return totals.flagged ? `${line} ${threeI18n('threeMode.controls.suggestedFlagged', `${totals.flagged} in red: too small for a minimum stair core.`, { count: totals.flagged })}` : line;
     }
@@ -8794,7 +8794,7 @@
         // A building can have several parcel slices or appear in both data families. Its
         // registered drawing is owned once, independent of how many exterior meshes it has.
         try {
-            const key = JSON.stringify([plans.registration, plans.floors?.map(floor => floor.id)]);
+            const key = JSON.stringify([plans.registration, plans.storeys?.map(storey => storey.id)]);
             if (renderedFloorPlanKeys.has(key)) return true;
             const group = floorPlanRenderer.createBuildingGroup(THREE, feature,
                 (lng, lat) => latLngToXY(lat, lng), floorPlanGeometry, { proxyMaterial, proxyHeightM });
@@ -9029,7 +9029,7 @@
                 [null, ...levels].forEach(level => {
                     const option = document.createElement('option');
                     option.value = level === null ? 'all' : String(level);
-                    option.textContent = level === null ? threeI18n('threeMode.controls.floorAll', 'All floors')
+                    option.textContent = level === null ? threeI18n('threeMode.controls.floorAll', 'All storeys')
                         : level < 0 ? threeI18n('threeMode.controls.floorBasement', `Basement ${-level}`, { level: -level })
                         : level === 0 ? threeI18n('threeMode.controls.floorGround', 'Ground floor')
                         : threeI18n('threeMode.controls.floorLevel', `Floor ${level}`, { level });
@@ -9049,7 +9049,7 @@
             return total;
         }, { floors: 0, buildings: 0, estimatedFloors: 0, apartments: 0 });
         const lines = [totals.floors
-            ? threeI18n('threeMode.controls.xrayCount', `Floors: ${totals.floors} · Buildings: ${totals.buildings}`, totals)
+            ? threeI18n('threeMode.controls.xrayCount', `Storeys: ${totals.floors} · Buildings: ${totals.buildings}`, totals)
             : threeI18n('threeMode.controls.xrayEmpty', 'No floor plans available for the visible buildings.')];
         if (totals.estimatedFloors) lines.push(threeI18n('threeMode.controls.xrayEstimated',
             'Heights and opening types are inferred.'));
@@ -9062,7 +9062,7 @@
             lines.push(threeI18n('threeMode.controls.suggestedNote', 'Suggested layouts are generated defaults, not part of the design.'));
             const buildings = suggestedPlanTotals.slices - suggestedPlanTotals.flagged;
             if (buildings) lines.push(threeI18n('threeMode.controls.suggestedCount',
-                `Suggested: ${buildings} buildings · ${suggestedPlanTotals.apartments} apartments per floor`,
+                `Suggested: ${buildings} buildings · ${suggestedPlanTotals.apartments} apartments per storey`,
                 { buildings, apartments: suggestedPlanTotals.apartments }));
             if (suggestedPlanTotals.flagged) lines.push(threeI18n('threeMode.controls.suggestedFlagged',
                 `${suggestedPlanTotals.flagged} in red: too small for a minimum stair core.`, { count: suggestedPlanTotals.flagged }));

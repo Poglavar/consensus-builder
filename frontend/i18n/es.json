@@ -1039,7 +1039,7 @@
     },
     "common": {
         "maxFloors": "Máximo de plantas:",
-        "minFloors": "Pisos mínimos:",
+        "minFloors": "Mínimo de plantas:",
         "copied": "Copiado",
         "lifecycle": {
             "draft": "Borrador",
@@ -3452,7 +3452,7 @@
                 "buildingCount": "Envolventes según la regla:",
                 "totalArea": "Huella según la regla (m²):",
                 "totalVolume": "Volumen según la regla (m³):",
-                "avgFloors": "Pisos del ejemplo (prom.):",
+                "avgFloors": "Plantas del ejemplo (prom.):",
                 "ruleType": "Qué obliga la norma:",
                 "ruleTypeMax": "Como máximo esto",
                 "ruleTypeRange": "Entre un mínimo y esto",
@@ -8248,7 +8248,7 @@
             "sideSetback": "Retiro lateral mínimo",
             "rearSetback": "Retiro posterior mínimo",
             "height": "Altura máxima",
-                "storeys": "Pisos máximos",
+                "storeys": "Máximo de plantas",
             "lotArea": "Superficie mínima de parcela"
         },
         "photoNote": "Explora los volúmenes permitidos en el mapa o en el modelo 3D.",
@@ -8323,7 +8323,7 @@
             "cached-calculation": "Cálculo guardado",
             "new-attached-multifamily": "Nueva vivienda multifamiliar adosada",
             "general": "General (mapa de tratamientos)",
-            "sustainable": "Pisos de construcción sostenible (Decreto 676/2025)"
+            "sustainable": "Plantas de construcción sostenible (Decreto 676/2025)"
         },
         "evidence": {
             "direct": "Valor directo de la fuente",

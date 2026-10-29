@@ -339,7 +339,7 @@
         "consensus:role": "building",
         "consensus:index": 4,
         "floorPlans": {
-          "schema": "consensus-builder.building-floor-plans.v2",
+          "schema": "consensus-builder.building-floor-plans.v3",
           "registration": {
             "corners": [
               [16.017334108139796, 45.80005961093728],
@@ -1365,7 +1365,7 @@
               }
             }
           ],
-          "floors": [
+          "storeys": [
             {
               "id": "C1-floor--1",
               "level": -1,
@@ -1399,7 +1399,7 @@
                 ],
                 "openingClassification": "doors-only"
               },
-              "apartments": []
+              "units": []
             }
           ],
           "notes": [

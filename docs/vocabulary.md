@@ -869,7 +869,7 @@ A stated distance between a building or permitted form and the relevant land bou
 
 ### Height
 
-A vertical size in metres with an identified basis, such as measured roof height, authored building height or storeys multiplied by an assumed floor height.
+A vertical size in metres with an identified basis, such as measured roof height, authored building height or storeys multiplied by an assumed storey height.
 
 ### Elevation
 
@@ -877,7 +877,7 @@ A vertical position relative to a stated datum or reference. An elevation is not
 
 ### Storey
 
-A vertical subdivision of a building. A storey count, floor index, local label and elevation are separate quantities and require an explicit numbering or height convention to relate them.
+A vertical subdivision of a building, and the one name for it: counts, rules, the floor model and the UI say storey (CityGML `Storey`, IFC `IfcBuildingStorey`). A storey count, storey number (`level`, 0 at the ground floor, negative below ground), local label and elevation are separate quantities and require an explicit numbering or height convention to relate them. "Floor" names only floor area, floor plans and a single storey's label (Ground floor, Floor 3, Basement 1). The building property `floors` and the rule fields `maxFloors`, `minFloors` and `floorHeightM` are storey counts and a storey height.
 
 ### Land area
 
@@ -885,7 +885,7 @@ The horizontal area of a stated parcel, site, footprint or land piece, in m². T
 
 ### Floor area
 
-An area summed over the stated floors and measurement convention, in m². GFA and GBP name floor-area measures; a model's estimate need not equal a jurisdiction's statutory measure.
+An area summed over the stated storeys and measurement convention, in m². GFA and GBP name floor-area measures; a model's estimate need not equal a jurisdiction's statutory measure.
 
 ### Site coverage
 
@@ -901,23 +901,23 @@ The deterministic area value used in agreement input and output commitments, exp
 
 ### Floor plan
 
-A drawing or architectural layout describing a whole floor or an accommodation unit. The source drawing, its interpreted reconstruction and a generated suggested layout are distinct artifacts.
+A drawing or architectural layout describing a whole storey or an accommodation unit. The source drawing, its interpreted reconstruction and a generated suggested layout are distinct artifacts.
 
 ### Published floor plan
 
-An architectural artifact with a stable publication ID, retained source evidence, unit or whole-floor scope, architectural content and review status. Its geographic building association and interpretation revision are separate from that publication identity.
+An architectural artifact with a stable publication ID, retained source evidence, unit or whole-storey scope, architectural content and review status. Its geographic building association and interpretation revision are separate from that publication identity.
 
 ### Floor model
 
-A versioned architectural model associated with `(city, source, ownerId, buildingId)`. For a proposal building, `ownerId` identifies the containing design rather than a landowner; version identity and the current-version designation are separate.
+A versioned architectural model associated with `(city, source, ownerId, buildingId)`, in the `building-floor-plans.v3` format: reusable layouts and the building's `storeys`, each with its level, elevation, layout and `units`. For a proposal building, `ownerId` identifies the containing design rather than a landowner; version identity and the current-version designation are separate.
 
 ### Unit
 
-An identified accommodation or layout within a building or floor. A modeled unit or its count does not by itself establish a separately registered property title.
+An identified accommodation or layout within a building or storey (CityGML `BuildingUnit`). A floor model's unit has a kind: apartment, shop, office or garage; only apartments count as housing. A modeled unit or its count does not by itself establish a separately registered property title.
 
 ### Room
 
-A subdivision of an architectural layout. Its modeled walls, openings and use belong to the floor interpretation or design.
+A subdivision of an architectural layout. Its modeled walls, openings and use belong to the storey's interpretation or design.
 
 ### Floor registration
 

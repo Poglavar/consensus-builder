@@ -1038,8 +1038,8 @@
         "slantedRoof": "Slanted roof with attic"
     },
     "common": {
-        "maxFloors": "Max floors:",
-        "minFloors": "Min floors:",
+        "maxFloors": "Max storeys:",
+        "minFloors": "Min storeys:",
         "copied": "Copied",
         "lifecycle": {
             "draft": "Draft",
@@ -3316,10 +3316,10 @@
             },
             "existing": {
                 "toggle": "Based on existing buildings",
-                "proposedHeight": "Proposed height (floors):",
-                "additionalFloors": "Additional floors:",
-                "floorHeight": "Floor height (m):",
-                "helper": "Pick a rule: proposed height draws every building at exactly that height; additional floors adds floors on top of each building's current height (needs known heights).",
+                "proposedHeight": "Proposed height (storeys):",
+                "additionalFloors": "Additional storeys:",
+                "floorHeight": "Storey height (m):",
+                "helper": "Pick a rule: proposed height draws every building at exactly that height; additional storeys adds storeys on top of each building's current height (needs known heights).",
                 "summaryExact": {
                     "one": "Proposing {{count}} building at {{height}} m.",
                     "other": "Proposing {{count}} buildings at {{height}} m."
@@ -3425,7 +3425,7 @@
                 "buildingCount": "Rule envelopes:",
                 "totalArea": "Rule footprint (m²):",
                 "totalVolume": "Rule volume (m³):",
-                "avgFloors": "Example floors (avg):",
+                "avgFloors": "Example storeys (avg):",
                 "ruleType": "What the rule compels:",
                 "ruleTypeMax": "At most this",
                 "ruleTypeRange": "Between a minimum and this",
@@ -6334,15 +6334,15 @@
             "facadeStyleTooltip": "Mixed assigns a style independently to each building; glass is used only at 10+ storeys. Other presets apply to every building.",
             "facadesNote": "Illustrative designs for proposed buildings.",
             "xray": "X-ray",
-            "xrayTooltip": "Show modelled floors, walls, doors and windows.",
+            "xrayTooltip": "Show modelled storeys, walls, doors and windows.",
             "xraySection": "X-ray floor plans",
-            "floorCutawayTooltip": "Choose which floors remain visible in X-ray view",
-            "xrayCount": "Floors: {{floors}} · buildings: {{buildings}}",
+            "floorCutawayTooltip": "Choose which storeys remain visible in X-ray view",
+            "xrayCount": "Storeys: {{floors}} · buildings: {{buildings}}",
             "xrayEmpty": "No floor plans available for the visible buildings.",
             "xrayEstimated": "Heights and opening types are inferred.",
             "xrayAlignment": "Plan alignment is approximate.",
             "floorCutaway": "Cut above",
-            "floorAll": "All floors",
+            "floorAll": "All storeys",
             "floorGround": "Ground floor",
             "floorBasement": "Basement {{level}}",
             "floorLevel": "Floor {{level}}",
@@ -6350,7 +6350,7 @@
             "suggestedLayouts": "Suggested layouts",
             "suggestedLayoutsTooltip": "Generate a default layout for proposed buildings without a modelled interior: a stair and lift core entered from the street side, two apartments per core. A suggestion, not part of the design.",
             "suggestedNote": "Suggested layouts are generated defaults, not part of the design.",
-            "suggestedCount": "Suggested: {{buildings}} buildings · {{apartments}} apartments per floor",
+            "suggestedCount": "Suggested: {{buildings}} buildings · {{apartments}} apartments per storey",
             "suggestedFlagged": "{{count}} in red: too small for a minimum stair core.",
             "suggestedPendingStreets": "Street data is loading; entrances face the longest facade until it arrives.",
             "suggestedExisting": "Existing buildings too",
@@ -6411,7 +6411,7 @@
             "proposed": "Proposed",
             "volume": "Volume",
             "floorArea": "Floor area",
-            "floorNote": "@ {{h}} m/floor",
+            "floorNote": "@ {{h}} m/storey",
             "planned": "Planned",
             "plannedConditional": "Planned is what the rules grant; {{floorArea}} more needs: {{condition}}",
             "value": "Value",
@@ -6424,13 +6424,13 @@
             "proposalLabel": "Design",
             "show": "show",
             "suggestedLayout": "Suggested layout",
-            "suggestedSummary": "{{cores}} core(s) · {{apartments}} apartments per floor · {{rooms}} rooms",
+            "suggestedSummary": "{{cores}} core(s) · {{apartments}} apartments per storey · {{rooms}} rooms",
             "suggestedFlagged": "No default layout fits: {{reason}}"
         },
         "proposalPanel": {
             "title": "Design info",
             "parcelsLabel": "Parcels",
-            "suggestedTotals": "Suggested layouts: {{buildings}} buildings · {{apartmentsPerFloor}} apartments per floor · {{apartments}} in total",
+            "suggestedTotals": "Suggested layouts: {{buildings}} buildings · {{apartmentsPerFloor}} apartments per storey · {{apartments}} in total",
             "avgPerParcel": "Avg / parcel"
         },
         "isolation": {
@@ -7208,7 +7208,7 @@
         "buildings": {
             "footprint": "footprint {{area}}",
             "floorArea": "floor area {{area}}",
-            "height": "{{floors}} floors · {{height}}"
+            "height": "{{floors}} storeys · {{height}}"
         },
         "structure": {
             "park": "Park",

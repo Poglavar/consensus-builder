@@ -5,7 +5,7 @@
     {
       "id": "F3",
       "northInDrawing": "up",
-      "floors": [
+      "storeys": [
         {
           "level": -1,
           "elevationM": -3,

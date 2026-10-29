@@ -72,11 +72,11 @@ export async function importFloorModels(client, options, input) {
         models = input.models;
         if (models.some(model => model.source === 'proposal')) throw new Error('Import proposal models with --archive so their footprints can be verified.');
     }
-    let changed = 0, floors = 0;
+    let changed = 0, storeys = 0;
     for (const [index, model] of models.entries()) {
         const saved = await saveFloorModel(client, model, { apply: options.apply });
         if (saved.changed) changed++;
-        floors += model.floorPlans.floors.length;
+        storeys += model.floorPlans.storeys.length;
         console.log(JSON.stringify({ progress: `${index + 1}/${models.length}`, city: model.city, source: model.source,
             buildingId: model.buildingId, version: saved.version, changed: saved.changed, apply: options.apply }));
     }
@@ -87,7 +87,7 @@ export async function importFloorModels(client, options, input) {
         await client.query(`UPDATE proposal SET proposal_data = jsonb_set(proposal_data, '{geometry,buildings}', $2::jsonb),
             updated_at = now() WHERE id = $1`, [proposalRow.id, JSON.stringify(cleanedBuildings)]);
     }
-    return { changedBuildings: changed, buildings: models.length, floors, removedInlineCopies: Boolean(embedded), apply: options.apply };
+    return { changedBuildings: changed, buildings: models.length, storeys, removedInlineCopies: Boolean(embedded), apply: options.apply };
 }
 
 async function main() {

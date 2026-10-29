@@ -1406,7 +1406,7 @@ function showBlockifyModal() {
                 <div class="parameter-group blockify-existing-only" style="display:none">
                     <label class="blockify-rule-label" for="proposed-height-slider">
                         <input type="radio" id="blockify-rule-exact" name="blockify-existing-rule" value="exact" checked>
-                        <span data-i18n-key="blockify.modal.existing.proposedHeight" data-i18n-attr="text">Proposed height (floors):</span>
+                        <span data-i18n-key="blockify.modal.existing.proposedHeight" data-i18n-attr="text">Proposed height (storeys):</span>
                         <span id="proposed-height-value">${DEFAULT_PROPOSED_HEIGHT_FLOORS} (${CbFormat.formatLength(DEFAULT_PROPOSED_HEIGHT_FLOORS * DEFAULT_FLOOR_HEIGHT_M)})</span>
                     </label>
                     <input type="range" id="proposed-height-slider" min="1" max="20" value="${DEFAULT_PROPOSED_HEIGHT_FLOORS}" step="1">
@@ -1414,14 +1414,14 @@ function showBlockifyModal() {
                 <div class="parameter-group blockify-existing-only" style="display:none">
                     <label class="blockify-rule-label" for="additional-floors-slider">
                         <input type="radio" id="blockify-rule-additional" name="blockify-existing-rule" value="additional">
-                        <span data-i18n-key="blockify.modal.existing.additionalFloors" data-i18n-attr="text">Additional floors:</span>
+                        <span data-i18n-key="blockify.modal.existing.additionalFloors" data-i18n-attr="text">Additional storeys:</span>
                         <span id="additional-floors-value">${DEFAULT_ADDITIONAL_FLOORS}</span>
                     </label>
                     <input type="range" id="additional-floors-slider" min="1" max="20" value="${DEFAULT_ADDITIONAL_FLOORS}" step="1" disabled>
                 </div>
                 <div class="parameter-group blockify-existing-only" style="display:none">
                     <label for="floor-height-slider">
-                        <span data-i18n-key="blockify.modal.existing.floorHeight" data-i18n-attr="text">Floor height (m):</span>
+                        <span data-i18n-key="blockify.modal.existing.floorHeight" data-i18n-attr="text">Storey height (m):</span>
                         <span id="floor-height-value">${CbFormat.formatNumber(DEFAULT_FLOOR_HEIGHT_M, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
                     </label>
                     <input type="range" id="floor-height-slider" min="2.5" max="5" value="${DEFAULT_FLOOR_HEIGHT_M}" step="0.1">
@@ -1456,7 +1456,7 @@ function showBlockifyModal() {
                 </div>
                 <div class="parameter-group blockify-freeform-only">
                     <label for="height-slider">
-                        <span data-i18n-key="common.maxFloors" data-i18n-attr="text">Max floors:</span>
+                        <span data-i18n-key="common.maxFloors" data-i18n-attr="text">Max storeys:</span>
                         <span id="height-value">${blockFloorsLabel(DEFAULT_BUILDING_HEIGHT)}</span>
                     </label>
                     <input type="range" id="height-slider" min="1" max="${BLOCK_MAX_FLOORS}" value="${blockFloors(DEFAULT_BUILDING_HEIGHT)}" step="1">
@@ -1471,7 +1471,7 @@ function showBlockifyModal() {
                 </div>
                 <div class="parameter-group blockify-freeform-only" id="blockify-minheight-group" style="display: none;">
                     <label for="blockify-minheight-slider">
-                        <span data-i18n-key="common.minFloors" data-i18n-attr="text">Min floors:</span>
+                        <span data-i18n-key="common.minFloors" data-i18n-attr="text">Min storeys:</span>
                         <span id="blockify-minheight-value">0</span>
                     </label>
                     <input type="range" id="blockify-minheight-slider" min="0" max="${BLOCK_MAX_FLOORS}" value="0" step="1">

@@ -156,7 +156,7 @@
             t('blockify.modal.messages.buildingCount', 'Buildings: {{count}}', { count: b.count }),
             t('parcelCompare.buildings.footprint', 'footprint {{area}}', { area: m2(b.footprintM2) }),
             t('parcelCompare.buildings.floorArea', 'floor area {{area}}', { area: m2(b.floorAreaM2) }),
-            t('parcelCompare.buildings.height', '{{floors}} floors · {{height}}', { floors: range(b.floors, ''), height: range(b.heightM, ' m') })
+            t('parcelCompare.buildings.height', '{{floors}} storeys · {{height}}', { floors: range(b.floors, ''), height: range(b.heightM, ' m') })
         ];
     }
 

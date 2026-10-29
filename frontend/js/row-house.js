@@ -1222,7 +1222,7 @@
                     </div>
                     <div class="parameter-group" id="rowhouse-minheight-group" style="display: none;">
                         <label for="rowhouse-minheight-slider">
-                            <span data-i18n-key="common.minFloors" data-i18n-attr="text">Min floors:</span>
+                            <span data-i18n-key="common.minFloors" data-i18n-attr="text">Min storeys:</span>
                             <span id="rowhouse-minheight-value">0</span>
                         </label>
                         <input type="range" id="rowhouse-minheight-slider" min="0" max="${ROW_MAX_FLOORS}" value="0" step="1">
@@ -1254,7 +1254,7 @@
                     </div>
                     <div class="parameter-group">
                         <label for="rowhouse-height-slider">
-                            <span data-i18n-key="common.maxFloors" data-i18n-attr="text">Max floors:</span>
+                            <span data-i18n-key="common.maxFloors" data-i18n-attr="text">Max storeys:</span>
                             <span id="rowhouse-height-value">${rowFloorsLabel(DEFAULT_BUILDING_HEIGHT)}</span>
                         </label>
                         <input type="range" id="rowhouse-height-slider" min="1" max="${ROW_MAX_FLOORS}" value="${rowFloors(DEFAULT_BUILDING_HEIGHT)}" step="1">

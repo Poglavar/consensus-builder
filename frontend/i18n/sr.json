@@ -1039,8 +1039,8 @@
         "slantedRoof": "Kosi krov s potkrovljem"
     },
     "common": {
-        "maxFloors": "Maks. spratova:",
-        "minFloors": "Min. spratova:",
+        "maxFloors": "Maks. etaža:",
+        "minFloors": "Min. etaža:",
         "copied": "Kopirano",
         "lifecycle": {
             "draft": "Nacrt",
@@ -3346,10 +3346,10 @@
             },
             "existing": {
                 "toggle": "Na osnovu postojećih zgrada",
-                "proposedHeight": "Predložena visina (spratova):",
-                "additionalFloors": "Dodatni spratovi:",
-                "floorHeight": "Visina sprata (m):",
-                "helper": "Izaberite pravilo: predložena visina crta svaku zgradu tačno na toj visini; dodatni spratovi dodaju spratove na trenutnu visinu svake zgrade (zahteva poznate visine).",
+                "proposedHeight": "Predložena visina (etaža):",
+                "additionalFloors": "Dodatne etaže:",
+                "floorHeight": "Visina etaže (m):",
+                "helper": "Izaberite pravilo: predložena visina crta svaku zgradu tačno na toj visini; dodatne etaže dodaju etaže na trenutnu visinu svake zgrade (zahteva poznate visine).",
                 "summaryExact": {
                     "one": "Predlaže se {{count}} zgrada visine {{height}} m.",
                     "few": "Predlažu se {{count}} zgrade visine {{height}} m.",
@@ -3457,7 +3457,7 @@
                 "buildingCount": "Gabariti prema pravilu:",
                 "totalArea": "Površina osnove prema pravilu (m²):",
                 "totalVolume": "Zapremina prema pravilu (m³):",
-                "avgFloors": "Spratova u primeru (pros.):",
+                "avgFloors": "Etaža u primeru (pros.):",
                 "ruleType": "Šta pravilo obavezuje:",
                 "ruleTypeMax": "Najviše ovoliko",
                 "ruleTypeRange": "Između minimuma i ovoga",
@@ -6384,7 +6384,7 @@
             "suggestedLayouts": "Predloženi tlocrti",
             "suggestedLayoutsTooltip": "Generiši podrazumevani tlocrt za predložene zgrade bez modelirane unutrašnjosti: jezgro sa stepeništem i liftom sa ulazom sa ulične strane, dva stana po jezgru. Ovo je sugestija, a ne deo dizajna.",
             "suggestedNote": "Predloženi tlocrti su generisane podrazumevane vrednosti, a ne deo dizajna.",
-            "suggestedCount": "Predloženo: {{buildings}} zgrada · {{apartments}} stanova po spratu",
+            "suggestedCount": "Predloženo: {{buildings}} zgrada · {{apartments}} stanova po etaži",
             "suggestedFlagged": "{{count}} crveno: premalo za minimalno stepenišno jezgro.",
             "suggestedPendingStreets": "Podaci o ulicama se učitavaju; ulazi gledaju na najdužu fasadu dok ne stignu.",
             "suggestedExisting": "I postojeće zgrade",
@@ -6458,13 +6458,13 @@
             "proposalLabel": "Predlog",
             "show": "prikaži",
             "suggestedLayout": "Predloženi tlocrt",
-            "suggestedSummary": "{{cores}} jezgro · {{apartments}} stanova po spratu · {{rooms}} prostorija",
+            "suggestedSummary": "{{cores}} jezgro · {{apartments}} stanova po etaži · {{rooms}} prostorija",
             "suggestedFlagged": "Podrazumevani tlocrt ne staje: {{reason}}"
         },
         "proposalPanel": {
             "title": "Podaci o dizajnu",
             "parcelsLabel": "Parcele",
-            "suggestedTotals": "Predloženi tlocrti: {{buildings}} zgrada · {{apartmentsPerFloor}} stanova po spratu · ukupno {{apartments}}",
+            "suggestedTotals": "Predloženi tlocrti: {{buildings}} zgrada · {{apartmentsPerFloor}} stanova po etaži · ukupno {{apartments}}",
             "avgPerParcel": "Prosek / parceli"
         },
         "isolation": {
@@ -7245,7 +7245,7 @@
         "buildings": {
             "footprint": "osnova {{area}}",
             "floorArea": "BRGP {{area}}",
-            "height": "spratova: {{floors}} · {{height}}"
+            "height": "etaža: {{floors}} · {{height}}"
         },
         "structure": {
             "park": "Park",
@@ -7358,11 +7358,11 @@
     "buildingSources": {
         "unavailableTitle": "Zgrade nisu dostupne",
         "title": "Izaberi izvor zgrada",
-        "intro": "Dodaj javni HTTPS URL osnova zgrada za ovaj grad ili OpenStreetMap ogledala (adresa Overpass API-ja koja se završava na /interpreter). Isprobavamo svaki podržani format i čitamo polje visine ili broja spratova ako postoji; ostale visine se procenjuju.",
+        "intro": "Dodaj javni HTTPS URL osnova zgrada za ovaj grad ili OpenStreetMap ogledala (adresa Overpass API-ja koja se završava na /interpreter). Isprobavamo svaki podržani format i čitamo polje visine ili broja etaža ako postoji; ostale visine se procenjuju.",
         "url": "URL izvora zgrada",
         "matched": "Pronađen adapter: {{adapter}}. {{count}} zgrada u test području. Pokrivenost van tog područja zavisi od izvora.",
         "defaultGdi": "3D model Zagreba (GDI)",
-        "levelsOnly": "Visine iz polja broja spratova {{field}}, 3 m po spratu.",
+        "levelsOnly": "Visine iz polja broja etaža {{field}}, 3 m po etaži.",
         "noHeights": "Ovaj izvor nema polje visine; visine se procenjuju.",
         "heightField": "Visine iz polja {{field}}, u",
         "heightUnit": "Jedinica visine",
@@ -8271,7 +8271,7 @@
             "sideSetback": "Najmanji bočni odmak",
             "rearSetback": "Najmanji zadnji odmak",
             "height": "Najveća visina",
-                "storeys": "Najveći broj spratova",
+                "storeys": "Najveći broj etaža",
             "lotArea": "Najmanja površina parcele"
         },
         "photoNote": "Dozvoljene volumene pregledajte na karti ili u 3D modelu.",
@@ -8347,7 +8347,7 @@
             "cached-calculation": "Sačuvani proračun",
             "new-attached-multifamily": "Nova višestambena izgradnja u nizu",
             "general": "Opšte (karta tretmana)",
-            "sustainable": "Spratovi za održivu gradnju (Dekret 676/2025)"
+            "sustainable": "Etaže za održivu gradnju (Dekret 676/2025)"
         },
         "evidence": {
             "direct": "Direktna izvorna vrednost",

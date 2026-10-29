@@ -4700,7 +4700,7 @@
             "facadeStyleTooltip": "Le mode mixte attribue un style à chaque bâtiment indépendamment ; le verre est utilisé uniquement à partir de 10 niveaux. Les autres préréglages s’appliquent à tous les bâtiments.",
             "facadesNote": "Représentations illustratives des bâtiments proposés.",
             "xray": "Vue en transparence",
-            "xrayTooltip": "Afficher les planchers, murs, portes et fenêtres modélisés.",
+            "xrayTooltip": "Afficher les niveaux, murs, portes et fenêtres modélisés.",
             "xraySection": "Plans des niveaux en transparence",
             "floorCutawayTooltip": "Choisissez les niveaux qui restent visibles dans la vue en transparence",
             "xrayCount": "Niveaux : {{floors}} · bâtiments : {{buildings}}",
@@ -8378,7 +8378,7 @@
             "sideSetback": "Retrait latéral minimal",
             "rearSetback": "Retrait arrière minimal",
             "height": "Hauteur maximale",
-            "storeys": "Nombre maximal d'étages",
+            "storeys": "Nombre maximal de niveaux",
             "lotArea": "Surface minimale du terrain"
         },
         "photoNote": "Explorez la volumétrie autorisée sur la carte ou dans la vue du modèle 3D.",
@@ -8443,7 +8443,7 @@
         },
         "scenario": {
             "general": "Général (carte des traitements)",
-            "sustainable": "Étages de construction durable (décret 676/2025)",
+            "sustainable": "Niveaux de construction durable (décret 676/2025)",
             "all": "Tous les types de logement (tirés au sort par parcelle)",
             "family1": "Un logement",
             "family2": "Deux logements",
