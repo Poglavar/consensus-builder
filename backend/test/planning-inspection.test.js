@@ -80,6 +80,26 @@ describe('cache-only parcel inspection', () => {
     });
 });
 
+describe('parcel panel evidence', () => {
+    it('asks the cache for cadastral parcels only, never for a design-formed piece', async () => {
+        const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');
+        const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
+        const show = body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'showParcelEvidence');
+        // persistent-storage.js needs a browser; its rule is that a formed piece's id carries a '#'.
+        const PersistentStorage = { isDerivedParcelId: id => String(id).includes('#') };
+        const parcelRecords = vi.fn(async () => []);
+        const section = { isConnected: true, append: vi.fn() };
+        const container = { querySelector: () => null, append: vi.fn() };
+        const context = vm.createContext({ root: { PersistentStorage }, parcelRecords, element: () => section, parcelPanel: null, console });
+        vm.runInContext(source.slice(show.start, show.end), context);
+        await context.showParcelEvidence(container, 'HR-340715-3004#p-nswq61td8m-1');
+        expect(parcelRecords).not.toHaveBeenCalled();
+        expect(container.append).not.toHaveBeenCalled();
+        await context.showParcelEvidence(container, 'HR-340715-3004');
+        expect(parcelRecords).toHaveBeenCalledWith('HR-340715-3004');
+    });
+});
+
 describe('shared building and proposal representations', () => {
     it('routes public built inspection to the click stack and keeps an unhosted built inspector hidden', () => {
         const source = readFileSync(new URL('../../frontend/js/planning/views.js', import.meta.url), 'utf8');

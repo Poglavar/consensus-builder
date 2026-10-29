@@ -131,6 +131,8 @@
         if (!container || !parcel) return;
         parcelPanel = { container, parcel };
         container.querySelector('.planning-parcel-evidence')?.remove();
+        // Saved results exist only for cadastral parcels; a design-formed piece has none to ask for.
+        if (root.PersistentStorage.isDerivedParcelId(parcel)) return;
         const section = element('section', 'planning-parcel-evidence'); section.hidden = true;
         container.append(section);
         try {
