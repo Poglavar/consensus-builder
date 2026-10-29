@@ -552,23 +552,17 @@
                 // A PARTIAL parcel by definition has ground outside the body, so a null
                 // difference here is a failed computation, never "fully consumed" — swallowing
                 // it used to take the parcel whole with no outside piece minted (dead ground).
-                // A retry on coordinates truncated to 7 decimals (~1.1 cm) used to sit here; it is
-                // gone, because quantizing coordinates is what manufactures the degenerate rings
-                // it was meant to survive, and a cut computed at centimetre precision is a silently
-                // wrong answer. A failure here fails loudly via the authoring refusal below.
-                let outside = null;
-                try {
-                    outside = turfRef.difference(
-                        { type: 'Feature', properties: {}, geometry: entry.feature.geometry }, footprint);
-                } catch (error) {
-                    // Refuses the apply naming the parcel and the clip; falling back to the
-                    // partial-coverage refusal misreported it as a footprint problem.
-                    throw clipFailureApi().clipFailure('difference', error, {
+                // The cut runs through the shared clip (parcel-arrangement.js clipWith): the same
+                // 9-decimal grid as every other stage, retried deterministically on coarser grids.
+                // A clip that still fails throws a ClipFailure that refuses the apply naming the
+                // parcel and the clip; falling back to the partial-coverage refusal misreported it
+                // as a footprint problem.
+                const outside = clipFailureApi().clipWith(turfRef, 'difference',
+                    { type: 'Feature', properties: {}, geometry: entry.feature.geometry }, footprint, {
                         site: 'apply-structures.partialCut',
                         proposalId: idLabel,
                         parcelId: partial.id
-                    }, [entry.feature, footprint]);
-                }
+                    });
                 if (!outside || !outside.geometry) { cutsOk = false; return; }
                 const parts = [];
                 if (outside && outside.geometry) {

@@ -3198,10 +3198,20 @@
     }
 
     // A polygon clip that cannot be done, typed and counted (parcel-arrangement.js ClipFailure).
-    function layoutClipFailure(operation, error, site, operands) {
-        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+    function layoutArrangement() {
+        return (typeof window !== 'undefined' && window.__parcelArrangement)
             || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+    }
+
+    function layoutClipFailure(operation, error, site, operands) {
+        const api = layoutArrangement();
         return api ? api.clipFailure(operation, error, { site }, operands) : error;
+    }
+
+    // The shared parcel clip (parcel-arrangement.js clipWith): the same grid as every other stage;
+    // a clip it cannot do throws a ClipFailure naming `site`.
+    function layoutClip(t, operation, a, b, site) {
+        return layoutArrangement().clipWith(t, operation, a, b, { site });
     }
 
     async function refreshPreview() {
@@ -3327,10 +3337,7 @@
         // A pool with a plot silently left out of it is not the layout's ground: refuse instead.
         let union = features[0];
         for (let i = 1; i < features.length; i++) {
-            let merged = null;
-            try { merged = t.union(union, features[i]); } catch (error) {
-                throw layoutClipFailure('union', error, 'parcel-layout.buildPoolFromPlots', [union, features[i]]);
-            }
+            const merged = layoutClip(t, 'union', union, features[i], 'parcel-layout.buildPoolFromPlots');
             if (!merged) throw layoutClipFailure('union', new Error('union came back empty'), 'parcel-layout.buildPoolFromPlots', [union, features[i]]);
             union = merged;
         }

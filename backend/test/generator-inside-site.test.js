@@ -199,7 +199,10 @@ describe('structures (proposals/geometry.js buildGeometryFromParcels)', () => {
     it('a park on the two parcels binds exactly them', () => {
         const src = read('../../frontend/js/proposals/geometry.js');
         const body = src.slice(src.indexOf('function buildGeometryFromParcels('), src.indexOf('function computeLakeZonesForGeometry('));
-        const build = (0, eval)(`(${body})`); // eslint-disable-line no-eval
+        // Its unions run through the shared clip, resolved by proposalGeometryClipApi from window.
+        const clipApi = src.slice(src.indexOf('function proposalGeometryClipApi('), src.indexOf('function getFeatureCentroid('));
+        const build = (0, eval)(`(function (window) { ${clipApi}\nreturn (${body}); })`)( // eslint-disable-line no-eval
+            { ...globalThis.window, __parcelArrangement: require('../../frontend/js/proposals/parcel-arrangement.js') });
         expect(boundIds(build(SOURCES))).toEqual(['S1', 'S2']);
     });
 });

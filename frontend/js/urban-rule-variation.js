@@ -389,10 +389,20 @@
     // When the massing is nowhere thicker than minDepthM the erosion vanishes and the minimum IS
     // the maximum — "build all of it", which is the correct reading, not a failure.
     // A polygon clip that cannot be done, typed and counted (parcel-arrangement.js ClipFailure).
-    function variationClipFailure(operation, error, site, operands, parcelId) {
-        const api = (global && global.__parcelArrangement)
+    function variationArrangement() {
+        return (global && global.__parcelArrangement)
             || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+    }
+
+    function variationClipFailure(operation, error, site, operands, parcelId) {
+        const api = variationArrangement();
         return api ? api.clipFailure(operation, error, { site, parcelId }, operands) : error;
+    }
+
+    // The shared parcel clip (parcel-arrangement.js clipWith) with the caller's turf: the same grid
+    // as every other stage; a clip it cannot do throws a ClipFailure naming `site` and the parcel.
+    function variationClip(turf, operation, a, b, site, parcelId) {
+        return variationArrangement().clipWith(turf, operation, a, b, { site, parcelId });
     }
 
     function buildToMinimum(massingFeature, minDepthM, deps) {
@@ -408,20 +418,14 @@
         if (core && core.geometry) {
             // The whole massing as the "minimum" (or no minimum at all) would be a rule the
             // proposal never stated: a clip that fails here refuses the envelope.
-            let cut = null;
-            try { cut = turf.difference(filled, core); } catch (error) {
-                throw variationClipFailure('difference', error, 'urban-rule-variation.buildToMinimum', [filled, core]);
-            }
+            const cut = variationClip(turf, 'difference', filled, core, 'urban-rule-variation.buildToMinimum');
             // The core is an inward buffer of `filled`, so the band cannot be empty: a null here
             // is the clipper losing it, not a band of nothing.
             if (!cut) throw variationClipFailure('difference', new Error('difference came back empty'), 'urban-rule-variation.buildToMinimum', [filled, core]);
             band = cut;
         }
 
-        let clipped = null;
-        try { clipped = turf.intersect(band, massingFeature); } catch (error) {
-            throw variationClipFailure('intersect', error, 'urban-rule-variation.buildToMinimum', [band, massingFeature]);
-        }
+        const clipped = variationClip(turf, 'intersect', band, massingFeature, 'urban-rule-variation.buildToMinimum');
         return (clipped && clipped.geometry) ? clipped : null;
     }
 
@@ -458,10 +462,7 @@
             // Without it, a left-out plot reads as a hole in the block instead of a plot that cannot
             // take a building as it stands.
             // A failed intersect is not "the massing does not reach this parcel": refuse.
-            let piece = null;
-            try { piece = turf.intersect(massingFeature, parcelFeature); } catch (error) {
-                throw variationClipFailure('intersect', error, 'urban-rule-variation.splitMassingByParcels', [massingFeature, parcelFeature], parcelId);
-            }
+            const piece = variationClip(turf, 'intersect', massingFeature, parcelFeature, 'urban-rule-variation.splitMassingByParcels', parcelId);
             const wouldBe = (piece && piece.geometry) ? piece.geometry : null;
 
             if (normalized.minPlotAreaM2 > 0 && areaOf(parcelFeature, turf) < normalized.minPlotAreaM2) {
@@ -486,13 +487,9 @@
             // contradicting itself.
             let compelledHere = null;
             if (compelled) {
-                try {
-                    const clip = turf.intersect(compelled, piece);
-                    if (clip && clip.geometry && areaOf(clip, turf) >= 1) compelledHere = clip.geometry;
-                } catch (error) {
-                    // Not "the rule compels nothing here": refuse.
-                    throw variationClipFailure('intersect', error, 'urban-rule-variation.compelledPerParcel', [compelled, piece], parcelId);
-                }
+                // A failed clip is not "the rule compels nothing here": it throws and refuses.
+                const clip = variationClip(turf, 'intersect', compelled, piece, 'urban-rule-variation.compelledPerParcel', parcelId);
+                if (clip && clip.geometry && areaOf(clip, turf) >= 1) compelledHere = clip.geometry;
             }
 
             pieces.push({
@@ -537,10 +534,7 @@
                 && turf.booleanPointInPolygon(point, entry.feature));
             if (!host || hosts.has(String(host.parcelId))) return false;
             hosts.add(String(host.parcelId));
-            let inside = null;
-            try { inside = turf.intersect(piece, host.feature); } catch (error) {
-                throw variationClipFailure('intersect', error, 'urban-rule-variation.piecesOnGround', [piece, host.feature], host.parcelId);
-            }
+            const inside = variationClip(turf, 'intersect', piece, host.feature, 'urban-rule-variation.piecesOnGround', host.parcelId);
             return !!(inside && inside.geometry) && areaOf(inside, turf) >= areaOf(piece, turf) * 0.99;
         });
         if (standsAsSaved) return buildings;

@@ -716,9 +716,7 @@ function buildGeometryFromParcels(parcelInputs = []) {
         let merged = null;
         parcelFeatures.forEach(feature => {
             if (!merged) { merged = feature; return; }
-            try { merged = turf.union(merged, feature) || merged; } catch (error) {
-                throw proposalGeometryClipApi().clipFailure('union', error, { site: 'proposals-geometry.buildGeometryFromParcels' }, [merged, feature]);
-            }
+            merged = proposalGeometryClipApi().clipWith(turf, 'union', merged, feature, { site: 'proposals-geometry.buildGeometryFromParcels' }) || merged;
         });
         mergedFeature = merged;
     }
@@ -750,12 +748,8 @@ function buildGeometryFromParcels(parcelInputs = []) {
                 let gaps = shellFeature;
                 for (const parcel of parcelFeatures) {
                     if (!gaps) break;
-                    try {
-                        gaps = turf.difference(gaps, parcel);
-                    } catch (error) {
-                        // Ignoring it would carve this parcel's own ground out as a "hole".
-                        throw proposalGeometryClipApi().clipFailure('difference', error, { site: 'proposals-geometry.internalGaps' }, [gaps, parcel]);
-                    }
+                    // A failed clip throws: ignoring it would carve this parcel's own ground out as a "hole".
+                    gaps = proposalGeometryClipApi().clipWith(turf, 'difference', gaps, parcel, { site: 'proposals-geometry.internalGaps' });
                 }
 
                 // If there are gaps, they represent internal holes that should be preserved

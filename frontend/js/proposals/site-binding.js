@@ -250,16 +250,12 @@
             const geometry = parcel && asPolygonGeometry(parcel.geometry);
             if (!geometry) continue;
             const parcelFeature = t.feature(geometry);
-            let intersection = null;
-            try { intersection = t.intersect(siteFeature, parcelFeature); } catch (error) {
-                // Null would leave a parcel the site reaches into unbound — stored on the record.
-                throw clipFailureApi().clipFailure('intersect', error, { site: 'site-binding.bindingFromParcels', parcelId: parcel.id }, [siteFeature, parcelFeature]);
-            }
+            // A failed clip throws a typed ClipFailure: null would leave a parcel the site reaches
+            // into unbound — stored on the record.
+            const intersection = clipFailureApi().clipWith(t, 'intersect', siteFeature, parcelFeature, { site: 'site-binding.bindingFromParcels', parcelId: parcel.id });
             if (open) {
-                try { open = t.difference(open, parcelFeature); } catch (error) {
-                    // "The larger estimate" overstated the unsurveyed ground the binding records.
-                    throw clipFailureApi().clipFailure('difference', error, { site: 'site-binding.unsurveyed', parcelId: parcel.id }, [open, parcelFeature]);
-                }
+                // Thrown too: "the larger estimate" overstated the unsurveyed ground the binding records.
+                open = clipFailureApi().clipWith(t, 'difference', open, parcelFeature, { site: 'site-binding.unsurveyed', parcelId: parcel.id });
             }
             if (!intersection || !polygonsOf(intersection).length) continue;
             const overlapM2 = t.area(intersection);

@@ -7,6 +7,9 @@
     'use strict';
     const ownership = () => root.ReparcellizationOwnership
         || (typeof require === 'function' ? require('./reparcellization-ownership.js') : null);
+    // The shared parcel clip (proposals/parcel-arrangement.js clipWith): the same grid as every stage.
+    const arrangement = () => (typeof window !== 'undefined' && window.__parcelArrangement)
+        || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
     const deal = () => root.ReparcellizationDeal
         || (typeof require === 'function' ? require('./reparcellization-deal.js') : null);
     const cityMoney = () => root.CityMoney
@@ -47,10 +50,10 @@
             const shell = feature({ type: 'Polygon', coordinates: [rings[0]] });
             const holes = rings.slice(1).map(ring => feature({ type: 'Polygon', coordinates: [ring] }));
             for (let i = 0; i < holes.length; i++) {
-                const outside = turf.difference(holes[i], shell);
+                const outside = arrangement().clipWith(turf, 'difference', holes[i], shell, { site: 'reparcellization-validation.polygon' });
                 if (outside && turf.area(outside) > 0.01) throw new Error('A hole lies outside its polygon.');
                 for (let j = 0; j < i; j++) {
-                    const hit = turf.intersect(holes[i], holes[j]);
+                    const hit = arrangement().clipWith(turf, 'intersect', holes[i], holes[j], { site: 'reparcellization-validation.polygon' });
                     if (hit && turf.area(hit) > 0.01) throw new Error('Polygon holes overlap.');
                 }
             }
@@ -58,7 +61,7 @@
             return part;
         });
         for (let i = 0; i < polygons.length; i++) for (let j = 0; j < i; j++) {
-            const hit = turf.intersect(polygons[i], polygons[j]);
+            const hit = arrangement().clipWith(turf, 'intersect', polygons[i], polygons[j], { site: 'reparcellization-validation.polygon' });
             if (hit && turf.area(hit) > 0.01) throw new Error('Parts of a polygon overlap.');
         }
         return feature(geometry);
@@ -86,13 +89,8 @@
             if (!errors.length) {
                 // Each clip below that throws becomes a ClipFailure (counted in clipHealth()); the
                 // validation still answers with its invalid-pool issue, carrying the clip's message.
-                const clipped = (operation, a, b) => {
-                    try { return turf[operation](a, b); } catch (error) {
-                        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
-                            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
-                        throw api ? api.clipFailure(operation, error, { site: 'reparcellization-validation.pool', proposalId: proposal && proposal.proposalId }, [a, b]) : error;
-                    }
-                };
+                const clipped = (operation, a, b) => arrangement().clipWith(turf, operation, a, b,
+                    { site: 'reparcellization-validation.pool', proposalId: proposal && proposal.proposalId });
                 try {
                     let union = null, overlapAreaM2 = 0;
                     for (let i = 0; i < shapes.length; i++) {

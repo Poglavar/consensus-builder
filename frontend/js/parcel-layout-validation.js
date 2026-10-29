@@ -42,10 +42,10 @@
             const shell = feature({ type: 'Polygon', coordinates: [rings[0]] });
             const holes = rings.slice(1).map(ring => feature({ type: 'Polygon', coordinates: [ring] }));
             for (let i = 0; i < holes.length; i++) {
-                const outside = turf.difference(holes[i], shell);
+                const outside = clipped(turf, 'difference', holes[i], shell, 'parcel-layout-validation.polygon');
                 if (outside && turf.area(outside) > 0.01) throw new Error('A hole lies outside its polygon.');
                 for (let j = 0; j < i; j++) {
-                    const hit = turf.intersect(holes[i], holes[j]);
+                    const hit = clipped(turf, 'intersect', holes[i], holes[j], 'parcel-layout-validation.polygon');
                     if (hit && turf.area(hit) > 0.01) throw new Error('Polygon holes overlap.');
                 }
             }
@@ -53,7 +53,7 @@
             return part;
         });
         for (let i = 0; i < polygons.length; i++) for (let j = 0; j < i; j++) {
-            const hit = turf.intersect(polygons[i], polygons[j]);
+            const hit = clipped(turf, 'intersect', polygons[i], polygons[j], 'parcel-layout-validation.polygon');
             if (hit && turf.area(hit) > 0.01) throw new Error('Parts of a polygon overlap.');
         }
         return feature(geometry);
@@ -64,11 +64,11 @@
     // Plot unions and coverage differences use the shared clip (proposals/parcel-arrangement.js): the
     // same coordinate grid as every other parcel clip, with its coarser retries. A raw turf union of
     // a block's plots with its carved courtyard left a three-point sliver ring and refused the layout.
-    function clipped(turf, operation, a, b) {
+    function clipped(turf, operation, a, b, site = 'parcel-layout-validation.pool') {
         const api = (typeof window !== 'undefined' && window.__parcelArrangement)
             || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
         if (!api) throw new Error('The parcel clipper is not loaded.');
-        return api.clipWith(turf, operation, a, b, { site: 'parcel-layout-validation.pool' });
+        return api.clipWith(turf, operation, a, b, { site });
     }
 
     /**

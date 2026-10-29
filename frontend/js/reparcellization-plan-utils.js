@@ -8,6 +8,11 @@
     'use strict';
     const clone = value => JSON.parse(JSON.stringify(value));
     const feature = geometry => ({ type: 'Feature', properties: {}, geometry });
+    // The shared parcel clip (proposals/parcel-arrangement.js clipWith) with the caller's turf: the
+    // same grid as every stage; a clip it cannot do throws a ClipFailure.
+    const clip = (turfApi, operation, a, b, site) => ((typeof window !== 'undefined' && window.__parcelArrangement)
+        || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null))
+        .clipWith(turfApi, operation, a, b, { site });
 
     // The inner rings (courtyards) of a building footprint, as polygons of their own.
     function deriveCourtyardFromFootprint(input) {
@@ -35,7 +40,7 @@
     // old layout intact; every positive-area remainder survives, including sub-square-metre parts.
     // The carved plot takes `source` (and `derivation`, for a courtyard); remainders keep theirs.
     function carveLayout({ pool, slices, polygon, source, derivation = null }, turfApi) {
-        const clipped = turfApi.intersect(pool, polygon);
+        const clipped = clip(turfApi, 'intersect', pool, polygon, 'reparcellization-plan-utils.carveLayout');
         if (!clipped?.geometry || turfApi.area(clipped) < 1) return null;
         const next = [];
         const append = (geometry, template) => {
@@ -52,7 +57,7 @@
                 next.push(clone(slice));
                 continue;
             }
-            const remainder = turfApi.difference(feature(slice.geometry), clipped);
+            const remainder = clip(turfApi, 'difference', feature(slice.geometry), clipped, 'reparcellization-plan-utils.carveLayout');
             if (remainder?.geometry) append(remainder.geometry, slice);
         }
         append(clipped.geometry, {
@@ -75,11 +80,11 @@
                 : (proposal.geometry?.buildings || []).filter(value => value?.geometry);
             let footprintUnion = null;
             for (const footprint of footprints) {
-                footprintUnion = footprintUnion ? turfApi.union(footprintUnion, footprint) : footprint;
+                footprintUnion = footprintUnion ? clip(turfApi, 'union', footprintUnion, footprint, 'reparcellization-plan-utils.courtyards') : footprint;
             }
             const courtyard = deriveCourtyardFromFootprint(footprintUnion);
             if (!courtyard) continue;
-            const overlap = turfApi.intersect(pool, courtyard);
+            const overlap = clip(turfApi, 'intersect', pool, courtyard, 'reparcellization-plan-utils.courtyards');
             if (overlap && turfApi.area(overlap) >= 1) {
                 const title = proposal.title ?? proposal.name ?? proposal.proposalName ?? '';
                 entries.push({ proposal, courtyard, derivation: {

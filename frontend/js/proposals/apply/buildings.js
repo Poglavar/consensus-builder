@@ -413,12 +413,9 @@
         // `threw` distinguishes a real "fully consumed" (null difference) from a failed
         // computation, so the caller can refuse instead of hiding ground it never re-minted.
         //
-        // There used to be a retry here on coordinates truncated to 7 decimals (~1.1 cm). It is
-        // gone: quantizing coordinates is what MANUFACTURES degenerate rings in the first place
-        // (a coarse grid collapses near-coincident points into identical ones), and it is the same
-        // rounding that used to leave sliver debris along every cut. Silently returning a cut
-        // computed at centimetre precision is a wrong answer wearing a right answer's clothes.
-        // A throw here is a real failure and is reported as one.
+        // The cut runs through the shared clip (parcel-arrangement.js clipWith): the same 9-decimal
+        // grid as every other stage, retried deterministically on coarser grids. A throw from it
+        // is a real failure and is reported as one.
         const safeDifference = (aGeometry, bFeature, hostId) => {
             const a = { type: 'Feature', properties: {}, geometry: aGeometry };
             try {

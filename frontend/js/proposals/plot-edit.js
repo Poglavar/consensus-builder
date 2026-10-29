@@ -35,23 +35,31 @@
         return geometry ? Math.abs(turf.area(feature(geometry))) : 0;
     }
 
+    // The shared parcel clip (parcel-arrangement.js clipWith) with the injected turf: the same grid
+    // as every other stage, and a failure is a typed ClipFailure.
+    function clipWith(turf, operation, a, b) {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        return api.clipWith(turf, operation, a, b, { site: `plot-edit.${operation}` });
+    }
+
     // turf 6 boolean operations take two features and return a feature, or null when nothing is left.
     function intersect(turf, a, b) {
         if (!a || !b) return null;
-        return geometryOf(turf.intersect(feature(a), feature(b)));
+        return geometryOf(clipWith(turf, 'intersect', feature(a), feature(b)));
     }
 
     function difference(turf, a, b) {
         if (!a) return null;
         if (!b) return a;
-        return geometryOf(turf.difference(feature(a), feature(b)));
+        return geometryOf(clipWith(turf, 'difference', feature(a), feature(b)));
     }
 
     function unionAll(turf, geometries) {
         let union = null;
         for (const geometry of geometries) {
             if (!geometry) continue;
-            union = union ? geometryOf(turf.union(feature(union), feature(geometry))) : geometry;
+            union = union ? geometryOf(clipWith(turf, 'union', feature(union), feature(geometry))) : geometry;
         }
         return union;
     }

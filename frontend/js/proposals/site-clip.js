@@ -108,10 +108,7 @@
             if (!g) continue;
             const f = { type: 'Feature', properties: {}, geometry: g };
             if (!acc) { acc = f; continue; }
-            let next = null;
-            try { next = t.union(acc, f); } catch (error) {
-                throw clipFailureApi().clipFailure('union', error, { site: 'site-clip.exactUnion' }, [acc, f]);
-            }
+            const next = clipFailureApi().clipWith(t, 'union', acc, f, { site: 'site-clip.exactUnion' });
             if (!next || !next.geometry) return null;
             acc = next;
         }
@@ -144,7 +141,7 @@
         const g = geometryOf(feature);
         const s = geometryOf(site);
         if (!g || !s) return null;
-        const clipped = t.intersect({ type: 'Feature', properties: {}, geometry: g }, { type: 'Feature', properties: {}, geometry: s });
+        const clipped = clipFailureApi().clipWith(t, 'intersect', { type: 'Feature', properties: {}, geometry: g }, { type: 'Feature', properties: {}, geometry: s }, { site: 'site-clip.clipToSite' });
         if (!clipped || !clipped.geometry) return null;
         const cleaned = despike(clipped);
         if (!cleaned || !(t.area(cleaned) > 0)) return null;

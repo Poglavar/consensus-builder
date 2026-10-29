@@ -20,9 +20,10 @@
 
     // A clip the clipper could not do is a typed ClipFailure, recorded in one place
     // (parcel-arrangement.js clipHealth), never a silent zero.
+    const arrangementApi = () => (typeof window !== 'undefined' && window.__parcelArrangement)
+        || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
     const clipFailureOf = (operation, error, context, operands) => {
-        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
-            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        const api = arrangementApi();
         return api && typeof api.clipFailure === 'function' ? api.clipFailure(operation, error, context, operands) : error;
     };
 
@@ -139,7 +140,7 @@
         const t = T();
         if (!t || !a || !b) return 0;
         try {
-            const hit = t.intersect(a, b);
+            const hit = arrangementApi().clipWith(t, 'intersect', a, b, { site: 'plan-order.intersectionArea' });
             return hit ? t.area(hit) : 0;
         } catch (error) {
             // Zero area here reads as "the footprint does not stand on this parcel" — a wrong
@@ -150,7 +151,9 @@
             const retry = (left, right) => {
                 try {
                     const repaired = t.buffer(right, TOPOLOGY_REPAIR_BUFFER_M, { units: 'meters' });
-                    const hit = repaired ? t.intersect(left, repaired) : null;
+                    const hit = repaired
+                        ? arrangementApi().clipWith(t, 'intersect', left, repaired, { site: 'plan-order.intersectionRepair' })
+                        : null;
                     if (!hit) return 0;
                     const measured = Number(t.area(hit)) || 0;
                     const ceiling = Math.min(Number(t.area(a)) || 0, Number(t.area(b)) || 0);

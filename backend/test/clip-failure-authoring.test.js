@@ -166,9 +166,11 @@ describe('urban-rule-variation', () => {
         [[15.9705, 45.8104], [15.9715, 45.8104], [15.9715, 45.8106], [15.9705, 45.8106], [15.9705, 45.8104]]
     ]);
     const parcels = [{ feature: WEST, parcelId: 'P1' }, { feature: EAST, parcelId: 'P2' }];
+    // The shared clip hands turf grid-snapped copies, so operands are matched by shape, not identity.
+    const same = (x, y) => JSON.stringify(x && x.geometry) === JSON.stringify(y && y.geometry);
 
     it('splitMassingByParcels refuses instead of reading the parcel as "no massing here"', () => {
-        const t = failingTurf('intersect', (a, b) => a === massing && (b === WEST || b === EAST));
+        const t = failingTurf('intersect', (a, b) => same(a, massing) && (same(b, WEST) || same(b, EAST)));
         const failure = expectRefusal(() => variation.splitMassingByParcels(massing, parcels, rule, 'seed', { turf: t }),
             'urban-rule-variation.splitMassingByParcels');
         expect(failure.parcelId).toBe('P1');
@@ -179,7 +181,7 @@ describe('urban-rule-variation', () => {
     });
 
     it('the per-parcel compelled part refuses instead of compelling nothing', () => {
-        const t = failingTurf('intersect', (a, b) => a !== massing && b !== massing);
+        const t = failingTurf('intersect', (a, b) => !same(a, massing) && !same(b, massing));
         expectRefusal(() => variation.splitMassingByParcels(massing, parcels, rule, 'seed', { turf: t }),
             'urban-rule-variation.compelledPerParcel');
     });
@@ -515,7 +517,7 @@ describe('road-drawing conflict markers (display; degrade, reported)', () => {
 
 describe('parcel-layout editor (refuse)', () => {
     const path = '../../frontend/js/parcel-layout.js';
-    const load = t => runFunctions(path, ['layoutClipFailure', 'buildPoolFromPlots'], {
+    const load = t => runFunctions(path, ['layoutArrangement', 'layoutClipFailure', 'layoutClip', 'buildPoolFromPlots'], {
         turf: t, window: { __parcelArrangement: A }
     });
 

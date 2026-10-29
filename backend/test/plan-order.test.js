@@ -100,7 +100,9 @@ describe('base-parcel ancestry', () => {
         };
         try {
             expect(planOrder.intersectionArea(footprint, parcel)).toBe(55702.2);
-            expect(exactAttempts).toBe(1);
+            // The shared clip (parcel-arrangement.js clipWith) tries the standard grid and its two
+            // coarser retries before the buffer repair answers.
+            expect(exactAttempts).toBe(3);
         } finally {
             globalThis.turf = realTurf;
         }

@@ -56,7 +56,8 @@ describe('reparcellization plan utilities', () => {
 
     it('keeps a positive sub-square-metre remainder', () => {
         const parcel = square(0, 0, 0.001, 0.001);
-        const cut = square(0, 0, 0.0009999999, 0.001);
+        // A 1e-8° (~1 mm) remainder: above the shared 9-decimal clip grid, far below a square metre.
+        const cut = square(0, 0, 0.00099999, 0.001);
         const next = utils.carveLayout({ pool: parcel, slices: [{ geometry: parcel.geometry, source: 'base' }],
             polygon: cut.geometry, source: 'manual' }, turf);
         expect(next.some(slice => slice.source === 'base' && area(slice.geometry) > 0 && area(slice.geometry) < 1)).toBe(true);

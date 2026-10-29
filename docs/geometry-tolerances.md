@@ -59,7 +59,7 @@ site hash (`site-hash.js`, versioned; changing its rounding is a new version).
 | Step | | Status |
 | --- | --- | --- |
 | 1 | `geometry-tolerances.js`: the grid and `snap()`; parcels snapped on arrival (`ground-service.js`, fabric seed), so server and DGU parcels are identical | done |
-| 2 | Every clip on the grid (the raw turf clips in subdivision, layout pool, parcel geometry, structures apply); the clip grid's 8/7-decimal retries refuse instead of producing off-grid geometry; authored geometry saved on the grid | open |
+| 2 | Every clip that decides ground runs through the one shared clip (`parcel-arrangement.js` `clipWith`, inputs on the grid, coarser retries deterministic so every stage gets the same answer): binding, ancestry, land take, plot, site and pool cuts, layout and footprint validation, the per-parcel split, demolition regions, MCP's geometry runtime included. Display-only clips stay raw | done |
 | 3 | Measure the remaining cutting noise on real designs; set `NOISE_M`; `reachesInto` in the module | open |
 | 4 | Every "does it reach / is it debris" decision calls `reachesInto`: apply hosts and provenance (buildings, structures, layouts), plot ownership, sliver drops and the identity explode, re-basing, road crossings, plot edit, layout validation, MCP ground effects; the vertex patch in `apply/parcels.js` goes | open |
 | 5 | Pieces cut to their consumed hosts; the map's apply runs the fabric's partition check | open |

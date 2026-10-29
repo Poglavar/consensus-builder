@@ -255,8 +255,9 @@
         const spaceCache = new Map();
         const ops = {
             areaOf: feature => win.__planYield.geometryAreaM2(feature),
+            // The shared parcel clip (parcel-arrangement.js clipWith): the same grid as every stage.
             intersect: (a, b) => {
-                try { return win.turf.intersect(a, b); }
+                try { return win.__parcelArrangement.clipWith(win.turf, 'intersect', a, b, { site: 'present-state' }); }
                 catch (error) {
                     win.__parcelArrangement.reportClipFailure('intersect', error, { site: 'present-state' }, [a, b]);
                     return null;
@@ -264,7 +265,7 @@
             },
             // A failed difference keeps the building whole: it is reported, never silently removed.
             difference: (a, b) => {
-                try { return win.turf.difference(a, b); }
+                try { return win.__parcelArrangement.clipWith(win.turf, 'difference', a, b, { site: 'present-state' }); }
                 catch (error) {
                     win.__parcelArrangement.reportClipFailure('difference', error, { site: 'present-state' }, [a, b]);
                     return a;
