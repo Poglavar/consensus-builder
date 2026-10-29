@@ -40,8 +40,10 @@ The targeted `mcp-edit.test.js` checks valid park, square and lake vertex change
 invalid coordinates, and preservation of the source revision. Existing tests cover decoration edits,
 building geometry and validation. Existing primitives are sufficient, so no new MCP tool, schema or
 discovery entry is needed. The browser controls commit to the existing local editor draft. MCP still
-uses expected-CID checks and returns immutable revisions; live synchronization between an already
-open map and an agent conversation is not implemented by this change.
+uses expected-CID checks and returns immutable revisions. A [shared plan session](student-ai.md)
+connects the agent conversation to the open map, with one editor at a time and live updates of
+accepted revisions. Conversational editing and human–AI handover are the current accessibility
+and ergonomics priority; human-to-human collaboration is deferred.
 
 ## Coverage and limits
 

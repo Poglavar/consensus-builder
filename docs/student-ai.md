@@ -1,8 +1,25 @@
 # Student AI assistance
 
-A student and an MCP agent can work on the same plan through a private server session. The
+A person and an MCP agent can work on the same plan through a private server session. The
 browser keeps its normal map and editors; the agent uses the hosted MCP. Completed, accepted
 revisions are reflected in the browser. The two take turns rather than editing concurrently.
+
+## Product focus
+
+The priority is accessible, ergonomic city editing through conversation with an AI agent:
+"move the bench two metres north", "rotate this building", "make the path wider", or "undo that".
+The person gives an instruction in their chosen agent application, the agent inspects and edits
+through MCP, and the accepted change appears in the person's map. Editing remains scoped to an
+ordinary plan and its designs. Text conversation is sufficient; spoken input depends on the chosen
+agent application's capabilities.
+
+The person should be able to understand what the agent is editing, follow the result without
+relying on animation alone, correct a misunderstanding, undo a change and take control using the
+normal editor. Improve the existing MCP operations and handover flow around those tasks. Browser
+remote control is optional and is not required for this workflow.
+
+Human-to-human collaboration, participant roles/presence and simultaneous multi-user editing are
+deferred. They are not prerequisites for improving human–AI assistance or releasing this flow.
 
 ## What is shared
 
@@ -93,24 +110,32 @@ path are part of the current implementation. The following work remains, in orde
    frontend. Follow the [MCP deployment contract](mcp.md#deployment). Verify a real shared-session
    edit and notification through the public site, and retain the previous release for rollback.
    Recreate experimental file-backed sessions; their old links are not database sessions.
-4. **Add session management.** List and reopen accessible sessions, delete finished sessions,
-   manage invitations and show storage-limit errors clearly. Define deletion and retention behavior
-   for connected participants and keep private sessions out of the publication index.
-5. **Add revision history.** Attribute accepted changes to their actor, show what changed, allow
-   inspection of earlier revisions and restore a selected revision as a new accepted version.
-   Extend beyond the current single agent-change undo without mutating prior content.
-6. **Extend collaboration to people.** Introduce individual invitations, participant identities,
-   viewer/editor permissions, presence, Request control and Pass control. Retain owner takeover
-   and one editor at a time initially. Replace the fixed owner/agent editing distinction with
-   participant identity and permissions so an AI can participate through the same contract.
-   Reuse ordinary plan revisions, the existing human editors and live notifications.
-7. **Consider simultaneous editing after turn-taking works well.** Start with participants editing
-   different designs within the same plan. Define how membership changes and competing edits to
-   the same design are detected and resolved before permitting concurrent saves. Automatic offline
-   merging is outside the current contract.
+4. **Improve conversational MCP editing.** Make it straightforward for the agent to inspect the
+   current plan, identify the intended design or object, apply a precise edit and read back the
+   accepted result. Improve object descriptions, references, units, validation errors and recovery
+   guidance using existing granular operations. Include relevant map selection/context explicitly
+   where useful; do not assume the agent sees the person's screen. Ask for clarification when a
+   target or instruction is ambiguous. Keep ordinary corrections within the current shared plan.
+5. **Improve human–AI ergonomics.** Make connecting an agent, reopening a session, handing over,
+   taking control, saving pending edits, undoing and disconnecting easy to find and understand.
+   Distinguish agent activity, applying a revision, saved state and connection errors. Provide
+   concise change summaries and accessible announcements alongside visual feedback. Preserve
+   keyboard focus, the camera and unrelated work; respect reduced motion. Session management
+   should serve the person's work with their agent, including ending or deleting finished sessions.
+6. **Improve review and recovery.** Show what the agent changed and allow inspection and restoration
+   of earlier revisions as new accepted versions. Extend beyond the current single agent-change
+   undo without mutating prior content. Keep publication separate from accepting an edit.
+7. **Evaluate complete conversational tasks.** Use representative instructions for moving and
+   rotating buildings, editing paths, placing furniture, correcting mistakes and undoing changes.
+   Check that the agent finds the intended object and that its description matches the saved map
+   state. Include ambiguous requests, failed edits and interrupted connections. Evaluate task
+   completion, required interventions and recovery with the student's actual input or assistive
+   technology; tool success alone does not establish usability.
 
 New human editing and session-management operations must have MCP parity through shared
-operations and validation; update the affected schemas and discovery alongside implementation.
+operations and validation; update affected schemas and discovery alongside implementation.
+Prefer improving existing inspect/edit primitives over adding a tool for every conversational task.
+Human-to-human and simultaneous editing remain deferred outside this work plan.
 
 ## Optional browser-control trial
 
