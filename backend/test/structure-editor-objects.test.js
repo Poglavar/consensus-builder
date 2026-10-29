@@ -37,6 +37,15 @@ describe('structure object editing', () => {
             expect(item).toEqual(before);
         }
     });
+    it('keeps playground equipment selectable and movable after integrating the park editor', () => {
+        const item = { coordinate: tree.coordinate, bearing: 75 }, point = [-.099,51.5015];
+        const entries = objects.entries({ swings: [item], seesaws: [item], slides: [item] }, turf);
+        expect(entries.map(entry => entry.tool)).toEqual(['swing', 'seesaw', 'slide']);
+        for (const type of ['swings', 'seesaws', 'slides']) {
+            expect(objects.move(type, item, point, boundary, turf, coordinates)).toEqual({ ...item, coordinate: point });
+            expect(item.coordinate).toEqual(tree.coordinate);
+        }
+    });
     it('moves every point of a path or pond and refuses a shape that would cross the boundary', () => {
         for (const [type, item] of [['paths',path],['ponds',pond]]) {
             const before = structuredClone(item), from = objects.position(type, item, turf), to = [from[0],from[1]+.0001];

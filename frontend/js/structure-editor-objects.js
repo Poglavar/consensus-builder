@@ -5,8 +5,8 @@
     if (root) root.StructureEditorObjects = api;
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
-    const tools = { trees: 'tree', benches: 'bench', flowerbeds: 'flowerbed', ponds: 'pond', paths: 'path', fountains: 'fountain', stalls: 'stall', statues: 'statue', lamps: 'lamp' };
-    const records = new Set(['trees', 'benches', 'stalls', 'lamps']);
+    const tools = { trees: 'tree', benches: 'bench', flowerbeds: 'flowerbed', ponds: 'pond', paths: 'path', fountains: 'fountain', stalls: 'stall', statues: 'statue', lamps: 'lamp', swings: 'swing', seesaws: 'seesaw', slides: 'slide' };
+    const records = new Set(['trees', 'benches', 'stalls', 'lamps', 'swings', 'seesaws', 'slides']);
     const shapes = new Set(['paths', 'flowerbeds', 'ponds']);
 
     function position(type, item, turf) {

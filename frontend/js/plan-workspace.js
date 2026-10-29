@@ -41,7 +41,7 @@
         }
         const snapshot = win.PlanComposition.create(plan.content.title,
             plan.content.designCids.map(cid => ({ ...available.get(cid),
-                ...(plan.designSources?.[cid] ? { planFileSource: plan.designSources[cid] } : {}) })), plan.content.view);
+                ...(plan.designSources?.[cid] ? { planFileSource: plan.designSources[cid] } : {}) })), plan.content.view, plan.content.schedule);
         if (snapshot.cid !== plan.cid) throw new Error(win.i18n.t('planDialog.revisionChanged'));
         return save({ ...snapshot, ...(plan.published ? { published: true } : {}) });
     }

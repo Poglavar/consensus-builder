@@ -1131,7 +1131,7 @@
     }
 
     function toolLabel(tool) {
-        const names = { tree: 'Tree', flowerbed: 'Flowerbed', pond: 'Pond', path: 'Footpath', bench: 'Bench', fountain: 'Fountain', stall: 'Market stall', statue: 'Statue', lamp: 'Lamp', select: 'Select' };
+        const names = { tree: 'Tree', flowerbed: 'Flowerbed', pond: 'Pond', path: 'Footpath', bench: 'Bench', fountain: 'Fountain', stall: 'Market stall', statue: 'Statue', lamp: 'Lamp', swing: 'Swings', seesaw: 'Seesaw', slide: 'Slide', select: 'Select' };
         return t(`tools.${tool}`, names[tool] || tool);
     }
 

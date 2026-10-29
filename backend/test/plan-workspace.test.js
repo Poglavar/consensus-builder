@@ -36,6 +36,13 @@ describe('plan workspace',()=>{
   const h=harness(),row=snapshot();h.api.save(row);design.title='Changed live design';
   const resolved=await h.api.resolve(row);expect(resolved.designs[0].content.title).toBe('Pocket park');expect(h.win.DesignSync.fetchDesigns).not.toHaveBeenCalled();
  });
+ it('retains construction windows when resolving a published plan for a private shared session',async()=>{
+  const base=snapshot(),row=PlanComposition.withSchedule(base,{[base.designs[0].cid]:{start:'2027-01',end:'2027-06'}});
+  const h=harness({DesignRecord:require('../../frontend/js/design-record.js'),proposalStorage:{getAllProposals:()=>[design]}});
+  const resolved=await h.api.resolve({cid:row.cid,content:row.content,published:true});
+  expect(resolved.cid).toBe(row.cid);expect(resolved.content.schedule).toEqual(row.content.schedule);
+  expect(resolved.published).toBe(true);expect(h.win.DesignSync.fetchDesigns).not.toHaveBeenCalled();
+ });
  it('publishes each exact carried object before saving the plan and keeps the snapshot on retry',async()=>{
   const base=snapshot(),row={...base,designSources:{[base.designs[0].cid]:{sourceId:'gb-hmlr-city-of-london',snapshotId:'release-1'}}},seen=[];
   const h=harness({PlanComposition:{...PlanComposition,localRecords:r=>r.designs.map(d=>({proposalId:`plan-member-${d.cid}`,published:{cid:d.cid},title:d.content.title}))}});
