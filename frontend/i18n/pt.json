@@ -3100,6 +3100,12 @@
                 "restoringGround": "A repor o terreno local…",
                 "saving": "A guardar…",
                 "unappliedStatus": "O projeto «{{name}}» foi removido do mapa e permanece na sua lista de projetos.",
+                "dependents": {
+                    "title": "Projetos construídos sobre este",
+                    "message": "Sobre «{{name}}» assentam: {{names}}. Retirá-los também do mapa ou deixá-los? Se ficarem, cada um volta a ocupar o seu terreno por si.",
+                    "all": "Retirar todos",
+                    "leave": "Deixá-los no mapa"
+                },
                 "remove": "Remover do mapa",
                 "includedInRoad": "Incluído na estrada combinada",
                 "includedInRoadHint": "Remova {{name}} do mapa para repor esta estrada.",

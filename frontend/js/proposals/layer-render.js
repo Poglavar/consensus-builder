@@ -912,6 +912,28 @@ function proposalUnapplyPhaseLabel(event, t) {
     return null;
 }
 
+// Designs standing on the one being unapplied (ProposalManager.findUnapplyDependents) are named, and
+// the user chooses: unapply them too, or leave them, each then cutting its ground again on its own.
+// Resolves to the ids to unapply alongside ([] to leave them), or null when the user cancels.
+async function chooseUnapplyDependents(proposalId, proposalLabel, t) {
+    const dependents = ProposalManager.findUnapplyDependents?.(proposalId) || [];
+    if (!dependents.length || !window.CbDialog?.choice) return [];
+    const say = (key, fallback, params) => (t ? t(key, fallback, params) : fallback);
+    const names = dependents.map(record => `“${record.title || record.name || record.proposalId}”`).join(', ');
+    const answer = await window.CbDialog.choice(
+        say('panel.proposal.actions.dependents.message',
+            'These designs stand on “{{name}}”: {{names}}. Unapply them too, or leave them on the map? Left in place, each takes its ground again on its own.',
+            { name: proposalLabel, names }),
+        [
+            { value: 'all', label: say('panel.proposal.actions.dependents.all', 'Unapply all'), role: 'danger' },
+            { value: 'leave', label: say('panel.proposal.actions.dependents.leave', 'Leave them on the map'), primary: true },
+            { value: 'cancel', label: say('common.cancel', 'Cancel') }
+        ],
+        { title: say('panel.proposal.actions.dependents.title', 'Designs built on this one') });
+    if (answer === 'all') return dependents.map(record => String(record.proposalId));
+    return answer === 'leave' ? [] : null;
+}
+
 async function removeProposalFromMap(proposalId, options = {}) {
     if (!proposalId || typeof ProposalManager === 'undefined' || typeof ProposalManager.unapplyProposal !== 'function') {
         if (typeof reportProposalMapActionFailure === 'function') {
@@ -943,6 +965,8 @@ async function removeProposalFromMap(proposalId, options = {}) {
     const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
     const proposalLabel = proposalSnapshot?.title || proposalSnapshot?.name || String(proposalId);
     let succeeded = false;
+    const alsoUnapplyIds = await chooseUnapplyDependents(proposalId, proposalLabel, t);
+    if (alsoUnapplyIds === null) return false;
 
     if (button) {
         button.disabled = true;
@@ -964,6 +988,7 @@ async function removeProposalFromMap(proposalId, options = {}) {
         // Unapply commits authored state first; the local fabric system then restores this record's
         // flat cadastral scope without making map geometry a precondition for the state change.
         const unapplied = await ProposalManager.unapplyProposal(proposalId, {
+            alsoUnapplyIds,
             onProgress: event => {
                 const phaseLabel = proposalUnapplyPhaseLabel(event, t);
                 if (!phaseLabel) return;

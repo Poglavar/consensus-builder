@@ -1869,6 +1869,12 @@
                 "restoringGround": "Vraćam lokalni teren…",
                 "saving": "Spremam…",
                 "unappliedStatus": "Prijedlog „{{name}}” uklonjen je s karte i ostaje na popisu dizajna.",
+                "dependents": {
+                    "title": "Prijedlozi izgrađeni na ovome",
+                    "message": "Na prijedlogu „{{name}}” stoje: {{names}}. Ukloniti i njih s karte ili ih ostaviti? Ako ostanu, svaki iznova zauzima svoje tlo.",
+                    "all": "Ukloni sve",
+                    "leave": "Ostavi ih na karti"
+                },
                 "remove": "Ukloni s karte",
                 "includedInRoad": "Uključeno u spojenu cestu",
                 "includedInRoadHint": "Uklonite {{name}} s karte kako biste vratili ovu cestu.",

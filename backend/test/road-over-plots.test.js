@@ -381,6 +381,42 @@ describe('a road built through a parcel layout on parcels', () => {
         await expect(manager.unapplyProposal('road-cad')).resolves.toBe(true);
         expect(snapshot(fabric)).toEqual(before);
     });
+
+    // Unapplying the layout under the road (the user, 2026-10-29): the road is named, and either
+    // comes off with the layout in one transaction or stays to cut the plain parcels on its own.
+    it('names the road standing on the layout, and unapplies it alongside or leaves it on the parcels', async () => {
+        const HR2 = parcel('HR-330264-2', rect(6, 0, 12, 6));
+        const binding = { parcels: [{ parcelId: 'HR-330264-1' }, { parcelId: 'HR-330264-2' }], coverage: 'complete', source: 'server' };
+        const roadBinding = { parcels: [{ parcelId: 'HR-330264-2' }], coverage: 'complete', source: 'server' };
+        for (const together of [true, false]) {
+            const record = subdivisionRecord('readjust', BARE_SITE, { declared: ['HR-330264-1', 'HR-330264-2'], binding });
+            const road = roadRecord('road-cad', CROSS_ROAD, { cadastreParcelIds: ['HR-330264-2'], binding: roadBinding });
+            const { manager, fabric } = await harness({ facts: [HR1, HR2], records: [record, road] });
+            const plain = snapshot(fabric);
+            const plainPieces = fabric.list();
+            await expect(manager.applyProposal('readjust')).resolves.toBe(true);
+            await expect(manager.deriveForNewProposal(globalThis.proposalStorage.getProposal('road-cad'))).resolves.toMatchObject({ ok: true });
+            expect(manager.findUnapplyDependents('readjust').map(dependent => dependent.proposalId)).toEqual(['road-cad']);
+            expect(manager.findUnapplyDependents('road-cad')).toEqual([]);
+
+            await expect(manager.unapplyProposal('readjust', { alsoUnapplyIds: together ? ['road-cad'] : [] })).resolves.toBe(true);
+            expect(globalThis.proposalStorage.getProposal('readjust').applied).toBe(false);
+            expect(globalThis.proposalStorage.getProposal('road-cad').applied).toBe(!together);
+            const pieces = fabric.list();
+            expect(pieces.some(piece => piece.properties.producedByProposalId === 'readjust')).toBe(false);
+            if (together) {
+                expect(snapshot(fabric)).toEqual(plain);
+            } else {
+                // The road cut the plain parcel it stands on: its own land is a piece, and the rest of
+                // the parcels stay clear of it.
+                const [own, rest] = [pieces.filter(piece => piece.properties.producedByProposalId === 'road-cad'),
+                    pieces.filter(piece => piece.properties.producedByProposalId !== 'road-cad')];
+                expect(own.length).toBeGreaterThan(0);
+                rest.forEach(piece => expect(overlap(piece, CROSS_ROAD)).toBeLessThan(0.25));
+                expect(total(pieces)).toBeCloseTo(total(plainPieces), 0);
+            }
+        }
+    });
 });
 
 // Observed in the road tool on HR-339318-5848/3 (fixture): a Block proposed on the parcel, then a

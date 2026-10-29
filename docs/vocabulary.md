@@ -363,6 +363,8 @@ Whether a design currently contributes to the working composition. Application e
 
 Import retains a design definition independently of the currently viewed ground context. Reconstruction uses its authored geography and actual cadastral source references; descriptive city text does not determine eligibility.
 
+Unapplying a design that later applied designs stand on (their footprints lie on its ground) names them first. The person unapplies them with it, in one change, or leaves them applied; a design left applied takes its ground again from what remains, as in any replay.
+
 ### Replay
 
 The reconstruction of a working composition by applying designs in their defined formation and dependency order. Display order, agreement membership order and construction windows do not themselves determine replay order.

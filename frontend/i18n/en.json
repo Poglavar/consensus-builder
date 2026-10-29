@@ -1856,6 +1856,12 @@
                 "restoringGround": "Restoring local terrain…",
                 "saving": "Saving…",
                 "unappliedStatus": "The design “{{name}}” was unapplied and remains in your designs list.",
+                "dependents": {
+                    "title": "Designs built on this one",
+                    "message": "These designs stand on “{{name}}”: {{names}}. Unapply them too, or leave them on the map? Left in place, each takes its ground again on its own.",
+                    "all": "Unapply all",
+                    "leave": "Leave them on the map"
+                },
                 "remove": "Unapply",
                 "includedInRoad": "Included in combined road",
                 "includedInRoadHint": "Remove {{name}} from the map to restore this road.",

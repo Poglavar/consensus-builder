@@ -3100,6 +3100,12 @@
                 "restoringGround": "Restauration du terrain local…",
                 "saving": "Enregistrement…",
                 "unappliedStatus": "Le projet « {{name}} » a été retiré de la carte et reste dans votre liste de projets.",
+                "dependents": {
+                    "title": "Projets construits sur celui-ci",
+                    "message": "Sur « {{name}} » reposent : {{names}}. Les retirer aussi de la carte ou les laisser ? S’ils restent, chacun reprend son terrain de lui-même.",
+                    "all": "Tout retirer",
+                    "leave": "Les laisser sur la carte"
+                },
                 "remove": "Retirer de la carte",
                 "includedInRoad": "Inclus dans une route combinée",
                 "includedInRoadHint": "Retirez {{name}} de la carte pour restaurer cette route.",

@@ -1869,6 +1869,12 @@
                 "restoringGround": "Vraćam lokalni teren…",
                 "saving": "Čuvam…",
                 "unappliedStatus": "Predlog „{{name}}” uklonjen je sa mape i ostaje na listi dizajna.",
+                "dependents": {
+                    "title": "Predlozi izgrađeni na ovom",
+                    "message": "Na predlogu „{{name}}” stoje: {{names}}. Ukloniti i njih sa mape ili ih ostaviti? Ako ostanu, svaki ponovo zauzima svoje tlo.",
+                    "all": "Ukloni sve",
+                    "leave": "Ostavi ih na mapi"
+                },
                 "remove": "Ukloni sa mape",
                 "includedInRoad": "Uključeno u spojeni put",
                 "includedInRoadHint": "Uklonite {{name}} sa mape da biste vratili ovaj put.",

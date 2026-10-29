@@ -1879,6 +1879,12 @@
                 "restoringGround": "Restaurando el terreno local…",
                 "saving": "Guardando…",
                 "unappliedStatus": "El diseño «{{name}}» se retiró del mapa y permanece en la lista.",
+                "dependents": {
+                    "title": "Diseños construidos sobre este",
+                    "message": "Sobre «{{name}}» se apoyan: {{names}}. ¿Retirarlos también del mapa o dejarlos? Si se quedan, cada uno vuelve a ocupar su terreno por sí mismo.",
+                    "all": "Retirar todos",
+                    "leave": "Dejarlos en el mapa"
+                },
                 "remove": "Retirar del mapa",
                 "includedInRoad": "Incluida en la vía combinada",
                 "includedInRoadHint": "Quita {{name}} del mapa para restaurar esta vía.",
