@@ -553,10 +553,19 @@
         // And it must NOT be caught. A failed difference means the parcel's remaining ground could
         // not be computed; swallowing it returned road pieces with no remainders, i.e. it silently
         // deleted 1,282 m² of someone's land from the map while every test stayed green.
+        //
+        // Subtract the TAKE, not its hit. The hit (take ∩ parcel) carries the computed crossing
+        // points of the take's kerbs with the parcel boundary; snapped to the clip grid they sit up
+        // to 0.05 mm off that boundary, so subtracting the hit left a 0.05 mm sliver of parcel
+        // between the road and the outside: a remainder with a HOLE where the road enters it (Zagreb
+        // 3018 under a road coming in from 2092), and the hairline doubled the two parcels' shared
+        // edge in a Block's site, where the setback then opened a 2 × setback channel along it.
+        // The take crosses the boundary transversally, and its crossing points are computed from
+        // the same segments as the hit's, so the road piece and the remainder share them exactly.
         let leftover = parcelFeature;
         for (let index = 0; index < takenParts.length; index += 1) {
             if (!leftover) break;
-            leftover = clip('difference', leftover, takenParts[index], {
+            leftover = clip('difference', leftover, featureOf(hits[index].take.geometry), {
                 site: 'parcel-arrangement.remainder',
                 parcelId: id,
                 takeId: hits[index] && hits[index].take && hits[index].take.id
