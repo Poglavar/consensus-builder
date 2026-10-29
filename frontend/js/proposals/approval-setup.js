@@ -715,19 +715,11 @@
     // A rights file to fill in; it has room for leases and public bodies when the rules count them.
     function downloadTemplate(parcelIds, config = null) {
         const api = approval();
-        if (!api?.createTemplate || !root.Blob || !root.URL?.createObjectURL || !root.document) return;
+        if (!api?.createTemplate || !root.FileDownload) return;
         let need = { leases: false, publicBodies: false };
         try { need = regimes().needs(api.policyRules(normalizedConfig(config)?.policy).tests); } catch (_) { /* a plain template */ }
         const template = api.createTemplate(parcelIds || [], need);
-        const url = root.URL.createObjectURL(new root.Blob([JSON.stringify(template, null, 2)], { type: 'application/json' }));
-        const link = root.document.createElement('a');
-        link.href = url;
-        link.download = 'parcel-rights-template.json';
-        root.document.body.appendChild(link);
-        link.click();
-        link.remove();
-        // The browser reads the URL after this tick; revoke it once the download has started.
-        root.setTimeout(() => root.URL.revokeObjectURL(url), 0);
+        root.FileDownload.save(root, JSON.stringify(template, null, 2), 'parcel-rights-template.json', 'application/json');
     }
 
     // The form in its own dialog, for a proposal being created (the create dialog's row and the land

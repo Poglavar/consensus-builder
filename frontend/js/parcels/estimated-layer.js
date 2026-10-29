@@ -152,9 +152,7 @@
         });
         download.addEventListener('click', () => {
             if (!state.collection) return;
-            const url = URL.createObjectURL(new Blob([JSON.stringify(state.collection)], { type: 'application/geo+json' }));
-            const link = node('a'); link.href = url; link.download = 'illustrative-parcel-estimates.geojson';
-            link.click(); URL.revokeObjectURL(url);
+            global.FileDownload.save(global, JSON.stringify(state.collection), 'illustrative-parcel-estimates.geojson', 'application/geo+json');
         });
         start.addEventListener('click', async () => {
             if (!state.area || state.controller) return;

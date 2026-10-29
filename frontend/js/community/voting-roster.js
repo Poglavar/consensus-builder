@@ -11,10 +11,7 @@
         if(!slot)return {busy:()=>false,destroy(){}};
         const local={id:value?.id || root.crypto.randomUUID(),entries:[],value,busy:false,labels:'',count:10,saved:true,error:null};
         let alive=true;
-        const download=(name,content,type)=>{
-            const url=URL.createObjectURL(new Blob([content],{type}));
-            const link=root.document.createElement('a');link.download=name;link.href=url;link.click();URL.revokeObjectURL(url);
-        };
+        const download=(name,content,type)=>root.FileDownload.save(root,content,name,type);
         const notify=()=>changed(local.value,local.busy || !local.saved);
         function render() {
             if(!alive)return;

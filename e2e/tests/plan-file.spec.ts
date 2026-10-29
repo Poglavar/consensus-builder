@@ -18,7 +18,7 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => { (window as any).MapHighlight = { color: '#469973' }; });
   for (const file of ['js/app-diagnostics.js', 'vendor/noble-hashes-1.8.0/sha256.js', 'vendor/ipfs-file-cid/ipfs-file-cid.js', 'js/cid.js',
     'js/proposals/authored-record.js', 'js/proposals/formation-depth.js', 'js/design-record.js', 'js/plan-record.js',
-    'js/plan-file.js', 'js/data-source.js', 'js/ui/busy-control.js', 'js/ui/modal-escape.js', 'js/ui/dialogs.js', 'js/proposals/dialog-share.js']) {
+    'js/plan-file.js', 'js/data-source.js', 'js/ui/busy-control.js', 'js/ui/file-download.js', 'js/ui/modal-escape.js', 'js/ui/dialogs.js', 'js/proposals/dialog-share.js']) {
     await page.addScriptTag({ path: path.join(root, file) });
   }
   await page.evaluate(() => {
@@ -233,7 +233,7 @@ test('optional diagnostic sending localizes confirmation and outcomes and keeps 
       w.finishDiagnosticSend = () => resolve({ ok: true, json: async () => ({ accepted: JSON.parse(options.body).entries.length }) });
     }) : fetch(url, options);
   });
-  for (const file of ['js/app-diagnostics.js', 'js/ui/busy-control.js']) await page.addScriptTag({ path: path.join(root, file) });
+  for (const file of ['js/app-diagnostics.js', 'js/ui/busy-control.js', 'js/ui/file-download.js']) await page.addScriptTag({ path: path.join(root, file) });
   await loadDiagnosticLanguages(page);
   await page.evaluate(() => {
     const w = window as any; w.i18n.setLanguage('hr', { persist: false });

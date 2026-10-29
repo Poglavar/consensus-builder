@@ -192,9 +192,7 @@
                 label(node, key, fallback); node.setAttribute(attribute, ''); node.addEventListener('click', action); host.appendChild(node); return node;
             };
             button('download', 'Download diagnostics', 'data-diagnostics-export', () => {
-                const url = win.URL.createObjectURL(new win.Blob([client.exportText()], { type: 'application/json' }));
-                const link = win.document.createElement('a'); link.href = url; link.download = 'ugt-diagnostics.json';
-                win.document.body.appendChild(link); link.click(); link.remove(); win.setTimeout(() => win.URL.revokeObjectURL(url), 1000);
+                win.FileDownload.save(win, client.exportText(), 'ugt-diagnostics.json', 'application/json');
             });
             button('clear', 'Clear diagnostics', 'data-diagnostics-clear', () => client.clear());
             // The static build and server gate are independently off until rollout review.

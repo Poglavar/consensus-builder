@@ -148,15 +148,7 @@
         const payload = { city: city || currentCity(), takenAt: new Date().toISOString(), count: all.length, proposals: all };
         const text = JSON.stringify(payload, null, 2);
         try {
-            const blob = new Blob([text], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `proposals-${payload.city || 'city'}-${payload.takenAt.replace(/[:.]/g, '-')}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => URL.revokeObjectURL(url), 10000);
+            window.FileDownload.save(window, text, `proposals-${payload.city || 'city'}-${payload.takenAt.replace(/[:.]/g, '-')}.json`, 'application/json');
         } catch (error) {
             console.error('[proposals] backup could not be downloaded — nothing else should run', error);
             return null;

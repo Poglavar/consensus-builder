@@ -21,15 +21,8 @@
         const observe = (operation, options, action) => win.AppDiagnostics
             ? win.AppDiagnostics.run(operation, { ...options, context: { surface: 'plan-file', ...options.context } }, action) : action();
         // A download is named after its plan or design: "Riverside blocks" -> riverside-blocks.ugt.json.
-        const fileStem = title => String(title || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'plan';
-        function download(text, name, type) {
-            const url = win.URL.createObjectURL(new win.Blob([text], { type }));
-            const a = doc.createElement('a');
-            a.href = url; a.download = name; doc.body.appendChild(a); a.click(); a.remove();
-            // Firefox needs the object URL to remain alive until the download has started.
-            win.setTimeout(() => win.URL.revokeObjectURL(url), 1000);
-        }
+        const fileStem = title => win.FileDownload.fileStem(title, 'plan');
+        const download = (text, name, type) => win.FileDownload.save(win, text, name, type);
         async function fetchModel(raw) {
             const url = new URL(win.resolveBackendAssetUrl(raw), win.location.href);
             if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) throw new Error(t('modelUrl', 'The model URL cannot be downloaded safely.'));
