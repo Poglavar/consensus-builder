@@ -63,8 +63,10 @@ export async function loadParcelStudy(query, { sources, parcelProvider = descrip
 
 // A provider whose rules attach to the parcel rather than the zoning area (a front-yard map read
 // under the lot) refines the area records for that parcel; the zoning identities stay the same.
-export async function parcelRecords(provider, parcel, records) {
-    return provider.parcelRecords ? provider.parcelRecords(parcel, records) : records;
+// `context` carries what an envelope load knows about the lot (its front edge, the street width
+// across it, a floor-area measure); a single-parcel study passes nothing.
+export async function parcelRecords(provider, parcel, records, context = {}) {
+    return provider.parcelRecords ? provider.parcelRecords(parcel, records, context) : records;
 }
 
 // A zone under less than this share of the lot is boundary digitising noise: evidence, not a part.

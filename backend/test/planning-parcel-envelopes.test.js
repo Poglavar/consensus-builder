@@ -3,7 +3,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
-import { loadParcelEnvelopes, parcelOverlapProblems, parcelConfigurations, outerBound, lotAreaTest } from '../planning/parcel-envelopes.js';
+import { loadParcelEnvelopes, parcelOverlapProblems, parcelConfigurations, outerBound, lotAreaTest, tieredBound, floorAreaM2 } from '../planning/parcel-envelopes.js';
+import { streetWidthAcross } from '../planning/street-width.js';
 import { createAtlasProvider } from '../planning/providers/atlas.js';
 import { assembleParcelStudy } from '../planning/parcel-study.js';
 import { setupPlanningRoutes } from '../routes/planning.js';
@@ -45,8 +46,10 @@ describe('viewport parcel envelopes', () => {
         const result = await loadParcelEnvelopes(query,options(features));
         expect(result.items).toHaveLength(2);
         const item = result.items[0];
+        // The bound stacks what any type permits: both grounds to family1's roof, family2's alone above it.
+        expect(item.volumes.map(volume => [volume.baseM, volume.topM])).toEqual([[0, 35*0.3048], [35*0.3048, 45*0.3048]]);
         expect(item).toMatchObject({role:'permitted',proposalId:null,parcelEnvelope:true,areas:[],constraints:[],
-            volumes:[{baseM:0,topM:45*0.3048}],assessment:{meaning:'outer-bound',status:'unresolved'},
+            metrics:{heightM:45*0.3048},assessment:{meaning:'outer-bound',status:'unresolved'},
             source:{scenario:null,parcel:'parcel-one'},
             sourceEvidence:{frontEdge:null,parcelReference:{parcelId:'parcel-one'},excludedConfigurations:{family3:'prohibited',
                 accessory:'unrecorded',plannedresidential:'unrecorded'}}});
@@ -123,7 +126,9 @@ describe('viewport parcel envelopes', () => {
             reason:state === 'no-street' ? 'no-facing-street' : 'street-data-unavailable'}});
         expect(item.derivation.frontEdges).toEqual([0,1,2,3]);
         expect(envelopes.frontEdgeFor(item,{variation:'2'})).toBeNull();
-        expect(item.volumes).toHaveLength(1);
+        // One prism per level the two housing types' heights define.
+        expect(item.volumes).toHaveLength(2);
+        expect(item.sourceEvidence.streetWidth).toMatchObject({ widthM: null, reason: 'no-front-edge' });
     });
     it('skips street lookup when the parcel source returns no parcels', async () => {
         const streetProvider = {near:vi.fn()};
@@ -369,5 +374,65 @@ describe('configuration display logic', () => {
         expect(scene.itemAppearance(envelope,{permitted:'solid'})).toBe('solid');
         expect(scene.itemAppearance(sourceArea,{permitted:'off',zoningAreas:'ghost'})).toBe('ghost');
         expect(scene.itemAppearance(envelope,{permitted:'off',zoningAreas:'ghost'})).toBe('off');
+    });
+});
+
+// A 17 × 22 m lot at the Atlas fixture's latitude, with the street at its south edge (edge 0).
+const lot = (id = 'lot', box = [-105.0001, 40, -104.9999, 40.0002]) => ({ ...turf.bboxPolygon(box), id, properties: { parcelNumber: id } });
+const constraint = (quantity, value, extra = {}) => ({ quantity, value, unit: 'm', bound: 'minimum', evidence: 'literal', ...extra });
+const areaOf = geometry => turf.area(turf.feature(geometry));
+describe('tiered bounds and street width', () => {
+    const site = lot();
+    const [w, s, e, n] = turf.bbox(site);
+    const widthM = turf.distance([w, s], [e, s], { units: 'meters' }), depthM = turf.distance([w, s], [w, n], { units: 'meters' });
+    const context = constraints => ({ parcel: site, source: { constraints: [constraint('height', 30, { evidence: 'direct', bound: 'maximum' }), ...constraints] } });
+    it('stacks one prism per level a yard starts at, deepest started yard of each role applying', () => {
+        const tiers = tieredBound(context([constraint('rearSetback', 4), constraint('sideSetback', 3, { fromHeightM: 10 }),
+            constraint('frontSetback', 2), constraint('frontSetback', 6, { fromHeightM: 20 }), constraint('frontSetback', 5, { fromHeightM: 20 })]), 0, turf);
+        expect(tiers.map(tier => [tier.baseM, tier.topM, tier.heightM, tier.interpretations])).toEqual([[0, 10, 30, 1], [10, 20, 30, 1], [20, 30, 30, 1]]);
+        expect(areaOf(tiers[0].geometry)).toBeCloseTo(widthM * (depthM - 2 - 4), -1);
+        expect(areaOf(tiers[1].geometry)).toBeCloseTo((widthM - 6) * (depthM - 2 - 4), -1);
+        expect(areaOf(tiers[2].geometry)).toBeCloseTo((widthM - 6) * (depthM - 6 - 4), -1);
+        // Storeys take the tier their top reaches: 7 storeys of 30/7 m, the third tops 12.9 m, the fifth 21.4 m.
+        expect(floorAreaM2(tiers, 7, 30)).toBeCloseTo(2 * tiers[0].areaM2 + 2 * tiers[1].areaM2 + 3 * tiers[2].areaM2, 6);
+        expect(floorAreaM2(tiers, 0, 30)).toBeNull();
+    });
+    it('keeps a single prism, and the first recorded value per yard, when no yard starts above the ground', () => {
+        const tiers = tieredBound(context([constraint('rearSetback', 4), constraint('rearSetback', 9), constraint('sideSetback', 1)]), 0, turf);
+        expect(tiers).toHaveLength(1);
+        expect(areaOf(tiers[0].geometry)).toBeCloseTo((widthM - 2) * (depthM - 4), -1);
+        // A yard starting at or above the height adds no level.
+        expect(tieredBound(context([constraint('sideSetback', 1, { fromHeightM: 30 })]), 0, turf)).toHaveLength(1);
+        // Without a front edge every tier joins the interpretations, as the unoriented bound does.
+        const unoriented = tieredBound(context([constraint('rearSetback', 4), constraint('sideSetback', 3, { fromHeightM: 10 })]), null, turf);
+        expect(unoriented.map(tier => [tier.baseM, tier.topM, tier.interpretations])).toEqual([[0, 10, 4], [10, 30, 4]]);
+    });
+    it('bounds a set of configurations level by level and merges levels with the same ground', () => {
+        const square = size => turf.bboxPolygon([0, 0, size, size]).geometry;
+        const bound = outerBound([{ volumes: [{ geometry: square(1), baseM: 0, topM: 10 }, { geometry: square(0.5), baseM: 10, topM: 20 }] },
+            { volumes: [{ geometry: square(0.5), baseM: 0, topM: 25 }] }, { volumes: [] }], turf);
+        expect(bound.heightM).toBe(25);
+        expect(bound.tiers.map(tier => [tier.baseM, tier.topM, Math.round(areaOf(tier.geometry) / areaOf(square(0.5)))])).toEqual([[0, 10, 4], [10, 25, 1]]);
+        expect(areaOf(bound.geometry)).toBeCloseTo(areaOf(square(1)), 6);
+    });
+    it('measures the street width from the front edge to the first lot across, ignoring the lot itself and lots behind', () => {
+        const toLat = metres => metres / 111320, toLng = metres => toLat(metres) / Math.cos(40 * Math.PI / 180);
+        const obstacle = (id, box) => ({ id, geometry: turf.bboxPolygon(box).geometry, bbox: box });
+        const across = obstacle('across', [w - toLng(5), s - toLat(12 + 30), e + toLng(5), s - toLat(12)]);
+        const behind = obstacle('behind', [w, n + toLat(3), e, n + toLat(20)]);
+        const own = { id: site.id, geometry: site.geometry, bbox: [w, s, e, n] };
+        const measured = streetWidthAcross(site, 0, [own, behind, across]);
+        expect(measured.widthM).toBeCloseTo(12, 0);
+        expect(measured.hits).toHaveLength(3);
+        expect(streetWidthAcross(site, 0, [own, behind])).toMatchObject({ widthM: null, reason: 'no-lot-across' });
+        // A lot beyond the search distance is no lot across; a lot touching only one ray still answers.
+        expect(streetWidthAcross(site, 0, [across], { maxDistanceM: 10 })).toMatchObject({ widthM: null });
+        const corner = obstacle('corner', [e - toLng(6), s - toLat(8), e + toLng(10), s - toLat(6)]);
+        const touched = streetWidthAcross(site, 0, [corner]);
+        expect(touched.hits).toHaveLength(1);
+        expect(touched.widthM).toBeCloseTo(6, 0);
+        // The rear edge (edge 2) faces the lot behind, 3 m away.
+        expect(streetWidthAcross(site, 2, [own, behind, across]).widthM).toBeCloseTo(3, 0);
+        expect(streetWidthAcross(site, 9, [across])).toMatchObject({ widthM: null, reason: 'invalid-front-edge' });
     });
 });

@@ -8667,7 +8667,8 @@
             "plannedresidential": "سكني مخطط",
             "cached-calculation": "حساب محفوظ",
             "new-attached-multifamily": "سكن جديد متلاصق متعدد الأسر",
-            "general": "عام (خريطة المعالجات)"
+            "general": "عام (خريطة المعالجات)",
+            "sustainable": "طوابق البناء المستدام (المرسوم 676/2025)"
         },
         "evidence": {
             "direct": "قيمة مباشرة من المصدر",

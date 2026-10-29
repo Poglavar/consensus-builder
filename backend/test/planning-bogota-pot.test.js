@@ -4,7 +4,9 @@ import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
 import { createBogotaPotProvider, bogotaPotSource } from '../planning/providers/bogota-pot.js';
-import { parseAltura, parseAntejardin, interpretTreatment, BOGOTA_RULES } from '../planning/providers/bogota-pot-rules.js';
+import { parseAltura, parseAntejardin, interpretTreatment, antejardinConstraint, streetWallConstraint, dimensionalConstraints, solveRenovacion,
+    incentiveCandidacy, incentive, parcelReading, BOGOTA_RULES, EQUIPAMIENTOS } from '../planning/providers/bogota-pot-rules.js';
+import { parseAnnex, widenLotCode } from '../scripts/build-bogota-equipamientos.mjs';
 import { getPlanningSources, planningRepresentations } from '../planning/sources.js';
 import { loadParcelEnvelopes } from '../planning/parcel-envelopes.js';
 import { loadParcelStudy, studyParcelSource } from '../planning/parcel-study.js';
@@ -18,6 +20,9 @@ const treatment = (objectId = 38341, changes = {}) => ({ type: 'Feature', geomet
         ACTO_ADMINISTRATIVO: 'Decreto 555 de 29 de diciembre de 2021', OBSERVACION: ' ', FECHA_CAPTURA: 1640736000000, RESPONSABLE: '553', ...changes } });
 const antejardin = (objectId = 2094, changes = {}) => ({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [antejardinRing] },
     properties: { OBJECTID: objectId, DIMENSION: '3.50', NOTA: ' ', OBSERVACION: ' ', ACTO_ADMINISTRATIVO: 'Decreto 555 de 29 de diciembre de 2021', FECHA_CAPTURA: 1640736000000, ...changes } });
+// The activity-area polygon (layer 14) over the same ground: a Proximidad area, where Decreto 676/2025 storeys apply.
+const activity = (objectId = 20034, changes = {}) => ({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [treatmentRing] },
+    properties: { OBJECTID: objectId, CODIGO_AREA_ACTIVIDAD: 'AAPRSU', NOMBRE_AREA_ACTIVIDAD: 'Área de Actividad de Proximidad - AAP - Receptora de soportes urbanos', ...changes } });
 // A 22 m square lot inside both polygons, with the street to its south.
 const centre = [-74.05305, 4.64795];
 const parcel = (id = 'CO-BOGOTA-008101001001', box = [centre[0] - 0.0001, centre[1] - 0.0001, centre[0] + 0.0001, centre[1] + 0.0001]) =>
@@ -25,15 +30,15 @@ const parcel = (id = 'CO-BOGOTA-008101001001', box = [centre[0] - 0.0001, centre
 const streets = () => ({ near: async () => ({ type: 'FeatureCollection', source: 'overpass', partial: false, truncated: false,
     features: [turf.lineString([[centre[0] - 0.001, centre[1] - 0.00025], [centre[0] + 0.001, centre[1] - 0.00025]], { osm_id: 'w1', name: 'Calle', highway: 'residential' })] }) });
 
-// A fake service: layer 15 answers treatment queries, layer 22 front yards; every request is recorded.
-function service({ treatments = [treatment()], antejardines = [antejardin()], fail = null } = {}) {
+// A fake service: layer 15 answers treatment queries, layer 22 front yards, layer 14 activity areas; every request is recorded.
+function service({ treatments = [treatment()], antejardines = [antejardin()], activities = [activity()], fail = null } = {}) {
     const calls = [];
     const fetchImpl = vi.fn(async href => {
         const url = new URL(href);
         calls.push(url);
         const layer = Number(url.pathname.split('/').at(-2));
         if (fail === layer) throw new Error('network');
-        const pool = layer === 15 ? treatments : antejardines;
+        const pool = layer === 15 ? treatments : layer === 14 ? activities : antejardines;
         const ids = url.searchParams.get('objectIds');
         const after = /OBJECTID > (\d+)/.exec(url.searchParams.get('where') || '');
         let features = ids ? pool.filter(f => ids.split(',').includes(String(f.properties.OBJECTID))) : pool.filter(f => !after || f.properties.OBJECTID > Number(after[1]));
@@ -62,11 +67,14 @@ describe('Bogotá POT rules', () => {
         expect(parseAntejardin(' ')).toBeNull(); expect(parseAntejardin('abc')).toBeNull();
     });
     it('turns an assigned storey count into metric constraints and keeps other statuses non-configurable', () => {
-        // 5 storeys × (3.80 m clear + 0.25 m slab) = 20.25 m; 4–6 storeys take a 5 m rear yard; TA takes max(H/5, 4 m) at the sides.
+        // 5 storeys × (3.80 m clear + 0.25 m slab) = 20.25 m; 4–6 storeys take a 5 m rear yard; TA takes
+        // max(H/5, 4 m) at the sides from the second floor, H counted above that level.
         const five = interpretTreatment({ TRATAMIENTO: 'CONSOLIDACION', TIPOLOGIA: 'TA', ALTURA_MAXIMA: '5' });
         expect(five).toMatchObject({ status: 'allowed', storeys: 5, heightM: 20.25, heightLabel: '5 pisos', uplift: null });
         expect(five.constraints.map(c => [c.quantity, c.value, c.unit, c.evidence])).toEqual([
-            ['storeys', 5, 'count', 'direct'], ['height', 20.25, 'm', 'direct'], ['rearSetback', 5, 'm', 'literal'], ['sideSetback', 4.05, 'm', 'literal']]);
+            ['storeys', 5, 'count', 'direct'], ['height', 20.25, 'm', 'direct'], ['rearSetback', 5, 'm', 'literal'], ['sideSetback', 4, 'm', 'literal']]);
+        expect(five.constraints[3].fromHeightM).toBe(4.05);
+        expect(interpretTreatment({ TRATAMIENTO: 'CONSOLIDACION', TIPOLOGIA: 'TA', ALTURA_MAXIMA: '20' }).constraints[3]).toMatchObject({ quantity: 'sideSetback', value: 15.39, fromHeightM: 4.05 });
         const continuous = interpretTreatment({ TRATAMIENTO: 'CONSOLIDACION', TIPOLOGIA: ' ', ALTURA_MAXIMA: '12' });
         expect(continuous.constraints.map(c => [c.quantity, c.value])).toEqual([['storeys', 12], ['height', 48.6], ['rearSetback', 8], ['sideSetback', 0]]);
         expect(interpretTreatment({ TRATAMIENTO: 'MEJORAMIENTO INTEGRAL', ALTURA_MAXIMA: '3 B-urb' }).constraints.map(c => [c.quantity, c.value]))
@@ -75,18 +83,102 @@ describe('Bogotá POT rules', () => {
         expect(interpretTreatment({ TRATAMIENTO: 'CONSERVACION', ALTURA_MAXIMA: '3-6' })).toMatchObject({ status: 'allowed', storeys: 3,
             uplift: { storeys: 6 }, heightLabel: '3 pisos (hasta 6 con frente suficiente)' });
         expect(interpretTreatment({ TRATAMIENTO: 'DESARROLLO', ALTURA_MAXIMA: 'Rg 2' })).toMatchObject({ status: 'unsupported_calculation', constraints: [], reason: expect.stringContaining('Rango 2') });
-        expect(interpretTreatment({ TRATAMIENTO: 'RENOVACION', ALTURA_MAXIMA: '7' })).toMatchObject({ status: 'unsupported_calculation', constraints: [] });
+        // Renovación's height results from the index and the yards on the lot: the polygon alone cannot say it.
+        expect(interpretTreatment({ TRATAMIENTO: 'RENOVACION', ALTURA_MAXIMA: '7' })).toMatchObject({ status: 'unsupported_calculation', constraints: [], resultante: true, storeyCap: 7 });
         expect(interpretTreatment({ TRATAMIENTO: 'CONSERVACION', ALTURA_MAXIMA: 'BIC NAL' })).toMatchObject({ status: 'instrument_handoff', reason: expect.stringContaining('Bien de Interés Cultural') });
-        expect(interpretTreatment({ TRATAMIENTO: 'RENOVACION', ALTURA_MAXIMA: null })).toMatchObject({ status: 'instrument_handoff', heightLabel: 'altura no asignada', reason: expect.stringContaining('resultante') });
+        expect(interpretTreatment({ TRATAMIENTO: 'RENOVACION', ALTURA_MAXIMA: null })).toMatchObject({ status: 'unsupported_calculation', resultante: true, storeyCap: null, heightLabel: 'altura resultante', reason: expect.stringContaining('índice') });
         expect(interpretTreatment({ TRATAMIENTO: 'CONSOLIDACION', ALTURA_MAXIMA: ' ' })).toMatchObject({ status: 'instrument_handoff', reason: expect.stringContaining('Decreto 253/2026') });
         expect(interpretTreatment({ TRATAMIENTO: 'CONSOLIDACION', ALTURA_MAXIMA: '??' })).toMatchObject({ status: 'unrecorded' });
+    });
+    it('reads equipamiento storeys from the Decreto 253/2026 annex by the polygon identity, dotacional storey height and front yard', () => {
+        expect(Object.keys(EQUIPAMIENTOS.polygons)).toHaveLength(596);
+        // Annex row 2 (4 storeys, lot 005617052003) is the second blank Consolidación polygon by OBJECTID.
+        const school = interpretTreatment({ OBJECTID: 35773, TRATAMIENTO: 'CONSOLIDACION', TIPOLOGIA: ' ', ALTURA_MAXIMA: ' ', OBSERVACION: 'DOT' });
+        expect(school).toMatchObject({ status: 'allowed', storeys: 4, heightM: 18.4, storeyHeightM: 4.6, equipamiento: { annexId: 2, lots: ['005617052003'], condition: null } });
+        expect(school.constraints.map(c => [c.quantity, c.value])).toEqual([['storeys', 4], ['height', 18.4], ['rearSetback', 5], ['sideSetback', 0]]);
+        expect(school.heightLabel).toBe('4 pisos (equipamiento, Decreto 253/2026)');
+        // Row 7 is "N/A": public-service infrastructure without a storey count.
+        expect(interpretTreatment({ OBJECTID: 35781, TRATAMIENTO: 'CONSOLIDACION', ALTURA_MAXIMA: ' ' })).toMatchObject({ status: 'instrument_handoff',
+            equipamiento: { annexId: 7, decision: 'N/A' }, reason: expect.stringContaining('Infraestructura de Servicios Públicos') });
+        // The annex minimum front yard applies to equipamiento lots even where the front-yard map says less.
+        expect(antejardinConstraint({ OBJECTID: 1, DIMENSION: '2.00' }, {}, 'CONSOLIDACION', BOGOTA_RULES, { equipamiento: true }).constraint).toMatchObject({ quantity: 'frontSetback', value: 3.5 });
+        expect(antejardinConstraint({ OBJECTID: 1, DIMENSION: '5.00' }, {}, 'CONSOLIDACION', BOGOTA_RULES, { equipamiento: true }).constraint).toMatchObject({ value: 5 });
+        expect(antejardinConstraint({}, {}, 'CONSOLIDACION', BOGOTA_RULES, { equipamiento: true }).constraint).toMatchObject({ value: 3.5 });
+        expect(antejardinConstraint({ DIMENSION: '2.00' }, {}, 'RENOVACION', BOGOTA_RULES, { equipamiento: true }).constraint).toBeNull();
+    });
+    it('parses the annex text into numbered rows with lot codes widened to the lot layer\'s form', () => {
+        const rows = parseAnnex(['   ID polígono      DECISIÓN        CÓDIGO', '   ID 1 C/N/A        N/A             1081020188                AE: Lagos de Torca',
+            '                                                       Actuación Estratégica Lagos de Torca', '    ID 2 C/4           4             0056175203',
+            '   ID 3 C/5          5', '                                   0091350420', '                                   0091350419',
+            '                       CLASIFICACIÓN DE LA INFORMACIÓN: PÚBLICA', '   -   N/A: No aplica. La determinación', '       o normativa aplicable.'].join('\n'));
+        expect(rows).toEqual([
+            { id: 1, legend: 'C/N/A', storeys: null, decision: 'N/A', codes: ['1081020188'], condition: 'AE: Lagos de Torca Actuación Estratégica Lagos de Torca' },
+            { id: 2, legend: 'C/4', storeys: 4, decision: '4', codes: ['0056175203'], condition: '' },
+            { id: 3, legend: 'C/5', storeys: 5, decision: '5', codes: ['0091350420', '0091350419'], condition: '' }]);
+        expect(widenLotCode('0056175203')).toBe('005617052003');
+        expect(widenLotCode('NO TIENE')).toBeNull();
+    });
+    it('steps the facade back above the street-wall height from the measured street width', () => {
+        // D = street 12 m + front yard 3 m = 15 m; A = 2.5 × 15 = 37.5 m; a 48.6 m building steps back max(4, (48.6 − 37.5)/5) = 4 m.
+        const wall = streetWallConstraint({ treatment: 'CONSOLIDACION', heightM: 48.6, antejardinM: 3, streetWidthM: 12 });
+        expect(wall.constraint).toMatchObject({ quantity: 'frontSetback', value: 7, fromHeightM: 37.5, evidence: 'literal' });
+        expect(wall.evidence).toMatchObject({ applies: true, distanceM: 15, facadeHeightM: 37.5, setbackM: 4 });
+        // A taller building steps back (H − A)/5 once that exceeds 4 m.
+        expect(streetWallConstraint({ treatment: 'RENOVACION', heightM: 80, streetWidthM: 10 }).constraint).toMatchObject({ value: 11, fromHeightM: 25 });
+        expect(streetWallConstraint({ treatment: 'CONSOLIDACION', heightM: 20.25, antejardinM: 3.5, streetWidthM: 12 })).toMatchObject({ constraint: null, evidence: { applies: false, reason: 'building-below-facade-height' } });
+        expect(streetWallConstraint({ treatment: 'CONSOLIDACION', heightM: 100, streetWidthM: 31 })).toMatchObject({ constraint: null, evidence: { reason: 'street-wider-than-rule' } });
+        expect(streetWallConstraint({ treatment: 'CONSOLIDACION', heightM: 100, streetWidthM: null })).toMatchObject({ constraint: null, evidence: { reason: 'street-width-unknown' } });
+        expect(streetWallConstraint({ treatment: 'CONSERVACION', heightM: 100, streetWidthM: 10 })).toMatchObject({ constraint: null, evidence: { reason: 'treatment-without-street-wall-rule' } });
+        const twelve = dimensionalConstraints({ treatment: 'CONSOLIDACION', storeys: 12, antejardinM: 3.5, streetWidthM: 8 });
+        expect(twelve.constraints.map(c => [c.quantity, c.value, c.fromHeightM])).toEqual([['storeys', 12, undefined], ['height', 48.6, undefined], ['rearSetback', 8, undefined],
+            ['sideSetback', 0, undefined], ['frontSetback', 7.5, 28.75]]);
+    });
+    it('gives Renovación the storey count holding the most floor area within the construction index', () => {
+        // Renovación: rear yard by height in metres, side yards from 11.40 m. A measure that models
+        // a 20 × 20 m lot: each storey's footprint is the lot less the yards its top reaches.
+        const lot = 20, measure = constraints => {
+            const by = Object.fromEntries(constraints.map(c => [c.quantity, c]));
+            const storeys = by.storeys.value, storeyM = by.height.value / storeys;
+            let total = 0;
+            for (let k = 1; k <= storeys; k++) {
+                const side = by.sideSetback && k * storeyM > by.sideSetback.fromHeightM ? by.sideSetback.value : 0;
+                total += Math.max(0, lot - 2 * side) * Math.max(0, lot - by.rearSetback.value);
+            }
+            return { floorAreaM2: total };
+        };
+        const solved = solveRenovacion({ lotM2: 400 }, measure);
+        expect(solved).toMatchObject({ storeys: 8, heightM: 32.4, index: 5, limitM2: 2000 });
+        expect(solved.floorAreaM2).toBeLessThanOrEqual(2000);
+        expect(solved.constraints.map(c => [c.quantity, c.value, c.fromHeightM])).toEqual([['storeys', 8, undefined], ['height', 32.4, undefined], ['rearSetback', 8, undefined], ['sideSetback', 4.05, 12.15]]);
+        expect(dimensionalConstraints({ treatment: 'RENOVACION', storeys: 21 }).constraints.find(c => c.quantity === 'rearSetback').value).toBe(20);
+        // A map storey count in Renovación caps the search; a lot where no storey fits has no height.
+        expect(solveRenovacion({ lotM2: 400, storeyCap: 3 }, measure)).toMatchObject({ storeys: 3 });
+        expect(solveRenovacion({ lotM2: 400 }, () => ({ floorAreaM2: 0 }))).toBeNull();
+    });
+    it('offers the Decreto 676/2025 storeys as a conditional reading of a qualifying lot only', () => {
+        const five = interpretTreatment({ TRATAMIENTO: 'CONSOLIDACION', TIPOLOGIA: ' ', ALTURA_MAXIMA: '5' });
+        expect(incentiveCandidacy(five)).toEqual({ candidate: true, reason: null });
+        expect(incentiveCandidacy(interpretTreatment({ TRATAMIENTO: 'CONSOLIDACION', ALTURA_MAXIMA: '3-5' })).candidate).toBe(false);
+        expect(incentiveCandidacy(interpretTreatment({ TRATAMIENTO: 'CONSOLIDACION', ALTURA_MAXIMA: '12' })).candidate).toBe(false);
+        expect(incentiveCandidacy(interpretTreatment({ TRATAMIENTO: 'RENOVACION', ALTURA_MAXIMA: ' ' })).candidate).toBe(false);
+        expect(incentive(five, { lotM2: 500, activityCode: 'AAPRSU' })).toMatchObject({ applies: true, bonusStoreys: 2, storeys: 7 });
+        expect(incentive(five, { lotM2: 900, activityCode: 'AAERAE' })).toMatchObject({ applies: true, bonusStoreys: 3, storeys: 8 });
+        expect(incentive(interpretTreatment({ TRATAMIENTO: 'CONSOLIDACION', ALTURA_MAXIMA: '11' }), { lotM2: 900, activityCode: 'AAERAE' })).toMatchObject({ applies: true, bonusStoreys: 1, storeys: 12 });
+        expect(incentive(five, { lotM2: 250, activityCode: 'AAPRSU' })).toMatchObject({ applies: false, reason: expect.stringContaining('300 m²') });
+        expect(incentive(five, { lotM2: 500, activityCode: 'AAGSM' })).toMatchObject({ applies: false, reason: expect.stringContaining('AAGSM') });
+        expect(incentive(five, { lotM2: 500, activityCode: null })).toMatchObject({ applies: false });
+        const lot = parcelReading(five, { scenario: 'sustainable', lotM2: 500, activityCode: 'AAPRSU', antejardinM: 3 });
+        expect(lot).toMatchObject({ status: 'allowed', storeys: 7, heightM: 28.35, condition: expect.stringContaining('ecourbanismo'), title: expect.stringContaining('5 + 2 sostenibles') });
+        expect(lot.constraints.map(c => [c.quantity, c.value])).toEqual([['storeys', 7], ['height', 28.35], ['rearSetback', 6], ['sideSetback', 0]]);
+        expect(parcelReading(five, { scenario: 'sustainable', lotM2: 200 })).toMatchObject({ status: 'unsupported_calculation', constraints: [] });
+        expect(parcelReading(five, { scenario: 'general', lotM2: 500 })).toMatchObject({ status: 'allowed', storeys: 5, heightM: 20.25 });
     });
 });
 
 describe('Bogotá POT provider', () => {
     it('is registered with the Bogotá lot source pinned for parcel studies', () => {
         const source = getPlanningSources().find(provider => provider.descriptor.id === 'bogota-pot-555');
-        expect(source.descriptor).toMatchObject({ city: 'bogota', parcelSourceId: 'co-bogota-uaecd-lote', scenarios: ['general'], capabilities: { areas: true, volumes: false } });
+        expect(source.descriptor).toMatchObject({ city: 'bogota', parcelSourceId: 'co-bogota-uaecd-lote', scenarios: ['general', 'sustainable'], scenario: 'general', capabilities: { areas: true, volumes: false } });
         expect(studyParcelSource(source, 'bogota')).toMatchObject({ id: 'co-bogota-uaecd-lote' });
     });
     it('lists treatment areas clipped to the viewport with metric constraints and pages by object id', async () => {
@@ -102,7 +194,7 @@ describe('Bogotá POT provider', () => {
         expect(first.items[0].proposal.constraints).toEqual(first.items[0].constraints);
         expect(first.truncated).toBe(true);
         const second = await planningRepresentations({}, { city: 'bogota', source: 'bogota-pot-555', bbox, limit: 1, cursor: first.nextCursor }, [provider]);
-        expect(second.items[0]).toMatchObject({ title: 'Renovación urbana · altura no asignada', assessment: { status: 'instrument_handoff' } });
+        expect(second.items[0]).toMatchObject({ title: 'Renovación urbana · altura resultante', assessment: { status: 'unsupported_calculation' }, constraints: [] });
         expect(second.truncated).toBe(false);
         expect(calls.filter(url => url.pathname.endsWith('/15/query')).map(url => url.searchParams.get('where'))).toEqual(['1=1', 'OBJECTID > 1']);
         expect(calls.every(url => url.searchParams.get('outSR') === '4326' && url.searchParams.get('f') === 'geojson')).toBe(true);
@@ -139,26 +231,86 @@ describe('Bogotá POT provider', () => {
     });
 });
 
+const lotSize = () => {
+    const box = turf.bbox(parcel());
+    return { widthM: turf.distance([box[0], box[1]], [box[2], box[1]], { units: 'meters' }), depthM: turf.distance([box[0], box[1]], [box[0], box[3]], { units: 'meters' }) };
+};
+const tierArea = volume => turf.area(turf.feature(volume.geometry));
+
 describe('Bogotá parcel envelopes', () => {
-    it('derives a bounded volume from storeys, the front yard under the lot and the decree yards', async () => {
+    it('derives a tiered volume from storeys, the front yard under the lot and the decree yards, with the incentive storeys as a conditional configuration', async () => {
         const { provider } = service();
         const result = await loadParcelEnvelopes({ city: 'bogota', source: 'bogota-pot-555', bbox }, envelopeOptions(provider));
         expect(result.unavailable).toEqual([]);
         const [item] = result.items;
         expect(item).toMatchObject({ role: 'permitted', parcelEnvelope: true, source: { id: 'bogota-pot-555', parcel: parcel().id },
-            volumes: [{ baseM: 0, topM: 20.25 }], sourceEvidence: { frontage: { basis: 'street' }, excludedConfigurations: {} } });
-        const [configuration] = item.configurations;
-        expect(configuration).toMatchObject({ id: 'general', treatment: 'allowed', unavailableReason: null });
-        expect(configuration.constraints.map(c => [c.quantity, c.value, c.unit])).toEqual([
-            ['storeys', 5, 'count'], ['height', 20.25, 'm'], ['rearSetback', 5, 'm'], ['sideSetback', 4.05, 'm'], ['frontSetback', 3.5, 'm']]);
-        // The street lies south: the bound loses the 3.5 m front yard at the south edge, the 5 m rear
-        // yard at the north edge and the 4.05 m detached-typology side yards at the east and west edges.
-        const box = turf.bbox(parcel());
-        const widthM = turf.distance([box[0], box[1]], [box[2], box[1]], { units: 'meters' }), depthM = turf.distance([box[0], box[1]], [box[0], box[3]], { units: 'meters' });
-        expect(item.metrics.footprintM2).toBeCloseTo((widthM - 2 * 4.05) * (depthM - 3.5 - 5), 0);
+            sourceEvidence: { frontage: { basis: 'street' }, streetWidth: { widthM: null, reason: 'no-lot-across' }, excludedConfigurations: {} } });
+        const [general, sustainable] = item.configurations;
+        expect(general).toMatchObject({ id: 'general', treatment: 'allowed', unavailableReason: null });
+        expect(general).not.toHaveProperty('condition');
+        expect(general.constraints.map(c => [c.quantity, c.value, c.unit])).toEqual([
+            ['storeys', 5, 'count'], ['height', 20.25, 'm'], ['rearSetback', 5, 'm'], ['sideSetback', 4, 'm'], ['frontSetback', 3.5, 'm']]);
+        // The street lies south: the ground floor loses the 3.5 m front yard at the south edge and the
+        // 5 m rear yard at the north edge; from the second floor the 4 m detached-typology side yards
+        // take the east and west edges too, so the configuration is two stacked prisms.
+        const { widthM, depthM } = lotSize();
+        expect(general.volumes.map(volume => [volume.baseM, volume.topM])).toEqual([[0, 4.05], [4.05, 20.25]]);
+        expect(tierArea(general.volumes[0])).toBeCloseTo(widthM * (depthM - 3.5 - 5), -1);
+        expect(tierArea(general.volumes[1])).toBeCloseTo((widthM - 8) * (depthM - 3.5 - 5), -1);
+        expect(general.metrics).toMatchObject({ heightM: 20.25 });
+        expect(general.metrics.floorAreaM2).toBeCloseTo(widthM * (depthM - 8.5) + 4 * (widthM - 8) * (depthM - 8.5), -1);
+        // The 494 m² lot in a Proximidad area earns two Decreto 676/2025 storeys, rear yard for 7 storeys and side yards for 28.35 m.
+        expect(sustainable).toMatchObject({ id: 'sustainable', treatment: 'allowed', unavailableReason: null, condition: expect.stringContaining('ecourbanismo') });
+        expect(sustainable.constraints.map(c => [c.quantity, c.value])).toEqual([['storeys', 7], ['height', 28.35], ['rearSetback', 6], ['sideSetback', 4.86], ['frontSetback', 3.5]]);
+        expect(sustainable.volumes.map(volume => [volume.baseM, volume.topM])).toEqual([[0, 4.05], [4.05, 28.35]]);
+        // The outer bound stacks what either configuration permits at each level: the general
+        // ground floor, the wider side yards of the taller option above the general roof.
+        expect(item.volumes.map(volume => [volume.baseM, volume.topM])).toEqual([[0, 4.05], [4.05, 20.25], [20.25, 28.35]]);
+        expect(item.metrics).toMatchObject({ heightM: 28.35 });
+        expect(tierArea(item.volumes[1])).toBeCloseTo((widthM - 8) * (depthM - 8.5), -1);
+        expect(tierArea(item.volumes[2])).toBeCloseTo((widthM - 2 * 4.86) * (depthM - 3.5 - 6), -1);
+        expect(item.title).toBe('Consolidación · 5 pisos · 008101001001');
     });
-    it('leaves a parcel without an assigned height unavailable for a recorded, non-configurable status', async () => {
-        const { provider } = service({ treatments: [treatment(5, { TRATAMIENTO: 'RENOVACION', ALTURA_MAXIMA: ' ' })] });
+    it('solves the resulting height of a Renovación lot from the construction index and its yards', async () => {
+        const { provider } = service({ treatments: [treatment(5, { TRATAMIENTO: 'RENOVACION', TIPOLOGIA: ' ', ALTURA_MAXIMA: ' ' })] });
+        const result = await loadParcelEnvelopes({ city: 'bogota', source: 'bogota-pot-555', bbox }, envelopeOptions(provider));
+        expect(result.unavailable).toEqual([]);
+        const [item] = result.items;
+        const [general] = item.configurations;
+        expect(item.configurations).toHaveLength(1);
+        expect(item.sourceEvidence.excludedConfigurations).toEqual({ sustainable: 'unsupported_calculation' });
+        // A 22 m lot: eight storeys hold the most floor area; the rear yard is 8 m at 32.4 m and the
+        // side yards 4.05 m from 12.15 m (three storeys) up. No front yard and, without a lot across the street, no street wall.
+        expect(general.constraints.map(c => [c.quantity, c.value, c.fromHeightM])).toEqual([['storeys', 8, undefined], ['height', 32.4, undefined], ['rearSetback', 8, undefined], ['sideSetback', 4.05, 12.15]]);
+        expect(general.volumes.map(volume => [volume.baseM, volume.topM])).toEqual([[0, 12.15], [12.15, 32.4]]);
+        const { widthM, depthM } = lotSize();
+        expect(tierArea(general.volumes[0])).toBeCloseTo(widthM * (depthM - 8), -1);
+        expect(tierArea(general.volumes[1])).toBeCloseTo((widthM - 8.1) * (depthM - 8), -1);
+        expect(general.metrics.floorAreaM2).toBeLessThanOrEqual(5 * widthM * depthM);
+        expect(item.title).toBe('Renovación urbana · 8 pisos (altura resultante, índice 5,0) · 008101001001');
+        expect(item.sourceEvidence.excludedConfigurations.sustainable).toBe('unsupported_calculation');
+    });
+    it('steps a tall facade back above the street-wall height when a lot lies across the street', async () => {
+        // The street runs 28 m south of the lot centre; a lot across it starts 9 m beyond the lot line.
+        const across = parcel('CO-BOGOTA-008101002001', [centre[0] - 0.0001, centre[1] - 0.00045, centre[0] + 0.0001, centre[1] - 0.00018]);
+        const { provider } = service({ treatments: [treatment(5, { TIPOLOGIA: ' ', ALTURA_MAXIMA: '12' })] });
+        const result = await loadParcelEnvelopes({ city: 'bogota', source: 'bogota-pot-555', bbox }, envelopeOptions(provider, [parcel(), across]));
+        const item = result.items.find(entry => entry.source.parcel === parcel().id);
+        expect(item.sourceEvidence.streetWidth.widthM).toBeCloseTo(8.9, 0);
+        const [general] = item.configurations;
+        const wall = general.constraints.find(c => c.quantity === 'frontSetback' && c.fromHeightM);
+        // D = 8.9 m + 3.5 m front yard; the facade rises to 2.5·D, then steps back max(4, (48.6 − A)/5) = 4 m more.
+        const distanceM = item.sourceEvidence.streetWidth.widthM + 3.5;
+        expect(wall).toMatchObject({ value: 7.5, fromHeightM: Math.round(2.5 * distanceM * 1000) / 1000 });
+        expect(general.volumes.map(volume => [volume.baseM, volume.topM])).toEqual([[0, wall.fromHeightM], [wall.fromHeightM, 48.6]]);
+        const { widthM, depthM } = lotSize();
+        expect(tierArea(general.volumes[0])).toBeCloseTo(widthM * (depthM - 3.5 - 8), -1);
+        expect(tierArea(general.volumes[1])).toBeCloseTo(widthM * (depthM - 7.5 - 8), -1);
+        // Twelve storeys already reach the incentive's cap, so the polygon offers no sustainability reading.
+        expect(item.sourceEvidence.excludedConfigurations).toEqual({ sustainable: 'unsupported_calculation' });
+    });
+    it('leaves a lot in an unassigned sector unavailable for a recorded, non-configurable status', async () => {
+        const { provider } = service({ treatments: [treatment(5, { TRATAMIENTO: 'DESARROLLO', ALTURA_MAXIMA: 'Rg 2' })] });
         const result = await loadParcelEnvelopes({ city: 'bogota', source: 'bogota-pot-555', bbox }, envelopeOptions(provider));
         expect(result.items).toEqual([]);
         expect(result.unavailable).toEqual([{ parcelId: parcel().id, reason: 'status-not-configurable' }]);
@@ -172,7 +324,8 @@ describe('Bogotá parcel envelopes', () => {
         const context = await loadParcelStudy({ city: 'bogota', source: 'bogota-pot-555', scenario: 'general', parcel: parcel().id }, envelopeOptions(provider));
         expect(context.source.constraints.map(c => c.quantity)).toEqual(['storeys', 'height', 'rearSetback', 'sideSetback', 'frontSetback']);
         const bound = core.derive(context, 0, turf);
-        expect(bound.limits).toEqual({ frontSetback: 3.5, sideSetback: 4.05, rearSetback: 5 });
+        // A plain derivation applies the second-floor side yard from the ground: the study's single prism stays conservative.
+        expect(bound.limits).toEqual({ frontSetback: 3.5, sideSetback: 4, rearSetback: 5 });
         expect(bound.heightM).toBe(20.25);
     });
 });

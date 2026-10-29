@@ -5,10 +5,13 @@ import * as turf from '@turf/turf';
 import { createPublicSourceFetch } from '../../parcels/public-source-fetch.js';
 import { validateGeometry } from '../../parcels/source-contract.js';
 import { withSourceProposal, sourceRevision } from '../source-proposal.js';
-import { interpretTreatment, antejardinConstraint, BOGOTA_RULES } from './bogota-pot-rules.js';
+import { interpretTreatment, antejardinConstraint, parcelReading, incentiveCandidacy, BOGOTA_RULES } from './bogota-pot-rules.js';
 
 export const BOGOTA_POT_SERVICE = 'https://services7.arcgis.com/lsxbLWF2l19Rmhqj/arcgis/rest/services/POT_Bogota_Decreto_555_2021/FeatureServer';
-export const BOGOTA_POT_LAYERS = Object.freeze({ treatment: 15, antejardin: 22 });
+export const BOGOTA_POT_LAYERS = Object.freeze({ treatment: 15, antejardin: 22, activity: 14 });
+// `general` is the treatment map as it stands; `sustainable` adds the Decreto 676/2025 storeys a
+// project earns by adopting every ecourbanismo measure, decided per lot.
+export const BOGOTA_POT_SCENARIOS = Object.freeze(['general', 'sustainable']);
 export const bogotaPotSource = Object.freeze({
     id: 'bogota-pot-555', city: 'bogota', label: 'POT Bogotá · Decreto 555/2021', edition: '2021-12-29', default: true,
     kind: 'regulation', coverage: 'zoning-areas', scope: 'city',
@@ -18,7 +21,7 @@ export const bogotaPotSource = Object.freeze({
     attribution: 'SDP Bogotá, POT Decreto 555/2021 · copy published by IDE Cundinamarca (IDEC) · CC BY 4.0',
     capabilities: { volumes: false, areas: true, parcelEvidence: false, constraintEvaluation: false },
     parcelSourceId: 'co-bogota-uaecd-lote', parcelStudy: 'direct-dimensions.v1',
-    scenarios: ['general'], scenario: 'general'
+    scenarios: BOGOTA_POT_SCENARIOS, scenario: 'general'
 });
 
 const publicFetch = createPublicSourceFetch({ maxBytes: 64 * 1024 * 1024, timeoutMs: 60000 });
@@ -76,58 +79,92 @@ export function createBogotaPotProvider(descriptor = bogotaPotSource, { fetchImp
         reads.set(key, { at: now(), promise });
         return promise;
     }
-    // Front-yard polygons covering an area, kept so every parcel of one envelope load reads the
-    // same page. A page the service cut short covers nothing.
-    function antejardinUnder(bbox) {
-        const fresh = covers.find(cover => now() - cover.at < TTL_MS && contains(cover.bbox, bbox));
+    // Polygons of a per-lot layer (front yards, activity areas) covering an area, kept so every
+    // parcel of one envelope load reads the same page. A page the service cut short covers nothing.
+    function layerUnder(layer, bbox) {
+        const fresh = covers.find(cover => cover.layer === layer && now() - cover.at < TTL_MS && contains(cover.bbox, bbox));
         if (fresh) return fresh.promise;
-        const cover = { bbox, at: now(), promise: readBounds(layers.antejardin, bbox, { count: 2000 }).then(page => {
-            if (page.more) { covers.splice(covers.indexOf(cover), 1); throw upstream('Bogotá front-yard map returned an incomplete page.'); }
+        const cover = { layer, bbox, at: now(), promise: readBounds(layer, bbox, { count: 2000 }).then(page => {
+            if (page.more) { covers.splice(covers.indexOf(cover), 1); throw upstream(`Bogotá POT layer ${layer} returned an incomplete page.`); }
             return page.features;
         }).catch(error => { const index = covers.indexOf(cover); if (index >= 0) covers.splice(index, 1); throw error; }) };
         if (covers.length >= COVER_CAP) covers.shift();
         covers.push(cover);
         return cover.promise;
     }
+    const antejardinUnder = bbox => layerUnder(layers.antejardin, bbox);
+    const activityUnder = bbox => layerUnder(layers.activity, bbox);
+    // The polygon of a layer with the largest overlap under a lot, with the share it covers.
+    function largestUnder(features, parcel) {
+        const bounds = turf.bbox(parcel), candidates = features.filter(feature => intersects(boundsOf(feature), bounds));
+        let best = null;
+        const failed = [];
+        for (const feature of candidates) {
+            let overlap;
+            try { overlap = turf.intersect(turf.feature(parcel.geometry), feature); }
+            catch (_) { failed.push(feature.properties.OBJECTID); continue; }
+            const areaM2 = overlap ? turf.area(overlap) : 0;
+            if (areaM2 > 0.01 && (!best || areaM2 > best.areaM2)) best = { feature, areaM2 };
+        }
+        return { best, candidates: candidates.length, failed, overlap: best ? { overlapM2: best.areaM2, overlapShare: best.areaM2 / turf.area(parcel),
+            revision: sourceRevision(best.feature), ...(failed.length ? { unreadable: failed } : {}) } : null };
+    }
+    const rulesEvidence = Object.freeze({ decree: BOGOTA_RULES.decree, clearHeightM: BOGOTA_RULES.clearHeightM, slabM: BOGOTA_RULES.slabM,
+        storeyHeightM: BOGOTA_RULES.storeyHeightM, dotacionalStoreyHeightM: BOGOTA_RULES.dotacionalStoreyHeightM,
+        citations: [BOGOTA_RULES.storeyHeightCitation, BOGOTA_RULES.rearSetbackCitation, BOGOTA_RULES.sideSetbackCitation,
+            BOGOTA_RULES.antejardinCitation, BOGOTA_RULES.streetWallCitation, BOGOTA_RULES.renovacionCitation,
+            BOGOTA_RULES.sustainabilityCitation, BOGOTA_RULES.dotacionalStoreyCitation] });
     function record(feature, displayGeometry, city = descriptor.city, scenario = descriptor.scenario) {
         const p = feature.properties, reading = interpretTreatment(p), recordId = String(p.OBJECTID);
         const id = `${descriptor.id}:${recordId}`;
         const site = validateGeometry(displayGeometry) ? displayGeometry : null;
+        // The sustainability scenario stands on the same polygon; whether its storeys apply is the
+        // lot's decision (parcelRecords), so the polygon only says whether it can carry them at all.
+        const candidacy = scenario === 'sustainable' ? incentiveCandidacy(reading) : null;
+        const status = candidacy && !candidacy.candidate ? 'unsupported_calculation' : reading.status;
+        const reason = candidacy && !candidacy.candidate ? candidacy.reason : reading.reason;
         return withSourceProposal({
-            id, role: 'permitted', title: `${reading.treatmentLabel} · ${reading.heightLabel}`,
+            id, role: 'permitted', title: `${reading.treatmentLabel} · ${reading.heightLabel}${candidacy?.candidate ? ' · pisos sostenibles según lote' : ''}`,
             site, areas: site ? [{ id: `${id}:area`, geometry: site }] : [], volumes: [], spatialReference,
             source: { ...descriptor, city: city || descriptor.city, scenario, recordId,
                 version: sourceRevision({ id: recordId, geometry: feature.geometry, properties: p }),
                 publishedAt: Number.isFinite(p.FECHA_CAPTURA) ? new Date(p.FECHA_CAPTURA).toISOString().slice(0, 10) : null },
             authority: { effect: 'obligatory', basis: 'source-summary', applicability: 'unresolved' },
-            assessment: { meaning: 'zoning-area', status: reading.status, reason: reading.reason,
-                geometry: 'source-area', constraints: 'not-evaluated', current: true },
+            assessment: { meaning: 'zoning-area', status, reason, geometry: 'source-area', constraints: 'not-evaluated', current: true },
             metrics: { floorAreaM2: null, heightM: null },
-            constraints: reading.constraints.map(constraint => ({ ...constraint, scenario })),
-            sourceEvidence: { layer: 'treatment', serviceLayer: layers.treatment, properties: p,
-                interpretation: { treatment: reading.treatment, tipologia: reading.tipologia, altura: reading.altura,
-                    storeys: reading.storeys, heightM: reading.heightM, status: reading.status, reason: reading.reason },
-                ...(reading.uplift ? { uplift: reading.uplift } : {}),
-                rules: { decree: BOGOTA_RULES.decree, clearHeightM: BOGOTA_RULES.clearHeightM, slabM: BOGOTA_RULES.slabM,
-                    storeyHeightM: BOGOTA_RULES.storeyHeightM, citations: [BOGOTA_RULES.storeyHeightCitation,
-                        BOGOTA_RULES.rearSetbackCitation, BOGOTA_RULES.sideSetbackCitation, BOGOTA_RULES.antejardinCitation] } }
+            constraints: status === 'allowed' ? reading.constraints.map(constraint => ({ ...constraint, scenario })) : [],
+            sourceEvidence: { layer: 'treatment', serviceLayer: layers.treatment, properties: p, interpretation: reading,
+                ...(reading.uplift ? { uplift: reading.uplift } : {}), ...(reading.equipamiento ? { equipamiento: reading.equipamiento } : {}),
+                ...(candidacy ? { incentive: { ...candidacy, pending: candidacy.candidate ? 'parcel' : null } } : {}), rules: rulesEvidence }
         });
     }
-    // The same treatment record, carrying the parcel's own front-yard reading. Identity and
-    // revision stay the treatment polygon's; the front-yard polygon's revision is evidence.
-    function refine(item, reading) {
+    // The same treatment record read on one lot: its front yard, street width, area and activity
+    // area give the lot's constraints. Identity and revision stay the treatment polygon's; the
+    // per-lot polygons' revisions are evidence.
+    function refine(item, { antejardin, activity, lotM2, context }) {
         const { proposal, proposalId, ...base } = item;
-        return withSourceProposal({ ...base,
-            constraints: reading.constraint ? [...base.constraints, { ...reading.constraint, scenario: base.source.scenario }] : base.constraints,
-            sourceEvidence: { ...base.sourceEvidence, antejardin: reading.evidence } });
+        const reading = base.sourceEvidence.interpretation;
+        const yard = antejardinConstraint(antejardin.best?.feature.properties ?? {}, antejardin.overlap ?? { candidates: antejardin.candidates,
+            ...(antejardin.failed.length ? { unreadable: antejardin.failed } : {}) }, reading.treatment, BOGOTA_RULES, { equipamiento: Boolean(reading.equipamiento) });
+        const activityCode = activity?.best ? activity.best.feature.properties.CODIGO_AREA_ACTIVIDAD : null;
+        const lot = parcelReading(reading, { scenario: base.source.scenario, antejardinM: yard.constraint?.value ?? null, streetWidthM: context.streetWidthM ?? null,
+            lotM2, activityCode, measure: context.measure || null });
+        const constraints = lot.status === 'allowed' ? [...lot.constraints, ...(yard.constraint ? [yard.constraint] : [])].map(constraint => ({ ...constraint, scenario: base.source.scenario })) : [];
+        return withSourceProposal({ ...base, title: lot.title || `${reading.treatmentLabel} · ${lot.heightLabel}`,
+            assessment: { ...base.assessment, status: lot.status, reason: lot.reason, ...(lot.condition ? { condition: lot.condition } : {}) },
+            metrics: { ...base.metrics, heightM: lot.heightM }, constraints,
+            sourceEvidence: { ...base.sourceEvidence, antejardin: yard.evidence, ...lot.evidence,
+                ...(activity ? { activity: activity.best ? { objectId: activity.best.feature.properties.OBJECTID, code: activityCode,
+                    name: activity.best.feature.properties.NOMBRE_AREA_ACTIVIDAD, overlapShare: activity.overlap.overlapShare } : { objectId: null, candidates: activity.candidates } } : {}) } });
     }
     return {
         descriptor,
         async query(_pool, { bbox, limit, after = null, scenario = descriptor.scenario, city }) {
             if (after !== null && !/^\d{1,10}$/.test(String(after))) throw Object.assign(new Error('Invalid source cursor'), { status: 400 });
             const page = await readBounds(layers.treatment, bbox, { after, count: limit + 1 });
-            // Front yards for the same area are fetched alongside; a failure surfaces on the parcel read.
+            // Per-lot layers for the same area are fetched alongside; a failure surfaces on the parcel read.
             antejardinUnder(bbox).catch(() => {});
+            if (scenario === 'sustainable') activityUnder(bbox).catch(() => {});
             const visible = page.features.slice(0, limit);
             const items = visible.map(feature => record(feature, turf.bboxClip(feature, bbox).geometry, city, scenario));
             const statuses = {};
@@ -143,24 +180,13 @@ export function createBogotaPotProvider(descriptor = bogotaPotSource, { fetchImp
                 || (await fetchLayer(layers.treatment, { objectIds: recordId })).features.find(item => String(item.properties.OBJECTID) === String(recordId));
             return feature ? [record(feature, feature.geometry, city, scenario)] : [];
         },
-        async parcelRecords(parcel, records) {
-            const bounds = turf.bbox(parcel);
-            const candidates = (await antejardinUnder(bounds)).filter(feature => intersects(boundsOf(feature), bounds));
-            let best = null;
-            const failed = [];
-            for (const feature of candidates) {
-                let overlap;
-                try { overlap = turf.intersect(turf.feature(parcel.geometry), feature); }
-                catch (_) { failed.push(feature.properties.OBJECTID); continue; }
-                const areaM2 = overlap ? turf.area(overlap) : 0;
-                if (areaM2 > 0.01 && (!best || areaM2 > best.areaM2)) best = { feature, areaM2 };
-            }
-            const overlap = best ? { overlapM2: best.areaM2, overlapShare: best.areaM2 / turf.area(parcel),
-                revision: sourceRevision(best.feature), ...(failed.length ? { unreadable: failed } : {}) } : null;
-            return records.map(item => refine(item, best
-                ? antejardinConstraint(best.feature.properties, overlap, item.sourceEvidence?.interpretation?.treatment)
-                : { constraint: null, evidence: { objectId: null, dimensionM: null, candidates: candidates.length,
-                    ...(failed.length ? { unreadable: failed } : {}) } }));
+        // `context` comes from the envelope load: the lot's street width across its front edge and
+        // a measure of the floor area a set of constraints leaves on it (Renovación's height).
+        async parcelRecords(parcel, records, context = {}) {
+            const bounds = turf.bbox(parcel), lotM2 = turf.area(parcel);
+            const antejardin = largestUnder(await antejardinUnder(bounds), parcel);
+            const activity = records.some(item => item.sourceEvidence?.incentive?.pending === 'parcel') ? largestUnder(await activityUnder(bounds), parcel) : null;
+            return records.map(item => refine(item, { antejardin, activity, lotM2, context }));
         }
     };
 }

@@ -8262,7 +8262,8 @@
             "plannedresidential": "Residencial planificado",
             "cached-calculation": "Cálculo guardado",
             "new-attached-multifamily": "Nueva vivienda multifamiliar adosada",
-            "general": "General (mapa de tratamientos)"
+            "general": "General (mapa de tratamientos)",
+            "sustainable": "Pisos de construcción sostenible (Decreto 676/2025)"
         },
         "evidence": {
             "direct": "Valor directo de la fuente",

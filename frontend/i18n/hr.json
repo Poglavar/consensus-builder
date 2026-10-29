@@ -8153,7 +8153,8 @@
             "empty-supported-bound": "Nema prostora unutar podržanih odmaka",
             "unsupported-parcel-shape": "Nepodržan oblik čestice",
             "study-multiple-zoning-areas": "Više planskih područja na jednoj čestici",
-            "study-zoning-missing": "Nema planskog izvora za česticu"
+            "study-zoning-missing": "Nema planskog izvora za česticu",
+            "status-not-configurable": "Zabilježeni status ne daje izgradivu visinu"
         },
         "refreshPending": "Čeka osvježavanje",
         "refreshCount": {
@@ -8211,6 +8212,7 @@
             "sideSetback": "Najmanji bočni odmak",
             "rearSetback": "Najmanji stražnji odmak",
             "height": "Najveća visina",
+            "storeys": "Najveći broj katova",
             "lotArea": "Najmanja površina čestice"
         },
         "photoNote": "Dopuštene volumene pregledajte na karti ili u 3D modelu.",
@@ -8275,6 +8277,8 @@
             "other": "{{count}} izvornih područja zoniranja u prikazu"
         },
         "scenario": {
+            "general": "Opće (karta tretmana)",
+            "sustainable": "Katovi za održivu gradnju (Dekret 676/2025)",
             "all": "Svi tipovi stanovanja (nasumično po čestici)",
             "family1": "Jednoobiteljsko",
             "family2": "Dvije obitelji",

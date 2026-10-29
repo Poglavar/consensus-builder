@@ -34,7 +34,11 @@
         const candidates = list.filter(drawable);
         if (!candidates.length) return null;
         const pool = candidates.some(qualifies) ? candidates.filter(qualifies) : candidates;
-        return pool[hash(String(item.id)) % pool.length];
+        // A configuration the project must opt into (an incentive's extra storeys) is shown only when
+        // pinned or when nothing unconditional draws; the roll otherwise stays with what the map grants.
+        const settled = pool.filter(configuration => !configuration.condition);
+        const choice = settled.length ? settled : pool;
+        return choice[hash(String(item.id)) % choice.length];
     }
     // Frontage belongs to the parcel's source evidence; changing the housing type cannot rotate it.
     function frontEdgeFor(item) {

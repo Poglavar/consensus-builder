@@ -8286,7 +8286,8 @@
             "plannedresidential": "Planirano stanovanje",
             "cached-calculation": "Sačuvani proračun",
             "new-attached-multifamily": "Nova višestambena izgradnja u nizu",
-            "general": "Opšte (karta tretmana)"
+            "general": "Opšte (karta tretmana)",
+            "sustainable": "Spratovi za održivu gradnju (Dekret 676/2025)"
         },
         "evidence": {
             "direct": "Direktna izvorna vrednost",

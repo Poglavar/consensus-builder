@@ -8234,7 +8234,8 @@
             "plannedresidential": "Planned residential",
             "cached-calculation": "Saved calculation",
             "new-attached-multifamily": "New attached multifamily",
-            "general": "General (treatment map)"
+            "general": "General (treatment map)",
+            "sustainable": "Sustainable-construction storeys (Decreto 676/2025)"
         },
         "evidence": {
             "direct": "Direct source value",

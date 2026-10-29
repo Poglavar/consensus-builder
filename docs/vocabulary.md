@@ -530,13 +530,13 @@ The maximum building form derived under an identified rule and its supported ass
 
 ### Outer bound
 
-The combined extent of the drawable building configurations and their supported interpretations. It bounds possible forms rather than defining one constructible building. A lot that several zoning areas partition has one outer bound per part, each the whole lot's bound clipped to that part; a zoning area under 2 % of the lot is evidence, not a part.
+The combined extent of the drawable building configurations and their supported interpretations. It bounds possible forms rather than defining one constructible building. A lot that several zoning areas partition has one outer bound per part, each the whole lot's bound clipped to that part; a zoning area under 2 % of the lot is evidence, not a part. A bound is a stack of prisms: between any two levels, the ground some configuration's volume covers there. A yard that starts above the ground (a side yard from the second floor, a street-wall setback above the facade height) carries `fromHeightM` on its constraint and makes a configuration a stack of tiers.
 
 The comparison controls label this **Max envelope**, as they do an authored rule's maximum envelope. This display label does not make alternative configurations simultaneously buildable or remove the source's qualifications.
 
 ### Configuration
 
-One source-recorded building option, such as an allowed housing type, with its own constraints, treatment, derived geometry and availability. Configurations are alternatives, not additive permissions.
+One source-recorded building option, such as an allowed housing type, with its own constraints, treatment, derived geometry and availability. Configurations are alternatives, not additive permissions. A configuration the project must opt into (an incentive's extra storeys) carries a `condition`; the map shows it only when pinned or when nothing unconditional draws.
 
 ### Lot test
 
@@ -567,11 +567,19 @@ The geographic area to which supplied zoning evidence refers. It is distinct fro
 
 ### Treatment area (Bogotá)
 
-A zoning area of Bogotá's POT treatment map (Decreto 555/2021): one polygon with a treatment (consolidación, renovación, desarrollo, mejoramiento integral, conservación), an optional typology (`TA`, detached) and a height code. A storey count on the map is the base height; a range's upper number, development ranges, instrument codes and blanks are evidence, not geometry. Storeys become metres through the decree's clear height plus an assumed slab ([Bogotá POT source](bogota-pot-source.md)).
+A zoning area of Bogotá's POT treatment map (Decreto 555/2021): one polygon with a treatment (consolidación, renovación, desarrollo, mejoramiento integral, conservación), an optional typology (`TA`, detached) and a height code. A storey count on the map is the base height; a range's upper number, development ranges and instrument codes are evidence, not geometry. A blank Consolidación polygon is an equipamiento whose storeys Decreto 253/2026 assigns by polygon; a blank Renovación polygon has a resulting height. Storeys become metres through the decree's clear height plus an assumed slab ([Bogotá POT source](bogota-pot-source.md)).
+
+### Resulting height (Bogotá)
+
+The height of a Renovación lot, which the POT does not state as storeys: the storey count whose floors, each bounded by the rear yard for that height, the side yards above the third storey and the street wall, hold the most floor area within the lot's construction index. It is solved per lot from its front edge and the lot line across its street, so it exists in the envelope view and is evidence elsewhere.
+
+### Street wall (Bogotá)
+
+The rule that a facade may rise to a multiple of the distance across the public space (2.5 × the street width plus the lot's own front yard, up to a 30 m distance) and must step back above that height. The street width is measured from the lot's front edge to the first other lot across it; a lot with no lot across within reach has no street wall.
 
 ### Antejardín
 
-Bogotá's front yard: the private strip between the lot line and the building line whose minimum depth the POT front-yard map assigns to Consolidación lots. It is read under the parcel, not from the treatment area, and becomes the parcel's front setback.
+Bogotá's front yard: the private strip between the lot line and the building line whose minimum depth the POT front-yard map assigns to Consolidación lots. It is read under the parcel, not from the treatment area, and becomes the parcel's front setback. An equipamiento lot takes at least the Decreto 253/2026 minimum.
 
 ### Applicability
 

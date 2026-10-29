@@ -8264,7 +8264,8 @@
             "empty-supported-bound": "Aucun espace dans les limites des retraits pris en charge",
             "unsupported-parcel-shape": "Forme de parcelle non prise en charge",
             "study-multiple-zoning-areas": "Plusieurs zones de zonage sur une même parcelle",
-            "study-zoning-missing": "Aucune source de zonage pour la parcelle"
+            "study-zoning-missing": "Aucune source de zonage pour la parcelle",
+            "status-not-configurable": "Le statut enregistré ne donne aucune hauteur constructible"
         },
         "refreshPending": "Actualisation en attente",
         "refreshCount": {
@@ -8319,6 +8320,7 @@
             "sideSetback": "Retrait latéral minimal",
             "rearSetback": "Retrait arrière minimal",
             "height": "Hauteur maximale",
+            "storeys": "Nombre maximal d'étages",
             "lotArea": "Surface minimale du terrain"
         },
         "photoNote": "Explorez la volumétrie autorisée sur la carte ou dans la vue du modèle 3D.",
@@ -8381,6 +8383,8 @@
             "other": "{{count}} zones du zonage source dans la vue"
         },
         "scenario": {
+            "general": "Général (carte des traitements)",
+            "sustainable": "Étages de construction durable (décret 676/2025)",
             "all": "Tous les types de logement (tirés au sort par parcelle)",
             "family1": "Un logement",
             "family2": "Deux logements",
