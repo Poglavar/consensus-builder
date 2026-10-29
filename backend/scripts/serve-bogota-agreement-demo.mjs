@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// Serve prepared examples through the existing private draft transport, on loopback only.
-import { readFile, writeFile, mkdtemp } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+// Serve prepared local examples with persistent, non-expiring private draft links.
+import { readFile, writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { createPreviewLinks } from '../agents/mcp-preview-links.js';
 import { createMcpHttpService } from '../agents/mcp-http.mjs';
@@ -25,8 +25,8 @@ if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('--p
 const previewOrigin = `http://localhost:${port}`;
 const sample = JSON.parse(await readFile(values.sample ? resolve(values.sample)
     : new URL('../../docs/demo/bogota-agreements/sampledata.json', import.meta.url), 'utf8'));
-const directory = await mkdtemp(join(tmpdir(), 'ugt-bogota-demo-'));
-const links = createPreviewLinks({ origin: previewOrigin, appOrigin: frontend, storeDirectory: directory });
+const directory = fileURLToPath(new URL('../uploads/bogota-agreement-demo/', import.meta.url));
+const links = createPreviewLinks({ origin: previewOrigin, appOrigin: frontend, storeDirectory: directory, ttlMs: null });
 let previews;
 try {
     previews = sample.agreements.map(({ content }) => {

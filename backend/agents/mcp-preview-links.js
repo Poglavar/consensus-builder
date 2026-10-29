@@ -1,4 +1,4 @@
-// Expiring bearer references address individual durable private draft objects.
+// Bearer references address durable private drafts; local demos can opt out of expiry.
 import { createRequire } from 'node:module';
 import { canonicalBytes, cidOfObject } from '../cid.js';
 import { createDraftStore, draftMembersMatch } from './mcp-draft-store.js';
@@ -10,9 +10,11 @@ const PlanRecord = require('../../frontend/js/plan-record.js');
 const unavailable = message => Object.assign(new Error(message), { code: 'draft-reference-expired' });
 
 export function createPreviewLinks({ origin, appOrigin, storeDirectory, now = Date.now, ttlMs = 86_400_000, maxEntries = 4096, maxBytes = 128 * 1024 * 1024 }) {
-    if (!Number.isInteger(maxEntries) || maxEntries < 1 || !Number.isFinite(ttlMs) || ttlMs <= 0
+    if (!Number.isInteger(maxEntries) || maxEntries < 1 || (ttlMs !== null && (!Number.isFinite(ttlMs) || ttlMs <= 0))
         || !Number.isFinite(maxBytes) || maxBytes < links.MAX_OBJECT_BYTES) throw new Error('Preview bounds must be positive');
     const base = new URL(origin), app = new URL(appOrigin);
+    if (ttlMs === null && ![base, app].every(url => ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)))
+        throw new Error('Non-expiring previews require loopback preview and app origins');
     links.reference(new URL(`/mcp/previews/${'a'.repeat(32)}`, base).href);
     if (base.username || base.password || base.pathname !== '/' || base.search || base.hash) throw new Error('Preview origin must be an origin');
     const store = createDraftStore({ directory: storeDirectory, now, maxEntries, maxBytes });
@@ -50,7 +52,7 @@ export function createPreviewLinks({ origin, appOrigin, storeDirectory, now = Da
                     return { cid: member.row.cid, draftRef: ref(member.token) };
                 });
                 return save(record, parcelSourceId, members);
-            }, now() + ttlMs);
+            }, ttlMs === null ? null : now() + ttlMs);
         } catch (error) {
             if (error.code === 'preview-cache-full') return { previewUrl: null, previewStatus: 'private-artifact', draftArtifact: artifact,
                 previewWarning: 'Private draft storage is full. Keep or export this draft artifact; existing unexpired references are retained.' };
@@ -62,7 +64,7 @@ export function createPreviewLinks({ origin, appOrigin, storeDirectory, now = Da
         if (record.city) url.searchParams.set('city', record.city);
         if (when) url.searchParams.set('when', when);
         if (buildout) url.searchParams.set('buildout', buildout);
-        return { previewUrl: url.href, draftRef: ref(stored.token), previewStatus: 'private-link', previewExpiresAt: new Date(stored.expiresAt).toISOString() };
+        return { previewUrl: url.href, draftRef: ref(stored.token), previewStatus: 'private-link', previewExpiresAt: stored.expiresAt === null ? null : new Date(stored.expiresAt).toISOString() };
     }
     function decorate(value) {
         if (!value || typeof value !== 'object' || isTrustedMetadata(value) || ['design/v1', 'agreement/v1', 'plan/v1'].includes(value.schema)) return value;

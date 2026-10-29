@@ -64,6 +64,33 @@ describe('persistent private draft storage', () => {
         store.dispose();
         expect((await open(path).resolve(existing.draftRef)).design.title).toBe('Existing');
     });
+    it('retains local collection links and all members indefinitely across restart without changing references', async () => {
+        let time = 1_000;
+        const path = directory(), options = { origin: 'http://localhost:4799', appOrigin: 'http://localhost:5680',
+            now: () => time, maxEntries: 2 };
+        const designs = [design('Local member')];
+        const artifact = { plan: { schema: 'plan/v1', designCids: designs.map(cidOfObject) }, designs, parcelSourceId: 'ground' };
+        const first = open(path, { ...options, ttlMs: 100 }), preview = first.create(artifact);
+        const original = first.get(tokenOf(preview.draftRef));
+        first.dispose();
+        const retained = open(path, { ...options, ttlMs: null }), permanent = retained.create(artifact);
+        expect(permanent.draftRef).toBe(preview.draftRef);
+        expect(permanent.previewExpiresAt).toBeNull();
+        retained.dispose();
+        time = Date.UTC(2100, 0, 1);
+        const recovered = open(path, { ...options, ttlMs: 100 });
+        expect(recovered.get(tokenOf(preview.draftRef))).toEqual(original);
+        expect(await recovered.resolve(preview.draftRef)).toEqual(artifact);
+        expect(recovered.create(artifact)).toMatchObject({ draftRef: preview.draftRef, previewExpiresAt: null });
+        expect(recovered.create({ design: design('Beyond capacity') }).previewStatus).toBe('private-artifact');
+        recovered.clear();
+        await expect(recovered.resolve(preview.draftRef)).rejects.toThrow(/unavailable or expired/);
+    });
+    it('permits non-expiring previews only when both preview and app origins are loopback', () => {
+        expect(() => open(directory(), { ttlMs: null })).toThrow(/loopback/);
+        expect(() => open(directory(), { ttlMs: null, origin: 'http://localhost:4799' })).toThrow(/loopback/);
+        expect(() => open(directory(), { ttlMs: null, appOrigin: 'http://localhost:5680' })).toThrow(/loopback/);
+    });
     it('honors advertised expiry after restart and admits replacements only after expiry', async () => {
         let time = 1_000;
         const path = directory(), options = { now: () => time, ttlMs: 100, maxEntries: 1 };

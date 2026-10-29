@@ -12,9 +12,11 @@ node backend/scripts/serve-bogota-agreement-demo.mjs \
 
 The launcher prints three links and saves them to the requested file: owners' agreement,
 its counter-agreement, and community poll. It uses the existing private-draft import flow and serves
-only on loopback. Opening a link applies the Plan and saves an editable local draft. Links expire
-after 24 hours and require the frontend, API and preview process to remain running. Stop the preview
-process when finished; run it again to obtain new links. Nothing is pinned, published or signed.
+only on loopback. Opening a link applies the Plan and saves an editable local draft. Links have no
+expiry. Their objects are retained in the checkout's ignored `backend/uploads/bogota-agreement-demo/`
+directory. Stop the preview process when finished; restarting it with the same frontend, API and
+preview port restores the same links. The frontend, API and preview process must be running to open
+them. Keep the storage directory when moving the checkout. Nothing is pinned, published or signed.
 
 ## Five-minute walkthrough
 

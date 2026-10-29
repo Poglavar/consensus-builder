@@ -61,7 +61,7 @@ export function createDraftStore({ directory, now = Date.now, maxEntries = 4096,
         const assertOpen = () => { if (disposed) throw new Error('Private draft storage is disposed'); };
         const fileOf = token => join(directory, `${token}.json`);
         const valid = entry => entry?.version === 1 && TOKEN.test(entry.token) && typeof entry.key === 'string'
-            && Number.isFinite(entry.expiresAt) && entry.row && ['design/v1', 'plan/v1', 'agreement/v1'].includes(entry.row.record?.schema)
+            && (entry.expiresAt === null || Number.isFinite(entry.expiresAt)) && entry.row && ['design/v1', 'plan/v1', 'agreement/v1'].includes(entry.row.record?.schema)
             && entry.row.cid === cidOfObject(entry.row.record)
             && (entry.row.record.schema !== 'agreement/v1' || (entry.row.plan?.cid === entry.row.record.planCid
                 && !PlanRecord.validate(entry.row.plan.content) && cidOfObject(entry.row.plan.content) === entry.row.plan.cid))
@@ -102,22 +102,26 @@ export function createDraftStore({ directory, now = Date.now, maxEntries = 4096,
             if (byKey.get(entry.key) === token) byKey.delete(entry.key);
         }
         function prune() {
-            for (const [token, entry] of entries) if (entry.expiresAt <= now()) remove(token);
+            for (const [token, entry] of entries) if (entry.expiresAt !== null && entry.expiresAt <= now()) remove(token);
         }
         function get(token) {
             assertOpen(); prune();
             if (typeof token !== 'string' || !TOKEN.test(token)) return null;
             const entry = entries.get(token);
-            return entry && entry.expiresAt > now() ? structuredClone(entry) : null;
+            return entry && (entry.expiresAt === null || entry.expiresAt > now()) ? structuredClone(entry) : null;
         }
         // Stage the whole collection before admission: capacity never evicts an unexpired reference.
         function putBatch(build, expiresAt) {
+            if (expiresAt !== null && !Number.isFinite(expiresAt)) throw new Error('Draft expiry must be a timestamp or null');
             assertOpen(); prune();
             const pending = new Map();
             function add(key, row) {
                 const token = byKey.get(key) || [...pending.values()].find(entry => entry.key === key)?.token || randomBytes(24).toString('base64url');
                 const previous = pending.get(token) || entries.get(token);
-                const entry = { version: 1, token, key, expiresAt: Math.max(previous?.expiresAt || 0, expiresAt), row: structuredClone(row) };
+                // Local references retained indefinitely must never acquire an expiry on reuse.
+                const retainedUntil = previous?.expiresAt === null || expiresAt === null
+                    ? null : Math.max(previous?.expiresAt ?? 0, expiresAt);
+                const entry = { version: 1, token, key, expiresAt: retainedUntil, row: structuredClone(row) };
                 pending.set(token, entry); return structuredClone(entry);
             }
             const result = build(add);
