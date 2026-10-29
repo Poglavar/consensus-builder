@@ -74,7 +74,14 @@ content CID, and refuses ambiguous instances. Handover also compares against the
 session revision so pending metadata is saved before granting control. The focused headless
 unit file passed all ten tests after this fix.
 
-The final headed title/schedule recheck did not execute: automatic permission review timed out
-on both attempts. The corrected metadata path and a portable preview link therefore remain
-unverified in the live browser. Earlier live geometry, handover, mobile, reload and revocation
-checks above completed successfully.
+The later headed title/schedule recheck passed on 2026-10-29. Normal UI edits saved the title
+“Shared garden with a schedule” and the January–March 2027 construction window into the same
+local shared session; real MCP inspection returned both exactly. Earlier attempts had been
+blocked by automatic permission-review timeouts and provider-capacity errors.
+
+A subsequent local test in the visible 3D browser also passed: the owner granted agent control,
+the agent moved the bench two metres north through the local shared-plan MCP tool, and the
+same page automatically applied the exact returned design CID. The collaboration panel remained
+open with Take control available. No preview navigation, publication or deployment was needed
+for that update. A new private preview was generated; opening that final link in a fresh browser
+profile remains separate from the verified live session.
