@@ -607,23 +607,21 @@ The source-qualified building footprints considered by an operation, with any kn
 
 ## Parties, rights and decisions
 
-### Party
+### Allocation party
 
-Each input parcel of an agreement is exactly one party, `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”. Agreements name no persons: input parcels carry no holders, and allocations and money lines name a parcel party, the proposer or the public. The parcel party is the owner group of that parcel whoever its members are; it is not verified ownership.
+Each input parcel of an agreement is exactly one allocation party, `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”. Allocations name no persons: input parcels carry no holders, and allocations and money lines name a parcel party, the proposer or the public. The parcel party is the owner group of that parcel whoever its members are; it is not verified ownership.
 
 ### Persons
 
-The people behind parcel parties, derived from a rights snapshot and never stored in an agreement. A person holding share s of parcel i co-owns every output allocated to that parcel's party at fraction s and receives s of its cash; each parcel's cash is split in minor currency units by largest remainder, so per-person totals equal per-party totals exactly. Parcels whose rights do not name complete holders stay one unresolved party. Owner approvals and lens decisions read the rights snapshot, not the agreement.
-
-A person, organization or authority identified for rights, allocations or decisions. A party can hold different rights in different parcels; the rights engine's `ownerId` is a party identifier, not an assertion of universal ownership.
+The per-person positions behind parcel parties, derived from the rights snapshot held in the agreement’s rule rather than stored as allocation terms. A person holding share s of parcel i co-owns every output allocated to that parcel's party at fraction s and receives s of its cash; each parcel's cash is split in minor currency units by largest remainder, so per-person totals equal per-party totals exactly. Parcels whose rights do not name complete holders stay one unresolved party. Owner approvals and lens decisions read the committed rights snapshot in the rule.
 
 ### Rights holder
 
-A party holding a stated right, such as ownership or a lease, in identified land. The right and its share are part of the rights snapshot.
+A person or organization holding a stated right, such as ownership or a lease, in identified land, identified by `ownerId`. The same holder can own shares in several parcels; headcounts count that identity once. An allocation party is not a resolved rights holder. Required authorities also have identifiers in decision records but do not count as input owners.
 
 ### Decision actor
 
-The signing identity acting for a party, represented by `actorId`. A party identifier, profile name and signing wallet have distinct roles even when a provider uses the same string for two of them.
+The signing identity acting for a rights holder or required authority, represented by `actorId`. One actor can represent several holders; counting actors is not counting owners. Holder identifiers, profile names and signing wallets have distinct roles.
 
 ### Author
 
@@ -631,7 +629,7 @@ The attribution supplied for a design or agreement. Authorship alone establishes
 
 ### Rights snapshot
 
-A declared source-qualified account of parcel rights, holders, shares, completeness and any supplied areas. A complete holder list sums to one for its stated right; separate rights are not combined into one ownership total.
+A declared source-qualified account of parcel rights, holders, shares, completeness and any supplied areas. A complete holder list sums to one for its stated right; separate rights are not combined into one ownership total. Unresolved parcel-owner placeholders do not establish identities for voting. Updating the committed snapshot changes the agreement CID and approval context, requiring new decisions.
 
 ### Ownership share
 
@@ -667,11 +665,11 @@ A parcel-level aggregate of the agreement decisions that currently count. `accep
 
 ### Approval headcount
 
-The number of supporting eligible parties relative to the number of parties in the specified electorate. It measures policy support, independently of their ownership fractions.
+The number of distinct supporting eligible rights holders relative to the number of distinct holders in the specified electorate, independently of their ownership fractions. A scheme’s `minParties` is an additional absolute minimum of distinct approving input owners, never a parcel or wallet count. Unknown ownership leaves this test unresolved.
 
 ### Approval area
 
-The area-weighted support defined by an approval rule and rights shares. Overlapping rights can contribute separate policy weights, so the result need not equal a union of physical land area.
+The area-weighted support defined by an approval rule and rights shares. A parcel or lease credits its counted share of area only when all counted co-holders approve. Overlapping rights can contribute separate policy weights, so the result need not equal a union of physical land area. This model convention is distinct from verification of a jurisdiction’s co-owner decision law.
 
 ### Lens
 

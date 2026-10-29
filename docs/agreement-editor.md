@@ -3,11 +3,40 @@
 
 Agreement creation selects an independently saved immutable plan. Its designs are read-only in the Input parcels tab. Rules contains the decision scheme, compensation controls and buttons for the separate ownership-rights and lens dialogs. Output parcels assigns each piece to one input parcel's party, Proposer or Public. Persons shows each party's land and cash contributed/received, including the balancing sponsor, with no person-level cash edits.
 
-Every input parcel is exactly one abstract party, `parcel-owner:<parcelId>`, shown as “Owner(s) of parcel X”. The agreement never names people. Ownership rights (the Parcel ownership rights dialog, or the default snapshot from local owner records) live only in the rule and do not change the parties or allocations. When they name people, Input parcels lists each parcel's owners and shares and Persons adds **Persons by ownership rights**: per person, land put in and received and cash, derived by `AgreementPersons.personPositions` (person k co-owns every output allocated to parcel i's party at share s[k][i] and receives that share of the party's cash, split per parcel into whole cents by largest remainder). Parcels without complete rights stay one party and are counted under it.
+Every input parcel is exactly one abstract party, `parcel-owner:<parcelId>`, shown as “Owner(s) of parcel X”. Allocations and cash lines never name people; the rule can carry a rights snapshot naming them. Ownership rights (the Parcel ownership rights dialog, or the default snapshot from local owner records) live only in the rule and do not change the parties or allocations. When they name people, Input parcels lists each parcel's owners and shares and Persons adds **Persons by ownership rights**: per person, land put in and received and cash, derived by `AgreementPersons.personPositions` (person k co-owns every output allocated to parcel i's party at share s[k][i] and receives that share of the party's cash, split per parcel into whole cents by largest remainder). Parcels without complete rights stay one allocation party in the ledger; their placeholder identities never count as resolved owners for approval.
 
 Area compensation is `(contributed area × (1 − contribution ratio) − allocated area) × rate`, rounded to integer cents per party. The selected scheme caps the allowed contribution ratio. The sponsor supplies or receives the cash difference. No-cash rules generate no cash lines. Saving and HTTP publication reject unbalanced land, unknown input areas, named input holders, missing or multiple output recipients, recipients that are not an input parcel's party and cash inconsistent with the rules.
 
 This intentionally retires joint output allocations, implicit carried-holder outputs, manually entered cash terms and named input holders. Recreate affected experimental agreements. Input co-ownership is expressed by the rights snapshot, not by the agreement's parties.
+
+## Ownership and the Colombian preset
+
+The shared core keeps three identities separate: the parcel allocation party (`parcel-owner:<id>`),
+the rights holder (`ownerId`) and the signer acting for that holder (`actorId`). Ownership can be
+resolved after drafting without changing output recipients or parcel-level cash. Uploading it changes
+the committed agreement CID and approval context, so prior decisions cannot carry over.
+
+The Colombian preset requires at least 51% of the input area, at least two distinct approving input
+owners and the separate authority decision. The Dutch minimum of three owners uses the same
+`minParties` field and evaluator. Multiple parcels of one owner still count as one owner; two
+co-owners of one ground parcel count as two. Unknown rights show an unresolved minimum check and
+allow drafting/publication, but never pass the approval tally. A known insufficient owner count is
+a scheme validation error. This intentionally corrects the experimental parcel-count behavior;
+recreate affected agreements and collect new decisions rather than treating earlier decisions as
+verified under the corrected evaluator.
+
+Every area test uses the existing convention that all counted co-holders of a parcel or lease must
+approve before its counted area is credited. This is explicit in the rule text; jurisdiction-specific
+co-owner voting authority still needs confirmation. No alternative co-owner mode is implied.
+
+The Bogotá demo uses ordinary ground lots. Horizontal-property apartments require a separate legal
+unit/ground relationship: overlapping unit rights cannot be added as extra ground parcels. Community
+polls remain separate from owner approval. A tenant beneficiary/obligation module is deferred until
+a concrete eligibility unit, amount basis and funding responsibility can be specified.
+
+Bogotá's native currency is COP. Colombian Spanish (`es-CO`) uses the Spanish dictionary with
+Colombian number/date formatting; selecting a display locale does not convert cash. Agent-created
+agreements use the plan city's currency when none is supplied, just like the human editor.
 
 ## MCP parity
 

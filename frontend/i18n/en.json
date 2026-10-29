@@ -230,6 +230,7 @@
     },
     "proposalApproval": {
         "ownerLabel": "Owner {{label}}",
+        "meterDistinctOwners": "Distinct approving owners",
         "leaseholderLabel": "Leaseholder {{label}}",
         "authorityLabel": "Authority",
         "authorityLabelLettered": "Authority {{label}}",
@@ -243,6 +244,8 @@
             "vacuous": "Nobody to count here, so this test does not block.",
             "heard": "Heard, not counted",
             "ownersHeard": "Owners are heard; the authority decides.",
+            "minimumOwners": "approval by at least {{count}} distinct owners",
+            "areaConsent": "For area tests, a parcel or lease counts only after all its counted co-holders approve.",
             "of": {
                 "headcount-owners-all": "of the owners",
                 "headcount-owners-private": "of the private owners",
@@ -283,7 +286,7 @@
                 "publicLand": "Public land without compensation",
                 "levelling": "Differences",
                 "valueGain": "Value gain",
-                "minParties": "Parties"
+                "minParties": "Distinct owners"
             },
             "groups": {
                 "decision": "How it is decided",
@@ -426,11 +429,11 @@
                 "minParties": {
                     "any": {
                         "short": "Any number",
-                        "long": "No minimum number of parties."
+                        "long": "No minimum number of distinct owners."
                     },
                     "some": {
                         "short": "At least {{count}}",
-                        "long": "At least {{count}} parties bring land in."
+                        "long": "At least {{count}} distinct input owners must approve."
                     }
                 }
             },
@@ -479,14 +482,15 @@
                 "capPoolUnknown": "The pool area is unknown, so the {{limit}} cap cannot be checked.",
                 "capPoolOk": "{{given}} of the pool is not returned to owners; the cap is {{limit}}.",
                 "capPoolOver": "{{given}} of the pool is not returned to owners, over the {{limit}} cap.",
-                "partiesOk": "{{actual}} parties bring land in; the scheme needs at least {{required}}.",
-                "partiesFew": "Only {{actual}} bring land in; the scheme needs at least {{required}} parties.",
+                "partiesOk": "The land has {{actual}} distinct owners; at least {{required}} must approve.",
+                "partiesFew": "The land has only {{actual}} distinct owners; the scheme needs at least {{required}}.",
+                "partiesUnknown": "Upload complete ownership to check the minimum of {{required}} distinct owners.",
                 "proposerNone": "No land goes to a proposer.",
                 "proposerOver": "{{area}} m² would go to a proposer; under this scheme land returns to its owners or goes to public use."
             },
             "valueGainAll": "Distributed by value, each owner is made whole to the value they put in; the whole value gain is settled in money.",
             "valueGainShare": "Distributed by value, {{percent}}% of each owner’s value gain is settled in money.",
-            "minParties": "At least {{count}} parties bring land in.",
+            "minParties": "At least {{count}} distinct input owners must approve.",
             "noProposer": "Land returns to its owners or goes to public use; a proposer cannot acquire it."
         },
         "authority": {
@@ -623,6 +627,7 @@
             "contributes": "Your proposed contribution",
             "conditions": "Conditions",
             "progress": "Progress",
+            "minimumOwners": "{{count}} distinct owner approvals needed",
             "yourShare": "Your share {{share}}",
             "coOwnedWith": "co-owned with {{owners}}",
             "openUntil": "Open until {{date}}",
@@ -808,7 +813,7 @@
                 "fixes": "What would meet it",
                 "fixBasisValue": "In Rules, set Compensation to “Balance land value differences in money”, then give every input parcel and resulting piece a value per m².",
                 "fixBasisArea": "In Rules, set Compensation to “Balance land differences in money”.",
-                "fixParties": "{{actual}} parties bring land in and this scheme needs {{required}}: choose a plan over more parcels, or another scheme.",
+                "fixParties": "{{actual}} distinct owners hold the land; this scheme needs {{required}}. Check the ownership file or choose land with enough distinct owners.",
                 "fixProposer": "In Output parcels, assign the proposer’s pieces to an owner or to Public land.",
                 "fixCapOwner": "In Output parcels, give {{owner}} at least {{area}} more land back, or lower the Land contribution; a scheme with a higher cap is another way.",
                 "fixCapOwnerPlain": "In Output parcels, give {{owner}} more land back.",

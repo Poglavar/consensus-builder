@@ -2237,7 +2237,7 @@
                 "fixes": "Ce qui permettrait de le respecter",
                 "fixBasisValue": "Dans Règles, choisissez « Compenser les différences de valeur foncière en argent » pour Indemnité, puis saisissez une valeur par m² pour chaque parcelle d’entrée et chaque portion résultante.",
                 "fixBasisArea": "Dans Règles, choisissez « Compenser les différences de terrain en argent » pour Indemnité.",
-                "fixParties": "Parties apportant des terrains : {{actual}}, alors que ce dispositif en exige {{required}} ; choisissez un plan couvrant davantage de parcelles, ou un autre dispositif.",
+                "fixParties": "{{actual}} propriétaires distincts détiennent le terrain ; ce dispositif en exige {{required}}. Vérifiez le fichier de propriété ou choisissez un terrain avec suffisamment de propriétaires distincts.",
                 "fixProposer": "Dans Parcelles résultantes, attribuez les portions du porteur du projet à un propriétaire ou à Terrain public.",
                 "fixCapOwner": "Dans Parcelles résultantes, restituez à {{owner}} au moins {{area}} de terrain en plus, ou réduisez la Contribution foncière ; un dispositif au plafond plus élevé est une autre solution.",
                 "fixCapOwnerPlain": "Dans Parcelles résultantes, restituez davantage de terrain à {{owner}}.",
@@ -3577,6 +3577,7 @@
     },
     "proposalApproval": {
         "ownerLabel": "Propriétaire {{label}}",
+        "meterDistinctOwners": "Propriétaires distincts ayant approuvé",
         "leaseholderLabel": "Titulaire de bail {{label}}",
         "authorityLabel": "Autorité",
         "authorityLabelLettered": "Autorité {{label}}",
@@ -3590,6 +3591,8 @@
             "vacuous": "Personne n’est à comptabiliser ici ; ce critère n’est donc pas bloquant.",
             "heard": "Consultés, sans voix comptabilisée",
             "ownersHeard": "Les propriétaires sont consultés ; l’autorité décide.",
+            "minimumOwners": "approbation d’au moins {{count}} propriétaires distincts",
+            "areaConsent": "Pour les tests de superficie, une parcelle ou un bail ne compte qu’après l’accord de tous ses copropriétaires pris en compte.",
             "of": {
                 "headcount-owners-all": "des propriétaires",
                 "headcount-owners-private": "des propriétaires privés",
@@ -3630,7 +3633,7 @@
                 "publicLand": "Terrain public sans indemnité",
                 "levelling": "Différences",
                 "valueGain": "Plus-value",
-                "minParties": "Parties"
+                "minParties": "Propriétaires distincts"
             },
             "groups": {
                 "decision": "Comment on décide",
@@ -3773,11 +3776,11 @@
                 "minParties": {
                     "any": {
                         "short": "Nombre libre",
-                        "long": "Pas de nombre minimal de parties."
+                        "long": "Aucun nombre minimal de propriétaires distincts."
                     },
                     "some": {
                         "short": "Au moins {{count}}",
-                        "long": "Au moins {{count}} parties apportent du terrain."
+                        "long": "Au moins {{count}} propriétaires distincts des parcelles d’entrée doivent approuver."
                     }
                 }
             },
@@ -3826,14 +3829,15 @@
                 "capPoolUnknown": "La superficie des terrains regroupés est inconnue ; le plafond de {{limit}} ne peut donc pas être vérifié.",
                 "capPoolOk": "{{given}} des terrains regroupés ne sont pas restitués aux propriétaires ; le plafond est de {{limit}}.",
                 "capPoolOver": "{{given}} des terrains regroupés ne sont pas restitués aux propriétaires, au-delà du plafond de {{limit}}.",
-                "partiesOk": "{{actual}} parties apportent des terrains ; le dispositif en exige au moins {{required}}.",
-                "partiesFew": "Parties apportant des terrains : {{actual}} seulement ; le dispositif en exige au moins {{required}}.",
+                "partiesOk": "Le terrain compte {{actual}} propriétaires distincts ; au moins {{required}} doivent approuver.",
+                "partiesFew": "Le terrain ne compte que {{actual}} propriétaires distincts ; ce dispositif en exige au moins {{required}}.",
+                "partiesUnknown": "Importez les données complètes de propriété pour vérifier le minimum de {{required}} propriétaires distincts.",
                 "proposerNone": "Aucun terrain n’est attribué à un porteur de projet.",
                 "proposerOver": "{{area}} m² iraient à un porteur de projet ; dans ce dispositif, les terrains reviennent à leurs propriétaires ou sont affectés à un usage public."
             },
             "valueGainAll": "Avec une répartition selon la valeur, chaque propriétaire retrouve l’intégralité de la valeur qu’il apporte ; toute la plus-value est réglée en argent.",
             "valueGainShare": "Avec une répartition selon la valeur, la plus-value de chaque propriétaire est réglée en argent à hauteur de {{percent}}%.",
-            "minParties": "Au moins {{count}} parties apportent des terrains.",
+            "minParties": "Au moins {{count}} propriétaires distincts des parcelles d’entrée doivent approuver.",
             "noProposer": "Les terrains reviennent à leurs propriétaires ou sont affectés à un usage public ; un porteur de projet ne peut pas les acquérir."
         },
         "authority": {
@@ -3970,6 +3974,7 @@
             "contributes": "Votre contribution proposée",
             "conditions": "Conditions",
             "progress": "Avancement",
+            "minimumOwners": "{{count}} approbations de propriétaires distincts nécessaires",
             "yourShare": "Votre part : {{share}}",
             "coOwnedWith": "en indivision avec {{owners}}",
             "openUntil": "Ouvert jusqu’au {{date}}",

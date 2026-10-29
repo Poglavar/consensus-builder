@@ -303,11 +303,11 @@ describe('distribution rules of a scheme', () => {
 describe('words for the rules', () => {
     it('says each scheme’s rule in one sentence, and the meters by what they count', () => {
         const sentence = id => X.rulesText(A.normalizePolicy(R.policyOf(R.latest(id), R.latest(id).authorities ? ['x'] : [])), t, pin(id));
-        expect(sentence('nl-kavelruil')).toBe('Configured approval rules require every owner to accept.');
-        expect(sentence('es-ct-basic')).toBe('Configured approval rules require more than 1/2 of the area and the municipality’s approval of the compensation project.');
-        expect(sentence('jp-association')).toBe('Configured approval rules require at least 2/3 of the private owners, at least 2/3 of the private leaseholders and at least 2/3 of the private owned and leased area and the prefectural governor’s approval.');
+        expect(sentence('nl-kavelruil')).toBe('Configured approval rules require every one of the owners and approval by at least 3 distinct owners.');
+        expect(sentence('es-ct-basic')).toBe('Configured approval rules require more than 1/2 of the area and the municipality’s approval of the compensation project. For area tests, a parcel or lease counts only after all its counted co-holders approve.');
+        expect(sentence('jp-association')).toBe('Configured approval rules require at least 2/3 of the private owners, at least 2/3 of the private leaseholders and at least 2/3 of the private owned and leased area and the prefectural governor’s approval. For area tests, a parcel or lease counts only after all its counted co-holders approve.');
         expect(sentence('de-umlegung-new')).toBe('Configured approval rules require only the Umlegung authority’s adoption of the readjustment plan. Owner responses do not decide this tally.');
-        expect(X.rulesText(threshold([1, 2], [7, 10]), t)).toBe('Configured approval rules require at least 1/2 of the owners and at least 7/10 of the area.');
+        expect(X.rulesText(threshold([1, 2], [7, 10]), t)).toBe('Configured approval rules require at least 1/2 of the owners and at least 7/10 of the area. For area tests, a parcel or lease counts only after all its counted co-holders approve.');
         expect(X.meterName(test('headcount', 'owners', 'all', 1, 2))).toBe('owners');
         expect(X.meterName(test('area', 'owners+leaseholders', 'private', 1, 2))).toBe('area-owners-and-leaseholders-private');
         expect(X.meterLabel(test('headcount', 'leaseholders', 'all', 1, 2), t)).toBe('Leaseholders');
@@ -315,7 +315,7 @@ describe('words for the rules', () => {
             'Land returns to its owners or goes to public use; a proposer cannot acquire it.']);
         expect(X.allocationLines(R.latest('de-umlegung-new'), t)[1]).toBe('Distributed by value, each owner is made whole to the value they put in; the whole value gain is settled in money.');
         expect(X.allocationLines(R.latest('in-gj-tps'), t)[1]).toBe('Distributed by value, 50% of each owner’s value gain is settled in money.');
-        expect(X.allocationLines(R.latest('nl-kavelruil'), t)).toEqual(['At least 3 parties bring land in.']);
+        expect(X.allocationLines(R.latest('nl-kavelruil'), t)).toEqual(['At least 3 distinct input owners must approve.']);
         expect(X.allocationLines(R.get('nl-kavelruil', '2026-10-11'), t)).toEqual([]);
     });
 
@@ -328,13 +328,65 @@ describe('words for the rules', () => {
         const few = R.checkAllocation(R.latest('nl-kavelruil'), { basis: 'area', poolAreaM2: 100, owners: [], partyCount: 2 });
         expect(few).toEqual({ ok: false, rules: [{ kind: 'parties', required: 3, actual: 2, ok: false }] });
         expect(R.checkAllocation(R.latest('co-readjustment'), { basis: 'value', poolAreaM2: 100, owners: [], partyCount: 2 }).ok).toBe(true);
-        // A fact that is left out skips its rule, so the older callers read as before.
-        expect(R.checkAllocation(R.latest('nl-kavelruil'), { basis: 'area', poolAreaM2: 100, owners: [] }).rules).toEqual([]);
+        // An unresolved owner count is not a successful plurality check.
+        expect(R.checkAllocation(R.latest('nl-kavelruil'), { basis: 'area', poolAreaM2: 100, owners: [] }))
+            .toEqual({ ok: null, rules: [{ kind: 'parties', required: 3, actual: null, ok: null }] });
         const acquired = R.checkAllocation(R.latest('tr-article-18'), { basis: 'area', poolAreaM2: 100, owners: [], proposerAreaM2: 10 });
         expect(acquired.rules.find(rule => rule.kind === 'proposer')).toEqual({ kind: 'proposer', areaM2: 10, ok: false });
         expect(R.checkAllocation(R.latest('jp-association'), { basis: 'value', poolAreaM2: 100, owners: [], proposerAreaM2: 10 }).rules.some(rule => rule.kind === 'proposer')).toBe(false);
-        expect(X.checkLines(few, t)).toEqual(['Only 2 bring land in; the scheme needs at least 3 parties.']);
+        expect(X.checkLines(few, t)).toEqual(['The land has only 2 distinct owners; the scheme needs at least 3.']);
         expect(X.checkLines(acquired, t)[2]).toBe('10 m² would go to a proposer; under this scheme land returns to its owners or goes to public use.');
+    });
+});
+
+describe('minimum distinct approving owners', () => {
+    const scheme = R.latest('co-readjustment');
+    const subject = (rows, useV2 = false) => proposal((useV2 ? v2 : v1)(rows), R.policyOf(scheme, ['authority']), pin(scheme.id));
+    const parcel = (parcelId, areaM2, owners) => ({ parcelId, areaM2, owners, complete: true });
+    it('does not turn several parcels of one owner into several participants', () => {
+        const p = subject([parcel('p1', 60, [owner('A')]), parcel('p2', 40, [owner('A')])]);
+        expect(A.tally(p, ['A', 'A', 'authority'])).toMatchObject({
+            participants: { known: true, total: 1, support: 1, needed: 2, met: false },
+            supportMet: false, authorityMet: true, passed: false
+        });
+    });
+    it('requires both plurality and area, and then a separate authority decision', () => {
+        const p = subject([parcel('p1', 60, [owner('A')]), parcel('p2', 40, [owner('B')])]);
+        const one = A.tally(p, ['A', 'authority']);
+        expect(one.tests[0]).toMatchObject({ support: 60, total: 100, met: true });
+        expect(one).toMatchObject({ participants: { support: 1, met: false }, passed: false });
+        expect(A.tally(p, ['A', 'B'])).toMatchObject({ supportMet: true, authorityMet: false, passed: false });
+        expect(A.tally(p, ['A', 'B', 'authority'])).toMatchObject({ passed: true });
+        expect(review.progress(p, ['A'])).toMatchObject({ participants: { support: 1, needed: 2 }, supportMet: false });
+        const html = loadApprovalPanel().cardHtml({ ...p, agreementId: 'plurality' });
+        expect(html).toContain('data-approval-meter="participants"');
+        expect(html).toContain('Needs 2');
+        expect(html).not.toContain('Heard, not counted');
+        expect(X.rulesText(p.approvalConfig.policy, t, pin(scheme.id))).toContain('approval by at least 2 distinct owners');
+    });
+    it('counts two co-owners of one ground parcel but credits its area only after both approve', () => {
+        const p = subject([parcel('p1', 100, [owner('A', '1/2'), owner('B', '1/2')])]);
+        expect(A.tally(p, ['A', 'authority']).tests[0]).toMatchObject({ support: 0, total: 100, met: false });
+        expect(A.tally(p, ['A', 'B', 'authority'])).toMatchObject({ participants: { total: 2, support: 2 }, passed: true });
+    });
+    it('does not use leaseholders or the authority to meet an owner minimum', () => {
+        const row = { ...parcel('p1', 100, [owner('A')]), leases: [{ leaseId: 'l1', areaM2: 100, holders: [owner('tenant')] }] };
+        expect(A.tally(subject([row], true), ['A', 'tenant', 'authority'])).toMatchObject({ participants: { total: 1, support: 1 }, passed: false });
+    });
+    it('keeps incomplete rights and parcel-owner placeholders unresolved, even if marked complete', () => {
+        for (const rows of [
+            [{ ...parcel('p1', 100, [owner('A')]), complete: false }],
+            [parcel('p1', 50, [owner('parcel-owner:p1')]), parcel('p2', 50, [owner('parcel-owner:p2')])]
+        ]) {
+            expect(A.tally(subject(rows), rows.flatMap(row => row.owners.map(o => o.ownerId)))).toMatchObject({
+                ready: false, participants: { known: false, total: null, support: null, met: false }, passed: false
+            });
+        }
+    });
+    it('also enforces the existing Dutch three-owner minimum', () => {
+        const nl = R.latest('nl-kavelruil');
+        const p = proposal(v1([parcel('p1', 50, [owner('A')]), parcel('p2', 50, [owner('B')])]), R.policyOf(nl, []), pin(nl.id));
+        expect(A.tally(p, ['A', 'B'])).toMatchObject({ participants: { needed: 3, met: false }, passed: false });
     });
 });
 

@@ -17,7 +17,7 @@ export const DESIGN_SCHEMA = designRecord.SCHEMA;
 export const AGREEMENT_SCHEMA = agreementRecord.PUBLISHED_SCHEMA;
 export const OUTPUT_ROLES = agreementRecord.ROLES;
 // Agreement parties are abstract, one per input parcel (`parcel-owner:<parcelId>`); people are
-// derived from a rights snapshot with personPositions, never stored in the agreement.
+// derived from the rule’s rights snapshot with personPositions, never stored as allocation terms.
 export const partyKey = agreementRecord.partyKey;
 export const personPositions = agreementPersons.personPositions;
 export const defaultAllocations = agreementRecord.defaultAllocations;

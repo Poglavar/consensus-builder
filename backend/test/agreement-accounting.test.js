@@ -34,6 +34,26 @@ describe('plan-first agreement accounting', () => {
         expect(Record.ledger(record).money.sponsorCents).toBe(0);
         expect(Record.rightsFromInputs(record.inputs).parcels.every(row => !row.complete)).toBe(true);
     });
+    it('resolves owners late without changing parcel allocations, cash or the plan, but changes the signed context', () => {
+        const raw = fixture(), co = Regimes.latest('co-readjustment');
+        raw.rule.approvalConfig = { schema: 'proposal-approval/v1', rights: Record.rightsFromInputs(raw.inputs),
+            regime: { id: co.id, version: co.version }, policy: Regimes.policyOf(co, ['authority']) };
+        const unresolved = Record.settle(raw), before = Record.published(unresolved);
+        expect(Record.schemeCheck(unresolved).check).toMatchObject({ ok: null });
+        expect(http(unresolved).ok).toBe(true);
+        const resolved = structuredClone(unresolved);
+        resolved.rule.approvalConfig.rights = Record.rightsFromInputs(resolved.inputs, id => id === 'A'
+            ? [{ ownerKey: 'person-1', share: 1 }]
+            : [{ ownerKey: 'person-1', share: 0.3 }, { ownerKey: 'person-2', share: 0.7 }]);
+        const after = Record.published(Record.settle(resolved));
+        expect(Record.schemeCheck(resolved).check).toMatchObject({ ok: true, rules: [{ kind: 'parties', actual: 2 }] });
+        for (const key of ['plan', 'inputs', 'outputs', 'allocations', 'money']) expect(after[key]).toEqual(before[key]);
+        expect(Cid.cidOfObject(after)).not.toBe(Cid.cidOfObject(before));
+        const a = require('../../frontend/js/proposals/approval.js');
+        expect(a.contextHash(Record.approvalSubject(resolved))).not.toBe(a.contextHash(Record.approvalSubject(unresolved)));
+        resolved.rule.approvalConfig.rights = Record.rightsFromInputs(resolved.inputs, () => [{ ownerKey: 'only-owner', share: 1 }]);
+        expect(Record.schemeCheck(resolved).check).toMatchObject({ ok: false, rules: [{ kind: 'parties', actual: 1 }] });
+    });
     it('acquires all outputs for a proposer with no input land, funded by the sponsor', () => {
         const raw = fixture();
         raw.allocations = raw.outputs.map(output => ({ output: output.hash, to: { kind: 'proposer' } }));
@@ -277,8 +297,12 @@ describe('scheme distribution rules', () => {
 
         const exchange = Record.settle({ ...fixture(), rule: { ...fixture().rule, approvalConfig: { schema: 'proposal-approval/v1', rights: null,
             regime: { id: 'nl-kavelruil', version: Regimes.latest('nl-kavelruil').version }, policy: Regimes.policyOf(Regimes.latest('nl-kavelruil'), []) } } });
+        // Unknown rights allow publication, but must never look like a passed participant check.
+        expect(Record.schemeCheck(exchange).check.ok).toBeNull();
+        expect(http(exchange).ok).toBe(true);
+        exchange.rule.approvalConfig.rights = Record.rightsFromInputs(exchange.inputs, id => [{ ownerKey: 'person-' + id, share: 1 }]);
         const parties = Record.validate(exchange).errors.find(row => row.code === 'scheme-parties');
-        expect(parties).toMatchObject({ section: 'land', message: 'Only 2 parties bring land in; Netherlands — voluntary urban land exchange (kavelruil) needs at least 3.' });
+        expect(parties).toMatchObject({ section: 'land', message: 'The land has 2 distinct owners; Netherlands — voluntary urban land exchange (kavelruil) needs at least 3.' });
         expect(http(exchange)).toMatchObject({ ok: false, section: 'land' });
 
         const turkey = Regimes.latest('tr-article-18');

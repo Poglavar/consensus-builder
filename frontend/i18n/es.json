@@ -230,6 +230,7 @@
     },
     "proposalApproval": {
         "ownerLabel": "Propietario {{label}}",
+        "meterDistinctOwners": "Propietarios distintos que aprueban",
         "leaseholderLabel": "Arrendatario {{label}}",
         "authorityLabel": "Autoridad",
         "authorityLabelLettered": "Autoridad {{label}}",
@@ -243,6 +244,8 @@
             "vacuous": "No hay nadie a quien contar aquí, así que esta prueba no bloquea.",
             "heard": "Oídos, no se cuentan",
             "ownersHeard": "Los propietarios son oídos; decide la autoridad.",
+            "minimumOwners": "aprobación de al menos {{count}} propietarios distintos",
+            "areaConsent": "En las pruebas por superficie, una parcela o un arrendamiento solo cuenta cuando todos sus cotitulares computables lo aprueban.",
             "of": {
                 "headcount-owners-all": "de los propietarios",
                 "headcount-owners-private": "de los propietarios privados",
@@ -283,7 +286,7 @@
                 "publicLand": "Suelo público sin compensación",
                 "levelling": "Diferencias",
                 "valueGain": "Plusvalía",
-                "minParties": "Partes"
+                "minParties": "Propietarios distintos"
             },
             "groups": {
                 "decision": "Cómo se decide",
@@ -426,11 +429,11 @@
                 "minParties": {
                     "any": {
                         "short": "Cualquier número",
-                        "long": "Sin número mínimo de partes."
+                        "long": "No hay un mínimo de propietarios distintos."
                     },
                     "some": {
                         "short": "Al menos {{count}}",
-                        "long": "Al menos {{count}} partes aportan suelo."
+                        "long": "Al menos {{count}} propietarios distintos de las parcelas de entrada deben aprobar."
                     }
                 }
             },
@@ -479,14 +482,15 @@
                 "capPoolUnknown": "Se desconoce la superficie del conjunto, así que no se puede comprobar el límite del {{limit}}.",
                 "capPoolOk": "El {{given}} del conjunto no vuelve a los propietarios; el límite es {{limit}}.",
                 "capPoolOver": "El {{given}} del conjunto no vuelve a los propietarios, por encima del límite del {{limit}}.",
-                "partiesOk": "{{actual}} partes aportan suelo; el esquema exige al menos {{required}}.",
-                "partiesFew": "Partes que aportan suelo: solo {{actual}}; el esquema exige al menos {{required}}.",
+                "partiesOk": "El terreno tiene {{actual}} propietarios distintos; al menos {{required}} deben aprobar.",
+                "partiesFew": "El terreno solo tiene {{actual}} propietarios distintos; el esquema exige al menos {{required}}.",
+                "partiesUnknown": "Carga la información completa de titularidad para comprobar el mínimo de {{required}} propietarios distintos.",
                 "proposerNone": "No se asigna suelo a ningún proponente.",
                 "proposerOver": "{{area}} m² irían a un proponente; con este esquema, el suelo vuelve a sus propietarios o se destina a uso público."
             },
             "valueGainAll": "Si se reparte por valor, cada propietario recupera íntegramente el valor que aporta; toda la plusvalía se liquida en dinero.",
             "valueGainShare": "Si se reparte por valor, se liquida en dinero el {{percent}} % de la plusvalía de cada propietario.",
-            "minParties": "Al menos {{count}} partes aportan suelo.",
+            "minParties": "Al menos {{count}} propietarios distintos de las parcelas de entrada deben aprobar.",
             "noProposer": "El suelo vuelve a sus propietarios o se destina a uso público; un proponente no puede adquirirlo."
         },
         "authority": {
@@ -623,6 +627,7 @@
             "contributes": "Su aportación diseño",
             "conditions": "Condiciones",
             "progress": "Progreso",
+            "minimumOwners": "Se necesitan {{count}} aprobaciones de propietarios distintos",
             "yourShare": "Tu cuota {{share}}",
             "coOwnedWith": "en copropiedad con {{owners}}",
             "openUntil": "Abierta hasta el {{date}}",
@@ -808,7 +813,7 @@
                 "fixes": "Qué haría falta para cumplirlo",
                 "fixBasisValue": "En Reglas, elige «Equilibrar diferencias de valor del suelo con dinero» en Compensación y luego introduce un valor por m² para cada parcela de entrada y cada porción resultante.",
                 "fixBasisArea": "En Reglas, elige «Equilibrar diferencias de terreno con dinero» en Compensación.",
-                "fixParties": "Partes que aportan suelo: {{actual}}; este esquema exige {{required}}. Elige un plan que abarque más parcelas u otro esquema.",
+                "fixParties": "{{actual}} propietarios distintos tienen el terreno; este esquema exige {{required}}. Comprueba el archivo de titularidad o elige terrenos con suficientes propietarios distintos.",
                 "fixProposer": "En Parcelas resultantes, asigna las porciones del proponente a un propietario o a Suelo público.",
                 "fixCapOwner": "En Parcelas resultantes, devuelve a {{owner}} al menos {{area}} más de suelo, o reduce la Contribución de terreno; otra opción es un esquema con un límite más alto.",
                 "fixCapOwnerPlain": "En Parcelas resultantes, devuelve más suelo a {{owner}}.",

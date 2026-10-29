@@ -141,6 +141,29 @@ describe('agreement MCP editing surface', () => {
         expect(german.agreement.rule.lens).toEqual(firstRule.lens);
     });
 
+    it('keeps unresolved Colombian ownership draftable, then counts holders rather than parcels through MCP', async () => {
+        const { tools, namedPlan } = await runtime();
+        const co = ApprovalRegimes.latest('co-readjustment');
+        const rule = { electorate: 'owners', binding: false, lens: [],
+            approvalConfig: { schema: 'proposal-approval/v1', rights: null,
+                regime: { id: co.id, version: co.version }, policy: ApprovalRegimes.policyOf(co, ['authority']) },
+            settlement: { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 0 } };
+        const original = await tools.draftAgreement({ plan: namedPlan.draftArtifact, rule });
+        expect((await tools.inspectAgreement({ plan: original.draftArtifact })).scheme)
+            .toMatchObject({ ok: null, rules: [{ kind: 'parties', actual: null, required: 2, ok: null }] });
+        const rights = { schema: 'parcel-rights/v1', source: { provider: 'upload', reference: 'synthetic-test' },
+            parcels: [{ parcelId: 'A', complete: true, areaM2: original.agreement.inputs.parcels[0].areaM2,
+                owners: [{ ownerId: 'person-one', share: '1/2' }, { ownerId: 'person-two', share: '1/2' }] }] };
+        const resolved = await tools.editAgreement({ plan: original.draftArtifact, expectedCid: original.cid, terms: { rights } });
+        expect((await tools.inspectAgreement({ plan: resolved.draftArtifact })).scheme)
+            .toMatchObject({ ok: true, rules: [{ kind: 'parties', actual: 2, required: 2 }] });
+        for (const key of ['planCid', 'allocations', 'money']) expect(resolved.agreement[key]).toEqual(original.agreement[key]);
+        expect(resolved.cid).not.toBe(original.cid);
+        rights.parcels[0].owners = [{ ownerId: 'person-one', share: '1/1' }];
+        await expect(tools.editAgreement({ plan: original.draftArtifact, expectedCid: original.cid, terms: { rights } }))
+            .rejects.toThrow(/land has 1 distinct owners/);
+    });
+
     it('settles by value through MCP, reports the valuation and the scheme check, and refuses an area deal under a value scheme', async () => {
         const { tools, namedPlan } = await runtime();
         const first = await tools.draftAgreement({ plan: namedPlan.draftArtifact, rulePreset: 'community-vote' });

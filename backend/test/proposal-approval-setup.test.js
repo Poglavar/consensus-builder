@@ -117,12 +117,12 @@ describe('summary line', () => {
         expect(Setup.summaryText(null, [])).toBe('Not set up yet — owners cannot accept until it is.');
         const threshold = { type: 'threshold', owners: { numerator: 1, denominator: 2, strict: false }, area: { numerator: 7, denominator: 10, strict: false } };
         expect(Setup.summaryText({ rights, policy: threshold }, ['key-a']))
-            .toBe('Rights for 2 parcel(s), 3 owner(s) · Configured approval rules require at least 1/2 of the owners and at least 7/10 of the area. · 1 lens member(s).');
+            .toBe('Rights for 2 parcel(s), 3 owner(s) · Configured approval rules require at least 1/2 of the owners and at least 7/10 of the area. For area tests, a parcel or lease counts only after all its counted co-holders approve. · 1 lens member(s).');
         expect(Setup.summaryText({ rights, policy: { type: 'unanimous' } }, []))
             .toBe('Rights for 2 parcel(s), 3 owner(s) · Configured approval rules require every owner to accept. · No lens member yet.');
         const scheme = { schema: 'proposal-approval/v1', rights, policy: { type: 'rules', tests: [{ measure: 'area', of: 'owners', scope: 'all', numerator: 1, denominator: 2, strict: true }],
             authorities: [{ authorityId: 'ajuntament' }] }, regime: { id: 'es-ct-basic', version: '2026-10-11' } };
-        expect(Setup.summaryText(scheme, ['key-a'])).toBe('Rights for 2 parcel(s), 3 owner(s) · Catalonia — basic compensation: Configured approval rules require more than 1/2 of the area and the municipality’s approval of the compensation project. · 1 lens member(s).');
+        expect(Setup.summaryText(scheme, ['key-a'])).toBe('Rights for 2 parcel(s), 3 owner(s) · Catalonia — basic compensation: Configured approval rules require more than 1/2 of the area and the municipality’s approval of the compensation project. For area tests, a parcel or lease counts only after all its counted co-holders approve. · 1 lens member(s).');
     });
 });
 
@@ -200,6 +200,17 @@ describe('the scheme guide', () => {
     const words = () => require('../../frontend/js/proposals/approval-text.js');
     const t = (key, fallback, params = {}) => String(fallback).replace(/\{\{(\w+)\}\}/g, (_, name) => params[name]);
 
+    it('keeps an unknown distinct-owner count neutral in the card and picker', () => {
+        const co = regimes().latest('co-readjustment');
+        const check = { ok: null, lines: [{ ok: null, text: 'Upload complete ownership to check the minimum of 2 distinct owners.' }] };
+        const config = { schema: 'proposal-approval/v1', rights: null, policy: regimes().policyOf(co, ['authority']), regime: { id: co.id, version: co.version } };
+        const html = Setup.html({ config, schemeStatus: { [co.id]: null }, schemeCheck: check });
+        expect(html).toContain('data-approval-scheme-ok="unknown"');
+        expect(html).toContain('data-check-ok="unknown"');
+        expect(html).not.toMatch(/value="co-readjustment"[^>]*data-scheme-met="true"/);
+        const guide = Setup.schemeGuideHtml({ template: co, check, rules: [{ kind: 'parties', ok: null, required: 2, actual: null }] });
+        expect(guide).not.toContain('choose land with enough distinct owners');
+    });
     it('describes every scheme in the same dimensions, derived from its own data', () => {
         const ids = regimes().DIMENSIONS.flatMap(group => group.ids);
         expect(ids).toEqual(['initiator', 'decider', 'support', 'electorate', 'dissenters', 'stage', 'basis', 'publicLand', 'levelling', 'valueGain', 'minParties']);
@@ -248,7 +259,7 @@ describe('the scheme guide', () => {
         expect(exchange).toContain('--scheme-length: 100.0%');
         expect(exchange).not.toContain('data-scheme-flow-step="authority"');
         expect(exchange).toContain('Three example owners giving up a quarter of their land: the scheme sets no cap.');
-        expect(exchange).toContain('At least 3 parties bring land in.');
+        expect(exchange).toContain('At least 3 distinct input owners must approve.');
         // A value scheme with three tests at once: three gauges, the rights file and the value step.
         const japan = Setup.schemeGuideHtml({ template: regimes().latest('jp-association') });
         expect(japan.match(/class="scheme-gauge"/g)).toHaveLength(3);
@@ -304,7 +315,7 @@ describe('the scheme guide', () => {
         // A pool cap draws the pool's share not returned to owners against the cap.
         expect(Setup.ownersModel(regimes().dimensionsOf(regimes().latest('tw-owner-organized')), ledger).pool).toEqual({ given: 0.4, limit: 0.45 });
         const few = Setup.schemeGuideHtml({ template: regimes().latest('nl-kavelruil'), ledger, rules: [{ kind: 'parties', required: 3, actual: 2, ok: false }], check: { ok: false, lines: [{ ok: false, text: 'few' }] } });
-        expect(few).toContain('2 parties bring land in and this scheme needs 3');
+        expect(few).toContain('2 distinct owners hold the land; this scheme needs 3');
     });
 
     it('compares every scheme in the same dimensions, the picked one marked and the broken ones flagged', () => {

@@ -230,6 +230,7 @@
     },
     "proposalApproval": {
         "ownerLabel": "Vlasnik {{label}}",
+        "meterDistinctOwners": "Različiti vlasnici koji su odobrili",
         "leaseholderLabel": "Zakupac {{label}}",
         "authorityLabel": "Nadležni organ",
         "authorityLabelLettered": "Nadležni organ {{label}}",
@@ -243,6 +244,8 @@
             "vacuous": "Ovde nema koga brojati, pa ovaj uslov ne blokira.",
             "heard": "Saslušani, ne broje se",
             "ownersHeard": "Vlasnici se saslušavaju; odlučuje nadležni organ.",
+            "minimumOwners": "odobrenje najmanje {{count}} različitih vlasnika",
+            "areaConsent": "Kod testova površine, parcela ili zakup računaju se tek kada ih odobre svi suvlasnici koji se računaju.",
             "of": {
                 "headcount-owners-all": "vlasnika",
                 "headcount-owners-private": "privatnih vlasnika",
@@ -283,7 +286,7 @@
                 "publicLand": "Javno zemljište bez naknade",
                 "levelling": "Razlike",
                 "valueGain": "Rast vrednosti",
-                "minParties": "Strane"
+                "minParties": "Različiti vlasnici"
             },
             "groups": {
                 "decision": "Kako se odlučuje",
@@ -426,11 +429,11 @@
                 "minParties": {
                     "any": {
                         "short": "Bilo koji broj",
-                        "long": "Nema najmanjeg broja strana."
+                        "long": "Nema minimalnog broja različitih vlasnika."
                     },
                     "some": {
                         "short": "Najmanje {{count}}",
-                        "long": "Zemljište unosi najmanje {{count}} strana."
+                        "long": "Mora da odobri najmanje {{count}} različitih vlasnika ulaznih parcela."
                     }
                 }
             },
@@ -479,14 +482,15 @@
                 "capPoolUnknown": "Površina fonda nije poznata, pa se granica od {{limit}} ne može proveriti.",
                 "capPoolOk": "{{given}} fonda se ne vraća vlasnicima; granica je {{limit}}.",
                 "capPoolOver": "{{given}} fonda se ne vraća vlasnicima, iznad granice od {{limit}}.",
-                "partiesOk": "Broj strana koje unose zemljište: {{actual}}; šema traži najmanje {{required}}.",
-                "partiesFew": "Broj strana koje unose zemljište je samo {{actual}}; šema traži najmanje {{required}}.",
+                "partiesOk": "Zemljište ima {{actual}} različitih vlasnika; najmanje {{required}} mora da odobri.",
+                "partiesFew": "Zemljište ima samo {{actual}} različitih vlasnika; ova šema zahteva najmanje {{required}}.",
+                "partiesUnknown": "Učitajte potpune podatke o vlasništvu da biste proverili minimum od {{required}} različitih vlasnika.",
                 "proposerNone": "Predlagač ne dobija zemljište.",
                 "proposerOver": "Predlagač bi dobio {{area}} m²; prema ovoj šemi zemljište se vraća vlasnicima ili ide za javne namene."
             },
             "valueGainAll": "Pri raspodeli prema vrednosti svaki vlasnik dobija nazad punu vrednost koju je uneo; celo povećanje vrednosti namiruje se novcem.",
             "valueGainShare": "Pri raspodeli prema vrednosti novcem se namiruje {{percent}}% povećanja vrednosti koje ostvari svaki vlasnik.",
-            "minParties": "Broj strana koje unose zemljište: najmanje {{count}}.",
+            "minParties": "Mora da odobri najmanje {{count}} različitih vlasnika ulaznih parcela.",
             "noProposer": "Zemljište se vraća vlasnicima ili ide za javne namene; predlagač ne može da ga stekne."
         },
         "authority": {
@@ -623,6 +627,7 @@
             "contributes": "Vaš predloženi doprinos",
             "conditions": "Uslovi",
             "progress": "Napredak",
+            "minimumOwners": "Potrebno je {{count}} odobrenja različitih vlasnika",
             "yourShare": "Vaš udeo {{share}}",
             "coOwnedWith": "u suvlasništvu sa: {{owners}}",
             "openUntil": "Otvoreno do {{date}}",
@@ -808,7 +813,7 @@
                 "fixes": "Šta bi ispunilo uslove",
                 "fixBasisValue": "Na kartici Pravila u polju Naknada izaberite „Novčano izravnanje razlika u vrednosti zemljišta”, a zatim unesite vrednost po m² za svaku ulaznu parcelu i svaki nastali deo.",
                 "fixBasisArea": "Na kartici Pravila u polju Naknada izaberite „Novčano izravnanje razlika u zemljištu”.",
-                "fixParties": "Broj strana koje unose zemljište je {{actual}}, a ova šema traži {{required}}; izaberite plan koji obuhvata više parcela ili drugu šemu.",
+                "fixParties": "Zemljište ima {{actual}} različitih vlasnika, a ova šema zahteva {{required}}. Proverite datoteku o vlasništvu ili izaberite zemljište sa dovoljno različitih vlasnika.",
                 "fixProposer": "Na kartici Izlazne parcele dodelite delove predlagača nekom vlasniku ili ih označite kao Javno zemljište.",
                 "fixCapOwner": "Na kartici Izlazne parcele vratite vlasniku {{owner}} još najmanje {{area}} zemljišta ili smanjite Doprinos zemljišta; druga mogućnost je šema sa višom granicom.",
                 "fixCapOwnerPlain": "Na kartici Izlazne parcele vratite vlasniku {{owner}} više zemljišta.",
