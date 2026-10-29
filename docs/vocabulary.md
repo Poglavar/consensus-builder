@@ -1024,6 +1024,14 @@ embedded authored model assets and known source references. The plan owns member
 view. Import creates local, unapplied drafts and retains that membership; it conveys no publication,
 agreement decisions, signatures or ownership. Referenced source datasets are independent dependencies.
 
+### Portable agreement file
+
+A versioned `ugt-agreement-file/v1` JSON envelope (`agreement-file.js`): an `agreement/v1` record,
+the portable plan file of its plan, and `designCids`, which maps each design CID the agreement names
+to that design's CID in the plan file (embedding a model changes it). Import adds the plan's designs
+as local, unapplied drafts and saves the agreement as a local draft under a new id over them, with
+no publication, chain account, votes or signatures.
+
 ### Private preview
 
 A temporary means of inspecting a draft artifact. An opaque bearer reference grants access to a stored draft object, independently of permanent publication and wallet approval. Collection previews reference their member designs individually; URLs contain no serialized records or geometry.

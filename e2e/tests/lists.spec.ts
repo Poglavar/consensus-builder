@@ -102,6 +102,13 @@ for (const width of [1280, 390]) {
     await expect(page.locator('[data-agreement-action="delete"]')).toHaveCount(0);
     await page.locator('#proposals-button').click();
     await sheet.locator('[data-list-source="published"]').click(); await expect(agreementRow).toBeVisible();
+    // Download: the agreement with its plan's file, which Import agreement file reads back below.
+    const agreementDownload = page.waitForEvent('download');
+    await agreementRow.getByRole('button', { name: 'Download', exact: true }).click();
+    const agreementFile = await agreementDownload;
+    expect(agreementFile.suggestedFilename()).toBe('residents-agreement.ugt-agreement.json');
+    const agreementChunks: Buffer[] = [];
+    for await (const chunk of (await agreementFile.createReadStream())!) agreementChunks.push(Buffer.from(chunk));
     await agreementRow.getByRole('button', { name: 'Share', exact: true }).click();
     await agreementRow.getByRole('button', { name: 'Remove from browser', exact: true }).click();
     await page.locator('.cb-dialog').getByRole('button', { name: 'Remove from browser', exact: true }).click();
@@ -109,6 +116,14 @@ for (const width of [1280, 390]) {
     await expect(agreementRow.getByRole('button', { name: 'Remove from browser', exact: true })).toHaveCount(0);
     await expect.poll(() => page.evaluate(id => (window as any).AgreementStore.get(id), agreement.id)).toBeNull();
     await sheet.locator('[data-list-source="local"]').click(); await expect(sheet.locator('#designs-agreements .lists-item')).toHaveCount(0);
+    // Import agreement file brings it back as a local draft under a new id, not as the published one.
+    await sheet.locator('#agreement-file-actions input[type=file]').setInputFiles({ name: 'residents-agreement.ugt-agreement.json', mimeType: 'application/json', buffer: Buffer.concat(agreementChunks) });
+    await page.locator('.cb-dialog').filter({ hasText: 'Review agreement file' }).getByRole('button', { name: 'Import as drafts', exact: true }).click();
+    const importedDialog = page.locator('.cb-dialog').filter({ hasText: 'Agreement imported' });
+    await expect(importedDialog).toBeVisible(); await page.keyboard.press('Escape'); await expect(importedDialog).toBeHidden();
+    const importedRow = sheet.locator('#designs-agreements .lists-item').filter({ hasText: 'Residents agreement' });
+    await expect(importedRow).toHaveCount(1); await expect(importedRow).toContainText('Draft');
+    expect(await page.evaluate(id => { const list = (window as any).AgreementStore.list(); return list.length === 1 && list[0].id !== id && !list[0].published; }, agreement.id)).toBe(true);
     await sheet.getByRole('tab', { name: 'Plans', exact: true }).click();
     await planRow.getByRole('button', { name: 'Remove from browser', exact: true }).click();
     await page.locator('.cb-dialog').getByRole('button', { name: 'Remove from browser', exact: true }).click();

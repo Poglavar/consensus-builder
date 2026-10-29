@@ -7,6 +7,8 @@
         root.PlanFileUI = api.browser(root);
         const host = root.document.getElementById('plan-file-actions');
         if (host) host.appendChild(root.PlanFileUI.controls());
+        const agreements = root.document.getElementById('agreement-file-actions');
+        if (agreements) agreements.appendChild(root.PlanFileUI.agreementControls());
     }
 })(typeof window !== 'undefined' ? window : null, function () {
     'use strict';
@@ -188,14 +190,72 @@
         }
         // A road also downloads as its OSM document (Road → Import reads it back) and a parcel layout
         // as its plots (the layout editor's Upload GeoJSON reads them back).
-        const EXTRA_LABELS = { 'road-osm': ['roadOsm', 'Download road (OSM, for Import)'], 'layout-plots': ['layoutPlots', 'Download plots (GeoJSON)'] };
+        const EXTRA_LABELS = { 'road-osm': ['roadOsm', 'Download road for import (OSM)'], 'layout-plots': ['layoutPlots', 'Download plots (GeoJSON)'] };
         function design(record) {
             const title = () => record.title || 'My design';
             const extras = win.DesignFileExports.downloadsFor(record).map(file => ({ label: t(...EXTRA_LABELS[file.id]), hook: file.id,
                 make: () => ({ text: file.text, name: fileStem(title()) + file.suffix, type: file.type }) }));
             win.showSimpleShareModal({ title: t('design', 'Download design'), body: controls({ getRecords: () => [record], getTitle: title, importAllowed: false, extras }), actions: [] });
         }
-        return { controls, planControls, plan, design, review, commitImport, openPlan };
+        // ---- agreements: the terms with the plan file of their plan (agreement-file.js) ----------
+        // Download one agreement, stored or published (`designs`: a published one's fetched designs).
+        async function downloadAgreement(record, designs = []) {
+            if (!record?.plan) throw new Error(t('agreementNoPlan', 'This agreement has no plan yet, so it cannot be downloaded.'));
+            return observe('export', { entity: 'file', code: 'plan-export-failed', context: { format: 'agreement' } }, async () => {
+                const row = await win.PlanWorkspace.resolve(record.plan, designs);
+                const cidMap = {};
+                const planFile = await win.PlanFile.create(structuredClone(win.PlanComposition.localRecords(row, { apiBase: win.DesignSync.apiBase() })), {
+                    title: row.content.title, view: structuredClone(row.content.view), schedule: row.content.schedule || null,
+                    designSources: row.designSources || {}, fetchModel, cidMap });
+                const file = win.AgreementFile.create(record, planFile, cidMap);
+                return download(win.AgreementFile.stringify(file), `${win.FileDownload.fileStem(record.title || row.content.title, 'agreement')}.ugt-agreement.json`, 'application/json');
+            });
+        }
+        function reviewAgreement(file) {
+            return new Promise(resolve => {
+                const body = doc.createElement('p');
+                body.textContent = t('agreementPreview', '“{{title}}”: an agreement over the plan “{{plan}}” with {{count}} designs. Import adds the designs as local, unapplied drafts and the agreement as a local draft. It is not proposed or published, and no vote or signature is imported.',
+                    { title: file.agreement.title || file.planFile.plan.title, plan: file.planFile.plan.title, count: file.planFile.designs.length });
+                const modal = win.showSimpleShareModal({ title: t('reviewAgreement', 'Review agreement file'), body,
+                    autoCloseActions: false, onClose: () => resolve(false), actions: [
+                        { id: 'cancel', label: t('cancel', 'Cancel'), onClick: m => { resolve(false); m.close(); } },
+                        { id: 'import', label: t('importDrafts', 'Import as drafts'), primary: true, onClick: m => { resolve(true); m.close(); } }
+                    ] });
+                if (!modal) resolve(false);
+            });
+        }
+        // The plan's designs arrive as drafts (one mutation, as a plan file import), then the agreement
+        // is stored under a new id over them.
+        async function importAgreement(file) {
+            const checked = win.AgreementFile.validate(file);
+            const plan = await commitImport(checked.planFile);
+            return win.AgreementStore.save(win.AgreementFile.localAgreement(checked, plan, { id: win.AgreementRecord.newId() }));
+        }
+        function agreementControls() {
+            const group = doc.createElement('div'); group.className = 'plan-file-controls';
+            const input = doc.createElement('input'); input.type = 'file'; input.accept = '.json,application/json'; input.hidden = true;
+            input.setAttribute('aria-label', t('importAgreement', 'Import agreement file'));
+            const choose = doc.createElement('button'); choose.type = 'button'; choose.className = 'btn';
+            choose.textContent = t('importAgreement', 'Import agreement file'); choose.dataset.planFileAction = 'import-agreement';
+            actionIcon(choose, 'file-import');
+            choose.addEventListener('click', () => { if (!win.BusyControl.isBusy(choose)) input.click(); });
+            input.addEventListener('change', () => {
+                const chosen = input.files?.[0]; input.value = '';
+                if (!chosen) return;
+                win.BusyControl.track(choose, async () => {
+                    if (chosen.size > win.PlanFile.MAX_BYTES) throw new Error(t('tooLarge', 'Plan files are limited to 32 MiB.'));
+                    const file = win.AgreementFile.parse(await chosen.text());
+                    if (!await reviewAgreement(file)) return;
+                    const agreement = await importAgreement(file);
+                    win.updateShowProposalsButton?.(); win.refreshProposalsLayer?.();
+                    win.showSimpleShareModal({ title: t('agreementImported', 'Agreement imported'), body: t('agreementImportedBody', 'The agreement and its plan’s designs are saved here as drafts. Apply the plan’s designs to read its land.'),
+                        actions: [{ label: t('openAgreement', 'Open imported agreement'), primary: true, onClick: () => Promise.resolve(win.AgreementPanel.open(agreement.id)).catch(e => error(e)) }] });
+                }).catch(e => error(e, 'plan-import-failed'));
+            });
+            group.append(choose, input);
+            return group;
+        }
+        return { controls, planControls, plan, design, review, commitImport, openPlan, downloadAgreement, importAgreement, agreementControls };
     }
     return { PREFIX, browser };
 });

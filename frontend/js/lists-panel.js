@@ -48,7 +48,7 @@
         const city = () => win.normalizeCityCodeForApi(win.resolveCurrentCityCode());
         const area = () => state.tab === 'designs' ? win.getProposalCountAreaContext() : null;
         const cacheKey = () => { const view = area(); return `${win.DesignSync.apiBase()}:${view?.explore ? view.key : city()}:${state.tab}`; };
-        const host = () => doc.getElementById({ designs: 'proposal-list-host', plans: 'plan-list-host', agreements: 'designs-agreements' }[state.tab]);
+        const host = () => doc.getElementById({ designs: 'proposal-list-host', plans: 'plan-list-host', agreements: 'agreement-list-host' }[state.tab]);
         const opened = () => win.MapShell?.isOpen('proposals-sheet');
         function localRows(kind) {
             if (kind === 'designs') return win.proposalStorage.getAllProposals().map(record => ({
@@ -285,6 +285,10 @@
                 actions.append(shareButton);
                 if (kind === 'designs') actions.append(button(t('common.download'), async () => win.PlanFileUI.design(await designRecord(row)), '', 'download'));
                 if (kind === 'plans') actions.append(button(t('common.download'), async () => win.PlanFileUI.plan(await planOf(row)), '', 'download'));
+                if (kind === 'agreements') actions.append(button(t('common.download'), async () => {
+                    const resolved = row.local ? { agreement: row.local, designs: [] } : await win.AgreementSync.resolveDetails(row.key);
+                    return win.PlanFileUI.downloadAgreement(resolved.agreement, resolved.designs);
+                }, '', 'download'));
                 if (kind === 'plans') {
                     actions.append(button(t('sidebar.proposals.planStats.modalTitle'), async () => {
                         await win.showPlanStatsModal(await planOf(row));

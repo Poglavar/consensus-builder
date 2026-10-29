@@ -320,6 +320,7 @@
             + `<i class="fas fa-left-right" aria-hidden="true"></i> ${esc(tr('mapCompare.toggle', 'Before / after'))}</button>`
             + (canBet && !readOnly ? `<button type="button" class="btn" data-agreement-action="bet"><i class="fas fa-chart-line" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.bet', 'Bet'))}</button>` : '')
             + (published || readOnly ? '' : `<button type="button" class="btn" data-agreement-action="edit"><i class="fas fa-pen" aria-hidden="true"></i> ${esc(tr('agreement.panel.actions.edit', 'Edit'))}</button>`)
+            + `<button type="button" class="btn" data-agreement-action="download"><i class="fas fa-download" aria-hidden="true"></i> ${esc(tr('common.download', 'Download'))}</button>`
             + '</div>';
     }
 
@@ -1484,7 +1485,7 @@
             const action = event.target.closest('[data-agreement-action]');
             if (!action || action.disabled) return;
             const actionName = action.getAttribute('data-agreement-action');
-            if (state.readOnlyAgreement && !['close', 'link', 'plan', 'scheme-guide', 'counter'].includes(actionName)) return;
+            if (state.readOnlyAgreement && !['close', 'link', 'plan', 'scheme-guide', 'counter', 'download'].includes(actionName)) return;
             switch (actionName) {
                 case 'close': close(); break;
                 case 'plan': win.BusyControl.track(action, () => win.ClickStack.showPlan(state.agreement.plan, { designs: state.agreement.designs, draft: !state.agreement.published })).catch(error => win.showStyledAlert(error.message)); break;
@@ -1492,6 +1493,9 @@
                 case 'apply-designs': win.BusyControl.track(action, () => applyDesigns()).catch(error => win.showStyledAlert(error.message)); break;
                 case 'propose': win.BusyControl.track(action, () => propose()); break;
                 case 'link': copyLink(); break;
+                // The agreement with the plan file of its plan (agreement-file.js); Import agreement file reads it back.
+                case 'download': win.BusyControl.track(action, () => win.PlanFileUI.downloadAgreement(state.agreement,
+                    state.readOnlyDesigns ? [...state.readOnlyDesigns.values()] : [])).catch(error => win.showStyledAlert(error.message)); break;
                 case 'mint': mint(); break;
                 case 'repropose': win.BusyControl.track(action, () => repropose()); break;
                 case 'fund': fund(); break;

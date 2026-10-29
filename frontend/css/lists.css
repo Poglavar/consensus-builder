@@ -29,7 +29,8 @@
 #proposals-sheet #proposal-list-host { display: grid; overflow: visible; flex: none; }
 #proposals-sheet #designs-browse:not([hidden]) { display: grid; gap: var(--cb-space-3); }
 #proposals-sheet #designs-plans { gap: var(--cb-space-3); }
-#proposals-sheet #plan-file-actions .plan-file-controls { padding: 0; }
+#proposals-sheet #plan-file-actions .plan-file-controls,
+#proposals-sheet #agreement-file-actions .plan-file-controls { padding: 0; }
 .lists-controls { flex-shrink: 0; }
 .lists-item { --lists-accent: var(--cb-text-muted); border-inline-start: 3px solid var(--lists-accent); background: color-mix(in srgb, var(--lists-accent) 4%, var(--cb-surface)); }
 .lists-item[data-list-tone="nature"] { --lists-accent: var(--cb-success); }
