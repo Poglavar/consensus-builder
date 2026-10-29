@@ -16,7 +16,13 @@ remain authored feature metadata.
 
 Each current live parcel a Freeform building touches gets its own Land take choice: Footprint only
 (the default) or Whole parcel, which adds that parcel's entire current outline; All footprint and
-All whole set every row. The building itself stays narrow. The exact `geometry.landTake`
+All whole set every row. The live parcels are those as they stood before the design under edit
+(`FreeformLandTake.groundBefore`): a building on a parcel layout's plot is offered that plot, not
+the cadastral parcel under the layout. The design's own building parcel returns to the piece it
+was cut from (the piece of the same cadastral parcel it shares the longest edge with) when it is
+no more than its footprint, and otherwise stands as the whole land it took; its cadastral
+remainders join back into their parcel. A footprint that straddled two plots returns wholly to
+one of them. The building itself stays narrow. The exact `geometry.landTake`
 (`frontend/js/freeform-land-take.js`) is shared by binding, parcel formation, owner remainders,
 demolition prefetch and replay, and agreement derivation.
 

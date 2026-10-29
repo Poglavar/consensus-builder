@@ -16,6 +16,10 @@
         let whole = new Set(), parcels = [], current = null, savedTake = initialTake;
         let sequence = 0, timer = null, closed = false;
         let geometryKey = null, stock = [], outcomes = null, pending = false, baseline = null;
+        // The applied design under edit, if any, and its footprint as it stood when the edit opened:
+        // the review reads the ground as it was before that design (FreeformLandTake.groundBefore).
+        const ownId = env.getActiveProposalDesignDraft?.()?.sourceLocalProposalId || null;
+        const ownFootprint = ownId && getBuildings().length ? api.union(getBuildings(), env.turf) : null;
         const text = (key, params = {}) => env.i18n.t(`landTake.${key}`, params);
         function style(kind) {
             const css = getComputedStyle(panel);
@@ -107,8 +111,15 @@
                 const region = footprint;
                 await env.CadastralParcelRepository.ensureFootprint(region);
                 if (closed || ticket !== sequence) return false;
-                // Review source parcels, not the fragments this applied design itself produced.
-                parcels = env.__cadastreAncestry.loadedCadastreParcels(env.turf.bbox(region)).map(item => item.feature);
+                // The live pieces as they stood before this design: a layout's plot under the
+                // building, not the cadastral parcel the layout stands on, and never this design's own
+                // fragments. Its own pieces are read wherever they are, so a moved building still
+                // finds the piece it was cut from.
+                const live = env.LiveParcelFabric.queryBounds(env.turf.bbox(region), { includeCorridors: false });
+                const seen = new Set(live.map(piece => env.LiveParcelFabric.featureId(piece)));
+                const ownPieces = ownId ? env.LiveParcelFabric.producedBy(ownId)
+                    .filter(piece => !seen.has(env.LiveParcelFabric.featureId(piece))) : [];
+                parcels = api.groundBefore({ pieces: [...live, ...ownPieces], ownId, ownFootprint, turf: env.turf });
                 current = api.plan({ buildings, parcels, whole, savedTake, turf: env.turf });
                 savedTake = null;
                 whole = new Set(current.rows.filter(row => row.mode === 'whole').map(row => row.key));
@@ -125,7 +136,6 @@
                 stock = await env.__demolitionPrefetch.loadBuildingStock(current.take.geometry,
                     (...args) => env.BuildingSourceClient.request(...args));
                 if (closed || ticket !== sequence) return false;
-                const ownId = env.getActiveProposalDesignDraft?.()?.sourceLocalProposalId;
                 // Replacing this source must review its original stock, before its own removals.
                 const pool = env.collectLoadedCorridorBuildings({ extraPool: stock, includeLoadedSurveyPool: false,
                     excludeProposalId: ownId });
