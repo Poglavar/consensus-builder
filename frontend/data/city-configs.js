@@ -17358,7 +17358,7 @@
                 attribution: '<a href="https://kataster.bev.gv.at/">BEV cadastral vector tiles</a> · CC BY 4.0 · adapted'
             },
             buildings: { sources: [{ id: 'wien-lod2', name: 'Stadt Wien roof model (LOD2.1)',
-                attribution: 'Datenquelle: <a href="https://www.data.gv.at/katalog/dataset/86d88cae-ad97-4476-bae5-73488a12776d">Stadt Wien – data.wien.gv.at</a> · Generalisiertes Dachmodell LOD2.1 · CC BY 4.0' }, { id: 'osm', use: false }] },
+                attribution: 'Datenquelle: <a href="https://www.data.gv.at/katalog/dataset/86d88cae-ad97-4476-bae5-73488a12776d">Stadt Wien – data.wien.gv.at</a> · Generalisiertes Dachmodell LOD2.1 · CC BY 4.0' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
