@@ -45,6 +45,16 @@ describe('MCP production routing', () => {
         }
     });
 
+    it('deploys private database storage before reload and keeps API notifications unbuffered', () => {
+        const deploy = readFileSync(new URL('../deploy-backend.sh', import.meta.url), 'utf8');
+        expect(deploy).toContain('db/shared-plan-session-ddl.sql');
+        expect(deploy.indexOf('db/shared-plan-session-ddl.sql')).toBeLessThan(deploy.indexOf('pm2 startOrReload'));
+        const nginx = readFileSync(new URL('../nginx/api.urbangametheory.xyz.nginx.conf', import.meta.url), 'utf8');
+        const route = nginx.match(/location \^~ \/shared-plan-sessions \{([^}]+)\}/)?.[1];
+        expect(route).toContain('proxy_buffering off;');
+        expect(route).toContain('proxy_read_timeout 90s;');
+    });
+
     it('does not occupy an API or registered lens service port', () => {
         const personas = JSON.parse(readFileSync(new URL('../agents/personas.json', import.meta.url), 'utf8')).personas;
         const occupied = [Number(apps.find(app => app.name === 'consensus-builder-api').env.API_PORT),

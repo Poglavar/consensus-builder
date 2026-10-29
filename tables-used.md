@@ -48,6 +48,7 @@ Rules that shape the list:
 - consensus.proposal
 - consensus.design
 - consensus.plan
+- consensus.shared_plan_session (schema-only — private collaboration content and capability verifiers; backend/db/shared-plan-session-ddl.sql)
 - consensus.agreement
 - consensus.agreement_decision
 - consensus.bet_event (schema-only)

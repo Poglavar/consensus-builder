@@ -69,8 +69,10 @@ undo through `ugt_edit_shared_plan` while it holds control.
   they do not imply a successful shared save.
 - A session is scoped to a plan. Camera position and unrelated local designs are not shared work.
 - The existing single-tab browser workspace lock remains in force.
-- The service stores sessions on disk across restarts, independently of expiring preview links.
-  It runs with one writer per storage directory and rejects writes when storage is full.
+- The API stores sessions in PostgreSQL across restarts, independently of expiring preview links.
+  Transactional version/control checks prevent competing saves from overwriting one another.
+  The MCP worker holds no database credentials. Session capability verifiers are hashed in storage.
+  Experimental file-backed sessions must be recreated; they are no longer read.
 - Sharing/publishing, wallet approval and blockchain actions keep their existing explicit flows.
 
 ## Optional browser-control trial

@@ -14,6 +14,7 @@ import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { cidOfObject } from '../cid.js';
 import { MCP_LOCAL_TOOLS } from '../agents/mcp-catalog.js';
 import { createSharedPlanSessions } from '../agents/mcp-shared-plan-sessions.js';
+import { createMemorySharedPlanRepository } from './helpers/shared-plan-repository.js';
 
 const CID = cidOfObject({ schema: 'agreement/v1', title: 'An agreement' });
 const DESIGN_CID = cidOfObject({ schema: 'design/v1', title: 'A design' });
@@ -53,26 +54,25 @@ async function toolsByName() {
 
 describe('Urban Game Theory MCP server', () => {
     it('carries a shared-plan turn through the real MCP tool boundary and rejects a late agent write', async () => {
-        const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'mcp-shared-wire-'));
-        const sessions = createSharedPlanSessions({ directory, validateArtifact: value => {
+        const sessions = createSharedPlanSessions({ repository: createMemorySharedPlanRepository(), validateArtifact: value => {
             if (!value?.cid || !value?.plan || !Array.isArray(value.designs)) throw new Error('invalid test artifact');
         } });
         const initial = { cid: DESIGN_CID, plan: { schema: 'plan/v1', title: 'Before' }, designs: [] };
-        const created = sessions.create(initial), tools = stubTools();
+        const created = await sessions.create(initial), tools = stubTools();
         tools.editPlan = vi.fn(async () => ({ cid: CID, plan: { schema: 'plan/v1', title: 'After' }, designs: [], changes: [], consequences: { removed: [], junctions: [], cuts: [] } }));
         try {
             await connect(tools, { sharedPlans: sessions });
             const inspected = await client.callTool({ name: 'ugt_inspect_shared_plan', arguments: { sessionId: created.id, capability: created.inviteToken } });
             expect(inspected.isError).not.toBe(true); expect(inspected.structuredContent).toMatchObject({ version: 0, cid: DESIGN_CID });
-            const handover = sessions.control(created.id, created.ownerToken, { expectedVersion: 0, controller: 'agent' });
+            const handover = await sessions.control(created.id, created.ownerToken, { expectedVersion: 0, controller: 'agent' });
             const edited = await client.callTool({ name: 'ugt_edit_shared_plan', arguments: { sessionId: created.id, capability: created.inviteToken,
                 expectedVersion: handover.version, expectedCid: DESIGN_CID, operations: [] } });
             expect(edited.isError).not.toBe(true); expect(edited.structuredContent).toMatchObject({ version: 2, cid: CID });
-            const owner = sessions.control(created.id, created.ownerToken, { expectedVersion: 2, controller: 'owner' });
+            const owner = await sessions.control(created.id, created.ownerToken, { expectedVersion: 2, controller: 'owner' });
             const late = await client.callTool({ name: 'ugt_edit_shared_plan', arguments: { sessionId: created.id, capability: created.inviteToken,
                 expectedVersion: owner.version, expectedCid: CID, operations: [] } });
             expect(late).toMatchObject({ isError: true, structuredContent: { code: 'shared-plan-control-required' } });
-        } finally { sessions.dispose(); fs.rmSync(directory, { recursive: true, force: true }); }
+        } finally { await sessions.dispose(); }
     });
     it('exposes exact private inspection and granular edits through the actual MCP schemas', async () => {
         const calls=[];

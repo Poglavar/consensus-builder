@@ -6,30 +6,13 @@ import { createMcpHandler } from '@modelcontextprotocol/server';
 import { toNodeHandler, hostHeaderValidation, originValidation } from '@modelcontextprotocol/node';
 import { createUrbanGameTheoryMcpServer } from './mcp-server.mjs';
 import { createPreviewLinks } from './mcp-preview-links.js';
-import { createSharedPlanSessions } from './mcp-shared-plan-sessions.js';
+import { createSharedPlanClient } from './shared-plan-client.js';
+import { canonicalArtifact } from './shared-plan-artifact.js';
 import { createUrbanGameTheoryTools } from './ugt-agent-tools.js';
-import { cidOfObject } from '../cid.js';
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
-const PlanRecord = require('../../frontend/js/plan-record.js');
-const DesignRecord = require('../../frontend/js/design-record.js');
-
 // Match the API's JSON request budget. The former 32 KiB ceiling rejected ordinary agreements
 // carrying an unpublished layout, long before the application's per-object publication limit.
 export const MCP_MAX_REQUEST_BYTES = 15 * 1024 * 1024;
 
-function canonicalArtifact(value) {
-    const plan = value?.plan?.content || value?.plan;
-    const designs = value?.designs;
-    if (!plan || PlanRecord.validate(plan) || cidOfObject(plan) !== value?.cid || !Array.isArray(designs) || designs.length !== plan.designCids.length) {
-        throw Object.assign(new Error('A shared plan needs one exact plan/v1 and all of its exact design/v1 members.'), { code: 'shared-plan-artifact-invalid', status: 400 });
-    }
-    const rows = designs.map(row => ({ cid: row?.cid || cidOfObject(row?.content || row), content: row?.content || row, parcelSourceId: row?.parcelSourceId || null }));
-    if (new Set(rows.map(row => row.cid)).size !== rows.length || rows.some(row => row.cid !== cidOfObject(row.content) || !DesignRecord.validate(row.content).valid
-        || (row.parcelSourceId !== null && (typeof row.parcelSourceId !== 'string' || !row.parcelSourceId)))
-        || rows.some(row => !plan.designCids.includes(row.cid) || (row.parcelSourceId !== null && (typeof row.parcelSourceId !== 'string' || row.parcelSourceId.length > 200)))) throw Object.assign(new Error('Shared plan members must exactly match the plan commitment.'), { code: 'shared-plan-artifact-invalid', status: 400 });
-    return { cid: value.cid, plan: structuredClone(plan), designs: structuredClone(rows) };
-}
 
 async function readJson(req, limit = MCP_MAX_REQUEST_BYTES) {
     const chunks = []; let bytes = 0;
@@ -47,7 +30,7 @@ export function assertHostedEnvironment(env) {
 export function createMcpHttpService({ env = process.env, fetchImpl, factory,
     publicOrigin = 'https://urbangametheory.xyz', maxConcurrent = 8, maxPerMinute = 600,
     maxPublishPerMinute = 10, now = Date.now, previewOrigin = env.MCP_PREVIEW_ORIGIN || publicOrigin, previewTtlMs,
-    storeDirectory = env.MCP_DRAFT_DIRECTORY || fileURLToPath(new URL('../uploads/mcp-drafts/', import.meta.url)), sharedPlanDirectory } = {}) {
+    storeDirectory = env.MCP_DRAFT_DIRECTORY || fileURLToPath(new URL('../uploads/mcp-drafts/', import.meta.url)), sharedPlans: providedSharedPlans } = {}) {
     assertHostedEnvironment(env);
     const origin = new URL(publicOrigin);
     if (origin.protocol !== 'https:' || origin.username || origin.password || origin.pathname !== '/' || origin.search || origin.hash) throw new Error('MCP_PUBLIC_ORIGIN must be an HTTPS origin');
@@ -57,7 +40,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
     let active = 0, count = 0, publishes = 0, start = now();
     const streams = new Set();
     const previews = createPreviewLinks({ origin: previewOrigin, appOrigin, storeDirectory, now, ...(previewTtlMs == null ? {} : { ttlMs: previewTtlMs }) });
-    const sharedPlans = createSharedPlanSessions({ directory: sharedPlanDirectory || `${storeDirectory}/shared-plans`, now, validateArtifact: canonicalArtifact });
+    const sharedPlans = providedSharedPlans || createSharedPlanClient({ env, fetchImpl });
     // REST needs the same reference resolver as MCP. It only constructs private immutable artifacts;
     // it neither publishes nor signs, and lets a browser begin from a published plan as well as a draftRef.
     const sharedPlanTools = createUrbanGameTheoryTools({ mode: 'hosted', env, fetchImpl, resolveDraftReference: previews.resolve });
@@ -91,6 +74,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
         if (sessionRoot || sessionPath) {
             if (req.headers.origin === appOrigin) { res.setHeader('Access-Control-Allow-Origin', appOrigin); res.setHeader('Vary', 'Origin'); }
             if (req.method === 'OPTIONS') return json(204, {}, { Allow: 'GET, POST, PUT, OPTIONS', 'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS', 'Access-Control-Allow-Headers': 'Authorization, Content-Type' });
+            if (closing) return json(503, { code: 'shared-plan-unavailable' });
             resetWindow();
             if (active >= maxConcurrent || count >= maxPerMinute) return json(429, { code: 'rate-limited', message: 'MCP request budget exhausted.' }, { 'Retry-After': '60' });
             count++;
@@ -99,20 +83,27 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
                 if (!capability) return json(401, { code: 'shared-plan-capability-required', message: 'Use a shared plan capability.' });
                 const id = sessionPath[1];
                 try {
-                    const initial = sharedPlans.eventState(id, capability);
+                    await sharedPlans.eventState(id, capability);
+                    if (closing) return json(503, { code: 'shared-plan-unavailable' });
                     if (streams.size >= 128 || [...streams].filter(stream => stream.id === id).length >= 4) return json(429, { code: 'shared-plan-stream-capacity' });
-                    res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Connection': 'keep-alive', 'Referrer-Policy': 'no-referrer', 'X-Accel-Buffering': 'no' });
                     const stream = { id, close }; streams.add(stream);
                     let unsubscribe = () => {}, timer, closed = false;
                     function close() { if (closed) return; closed = true; clearInterval(timer); unsubscribe(); streams.delete(stream); if (!res.destroyed) res.end(); }
+                    let sending = Promise.resolve(), ready = false;
                     function send() {
-                        try { if (!res.write(`event: state\ndata: ${JSON.stringify(sharedPlans.eventState(id, capability))}\n\n`)) { close(); res.destroy(); } }
-                        catch { close(); }
+                        sending = sending.then(async () => {
+                            if (closed || !ready) return;
+                            const state = await sharedPlans.eventState(id, capability);
+                            if (!closed && !res.write(`event: state\ndata: ${JSON.stringify(state)}\n\n`)) { close(); res.destroy(); }
+                        }).catch(close);
                     }
-                    unsubscribe = sharedPlans.subscribe(id, capability, send);
                     res.on('close', close);
+                    try { unsubscribe = await sharedPlans.subscribe(id, capability, send, close); }
+                    catch (error) { streams.delete(stream); res.removeListener('close', close); throw error; }
+                    if (closed || closing || res.destroyed) { close(); unsubscribe(); return; }
+                    res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Connection': 'keep-alive', 'Referrer-Policy': 'no-referrer', 'X-Accel-Buffering': 'no' });
                     timer = setInterval(() => { if (!res.write(': heartbeat\n\n')) { close(); res.destroy(); } }, 15_000); timer.unref();
-                    if (!res.write(`event: state\ndata: ${JSON.stringify(initial)}\n\n`)) { close(); res.destroy(); }
+                    ready = true; send();
                 } catch (error) { if (!res.headersSent) json(error.status || 400, { code: error.code || 'shared-plan-invalid', message: error.message }); else res.destroy(); }
                 return;
             }
@@ -120,18 +111,18 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
             try {
                 if (sessionRoot && req.method === 'POST') {
                     if (req.headers.origin && req.headers.origin !== appOrigin) return json(403, { code: 'origin-forbidden' });
-                    const body = await readJson(req); const result = sharedPlans.create(await resolveSharedPlan(body.plan));
+                    const body = await readJson(req); const result = await sharedPlans.create(await resolveSharedPlan(body.plan));
                     return json(201, result, { 'Referrer-Policy': 'no-referrer' });
                 }
                 if (!sessionPath || !capability) return json(401, { code: 'shared-plan-capability-required', message: 'Use a shared plan capability.' });
                 const id = sessionPath[1], action = sessionPath[2], control = action === 'control';
-                if (req.method === 'GET' && !action) return json(200, sharedPlans.inspect(id, capability), { 'Referrer-Policy': 'no-referrer' });
+                if (req.method === 'GET' && !action) return json(200, await sharedPlans.inspect(id, capability), { 'Referrer-Policy': 'no-referrer' });
                 const body = await readJson(req);
-                if (req.method === 'POST' && control) return json(200, sharedPlans.control(id, capability, body), { 'Referrer-Policy': 'no-referrer' });
-                if (req.method === 'POST' && action === 'undo') return json(200, sharedPlans.undo(id, capability, body), { 'Referrer-Policy': 'no-referrer' });
+                if (req.method === 'POST' && control) return json(200, await sharedPlans.control(id, capability, body), { 'Referrer-Policy': 'no-referrer' });
+                if (req.method === 'POST' && action === 'undo') return json(200, await sharedPlans.undo(id, capability, body), { 'Referrer-Policy': 'no-referrer' });
                 if (req.method === 'PUT' && !action) {
-                    sharedPlans.assertEditable(id, capability, body.expectedVersion);
-                    return json(200, sharedPlans.replace(id, capability, { expectedVersion: body.expectedVersion, artifact: await resolveSharedPlan(body.plan) }), { 'Referrer-Policy': 'no-referrer' });
+                    await sharedPlans.assertEditable(id, capability, body.expectedVersion);
+                    return json(200, await sharedPlans.replace(id, capability, { expectedVersion: body.expectedVersion, artifact: await resolveSharedPlan(body.plan) }), { 'Referrer-Policy': 'no-referrer' });
                 }
                 return json(405, { code: 'method-not-allowed' }, { Allow: control ? 'POST, OPTIONS' : 'GET, PUT, OPTIONS' });
             } catch (error) { return json(error.status || 400, { code: error.code || 'shared-plan-invalid', message: error.message, ...(error.currentVersion != null ? { currentVersion: error.currentVersion, currentCid: error.currentCid } : {}) }); }
@@ -186,7 +177,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
                 await closed;
             }
             try { await handler.close(); }
-            finally { previews.dispose(); sharedPlans.dispose(); }
+            finally { previews.dispose(); await sharedPlans.dispose(); }
         })();
     } };
 }

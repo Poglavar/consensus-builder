@@ -171,11 +171,20 @@ load. Links carry no secret and are safe to forward.
 - PM2 app `ugt-mcp` in `backend/ecosystem.config.cjs`, loopback port 3097, launched through
   `agents/mcp-launch.mjs`. The draft store (`MCP_DRAFT_DIRECTORY`, default
   `backend/uploads/mcp-drafts/`) needs one service process per directory.
-- Shared plan sessions are durable private server state in
-  `MCP_DRAFT_DIRECTORY/shared-plans/` (or the explicit shared-plan directory). Back up that child
-  directory with the draft store. Sessions do not expire; the service refuses new or enlarged
-  state once its 1,024-session or 128 MiB bound is reached, rather than evicting an active plan.
-  One MCP process owns the directory at a time. The private session API exposes authenticated
+- Shared plan sessions live in PostgreSQL `consensus.shared_plan_session`, managed by the API through
+  `/shared-plan-sessions`. The hosted MCP worker uses capability-authenticated API requests and never
+  receives database credentials. The table stores the accepted artifact, version/control, change
+  receipt, undo snapshot and SHA-256 capability verifiers; raw capabilities are returned only when
+  created or renewed. Database transactions lock the current row and check version and authority
+  before committing. PostgreSQL notifications carry only session ids and wake event streams across
+  API workers. Agent activity remains ephemeral in the single MCP worker.
+- Apply `backend/db/shared-plan-session-ddl.sql` before starting the changed API/MCP services; the
+  backend deploy script includes it. Install the unbuffered `/shared-plan-sessions` location in the
+  API nginx configuration as well as the public MCP locations below. Back up the table with the
+  database. Sessions do not expire; writes exceeding 1,024 sessions or 128 MiB are refused atomically.
+  Experimental file-backed session links must be recreated; there is no file reader or import path.
+  `/uploads/mcp-drafts` is denied, including old session files. Private preview files remain separate
+  from collaboration storage. The public MCP session API exposes authenticated
   `GET /mcp/plan-sessions/:id/events` as server-sent state notifications and
   `POST /mcp/plan-sessions/:id/undo` with `expectedVersion`. Capabilities travel in the Bearer
   authorization header. Event streams are limited to 128 globally and four per session, send

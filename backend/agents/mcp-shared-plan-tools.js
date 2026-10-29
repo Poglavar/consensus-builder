@@ -13,7 +13,7 @@ export function createSharedPlanMcpTools({ actions, sharedPlans }) {
             return sharedPlans.inspect(sessionId, capability);
         },
         async editSharedPlan({ sessionId, capability, expectedVersion, expectedCid, operations, title, view, schedule, when, buildout, undoLastAgentChange }) {
-            const current = sharedPlans.assertEditable(sessionId, capability, expectedVersion);
+            const current = await sharedPlans.assertEditable(sessionId, capability, expectedVersion);
             // Check before the expensive immutable revision work, then check again in replace(). An
             // owner taking control during this calculation safely rejects the late agent result.
             if (expectedCid !== current.cid) {
@@ -25,10 +25,10 @@ export function createSharedPlanMcpTools({ actions, sharedPlans }) {
                 if (operations?.length || [title, view, schedule, when, buildout].some(value => value !== undefined)) throw Object.assign(new Error('Undo cannot be combined with content edits.'), { code: 'shared-plan-undo-conflict' });
                 return sharedPlans.undo(sessionId, capability, { expectedVersion });
             }
-            const endActivity = sharedPlans.beginActivity(sessionId, capability, expectedVersion);
+            const endActivity = await sharedPlans.beginActivity(sessionId, capability, expectedVersion);
             try {
                 const revised = await actions.editPlan({ plan: current.artifact, expectedCid, operations, title, view, schedule, when, buildout });
-                const committed = sharedPlans.replace(sessionId, capability, { expectedVersion, artifact: artifactOf(revised), changes: revised.changes, consequences: revised.consequences });
+                const committed = await sharedPlans.replace(sessionId, capability, { expectedVersion, artifact: artifactOf(revised), changes: revised.changes, consequences: revised.consequences });
                 return { ...committed, changes: revised.changes, consequences: revised.consequences };
             } finally { endActivity(); }
         }

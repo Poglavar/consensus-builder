@@ -1,5 +1,11 @@
 // Real MCP clients exercise hosted isolation, protocol negotiation and public request limits.
 import { request } from 'node:http';
+import express from 'express';
+import { setupSharedPlanSessionsRoute } from '../routes/shared-plan-sessions.js';
+import { createSharedPlanSessions } from '../agents/mcp-shared-plan-sessions.js';
+import { createSharedPlanClient } from '../agents/shared-plan-client.js';
+import { canonicalArtifact } from '../agents/shared-plan-artifact.js';
+import { createMemorySharedPlanRepository } from './helpers/shared-plan-repository.js';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -19,7 +25,12 @@ const services = [], clients = [], directories = [];
 afterEach(async () => { await Promise.all(clients.splice(0).map(client => client.close())); await Promise.all(services.splice(0).map(service => service.close())); directories.splice(0).forEach(dir => rmSync(dir, { recursive: true, force: true })); });
 async function host(options = {}) {
     const storeDirectory = mkdtempSync(join(tmpdir(), 'mcp-http-')); directories.push(storeDirectory);
-    const service = createMcpHttpService({ storeDirectory, env: {}, fetchImpl: async () => new Response(JSON.stringify({ sources: [] })), ...options });
+    const app = express(); app.use(express.json({ limit: '15mb' }));
+    const api = setupSharedPlanSessionsRoute(app, null, { sessions: createSharedPlanSessions({ repository: createMemorySharedPlanRepository(), validateArtifact: canonicalArtifact }) });
+    const server = app.listen(0); await once(server, 'listening');
+    services.push({ async close() { await api.close(); await new Promise(resolve => server.close(resolve)); } });
+    const sharedPlans = createSharedPlanClient({ env: { UGT_API_BASE: `http://127.0.0.1:${server.address().port}` } });
+    const service = createMcpHttpService({ storeDirectory, sharedPlans, env: {}, fetchImpl: async () => new Response(JSON.stringify({ sources: [] })), ...options });
     services.push(service); service.http.listen(0); await once(service.http, 'listening');
     return `http://127.0.0.1:${service.http.address().port}`;
 }

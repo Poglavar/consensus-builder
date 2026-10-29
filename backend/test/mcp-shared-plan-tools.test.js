@@ -1,79 +1,89 @@
-import { mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createSharedPlanSessions } from '../agents/mcp-shared-plan-sessions.js';
 import { createSharedPlanMcpTools } from '../agents/mcp-shared-plan-tools.js';
+import { createMemorySharedPlanRepository } from './helpers/shared-plan-repository.js';
 
 const cleanup = [];
-afterEach(() => cleanup.splice(0).forEach(fn => fn()));
+afterEach(async () => { await Promise.all(cleanup.splice(0).map(fn => fn())); });
 const revision = cid => ({ cid, plan: { schema: 'plan/v1', title: cid }, designs: [] });
 function setup() {
-    const directory = mkdtempSync(join(tmpdir(), 'shared-plan-race-'));
-    const store = createSharedPlanSessions({ directory, validateArtifact: value => {
+    const store = createSharedPlanSessions({ repository: createMemorySharedPlanRepository(), validateArtifact: value => {
         if (!value?.cid || !value.plan || !Array.isArray(value.designs)) throw new Error('Invalid test artifact');
     } });
-    cleanup.push(() => { store.dispose(); rmSync(directory, { recursive: true, force: true }); });
+    cleanup.push(() => store.dispose());
     const created = store.create(revision('initial'));
-    store.control(created.id, created.ownerToken, { expectedVersion: 0, controller: 'agent' });
     const pending = [], failures = [];
     const actions = { editPlan: () => new Promise((resolve, reject) => { pending.push(resolve); failures.push(reject); }) };
     const tools = createSharedPlanMcpTools({ actions, sharedPlans: store });
-    const edit = () => tools.editSharedPlan({ sessionId: created.id, capability: created.inviteToken,
-        expectedVersion: 1, expectedCid: 'initial', title: 'Edited' });
+    const edit = async () => {
+        const session = await created;
+        return tools.editSharedPlan({ sessionId: session.id, capability: session.inviteToken,
+            expectedVersion: 1, expectedCid: 'initial', title: 'Edited' });
+    };
     return { store, created, pending, failures, edit };
 }
 
 describe('shared plan asynchronous commit', () => {
     it('rejects an edit that was authorized when it started but finishes after human takeover', async () => {
         const { store, created, pending, edit } = setup();
+        const session = await created;
+        await store.control(session.id, session.ownerToken, { expectedVersion: 0, controller: 'agent' });
         const task = edit();
-        expect(pending).toHaveLength(1);
-        const owner = store.control(created.id, created.ownerToken, { expectedVersion: 1, controller: 'owner' });
+        await vi.waitFor(() => expect(pending).toHaveLength(1));
+        const owner = await store.control(session.id, session.ownerToken, { expectedVersion: 1, controller: 'owner' });
         pending[0](revision('late-agent'));
         await expect(task).rejects.toMatchObject({ code: 'shared-plan-version-conflict', status: 409 });
-        expect(store.inspect(created.id, created.ownerToken)).toEqual(owner);
+        expect(await store.inspect(session.id, session.ownerToken)).toEqual(owner);
     });
 
     it('announces actual activity and supports MCP undo of an accepted edit', async () => {
         const { store, created, pending, edit } = setup();
-        const states = []; const off = store.subscribe(created.id, created.ownerToken, () => states.push(store.eventState(created.id, created.ownerToken)));
-        expect(store.eventState(created.id, created.ownerToken).activity.agentEditing).toBe(false);
-        const task = edit(); expect(states.at(-1).activity.agentEditing).toBe(true);
+        const session = await created;
+        await store.control(session.id, session.ownerToken, { expectedVersion: 0, controller: 'agent' });
+        const states = []; const off = await store.subscribe(session.id, session.ownerToken, async () => states.push(await store.eventState(session.id, session.ownerToken)));
+        expect((await store.eventState(session.id, session.ownerToken)).activity.agentEditing).toBe(false);
+        const task = edit(); await vi.waitFor(() => expect(states.at(-1)?.activity.agentEditing).toBe(true));
+        await vi.waitFor(() => expect(pending).toHaveLength(1));
         pending[0](revision('edited')); await task;
-        expect(states.at(-1)).toMatchObject({ cid: 'edited', activity: { agentEditing: false } });
+        await vi.waitFor(() => expect(states.at(-1)).toMatchObject({ cid: 'edited', activity: { agentEditing: false } }));
         const tools = createSharedPlanMcpTools({ actions: {}, sharedPlans: store });
-        const undone = await tools.editSharedPlan({ sessionId: created.id, capability: created.inviteToken, expectedVersion: 2, expectedCid: 'edited', undoLastAgentChange: true });
+        const undone = await tools.editSharedPlan({ sessionId: session.id, capability: session.inviteToken, expectedVersion: 2, expectedCid: 'edited', undoLastAgentChange: true });
         expect(undone).toMatchObject({ cid: 'initial', version: 3, canUndo: false, lastChange: { kind: 'undo' } }); off();
     });
     it('allows the owner capability to edit through MCP without announcing agent activity', async () => {
         const { store, created } = setup();
-        store.control(created.id, created.ownerToken, { expectedVersion: 1, controller: 'owner' });
-        const seen = []; const off = store.subscribe(created.id, created.ownerToken, () => seen.push(store.eventState(created.id, created.ownerToken)));
+        const session = await created;
+        await store.control(session.id, session.ownerToken, { expectedVersion: 0, controller: 'owner' });
+        const seen = []; const off = await store.subscribe(session.id, session.ownerToken, async () => seen.push(await store.eventState(session.id, session.ownerToken)));
         const tools = createSharedPlanMcpTools({ actions: { editPlan: async () => revision('owner-edit') }, sharedPlans: store });
-        await expect(tools.editSharedPlan({ sessionId: created.id, capability: created.ownerToken, expectedVersion: 2, expectedCid: 'initial', title: 'Owner edit' })).resolves.toMatchObject({ cid: 'owner-edit', lastChange: { actor: 'owner' } });
+        await expect(tools.editSharedPlan({ sessionId: session.id, capability: session.ownerToken, expectedVersion: 1, expectedCid: 'initial', title: 'Owner edit' })).resolves.toMatchObject({ cid: 'owner-edit', lastChange: { actor: 'owner' } });
         expect(seen.every(state => !state.activity.agentEditing)).toBe(true); off();
     });
     it('keeps activity visible until every concurrent operation has finished or been superseded', async () => {
         const { store, created, pending, failures, edit } = setup();
+        const session = await created;
+        await store.control(session.id, session.ownerToken, { expectedVersion: 0, controller: 'agent' });
         const first = edit(), second = edit();
+        await vi.waitFor(() => expect(pending).toHaveLength(2));
         failures[1](new Error('failed')); await expect(second).rejects.toThrow('failed');
-        expect(store.eventState(created.id, created.ownerToken)).toMatchObject({ version: 1, cid: 'initial', activity: { agentEditing: true } });
+        expect(await store.eventState(session.id, session.ownerToken)).toMatchObject({ version: 1, cid: 'initial', activity: { agentEditing: true } });
         failures[0](new Error('failed too')); await expect(first).rejects.toThrow('failed too');
-        expect(store.eventState(created.id, created.ownerToken)).toMatchObject({ version: 1, cid: 'initial', activity: { agentEditing: false } });
-        const late = edit(); store.control(created.id, created.ownerToken, { expectedVersion: 1, controller: 'owner' });
-        expect(store.eventState(created.id, created.ownerToken).activity.agentEditing).toBe(false);
+        expect(await store.eventState(session.id, session.ownerToken)).toMatchObject({ version: 1, cid: 'initial', activity: { agentEditing: false } });
+        const late = edit(); await vi.waitFor(() => expect(pending).toHaveLength(3)); await store.control(session.id, session.ownerToken, { expectedVersion: 1, controller: 'owner' });
+        expect((await store.eventState(session.id, session.ownerToken)).activity.agentEditing).toBe(false);
         pending[2](revision('late')); await expect(late).rejects.toMatchObject({ code: 'shared-plan-version-conflict' });
-        expect(store.eventState(created.id, created.ownerToken).activity.agentEditing).toBe(false);
+        expect((await store.eventState(session.id, session.ownerToken)).activity.agentEditing).toBe(false);
     });
     it('accepts only one of two edits computed from the same inspected version', async () => {
         const { store, created, pending, edit } = setup();
+        const session = await created;
+        await store.control(session.id, session.ownerToken, { expectedVersion: 0, controller: 'agent' });
         const first = edit(), second = edit();
-        expect(pending).toHaveLength(2);
+        await vi.waitFor(() => expect(pending).toHaveLength(2));
         pending[0](revision('first-edit'));
         await expect(first).resolves.toMatchObject({ cid: 'first-edit', version: 2 });
         pending[1](revision('second-edit'));
         await expect(second).rejects.toMatchObject({ code: 'shared-plan-version-conflict' });
-        expect(store.inspect(created.id, created.inviteToken)).toMatchObject({ cid: 'first-edit', version: 2 });
+        expect(await store.inspect(session.id, session.inviteToken)).toMatchObject({ cid: 'first-edit', version: 2 });
     });
 });

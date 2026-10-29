@@ -6,6 +6,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { embeddableStatic } from './utils/embeddable-static.js';
 import { uploadStaticHeaders } from './utils/upload-static-headers.js';
+import { privateUploadGuard } from './utils/private-upload-guard.js';
+import { setupSharedPlanSessionsRoute } from './routes/shared-plan-sessions.js';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { AsyncLocalStorage } from 'node:async_hooks';
@@ -408,6 +410,7 @@ export function createApp({
             // /agent/* pays per request, so the payment is the limiter (design decision, not an oversight).
             // Betting telemetry has its own bounded-batch limiter and must not consume the authoring budget.
             // Code voting has its own HTTP limit and persistent authentication budget.
+            if (req.path === '/shared-plan-sessions' || req.path.startsWith('/shared-plan-sessions/')) return next();
             if (req.method === 'POST' && /^\/agreements\/[^/]+\/voting\/(access|ballot)$/.test(req.path)) return next();
             if (req.method === 'POST' && (READ_ONLY_POST_PATHS.has(req.path) || isAgentPath(req.path) || req.path === '/bets/events' || req.path.startsWith('/bets/points/'))) {
                 return next();
@@ -420,7 +423,7 @@ export function createApp({
     // same-origin resource policy blocked every cross-origin <img> of them. See utils/embeddable-static.js.
     // uploadStaticHeaders: nosniff everywhere, and non-image/model/JSON files only as downloads.
     const uploadsRoot = path.resolve('uploads');
-    app.use('/uploads', embeddableStatic, uploadStaticHeaders, express.static(uploadsRoot));
+    app.use('/uploads', privateUploadGuard, embeddableStatic, uploadStaticHeaders, express.static(uploadsRoot));
     app.use('/metadata', embeddableStatic, uploadStaticHeaders, express.static(path.join(uploadsRoot, 'metadata')));
     app.use('/images', embeddableStatic, uploadStaticHeaders, express.static(path.join(uploadsRoot, 'images')));
 
@@ -435,6 +438,7 @@ export function createApp({
     app.locals.pool = activePool;
     app.locals.requestContext = requestContext;
 
+    app.locals.sharedPlanSessions = setupSharedPlanSessionsRoute(app, activePool);
     setupHealthRoute(app);
     setupObjectRoute(app, activePool);
     setupParcelsRoute(app, activePool);
@@ -549,6 +553,7 @@ export function startServer({ env = process.env, pool } = {}) {
         const drained = new Promise((resolve, reject) => {
             server.close((error) => error ? reject(error) : resolve());
         });
+        await app.locals.sharedPlanSessions.close();
         await Promise.all([drained, feedbackNotifications.close()]);
         if (typeof activePool?.end === 'function') {
             await activePool.end();
