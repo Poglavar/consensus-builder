@@ -20,6 +20,9 @@
         };
         const observe = (operation, options, action) => win.AppDiagnostics
             ? win.AppDiagnostics.run(operation, { ...options, context: { surface: 'plan-file', ...options.context } }, action) : action();
+        // A download is named after its plan or design: "Riverside blocks" -> riverside-blocks.ugt.json.
+        const fileStem = title => String(title || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'plan';
         function download(text, name, type) {
             const url = win.URL.createObjectURL(new win.Blob([text], { type }));
             const a = doc.createElement('a');
@@ -131,8 +134,8 @@
             };
             if (getRecords) {
                 const make = () => win.PlanFile.create(structuredClone(getRecords()), { title: getTitle(), view: structuredClone(getView()), schedule: getSchedule(), designSources: getSources(), fetchModel });
-                button(t('json', 'Download editable plan'), async () => download(win.PlanFile.stringify(await make()), 'plan.ugt.json', 'application/json'), 'json');
-                button(t('geojson', 'Download GeoJSON'), () => download(JSON.stringify(win.PlanFile.geojsonRecords(structuredClone(getRecords()), { title: getTitle(), view: structuredClone(getView()) }), null, 2) + '\n', 'plan.geojson', 'application/geo+json'), 'geojson');
+                button(t('json', 'Download editable plan'), async () => download(win.PlanFile.stringify(await make()), `${fileStem(getTitle())}.ugt.json`, 'application/json'), 'json');
+                button(t('geojson', 'Download GeoJSON'), () => download(JSON.stringify(win.PlanFile.geojsonRecords(structuredClone(getRecords()), { title: getTitle(), view: structuredClone(getView()) }), null, 2) + '\n', `${fileStem(getTitle())}.geojson`, 'application/geo+json'), 'geojson');
             }
             if (!importAllowed) return group;
             const input = doc.createElement('input'); input.type = 'file'; input.accept = '.json,application/json'; input.hidden = true;
@@ -175,10 +178,22 @@
             help.textContent = t('help', 'File formats and limits'); group.appendChild(help);
             return group;
         }
-        function design(record) {
-            win.showSimpleShareModal({ title: t('design', 'Download design'), body: controls({ getRecords: () => [record], getTitle: () => record.title || 'My design' }), actions: [] });
+        // The download controls of one resolved plan (PlanWorkspace.resolve): its members as they are
+        // in that exact revision, its view, schedule and sources.
+        function planControls(row) {
+            return controls({ getRecords: () => win.PlanComposition.localRecords(row, { apiBase: win.DesignSync.apiBase() }),
+                getView: () => row.content.view, getTitle: () => row.content.title, getSources: () => row.designSources || {},
+                getSchedule: () => row.content.schedule || null, importAllowed: false });
         }
-        return { controls, design, review, commitImport, openPlan };
+        // Download a plan ({ cid, content }, or a stored row) or a design as a file, from any surface.
+        async function plan(record, members = []) {
+            const row = await win.PlanWorkspace.resolve(record, members);
+            win.showSimpleShareModal({ title: t('plan', 'Download plan'), body: planControls(row), actions: [] });
+        }
+        function design(record) {
+            win.showSimpleShareModal({ title: t('design', 'Download design'), body: controls({ getRecords: () => [record], getTitle: () => record.title || 'My design', importAllowed: false }), actions: [] });
+        }
+        return { controls, planControls, plan, design, review, commitImport, openPlan };
     }
     return { PREFIX, browser };
 });

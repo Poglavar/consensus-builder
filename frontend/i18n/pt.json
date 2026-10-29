@@ -11,6 +11,7 @@
         "importedPlans": "Planos importados",
         "help": "Formatos de ficheiro e limites",
         "design": "Descarregar projeto",
+        "plan": "Descarregar plano",
         "review": "Rever ficheiro de plano",
         "cancel": "Cancelar",
         "importDrafts": "Importar como rascunhos",

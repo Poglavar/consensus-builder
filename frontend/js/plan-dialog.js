@@ -233,8 +233,7 @@
         actions.append(button(t('editPlan'),async()=>{dialog.close();await create({base:row});}));
         actions.append(button(t('schedule'),async()=>{dialog.close();await schedule(row);}));
         actions.append(button(t('createAgreement'),async()=>{dialog.close();await win.AgreementDialog.open({plan:row});}));
-        body.append(actions,win.PlanFileUI.controls({ getRecords:()=>win.PlanComposition.localRecords(row,{apiBase:win.DesignSync.apiBase()}),
-            getView:()=>row.content.view,getTitle:()=>row.content.title,getSources:()=>row.designSources||{},getSchedule:()=>row.content.schedule||null,importAllowed:false }));
+        body.append(actions,win.PlanFileUI.planControls(row));
         dialog=openDialog(t('plan'),body);return dialog;
     }
     win.PlanDialog=Object.freeze({create,addDesign,share,details,schedule,scheduleStrip});

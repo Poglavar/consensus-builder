@@ -11,6 +11,7 @@
         "importedPlans": "Imported plans",
         "help": "File formats and limits",
         "design": "Download design",
+        "plan": "Download plan",
         "review": "Review plan file",
         "cancel": "Cancel",
         "importDrafts": "Import as drafts",

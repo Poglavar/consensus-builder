@@ -49,6 +49,14 @@ for (const width of [1280, 390]) {
     await expect(page.locator('#plan-stats-modal [data-plan-stat="scope"]')).toContainText('Residents plan');
     await page.keyboard.press('Escape');
     await expect(page.locator('#plan-stats-modal')).toBeHidden();
+    // Download: the plan as an editable plan file, named after its title; no import in that dialog.
+    await planRow.getByRole('button', { name: 'Download', exact: true }).click();
+    const downloadDialog = page.locator('.cb-dialog').filter({ hasText: 'Download plan' });
+    await expect(downloadDialog.locator('[data-plan-file-action="import"]')).toHaveCount(0);
+    const planDownload = page.waitForEvent('download');
+    await downloadDialog.getByRole('button', { name: 'Download editable plan', exact: true }).click();
+    expect((await planDownload).suggestedFilename()).toBe('residents-plan.ugt.json');
+    await page.keyboard.press('Escape'); await expect(downloadDialog).toBeHidden();
     await expectInsets();
     await expect(planRow).toContainText('Draft'); await expect(planRow).toContainText('This browser');
     // The title shows the plan on the map and keeps the list open; Open selects it.
@@ -109,6 +117,13 @@ for (const width of [1280, 390]) {
     expect(await sheet.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
     await sheet.getByRole('searchbox').fill('');
     await sheet.getByRole('tab', { name: 'Designs', exact: true }).click();
+    // A design downloads as a one-design GeoJSON too.
+    await sheet.locator('#proposal-list-host .lists-item').getByRole('button', { name: 'Download', exact: true }).click();
+    const designDialog = page.locator('.cb-dialog').filter({ hasText: 'Download design' });
+    const designDownload = page.waitForEvent('download');
+    await designDialog.getByRole('button', { name: 'Download GeoJSON', exact: true }).click();
+    expect((await designDownload).suggestedFilename()).toMatch(/^park.*\.geojson$/);
+    await page.keyboard.press('Escape'); await expect(designDialog).toBeHidden();
     await sheet.locator('#proposal-list-host .lists-item').getByRole('button', { name: 'Remove from browser', exact: true }).click();
     await page.locator('.cb-dialog').getByRole('button', { name: 'Remove from browser', exact: true }).click();
     await expect(sheet.locator('#proposal-list-host .lists-item')).toHaveCount(0);

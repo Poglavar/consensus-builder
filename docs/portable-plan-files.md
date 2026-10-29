@@ -29,6 +29,12 @@ The share panel supplies the same explicit selected set to both downloads, prese
 and agreement-scoped membership. Individual design download uses a one-member plan. Opening an
 imported plan supplies its saved view; subsequent view edits intentionally produce a new snapshot.
 
+Download is offered wherever a design or plan is shown: the Lists rows (Designs, Plans), the
+click stack's design card and plan section, and the design panel (`PlanFileUI.design`,
+`PlanFileUI.plan`). A plan downloads its exact revision with its members, view and schedule; a
+design that is only published is fetched for the file and not stored. These dialogs offer the two
+downloads only, and a file is named after its plan or design title (`riverside-blocks.ugt.json`).
+
 ## MCP parity
 
 Existing `ugt_get_plan`, `ugt_inspect_plan` and `ugt_edit_plan` accept the parsed portable

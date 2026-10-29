@@ -183,7 +183,8 @@ for (const [label, reference, expectedUrl] of [
     for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
     const file = JSON.parse(Buffer.concat(chunks).toString());
     expect(requests).toEqual([expectedUrl]);
-    expect(download.suggestedFilename()).toBe('plan.ugt.json');
+    // Named after the plan's title; this one has the default, "My plan".
+    expect(download.suggestedFilename()).toBe('my-plan.ugt.json');
     expect(file.designs[0].content.geometry.buildings[0].properties.modelUrl).toBe('data:model/gltf-binary;base64,' + glb.toString('base64'));
     expect(await page.evaluate(file => { const w = window as any; return w.PlanFile.parse(JSON.stringify(file)).schema; }, file)).toBe('ugt-plan-file/v1');
     expect(await page.evaluate(() => (window as any).sample.geometry.buildings[0].properties.modelUrl)).toBe(reference);

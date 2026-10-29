@@ -283,6 +283,8 @@
                 shareButton.querySelector('i').classList.add('lists-share-icon');
                 if (kind === 'agreements' && !row.published) shareButton.title = t('lists.proposeFirst');
                 actions.append(shareButton);
+                if (kind === 'designs') actions.append(button(t('common.download'), async () => win.PlanFileUI.design(await designRecord(row)), '', 'download'));
+                if (kind === 'plans') actions.append(button(t('common.download'), async () => win.PlanFileUI.plan(await planOf(row)), '', 'download'));
                 if (kind === 'plans') {
                     actions.append(button(t('sidebar.proposals.planStats.modalTitle'), async () => {
                         await win.showPlanStatsModal(await planOf(row));
