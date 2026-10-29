@@ -260,6 +260,19 @@ describe('the sun in the scene', () => {
         expect(replacement.receiveShadow).toBe(false);
     });
 
+    it('flags meshes rebuilt since the last frame before a scene-changed shadow draw', () => {
+        const at = new Date('2026-06-21T10:00:00Z');
+        handle.beforeRender({ fullFrame: true }, at);
+        const parcel = mesh(lit(), 0);
+        scene.children.push(parcel);
+        // Within the periodic sweep interval: only a scene change makes the new ground receive shadows.
+        handle.beforeRender({ fullFrame: false }, at);
+        expect(parcel.receiveShadow).toBeFalsy();
+        handle.beforeRender({ fullFrame: false, sceneChanged: true }, at);
+        expect(parcel.receiveShadow).toBe(true);
+        expect(renderer.shadowMap.needsUpdate).toBe(true);
+    });
+
     it('plays the day from a frame hook only while playing, one full day per cycle', () => {
         expect(hooks.size).toBe(0);
         threeSun.state.playing = true;

@@ -15,7 +15,7 @@
     'use strict';
 
     const STORAGE_KEY = 'cb_3d_sun_enabled';
-    const FLAG_SWEEP_MS = 1000;          // new meshes pick up shadow flags within a second
+    const FLAG_SWEEP_MS = 1000;          // meshes added without a scene change pick up shadow flags within a second
     const MIN_CASTER_HEIGHT_M = 0.3;     // flat ground receives shadows but does not cast them
     const DAY_CYCLE_MS = 60000;          // one full day of sun per minute while playing
     const MAX_FRAME_DT_MS = 500;         // a stalled tab never jumps the sun forward by hours
@@ -440,7 +440,9 @@
             a.showingSun = true;
             a.renderer.shadowMap.needsUpdate = true;
         }
-        if (now.getTime() - a.lastSweep >= FLAG_SWEEP_MS) {
+        // A changed scene is swept before its shadow draw: meshes rebuilt since the last frame (parcels
+        // and ground arriving in batches) would otherwise draw without shadows until the next sweep.
+        if (sceneChanged || now.getTime() - a.lastSweep >= FLAG_SWEEP_MS) {
             a.lastSweep = now.getTime();
             applyShadowFlags(a.scene, true, new Set((a.excludedRoots() || []).filter(Boolean)));
         }
