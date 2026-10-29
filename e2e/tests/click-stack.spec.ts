@@ -129,7 +129,7 @@ test.describe('Click stack @core', () => {
   });
 
   for (const width of [1280, 390]) {
-    test(`plan section keeps its caller after agreement close and creation at ${width}px`, async ({ mockApi: page }, testInfo) => {
+    test(`plan section keeps its caller after agreement close, and creation opens the new agreement at ${width}px`, async ({ mockApi: page }, testInfo) => {
       await page.setViewportSize({ width, height: 844 });
       await twoAgreementsOnPark(page);
       await expandStackSection(page, 'plans');
@@ -176,11 +176,17 @@ test.describe('Click stack @core', () => {
       await agreementEditor(page).getByRole('tab', { name: /^Output parcels \(\d+\)$/ }).click();
       await agreementEditor(page).locator('[data-agreement-allocation-mode]').selectOption('proposer');
       await expect(editorSave(agreementEditor(page))).toBeEnabled();
+      const known = new Set((await storedAgreements(page)).map((row: any) => row.id));
       await editorSave(agreementEditor(page)).click(); await expect(agreementEditor(page)).toBeHidden();
-      await expect(clickStack(page)).toBeVisible(); await expect(agreementPanel(page)).toBeHidden();
-      await expandStackSection(page, 'agreements');
-      await expect(agreements.locator('.click-stack__selector option')).toHaveCount(3);
-      expect((await storedAgreements(page)).length).toBe(count + 1);
+      const stored = await storedAgreements(page);
+      expect(stored.length).toBe(count + 1);
+      const created = stored.find((row: any) => !known.has(row.id));
+      // The stack moves to the new agreement: its Agreements section, expanded, hosting its properties.
+      await expect(clickStack(page)).toBeVisible();
+      await expect.poll(() => page.evaluate(() => (window as any).ClickStack.current().expanded)).toBe('agreements');
+      expect(await page.evaluate(() => (window as any).AgreementPanel.current())).toBe(created.id);
+      await expect(agreements.locator('#agreement-panel')).toBeVisible();
+      await expect(agreements.locator('#agreement-panel')).toHaveClass(/is-hosted/);
     });
   }
 

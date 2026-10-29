@@ -972,6 +972,7 @@ Postpone refresh/server-to-local synchronization. For empty parcels, display onl
 - 2026-10-27: Agreement authoring blocks map and unrelated controls until Create/Cancel; its shared striped Lens button edits the same persistent preference as agent details, while agreements retain individual lens snapshots.
 
 - 2026-10-27: Creating an agreement from a Plan click-stack section preserves that caller on close/cancel and returns there after creation, refreshing its agreement list rather than opening another dock.
+  - 2026-10-29, user decision: after creation the stack shows the new agreement in its expanded Agreements section instead of returning to the plan; close/cancel still return to the plan.
 
 - 2026-10-27: Agreements appears above Plans in both click stacks and is scoped to the selected exact Plan revision; agreement-details Plan buttons inspect that revision in place without navigation, workspace application or camera movement.
 
