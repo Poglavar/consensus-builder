@@ -244,6 +244,7 @@
     let greenGroup = null; // real-world lawns, parks, meadows and woods (OpenFreeMap tiles), toggleable scenery
     let proposalInteractionGroup = null; // selectable applied/unapplied proposal surfaces
     let proposalDraftGroup = null; // source-vs-draft comparison overlay; never mutates proposal state
+    let compareUnappliedGroup = null; // what the Compare tab's plan sides draw of members not on the map; drawn in the compare passes only
     let latestProposalDraftPreviewDetail = null;
     let onMapEditorModelPreviewGeneration = 0;
     let treesEnabled = true; // user toggle (default ON); real value loaded from storage on 3D init
@@ -5888,13 +5889,16 @@
                             const height = building3DHeightMeters(bld);
                             const remainder = asFeature(carve.remainder);
                             const demolished = asFeature(carve.demolished);
+                            // Each prism says which part it is: the Compare tab keeps the remainder
+                            // on every side and takes only the condemned part off a side that applies
+                            // the demolition.
                             if (renderParts.remainder && remainder) {
                                 polygonFeatureToMeshes(remainder, buildingMaterial, 0, height)
-                                    .forEach(addObserved);
+                                    .forEach(mesh => { mesh.userData.demolitionPart = 'remainder'; addObserved(mesh); });
                             }
                             if (renderParts.demolished && demolished) {
                                 polygonFeatureToMeshes(demolished, demolishedMaterial, 0, height)
-                                    .forEach(addObserved);
+                                    .forEach(mesh => { mesh.userData.demolitionPart = 'demolished'; addObserved(mesh); });
                             }
                             return;
                         }
@@ -8765,19 +8769,35 @@
         return found;
     }
 
+    // The two sides' plan members that no applied design stands for, once read (compare-unapplied.js).
+    function compareUnappliedParts() {
+        const compare = window.ThreeCompare, unapplied = window.CompareUnapplied;
+        if (!compare?.isActive?.() || !unapplied) return [];
+        const { left, right } = compare.sides();
+        return [unapplied.partOf(left), unapplied.partOf(right)].filter(Boolean);
+    }
+
+    // The footprint an existing building's meshes were built from, and its id.
+    function observedFootprintOf(object) {
+        let feature = null;
+        object.traverse(node => { if (!feature && node.userData?.planningBuiltFeature) feature = node.userData.planningBuiltFeature; });
+        return feature ? { feature, id: clickedBuildingId(feature) } : null;
+    }
+
     // Every scene object a side may hide, with what it stands for. Objects hidden anyway (a display
     // setting, isolation) are left out, so a pass never shows what the person switched off.
     function compareDescriptors() {
         const descriptors = [];
         const outcomes = window.currentBuildingOutcomeState?.();
+        const parts = compareUnappliedParts();
         const designIdOfRecord = record => {
             const by = record?.proposalKey || record?.proposalId;
             if (!by) return null;
             const proposal = window.getProposalByIdOrHash?.(by) || window.proposalStorage?.getProposal?.(by);
             return proposal ? String(proposalIdOf(proposal)) : String(by);
         };
-        const each = (group, make) => {
-            if (!group || group.visible === false) return;
+        const each = (group, make, { evenHidden = false } = {}) => {
+            if (!group || (!evenHidden && group.visible === false)) return;
             for (const child of group.children) {
                 if (child.visible === false) continue;
                 const descriptor = make(child);
@@ -8785,10 +8805,14 @@
             }
         };
         each(existingBuildingsGroup, child => {
-            let feature = null;
-            child.traverse(node => { if (!feature && node.userData?.planningBuiltFeature) feature = node.userData.planningBuiltFeature; });
-            const record = feature ? outcomes?.demolishedById.get(clickedBuildingId(feature)) : null;
-            return { role: 'existing', demolishedBy: record ? designIdOfRecord(record) : null };
+            const observed = observedFootprintOf(child);
+            const record = observed ? outcomes?.demolishedById.get(observed.id) : null;
+            const demolishedBy = [];
+            // The surviving remainder of a cut building stands on every side; the condemned part
+            // goes with the design that demolishes it.
+            if (record && child.userData?.demolitionPart !== 'remainder') demolishedBy.push({ id: designIdOfRecord(record), unapplied: false });
+            if (observed) for (const part of parts) demolishedBy.push(...part.cutsOf(observed.id, observed.feature));
+            return { role: 'existing', demolishedBy };
         });
         each(planningSourcesGroup, () => ({ role: 'permitted' }));
         for (const group of [proposedBuildingsGroup, ineligibleBuildingsGroup, floorPlanGroup, plannedFlatGroup, parkGroundGroup,
@@ -8796,7 +8820,79 @@
             stationGroup, corridorGroup, terrainCorridorGroup]) {
             each(group, child => ({ role: 'proposed', designId: compareDesignIdOf(child) }));
         }
+        // What the plan sides draw of their unapplied members: hidden outside the passes, so read anyway.
+        each(compareUnappliedGroup, child => ({ role: 'proposed', designId: compareDesignIdOf(child), unapplied: true }), { evenHidden: true });
         return descriptors;
+    }
+
+    // ── what a plan side draws of members not on the map ─────────────────────────────────────
+    // Built once per choice of sides and read state: each unapplied member's buildings as the
+    // proposed buildings are built (sliced by parcel, in the Proposed material), its road corridor
+    // and its park, square, lake or station ground as flat plates, and what is left of each
+    // standing building it cuts, as a prism at that building's height. Every mesh carries the
+    // member's design CID as its proposalId, so the passes switch it like an applied design's.
+    let compareUnappliedKey = null;
+    const compareUnappliedMaterials = {};
+    function compareUnappliedMaterial(kind) {
+        if (!compareUnappliedMaterials[kind]) {
+            const colors = { road: 0x4b5563, park: 0x3f7d3a, square: 0xb8b2a6, lake: 0x3b82c4, station: 0x7c6f9f };
+            compareUnappliedMaterials[kind] = new THREE.MeshLambertMaterial({ color: colors[kind] ?? colors.square, side: THREE.DoubleSide });
+        }
+        return compareUnappliedMaterials[kind];
+    }
+
+    function refreshCompareUnapplied3D() {
+        if (!compareUnappliedGroup) return;
+        const parts = compareUnappliedParts();
+        const key = parts.map(part => part.rows.map(row => row.proposalId).join(',')).join('|');
+        if (key === compareUnappliedKey) return;
+        compareUnappliedKey = key;
+        clearGroupChildren(compareUnappliedGroup);
+        const material = plannedDisplay === 'solid' ? buildingMaterials.solid : buildingMaterials.ghost;
+        const drawn = new Set(), cutBuildings = new Set();
+        let buildings = 0, plates = 0, remainders = 0;
+        for (const part of parts) {
+            for (const row of part.rows) {
+                const id = String(row.proposalId);
+                if (drawn.has(id)) continue;
+                drawn.add(id);
+                (row.geometry?.buildings || []).forEach((building, index) => {
+                    const feature = { ...building, properties: { ...(building.properties || {}), proposalId: id, buildingIndex: index } };
+                    try {
+                        const plan = window.UrbanRuleVariation.plannedDrawPlan(feature, plannedRepresentation, { turf }, buildOutDisplaySalt);
+                        for (const [shape, envelope] of [[plan.buildOut, false], [plan.massing, plan.massingStyle === 'envelope']]) {
+                            if (!shape) continue;
+                            createBuildingSlices(shape, estimateBuildingHeightMeters(shape), envelope ? buildingMaterials.massing : material,
+                                compareUnappliedGroup, envelope ? null : feature, null);
+                            buildings += 1;
+                        }
+                    } catch (error) {
+                        console.warn(`[${new Date().toISOString()}] [3D compare] a building of unapplied member ${id} was skipped`, error);
+                    }
+                });
+                const plate = (kind, geometry) => {
+                    if (!geometry) return;
+                    polygonFeatureToMeshes({ type: 'Feature', properties: {}, geometry }, compareUnappliedMaterial(kind), 0.08, 0)
+                        .forEach(mesh => { mesh.userData.proposalId = id; compareUnappliedGroup.add(mesh); plates += 1; });
+                };
+                plate('road', row.roadProposal?.definition?.polygon);
+                plate(row.structureProposal?.kind || 'square', row.structureProposal?.geometry);
+            }
+            for (const child of existingBuildingsGroup?.children || []) {
+                const observed = observedFootprintOf(child);
+                if (!observed || cutBuildings.has(observed.id)) continue;
+                for (const cut of part.cutsOf(observed.id, observed.feature)) {
+                    if (!cut.remainder) continue;
+                    cutBuildings.add(observed.id);
+                    // The height of what stands there now; the scene is z-up.
+                    const height = new THREE.Box3().setFromObject(child).getSize(new THREE.Vector3()).z || 3;
+                    polygonFeatureToMeshes({ type: 'Feature', properties: {}, geometry: cut.remainder }, material, 0, height)
+                        .forEach(mesh => { mesh.userData.proposalId = String(cut.by.id); compareUnappliedGroup.add(mesh); remainders += 1; });
+                }
+            }
+        }
+        if (parts.length) console.log(`[${new Date().toISOString()}] [3D compare] unapplied members: ${drawn.size} designs, ${buildings} buildings, ${plates} plates, ${remainders} cut remainders`);
+        invalidateThreeView();
     }
 
     function renderComparePasses(fullFrame) {
@@ -8809,6 +8905,7 @@
         const rects = compare.scissorRects(size.x, size.y, percent);
         const switched = [...compareSplit.leftOnly, ...compareSplit.rightOnly, ...compareSplit.hidden];
         compareSplit.hidden.forEach(item => { item.object.visible = false; });
+        if (compareUnappliedGroup) compareUnappliedGroup.visible = true;
         renderer.setScissorTest(true);
         try {
             for (const side of ['left', 'right']) {
@@ -8820,6 +8917,7 @@
         } finally {
             renderer.setScissorTest(false);
             renderer.setScissor(0, 0, size.x, size.y);
+            if (compareUnappliedGroup) compareUnappliedGroup.visible = false;
             switched.forEach(item => { item.object.visible = true; });
         }
     }
@@ -9161,6 +9259,10 @@
         greenGroup = new THREE.Group();
         proposalInteractionGroup = new THREE.Group();
         proposalDraftGroup = new THREE.Group();
+        compareUnappliedGroup = new THREE.Group();
+        compareUnappliedGroup.name = 'CompareUnapplied';
+        compareUnappliedGroup.visible = false;
+        compareUnappliedGroup.userData.buildingFamily = 'planned';
         treesEnabled = loadTreesEnabledPref();
         waterEnabled = loadWaterEnabledPref();
         greenEnabled = loadGreenEnabledPref();
@@ -9187,6 +9289,7 @@
         scene.add(greenGroup);
         scene.add(proposalInteractionGroup);
         scene.add(proposalDraftGroup);
+        scene.add(compareUnappliedGroup);
         existingTransitAlignmentGroup = null; // rebuilt from the cached city sources below
 
         // Controls
@@ -9701,7 +9804,7 @@
         sceneReady = true;
         resolveSceneReady?.(true);
         resolveSceneReady = null;
-        window.ThreeCompare?.attach?.({ container: threeContainer, invalidate: invalidateThreeView });
+        window.ThreeCompare?.attach?.({ container: threeContainer, invalidate: invalidateThreeView, compareChanged: refreshCompareUnapplied3D });
         // We are ready: hide overlay and settle the mode buttons.
         hideRenderingOverlay();
         isTransitioning3D = false;
@@ -10104,6 +10207,8 @@
         isActive = false;
         window.ThreeCompare?.detach?.();
         compareSplit = null;
+        compareUnappliedKey = null;
+        clearGroupChildren(compareUnappliedGroup);
         // The click stack is the 3D view's; the 2D map has its own.
         try { window.ThreeClickStack?.close({ silent: true }); } catch (_) { }
         focusProposalIds = null; // reset shared-link focus; a manual re-entry frames all proposals
