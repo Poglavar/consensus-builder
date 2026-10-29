@@ -8131,14 +8131,14 @@
             "compare": "Usporedba"
         },
         "compare": {
-            "enable": "Usporedi jedno uz drugo",
+            "stop": "Prekini usporedbu",
             "left": "Lijevo",
             "right": "Desno",
             "swap": "Zamijeni strane",
             "sliderLabel": "Razdjelnik usporedbe",
             "reading": "{{label}} (čita se…)",
             "unreadable": "{{label}} (nije se mogao pročitati: {{reason}})",
-            "mapNote": "Na karti svaka strana crta svoje zgrade i dopuštenu građevnu masu kao tlocrte; plan koji nije primijenjen crta kao tlocrte i svoje ceste i prostore. Čestice te primijenjene ceste i parkovi vide se na obje strane.",
+            "mapNote": "Na karti svaka strana crta svoje zgrade i dopuštenu građevnu masu kao tlocrte; dizajn ili plan koji nije primijenjen crta kao tlocrte i svoje ceste i prostore. Čestice te primijenjene ceste i parkovi vide se na obje strane.",
             "options": {
                 "built": "Izgrađeno danas",
                 "permitted": "Dopuštena građevna masa",

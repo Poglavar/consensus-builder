@@ -4556,7 +4556,8 @@
         "busy": "Ainda está em curso outra atualização do mapa. Aguarde que termine e tente novamente.",
         "storeUnavailable": "Os projetos ainda não foram carregados. Aguarde que o carregamento da cidade termine e tente novamente.",
         "notFound": "Este projeto já não está disponível. Atualize a lista de projetos e tente novamente.",
-        "cancelled": "Este projeto foi retirado, pelo que não pode ser aplicado ao mapa."
+        "cancelled": "Este projeto foi retirado, pelo que não pode ser aplicado ao mapa.",
+        "partitionInvalid": "Não é possível aplicar \"{{title}}\": as parcelas que forma não cobririam exatamente o terreno que substituem ({{detail}}). O projeto fica guardado, não aplicado."
     },
     "threeMode": {
         "parcelPanel": {
@@ -8242,14 +8243,14 @@
             "compare": "Comparar"
         },
         "compare": {
-            "enable": "Comparar lado a lado",
+            "stop": "Parar de comparar",
             "left": "Esquerda",
             "right": "Direita",
             "swap": "Trocar lados",
             "sliderLabel": "Divisor de comparação",
             "reading": "{{label}} (a ler…)",
             "unreadable": "{{label}} (não foi possível ler: {{reason}})",
-            "mapNote": "No mapa, cada lado desenha os seus próprios edifícios e a volumetria permitida como implantações; um plano não aplicado desenha também as suas ruas e espaços como implantações. As parcelas e as ruas e parques aplicados aparecem nos dois lados.",
+            "mapNote": "No mapa, cada lado desenha os seus próprios edifícios e a volumetria permitida como implantações; um projeto ou plano não aplicado desenha também as suas ruas e espaços como implantações. As parcelas e as ruas e parques aplicados aparecem nos dois lados.",
             "options": {
                 "built": "Edificado hoje",
                 "permitted": "Volumetria permitida",

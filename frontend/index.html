@@ -554,10 +554,6 @@
                 </div>
                 <!-- Side by side comparison in the model view and on the map (js/three-compare.js, js/compare-on-map.js). -->
                 <div id="planning-views-compare" class="planning-compare" role="tabpanel" data-planning-tab-panel="compare" hidden>
-                    <label class="planning-compare-toggle">
-                        <input type="checkbox" id="planning-compare-enable">
-                        <span data-i18n-key="planningViews.compare.enable">Compare side by side</span>
-                    </label>
                     <div class="planning-compare-sides">
                         <label class="planning-source-field">
                             <span data-i18n-key="planningViews.compare.left">Left</span>
@@ -570,6 +566,10 @@
                             <select id="planning-compare-right" class="planning-layer-select"></select>
                         </label>
                     </div>
+                    <button type="button" id="planning-compare-enable" class="btn btn-primary planning-compare-toggle" aria-pressed="false">
+                        <i class="fa-solid fa-table-columns" aria-hidden="true"></i>
+                        <span class="planning-compare-toggle__label" data-i18n-key="planningViews.tabs.compare">Compare</span>
+                    </button>
                     <div id="planning-compare-status" class="planning-compare-status" role="status" aria-live="polite" hidden></div>
                     <div class="planning-compare-note" hidden>
                         <p class="sheet-note" data-i18n-key="planningViews.compare.mapNote">On the map, each side draws its own buildings and permitted massing as footprints. Parcels, roads and parks show on both sides.</p>

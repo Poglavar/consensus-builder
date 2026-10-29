@@ -85,6 +85,22 @@
         handleEl.appendChild(grip);
         container.appendChild(handleEl);
 
+        // An X at the top of the divider ends the comparison (options.onClose), for a host whose own
+        // controls may be out of sight while it is on.
+        let closeEl = null;
+        if (typeof options.onClose === 'function') {
+            closeEl = doc.createElement('button');
+            closeEl.type = 'button';
+            closeEl.className = 'map-compare__close';
+            closeEl.setAttribute('aria-label', options.closeLabel || 'Close comparison');
+            closeEl.title = options.closeLabel || 'Close comparison';
+            closeEl.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+            // The handle drags on pointerdown; the X is a click, not the start of a drag.
+            closeEl.addEventListener('pointerdown', event => event.stopPropagation());
+            closeEl.addEventListener('click', event => { event.stopPropagation(); options.onClose(); });
+            handleEl.appendChild(closeEl);
+        }
+
         const onDivider = options.labelPlacement === 'divider';
         const labelEls = ['before', 'after'].map(side => {
             const el = doc.createElement('div');
@@ -135,6 +151,7 @@
         return {
             handleEl,
             labelEls,
+            closeEl,
             getPercent: () => percent,
             setPercent(next) { divider.setValue(next); percent = divider.getValue(); applyClip(); return percent; },
             applyClip,

@@ -55,6 +55,19 @@ describe('what a side shows', () => {
         expect(options[4].unapplied).toEqual(['cidX']);
     });
 
+    // Two designs on the same parcels cannot both be applied: the one that is not is still a side,
+    // drawn from its own read (under its CID), never from the applied rival.
+    it('offers a design that is not applied as a side that applies it alone, read under its CID', () => {
+        const options = compare.sideOptions({ designs: [{ id: 'tower', title: 'Tower' }, { id: 'block', title: 'Block', cid: 'cidBlock', readId: 'plan-of-block' }] });
+        expect(options[4]).toEqual({ value: 'design:block', kind: 'design', id: 'block', title: 'Block',
+            members: ['cidBlock'], unapplied: ['cidBlock'], readId: 'plan-of-block' });
+        const applies = (value, by) => compare.appliesDesign(compare.parseSide(value, options), by);
+        expect(applies('design:block', { id: 'cidBlock', unapplied: true })).toBe(true);
+        expect(applies('design:block', { id: 'tower' })).toBe(false);
+        expect(applies('design:tower', { id: 'cidBlock', unapplied: true })).toBe(false);
+        expect(applies('proposed', { id: 'cidBlock', unapplied: true })).toBe(false);
+    });
+
     it('draws proposed work only on Proposed, its own design or a plan holding it', () => {
         expect(['built', 'permitted'].map(value => shows(value, block))).toEqual([false, false]);
         expect(shows('proposed', block)).toBe(true);
@@ -92,7 +105,7 @@ describe('scissor rectangles', () => {
 });
 
 describe('whether two sides can be compared yet', () => {
-    const plan = (id, unapplied = ['c1']) => ({ kind: 'plan', id, unapplied });
+    const plan = (id, unapplied = ['c1']) => ({ kind: 'plan', id, unapplied, readId: id });
     it('waits for every plan side with unapplied members to be read, and names the one that failed', () => {
         const { readiness } = compare;
         const statuses = { a: { status: 'ready' }, b: { status: 'loading' }, c: { status: 'failed', error: 'plot 7 refused' } };
@@ -104,5 +117,14 @@ describe('whether two sides can be compared yet', () => {
         expect(waiting.reading.map(side => side.id)).toEqual(['b', 'z']);
         const broken = readiness([plan('a'), plan('c')], statusOf);
         expect(broken).toEqual({ ready: false, reading: [], failed: [{ side: plan('c'), error: 'plot 7 refused' }] });
+    });
+
+    it('waits for a design that is not applied to be read as its one-member plan', () => {
+        const options = compare.sideOptions({ designs: [{ id: 'd1' }, { id: 'd2', cid: 'cidD2', readId: 'plan-of-d2' }] });
+        const statuses = { 'plan-of-d2': { status: 'loading' } };
+        const pair = [compare.parseSide('design:d1', options), compare.parseSide('design:d2', options)];
+        expect(compare.readiness(pair, id => statuses[id] || null).reading.map(side => side.id)).toEqual(['d2']);
+        statuses['plan-of-d2'] = { status: 'ready' };
+        expect(compare.readiness(pair, id => statuses[id] || null).ready).toBe(true);
     });
 });

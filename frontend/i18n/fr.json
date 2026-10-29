@@ -4556,7 +4556,8 @@
         "busy": "Une autre mise à jour de la carte est en cours. Attendez qu’elle se termine et réessayez.",
         "storeUnavailable": "Les projets ne sont pas encore chargés. Attendez la fin du chargement de la ville et réessayez.",
         "notFound": "Ce projet n’est plus disponible. Actualisez la liste des projets et réessayez.",
-        "cancelled": "Ce projet a été retiré ; il ne peut donc pas être appliqué à la carte."
+        "cancelled": "Ce projet a été retiré ; il ne peut donc pas être appliqué à la carte.",
+        "partitionInvalid": "Impossible d'appliquer « {{title}} » : les parcelles qu'il forme ne couvriraient pas exactement le terrain qu'elles remplacent ({{detail}}). Le projet reste enregistré, non appliqué."
     },
     "threeMode": {
         "parcelPanel": {
@@ -8242,14 +8243,14 @@
             "compare": "Comparer"
         },
         "compare": {
-            "enable": "Comparer côte à côte",
+            "stop": "Arrêter la comparaison",
             "left": "Gauche",
             "right": "Droite",
             "swap": "Inverser les côtés",
             "sliderLabel": "Séparateur de comparaison",
             "reading": "{{label}} (lecture…)",
             "unreadable": "{{label}} (illisible : {{reason}})",
-            "mapNote": "Sur la carte, chaque côté dessine ses propres bâtiments et la volumétrie autorisée en emprise au sol ; un plan non appliqué dessine aussi ses rues et ses espaces en emprise au sol. Les parcelles ainsi que les rues et les parcs appliqués apparaissent des deux côtés.",
+            "mapNote": "Sur la carte, chaque côté dessine ses propres bâtiments et la volumétrie autorisée en emprise au sol ; un projet ou un plan non appliqué dessine aussi ses rues et ses espaces en emprise au sol. Les parcelles ainsi que les rues et les parcs appliqués apparaissent des deux côtés.",
             "options": {
                 "built": "Bâti existant",
                 "permitted": "Volumétrie autorisée",

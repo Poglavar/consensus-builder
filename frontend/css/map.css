@@ -1666,6 +1666,31 @@ body.three-mode-active #agent-bubbles-container {
     cursor: ew-resize;
 }
 
+/* The X at the top of the divider that ends a comparison (MapBeforeAfter onClose). */
+.map-compare__close {
+    position: absolute;
+    top: var(--cb-space-3);
+    left: 0;
+    z-index: calc(var(--cb-z-map-compare) + 3);
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--cb-surface);
+    box-shadow: var(--cb-shadow-sm);
+    color: var(--cb-text);
+    font-size: var(--cb-text-sm);
+    cursor: pointer;
+}
+
+.map-compare__close:hover { background: var(--cb-surface-2); }
+.map-compare__close:focus-visible { outline: 3px solid var(--cb-primary); outline-offset: 2px; }
+
 .map-compare__label {
     position: absolute;
     bottom: 10px;

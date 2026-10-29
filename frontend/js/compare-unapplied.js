@@ -131,10 +131,11 @@
         });
     }
 
-    // What a ready plan side draws itself and clears, for the side's current unapplied members:
-    // { rows, clearing, cutsOf(id, footprint) } or null while the plan is not ready.
+    // What a ready side draws itself and clears, for the side's current unapplied members (a plan's, or
+    // a design that is not applied, read as a one-member plan): { rows, clearing, cutsOf(id, footprint) }
+    // or null while its plan (side.readId) is not ready.
     function partOf(side) {
-        const entry = side?.kind === 'plan' ? entries.get(String(side.id)) : null;
+        const entry = side?.unapplied?.length ? entries.get(String(side.readId)) : null;
         if (!entry || entry.status !== 'ready') return null;
         const key = [...(side.unapplied || [])].map(String).sort().join('|');
         if (!entry.parts.has(key)) {

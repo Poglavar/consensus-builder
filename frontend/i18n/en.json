@@ -8085,14 +8085,14 @@
             "compare": "Compare"
         },
         "compare": {
-            "enable": "Compare side by side",
+            "stop": "Stop comparing",
             "left": "Left",
             "right": "Right",
             "swap": "Swap sides",
             "sliderLabel": "Comparison divider",
             "reading": "{{label}} (reading…)",
             "unreadable": "{{label}} (could not be read: {{reason}})",
-            "mapNote": "On the map, each side draws its own buildings and permitted massing as footprints; a plan that is not applied also draws its roads and spaces as footprints. Parcels and applied roads and parks show on both sides.",
+            "mapNote": "On the map, each side draws its own buildings and permitted massing as footprints; a design or plan that is not applied also draws its roads and spaces as footprints. Parcels and applied roads and parks show on both sides.",
             "options": {
                 "built": "Built today",
                 "permitted": "Permitted massing",
