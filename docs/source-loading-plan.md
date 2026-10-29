@@ -242,10 +242,11 @@ show the same list instead of the three fixed checkboxes.
   span, but stores only the span. This is a contract break; a span written by an older tunnel
   record still applies.
 - **Where it runs.** A page-level `DemolitionIndex` derives incrementally:
-  - when a cell lands or is replaced, for that cell's buildings against the designs whose regions
-    reach it;
-  - when the applied set or a design's geometry changes, for the cells under the old and the new
-    regions.
+  - when the applied set or a design's land changes, for the buildings under the old and the new
+    land of the designs that changed (by the boxes of their polygon parts, so a long road edited at
+    one end measures only the buildings near that end), loading only the cells under the new land;
+    every other record is kept;
+  - when the source list changes or an area did not load, for everything.
 
   The cells under every applied design's region are ensured through the cell loader, which replaces
   the replay's `/buildings/under` prefetch.

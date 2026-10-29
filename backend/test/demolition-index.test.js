@@ -39,8 +39,14 @@ function page({ sources = ['gdi-3d'] } = {}) {
         }
         return { failed: 0 };
     });
+    // The buildings each derivation measured, by key.
+    const measured = [];
+    const derive = vi.fn((input, turfApi) => {
+        measured.push(input.buildings.map(building => building.key).sort());
+        return DemolitionDerive.derive(input, turfApi);
+    });
     const window = {
-        DemolitionDerive, SourceList, BuildingCells, turf, console,
+        DemolitionDerive: { ...DemolitionDerive, derive }, SourceList, BuildingCells, turf, console,
         BuildingCellLoader: { load },
         CityConfigManager: { getParcelGridSize: () => 0.0025, datasetToLatLng: (easting, northing) => [northing, easting],
             getBuildingSources: () => sources.map(id => ({ id, use: true })), getBuildingSourceKey: () => sources.join('>') },
@@ -52,7 +58,7 @@ function page({ sources = ['gdi-3d'] } = {}) {
         dispatchEvent: event => events.push(event)
     };
     vm.runInNewContext(source, { window, console });
-    return { window, index: window.DemolitionIndex, proposals, load, events, listeners };
+    return { window, index: window.DemolitionIndex, proposals, load, events, listeners, measured };
 }
 
 describe('demolition index', () => {
@@ -89,6 +95,28 @@ describe('demolition index', () => {
         expect(roadOnly.carveOf('gdi-3d:away', () => stock[2].geometry)).toBeNull();
         // A duplicate mesh under the road with no footprint in the stock is still razed.
         expect(roadOnly.carveOf('gdi-3d:twin', () => box(16.0002, 46.00002, 16.00025, 46.00007))).toMatchObject({ remainder: null });
+    });
+
+    it('measures again only the buildings under the land a change moved, keeping every other record', async () => {
+        h.index.registerRegion('park', box(16.001, 46, 16.0015, 46.0001));
+        await h.index.refresh();
+        expect(h.measured.pop()).toEqual(['gdi-3d:away', 'gdi-3d:park-hit', 'gdi-3d:road-hit']);
+        h.load.mockClear();
+        // The park moves off its building: only that building is measured, against the park's old
+        // and new land, and only the cells under the new land are loaded.
+        h.index.registerRegion('park', box(16.0013, 46, 16.0015, 46.0001));
+        h.listeners.get('parcelFabricCommitted')();
+        await h.index.refresh();
+        expect(h.measured.pop()).toEqual(['gdi-3d:park-hit']);
+        expect(h.load).toHaveBeenCalledTimes(1);
+        expect(h.index.records().map(record => record.id)).toEqual(['gdi-3d:road-hit']);
+        // The road unapplied: only its building is measured again.
+        h.proposals[0].applied = false;
+        h.listeners.get('parcelFabricCommitted')();
+        await h.index.refresh();
+        expect(h.measured.pop()).toEqual(['gdi-3d:road-hit']);
+        expect(h.index.records()).toEqual([]);
+        expect(h.events).toHaveLength(3);
     });
 
     it('derives again over the new sources after the list changes', async () => {

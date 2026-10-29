@@ -1,8 +1,9 @@
 // The applied plan's demolitions in this browser, derived (demolition-derive.js) from the land each
 // applied design takes against the buildings the city's sources give for that land, loaded through
 // the cell loader like every other building (docs/source-loading-plan.md, F4). Nothing is stored on
-// the designs: a commit, a source switch or a stand-in cell derives again, and `demolitionsChanged`
-// tells the 2D map, the 3D scene and the other views to redraw.
+// the designs: a commit derives again the buildings under the land of the designs it changed (their
+// old land and their new), a source switch or an area that did not load derives everything, and
+// `demolitionsChanged` tells the 2D map, the 3D scene and the other views to redraw.
 (function (root) {
     'use strict';
 
@@ -13,7 +14,8 @@
     // footprints, or its carved body), registered by the apply path. Roads need none: their land is
     // their stored footprint.
     const appliedRegions = new Map();
-    let state = { records: new Map(), tunnelled: new Map(), stock: [], stockKeys: new Set(), takerIds: '', incomplete: false, version: 0, signature: null };
+    // stock: Map<key, building> under the applied land; takers: Map<proposalId, { digest, boxes }>.
+    let state = { records: new Map(), tunnelled: new Map(), stock: new Map(), takers: null, sourceKey: null, takerIds: '', incomplete: false, version: 0 };
     let running = null;
     let dirty = false;
 
@@ -52,28 +54,27 @@
         return takers;
     }
 
-    function signatureOf(takers, sourceKey) {
-        // Region identity by a cheap digest of its coordinates: same land, same answer.
-        const digest = value => {
-            const text = JSON.stringify(value);
-            let hash = 0;
-            for (let i = 0; i < text.length; i += 1) hash = (hash * 31 + text.charCodeAt(i)) | 0;
-            return `${text.length}.${hash}`;
-        };
-        return JSON.stringify([sourceKey, takers.map(taker => [taker.proposalId, digest(taker.region), digest(taker.tunnels)]).sort()]);
+    // A taker's land by a cheap digest of its coordinates (same land, same answer), with the boxes of
+    // its polygon parts, so a long road changed at one end re-derives only the buildings near it.
+    function landOf(taker) {
+        const text = JSON.stringify([taker.region, taker.tunnels]);
+        let hash = 0;
+        for (let i = 0; i < text.length; i += 1) hash = (hash * 31 + text.charCodeAt(i)) | 0;
+        const region = taker.region?.type === 'MultiPolygon'
+            ? taker.region.coordinates.map(coordinates => ({ type: 'Polygon', coordinates })) : [taker.region];
+        return { digest: `${text.length}.${hash}`, boxes: region.map(root.DemolitionDerive.bboxOf).filter(Boolean) };
     }
 
-    // The buildings under some land (takers' regions): every cell any region's box touches, each from
-    // the city's sources at that place, a stand-in's duplicates of an earlier source's buildings
-    // dropped. → { buildings: [{ key, geometry, rank, item, source }], failed }
-    async function loadStock(takers) {
+    // The buildings under some land (takers' regions), added to `byKey`: every cell any region's box
+    // touches, each from the city's sources at that place, a stand-in's duplicates of an earlier
+    // source's buildings dropped. → { buildings: [{ key, geometry, rank, item, source }], failed }
+    async function loadStock(takers, byKey = new Map()) {
         const cellsApi = root.BuildingCells;
         const loader = root.BuildingCellLoader;
         const manager = root.CityConfigManager;
-        if (!takers.length || !cellsApi || !loader || !manager) return { buildings: [], failed: 0 };
+        if (!takers.length || !cellsApi || !loader || !manager) return { buildings: [...byKey.values()], failed: 0 };
         const gridSize = Number(manager.getParcelGridSize?.());
         const toLatLng = (easting, northing) => manager.datasetToLatLng(easting, northing);
-        const byKey = new Map();
         const cellsBySources = new Map();
         for (const taker of takers) {
             const box = root.DemolitionDerive.bboxOf(taker.region);
@@ -108,20 +109,38 @@
         return { buildings: [...byKey.values()], failed };
     }
 
+    const overlapsAny = (box, boxes) => boxes.some(other => box[0] <= other[2] && other[0] <= box[2] && box[1] <= other[3] && other[1] <= box[3]);
+
     async function derivePass() {
         const takers = takersOf(allProposals());
         const sourceKey = root.CityConfigManager?.getBuildingSourceKey?.() || '';
-        const signature = signatureOf(takers, sourceKey);
-        if (signature === state.signature && !state.incomplete) return false;
-        const stock = await loadStock(takers);
-        const derived = root.DemolitionDerive.derive({ takers, buildings: stock.buildings }, root.turf);
+        const lands = new Map(takers.map(taker => [taker.proposalId, landOf(taker)]));
+        const whole = !state.takers || state.sourceKey !== sourceKey || state.incomplete;
+        // The designs whose land is new, gone or different since the last pass.
+        const changed = whole ? takers.map(taker => taker.proposalId) : [...new Set([...lands.keys(), ...state.takers.keys()])]
+            .filter(id => lands.get(id)?.digest !== state.takers.get(id)?.digest);
+        if (!whole && !changed.length) return false;
+        const started = Date.now();
+        const stock = whole ? new Map() : new Map(state.stock);
+        const loaded = await loadStock(takers.filter(taker => changed.includes(taker.proposalId)), stock);
+        const records = whole ? new Map() : new Map(state.records);
+        const tunnelled = whole ? new Map() : new Map(state.tunnelled);
+        // Every building under a changed design's old or new land is measured again against every
+        // design over it; a building a stand-in cell no longer holds loses its record.
+        const boxes = changed.flatMap(id => [...(lands.get(id)?.boxes || []), ...(state.takers?.get(id)?.boxes || [])]);
+        const affected = whole ? [...stock.values()]
+            : [...stock.values()].filter(building => overlapsAny(root.DemolitionDerive.bboxOf(building.geometry) || [], boxes));
+        for (const building of affected) { records.delete(building.key); tunnelled.delete(building.key); }
+        for (const key of [...records.keys(), ...tunnelled.keys()]) if (!stock.has(key)) { records.delete(key); tunnelled.delete(key); }
+        const derived = root.DemolitionDerive.derive({ takers, buildings: affected }, root.turf);
         derived.failures.forEach(({ key, error }) => {
             console.error(`[${new Date().toISOString()}] [demolitions] building ${key} could not be measured against the plan; it is drawn untouched`, error);
         });
-        state = { records: derived.records, tunnelled: derived.tunnelled, stock: stock.buildings,
-            stockKeys: new Set(stock.buildings.map(building => building.key)), takerIds: idsOf(takers),
-            incomplete: stock.failed > 0, version: state.version + 1, signature };
-        log(`${derived.records.size} demolished or cut, ${derived.tunnelled.size} passed under, by ${takers.length} designs over ${stock.buildings.length} buildings${stock.failed ? `; ${stock.failed} areas did not load` : ''}`);
+        derived.records.forEach((record, key) => records.set(key, record));
+        derived.tunnelled.forEach((entry, key) => tunnelled.set(key, entry));
+        state = { records, tunnelled, stock, takers: lands, sourceKey, takerIds: idsOf(takers),
+            incomplete: loaded.failed > 0, version: state.version + 1 };
+        log(`${records.size} demolished or cut, ${tunnelled.size} passed under, by ${takers.length} designs; ${whole ? 'all' : `${changed.length} changed designs,`} ${affected.length} of ${stock.size} buildings measured in ${Date.now() - started} ms${loaded.failed ? `; ${loaded.failed} areas did not load` : ''}`);
         return true;
     }
 
@@ -168,11 +187,11 @@
     function carveRecords(proposals = null) {
         const takers = takersOf(proposals || allProposals());
         const records = idsOf(takers) === state.takerIds ? state.records
-            : (takers.length ? root.DemolitionDerive.derive({ takers, buildings: state.stock }, root.turf).records : new Map());
+            : (takers.length ? root.DemolitionDerive.derive({ takers, buildings: [...state.stock.values()] }, root.turf).records : new Map());
         const late = new Map();
         const carveOf = (key, footprint) => {
             let record = records.get(String(key)) || null;
-            if (!record && !state.stockKeys.has(String(key)) && takers.length && typeof footprint === 'function') {
+            if (!record && !state.stock.has(String(key)) && takers.length && typeof footprint === 'function') {
                 if (!late.has(key)) {
                     const geometry = footprint();
                     late.set(key, geometry ? root.DemolitionDerive.derive({ takers, buildings: [{ key, geometry }] }, root.turf).records.get(key) || null : null);
@@ -204,7 +223,7 @@
     const status = () => ({ version: state.version, incomplete: state.incomplete, pending: !!running });
 
     for (const event of ['parcelFabricCommitted', 'appliedCorridorsChanged']) root.addEventListener?.(event, () => { refresh(); });
-    root.addEventListener?.('sourceListChanged', () => { state = { ...state, signature: null }; refresh(); });
+    root.addEventListener?.('sourceListChanged', () => { refresh(); });
 
     root.DemolitionIndex = { EVENT, registerRegion, refresh, records, carveRecords, recordFor, tunnelledKeys, status, takersOf, stockUnder };
 })(typeof window !== 'undefined' ? window : globalThis);

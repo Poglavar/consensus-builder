@@ -399,7 +399,7 @@ The exact ground a design consumes. A Freeform design's `geometry.landTake` can 
 
 ### Derived demolition
 
-What the applied designs do to the source buildings shown: razed, cut (the rest stands) or passed under by a road tunnel. It is derived from each design's land (a road's footprint, a building design's parcels and footprints, a structure's body) against the buildings of the sources in use, against the union of every design's land, so the order of the designs does not matter: under 2 m² of overlap a building is untouched, and when under 10 m² or 15 % of its footprint is left it is razed. Nothing is stored on a design; a source switch or a stand-in cell derives again.
+What the applied designs do to the source buildings shown: razed, cut (the rest stands) or passed under by a road tunnel. It is derived from each design's land (a road's footprint, a building design's parcels and footprints, a structure's body) against the buildings of the sources in use, against the union of every design's land, so the order of the designs does not matter: under 2 m² of overlap a building is untouched, and when under 10 m² or 15 % of its footprint is left it is razed. Nothing is stored on a design; a change to a design derives again the buildings under its old and new land, and a source switch derives everything again.
 
 ### Building tunnel
 
