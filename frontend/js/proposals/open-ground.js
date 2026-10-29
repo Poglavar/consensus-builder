@@ -14,10 +14,12 @@
     'use strict';
 
     const GROUND_ID_PREFIX = 'ground:';
-    // Numerical floor for one component of open ground. The width floor (site-binding's
-    // max(tolerance, INTRUSION_NOISE_M)) decides what is ground; this only skips the inward-buffer
-    // test for specks that are certainly not.
-    const MIN_GROUND_COMPONENT_M2 = 0.01;
+    // Whether a component of open ground is ground is the shared rule (geometry-tolerances.js
+    // isGround, widened by the record's toleranceM as binding is).
+    function groundApi() {
+        return (typeof window !== 'undefined' && window.GeometryTolerances)
+            || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
+    }
     // Default grid cell of the interaction index, in degrees (~250-550 m). Proposals are tens to
     // hundreds of metres across, so a few cells per entry; larger entries go to an overflow list.
     const DEFAULT_CELL_DEG = 0.005;
@@ -205,17 +207,8 @@
             if (!next || !polygonsOf(next).length) return null;
             open = next;
         }
-        const sb = siteBindingApi(opts);
-        const floorM = Math.max(
-            Number(opts.toleranceM) > 0 ? Number(opts.toleranceM) : 0,
-            sb && Number.isFinite(sb.INTRUSION_NOISE_M) ? sb.INTRUSION_NOISE_M : 0.001
-        );
-        const kept = polygonsOf(open).filter(rings => {
-            const piece = t.polygon(rings);
-            if (!(t.area(piece) >= MIN_GROUND_COMPONENT_M2)) return false;
-            return !sb || typeof sb.survivesInwardBuffer !== 'function'
-                || sb.survivesInwardBuffer(piece, floorM / 2, { turf: t });
-        });
+        const toleranceM = Number(opts.toleranceM) > 0 ? Number(opts.toleranceM) : 0;
+        const kept = polygonsOf(open).filter(rings => groundApi().isGround(t, t.polygon(rings), toleranceM));
         return toGeometry(kept);
     }
 
@@ -387,7 +380,6 @@
 
     return {
         GROUND_ID_PREFIX,
-        MIN_GROUND_COMPONENT_M2,
         isGroundId,
         groundIdFromHash,
         groundIdsOf,

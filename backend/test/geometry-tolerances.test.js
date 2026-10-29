@@ -42,10 +42,25 @@ describe('what counts as ground', () => {
         expect(grid.isGround(turf, box(16, 45, 16.001, 45 + 0.004 / 111000), 0.01)).toBe(false); // narrower than its 1 cm allowance
         expect(grid.isGround(turf, null)).toBe(false);
     });
+    it('answers for a shape too large to be all boundary band without eroding it', () => {
+        const eroding = new Proxy(turf, { get: (target, key) => (key === 'buffer' ? () => { throw new Error('eroded'); } : target[key]) });
+        expect(grid.isGround(eroding, parcel)).toBe(true);                                     // ~78 × 111 m
+        const strip = box(16, 45, 16.001, 45 + 0.0015 / 111000);                               // 1.5 mm: could be all band
+        expect(grid.isGround(turf, strip)).toBe(true);                                         // so it is eroded
+        expect(grid.isGround(eroding, strip)).toBe(false);                                     // and a failed erosion is no ground
+    });
     it('decides whether a shape reaches into a parcel by that rule on the shared clip', () => {
         const reach = d => box(15.9995, 45.0002, 16 + d / 78600, 45.0004); // reaches d metres past the parcel's west edge
         expect(grid.reachesInto(turf, reach(0.039), parcel)).toBe(true);
         expect(grid.reachesInto(turf, reach(0.0003), parcel)).toBe(false);
         expect(grid.reachesInto(turf, box(15.99, 45, 15.995, 45.001), parcel)).toBe(false);
+    });
+    it('names the part of a shape its covers leave uncovered, so standing wholly on them is one isGround', () => {
+        const west = box(16, 45, 16.0005, 45.001);
+        const east = box(16.0005, 45, 16.001, 45.001);
+        expect(grid.uncoveredBy(turf, parcel, [west, east])).toBe(null);
+        expect(grid.isGround(turf, grid.uncoveredBy(turf, parcel, [west]))).toBe(true);
+        const sliver = box(16, 45, 16.001, 45.001 - 0.0004 / 111000); // leaves a 0.4 mm strip uncovered
+        expect(grid.isGround(turf, grid.uncoveredBy(turf, parcel, [sliver]))).toBe(false);
     });
 });

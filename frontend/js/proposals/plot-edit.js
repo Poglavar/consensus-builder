@@ -15,8 +15,12 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
-    // Differences below this are floating-point noise from the boolean operations, not land.
-    const DEFAULT_TOLERANCE_M2 = 0.5;
+    // Whether an overlap, a gap or a part outside is land or debris from the boolean operations is
+    // the shared rule (geometry-tolerances.js isGround), the one the apply checks with.
+    function groundApi() {
+        return (typeof window !== 'undefined' && window.GeometryTolerances)
+            || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
+    }
 
     function feature(geometry) {
         if (!geometry) return null;
@@ -103,12 +107,13 @@
      * for index: after[i] null is a plot the edit dissolved, before[i] null is one it created. Only
      * the plots the edit could have reached are checked. With `pool`, the whole layout is checked
      * against it instead, for edits that rebuild the list (a carve) and have no aligned predecessor.
+     * An overlap, gap or part outside fails the check when it is ground (geometry-tolerances.js).
      * Returns { ok, folded: [i], gap, overlap, outside, overlaps: [[i, j, m²]] }, areas in m².
      */
     function checkTiling(before, after, deps, options) {
         const turf = deps && deps.turf;
         const opts = options || {};
-        const tolerance = Number.isFinite(opts.toleranceM2) ? opts.toleranceM2 : DEFAULT_TOLERANCE_M2;
+        const isGround = geometry => !!geometry && groundApi().isGround(turf, feature(geometry));
         const to = (after || []).map(geometryOf);
         let indices;
         let held;
@@ -133,16 +138,17 @@
                 const a = to[indices[i]];
                 const b = to[indices[j]];
                 if (!a || !b || !boxesMeet(turf, a, b)) continue;
-                const shared = area(turf, intersect(turf, a, b));
-                if (shared > tolerance) overlaps.push([indices[i], indices[j], shared]);
+                const sharedGeometry = intersect(turf, a, b);
+                const shared = area(turf, sharedGeometry);
+                if (isGround(sharedGeometry)) overlaps.push([indices[i], indices[j], shared]);
                 overlap += shared;
             }
         }
         const covered = unionAll(turf, plots);
-        const outside = area(turf, difference(turf, covered, held));
-        const gap = area(turf, difference(turf, held, covered));
-        const ok = overlaps.length === 0 && overlap <= tolerance && outside <= tolerance && gap <= tolerance;
-        return { ok, folded, gap, overlap, outside, overlaps };
+        const outsideGeometry = difference(turf, covered, held);
+        const gapGeometry = difference(turf, held, covered);
+        const ok = overlaps.length === 0 && !isGround(outsideGeometry) && !isGround(gapGeometry);
+        return { ok, folded, gap: area(turf, gapGeometry), overlap, outside: area(turf, outsideGeometry), overlaps };
     }
 
     // How much land an edit actually moved, per plot. An edit still has to be REPORTABLE: removing a
@@ -171,5 +177,5 @@
         return { perPlot, moved, dissolved };
     }
 
-    return { checkTiling, areaShift, DEFAULT_TOLERANCE_M2 };
+    return { checkTiling, areaShift };
 });

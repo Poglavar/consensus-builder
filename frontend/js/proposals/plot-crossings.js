@@ -15,9 +15,12 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (global) {
     'use strict';
 
-    // Crossings below this are kerf along shared edges, not ground the corridor takes (the same
-    // 1 m² budget corridor-structures.js uses for parks/squares/lakes).
-    const MIN_CROSSING_M2 = 1;
+    // A crossing is ground the corridor takes, not debris along a shared edge: the shared rule
+    // (geometry-tolerances.js reachesInto), the one the apply refuses with.
+    function groundApi() {
+        return (typeof window !== 'undefined' && window.GeometryTolerances)
+            || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
+    }
 
     function T(options) {
         if (options && options.turf) return options.turf;
@@ -41,15 +44,13 @@
         return null;
     };
 
-    function overlapM2(t, a, b) {
-        try {
-            const hit = t.intersect(a, b);
-            return hit ? (Number(t.area(hit)) || 0) : 0;
-        } catch (error) {
-            // Zero would leave a crossed plot or building out of "Build through?" — the user would
-            // approve a road without being told what it cuts.
-            throw clipFailureApi().clipFailure('intersect', error, { site: 'plot-crossings.overlapM2' }, [a, b]);
-        }
+    // The area by which `a` reaches into `b` (geometry-tolerances.js: their overlap on the shared clip
+    // is ground), else 0. A clip that fails throws a typed ClipFailure: zero would leave a crossed
+    // plot or building out of "Build through?" — the user would approve a road without being told
+    // what it cuts.
+    function reachM2(t, a, b) {
+        const hit = clipFailureApi().clipWith(t, 'intersect', a, b, { site: 'plot-crossings.overlapM2' });
+        return hit && groundApi().isGround(t, hit) ? (Number(t.area(hit)) || 0) : 0;
     }
 
     function isPlotRecord(record) {
@@ -82,7 +83,7 @@
     /**
      * @param corridor GeoJSON Feature/geometry of the edge being added (surface ribbon).
      * @param {{ pieces: object[], buildings: object[], lookupProposal: (id) => object|null,
-     *   plotRecords: object[], approvedIds?: Iterable<string>, minAreaM2?: number, turf?: object }} options
+     *   plotRecords: object[], approvedIds?: Iterable<string>, turf?: object }} options
      *   pieces: live fabric pieces near the edge (properties.producedByProposalId);
      *   buildings: applied proposal building footprints (properties.proposalId);
      *   plotRecords: applied subdivision/parcel-layout records (for "is this house on a plot").
@@ -96,7 +97,6 @@
         const edge = asFeature(corridor);
         const out = { plots: [], blocked: [] };
         if (!t || !edge) return out;
-        const min = typeof opts.minAreaM2 === 'number' && Number.isFinite(opts.minAreaM2) ? opts.minAreaM2 : MIN_CROSSING_M2;
         const approved = new Set(Array.from(opts.approvedIds || [], String));
         const lookup = typeof opts.lookupProposal === 'function' ? opts.lookupProposal : () => null;
 
@@ -109,8 +109,8 @@
             const record = lookup(key);
             if (!isPlotRecord(record)) return;
             const feature = asFeature(piece);
-            const area = feature ? overlapM2(t, edge, feature) : 0;
-            if (area < min) return;
+            const area = feature ? reachM2(t, edge, feature) : 0;
+            if (!(area > 0)) return;
             const entry = byPlotRecord.get(key) || { proposalId: key, title: titleOf(record, key), kind: plotKind(record), count: 0, areaM2: 0 };
             entry.count += 1;
             entry.areaM2 += area;
@@ -128,10 +128,10 @@
             const feature = asFeature(building);
             const owner = feature && feature.properties ? feature.properties.proposalId : null;
             if (!feature || owner === undefined || owner === null || owner === '') return;
-            const area = overlapM2(t, edge, feature);
-            if (area < min) return;
+            const area = reachM2(t, edge, feature);
+            if (!(area > 0)) return;
             // The plot only words the warning; the refusal is the same on or off a plot.
-            const ground = plotGrounds.find(entry => entry.parts.some(part => overlapM2(t, part, feature) >= min));
+            const ground = plotGrounds.find(entry => entry.parts.some(part => reachM2(t, part, feature) > 0));
             const key = String(owner);
             const entry = byHouse.get(key) || {
                 proposalId: key,
@@ -213,7 +213,6 @@
     }
 
     return {
-        MIN_CROSSING_M2,
         isPlotRecord,
         plotKind,
         detectPlotCrossings,

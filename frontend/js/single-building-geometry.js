@@ -12,8 +12,6 @@
 (function (global) {
     'use strict';
 
-    const GROUND_AREA_EPSILON_M2 = 0.01;
-
     function ensureClosedRing(ring) {
         if (!Array.isArray(ring) || ring.length === 0) return ring;
         const first = ring[0];
@@ -98,23 +96,26 @@
         return true;
     }
 
-    // The editor and the authoritative apply path use the same absolute area tolerance. A looser
-    // editor check used to accept a default footprint with 0.018 m² outside its host parcel; the
-    // proposal was then saved but correctly refused by apply.
+    // The editor and the authoritative apply path use the same rule: no part of the footprint
+    // outside its boundary is ground (geometry-tolerances.js isGround). A looser editor check used
+    // to accept a default footprint with 0.018 m² outside its host parcel; the proposal was then
+    // saved but correctly refused by apply.
     // The shared parcel clip (proposals/parcel-arrangement.js clipWith): the same grid as apply.
     function arrangementApi() {
         return (global && global.__parcelArrangement)
             || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
     }
 
-    function footprintWithinBoundary(footprint, boundary, turfApi, epsilonM2 = GROUND_AREA_EPSILON_M2) {
+    function groundApi() {
+        return (global && global.GeometryTolerances)
+            || (typeof require === 'function' ? require('./geometry-tolerances.js') : null);
+    }
+
+    function footprintWithinBoundary(footprint, boundary, turfApi) {
         if (!footprint?.geometry || !boundary?.geometry || !turfApi) return false;
         try {
             const outside = arrangementApi().clipWith(turfApi, 'difference', footprint, boundary, { site: 'single-building-geometry.footprintWithinBoundary' });
-            if (!outside) return true;
-            const outsideArea = Number(turfApi.area(outside));
-            const epsilon = Number.isFinite(Number(epsilonM2)) ? Math.max(0, Number(epsilonM2)) : GROUND_AREA_EPSILON_M2;
-            return Number.isFinite(outsideArea) && outsideArea <= epsilon;
+            return !groundApi().isGround(turfApi, outside);
         } catch (error) {
             // The difference could not be computed, so whether the footprint stays inside is
             // unknown: answer "not inside" (the placement is refused) and report it. The old
@@ -351,10 +352,9 @@
         try { return typeof require === 'function' ? require('./proposals/site-clip.js') : null; } catch (_) { return null; }
     }
 
-    // footprintWithinBoundary accepts up to GROUND_AREA_EPSILON_M2 outside the block (float noise
-    // from dragging a vertex onto the edge), but 0.01 m² is a 1-2 cm sliver along a few decimetres
-    // of the neighbour's ground, which binds that parcel at tolerance 0. A saved footprint is
-    // therefore clipped to the block: what the editor tolerated as noise is cut off, not published.
+    // footprintWithinBoundary accepts cutting debris outside the block (float noise from dragging a
+    // vertex onto the edge). A saved footprint is clipped to the block all the same: what the editor
+    // tolerated as noise is cut off, not published.
     function clipFootprintToBoundary(footprint, boundary, turfApi) {
         if (!footprint?.geometry || !boundary?.geometry) return footprint;
         const clip = siteClipApi();
@@ -364,7 +364,6 @@
     }
 
     const api = {
-        GROUND_AREA_EPSILON_M2,
         buildRectangleRing,
         placeModelFootprint,
         clipFootprintToBoundary,

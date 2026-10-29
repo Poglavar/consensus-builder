@@ -22,10 +22,15 @@
     const PUBLIC_LAND_KEY = 'public-land';
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     const feature = geometry => ({ type: 'Feature', properties: {}, geometry });
-    // Match the fabric's absolute plus one-part-per-million conservation budget. Overlap is
-    // checked separately, so a gap and an overlapping plot cannot cancel each other numerically.
-    const coverageTolerance = area => 1 + area * 1e-6;
-    const overlapTolerance = area => Math.min(coverageTolerance(area), Math.max(0.01, area * 1e-6));
+    // An overlap, a gap in the pool or a part outside it fails when it is ground (the shared rule,
+    // geometry-tolerances.js isGround); cutting debris passes. Each is judged on its own geometry,
+    // so a gap and an overlapping plot cannot cancel each other.
+    function isGround(turf, value) {
+        if (!value) return false;
+        const grid = (root && root.GeometryTolerances)
+            || (typeof require === 'function' ? require('./geometry-tolerances.js') : null);
+        return grid.isGround(turf, value);
+    }
 
     function polygon(value, turf) {
         const geometry = value?.type === 'Feature' ? value.geometry : value;
@@ -51,10 +56,10 @@
             const holes = rings.slice(1).map(ring => feature({ type: 'Polygon', coordinates: [ring] }));
             for (let i = 0; i < holes.length; i++) {
                 const outside = arrangement().clipWith(turf, 'difference', holes[i], shell, { site: 'reparcellization-validation.polygon' });
-                if (outside && turf.area(outside) > 0.01) throw new Error('A hole lies outside its polygon.');
+                if (isGround(turf, outside)) throw new Error('A hole lies outside its polygon.');
                 for (let j = 0; j < i; j++) {
                     const hit = arrangement().clipWith(turf, 'intersect', holes[i], holes[j], { site: 'reparcellization-validation.polygon' });
-                    if (hit && turf.area(hit) > 0.01) throw new Error('Polygon holes overlap.');
+                    if (isGround(turf, hit)) throw new Error('Polygon holes overlap.');
                 }
             }
             if (!(turf.area(part) > 0)) throw new Error('A polygon must have positive area.');
@@ -62,7 +67,7 @@
         });
         for (let i = 0; i < polygons.length; i++) for (let j = 0; j < i; j++) {
             const hit = arrangement().clipWith(turf, 'intersect', polygons[i], polygons[j], { site: 'reparcellization-validation.polygon' });
-            if (hit && turf.area(hit) > 0.01) throw new Error('Parts of a polygon overlap.');
+            if (isGround(turf, hit)) throw new Error('Parts of a polygon overlap.');
         }
         return feature(geometry);
     }
@@ -98,7 +103,7 @@
                             const hit = clipped('intersect', union, shapes[i]);
                             const area = hit ? turf.area(hit) : 0;
                             overlapAreaM2 += area;
-                            if (area > overlapTolerance(areas[i])) issue('overlapping-polygons', `New parcel ${i + 1} overlaps another new parcel.`, 'geometry', { plotIndex: i, areaM2: area });
+                            if (isGround(turf, hit)) issue('overlapping-polygons', `New parcel ${i + 1} overlaps another new parcel.`, 'geometry', { plotIndex: i, areaM2: area });
                         }
                         union = union ? clipped('union', union, shapes[i]) : shapes[i];
                         if (!union) throw new Error('The new parcel union could not be computed.');
@@ -113,10 +118,10 @@
                     const gap = clipped('difference', pool, union), outside = clipped('difference', union, pool);
                     Object.assign(metrics, { poolAreaM2: area, plotAreaM2: areas.reduce((a, b) => a + b, 0),
                         uncoveredAreaM2: gap ? turf.area(gap) : 0, outsideAreaM2: outside ? turf.area(outside) : 0, overlapAreaM2 });
-                    if (metrics.uncoveredAreaM2 > coverageTolerance(area)) issue('coverage-gap', 'The new parcels leave part of the declared pool uncovered.', 'geometry', { areaM2: metrics.uncoveredAreaM2 });
-                    if (metrics.outsideAreaM2 > coverageTolerance(area)) issue('coverage-excess', 'The new parcels extend outside the declared pool.', 'geometry', { areaM2: metrics.outsideAreaM2 });
-                    // Connectivity follows the intended pool. Tiny numerical seams between new
-                    // neighbours are handled by the conservation budget, not a separate UI rule.
+                    if (isGround(turf, gap)) issue('coverage-gap', 'The new parcels leave part of the declared pool uncovered.', 'geometry', { areaM2: metrics.uncoveredAreaM2 });
+                    if (isGround(turf, outside)) issue('coverage-excess', 'The new parcels extend outside the declared pool.', 'geometry', { areaM2: metrics.outsideAreaM2 });
+                    // Connectivity follows the intended pool. Numerical seams between new neighbours
+                    // are debris by the ground rule above, not a separate UI rule.
                     if (pool.geometry.type === 'MultiPolygon' && pool.geometry.coordinates.length > 1) {
                         issue('disconnected-readjustment', 'Use a separate readjustment for each disconnected pool.', 'geometry');
                     }
@@ -188,5 +193,5 @@
         const offerCurrency = fields.offerCurrency || plan?.valuationCurrency || cityMoney().currentCurrency();
         return validate({ ...fields, goal: 'reparcellization', reparcellization: plan, offer, offerCurrency }, options);
     }
-    return { validate, validatePlan, polygon, coverageTolerance, overlapTolerance };
+    return { validate, validatePlan, polygon };
 });

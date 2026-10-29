@@ -496,7 +496,7 @@
                 const footprintArea = Number(turf.area(footprint)) || 0;
                 if (!(footprintArea > 0)) return { ids: [], coverage: 0 };
                 // Ancestors and covered area are measured apart (plan-order.js measureCoverage): an
-                // edge sliver below the ancestry floor is still ground the footprint stands inside.
+                // edge sliver that is no ancestor still counts toward the area the footprint stands inside.
                 const { hits, coveredArea } = order.measureCoverage(footprint, stored.map(feature => ({
                     id: featureId(feature),
                     feature

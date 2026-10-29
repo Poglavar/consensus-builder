@@ -10,16 +10,6 @@
 })(typeof window !== 'undefined' ? window : globalThis, function liveParcelFabricFactory(root) {
     'use strict';
 
-    const GEOMETRY_EPSILON_M2 = 0.01;
-    // Area accounting compares the sum of a parcel's pieces with the parcel itself. The arrangement
-    // drops pieces under parcel-arrangement.js MIN_PIECE_M2 (0.25 m²) as clipper artifacts, so a
-    // parcel may legitimately come back a few slivers short; one square metre is that budget, two
-    // orders of magnitude under any hole a user could see and four under the incident that
-    // motivated the invariant. One part per million covers planar-versus-geodesic rounding.
-    const COVERAGE_TOLERANCE_M2 = 1;
-    const RELATIVE_AREA_TOLERANCE = 1e-6;
-    // A replacement vertex this close to its parcel's boundary is on the boundary.
-    const VERTEX_TOLERANCE_M = 0.02;
     const CADASTRE_RELEASE_KINDS = new Set([
         'cadastral-ground-release',
         'repository-reset',
@@ -35,6 +25,9 @@
     // Immutable cadastral facts are kept on the shared coordinate grid, whoever seeds them.
     const geometryGrid = (root && root.GeometryTolerances)
         || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
+    // A replacement vertex within the one noise value (geometry-tolerances.js NOISE_M) of its
+    // parcel's boundary is on the boundary.
+    const VERTEX_TOLERANCE_M = geometryGrid.NOISE_M;
     // One collator for every delta sort: localeCompare with options builds a collator per call,
     // which made sorting a whole-cadastre delta (~6,000 ids) a 185 ms task.
     const ID_COLLATOR = new Intl.Collator(undefined, { numeric: true });
@@ -385,6 +378,22 @@
             return [];
         }
 
+        // The length of every ring of a feature in ground metres (equirectangular at each edge's
+        // latitude; it sizes a noise budget, so the approximation is ample).
+        function boundaryLengthM(feature) {
+            let total = 0;
+            ringsOf(feature).forEach(ring => {
+                for (let i = 1; i < (Array.isArray(ring) ? ring.length : 0); i += 1) {
+                    const [x0, y0] = ring[i - 1];
+                    const [x1, y1] = ring[i];
+                    const dx = (x1 - x0) * 111320 * Math.cos(((y0 + y1) / 2) * Math.PI / 180);
+                    const dy = (y1 - y0) * 110540;
+                    total += Math.sqrt(dx * dx + dy * dy);
+                }
+            });
+            return total;
+        }
+
         function verticesOf(feature) {
             const out = [];
             ringsOf(feature).forEach(ring => {
@@ -545,10 +554,12 @@
 
             const boundaryCache = new Map();
             const factAreaByGroup = new Map();
+            const factBoundaryByGroup = new Map();
             const pieceAreaByGroup = new Map();
             scopeIds.forEach(id => {
                 const group = find(id);
                 factAreaByGroup.set(group, (factAreaByGroup.get(group) || 0) + measuredArea(facts.get(id)));
+                factBoundaryByGroup.set(group, (factBoundaryByGroup.get(group) || 0) + boundaryLengthM(facts.get(id)));
             });
             for (const feature of replacements) {
                 const provenance = explicitCadastreIds(feature);
@@ -585,7 +596,10 @@
             });
             factAreaByGroup.forEach((factM2, group) => {
                 const pieceM2 = pieceAreaByGroup.get(group) || 0;
-                const toleranceM2 = COVERAGE_TOLERANCE_M2 + factM2 * RELATIVE_AREA_TOLERANCE;
+                // The area budget is derived from the one noise value (geometry-tolerances.js
+                // NOISE_M): a debris strip that wide along every edge of the group's parcels. More
+                // than that missing or doubled is a hole or an overlap, not cutting debris.
+                const toleranceM2 = geometryGrid.NOISE_M * (factBoundaryByGroup.get(group) || 0);
                 const deltaM2 = pieceM2 - factM2;
                 metrics.coverageChecks += 1;
                 if (Math.abs(deltaM2) > metrics.worstCoverageDeltaM2) metrics.worstCoverageDeltaM2 = Math.abs(deltaM2);
@@ -1095,5 +1109,5 @@
         });
     }
 
-    return Object.freeze({ createLiveParcelFabric, featureId, explicitCadastreIds, explicitGroundIds, GEOMETRY_EPSILON_M2 });
+    return Object.freeze({ createLiveParcelFabric, featureId, explicitCadastreIds, explicitGroundIds });
 });

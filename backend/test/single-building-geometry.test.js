@@ -9,7 +9,6 @@ import { inverse } from './helpers/ellipsoid.js';
 
 const require = createRequire(import.meta.url);
 const {
-    GROUND_AREA_EPSILON_M2,
     buildRectangleRing,
     footprintWithinBoundary,
     geometryCenter,
@@ -129,7 +128,9 @@ describe('freeform polygon editing', () => {
         expect(quarterTurn.coordinates[0][0][1]).toBeLessThan(center.lat);
     });
 
-    it('uses the authoritative 0.01 m² boundary tolerance', () => {
+    // Was: an area tolerance of 0.01 m² (a 1 mm × 5 m strip outside passed). Now what lies outside
+    // must not be ground (geometry-tolerances.js isGround): 4 mm is refused, 0.4 mm passes.
+    it('uses the authoritative ground rule for what lies outside the boundary', () => {
         const lat = 43.735;
         const metresToLat = metres => metres / 111320;
         const metresToLng = metres => metres / (111320 * Math.cos(lat * Math.PI / 180));
@@ -141,12 +142,11 @@ describe('freeform polygon editing', () => {
             [metresToLng(westM), lat + metresToLat(southM)]
         ]]);
         const host = rectangle(0, 0, 10, 10);
-        const outsideByAboutPointZeroTwo = rectangle(-0.004, 2, 5, 7);
-        const outsideByAboutPointZeroZeroFive = rectangle(-0.001, 2, 5, 7);
+        const outsideByFourMillimetres = rectangle(-0.004, 2, 5, 7);
+        const outsideByDebris = rectangle(-0.0004, 2, 5, 7);
 
-        expect(GROUND_AREA_EPSILON_M2).toBe(0.01);
-        expect(footprintWithinBoundary(outsideByAboutPointZeroTwo, host, turf)).toBe(false);
-        expect(footprintWithinBoundary(outsideByAboutPointZeroZeroFive, host, turf)).toBe(true);
+        expect(footprintWithinBoundary(outsideByFourMillimetres, host, turf)).toBe(false);
+        expect(footprintWithinBoundary(outsideByDebris, host, turf)).toBe(true);
     });
 });
 

@@ -1,12 +1,12 @@
 // Unit tests for frontend/js/parcel-layout-ownership.js: the holders of a formed piece are the
 // recorded owners of the ground under it, pro rata by area, merged per owner, without slivers, and
 // the part of the piece no owned parcel covers is reported as open ground.
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const turf = require('@turf/turf');
-const { ownersOf, MIN_SHARE, DEFAULT_MIN_OVERLAP_M2 } = require('../../frontend/js/parcel-layout-ownership.js');
+const { ownersOf, MIN_SHARE } = require('../../frontend/js/parcel-layout-ownership.js');
 
 // Rectangles near Zagreb in units of 1e-3 degree (≈ 78 m east, 111 m north).
 function rect(x0, y0, x1, y1) {
@@ -78,38 +78,33 @@ describe('ownersOf', () => {
         expect(ownersOf(rect(4, 0, 5, 2), [], ownerOf, options)).toEqual({ owners: [], openGroundShare: 1 });
     });
 
-    it('does not count a parcel that only touches the piece or reaches in by less than the anchor floor', () => {
-        expect(DEFAULT_MIN_OVERLAP_M2).toBe(1);
+    it('does not count a parcel that only touches the piece or reaches in by debris (geometry-tolerances.js isGround)', () => {
         // Ana's parcel only touches the piece along x = 2.
         const touching = ownersOf(rect(2, 0, 3, 2), [parcel('A1', rect(0, 0, 2, 2)), parcel('B', rect(2, 0, 4, 2))], ownerOf, options);
         expect(touching.owners).toEqual([{ ownerKey: 'agent-boris', displayName: 'Boris', share: 1 }]);
-        // Boris's parcel reaches into the piece by a sliver: ≈ 1.6 mm × 222 m ≈ 0.35 m².
-        const sliver = [parcel('B', rect(2 - 2e-5, 0, 4, 2))];
-        const reached = ownersOf(rect(0, 0, 2, 2), sliver, ownerOf, options);
+        // Boris's parcel reaches into the piece by cutting debris: ≈ 0.4 mm × 222 m, narrower than the 1 mm noise.
+        const debris = [parcel('B', rect(2 - 5e-6, 0, 4, 2))];
+        const reached = ownersOf(rect(0, 0, 2, 2), debris, ownerOf, options);
         expect(reached.owners).toEqual([]);
         expect(reached.openGroundShare).toBeCloseTo(1, 6);
-        // Without the floor the sliver would make Boris the holder of the whole piece.
-        expect(ownersOf(rect(0, 0, 2, 2), sliver, ownerOf, { turf, minOverlapM2: 0 }).owners)
+        // A 1.6 mm strip used to fall under a 1 m² floor; it is wider than the noise, so it is ground Boris holds.
+        expect(ownersOf(rect(0, 0, 2, 2), [parcel('B', rect(2 - 2e-5, 0, 4, 2))], ownerOf, options).owners)
             .toEqual([{ ownerKey: 'agent-boris', displayName: 'Boris', share: 1 }]);
     });
 
-    it('uses an injected measure, skips parcels whose boxes miss the piece, and orders equal shares by owner key', () => {
-        const intersectionArea = vi.fn(() => 10);
+    it('skips parcels whose boxes miss the piece and orders equal shares by owner key', () => {
         const sources = [parcel('B', rect(1, 0, 2, 2)), parcel('A1', rect(0, 0, 1, 2)), parcel('far', rect(10, 10, 11, 11))];
         const lookup = source => (source.properties.parcelId === 'far' ? owners.B : ownerOf(source));
-        const result = ownersOf(rect(0, 0, 2, 2), sources, lookup, { turf, intersectionArea, area: () => 20 });
-        expect(intersectionArea).toHaveBeenCalledTimes(2);
-        expect(result).toEqual({
-            owners: [{ ownerKey: 'agent-ana', displayName: 'Ana', share: 0.5 }, { ownerKey: 'agent-boris', displayName: 'Boris', share: 0.5 }],
-            openGroundShare: 0
-        });
+        const result = ownersOf(rect(0, 0, 2, 2), sources, lookup, options);
+        expect(result.owners.map(owner => owner.ownerKey)).toEqual(['agent-ana', 'agent-boris']);
+        result.owners.forEach(owner => expect(owner.share).toBeCloseTo(0.5, 9));
+        expect(result.openGroundShare).toBeCloseTo(0, 9);
     });
 
     it('fails loudly on a malformed lookup or measure instead of guessing a holder', () => {
         const sources = [parcel('A1', rect(0, 0, 2, 2))];
         expect(() => ownersOf(rect(0, 0, 1, 1), sources, null, options)).toThrow(/ownerOf/);
         expect(() => ownersOf(rect(0, 0, 1, 1), sources, () => ({ displayName: 'Nobody' }), options)).toThrow(/without an ownerKey/);
-        expect(() => ownersOf(rect(0, 0, 1, 1), sources, ownerOf, { turf, intersectionArea: () => NaN })).toThrow(/could not be measured/);
         expect(() => ownersOf(null, sources, ownerOf, options)).toThrow(/polygon piece/);
         expect(() => ownersOf(rect(0, 0, 1, 1), sources, ownerOf, {})).toThrow(/needs turf/);
     });

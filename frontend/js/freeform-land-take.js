@@ -14,6 +14,14 @@
     const arrangement = () => (typeof window !== 'undefined' && window.__parcelArrangement)
         || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
     const clip = (turf, operation, a, b, site) => arrangement().clipWith(turf, operation, a, b, { site });
+    // Whether a part outside, a reach into a parcel or a remainder is ground or cutting debris is the
+    // shared rule (geometry-tolerances.js isGround), the one binding and the apply use.
+    const isGround = (turf, value) => {
+        if (!value) return false;
+        const grid = (typeof window !== 'undefined' && window.GeometryTolerances)
+            || (typeof require === 'function' ? require('./geometry-tolerances.js') : null);
+        return grid.isGround(turf, value);
+    };
     function union(features, turf) {
         return features.filter(Boolean).reduce((result, item) => result ? clip(turf, 'union', result, item, 'freeform-land-take.union') : clone(item), null);
     }
@@ -24,7 +32,7 @@
             const body = feature(building);
             if (!body) return false;
             const outside = clip(turf, 'difference', body, land, 'freeform-land-take.contains');
-            return !outside || turf.area(outside) <= Math.min(0.01, turf.area(body) * 1e-6);
+            return !isGround(turf, outside);
         });
     }
     function plan({ buildings, parcels, whole = new Set(), savedTake = null, turf }) {
@@ -35,14 +43,14 @@
         for (const parcel of parcels) {
             const host = feature(parcel);
             const intersection = clip(turf, 'intersect', footprint, host, 'freeform-land-take.plan');
-            const overlapM2 = intersection ? turf.area(intersection) : 0;
             // Whole-parcel surroundings belong to a building on that parcel, not a separate paving tool.
-            if (overlapM2 <= Math.min(0.001, turf.area(footprint) * 1e-6)) continue;
+            if (!isGround(turf, intersection)) continue;
+            const overlapM2 = turf.area(intersection);
             const id = String(host.properties?.parcelId ?? host.id ?? '');
             const key = JSON.stringify([id, host.geometry]);
             const parcelM2 = turf.area(host);
             const savedRemainder = savedTake ? clip(turf, 'difference', host, feature(savedTake), 'freeform-land-take.plan') : null;
-            const mode = whole.has(key) || (savedTake && (!savedRemainder || turf.area(savedRemainder) < Math.min(0.01, parcelM2 * 1e-6))) ? 'whole' : 'footprint';
+            const mode = whole.has(key) || (savedTake && !isGround(turf, savedRemainder)) ? 'whole' : 'footprint';
             if (mode === 'whole') extra.push(host);
             rows.push({ key, id, feature: host, mode, overlapM2, parcelM2,
                 take: mode === 'whole' ? host : intersection,

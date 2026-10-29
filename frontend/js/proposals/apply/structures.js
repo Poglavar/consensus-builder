@@ -34,6 +34,12 @@
         return typeof require === 'function' ? require('../open-ground.js') : null;
     }
 
+    // What counts as ground and whether a shape reaches into a parcel (geometry-tolerances.js).
+    function groundApi() {
+        return (typeof window !== 'undefined' && window.GeometryTolerances)
+            || (typeof require === 'function' ? require('../../geometry-tolerances.js') : null);
+    }
+
     // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
     function clipFailureApi() {
         const api = (typeof window !== 'undefined' && window.__parcelArrangement)
@@ -47,6 +53,7 @@
             ? (left, right) => arrangement.clip('intersect', left, right)
             : (left, right) => turfRef.intersect(left, right);
         return {
+            turf: turfRef,
             area: feature => {
                 try { return turfRef.area(feature) || 0; } catch (_) { return 0; }
             },
@@ -507,6 +514,11 @@
                 _parcelMutation: options._parcelMutation
             }) || []);
         const ground = openGroundApi();
+        // Every "is this ground / does it reach this parcel" below is the shared rule, widened only
+        // by the design's own toleranceM, as binding widened it.
+        const groundRule = groundApi();
+        const toleranceM = groundRule.designToleranceM(proposalData);
+        const asPlain = feature => ({ type: 'Feature', properties: {}, geometry: feature.geometry });
         const allCandidates = candidateFeatures
             .map(feature => ({ id: _getParcelIdFromFeature(feature), feature }))
             .filter(entry => entry.id !== undefined && entry.id !== null);
@@ -514,26 +526,23 @@
         // supplies the footprint's ground where no parcel lies.
         const hostEntries = allCandidates.filter(entry => ground && ground.isOpenGroundHost(entry.feature));
         const candidates = allCandidates.filter(entry => !hostEntries.includes(entry));
-        const hostOverlapM2 = hostEntries.reduce((sum, entry) => sum
-            + takeCtx.intersectionArea(footprint, { type: 'Feature', properties: {}, geometry: entry.feature.geometry }), 0);
-        const takenHosts = hostEntries.filter(entry => takeCtx.intersectionArea(
-            footprint, { type: 'Feature', properties: {}, geometry: entry.feature.geometry }) >= (Number(formationEdit.DEFAULT_TOLERANCE_M2) || 1));
+        const takenHosts = hostEntries.filter(entry => groundRule.reachesInto(turfRef, footprint, asPlain(entry.feature), toleranceM,
+            { site: 'apply-structures.host', proposalId: idLabel, parcelId: entry.id }));
 
         let plan = candidates.length
-            ? formationEdit.wholeParcelTakePlan(footprint, candidates, takeCtx)
+            ? formationEdit.wholeParcelTakePlan(footprint, candidates, takeCtx, { toleranceM })
             : { mode: 'refuse', reason: 'no-parcels', parcelIds: [], partials: [], uncoveredShare: 1 };
         const footprintArea = takeCtx.area(footprint);
-        const uncoveredTolerance = Math.max(
-            Number(formationEdit.DEFAULT_TOLERANCE_M2) || 1,
-            footprintArea * (Number(formationEdit.DEFAULT_TOLERANCE_PCT) || 1) / 100
-        );
         // Ground the footprint covers that is on neither a candidate parcel nor the open-ground host.
-        const uncoveredM2 = Math.max(0, Math.max(0, Number(plan.uncoveredShare) || 0) * footprintArea - hostOverlapM2);
+        const uncovered = groundRule.uncoveredBy(turfRef, footprint, [...candidates, ...takenHosts].map(entry => asPlain(entry.feature)),
+            { site: 'apply-structures.uncovered', proposalId: idLabel });
+        const uncoveredIsGround = groundRule.isGround(turfRef, uncovered, toleranceM);
+        const uncoveredShare = uncovered ? Math.min(1, takeCtx.area(uncovered) / footprintArea) : 0;
         if (takenHosts.length && (plan.reason === 'uncovered-ground' || plan.reason === 'no-parcels')) {
             // The rest of the footprint is open ground: take the whole parcels (if any) plus it.
-            plan = uncoveredM2 <= uncoveredTolerance
-                ? { mode: plan.parcelIds.length ? 'merge' : 'ground', reason: null, parcelIds: plan.parcelIds.slice(), partials: [], uncoveredShare: uncoveredM2 / footprintArea }
-                : { ...plan, reason: 'uncovered-ground', uncoveredShare: uncoveredM2 / footprintArea };
+            plan = !uncoveredIsGround
+                ? { mode: plan.parcelIds.length ? 'merge' : 'ground', reason: null, parcelIds: plan.parcelIds.slice(), partials: [], uncoveredShare }
+                : { ...plan, reason: 'uncovered-ground', uncoveredShare };
         }
         // Partial parcels are cut at the body edge: the inside is consumed with the take, and each
         // outside piece is re-minted so identity flows with the ground — a formed parent's pieces
@@ -545,7 +554,7 @@
         if (cutsAtBodyEdge && typeof turfRef.difference === 'function') {
             const takenIdSet = new Set(plan.parcelIds.map(String));
             partialCuts = [];
-            let cutsOk = uncoveredM2 <= uncoveredTolerance;
+            let cutsOk = !uncoveredIsGround;
             plan.partials.forEach(partial => {
                 const entry = candidates.find(c => String(c.id) === String(partial.id));
                 if (!entry || !entry.feature || !entry.feature.geometry) { cutsOk = false; return; }
@@ -570,9 +579,10 @@
                         ? outside.geometry.coordinates.map(coords => ({ type: 'Polygon', coordinates: coords }))
                         : [outside.geometry];
                     polys.forEach(geometry => {
+                        if (!groundRule.isGround(turfRef, { type: 'Feature', properties: {}, geometry })) return;
                         let area = 0;
                         try { area = turfRef.area({ type: 'Feature', properties: {}, geometry }) || 0; } catch (_) { }
-                        if (area >= 0.5) parts.push({ geometry, area });
+                        parts.push({ geometry, area });
                     });
                 }
                 parts.sort((x, y) => y.area - x.area);
@@ -580,7 +590,7 @@
                 takenIdSet.add(String(partial.id));
             });
             if (cutsOk) {
-                plan = { mode: 'merge', reason: null, parcelIds: Array.from(takenIdSet), partials: [], uncoveredShare: uncoveredM2 / footprintArea };
+                plan = { mode: 'merge', reason: null, parcelIds: Array.from(takenIdSet), partials: [], uncoveredShare };
                 if (typeof window !== 'undefined' && window.DEBUG_APPLY) {
                     console.debug('[structureFormation] cut', partialCuts.length, 'partial parcel(s) at the', sp.kind, 'edge');
                 }
@@ -634,7 +644,7 @@
                         coordinates: severTestPolys.flatMap(g => g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates])
                     }));
             const roadHit = (typeof this._appliedRoadOverlappedByTaking === 'function')
-                ? this._appliedRoadOverlappedByTaking(severTestGround, idLabel, options) : null;
+                ? this._appliedRoadOverlappedByTaking(severTestGround, idLabel, { ...options, toleranceM }) : null;
             if (roadHit) {
                 const road = roadHit.proposal;
                 const roadName = road.title || road.name || road.proposalId;

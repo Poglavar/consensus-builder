@@ -37,6 +37,9 @@
     const T = () => (typeof turf !== 'undefined' && turf)
         ? turf
         : (typeof require === 'function' ? require('@turf/turf') : null);
+    // "Within noise" is the shared rule (geometry-tolerances.js isGround): debris is no take.
+    const groundRule = () => (global && global.GeometryTolerances)
+        || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
 
     // A clip that fails here makes a number UNKNOWN, never a smaller or zero one: it is reported
     // and counted in clipHealth() (parcel-arrangement.js), and the caller gets null — which the
@@ -69,8 +72,9 @@
     }
 
     // How much of `footprint`'s overlap with the parcel lies inside earlier formations' ground.
-    // Returns { takeM2, deferredM2 } — deferredM2 counts only overlap with formations that precede
-    // `self` in creation order (and are not self).
+    // Returns { takeM2, deferredM2, rest } — deferredM2 counts only overlap with formations that
+    // precede `self` in creation order (and are not self); `rest` is the part of the take outside
+    // them (null when none is left).
     function deferredTake(footprint, parcelFeature, cedingFlows, self, api) {
         const t = T();
         if (!t || !footprint || !parcelFeature) return null;
@@ -79,7 +83,7 @@
             reportClip('intersect', error, 'dossier.deferredTake', [footprint, parcelFeature]);
             return null;
         }
-        if (!take) return { takeM2: 0, deferredM2: 0 };
+        if (!take) return { takeM2: 0, deferredM2: 0, rest: null };
         const takeM2 = t.area(take);
 
         let earlierGround = null;
@@ -99,9 +103,14 @@
             }
         });
         if (unknown) return null;
-        if (!earlierGround) return { takeM2, deferredM2: 0 };
+        if (!earlierGround) return { takeM2, deferredM2: 0, rest: take };
         const deferredM2 = api.intersectionArea(take, earlierGround);
-        return { takeM2, deferredM2 };
+        let rest = null;
+        try { rest = t.difference(take, earlierGround); } catch (error) {
+            reportClip('difference', error, 'dossier.deferredTake', [take, earlierGround]);
+            return null;
+        }
+        return { takeM2, deferredM2, rest };
     }
 
     // Which channel one proposal lands in for one parcel root. `ctx`:
@@ -130,7 +139,7 @@
             // direction, silently skipping them is the §3.5 bug.
             const split = deferredTake(footprint, context.parcelFeature, context.cedingFlows,
                 { id: proposal && proposal.proposalId, createdAt: proposal && proposal.createdAt }, api);
-            if (split && api && (split.takeM2 - split.deferredM2) < api.MIN_INTERSECTION_M2) {
+            if (split && !groundRule().isGround(T(), split.rest)) {
                 return 'disclosure';
             }
             return 'acceptance';
@@ -149,10 +158,8 @@
                 try {
                     const overlap = t ? t.intersect(footprint, ceding.footprint) : null;
                     if (!overlap) continue;
-                    const within = context.parcelFeature
-                        ? api.intersectionArea(overlap, context.parcelFeature)
-                        : (t ? t.area(overlap) : 0);
-                    if (within >= api.MIN_INTERSECTION_M2) return 'disclosure';
+                    const within = context.parcelFeature ? t.intersect(overlap, context.parcelFeature) : overlap;
+                    if (groundRule().isGround(t, within)) return 'disclosure';
                 } catch (error) {
                     // Unknown overlap stays an offer addressed to the owner (the over-asking
                     // direction), but it is reported rather than swallowed.

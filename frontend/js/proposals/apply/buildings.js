@@ -26,6 +26,12 @@
         return typeof require === 'function' ? require('../open-ground.js') : null;
     }
 
+    // What counts as ground and whether a shape reaches into a parcel (geometry-tolerances.js).
+    function groundApi() {
+        return (typeof window !== 'undefined' && window.GeometryTolerances)
+            || (typeof require === 'function' ? require('../../geometry-tolerances.js') : null);
+    }
+
     function shouldFormOwnBuildingParcel(_proposalData, goalKey, featureCount) {
         return goalKey === 'single' && featureCount === 1;
     }
@@ -256,31 +262,27 @@
         const clip = (operation, left, right, context) => arrangement.clip(operation, left, right,
             { proposalId: idLabel, ...context });
         const takeCtx = {
-            area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } },
-            // An overlap that cannot be computed is unknown, not zero: zero decides which
-            // parcels the building takes.
-            intersectionArea: (a, b) => {
-                try { const hit = clip('intersect', a, b, { site: 'apply-buildings.intersectionArea' }); return hit ? turfRef.area(hit) : 0; } catch (error) {
-                    throw clipFailureApi().clipFailure('intersect', error, { site: 'apply-buildings.intersectionArea', proposalId: idLabel }, [a, b]);
-                }
-            }
+            turf: turfRef,
+            area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } }
         };
         // The exact reviewed take is authored land, never the union of today's whole hosts.
         // Replay may partition that land again, but cannot silently expand it.
         const takeGeometry = proposalData.geometry?.landTake?.geometry || proposalData.geometry?.landTake || footprintGeometry;
         const takeFeature = arrangement.onClipGrid({ type: 'Feature', properties: {}, geometry: takeGeometry });
         const material = { type: 'Feature', properties: {}, geometry: footprintGeometry };
+        // Every "is this ground / does it reach this parcel" below is the shared rule, widened only
+        // by the design's own toleranceM, as binding widened it.
+        const ground = groundApi();
+        const toleranceM = ground.designToleranceM(proposalData);
         const outside = proposalData.geometry?.landTake
             ? clip('difference', material, takeFeature, { site: 'apply-buildings.materialOutsideTake' }) : null;
-        if (outside && turfRef.area(outside) > Math.min(0.01, turfRef.area(material) * 1e-6)) {
+        if (ground.isGround(turfRef, outside, toleranceM)) {
             this._setLastApplyFailure(idLabel, { code: 'building-outside-land-take', message: 'The building extends outside its reviewed land take.' });
             return { ok: false };
         }
         const footprint = takeFeature;
-        // A valid small building can straddle several live pieces, each smaller than the usual
-        // 1 m² tolerance. Keep its material hosts and anchors at the footprint's own scale.
-        const hostToleranceM2 = Math.min(formationEdit.DEFAULT_TOLERANCE_M2,
-            takeCtx.area(footprint) * formationEdit.DEFAULT_TOLERANCE_PCT / 100);
+        const reaches = (parcelFeature, parcelId) => ground.reachesInto(turfRef, footprint, parcelFeature, toleranceM,
+            { site: 'apply-buildings.host', proposalId: idLabel, parcelId });
 
         const candidateIds = declaredParentIds.slice();
         const candidateFeatures = Array.isArray(resolvedParentFeatures)
@@ -289,33 +291,20 @@
                 allowMissing: true,
                 _parcelMutation: options._parcelMutation
             }) || []);
-        const ground = openGroundApi();
+        const openGround = openGroundApi();
         const allCandidates = candidateFeatures
             .map(feature => ({ id: _getParcelIdFromFeature(feature), feature }))
             .filter(entry => entry.id !== undefined && entry.id !== null);
-        const hostEntries = allCandidates.filter(entry => ground && ground.isOpenGroundHost(entry.feature));
+        const hostEntries = allCandidates.filter(entry => openGround && openGround.isOpenGroundHost(entry.feature));
         const candidates = allCandidates.filter(entry => !hostEntries.includes(entry));
         const asPlain = geometry => ({ type: 'Feature', properties: {}, geometry });
-        const takenHosts = hostEntries.filter(entry => takeCtx.intersectionArea(footprint, asPlain(entry.feature.geometry))
-            >= hostToleranceM2);
+        const takenHosts = hostEntries.filter(entry => reaches(asPlain(entry.feature.geometry), entry.id));
         // Ground provenance of what the building parcel takes: the open-ground host and any formed
         // pieces on open ground among its parents.
         const groundIdsWith = features => Array.from(new Set([
-            ...takenHosts.flatMap(entry => ground.groundIdsOf(entry.feature)),
-            ...features.flatMap(feature => ground.groundIdsOf(feature))
+            ...takenHosts.flatMap(entry => openGround.groundIdsOf(entry.feature)),
+            ...features.flatMap(feature => openGround.groundIdsOf(feature))
         ]));
-        // The footprint's ground on the open-ground host(s): exactly footprint ∩ host.
-        const groundTakeGeometries = [];
-        takenHosts.forEach(entry => {
-            let hit = null;
-            try { hit = clip('intersect', footprint, asPlain(entry.feature.geometry),
-                { site: 'apply-buildings.groundTake', parcelId: entry.id }); } catch (error) {
-                // Null would leave the building's open ground out of its own parcel.
-                throw clipFailureApi().clipFailure('intersect', error, { site: 'apply-buildings.groundTake', proposalId: idLabel, parcelId: entry.id }, [footprint, entry.feature]);
-            }
-            if (hit && hit.geometry) groundTakeGeometries.push(hit.geometry);
-        });
-        const hostOverlapM2 = groundTakeGeometries.reduce((sum, geometry) => sum + takeCtx.area(asPlain(geometry)), 0);
 
         const proposerName = proposalData.author || 'Proposer';
         const proposerOwnership = { owners: [{ name: proposerName, ownerLabel: proposerName, percentageShare: 100, actualShareText: '100%' }] };
@@ -351,24 +340,17 @@
             try { this._setLastApplyFailure(idLabel, { code: 'building-footprint-degenerate', message: 'The building footprint has no usable area.' }); } catch (_) { }
             return { ok: false };
         }
-        const hosts = [];
-        let coveredM2 = hostOverlapM2;
-        candidates.forEach(entry => {
-            const parcelFeature = { type: 'Feature', properties: {}, geometry: entry.feature.geometry };
-            const overlap = takeCtx.intersectionArea(footprint, parcelFeature);
-            if (!(overlap > 0) || overlap < hostToleranceM2) return;
-            coveredM2 += overlap;
-            hosts.push(entry);
-        });
+        const hosts = candidates.filter(entry => reaches(asPlain(entry.feature.geometry), entry.id));
         if (!hosts.length && !takenHosts.length) {
             const message = 'No parcels found under the building footprint.';
             if (typeof updateStatus === 'function') updateStatus(message);
             try { this._setLastApplyFailure(idLabel, { code: 'building-no-parcels', message }); } catch (_) { }
             return { ok: false };
         }
-        const uncoveredM2 = Math.max(0, footprintArea - coveredM2);
-        if (uncoveredM2 > Math.max(formationEdit.DEFAULT_TOLERANCE_M2, footprintArea * formationEdit.DEFAULT_TOLERANCE_PCT / 100)) {
-            const message = `Part of the building footprint lies on no live parcel here (${Math.round(uncoveredM2 / footprintArea * 100)}% uncovered).`;
+        const uncovered = ground.uncoveredBy(turfRef, footprint, [...takenHosts, ...hosts].map(entry => asPlain(entry.feature.geometry)),
+            { site: 'apply-buildings.uncovered', proposalId: idLabel });
+        if (ground.isGround(turfRef, uncovered, toleranceM)) {
+            const message = `Part of the building footprint lies on no live parcel here (${Math.max(1, Math.round(takeCtx.area(uncovered) / footprintArea * 100))}% uncovered).`;
             if (typeof updateStatus === 'function') updateStatus(message);
             try { this._setLastApplyFailure(idLabel, { code: 'building-uncovered-ground', message }); } catch (_) { }
             return { ok: false };
@@ -379,7 +361,7 @@
         const primary = hostFeatures[0];
         const parentEntries = hosts.flatMap(entry => formationEdit.cadastreIdsOfFeature(entry.feature)
             .map(baseId => ({ baseId, feature: entry.feature })));
-        const buildingCadastreIds = formationEdit.overlappingBaseIds(footprint, parentEntries, takeCtx, { minM2: hostToleranceM2 });
+        const buildingCadastreIds = formationEdit.overlappingBaseIds(footprint, parentEntries, takeCtx, { toleranceM });
         const groundIds = groundIdsWith(hostFeatures);
         if (!buildingCadastreIds.length && !groundIds.length) {
             throw new Error('Building formation has no explicit cadastral anchors under its footprint.');
@@ -436,17 +418,13 @@
             if (!difference || !difference.geometry) {
                 // "Fully consumed" must be TRUE, not an exception artifact: a sweep-line throw
                 // here used to hide the host with no remainder minted — a whole parcel of DEAD
-                // ground around the building (unclickable, unhoverable). If the computation
-                // failed AND the host is not genuinely inside the footprint, refuse the apply
-                // rather than swallow ground that cannot be re-minted.
+                // ground around the building (unclickable, unhoverable). Whether the remainder is
+                // ground is decided on the remainder itself (geometry-tolerances.js isGround); the
+                // shared clip is deterministic, so a failed cut cannot be measured another way.
+                // Refuse the apply rather than swallow ground that cannot be re-minted.
                 if (threw) {
-                    const hostArea = takeCtx.area({ type: 'Feature', properties: {}, geometry: hostFeature.geometry });
-                    const covered = takeCtx.intersectionArea(
-                        { type: 'Feature', properties: {}, geometry: hostFeature.geometry }, footprint);
-                    if (!(hostArea > 0) || (hostArea - covered) > Math.max(1, hostArea * 0.01)) {
-                        cutFailedHostId = String(_getParcelIdFromFeature(hostFeature) || 'unknown');
-                        cutFailure = failure;
-                    }
+                    cutFailedHostId = String(_getParcelIdFromFeature(hostFeature) || 'unknown');
+                    cutFailure = failure;
                 }
                 return; // host fully consumed by the footprint
             }
@@ -462,7 +440,7 @@
             const parts = geometries.map(geometry => ({
                 geometry,
                 area: _calculateGeoJsonArea(geometry)
-            })).filter(part => part.area >= 0.5).sort((a, b) => b.area - a.area);
+            })).filter(part => ground.isGround(turfRef, asPlain(part.geometry))).sort((a, b) => b.area - a.area);
 
             if (isForeign && allocateForeignIndex) allocateForeignIndex.reserve(hostIdentity.anchor, hostIdentity.token, hostIdentity.index);
 
@@ -508,7 +486,7 @@
         // computation on clones).
         {
             const roadHit = (typeof this._appliedRoadOverlappedByTaking === 'function')
-                ? this._appliedRoadOverlappedByTaking(takeGeometry, idLabel, options) : null;
+                ? this._appliedRoadOverlappedByTaking(takeGeometry, idLabel, { ...options, toleranceM }) : null;
             if (roadHit) {
                 const road = roadHit.proposal;
                 const roadName = road.title || road.name || road.proposalId;

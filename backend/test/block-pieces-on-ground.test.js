@@ -56,6 +56,19 @@ describe('the pieces a Block stands as on its ground', () => {
         expect(UrbanRuleVariation.piecesOnGround(lone, massing, whole, { turf })).toBe(lone);
     });
 
+    // Was: a piece stood as saved while 99 % of it lay on its host. Now no part of it outside the host
+    // may be ground (geometry-tolerances.js isGround): a 2.4 cm strip over the border is re-cut,
+    // cutting debris is not.
+    it('stand as saved only while nothing of a piece but debris lies outside its lot', () => {
+        const massing = massingFor('block');
+        const saved = UrbanRuleVariation.splitMassingByParcels(massing, lots, rule('block'), 731, { turf }).pieces;
+        const movedBorder = east => [{ feature: box(16.000, 45.000, east, 45.0014), parcelId: 'L1' }, { feature: box(east, 45.000, 16.002, 45.0014), parcelId: 'L2' }];
+        expect(UrbanRuleVariation.piecesOnGround(saved, massing, movedBorder(16.001000005), { turf })).toBe(saved);
+        const recut = UrbanRuleVariation.piecesOnGround(saved, massing, movedBorder(16.0010003), { turf });
+        expect(recut).not.toBe(saved);
+        expect(recut.map(piece => piece.properties.parcelId)).toEqual(['L1', 'L2']);
+    });
+
     it('leaves anything that is not a rule massing as it was saved', () => {
         const saved = [box(16.000, 45.000, 16.001, 45.001)];
         expect(UrbanRuleVariation.piecesOnGround(saved, ring(), cadastre, { turf })).toBe(saved);

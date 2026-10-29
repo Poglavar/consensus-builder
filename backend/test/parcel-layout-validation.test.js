@@ -63,11 +63,15 @@ describe('parcel-layout validation', () => {
         expect(result.errors.map(error => [error.code, error.plotIndex])).toEqual([['invalid-plot', 0], ['invalid-plot', 1]]);
     });
 
-    it('tolerates a gap under the conservation budget', () => {
-        // 0.5 m² of the pool left between two plots is a numerical seam, not missing land.
-        const result = validate({ pool: POOL, plots: plots(box(0, 0, 40, 50), box(40.01, 0, 100, 50)) }, { turf });
-        expect(result.metrics.uncoveredAreaM2).toBeGreaterThan(0.1);
-        expect(result.valid).toBe(true);
+    // Was: a 1 cm × 50 m gap (0.5 m²) passed under a 1 m² conservation budget. A gap is now judged
+    // by the shared ground rule (geometry-tolerances.js isGround): 1 cm is land, 0.4 mm is a seam.
+    it('tolerates a numerical seam between plots, and refuses a real gap however small its area', () => {
+        const seam = validate({ pool: POOL, plots: plots(box(0, 0, 40, 50), box(40.0004, 0, 100, 50)) }, { turf });
+        expect(seam.metrics.uncoveredAreaM2).toBeGreaterThan(0.01);
+        expect(seam.valid).toBe(true);
+        const gap = validate({ pool: POOL, plots: plots(box(0, 0, 40, 50), box(40.01, 0, 100, 50)) }, { turf });
+        expect(gap.metrics.uncoveredAreaM2).toBeLessThan(1);
+        expect(codes(gap)).toEqual(['coverage-gap']);
     });
 
     it('checks a subdivision against its site, not the pool it carries', () => {

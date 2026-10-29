@@ -21,12 +21,13 @@
         return api;
     }
 
-    // Below this, two polygons are not meaningfully related — the same measured-noise floor
-    // plan-order.js uses for ancestry. It is NOT a tolerance for cut debris: the fabric is read at
-    // full precision now (see cadastre-ancestry.js), so ground a road actually cut leaves exactly
-    // zero overlap and mere adjacency measures exactly zero. Used below to tell a real take of
-    // corridor ground from an abutting one, which must never be trimmed.
-    const MIN_REAL_OVERLAP_M2 = 0.25;
+    // Whether a road really takes ground or merely abuts it, and whether a carved piece is still
+    // ground, is the one shared rule (geometry-tolerances.js reachesInto / isGround), the rule
+    // binding and ancestry use. An abutting take, which must never be trimmed, is not ground.
+    function groundApi() {
+        return (typeof window !== 'undefined' && window.GeometryTolerances)
+            || (typeof require === 'function' ? require('../../geometry-tolerances.js') : null);
+    }
 
     return {
     // §15b (decision 2026-08-06): one partition, latest wins. A later taking never rewrites a
@@ -68,8 +69,8 @@
     // road is not carved here — a newer formation over it is still refused.
     //
     // Takes the same geometry the corridor cut consumes (plan-order footprintOf, as
-    // _appliedCorridorTakes), clipped through the arrangement's snapped clipper; crumbs below
-    // MIN_REAL_OVERLAP_M2 are dropped. `geometries` is a list (one per piece); returns
+    // _appliedCorridorTakes), clipped through the arrangement's snapped clipper; crumbs that are not
+    // ground (geometry-tolerances.js isGround) are dropped. `geometries` is a list (one per piece); returns
     // { geometries, corridorIds } — each entry the carved geometry, or null when the corridors take
     // all of it; the input list unchanged and [] when no later corridor crosses any of them.
     _groundAfterLaterCorridors(record, geometries, options = {}) {
@@ -109,7 +110,7 @@
         // Import order and formation replay order can differ. Use the same geometric clip order
         // as cadastral arrangement so a formation's remaining ground keeps its agreement hash.
         const orderedClaims = clipFailureApi().orderClips(claims, claim => claim.feature);
-        const area = feature => { try { return turfRef.area(feature) || 0; } catch (_) { return 0; } };
+        const ground = groundApi();
         const disjoint = (a, b) => !!a && !!b && (a[0] > b[2] || b[0] > a[2] || a[1] > b[3] || b[1] > a[3]);
         const corridorIds = new Set();
         const carved = list.map(geometry => {
@@ -120,32 +121,25 @@
                 let box = null;
                 try { box = turfRef.bbox(body); } catch (_) { box = null; }
                 if (disjoint(box, claim.box)) continue;
-                let overlapM2 = 0;
-                try {
-                    const hit = clip('intersect', body, claim.feature);
-                    overlapM2 = hit ? area(hit) : 0;
-                } catch (error) {
-                    // Zero would leave the later corridor's ribbon inside this formation: two
-                    // proposals owning the same ground.
-                    throw clipFailureApi().clipFailure('intersect', error, {
-                        site: 'apply-road.groundAfterLaterCorridors',
-                        proposalId: record.proposalId,
-                        takeId: claim.id
-                    }, [body, claim.feature]);
-                }
-                if (overlapM2 < MIN_REAL_OVERLAP_M2) continue;
+                // A clip that fails throws a typed ClipFailure: zero would leave the later
+                // corridor's ribbon inside this formation, two proposals owning the same ground.
+                if (!ground.reachesInto(turfRef, body, claim.feature, 0, {
+                    site: 'apply-road.groundAfterLaterCorridors',
+                    proposalId: record.proposalId,
+                    takeId: claim.id
+                })) continue;
                 corridorIds.add(claim.id);
                 cut = true;
                 const rest = clip('difference', body, claim.feature);
-                if (!rest || !rest.geometry || !(area(rest) >= MIN_REAL_OVERLAP_M2)) return null;
+                if (!rest || !rest.geometry || !ground.isGround(turfRef, rest)) return null;
                 body = { type: 'Feature', properties: {}, geometry: rest.geometry };
             }
             if (!cut) return geometry;
-            // Drop the clipper's sub-noise crumbs so the piece is only real ground.
+            // Drop the clipper's debris so the piece is only real ground.
             const polygons = body.geometry.type === 'MultiPolygon'
                 ? body.geometry.coordinates
                 : [body.geometry.coordinates];
-            const kept = polygons.filter(coordinates => area({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates } }) >= MIN_REAL_OVERLAP_M2);
+            const kept = polygons.filter(coordinates => ground.isGround(turfRef, { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates } }));
             if (!kept.length) return null;
             return kept.length === 1 ? { type: 'Polygon', coordinates: kept[0] } : { type: 'MultiPolygon', coordinates: kept };
         });
@@ -166,12 +160,15 @@
     //
     // Roads still take from everything else; this is the one direction that is closed. Returns
     // { proposal, overlapM2 } for the first applied road the taking would stand on, else null.
+    // "Stands on" is the shared rule (geometry-tolerances.js isGround of the overlap), widened only
+    // by `options.toleranceM`, the taking design's own allowance.
     // A road applied AFTER a structure is not "placed" for it: replay carves that road's ground out
     // of the formation first (_groundAfterLaterCorridors), so only earlier roads remain here.
     _appliedRoadOverlappedByTaking(takenGeometry, excludeProposalId, options = {}) {
         try {
             const turfRef = (typeof turf !== 'undefined') ? turf : null;
             if (!turfRef || !takenGeometry) return null;
+            const ground = groundApi();
             const taken = takenGeometry.type === 'Feature'
                 ? takenGeometry
                 : { type: 'Feature', properties: {}, geometry: takenGeometry };
@@ -194,21 +191,17 @@
                 // otherwise. Same geometry the cut consumes, so the guard cannot disagree with it.
                 const claim = this._takingFootprintOf(p);
                 if (!claim) continue;
-                let overlapM2 = 0;
-                try {
-                    const hit = turfRef.intersect(taken, { type: 'Feature', properties: {}, geometry: claim });
-                    overlapM2 = hit ? (turfRef.area(hit) || 0) : 0;
-                } catch (error) {
-                    // Zero would let a take stand on an applied road unchecked.
-                    throw clipFailureApi().clipFailure('intersect', error, {
-                        site: 'apply-road.appliedRoadOverlappedByTaking',
-                        proposalId: excludeKey || null,
-                        takeId: p.proposalId
-                    }, [taken, claim]);
-                }
-                // Abutting a street is normal composition and measures exactly zero now that the
-                // fabric is read at full precision; anything above the noise floor is a real take.
-                if (overlapM2 >= MIN_REAL_OVERLAP_M2) return { proposal: p, overlapM2 };
+                const claimFeature = { type: 'Feature', properties: {}, geometry: claim };
+                // A clip that fails throws a typed ClipFailure: zero would let a take stand on an
+                // applied road unchecked.
+                const hit = clipFailureApi().clipWith(turfRef, 'intersect', taken, claimFeature, {
+                    site: 'apply-road.appliedRoadOverlappedByTaking',
+                    proposalId: excludeKey || null,
+                    takeId: p.proposalId
+                });
+                // Abutting a street is normal composition and leaves no ground in the overlap;
+                // anything that is ground is a real take.
+                if (ground.isGround(turfRef, hit, options.toleranceM)) return { proposal: p, overlapM2: turfRef.area(hit) || 0 };
             }
         } catch (error) {
             // A clip that could not be done refuses the take; it is not "no road here".

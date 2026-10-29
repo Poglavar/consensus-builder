@@ -27,22 +27,13 @@
         return api && typeof api.clipFailure === 'function' ? api.clipFailure(operation, error, context, operands) : error;
     };
 
-    // Below this an intersection is shared-border noise from coordinate rounding, not a real
-    // relationship. Two parcels that merely abut produce slivers of a few cm².
-    //
-    // The floor is the MEASURED noise, not a judgement about what size of take "matters". Measured
-    // on real Zagreb fabric (2026-08-08): across 20,001 bbox-adjacent cadastral pairs only 8 overlap
-    // at all — three at 0.001 m², three at 0.100 m², and two genuine data defects at 1577/1859 m².
-    // So pure rounding noise tops out around 0.1 m², and 0.25 gives 2.5x headroom over it.
-    //
-    // It used to be 2 m², which is 20x above that noise floor, and it silently DISCARDED real
-    // takes: a corridor genuinely covering 0.755 m² of parcel 6804/5 never registered the parcel,
-    // so the road never cut it and the corridor simply lay on top of ground someone else still
-    // owned. That unregistered double-cover is what forced a string of tolerance exceptions
-    // elsewhere (the live-fabric overlap allowance, the severance genuine-overlap guard), and it
-    // made the parcel unusable: taking it whole for a square took road surface with it, which the
-    // severance test — correctly — read as cutting the road in two. Register the take instead.
-    const MIN_INTERSECTION_M2 = 0.25;
+    // Whether an intersection is a real relationship or cutting debris is the one shared rule
+    // (geometry-tolerances.js isGround: wider than the measured 1 mm noise, or than a design's own
+    // toleranceM). An area floor here used to be 2 m², then 0.25 m²; the 2 m² floor silently
+    // DISCARDED real takes: a corridor genuinely covering 0.755 m² of parcel 6804/5 never registered
+    // the parcel, so the road never cut it and the corridor lay on ground someone else still owned.
+    const groundApi = () => (typeof window !== 'undefined' && window.GeometryTolerances)
+        || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
 
     // A road's footprint is derived by the same corridor builder used for cutting. Keeping a Turf
     // buffer here produced a second, round-capped acquisition model whose ancestry disagreed with
@@ -131,17 +122,29 @@
     // coverage although every square metre was present.
     //
     // Moving one operand outwards by a tenth of a millimetre breaks only the coincident-segment
-    // ambiguity. Even along a kilometre of shared boundary it adds 0.1 m2 — below the measured
-    // 0.25 m2 ancestry floor — and the returned area is clamped to the unbuffered operands, so it
-    // cannot manufacture a larger take. The retry runs only after the exact intersection throws.
+    // ambiguity. It widens the overlap by 0.1 mm — below the 1 mm noise (geometry-tolerances.js) —
+    // and the returned area is clamped to the unbuffered operands, so it cannot manufacture a
+    // larger take. The retry runs only after the exact intersection throws.
     const TOPOLOGY_REPAIR_BUFFER_M = 0.0001;
 
     function intersectionArea(a, b) {
+        const hit = intersection(a, b);
+        return hit ? hit.area : 0;
+    }
+
+    // The overlap of `a` and `b` on the shared clip as { feature, area } (area clamped to the
+    // smaller operand), or null when they share nothing.
+    function intersection(a, b) {
         const t = T();
-        if (!t || !a || !b) return 0;
+        if (!t || !a || !b) return null;
+        const measured = hit => {
+            if (!hit) return null;
+            const ceiling = Math.min(Number(t.area(a)) || 0, Number(t.area(b)) || 0);
+            const area = Math.max(0, Math.min(Number(t.area(hit)) || 0, ceiling));
+            return area > 0 ? { feature: hit, area } : null;
+        };
         try {
-            const hit = arrangementApi().clipWith(t, 'intersect', a, b, { site: 'plan-order.intersectionArea' });
-            return hit ? t.area(hit) : 0;
+            return measured(arrangementApi().clipWith(t, 'intersect', a, b, { site: 'plan-order.intersectionArea' }));
         } catch (error) {
             // Zero area here reads as "the footprint does not stand on this parcel" — a wrong
             // ancestry, a wrong coverage. Only the measured repair below may answer instead.
@@ -154,10 +157,7 @@
                     const hit = repaired
                         ? arrangementApi().clipWith(t, 'intersect', left, repaired, { site: 'plan-order.intersectionRepair' })
                         : null;
-                    if (!hit) return 0;
-                    const measured = Number(t.area(hit)) || 0;
-                    const ceiling = Math.min(Number(t.area(a)) || 0, Number(t.area(b)) || 0);
-                    return ceiling > 0 ? Math.max(0, Math.min(measured, ceiling)) : 0;
+                    return { hit: measured(hit) };
                 } catch (_) {
                     return null;
                 }
@@ -165,19 +165,27 @@
             // Base-ancestry callers pass the parcel second, which is the useful first repair. The
             // symmetric retry also keeps this exported helper honest for its other callers.
             const repairedB = retry(a, b);
-            if (repairedB !== null) return repairedB;
+            if (repairedB !== null) return repairedB.hit;
             const repairedA = retry(b, a);
-            if (repairedA !== null) return repairedA;
+            if (repairedA !== null) return repairedA.hit;
             // Every repair threw too: the overlap is unknown, so say so.
             throw clipFailureOf('intersect', error, { site: 'plan-order.intersectionArea' }, [a, b]);
         }
     }
 
-    // The base cadastral parcels a footprint actually covers, largest share first.
-    // `baseParcels` is [{ id, feature }] — whatever the caller has loaded for the area.
+    // The base cadastral parcels a footprint reaches into (geometry-tolerances.js: their overlap is
+    // ground), largest share first. `baseParcels` is [{ id, feature }] — whatever the caller has
+    // loaded for the area. `options.toleranceM` is the design's own allowance, when the caller has
+    // the record.
     function computeBaseAncestry(footprint, baseParcels, options) {
+        return overlapsOf(footprint, baseParcels, options)
+            .filter(hit => hit.ground)
+            .map(({ id, area }) => ({ id, area }));
+    }
+
+    // Every parcel the footprint overlaps at all, as { id, area, ground }, largest first.
+    function overlapsOf(footprint, baseParcels, options) {
         const opts = options || {};
-        const minArea = Number.isFinite(opts.minAreaM2) ? opts.minAreaM2 : MIN_INTERSECTION_M2;
         if (!footprint || !Array.isArray(baseParcels)) return [];
 
         // Bounding box first. A proposal touches a handful of parcels and is asked against every
@@ -200,32 +208,31 @@
         baseParcels.forEach(entry => {
             if (!entry || !entry.feature || !entry.id) return;
             if (outsideBox(entry.feature)) return;
-            const area = intersectionArea(footprint, entry.feature);
+            const hit = intersection(footprint, entry.feature);
+            if (!hit) return;
             // Keep the measured area. Rounding here is not presentation-only: repository coverage
             // sums these values and divides by the exact footprint area. A perfectly covered small
             // building of 11.27 m² therefore used to look only 97.6% covered (11 / 11.27) and was
             // refused before materialization. Callers that display an area can round at the edge.
-            if (area >= minArea) hits.push({ id: String(entry.id), area });
+            hits.push({ id: String(entry.id), area: hit.area, ground: groundApi().isGround(T(), hit.feature, opts.toleranceM) });
         });
         hits.sort((a, b) => b.area - a.area || String(a.id).localeCompare(String(b.id)));
         return hits;
     }
 
-    // How much of a footprint the given parcels cover, and which of them it stands on. Two questions
-    // with two floors: an ANCESTOR must hold at least MIN_INTERSECTION_M2 of the footprint (less is a
-    // shared edge, not ground it stands on), but the COVERED AREA counts every overlap, however small.
-    // Summing only the ancestors' areas left the slivers along shared edges out of the covered area,
-    // so a footprint lying wholly inside its parcels read as sticking out: a park snapped onto a
-    // neighbouring plot touched a third parcel by 0.09 m², that sliver was dropped from the sum, and
-    // the park was refused as extending beyond its parcels (2026-10-17). Parcels of one cadastre do
-    // not overlap, so the plain sum is the area of the footprint inside their union.
+    // How much of a footprint the given parcels cover, and which of them it stands on. An ANCESTOR
+    // is a parcel the footprint reaches into (its overlap is ground, computeBaseAncestry), but the
+    // COVERED AREA counts every overlap, debris included. Summing only the ancestors' areas left the
+    // slivers along shared edges out of the covered area, so a footprint lying wholly inside its
+    // parcels read as sticking out: a park snapped onto a neighbouring plot touched a third parcel
+    // by 0.09 m², that sliver was dropped from the sum, and the park was refused as extending beyond
+    // its parcels (2026-10-17). Parcels of one cadastre do not overlap, so the plain sum is the area
+    // of the footprint inside their union; coveredArea is a measurement, not a decision.
     // Returns { hits: ancestors (as computeBaseAncestry), coveredArea: m² }.
     function measureCoverage(footprint, baseParcels, options) {
-        const opts = options || {};
-        const floor = Number.isFinite(opts.minAreaM2) ? opts.minAreaM2 : MIN_INTERSECTION_M2;
-        const overlaps = computeBaseAncestry(footprint, baseParcels, { ...opts, minAreaM2: Number.MIN_VALUE });
+        const overlaps = overlapsOf(footprint, baseParcels, options);
         return {
-            hits: overlaps.filter(hit => hit.area >= floor),
+            hits: overlaps.filter(hit => hit.ground).map(({ id, area }) => ({ id, area })),
             coveredArea: overlaps.reduce((sum, hit) => sum + (Number(hit.area) || 0), 0)
         };
     }
@@ -269,7 +276,6 @@
     }
 
     const api = {
-        MIN_INTERSECTION_M2,
         intersectionArea,
         footprintOf,
         cadastreCoverageIdsForGeometry,

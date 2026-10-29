@@ -448,7 +448,6 @@ describe('dossier: an unmeasurable take is unknown, never smaller', () => {
     const dossier = require('../../frontend/js/proposals/dossier.js');
     beforeEach(() => {
         install('__planOrder', {
-            MIN_INTERSECTION_M2: 0.25,
             footprintOf: () => LEFT,
             intersectionArea: (a, b) => { const hit = turf.intersect(a, b); return hit ? turf.area(hit) : 0; }
         });
@@ -493,18 +492,20 @@ describe('dossier: an unmeasurable take is unknown, never smaller', () => {
 
 describe('map-pick ground (display)', () => {
     // The ground a design stands on, as the share panel's hover and every pick highlight measure it
-    // (js/map-pick.js groundIntersectionArea, MapPick.groundOf).
+    // (js/map-pick.js groundReaches, MapPick.groundOf).
     it('an unknown overlap keeps the parcel, reported', () => {
         const MapPick = require('../../frontend/js/map-pick.js');
         install('turf', failing(['intersect']));
-        const m2 = expectReported('map-pick.groundUnderBody', () => MapPick.groundIntersectionArea(LEFT, RIGHT));
-        expect(m2).toBe(Number.POSITIVE_INFINITY);
+        const reaches = expectReported('map-pick.groundUnderBody', () => MapPick.groundReaches(LEFT, RIGHT));
+        expect(reaches).toBe(true);
         // So every parcel whose overlap is unknown stays under the body rather than silently dropping
         // out of the highlight, each clip reported.
         install('__hoverGround', require('../../frontend/js/proposals/hover-ground.js'));
+        // FAR's box misses the body, so no clip runs for it (geometry-tolerances.js reachesInto) and
+        // it is not ground the body stands on.
         const before = count('map-pick.groundUnderBody');
-        expect(MapPick.groundOf([LEFT, FAR], [RIGHT])).toEqual([LEFT, FAR]);
-        expect(count('map-pick.groundUnderBody')).toBe(before + 2);
+        expect(MapPick.groundOf([LEFT, FAR], [RIGHT])).toEqual([LEFT]);
+        expect(count('map-pick.groundUnderBody')).toBe(before + 1);
     });
 });
 

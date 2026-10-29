@@ -81,14 +81,17 @@ describe('explodeToContiguousParts', () => {
         });
     });
 
-    it('drops sub-threshold slivers when given an area function', () => {
-        const parts = pc.explodeToContiguousParts(multi([[0, 0, 10, 10], [50, 50, 50.2, 50.2]]), { minAreaM2: 1, areaOf });
+    // Was: { minAreaM2, areaOf } dropped pieces below an area floor. The caller now passes the shared
+    // ground test (geometry-tolerances.js isGround); a stand-in predicate exercises the dropping here.
+    it('drops pieces the ground test calls debris', () => {
+        const isGround = f => areaOf(f) >= 1;
+        const parts = pc.explodeToContiguousParts(multi([[0, 0, 10, 10], [50, 50, 50.2, 50.2]]), { isGround, areaOf });
         expect(parts).toHaveLength(1);
         expect(areaOf(parts[0])).toBe(100);
     });
 
-    it('keeps the largest piece rather than minting nothing when all are sub-threshold', () => {
-        const parts = pc.explodeToContiguousParts(multi([[0, 0, 0.5, 0.5], [9, 9, 9.2, 9.2]]), { minAreaM2: 100, areaOf });
+    it('keeps the largest piece rather than minting nothing when all are debris', () => {
+        const parts = pc.explodeToContiguousParts(multi([[0, 0, 0.5, 0.5], [9, 9, 9.2, 9.2]]), { isGround: () => false, areaOf });
         expect(parts).toHaveLength(1);
         expect(areaOf(parts[0])).toBeCloseTo(0.25, 5);
     });

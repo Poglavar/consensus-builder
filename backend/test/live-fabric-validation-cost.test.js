@@ -121,12 +121,29 @@ describe('bbox prefilter', () => {
 
     it('accepts a vertex on the boundary within tolerance', async () => {
         const { fabric } = await seeded([box('HR-A', 15, 45, 15.001, 45.001)]);
-        // ~1 cm east of the eastern edge: outside the polygon, inside VERTEX_TOLERANCE_M (2 cm).
-        const piece = box('HR-A#edge', 15, 45, 15.001 + 1e-7, 45.001,
+        // ~0.4 mm east of the eastern edge: outside the polygon, inside VERTEX_TOLERANCE_M (NOISE_M, 1 mm).
+        const piece = box('HR-A#edge', 15, 45, 15.001 + 5e-9, 45.001,
             { cadastreParcelIds: ['HR-A'], producedByProposalId: 'p1' });
 
         await expect(commit(fabric, mutation => mutation.replaceCadastreScope(['HR-A'], [piece]),
             { kind: 'proposal-apply' })).resolves.toEqual(expect.any(Array));
+    });
+
+    it('refuses ground missing beyond a noise-wide strip along the edges (the old 1 m² budget passed it)', async () => {
+        const { fabric } = await seeded([box('HR-A', 15, 45, 15.001, 45.001)]);
+        // Stops ~6.7 mm short of the north edge: ~0.52 m² missing, over NOISE_M × the ~379 m boundary.
+        const piece = box('HR-A#short', 15, 45, 15.001, 45.001 - 6e-8,
+            { cadastreParcelIds: ['HR-A'], producedByProposalId: 'p1' });
+        await expect(commit(fabric, mutation => mutation.replaceCadastreScope(['HR-A'], [piece]),
+            { kind: 'proposal-apply' })).rejects.toMatchObject({ code: 'live-fabric-replacement-hole' });
+    });
+
+    it('refuses a vertex a centimetre past the boundary (the old 2 cm tolerance accepted it)', async () => {
+        const { fabric } = await seeded([box('HR-A', 15, 45, 15.001, 45.001)]);
+        const piece = box('HR-A#edge', 15, 45, 15.001 + 1e-7, 45.001,
+            { cadastreParcelIds: ['HR-A'], producedByProposalId: 'p1' });
+        await expect(commit(fabric, mutation => mutation.replaceCadastreScope(['HR-A'], [piece]),
+            { kind: 'proposal-apply' })).rejects.toMatchObject({ code: 'live-fabric-replacement-outside' });
     });
 });
 

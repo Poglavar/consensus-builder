@@ -321,6 +321,7 @@ export function loadRoadDrawing(options = {}) {
         // The city's side of the road; `options.drivingSide` draws as in a city that keeps left.
         CityConfigManager: { getDrivingSide: () => options.drivingSide || 'right' },
         __formationEdit: formationEdit,
+        GeometryTolerances: require(`${FRONTEND}geometry-tolerances.js`),
         ...corridorGeometry,
         ...corridorProfile,
         ...corridorTunnel,

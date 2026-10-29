@@ -609,8 +609,10 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures, options 
         const contiguity = (typeof window !== 'undefined') ? window.__parcelContiguity : null;
         if (contiguity && childFeatures.some(f => contiguity.partCount(f) > 1)) {
             const turf = (typeof window !== 'undefined') ? window.turf : null;
+            const grid = (typeof window !== 'undefined') ? window.GeometryTolerances : null;
+            // A part that is not ground (geometry-tolerances.js isGround) is cutting debris, not a parcel.
             const exploded = contiguity.explodeAll(childFeatures, {
-                minAreaM2: 1,
+                isGround: turf && grid ? f => grid.isGround(turf, f) : null,
                 areaOf: turf && typeof turf.area === 'function' ? f => turf.area(f) : null
             });
             console.debug('[_assignSyntheticChildIdentities] split non-contiguous child parcels',
@@ -714,9 +716,12 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures, options 
     });
 }
 
-// The authored footprint and immutable cadastral scope may differ only by the shared geometry
-// epsilon. A percentage threshold rejects tiny valid footprints more harshly than large ones.
-const FLAT_GROUND_AREA_EPSILON_M2 = 0.01;
+// What counts as ground and whether a shape reaches into a parcel: the one shared rule
+// (geometry-tolerances.js), the browser global or required under node.
+function _groundRule() {
+    const root = typeof window !== 'undefined' ? window : globalThis;
+    return root.GeometryTolerances || require('./geometry-tolerances.js');
+}
 
 // Bound cadastral references determine the source needed for reconstruction. Parcel-free
 // designs carry their own geography; their descriptive city text never gates live output.
@@ -726,13 +731,16 @@ function _recordInGroundContext(record, currentCityId) {
     return !ids.length || ids.some(id => isInCity(id, currentCityId));
 }
 
-function _flatGroundCoverageIsComplete(declaredCount, resolvedCount, coverage, footprintArea) {
-    const area = Number(footprintArea);
-    const ratio = Number(coverage);
-    if (!(Number(declaredCount) > 0) || !(Number(resolvedCount) > 0)
-        || !(area > 0) || !(ratio > 0) || !Number.isFinite(ratio)) return false;
-    const boundedRatio = Math.max(0, Math.min(1, ratio));
-    return area * (1 - boundedRatio) <= FLAT_GROUND_AREA_EPSILON_M2;
+// The authored footprint stands wholly on its cadastral parcels when none of it left off them is
+// ground (geometry-tolerances.js isGround of the uncovered part, widened only by the design's own
+// toleranceM). An area or ratio threshold judged tiny footprints more harshly than large ones.
+function _flatGroundCoverageIsComplete(footprint, parcels, turfApi, toleranceM = 0) {
+    const list = (Array.isArray(parcels) ? parcels : []).filter(parcel => parcel && parcel.geometry);
+    if (!footprint || !list.length || !turfApi || typeof turfApi.area !== 'function') return false;
+    if (!(Number(turfApi.area(footprint)) > 0)) return false;
+    const rule = _groundRule();
+    const uncovered = rule.uncoveredBy(turfApi, footprint, list, { site: 'proposal-manager.flatGroundCoverage' });
+    return !rule.isGround(turfApi, uncovered, toleranceM);
 }
 
 const _PROPOSAL_APPLY_FAILURE_TEXT = {
@@ -1416,27 +1424,18 @@ const ProposalManager = {
             complete = this._footprintInsideSite(groundRecord, footprint);
             if (!complete) failure = _proposalApplyFailure('proposal-footprint-outside-site');
         } else if (footprint && footprint.geometry) {
-            let resolved = null;
-            try {
-                resolved = repository && typeof repository.coverageOf === 'function'
-                    ? repository.coverageOf(footprint, { ids: declared })
-                    : null;
-            } catch (_) { resolved = null; }
-            const coverage = Number(resolved && resolved.coverage) || 0;
+            const parcels = declared.length && repository && typeof repository.peekMany === 'function'
+                ? repository.peekMany(declared)
+                : [];
             const turfApi = browserRoot.turf;
             const footprintArea = turfApi && typeof turfApi.area === 'function'
                 ? Number(turfApi.area(footprint)) || 0
                 : 0;
-            complete = _flatGroundCoverageIsComplete(
-                declared.length,
-                Array.isArray(resolved?.ids) ? resolved.ids.length : 0,
-                coverage,
-                footprintArea
-            );
+            complete = _flatGroundCoverageIsComplete(footprint, parcels, turfApi, _groundRule().designToleranceM(record));
             if (!complete) {
                 const code = !(footprintArea > 0) ? 'proposal-footprint-invalid'
                     : !declared.length ? 'proposal-ground-undeclared'
-                        : !resolved ? 'cadastral-ground-unavailable'
+                        : !parcels.length ? 'cadastral-ground-unavailable'
                             : 'proposal-footprint-outside-cadastre';
                 failure = _proposalApplyFailure(code);
             }
@@ -1454,21 +1453,21 @@ const ProposalManager = {
             : (resolution.failure || _proposalApplyFailure('cadastral-ground-unavailable'));
     },
 
-    // The authored footprint lies inside the record's site (shared-edge rounding aside). A
-    // footprint-derived site contains its footprint by construction.
+    // The authored footprint lies inside the record's site: none of it outside is ground
+    // (geometry-tolerances.js isGround, widened only by the record's toleranceM). A footprint-derived
+    // site contains its footprint by construction.
     _footprintInsideSite(record, footprint) {
         const browserRoot = typeof window !== 'undefined' ? window : globalThis;
         const siteApi = browserRoot.__siteBinding;
-        const order = browserRoot.__planOrder;
         const t = browserRoot.turf || (typeof turf !== 'undefined' ? turf : null);
-        if (!siteApi || !order || !t || !footprint) return false;
+        if (!siteApi || !t || !footprint) return false;
         const site = siteApi.siteOf(record);
         if (!site) return false;
         if (!record.site) return true;
-        const footprintArea = Number(t.area(footprint)) || 0;
-        if (!(footprintArea > 0)) return false;
-        const inside = Number(order.intersectionArea(footprint, t.feature(site))) || 0;
-        return footprintArea - inside <= Math.max(FLAT_GROUND_AREA_EPSILON_M2, footprintArea * 1e-6);
+        if (!(Number(t.area(footprint)) > 0)) return false;
+        const rule = _groundRule();
+        const outside = rule.uncoveredBy(t, footprint, [t.feature(site)], { site: 'proposal-manager.footprintInsideSite' });
+        return !rule.isGround(t, outside, rule.designToleranceM(record));
     },
 
     async _flatScopeSeeds(records, extraCadastreParcelIds = [], options = {}) {
@@ -1599,8 +1598,7 @@ const ProposalManager = {
     _openGroundInteractions(seeds, candidates) {
         const browserRoot = typeof window !== 'undefined' ? window : globalThis;
         const siteApi = browserRoot.__siteBinding;
-        const order = browserRoot.__planOrder;
-        if (!siteApi || !order || typeof order.intersectionArea !== 'function') return null;
+        if (!siteApi || !browserRoot.turf) return null;
         const seedList = (Array.isArray(seeds) ? seeds : []).filter(Boolean);
         const candidateList = (Array.isArray(candidates) ? candidates : []).filter(Boolean);
         const anyOpen = seedList.some(record => openGroundApi.hasOpenGround(_groundRecord(record)))
@@ -1629,7 +1627,8 @@ const ProposalManager = {
         };
         const candidateEntries = candidateList.map(entryOf).filter(entry => entry && entry.id && entry.bbox);
         const byId = new Map(candidateEntries.map(entry => [entry.id, entry]));
-        const intersects = (a, b) => Number(order.intersectionArea(a, b)) >= (Number(order.MIN_INTERSECTION_M2) || 0.25);
+        // Two grounds interact when one reaches into the other (geometry-tolerances.js reachesInto).
+        const intersects = (a, b) => _groundRule().reachesInto(browserRoot.turf, a, b, 0, { site: 'proposal-manager.openGroundInteractions' });
         return members => {
             const memberEntries = members.map(entryOf).filter(entry => entry && entry.bbox);
             const hit = openGroundApi.geometricInteractions(memberEntries, candidateEntries, { intersects });
@@ -3429,14 +3428,15 @@ const ProposalManager = {
         // Pieces OTHER proposals formed on this open ground stand where they stand: they leave the
         // host and become parents of their own (the taker amends the taken, as on cadastral ground).
         const fabric = _fabricDraft(options) || _committedFabric();
-        const order = browserRoot.__planOrder;
         let occupied = [];
-        if (fabric && typeof fabric.queryBounds === 'function' && order && typeof order.intersectionArea === 'function') {
+        if (fabric && typeof fabric.queryBounds === 'function' && browserRoot.turf) {
             const siteFeature = { type: 'Feature', properties: {}, geometry: site };
+            // A piece occupies the site when the site reaches into it (geometry-tolerances.js).
             occupied = fabric.queryBounds(openGroundApi.bboxOf(site))
                 .filter(feature => openGroundApi.groundIdsOf(feature).length
                     && String(feature.properties.producedByProposalId || '') !== String(record.proposalId || ''))
-                .filter(feature => Number(order.intersectionArea(siteFeature, feature)) >= (Number(order.MIN_INTERSECTION_M2) || 0.25));
+                .filter(feature => _groundRule().reachesInto(browserRoot.turf, siteFeature, feature, 0,
+                    { site: 'proposal-manager.openGroundOccupied', proposalId: record.proposalId }));
         }
         const cacheKey = JSON.stringify([canonical, declared, Number(record.toleranceM) || 0,
             record.binding && record.binding.coverage || null]);
@@ -3891,6 +3891,11 @@ const ProposalManager = {
             return { ok: false, ids: [], features: [], cadastreIds: [], coverage: 0, message };
         }
 
+        // Which pieces the footprint stands on, whether any of it stands on none, and whether two
+        // pieces double-cover ground are all the shared rule (geometry-tolerances.js), widened only
+        // by the record's own toleranceM where the footprint is the question.
+        const rule = _groundRule();
+        const toleranceM = rule.designToleranceM(proposalData);
         let footprint = null;
         let candidates = [];
         let hits = [];
@@ -3910,11 +3915,12 @@ const ProposalManager = {
                 if (!seen.has(id)) { seen.add(id); candidates.push(feature); }
             });
             if (groundHost) candidates = candidates.concat([groundHost]);
-            // Ancestors and covered area are measured apart (plan-order.js measureCoverage).
+            // Ancestors and covered area are measured apart (plan-order.js measureCoverage); the
+            // covered share is reported, never decided on.
             const measured = order.measureCoverage(footprint, candidates.map(feature => ({
                 id: String(_getParcelIdFromFeature(feature)),
                 feature
-            })));
+            })), { toleranceM });
             hits = measured.hits;
             coveredArea = measured.coveredArea;
             coverage = Math.max(0, Math.min(1, coveredArea / footprintArea));
@@ -3927,7 +3933,7 @@ const ProposalManager = {
         // The host (when hit) goes last, after the live pieces, in ids and features alike.
         const ids = Array.from(new Set(hits.map(hit => String(hit.id || '')).filter(Boolean)))
             .sort((left, right) => (left === groundHostId) - (right === groundHostId));
-        if (!ids.length || coverage < 0.95) {
+        if (!ids.length) {
             const message = `The live fabric covers only ${Math.round(coverage * 100)}% of this ${formationLabel}'s footprint; nothing was cut.`;
             try { this._setLastApplyFailure(idLabel, { code: 'formation-ground-unresolved', message, coverage, missingIds: [] }); } catch (_) { }
             try { if (typeof updateStatus === 'function') updateStatus(message); } catch (_) { }
@@ -3948,15 +3954,11 @@ const ProposalManager = {
         // overlap; their live descendants may inherit only that existing overlap. Refuse any new
         // double-cover instead of multiplying it into another replay.
         //
-        // This was 5 m² to tolerate "kerf" — sliver debris along the boundaries turf had just cut.
-        // That debris was never turf's: it came from reading geometry back through Leaflet's
-        // 6-decimal rounding (see cadastre-ancestry.js). With the fabric read at full precision the
-        // debris is GONE, measured, not assumed: across the whole live fabric (4,656 parcels,
-        // ~21k adjacent pairs) exactly zero overlaps involve a parcel we cut, and the only two that
-        // remain are defects in the cadastral source itself, at 1577 and 1855 m². So the floor goes
-        // back to the measured-noise scale, and a genuine double-cover is caught instead of waved
-        // through under 5 m².
-        const OVERLAP_REFUSAL_M2 = 0.25;
+        // A double-cover is an overlap that is ground (geometry-tolerances.js isGround). It was once
+        // 5 m² to tolerate "kerf", debris that came from reading geometry back through Leaflet's
+        // 6-decimal rounding; with the fabric on one grid, cutting leaves debris under 1 mm wide,
+        // and the only real overlaps are defects in the cadastral source itself (1577 and 1855 m²).
+        const overlapIsGround = feature => rule.isGround(t, feature);
         const inheritedOverlapPairs = [];
         try {
             if (typeof turf !== 'undefined' && typeof turf.intersect === 'function' && typeof turf.area === 'function') {
@@ -4008,7 +4010,7 @@ const ProposalManager = {
                     for (let j = i + 1; j < features.length; j += 1) {
                         if (boxesDisjoint(boxes[i], boxes[j])) continue;
                         const hit = intersectParents(features[i], features[j]);
-                        if (hit && turf.area(hit) > OVERLAP_REFUSAL_M2) {
+                        if (hit && overlapIsGround(hit)) {
                             // Two distinct cadastral outlines can themselves cover the same ground.
                             // A cut may inherit exactly that overlap, but it cannot create any new
                             // double-cover or turn two pieces of the same source into overlapping land.
@@ -4021,7 +4023,7 @@ const ProposalManager = {
                             const sourceOverlap = leftSource && rightSource
                                 ? intersectParents(leftSource, rightSource) : null;
                             const newOverlap = sourceOverlap ? clip('difference', hit, sourceOverlap) : hit;
-                            if (sourceOverlap && (!newOverlap || turf.area(newOverlap) <= OVERLAP_REFUSAL_M2)) {
+                            if (sourceOverlap && (!newOverlap || !overlapIsGround(newOverlap))) {
                                 inheritedOverlapPairs.push([i, j]);
                                 continue;
                             }
@@ -4069,8 +4071,18 @@ const ProposalManager = {
             return { ok: false, ids, features: [], coverage, message };
         }
 
-        if (coverage < 0.95) {
-            const message = `The live fabric covers only ${Math.round(coverage * 100)}% of this ${formationLabel}'s footprint; nothing was cut.`;
+        // The footprint must stand on the resolved pieces: none of it left off them may be ground.
+        // The covered share above only words the refusal.
+        let uncovered = null;
+        try {
+            uncovered = rule.uncoveredBy(t, footprint, features, { site: 'proposal-manager.liveParentsUncovered', proposalId: idLabel });
+        } catch (error) {
+            const message = `Cannot apply ${formationLabel}: cadastral-scope coverage could not be evaluated.`;
+            try { this._setLastApplyFailure(idLabel, { code: 'formation-ground-evaluation-failed', message, error: error?.message }); } catch (_) { }
+            return { ok: false, ids: [], features: [], cadastreIds, coverage: 0, message };
+        }
+        if (rule.isGround(t, uncovered, toleranceM)) {
+            const message = `The live fabric covers only ${Math.min(99, Math.floor(coverage * 100))}% of this ${formationLabel}'s footprint; nothing was cut.`;
             try { this._setLastApplyFailure(idLabel, { code: 'formation-ground-unresolved', message, coverage, missingIds: [] }); } catch (_) { }
             try { if (typeof updateStatus === 'function') updateStatus(message); } catch (_) { }
             return { ok: false, ids, features: [], coverage, message };
@@ -4121,9 +4133,6 @@ function _resolveRootParcelNumberFromProperties(props) {
     }
     return '';
 }
-
-// Only reject numerical zero. Real slivers are parcels and must remain in the tessellation.
-const GEOMETRY_AREA_EPSILON_M2 = 0.01;
 
 function _shouldSkipUncutRemainder(parentParcelArea, pieceArea) {
     const parentArea = Number(parentParcelArea);

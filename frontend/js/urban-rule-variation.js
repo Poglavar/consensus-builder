@@ -405,6 +405,12 @@
         return variationArrangement().clipWith(turf, operation, a, b, { site, parcelId });
     }
 
+    // What counts as ground (geometry-tolerances.js), the rule every stage uses.
+    function variationGround() {
+        return (global && global.GeometryTolerances)
+            || (typeof require === 'function' ? require('./geometry-tolerances.js') : null);
+    }
+
     function buildToMinimum(massingFeature, minDepthM, deps) {
         const turf = deps && deps.turf;
         if (!massingFeature || !massingFeature.geometry || !turf || !(minDepthM > 0)) return null;
@@ -534,8 +540,10 @@
                 && turf.booleanPointInPolygon(point, entry.feature));
             if (!host || hosts.has(String(host.parcelId))) return false;
             hosts.add(String(host.parcelId));
-            const inside = variationClip(turf, 'intersect', piece, host.feature, 'urban-rule-variation.piecesOnGround', host.parcelId);
-            return !!(inside && inside.geometry) && areaOf(inside, turf) >= areaOf(piece, turf) * 0.99;
+            // A piece lies on its host when none of it outside the host is ground (the shared rule,
+            // geometry-tolerances.js isGround, of the difference on the shared clip).
+            const outside = variationClip(turf, 'difference', piece, host.feature, 'urban-rule-variation.piecesOnGround', host.parcelId);
+            return !variationGround().isGround(turf, outside);
         });
         if (standsAsSaved) return buildings;
         const { pieces } = splitMassingByParcels(massing, ground, rule, massing.properties.variationSeed, deps);

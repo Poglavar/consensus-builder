@@ -8,7 +8,7 @@ import { installAppGeometry } from './mcp-geometry.js';
 const root = new URL('../../frontend/js/', import.meta.url);
 const scripts = [
     'cid.js', 'agreement-record.js', 'agreement-ground.js', 'work-slicer.js', 'proposals/apply/route.js', 'proposals/parcel-contiguity.js',
-    'proposals/footprint-parts.js', 'proposals/parcel-arrangement.js', 'proposals/plan-order.js', 'proposals/formation-edit.js',
+    'proposals/footprint-parts.js', 'geometry-tolerances.js', 'proposals/parcel-arrangement.js', 'proposals/plan-order.js', 'proposals/formation-edit.js',
     'parcel-layout-validation.js', 'parcel-layout-record.js', 'parcel-layout-ownership.js',
     'parcels/live-fabric.js', 'proposals/apply/road.js', 'proposals/apply/buildings.js', 'proposals/apply/structures.js', 'proposals/apply/parcels.js'
 ].map(path => ({ path, source: readFileSync(new URL(path, root), 'utf8'), require: createRequire(new URL(path, root)) }));

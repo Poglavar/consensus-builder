@@ -72,24 +72,73 @@
 
     // The one answer to "is this ground": somewhere wider than max(toleranceM, NOISE_M). A design's own
     // toleranceM (a per-record allowance, binding.js) widens it; nothing narrows it. A circle of that
-    // diameter has area π(w/2)², so anything smaller cannot hold one and skips the buffer.
+    // diameter has area π(w/2)², so anything smaller cannot hold one and skips the buffer. And every
+    // point within r of the boundary lies in one of the n stadiums around its edges, of total area at
+    // most 2rP + nπr²; anything larger holds a point farther than r from the boundary, so it is
+    // ground without the buffer (most parcels and pieces, which leaves the buffer to thin shapes).
     function isGround(t, feature, toleranceM = 0) {
         if (!feature || !t) return false;
         const widthM = Math.max(Number(toleranceM) || 0, NOISE_M);
+        const r = widthM / 2;
         const area = t.area(feature);
-        if (!(area >= Math.PI * (widthM / 2) * (widthM / 2))) return false;
-        return survivesInwardBuffer(t, feature, widthM / 2);
+        if (!(area >= Math.PI * r * r)) return false;
+        const g = feature.geometry || feature;
+        let vertices = 0;
+        const count = c => { if (typeof c[0] === 'number') vertices += 1; else c.forEach(count); };
+        if (g && Array.isArray(g.coordinates)) count(g.coordinates);
+        let perimeterM = Infinity;
+        try { perimeterM = t.length(feature, { units: 'kilometers' }) * 1000; } catch (_) { perimeterM = Infinity; }
+        if (area > 2 * r * perimeterM + vertices * Math.PI * r * r) return true;
+        return survivesInwardBuffer(t, feature, r);
     }
 
     // The one answer to "does `shape` take, stand on, consume or anchor to `parcel`": their overlap,
     // cut by the shared clip (parcel-arrangement.js clipWith, on this grid), is ground. `context`
     // names the caller when the clip fails.
     function reachesInto(t, shape, parcel, toleranceM = 0, context = {}) {
-        const arrangement = (typeof window !== 'undefined' && window.__parcelArrangement)
-            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
-        const overlap = arrangement.clipWith(t, 'intersect', shape, parcel, { site: 'geometry-tolerances.reachesInto', ...context });
+        if (!shape || !parcel || boxesApart(t, shape, parcel)) return false;
+        const overlap = arrangementApi().clipWith(t, 'intersect', shape, parcel, { site: 'geometry-tolerances.reachesInto', ...context });
         return !!(overlap && overlap.geometry) && isGround(t, overlap, toleranceM);
     }
 
-    return Object.freeze({ GRID_DECIMALS, NOISE_M, snapCoordinates, snapGeometry, snapFeature, survivesInwardBuffer, isGround, reachesInto });
+    // The part of `shape` that none of `covers` covers, each cut by the shared clip, or null when
+    // nothing is left. "Does the shape stand wholly on these" is then !isGround(t, uncoveredBy(...)).
+    function uncoveredBy(t, shape, covers, context = {}) {
+        let rest = asFeature(shape);
+        for (const cover of covers || []) {
+            if (!rest) return null;
+            if (!cover || boxesApart(t, rest, cover)) continue;
+            rest = asFeature(arrangementApi().clipWith(t, 'difference', rest, cover, { site: 'geometry-tolerances.uncoveredBy', ...context }));
+        }
+        return rest;
+    }
+
+    // A design record's own allowance (its toleranceM), normalized as binding normalizes it
+    // (site-binding.js normalizeTolerance), so applying a design honours exactly what binding did.
+    function designToleranceM(record) {
+        const binding = (typeof window !== 'undefined' && window.__siteBinding)
+            || (typeof require === 'function' ? require('./proposals/site-binding.js') : null);
+        return binding.normalizeTolerance(record && record.toleranceM);
+    }
+
+    function arrangementApi() {
+        return (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
+    }
+
+    function asFeature(value) {
+        if (!value) return null;
+        if (value.type === 'Feature') return value.geometry ? value : null;
+        return value.type ? { type: 'Feature', properties: {}, geometry: value } : null;
+    }
+
+    // Shapes whose bounding boxes are apart share no ground; four comparisons save a clip.
+    function boxesApart(t, a, b) {
+        let x = null;
+        let y = null;
+        try { x = t.bbox(a); y = t.bbox(b); } catch (_) { return false; }
+        return x[0] > y[2] || y[0] > x[2] || x[1] > y[3] || y[1] > x[3];
+    }
+
+    return Object.freeze({ GRID_DECIMALS, NOISE_M, snapCoordinates, snapGeometry, snapFeature, survivesInwardBuffer, isGround, reachesInto, uncoveredBy, designToleranceM });
 });

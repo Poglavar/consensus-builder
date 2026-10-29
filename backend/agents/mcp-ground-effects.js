@@ -3,6 +3,9 @@ import { createRequire } from 'node:module';
 import { appTurf as turf } from './mcp-geometry.js';
 const require = createRequire(import.meta.url);
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
+// A road cuts a surface when it reaches into it: the shared clip and ground rule the map's apply uses.
+const arrangement = require('../../frontend/js/proposals/parcel-arrangement.js');
+const grid = require('../../frontend/js/geometry-tolerances.js');
 
 const feature = geometry => turf.feature(geometry);
 const asFormation = design => ({ ...design.content, proposalId: design.cid, createdAt: design.content.authoredAt });
@@ -19,7 +22,7 @@ function surfacesOf(design) {
     return surfaces.filter(surface => surface.geometry && /Polygon/.test(surface.geometry.type || ''));
 }
 
-export function describeRoadCuts(designs, { minOverlapM2 = 0.25 } = {}) {
+export function describeRoadCuts(designs) {
     const formations = new Map(designs.map(design => [design.cid, asFormation(design)]));
     const roads = designs.filter(design => design.content.roadProposal?.definition?.polygon)
         .sort((a, b) => planOrder.compareFormationOrder(formations.get(a.cid), formations.get(b.cid)));
@@ -36,9 +39,9 @@ export function describeRoadCuts(designs, { minOverlapM2 = 0.25 } = {}) {
                 const groundSurface = surface.surfaceKind === 'ground-surface';
                 if (!groundSurface && planOrder.compareFormationOrder(formations.get(design.cid), formations.get(road.cid)) >= 0) continue;
                 const roadFeature = feature(road.content.roadProposal.definition.polygon);
-                const overlap = turf.intersect(authored, roadFeature);
-                const overlapM2 = overlap ? turf.area(overlap) : 0;
-                if (!(overlapM2 >= minOverlapM2)) continue;
+                const overlap = arrangement.clipWith(turf, 'intersect', authored, roadFeature, { site: 'mcp-ground-effects.roadCut', takeId: road.cid });
+                if (!grid.isGround(turf, overlap)) continue;
+                const overlapM2 = turf.area(overlap);
                 effective = effective ? turf.difference(effective, roadFeature) : null;
                 hits.push({ road, overlapM2 });
             }

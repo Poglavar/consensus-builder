@@ -238,8 +238,10 @@ describe('which cadastral parcels hold a vertex', () => {
         const mutation = fabric.beginMutation({ kind: 'proposal-apply' });
         try {
             expect(mutation.cadastreIdsHolding([15.0015, 45.0005], ['HR-A', 'HR-B'])).toEqual(['HR-B']);
-            // A vertex 1 cm past HR-A's east edge still belongs to HR-A (VERTEX_TOLERANCE_M), and lies in HR-B.
-            expect(mutation.cadastreIdsHolding([15.00100013, 45.0005], ['HR-A', 'HR-B'])).toEqual(['HR-A', 'HR-B']);
+            // A vertex 0.5 mm past HR-A's east edge still belongs to HR-A (within NOISE_M, 1 mm), and lies in HR-B.
+            expect(mutation.cadastreIdsHolding([15.001000006, 45.0005], ['HR-A', 'HR-B'])).toEqual(['HR-A', 'HR-B']);
+            // 1 cm past it used to belong too (a 2 cm tolerance); that is ground, so only HR-B holds it.
+            expect(mutation.cadastreIdsHolding([15.00100013, 45.0005], ['HR-A', 'HR-B'])).toEqual(['HR-B']);
             expect(mutation.cadastreIdsHolding([15.003, 45.0005], ['HR-A', 'HR-B', 'HR-X'])).toEqual([]);
         } finally { mutation.rollback(); }
     });

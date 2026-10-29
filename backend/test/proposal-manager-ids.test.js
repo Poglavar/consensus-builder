@@ -1,5 +1,5 @@
 // Unit tests for ProposalManager's synthetic descendant-id composition, the uncut-remainder guard,
-// and the apply-failure metadata store. All pure — no map, no DOM, no turf.
+// the flat-ground coverage rule and the apply-failure metadata store. No map, no DOM.
 //
 // These used to live in e2e/tests/proposal-synthetic-regressions.spec.ts and
 // e2e/tests/proposals-dependency-failures.spec.ts, which booted Chromium to concatenate strings.
@@ -196,20 +196,28 @@ describe('_shouldSkipUncutRemainder', () => {
     });
 });
 
+// Was: counts, a coverage ratio and an area, against a 0.01 m² epsilon. Now the footprint and its
+// parcels: complete when none of the footprint left off them is ground (geometry-tolerances.js).
 describe('_flatGroundCoverageIsComplete', () => {
-    it('rejects the 0.018 m² outside sliver produced by the former building-editor tolerance', () => {
-        expect(_flatGroundCoverageIsComplete(1, 1, 0.9983738316419258, 11.272744860315052)).toBe(false);
+    const turf = require('@turf/turf');
+    const box = (w, s, e, n) => turf.polygon([[[w, s], [e, s], [e, n], [w, n], [w, s]]]);
+    const footprint = box(16, 45, 16.0001, 45.0001); // ~7.9 m × 11.1 m
+    const parcelShortBy = degrees => box(15.9999, 44.9999, 16.0002, 45.0001 - degrees);
+
+    it('rejects a strip off the parcels wider than the noise, however small its area', () => {
+        // ~2 mm × 7.9 m ≈ 0.016 m², about the 0.018 m² sliver the former building-editor tolerance made.
+        expect(_flatGroundCoverageIsComplete(footprint, [parcelShortBy(2e-8)], turf)).toBe(false);
     });
 
-    it('accepts geometry noise within 0.01 m² regardless of footprint size', () => {
-        expect(_flatGroundCoverageIsComplete(1, 1, 1 - (0.009 / 1), 1)).toBe(true);
-        expect(_flatGroundCoverageIsComplete(1, 1, 1 - (0.009 / 10000), 10000)).toBe(true);
+    it('accepts cutting debris, and a strip within the design\'s own toleranceM', () => {
+        expect(_flatGroundCoverageIsComplete(footprint, [parcelShortBy(3e-9)], turf)).toBe(true);
+        expect(_flatGroundCoverageIsComplete(footprint, [parcelShortBy(2e-8)], turf, 0.01)).toBe(true);
     });
 
-    it('never treats absent declared or resolved ground as complete', () => {
-        expect(_flatGroundCoverageIsComplete(0, 1, 1, 10)).toBe(false);
-        expect(_flatGroundCoverageIsComplete(1, 0, 1, 10)).toBe(false);
-        expect(_flatGroundCoverageIsComplete(1, 1, 0, 0.005)).toBe(false);
+    it('never treats absent ground or an empty footprint as complete', () => {
+        expect(_flatGroundCoverageIsComplete(footprint, [], turf)).toBe(false);
+        expect(_flatGroundCoverageIsComplete(null, [parcelShortBy(0)], turf)).toBe(false);
+        expect(_flatGroundCoverageIsComplete(footprint, [parcelShortBy(0)], null)).toBe(false);
     });
 });
 

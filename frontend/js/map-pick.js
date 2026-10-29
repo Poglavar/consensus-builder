@@ -32,19 +32,21 @@
 
     // ---- a design's shapes on the map ------------------------------------------------------------
 
-    // The overlap the ground resolution measures. A clip that fails is an UNKNOWN overlap, not none:
-    // it is reported and counted in clipHealth() (parcel-arrangement.js) and the parcel is kept —
-    // showing a parcel too many beats silently dropping the ground a design stands on.
-    function groundIntersectionArea(a, b) {
+    // Whether a design's body stands on a parcel: the shared rule (geometry-tolerances.js
+    // reachesInto). A clip that fails is an UNKNOWN reach, not none: it is reported and counted in
+    // clipHealth() (parcel-arrangement.js) and the parcel is kept — showing a parcel too many beats
+    // silently dropping the ground a design stands on.
+    function groundReaches(body, parcel) {
+        const rule = root.GeometryTolerances
+            || (typeof require === 'function' ? require('./geometry-tolerances.js') : null);
         try {
-            const hit = root.turf.intersect(a, b);
-            return hit ? (root.turf.area(hit) || 0) : 0;
+            return rule.reachesInto(root.turf, body, parcel, 0, { site: 'map-pick.groundUnderBody' });
         } catch (error) {
             const clips = root.__parcelArrangement
                 || (typeof require === 'function' ? require('./proposals/parcel-arrangement.js') : null);
             if (!clips || typeof clips.reportClipFailure !== 'function') throw error;
-            clips.reportClipFailure('intersect', error, { site: 'map-pick.groundUnderBody' }, [a, b]);
-            return Number.POSITIVE_INFINITY;
+            clips.reportClipFailure('intersect', error, { site: 'map-pick.groundUnderBody' }, [body, parcel]);
+            return true;
         }
     }
 
@@ -93,7 +95,7 @@
     function groundOf(parcels, body) {
         const ground = root.__hoverGround;
         if (!ground || typeof ground.groundUnderBody !== 'function' || !root.turf) return parcels;
-        return ground.groundUnderBody(parcels, body, { intersectionArea: groundIntersectionArea });
+        return ground.groundUnderBody(parcels, body, { reaches: groundReaches });
     }
 
     // What the highlight draws: the design's body, else the ground it stands on. The body comes first
@@ -307,5 +309,5 @@
         }
     }
 
-    return { begin, end, active, pick, refresh, bodyOf, parcelsOf, groundOf, outlineOf, groundIntersectionArea };
+    return { begin, end, active, pick, refresh, bodyOf, parcelsOf, groundOf, outlineOf, groundReaches };
 });

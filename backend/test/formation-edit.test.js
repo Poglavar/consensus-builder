@@ -7,6 +7,7 @@ const turf = require('@turf/turf');
 const fe = require('../../frontend/js/proposals/formation-edit.js');
 
 const ctx = {
+    turf,
     area: f => turf.area(f),
     intersectionArea: (a, b) => {
         const hit = turf.intersect(a, b);
@@ -90,11 +91,18 @@ describe('baseIdsOfFeatures', () => {
 });
 
 describe('overlappingBaseIds', () => {
-    it('keeps material sub-square-metre ancestry while excluding boundary noise', () => {
-        const context = { area: () => 100, intersectionArea: (_piece, parent) => parent.properties.overlap };
-        const parents = [0.8756, 0.25, 0.1, 0].map((overlap, i) => ({ baseId: `base-${i}`,
-            feature: { ...block(0, 0, 1, 1), properties: { overlap } } }));
-        expect(fe.overlappingBaseIds(block(0, 0, 1, 1), parents, context)).toEqual(['base-0', 'base-1']);
+    // Was: injected overlap areas 0.8756/0.25 m² kept, 0.1/0 m² dropped (a 0.25 m² floor). Now the
+    // shared rule on real geometry: any reach wider than the 1 mm noise anchors, debris does not.
+    it('keeps a small real reach as ancestry while excluding cutting debris (geometry-tolerances.js reachesInto)', () => {
+        const east = LON + 1e-3;
+        const parents = [
+            { baseId: 'reach-1cm', feature: rect(east - 1.3e-7, LAT, east + 1e-3, LAT + 1e-3) }, // ~1 cm × 111 m
+            { baseId: 'debris', feature: rect(LON - 1e-3, LAT, LON + 5e-9, LAT + 1e-3) },       // ~0.4 mm × 111 m
+            { baseId: 'touching', feature: block(0, 1, 1, 2) }
+        ];
+        expect(fe.overlappingBaseIds(block(0, 0, 1, 1), parents, ctx)).toEqual(['reach-1cm']);
+        // A design's own toleranceM widens the rule, as binding does.
+        expect(fe.overlappingBaseIds(block(0, 0, 1, 1), parents, ctx, { toleranceM: 0.05 })).toEqual([]);
     });
     it('anchors a plot to every base parcel actually under it, in parent order', () => {
         // Parents side by side; the plot spans the boundary.
@@ -157,8 +165,21 @@ describe('wholeParcelTakePlan', () => {
     });
 
     it('tolerates vertex noise on an exact fill (the Borovje case)', () => {
-        const noisyFootprint = block(0.000005, 0, 2.000005, 2); // ~0.4 m shift
+        const noisyFootprint = block(0.000005, 0, 2.000005, 2); // ~0.4 mm shift: cutting debris
         const plan = fe.wholeParcelTakePlan(noisyFootprint, parcels, ctx);
+        expect(plan.mode).toBe('adopt');
+        expect(plan.parcelIds).toEqual(['HR-A']);
+    });
+
+    // A shift that leaves real ground (here ~0.4 m) used to pass under the 1 m² / 1 % allowance
+    // whenever its strip was small enough; now it is ground and refused as partial, unless the
+    // design's own toleranceM (binding's allowance) is wider.
+    it('takes a footprint shifted by real ground whole only within the design\'s own toleranceM', () => {
+        const shiftedFootprint = block(0.005, 0, 2.005, 2); // ~0.4 m shift
+        const strict = fe.wholeParcelTakePlan(shiftedFootprint, parcels, ctx);
+        expect(strict.mode).toBe('refuse');
+        expect(strict.reason).toBe('partial-parcels');
+        const plan = fe.wholeParcelTakePlan(shiftedFootprint, parcels, ctx, { toleranceM: 1 });
         expect(plan.mode).toBe('adopt');
         expect(plan.parcelIds).toEqual(['HR-A']);
     });
@@ -198,9 +219,10 @@ describe('clipPiecesByTaking (§15b: a taking clips the pieces it crosses)', () 
         expect(res.takenAreaM2).toBe(0);
     });
 
-    it('treats a sub-floor graze as rounding, not a taking', () => {
-        // Overlaps the strip by a hair along one edge (< 0.5 m²).
-        const grazing = plot(15.9600, 45.800590037, 15.9610, 45.8010, 'g');
+    it('treats a graze by cutting debris as no taking', () => {
+        // Overlaps the strip by ~0.4 mm along one edge (was ~4 mm under the old 0.5 m² floor; 4 mm is
+        // now ground, wider than the 1 mm noise).
+        const grazing = plot(15.9600, 45.800590004, 15.9610, 45.8010, 'g');
         const res = fe.clipPiecesByTaking([grazing], strip, ctx);
         expect(res.changed).toBe(false);
         expect(res.pieces[0]).toBe(grazing);

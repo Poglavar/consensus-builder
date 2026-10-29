@@ -3447,15 +3447,15 @@
         // is spoken for, so a subdivision over it would never apply.
         const fabric = window.LiveParcelFabric;
         const ground = window.__openGround;
-        const order = window.__planOrder;
         const sourceId = window.getActiveProposalDesignDraft?.()?.sourceLocalProposalId;
-        if (fabric && typeof fabric.queryBounds === 'function' && ground && order && typeof order.intersectionArea === 'function') {
+        if (fabric && typeof fabric.queryBounds === 'function' && ground) {
             const siteFeature = { type: 'Feature', properties: {}, geometry: site };
             const holders = new Set();
+            // The site reaches into the piece: the shared rule the apply uses (geometry-tolerances.js).
             fabric.queryBounds(ground.bboxOf(site))
                 .filter(feature => ground.groundIdsOf(feature).length && feature.properties && feature.properties.producedByProposalId
                     && String(feature.properties.producedByProposalId) !== String(sourceId || ''))
-                .filter(feature => Number(order.intersectionArea(siteFeature, feature)) >= (Number(order.MIN_INTERSECTION_M2) || 0.25))
+                .filter(feature => window.GeometryTolerances.reachesInto(turf, siteFeature, feature, 0, { site: 'parcel-layout.openGroundHolders' }))
                 .forEach(feature => holders.add(String(feature.properties.producedByProposalId)));
             if (holders.size) {
                 const names = Array.from(holders).map(id => {

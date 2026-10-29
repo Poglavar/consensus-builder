@@ -59,8 +59,12 @@ describe('detectPlotCrossings (pure)', () => {
     });
 
     it('ignores kerf along an edge and plots already agreed to', () => {
-        const grazing = rect(12, 0, 12.0005, 6); // a sliver along the shared edge, well under 1 m²
+        // ~0.45 mm along the shared edge: cutting debris (geometry-tolerances.js). Was a 4.5 mm (0.3 m²)
+        // strip under a 1 m² floor; a strip that wide is ground now and would be a crossing.
+        const grazing = rect(12, 0, 12.00005, 6);
         expect(plots.detectPlotCrossings(grazing, { pieces: PIECES, lookupProposal: lookup, turf }).plots).toEqual([]);
+        expect(plots.detectPlotCrossings(rect(12, 0, 12.0005, 6), { pieces: PIECES, lookupProposal: lookup, turf }).plots
+            .map(entry => entry.proposalId)).toEqual(['layout']);
         const road = rect(8, -3, 9, 9);
         expect(plots.detectPlotCrossings(road, { pieces: PIECES, lookupProposal: lookup, approvedIds: ['sub'], turf }).plots).toEqual([]);
     });

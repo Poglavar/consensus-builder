@@ -15,6 +15,12 @@
         return api;
     }
 
+    // What counts as ground and whether a shape reaches into a parcel (geometry-tolerances.js).
+    function groundApi() {
+        return (typeof window !== 'undefined' && window.GeometryTolerances)
+            || (typeof require === 'function' ? require('../../geometry-tolerances.js') : null);
+    }
+
     function openGroundApi() {
         if (typeof window !== 'undefined' && window.__openGround) return window.__openGround;
         return typeof require === 'function' ? require('../open-ground.js') : null;
@@ -143,7 +149,8 @@
             for (const plot of layout.plots) {
                 const geometry = plot.geometry;
                 if (!geometry || !/Polygon/.test(String(geometry.type || ''))) continue;
-                const roadHit = this._appliedRoadOverlappedByTaking(geometry, idLabel, options);
+                const roadHit = this._appliedRoadOverlappedByTaking(geometry, idLabel,
+                    { ...options, toleranceM: groundApi().designToleranceM(proposalData) });
                 if (!roadHit) continue;
                 const road = roadHit.proposal;
                 const roadName = road.title || road.name || road.proposalId;
@@ -269,15 +276,12 @@
         if (!formationEdit || !turfRef || typeof turfRef.intersect !== 'function') {
             throw new Error('Parcel-layout formation requires the cadastral provenance geometry service.');
         }
-        const anchorCtx = {
-            area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } },
-            // Zero would drop a parcel from a plot's provenance (whose ground it is).
-            intersectionArea: (a, b) => {
-                try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (error) {
-                    throw clipFailureApi().clipFailure('intersect', error, { site: 'apply-parcels.intersectionArea', proposalId }, [a, b]);
-                }
-            }
-        };
+        // A plot's anchors are the parents it reaches into (geometry-tolerances.js reachesInto on the
+        // shared clip, which throws a typed ClipFailure rather than dropping a parcel from a plot's
+        // provenance), widened only by the layout's own toleranceM, as binding widened it.
+        const groundRule = groundApi();
+        const toleranceM = groundRule.designToleranceM(proposalData);
+        const anchorCtx = { turf: turfRef };
         // Provenance per plot: the cadastral parcels under it and, on open ground, the ground id of
         // the host it stands on. A plot wholly on open ground carries only `groundIds` (rootless id);
         // one spanning both carries both; one on neither is ground from nowhere and refuses.
@@ -290,10 +294,10 @@
             throw new Error('Parcel-layout parents carry no explicit cadastral or open-ground provenance.');
         }
         // The fabric accepts a plot only when every vertex lies in one of its own cadastral
-        // parcels (live-fabric.js vertexInsideFact). A plot can reach into a parcel of the layout
-        // by less than the area floor above and still put a vertex well inside it (a 0.13 m² sliver
-        // 0.37 m deep, on ground a street already carved from that parcel's pieces): that parcel
-        // holds its ground too, so it joins the plot's provenance.
+        // parcels (live-fabric.js vertexInsideFact). A plot's vertex can lie inside a parcel of the
+        // layout it does not reach into by the rule above (on ground a street already carved from
+        // that parcel's pieces): that parcel holds its ground too, so it joins the plot's provenance.
+        // This vertex patch goes in docs/geometry-tolerances.md step 5.
         const fabricDraft = options?._parcelMutation?.fabric;
         const layoutIds = [...new Set(parentEntries.map(entry => String(entry.baseId)))];
         const anchorVertices = (feature, ids) => {
@@ -306,8 +310,8 @@
             return ids;
         };
         childFeatures.forEach(feature => {
-            const ids = parentEntries.length ? anchorVertices(feature, formationEdit.overlappingBaseIds(feature, parentEntries, anchorCtx)) : [];
-            const groundIds = groundEntries.length ? formationEdit.overlappingBaseIds(feature, groundEntries, anchorCtx) : [];
+            const ids = parentEntries.length ? anchorVertices(feature, formationEdit.overlappingBaseIds(feature, parentEntries, anchorCtx, { toleranceM })) : [];
+            const groundIds = groundEntries.length ? formationEdit.overlappingBaseIds(feature, groundEntries, anchorCtx, { toleranceM }) : [];
             if (!ids.length && !groundIds.length) {
                 throw new Error('A layout plot lies on no declared cadastral parcel and no open ground of its site.');
             }
@@ -357,9 +361,9 @@
                                 parcelId: _getParcelIdFromFeature(parentFeature)
                             });
                         if (!leftover || !leftover.geometry) return;
+                        if (!groundRule.isGround(turfRemainder, leftover)) return; // cutting debris, not land
                         let leftoverArea = 0;
                         try { leftoverArea = turfRemainder.area(leftover) || 0; } catch (_) { leftoverArea = 0; }
-                        if (leftoverArea < 0.5) return; // rounding, not land
                         const parentId = _getParcelIdFromFeature(parentFeature);
                         // §15b identity flows with the ground: the leftover of ANOTHER
                         // proposal's formed plot stays the VICTIM's child — the largest part
@@ -381,7 +385,7 @@
                                     try { area = turfRemainder.area(turfRemainder.polygon(coords)) || 0; } catch (_) { area = 0; }
                                     return { coords, area };
                                 })
-                                .filter(part => part.area >= 0.5)
+                                .filter(part => groundRule.isGround(turfRemainder, { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: part.coords } }))
                                 .sort((x, y) => y.area - x.area);
                             parts.forEach((part, partIndex) => {
                                 const carried = JSON.parse(JSON.stringify(parentFeature));
@@ -453,7 +457,7 @@
         const holdersOf = new Map();
         childFeatures.forEach(feature => {
             if (String(feature.properties.producedByProposalId) !== String(proposalId)) return;
-            const { owners } = ownership.ownersOf(feature, ownedSources, ownerOf, { ...anchorCtx, turf: turfRef });
+            const { owners } = ownership.ownersOf(feature, ownedSources, ownerOf, { turf: turfRef });
             holdersOf.set(feature, owners);
             // A remainder is a clone of its parent and keeps what the parcel panel showed for it.
             if (feature.properties.readjustmentPiece.role !== 'plot' || !owners.length) return;

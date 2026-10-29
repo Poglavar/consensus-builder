@@ -224,8 +224,7 @@
         });
     }
 
-    // Below this a "touch" is a shared boundary or a rounding artefact (plan-order.js
-    // MIN_INTERSECTION_M2), not standing on the ground.
+    // Below this a "touch" is a shared boundary or a rounding artefact, not standing on the ground.
     const DEPENDENT_TOUCH_M2 = 0.25;
     // Two parts are the same ground when their overlap holds essentially all of both.
     const SAME_GROUND_FRACTION = 0.999;

@@ -14,8 +14,11 @@
     // The accounting placeholder for open ground, with no represented ownership party. It is
     // never an agent, cash recipient or ownership transfer; it makes no title finding.
     const OPEN_GROUND_OWNER_KEY = 'open-ground';
-    // Below this a piece is clipping noise, not ground.
-    const MIN_PIECE_M2 = 0.5;
+    // Whether a piece is ground or clipping debris is the shared rule (geometry-tolerances.js isGround).
+    function groundApi() {
+        return (typeof window !== 'undefined' && window.GeometryTolerances)
+            || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
+    }
 
     // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
     function clipFailureApi() {
@@ -86,20 +89,19 @@
             const parcelFeature = { type: 'Feature', properties: {}, geometry: g };
             // A failed clip throws, not "this parcel contributes nothing": its owner's share of the pool would vanish.
             const hit = clipFailureApi().clipWith(t, 'intersect', siteFeature, parcelFeature, { site: 'subdivision.sitePool', parcelId: parcel.id });
-            const areaM2 = hit ? areaOf(t, hit) : 0;
-            if (areaM2 >= MIN_PIECE_M2) parts.push({ parcelId: String(parcel.id), geometry: hit.geometry, areaM2 });
+            if (hit && groundApi().isGround(t, hit)) parts.push({ parcelId: String(parcel.id), geometry: hit.geometry, areaM2: areaOf(t, hit) });
             if (open) {
                 // A failed subtraction is not "no parcel here": the open ground would be overstated.
                 open = clipFailureApi().clipWith(t, 'difference', open, parcelFeature, { site: 'subdivision.sitePool', parcelId: parcel.id });
             }
         }
-        const openGroundM2 = open ? areaOf(t, open) : 0;
+        const openIsGround = !!open && groundApi().isGround(t, open);
         return {
             pool: simplestGeometry(siteFeature.geometry),
             totalAreaM2,
             parts,
-            openGround: open && openGroundM2 >= MIN_PIECE_M2 ? open.geometry : null,
-            openGroundM2: openGroundM2 >= MIN_PIECE_M2 ? openGroundM2 : 0
+            openGround: openIsGround ? open.geometry : null,
+            openGroundM2: openIsGround ? areaOf(t, open) : 0
         };
     }
 
@@ -197,11 +199,12 @@
             if (!other) return 0;
             // A failed clip throws: zero would hand the plot to whichever contributor's overlap did compute.
             const hit = clipFailureApi().clipWith(t, 'intersect', plot, other, { site: 'subdivision.ownerKeyByGround' });
-            return hit ? areaOf(t, hit) : 0;
+            // Debris along a shared edge covers nothing (geometry-tolerances.js isGround).
+            return hit && groundApi().isGround(t, hit) ? areaOf(t, hit) : 0;
         };
         const byParcel = new Map((pool.parts || []).map(part => [String(part.parcelId), overlap(part.geometry)]));
         let best = null;
-        let bestArea = MIN_PIECE_M2;
+        let bestArea = 0;
         for (const share of shares || []) {
             const area = share.unrepresentedGround || isOpenGroundOwnerKey(share.ownerKey)
                 ? overlap(pool.openGround)

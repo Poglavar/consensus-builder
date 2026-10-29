@@ -478,7 +478,7 @@ proposal-bridge.js/create.js and backend/agents/minter.js; decoders render the z
   parcels, the site preview does not send their ids to the repository.
 - **Geometric interaction** (`_openGroundInteractions` + `open-ground.geometricInteractions`): the
   formation closure adds, beside shared anchors, standing records whose ground (site, else footprint)
-  intersects a member's by ≥ 0.25 m² where at least one of the two is on open ground; transitive; bbox
+  reaches into a member's (`geometry-tolerances.js reachesInto`) where at least one of the two is on open ground; transitive; bbox
   grid index (`createBboxIndex`, overflow list for huge entries); each record's ground cached on the
   record object (corridors never cached). A purely cadastral plan skips the pass entirely. Stacking on
   open ground follows the cadastral rule "the taker amends the taken": a newer proposal takes the older
@@ -688,7 +688,7 @@ Phone 375×740: editor fits, no horizontal scroll. No page errors.
   "Apply to map" of the road instead parked the whole park as a rival (`proposal-supersession.js`).
   Now: `apply/road.js _structureGroundAfterLaterCorridors(record, geometry)` carves the footprints of
   applied corridors LATER in the formation order out of a park/square/lake (same geometry the corridor
-  cut consumes, the arrangement's snapped clipper, crumbs < 0.25 m² dropped); `apply/structures.js`
+  cut consumes, the arrangement's snapped clipper, crumbs that are not ground dropped); `apply/structures.js`
   forms, measures (resolver gets a carved view of the record) and draws that body, a split body becomes
   one piece per part through the contiguity funnel; the record keeps its authored geometry; stored
   decorations are filtered to the carved ground for display only (`decorationsOnGround`), lake graphics
@@ -770,7 +770,7 @@ mixed site over HR-330264-488/2 and the hole ("Katastar: djelomična", hatched o
 - **One carve for every formed piece a later road crosses.** `apply/road.js`
   `_structureGroundAfterLaterCorridors` became `_groundAfterLaterCorridors(record, geometries)`: the
   applied corridors LATER in the formation order are clipped (arrangement's snapped clipper, crumbs
-  < 0.25 m² dropped, bbox prefilter) out of a list of geometries. Structures pass `[body]` (unchanged
+  that are not ground dropped, bbox prefilter) out of a list of geometries. Structures pass `[body]` (unchanged
   behaviour); `apply/parcels.js` passes every plot of a readjustment/subdivision, so a later road takes
   its ribbon out of the plots it crosses (split plots become one piece per part through the contiguity
   funnel; a plot taken whole is not formed; all taken → `readjustment-taken-by-corridors`). The resolver

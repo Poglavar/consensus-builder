@@ -72,16 +72,9 @@ afterEach(() => {
 
 const siteCount = site => A.clipHealth().bySite[site] || 0;
 
-// True when the clip was called directly from `file` (the readjustment validator runs its own
-// clips first, and those must work for the apply to reach the sites under test).
-const calledFrom = file => () => {
-    const frames = String(new Error().stack).split('\n').slice(1);
-    const caller = frames.find(line => !/clip-failure-proposals\.test\.js/.test(line));
-    return !!caller && caller.includes(file);
-};
-
-// The same, for a clip `file` makes through the shared clip (parcel-arrangement.js clip/clipWith):
-// the first caller outside that module.
+// True when `file` made the clip through the shared clip (parcel-arrangement.js clip/clipWith): the
+// first caller outside that module. Clips other modules run first must work for the apply to reach
+// the site under test.
 const calledThroughClipFrom = file => () => {
     const frames = String(new Error().stack).split('\n').slice(1)
         .filter(line => !/clip-failure-proposals\.test\.js/.test(line) && !/parcel-arrangement\.js/.test(line));
@@ -257,14 +250,16 @@ describe('plot-crossings.detectPlotCrossings', () => {
 
 describe('formation-edit', () => {
     const ctx = t => ({
+        turf: t,
         area: f => t.area(f),
         intersectionArea: (a, b) => { const hit = t.intersect(a, b); return hit ? t.area(hit) : 0; },
         difference: (a, b) => t.difference(a, b)
     });
 
     it('an overlap that cannot be computed refuses instead of reading as zero', () => {
+        // Whether the taking reaches a piece is geometry-tolerances.js reachesInto, named for its caller.
         expectClipFailure(() => formationEdit.clipPiecesByTaking([{ geometry: rect(0, 0, 10, 10) }], rect(5, 0, 15, 10),
-            ctx(failingTurf(['intersect']))), 'formation-edit.intersectionArea');
+            ctx(failingTurf(['intersect']))), 'formation-edit.clipPiecesByTaking');
     });
 
     it('clipPiecesByTaking refuses instead of treating a failed difference as "fully taken"', () => {
@@ -362,7 +357,8 @@ describe('apply/structures.js', () => {
         installApplyGlobals();
         const hr1 = parcelFeature('HR-1', rect(0, 0, 20, 10));
         const self = mixinThis({ _formStructureParcel: structuresApply._formStructureParcel }, [hr1]);
-        globalThis.turf = failingTurf(['difference']);
+        // Only the cut itself fails; the whole-parcel and uncovered checks (geometry-tolerances.js) run first.
+        globalThis.turf = failingTurf(['difference'], calledThroughClipFrom('apply/structures.js'));
         const failure = await expectClipRejection(self._formStructureParcel('sq-1', {}, { kind: 'square' }, rect(5, 0, 15, 10),
             ['HR-1'], 'sq-1', [hr1], {}), 'apply-structures.partialCut');
         expect(failure).toMatchObject({ proposalId: 'sq-1', parcelId: 'HR-1' });
@@ -377,18 +373,20 @@ describe('apply/buildings.js _formBuildingParcel', () => {
         installApplyGlobals();
         const self = mixinThis({ _formBuildingParcel: buildingsApply._formBuildingParcel }, [parcelFeature('HR-A', rect(0, 0, 20, 20))]);
         globalThis.turf = failingTurf(['intersect']);
-        await expectClipRejection(run(self, {}, rect(5, 5, 10, 10)), 'apply-buildings.intersectionArea');
+        // The host test is geometry-tolerances.js reachesInto, named for the building's host check.
+        await expectClipRejection(run(self, {}, rect(5, 5, 10, 10)), 'apply-buildings.host');
         expect(self.hidden).toHaveLength(0);
     });
 
-    it('the footprint\'s open ground refuses instead of being left out of its parcel', async () => {
+    // Was: the separate open-ground take clip (apply-buildings.groundTake), which only measured an
+    // area; the host's reach is now the one test, and it refuses naming the host.
+    it('an open-ground host whose reach cannot be computed refuses instead of being left out of its parcel', async () => {
         installApplyGlobals();
         globalThis.window.__openGround = openGround;
         const host = feature(rect(0, 0, 20, 20), { parcelId: 'ground:abc', openGroundHost: true, groundIds: ['ground:abc'] });
         const self = mixinThis({ _formBuildingParcel: buildingsApply._formBuildingParcel }, [host]);
-        // Intersect #1 measures the host overlap; the take and its coarser retries all fail.
-        globalThis.turf = failingTurf(['intersect'], (_op, n) => n >= 2);
-        const failure = await expectClipRejection(run(self, {}, rect(5, 5, 10, 10)), 'apply-buildings.groundTake');
+        globalThis.turf = failingTurf(['intersect']);
+        const failure = await expectClipRejection(run(self, {}, rect(5, 5, 10, 10)), 'apply-buildings.host');
         expect(failure.parcelId).toBe('ground:abc');
     });
 
@@ -396,7 +394,8 @@ describe('apply/buildings.js _formBuildingParcel', () => {
         installApplyGlobals();
         const parcels = [parcelFeature('HR-A', rect(0, 0, 10, 10)), parcelFeature('HR-B', rect(10, 0, 20, 10))];
         const self = mixinThis({ _formBuildingParcel: buildingsApply._formBuildingParcel }, parcels);
-        globalThis.turf = failingTurf(['difference']);
+        // Only the remainder cut fails; the uncovered-footprint check (geometry-tolerances.js) runs first.
+        globalThis.turf = failingTurf(['difference'], calledThroughClipFrom('apply/buildings.js'));
         const before = siteCount('apply-buildings.hostRemainder');
         const result = await run(self, {}, rect(5, 2, 15, 8));
         expect(result.ok).toBe(false);
@@ -439,8 +438,9 @@ describe('apply/parcels.js _applyParcelLayoutProposal', () => {
 
     it('plot provenance refuses instead of dropping a parcel whose overlap cannot be computed', async () => {
         installApplyGlobals();
-        globalThis.turf = failingTurf(['intersect'], calledFrom('apply/parcels.js'));
-        await expectClipRejection(self()._applyParcelLayoutProposal('p-layout', data(), {}), 'apply-parcels.intersectionArea');
+        // A plot's anchors are formation-edit.js overlappingBaseIds (geometry-tolerances.js reachesInto).
+        globalThis.turf = failingTurf(['intersect'], calledThroughClipFrom('geometry-tolerances.js'));
+        await expectClipRejection(self()._applyParcelLayoutProposal('p-layout', data(), {}), 'formation-edit.overlappingBaseIds');
     });
 
     it('the plots\' union refuses instead of minting a plot back as a remainder', async () => {
