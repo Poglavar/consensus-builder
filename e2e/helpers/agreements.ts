@@ -251,7 +251,7 @@ export async function closeAgreementPanel(page: Page): Promise<void> {
 // A row of the Agreements list: an agreement here by its id, one in the index by its CID.
 export const agreementListItem = (list: Locator, key: string) => list.locator(`.lists-item[data-list-id="${key}"]`);
 // Inspect a listed agreement: its title button opens its panel and closes the Lists panel.
-export const openListedAgreement = (list: Locator, key: string) => agreementListItem(list, key).locator('.lists-item__title').click();
+export const openListedAgreement = (list: Locator, key: string) => agreementListItem(list, key).locator('.lists-item__open').click();
 
 // The panel on the right dock once its check against the map reached `status`. A matching agreement
 // shows no status at all; one that does not match shows the warning, which is returned.

@@ -10887,6 +10887,8 @@
         if (zoom) frameIsolatedFeatures(features);
         return true;
     };
+    // Moves the camera onto features without selecting anything (a list row's preview).
+    window.frameThreeModeFeatures = features => { if (isActive) frameIsolatedFeatures(features); };
     window.showThreeModeDesign = showThreeModeDesign;
     window.showThreeModeParcel = showThreeModeParcel;
     window.showThreeModeBuilding = showThreeModeBuilding;

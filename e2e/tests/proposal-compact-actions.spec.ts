@@ -46,9 +46,9 @@ async function openCompactFromProposalList(page: import('@playwright/test').Page
   const list = page.locator('#proposals-sheet #proposal-list-host');
   const row = list.locator(`.lists-item[data-list-id="${proposalId}"]`);
   await expect(row).toBeVisible();
-  // This is the actual list action that opens proposal details (Lists, 01268caee: the row's title),
+  // This is the actual list action that opens proposal details (Lists: the row's Open),
   // not a direct JS call to the panel.
-  await row.locator('.lists-item__title').click();
+  await row.locator('.lists-item__open').click();
   await expect(page.locator('#planning-inspector')).toBeHidden();
   await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalId);
   await showProposal(page, proposalId);

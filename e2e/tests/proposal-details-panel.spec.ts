@@ -15,8 +15,8 @@ test.describe('Proposal details panel @features', () => {
       });
     }, PARCEL_ID);
     await page.locator('#proposals-button').click();
-    // Lists (01268caee): a design row's title opens its details.
-    await page.locator(`#proposal-list-host .lists-item[data-list-id="${proposalId}"] .lists-item__title`).click();
+    // Lists: a design row's Open opens its details.
+    await page.locator(`#proposal-list-host .lists-item[data-list-id="${proposalId}"] .lists-item__open`).click();
     await expect(page.locator('#planning-inspector')).toBeHidden();
     await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalId);
     const section = stackSection(page, 'designs');

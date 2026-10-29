@@ -43,13 +43,14 @@ function renderProposalBuildingPreview(proposal) {
     if (groups.buildingPreview.bringToFront) groups.buildingPreview.bringToFront();
 }
 
-function renderPreviewOverlay(proposal, { blink = false } = {}) {
+function renderPreviewOverlay(proposal, { blink = false, append = false } = {}) {
     const groups = ensureProposalOverlayGroups();
     if (!groups.preview) {
         return { parcelFeatures: [], primaryFeatures: [] };
     }
 
-    groups.preview.clearLayers();
+    // `append` adds to what is drawn: one preview of several designs (previewRecordsOnMap).
+    if (!append) groups.preview.clearLayers();
 
     if (!proposal) {
         return { parcelFeatures: [], primaryFeatures: [] };
@@ -214,6 +215,39 @@ function previewProposalOnMap(proposalIdOrHash, { center = true, blink = true } 
             }
         }
     }
+}
+
+// Shows design records on the map without selecting or opening them: a listed design, or the
+// designs of a listed plan or agreement (lists-panel.js). The records need not be stored. The map, or
+// the model view's camera, frames them in the area the lists sheet leaves visible. False when none of
+// them has a place on the map.
+function previewRecordsOnMap(records, previewKey) {
+    clearProposalPreview();
+    if (typeof map === 'undefined' || !map || typeof L === 'undefined') return false;
+    const features = [];
+    records.forEach(record => {
+        const { parcelFeatures, primaryFeatures } = collectProposalFeatureSets(record);
+        features.push(...(primaryFeatures.length ? primaryFeatures : parcelFeatures));
+    });
+    let bounds = computeBoundsFromFeatures(features);
+    records.map(record => window.__proposalCounts?.proposalBounds(record)).filter(Boolean).forEach(([west, south, east, north]) => {
+        const box = L.latLngBounds([south, west], [north, east]);
+        bounds = bounds ? bounds.extend(box) : box;
+    });
+    if (!bounds || !bounds.isValid()) return false;
+    if (window.isThreeModeActive?.()) {
+        window.frameThreeModeFeatures([turf.bboxPolygon([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()])]);
+    } else {
+        try {
+            window.suppressCameraMoves = true;
+            map.fitBounds(bounds, { ...getProposalPanelFitPadding(40), maxZoom: 19, animate: false });
+        } finally {
+            window.suppressCameraMoves = false;
+        }
+    }
+    records.forEach(record => renderPreviewOverlay(record, { append: true }));
+    currentProposalPreviewId = previewKey;
+    return true;
 }
 
 function setProposalModalDimmed(dimmed) {

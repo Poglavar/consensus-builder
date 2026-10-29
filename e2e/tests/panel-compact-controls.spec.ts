@@ -31,7 +31,7 @@ async function openProposalFromList(page: import('@playwright/test').Page, propo
   const list = page.locator('#proposals-sheet #proposal-list-host');
   const row = list.locator(`.lists-item[data-list-id="${proposalId}"]`);
   await expect(row).toBeVisible();
-  await row.locator('.lists-item__title').click();
+  await row.locator('.lists-item__open').click();
   await expect(page.locator('#proposal-details-panel')).toBeVisible();
 }
 

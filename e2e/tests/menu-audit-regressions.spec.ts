@@ -178,7 +178,7 @@ for (const width of [1180, 390]) test(`Designs Browse keeps filtered draft and p
   await expect(rows.first()).toContainText('List option B');
   await status.selectOption('all');
   await expect(rows).toHaveCount(2);
-  const details = draft.locator('.lists-item__title');
+  const details = draft.locator('.lists-item__open');
   await details.scrollIntoViewIfNeeded();
   await expect(details).toBeInViewport();
   await details.click();

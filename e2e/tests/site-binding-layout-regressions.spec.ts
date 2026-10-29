@@ -27,7 +27,7 @@ async function drawSite(page: Page) {
 
 async function editSavedLayout(page: Page, id: string) {
   await page.locator('#proposals-button').click();
-  await page.locator(`#proposals-sheet .lists-item[data-list-id="${id}"] .lists-item__title`).click();
+  await page.locator(`#proposals-sheet .lists-item[data-list-id="${id}"] .lists-item__open`).click();
   await page.locator('#proposal-details-footer .btn-edit-geometry').click();
   const editor = page.locator('.on-map-reparcellization');
   await expect(editor.locator('.on-map-editor__panel')).toBeVisible();

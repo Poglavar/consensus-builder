@@ -213,6 +213,10 @@ nothing, or another selection. It replaced the floating top-left parcel /
   finishing, a restored selection) starts a fresh scene-click sequence and frames its
   object when it is outside the map area the panels leave visible or too small to make out;
   an object already in view keeps the camera (`framingNeeded` in `click-stack-model.js`).
+- In Lists, a row's title only shows it on the map: the design, or a plan's or agreement's designs,
+  outlined and framed in the area the sheet leaves visible (the model view moves its camera), with
+  the list left open and nothing selected. The row's **Open** button selects it as described above,
+  closing the list (`lists-panel.js`).
 - The expanded card's header has a **Focus** button (crosshairs, “Show on map”) for every
   section with a shape: it highlights the object and always fits the map to it, clear of the
   stack. Ground has no Focus button. The model view's stack has the same button, which moves

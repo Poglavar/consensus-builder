@@ -919,9 +919,8 @@ function proposalPanelFitPadding(rect, viewport, margin = 40) {
 function getProposalPanelFitPadding(margin = 40) {
     let rect = null;
     try {
-        const listModal = document.querySelector('.proposal-list-modal');
-        const listPanel = document.querySelector('.proposal-list-modal-content');
-        if (listModal && window.MapShell?.isOpen?.('proposals-sheet') && listPanel) {
+        const listPanel = document.getElementById('proposals-sheet');
+        if (window.MapShell?.isOpen?.('proposals-sheet') && listPanel) {
             rect = listPanel.getBoundingClientRect();
         } else {
             const details = ['agreement-panel', 'proposal-details-panel'].map(id => document.getElementById(id))

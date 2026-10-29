@@ -51,7 +51,21 @@ for (const width of [1280, 390]) {
     await expect(page.locator('#plan-stats-modal')).toBeHidden();
     await expectInsets();
     await expect(planRow).toContainText('Draft'); await expect(planRow).toContainText('This browser');
+    // The title shows the plan on the map and keeps the list open; Open selects it.
+    const parkInView = () => page.evaluate(id => {
+      const w = window as any;
+      const [west, south, east, north] = w.__proposalCounts.proposalBounds(w.proposalStorage.getProposal(id));
+      return w.map.getBounds().contains([[south, west], [north, east]]);
+    }, agreement.parkId);
+    await page.evaluate(() => (window as any).map.setView([45.70, 15.80], 17, { animate: false }));
+    expect(await parkInView()).toBe(false);
     await planRow.getByRole('button', { name: 'Residents plan', exact: true }).click();
+    await expect.poll(parkInView).toBe(true);
+    await expect(planRow).toHaveClass(/is-selected/);
+    await expect(sheet).toBeVisible();
+    await expect(page.locator('#click-stack .click-stack__section[data-kind="plans"]')).toBeHidden();
+    await planRow.getByRole('button', { name: 'Open Residents plan', exact: true }).click();
+    await expect(sheet).toBeHidden();
     await expect(page.locator('#click-stack .click-stack__section[data-kind="plans"]')).toBeVisible();
     await expect(page.locator('#click-stack')).toContainText('Residents plan');
     await expect(page.locator('#click-stack').getByRole('button', { name: 'Remove from browser', exact: true })).toHaveCount(0);
@@ -65,7 +79,11 @@ for (const width of [1280, 390]) {
     await expect(sheet.getByRole('button', { name: 'Import plan file', exact: true })).toBeHidden();
     await expect(agreementRow.locator('.lists-item__icon .cb-icon-agreement')).toBeVisible();
     await expectInsets();
+    await page.evaluate(() => (window as any).map.setView([45.70, 15.80], 17, { animate: false }));
     await agreementRow.getByRole('button', { name: 'Residents agreement', exact: true }).click();
+    await expect.poll(parkInView).toBe(true);
+    await expect(sheet).toBeVisible();
+    await agreementRow.getByRole('button', { name: 'Open Residents agreement', exact: true }).click();
     await expect(page.locator('#click-stack')).toContainText('Residents agreement');
     await expect(page.locator('[data-agreement-action="delete"]')).toHaveCount(0);
     await page.locator('#proposals-button').click();

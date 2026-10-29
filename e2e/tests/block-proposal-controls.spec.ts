@@ -64,8 +64,8 @@ for (const kind of ['road', 'building', 'park'] as const) {
     await page.evaluate(async ids => (window as any).CadastralParcelRepository.ensureIds(ids), ids);
     const id = await createBlockFixture(page, kind);
     await page.locator('#proposals-button').click();
-    // Lists rows (lists-panel.js, 01268caee) are keyed by data-list-id; the title button opens details.
-    await page.locator(`#proposals-sheet .lists-item[data-list-id="${id}"] .lists-item__title`).click();
+    // Lists rows (lists-panel.js, 01268caee) are keyed by data-list-id; Open opens details.
+    await page.locator(`#proposals-sheet .lists-item[data-list-id="${id}"] .lists-item__open`).click();
     // The current list action opens the Planning inspector first; use its explicit action to
     // reach proposal map controls while preserving the list-navigation path under test.
     const inspector = page.locator('#planning-inspector');

@@ -91,8 +91,29 @@
             const plan = row.record.content ? row.record : await win.NamedPlans.fetchPlan(row.key);
             return row.published ? { ...plan, published: true } : plan;
         }
+        // The designs a row stands for, as records that need not be stored: the design itself, a
+        // plan's members, an agreement's plan's designs.
+        async function designRecords(row, kind) {
+            const apiBase = win.DesignSync.apiBase();
+            if (kind === 'designs') return [row.local || { ...win.DesignSync.localDesignFromRow(await win.DesignSync.fetchDesign(row.key), { apiBase }), proposalId: row.key }];
+            if (kind === 'plans') return win.PlanComposition.localRecords(await win.PlanWorkspace.resolve(await planOf(row)), { apiBase });
+            if (!row.local) return (await win.AgreementSync.resolveDetails(row.key)).designs;
+            const stored = row.local.designs.map(design => win.proposalStorage.getProposal(design.proposalId));
+            const missing = row.local.designs.filter((design, index) => !stored[index] && design.cid).map(design => design.cid);
+            const fetched = missing.length ? (await win.DesignSync.fetchDesigns(missing)).rows : new Map();
+            return [...stored.filter(Boolean), ...[...fetched.values()].map(design => win.DesignSync.localDesignFromRow(design, { apiBase }))];
+        }
+        // A row's title shows it on the map and keeps the list open: browsing commits to nothing.
+        async function focus(row, kind) {
+            state.active = `${kind}:${row.key}`; renderRows();
+            if (!win.previewRecordsOnMap(await designRecords(row, kind), `list:${state.active}`)) {
+                win.showEphemeralMessage(t('lists.noPlace'), 4000, 'info');
+            }
+        }
+        // Open selects the row's object as a click on it would, closing the list.
         async function inspect(row, kind) {
             state.active = `${kind}:${row.key}`;
+            win.clearProposalPreview();
             if (kind === 'designs') {
                 const record = await designOf(row);
                 return win.openListedProposal(record, record.proposalId, 'details');
@@ -200,7 +221,8 @@
                         finally { check.disabled = false; item.removeAttribute('aria-busy'); renderActions(); }
                     }); label.append(check); heading.append(label);
                 }
-                const title = button(row.title, () => inspect(row, kind), 'btn-quiet lists-item__title');
+                const title = button(row.title, () => focus(row, kind), 'btn-quiet lists-item__title');
+                title.title = t('modal.roadWidth.polygonError.showOnMap');
                 const mark = node('span', 'lists-item__icon'); mark.append(icon(appearance[0]));
                 title.prepend(mark); heading.append(title); item.append(heading);
                 const badges = node('div', 'lists-item__badges');
@@ -215,6 +237,9 @@
                 if (kind === 'plans') item.append(node('p', 'sheet-note', t('agreement.list.designs', { count: row.record.content?.designCids.length ?? row.record.designCount })));
                 if (kind === 'agreements' && row.local) item.append(node('p', 'sheet-note', win.AgreementPanel.ruleShort(row.local.rule)));
                 const actions = node('div', 'cb-actions lists-item__actions');
+                const open = button(t('lists.open'), () => inspect(row, kind), 'btn-primary lists-item__open', 'arrow-pointer');
+                open.setAttribute('aria-label', t('lists.openNamed', { title: row.title }));
+                actions.append(open);
                 const shareButton = button(t('panel.proposal.actions.share'), () => share(row, kind), '', 'share-nodes');
                 shareButton.querySelector('i').classList.add('lists-share-icon');
                 if (kind === 'agreements' && !row.published) shareButton.title = t('lists.proposeFirst');

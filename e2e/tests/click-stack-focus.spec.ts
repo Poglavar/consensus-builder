@@ -31,7 +31,7 @@ async function openFromLists(page: Page, id: string) {
   await page.locator('#proposals-button').click();
   const sheet = page.locator('#proposals-sheet');
   await expect(sheet).toBeVisible();
-  await sheet.locator(`.lists-item[data-list-id="${id}"] .lists-item__title`).click();
+  await sheet.locator(`.lists-item[data-list-id="${id}"] .lists-item__open`).click();
   await expect(stackSection(page, 'designs').locator('.click-stack__row')).toHaveAttribute('aria-expanded', 'true');
 }
 

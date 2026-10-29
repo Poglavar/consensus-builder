@@ -53,9 +53,9 @@ test.describe('Dock sheets', () => {
     await page.evaluate(() => (window as any).hideProposalDetailsPanel?.(true));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator('#proposals-button').click();
-    // Lists rows (lists-panel.js, 01268caee) are keyed by data-list-id; the title button inspects.
+    // Lists rows (lists-panel.js, 01268caee) are keyed by data-list-id; Open selects (the title only shows it on the map).
     const row = page.locator(`#proposals-sheet .lists-item[data-list-id="${parkId}"]`);
-    await row.locator('.lists-item__title').click();
+    await row.locator('.lists-item__open').click();
     await expect(page.locator('#proposals-sheet')).toBeHidden();
     const panel = page.locator('#click-stack');
     await expect(panel).toBeVisible();
