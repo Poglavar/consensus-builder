@@ -184,7 +184,7 @@ describe('viewport parcel envelopes', () => {
     });
     it('refuses incomplete or oversized parcel reads instead of displaying a convenient subset', async () => {
         await expect(loadParcelEnvelopes(query,options([],provider(),false))).rejects.toMatchObject({code:'study-parcel-incomplete'});
-        await expect(loadParcelEnvelopes(query,options(Array.from({length:501},(_,i)=>parcel(String(i)))))).rejects.toMatchObject({code:'envelope-area-too-large'});
+        await expect(loadParcelEnvelopes(query,options(Array.from({length:1001},(_,i)=>parcel(String(i)))))).rejects.toMatchObject({code:'envelope-area-too-large'});
     });
     it('requires an explicitly pinned parcel source instead of inferring one from the requesting city', async () => {
         const source = createAtlasProvider({type:'FeatureCollection',features:[{...turf.bboxPolygon([-105.002,39.999,-105,40.001]),properties}]},

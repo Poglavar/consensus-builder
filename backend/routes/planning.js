@@ -8,12 +8,28 @@ import { createFrontageStreetRegistry, NETWORK_ENVIRONMENT_SOURCES } from '../so
 function validCity(city) { return city === undefined || typeof city === 'string' && /^[a-z][a-z0-9_-]{0,79}$/.test(city); }
 function validSource(source) { return source === undefined || (typeof source === 'string' && /^[a-z0-9_-]{1,100}$/.test(source)); }
 
+// Envelope answers for one area are kept for a while and shared between callers, including two
+// identical requests in flight: a dense view costs seconds, most of it upstream reads.
+const ENVELOPE_CACHE_MS = 10 * 60 * 1000, ENVELOPE_CACHE_SIZE = 64;
+export function createEnvelopeCache(envelopeQuery, { now = Date.now } = {}) {
+    const answers = new Map();
+    return query => {
+        const key = JSON.stringify([query.city, query.source, query.scenario ?? null, query.bbox]);
+        const cached = answers.get(key);
+        if (cached && now() - cached.at < ENVELOPE_CACHE_MS) return cached.promise;
+        const promise = envelopeQuery(query).catch(error => { answers.delete(key); throw error; });
+        if (answers.size >= ENVELOPE_CACHE_SIZE) answers.delete(answers.keys().next().value);
+        answers.set(key, { at: now(), promise });
+        return promise;
+    };
+}
+
 export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
     streetProvider = createFrontageStreetRegistry(pool).open(NETWORK_ENVIRONMENT_SOURCES.frontage),
     query = (pool, query) => planningRepresentations(pool, query, sources),
     parcelQuery = (pool, query) => planningParcel(pool, query, sources),
     studyQuery = query => loadParcelStudy(query, { sources }),
-    envelopeQuery = query => loadParcelEnvelopes(query, { sources, streetProvider }) } = {}) {
+    envelopeQuery = createEnvelopeCache(query => loadParcelEnvelopes(query, { sources, streetProvider })) } = {}) {
     app.get('/planning/envelopes', async (req, res) => {
         res.set('Cache-Control', 'no-store');
         const { city, source, scenario } = req.query;

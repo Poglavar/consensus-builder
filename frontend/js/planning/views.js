@@ -533,7 +533,7 @@
     // answered area or back to one asks for nothing; Retry and a source re-read clear it.
     const viewCache = core.createViewportCache({ limit: 64, maxAgeMs: 10 * 60 * 1000 });
     // The API's area limits (backend/routes/planning.js validateBounds): a larger view is answered
-    // 400 (over 500 lots), shown as "zoom in". Snapping never pushes a view over them; a view already over one asks
+    // 400 (over 1,000 lots), shown as "zoom in". Snapping never pushes a view over them; a view already over one asks
     // for nothing, since the answer is known.
     const MAX_AREA_KM2 = { envelopes: 0.5, areas: 4 };
     const MOVE_REFRESH_DELAY_MS = 300;

@@ -109,9 +109,17 @@ async function readFrontageStreets(bounds, streetProvider) {
     } catch (_) { return null; }
 }
 
-function parcelFrontage(parcel, streets) {
+// Streets with their boxes, so each lot scores only the streets within frontage reach of it.
+function streetIndex(streets) {
+    return streets ? streets.features.map(feature => ({ feature, bbox: turf.bbox(feature) })) : null;
+}
+function parcelFrontage(parcel, streets, index) {
     if (!streets) return { frontEdge: null, evidence: { basis: 'unknown', reason: 'street-data-unavailable' } };
-    const scores = plots.frontageScores(parcel, streets.features, { turf }), best = scores[0];
+    const [w, s, e, n] = turf.bbox(parcel), marginM = plots.FRONTAGE_STREET_MAX_DISTANCE_M + 5;
+    const dLat = marginM / 111320, dLng = dLat / Math.cos((s + n) / 2 * Math.PI / 180);
+    const reach = [w - dLng, s - dLat, e + dLng, n + dLat];
+    const nearby = index.filter(entry => intersects(entry.bbox, reach)).map(entry => entry.feature);
+    const scores = plots.frontageScores(parcel, nearby, { turf }), best = scores[0];
     if (!best) return { frontEdge: null, evidence: { basis: 'unknown', reason: 'no-facing-street', source: streets.source } };
     return { frontEdge: best.index, evidence: { basis: 'street', source: streets.source, street: best.street,
         distanceM: best.distanceM, score: best.score, candidateEdges: scores.map(edge => edge.index) } };
@@ -124,8 +132,9 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
     const descriptor = studyParcelSource(provider, query.city);
     const parcels = await parcelProvider(descriptor).queryBounds(query.bbox);
     if (parcels.complete !== true) fail('study-parcel-incomplete', 503);
-    // A work bound, not a secret: 500 lots cost a few seconds, most of it the upstream parcel read.
-    if (parcels.features.length > 500) fail('envelope-area-too-large', 400);
+    // A work bound, not a secret: a dense zoom-18 view holds about 1,000 lots, which cost a few
+    // seconds, most of it the upstream parcel read.
+    if (parcels.features.length > 1000) fail('envelope-area-too-large', 400);
     const records = parcels.features.map(parcel => ({ parcel, bbox: turf.bbox(parcel) }));
     // Query zoning across full parcel outlines, not just the viewport (a corner can cross a zone).
     const fullBounds = records.length ? [Math.min(...records.map(r => r.bbox[0])), Math.min(...records.map(r => r.bbox[1])),
@@ -136,6 +145,7 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
         records.length ? readFrontageStreets(fullBounds, streetProvider) : null
     ]);
     const zonesByScenario = Object.fromEntries(zoneEntries);
+    const streetsNearby = streetIndex(streets);
     const overlapProblems = parcelOverlapProblems(records);
     const items = [], unavailable = [];
     for (const { parcel } of records) {
@@ -146,7 +156,7 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
             const scenarioZones = zones[scenarios[0]], found = parcelZones(parcel, scenarioZones);
             if (found.stacked) fail('study-multiple-zoning-areas');
             if (!found.major.length) fail('study-zoning-missing');
-            const frontage = parcelFrontage(parcel, streets);
+            const frontage = parcelFrontage(parcel, streets, streetsNearby);
             const failures = [];
             // One envelope per zoning area that partitions the lot: the whole lot's bound, clipped to that part.
             for (const part of found.major) {

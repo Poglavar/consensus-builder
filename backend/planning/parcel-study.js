@@ -71,9 +71,14 @@ export async function parcelRecords(provider, parcel, records) {
 export const MINOR_ZONE_SHARE = 0.02;
 // The zoning areas under a parcel, largest first. Major zones are parts when they partition the
 // lot; zones stacked over the same ground (an overlay, a duplicate record) leave its rules ambiguous.
+const siteBounds = new WeakMap();
+const boxesTouch = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
 export function parcelZones(parcel, records) {
     const bounds = turf.bbox(parcel), parcelM2 = turf.area(parcel);
     const overlaps = records.flatMap(source => {
+        // A zone whose box misses the lot cannot cover it; the box is computed once per record.
+        if (!siteBounds.has(source.site)) siteBounds.set(source.site, turf.bbox(source.site));
+        if (!boxesTouch(siteBounds.get(source.site), bounds)) return [];
         const geometry = zoningNearParcel(source.site, bounds);
         const covered = geometry && turf.intersect(parcel, turf.feature(geometry));
         const areaM2 = covered ? turf.area(covered) : 0;

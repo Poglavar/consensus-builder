@@ -83,7 +83,10 @@ per part (`…~<recordId>`), each the whole lot's bound clipped to that part; a 
 the lot is boundary noise kept as evidence; zones stacked over the same ground stay ambiguous.
 In a Chapinero test block (28 lots) 26 bounds are drawn; a 203-lot zoom-19 cell draws 154 in
 about 6 s cold and 3 s warm, the rest being overlapping lot identities in the parcel source (19),
-lots too small for their yards (24) and sectors without an assigned height (6).
+lots too small for their yards (24) and sectors without an assigned height (6). A dense zoom-18
+view holds 850–950 lots and takes about 8 s cold and 5 s warm, most of it the upstream parcel
+read; the envelope request accepts up to 1,000 lots, and the API keeps each area's answer for ten
+minutes and shares it between identical requests in flight.
 
 ## Checking the source
 

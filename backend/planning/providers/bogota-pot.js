@@ -26,6 +26,8 @@ const upstream = message => Object.assign(new Error(message), { status: 503, cod
 const TTL_MS = 15 * 60 * 1000, FEATURE_CAP = 8000, READ_CAP = 128, COVER_CAP = 64;
 const contains = (outer, inner) => outer[0] <= inner[0] && outer[1] <= inner[1] && outer[2] >= inner[2] && outer[3] >= inner[3];
 const intersects = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+const featureBounds = new WeakMap();
+const boundsOf = feature => { if (!featureBounds.has(feature)) featureBounds.set(feature, turf.bbox(feature)); return featureBounds.get(feature); };
 const spatialReference = Object.freeze({ horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' });
 
 export function createBogotaPotProvider(descriptor = bogotaPotSource, { fetchImpl = publicFetch, now = Date.now } = {}) {
@@ -143,7 +145,7 @@ export function createBogotaPotProvider(descriptor = bogotaPotSource, { fetchImp
         },
         async parcelRecords(parcel, records) {
             const bounds = turf.bbox(parcel);
-            const candidates = (await antejardinUnder(bounds)).filter(feature => intersects(turf.bbox(feature), bounds));
+            const candidates = (await antejardinUnder(bounds)).filter(feature => intersects(boundsOf(feature), bounds));
             let best = null;
             const failed = [];
             for (const feature of candidates) {
