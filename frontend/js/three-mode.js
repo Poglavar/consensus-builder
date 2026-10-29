@@ -10257,9 +10257,8 @@
         return window.DesignSync.sortedCids(getAppliedProposals().map(publishedDesignCid).filter(Boolean));
     }
 
-    // The applied designs the walk still waits for: unpublished ones that can be published alone. A
-    // parcel layout is published only with its agreement (ProposalPublishTerms.publishRefusal), so
-    // the walk goes on without it.
+    // The applied designs the walk still waits for: unpublished ones that can be published. One that
+    // cannot (ProposalPublishTerms.publishRefusal: invalid or too large) does not hold the walk up.
     function getNonUploadedAppliedProposals() {
         return getAppliedProposals().filter(p => !publishedDesignCid(p) && !window.ProposalPublishTerms.publishRefusal(p));
     }

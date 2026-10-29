@@ -271,6 +271,7 @@
             }
         },
         "dimensions": {
+            "rules": "Las reglas del esquema",
             "labels": {
                 "initiator": "Quién lo inicia",
                 "decider": "Quién tiene la última palabra",
@@ -437,14 +438,12 @@
                 "givesUp": "cede el {{percent}} %",
                 "gains": "gana el {{percent}} %",
                 "pool": "El {{given}} % del conjunto no vuelve a los propietarios; el tope es el {{limit}} %.",
-                "measure": "Mostrar",
-                "area": "Por superficie",
-                "value": "Por valor",
-                "owed": "Le corresponde",
+                "owed": "A cada propietario le corresponde el suelo que aporta; el dinero liquida la diferencia entre eso y el suelo que recupera.",
                 "floor": "Mínimo de retorno con el tope",
                 "exampleCap": "Tres propietarios de ejemplo que ceden lo máximo que permite el esquema. Con un plan abierto, el gráfico muestra sus partes.",
                 "exampleNoCap": "Tres propietarios de ejemplo que ceden una cuarta parte de su suelo: el esquema no fija tope. Con un plan abierto, el gráfico muestra sus partes.",
-                "plan": "Cada parte de este acuerdo, de mayor a menor: lo que aporta y recupera, y el dinero que liquida la diferencia (+ recibe, − paga)."
+                "owedContribution": "A cada propietario le corresponde el suelo que aporta menos la cesión del {{percent}} % sin compensación; el dinero liquida la diferencia entre eso y el suelo que recupera.",
+                "owedValue": "A cada propietario le corresponde una parte del valor del nuevo suelo igual al valor que aporta; el dinero liquida la diferencia entre eso y el valor del suelo que recupera."
             }
         },
         "regime": {

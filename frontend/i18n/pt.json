@@ -3611,6 +3611,7 @@
             }
         },
         "dimensions": {
+            "rules": "As regras do esquema",
             "labels": {
                 "initiator": "Quem inicia",
                 "decider": "Quem tem a palavra final",
@@ -3777,14 +3778,12 @@
                 "givesUp": "cede {{percent}}%",
                 "gains": "ganha {{percent}}%",
                 "pool": "{{given}}% do conjunto não volta aos proprietários; o limite é {{limit}}%.",
-                "measure": "Mostrar",
-                "area": "Por área",
-                "value": "Por valor",
-                "owed": "Que lhe cabe",
+                "owed": "A cada proprietário cabe o terreno que traz; o dinheiro liquida a diferença entre isso e o terreno que recebe de volta.",
                 "floor": "Retorno mínimo pelo limite",
                 "exampleCap": "Três proprietários de exemplo que cedem o máximo que o esquema permite. Com um plano aberto, o gráfico mostra as suas partes.",
                 "exampleNoCap": "Três proprietários de exemplo que cedem um quarto do seu terreno: o esquema não fixa limite. Com um plano aberto, o gráfico mostra as suas partes.",
-                "plan": "Cada parte deste acordo, da maior para a menor: o que traz e recebe de volta, e o dinheiro que liquida a diferença (+ recebe, − paga)."
+                "owedContribution": "A cada proprietário cabe o terreno que traz menos a contribuição de {{percent}}% tomada sem compensação; o dinheiro liquida a diferença entre isso e o terreno que recebe de volta.",
+                "owedValue": "A cada proprietário cabe uma parte do valor do novo terreno igual ao valor que traz; o dinheiro liquida a diferença entre isso e o valor do terreno que recebe de volta."
             }
         },
         "regime": {

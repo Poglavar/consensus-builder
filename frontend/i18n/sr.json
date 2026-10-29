@@ -271,6 +271,7 @@
             }
         },
         "dimensions": {
+            "rules": "Pravila modela",
             "labels": {
                 "initiator": "Ko pokreće",
                 "decider": "Ko ima poslednju reč",
@@ -437,14 +438,12 @@
                 "givesUp": "daje {{percent}} %",
                 "gains": "dobija {{percent}} %",
                 "pool": "{{given}} % ukupnog zemljišta ne vraća se vlasnicima; granica je {{limit}} %.",
-                "measure": "Prikaži",
-                "area": "Po površini",
-                "value": "Po vrednosti",
-                "owed": "Pripada mu",
+                "owed": "Svakom vlasniku pripada zemljište koje unosi; novac izmiruje razliku između toga i zemljišta koje dobija nazad.",
                 "floor": "Najmanje nazad uz granicu",
                 "exampleCap": "Tri primera vlasnika koji daju najviše što model dozvoljava. Kada je plan otvoren, grafikon prikazuje njegove strane.",
                 "exampleNoCap": "Tri primera vlasnika koji daju četvrtinu svog zemljišta: model ne postavlja granicu. Kada je plan otvoren, grafikon prikazuje njegove strane.",
-                "plan": "Svaka strana ovog sporazuma, od najveće: šta unosi i šta dobija nazad, i novac kojim se izmiruje razlika (+ prima, − plaća)."
+                "owedContribution": "Svakom vlasniku pripada zemljište koje unosi umanjeno za doprinos od {{percent}} % koji se uzima bez naknade; novac izmiruje razliku između toga i zemljišta koje dobija nazad.",
+                "owedValue": "Svakom vlasniku pripada udeo u vrednosti novog zemljišta jednak vrednosti koju unosi; novac izmiruje razliku između toga i vrednosti zemljišta koje dobija nazad."
             }
         },
         "regime": {

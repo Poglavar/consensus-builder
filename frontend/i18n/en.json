@@ -271,6 +271,7 @@
             }
         },
         "dimensions": {
+            "rules": "The scheme’s rules",
             "labels": {
                 "initiator": "Who starts it",
                 "decider": "Who has the final say",
@@ -437,14 +438,12 @@
                 "givesUp": "gives up {{percent}}%",
                 "gains": "gains {{percent}}%",
                 "pool": "{{given}}% of the pool is not returned to the owners; the cap is {{limit}}%.",
-                "measure": "Show",
-                "area": "By area",
-                "value": "By value",
-                "owed": "Owed",
+                "owed": "Each owner is owed the land they put in; money settles the difference between that and the land they get back.",
                 "floor": "Least back under the cap",
                 "exampleCap": "Three example owners giving up the most the scheme allows. With a plan open, the chart shows its parties.",
                 "exampleNoCap": "Three example owners giving up a quarter of their land: the scheme sets no cap. With a plan open, the chart shows its parties.",
-                "plan": "Every party of this agreement, largest first: what each puts in and gets back, and the money settling the difference (+ receives, − pays)."
+                "owedContribution": "Each owner is owed the land they put in less the {{percent}}% contribution taken without compensation; money settles the difference between that and the land they get back.",
+                "owedValue": "Each owner is owed a share of the new land’s value matching the value they put in; money settles the difference between that and the value of the land they get back."
             }
         },
         "regime": {

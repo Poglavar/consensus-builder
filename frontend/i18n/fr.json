@@ -3611,6 +3611,7 @@
             }
         },
         "dimensions": {
+            "rules": "Les règles du schéma",
             "labels": {
                 "initiator": "Qui le lance",
                 "decider": "Qui a le dernier mot",
@@ -3777,14 +3778,12 @@
                 "givesUp": "cède {{percent}} %",
                 "gains": "gagne {{percent}} %",
                 "pool": "{{given}} % de la masse ne revient pas aux propriétaires ; le plafond est de {{limit}} %.",
-                "measure": "Afficher",
-                "area": "En surface",
-                "value": "En valeur",
-                "owed": "Dû",
+                "owed": "Chaque propriétaire a droit au terrain qu’il apporte ; l’argent règle la différence avec le terrain qu’il récupère.",
                 "floor": "Retour minimal selon le plafond",
                 "exampleCap": "Trois propriétaires d’exemple cédant le maximum permis par le schéma. Avec un plan ouvert, le graphique montre ses parties.",
                 "exampleNoCap": "Trois propriétaires d’exemple cédant un quart de leur terrain : le schéma ne fixe pas de plafond. Avec un plan ouvert, le graphique montre ses parties.",
-                "plan": "Chaque partie de cet accord, de la plus grande à la plus petite : ce qu’elle apporte et récupère, et l’argent qui règle la différence (+ reçoit, − paie)."
+                "owedContribution": "Chaque propriétaire a droit au terrain qu’il apporte, moins la contribution de {{percent}} % prise sans indemnité ; l’argent règle la différence avec le terrain qu’il récupère.",
+                "owedValue": "Chaque propriétaire a droit à une part de la valeur du nouveau terrain égale à la valeur qu’il apporte ; l’argent règle la différence avec la valeur du terrain qu’il récupère."
             }
         },
         "regime": {
