@@ -518,6 +518,36 @@
         return { pieces, excluded };
     }
 
+    // The pieces an applied Block or Row stands as on the ground it has now (`ground`:
+    // [{ feature, parcelId }], the live parcels under it). A block is one building per parcel, so its
+    // saved pieces stand as saved while each lies on one parcel of that ground and no two share one.
+    // Once the ground has changed under it (a parcel layout it was drawn on came off the map), a
+    // piece straddles today's parcels or two pieces share one, and its saved massing is cut again by
+    // today's parcels. The saved design is never changed: these pieces exist only on the map.
+    function piecesOnGround(buildings, massing, ground, deps) {
+        const turf = deps && deps.turf;
+        const rule = massing && massing.properties && massing.properties.urbanRule;
+        if (!turf || !massing || !massing.geometry || !rule || (rule.typology !== 'block' && rule.typology !== 'row')
+            || !Array.isArray(buildings) || !buildings.length || !Array.isArray(ground) || !ground.length) return buildings;
+        const hosts = new Set();
+        const standsAsSaved = buildings.every(piece => {
+            if (!piece || !piece.geometry) return false;
+            const point = turf.pointOnFeature(piece);
+            const host = ground.find(entry => entry && entry.feature && entry.feature.geometry
+                && turf.booleanPointInPolygon(point, entry.feature));
+            if (!host || hosts.has(String(host.parcelId))) return false;
+            hosts.add(String(host.parcelId));
+            let inside = null;
+            try { inside = turf.intersect(piece, host.feature); } catch (error) {
+                throw variationClipFailure('intersect', error, 'urban-rule-variation.piecesOnGround', [piece, host.feature], host.parcelId);
+            }
+            return !!(inside && inside.geometry) && areaOf(inside, turf) >= areaOf(piece, turf) * 0.99;
+        });
+        if (standsAsSaved) return buildings;
+        const { pieces } = splitMassingByParcels(massing, ground, rule, massing.properties.variationSeed, deps);
+        return pieces.length ? pieces : buildings;
+    }
+
     // One legal build-out of a single block piece. Only the height varies: the footprint is fixed by
     // the parcel it sits on and the ring it was cut from, so a street under one rule reads as
     // separate buildings of different heights on a common building line.
@@ -744,6 +774,7 @@
         parcelEnvelope,
         buildToMinimum,
         splitMassingByParcels,
+        piecesOnGround,
         summariseBlockRule,
         realizeFromEnvelope,
         realizeBlockPiece,
