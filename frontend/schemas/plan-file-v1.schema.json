@@ -17,7 +17,7 @@
     "plan": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "title": "Named plan/v1",
-      "$comment": "Acceptance also requires ugt-map-location format, x-ugt-ascending and x-ugt-utf16-maxLength (JavaScript string lengths). These semantic extensions use PlanRecord.semanticRules, the same helpers as PlanRecord.validate. Clients ignoring extensions must not claim full validation.",
+      "$comment": "Acceptance also requires ugt-map-location format, x-ugt-ascending, x-ugt-plan-members (schedule keys are designCids members, months within range, start ≤ end) and x-ugt-utf16-maxLength (JavaScript string lengths). These semantic extensions use PlanRecord.semanticRules, the same helpers as PlanRecord.validate. Clients ignoring extensions must not claim full validation.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -211,6 +211,33 @@
             "at",
             "mode"
           ]
+        },
+        "schedule": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "pattern": "^baf(?:krei[a-z2-7]{52}|ybei[a-z2-7]{52})$"
+          },
+          "x-ugt-plan-members": true,
+          "description": "Optional construction window per member design CID: start and end months (YYYY-MM, inclusive, 2026-01–2966-12, start ≤ end). Members without an entry are unscheduled; omit schedule when no member has a window.",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "start": {
+                "type": "string",
+                "pattern": "^(\\d{4})-(0[1-9]|1[0-2])$"
+              },
+              "end": {
+                "type": "string",
+                "pattern": "^(\\d{4})-(0[1-9]|1[0-2])$"
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ]
+          }
         }
       },
       "required": [

@@ -195,9 +195,11 @@
         return text;
     }
 
-    async function create(records, { title, view, designSources = {}, fetchModel = () => fail('A model dependency could not be embedded.') } = {}) {
+    // schedule: the plan's construction windows by design CID; a design whose CID changes when its
+    // models are embedded keeps its window.
+    async function create(records, { title, view, schedule = null, designSources = {}, fetchModel = () => fail('A model dependency could not be embedded.') } = {}) {
         if (!Array.isArray(records) || !records.length || records.length > api('PlanRecord').MAX_DESIGNS) fail('Choose between 1 and 1000 designs.');
-        const rows = new Map(), sources = {};
+        const rows = new Map(), sources = {}, windows = {};
         for (const record of records) {
             const content = api('DesignRecord').published(record);
             inspect(content);
@@ -205,11 +207,12 @@
             await embedModels(content, fetchModel);
             const cid = api('Cid').cidOfObject(content);
             rows.set(cid, { cid, content });
+            if (schedule?.[originalCid]) windows[cid] = schedule[originalCid];
             const source = designSources[originalCid] || record.planFileSource || record.binding?.parcelSource;
             if (source?.sourceId) sources[cid] = { sourceId: source.sourceId, snapshotId: source.snapshotId ?? null };
         }
         const cids = [...rows.keys()].sort();
-        const file = { schema: SCHEMA, plan: api('PlanRecord').create(title || 'My plan', cids, view),
+        const file = { schema: SCHEMA, plan: api('PlanRecord').create(title || 'My plan', cids, view, windows),
             designs: cids.map(cid => rows.get(cid)), designSources: sources };
         stringify(file);
         return file;

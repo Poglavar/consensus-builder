@@ -1,4 +1,3 @@
-import { openPlanActions } from '../helpers/plan-actions';
 // Verify shared dynamic dialogs and controls produce the expected corridor, plan, and claim effects.
 import { test, expect } from '../helpers/fixtures';
 import { clickMapPoint, createBuilding, createSpace, drawCorridor, openCity, openParcel } from '../helpers/runtime';
@@ -221,37 +220,49 @@ test.describe('shared dynamic button factories @features', () => {
     await expect(banner).toHaveCount(0);
   });
 
-  test('plan stats Added and Standing change the per-period proposal totals', async ({ mockApi: page }) => {
+  test('plan stats Added and Standing change the per-period totals of a scheduled plan', async ({ mockApi: page }) => {
     await openCity(page);
     const firstId = await createBuilding(page);
-    await page.evaluate(id => {
-      const store = (window as any).proposalStorage;
+    const title = 'Scheduled plan';
+    // Two members whose construction windows end in 2035 and 2040: the plan's periods.
+    await page.evaluate(({ id, title }) => {
+      const w = window as any;
+      const store = w.proposalStorage;
       const first = store.getProposal(id);
-      if (!first || !store.setProposalEpochYear(id, 2035)) throw new Error('Applied fixture building was not stored');
+      if (!first) throw new Error('Applied fixture building was not stored');
       const second = JSON.parse(JSON.stringify(first));
       second.proposalId = undefined;
-      second.title = 'Second epoch building';
+      second.title = 'Second scheduled building';
       second.name = second.title;
-      second.epochYear = 2040;
       second.createdAt = '2026-10-02T00:00:00.000Z';
-      store.addProposal(second);
-    }, firstId);
+      const secondId = store.addProposal(second);
+      const records = [store.getProposal(id), store.getProposal(secondId)];
+      const [a, b] = records.map(record => w.DesignRecord.cidOf(record));
+      const schedule = { [a]: { start: '2034-06', end: '2035-03' }, [b]: { start: '2039-01', end: '2040-12' } };
+      w.PlanWorkspace.save(w.PlanComposition.create(title, records,
+        { city: w.resolveCurrentCityCode(), at: '45.8,15.98,17', mode: '2d', language: 'en' }, schedule));
+      w.MapShell.closeSheets();
+    }, { id: firstId, title });
 
     await page.locator('#proposals-button').click();
-    await (await openPlanActions(page)).getByRole('button', { name: 'Plan stats', exact: true }).click();
+    await page.locator('[data-list-tab="plans"]').click();
+    const row = page.locator('#plan-list-host .lists-item').filter({ has: page.getByRole('button', { name: title, exact: true }) });
+    await row.getByRole('button', { name: 'Plan stats', exact: true }).click();
     const modal = page.locator('#plan-stats-modal');
     await expect(modal).toBeVisible();
-    const section = modal.locator('[data-plan-stat="epoch-section"]');
+    const section = modal.locator('[data-plan-stat="period-section"]');
     await expect(section).toBeVisible();
-    const table = section.locator('[data-plan-stat="epoch-table"] table');
+    const table = section.locator('[data-plan-stat="period-table"] table');
     const secondYearProposals = table.locator('tr').nth(2).locator('td').nth(1);
     await expect(table.locator('tr').nth(1).locator('td').first()).toHaveText('2035');
     await expect(table.locator('tr').nth(2).locator('td').first()).toHaveText('2040');
+    await expect(table.locator('tr')).toHaveCount(3);
     const addedCount = await secondYearProposals.innerText();
-    await section.locator('[data-epoch-view="cumulative"]').click();
+    expect(addedCount).toBe('1');
+    await section.locator('[data-period-view="cumulative"]').click();
     await expect.poll(() => secondYearProposals.innerText()).not.toBe(addedCount);
     expect(await secondYearProposals.innerText()).toBe('2');
-    await section.locator('[data-epoch-view="added"]').click();
+    await section.locator('[data-period-view="added"]').click();
     await expect.poll(() => secondYearProposals.innerText()).toBe(addedCount);
     await modal.getByRole('button', { name: 'Close plan stats' }).click();
     await expect(modal).toBeHidden();

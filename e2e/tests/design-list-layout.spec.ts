@@ -15,7 +15,6 @@ async function openDesignList(page: Page): Promise<void> {
         goal: 'park',
         lifecycleStatus: 'Active',
         applied: true,
-        epochYear: 2035,
         cadastreParcelIds: [parcelId],
       });
     }

@@ -1,7 +1,7 @@
 // Named plans are immutable design selections and map views, independent of agreement ground and terms.
 import { createRequire } from 'node:module';
 import { appTurf as turf, intentDesign } from './mcp-geometry.js';
-import { cidOfObject, designObject, isCid, isParcelLayout } from './agreement-objects.js';
+import { cidOfObject, designObject, isCid } from './agreement-objects.js';
 import { editedDesign } from './mcp-edit.js';
 import { validateTrackDesign } from './mcp-constructors.js';
 import { previewArtifact } from './mcp-preview.js';
@@ -16,8 +16,40 @@ const fail = (code, message, next = { action: 'Inspect the intended named plan r
 };
 const missing = error => ['http-404', 'design-not-found'].includes(error.code);
 
+// Construction windows follow a member through revisions: renames maps an old design CID to its
+// revision's CID (an edit, a replacement or a road joined to another).
+function carrySchedule(schedule, renames, memberCids) {
+    const follow = cid => { const seen = new Set(); while (renames.has(cid) && !seen.has(cid)) { seen.add(cid); cid = renames.get(cid); } return cid; };
+    const members = new Set(memberCids), carried = {};
+    for (const [cid, window] of Object.entries(schedule || {})) {
+        const next = follow(cid);
+        if (members.has(next)) carried[next] = window;
+    }
+    return carried;
+}
+
 export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftReference, publishDesign }) {
-    const planUrl = cid => new URL(`/plans/${cid}`, appOrigin).href;
+    const planUrl = (cid, when = null, buildout = null) => {
+        const url = new URL(`/plans/${cid}`, appOrigin);
+        if (when) url.searchParams.set('when', when);
+        if (buildout) url.searchParams.set('buildout', buildout);
+        return url.href;
+    };
+    // schedule: { [designCid | 'design:<cid>']: { start, end } | null }, merged over carried windows;
+    // null clears a member's window. Keys naming a design this call revised follow it.
+    function scheduleWith(base, changes, renames, memberCids) {
+        const next = carrySchedule(base, renames, memberCids);
+        for (const [key, window] of Object.entries(changes || {})) {
+            const named = key.startsWith('design:') ? key.slice('design:'.length) : key;
+            const cid = carrySchedule({ [named]: true }, renames, memberCids);
+            const target = Object.keys(cid)[0];
+            if (!target) fail('schedule-member-not-found', `The construction window names ${key}, which is not a design of this plan revision.`,
+                { tool: 'ugt_inspect_plan', action: 'Use a design CID or design ref returned by inspecting this plan.' });
+            if (window === null) delete next[target];
+            else next[target] = { start: window.start, end: window.end };
+        }
+        return next;
+    }
     function checkRevision(value, expectedCid, currentCid) {
         if (expectedCid !== currentCid) throw Object.assign(new Error('Inspect the selected named plan and confirm its exact revision before editing or publishing.'), {
             code: 'plan-revision-mismatch', field: 'expectedCid', currentCid, expectedCid,
@@ -80,14 +112,14 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         const east = Math.max(...bounds.map(b => b[2])), north = Math.max(...bounds.map(b => b[3]));
         return { at: `${(south + north) / 2},${(west + east) / 2},17`, mode: '2d', city: designs[0].content.city || null };
     }
-    async function privateResult(plan, designs, extra = {}) {
+    async function privateResult(plan, designs, extra = {}, { when = null, buildout = null } = {}) {
         const cid = checkedPlan(plan);
         const designSources = Object.fromEntries(designs.filter(row => row.parcelSourceId).map(row => [row.cid, row.parcelSourceId]));
-        const preview = await previewArtifact({ plan, designs: designs.map(row => row.content) });
+        const preview = await previewArtifact({ plan, designs: designs.map(row => row.content), when, buildout });
         preview.draftArtifact.designSources = designSources;
         return { plan, cid, designs, publication: 'private', ...extra, ...preview };
     }
-    async function draftPlan({ designs: inputs, title, view }) {
+    async function draftPlan({ designs: inputs, title, view, schedule, when = null, buildout = null }) {
         if (!Array.isArray(inputs) || !inputs.length || inputs.length > PlanRecord.MAX_DESIGNS) fail('invalid-plan', 'Choose between 1 and 1000 designs.');
         const designs = [];
         for (const input of inputs) {
@@ -96,9 +128,10 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
             designs.push({ cid, ...resolved });
         }
         let plan;
-        try { plan = PlanRecord.create(title, designs.map(row => row.cid), view || defaultView(designs)); }
+        const cids = designs.map(row => row.cid), windows = scheduleWith({}, schedule, new Map(), cids);
+        try { plan = PlanRecord.create(title, cids, view || defaultView(designs), windows); }
         catch (error) { fail('invalid-plan', error.message); }
-        return privateResult(plan, designs);
+        return privateResult(plan, designs, {}, { when, buildout });
     }
     // An agent's working plan (docs/agent-working-plan.md): authored designs are placed in turn with the
     // browser's apply rules. Without a plan they start a new private one. A refusal places nothing and
@@ -107,7 +140,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
     async function placeDesigns({ plan: value, designs: incoming, displace = false }) {
         const original = value === undefined || value === null ? null : await resolvePlan(value);
         let members = original ? original.designs : [];
-        const placed = [], consequences = { removed: [], junctions: [], cuts: [] };
+        const placed = [], consequences = { removed: [], junctions: [], cuts: [] }, renames = new Map();
         for (const { before = null, ...row } of incoming) {
             const member = before && members.some(other => other.cid === before) ? before : null;
             const result = placeInPlan({ members, incoming: row, before: member, displace });
@@ -117,18 +150,22 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
                     plan: original ? { cid: original.cid, status: 'unchanged' } : null };
             }
             members = result.members; placed.push(result.design);
+            if (member) renames.set(member, result.design.cid);
+            for (const change of result.consequences.junctions) renames.set(change.beforeCid, change.afterCid);
             for (const key of Object.keys(consequences)) consequences[key].push(...result.consequences[key]);
         }
         let plan;
-        try { plan = PlanRecord.create(original?.plan.title || incoming[0]?.content.title || 'Working plan', members.map(row => row.cid), original?.plan.view || defaultView(members)); }
+        const cids = members.map(row => row.cid);
+        try { plan = PlanRecord.create(original?.plan.title || incoming[0]?.content.title || 'Working plan', cids, original?.plan.view || defaultView(members),
+            carrySchedule(original?.plan.schedule, renames, cids)); }
         catch (error) { fail('invalid-plan', error.message); }
         return { placement: { status: 'placed' }, designs: placed, consequences,
             plan: await privateResult(plan, members, original ? { previousCid: original.cid } : {}) };
     }
-    async function getPlan({ plan: value }) {
+    async function getPlan({ plan: value, when = null, buildout = null }) {
         const resolved = await resolvePlan(value);
-        if (!resolved.published) return privateResult(resolved.plan, resolved.designs);
-        return { plan: resolved.plan, cid: resolved.cid, designs: resolved.designs, publication: 'published', url: planUrl(resolved.cid), previewUrl: planUrl(resolved.cid) };
+        if (!resolved.published) return privateResult(resolved.plan, resolved.designs, {}, { when, buildout });
+        return { plan: resolved.plan, cid: resolved.cid, designs: resolved.designs, publication: 'published', url: planUrl(resolved.cid), previewUrl: planUrl(resolved.cid, when, buildout) };
     }
     function inventory(plan) {
         const items = [];
@@ -139,7 +176,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
         for (const { cid, content } of plan.designs) {
             const ref = `design:${cid}`;
             add({ ref, kind: 'design', designCid: cid, path: '', title: content.title, goal: content.goal,
-                buildingCount: content.geometry?.buildings?.length || 0 }, read.siteOfDesign(content));
+                buildingCount: content.geometry?.buildings?.length || 0, construction: plan.plan.schedule?.[cid] || null }, read.siteOfDesign(content));
             (content.geometry?.buildings || []).forEach((building, index) => add({
                 ref: `building:${cid}:${index}`, kind: 'building', designCid: cid, designRef: ref,
                 buildingIndex: index, path: `/geometry/buildings/${index}`, title: building.properties?.name || content.title,
@@ -166,16 +203,16 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
             }
             return true;
         });
-        return { cid: plan.cid, title: plan.plan.title, view: plan.plan.view,
+        return { cid: plan.cid, title: plan.plan.title, view: plan.plan.view, schedule: plan.plan.schedule || null,
             items: matched.slice(offset, offset + limit).map(({ geometry, ...item }) => includeGeometry ? { ...item, geometry } : item),
             total: matched.length, offset, truncated: offset + limit < matched.length,
             selectionBasis: 'References belong to this immutable named plan revision. Compass selection requires the whole object bbox beyond the anchor bbox.',
             next: trustedMetadata({ tool: 'ugt_edit_plan', action: 'Use expectedCid and explicit refs. Ask the person when their description matches more than one object.' }) };
     }
-    async function editPlan({ plan: value, expectedCid, operations = [], title, view }) {
+    async function editPlan({ plan: value, expectedCid, operations = [], title, view, schedule, when = null, buildout = null }) {
         const original = await resolvePlan(value);
         checkRevision(value, expectedCid, original.cid);
-        if (!operations.length && title === undefined && view === undefined) fail('empty-edit', 'Supply membership/design operations, a title or a saved view.');
+        if (!operations.length && title === undefined && view === undefined && schedule === undefined) fail('empty-edit', 'Supply membership/design operations, a title, a saved view or construction windows.');
         const byRef = new Map(inventory(original).map(item => [item.ref, item]));
         const working = new Map(original.designs.map(row => [row.cid, structuredClone(row)]));
         const indices = new Map(original.designs.map(row => [row.cid, (row.content.geometry?.buildings || []).map((_, index) => index)]));
@@ -260,9 +297,13 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
             changes.push({ type: operation.type, ref: item.ref, beforeCid: row.cid, afterCid: placed.cid });
         }
         let plan;
-        try { plan = PlanRecord.create(title ?? original.plan.title, [...working.values()].map(row => row.cid), view ?? original.plan.view); }
+        const cids = [...working.values()].map(row => row.cid);
+        const renames = new Map([...changes.filter(change => change.beforeCid && change.afterCid).map(change => [change.beforeCid, change.afterCid]),
+            ...consequences.junctions.map(change => [change.beforeCid, change.afterCid])]);
+        const windows = scheduleWith(original.plan.schedule, schedule, renames, cids);
+        try { plan = PlanRecord.create(title ?? original.plan.title, cids, view ?? original.plan.view, windows); }
         catch (error) { fail('invalid-plan', error.message); }
-        return privateResult(plan, [...working.values()], { previousCid: original.cid, changes, consequences });
+        return privateResult(plan, [...working.values()], { previousCid: original.cid, changes, consequences }, { when, buildout });
     }
     async function publishPlan({ plan: value, expectedCid, confirm }) {
         if (confirm !== true) fail('confirmation-required', 'confirm must be true to publish a named plan.');
@@ -285,10 +326,6 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
                     if (existing.cid !== row.cid || cidOfObject(existing.content || existing.untrusted?.content) !== row.cid) fail('cid-mismatch', 'A published member differs from its committed design CID.');
             } catch (error) { if (!missing(error)) throw error; unpublished.push(row); }
         }
-        const layout = unpublished.find(row => isParcelLayout(row.content));
-        if (layout) state.layoutCid = layout.cid;
-        if (layout) fail('layout-agreement-required', 'An unpublished parcel layout must be published with the agreement that settles its land before saving this named plan.',
-            { tool: 'ugt_propose_agreement', action: 'Draft and review an agreement carrying the parcel layout, publish it, then retry this same named plan.', designCid: layout.cid });
         if (unpublished.length && !publishDesign) fail('publication-unavailable', 'Design publication is unavailable in this client.');
         for (const row of unpublished) {
             state.stage = 'publish-design';
@@ -310,8 +347,7 @@ export function createMcpNamedPlanTools({ read, drafts, appOrigin, resolveDraftR
             throw Object.assign(error, { ...dependency, code: error.code || 'publication-failed', cid: state.cid, stage: state.stage,
                 pinnedCids: [...new Set([...state.pinnedCids, ...(error.pinnedCids || [])])], indexed: state.indexed,
                 url: state.cid ? planUrl(state.cid) : null,
-                next: state.stage === 'resolve' && error.next ? error.next : state.layoutCid ? { tool: 'ugt_propose_agreement', designCid: state.layoutCid, action: 'Draft and review an agreement carrying this layout, publish it, then retry the same named plan.' }
-                    : { tool: 'ugt_publish_plan', arguments: { plan: value, expectedCid, confirm }, action: 'Retry this same confirmed immutable named plan revision; published members retain their CIDs.' } });
+                next: state.stage === 'resolve' && error.next ? error.next : { tool: 'ugt_publish_plan', arguments: { plan: value, expectedCid, confirm }, action: 'Retry this same confirmed immutable named plan revision; published members retain their CIDs.' } });
         }
     }
     return { draftPlan, getPlan, inspectPlan, editPlan, publishPlan, resolvePlan, placeDesigns };

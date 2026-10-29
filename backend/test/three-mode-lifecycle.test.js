@@ -106,6 +106,7 @@ it('resolves a caller waiting on scene readiness as false when the pending scene
         warmSceneTimer: null,
         warmSceneKey: null,
         stopSceneWork() {},
+        releaseRetiredGroups() {},
         resizeObserver: null,
         handleResize() {},
         cancelLoop() {},

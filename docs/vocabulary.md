@@ -365,11 +365,19 @@ Import retains a design definition independently of the currently viewed ground 
 
 ### Replay
 
-The reconstruction of a working composition by applying designs in their defined formation and dependency order. Display order, agreement membership order and display year do not themselves determine replay order.
+The reconstruction of a working composition by applying designs in their defined formation and dependency order. Display order, agreement membership order and construction windows do not themselves determine replay order.
 
-### Display year
+### Construction window
 
-The year assigned to a design for its timeline presentation, represented by `epochYear`. It is distinct from a promised construction date and from replay precedence.
+A plan member's start and end month (`YYYY-MM`, both inclusive), stored in the plan's `schedule` under the member's design CID. Dates belong to the plan, not the design: the same design can be built at different times in different plans. Members without a window are unscheduled and count as built at every date. The time control only displays a plan's windows; it does not set them. A window is distinct from replay precedence, and Plan stats counts a member in the year its window ends.
+
+### Time control
+
+The map's control that moves one month back and forth over the construction windows of the plan in view. At that month each scheduled member is planned (before its start), under construction (progress grows linearly over its window's months) or built (after its end). It only displays: nothing is applied, unapplied or replayed. Closing it returns to now, where everything on the map stands as applied. `when=YYYY-MM` in an address opens it at that month.
+
+### Simulated build-out
+
+A seeded, repeatable scenario giving the plan's undated members construction windows: a start month drawn from a yearly start rate and a duration from floor area; an urban rule builds parcel by parcel, one window per building. Members the plan dates keep their windows. It is shown on the time control and in an address as `buildout=<seed>`, and is never stored in a plan or agreement.
 
 ### Footprint
 
@@ -735,7 +743,7 @@ The transfer specified by a chain agreement's settlement terms. A configured rec
 
 ### Deadline
 
-The time limiting the agreement's decision or settlement process. It is distinct from a design's display year and an estimated construction date.
+The time limiting the agreement's decision or settlement process. It is distinct from a plan member's construction window.
 
 ## Money, value and markets
 
@@ -766,6 +774,10 @@ An agreement's `valuation`: one whole-cent value per m² for every input parcel 
 ### Scheme distribution rules
 
 The land rules a pinned scheme (`rule.approvalConfig.regime`) adds to its decision tests: a cap on the land an owner or the pool gives up, the area or value basis of distribution, the share of each owner's value gain settled in money, the fewest parties, and, under an authority-led scheme, no proposer acquisition. The record, the HTTP index and MCP check them with one shared function; the editor marks schemes the plan does not meet before they are chosen.
+
+### Scheme dimensions
+
+The eleven properties every scheme is described and compared by, in two groups. How it is decided: who starts it (owners or the authority), who has the final say (owners alone, owners then the authority, or the authority alone), the owner support needed (the tests), who is counted (owners or owners and leaseholders, all or private only), what happens to owners who say no (veto, bound by the majority, bound by the authority), and what passing unlocks (the stage). How the land is shared: the basis (area, value or either), public land without compensation (no cap, per owner or per pool), how differences are levelled (in money), the value gain (kept in land or a share settled in money; not applicable by area) and the fewest parties. `dimensionsOf` derives them from a scheme's data: the starter from its family, the outcome for dissenters from its tests and family. The scheme guide, its comparison table and the MCP `schemes` topic word them the same way.
 
 ### Readjustment cash
 

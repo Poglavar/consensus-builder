@@ -1,8 +1,8 @@
 // Exercise proposal modal buttons through the UI, with a local server boundary: the create dialog's
 // land-use, summary and road-designation controls, the share panel's selection, Publish and Copy URL,
-// the epoch timeline and the design index's Refresh.
+// and the design index's Refresh.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, PARCEL_ID, showProposal } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, showProposal } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
@@ -142,25 +142,6 @@ test.describe('proposal button controls: modal and alternate states @features', 
     expect(posts.some(request => request.path === '/agreements')).toBe(false);
     await page.keyboard.press('Escape');
     await expect(plan).toBeHidden();
-  });
-
-  test('proposal list epoch buttons move the cumulative timeline and restore all years', async ({ mockApi: page }) => {
-    await openCity(page);
-    await page.evaluate((parcelId) => {
-      const storage = (window as any).proposalStorage;
-      storage.addProposal({ title: 'Early stage', goal: 'park', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId], epochYear: 2035 });
-      storage.addProposal({ title: 'Later stage', goal: 'square', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId], epochYear: 2045 });
-    }, PARCEL_ID);
-    const list = await openProposalList(page);
-    const timeline = list.locator('.proposal-epoch-timeline');
-    await expect(timeline).toBeVisible();
-    await timeline.getByRole('button', { name: '2035.', exact: true }).click();
-    await expect(timeline.getByRole('button', { name: '2035.', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    await expect(timeline).toContainText(/Cumulative to 2035/);
-    await timeline.getByRole('button', { name: '2045.', exact: true }).click();
-    await expect(timeline.getByRole('button', { name: '2045.', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    await timeline.getByRole('button', { name: 'All', exact: true }).click();
-    await expect(timeline.locator('.proposal-epoch-diff')).toHaveCount(0);
   });
 
   test('road designation close discards the draft while Done commits the selected parcel boundary', async ({ mockApi: page }) => {

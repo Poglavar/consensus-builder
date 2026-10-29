@@ -19,3 +19,40 @@
 .plan-dialog__saved > strong { flex: 1 1 100%; overflow-wrap: anywhere; }
 #designs-plans { display: grid; align-content: start; gap: 12px; flex: 1 1 0; min-height: 0; overflow: auto; padding: var(--cb-space-3); }
 #designs-plans[hidden] { display: none; }
+
+/* Construction schedule (PlanDialog.schedule): each member's start and end month, under a strip
+   of every window on one month axis. JavaScript supplies only each bar's place on the axis
+   (--plan-schedule-offset, --plan-schedule-width: shares of the whole range). */
+.plan-schedule { display: grid; gap: var(--cb-space-2); min-width: 0; }
+.plan-schedule > .sheet-note { margin: 0; }
+.plan-schedule__gantt { display: grid; gap: var(--cb-space-1); }
+.plan-schedule__lanes { display: grid; gap: 3px; padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-sm); background: var(--cb-surface-2); }
+.plan-schedule__bar {
+    display: block;
+    height: 8px;
+    margin-left: calc(var(--plan-schedule-offset) * 100%);
+    width: max(6px, calc(var(--plan-schedule-width) * 100%));
+    padding: 0;
+    border: 0;
+    border-radius: var(--cb-radius-pill);
+    background: var(--cb-buildout-hatch);
+}
+button.plan-schedule__bar { cursor: pointer; }
+button.plan-schedule__bar:hover, button.plan-schedule__bar:focus-visible { background: var(--cb-buildout-crane); }
+.plan-schedule__axis { display: flex; justify-content: space-between; color: var(--cb-text-muted); font-size: var(--cb-text-sm); font-variant-numeric: tabular-nums; }
+.plan-schedule__rows { display: grid; gap: var(--cb-space-1); max-height: 45dvh; overflow: auto; margin: 0; padding: 0; list-style: none; }
+.plan-schedule__row { display: grid; gap: var(--cb-space-1); padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); }
+.plan-schedule__name { min-width: 0; overflow-wrap: anywhere; font-weight: var(--cb-weight-semibold); }
+.plan-schedule__fields { display: flex; flex-wrap: wrap; align-items: end; gap: var(--cb-space-2); }
+.plan-schedule__field { display: grid; gap: 2px; flex: 1 1 8rem; min-width: 0; color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+.plan-schedule__month { width: 100%; min-width: 0; }
+.plan-schedule__month[aria-invalid="true"] { border-color: var(--cb-danger); }
+/* The read-only strip in the click stack's plan section. */
+.click-stack__schedule { display: grid; gap: var(--cb-space-1); }
+.plan-schedule__simulate { margin-inline-end: auto; }
+/* Members without dates: named under the axis, muted, since they stand as built at every month. */
+.plan-schedule__undated { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--cb-space-1) var(--cb-space-2); color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+.plan-schedule__undated-label { font-weight: var(--cb-weight-semibold); }
+.plan-schedule__undated-item { padding: 0 var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-pill); background: var(--cb-surface-2); color: var(--cb-text-muted); font: inherit; }
+button.plan-schedule__undated-item { cursor: pointer; }
+button.plan-schedule__undated-item:hover, button.plan-schedule__undated-item:focus-visible { color: var(--cb-text); border-color: var(--cb-line-strong); }

@@ -899,6 +899,8 @@
         if (!global.DesignMemberships) await global.ensureOptionalTool('designMemberships');
         const instance = { id: plan.cid, cid: plan.cid, content: plan.content, label: plan.content.title, draft, localDesigns: designs };
         Object.assign(instance, await global.DesignMemberships.inspect('plans', instance, global));
+        // A plan with a construction schedule brings the build-out time control (js/buildout-clock.js).
+        global.BuildoutClock?.show({ cid: plan.cid, content: plan.content });
         if (doc.body.classList.contains('three-mode-active')) return global.showThreeModePlan(instance);
         const hits = { plans: [instance], planContext: instance, designs: instance.members };
         const stack = model.expand(model.buildClickStack(hits, { selected: { plans: instance.id } }), 'plans');

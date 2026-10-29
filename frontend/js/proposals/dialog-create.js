@@ -492,8 +492,6 @@ function showProposalDialog(overrides = null) {
         multiple: t('modal.createProposal.ownershipOptions.multiple', 'Multiple owners')
     };
     const nameLabel = t('modal.createProposal.nameLabel', 'Name');
-    // Epoha plana: koje desetljeće ovaj prijedlog gradi (vremenska crta u listi).
-    const epochLabel = t('modal.roadWidth.proposalList.epoch.rowLabel', 'Plan epoch');
     const namePlaceholder = t('modal.createProposal.namePlaceholderProposal', 'Design name');
     const unknownParcelLabel = t('modal.createProposal.unknownParcel', 'Unknown');
     const unknownOwnerLabel = t('modal.createProposal.ownerUnknown', 'Unknown');
@@ -746,12 +744,6 @@ function showProposalDialog(overrides = null) {
                 <div class="form-group">
                     <label for="proposalDescription">${descriptionLabel}</label>
                     <input type="text" id="proposalDescription" class="proposal-description-input" placeholder="${descriptionPlaceholder}">
-                </div>
-                <div class="form-group">
-                    <label for="proposalEpochYear" class="proposal-inline-field">
-                        <span>${epochLabel}</span>
-                        <select id="proposalEpochYear"></select>
-                    </label>
                 </div>
                 <div class="proposal-similar-section" id="proposalSimilarSection" style="display:none;">
                     <h4>${similarTitle}</h4>
@@ -1181,14 +1173,6 @@ function showProposalDialog(overrides = null) {
     // this only fills the empty do-nothing default).
     updateProposalNameAndDescription(DEFAULT_PROPOSAL_TYPE);
 
-    // Epoha: ponudi zadnju korištenu, da niz prijedloga za isto desetljeće ne
-    // traži isti odabir svaki put.
-    try {
-        if (window.__proposalEpoch && typeof window.__proposalEpoch.initCreateDialogSelect === 'function') {
-            window.__proposalEpoch.initCreateDialogSelect(document.getElementById('proposalEpochYear'));
-        }
-    } catch (_) { }
-
     const nameInputEl = document.getElementById('proposalName');
     const descriptionInputEl = document.getElementById('proposalDescription');
     if (nameInputEl && overridePrefill.name) {
@@ -1385,9 +1369,9 @@ function finishProposalDialogClose() {
 }
 
 // The walk view (three-mode.js) loads published designs by their CID, so every applied design is
-// published first: one row per unpublished design, "Publish all" the dialog's primary action. A parcel
-// layout is published only with its agreement (ProposalPublishTerms.publishRefusal): its row says so
-// and the walk goes on without it. onComplete runs once nothing publishable is left.
+// published first: one row per unpublished design, "Publish all" the dialog's primary action. A design
+// that cannot be published (ProposalPublishTerms.publishRefusal: invalid or too large) shows why on
+// its row and the walk goes on without it. onComplete runs once nothing publishable is left.
 function showWalkUploadGateModal(options = {}) {
     try {
         if (typeof proposalStorage === 'undefined' || typeof showSimpleShareModal !== 'function') return null;
@@ -1511,12 +1495,13 @@ function showWalkUploadGateModal(options = {}) {
             left.appendChild(meta);
             row.appendChild(left);
 
-            // A parcel layout is not published alone: the row says why and has nothing to press.
-            if (refusalOf(proposal)) {
+            // A design that cannot be published: the row says why and has nothing to press.
+            const refusal = refusalOf(proposal);
+            if (refusal) {
                 row.dataset.skipped = 'true';
                 const note = document.createElement('div');
                 note.className = 'walk-upload-gate__meta';
-                note.textContent = t('threeMode.walkGate.layoutSkipped', 'A parcel layout is published with its agreement, so the walk goes on without it.');
+                note.textContent = refusal.message;
                 left.appendChild(note);
                 listWrap.appendChild(row);
                 return;

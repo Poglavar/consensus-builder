@@ -270,6 +270,183 @@
                 "area-owners-and-leaseholders-private": "Privatna površina u vlasništvu i zakupu"
             }
         },
+        "dimensions": {
+            "labels": {
+                "initiator": "Tko pokreće",
+                "decider": "Tko ima konačnu riječ",
+                "support": "Potrebna podrška vlasnika",
+                "electorate": "Tko se broji",
+                "dissenters": "Vlasnici koji se protive",
+                "stage": "Što prolazak omogućuje",
+                "basis": "Zemljište se dijeli po",
+                "publicLand": "Javno zemljište bez naknade",
+                "levelling": "Razlike",
+                "valueGain": "Porast vrijednosti",
+                "minParties": "Strane"
+            },
+            "groups": {
+                "decision": "Kako se odlučuje",
+                "distribution": "Kako se dijeli zemljište"
+            },
+            "stages": {
+                "agreement": "Sporazum",
+                "initiative": "Inicijativa",
+                "association": "Udruga",
+                "plan": "Plan",
+                "execution": "Provedba"
+            },
+            "supportLong": "Potrebno je {{tests}}.",
+            "stageLong": "Prolazak služi za: {{stage}}.",
+            "flowAuthority": "Zatim",
+            "compare": "Usporedi sve modele",
+            "values": {
+                "initiator": {
+                    "owners": {
+                        "short": "Vlasnici",
+                        "long": "Pokreću ga vlasnici."
+                    },
+                    "authority": {
+                        "short": "Nadležno tijelo",
+                        "long": "Pokreće ga nadležno tijelo."
+                    }
+                },
+                "decider": {
+                    "owners": {
+                        "short": "Samo vlasnici",
+                        "long": "Sporazum vlasnika je odluka."
+                    },
+                    "owners-and-authority": {
+                        "short": "Vlasnici, zatim tijelo",
+                        "long": "Najprije podrška vlasnika, zatim odlučuje nadležno tijelo."
+                    },
+                    "authority": {
+                        "short": "Samo nadležno tijelo",
+                        "long": "Odlučuje nadležno tijelo; vlasnici se saslušavaju."
+                    }
+                },
+                "support": {
+                    "none": {
+                        "short": "Bez glasanja",
+                        "long": "Vlasnici ne glasaju."
+                    }
+                },
+                "electorate": {
+                    "none": {
+                        "short": "Nitko",
+                        "long": "Nitko se ne broji; vlasnici se saslušavaju."
+                    },
+                    "owners": {
+                        "short": "Svi vlasnici",
+                        "long": "Broje se vlasnici.",
+                        "private": {
+                            "short": "Samo privatni vlasnici",
+                            "long": "Broje se privatni vlasnici; javni nositelji prava ne ulaze u zbroj."
+                        }
+                    },
+                    "owners-and-leaseholders": {
+                        "short": "Vlasnici i zakupnici",
+                        "long": "Broje se vlasnici i zakupnici.",
+                        "private": {
+                            "short": "Samo privatni vlasnici i zakupnici",
+                            "long": "Broje se privatni vlasnici i zakupnici; javni nositelji prava ne ulaze u zbroj."
+                        }
+                    }
+                },
+                "dissenters": {
+                    "veto": {
+                        "short": "Veto",
+                        "long": "Svaki vlasnik ga može zaustaviti."
+                    },
+                    "bound-by-majority": {
+                        "short": "Obvezuje ih većina",
+                        "long": "Kad postoji podrška i nadležno tijelo odobri, obvezuje i vlasnike koji su bili protiv."
+                    },
+                    "bound-by-authority": {
+                        "short": "Obvezuje ih nadležno tijelo",
+                        "long": "Odluka nadležnog tijela obvezuje svakog vlasnika."
+                    }
+                },
+                "basis": {
+                    "area": {
+                        "short": "Površini",
+                        "long": "Nove čestice dijele se po površini."
+                    },
+                    "value": {
+                        "short": "Vrijednosti",
+                        "long": "Nove čestice dijele se po vrijednosti zemljišta."
+                    },
+                    "either": {
+                        "short": "Površini ili vrijednosti",
+                        "long": "Nove čestice dijele se po površini ili po vrijednosti zemljišta; strane biraju."
+                    }
+                },
+                "publicLand": {
+                    "none": {
+                        "short": "Bez gornje granice",
+                        "long": "Model ne postavlja granicu; strane se dogovaraju koliko postaje javno zemljište."
+                    },
+                    "owner": {
+                        "short": "≤ {{percent}} % po vlasniku",
+                        "long": "Svaki vlasnik za javnu namjenu bez naknade daje najviše {{percent}} % svog zemljišta.",
+                        "area": {
+                            "short": "≤ {{percent}} % po vlasniku (po površini)",
+                            "long": "Pri diobi po površini svaki vlasnik za javnu namjenu bez naknade daje najviše {{percent}} % svog zemljišta."
+                        }
+                    },
+                    "pool": {
+                        "short": "≤ {{percent}} % ukupnog zemljišta",
+                        "long": "Najviše {{percent}} % udruženog zemljišta postaje javno zemljište i troškovi bez naknade."
+                    }
+                },
+                "levelling": {
+                    "money": {
+                        "short": "U novcu",
+                        "long": "Ono što vlasnik dobije više ili manje od onoga što mu pripada podmiruje se u novcu."
+                    }
+                },
+                "valueGain": {
+                    "none": {
+                        "short": "—",
+                        "long": "Ne primjenjuje se: zemljište se dijeli po površini."
+                    },
+                    "kept": {
+                        "short": "Ostaje u zemljištu",
+                        "long": "Vlasnici zadržavaju porast vrijednosti u svom novom zemljištu."
+                    },
+                    "all": {
+                        "short": "Cijeli u novcu",
+                        "long": "Cijeli porast vrijednosti svakog vlasnika podmiruje se u novcu."
+                    },
+                    "share": {
+                        "short": "{{percent}} % u novcu",
+                        "long": "{{percent}} % porasta vrijednosti svakog vlasnika podmiruje se u novcu; ostatak ostaje u zemljištu."
+                    }
+                },
+                "minParties": {
+                    "any": {
+                        "short": "Bilo koji broj",
+                        "long": "Nema najmanjeg broja strana."
+                    },
+                    "some": {
+                        "short": "Najmanje {{count}}",
+                        "long": "Zemljište unosi najmanje {{count}} strana."
+                    }
+                }
+            },
+            "outcome": {
+                "givesUp": "daje {{percent}} %",
+                "gains": "dobiva {{percent}} %",
+                "pool": "{{given}} % ukupnog zemljišta ne vraća se vlasnicima; granica je {{limit}} %.",
+                "measure": "Prikaži",
+                "area": "Po površini",
+                "value": "Po vrijednosti",
+                "owed": "Pripada mu",
+                "floor": "Najmanje natrag uz granicu",
+                "exampleCap": "Tri primjera vlasnika koji daju najviše što model dopušta. Kad je plan otvoren, grafikon prikazuje njegove strane.",
+                "exampleNoCap": "Tri primjera vlasnika koji daju četvrtinu svog zemljišta: model ne postavlja granicu. Kad je plan otvoren, grafikon prikazuje njegove strane.",
+                "plan": "Svaka strana ovog sporazuma, od najveće: što unosi i što dobiva natrag te novac kojim se podmiruje razlika (+ prima, − plaća)."
+            }
+        },
         "regime": {
             "research": "Istraživački predložak",
             "stage": "Za što je ova podrška: {{stage}}",
@@ -627,17 +804,8 @@
             "guide": {
                 "open": "Kako funkcionira ova shema…",
                 "checked": "Pravila provjerena {{date}}",
-                "distribution": "Kako se raspodjeljuje zemljište",
-                "before": "Uneseno zemljište",
-                "after": "Zemljište nakon preraspodjele",
-                "schematicOwnerCap": "Svaki vlasnik bez naknade daje najviše {{percent}} % svog zemljišta za javne namjene i dobiva natrag česticu; svaka daljnja razlika izravnava se novcem.",
-                "schematicPoolCap": "Najviše {{percent}} % fonda bez naknade odlazi na javne sadržaje i troškove; strane dijele ostatak, a razlike se izravnavaju novcem.",
-                "schematicValue": "Svaki vlasnik dobiva natrag udio u novom zemljištu koji vrijedi onoliko koliko je unio; javno zemljište svima jednako smanjuje taj udio, a razlike se izravnavaju novcem.",
-                "schematicNone": "Strane dogovaraju što svaka dobiva natrag; shema ne postavlja granicu za javno zemljište, a razlike se izravnavaju novcem.",
-                "example": "Tri vlasnika kao primjer; kad je plan otvoren, trake prikazuju njegove strane.",
                 "against": "Usklađenost ovog sporazuma sa shemom",
                 "getsBack": "Dobiva natrag",
-                "givesUp": "Daje",
                 "fixes": "Što bi ispunilo uvjete",
                 "fixBasisValue": "Na kartici Pravila u polju Naknada odaberite „Novčano izravnanje razlika u vrijednosti zemljišta”, a zatim unesite vrijednost po m² za svaku ulaznu česticu i svaki nastali dio.",
                 "fixBasisArea": "Na kartici Pravila u polju Naknada odaberite „Novčano izravnanje razlika u zemljištu”.",
@@ -950,7 +1118,6 @@
             "errors": {
                 "cidMismatch": "Poslužitelj je izračunao drugačiji identitet ovog dizajna pa ništa nije objavljeno.",
                 "pinningUnconfigured": "Ovaj poslužitelj još ne može pohranjivati objavljene dizajne (pohrana nije konfigurirana).",
-                "layoutNeedsAgreement": "Raspored čestica objavljuje se zajedno sa sporazumom koji uređuje njegovo zemljište.",
                 "tooLarge": "Dizajn prelazi ograničenje objave od 10 MiB. Smanjite njegov obuhvat ili detalje prije dijeljenja; spremljen je lokalno.",
                 "invalidDesign": "Dizajn sadrži neispravne podatke. Ispravite ih prije dijeljenja.",
                 "rateLimitedFor": "Zasad je previše objava. Pokušajte ponovno za otprilike {{minutes}} min.",
@@ -985,8 +1152,7 @@
                 "listing": "Izrada popisa dizajna {{done}}/{{total}}…",
                 "checking": "Provjera dizajna {{done}}/{{total}}…",
                 "publishSelected": "Objavi odabrana dizajni",
-                "selectionCount": "Uključeno {{selected}} od {{total}} dizajni · izostavljeno {{excluded}}",
-                "layoutNeedsAgreement": "{{title}} objavljuje se sa svojim sporazumom. Izradite sporazum koji ga uključuje ili ga odznačite kako biste podijelili ostala dizajni."
+                "selectionCount": "Uključeno {{selected}} od {{total}} dizajni · izostavljeno {{excluded}}"
             },
             "route": {
                 "fetching": "Preuzimanje podijeljenih dizajna…",
@@ -1130,7 +1296,7 @@
                 "colFloorArea": "BRP m²",
                 "colApartments": "stanovi",
                 "colPeople": "stanovnici",
-                "noEpoch": "bez razdoblja",
+                "noPeriod": "bez razdoblja",
                 "scope": "{{title}} · Rješenja: {{counted}}",
                 "noteUnmeasured": "{{n}} od {{total}} zgrada nema navedenu visinu — njihova površina nije uračunata.",
                 "noteParcelArea": "Prosječna veličina čestice računa se na {{measured}} čestica čiji je oblik učitan; {{missing}} ih je izbrojeno, ali nije izmjereno.",
@@ -2752,18 +2918,6 @@
                     "minted": "Iskovan",
                     "inMemory": "U memoriji",
                     "awaitingFunding": "Čeka financiranje"
-                },
-                "epoch": {
-                    "rowLabel": "Epoha plana",
-                    "none": "Bez epohe",
-                    "custom": "Druga godina…",
-                    "customPrompt": "Godina vremenske crte (2026. – 2966.):",
-                    "saveError": "Spremanje epohe nije uspjelo.",
-                    "timelineLabel": "Vremenska crta",
-                    "all": "Sve",
-                    "cumulative": "Kumulativno do {year}.",
-                    "toApply": "treba primijeniti: {n}",
-                    "toUnapply": "treba maknuti: {n}"
                 }
             },
             "proposalChoice": {
@@ -3325,7 +3479,6 @@
         "description": "Ulice smještene u zemljište ostavljeno za njih."
     },
     "parcelLayout": {
-        "publishWithAgreement": "Raspored čestica objavljuje se sa svojim sporazumom. Predložite sporazum koji ga uključuje.",
         "editor": {
             "title": "Rasporedi čestice",
             "mapHint": "Ovdje nacrtajte čestice. Tko dobiva koju česticu odlučuje se kasnije, u sporazumu.",
@@ -6322,7 +6475,6 @@
             "title": "Objavite prije šetnje",
             "intro": "Ovi primijenjeni nacrti još nisu objavljeni. Prikaz šetnje učitava samo objavljene nacrte, pa se prvo objavljuju. Dijalog se zatvara i šetnja počinje čim svi budu objavljeni.",
             "publishAll": "Objavi sve",
-            "layoutSkipped": "Raspored čestica objavljuje se sa svojim sporazumom, pa šetnja nastavlja bez njega.",
             "openFailed": "Dijalog za objavu nije se mogao otvoriti."
         },
         "sun": {
@@ -8500,7 +8652,35 @@
         "countryNone": "Nije utvrđen nacionalni izvor",
         "countryUnchecked": "Nema dovršenog nacionalnog nalaza"
     },
+    "buildout": {
+        "summaryUndated": "U gradnji: {{construction}}, nije započeto: {{planned}}, bez datuma: {{undated}} (prikazano kao izgrađeno)",
+        "reroll": "Druga simulirana izgradnja",
+        "open": "Izgradnja kroz vrijeme",
+        "close": "Natrag na danas",
+        "back": "Prethodni mjesec",
+        "forward": "Sljedeći mjesec",
+        "play": "Pokreni",
+        "pause": "Zaustavi",
+        "month": "Mjesec",
+        "simulation": "Simulirana izgradnja",
+        "simulationBadge": "Simulacija",
+        "summary": "U gradnji: {{construction}}, nije započeto: {{planned}}",
+        "underConstruction": "U gradnji, izgrađeno {{percent}} %"
+    },
     "planDialog": {
+        "scheduleUndated": "Bez datuma (prikazano kao izgrađeno)",
+        "simulate": "Simuliraj izgradnju",
+        "simulateNothing": "Svi projekti u ovom planu već imaju datume.",
+        "schedule": "Raspored gradnje",
+        "scheduleTitle": "Raspored gradnje: {{title}}",
+        "scheduleHint": "Odredite kada se gradi svaki projekt. Spremanje stvara novu reviziju plana; pješčani sat na karti je zatim prikazuje kroz vrijeme.",
+        "scheduleEmpty": "Još nema datuma gradnje.",
+        "scheduleStart": "Početak",
+        "scheduleEnd": "Završetak",
+        "scheduleClear": "Ukloni datume",
+        "saveSchedule": "Spremi raspored",
+        "scheduleSaved": "Raspored gradnje spremljen je kao nova revizija plana.",
+        "scheduleInvalid": "Unesite mjesece između {{first}} i {{last}}, s početkom najkasnije u mjesecu završetka.",
         "plan": "Plan",
         "savedPlans": "Spremljeni planovi",
         "createPlan": "Izradi plan",

@@ -63,10 +63,11 @@ describe('three-mode Xray wiring', () => {
         const existingBuildingsGroup = { children: [], userData: {} };
         const proposedBuildingsGroup = { children: [{ id: 'proposal-survives' }], userData: {} };
         const ineligibleBuildingsGroup = { children: [{ id: 'ineligible-survives' }] };
+        const clear = vi.fn();
         const stubs = {
             window: {},
             enabled, built, planned, isolated, existingGroup: existingBuildingsGroup, proposedGroup: proposedBuildingsGroup, ineligibleGroup: ineligibleBuildingsGroup,
-            clearGroupChildren: vi.fn(), disposeFloorPlans: vi.fn(), restoreParcelEmphasis: vi.fn(),
+            clearGroupChildren: clear, retireGroupAfterFrame: group => clear(group), disposeFloorPlans: vi.fn(), restoreParcelEmphasis: vi.fn(),
             buildingDisplayPolicy: { resolveBuiltDisplayPolicy: mode => ({ visible: mode !== 'off', material: mode, showSurviving: true, showDemolished: false }) },
             buildingMaterials: { xray: 'xray-material', solid: 'solid-material', ghost: 'ghost-material' },
             buildNearbyProposalBuildings3D: vi.fn(async () => {}), buildProposedBuildings3D: vi.fn(async () => {}), appendSuggestedExistingFloorPlans: vi.fn(),
@@ -157,7 +158,8 @@ describe('three-mode Xray wiring', () => {
         const [build] = extracted('buildProposedBuildings3D', 'let plannedRepresentation="both",buildOutDisplaySalt=0;let buildingMaterials={};', {
             window:{ proposedBuildings:[model,ordinary], UrbanRuleVariation:{plannedDrawPlan:feature=>({buildOut:feature})} },
             turf:{}, appendBuildingFloorPlans:feature=>feature===model, appendSuggestedFloorPlans:()=>false,
-            createBuildingSlices:draw, estimateBuildingHeightMeters:()=>9, sceneWork
+            createBuildingSlices:draw, estimateBuildingHeightMeters:()=>9, sceneWork,
+            displayedFeatures:features=>features, buildoutSiteOf:()=>null
         });
         await build(group,'solid');
         expect(draw).toHaveBeenCalledExactlyOnceWith(ordinary,9,'solid',group,ordinary,null);

@@ -123,7 +123,7 @@
                 'css/layout.css',
                 'css/map.css?v=20261028-stack-focus',
                 'css/panels.css?v=20261027-panel-buttons',
-                'css/modals.css?v=20261027-panel-buttons',
+                'css/modals.css?v=20261029-no-epoch',
                 'css/parcel-sources.css',
                 'css/proposals.css?v=20261027-panel-buttons',
                 'css/grain-score.css?v=20261027-panel-buttons',
@@ -141,7 +141,7 @@
                 'css/utilities.css?v=20261027-panel-buttons',
                 'css/photoreal-mode.css',
                 'css/ai-scene.css',
-                'css/map-shell.css?v=20261027-panel-buttons',
+                'css/map-shell.css?v=20261029-no-epoch',
                 'css/activity-feed.css?v=20261027-style',
                 'css/area-monitor-list.css',
                 'css/map-credits.css',
@@ -157,7 +157,8 @@
                 'css/schelling-plan.css',
                 'css/road-in-parcel.css',
                 'css/proposal-details.css?v=20261028-parcel-tabs',
-                'css/plan-dialog.css',
+                'css/plan-dialog.css?v=20261029-undated',
+                'css/buildout-clock.css?v=20261029-panes',
                 'css/lists.css',
                 'css/proposal-approval.css?v=20261020-approval-rules',
                 'css/agreement.css?v=20261027-agreement-tabs',
@@ -465,7 +466,44 @@
                 data-i18n-key="mapShell.settings" data-i18n-attr="title,aria-label">
                 <i class="fas fa-gear" aria-hidden="true"></i>
             </button>
+            <!-- Build-out time control (js/buildout-clock.js): shown while a plan with a construction schedule is in view. -->
+            <button type="button" id="buildout-clock-button" class="map-shell-button" aria-controls="buildout-clock" aria-expanded="false"
+                title="Build-out over time" aria-label="Build-out over time" data-i18n-key="buildout.open" data-i18n-attr="title,aria-label" hidden>
+                <i class="fas fa-hourglass-half" aria-hidden="true"></i>
+            </button>
         </div>
+
+        <section id="buildout-clock" class="buildout-clock" aria-labelledby="buildout-clock-title" hidden>
+            <div class="buildout-clock__head">
+                <i class="fas fa-hourglass-half" aria-hidden="true"></i>
+                <h2 id="buildout-clock-title" class="buildout-clock__title"></h2>
+                <span class="buildout-clock__badge" data-i18n-key="buildout.simulationBadge">Simulation</span>
+                <button type="button" id="buildout-clock-reroll" class="btn btn-icon buildout-clock__reroll" aria-label="Another simulated build-out" title="Another simulated build-out"
+                    data-i18n-key="buildout.reroll" data-i18n-attr="aria-label,title"><i class="fa-solid fa-dice" aria-hidden="true"></i></button>
+                <button type="button" id="buildout-clock-close" class="close-circle-btn" aria-label="Back to now" title="Back to now"
+                    data-i18n-key="buildout.close" data-i18n-attr="aria-label,title">×</button>
+            </div>
+            <div class="buildout-clock__row">
+                <button type="button" id="buildout-clock-back" class="btn btn-icon" aria-label="Previous month" title="Previous month"
+                    data-i18n-key="buildout.back" data-i18n-attr="aria-label,title"><i class="fas fa-backward-step" aria-hidden="true"></i></button>
+                <button type="button" id="buildout-clock-play" class="btn btn-icon" aria-pressed="false" aria-label="Play" title="Play"><i class="fas fa-play" aria-hidden="true"></i></button>
+                <button type="button" id="buildout-clock-forward" class="btn btn-icon" aria-label="Next month" title="Next month"
+                    data-i18n-key="buildout.forward" data-i18n-attr="aria-label,title"><i class="fas fa-forward-step" aria-hidden="true"></i></button>
+                <output id="buildout-clock-month" class="buildout-clock__month" for="buildout-clock-slider"></output>
+            </div>
+            <input type="range" id="buildout-clock-slider" class="buildout-clock__slider" min="0" max="0" step="1" value="0"
+                aria-label="Month" data-i18n-key="buildout.month" data-i18n-attr="aria-label">
+            <p id="buildout-clock-summary" class="buildout-clock__summary sheet-note" aria-live="polite"></p>
+        </section>
+        <!-- Hatch fill of designs under construction on the 2D map (css/buildout-clock.css colours it). -->
+        <svg class="buildout-defs" width="0" height="0" aria-hidden="true" focusable="false">
+            <defs>
+                <pattern id="buildout-hatch" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+                    <rect class="buildout-hatch__ground" width="8" height="8"></rect>
+                    <line class="buildout-hatch__line" x1="0" y1="0" x2="0" y2="8"></line>
+                </pattern>
+            </defs>
+        </svg>
 
         <!-- 3D Toggle Button and 3D Container -->
         <button id="mode-walk-toggle" class="map-shell-button map-mode-walk-btn" title="Take a walk through your changes" aria-label="Take a walk through your changes" data-i18n-key="threeMode.toggle.walk" data-i18n-attr="title,aria-label" hidden>
@@ -1802,7 +1840,7 @@
     <script>
         window.__CB_WORKSPACE_REQUIRED__ = true;
         window.writeVersionedLocalScripts([
-            'js/optional-tools-loader.js?v=20261027-stack-properties',
+            'js/optional-tools-loader.js?v=20261029-undated',
             'js/shared-utils.js',
             // bundle:start foundation
             'js/ui/banner-stack.js',
@@ -1829,12 +1867,14 @@
             'js/environment.js',
             // Capture named-link parameters before map-core writes the remembered local view.
             'js/map-share.js',
-            'js/plan-record.js',
-            'js/named-plans.js?v=20261027-agreement-tabs',
-            'js/plan-composition.js',
+            'js/plan-record.js?v=20261029-schedule',
+            'js/buildout-schedule.js',
+            'js/buildout-simulation.js',
+            'js/named-plans.js?v=20261029-buildout',
+            'js/plan-composition.js?v=20261029-schedule',
             'js/plan-workspace.js',
-            'js/plan-dialog.js?v=20261027-create-plan-stack',
-            'js/lists-panel.js',
+            'js/plan-dialog.js?v=20261029-undated',
+            'js/lists-panel.js?v=20261029-schedule',
             'js/wipe-local-data.js',
             'js/world/world-entry-model.js?v=20261020-point-destinations',
             'data/boot-coverage.js',
@@ -1906,7 +1946,6 @@
             'js/proposals/status.js?v=20261019-local-consent',
             // bundle:start proposal-display-state
             'js/proposals/display-state.js?v=20261020-recorded-execution',
-            'js/proposals/epoch.js?v=20261020-explicit-publication',
             'js/proposals/counts.js',
             // bundle:end proposal-display-state
             'js/proposal-parcel-identity.js',
@@ -1979,7 +2018,7 @@
             'js/planning/views.js?v=20261027-station-inspection',
             'js/approval-link.js',
             'js/draft-link.js',
-            'js/draft-preview.js',
+            'js/draft-preview.js?v=20261029-buildout',
             'js/bets/bets-link.js',
             'js/bets/bets-telemetry.js?v=20261025',
             'js/bets/lmsr.js',
@@ -2150,7 +2189,7 @@
             'js/proposals/display-text.js',
             'js/proposals/panel-presentation.js?v=20261020-complete-area',
             // bundle:end proposal-panel-text
-            'js/proposals/list-ui.js?v=20261020-row-lookup',
+            'js/proposals/list-ui.js?v=20261029-no-epoch',
             // bundle:start proposal-map-actions
             'js/proposals/map-action.js',
             'js/proposals/before-after.js',
@@ -2166,7 +2205,8 @@
             'js/click-stack/click-stack-relations.js?v=20261027-observed-context',
             'js/click-stack/click-stack-neighbours.js?v=20261028-neighbours',
             'js/click-stack/click-stack-hits.js?v=20261028-neighbours',
-            'js/click-stack/click-stack-panel.js?v=20261028-neighbours',
+            'js/click-stack/click-stack-panel.js?v=20261029-buildout',
+            'js/buildout-clock.js?v=20261029-undated',
             'js/three-compare.js?v=20261028-compare',
             'js/proposals/market-view.js?v=20261019-market-evidence',
             'js/proposals/parcel-set-relations.js?v=20261020-reference-relations',
@@ -2178,7 +2218,7 @@
             'js/proposals/parcel-compare.js?v=20261020-comparison-status',
             'js/proposals/parcel-compare-ui.js?v=20261020-comparison-status',
             // bundle:end parcel-compare
-            'js/proposals/create.js?v=20261020-mint-identifiers',
+            'js/proposals/create.js?v=20261029-no-epoch',
             // bundle:start proposal-drafts
             'js/proposal-drafts.js?v=20261019-local-purchase',
             'js/corridor-draft.js',
@@ -2191,14 +2231,14 @@
             'js/building-layers-dialog.js',
             'js/road-node-edit.js',
             // bundle:end proposal-editor
-            'js/proposals/dialog-create.js?v=20261019-unknown-ownership',
+            'js/proposals/dialog-create.js?v=20261029-no-epoch',
             'js/proposals/ready-signal.js',
             'js/proposals/create-preview.js',
             'js/proposals/dialog-share.js?v=20261027-agreement-tabs',
             // bundle:start plans-agreements
             'js/design-record.js',
-            'js/plan-file.js',
-            'js/plan-file-ui.js?v=20261027-agreement-tabs',
+            'js/plan-file.js?v=20261029-schedule',
+            'js/plan-file-ui.js?v=20261029-schedule',
             'js/community/voting.js',
             'js/community/voting-roster.js',
             'js/community/voting-ui.js',
@@ -2219,10 +2259,10 @@
             'js/proposals/sharing-routes.js?v=20261020-publication-copies',
             'js/proposals/grain-score-rules.js',
             'js/proposals/core.js?v=20261022-agreement-chain',
-            'js/proposals/data.js?v=20261020-chain-title',
+            'js/proposals/data.js?v=20261029-no-epoch',
             'js/proposals/bootstrap.js?v=20261019-local-purchase',
             // bundle:start plan-analysis
-            'js/proposals/plan-yield.js',
+            'js/proposals/plan-yield.js?v=20261029-no-epoch',
             'js/proposals/site-stats.js',
             'js/proposals/maintenance.js',
             'js/proposals/demolition-prefetch.js',
@@ -2230,7 +2270,7 @@
             'js/plan-analysis.js',
             'js/proposals/present-state.js',
             'js/proposals/grain-score.js',
-            'js/proposals/plan-stats.js',
+            'js/proposals/plan-stats.js?v=20261029-no-epoch',
             'js/parcel-coverage-debug.js',
             'js/ui/notice-queue.js',
             // bundle:end plan-analysis
@@ -2460,7 +2500,7 @@
         window.writeVersionedLocalScripts([
             // bundle:start map-mode
             'js/map-mode-transition.js',
-            'js/map-mode-loader.js?v=20261028-lazy-floor-plans'
+            'js/map-mode-loader.js?v=20261029-buildout-3d'
             // bundle:end map-mode
         ]);
     </script>

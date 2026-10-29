@@ -170,10 +170,6 @@ export function serializeProposalRow(row, options = {}) {
         ?? row.onchain_data?.imageUrl
         ?? proposal.screenshotUrl
         ?? null;
-    // Epoch bucket ("Kumulativno do godine" timeline). Shared state, not local:
-    // which decade a proposal belongs to is a property of the plan, not of one
-    // browser's applied view.
-    proposal.epochYear = present(row.epoch_year) ? Number(row.epoch_year) : (proposal.epochYear ?? null);
     // The paid-agent stamp is only true of a row that carries a settled x402 payment. Rows written
     // through the free route before it stopped accepting `agent` may still hold a client-made one;
     // when the query selected agent_payment_id, an unpaid row's stamp is not served.

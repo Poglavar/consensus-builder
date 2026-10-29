@@ -12,7 +12,7 @@
     const isId = value => typeof value === 'string' && /^[a-zA-Z0-9_-]{8,128}$/.test(value);
     function isWorkKey(key) {
         return key === 'consensus-builder.proposal-drafts.v3' || key === 'cb_current_city'
-            || key === 'cb_explore_at' || key === 'cb.schelling.settings' || key === 'cb.epoch.lastUsed'
+            || key === 'cb_explore_at' || key === 'cb.schelling.settings'
             || key === 'cb_dev_backend_base' || key === 'cb_sim_url'
             || /^cb_(?:estimated_parcels|economic_source|parcel_source|building_source|imagery_source):/.test(key);
     }

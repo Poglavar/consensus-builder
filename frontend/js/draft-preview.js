@@ -41,6 +41,8 @@
         const applied = await root.handleSharedDesignRoute([...rows.keys()], { draftRows: rows, enter3D: true, openDetails: !collection });
         if (applied.blocked || applied.omitted?.length) return applied;
         if (applied.failed.length) throw new Error('Some draft designs could not be applied; review the map.');
+        // A scheduled plan opens its build-out time control, at ?when= when the link names a month.
+        if (artifact.plan && !artifact.agreement) root.BuildoutClock?.arrive({ cid: root.Cid.cidOfObject(artifact.plan), content: artifact.plan });
         if (artifact.agreement) {
             const content = artifact.agreement, cid = root.Cid.cidOfObject(content);
             const records = [...applied.localIds.values()].map(id => root.proposalStorage.getProposal(id));

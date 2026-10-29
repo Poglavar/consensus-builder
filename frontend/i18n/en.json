@@ -270,6 +270,183 @@
                 "area-owners-and-leaseholders-private": "Private owned and leased area"
             }
         },
+        "dimensions": {
+            "labels": {
+                "initiator": "Who starts it",
+                "decider": "Who has the final say",
+                "support": "Owner support needed",
+                "electorate": "Who is counted",
+                "dissenters": "Owners who say no",
+                "stage": "What passing unlocks",
+                "basis": "Land is shared by",
+                "publicLand": "Public land without compensation",
+                "levelling": "Differences",
+                "valueGain": "Value gain",
+                "minParties": "Parties"
+            },
+            "groups": {
+                "decision": "How it is decided",
+                "distribution": "How the land is shared"
+            },
+            "stages": {
+                "agreement": "Agreement",
+                "initiative": "Initiative",
+                "association": "Association",
+                "plan": "Plan",
+                "execution": "Execution"
+            },
+            "supportLong": "It needs {{tests}}.",
+            "stageLong": "Passing it is for {{stage}}.",
+            "flowAuthority": "Then",
+            "compare": "Compare all schemes",
+            "values": {
+                "initiator": {
+                    "owners": {
+                        "short": "Owners",
+                        "long": "The owners start it."
+                    },
+                    "authority": {
+                        "short": "Authority",
+                        "long": "The authority starts it."
+                    }
+                },
+                "decider": {
+                    "owners": {
+                        "short": "Owners alone",
+                        "long": "The owners’ agreement is the decision."
+                    },
+                    "owners-and-authority": {
+                        "short": "Owners, then authority",
+                        "long": "Owner support first, then the authority decides."
+                    },
+                    "authority": {
+                        "short": "Authority alone",
+                        "long": "The authority decides; owners are heard."
+                    }
+                },
+                "support": {
+                    "none": {
+                        "short": "No vote",
+                        "long": "There is no owner vote."
+                    }
+                },
+                "electorate": {
+                    "none": {
+                        "short": "Nobody",
+                        "long": "Nobody is counted; owners are heard."
+                    },
+                    "owners": {
+                        "short": "All owners",
+                        "long": "Owners are counted.",
+                        "private": {
+                            "short": "Private owners only",
+                            "long": "Private owners are counted; public holders are left out."
+                        }
+                    },
+                    "owners-and-leaseholders": {
+                        "short": "Owners and leaseholders",
+                        "long": "Owners and leaseholders are counted.",
+                        "private": {
+                            "short": "Private owners and leaseholders only",
+                            "long": "Private owners and leaseholders are counted; public holders are left out."
+                        }
+                    }
+                },
+                "dissenters": {
+                    "veto": {
+                        "short": "Veto",
+                        "long": "Each owner can block it."
+                    },
+                    "bound-by-majority": {
+                        "short": "Bound by the majority",
+                        "long": "Once the support is there and the authority approves, owners who said no are bound."
+                    },
+                    "bound-by-authority": {
+                        "short": "Bound by the authority",
+                        "long": "The authority’s decision binds every owner."
+                    }
+                },
+                "basis": {
+                    "area": {
+                        "short": "Area",
+                        "long": "New plots are shared out by area."
+                    },
+                    "value": {
+                        "short": "Value",
+                        "long": "New plots are shared out by land value."
+                    },
+                    "either": {
+                        "short": "Area or value",
+                        "long": "New plots are shared out by area or by land value; the parties choose."
+                    }
+                },
+                "publicLand": {
+                    "none": {
+                        "short": "No cap",
+                        "long": "The scheme sets no cap; the parties agree how much becomes public land."
+                    },
+                    "owner": {
+                        "short": "≤ {{percent}}% per owner",
+                        "long": "Each owner gives up at most {{percent}}% of their land for public use without compensation.",
+                        "area": {
+                            "short": "≤ {{percent}}% per owner (by area)",
+                            "long": "Shared by area, each owner gives up at most {{percent}}% of their land for public use without compensation."
+                        }
+                    },
+                    "pool": {
+                        "short": "≤ {{percent}}% of the pool",
+                        "long": "At most {{percent}}% of the pooled land becomes public land and costs without compensation."
+                    }
+                },
+                "levelling": {
+                    "money": {
+                        "short": "In money",
+                        "long": "What an owner gets back above or below what they are owed is settled in money."
+                    }
+                },
+                "valueGain": {
+                    "none": {
+                        "short": "—",
+                        "long": "Not applicable: land is shared by area."
+                    },
+                    "kept": {
+                        "short": "Kept in land",
+                        "long": "Owners keep their value gain in their new land."
+                    },
+                    "all": {
+                        "short": "All in money",
+                        "long": "Each owner’s whole value gain is settled in money."
+                    },
+                    "share": {
+                        "short": "{{percent}}% in money",
+                        "long": "{{percent}}% of each owner’s value gain is settled in money; the rest stays in land."
+                    }
+                },
+                "minParties": {
+                    "any": {
+                        "short": "Any number",
+                        "long": "No minimum number of parties."
+                    },
+                    "some": {
+                        "short": "At least {{count}}",
+                        "long": "At least {{count}} parties bring land in."
+                    }
+                }
+            },
+            "outcome": {
+                "givesUp": "gives up {{percent}}%",
+                "gains": "gains {{percent}}%",
+                "pool": "{{given}}% of the pool is not returned to the owners; the cap is {{limit}}%.",
+                "measure": "Show",
+                "area": "By area",
+                "value": "By value",
+                "owed": "Owed",
+                "floor": "Least back under the cap",
+                "exampleCap": "Three example owners giving up the most the scheme allows. With a plan open, the chart shows its parties.",
+                "exampleNoCap": "Three example owners giving up a quarter of their land: the scheme sets no cap. With a plan open, the chart shows its parties.",
+                "plan": "Every party of this agreement, largest first: what each puts in and gets back, and the money settling the difference (+ receives, − pays)."
+            }
+        },
         "regime": {
             "research": "Research template",
             "stage": "What this support is for: {{stage}}",
@@ -627,17 +804,8 @@
             "guide": {
                 "open": "How this scheme works…",
                 "checked": "Rules checked {{date}}",
-                "distribution": "How land is distributed",
-                "before": "Land put in",
-                "after": "Land after the readjustment",
-                "schematicOwnerCap": "Each owner gives up at most {{percent}}% of their land for public use without compensation and gets a plot back; any further difference is settled in money.",
-                "schematicPoolCap": "Up to {{percent}}% of the pool goes to public facilities and costs without compensation; the parties share the rest, and differences are settled in money.",
-                "schematicValue": "Every owner gets back a share of the new land worth what they put in; public land reduces that share for everyone alike, and differences are settled in money.",
-                "schematicNone": "The parties agree what each gets back; the scheme sets no cap on public land, and differences are settled in money.",
-                "example": "Three example owners; with a plan open, the bars show its parties.",
                 "against": "This agreement against the scheme",
                 "getsBack": "Gets back",
-                "givesUp": "Gives up",
                 "fixes": "What would meet it",
                 "fixBasisValue": "In Rules, set Compensation to “Balance land value differences in money”, then give every input parcel and resulting piece a value per m².",
                 "fixBasisArea": "In Rules, set Compensation to “Balance land differences in money”.",
@@ -948,7 +1116,6 @@
             "errors": {
                 "cidMismatch": "The server computed a different identity for this design, so nothing was published.",
                 "pinningUnconfigured": "This server cannot pin published designs yet (pinning is not configured).",
-                "layoutNeedsAgreement": "A parcel layout is published with the agreement that settles its land.",
                 "tooLarge": "This design exceeds the 10 MiB publication limit. Reduce its extent or detail before sharing; it is saved locally.",
                 "invalidDesign": "This design contains invalid data. Correct it before sharing.",
                 "rateLimitedFor": "Too many publications for now. Try again in about {{minutes}} min.",
@@ -982,8 +1149,7 @@
                 "listing": "Listing {{done}}/{{total}} designs…",
                 "checking": "Checking {{done}}/{{total}} designs…",
                 "publishSelected": "Publish selected designs",
-                "selectionCount": "{{selected}} of {{total}} designs included · {{excluded}} excluded",
-                "layoutNeedsAgreement": "{{title}} is published with its agreement. Create an agreement that includes it, or deselect it to share the other designs."
+                "selectionCount": "{{selected}} of {{total}} designs included · {{excluded}} excluded"
             },
             "route": {
                 "fetching": "Fetching the shared designs…",
@@ -1146,7 +1312,7 @@
                 "colFloorArea": "GFA m²",
                 "colApartments": "apartments",
                 "colPeople": "people",
-                "noEpoch": "no period",
+                "noPeriod": "no period",
                 "scope": "{{title}} · Designs: {{counted}}",
                 "noteUnmeasured": "{{n}} of {{total}} buildings state no height — their floor area is not counted.",
                 "noteParcelArea": "The average parcel size is over the {{measured}} parcels whose shape is loaded; {{missing}} are counted but not measured.",
@@ -2752,19 +2918,7 @@
                     "inMemory": "In-memory",
                     "awaitingFunding": "Awaiting funding"
                 },
-                "downloadConfirm": "Design is not in local storage yet. Download?",
-                "epoch": {
-                    "rowLabel": "Plan epoch",
-                    "none": "No epoch",
-                    "custom": "Other year…",
-                    "customPrompt": "Timeline year (2026–2966):",
-                    "saveError": "Failed to save the epoch.",
-                    "timelineLabel": "Timeline",
-                    "all": "All",
-                    "cumulative": "Cumulative to {year}.",
-                    "toApply": "to apply: {n}",
-                    "toUnapply": "to remove: {n}"
-                }
+                "downloadConfirm": "Design is not in local storage yet. Download?"
             },
             "proposalChoice": {
                 "title": "Choose design",
@@ -3293,7 +3447,6 @@
         "description": "Streets fitted into the ground left for them."
     },
     "parcelLayout": {
-        "publishWithAgreement": "A parcel layout is published with its agreement. Propose an agreement that includes it.",
         "editor": {
             "title": "Lay out parcels",
             "mapHint": "Draw the plots here. Who receives which plot is decided later, in the agreement.",
@@ -6288,7 +6441,6 @@
             "title": "Publish before walking",
             "intro": "These applied designs are not published yet. The walk view loads published designs only, so they are published first. The dialog closes and the walk starts as soon as all of them are published.",
             "publishAll": "Publish all",
-            "layoutSkipped": "A parcel layout is published with its agreement, so the walk goes on without it.",
             "openFailed": "The publish dialog could not open."
         },
         "sun": {
@@ -8448,7 +8600,35 @@
         "countryNone": "No national source established",
         "countryUnchecked": "No completed national finding"
     },
+    "buildout": {
+        "summaryUndated": "{{construction}} under construction, {{planned}} not started, {{undated}} without dates (shown as built)",
+        "reroll": "Another simulated build-out",
+        "open": "Build-out over time",
+        "close": "Back to now",
+        "back": "Previous month",
+        "forward": "Next month",
+        "play": "Play",
+        "pause": "Pause",
+        "month": "Month",
+        "simulation": "Simulated build-out",
+        "simulationBadge": "Simulation",
+        "summary": "{{construction}} under construction, {{planned}} not started",
+        "underConstruction": "Under construction, {{percent}}% built"
+    },
     "planDialog": {
+        "scheduleUndated": "Without dates (shown as built)",
+        "simulate": "Simulate build-out",
+        "simulateNothing": "Every design in this plan already has dates.",
+        "schedule": "Construction schedule",
+        "scheduleTitle": "Construction schedule: {{title}}",
+        "scheduleHint": "Set when each design is built. Saving makes a new revision of the plan; the hourglass on the map then plays it back.",
+        "scheduleEmpty": "No construction dates yet.",
+        "scheduleStart": "Start",
+        "scheduleEnd": "End",
+        "scheduleClear": "Clear dates",
+        "saveSchedule": "Save schedule",
+        "scheduleSaved": "Construction schedule saved as a new plan revision.",
+        "scheduleInvalid": "Enter months between {{first}} and {{last}}, each start no later than its end.",
         "plan": "Plan",
         "savedPlans": "Saved plans",
         "createPlan": "Create plan",

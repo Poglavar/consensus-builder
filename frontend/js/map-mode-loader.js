@@ -22,7 +22,8 @@
             'js/three-site-ground.js?v=20261028-trees-grass',
             'vendor/suncalc-1.9.0/suncalc.js', 'vendor/tz-lookup-11.7.0/tz.js', 'js/sun-shadows.js', 'js/three-sun.js',
             'js/sky-colors.js', 'js/three-sky.js', 'js/three-night-windows.js',
-            'js/three-mode.js?v=20261028-trees-grass'
+            'js/buildout-parts.js', 'js/three-buildout.js',
+            'js/three-mode.js?v=20261029-buildout-3d'
         ],
         photo: ['js/photoreal-frame.js', 'js/photoreal-ground.js', 'js/photoreal-seam.js',
             'js/photoreal-protect.js', 'js/photoreal-attribution.js', 'js/photoreal-parcels.js', 'js/photoreal-mode.js'],

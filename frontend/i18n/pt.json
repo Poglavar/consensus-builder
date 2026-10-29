@@ -280,7 +280,7 @@
                 "colFloorArea": "ABC m²",
                 "colApartments": "apartamentos",
                 "colPeople": "pessoas",
-                "noEpoch": "sem período",
+                "noPeriod": "sem período",
                 "scope": "{{title}} · Projetos: {{counted}}",
                 "noteUnmeasured": "{{n}} de {{total}} edifícios não têm altura indicada — a sua área de construção não é contabilizada.",
                 "noteParcelArea": "A dimensão média das parcelas é calculada sobre as {{measured}} parcelas cuja geometria está carregada; {{missing}} são contabilizadas, mas não medidas.",
@@ -641,19 +641,7 @@
                 "detailsTooltip": "Ver detalhes",
                 "deleteTooltip": "Eliminar projeto",
                 "empty": "Nenhum projeto corresponde aos filtros atuais.",
-                "downloadConfirm": "O projeto ainda não está no armazenamento local. Descarregar?",
-                "epoch": {
-                    "rowLabel": "Época do plano",
-                    "none": "Sem época",
-                    "custom": "Outro ano…",
-                    "customPrompt": "Ano da cronologia (2026–2966):",
-                    "saveError": "Não foi possível guardar a época.",
-                    "timelineLabel": "Cronologia",
-                    "all": "Todos",
-                    "cumulative": "Acumulado até {year}.",
-                    "toApply": "a aplicar: {n}",
-                    "toUnapply": "a remover: {n}"
-                }
+                "downloadConfirm": "O projeto ainda não está no armazenamento local. Descarregar?"
             },
             "proposalChoice": {
                 "parcels": "Parcelas",
@@ -2244,17 +2232,8 @@
             "guide": {
                 "open": "Como funciona este regime…",
                 "checked": "Regras verificadas em {{date}}",
-                "distribution": "Como é distribuído o terreno",
-                "before": "Terreno de entrada",
-                "after": "Terreno após o reparcelamento",
-                "schematicOwnerCap": "Cada proprietário cede, sem compensação, no máximo {{percent}}% do seu terreno para uso público e recebe de volta um lote; qualquer diferença adicional é liquidada em dinheiro.",
-                "schematicPoolCap": "Até {{percent}}% do conjunto destina-se, sem compensação, a equipamentos públicos e custos; as partes repartem o resto, e as diferenças são liquidadas em dinheiro.",
-                "schematicValue": "Cada proprietário recebe de volta uma parte do novo terreno com o valor com que contribuiu; o terreno público reduz essa parte por igual para todos, e as diferenças são liquidadas em dinheiro.",
-                "schematicNone": "As partes acordam o que cada uma recebe de volta; o regime não fixa limite ao terreno público, e as diferenças são liquidadas em dinheiro.",
-                "example": "Três proprietários de exemplo; com um plano aberto, as barras mostram as suas partes.",
                 "against": "Este acordo face ao regime",
                 "getsBack": "Recebe de volta",
-                "givesUp": "Cede",
                 "fixes": "O que permitiria cumpri-lo",
                 "fixBasisValue": "Em Regras, defina Compensação como «Equilibrar diferenças de valor do terreno em dinheiro» e, depois, atribua um valor por m² a cada parcela de entrada e a cada porção resultante.",
                 "fixBasisArea": "Em Regras, defina Compensação como «Equilibrar diferenças de terreno em dinheiro».",
@@ -3631,6 +3610,183 @@
                 "area-owners-and-leaseholders-private": "Área detida em propriedade e arrendada por privados"
             }
         },
+        "dimensions": {
+            "labels": {
+                "initiator": "Quem inicia",
+                "decider": "Quem tem a palavra final",
+                "support": "Apoio dos proprietários necessário",
+                "electorate": "Quem é contado",
+                "dissenters": "Proprietários que dizem não",
+                "stage": "O que a aprovação permite",
+                "basis": "O terreno é repartido por",
+                "publicLand": "Terreno público sem compensação",
+                "levelling": "Diferenças",
+                "valueGain": "Mais-valia",
+                "minParties": "Partes"
+            },
+            "groups": {
+                "decision": "Como se decide",
+                "distribution": "Como o terreno é repartido"
+            },
+            "stages": {
+                "agreement": "Acordo",
+                "initiative": "Iniciativa",
+                "association": "Associação",
+                "plan": "Plano",
+                "execution": "Execução"
+            },
+            "supportLong": "É preciso {{tests}}.",
+            "stageLong": "A aprovação serve para {{stage}}.",
+            "flowAuthority": "Depois",
+            "compare": "Comparar todos os esquemas",
+            "values": {
+                "initiator": {
+                    "owners": {
+                        "short": "Os proprietários",
+                        "long": "Os proprietários iniciam."
+                    },
+                    "authority": {
+                        "short": "A autoridade",
+                        "long": "A autoridade inicia."
+                    }
+                },
+                "decider": {
+                    "owners": {
+                        "short": "Só os proprietários",
+                        "long": "O acordo dos proprietários é a decisão."
+                    },
+                    "owners-and-authority": {
+                        "short": "Proprietários, depois autoridade",
+                        "long": "Primeiro o apoio dos proprietários, depois decide a autoridade."
+                    },
+                    "authority": {
+                        "short": "Só a autoridade",
+                        "long": "Decide a autoridade; os proprietários são ouvidos."
+                    }
+                },
+                "support": {
+                    "none": {
+                        "short": "Sem votação",
+                        "long": "Os proprietários não votam."
+                    }
+                },
+                "electorate": {
+                    "none": {
+                        "short": "Ninguém",
+                        "long": "Ninguém é contado; os proprietários são ouvidos."
+                    },
+                    "owners": {
+                        "short": "Todos os proprietários",
+                        "long": "Contam-se os proprietários.",
+                        "private": {
+                            "short": "Só proprietários privados",
+                            "long": "Contam-se os proprietários privados; os titulares públicos ficam de fora."
+                        }
+                    },
+                    "owners-and-leaseholders": {
+                        "short": "Proprietários e arrendatários",
+                        "long": "Contam-se proprietários e arrendatários.",
+                        "private": {
+                            "short": "Só proprietários e arrendatários privados",
+                            "long": "Contam-se proprietários e arrendatários privados; os titulares públicos ficam de fora."
+                        }
+                    }
+                },
+                "dissenters": {
+                    "veto": {
+                        "short": "Veto",
+                        "long": "Cada proprietário pode bloqueá-lo."
+                    },
+                    "bound-by-majority": {
+                        "short": "Vinculados pela maioria",
+                        "long": "Reunido o apoio e com a aprovação da autoridade, os proprietários que disseram não ficam vinculados."
+                    },
+                    "bound-by-authority": {
+                        "short": "Vinculados pela autoridade",
+                        "long": "A decisão da autoridade vincula todos os proprietários."
+                    }
+                },
+                "basis": {
+                    "area": {
+                        "short": "Área",
+                        "long": "Os novos lotes são repartidos por área."
+                    },
+                    "value": {
+                        "short": "Valor",
+                        "long": "Os novos lotes são repartidos pelo valor do terreno."
+                    },
+                    "either": {
+                        "short": "Área ou valor",
+                        "long": "Os novos lotes são repartidos por área ou pelo valor do terreno; as partes escolhem."
+                    }
+                },
+                "publicLand": {
+                    "none": {
+                        "short": "Sem limite",
+                        "long": "O esquema não fixa limite; as partes acordam quanto se torna terreno público."
+                    },
+                    "owner": {
+                        "short": "≤ {{percent}}% por proprietário",
+                        "long": "Cada proprietário cede no máximo {{percent}}% do seu terreno para uso público sem compensação.",
+                        "area": {
+                            "short": "≤ {{percent}}% por proprietário (por área)",
+                            "long": "Repartido por área, cada proprietário cede no máximo {{percent}}% do seu terreno para uso público sem compensação."
+                        }
+                    },
+                    "pool": {
+                        "short": "≤ {{percent}}% do conjunto",
+                        "long": "No máximo {{percent}}% do terreno reunido torna-se terreno público e custos sem compensação."
+                    }
+                },
+                "levelling": {
+                    "money": {
+                        "short": "Em dinheiro",
+                        "long": "O que um proprietário recebe acima ou abaixo do que lhe cabe é liquidado em dinheiro."
+                    }
+                },
+                "valueGain": {
+                    "none": {
+                        "short": "—",
+                        "long": "Não se aplica: o terreno é repartido por área."
+                    },
+                    "kept": {
+                        "short": "Fica no terreno",
+                        "long": "Os proprietários mantêm a mais-valia no seu novo terreno."
+                    },
+                    "all": {
+                        "short": "Toda em dinheiro",
+                        "long": "Toda a mais-valia de cada proprietário é liquidada em dinheiro."
+                    },
+                    "share": {
+                        "short": "{{percent}}% em dinheiro",
+                        "long": "{{percent}}% da mais-valia de cada proprietário é liquidada em dinheiro; o resto fica no terreno."
+                    }
+                },
+                "minParties": {
+                    "any": {
+                        "short": "Qualquer número",
+                        "long": "Sem número mínimo de partes."
+                    },
+                    "some": {
+                        "short": "Pelo menos {{count}}",
+                        "long": "Pelo menos {{count}} partes trazem terreno."
+                    }
+                }
+            },
+            "outcome": {
+                "givesUp": "cede {{percent}}%",
+                "gains": "ganha {{percent}}%",
+                "pool": "{{given}}% do conjunto não volta aos proprietários; o limite é {{limit}}%.",
+                "measure": "Mostrar",
+                "area": "Por área",
+                "value": "Por valor",
+                "owed": "Que lhe cabe",
+                "floor": "Retorno mínimo pelo limite",
+                "exampleCap": "Três proprietários de exemplo que cedem o máximo que o esquema permite. Com um plano aberto, o gráfico mostra as suas partes.",
+                "exampleNoCap": "Três proprietários de exemplo que cedem um quarto do seu terreno: o esquema não fixa limite. Com um plano aberto, o gráfico mostra as suas partes.",
+                "plan": "Cada parte deste acordo, da maior para a menor: o que traz e recebe de volta, e o dinheiro que liquida a diferença (+ recebe, − paga)."
+            }
+        },
         "regime": {
             "research": "Modelo de investigação",
             "stage": "Finalidade deste apoio: {{stage}}",
@@ -3872,8 +4028,7 @@
                 "listing": "A listar {{done}}/{{total}} projetos…",
                 "checking": "A verificar {{done}}/{{total}} projetos…",
                 "publishSelected": "Publicar projetos selecionados",
-                "selectionCount": "{{selected}} de {{total}} projetos incluídos · {{excluded}} excluídos",
-                "layoutNeedsAgreement": "{{title}} é publicado com o respetivo acordo. Crie um acordo que o inclua ou desmarque-o para partilhar os outros projetos."
+                "selectionCount": "{{selected}} de {{total}} projetos incluídos · {{excluded}} excluídos"
             },
             "view": {
                 "camera": "Incluir a posição e o ângulo da câmara",
@@ -3906,7 +4061,6 @@
             "errors": {
                 "cidMismatch": "O servidor calculou uma identidade diferente para este projeto, pelo que nada foi publicado.",
                 "pinningUnconfigured": "Este servidor ainda não consegue fixar projetos publicados (a fixação não está configurada).",
-                "layoutNeedsAgreement": "Uma disposição de parcelas é publicada com o acordo que define a afetação do respetivo terreno.",
                 "tooLarge": "Este projeto excede o limite de publicação de 10 MiB. Reduza a sua extensão ou o nível de detalhe antes de partilhar; está guardado localmente.",
                 "invalidDesign": "Este projeto contém dados inválidos. Corrija-os antes de partilhar.",
                 "rateLimitedFor": "Demasiadas publicações de momento. Tente novamente dentro de cerca de {{minutes}} min.",
@@ -4565,7 +4719,6 @@
             "title": "Publicar antes de passear",
             "intro": "Estes projetos aplicados ainda não foram publicados. A vista de passeio carrega apenas projetos publicados, pelo que são publicados primeiro. A caixa de diálogo fecha-se e o passeio começa assim que todos estiverem publicados.",
             "publishAll": "Publicar todos",
-            "layoutSkipped": "Uma configuração de parcelas é publicada com o respetivo acordo, pelo que o passeio prossegue sem ela.",
             "openFailed": "Não foi possível abrir a caixa de diálogo de publicação."
         },
         "sun": {
@@ -5055,8 +5208,7 @@
                 "uploadUnavailable": "O carregamento de GeoJSON requer o motor de geometria, que não foi carregado.",
                 "uploadTooMany": "Use no máximo {{count}} polígonos em uma divisão."
             }
-        },
-        "publishWithAgreement": "Uma disposição parcelar é publicada com o respetivo acordo. Proponha um acordo que a inclua."
+        }
     },
     "languages": {
         "en": "Inglês",
@@ -8280,7 +8432,35 @@
         "contact": "Utilize o formulário de comentários abaixo para contactar o responsável pela manutenção sobre privacidade, acesso, retificação ou eliminação de dados sob o nosso controlo. Inclua um comprovativo de receção do relato ou outra referência para podermos identificar o registo. Os pedidos são analisados tendo em conta as informações disponíveis e as limitações do armazenamento público e de terceiros. As futuras alterações a este aviso serão datadas nesta página.",
         "contactLink": "Contactar o responsável pela manutenção / pedir revisão de dados"
     },
+    "buildout": {
+        "summaryUndated": "{{construction}} em obra, {{planned}} por começar, {{undated}} sem datas (mostrados como construídos)",
+        "reroll": "Outra construção simulada",
+        "open": "Construção ao longo do tempo",
+        "close": "Voltar a hoje",
+        "back": "Mês anterior",
+        "forward": "Mês seguinte",
+        "play": "Reproduzir",
+        "pause": "Pausar",
+        "month": "Mês",
+        "simulation": "Construção simulada",
+        "simulationBadge": "Simulação",
+        "summary": "{{construction}} em obra, {{planned}} por começar",
+        "underConstruction": "Em obra, {{percent}}% construído"
+    },
     "planDialog": {
+        "scheduleUndated": "Sem datas (mostrados como construídos)",
+        "simulate": "Simular construção",
+        "simulateNothing": "Todos os projetos deste plano já têm datas.",
+        "schedule": "Calendário de obras",
+        "scheduleTitle": "Calendário de obras: {{title}}",
+        "scheduleHint": "Indique quando cada projeto é construído. Guardar cria uma nova revisão do plano; a ampulheta no mapa reprodu-la depois.",
+        "scheduleEmpty": "Ainda sem datas de obra.",
+        "scheduleStart": "Início",
+        "scheduleEnd": "Fim",
+        "scheduleClear": "Limpar datas",
+        "saveSchedule": "Guardar calendário",
+        "scheduleSaved": "Calendário de obras guardado como nova revisão do plano.",
+        "scheduleInvalid": "Introduza meses entre {{first}} e {{last}}, cada início no máximo no mês do fim.",
         "plan": "Plano",
         "savedPlans": "Planos guardados",
         "createPlan": "Criar plano",

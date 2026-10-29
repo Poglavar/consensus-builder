@@ -234,6 +234,10 @@
                         const plan = await win.PlanWorkspace.resolve(await planOf(row));
                         win.MapShell.closeSheets(); return win.AgreementDialog.open({ plan });
                     }, '', 'cb-icon-agreement'));
+                    actions.append(button(t('planDialog.schedule'), async () => {
+                        const plan = await planOf(row);
+                        win.MapShell.closeSheets(); return win.PlanDialog.schedule(plan);
+                    }, '', 'hourglass-half'));
                 }
                 if (row.local) {
                     const trash = button('', () => remove(row, kind), 'btn-danger btn-icon lists-item__remove', 'trash-can');

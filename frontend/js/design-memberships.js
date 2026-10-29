@@ -290,7 +290,22 @@
             });
             createAgreement.className = 'btn click-stack__create-agreement';
             actions.appendChild(createAgreement);
+            // Construction windows of the members: a new plan revision (docs/buildout-timeline.md).
+            const editSchedule = (focus = null) => win.BusyControl.track(scheduleButton,
+                () => win.PlanDialog.schedule({ cid: instance.cid, content: instance.content }, { focus, members: instance.localDesigns || [] }))
+                .catch(error => win.showStyledAlert(error.message));
+            const scheduleButton = action(win.i18n.t('planDialog.schedule'), () => editSchedule());
+            scheduleButton.className = 'btn click-stack__schedule-plan';
+            actions.appendChild(scheduleButton);
             host.appendChild(actions);
+            if (instance.content?.schedule && win.PlanDialog?.scheduleStrip) {
+                const strip = node('div', 'click-stack__schedule');
+                const titles = new Map((instance.localDesigns || []).flatMap(record => {
+                    try { return [[win.DesignRecord.cidOf(record), record.title]]; } catch (_) { return []; }
+                }));
+                strip.appendChild(win.PlanDialog.scheduleStrip(instance.content, { titles, onPick: editSchedule }));
+                host.appendChild(strip);
+            }
             const details = node('div', 'click-stack__membership-details');
             host.appendChild(details);
             const load = async () => {

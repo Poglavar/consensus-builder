@@ -187,7 +187,7 @@ describe('shared building and proposal representations', () => {
         const context = vm.createContext({
             window: { collectCarveRecords: () => [], carveBuildingByObjectId: () => carved ? { remainder: geometry, demolished: geometry } : null,
                 buildingFeaturePool: [feature], buildingPoolFeatureKey: f => f.properties.object_id, PlanningRepresentations: representations },
-            proposalStorage: { getAllProposals: () => [] }, demolishedMaterialFor: () => ({}), collectAppliedStructureClearanceRegions: () => [],
+            proposalStorage: { getAllProposals: () => [] }, displayedProposals: () => [], demolishedMaterialFor: () => ({}), collectAppliedStructureClearanceRegions: () => [],
             nearbyBuildingGeometryCache: { beginPass: () => ({}) }, nearbyProposalBuildings: [{ object_id: 12 }],
             xrayEnabled: false, suggestedPlansEnabled: false, suggestedExistingEnabled: false, origin3857: null,
             sceneWork: { forEach: async (items, fn) => items.forEach(fn) }, structureClearanceCarve: () => null,

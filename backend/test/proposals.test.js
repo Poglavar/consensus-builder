@@ -856,21 +856,6 @@ describe('GET /proposals/summary', () => {
         expect(call.params).toContain('park-square');
     });
 
-    it('returns only canonical authored goals in the epoch plan', async () => {
-        pool.setResult({ rows: [
-            { id: 1, proposal_id: 'p-1', city: 'zagreb', display_name: 'Park', type: 'structure', goal: 'park', epoch_year: 2027, bounds: null, created_at: new Date('2026-10-01T10:00:00Z'), screenshot_url: null },
-            { id: 2, proposal_id: 'p-2', city: 'zagreb', display_name: 'Unknown', type: 'building', goal: 'invented-goal', epoch_year: 2027, bounds: null, created_at: new Date('2026-10-02T10:00:00Z'), screenshot_url: null },
-            { id: 3, proposal_id: 'p-3', city: 'zagreb', display_name: 'Legacy', type: 'road', goal: null, epoch_year: 2027, bounds: null, created_at: new Date('2026-10-03T10:00:00Z'), screenshot_url: null }
-        ] });
-
-        const res = await request(app).get('/proposals/epoch-plan?city=zagreb');
-
-        expect(res.status).toBe(200);
-        expect(res.body.epochs[0].proposals.map(proposal => proposal.goal)).toEqual(['park', null, null]);
-        expect(pool.getCalls()[0].sql).toMatch(/proposal_data->>'goal' AS goal/);
-        expect(pool.getCalls()[0].sql).not.toMatch(/COALESCE\(proposal_data->>'goal', type\)/);
-    });
-
     it('free-text search matches name/title and author across all rows', async () => {
         pool.setResult({ rows: [] });
         const res = await request(app).get('/proposals/summary?q=ilica');

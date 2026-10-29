@@ -58,11 +58,11 @@ describe('BrowserWorkspace single owner', () => {
         expect(api).not.toHaveProperty('LATEST_KEY');
         for (const key of [
             'consensus-builder.proposal-drafts.v3', 'cb_current_city', 'cb_explore_at',
-            'cb.schelling.settings', 'cb.epoch.lastUsed', 'cb_estimated_parcels:zagreb',
+            'cb.schelling.settings', 'cb_estimated_parcels:zagreb',
             'cb_economic_source:zagreb', 'cb_parcel_source:zagreb',
             'cb_building_source:zagreb', 'cb_imagery_source:zagreb'
         ]) expect(isWorkKey(key), key).toBe(true);
-        for (const key of ['theme', 'language', 'cb_current_city_old', 'cb_parcel_source', 'unrelated']) {
+        for (const key of ['theme', 'language', 'cb_current_city_old', 'cb_parcel_source', 'cb.epoch.lastUsed', 'unrelated']) {
             expect(isWorkKey(key), key).toBe(false);
         }
     });

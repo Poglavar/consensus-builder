@@ -72,11 +72,8 @@ const int = n => Math.round(Number(n) || 0).toLocaleString('en-US');
 function printTable(title, buckets, columns) {
     console.log('');
     console.log(title);
-    const header = ['period', ...columns.map(c => c.head)];
-    const rows = buckets.map(bucket => [
-        bucket.year === null ? 'no epoch' : String(bucket.year),
-        ...columns.map(c => c.get(bucket))
-    ]);
+    const header = ['', ...columns.map(c => c.head)];
+    const rows = buckets.map(bucket => [bucket.label, ...columns.map(c => c.get(bucket))]);
     const widths = header.map((head, i) => Math.max(head.length, ...rows.map(r => r[i].length)));
     const line = cells => cells.map((cell, i) => (i === 0 ? cell.padEnd(widths[i]) : cell.padStart(widths[i]))).join('  ');
     console.log(line(header));
@@ -149,11 +146,8 @@ async function main() {
 
         log(`${rows.length} designs indexed, ${result.total.proposals} counted`);
 
-        printTable('ADDED per period', [...result.byEpoch, result.unassigned], COLUMNS);
-        if (result.cumulative.length) {
-            printTable('STANDING by the end of each period (cumulative, no-epoch proposals always in)', result.cumulative, COLUMNS);
-        }
-        printTable('TOTAL', [{ ...result.total, year: null }], COLUMNS);
+        // Construction periods belong to a plan's schedule, which indexed designs do not carry.
+        printTable('TOTAL', [{ ...result.total, label: 'all designs' }], COLUMNS);
 
         console.log('');
         console.log([
@@ -170,9 +164,6 @@ async function main() {
         // is the difference between a total that is low and a total that is quietly wrong.
         if (result.total.unmeasuredBuildings > 0) {
             console.log(`WARNING: ${result.total.unmeasuredBuildings} of ${result.total.buildings} buildings state no height — their floor area is NOT in these totals.`);
-        }
-        if (!result.byEpoch.length) {
-            console.log('NOTE: no design carries an epoch year, so there is nothing to split by period.');
         }
     } finally {
         await pool.end();

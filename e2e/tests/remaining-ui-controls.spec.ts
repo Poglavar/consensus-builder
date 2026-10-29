@@ -438,32 +438,4 @@ test.describe('Remaining UI controls @features', () => {
     }, saved.id);
     expect(reloaded).toEqual({ bearing: 53, height: 14.5, geometry: saved.geometry });
   });
-
-  test('proposal epoch card validates and saves a custom year through its real selector', async ({ mockApi: page }) => {
-    await openCity(page);
-    const proposalId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
-      title: 'Custom epoch park fixture', goal: 'park', city: 'zagreb', applied: false,
-      lifecycleStatus: 'Active', cadastreParcelIds: [parcelId], epochYear: 2035,
-      geometry, structureProposal: { kind: 'park', applied: false, geometry },
-    }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
-    await showProposal(page, proposalId);
-    await page.locator('#proposals-button').click();
-    const select = page.locator(`.proposal-epoch-card-select[data-proposal-id="${proposalId}"]`);
-    await expect(select).toBeVisible();
-    await selectNativeOption(select, 'custom');
-    const input = page.locator('.cb-dialog__prompt');
-    await expect(input).toHaveValue('2077');
-    await input.fill('2000');
-    await page.getByRole('button', { name: 'OK', exact: true }).click();
-    await expect(input).toHaveAttribute('aria-invalid', 'true');
-    await expect(page.locator('.cb-dialog--prompt')).toBeVisible();
-    await input.fill('2077');
-    await page.getByRole('button', { name: 'OK', exact: true }).click();
-    await expect.poll(() => page.evaluate(id => {
-      const storage = (window as any).proposalStorage;
-      const proposal = storage.getAllProposals().find((item: any) => item.proposalId === id || item.id === id);
-      return proposal?.epochYear ?? proposal?.epoch?.year ?? null;
-    }, proposalId)).toBe(2077);
-    await expect(page.locator('.cb-dialog--prompt')).toHaveCount(0);
-  });
 });
