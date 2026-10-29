@@ -13,6 +13,10 @@ import { footprintFeatureToBuilding, expandBbox, unavailableFrom } from './osm-3
 const FEET = 0.3048;
 // Adapters refuse a query over 1 km² (the descriptor's maxBboxKm2); a scene box is shrunk to fit.
 const MAX_SIDE_M = 950;
+// A box is read in tiles no wider than this: one query is also refused over the adapter's feature
+// limit (10,000), and a 950 m square of central Bogotá holds more construction pieces than that.
+const TILE_SIDE_M = 320;
+const TILE_CONCURRENCY = 3;
 
 const log = (...args) => console.log(`[${new Date().toISOString()}] [custom-buildings]`, ...args);
 
@@ -48,15 +52,49 @@ function fitBox([w, s, e, n]) {
     return [x0, y0, x1, y1];
 }
 
+// The box split into an even grid of tiles no wider or taller than TILE_SIDE_M.
+export function tileBox([w, s, e, n]) {
+    const midLat = (s + n) / 2;
+    const latStep = TILE_SIDE_M / 110540;
+    const lonStep = TILE_SIDE_M / (111320 * Math.max(0.01, Math.cos(midLat * Math.PI / 180)));
+    const cols = Math.max(1, Math.ceil((e - w) / lonStep - 1e-9));
+    const rows = Math.max(1, Math.ceil((n - s) / latStep - 1e-9));
+    const tiles = [];
+    for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+            tiles.push([w + (e - w) * i / cols, s + (n - s) * j / rows, w + (e - w) * (i + 1) / cols, s + (n - s) * (j + 1) / rows]);
+        }
+    }
+    return tiles;
+}
+
 export function createCustomBuildingProvider(descriptor, { fetchImpl = createPublicSourceFetch() } = {}) {
     const adapter = withSourceCooldown(createParcelSource(descriptor, { fetchImpl }));
 
+    // Tile by tile, merged by id (a building across a tile edge comes back from both). A failed tile
+    // leaves the answer incomplete; only when every tile fails is the source unavailable.
     async function featuresIn(bbox) {
-        const result = await adapter.queryBounds(bbox);
-        return {
-            features: (result.features || []).map(feature => customBuildingFeature(descriptor, feature)),
-            complete: result.complete === true
-        };
+        const queue = tileBox(bbox);
+        const total = queue.length;
+        const byId = new Map();
+        let complete = true, failed = 0, firstError = null;
+        await Promise.all(Array.from({ length: Math.min(TILE_CONCURRENCY, total) }, async () => {
+            while (queue.length) {
+                const tile = queue.shift();
+                try {
+                    const result = await adapter.queryBounds(tile);
+                    if (result.complete !== true) complete = false;
+                    for (const feature of result.features || []) byId.set(String(feature.id), feature);
+                } catch (error) {
+                    failed++;
+                    firstError = firstError || error;
+                    complete = false;
+                }
+            }
+        }));
+        if (failed === total) throw firstError;
+        if (failed) log(`${descriptor.name}: ${failed} of ${total} tiles failed, answer is partial: ${firstError.message}`);
+        return { features: [...byId.values()].map(feature => customBuildingFeature(descriptor, feature)), complete };
     }
 
     async function near(geometry, bufferMeters) {

@@ -5,7 +5,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { discoverCustomBuildingSource, discoverCustomParcelSource } from '../parcels/custom-source-discovery.js';
 import { encodeCustomSource, decodeCustomBuildingSource, decodeCustomSource } from '../parcels/custom-source-config.js';
-import { customBuildingFeature, createCustomBuildingProvider } from '../buildings/custom-source-3d.js';
+import { customBuildingFeature, createCustomBuildingProvider, tileBox } from '../buildings/custom-source-3d.js';
 
 const bbox = [15.97, 45.80, 15.9705, 45.8005];
 const polygon = { type: 'Polygon', coordinates: [[[15.97, 45.80], [15.9702, 45.80], [15.9702, 45.8002], [15.97, 45.8002], [15.97, 45.80]]] };
@@ -81,6 +81,25 @@ describe('custom building provider', () => {
         const geometry = { type: 'Polygon', coordinates: [[[15.96, 45.79], [15.99, 45.79], [15.99, 45.82], [15.96, 45.82], [15.96, 45.79]]] };
         expect((await provider.footprints(geometry)).truncated).toBe(true);
         expect((await provider.footprintsUnder([{ key: 'large', geometry }])).truncated).toBe(true);
+    });
+
+    it('reads a box in tiles of at most 320 m, merges a building seen by several, and keeps the rest when one tile fails', async () => {
+        expect(tileBox([15.96, 45.79, 15.968, 45.797])).toHaveLength(6);
+        expect(tileBox([15.97, 45.80, 15.9705, 45.8005])).toEqual([[15.97, 45.80, 15.9705, 45.8005]]);
+        const id = encodeCustomSource({ adapter: 'arcgis', endpoint: arcgisUrl, cityIds: ['zagreb'], metricSrid: 32633,
+            idField: 'OBJECTID', objectIdField: 'OBJECTID', idType: 'integer', outFields: ['OBJECTID'], kind: 'building' });
+        const inside = { type: 'Polygon', coordinates: [[[15.962, 45.792], [15.9622, 45.792], [15.9622, 45.7922], [15.962, 45.7922], [15.962, 45.792]]] };
+        const page = () => response({ type: 'FeatureCollection', features: [{ type: 'Feature', id: 7, properties: { OBJECTID: 7 }, geometry: inside }] });
+        const geometry = { type: 'Polygon', coordinates: [[[15.96, 45.79], [15.968, 45.79], [15.968, 45.797], [15.96, 45.797], [15.96, 45.79]]] };
+        const whole = vi.fn(async () => page());
+        const read = await createCustomBuildingProvider(decodeCustomBuildingSource(id), { fetchImpl: whole }).footprints(geometry);
+        expect(whole).toHaveBeenCalledTimes(6);
+        expect(read).toMatchObject({ count: 1, truncated: false, source: 'custom-footprints' });
+        let calls = 0;
+        const oneFails = vi.fn(async () => (++calls === 6 ? { ok: false, status: 500, headers: { get: () => null }, text: async () => 'down' } : page()));
+        const partial = await createCustomBuildingProvider(decodeCustomBuildingSource(id), { fetchImpl: oneFails }).footprints(geometry);
+        expect(partial).toMatchObject({ count: 1, truncated: true });
+        expect(partial.unavailable).toBeUndefined();
     });
 
     it('extrudes what the source returns, with the height source of each block', async () => {

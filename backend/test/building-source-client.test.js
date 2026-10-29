@@ -50,6 +50,16 @@ describe('building source client', () => {
             expect(calls.map(call=>call.body.source)).toEqual(['building.city','osm']);
         }
     });
+    it('keeps truncated city footprints instead of swapping in OSM, but not a truncated demolition scan', async () => {
+        const footprints = { source: 'custom-footprints', footprints: [{ id: 'CUSTOM-B-1' }], truncated: true };
+        const a = page({ sourceId: 'building.city', fallback: 'osm' }, [footprints]);
+        expect(await client.request('/buildings/footprints', { geometry }, { global: a.global })).toEqual(footprints);
+        expect(a.calls).toHaveLength(1);
+        const osm = { supported: true, regions: { take: [] }, truncated: false };
+        const b = page({ sourceId: 'building.city', fallback: 'osm' }, [{ supported: true, regions: { take: ['x'] }, truncated: true }, osm]);
+        expect(await client.request('/buildings/under', { geometry }, { global: b.global })).toEqual(osm);
+        expect(b.calls.map(call => call.body.source)).toEqual(['building.city', 'osm']);
+    });
     it('keeps aborts and failures visible when no fallback is configured', async () => {
         const abort = Object.assign(new Error('aborted'), { name:'AbortError' });
         const a = page({ sourceId:'building.city', fallback:'osm' }, [abort]);
