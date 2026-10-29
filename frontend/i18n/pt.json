@@ -8821,7 +8821,7 @@
     "compare": "Comparar",
     "swap": "Trocar linhas e colunas",
     "failed": "Não medido: {{reason}}",
-    "assumptions": "Com os pressupostos predefinidos e {{price}} por m². As estatísticas de um plano permitem alterá-los.",
+    "apartmentRule": "Habitações = área bruta × {{efficiency}} % útil × {{housing}} % habitação ÷ {{size}} m² por habitação; pessoas = habitações × {{persons}}.",
     "presentState": "Estado atual",
     "basis": "Estado atual sobre o terreno de",
     "basisCompared": "Todos os planos comparados",

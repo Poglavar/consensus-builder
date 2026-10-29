@@ -387,6 +387,26 @@ describe('comparing plans', () => {
         expect(rows[0].findIndex(label => label.startsWith('Buildings'))).toBeGreaterThan(0);
         swap.listeners.click.forEach(fn => fn());
     });
+
+    it('re-derives every column from its own assumptions, says the rule, and keeps them for Plan stats', async () => {
+        const window = openDialog(plan);
+        await window.comparePlanStats([{ content: { title: 'Two blocks' }, records: [block('d-1'), block('d-2')], withExisting: true }]);
+        await new Promise(resolve => setImmediate(resolve));
+        const body = window.openedDialog.body;
+        const apartments = () => rowsOf(tableOf(window)).find(row => row[0] === 'Apartments').slice(1).map(digits);
+        const before = apartments();
+        expect(before.every(count => count > 0)).toBe(true);
+        expect(textOf(body.querySelector('[data-plan-compare-rule]'))).toBe(
+            'Apartments = gross floor area × 80 % net × 75 % housing ÷ 65 m² per apartment; people = apartments × 2.4.');
+        const size = body.querySelector('#plan-compare-apartment-size');
+        size.value = '130';
+        size.listeners.input.forEach(fn => fn());
+        // Twice the apartment size, half the apartments (rounded down), in the present state too.
+        expect(apartments()).toEqual(before.map(count => Math.floor(count / 2)));
+        expect(textOf(body.querySelector('[data-plan-compare-rule]'))).toContain('÷ 130 m² per apartment');
+        await window.showPlanStatsModal({ content: { title: 'Garden plan' } });
+        expect(window.document.getElementById('plan-stats-apartment-size').value).toBe('130');
+    });
 });
 
 describe('public and private land in Plan stats', () => {

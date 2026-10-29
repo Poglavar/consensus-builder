@@ -8873,7 +8873,7 @@
     "compare": "Uporedi",
     "swap": "Zameni redove i kolone",
     "failed": "Nije izmereno: {{reason}}",
-    "assumptions": "Uz podrazumevane pretpostavke i {{price}} po m². U statistici jednog plana možete ih promeniti.",
+    "apartmentRule": "Stanovi = bruto površina × {{efficiency}} % neto × {{housing}} % stanovanja ÷ {{size}} m² po stanu; stanovnici = stanovi × {{persons}}.",
     "presentState": "Postojeće stanje",
     "basis": "Postojeće stanje na zemljištu plana",
     "basisCompared": "Svi upoređeni planovi",

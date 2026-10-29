@@ -8821,7 +8821,7 @@
     "compare": "Comparer",
     "swap": "Permuter lignes et colonnes",
     "failed": "Non mesuré : {{reason}}",
-    "assumptions": "Avec les hypothèses par défaut et {{price}} par m². Les statistiques d’un plan permettent de les modifier.",
+    "apartmentRule": "Logements = surface de plancher × {{efficiency}} % utile × {{housing}} % logement ÷ {{size}} m² par logement ; habitants = logements × {{persons}}.",
     "presentState": "État actuel",
     "basis": "État actuel sur le terrain de",
     "basisCompared": "Tous les plans comparés",

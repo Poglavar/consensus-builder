@@ -8821,7 +8821,7 @@
     "compare": "Compare",
     "swap": "Swap rows and columns",
     "failed": "Not measured: {{reason}}",
-    "assumptions": "At the default assumptions and {{price}} per m². Plan stats on one plan lets you change them.",
+    "apartmentRule": "Apartments = gross floor area × {{efficiency}} % net × {{housing}} % housing ÷ {{size}} m² per apartment; people = apartments × {{persons}}.",
     "presentState": "Present state",
     "basis": "Present state over the land of",
     "basisCompared": "All compared plans",

@@ -8849,7 +8849,7 @@
     "compare": "Comparar",
     "swap": "Intercambiar filas y columnas",
     "failed": "Sin medir: {{reason}}",
-    "assumptions": "Con los supuestos predeterminados y {{price}} por m². Las estadísticas de un plan permiten cambiarlos.",
+    "apartmentRule": "Viviendas = superficie construida × {{efficiency}} % útil × {{housing}} % vivienda ÷ {{size}} m² por vivienda; personas = viviendas × {{persons}}.",
     "presentState": "Estado actual",
     "basis": "Estado actual sobre el suelo de",
     "basisCompared": "Todos los planes comparados",
