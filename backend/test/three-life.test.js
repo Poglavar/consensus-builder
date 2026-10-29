@@ -1,10 +1,12 @@
-// Unit tests for the pure helpers of the 3D-life renderer (frontend/js/three-life.js): the instance
-// matrix layout, vehicle part proportions, and walking and riding figure poses. No THREE needed.
+// Unit tests for the 3D-life renderer (frontend/js/three-life.js): the instance matrix layout, vehicle
+// part proportions, walking and riding figure poses, and the lamps and headlight pools at night.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { writeMatrix, writeHidden, vehicleParts, personParts, riderParts } = require('../../frontend/js/three-life.js');
+const threeLife = require('../../frontend/js/three-life.js');
+const { writeMatrix, writeHidden, vehicleParts, vehicleLamps, headlightPool, poolAlpha, personParts, riderParts } = threeLife;
+const THREE = require('three');
 const { VEHICLE_KINDS } = require('../../frontend/js/life/life-agents.js');
 
 // Reference M = T(p) · Rz(yaw) · T(o) · Ry(a) · S(s) from plain row-major 4×4 products.
@@ -230,5 +232,94 @@ describe('riderParts', () => {
         const neck = apply(partMatrix(rider.body), [0, 0, 1]); // the column spans local z 0..1
         expect(neck[0] - hips[0], 'torso lean (+ is forward, x is the direction of travel)').toBeGreaterThan(0);
         expect(Math.abs(rider.head.ox - neck[0]), 'head centre ahead of the neck').toBeLessThan(0.1);
+    });
+});
+
+describe('vehicle lamps at night', () => {
+    it('puts two headlamps on the front face and two red tail lamps on the back, inside the body height', () => {
+        for (const kind of ['car', 'bus']) {
+            const v = vehicle(kind);
+            const body = extent(vehicleParts(v).body);
+            const lamps = vehicleLamps(v);
+            expect(lamps.map(l => l.head)).toEqual([true, true, false, false]);
+            for (const lamp of lamps) {
+                const e = extent(lamp);
+                const face = lamp.head ? body.x[1] : body.x[0];
+                expect(e.x[0] < face && face < e.x[1], `${kind} lamp straddles its face`).toBe(true);
+                expect(e.z[0]).toBeGreaterThan(body.z[0]);
+                expect(e.z[1]).toBeLessThan(body.z[1]);
+                expect(Math.abs(lamp.oy) + lamp.sy / 2).toBeLessThan(v.width / 2);
+            }
+            expect(lamps[0].oy).toBe(-lamps[1].oy);
+        }
+        expect(vehicleLamps(vehicle('moto')).map(l => [l.head, l.oy])).toEqual([[true, 0], [false, 0]]);
+    });
+
+    it('lays the light pool ahead of the front bumper, just above the road', () => {
+        for (const kind of ['car', 'bus', 'moto']) {
+            const v = vehicle(kind);
+            const pool = headlightPool(v);
+            expect(pool.ox).toBe(v.len / 2);
+            expect(pool.oz).toBeGreaterThan(0);
+            expect(pool.oz).toBeLessThan(0.1);
+            expect(pool.sx).toBeGreaterThan(pool.sy);
+        }
+    });
+
+    it('draws a beam that is dark at the bumper, brightest a few metres out and gone at its far end and sides', () => {
+        const size = 32;
+        const alpha = poolAlpha(size);
+        const at = (u, v) => alpha[Math.floor(v * size) * size + Math.floor(u * size)];
+        expect(at(0.0, 0.5)).toBeLessThan(0.1);
+        expect(at(0.2, 0.5)).toBeGreaterThan(0.5);
+        expect(at(0.99, 0.5)).toBeLessThan(0.02);
+        expect(at(0.1, 0.02)).toBe(0);
+        expect(at(0.2, 0.5)).toBeGreaterThan(at(0.6, 0.5));
+        alpha.forEach(value => { expect(value).toBeGreaterThanOrEqual(0); expect(value).toBeLessThanOrEqual(1); });
+    });
+
+    function lifeWith(vehicles) {
+        const layer = threeLife.create({ THREE, k: 1 });
+        layer.setSimulation({ vehicles, people: [], step() {} });
+        return layer;
+    }
+    const lampMesh = layer => layer.group.children[7];
+    const poolMesh = layer => layer.group.children[8];
+    const car = { id: 1, ...vehicle('car'), kind: 'car', color: 0xc0392b, x: 10, y: 5, z: 0, heading: 0, steer: 0 };
+
+    it('draws nothing extra by day, and lamps and a pool for every vehicle at night', () => {
+        const layer = lifeWith([car]);
+        expect(lampMesh(layer).material.toneMapped).toBe(false);
+        expect(poolMesh(layer).material.blending).toBe(THREE.AdditiveBlending);
+        expect(layer.stats().drawCalls).toBe(7);
+        expect(lampMesh(layer).visible).toBe(false);
+        expect([...lampMesh(layer).instanceMatrix.array.slice(0, 16)].every(x => x === 0)).toBe(true);
+
+        layer.setNight(1);
+        expect(layer.stats().drawCalls).toBe(9);
+        const headlamp = lampMesh(layer).instanceMatrix.array;
+        expect(headlamp[12]).toBeCloseTo(10 + vehicleLamps(car)[0].ox, 5);
+        expect(poolMesh(layer).instanceMatrix.array[12]).toBeCloseTo(10 + car.len / 2, 5);
+        expect(poolMesh(layer).material.opacity).toBeGreaterThan(0);
+
+        layer.setNight(0.5);
+        const half = poolMesh(layer).material.opacity;
+        layer.setNight(1);
+        expect(poolMesh(layer).material.opacity).toBeCloseTo(half * 2, 9);
+        layer.setNight(0);
+        expect(layer.stats().drawCalls).toBe(7);
+        layer.dispose();
+    });
+
+    it('colours headlamps warm white and tail lamps red', () => {
+        const layer = lifeWith([car]);
+        const colour = new THREE.Color();
+        lampMesh(layer).getColorAt(0, colour);
+        expect(colour.r).toBeGreaterThan(0.9);
+        expect(colour.b).toBeGreaterThan(0.6);   // linear: warm white, not yellow
+        lampMesh(layer).getColorAt(2, colour);
+        expect(colour.r).toBeGreaterThan(0.9);
+        expect(colour.g).toBeLessThan(0.1);
+        layer.dispose();
     });
 });

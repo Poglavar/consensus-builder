@@ -44,7 +44,9 @@ describe('GET /bets/:account', () => {
         expect(res.status).toBe(200);
         expect(res.headers['content-type']).toMatch(/text\/html/);
         expect(res.headers['cache-control']).toBe('public, max-age=60');
-        expect(pool.query.mock.calls[0][0]).toMatch(/FROM consensus\.agreement\s+WHERE onchain->>'account' = \$1/);
+        // Only agreements of a current plan are bet subjects (agreements/current-plan-sql.js).
+        expect(pool.query.mock.calls[0][0]).toMatch(/FROM consensus\.agreement a\s+JOIN consensus\.plan p ON p\.cid = a\.content->>'planCid'/);
+        expect(pool.query.mock.calls[0][0]).toMatch(/WHERE a\.onchain->>'account' = \$1/);
         expect(pool.query.mock.calls[0][1]).toEqual([ACCOUNT]);
         expect(meta(res.text, 'og:title')).toBe('Will Plan-led infill in <Rudeš> & "more" execute on-chain by 2026-12-31T00:00:00.000Z? · Bet on cities');
         expect(meta(res.text, 'og:description')).toBe('Bet with points: YES if this agreement executes on-chain by its deadline; NO if it expires or misses the deadline. Cancellation pays 0.5 per share. Both agreements can succeed, or neither. Execution does not mean construction.');

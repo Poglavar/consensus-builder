@@ -14,7 +14,7 @@
         return { dive3D: hasProposal && hasBuildings };
     }
 
-    // GET /designs is newest first; the arrival opens the first one by its CID (?focusProposal=<cid>).
+    // GET /designs is newest first; the arrival opens the first one by its CID (?design=<cid>).
     function latestDesignCid(payload) {
         const row = payload && Array.isArray(payload.designs) ? payload.designs[0] : null;
         return row && typeof row.cid === 'string' && row.cid ? row.cid : null;

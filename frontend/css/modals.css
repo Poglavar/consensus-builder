@@ -367,7 +367,7 @@ body.site-intro-open { overflow: hidden; }
     color: var(--cb-text-muted);
 }
 
-.plan-stats-epoch-head {
+.plan-stats-period-head {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -375,7 +375,7 @@ body.site-intro-open { overflow: hidden; }
     gap: var(--cb-space-2);
 }
 
-.plan-stats-epoch-table {
+.plan-stats-period-table {
     overflow-x: auto;
 }
 
@@ -409,7 +409,8 @@ body.site-intro-open { overflow: hidden; }
     gap: var(--cb-space-3);
 }
 
-.plan-compare__swap {
+.plan-compare__swap,
+.plan-compare__side-by-side {
     justify-self: start;
 }
 
@@ -2404,60 +2405,6 @@ path.geom-handle-edge.is-dragging { stroke-opacity: 0.35; }
 
 /* The icon is not a hit target of its own: a tap anywhere on the control lands on the button. */
 .geom-undo-button i { pointer-events: none; }
-
-/* --- Epoch buckets (vremenska crta plana) ------------------------------- */
-/* Epoha na kartici u listi: chip koji je ujedno izbornik — pokazuje godinu i
-   postavlja je, pa kartici ne treba i značka, a prijedlog se ne mora otvoriti
-   da bi mu se epoha promijenila. Bez epohe je siv, sa epohom u primarnoj boji (tokeni). */
-.proposal-epoch-card-select {
-    flex: 0 0 auto;
-    width: calc(4ch + 28px);
-    min-height: var(--cb-control-height-sm);
-    font-size: 10px;
-    line-height: 1.5;
-    padding: 1px 4px;
-    margin-left: auto;
-    border-radius: 9px;
-    color: var(--cb-primary-soft-ink);
-    background: var(--cb-primary-soft);
-    border: 1px solid var(--cb-primary);
-    font-variant-numeric: tabular-nums;
-    cursor: pointer;
-}
-.proposal-epoch-card-select.is-empty {
-    color: var(--cb-text-muted);
-    background: var(--cb-surface-2);
-    border-color: var(--cb-line-strong);
-}
-.proposal-epoch-card-select:disabled {
-    opacity: 0.6;
-    cursor: progress;
-}
-
-/* Vremenska crta: oznaka, godine kao cb-segmented (css/primitives.css) i razlika prema karti. */
-.proposal-epoch-timeline {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--cb-space-2);
-    padding: var(--cb-space-2) var(--cb-space-3);
-    border-bottom: 1px solid var(--cb-line);
-    background: var(--cb-surface-2);
-}
-.proposal-epoch-timeline-label {
-    font-size: var(--cb-text-xs);
-    text-transform: uppercase;
-    letter-spacing: var(--cb-tracking-caps);
-    color: var(--cb-text-muted);
-}
-.proposal-epoch-years {
-    gap: var(--cb-space-1);
-}
-.proposal-epoch-diff {
-    font-size: 11px;
-    color: var(--cb-text-muted);
-    margin-left: auto;
-}
 
 /* What removing a node will cost, said in the popup before the button is pressed. A junction
    removal moves thousands of square metres between owners; it used to do so in silence. */

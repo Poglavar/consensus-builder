@@ -5,9 +5,10 @@ The dated agreement market is the current betting contract. It replaces parimutu
 records and intentionally changes the experimental data shape: old pool records are not migrated or
 read through a compatibility path. Recreate test markets against the current contract.
 
-The implementation exists in the Rust program source, browser quote and points ledger, but the
-updated Solana market program has **not been deployed**. Devnet-USDC execution requires that program
-release. The points book is an independent server-side simulation and does not require a wallet.
+The implementation exists in the Rust program source, browser quote and points ledger. The market
+program with these instructions is deployed on Solana devnet; its release identity is recorded in
+[Agreement betting](betting-lmsr-points.md). The points book is an independent server-side
+simulation and does not require a wallet.
 
 The maker is LMSR. The JavaScript reference is
 `frontend/js/bets/lmsr.js`; the Rust port must reproduce `backend/test/fixtures/lmsr-vectors.json`
@@ -71,7 +72,7 @@ signature prevents another wallet from reserving that creator's address with unu
 Vault payouts sign with the full namespace, subject and creator seeds. The browser and Node codec
 is `frontend/js/solana/lmsr-client.js`; tests compare its bytes and account ordering with the IDL and
 independent Anchor serialization. Earlier unscoped experimental LMSR addresses are intentionally
-not read by this codec. These changes still require a market-program release.
+not read by this codec.
 
 ## Instructions
 
@@ -107,8 +108,8 @@ the terminal state and resolution; the attestation's `recipeHash` must match the
 `recipe_hash`; VOID's obligation is `floor(q_yes / 2) + floor(q_no / 2)`; the first attestation is
 stored on the account and a second only in the `LmsrMarketResolved` event; errors 6028 to 6044 are
 appended so the deployed codes keep their numbers. New instruction and account discriminators are
-in the program's IDL under `target/idl` until the checked-in IDL is refreshed at deploy time,
-together with the two backend tests that pin its hash and its instruction list.
+in the checked-in IDL, `blockchain/solana/idl/proposal_market.json`, which the backend client and
+layout tests pin.
 
 ## Evidence for kind 1: one schema, every source
 
@@ -152,8 +153,7 @@ the same transaction as its attestation. Kind 0 reads the agreement account's ex
 field. A missing, nonpositive or future execution time, or an unrecognized lifecycle status, is
 invalid evidence and fails settlement. The grace period delays the absence decision; it does not
 extend the event cutoff. The account reader's test serializes a real agreement, independently of
-the reader's offsets. This source correction requires a market-program release before deployment
-can be claimed; it does not change the agreement account layout.
+the reader's offsets. It does not change the agreement account layout.
 
 ## Insiders (streamline B3)
 
@@ -169,16 +169,22 @@ its shares, rounded down per position. VOID is distinct from a NO forecast: it r
 unit to either side rather than rewarding only NO holders. The aggregate obligation is
 `floor(q_yes / 2) + floor(q_no / 2)` and is covered by the maker reserve invariant.
 
-The prior collusion calculations and unimplemented cancellation-notice alternative remain in the
-[cancellation tradeoff record](lmsr-cancellation-analysis.md). Direct insider restrictions do
-not detect a second wallet controlled by an insider.
+VOID has two known costs. An honest cancellation usually means the truthful answer was NO, yet NO
+holders receive half rather than one. A colluder can still buy NO cheaply before the author cancels
+and collect half per share, which caps the extraction near a quarter of `b` (resolving NO on
+cancel would leave it open-ended). The unimplemented alternative is NO with notice: a proposal with
+an open market could only be cancelled after a fixed notice period recorded as
+`cancel_requested_at`, while trading continues with the pending cancellation visible, and VOID
+would remain for conflicting evidence. Adopting it is a one-line policy change in `resolve_lmsr`
+plus the notice field. Direct insider restrictions do not detect a second wallet controlled by an
+insider.
 
 ## Deployment boundary
 
-The previously deployed parimutuel program and its existing accounts remain historical chain
-state. The current source retains their old instructions and readers, but new frontend and points
-markets use the LMSR model. The LMSR instructions and account layout described here still require a
-program release; source code and local tests do not establish devnet deployment.
+The parimutuel accounts created before the LMSR release remain historical chain state. The current
+source retains their old instructions and readers, but new frontend and points markets use the LMSR
+model. The devnet program runs the instructions and account layout described here; a completed
+public trade with them is not yet recorded.
 
 ## Test contract (streamline K7)
 

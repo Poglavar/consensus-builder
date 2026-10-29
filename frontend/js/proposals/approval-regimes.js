@@ -32,7 +32,7 @@
     // allocation: basis ('area', 'value' or 'either'); cap (land given up: per owner or per pool, and
     // for which basis); valueGain (by value, the share of each owner's value gain that is settled in
     // money: Germany settles all of it, Gujarat charges half the increment, the rest keep it in land).
-    // minParties: the fewest input parties the scheme takes (kavelruil needs three, Colombia two).
+    // minParties: minimum distinct approving input owners (kavelruil needs three, Colombia two).
     // English text is the fallback for the `proposalApproval.schemes.<id>.*` i18n keys; `authority` is a noun phrase
     // ("the prefectural governor’s approval") that completes "…, and needs …".
     const REGIMES = [
@@ -292,11 +292,12 @@
      * @param {object} regime a REGIMES entry
      * @param {{ basis: 'area'|'value', poolAreaM2: number|null,
      *   owners: { ownerKey: string, contributedAreaM2: number|null, assignedAreaM2: number }[],
-     *   partyCount?: number, proposerAreaM2?: number }} facts
+     *   partyCount?: number|null, proposerAreaM2?: number }} facts
      *   owners are the input owners (not public land, open ground or outside recipients); partyCount is
-     *   how many parties bring land in; proposerAreaM2 is the land a proposer acquires. A fact that is
-     *   left out skips its rule.
-     * @returns {{ ok: boolean, rules: object[] }} one entry per rule: { kind, ok, ... } with kind
+     *   the resolved distinct input-owner count, never the number of parcels. An unresolved count
+     *   gives ok: null, so drafting can continue without claiming the minimum was checked.
+     *   proposerAreaM2 is the land a proposer acquires.
+     * @returns {{ ok: boolean|null, rules: object[] }} one entry per rule: { kind, ok, ... } with kind
      *   'basis', 'cap', 'parties' or 'proposer'.
      */
     function checkAllocation(regime, facts) {
@@ -323,15 +324,16 @@
                 rules.push({ kind: 'cap', per: 'pool', limit, given, ok: given !== null && given <= ratio(cap) + SLACK });
             }
         }
-        if (regime?.minParties && typeof facts.partyCount === 'number') {
-            rules.push({ kind: 'parties', required: regime.minParties, actual: facts.partyCount, ok: facts.partyCount >= regime.minParties });
+        if (regime?.minParties) {
+            const actual = Number.isSafeInteger(facts.partyCount) && facts.partyCount >= 0 ? facts.partyCount : null;
+            rules.push({ kind: 'parties', required: regime.minParties, actual, ok: actual === null ? null : actual >= regime.minParties });
         }
         // An authority-led readjustment returns the land to its owners or takes it for public use;
         // nobody else acquires land through it.
         if (regime?.family === 'authority-led' && typeof facts.proposerAreaM2 === 'number') {
             rules.push({ kind: 'proposer', areaM2: facts.proposerAreaM2, ok: !(facts.proposerAreaM2 > 0) });
         }
-        return { ok: rules.every(rule => rule.ok), rules };
+        return { ok: rules.some(rule => rule.ok === false) ? false : rules.some(rule => rule.ok === null) ? null : true, rules };
     }
 
     // The share of an owner's value gain the scheme settles in money (0 to 1): none without a scheme.
@@ -340,5 +342,48 @@
         return gain ? gain.numerator / gain.denominator : 0;
     }
 
-    return { CHECKED, CHECKED_VALUE, FAMILIES, REGIMES, list, get, latest, policyOf, needs, checkAllocation, valueGainRatio };
+    // The dimensions every scheme is described and compared by, in this order and grouped as the
+    // scheme guide shows them (approval-text.js words each value the same way for every scheme).
+    const DIMENSIONS = [
+        { group: 'decision', ids: ['initiator', 'decider', 'support', 'electorate', 'dissenters', 'stage'] },
+        { group: 'distribution', ids: ['basis', 'publicLand', 'levelling', 'valueGain', 'minParties'] }
+    ];
+
+    /**
+     * A template in those dimensions, as codes. The catalogue does not store who starts a scheme or
+     * what happens to owners who say no: the initiator follows from the family (an authority-led
+     * scheme is started by the authority, the others by owners gathering support), and dissenters
+     * follow from the tests (a test of every owner is a veto) and the family.
+     * @returns {{ initiator: 'owners'|'authority', decider: 'owners'|'owners-and-authority'|'authority',
+     *   support: object[], electorate: null|{ holders: 'owners'|'owners-and-leaseholders', privateOnly: boolean },
+     *   dissenters: 'veto'|'bound-by-majority'|'bound-by-authority', stage: string,
+     *   basis: 'area'|'value'|'either', publicLand: null|{ per: 'owner'|'pool', ratio: number, basis: string|null },
+     *   levelling: 'money', valueGain: null|number, minParties: number }}
+     *   valueGain is the share of each owner's value gain settled in money (0: kept in land), null when
+     *   the scheme shares land by area only.
+     */
+    function dimensionsOf(regime) {
+        const tests = regime.tests || [];
+        const allocation = regime.allocation || {};
+        const cap = allocation.cap;
+        const unanimous = tests.some(row => row.measure === 'headcount' && row.numerator === row.denominator && !row.strict);
+        return {
+            initiator: regime.family === 'authority-led' ? 'authority' : 'owners',
+            decider: regime.family === 'voluntary' ? 'owners' : regime.family === 'authority-led' ? 'authority' : 'owners-and-authority',
+            support: tests.map(row => ({ ...row })),
+            electorate: tests.length ? {
+                holders: tests.some(row => row.of !== 'owners') ? 'owners-and-leaseholders' : 'owners',
+                privateOnly: tests.every(row => row.scope === 'private')
+            } : null,
+            dissenters: unanimous ? 'veto' : regime.family === 'authority-led' ? 'bound-by-authority' : 'bound-by-majority',
+            stage: regime.stage,
+            basis: allocation.basis || 'either',
+            publicLand: cap ? { per: cap.per, ratio: ratio(cap), basis: cap.basis || null } : null,
+            levelling: 'money',
+            valueGain: allocation.basis === 'area' ? null : valueGainRatio(regime),
+            minParties: regime.minParties || 1
+        };
+    }
+
+    return { CHECKED, CHECKED_VALUE, FAMILIES, REGIMES, DIMENSIONS, list, get, latest, policyOf, needs, checkAllocation, valueGainRatio, dimensionsOf };
 });

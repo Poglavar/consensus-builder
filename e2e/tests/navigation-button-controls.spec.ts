@@ -19,7 +19,7 @@ async function cityDevice(browser: import('@playwright/test').Browser, index: Sh
   return { context, page };
 }
 
-// A park published from Zagreb through Share (POST /pins, POST /designs); returns its CID.
+// A park published from Zagreb through Share (POST /designs); returns its CID.
 async function publishSharedPark(page: import('@playwright/test').Page): Promise<string> {
   await openCity(page);
   await page.locator('#username-display').click();
@@ -120,7 +120,7 @@ test.describe('Navigation button controls @features', () => {
       await expect.poll(() => new URL(staying.page.url()).pathname).toBe('/');
       const stayedUrl = new URL(staying.page.url());
       expect(stayedUrl.searchParams.get('city')).toBe('explore');
-      expect(stayedUrl.searchParams.has('focusProposal')).toBe(false);
+      expect(stayedUrl.searchParams.has('design')).toBe(false);
       expect(await staying.page.evaluate(id => !!(window as any).proposalStorage.getProposal(id), localId)).toBe(false);
     } finally {
       await staying.context.close();

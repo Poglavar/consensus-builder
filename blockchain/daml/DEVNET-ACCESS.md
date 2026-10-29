@@ -160,4 +160,4 @@ standard is **`@canton-network/dapp-sdk`** (CIP-0103).
   the `PACKAGE_SELECTION_FAILED` limit. So the app agreement stays custodial; Loop
   is usable for **identity + Canton Coin payments** only.
 
-Full assessment + integration options: `feature-daml.md` §14.
+The resulting decisions are in [docs/feature-daml-readme.md](../../docs/feature-daml-readme.md#decisions).

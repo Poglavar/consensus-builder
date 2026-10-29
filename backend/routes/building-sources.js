@@ -1,4 +1,4 @@
-// POST /building-sources/discover: checks a user-supplied building source URL the way
+// GET /building-sources/discover: checks a user-supplied building source URL the way
 // /parcel-sources/discover checks a parcel one (same adapters, same public-URL guard, same limits),
 // and answers a portable `building.<base64url>` id the browser keeps in local storage and sends with
 // its /buildings/* requests as `source`. The browser never fetches the URL itself.
@@ -8,7 +8,7 @@ import { createParcelSource } from '../parcels/sources.js';
 import { createPublicSourceFetch, validatePublicSourceUrl } from '../parcels/public-source-fetch.js';
 import { discoverCustomBuildingSource } from '../parcels/custom-source-discovery.js';
 import { decodeCustomBuildingSource, encodeCustomSource } from '../parcels/custom-source-config.js';
-import { validateBounds } from '../parcels/source-contract.js';
+import { validateBounds, discoverQuery } from '../parcels/source-contract.js';
 import { looksLikeOverpass, discoverOverpassSource } from '../buildings/overpass-source.js';
 
 export function setupBuildingSourcesRoute(app, { discover = discoverCustomBuildingSource, publicFetch = createPublicSourceFetch(),
@@ -20,18 +20,19 @@ export function setupBuildingSourcesRoute(app, { discover = discoverCustomBuildi
         return res.status(status).json({ error: error.message, code: error.code,
             upstreamStatus: error.upstreamStatus, retryAfterSeconds: error.retryAfterSeconds, attempts: error.attempts });
     };
-    app.post('/building-sources/discover', rateLimit({ windowMs: 60000, limit: 6, standardHeaders: true, legacyHeaders: false,
+    app.get('/building-sources/discover', rateLimit({ windowMs: 60000, limit: 6, standardHeaders: true, legacyHeaders: false,
         message: { error: 'Please wait before checking another source.', code: 'building-source-rate-limited', retryAfterSeconds: 60 } }), async (req, res) => {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 60000);
         const disconnect = () => { if (!res.writableEnded) controller.abort(); };
         res.once('close', disconnect);
         try {
-            const url = validatePublicSourceUrl(req.body?.url);
+            const input = discoverQuery(req.query);
+            const url = validatePublicSourceUrl(input.url);
             if (url.href.length > 2000) throw Object.assign(new HttpError(400, 'Source URL is too long.'), { code: 'invalid-source-url' });
-            const city = req.body?.city;
+            const city = input.city;
             if (city !== undefined && (typeof city !== 'string' || !/^[a-z][a-z0-9_]{0,79}$/.test(city))) throw new HttpError(400, 'Invalid source label.');
-            const bbox = validateBounds(req.body?.bbox, 1);
+            const bbox = validateBounds(input.bbox, 1);
             // An OpenStreetMap (Overpass) mirror reads OSM's own tags, so there is nothing to discover.
             if (looksLikeOverpass(url.href)) {
                 const mirror = await discoverOverpass({ url: url.href, city, bbox });
@@ -43,8 +44,8 @@ export function setupBuildingSourcesRoute(app, { discover = discoverCustomBuildi
                 signal: options.signal ? AbortSignal.any([controller.signal, options.signal]) : controller.signal });
             const result = await discover({ url, city, metricSrid, bbox }, { fetchImpl: boundedFetch });
             // Field names rarely say their unit (NYC's HEIGHT_ROOF is feet), so the person may say it.
-            const heightUnit = ['m', 'ft'].includes(req.body?.heightUnit) && result.descriptor.heightField
-                ? req.body.heightUnit : result.descriptor.heightUnit;
+            const heightUnit = ['m', 'ft'].includes(input.heightUnit) && result.descriptor.heightField
+                ? input.heightUnit : result.descriptor.heightUnit;
             const source = decodeCustomBuildingSource(encodeCustomSource({ ...result.descriptor, kind: 'building', heightUnit }));
             // Re-read using the final portable identity before offering it to the browser.
             const probe = await createParcelSource(source, { fetchImpl: boundedFetch }).queryBounds(bbox);

@@ -258,8 +258,8 @@ export function setupBuildingsRoute(app, pool) {
                 }
             }
 
-            // A user-chosen building source (`source`) wins over the one where the regions lie (one
-            // request covers one scene, so its first region stands for all of them).
+            // The caller names the building source (`source`); the place never selects one, and a
+            // missing or unknown source is refused (400) before any query.
             const provider = buildingProviders.forRequest({ source: body.source, geometry: regions[0].geometry });
             if (!provider || typeof provider.footprintsUnder !== 'function') {
                 return res.json({ supported: false, regions: {}, truncated: false, source: null });

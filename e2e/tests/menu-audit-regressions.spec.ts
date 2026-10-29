@@ -156,15 +156,16 @@ for (const width of [1180, 390]) test(`Designs Browse keeps filtered draft and p
   const sheet = page.locator('#proposals-sheet');
   await expect(sheet.locator('#designs-browse-tab')).toHaveAttribute('aria-selected', 'true');
   await expect(sheet.locator('#shareAppliedProposalsButton')).toBeVisible();
-  await sheet.locator('.proposal-filters-toggle').click();
-  await expect(sheet.locator('#proposal-filter-applied, #proposal-filter-author')).toHaveCount(0);
-  const status = sheet.locator('#proposal-filter-publication');
+  // Lists (01268caee): publication and order are the only filters, behind the shared Filters disclosure.
+  await sheet.locator('.lists-filter-details > summary').click();
+  await expect(sheet.locator('#lists-controls select')).toHaveCount(2);
+  const status = sheet.locator('select[data-list-filter="publication"]');
   await expect(status).toBeVisible();
   expect(await status.locator('option').evaluateAll(options => options.map(option => (option as HTMLOptionElement).textContent?.trim())))
     .toEqual(['Draft & published', 'Draft', 'Published']);
-  const list = sheet.locator('.proposal-list-modal-body');
+  const list = sheet.locator('.lists-body');
   expect(await list.evaluate(el => el.clientHeight)).toBeGreaterThanOrEqual(100);
-  const rows = sheet.locator('.proposal-list-item');
+  const rows = sheet.locator('#proposal-list-host .lists-item');
   await expect(rows).toHaveCount(2);
   const draft = rows.filter({ hasText: 'List option A' });
   const published = rows.filter({ hasText: 'List option B' });
@@ -177,7 +178,7 @@ for (const width of [1180, 390]) test(`Designs Browse keeps filtered draft and p
   await expect(rows.first()).toContainText('List option B');
   await status.selectOption('all');
   await expect(rows).toHaveCount(2);
-  const details = draft.locator('.proposal-list-details-btn');
+  const details = draft.locator('.lists-item__open');
   await details.scrollIntoViewIfNeeded();
   await expect(details).toBeInViewport();
   await details.click();
@@ -197,9 +198,9 @@ test('phone menus fit the viewport and dismiss; Designs separates publication fr
     expect(box!.y).toBeGreaterThanOrEqual(0);
     expect(box!.y + box!.height).toBeLessThanOrEqual(844);
     if (id === 'proposals') {
-      await sheet.locator('.proposal-filters-toggle').click();
-      await expect(sheet.locator('#proposal-filter-applied, #proposal-filter-author')).toHaveCount(0);
-      const status = sheet.locator('#proposal-filter-publication');
+      await sheet.locator('.lists-filter-details > summary').click();
+      await expect(sheet.locator('#lists-controls select')).toHaveCount(2);
+      const status = sheet.locator('select[data-list-filter="publication"]');
       await expect(status).toBeVisible();
       expect(await status.locator('option').evaluateAll(options => options.map(option => (option as HTMLOptionElement).value)))
         .toEqual(['all', 'draft', 'published']);

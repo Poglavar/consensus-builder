@@ -9,12 +9,17 @@ for (const width of [1280, 390]) {
     await expect(design.locator('.proposal-overview-facts')).toContainText('Source parcels:');
     await expect(design.locator('.proposal-overview-facts')).not.toContainText('Parcels in design:');
     const actions = design.locator('.proposal-primary-actions');
-    const buttons = actions.locator('button:visible'); await expect(buttons).toHaveCount(6);
+    // Add to plan heads the design card, so the hosted panel's actions do not repeat it (7cc412330):
+    // Unapply, Share, Duplicate, Edit geometry and Before / after, two equal columns.
+    await expect(design.locator('.click-stack__actions--design .btn-add-to-plan')).toBeVisible();
+    const buttons = actions.locator('button:visible'); await expect(buttons).toHaveCount(5);
     const boxes = await buttons.evaluateAll(buttons => buttons.map(button => button.getBoundingClientRect().toJSON()));
     const row = (await actions.boundingBox())!;
     for (let i = 0; i < boxes.length; i += 2) {
+      expect(boxes[i].width).toBeCloseTo(boxes[0].width, 0); expect(boxes[i].x).toBeCloseTo(row.x, 0);
+      if (i + 1 === boxes.length) break;
       expect(boxes[i].width).toBeCloseTo(boxes[i + 1].width, 0); expect(boxes[i].y).toBeCloseTo(boxes[i + 1].y, 0);
-      expect(boxes[i].x).toBeCloseTo(row.x, 0); expect(boxes[i + 1].right).toBeCloseTo(row.x + row.width, 0);
+      expect(boxes[i + 1].right).toBeCloseTo(row.x + row.width, 0);
     }
     await page.evaluate(id => {
       const w = window as any; return w.ClickStack.showParcel(w.CadastralParcelRepository.get(id));

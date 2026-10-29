@@ -1118,8 +1118,11 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
     margin-bottom: 0;
 }
 
-.parcel-owner-section--unknown .parcel-owners-container--unknown {
-    flex: 0 0 auto;
+/* Three classes: the general .parcel-owner-section .parcel-owners-container (width: 100%) comes
+   later, and won with full width, squeezing "Owner:" into a column one letter wide. */
+.parcel-owner-section--unknown .parcel-owner-header .parcel-owners-container--unknown {
+    flex: 1 1 auto;
+    min-width: 0;
     width: auto;
     max-width: none;
     max-height: none;
@@ -1127,6 +1130,8 @@ a phone it is the bottom sheet, up to half the screen (the phone block at the en
 }
 
 .parcel-owner-header-label {
+    flex: 0 0 auto;
+    white-space: nowrap;
     font-weight: var(--cb-weight-semibold);
     color: var(--cb-text);
     font-size: var(--cb-text-sm);

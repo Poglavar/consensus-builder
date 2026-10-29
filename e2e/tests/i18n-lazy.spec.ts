@@ -41,5 +41,5 @@ test('language picker stays busy until the newly selected dictionary loads', asy
   await expect(button).toHaveCount(1);
   release();
   await expect(page.locator('[data-language="es-ES"][aria-busy="true"]')).toHaveCount(0);
-  await expect(page.locator('#proposals-button .map-shell-button-label')).toHaveText('Diseños');
+  await expect(page.locator('#proposals-button .map-shell-button-label')).toHaveText('Listas');
 });

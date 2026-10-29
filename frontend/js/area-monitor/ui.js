@@ -615,7 +615,7 @@
 
     // --- Utils ---
 
-    // An outcome goes out as a notice like every other (ephemerals.md).
+    // An outcome goes out as a notice like every other (design-language.md, Messages).
     function showToast(message) {
         if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(message, 3500);
     }

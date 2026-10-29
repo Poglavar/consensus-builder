@@ -193,7 +193,7 @@ const INDEX_AGREEMENT_BODY = {
         content: { type: 'object', description: 'The agreement/v1 object (agents.json: schema.$defs.agreement).' },
         designs: {
             type: 'array',
-            description: 'Linked designs the index does not hold yet, indexed in the same transaction (a parcel layout is published only this way).',
+            description: 'Linked designs the index does not hold yet, indexed in the same transaction.',
             items: { type: 'object', required: ['cid', 'content'], additionalProperties: false, properties: { cid: CID_PROPERTY, content: { type: 'object' } } }
         }
     }
@@ -347,7 +347,7 @@ export function buildOpenApi(base, env) {
             },
             '/pins': {
                 post: {
-                    summary: 'Pin a design/v1 or agreement/v1 object as a UnixFS file on IPFS (CIDv1, sha2-256, fixed 256 KiB chunks, raw leaves) with exactly these canonical bytes; single-chunk files use a raw CID and multi-chunk files a UnixFS dag-pb root. The server recomputes the CID and checks the object as the index would. Needs an Origin header of the app; 30 pins per 15 minutes per client',
+                    summary: 'Pin a design/v1 or agreement/v1 object as a UnixFS file on IPFS (CIDv1, sha2-256, fixed 256 KiB chunks, raw leaves) with exactly these canonical bytes; single-chunk files use a raw CID and multi-chunk files a UnixFS dag-pb root. The server recomputes the CID and checks the object as the index would. Publication does not need it: POST /designs, /plans and /agreements index without pinning; this is for objects a chain record will reference. Needs an Origin header of the app; 30 pins per 15 minutes per client',
                     operationId: 'pinObject',
                     requestBody: { required: true, content: { 'application/json': { schema: PIN_BODY } } },
                     responses: {
@@ -372,14 +372,13 @@ export function buildOpenApi(base, env) {
                     responses: { 200: { description: '{ designs: [design row without content], count }; read the content by CID with GET /designs/{cid}.' }, 400: { description: 'Invalid filter.' } }
                 },
                 post: {
-                    summary: 'Index a pinned design/v1 object: the server checks its CID and shape and derives its city and binding. A parcel layout is indexed only with its agreement. Needs an Origin header of the app',
+                    summary: 'Index a design/v1 object: the server checks its CID and shape and derives its city and binding. Any design, a parcel layout included. Needs an Origin header of the app',
                     operationId: 'indexDesign',
                     requestBody: { required: true, content: { 'application/json': { schema: INDEX_DESIGN_BODY } } },
                     responses: {
                         201: { description: 'The design row: { cid, city, goal, title, author, originCid, binding, content, screenshotUrl, screenshotBeforeUrl, screenshotPairUrl, createdAt }.' },
                         409: { description: 'The CID is indexed already (the body is its row), or binding-unresolved: the site reaches into a parcel by within measurement error of the tolerance.' },
                         400: { description: 'invalid-cid, cid-mismatch, invalid-design, invalid-site, invalid-tolerance, invalid-footprint, site-required or footprint-outside-site.' },
-                        422: { description: 'layout-needs-agreement: send a parcel layout in the designs of POST /agreements.' },
                         503: { description: 'binding-unavailable: nothing was stored.' }
                     }
                 }
@@ -408,7 +407,7 @@ export function buildOpenApi(base, env) {
                     responses: { 200: { description: '{ agreements: [agreement row], count }' }, 400: { description: 'Invalid filter.' } }
                 },
                 post: {
-                    summary: 'Index a pinned agreement/v1 object with the designs it links that the index does not hold yet. Its input parcels must be exactly the union of its designs\' bindings. Needs an Origin header of the app',
+                    summary: 'Index an agreement/v1 object with the designs it links that the index does not hold yet. Its input parcels must be exactly the union of its designs\' bindings. Needs an Origin header of the app',
                     operationId: 'indexAgreement',
                     requestBody: { required: true, content: { 'application/json': { schema: INDEX_AGREEMENT_BODY } } },
                     responses: {

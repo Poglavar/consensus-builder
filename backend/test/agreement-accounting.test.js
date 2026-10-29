@@ -14,11 +14,11 @@ const geometryAt = i => ({ type: 'Polygon', coordinates: [[[i, 0], [i + 0.5, 0],
 function fixture() {
     const outputs = [800, 1200].map((areaM2, i) => {
         const geometry = geometryAt(i);
-        return { hash: Record.outputHash(geometry), pieceId: `out-${i}`, geometry, areaM2, fromParcelIds: ['A', 'B'], role: 'plot', producedBy: 'layout', holders: [] };
+        return { hash: Record.outputHash(geometry), pieceId: `out-${i}`, geometry, areaM2, fromParcelIds: ['A', 'B'], role: 'plot', producedBy: 'layout' };
     });
     return Record.settle({ schema: 'agreement/v1', id: 'ag-accounting', city: 'zagreb',
         plan: { cid: Cid.cidOfObject(content), content }, designs: [{ proposalId: 'layout', cid: designCid }],
-        inputs: { parcels: [{ parcelId: 'A', areaM2: 1000, holders: [] }, { parcelId: 'B', areaM2: 1000, holders: [] }], openGroundM2: 0 },
+        inputs: { parcels: [{ parcelId: 'A', areaM2: 1000 }, { parcelId: 'B', areaM2: 1000 }], openGroundM2: 0 },
         outputs, allocations: outputs.map((output, i) => ({ output: output.hash, to: { kind: 'party', ownerKey: `parcel-owner:${i ? 'B' : 'A'}` } })),
         money: { currency: 'EUR', lines: [] }, rule: { electorate: 'owners', binding: false, lens: [], approvalConfig: null,
             settlement: { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 0 } } });
@@ -28,10 +28,31 @@ describe('plan-first agreement accounting', () => {
     it('supports unnamed owners and balances compensation from gains and losses', () => {
         const record = fixture();
         expect(Record.validate(record).valid).toBe(true);
-        expect(record.inputs.parcels[0].holders).toEqual([Record.abstractHolder('A')]);
+        expect(record.inputs.parcels[0]).toEqual({ parcelId: 'A', areaM2: 1000 });
+        expect(Record.landParties(record)).toEqual(new Set(['parcel-owner:A', 'parcel-owner:B']));
         expect(record.money.lines).toEqual([{ ownerKey: 'parcel-owner:A', amountCents: 2000000 }, { ownerKey: 'parcel-owner:B', amountCents: -2000000 }]);
         expect(Record.ledger(record).money.sponsorCents).toBe(0);
         expect(Record.rightsFromInputs(record.inputs).parcels.every(row => !row.complete)).toBe(true);
+    });
+    it('resolves owners late without changing parcel allocations, cash or the plan, but changes the signed context', () => {
+        const raw = fixture(), co = Regimes.latest('co-readjustment');
+        raw.rule.approvalConfig = { schema: 'proposal-approval/v1', rights: Record.rightsFromInputs(raw.inputs),
+            regime: { id: co.id, version: co.version }, policy: Regimes.policyOf(co, ['authority']) };
+        const unresolved = Record.settle(raw), before = Record.published(unresolved);
+        expect(Record.schemeCheck(unresolved).check).toMatchObject({ ok: null });
+        expect(http(unresolved).ok).toBe(true);
+        const resolved = structuredClone(unresolved);
+        resolved.rule.approvalConfig.rights = Record.rightsFromInputs(resolved.inputs, id => id === 'A'
+            ? [{ ownerKey: 'person-1', share: 1 }]
+            : [{ ownerKey: 'person-1', share: 0.3 }, { ownerKey: 'person-2', share: 0.7 }]);
+        const after = Record.published(Record.settle(resolved));
+        expect(Record.schemeCheck(resolved).check).toMatchObject({ ok: true, rules: [{ kind: 'parties', actual: 2 }] });
+        for (const key of ['plan', 'inputs', 'outputs', 'allocations', 'money']) expect(after[key]).toEqual(before[key]);
+        expect(Cid.cidOfObject(after)).not.toBe(Cid.cidOfObject(before));
+        const a = require('../../frontend/js/proposals/approval.js');
+        expect(a.contextHash(Record.approvalSubject(resolved))).not.toBe(a.contextHash(Record.approvalSubject(unresolved)));
+        resolved.rule.approvalConfig.rights = Record.rightsFromInputs(resolved.inputs, () => [{ ownerKey: 'only-owner', share: 1 }]);
+        expect(Record.schemeCheck(resolved).check).toMatchObject({ ok: false, rules: [{ kind: 'parties', actual: 1 }] });
     });
     it('acquires all outputs for a proposer with no input land, funded by the sponsor', () => {
         const raw = fixture();
@@ -152,6 +173,29 @@ describe('plan-first agreement accounting', () => {
         const none = Record.settle({ ...record, rule: { ...record.rule, settlement: { method: 'none', rateCentsPerM2: 0, contributionBasisPoints: 0 } } });
         expect(none.money.lines).toEqual([]); expect(Dialog.personsHtml(none)).not.toContain('EUR');
     });
+    it('lists the parcel parties, and the persons derived from ownership rights only when the rights name people', () => {
+        const record = fixture();
+        const abstract = Dialog.personsHtml(record);
+        expect(abstract).toContain('Owner(s) of parcel A');
+        expect(abstract).not.toContain('data-agreement-derived-persons');
+        // A pays 2,000,000 cents; B receives it. Ana owns all of A and 1/3 of B, Ben 2/3 of B.
+        const rights = { schema: 'parcel-rights/v1', source: { provider: 'upload' }, parcels: [
+            { parcelId: 'A', complete: true, areaM2: null, owners: [{ ownerId: 'ana', share: '1/1' }] },
+            { parcelId: 'B', complete: true, areaM2: null, owners: [{ ownerId: 'ana', share: '1/3' }, { ownerId: 'ben', share: '2/3' }] }
+        ] };
+        const named = { ...record, rule: { ...record.rule, approvalConfig: { schema: 'proposal-approval/v1', rights, policy: { type: 'unanimous' } } } };
+        const html = Dialog.personsHtml(named, new Map([['ana', 'Ana']]));
+        expect(html).toContain('Persons by ownership rights');
+        expect(html).toMatch(/data-agreement-person="ana"><th scope="row">Ana<\/th>/);
+        expect(html).toMatch(/data-agreement-person="ben"><th scope="row">ben<\/th>/);
+        // Ben: 2/3 of B's 1200 m² piece and 2/3 of its cash; Ana: A's 800 m² piece plus 1/3 of B's.
+        expect(html).toContain('13333.33 EUR');
+        expect(html).not.toContain('data-agreement-persons-unresolved');
+        const partial = { ...named, rule: { ...named.rule, approvalConfig: { ...named.rule.approvalConfig, rights: { ...rights, parcels: [rights.parcels[0]] } } } };
+        expect(Dialog.personsHtml(partial)).toContain('data-agreement-persons-unresolved');
+        expect(Dialog.ownersText('B', rights, new Map([['ana', 'Ana']]))).toBe('Ana 33%, ben 67%');
+        expect(Dialog.ownersText('B', null)).toBe('Owner(s) of parcel B');
+    });
     it('uses identical HTTP checks for compensation, conservation and single ownership', () => {
         const raw = fixture(), published = Record.published(raw);
         expect(validateAgreementContent(published, { designCids: [designCid] }).ok).toBe(true);
@@ -253,8 +297,12 @@ describe('scheme distribution rules', () => {
 
         const exchange = Record.settle({ ...fixture(), rule: { ...fixture().rule, approvalConfig: { schema: 'proposal-approval/v1', rights: null,
             regime: { id: 'nl-kavelruil', version: Regimes.latest('nl-kavelruil').version }, policy: Regimes.policyOf(Regimes.latest('nl-kavelruil'), []) } } });
+        // Unknown rights allow publication, but must never look like a passed participant check.
+        expect(Record.schemeCheck(exchange).check.ok).toBeNull();
+        expect(http(exchange).ok).toBe(true);
+        exchange.rule.approvalConfig.rights = Record.rightsFromInputs(exchange.inputs, id => [{ ownerKey: 'person-' + id, share: 1 }]);
         const parties = Record.validate(exchange).errors.find(row => row.code === 'scheme-parties');
-        expect(parties).toMatchObject({ section: 'land', message: 'Only 2 parties bring land in; Netherlands — voluntary urban land exchange (kavelruil) needs at least 3.' });
+        expect(parties).toMatchObject({ section: 'land', message: 'The land has 2 distinct owners; Netherlands — voluntary urban land exchange (kavelruil) needs at least 3.' });
         expect(http(exchange)).toMatchObject({ ok: false, section: 'land' });
 
         const turkey = Regimes.latest('tr-article-18');

@@ -1,0 +1,17 @@
+/* "Road in parcel" (js/road-in-parcel.js): the on-map panel that fits a road into ground left for
+   it, and the outline of that ground on the map while the panel is open. */
+.road-in-parcel__content { display: flex; flex-direction: column; gap: var(--cb-space-2); }
+.road-in-parcel__content p { margin: 0; }
+.road-in-parcel__hint { color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+.road-in-parcel__summary { color: var(--cb-text-strong); font-weight: var(--cb-weight-semibold); }
+.road-in-parcel__summary:empty,
+.road-in-parcel__status:empty { display: none; }
+.road-in-parcel__status { color: var(--cb-warning-soft-ink); }
+.road-in-parcel__groups { display: flex; flex-direction: column; gap: var(--cb-space-2); }
+.road-in-parcel__group { display: flex; align-items: center; justify-content: space-between; gap: var(--cb-space-2); }
+.road-in-parcel__group-label { flex: none; color: var(--cb-text); }
+.road-in-parcel__lanes { flex: 1 1 auto; min-width: 0; max-width: 16rem; }
+.road-in-parcel__footer { display: flex; justify-content: flex-end; gap: var(--cb-space-2); }
+
+/* The ground the road is fitted into. */
+.road-in-parcel__site { stroke: var(--cb-primary); stroke-width: 2; stroke-dasharray: 6 4; fill: none; }

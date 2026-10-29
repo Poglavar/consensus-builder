@@ -280,13 +280,15 @@ test.describe('Bets sheet @features', () => {
   });
 
   test('finishing the initial page load preserves a stake form opened through the No button', async ({ mockApi: page }) => {
-    // Hold an actual nonessential page image at the network boundary. DOMContentLoaded and the
-    // map remain usable, while the browser's real window load event cannot fire yet.
+    // Hold an actual nonessential page resource at the network boundary: the icon font, which the
+    // first paint requests (the logo image is lazy since f60ef1e39 and no longer delays load).
+    // DOMContentLoaded and the map remain usable, while the browser's real window load event cannot
+    // fire yet.
     let releaseImage!: () => void;
     const imageReady = new Promise<void>(resolve => { releaseImage = resolve; });
-    await page.route('**/images/consensus-builder-logo.png', async route => {
+    await page.route('**/webfonts/fa-solid-900.woff2', async route => {
       await imageReady;
-      await route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>' });
+      await route.continue();
     });
     fileContest(page);
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });

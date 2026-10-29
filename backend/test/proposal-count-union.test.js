@@ -202,7 +202,7 @@ describe('osvježavanje serverskog broja', () => {
         const list = serverList({ fetch: vi.fn(async () => answer(null, false)), cache, area: () => sibenik });
         await list.refreshServerProposalCount('sibenik');
         expect(cache.count).toBe(7);              // prazan gumb je gori od starog broja
-        expect(cache.error).toBe('Index unavailable');
+        expect(cache.error).toBe('Unable to load published designs. Check the connection and retry.'); // the user sentence, not the server's raw error (3d29268e4)
         expect(cache.loading).toBe(false);
         expect(list.updateShowProposalsButton).toHaveBeenCalled();
     });

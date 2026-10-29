@@ -162,10 +162,12 @@
                     && finite(owner.contributedArea) && owner.contributedArea > 0)
                     .map(owner => ({ ownerKey: String(owner.ownerKey), contributedAreaM2: owner.contributedArea, assignedAreaM2: assigned.get(String(owner.ownerKey)) || 0 }));
                 regimeCheck = regimes().checkAllocation(template, {
-                    basis: plan.contributionBasis === 'value' ? 'value' : 'area', poolAreaM2: metrics.poolAreaM2, owners
+                    basis: plan.contributionBasis === 'value' ? 'value' : 'area', poolAreaM2: metrics.poolAreaM2, owners,
+                    partyCount: approval().participantTally(proposal, [], template)?.total ?? null
                 });
-                regimeCheck.rules.filter(rule => !rule.ok).forEach(rule => issue('regime-allocation',
-                    rule.kind === 'basis' ? `${template.id} distributes by ${rule.required}; this plan distributes by ${rule.actual}.`
+                regimeCheck.rules.filter(rule => rule.ok === false).forEach(rule => issue('regime-allocation',
+                    rule.kind === 'parties' ? `${template.id} needs at least ${rule.required} distinct owners; the land has ${rule.actual}.`
+                        : rule.kind === 'basis' ? `${template.id} distributes by ${rule.required}; this plan distributes by ${rule.actual}.`
                         : rule.per === 'owner' ? `${rule.worst.ownerKey} gives up ${Math.round(rule.worst.given * 1000) / 10}% of their land, over the ${template.id} cap.`
                             : `Land not returned to owners is over the ${template.id} cap.`, 'allocation', { rule }));
             }

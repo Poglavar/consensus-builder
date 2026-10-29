@@ -120,7 +120,10 @@ describe('structure layers are drawn once per replay, not once per structure', (
     it('actually coalesces repeated structure updates and releases after an error', async () => {
         const context = {
             console,
-            document: { readyState: 'complete', getElementById: () => null },
+            // structures.js wires its ground-layer refresh to window, document and map events at load.
+            addEventListener: () => { },
+            map: { on: () => { } },
+            document: { readyState: 'complete', getElementById: () => null, addEventListener: () => { } },
             PersistentStorage: {
                 getItem: () => null,
                 setItem: () => { },
@@ -130,6 +133,8 @@ describe('structure layers are drawn once per replay, not once per structure', (
         context.window = context;
         vm.createContext(context);
         vm.runInContext(structures, context);
+        // Without a map the layer updates stop after their bookkeeping, which is what this pins.
+        delete context.map;
 
         let buildingOutcomeRefreshes = 0;
         context.refreshBuildingOutcomesFromRecords = () => { buildingOutcomeRefreshes += 1; };

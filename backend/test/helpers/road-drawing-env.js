@@ -318,6 +318,8 @@ export function loadRoadDrawing(options = {}) {
         Cid: require(`${FRONTEND}cid.js`),
         getBackendBase: () => 'https://api.example.test',
         PersistentStorage: memoryStorage(),
+        // The city's side of the road; `options.drivingSide` draws as in a city that keeps left.
+        CityConfigManager: { getDrivingSide: () => options.drivingSide || 'right' },
         __formationEdit: formationEdit,
         ...corridorGeometry,
         ...corridorProfile,

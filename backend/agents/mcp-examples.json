@@ -5389,7 +5389,7 @@
   },
   "agreement": {
     "source": "restatements/pionir-paron/folnegoviceva-rapska",
-    "cid": "bafkreia37bh2mkc74rmhziqtruvhjhhubavwrfmfveuyvlegg54vr5y22a",
+    "cid": "bafkreifcmy467gvjfvn7ipctydw2o4idwn52nrxv4vymbflkmwdjqksnty",
     "untrusted": {
       "agreement": {
         "schema": "agreement/v1",
@@ -5402,8 +5402,7 @@
           "parcels": [
             {
               "parcelId": "HR-335649-2708/1",
-              "areaM2": 14197.923849,
-              "holders": []
+              "areaM2": 14197.923849
             }
           ],
           "openGroundM2": 0

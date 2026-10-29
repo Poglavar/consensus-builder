@@ -13,15 +13,17 @@
             ...floorPlans, 'js/corridor-terrain-formation.js',
             'js/building-height.js', 'js/proposals/gain.js', 'js/three-mesh-sanitize.js',
             'js/three-screen-door.js', 'js/three-smooth-transparency.js', 'js/three-building-display.js',
-            'vendor/interior-viewer/interior-meshes.js', 'js/three-floor-plans.js', 'js/three-building-facades.js', 'js/three-resources.js',
+            'vendor/interior-viewer/interior-meshes.js', 'js/three-floor-plans.js', 'js/three-building-facades.js', 'js/rule-building-details.js', 'js/three-rule-roofs.js', 'js/three-resources.js',
             'js/three-scene-work.js', 'js/three-scene-readiness.js', 'js/three-structure-refresh.js', 'js/three-square-paving.js', 'js/three-lake-basin.js',
             'js/three-snapshot-navigation.js', 'js/three-keyboard-context.js', 'js/three-parcel-emphasis.js',
-            'js/elevated-rail-3d.js', 'js/three-focus-plan.js', 'js/three-click-plan.js', 'js/three-click-stack.js?v=20261028-stack-focus',
+            'js/elevated-rail-3d.js', 'js/three-focus-plan.js', 'js/three-click-plan.js', 'js/three-click-stack.js?v=20261029-selection',
             'js/life/life-graph.js', 'js/life/life-surface.js', 'js/life/life-agents.js', 'js/three-life.js',
             'js/life/ground-geometry.js', 'js/three-ground.js', 'js/tree-species.js', 'js/three-grass.js',
             'js/three-site-ground.js?v=20261028-trees-grass',
             'vendor/suncalc-1.9.0/suncalc.js', 'vendor/tz-lookup-11.7.0/tz.js', 'js/sun-shadows.js', 'js/three-sun.js',
-            'js/three-mode.js?v=20261028-trees-grass'
+            'js/sky-colors.js', 'js/three-sky.js', 'js/three-night-windows.js',
+            'js/buildout-parts.js', 'js/three-buildout.js',
+            'js/three-mode.js?v=20261029-buildout-3d'
         ],
         photo: ['js/photoreal-frame.js', 'js/photoreal-ground.js', 'js/photoreal-seam.js',
             'js/photoreal-protect.js', 'js/photoreal-attribution.js', 'js/photoreal-parcels.js', 'js/photoreal-mode.js'],
@@ -71,6 +73,8 @@
     };
     root.__ensurePhotorealMode = () => loadGroup('photo');
     root.__ensureFloorPlanModules = () => loadGroup('floorPlans');
+    // The 2D tile spins while cadastral parcels load (parcels/state.js), whichever view is shown.
+    root.mapParcelsLoading = () => !!root.ParcelsState?.isFetchingParcels?.();
     function paint(state) {
         root.__mapModeState = state;
         root.dispatchEvent(new CustomEvent('mapmodechange', { detail: state }));
@@ -82,7 +86,8 @@
                 if (!button) continue;
                 // The selected view is aria-pressed; the strip's tiles take their look from it.
                 button.setAttribute('aria-pressed', String(mode === state.desired));
-                button.classList.toggle('mode-btn-loading', mode === state.desired && state.pending);
+                button.classList.toggle('mode-btn-loading', (mode === state.desired && state.pending)
+                    || (mode === '2d' && root.mapParcelsLoading()));
             }
         }
         paintModeLocks();
@@ -124,6 +129,12 @@
         }
     }
     root.syncMapModeLocks = paintModeLocks;
+    for (const event of ['parcelFetchStarted', 'parcelFetchFinished']) {
+        root.addEventListener(event, () => {
+            if (root.updateModeButtonStates) root.updateModeButtonStates();
+            else document.getElementById('mode-2d-toggle')?.classList.toggle('mode-btn-loading', root.mapParcelsLoading());
+        });
+    }
     // Editors announce themselves on <body> (map-edit-locked, on-map-editing); road drawing by event.
     document.addEventListener('corridor-drawing-mode-changed', paintModeLocks);
     if (typeof MutationObserver === 'function' && document.body) {

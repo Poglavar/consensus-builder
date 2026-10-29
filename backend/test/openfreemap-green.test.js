@@ -58,7 +58,7 @@ describe('one tile read for water and green', () => {
     });
 });
 
-describe('POST /decor/green', () => {
+describe('GET /decor/green', () => {
     function app() {
         const routes = {};
         return { routes, get: (path, handler) => { routes['GET ' + path] = handler; }, post: (path, handler) => { routes['POST ' + path] = handler; } };
@@ -75,7 +75,7 @@ describe('POST /decor/green', () => {
         const greenProvider = { near: vi.fn(async () => ({ areas: [{ geometry: square(0, 0, 1), kind: 'lawn' }], count: 1, source: 'openfreemap' })) };
         setupDecorRoute(server, { query: vi.fn(async () => ({ rows: [] })) }, { greenProvider, waterProvider: { near: vi.fn() } });
         const res = response();
-        await server.routes['POST /decor/green']({ body: { geometry: { type: 'Point', coordinates: [15.978, 45.81] }, buffer_meters: 300 } }, res);
+        await server.routes['GET /decor/green']({ query: { bbox: '15.978,45.81,15.978,45.81', buffer_meters: '300' } }, res);
         expect(res.body).toMatchObject({ count: 1, source: 'openfreemap' });
         expect(greenProvider.near).toHaveBeenCalledWith({ type: 'Point', coordinates: [15.978, 45.81] }, 300);
 
@@ -83,7 +83,7 @@ describe('POST /decor/green', () => {
         setupDecorRoute(failing, { query: vi.fn() }, { greenProvider: { near: async () => { throw new Error('OpenFreeMap HTTP 503'); } }, waterProvider: { near: vi.fn() } });
         vi.spyOn(console, 'error').mockImplementation(() => {});
         const bad = response();
-        await failing.routes['POST /decor/green']({ body: { geometry: { type: 'Point', coordinates: [15.978, 45.81] } } }, bad);
+        await failing.routes['GET /decor/green']({ query: { bbox: '15.978,45.81,15.978,45.81' } }, bad);
         expect(bad.statusCode).toBe(502);
     });
 });

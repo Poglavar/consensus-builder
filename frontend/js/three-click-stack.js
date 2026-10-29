@@ -147,6 +147,7 @@
         if (!keepBody) global.AgreementPanel?.release?.(state.el);
         const el = state.el;
         const { stack } = state;
+        global.SelectionAddress?.write(global.SelectionAddress.selectionOf(stack, selectedInstance));
         // Whatever the old body hosted goes home first; the expanded section hosts it again.
         if (!keepBody) state.adapter?.release?.({ keepSelection: !stack.expanded });
         el.textContent = '';
@@ -397,7 +398,7 @@
         state.el.classList.remove('visible');
         state.el.textContent = '';
         doc.body.classList.remove('three-click-stack-open');
-        if (!silent) adapter?.closed?.();
+        if (!silent) { global.SelectionAddress?.write(null); adapter?.closed?.(); }
     }
 
     function collapse() {

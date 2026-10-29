@@ -3,7 +3,8 @@
 (function (win) {
     'use strict';
     let active = null;
-    const t = (key, params = {}) => win.i18n.t('cameraFlight.' + key, params);
+    // A dotted key names a shared copy outside the flight block (same text in every locale).
+    const t = (key, params = {}) => win.i18n.t(key.includes('.') ? key : 'cameraFlight.' + key, params);
     const clone = value => JSON.parse(JSON.stringify(value));
     function element(tag, className, text) {
         const node = document.createElement(tag); if (className) node.className = className;
@@ -164,7 +165,7 @@
                 const tools = element('div', 'flight-point-actions');
                 button(tools, 'up', 'moveUp', () => changed(edit.movePoint(item.id, -1))).disabled = locked() || i === 0;
                 button(tools, 'down', 'moveDown', () => changed(edit.movePoint(item.id, 1))).disabled = locked() || i === record.route.length - 1;
-                button(tools, 'remove-point', 'remove', () => changed(edit.removePoint(item.id))).disabled = locked() || record.route.length < 2;
+                button(tools, 'remove-point', 'structureEditor.tools.erase', () => changed(edit.removePoint(item.id))).disabled = locked() || record.route.length < 2;
                 row.append(tools); list.append(row);
             });
             const current = point(), i = index(current.id);
@@ -183,7 +184,7 @@
             looks.replaceChildren(...times.looks.filter(entry => entry.kind === 'look').map(key => {
                 const row = element('li', 'flight-key'); row.dataset.flightLook = key.id;
                 button(row, 'seek-look', 'lookAt', () => session.seek(key.time)).textContent = t('lookAt', { time: key.time.toFixed(1) });
-                button(row, 'remove-look', 'remove', () => changed(edit.removeLook(key.id))).disabled = locked(); return row;
+                button(row, 'remove-look', 'structureEditor.tools.erase', () => changed(edit.removeLook(key.id))).disabled = locked(); return row;
             }));
         }
         function updateState(state = {}) {
@@ -225,7 +226,7 @@
             if (pendingEntry) { changed(edit.setCue(selected, win.getThreeInteriorView())); pendingEntry = false; }
             captureThumbnail(selected); render(); if (!draftFailed) message(t('draftSaved'));
         }, true);
-        button(actions, 'undo', 'undo', () => changed(edit.undo())); button(actions, 'redo', 'redo', () => changed(edit.redo()));
+        button(actions, 'undo', 'structureEditor.undo', () => changed(edit.undo())); button(actions, 'redo', 'proposalDrafts.actions.redo', () => changed(edit.redo()));
         button(transport, 'play', 'play', async () => { previewState = 'playing'; await presenter.play(); updateState({ playing: session.playing }); }, true);
         button(transport, 'pause', 'pause', () => { previewState = 'paused'; presenter.pause(); updateState(); });
         button(transport, 'stop', 'stop', async () => { previewState = 'stopped'; presenter.stop(); session.pause(); await session.seek(0); updateState(); });
@@ -332,8 +333,9 @@
         const camera = disclosure('fineCamera'); camera.append(element('p', 'flight-hint', t('moveHint')));
         const moves = element('div', 'flight-move-pad'); camera.append(moves);
         const stepField = field(camera, 'step', 'step', 'number', 1, { min: .1, max: 100, step: .1 });
+        const moveLabels = { left: 'planningViews.compare.left', right: 'planningViews.compare.right' };
         for (const [name, vector] of [['forward', [0, 0, -1]], ['backward', [0, 0, 1]], ['left', [-1, 0, 0]], ['right', [1, 0, 0]], ['up', [0, 1, 0]], ['down', [0, -1, 0]]]) {
-            button(moves, 'move-' + name, name, () => session.nudge(vector, Number(stepField.value)));
+            button(moves, 'move-' + name, moveLabels[name] || name, () => session.nudge(vector, Number(stepField.value)));
         }
         const rotations = element('div', 'flight-fields'); camera.append(rotations);
         for (const name of ['yaw', 'pitch', 'roll']) field(rotations, name, name, 'number', 0, { step: 15 });

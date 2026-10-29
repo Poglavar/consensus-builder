@@ -324,9 +324,10 @@ export function applyCitySettings(root = DEFAULT_ROOT, options = {}) {
     }
     catalog.databaseSources = [...database.values()];
     fs.writeFileSync(configFile, configSource);
-    writeCityFiles(root);
+    const cityFiles = writeCityFiles(root);
     fs.writeFileSync(catalogFile, `${JSON.stringify(catalog, null, 2)}\n`);
-    return { citySettings: rows.length, appCities: appIds.size, sources: descriptors.size, databaseSources: databaseDescriptors.size };
+    // cityFiles: how many generated frontend/data city files the new configuration rewrote or removed.
+    return { citySettings: rows.length, appCities: appIds.size, sources: descriptors.size, databaseSources: databaseDescriptors.size, cityFiles };
 }
 
 if (process.argv[1] && fs.existsSync(process.argv[1]) && fs.realpathSync(process.argv[1]) === fs.realpathSync(fileURLToPath(import.meta.url))) {

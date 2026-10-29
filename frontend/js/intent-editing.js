@@ -185,6 +185,9 @@
             const definition = record.roadProposal.definition, elements = definition.osm.elements;
             if (same(definition.osm, original.roadProposal?.definition?.osm)
                 && ['polygon','constructionFrame'].some(key => !same(definition[key], original.roadProposal?.definition?.[key]))) fail('derived-road-footprint', 'The road footprint and construction frame are derived. Edit canonical OSM nodes and profiles to change the road shape.');
+            // A road placed into a parcel holds that parcel (docs/road-in-parcel.md): its ground is
+            // not edited, it is chosen by placing a new road.
+            if (!same(definition.bound, original.roadProposal?.definition?.bound)) fail('bounded-road-site', 'A road in a parcel keeps its parcel. Draft a new road with that ground to change it.');
             if (!Array.isArray(elements) || !elements.length) fail('invalid-road', 'A canonical road needs OSM elements.');
             const keys = new Set(elements.map(e => `${e.type}:${e.id}`));
             if (keys.size !== elements.length) fail('invalid-road', 'OSM element identities must be unique within their type.');
@@ -196,15 +199,28 @@
                 if (!['node','way','relation'].includes(element.type)) fail('invalid-road', 'Unknown OSM element type.');
             }
             if (!same(definition, original.roadProposal?.definition)) {
-                const osm = load('__corridorOsmForm', './corridor-osm-form.js'), view = osm.toView(definition);
+                const osm = load('__corridorOsmForm', './corridor-osm-form.js');
+                let view = osm.toView(definition);
+                // A road in a parcel keeps its ground: its edges re-fill the room an edit leaves,
+                // and an edit that moves it off the parcel or leaves its lanes too little room is refused.
+                const fit = load('__corridorSiteFit', './proposals/corridor-site-fit.js');
+                if (fit && fit.isBounded(view)) {
+                    view = fit.refitBounded(view);
+                    const before = original.roadProposal?.definition ? osm.toView(original.roadProposal.definition) : null;
+                    const issue = fit.boundedRoadIssues(view, undefined, { before })[0];
+                    if (issue) fail('bounded-road-refused', issue.code === 'core-too-wide'
+                        ? `These lanes need ${issue.requiredM} m and the parcel leaves ${issue.availableM} m there. Choose fewer or narrower lanes.`
+                        : 'A road in a parcel stays inside that parcel. Move the node back onto it.');
+                }
                 const material = load('__corridorFootprint', './corridor-footprint.js').materialize(view);
                 record.roadProposal.definition = osm.toRecord({ ...view, polygon: material.polygon, constructionFrame: material.constructionFrame });
                 record.site = material.polygon;
             }
         }
         // `paved`: the ground is paving (a square, paved building surroundings), the only ground a
-        // tree pit can be cut into; parks and green surroundings stand on lawn.
-        const validateDecorations = (decorations, { paved }) => {
+        // tree pit can be cut into; parks and green surroundings stand on lawn. `ground`: the polygon
+        // the decorations stand on, which a fenced area must stay inside.
+        const validateDecorations = (decorations, { paved, ground = null }) => {
             const checkPoint = point => {
                 if (!Array.isArray(point) || point.length < 2 || !point.every(finite) || Math.abs(point[0]) > 180 || Math.abs(point[1]) > 90) fail('invalid-decoration', 'Authored decoration coordinates must be finite WGS84 positions.');
             };
@@ -229,6 +245,17 @@
                 checkPoint(bench.coordinate);
                 if (!finite(bench.bearing)) fail('invalid-decoration', 'A bench needs a finite bearing in degrees.');
             }
+            if (decorations?.enclosures != null) {
+                if (!Array.isArray(decorations.enclosures)) fail('invalid-decoration', 'enclosures must be an array.');
+                const enclosures = load('ParkEnclosures', './park-enclosures.js');
+                for (const entry of decorations.enclosures) {
+                    const issue = enclosures.enclosureIssue(entry, ground);
+                    if (issue) fail(issue.code, issue.message);
+                    if (entry.ring && ground && !entry.ring.every(point => { try { return turf.booleanPointInPolygon(point, feature(ground)); } catch (_) { return false; } })) {
+                        fail('enclosure-outside', 'A fenced area must lie inside its park; leave out ring to fence the whole park.');
+                    }
+                }
+            }
         };
         if (record.structureProposal) {
             const space = record.structureProposal;
@@ -238,7 +265,7 @@
                 if (space.decorationDesign) space.decorationDesign = load('ProposalApplyStructures', './proposals/apply/structures.js')
                     .decorationsOnGround(space.decorationDesign, space.geometry, turf);
             }
-            validateDecorations(space.decorationDesign, { paved: space.kind === 'square' });
+            validateDecorations(space.decorationDesign, { paved: space.kind === 'square', ground: space.geometry });
         }
         if (record.buildingProposal) {
             const items = record.geometry?.buildings || [], oldItems = original.geometry?.buildings || [];
@@ -319,7 +346,7 @@
                 const ground = load('BuildingGround', './building-ground.js');
                 record.geometry.groundSurface = ground.clipSurfaceToLandTake(record.geometry.groundSurface, record.geometry.landTake, turf);
             }
-            validateDecorations(record.geometry?.groundSurface?.decorationDesign, { paved: record.geometry?.groundSurface?.treatment !== 'green' });
+            validateDecorations(record.geometry?.groundSurface?.decorationDesign, { paved: record.geometry?.groundSurface?.treatment !== 'green', ground: record.geometry?.groundSurface?.polygon || null });
         }
     }
     return { buildings, planting, rowEnvelope, transform, reconcile };

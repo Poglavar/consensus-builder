@@ -416,8 +416,15 @@ describe('agent quickstart docs', () => {
         // The flow, in order: bind, publish designs, propose the agreement, stop at a poll or mint a binding one.
         expect(res.body.flow).toHaveLength(6);
         expect(res.body.flow[0]).toMatch(/^POST \/designs\/binding/);
-        expect(res.body.flow[1]).toMatch(/POST \/pins \{ kind: "design".*POST \/designs/);
-        expect(res.body.flow[2]).toMatch(/POST \/pins \{ kind: "agreement".*POST \/agreements/);
+        expect(res.body.flow[1]).toMatch(/^POST \/designs \{ cid, content \}/);
+        expect(res.body.flow[2]).toMatch(/^POST \/agreements \{ cid, content, designs\? \}/);
+        // Publishing pins nothing: no step of the flow asks for POST /pins.
+        expect(res.body.flow.join('\n')).not.toContain('/pins');
+        expect(res.body.writes).toMatchObject({
+            origin: expect.stringMatching(/^POST \/designs, \/plans, \/agreements, /),
+            uploadLimit: 'POST /plans and /pins: 30 per 15 minutes per client; a 429 carries retryAfterSeconds'
+        });
+        expect(res.body.writes).not.toHaveProperty('pinLimit');
         expect(res.body.flow[3]).toMatch(/never minted/);
         expect(res.body.flow[4]).toMatch(/POST \/agreements\/\{cid\}\/onchain/);
         expect(res.body.flow[5]).toMatch(/AgreementDecision-v1/);

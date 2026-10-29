@@ -287,7 +287,15 @@ describe('editing a saved road: one parcel mutation, its corridor scope only', (
             definition.points[0][1] = at(170, 0);
         }, { onFailure: reason => failures.push(reason) })).toBe(false);
         expect(thrown().message).toBe('The edited road scope could not be rematerialised from the cadastre.');
-        expect(failures).toEqual(['Could not complete that road change — reverted.']);
+        expect(failures).toEqual(['Could not complete that road change — reverted: The edited road scope could not be rematerialised from the cadastre.']);
+
+        // When the arrangement names what it could not place, that is what the author is told.
+        manager.rematerializeCorridorScope = Object.assign(async () => ({ ok: false, failed: [{ code: 'proposal-apply-failed', message: 'Plot 7 has no ground left.' }] }), { calls: [] });
+        failures.length = 0;
+        expect(await globalThis.updateLocalCorridorGeometry('road-1', definition => {
+            definition.points[0][1] = at(175, 0);
+        }, { onFailure: reason => failures.push(reason) })).toBe(false);
+        expect(failures).toEqual(['Plot 7 has no ground left.']);
     });
 });
 

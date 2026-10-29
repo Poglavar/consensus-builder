@@ -7,6 +7,9 @@ import { discoverImagerySource, wmsMapUrl } from '../imagery/discovery.js';
 import { setupImagerySourcesRoute } from '../routes/imagery-sources.js';
 
 const bbox = [15.95, 45.79, 15.97, 45.81];
+// A discover check is a GET: its fields as a query string, lists comma-joined as the client sends them.
+const asQuery = body => Object.fromEntries(Object.entries(body).filter(([, value]) => value !== undefined)
+    .map(([key, value]) => [key, Array.isArray(value) ? value.join(',') : value]));
 const sampleCanvas = createCanvas(256, 256);
 sampleCanvas.getContext('2d').fillRect(0, 0, 256, 256);
 const png = sampleCanvas.toBuffer('image/png');
@@ -29,9 +32,9 @@ describe('public imagery source discovery and gateway', () => {
         const fetchImpl = vi.fn(async url => String(url).includes('GetCapabilities')
             ? new Response(capabilities(), { status: 200, headers: { 'Content-Type': 'text/xml' } }) : image());
         const server = app(fetchImpl);
-        const result = await request(server).post('/imagery-sources/discover').send({
+        const result = await request(server).get('/imagery-sources/discover').query(asQuery({
             url: 'https://geoportal.dgu.hr/services/inspire/orthophoto_2024/wms', city: 'zagreb', bbox
-        });
+        }));
         expect(result.status).toBe(200);
         expect(result.body.source).toMatchObject({ kind: 'imagery', adapter: 'wms', cityIds: ['zagreb'],
             layers: ['OI.OrthoimageCoverage'], version: '1.3.0', crs: 'CRS:84', format: 'image/png',
@@ -51,16 +54,16 @@ describe('public imagery source discovery and gateway', () => {
         const xml = capabilities('<Layer><Name>orthos:2022</Name><Title>2022</Title></Layer><Layer><Name>orthos:2024</Name><Title>2024</Title></Layer>');
         const fetchImpl = vi.fn(async url => String(url).includes('GetCapabilities')
             ? new Response(xml, { status: 200 }) : image());
-        const first = await request(app(fetchImpl)).post('/imagery-sources/discover').send({
+        const first = await request(app(fetchImpl)).get('/imagery-sources/discover').query(asQuery({
             url: 'https://maps.example.org/wms', city: 'zagreb', bbox
-        });
+        }));
         expect(first.body).toMatchObject({ selectionRequired: true, layers: [
             { name: 'orthos:2022', title: '2022' }, { name: 'orthos:2024', title: '2024' }
         ] });
         expect(fetchImpl).toHaveBeenCalledOnce();
-        const chosen = await request(app(fetchImpl)).post('/imagery-sources/discover').send({
+        const chosen = await request(app(fetchImpl)).get('/imagery-sources/discover').query(asQuery({
             url: 'https://maps.example.org/wms', city: 'zagreb', bbox, layers: ['orthos:2024']
-        });
+        }));
         expect(chosen.status).toBe(200);
         expect(chosen.body.source.layers).toEqual(['orthos:2024']);
         expect(new URL(fetchImpl.mock.calls.at(-1)[0]).searchParams.get('LAYERS')).toBe('orthos:2024');
@@ -69,9 +72,9 @@ describe('public imagery source discovery and gateway', () => {
     it('verifies an XYZ sample and keeps only a portable city-bound source identity', async () => {
         const fetchImpl = vi.fn(async () => image());
         const server = app(fetchImpl);
-        const result = await request(server).post('/imagery-sources/discover').send({
+        const result = await request(server).get('/imagery-sources/discover').query(asQuery({
             url: 'https://tiles.example.org/{z}/{x}/{y}.png', city: 'zagreb', bbox
-        });
+        }));
         expect(result.status).toBe(200);
         expect(result.body.source).toMatchObject({ adapter: 'xyz', cityIds: ['zagreb'],
             endpoint: 'https://tiles.example.org/{z}/{x}/{y}.png' });
@@ -86,15 +89,15 @@ describe('public imagery source discovery and gateway', () => {
     it('rejects XML service exceptions, private URLs, secret query keys and tampered identities', async () => {
         const fetchImpl = vi.fn(async () => new Response('<ServiceException>Unauthorized</ServiceException>', { status: 200 }));
         const server = app(fetchImpl);
-        const xml = await request(server).post('/imagery-sources/discover').send({
+        const xml = await request(server).get('/imagery-sources/discover').query(asQuery({
             url: 'https://tiles.example.org/{z}/{x}/{y}.png', city: 'zagreb', bbox
-        });
+        }));
         expect(xml.status).toBe(422);
         expect(xml.body.code).toBe('imagery-not-image');
         const before = fetchImpl.mock.calls.length;
         for (const url of ['http://maps.example.org/wms', 'https://127.0.0.1/wms',
             'https://maps.example.org/wms?authKey=abc']) {
-            const denied = await request(server).post('/imagery-sources/discover').send({ url, city: 'zagreb', bbox });
+            const denied = await request(server).get('/imagery-sources/discover').query(asQuery({ url, city: 'zagreb', bbox }));
             expect(denied.status).toBe(400);
         }
         expect(fetchImpl).toHaveBeenCalledTimes(before);
@@ -111,9 +114,9 @@ describe('public imagery source discovery and gateway', () => {
         const url = new URL(wmsMapUrl(source, bbox));
         expect(url.searchParams.get('BBOX')).toBe('45.79,15.95,45.81,15.97'); // WMS 1.3 EPSG:4326 axis order
         const fetchImpl = async () => new Response('<!DOCTYPE x [<!ENTITY x SYSTEM "file:///etc/passwd">]>', { status: 200 });
-        const response = await request(app(fetchImpl)).post('/imagery-sources/discover').send({
+        const response = await request(app(fetchImpl)).get('/imagery-sources/discover').query(asQuery({
             url: source.endpoint, city: 'zagreb', bbox
-        });
+        }));
         expect(response.status).toBe(422);
         expect(response.body.code).toBe('imagery-capabilities-invalid');
     });
@@ -156,9 +159,9 @@ describe('public imagery source discovery and gateway', () => {
     it('does not claim coverage from a fully transparent XYZ sample', async () => {
         const empty = createCanvas(256, 256).toBuffer('image/png');
         const result = await request(app(async () => new Response(empty, { status: 200 })))
-            .post('/imagery-sources/discover').send({
+            .get('/imagery-sources/discover').query(asQuery({
                 url: 'https://tiles.example.org/{z}/{x}/{y}.png', city: 'zagreb', bbox
-            });
+            }));
         expect(result.status).toBe(422);
         expect(result.body.code).toBe('imagery-empty-sample');
     });

@@ -2,7 +2,7 @@
 // each image request decodes it and uses the same DNS/redirect guard as parcel source discovery.
 import rateLimit from 'express-rate-limit';
 import { HttpError } from '../utils/helpers.js';
-import { validateBounds } from '../parcels/source-contract.js';
+import { validateBounds, discoverQuery } from '../parcels/source-contract.js';
 import { createPublicSourceFetch, validatePublicSourceUrl } from '../parcels/public-source-fetch.js';
 import { decodeImagerySource, encodeImagerySource } from '../imagery/custom-source.js';
 import { discoverImagerySource, xyzTileBounds } from '../imagery/discovery.js';
@@ -34,18 +34,19 @@ export function setupImagerySourcesRoute(app, { publicFetch = createPublicSource
         message: { error: 'Please wait before checking another imagery source.', code: 'imagery-source-rate-limited' } });
     const tileLimit = rateLimit({ windowMs: 60000, limit: 900, standardHeaders: true, legacyHeaders: false,
         message: { error: 'Imagery request limit reached.', code: 'imagery-source-rate-limited' } });
-    app.post('/imagery-sources/discover', discoverLimit, async (req, res) => {
+    app.get('/imagery-sources/discover', discoverLimit, async (req, res) => {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 60000);
         const disconnect = () => { if (!res.writableEnded) controller.abort(); };
         res.once('close', disconnect);
         try {
-            const url = validatePublicSourceUrl(req.body?.url);
+            const input = discoverQuery(req.query);
+            const url = validatePublicSourceUrl(input.url);
             if (url.href.length > 2000) throw invalid('Imagery URL is too long.');
-            const city = req.body?.city;
+            const city = input.city;
             if (city !== undefined && (typeof city !== 'string' || !/^[a-z][a-z0-9_]{0,79}$/.test(city))) throw invalid('Invalid source label.');
-            const bbox = validateBounds(req.body?.bbox, 25);
-            const layers = req.body?.layers;
+            const bbox = validateBounds(input.bbox, 25);
+            const layers = input.layers;
             if (layers !== undefined && (!Array.isArray(layers) || !layers.length || layers.length > 8
                 || layers.some(layer => typeof layer !== 'string' || !/^[A-Za-z0-9_.:-]{1,160}$/.test(layer))))
                 throw invalid('Choose up to eight named WMS layers.');

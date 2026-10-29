@@ -165,6 +165,21 @@ describe('CadastralParcelRepository', () => {
         expect(conflicting.snapshot().featureCount).toBe(0);
     });
 
+    it('keeps the same parcel served at 9 decimals and at full precision as one fact on the shared grid', async () => {
+        // The server serves 9 decimals; the DGU fallback reprojects at full precision. Both are the
+        // same parcel once on the grid (geometry-tolerances.js), so neither conflicts with the other.
+        const server = { type: 'Feature', properties: { parcelId: 'HR-A' }, geometry: { type: 'Polygon',
+            coordinates: [[[15.954258147, 45.760647177], [15.955, 45.760647177], [15.955, 45.761], [15.954258147, 45.760647177]]] } };
+        const dgu = structuredClone(server);
+        dgu.geometry.coordinates[0][0] = [15.95425814698254, 45.76064717685072];
+        dgu.geometry.coordinates[0][3] = [15.95425814698254, 45.76064717685072];
+        const fetchParcelsByIds = vi.fn(async () => parcelResult(['HR-A'], { features: [server, dgu] }));
+        const { service } = fixture({ fetchParcelsByIds });
+        await service.ensureIds(['HR-A']);
+        expect(service.snapshot().featureCount).toBe(1);
+        expect(service.get('HR-A').geometry.coordinates[0][0]).toEqual([15.954258147, 45.760647177]);
+    });
+
     it('owns retained cadastral geometry independently of transport and returned clones', async () => {
         const first = parcelFeature('HR-A', 0);
         const fetchParcelsByIds = vi.fn(async () => parcelResult(['HR-A'], { features: [first] }));

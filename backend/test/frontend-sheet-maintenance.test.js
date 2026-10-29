@@ -1,4 +1,4 @@
-// The Settings sheet's "Data & maintenance" section (UI-REWORK.md, Phase 6): local-cache upkeep
+// The Settings sheet's "Data & maintenance" section (design-language.md, Element names): local-cache upkeep
 // (parcel coverage/clear, block/road/proposal clears, wipe all) lives there and nowhere else in the
 // shell; source selectors and parcel refresh live with Layers. Each dataset's upkeep stays in its
 // own data-section wrapper so a city that hides

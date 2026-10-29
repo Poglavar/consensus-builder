@@ -22,8 +22,8 @@ for (const mode of ['model', 'photo'] as const) {
     const captured = await page.evaluate(() => (window as any).getThree3DGeoView());
     // The command palette remains available when 3D hides the bottom navigation.
     await page.keyboard.press('ControlOrMeta+k');
-    await page.locator('.command-palette__input').fill('Open Designs');
-    await page.locator('.command-palette__item').filter({ hasText: 'Open Designs' }).click();
+    await page.locator('.command-palette__input').fill('Lists');
+    await page.locator('.command-palette__item').filter({ hasText: /^Lists/ }).first().click();
     await page.locator('#shareAppliedProposalsButton').click();
     await page.locator('#lists-actions').getByRole('button', { name: 'Create plan', exact: true }).click();
     const composer = page.locator('.plan-composer');

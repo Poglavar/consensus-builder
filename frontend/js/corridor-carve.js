@@ -45,12 +45,14 @@ const carveIsApplied = (typeof isApplied === 'function')
 // Demolition records of every APPLIED proposal in `proposals`. Unapplying or deleting a proposal
 // takes its demolitions with it — the buildings come back. Roads, parks/squares/lakes and building
 // typologies all clear their ground the same way and all park their records on
-// `<kind>Proposal.demolishedBuildings`.
+// `<kind>Proposal.demolishedBuildings`. Each returned record is a copy naming the design that
+// demolishes it (`proposalId`), for the click stack and the Compare sides.
 function demolishedBuildingRecordsFrom(proposals, options = {}) {
     const selectedByCaller = options.selectedByCaller === true;
     const records = [];
     (proposals || []).forEach(proposal => {
         if (!proposal) return;
+        const owned = record => ({ ...record, proposalId: String(proposal.proposalId) });
         const rp = proposal.roadProposal;
         if (rp && rp.definition && (selectedByCaller || carveIsApplied(proposal, rp))) {
             const definition = rp.definition;
@@ -63,7 +65,7 @@ function demolishedBuildingRecordsFrom(proposals, options = {}) {
                 )
                 : rawRecords;
             (corridorRecords || []).forEach(record => {
-                if (record && record.id) records.push(record);
+                if (record && record.id) records.push(owned(record));
             });
         }
         ['structureProposal', 'buildingProposal'].forEach(key => {
@@ -71,7 +73,7 @@ function demolishedBuildingRecordsFrom(proposals, options = {}) {
             if (!sub || !Array.isArray(sub.demolishedBuildings)) return;
             if (!selectedByCaller && !carveIsApplied(proposal, sub)) return;
             sub.demolishedBuildings.forEach(record => {
-                if (record && record.id) records.push(record);
+                if (record && record.id) records.push(owned(record));
             });
         });
     });

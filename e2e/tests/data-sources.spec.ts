@@ -19,8 +19,9 @@ const sourceId = (heightUnit: string) => 'building.' + Buffer.from(JSON.stringif
 test.describe('Data sources @features', () => {
   test('Settings shows parcel source information and both source dialogs; a building source is checked, used, sent and reset', async ({ mockApi: page }) => {
     const discoverBodies: any[] = [];
-    await page.route('**/building-sources/discover', route => {
-      const body = route.request().postDataJSON(); discoverBodies.push(body);
+    await page.route(/\/building-sources\/discover\?/, route => {
+      expect(route.request().method()).toBe('GET');
+      const body = Object.fromEntries(new URL(route.request().url()).searchParams); discoverBodies.push(body);
       const unit = body.heightUnit || 'm';
       return route.fulfill({ json: { source: { ...descriptor(unit), id: sourceId(unit), name: 'data.example (arcgis)' },
         attempts: [{ adapter: 'arcgis', status: 'verified' }], buildingCount: 4 } });

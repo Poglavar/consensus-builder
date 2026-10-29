@@ -30,6 +30,34 @@ export function readControlResults(paths) {
   return [...tests.values()];
 }
 
+// A named controls run (TEST_RUN) keeps every finished test in its ledger, across all the parts of a
+// continued run; this rebuilds the Playwright JSON report shape that readControlResults reads.
+export function controlReportFromLedger(entries) {
+  const latest = new Map(entries.map(entry => [entry.id, entry]));
+  const root = { suites: [] };
+  const suiteAt = (parent, title) => {
+    let suite = parent.suites.find(child => child.title === title);
+    if (!suite) parent.suites.push(suite = { title, specs: [], suites: [] });
+    return suite;
+  };
+  for (const entry of latest.values()) {
+    const describes = entry.titles.slice(0, -1);
+    const suite = [entry.file, ...describes].reduce(suiteAt, root);
+    suite.specs.push({
+      title: entry.titles.at(-1), file: entry.file, line: entry.line,
+      tests: [{
+        projectName: entry.project, expectedStatus: entry.expectedStatus, status: entry.outcome, annotations: [],
+        results: [{
+          status: entry.status, duration: entry.durationMs, annotations: entry.annotations || [],
+          attachments: entry.controlEvents ? [{ name: 'ui-control-coverage', contentType: 'application/json',
+            body: Buffer.from(JSON.stringify(entry.controlEvents)).toString('base64') }] : [],
+        }],
+      }],
+    });
+  }
+  return root;
+}
+
 export function summarizeControlCoverage(sites, tests) {
   const byId = new Map(sites.map(site => [site.id, { ...site, observed: false, clicks: [], changes: [], interactions: [], variants: [] }]));
   const unattributed = new Map();

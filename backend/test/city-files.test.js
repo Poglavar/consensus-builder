@@ -2,11 +2,12 @@
 // browser boot loads exactly the current city's full configuration on top of every city's light one;
 // under node, data/city-configs.js alone gives the manager every full configuration.
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync, existsSync } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
-import { CITY_FILE_PATHS, staleCityFiles } from '../../scripts/build-city-files.mjs';
+import { CITY_FILE_PATHS, staleCityFiles, writeCityFiles } from '../../scripts/build-city-files.mjs';
 import { parseCityConfigs } from '../../scripts/lib/parcel-city-settings.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -19,6 +20,20 @@ describe('generated city files', () => {
         const { stale, extra } = staleCityFiles(REPO);
         expect(stale).toEqual([]);
         expect(extra).toEqual([]);
+    });
+    // The writers (admission, city settings) report these counts, so they must be what happened.
+    it('reports what a regeneration wrote and removed', () => {
+        const root = mkdtempSync(path.join(os.tmpdir(), 'city-files-'));
+        try {
+            mkdirSync(path.join(root, 'frontend/data/cities'), { recursive: true });
+            writeFileSync(path.join(root, CITY_FILE_PATHS.source), read(CITY_FILE_PATHS.source));
+            writeFileSync(path.join(root, CITY_FILE_PATHS.cities, 'gone.js'), '// no city owns this\n');
+            const first = writeCityFiles(root);
+            expect(first).toEqual({ written: first.total, removed: 1, total: 1993 });
+            expect(existsSync(path.join(root, CITY_FILE_PATHS.cities, 'gone.js'))).toBe(false);
+            expect(readFileSync(path.join(root, CITY_FILE_PATHS.index), 'utf8')).toBe(read(CITY_FILE_PATHS.index));
+            expect(writeCityFiles(root)).toEqual({ written: 0, removed: 0, total: 1993 });
+        } finally { rmSync(root, { recursive: true, force: true }); }
     });
 });
 

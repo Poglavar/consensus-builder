@@ -312,11 +312,32 @@ describe('subdivision on bare ground (empty binding)', () => {
         await expect(manager.applyProposal('park-first')).resolves.toBe(true);
         const before = fabric.list().map(piece => piece.properties.parcelId);
 
-        await expect(manager.applyProposal('sub-over-park')).resolves.toBe(false);
+        // A replay chooses no alternatives, so the park keeps its ground.
+        await expect(manager.applyProposal('sub-over-park', { replay: true })).resolves.toBe(false);
         const failure = manager.getLastApplyFailureInfo('sub-over-park');
         expect(failure.code).toBe('readjustment-taken-ground');
         expect(failure.message).toContain('"Corner park"');
         expect(fabric.list().map(piece => piece.properties.parcelId)).toEqual(before);
+    });
+
+    it('an explicit Apply of a subdivision over an applied park takes the park off the map', async () => {
+        // Direct Apply chooses the layout's occupied ground like a confirmed plan replacement
+        // (docs/plan-application-tab-workspace-audit-2026-10-25.md).
+        const park = {
+            proposalId: 'park-first', title: 'Corner park', goal: 'park', applied: false,
+            createdAt: '2026-10-01T00:00:01.000Z', cadastreParcelIds: [],
+            site: multi(rect(0, 0, 3, 3)), binding: { parcels: [], coverage: 'none' },
+            structureProposal: { kind: 'park', geometry: rect(0, 0, 3, 3) }
+        };
+        const record = subdivisionRecord('sub-over-park', BARE_SITE, { binding: { parcels: [], coverage: 'none' } });
+        const { manager, fabric } = await harness({ records: [park, record] });
+        await expect(manager.applyProposal('park-first')).resolves.toBe(true);
+        await expect(manager.applyProposal('sub-over-park')).resolves.toBe(true);
+        expect(globalThis.proposalStorage.getProposal('park-first').applied).toBe(false);
+        const pieces = fabric.list();
+        expect(pieces.some(piece => piece.properties.structureType === 'park')).toBe(false);
+        expect(pieces.filter(piece => piece.properties.producedByProposalId === 'sub-over-park'))
+            .toHaveLength(record.parcelLayout.plots.length);
     });
 });
 

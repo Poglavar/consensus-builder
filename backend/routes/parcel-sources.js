@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit';
 import { createPublicSourceFetch, validatePublicSourceUrl } from '../parcels/public-source-fetch.js';
 import { discoverCustomParcelSource } from '../parcels/custom-source-discovery.js';
 import { decodeCustomSource, encodeCustomSource } from '../parcels/custom-source-config.js';
-import { validateBounds, knownLimitFor } from '../parcels/source-contract.js';
+import { validateBounds, knownLimitFor, discoverQuery } from '../parcels/source-contract.js';
 
 export function setupParcelSourcesRoute(app, { sources = catalog.sources, fetchImpl, discover = discoverCustomParcelSource, publicFetch = createPublicSourceFetch() } = {}) {
     const adapters = new Map(sources.map(source => {
@@ -22,18 +22,19 @@ export function setupParcelSourcesRoute(app, { sources = catalog.sources, fetchI
             sourceId, upstreamStatus: error.upstreamStatus, retryAfterSeconds: error.retryAfterSeconds, attempts: error.attempts,
             parcelCounts: error.parcelCounts });
     };
-    app.post('/parcel-sources/discover', rateLimit({ windowMs: 60000, limit: 6, standardHeaders: true, legacyHeaders: false,
+    app.get('/parcel-sources/discover', rateLimit({ windowMs: 60000, limit: 6, standardHeaders: true, legacyHeaders: false,
         message: { error: 'Please wait before checking another source.', code: 'parcel-source-rate-limited', retryAfterSeconds: 60 } }), async (req, res) => {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 60000);
         const disconnect = () => { if (!res.writableEnded) controller.abort(); };
         res.once('close', disconnect);
         try {
-            const url = validatePublicSourceUrl(req.body?.url);
+            const input = discoverQuery(req.query);
+            const url = validatePublicSourceUrl(input.url);
             if (url.href.length > 2000) throw Object.assign(new HttpError(400, 'Source URL is too long.'), { code: 'invalid-source-url' });
-            const city = req.body?.city;
+            const city = input.city;
             if (city !== undefined && (typeof city !== 'string' || !/^[a-z][a-z0-9_]{0,79}$/.test(city))) throw new HttpError(400, 'Invalid source label.');
-            const bbox = validateBounds(req.body?.bbox, 1);
+            const bbox = validateBounds(input.bbox, 1);
             const lon = (bbox[0] + bbox[2]) / 2, lat = (bbox[1] + bbox[3]) / 2;
             const metricSrid = (lat >= 0 ? 32600 : 32700) + Math.max(1, Math.min(60, Math.floor((lon + 180) / 6) + 1));
             const boundedFetch = (url, options = {}) => publicFetch(url, { ...options,

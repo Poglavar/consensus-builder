@@ -10,7 +10,7 @@
 #proposals-sheet #designs-plans { padding: 0; overflow: visible; flex: none; }
 #proposals-sheet [role="tabpanel"][hidden] { display: none; }
 #proposals-sheet #designs-browse { overflow: visible; flex: none; }
-.lists-item { border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); padding: var(--cb-space-3); display: grid; gap: var(--cb-space-2); min-width: 0; }
+.lists-item { border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); padding: var(--cb-space-3); display: grid; gap: var(--cb-space-2); min-width: 0; cursor: pointer; }
 .lists-item.is-selected { border-color: var(--cb-primary); }
 .lists-item__heading { display: flex; align-items: start; gap: var(--cb-space-2); }
 .lists-item__title { text-align: start; white-space: normal; overflow-wrap: anywhere; flex: 1; justify-content: flex-start; font-weight: 600; }

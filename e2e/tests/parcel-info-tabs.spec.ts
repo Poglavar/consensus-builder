@@ -42,8 +42,8 @@ test.describe('Parcel info panel tabs @core', () => {
     await openDetails(page);
     await tab(page, 'propose-tab').click();
     await expect(page.locator('#propose-tab')).toBeVisible();
-    // 14 tools: the Ownership group's Offer went with owner offers (M2).
-    await expect(page.locator('#propose-content .parcel-build-btn')).toHaveCount(14);
+    // 13 tools: 8 design tiles; transport Road, Road in parcel, Track, Road station, Track station.
+    await expect(page.locator('#propose-content .parcel-build-btn')).toHaveCount(13);
   });
 
   test('a parcel with no proposals has no Designs section', async ({ mockApi: page }) => {

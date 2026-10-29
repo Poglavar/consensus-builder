@@ -15,7 +15,7 @@ const scripts = [
 const classic = ['proposal-parcel-identity.js', 'proposal-road-geometry.js', 'proposals/apply/finalize.js', 'proposal-manager.js', 'agreement-headless.js']
     .map(path => ({ path, source: readFileSync(new URL(path, root), 'utf8') }));
 
-export async function deriveWithApp({ designs, parcels, ownerOf = () => [] }) {
+export async function deriveWithApp({ designs, parcels }) {
     const logger = Object.fromEntries(['log', 'debug', 'info', 'warn', 'error'].map(level => [level, (...args) => console.error(`[${new Date().toISOString()}] [mcp-ground]`, ...args)]));
     const ctx = createContext({ console: logger, structuredClone, performance, URL, TextEncoder, Uint8Array, Buffer });
     installAppGeometry(ctx);
@@ -29,5 +29,5 @@ export async function deriveWithApp({ designs, parcels, ownerOf = () => [] }) {
         ctx.require = createRequire(new URL(script.path, root));
         runInContext(script.source, ctx, { filename: script.path, timeout: 10_000 });
     }
-    return ctx.AgreementHeadless.derive({ designs, parcels, ownerOf });
+    return ctx.AgreementHeadless.derive({ designs, parcels });
 }

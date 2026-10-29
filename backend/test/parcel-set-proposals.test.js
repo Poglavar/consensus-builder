@@ -34,7 +34,7 @@ describe('proposals on a set of parcels', () => {
     it('renders a total, rows that open their proposal, coverage only for several parcels, escaped text', () => {
         const entries = SetProposals.collect(['a', 'b', 'c'], forParcel, proposal => proposal.proposalId);
         const html = SetProposals.listHtml(entries, { parcelCount: 3, describe: describe_ });
-        expect(html).toContain('3 proposals on these parcels');
+        expect(html).toContain('3 designs on these parcels');
         expect(html).toContain('data-parcel-set-proposal="p-road" data-parcel-id="a"');
         expect(html).toContain('On 3 of 3 parcels');
         expect(html).toContain('Road &lt;b&gt;');
@@ -67,7 +67,7 @@ describe('proposals on a set of parcels', () => {
     });
 
     it('says so when nothing stands on the parcels', () => {
-        expect(SetProposals.listHtml([], { parcelCount: 2, describe: describe_ })).toContain('No proposals on these parcels yet.');
+        expect(SetProposals.listHtml([], { parcelCount: 2, describe: describe_ })).toContain('No designs on these parcels yet.');
         expect(SetProposals.listHtml([], { parcelCount: 2, describe: describe_, emptyText: 'Nothing here' })).toContain('Nothing here');
     });
 

@@ -2111,9 +2111,16 @@ const ProposalManager = {
 
         const fabric = _fabricDraft(opts);
         if (!fabric) throw new Error('Cadastral integration requires a parcel mutation draft.');
-        fabric.seedCadastre(list);
+        // The caller chose these parcels as absent from the fabric before this mutation was
+        // queued; one queued behind the boot replay can find a design standing on them by now (a
+        // layout plot across two parcels), and re-deriving one of the two was refused as "scope
+        // is not closed". Only ground still absent in this draft is integrated.
+        const stillAbsent = new Set(fabric.absentCadastreIds(list.map(_getParcelIdFromFeature).filter(Boolean), { includeCorridors: true }));
+        const arriving = list.filter(feature => stillAbsent.has(String(_getParcelIdFromFeature(feature) ?? '').trim()));
+        if (!arriving.length) return { ok: true, parcels: 0, fabric: null };
+        fabric.seedCadastre(arriving);
 
-        const ids = list.map(_getParcelIdFromFeature).filter(Boolean).map(String);
+        const ids = arriving.map(_getParcelIdFromFeature).filter(Boolean).map(String);
         const takes = this._appliedCorridorTakes(_peekProposals(_proposalStore(opts)));
         let derived = { added: 0, removed: 0, unchanged: 0, parcels: ids.length, parcelIds: ids, failed: [] };
         if (takes.length) {
@@ -2547,6 +2554,21 @@ const ProposalManager = {
         if (!store || !before || !edited) return [];
         const runtime = typeof window !== 'undefined' ? window : globalThis;
         return proposalClaims.editDependents(before, edited, _peekProposals(store), {
+            planOrder: runtime.__planOrder || null,
+            area: runtime.turf && typeof runtime.turf.area === 'function' ? runtime.turf.area : null,
+            isApplied: appliedOf
+        });
+    },
+
+    // Which applied records stand on the ground of `proposalId` and would have to cut the ground
+    // again on their own once it comes off the map (proposals/claims.js unapplyDependents), oldest
+    // first. Read-only: the unapply action names them and asks whether they come off too.
+    findUnapplyDependents(proposalId, options = {}) {
+        const store = _proposalStore(options);
+        const record = _getProposalRecord(proposalId, options);
+        if (!store || !record || !appliedOf(record)) return [];
+        const runtime = typeof window !== 'undefined' ? window : globalThis;
+        return proposalClaims.unapplyDependents(record, _peekProposals(store), {
             planOrder: runtime.__planOrder || null,
             area: runtime.turf && typeof runtime.turf.area === 'function' ? runtime.turf.area : null,
             isApplied: appliedOf
@@ -3474,10 +3496,16 @@ const ProposalManager = {
         const seed = _getProposalRecord(proposalId, opts);
         if (!seed) return false;
         if (!appliedOf(seed)) return true;
+        // `alsoUnapplyIds`: records standing on this one (findUnapplyDependents) the user chose to
+        // take off with it. They come off in the same transaction and their ground is rebuilt with it.
+        const alongside = (Array.isArray(opts.alsoUnapplyIds) ? opts.alsoUnapplyIds : [])
+            .map(id => _getProposalRecord(id, opts))
+            .filter(record => record && appliedOf(record) && String(record.proposalId) !== String(seed.proposalId));
+        const members = [seed, ...alongside];
         const startedAt = _now();
         const label = _getProposalApplyLabel(proposalId, seed);
         const kind = _proposalApplyKind(seed);
-        const scope = this._recordedCadastreScope([seed]);
+        const scope = this._recordedCadastreScope(members);
         let summary = null;
 
         _emitProposalProgress(opts.onProgress, {
@@ -3491,7 +3519,7 @@ const ProposalManager = {
         // Ground is a prerequisite, not a repair step. If it is unavailable, nothing — neither
         // the proposal record nor the live fabric nor the presenter — is committed.
         if (scope.cadastreParcelIds.length) {
-            await this._loadReplayGround([seed], {
+            await this._loadReplayGround(members, {
                 onProgress: opts.onProgress,
                 purpose: 'unapply',
                 _parcelMutation: opts._parcelMutation
@@ -3500,13 +3528,15 @@ const ProposalManager = {
             if ((profile.missingIds || []).length || Number(profile.unavailableMembers) > 0) return false;
         }
 
-        const stateChanged = await this._unapplyProposalTransactionBody(proposalId, {
-            ...opts,
-            deferSave: true
-        });
-        if (stateChanged !== true) return false;
+        for (const member of members) {
+            const stateChanged = await this._unapplyProposalTransactionBody(member.proposalId, {
+                ...opts,
+                deferSave: true
+            });
+            if (stateChanged !== true) return false;
+        }
 
-        summary = await this._rematerializeResolvedScope([seed], scope, {
+        summary = await this._rematerializeResolvedScope(members, scope, {
             ...opts,
             purpose: 'unapply',
             statusMode: 'rederive',
@@ -3515,8 +3545,8 @@ const ProposalManager = {
         if (!summary || summary.ok !== true) return false;
         store?.save?.();
         opts._parcelMutation.afterCommit(() => {
-            this._refreshUIAfterProposalChange(_getProposalRecord(proposalId));
-            console.info(`[unapplyProposal] Unapplied ${kind} ${label} — ${Math.round(_now() - startedAt)} ms`
+            members.forEach(member => this._refreshUIAfterProposalChange(_getProposalRecord(member.proposalId)));
+            console.info(`[unapplyProposal] Unapplied ${kind} ${label}${alongside.length ? ` and ${alongside.length} design(s) on it` : ''} — ${Math.round(_now() - startedAt)} ms`
                 + ` · ${scope.cadastreParcelIds.length} cadastral parcel(s)`
                 + ` · ${Number(summary?.fabric?.parcels) || 0} local live parcel piece(s)`);
         });

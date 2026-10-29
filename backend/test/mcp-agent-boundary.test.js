@@ -23,7 +23,7 @@ afterEach(async () => {
 });
 async function connect() {
     const directory = mkdtempSync(join(tmpdir(), 'mcp-agent-boundary-'));
-    const state = { directory, publishedDesigns: new Map(), publishedPlans: new Map(), pinned: new Map(), calls: [] };
+    const state = { directory, publishedDesigns: new Map(), publishedPlans: new Map(), calls: [] };
     fixtures.push(state);
     const tile = createCanvas(256, 256).toBuffer('image/png');
     const sources = Array.from({ length: 250 }, (_, index) => ({ id: `boundary-source-${index}`, label: `Fixture ground ${index}`, adapter: 'fixture', kind: 'default',
@@ -37,13 +37,9 @@ async function connect() {
         if (path === '/source-system') return Response.json({ abstractions: [{ id: 'parcels', contract: { operations: { byId: {}, under: {} } }, sources }] });
         if (path.startsWith('/parcel-sources/boundary-source-')) return Response.json({ complete: true, features: [{ type: 'Feature', id: 'P-1', properties: { parcelId: 'P-1' }, geometry: outline }] });
         if (path === '/designs/binding') return Response.json({ parcelSourceId: body.parcelSourceId || 'boundary-source-0', binding: { coverage: 'complete', unknownM2: 0, parcels: [{ parcelId: 'P-1' }] } });
-        if (path === '/pins') {
-            const bytes = Buffer.from(body.bytes, 'base64');
-            expect(cidOf(bytes)).toBe(body.cid); state.pinned.set(body.cid, bytes);
-            return Response.json({ cid: body.cid, pinnedAt: '2026-10-25T00:00:00.000Z' });
-        }
+        // Publication pins nothing: there is no /pins route here, and an unexpected route throws below.
         if (path === '/designs' && method === 'POST') {
-            expect(canonicalBytes(body.content)).toEqual(state.pinned.get(body.cid));
+            expect(cidOf(canonicalBytes(body.content))).toBe(body.cid);
             const row = { cid: body.cid, content: body.content, parcelSourceId: body.parcelSourceId };
             const status = state.publishedDesigns.has(body.cid) ? 409 : 201;
             state.publishedDesigns.set(body.cid, row); return Response.json(row, { status });
@@ -178,9 +174,12 @@ describe('hosted MCP agent acceptance boundary', () => {
         expect(reopened.untrusted.plan.designCids).toEqual([...state.publishedPlans.get(revised.cid).content.designCids]);
         const afterPublish = await ok('ugt_inspect_plan', { plan: published.url, filter: { kind: 'building' } });
         expect(afterPublish.items[0].floors).toBe(2); expect(afterPublish.items[0].untrusted.title).toBe('Final tower');
-        const pinCount = state.pinned.size;
+        const writes = () => state.calls.filter(row => row.method === 'POST' && ['/designs', '/plans'].includes(row.path));
+        expect(writes().map(row => row.path)).toEqual(['/designs', '/designs', '/plans']);
+        const writeCount = writes().length;
         expect((await ok('ugt_publish_plan', { plan: published.url, expectedCid: revised.cid, confirm: true })).url).toBe(published.url);
-        expect(state.pinned.size).toBe(pinCount);
+        expect(writes()).toHaveLength(writeCount);
+        expect(state.calls.some(row => row.path === '/pins')).toBe(false);
         const exported = await ok('ugt_export_draft', { draftRef: revised.draftRef });
         expect(exported.cid).toBe(revised.cid);
         expect(canonicalBytes(exported.artifact.untrusted.plan)).toEqual(canonicalBytes(revised.untrusted.plan));

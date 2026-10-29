@@ -72,7 +72,9 @@ export async function acceptanceFixtures({ apiBase, appOrigin, agreementCid, fet
         ugt_draft_agreement: { designs: [design], parcelSourceId, currency: row.content.money.currency, title: 'MCP acceptance draft', createdAt: authoredAt }
     };
     const constructionCases = [
-        ...['freeform', 'block', 'row', 'detached'].map(typology => ({ id: `building-${typology}`, tool: 'ugt_draft_building', arguments: { ...scope, typology, floors: 4, authoredAt } })),
+        // Row houses need two distinct parcels; on the one acceptance parcel they start from its outline, cut into row plots.
+        ...['freeform', 'block', 'row', 'detached'].map(typology => ({ id: `building-${typology}`, tool: 'ugt_draft_building', arguments: typology === 'row'
+            ? { city, parcelSourceId, outline: site, typology, floors: 4, authoredAt } : { ...scope, typology, floors: 4, authoredAt } })),
         { id: 'road', tool: 'ugt_draft_road', arguments: fixtures.ugt_draft_road },
         { id: 'track', tool: 'ugt_draft_track', arguments: fixtures.ugt_draft_track },
         ...['bus', 'tram', 'underground', 'elevated'].map(stationType => ({ id: `station-${stationType}`, tool: 'ugt_draft_station', arguments: {

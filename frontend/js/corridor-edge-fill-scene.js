@@ -142,6 +142,31 @@
         }));
     }
 
+    // A road placed into a parcel (docs/road-in-parcel.md): its site is its land, its lanes and edge
+    // strips are fitted inside it, and whatever they leave (the corners of its crossings, the
+    // ragged ends where the parcel's boundary cuts across a street) is paved footway. No parcels
+    // or buildings are read: the site alone says where the pavement ends.
+    function boundedRegions(definition, turf, options) {
+        const footprint = global.__corridorFootprint;
+        if (!footprint || typeof footprint.laneFootprintIn !== 'function') return [];
+        const frame = options.frame || footprint.frameForDefinition(definition);
+        let rest;
+        try {
+            const lanes = footprint.laneFootprintIn(definition, frame);
+            rest = turf.difference(turf.feature(definition.bound.site), turf.feature(lanes));
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [corridor-edge-fill] bounded road fill failed:`, error);
+            return [];
+        }
+        const geometry = rest && rest.geometry;
+        if (!geometry) return [];
+        const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : (geometry.type === 'MultiPolygon' ? geometry.coordinates : []);
+        return polygons
+            .map(coordinates => turf.polygon(coordinates))
+            .filter(part => turf.area(part) >= 0.5)
+            .map(part => ({ type: 'sidewalk', paving: 'paved', side: null, geojson: part }));
+    }
+
     // The filled footway of a corridor: `[{ type, paving, geojson }]`, one entry per fillable side
     // of each centerline segment. `options.segments` narrows it to a scope (the editor's), otherwise
     // the whole corridor is filled. Returns [] when nothing can be derived — no turf, no parcels
@@ -151,6 +176,7 @@
         const out = [];
         const turf = turfApi();
         if (!definition || !turf) return out;
+        if (definition.bound && definition.bound.site) return boundedRegions(definition, turf, options);
         if (typeof global.corridorEdgeFillSides !== 'function' || typeof global.corridorEdgeFillRegion !== 'function') return out;
         if (typeof global.corridorFeatureFromLatLngRing !== 'function' || typeof global.buildCorridorStripPolygon !== 'function') return out;
 

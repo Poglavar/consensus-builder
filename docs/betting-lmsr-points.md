@@ -27,8 +27,11 @@ The canonical kind 0 Solana market is sponsored by the agreement's sponsor. Its 
 are `b = 100_000_000` atomic units, `closes_at` equal to the on-chain agreement deadline, zero grace,
 and no per-position share cap (`max_position = 0`). These terms are verified by the backend reader.
 The ProposalMarket program was upgraded on Solana devnet on 26 October 2026 at slot
-`515120833`. Its downloaded executable matches the built LMSR artifact, including zero padding.
-See the [release evidence](betting-validation-2026-10-25.md#devnet-release-follow-up).
+`515120833`, in transaction
+[4qaab6jo…R7JCYrE](https://explorer.solana.com/tx/4qaab6joKfAmzUcntMQM5L5TgZNE22vRpBH1LmWUUAGZJVXxFT6mXVVe2bYsqWX3ZCB6Yc7XcM8Upc9UjR7JCYrE?cluster=devnet).
+The downloaded executable (SHA-256
+`77f9bdc34c8998cd77fa69c9e402c237e297bba471bca2a738204fd10d6c741a`) is the built LMSR artifact
+(`8404705555feeba6a4f78b942e94d6d9a69d1b699d5229320a403b2cee9d8a4f`) followed only by zero padding.
 This verifies deployment; it does not establish a completed public trade with the new instructions.
 
 The frontend release (`5c8e731e6`, deployed 25 October 2026 at 22:30:49 UTC) and backend

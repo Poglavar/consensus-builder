@@ -21,7 +21,8 @@ the live fabric and writes only `cadastreParcelIds`. Generated parcel IDs, gener
 formation receipts, demolition scans, and Leaflet layers are runtime output, never durable ancestry.
 
 A proposal record is admitted only when its canonical declaration is present, non-empty, and contains
-original cadastral IDs. A record with a missing, conflicting, aliased, or generated declaration is
+original cadastral IDs, or, since the open-ground work of 2026-10-02, when it declares a site without
+cadastral parcels ([vocabulary.md](vocabulary.md): site, binding, open ground is the current definition). A record with a missing, conflicting, aliased, or generated declaration is
 rejected: it is not added to the proposal store, cannot execute or replay, and is absent from the next
 normal save. Runtime code never repairs it or guesses its ground from geometry or an ID prefix.
 
@@ -2066,9 +2067,7 @@ overlap prefilter). Tests: `backend/test/parcels-under-geometry.test.js`,
 
 ## 16. Related notes
 
-- `feature-proposal-goals.md` — proposal typologies
 - `impact-resolver.md` — obstacle/impact handling on fabric changes
-- `advanced-readjustment.md` — reparcellization internals
 - Code: `frontend/js/proposals/plan-order.js` (pure: ancestry, ordering, formation, re-parent
   rewrite), `frontend/js/proposals/ownership-flow.js` (pure: ownership flow, effect fingerprint,
   consent validity), `frontend/js/proposals/dossier.js` (pure: §10 triage + remainder report),

@@ -335,8 +335,8 @@ describe('index.html wiring', () => {
         expect(scriptIndex('js/ui/search-model.js')).toBeLessThan(scriptIndex('js/ui/map-search.js'));
         expect(scriptIndex('js/world/world-coverage.js')).toBeLessThan(scriptIndex('js/ui/map-search.js'));
         expect(scriptIndex('js/ui/commands.js')).toBeLessThan(scriptIndex('js/ui/command-palette.js'));
-        expect(indexHtml).toContain("'css/map-search.css'");
-        expect(indexHtml).toContain("'css/command-palette.css'");
+        expect(scriptIndex('css/map-search.css'), 'css/map-search.css').toBeGreaterThan(-1);
+        expect(scriptIndex('css/command-palette.css'), 'css/command-palette.css').toBeGreaterThan(-1);
         expect(indexHtml).toMatch(/initializeMapShell\(\);\s*window\.MapSearch\.initialize\(\);\s*window\.CommandPalette\.initialize\(\);/);
     });
 
@@ -344,7 +344,8 @@ describe('index.html wiring', () => {
         for (const id of ['city-select', 'detect-city-button', 'locateParcelInput', 'locateParcelButton', 'locateParcelError']) {
             expect(indexHtml, id).not.toContain(`id="${id}"`);
         }
-        expect(indexHtml).toContain('id="command-palette-button"');
+        // The palette has no settings button since 7ed6200e9; Ctrl/Cmd-K and the search box open it.
+        expect(indexHtml).toContain('id="map-search-slot"');
     });
 });
 

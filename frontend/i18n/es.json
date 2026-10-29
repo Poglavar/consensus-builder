@@ -23,8 +23,7 @@
     },
     "workspace": {
         "blocked": {
-            "title": "Ya está abierto en otra pestaña",
-            "message": "Tu espacio de trabajo del mapa está abierto en otra pestaña. Cierra esa pestaña y vuelve a intentarlo aquí. Tu trabajo guardado seguirá aquí."
+            "title": "Ya está abierto en otra pestaña"
         },
         "unsupported": {
             "title": "Actualiza el navegador para continuar",
@@ -231,6 +230,7 @@
     },
     "proposalApproval": {
         "ownerLabel": "Propietario {{label}}",
+        "meterDistinctOwners": "Propietarios distintos que aprueban",
         "leaseholderLabel": "Arrendatario {{label}}",
         "authorityLabel": "Autoridad",
         "authorityLabelLettered": "Autoridad {{label}}",
@@ -244,6 +244,8 @@
             "vacuous": "No hay nadie a quien contar aquí, así que esta prueba no bloquea.",
             "heard": "Oídos, no se cuentan",
             "ownersHeard": "Los propietarios son oídos; decide la autoridad.",
+            "minimumOwners": "aprobación de al menos {{count}} propietarios distintos",
+            "areaConsent": "En las pruebas por superficie, una parcela o un arrendamiento solo cuenta cuando todos sus cotitulares computables lo aprueban.",
             "of": {
                 "headcount-owners-all": "de los propietarios",
                 "headcount-owners-private": "de los propietarios privados",
@@ -269,6 +271,182 @@
                 "area-leaseholders-private": "Superficie arrendada privada",
                 "area-owners-and-leaseholders-all": "Superficie en propiedad y en arriendo",
                 "area-owners-and-leaseholders-private": "Superficie privada en propiedad y en arriendo"
+            }
+        },
+        "dimensions": {
+            "rules": "Las reglas del esquema",
+            "labels": {
+                "initiator": "Quién lo inicia",
+                "decider": "Quién tiene la última palabra",
+                "support": "Apoyo de propietarios necesario",
+                "electorate": "Quién cuenta",
+                "dissenters": "Propietarios que dicen no",
+                "stage": "Qué permite aprobarlo",
+                "basis": "El suelo se reparte por",
+                "publicLand": "Suelo público sin compensación",
+                "levelling": "Diferencias",
+                "valueGain": "Plusvalía",
+                "minParties": "Propietarios distintos"
+            },
+            "groups": {
+                "decision": "Cómo se decide",
+                "distribution": "Cómo se reparte el suelo"
+            },
+            "stages": {
+                "agreement": "Acuerdo",
+                "initiative": "Iniciativa",
+                "association": "Asociación",
+                "plan": "Plan",
+                "execution": "Ejecución"
+            },
+            "supportLong": "Necesita {{tests}}.",
+            "stageLong": "Aprobarlo sirve para {{stage}}.",
+            "flowAuthority": "Después",
+            "compare": "Comparar todos los esquemas",
+            "values": {
+                "initiator": {
+                    "owners": {
+                        "short": "Los propietarios",
+                        "long": "Lo inician los propietarios."
+                    },
+                    "authority": {
+                        "short": "La autoridad",
+                        "long": "Lo inicia la autoridad."
+                    }
+                },
+                "decider": {
+                    "owners": {
+                        "short": "Solo los propietarios",
+                        "long": "El acuerdo de los propietarios es la decisión."
+                    },
+                    "owners-and-authority": {
+                        "short": "Propietarios y luego autoridad",
+                        "long": "Primero el apoyo de los propietarios, luego decide la autoridad."
+                    },
+                    "authority": {
+                        "short": "Solo la autoridad",
+                        "long": "Decide la autoridad; los propietarios son oídos."
+                    }
+                },
+                "support": {
+                    "none": {
+                        "short": "Sin votación",
+                        "long": "Los propietarios no votan."
+                    }
+                },
+                "electorate": {
+                    "none": {
+                        "short": "Nadie",
+                        "long": "No se cuenta a nadie; los propietarios son oídos."
+                    },
+                    "owners": {
+                        "short": "Todos los propietarios",
+                        "long": "Se cuenta a los propietarios.",
+                        "private": {
+                            "short": "Solo propietarios privados",
+                            "long": "Se cuenta a los propietarios privados; los titulares públicos quedan fuera."
+                        }
+                    },
+                    "owners-and-leaseholders": {
+                        "short": "Propietarios y arrendatarios",
+                        "long": "Se cuenta a propietarios y arrendatarios.",
+                        "private": {
+                            "short": "Solo propietarios y arrendatarios privados",
+                            "long": "Se cuenta a propietarios y arrendatarios privados; los titulares públicos quedan fuera."
+                        }
+                    }
+                },
+                "dissenters": {
+                    "veto": {
+                        "short": "Veto",
+                        "long": "Cada propietario puede bloquearlo."
+                    },
+                    "bound-by-majority": {
+                        "short": "Obligados por la mayoría",
+                        "long": "Con el apoyo reunido y la aprobación de la autoridad, los propietarios que dijeron no quedan obligados."
+                    },
+                    "bound-by-authority": {
+                        "short": "Obligados por la autoridad",
+                        "long": "La decisión de la autoridad obliga a todos los propietarios."
+                    }
+                },
+                "basis": {
+                    "area": {
+                        "short": "Superficie",
+                        "long": "Las nuevas parcelas se reparten por superficie."
+                    },
+                    "value": {
+                        "short": "Valor",
+                        "long": "Las nuevas parcelas se reparten por valor del suelo."
+                    },
+                    "either": {
+                        "short": "Superficie o valor",
+                        "long": "Las nuevas parcelas se reparten por superficie o por valor del suelo; las partes eligen."
+                    }
+                },
+                "publicLand": {
+                    "none": {
+                        "short": "Sin tope",
+                        "long": "El esquema no fija tope; las partes acuerdan cuánto pasa a ser suelo público."
+                    },
+                    "owner": {
+                        "short": "≤ {{percent}} % por propietario",
+                        "long": "Cada propietario cede como máximo el {{percent}} % de su suelo para uso público sin compensación.",
+                        "area": {
+                            "short": "≤ {{percent}} % por propietario (por superficie)",
+                            "long": "Repartido por superficie, cada propietario cede como máximo el {{percent}} % de su suelo para uso público sin compensación."
+                        }
+                    },
+                    "pool": {
+                        "short": "≤ {{percent}} % del conjunto",
+                        "long": "Como máximo el {{percent}} % del suelo aportado pasa a ser suelo público y costes sin compensación."
+                    }
+                },
+                "levelling": {
+                    "money": {
+                        "short": "En dinero",
+                        "long": "Lo que un propietario recupera por encima o por debajo de lo que le corresponde se liquida en dinero."
+                    }
+                },
+                "valueGain": {
+                    "none": {
+                        "short": "—",
+                        "long": "No aplica: el suelo se reparte por superficie."
+                    },
+                    "kept": {
+                        "short": "Queda en suelo",
+                        "long": "Los propietarios conservan la plusvalía en su nuevo suelo."
+                    },
+                    "all": {
+                        "short": "Toda en dinero",
+                        "long": "Toda la plusvalía de cada propietario se liquida en dinero."
+                    },
+                    "share": {
+                        "short": "{{percent}} % en dinero",
+                        "long": "El {{percent}} % de la plusvalía de cada propietario se liquida en dinero; el resto queda en suelo."
+                    }
+                },
+                "minParties": {
+                    "any": {
+                        "short": "Cualquier número",
+                        "long": "No hay un mínimo de propietarios distintos."
+                    },
+                    "some": {
+                        "short": "Al menos {{count}}",
+                        "long": "Al menos {{count}} propietarios distintos de las parcelas de entrada deben aprobar."
+                    }
+                }
+            },
+            "outcome": {
+                "givesUp": "cede el {{percent}} %",
+                "gains": "gana el {{percent}} %",
+                "pool": "El {{given}} % del conjunto no vuelve a los propietarios; el tope es el {{limit}} %.",
+                "owed": "A cada propietario le corresponde el suelo que aporta; el dinero liquida la diferencia entre eso y el suelo que recupera.",
+                "floor": "Mínimo de retorno con el tope",
+                "exampleCap": "Tres propietarios de ejemplo que ceden lo máximo que permite el esquema. Con un plan abierto, el gráfico muestra sus partes.",
+                "exampleNoCap": "Tres propietarios de ejemplo que ceden una cuarta parte de su suelo: el esquema no fija tope. Con un plan abierto, el gráfico muestra sus partes.",
+                "owedContribution": "A cada propietario le corresponde el suelo que aporta menos la cesión del {{percent}} % sin compensación; el dinero liquida la diferencia entre eso y el suelo que recupera.",
+                "owedValue": "A cada propietario le corresponde una parte del valor del nuevo suelo igual al valor que aporta; el dinero liquida la diferencia entre eso y el valor del suelo que recupera."
             }
         },
         "regime": {
@@ -304,14 +482,15 @@
                 "capPoolUnknown": "Se desconoce la superficie del conjunto, así que no se puede comprobar el límite del {{limit}}.",
                 "capPoolOk": "El {{given}} del conjunto no vuelve a los propietarios; el límite es {{limit}}.",
                 "capPoolOver": "El {{given}} del conjunto no vuelve a los propietarios, por encima del límite del {{limit}}.",
-                "partiesOk": "{{actual}} partes aportan suelo; el esquema exige al menos {{required}}.",
-                "partiesFew": "Partes que aportan suelo: solo {{actual}}; el esquema exige al menos {{required}}.",
+                "partiesOk": "El terreno tiene {{actual}} propietarios distintos; al menos {{required}} deben aprobar.",
+                "partiesFew": "El terreno solo tiene {{actual}} propietarios distintos; el esquema exige al menos {{required}}.",
+                "partiesUnknown": "Carga la información completa de titularidad para comprobar el mínimo de {{required}} propietarios distintos.",
                 "proposerNone": "No se asigna suelo a ningún proponente.",
                 "proposerOver": "{{area}} m² irían a un proponente; con este esquema, el suelo vuelve a sus propietarios o se destina a uso público."
             },
             "valueGainAll": "Si se reparte por valor, cada propietario recupera íntegramente el valor que aporta; toda la plusvalía se liquida en dinero.",
             "valueGainShare": "Si se reparte por valor, se liquida en dinero el {{percent}} % de la plusvalía de cada propietario.",
-            "minParties": "Al menos {{count}} partes aportan suelo.",
+            "minParties": "Al menos {{count}} propietarios distintos de las parcelas de entrada deben aprobar.",
             "noProposer": "El suelo vuelve a sus propietarios o se destina a uso público; un proponente no puede adquirirlo."
         },
         "authority": {
@@ -448,6 +627,7 @@
             "contributes": "Su aportación diseño",
             "conditions": "Condiciones",
             "progress": "Progreso",
+            "minimumOwners": "Se necesitan {{count}} aprobaciones de propietarios distintos",
             "yourShare": "Tu cuota {{share}}",
             "coOwnedWith": "en copropiedad con {{owners}}",
             "openUntil": "Abierta hasta el {{date}}",
@@ -628,21 +808,12 @@
             "guide": {
                 "open": "Cómo funciona este esquema…",
                 "checked": "Reglas revisadas el {{date}}",
-                "distribution": "Cómo se reparte el suelo",
-                "before": "Suelo aportado",
-                "after": "Suelo tras el reajuste",
-                "schematicOwnerCap": "Cada propietario cede como máximo el {{percent}} % de su suelo para uso público sin compensación y recupera una parcela; cualquier diferencia adicional se liquida en dinero.",
-                "schematicPoolCap": "Hasta el {{percent}} % del conjunto se destina a equipamientos públicos y costes sin compensación; las partes se reparten el resto, y las diferencias se liquidan en dinero.",
-                "schematicValue": "Cada propietario recupera una parte del nuevo suelo que vale lo que aportó; el suelo público reduce esa parte por igual para todos, y las diferencias se liquidan en dinero.",
-                "schematicNone": "Las partes acuerdan qué recupera cada una; el esquema no fija ningún límite al suelo público, y las diferencias se liquidan en dinero.",
-                "example": "Tres propietarios de ejemplo; con un plan abierto, las barras muestran sus partes.",
                 "against": "Este acuerdo frente al esquema",
                 "getsBack": "Recupera",
-                "givesUp": "Cede",
                 "fixes": "Qué haría falta para cumplirlo",
                 "fixBasisValue": "En Reglas, elige «Equilibrar diferencias de valor del suelo con dinero» en Compensación y luego introduce un valor por m² para cada parcela de entrada y cada porción resultante.",
                 "fixBasisArea": "En Reglas, elige «Equilibrar diferencias de terreno con dinero» en Compensación.",
-                "fixParties": "Partes que aportan suelo: {{actual}}; este esquema exige {{required}}. Elige un plan que abarque más parcelas u otro esquema.",
+                "fixParties": "{{actual}} propietarios distintos tienen el terreno; este esquema exige {{required}}. Comprueba el archivo de titularidad o elige terrenos con suficientes propietarios distintos.",
                 "fixProposer": "En Parcelas resultantes, asigna las porciones del proponente a un propietario o a Suelo público.",
                 "fixCapOwner": "En Parcelas resultantes, devuelve a {{owner}} al menos {{area}} más de suelo, o reduce la Contribución de terreno; otra opción es un esquema con un límite más alto.",
                 "fixCapOwnerPlain": "En Parcelas resultantes, devuelve más suelo a {{owner}}.",
@@ -850,6 +1021,11 @@
         "fr": "Français",
         "pt": "Português"
     },
+    "urbanRule": {
+        "balconies": "Balcones",
+        "balconyDepth": "Pueden sobresalir de la envolvente (m):",
+        "slantedRoof": "Tejado inclinado con ático"
+    },
     "common": {
         "maxFloors": "Máximo de plantas:",
         "minFloors": "Pisos mínimos:",
@@ -943,8 +1119,6 @@
             "linkLabel": "Enlace al diseño publicado",
             "errors": {
                 "cidMismatch": "El servidor calculó una identidad distinta para este diseño, así que no se publicó nada.",
-                "pinningUnconfigured": "Este servidor aún no puede fijar diseños publicados (la fijación no está configurada).",
-                "layoutNeedsAgreement": "Un trazado de parcelas se publica junto con el acuerdo que regula su suelo.",
                 "tooLarge": "Este diseño supera el límite de publicación de 10 MiB. Reduce su extensión o detalle antes de compartirlo; está guardado localmente.",
                 "invalidDesign": "Este diseño contiene datos no válidos. Corrígelos antes de compartirlo.",
                 "rateLimitedFor": "Demasiadas publicaciones por ahora. Inténtalo de nuevo en unos {{minutes}} min.",
@@ -978,8 +1152,7 @@
                 "listing": "Listando {{done}}/{{total}} diseños…",
                 "checking": "Comprobando {{done}}/{{total}} diseños…",
                 "publishSelected": "Publicar diseños seleccionados",
-                "selectionCount": "{{selected}} de {{total}} diseños incluidos · {{excluded}} excluidos",
-                "layoutNeedsAgreement": "{{title}} se publica con su acuerdo. Crea un acuerdo que lo incluya o desmárcalo para compartir los otros diseños."
+                "selectionCount": "{{selected}} de {{total}} diseños incluidos · {{excluded}} excluidos"
             },
             "route": {
                 "fetching": "Obteniendo los diseños compartidos…",
@@ -1223,10 +1396,6 @@
         "stations": {
             "title": "Estaciones",
             "placeTitle": "Colocar una estación",
-            "bus": "Estación de carretera",
-            "tram": "A nivel del suelo",
-            "underground": "Subterránea",
-            "elevated": "Estación elevada",
             "cancel": "Cancelar colocación",
             "hint": "Las estaciones ferroviarias se ajustan a las vías. Las de autobús se ajustan al lado de la carretera elegido."
         },
@@ -1290,7 +1459,6 @@
             "mintedAgreementsButton": "Acuerdos en cadena",
             "clearButton": "Restablecer diseños (este navegador)",
             "planStats": {
-                "buttonLabel": "Estadísticas del plan",
                 "calculating": "Calculando…",
                 "modalTitle": "Estadísticas del plan",
                 "planArea": "Superficie del plan (m²)",
@@ -1323,7 +1491,7 @@
                 "colFloorArea": "sup. m²",
                 "colApartments": "viviendas",
                 "colPeople": "habitantes",
-                "noEpoch": "sin periodo",
+                "noPeriod": "sin periodo",
                 "scope": "{{title}} · Diseños: {{counted}}",
                 "noteUnmeasured": "{{n}} de {{total}} edificios no indican altura — su superficie no se contabiliza.",
                 "noteParcelArea": "El tamaño medio de parcela se calcula sobre las {{measured}} parcelas cuya forma está cargada; {{missing}} se cuentan pero no se miden.",
@@ -1545,8 +1713,9 @@
                 "lake": "Lago",
                 "transport": "Transporte",
                 "road": "Carretera",
+                "roadInParcel": "Calle en parcela",
+                "roadInParcelTooltip": "Ajusta una calle a esta parcela: sus carriles llenan el ancho y no se toma nada fuera de ella",
                 "track": "Vía férrea",
-                "busStation": "Estación de carretera",
                 "tramStation": "Estación a nivel del suelo",
                 "undergroundStation": "Estación subterránea",
                 "elevatedStation": "Estación elevada",
@@ -1714,6 +1883,12 @@
                 "restoringGround": "Restaurando el terreno local…",
                 "saving": "Guardando…",
                 "unappliedStatus": "El diseño «{{name}}» se retiró del mapa y permanece en la lista.",
+                "dependents": {
+                    "title": "Diseños construidos sobre este",
+                    "message": "Sobre «{{name}}» se apoyan: {{names}}. ¿Retirarlos también del mapa o dejarlos? Si se quedan, cada uno vuelve a ocupar su terreno por sí mismo.",
+                    "all": "Retirar todos",
+                    "leave": "Dejarlos en el mapa"
+                },
                 "remove": "Retirar del mapa",
                 "includedInRoad": "Incluida en la vía combinada",
                 "includedInRoadHint": "Quita {{name}} del mapa para restaurar esta vía.",
@@ -1907,8 +2082,7 @@
             },
             "forkedFrom": "Derivado de {{cid}}",
             "tabs": {
-                "overview": "Resumen",
-                "details": "Detalles"
+                "overview": "Resumen"
             }
         },
         "block": {
@@ -2020,6 +2194,10 @@
             "edgeActionsProtectedHint": "No se puede añadir un nodo en una rampa, un túnel o un tramo a distinto nivel · × Demoler este tramo",
             "addNodeProtectedStatus": "No se puede añadir un nodo en una rampa, un túnel o un tramo a distinto nivel.",
             "editRevertedStatus": "No se pudo completar ese cambio de la vía — revertido.",
+            "editRevertedReason": "No se pudo completar ese cambio de la vía — revertido: {{reason}}",
+            "boundedSplit": "Una calle en una parcela sigue siendo una sola red conectada: ocupa toda la parcela. Deshaz el cambio, o borra la calle y vuelve a colocarla.",
+            "boundedTooWide": "Estos carriles necesitan {{required}} m y la parcela deja {{available}} m aquí. Elige menos carriles o más estrechos.",
+            "boundedOutside": "Una calle en una parcela se queda dentro de esa parcela. Devuelve el punto a ella.",
             "splitIntoStretches": "La edición desconectó la vía — se dividió en {{count}} diseños de vía separadas.",
             "applyingEdit": "Aplicando…",
             "buildingRoad": "Construyendo la vía…",
@@ -2749,19 +2927,7 @@
                     "inMemory": "En memoria",
                     "awaitingFunding": "A la espera de financiación"
                 },
-                "downloadConfirm": "El diseño no está en el almacenamiento local. ¿Descargar?",
-                "epoch": {
-                    "rowLabel": "Época del plan",
-                    "none": "Sin época",
-                    "custom": "Otro año…",
-                    "customPrompt": "Año de la línea de tiempo (2026–2966):",
-                    "saveError": "No se pudo guardar la época.",
-                    "timelineLabel": "Línea de tiempo",
-                    "all": "Todas",
-                    "cumulative": "Acumulado hasta {year}.",
-                    "toApply": "por aplicar: {n}",
-                    "toUnapply": "por quitar: {n}"
-                }
+                "downloadConfirm": "El diseño no está en el almacenamiento local. ¿Descargar?"
             },
             "proposalChoice": {
                 "title": "Elegir diseño",
@@ -3290,8 +3456,35 @@
             }
         }
     },
+    "roadInParcel": {
+        "hint": "Los carriles van por el centro de cada calle y caben en su parte más estrecha; aceras y franjas verdes llenan el resto. No se toma nada fuera de este terreno.",
+        "turn": "Girar 90°",
+        "place": "Colocar calle",
+        "summary": "Calles: {{streets}} · parcelas: {{parcels}}",
+        "group": {
+            "label": "{{count}} × {{width}} m"
+        },
+        "preset": {
+            "automatic": "Automático",
+            "label": "Carriles: {{lanes}}, {{width}} m"
+        },
+        "issue": {
+            "notGrid": "Este terreno no se lee como calles rectas. Dibuja la calle a mano con la herramienta Calle.",
+            "disconnected": "Partes de este terreno no se conectan como una sola red de calles. Selecciónalas por separado.",
+            "tooNarrow": "Aquí una calle mide {{width}} m de ancho, demasiado estrecha para un carril.",
+            "tooWide": "Los carriles elegidos para las calles de {{width}} m necesitan {{required}} m con sus aceras.",
+            "skipped": "Los trozos que no se leen como calles rectas quedan como están: {{count}}."
+        },
+        "failed": "No se pudo colocar la calle: {{reason}}",
+        "done": "Calles colocadas en la parcela: {{count}}.",
+        "donePartly": "Calles colocadas en la parcela: {{count}}. Sin colocar: {{failed}}",
+        "noParcel": "Selecciona primero la parcela reservada para la calle.",
+        "taken": "Una calle o vía ya ocupa este terreno. Quítala del mapa primero o selecciona otras parcelas.",
+        "joinFailed": "Las parcelas seleccionadas no se pudieron unir en un solo terreno.",
+        "roadName": "Calles",
+        "description": "Calles ajustadas al terreno reservado para ellas."
+    },
     "parcelLayout": {
-        "publishWithAgreement": "Una distribución de parcelas se publica con su acuerdo. Propón un acuerdo que la incluya.",
         "editor": {
             "title": "Trazar parcelas",
             "mapHint": "Dibuja aquí las parcelas. Quién recibe cada parcela se decide después, en el acuerdo.",
@@ -6003,6 +6196,7 @@
                 "donate": "Donó",
                 "pledge": "Comprometió",
                 "stake": "Apuesta",
+                "sell": "Vendió apuesta",
                 "createMarket": "Abrió mercado",
                 "resolve": "Resolvió mercado",
                 "claim": "Cobró ganancias",
@@ -6285,7 +6479,6 @@
             "title": "Publica antes de caminar",
             "intro": "Estos diseños aplicados aún no están publicados. La vista de paseo carga solo diseños publicados, así que se publican primero. El diálogo se cierra y el paseo empieza en cuanto todos estén publicados.",
             "publishAll": "Publicar todos",
-            "layoutSkipped": "Una distribución de parcelas se publica con su acuerdo, así que el paseo sigue sin ella.",
             "openFailed": "No se pudo abrir el diálogo de publicación."
         },
         "sun": {
@@ -6305,6 +6498,30 @@
         }
     },
     "structureEditor": {
+        "hintEnclosure": "Haz clic para trazar una zona vallada y luego haz clic en su primer punto o elige Terminar zona. Haz clic en una valla para elegir su tipo y uso; arrastra sus puntos para cambiar su forma.",
+        "hintGate": "Haz clic en una valla para poner una puerta; haz clic en una puerta para quitarla.",
+        "statusLastGate": "Una zona vallada conserva al menos una puerta.",
+        "statusGateOffFence": "Haz clic en una valla para poner una puerta.",
+        "enclosure": {
+            "fencePark": "Vallar todo el parque",
+            "title": "Zona vallada seleccionada",
+            "fence": "Valla",
+            "use": "Uso",
+            "remove": "Quitar zona vallada",
+            "fenceRail": "Barandilla baja",
+            "fenceMesh": "Malla",
+            "fenceIron": "Hierro forjado",
+            "fencePlinth": "Hierro sobre ladrillo",
+            "useNone": "Abierta",
+            "useDog": "Zona para perros",
+            "usePlay": "Zona de juegos",
+            "summary": "{{area}}, puertas: {{gates}}",
+            "drawn": "Zona vallada",
+            "wholePark": "Valla alrededor de todo el parque",
+            "finish": "Terminar zona",
+            "vertexTitle": "Arrastra para cambiar la forma de la zona vallada",
+            "deleteVertexTitle": "Eliminar este punto de la valla"
+        },
         "furniture": {
             "title": "Modelos de mobiliario",
             "upload": "Subir",
@@ -6340,6 +6557,11 @@
         "instructions": "Elige un elemento y luego haz clic dentro del límite. Arrastra cualquier elemento para moverlo.",
         "closeLabel": "Cerrar",
         "tools": {
+            "swing": "Columpio",
+            "seesaw": "Balancín",
+            "slide": "Tobogán",
+            "enclosure": "Zona vallada",
+            "gate": "Puerta",
             "lamp": "Farola",
             "tree": "Árbol",
             "flowerbed": "Parterre",
@@ -6398,9 +6620,7 @@
         "moveHint": "Arrastra la huella de la estación o el marcador central para cambiarla de lugar. El tipo, tamaño, rotación y altura del andén se mantienen.",
         "dragCenter": "Arrastra para mover la estación",
         "undo": "Deshacer",
-        "trackStation": "Estación ferroviaria",
         "groundLevel": "A nivel del suelo",
-        "elevated": "Estación elevada",
         "underground": "Subterránea",
         "cancel": "Cancelar"
     },
@@ -6633,7 +6853,8 @@
                 "donate": "Donación realizada",
                 "pledge": "Compromiso realizado",
                 "fulfillPledge": "Compromiso cumplido",
-                "claim": "Ganancias reclamadas"
+                "claim": "Ganancias reclamadas",
+                "sell": "Apuesta vendida"
             },
             "bet": {
                 "yes": "Apuesta de {{amount}} a sí",
@@ -6908,7 +7129,6 @@
         },
         "errors": {
             "importDisconnected": "El archivo contiene áreas separadas. Un sitio debe ser un área conectada.",
-            "importInvalid": "Este archivo no es un polígono GeoJSON en longitud/latitud.",
             "tooFew": "Un sitio necesita al menos tres vértices.",
             "tooMany": "Un sitio puede tener como máximo 500 vértices.",
             "selfIntersecting": "El contorno se cruza consigo mismo; mueve un vértice para evitarlo.",
@@ -7060,6 +7280,7 @@
         "unsupportedCrs": "Este WMS necesita un sistema de coordenadas geográfico o Web Mercator compatible."
     },
     "parcelSourceHealth": {
+        "notIntegrated": "Las parcelas llegaron, pero no se pudieron añadir al mapa.",
         "countryRestricted": "Este registro solo acepta conexiones desde {{country}}. Fuera de ese país, continúa sin parcelas o elige otra fuente.",
         "requestTimedOut": "Se agotó el tiempo de espera de la solicitud.",
         "offline": "Parece que no tienes conexión. Conéctate a internet y vuelve a intentarlo.",
@@ -7247,6 +7468,13 @@
     },
     "bets": {
         "tagline": "Apuesta por las ciudades",
+        "pitchLink": "Lee la presentación de Hyperstition",
+        "scope": {
+            "city": "Esta ciudad",
+            "worldPending": "Apuestas del mundo",
+            "world": "Apuestas del mundo ({{count}})",
+            "worldEmpty": "Aún no hay apuestas en otras ciudades."
+        },
         "intro": "Apuesta con puntos sin cartera o con USDC de devnet conectando una cartera. Ambos son dinero de juego sin valor en efectivo.",
         "loading": "Cargando apuestas…",
         "emptyAgreements": "Aún no hay mercados en esta ciudad. Acuña un acuerdo con fecha límite para abrir el primero.",
@@ -7468,6 +7696,13 @@
         }
     },
     "agreement": {
+        "outcomes": {
+            "owners": "Propietarios de las parcelas de entrada",
+            "none": "Propietarios sin porción",
+            "several": "Propietarios con varias porciones",
+            "noneList": "Sin porción:",
+            "severalList": "Varias porciones:"
+        },
         "dialog": {
             "titleCreate": "Crear acuerdo",
             "titleEdit": "Editar acuerdo",
@@ -7477,6 +7712,7 @@
             "save": "Guardar acuerdo"
         },
         "sections": {
+            "pieces": "Suelo resultante",
             "consultation": "Acuerdo no vinculante",
             "land": "Suelo",
             "allocation": "Asignación",
@@ -7587,17 +7823,19 @@
             "openGround": "Parte del suelo es terreno abierto sin propietario registrado."
         },
         "panel": {
+            "plan": "Plan del acuerdo",
             "title": "Acuerdo",
             "untitled": "Acuerdo del {{date}}",
             "status": {
-                "current": "Coincide con el mapa",
-                "stale": "Ya no coincide con el mapa",
+                "stale": "No coincide con el mapa: {{reasons}}. Antes / Después necesita que coincida.",
+                "staleDraft": "No coincide con el mapa: {{reasons}}. Proponer y Antes / Después necesitan que coincida.",
                 "error": "No se pudo comprobar el acuerdo con el mapa: {{reason}}",
                 "reasons": {
                     "designMissing": "se eliminó un diseño",
-                    "designNotApplied": "un diseño ya no está aplicado",
+                    "designNotApplied": "un diseño no está aplicado",
                     "designChanged": "un diseño cambió",
-                    "groundChanged": "el terreno cambió"
+                    "groundChanged": "el terreno cambió",
+                    "unknown": "el mapa cambió"
                 }
             },
             "ledgerHeading": "Balance",
@@ -7617,8 +7855,7 @@
             },
             "collapse": "Cerrar acuerdo",
             "removeLocalConfirm": "¿Quitar este acuerdo de este dispositivo? Sus diseños permanecen en el mapa. El acuerdo publicado sigue disponible a través de su enlace.",
-            "compareUnavailable": "Antes / después está disponible cuando el acuerdo coincide con los diseños aplicados en el mapa.",
-            "designs": "Diseños de este plan"
+            "designs": "Diseños del plan"
         },
         "list": {
             "create": "Crear acuerdo",
@@ -7657,7 +7894,6 @@
                     "other": "El servidor no tiene {{count}} de los diseños del acuerdo, así que no se propuso."
                 },
                 "inputsDifferFromBinding": "El suelo del acuerdo no es el que sus diseños ocupan en el servidor ({{parcels}}). Edita el acuerdo en el mapa actual y vuelve a proponerlo.",
-                "pinningUnconfigured": "Este servidor aún no puede fijar acuerdos publicados (la fijación no está configurada).",
                 "deadlinePast": "El plazo del acuerdo ya ha pasado. Edita el plazo y vuelve a proponerlo.",
                 "refused": "El servidor rechazó este acuerdo: {{reason}}",
                 "notACid": "Este no es un enlace de acuerdo.",
@@ -7797,14 +8033,18 @@
         "plan": {
             "untitled": "Plan sin título"
         },
+        "party": {
+            "parcelOwners": "Propietario(s) de la parcela {{parcelId}}"
+        },
         "workflow": {
+            "personsByRights": "Personas según los derechos de propiedad",
+            "personsUnresolved": "Sin derechos de propiedad completos, los propietarios de {{count}} parcela(s) siguen siendo una sola parte.",
             "choosePlan": "Elegir un plan guardado",
             "noPlans": "Primero crea un plan. Abre Planes y elige Crear plan.",
             "savePlan": "Guardar plan en este dispositivo",
             "planSaved": "Plan guardado en este dispositivo. Ya puedes crear su acuerdo.",
             "applyPlan": "Aplicar diseños del plan",
             "planNotApplied": "Aplica todos los diseños de este plan guardado antes de consultar el terreno.",
-            "rules": "Reglas",
             "inputs": "Parcelas de entrada",
             "outputs": "Parcelas resultantes",
             "persons": "Personas",
@@ -7847,7 +8087,9 @@
             "right": "Derecha",
             "swap": "Intercambiar lados",
             "sliderLabel": "Divisor de comparación",
-            "modelOnly": "Abre la vista de modelo para dibujar la comparación.",
+            "reading": "{{label}} (leyendo…)",
+            "unreadable": "{{label}} (no se pudo leer: {{reason}})",
+            "mapNote": "En el mapa, cada lado dibuja sus propios edificios y el volumen permitido como huellas; un plan no aplicado dibuja también sus calles y espacios como huellas. Las parcelas y las calles y parques aplicados se ven en ambos lados.",
             "options": {
                 "built": "Construido hoy",
                 "permitted": "Volumen permitido",
@@ -7891,7 +8133,8 @@
             "empty-supported-bound": "Sin espacio dentro de los retranqueos disponibles",
             "unsupported-parcel-shape": "Forma de parcela no compatible",
             "study-multiple-zoning-areas": "Varias áreas urbanísticas en una parcela",
-            "study-zoning-missing": "Sin fuente urbanística para la parcela"
+            "study-zoning-missing": "Sin fuente urbanística para la parcela",
+            "status-not-configurable": "El estado registrado no da una altura edificable"
         },
         "refreshPending": "Pendiente de actualización",
         "refreshCount": {
@@ -7946,6 +8189,7 @@
             "sideSetback": "Retiro lateral mínimo",
             "rearSetback": "Retiro posterior mínimo",
             "height": "Altura máxima",
+                "storeys": "Pisos máximos",
             "lotArea": "Superficie mínima de parcela"
         },
         "photoNote": "Explora los volúmenes permitidos en el mapa o en el modelo 3D.",
@@ -8017,7 +8261,8 @@
             "accessory": "Vivienda accesoria",
             "plannedresidential": "Residencial planificado",
             "cached-calculation": "Cálculo guardado",
-            "new-attached-multifamily": "Nueva vivienda multifamiliar adosada"
+            "new-attached-multifamily": "Nueva vivienda multifamiliar adosada",
+            "general": "General (mapa de tratamientos)"
         },
         "evidence": {
             "direct": "Valor directo de la fuente",
@@ -8212,6 +8457,9 @@
         "chooseSharePlan": "¿Qué plan quieres compartir?"
     },
     "clickStackRelations": {
+        "designParcels": "Parcelas",
+        "formedParcelsTab": "Parcelas resultantes",
+        "affectsParcelsTab": "Parcelas de entrada",
         "affectedBy": "Afectado por el diseño:",
         "memberPlans": "Incluido en planes:",
         "includedDesigns": "Diseños:",
@@ -8395,7 +8643,35 @@
         "countryNone": "No se identificó una fuente nacional",
         "countryUnchecked": "No hay un hallazgo nacional completo"
     },
+    "buildout": {
+        "summaryUndated": "{{construction}} en construcción, {{planned}} sin empezar, {{undated}} sin fechas (se muestran construidos)",
+        "reroll": "Otra construcción simulada",
+        "open": "Construcción en el tiempo",
+        "close": "Volver a hoy",
+        "back": "Mes anterior",
+        "forward": "Mes siguiente",
+        "play": "Reproducir",
+        "pause": "Pausar",
+        "month": "Mes",
+        "simulation": "Construcción simulada",
+        "simulationBadge": "Simulación",
+        "summary": "{{construction}} en construcción, {{planned}} sin empezar",
+        "underConstruction": "En construcción, {{percent}} % construido"
+    },
     "planDialog": {
+        "scheduleUndated": "Sin fechas (se muestran construidos)",
+        "simulate": "Simular construcción",
+        "simulateNothing": "Todos los diseños de este plan ya tienen fechas.",
+        "schedule": "Calendario de obras",
+        "scheduleTitle": "Calendario de obras: {{title}}",
+        "scheduleHint": "Indica cuándo se construye cada diseño. Al guardar se crea una nueva revisión del plan; el reloj de arena del mapa la reproduce.",
+        "scheduleEmpty": "Aún no hay fechas de obra.",
+        "scheduleStart": "Inicio",
+        "scheduleEnd": "Fin",
+        "scheduleClear": "Quitar fechas",
+        "saveSchedule": "Guardar calendario",
+        "scheduleSaved": "Calendario de obras guardado como nueva revisión del plan.",
+        "scheduleInvalid": "Introduce meses entre {{first}} y {{last}}, con cada inicio no posterior a su fin.",
         "plan": "Plan",
         "savedPlans": "Planes guardados",
         "createPlan": "Crear plan",
@@ -8523,15 +8799,16 @@
     "lists": {
         "title": "Listas",
         "plans": "Planes",
-        "thisBrowser": "Este navegador",
         "source": "Origen",
         "search": "Buscar en elementos cargados",
         "byTitle": "Título",
         "newest": "Más recientes primero",
         "remove": "Eliminar del navegador",
         "removeConfirm": "¿Eliminar «{{title}}» de este navegador? Los enlaces publicados y los demás registros seguirán disponibles.",
-        "continue": "Continuar",
         "select": "Seleccionar {{title}}",
+        "open": "Abrir",
+        "openNamed": "Abrir {{title}}",
+        "noPlace": "Esto no tiene lugar en el mapa.",
         "agreementHint": "Crea un acuerdo a partir de un plan en la pestaña Planes.",
         "proposeFirst": "Abre el acuerdo para revisarlo y proponerlo antes de compartirlo.",
         "loading": "Cargando…",
@@ -8577,7 +8854,8 @@
     "basisCompared": "Todos los planes comparados",
     "measuring": "Midiendo…",
     "landDefinition": "El suelo público son las calles y los parques y plazas de OpenStreetMap; el privado es el resto de las parcelas. El estado actual cuenta cada edificio existente en ese suelo; un plan cuenta, junto a los nuevos, los existentes que sus diseños no eliminan.",
-    "noBasis": "No hay ningún plan guardado del que tomar el suelo."
+    "noBasis": "No hay ningún plan guardado del que tomar el suelo.",
+    "sideBySide": "Lado a lado en el mapa"
   },
     "cameraFlight": {
         "sound": "Sonido",
@@ -8604,15 +8882,12 @@
         "pause": "Pausar",
         "stop": "Detener",
         "share": "Compartir vuelo",
-        "undo": "Deshacer",
-        "redo": "Rehacer",
         "overview": "Vista general",
         "camera": "Vista de cámara",
         "route": "Recorrido",
         "viewNumber": "Vista {{number}}",
         "moveUp": "Mover antes",
         "moveDown": "Mover después",
-        "remove": "Eliminar",
         "updateView": "Usar la vista actual",
         "travel": "Tiempo de desplazamiento (vacío = auto)",
         "hold": "Pausa en esta vista",
@@ -8635,8 +8910,6 @@
         "step": "Paso (m)",
         "forward": "Adelante",
         "backward": "Atrás",
-        "left": "Izquierda",
-        "right": "Derecha",
         "up": "Arriba",
         "down": "Abajo",
         "turnLeft": "Mirar a la izquierda",

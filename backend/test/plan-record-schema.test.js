@@ -17,6 +17,7 @@ const ajv=new Ajv2020();
 ajv.addFormat('ugt-map-location',{type:'string',validate:PlanRecord.semanticRules.location});
 ajv.addKeyword({keyword:'x-ugt-ascending',type:'array',schemaType:'boolean',validate:(enabled,value)=>!enabled||PlanRecord.semanticRules.ascending(value)});
 ajv.addKeyword({keyword:'x-ugt-utf16-maxLength',type:'string',schemaType:'number',validate:(limit,value)=>PlanRecord.semanticRules.text(value,limit)});
+ajv.addKeyword({keyword:'x-ugt-plan-members',type:'object',schemaType:'boolean',validate:(enabled,value,parent,context)=>!enabled||PlanRecord.semanticRules.scheduleError(value,context.rootData.designCids)===null});
 const schema=PlanRecord.jsonSchema(),validate=ajv.compile(schema);
 describe('shared named-plan JSON Schema',()=>{
     it('shares canonical limits and declares semantic extensions explicitly',()=>{
@@ -38,7 +39,8 @@ describe('shared named-plan JSON Schema',()=>{
     it('matches valid omissions, nulls, views and numeric location forms',()=>{
         const basic={schema:'plan/v1',title:'A',designCids:[cids[0]],view:{at:'0,0,3',mode:'model'}};
         for(const value of [canonical(),basic,{...basic,view:{...basic.view,rotate:true}},{...basic,title:'A\nB',view:{at:'85.0511,180,22',mode:'photo',city:null,language:null,camera:{targetLat:85.0511,targetLng:-180,headingDeg:720,pitchRad:-Math.PI/2,range:1},settings:null}},
-            {...basic,view:{at:'1e1,0x10,3',mode:'2d',settings:{planningSource:'source-one',existing:'off'}}}]){
+            {...basic,view:{at:'1e1,0x10,3',mode:'2d',settings:{planningSource:'source-one',existing:'off'}}},
+            {...basic,schedule:{[cids[0]]:{start:'2026-01',end:'2966-12'}}},{...canonical(),schedule:{[cids[1]]:{start:'2030-05',end:'2030-05'}}}]){
             expect(PlanRecord.validate(value)).toBeNull();expect(validate(value),JSON.stringify(validate.errors)).toBe(true);
         }
     });
@@ -47,7 +49,9 @@ describe('shared named-plan JSON Schema',()=>{
             p=>{p.designCids=[];},p=>{p.designCids=[cids[0],cids[0]];},p=>{p.designCids=[...cids].reverse();},p=>{p.designCids=['invalid'];},p=>{p.designCids=Array(1001).fill(cids[0]);},
             p=>{p.view.extra=true;},p=>{p.view.mode='3d';},p=>{delete p.view.at;},p=>{p.view.at='85.0512,0,17';},p=>{p.view.at='0,180.1,17';},p=>{p.view.at='0,0,2.9';},p=>{p.view.at='0,0,22.1';},p=>{p.view.at='0,,17';},p=>{p.view.at='0,0,Infinity';},
             p=>{p.view.language='de';},p=>{p.view.city='';},p=>{p.view.city='🌳'.repeat(51);},p=>{p.view.camera={};},p=>{p.view.camera={targetLat:0,targetLng:0,headingDeg:0,pitchRad:.1,range:1};},p=>{p.view.camera={targetLat:0,targetLng:0,headingDeg:Infinity,pitchRad:0,range:1};},
-            p=>{p.view.rotate='yes';},p=>{p.view.rotate=null;},p=>{p.view.settings={unsupported:'on'};},p=>{p.view.settings={existing:''};},p=>{p.view.settings={existing:'🌳'.repeat(101)};}];
+            p=>{p.view.rotate='yes';},p=>{p.view.rotate=null;},p=>{p.view.settings={unsupported:'on'};},p=>{p.view.settings={existing:''};},p=>{p.view.settings={existing:'🌳'.repeat(101)};},
+            p=>{p.schedule={};},p=>{p.schedule={[cidOfObject({title:'Other'})]:{start:'2027-01',end:'2027-02'}};},p=>{p.schedule={[cids[0]]:{start:'2027-03',end:'2027-02'}};},
+            p=>{p.schedule={[cids[0]]:{start:'2025-12',end:'2027-02'}};},p=>{p.schedule={[cids[0]]:{start:'2027-01'}};},p=>{p.schedule={[cids[0]]:{start:'2027-01',end:'2027-02',basis:'permit'}};},p=>{p.schedule={[cids[0]]:null};}];
         for(const change of changes){const value=canonical();change(value);expect(PlanRecord.validate(value),JSON.stringify(value)).not.toBeNull();expect(validate(value),JSON.stringify(value)).toBe(false);}
     });
     it('exposes the exact schema through help without moving schema prose into untrusted fields',()=>{

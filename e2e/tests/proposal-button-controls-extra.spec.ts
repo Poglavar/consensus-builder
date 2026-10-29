@@ -1,8 +1,8 @@
 // Exercise proposal modal buttons through the UI, with a local server boundary: the create dialog's
 // land-use, summary and road-designation controls, the share panel's selection, Publish and Copy URL,
-// the epoch timeline and the design index's Retry.
+// and the design index's Refresh.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, openParcel, createSpace, PARCEL_ID, showProposal } from '../helpers/runtime';
+import { openCity, openParcel, createSpace, showProposal } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
 
@@ -50,7 +50,7 @@ async function establishLocalProfile(page: import('@playwright/test').Page): Pro
 
 async function openProposalList(page: import('@playwright/test').Page) {
   await page.locator('#proposals-button').click();
-  return page.locator('#proposals-sheet .proposal-list-modal');
+  return page.locator('#proposals-sheet');
 }
 
 test.describe('proposal button controls: modal and alternate states @features', () => {
@@ -108,8 +108,8 @@ test.describe('proposal button controls: modal and alternate states @features', 
     const sheet = page.locator('#proposals-sheet');
     const shareTab = sheet.locator('#shareAppliedProposalsButton');
     await shareTab.click();
-    const plans = sheet.locator('#designs-plans');
-    await plans.getByRole('button', { name: 'Create plan', exact: true }).click();
+    // Lists (01268caee): the Plans tab's Create plan sits in #lists-actions and starts an empty composer.
+    await sheet.locator('#lists-actions').getByRole('button', { name: 'Create plan', exact: true }).click();
     const composer = page.locator('.plan-composer');
     await expect(composer.locator('.plan-dialog__count')).toHaveText('0 selected');
     const save = composer.getByRole('button', { name: 'Create plan', exact: true });
@@ -122,12 +122,14 @@ test.describe('proposal button controls: modal and alternate states @features', 
     const index = pageIndex(page);
     const beforeSave = index.requests.filter(request => request.method === 'POST').length;
     await save.click();
-    const details = page.locator('.plan-details');
-    await expect(details.locator('.plan-dialog__members li')).toHaveCount(1);
+    // The saved plan opens in the click stack's Plan section, which holds Share plan.
+    const details = page.locator('#click-stack .click-stack__section[data-kind="plans"]');
+    await expect(details).toContainText('Button control plan');
     expect(index.requests.filter(request => request.method === 'POST')).toHaveLength(beforeSave);
     await details.getByRole('button', { name: 'Share plan', exact: true }).click();
     const plan = page.locator('.plan-share');
     await expect(plan).toBeVisible();
+    await expect(plan.locator('.plan-dialog__members li')).toHaveCount(1);
     const baseline = index.requests.filter(request => request.method === 'POST').length;
     await plan.getByRole('button', { name: 'Publish and copy link', exact: true }).click();
     const link = plan.getByLabel('Plan link', { exact: true });
@@ -138,28 +140,8 @@ test.describe('proposal button controls: modal and alternate states @features', 
     const posts = index.requests.filter(request => request.method === 'POST').slice(baseline);
     expect(posts.map(request => request.path)).toContain('/plans');
     expect(posts.some(request => request.path === '/agreements')).toBe(false);
-
-    await expect(sheet.getByRole('heading', { name: 'Plan', exact: true })).toBeVisible();
     await page.keyboard.press('Escape');
-  });
-
-  test('proposal list epoch buttons move the cumulative timeline and restore all years', async ({ mockApi: page }) => {
-    await openCity(page);
-    await page.evaluate((parcelId) => {
-      const storage = (window as any).proposalStorage;
-      storage.addProposal({ title: 'Early stage', goal: 'park', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId], epochYear: 2035 });
-      storage.addProposal({ title: 'Later stage', goal: 'square', lifecycleStatus: 'Active', cadastreParcelIds: [parcelId], epochYear: 2045 });
-    }, PARCEL_ID);
-    const list = await openProposalList(page);
-    const timeline = list.locator('.proposal-epoch-timeline');
-    await expect(timeline).toBeVisible();
-    await timeline.getByRole('button', { name: '2035.', exact: true }).click();
-    await expect(timeline.getByRole('button', { name: '2035.', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    await expect(timeline).toContainText(/Cumulative to 2035/);
-    await timeline.getByRole('button', { name: '2045.', exact: true }).click();
-    await expect(timeline.getByRole('button', { name: '2045.', exact: true })).toHaveAttribute('aria-pressed', 'true');
-    await timeline.getByRole('button', { name: 'All', exact: true }).click();
-    await expect(timeline.locator('.proposal-epoch-diff')).toHaveCount(0);
+    await expect(plan).toBeHidden();
   });
 
   test('road designation close discards the draft while Done commits the selected parcel boundary', async ({ mockApi: page }) => {
@@ -186,7 +168,7 @@ test.describe('proposal button controls: modal and alternate states @features', 
     expect(saved.polygon.type).toMatch(/Polygon/);
   });
 
-  test('the design index Retry recovers the proposal list after one failed request', async ({ mockApi: page }) => {
+  test('the design index Refresh recovers the published list after one failed request', async ({ mockApi: page }) => {
     let requests = 0;
     let allowRecovery = false;
     // The Server tab lists GET /designs (proposals/design-sync.js); newer than the page's index route.
@@ -197,14 +179,15 @@ test.describe('proposal button controls: modal and alternate states @features', 
       return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ designs: [], count: 0 }) });
     });
     await openCity(page);
+    // Lists (01268caee): the Published scope reports a failed page in #lists-status; Refresh reloads it.
     const list = await openProposalList(page);
-    await list.locator('.proposal-source-btn[data-source="server"]').click();
+    await list.locator('[data-list-source="published"]').click();
     await expect.poll(() => requests).toBeGreaterThan(0);
-    const retry = list.locator('.proposal-server-retry');
-    await expect(retry).toBeVisible();
+    const status = list.locator('#lists-status');
+    await expect(status).toHaveText('temporary test outage');
     allowRecovery = true;
-    await retry.click();
+    await list.getByRole('button', { name: 'Refresh', exact: true }).click();
     await expect.poll(() => requests).toBeGreaterThanOrEqual(2);
-    await expect(list.locator('.proposal-list-error')).toHaveCount(0);
+    await expect(status).toHaveText('0 of 0 loaded items');
   });
 });

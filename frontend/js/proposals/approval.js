@@ -248,7 +248,12 @@
         const rules = policyRules(context.policy);
         const byParcel = new Map((context.rights?.parcels || []).map(parcel => [parcel.parcelId, parcel]));
         const parcels = context.cadastreParcelIds.map(id => byParcel.get(id)).filter(Boolean);
-        const missingParcelIds = context.cadastreParcelIds.filter(id => !byParcel.get(id)?.complete);
+        // Parcel-owner keys are unresolved allocation groups, never identities for a headcount.
+        const missingParcelIds = context.cadastreParcelIds.filter(id => {
+            const parcel = byParcel.get(id);
+            return !parcel?.complete || [...parcel.owners, ...(parcel.leases || []).flatMap(lease => lease.holders)]
+                .some(holder => holder.ownerId.startsWith('parcel-owner:'));
+        });
         const ownerIds = unique(parcels.flatMap(parcel => parcel.owners.map(owner => owner.ownerId)));
         const leaseholderIds = unique(parcels.flatMap(parcel => (parcel.leases || []).flatMap(lease => lease.holders.map(holder => holder.ownerId))));
         const holderIds = new Set([...ownerIds, ...leaseholderIds]);
@@ -354,6 +359,22 @@
             met: known && (vacuous || passes(support, total, test))
         };
     }
+    // The existing minimum-participant presets count distinct input owners, not parcel groups,
+    // shares, signing wallets, leaseholders or the required authority. They require that many YESes.
+    function minimumParticipants(state, template, yes) {
+        if (!template?.minParties) return null;
+        return {
+            known: state.ready, needed: template.minParties,
+            total: state.ready ? state.ownerIds.length : null,
+            support: state.ready ? state.ownerIds.filter(id => yes.has(id)).length : null,
+            met: state.ready && state.ownerIds.filter(id => yes.has(id)).length >= template.minParties
+        };
+    }
+    function participantTally(proposal, approvedIds = [], template = undefined) {
+        const state = inspect(proposal), pin = state.context.regime;
+        return minimumParticipants(state, template === undefined ? (pin ? regimes().get(pin.id, pin.version) : null) : template,
+            new Set(approvedIds));
+    }
     function tally(proposal, approvedIds = []) {
         const state = inspect(proposal);
         const yes = new Set(approvedIds.filter(id => state.partyIds.includes(id)));
@@ -363,10 +384,12 @@
         const authorities = state.rules.authorities.map(({ authorityId }) => ({ authorityId, approved: ready && yes.has(authorityId) }));
         // Owners and the land they hold, whatever the rules count: the figures other views show.
         const ownership = ready ? evaluate({ ...UNANIMOUS_TEST, measure: 'area' }, state, yes) : null;
-        const supportMet = ready && tests.every(test => test.met);
+        const pin = state.context.regime;
+        const participants = minimumParticipants(state, pin ? regimes().get(pin.id, pin.version) : null, yes);
+        const supportMet = ready && tests.every(test => test.met) && (!participants || participants.met);
         const authorityMet = ready && authorities.every(row => row.approved);
         return {
-            ready, reason: state.reason, tests, authorities, supportMet, authorityMet, passed: supportMet && authorityMet,
+            ready, reason: state.reason, tests, participants, authorities, supportMet, authorityMet, passed: supportMet && authorityMet,
             totalOwners: ready ? state.ownerIds.length : null, acceptedOwners: ready ? state.ownerIds.filter(id => yes.has(id)).length : 0,
             acceptedParcelIds,
             totalAreaM2: ownership?.known ? ownership.total : null,
@@ -438,5 +461,5 @@
     return { RIGHTS_SCHEMA, RIGHTS_SCHEMA_V2, CONFIG_SCHEMA, CONTEXT_SCHEMA, DECISION_SCHEMA, MEASURES, CLASSES, SCOPES, MAX_TESTS, MAX_AUTHORITIES,
         normalizeRights, normalizeConfig, normalizePolicy, policyRules, testOf,
         lensKeys, contextContent, contextHash, stableStringify, inspect, ownerLabel, partyOf, partyLabel, letters, createTemplate,
-        tally, evidenceAllows, subjectOf, decisionContent, validOwnerIds, recordDecision };
+        tally, participantTally, evidenceAllows, subjectOf, decisionContent, validOwnerIds, recordDecision };
 });

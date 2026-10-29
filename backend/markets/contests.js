@@ -206,13 +206,30 @@ export function buildContests({ city, agreements, markets = new Map(), now = new
     }).filter(contest => contest.mintedCount > 0)
         .sort(compareContests);
 
-    const summary = contests.reduce((acc, contest) => ({
+    return { city, generatedAt: now.toISOString(), summary: summarize(contests), contests };
+}
+
+function summarize(contests) {
+    return contests.reduce((acc, contest) => ({
         contests: acc.contests + 1,
         agreements: acc.agreements + contest.agreementCount,
         markets: acc.markets + contest.marketCount,
         openMarkets: acc.openMarkets + contest.openMarketCount,
         sharesAtomic: (atomic(acc.sharesAtomic) + atomic(contest.sharesAtomic)).toString()
     }), { contests: 0, agreements: 0, markets: 0, openMarkets: 0, sharesAtomic: '0' });
+}
 
-    return { city, generatedAt: now.toISOString(), summary, contests };
+// Every city but `city`: each city's contests are built on their own (parcel numbers of two cities
+// never join one contest), carry their city, and are ordered together as one list.
+export function buildOtherCityContests({ city, agreements, markets = new Map(), now = new Date() }) {
+    const byCity = new Map();
+    for (const agreement of Array.isArray(agreements) ? agreements : []) {
+        if (!agreement.city || agreement.city === city) continue;
+        if (!byCity.has(agreement.city)) byCity.set(agreement.city, []);
+        byCity.get(agreement.city).push(agreement);
+    }
+    const contests = [...byCity].flatMap(([other, list]) =>
+        buildContests({ city: other, agreements: list, markets, now }).contests.map(contest => ({ ...contest, city: other })))
+        .sort(compareContests);
+    return { city, scope: 'other', generatedAt: now.toISOString(), summary: summarize(contests), contests };
 }

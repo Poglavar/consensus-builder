@@ -974,7 +974,7 @@ describe('editing a saved road (updateLocalCorridorGeometry)', () => {
         const failures = [];
         expect(await globalThis.updateLocalCorridorGeometry('nowhere', () => {}, { onFailure: reason => failures.push(reason) })).toBe(false);
         expect(failures).toEqual(['This road is not among the designs of the city on the map. Switch to the city it was created in, then try again.']);
-        expect(world.lastStatus()).toBe('Could not complete that road change — reverted.');
+        expect(world.lastStatus()).toBe('Could not complete that road change — reverted: This road is not among the designs of the city on the map. Switch to the city it was created in, then try again.');
         expect(world.session.corridorApplyIndicatorCount).toBe(0);
     });
 });

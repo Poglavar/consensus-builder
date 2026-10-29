@@ -217,8 +217,8 @@ function realProposalStorage() {
     return { storage, restore };
 }
 
-// The courier and the index as the browser sees them: /pins recomputes the CID of the exact bytes it
-// receives (with the node twin, as the server does), /designs files the content under it.
+// The index as the browser sees it: /designs recomputes the CID of the content it receives (with the
+// node twin, as the server does) and files the content under it. Publishing pins nothing.
 function fakeServer({ answerCid = null, refuseDesigns = null } = {}) {
     const calls = [];
     const designs = new Map();
@@ -226,15 +226,11 @@ function fakeServer({ answerCid = null, refuseDesigns = null } = {}) {
         const { pathname } = new URL(url);
         const body = init.body ? JSON.parse(init.body) : undefined;
         calls.push({ method: init.method, pathname, body });
-        if (init.method === 'POST' && pathname === '/pins') {
-            const cid = NodeCid.cidOf(Buffer.from(body.bytes, 'base64'));
-            if (cid !== body.cid) return json(409, { code: 'cid-mismatch' });
-            return json(200, { cid: answerCid || cid, pinnedAt: '2026-10-21T12:00:00.000Z' });
-        }
         if (init.method === 'POST' && pathname === '/designs') {
             if (refuseDesigns) return json(refuseDesigns.status, refuseDesigns.body);
+            if (NodeCid.cidOf(NodeCid.canonicalBytes(body.content)) !== body.cid) return json(400, { code: 'cid-mismatch' });
             designs.set(body.cid, body);
-            return json(201, { cid: body.cid, content: body.content, createdAt: '2026-10-21T12:00:01.000Z' });
+            return json(201, { cid: answerCid || body.cid, content: body.content, createdAt: '2026-10-21T12:00:01.000Z' });
         }
         if (init.method === 'POST' && pathname === '/map-previews') {
             return json(202, { imageUrl: `${API}/map-previews/${body.cids.join(',')}/image.png` });
@@ -309,7 +305,7 @@ describe('publishDesign', () => {
         expect(record.published).toBeUndefined();
     });
 
-    it('reuses an already published parcel layout without a publication or author gate', async () => {
+    it('reuses an already published parcel layout without a publication or author gate; a revision publishes like any design', async () => {
         const record = road({ goal: 'parcel-layout', parcelLayout: { plots: [] } });
         record.published = { cid: DesignRecord.cidOf(record), apiBase: API };
         const { sync, server, win } = fakeWindow({ records: [record], blocked: 'Choose a name' });
@@ -317,21 +313,19 @@ describe('publishDesign', () => {
         expect(await sync.publishDesign(record)).toEqual({ cid: record.published.cid, row: null, alreadyPublished: true });
         expect(server.calls).toEqual([]);
         record.title = 'Revised layout';
-        expect(await thrown(() => sync.publishDesign(record))).toMatchObject({ code: 'layout-needs-agreement' });
+        expect(await thrown(() => sync.publishDesign(record))).toMatchObject({ code: 'name-needed' });
     });
 
-    it('refuses oversized designs locally before pinning or indexing, retaining the draft', async () => {
+    it('refuses oversized designs locally before indexing, retaining the draft', async () => {
         const record = { proposalId: 'large-block', goal: 'buildings', buildingProposal: { notes: 'x'.repeat(10 * 1024 * 1024) }, geometry: { buildings: [] } };
         const { sync, server } = fakeWindow();
         expect(await thrown(() => sync.publishDesign(record))).toMatchObject({ code: 'too-large' });
         expect(server.calls).toEqual([]);
         expect(record.published).toBeUndefined();
         expect(record.buildingProposal.notes.length).toBe(10 * 1024 * 1024);
-        expect(await thrown(() => sync.pinDesign(record))).toMatchObject({ code: 'too-large' });
-        expect(server.calls).toEqual([]);
     });
 
-    it.each(['block', 'row', 'parcelBased', 'single', 'park', 'square'])('pins and imports the exact authored %s furniture', async kind => {
+    it.each(['block', 'row', 'parcelBased', 'single', 'park', 'square'])('publishes and imports the exact authored %s furniture', async kind => {
         const geometry = square(10, 45);
         const design = { version: 3, trees: [{ coordinate: [10.0001, 45.0001], kind: 'conifer', heightM: 12 }], paths: [[[10.0001, 45.0002], [10.0002, 45.0003]]], benches: [] };
         const structure = ['park', 'square'].includes(kind);
@@ -343,15 +337,15 @@ describe('publishDesign', () => {
         };
         const { sync, server } = fakeWindow({ records: [record] });
         const result = await sync.publishDesign(record);
-        const pinned = JSON.parse(Buffer.from(server.calls.find(call => call.pathname === '/pins').body.bytes, 'base64').toString('utf8'));
-        expect(structure ? pinned.structureProposal.decorationDesign : pinned.geometry.groundSurface.decorationDesign).toEqual(design);
+        const sent = server.calls.find(call => call.pathname === '/designs').body.content;
+        expect(structure ? sent.structureProposal.decorationDesign : sent.geometry.groundSurface.decorationDesign).toEqual(design);
         const indexRow = server.designs.get(result.cid);
         const receiver = await fakeWindow().sync.importDesign(indexRow);
         expect(structure ? receiver.structureProposal.decorationDesign : receiver.geometry.groundSurface.decorationDesign).toEqual(design);
         expect(DesignRecord.cidOf(receiver)).toBe(result.cid);
     });
 
-    it('pins the exact canonical bytes, indexes them and marks the record published here', async () => {
+    it('indexes the design under the CID of its canonical bytes, pins nothing and marks the record published here', async () => {
         const record = road({ author: '' });
         const { sync, server, stored, saves } = fakeWindow({ records: [record], configs: { zagreb: { parcels: { sourceId: 'zagreb-dgu' } } } });
         const result = await sync.publishDesign(record);
@@ -359,10 +353,9 @@ describe('publishDesign', () => {
         expect(record.author).toBe('Guest Ana');
         const content = DesignRecord.published(record);
         expect(result).toMatchObject({ cid: Cid.cidOfObject(content), alreadyPublished: false });
-        expect(server.calls.map(call => `${call.method} ${call.pathname}`)).toEqual(['POST /pins', 'POST /designs']);
-        const [pin, index] = server.calls.map(call => call.body);
-        expect(pin.kind).toBe('design');
-        expect(Buffer.from(pin.bytes, 'base64').toString('utf8')).toBe(new TextDecoder().decode(Cid.canonicalBytes(content)));
+        expect(server.calls.map(call => `${call.method} ${call.pathname}`)).toEqual(['POST /designs']);
+        const [index] = server.calls.map(call => call.body);
+        expect(index.cid).toBe(Cid.cidOf(Cid.canonicalBytes(content)));
         expect(index).toEqual({ cid: result.cid, content, parcelSourceId: 'zagreb-dgu' });
         expect(record.published).toEqual({ cid: result.cid, publishedAt: '2026-10-21T12:00:01.000Z', apiBase: API });
         expect(stored.get('road-1').published).toEqual(record.published);
@@ -371,23 +364,24 @@ describe('publishDesign', () => {
 
         // Published and unchanged: nothing is sent again.
         expect(await sync.publishDesign(record)).toEqual({ cid: result.cid, row: null, alreadyPublished: true });
-        expect(server.calls).toHaveLength(2);
+        expect(server.calls).toHaveLength(1);
         // Edited in place: it is another design, published under its own CID.
         record.title = 'Wider lane';
         expect(sync.publishedCid(record)).toBeNull();
         const again = await sync.publishDesign(record);
         expect(again.cid).not.toBe(result.cid);
-        expect(server.calls).toHaveLength(4);
+        expect(server.calls).toHaveLength(2);
     });
 
-    it('refuses a parcel layout and a guest without a name before anything leaves the device', async () => {
+    it('publishes a parcel layout on its own, and refuses a guest without a name before anything leaves the device', async () => {
         const layout = { proposalId: 'layout-1', goal: 'parcel-layout', site: square(15.96, 45.8), parcelLayout: { algorithm: 'equal', plots: [] } };
         const { sync, server } = fakeWindow({ records: [layout] });
-        const refused = await thrown(() => sync.publishDesign(layout));
-        expect(refused).toMatchObject({ code: 'layout-needs-agreement' });
+        const published = await sync.publishDesign(layout);
+        expect(published).toMatchObject({ alreadyPublished: false });
+        expect(layout.published).toMatchObject({ cid: published.cid });
+        expect(server.calls.map(call => call.pathname).slice(0, 1)).toEqual(['/designs']);
         const guest = fakeWindow({ records: [road()], blocked: 'Choose a name before publishing.' });
         expect(await thrown(() => guest.sync.publishDesign(road()))).toMatchObject({ code: 'name-needed', cancelled: true, message: 'Choose a name before publishing.' });
-        expect(server.calls).toEqual([]);
         expect(guest.server.calls).toEqual([]);
     });
 
@@ -537,6 +531,25 @@ describe('links, parcel sources and refusals', () => {
         expect(attempts).toBe(2);
     });
 
+    it('binds a design with the parcel source where its ground lies, whatever its city says', async () => {
+        const FootprintParts = require('../../frontend/js/proposals/footprint-parts.js');
+        const sited = road({ city: null });
+        const drawn = road({ proposalId: 'road-2', city: null, site: null,
+            roadProposal: { definition: { widthM: 9, polygon: square(15.97, 45.81) } } });
+        const { sync, server, win } = fakeWindow({ records: [sited, drawn] });
+        win.__footprintParts = FootprintParts;
+        const asked = [];
+        win.CityConfigManager.getDataContext = (geometry, city) => {
+            asked.push({ geometry, city });
+            return { parcelSourceId: geometry ? 'oss-wfs' : null };
+        };
+        await sync.publishDesign(sited);
+        await sync.publishDesign(drawn);
+        expect(server.calls.filter(call => call.pathname === '/designs').map(call => call.body.parcelSourceId)).toEqual(['oss-wfs', 'oss-wfs']);
+        expect(asked[0]).toEqual({ geometry: sited.site, city: null });
+        expect(asked[1].geometry).toEqual({ type: 'GeometryCollection', geometries: [square(15.97, 45.81)] });
+    });
+
     it('binds a city\'s designs with its catalogue parcel source, else the default', () => {
         const { sync } = fakeWindow({ configs: { zagreb: { parcels: { sourceId: 'zagreb-dgu' } }, split: { parcels: {} } } });
         expect(sync.parcelSourceIdOf('zagreb')).toBe('zagreb-dgu');
@@ -547,8 +560,6 @@ describe('links, parcel sources and refusals', () => {
     it('words each refusal by the server\'s code', () => {
         const { sync, win } = fakeWindow();
         expect(sync.refusalMessage(409, { code: 'cid-mismatch' })).toMatch(/different identity/);
-        expect(sync.refusalMessage(503, { code: 'pinning-unconfigured' })).toMatch(/pinning is not configured/);
-        expect(sync.refusalMessage(422, { code: 'layout-needs-agreement' })).toMatch(/published with the agreement/);
         expect(sync.refusalMessage(413, { code: 'too-large' })).toMatch(/10 MiB/);
         expect(sync.refusalMessage(429, {})).toBe('Too many publications for now. Wait a few minutes and try again.');
         expect(sync.refusalMessage(429, { retryAfterSeconds: 30 })).toBe('Too many publications for now. Try again in about 1 min.');

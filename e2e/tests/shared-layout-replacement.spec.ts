@@ -44,7 +44,7 @@ for (const width of [1280, 390]) test(`replacing an occupied road with buildings
       target = await page.context().newPage();
       await mockAllApiRoutes(target); await attachSharedIndex(target, index); await stubBasemapTiles(target);
       const incomingUrl = url([building, park]);
-      await target.goto(incomingUrl, { waitUntil: 'domcontentloaded' });
+      await target.goto(incomingUrl, { waitUntil: 'commit' }); // a blocked tab never reaches DOMContentLoaded
       await expect.poll(() => target.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('blocked');
       await expect(target.locator('#workspace-screen')).toBeVisible();
       expect(new URL(target.url()).pathname + new URL(target.url()).search).toBe(incomingUrl);

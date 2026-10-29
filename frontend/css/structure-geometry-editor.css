@@ -242,22 +242,88 @@
     position: absolute;
     left: 50%;
     bottom: 0;
-    z-index: -1;
+    z-index: var(--cb-z-world-scrim);
     width: 0.6em;
     height: 0.6em;
-    border: 1px solid #8f8b80;
+    border: 1px solid var(--cb-tree-pit-rim);
     border-radius: 2px;
     transform: translate(-50%, 25%);
 }
 
 .park-tree-glyph.is-pit-grille::before {
-    background: repeating-linear-gradient(90deg, #3d3f42 0 2px, #6b5a48 2px 4px);
+    background: repeating-linear-gradient(90deg, var(--cb-tree-pit-grille) 0 2px, var(--cb-tree-pit-grille-gap) 2px 4px);
 }
 
 .park-tree-glyph.is-pit-grass::before {
-    background: #6f9a3e;
+    background: var(--cb-tree-pit-grass);
 }
 
 .park-tree-glyph.is-pit-soil::before {
-    background: #6b4f3a;
+    background: var(--cb-tree-pit-soil);
 }
+
+/* A park's fences on the 2D map and in the park editor (park-enclosures.js), lightest to heaviest:
+   a low timber rail, a dark green mesh, black wrought iron, iron on a brick plinth. */
+.park-fence {
+    fill: none;
+    stroke: var(--park-fence-color);
+    stroke-width: var(--park-fence-width);
+    stroke-opacity: 1;
+    stroke-linecap: butt;
+}
+
+.park-fence.is-rail { --park-fence-color: var(--cb-park-fence-rail); --park-fence-width: 1.5px; stroke-dasharray: 4 3; }
+.park-fence.is-mesh { --park-fence-color: var(--cb-park-fence-mesh); --park-fence-width: 2px; }
+.park-fence.is-iron { --park-fence-color: var(--cb-park-fence-iron); --park-fence-width: 2.5px; }
+.park-fence.is-plinth { --park-fence-color: var(--cb-park-fence-plinth); --park-fence-width: 4px; }
+
+/* The ground of a dog area (gravel) and a play area (rubber safety surface). */
+.park-enclosure-ground,
+.structure-geometry-enclosure {
+    stroke: none;
+    fill: transparent;
+    fill-opacity: 0.85;
+}
+
+.park-enclosure-ground.is-gravel,
+.structure-geometry-enclosure.is-gravel { fill: var(--cb-park-ground-gravel); }
+.park-enclosure-ground.is-rubber,
+.structure-geometry-enclosure.is-rubber { fill: var(--cb-park-ground-rubber); }
+
+/* In the editor a fence is wide enough to click, and the selected area is outlined. */
+.structure-geometry-fence { --park-fence-width: 6px; cursor: pointer; }
+.structure-geometry-enclosure.is-selected { stroke: var(--cb-primary); stroke-width: 2px; stroke-dasharray: 6 4; }
+.structure-geometry-area-start { stroke: var(--cb-text); stroke-width: 2px; fill: var(--cb-surface); fill-opacity: 1; }
+
+/* Gates, play equipment and the sign of a dog or play area. */
+.structure-geometry-icon.is-gate i,
+.structure-furniture-glyph.is-gate i {
+    color: var(--cb-park-fence-iron);
+    filter: drop-shadow(0 1px 1px var(--cb-surface));
+    font-size: var(--cb-text-xs);
+}
+
+.structure-geometry-icon.is-play i,
+.structure-furniture-glyph.is-play i {
+    color: var(--cb-park-play-equipment);
+    filter: drop-shadow(0 1px 1px var(--cb-surface));
+    font-size: var(--cb-text-sm);
+}
+
+.structure-furniture-glyph.is-area i {
+    color: var(--cb-surface);
+    background: var(--cb-park-fence-mesh);
+    border-radius: var(--cb-radius-sm);
+    padding: 2px;
+    font-size: var(--cb-text-sm);
+}
+
+/* The selected fenced area's card in the park editor, laid out like the tree card. */
+.structure-geometry-enclosure-card {
+    display: grid;
+    gap: var(--cb-space-1);
+    padding: var(--cb-space-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+}
+.structure-geometry-enclosure-card[hidden] { display: none; }

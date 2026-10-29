@@ -1,8 +1,8 @@
 // The agreement index (plan-design-agreement.md, M2 "Courier and index"). POST /agreements takes an
 // agreement/v1 object the browser addressed itself, { cid, content, plan?, designs? }, and indexes it once the
 // server has checked what it can: the CID is the content's; the shape is agreement/v1; every design it
-// links is indexed (one not yet indexed, such as a parcel layout, which publishes only with its
-// agreement, comes along in `designs` and is indexed in the same transaction as the agreement); its
+// links is indexed (one not yet indexed may come along in `designs` and is indexed in the same
+// transaction as the agreement); its
 // input parcels are exactly the parcels its designs' sites take on the server (the former
 // "declaration equals binding" rule, now per agreement); its rights snapshot is well formed; its
 // deadline lies ahead. GET /agreements/:cid and GET /agreements?city&design&parcel&minted read the index
@@ -64,7 +64,6 @@ const isInstant = value => typeof value === 'string' && Number.isFinite(Date.par
     && new Date(Date.parse(value)).toISOString() === value;
 const isText = (value, max) => typeof value === 'string' && value.trim() !== '' && value.length <= max;
 const isArea = value => typeof value === 'number' && Number.isFinite(value) && value >= 0;
-const isShare = value => typeof value === 'number' && Number.isFinite(value) && value > 0 && value <= 1;
 
 /** An agreement row as every /agreements route answers it. */
 export function serializeAgreementRow(row) {
@@ -103,8 +102,9 @@ export async function loadAgreement(db, cid) {
 
 /**
  * The agreement/v1 checks that need no database, section by section as the agreement dialog groups
- * them (designs | land | allocation | money | rule | details). Party keys are not matched against the
- * holders: the published outputs carry none, and the lens judges who may receive what.
+ * them (designs | land | allocation | money | rule | details). Parties are abstract, one per input
+ * parcel (`parcel-owner:<parcelId>`); the content names no people, and owner decisions are judged
+ * against the rule's rights snapshot.
  * @param {{ now?: number }} options  the deadline must lie after `now`
  * @returns {{ ok: true, designCids, inputParcelIds, parcelSourceId, deadline }
  *   | { ok: false, status, code, section, error }}
@@ -137,14 +137,7 @@ export function validateAgreementContent(content, { now = Date.now(), designCids
             sources.add(parcel.parcelSourceId);
         }
         if (parcel.areaM2 != null && !isArea(parcel.areaM2)) return invalid('land', `Input parcel ${parcel.parcelId} needs an area of at least 0, or null.`);
-        if (!Array.isArray(parcel.holders)) return invalid('land', `Input parcel ${parcel.parcelId} lists its holders.`);
-        const holders = new Set();
-        for (const holder of parcel.holders) {
-            if (!isPlainObject(holder) || !isText(holder.ownerKey, MAX_ID_LENGTH) || holders.has(holder.ownerKey) || !isShare(holder.share)) {
-                return invalid('land', `Every holder of input parcel ${parcel.parcelId} needs a key of its own and a share above 0 and at most 1.`);
-            }
-            holders.add(holder.ownerKey);
-        }
+        if (Object.hasOwn(parcel, 'holders')) return invalid('land', `Input parcel ${parcel.parcelId} names holders; agreement parties are abstract (${agreementRecord.partyKey(parcel.parcelId)}) and owners belong in the rule's rights.`);
     }
     // The index keeps one parcel source per agreement: ids only mean something within their source.
     if (sources.size > 1) return invalid('land', 'The input parcels come from more than one parcel source.');
@@ -269,16 +262,15 @@ export function validateAgreementContent(content, { now = Date.now(), designCids
     if (rule.electorate === 'owners') {
         if (!agreementRecord.settlementValid(rule)) return invalid('rule', 'Set valid compensation terms within the selected scheme limit.');
         if (allocated.size !== outputs.size) return invalid('allocation', 'Choose one recipient for every output parcel.');
-        const parties = new Set(inputs.parcels.flatMap(parcel => parcel.holders.map(holder => holder.ownerKey)));
-        if (inputs.parcels.some(parcel => !parcel.holders.length || Math.abs(parcel.holders.reduce((sum, holder) => sum + holder.share, 0) - 1) > 1e-8)) return invalid('land', 'Input owners must hold 100% of each parcel; use its abstract owner when names are unavailable.');
-        if (content.allocations.some(line => line.to.kind === 'party' && !parties.has(line.to.ownerKey))) return invalid('allocation', 'A recipient must own input land.');
-        if (money.lines.some(line => !parties.has(line.ownerKey))) return invalid('money', 'A cash party must own input land.');
+        const parties = new Set(inputs.parcels.map(parcel => agreementRecord.partyKey(parcel.parcelId)));
+        if (content.allocations.some(line => line.to.kind === 'party' && !parties.has(line.to.ownerKey))) return invalid('allocation', 'A recipient party must be the owners of an input parcel.');
+        if (money.lines.some(line => !parties.has(line.ownerKey))) return invalid('money', 'A cash party must be the owners of an input parcel.');
         try {
             // The record's own judgement of the terms, the land values, the named scheme's distribution
             // rules and the derived cash (AgreementRecord.settlementIssues), so the index, the dialog
             // and MCP refuse the same agreements for the same reasons.
             const local = { ...content, id: 'publication-check', plan: null, designs: [],
-                outputs: content.outputs.map(output => ({ ...output, pieceId: output.hash, holders: [], geometry: null })) };
+                outputs: content.outputs.map(output => ({ ...output, pieceId: output.hash, geometry: null })) };
             if (!agreementRecord.landBalance(agreementRecord.settle(local)).balanced) return invalid('land', 'Input and output land areas must balance.');
             const [issue] = agreementRecord.settlementIssues(local);
             if (issue) return invalid(issue.section, issue.message);
@@ -425,7 +417,7 @@ export function setupAgreementsRoute(app, deps) {
             // Designs sent along are checked and bound now; they are written with the agreement or not at all.
             const prepared = new Map();
             for (const entry of carried) {
-                const outcome = await prepareDesign(pool, entry, { allowLayout: true, parcelSourceId: checked.parcelSourceId });
+                const outcome = await prepareDesign(pool, entry, { parcelSourceId: checked.parcelSourceId });
                 if (outcome.refusal) return send(res, outcome.refusal.status, { ...outcome.refusal.body, design: entry.cid });
                 if (outcome.prepared) prepared.set(entry.cid, outcome.prepared);
             }

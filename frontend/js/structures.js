@@ -323,6 +323,10 @@
             } catch (_) { }
         });
 
+        try { drawParkEnclosures(group, parkFeature, decorations, pane); } catch (error) {
+            console.error(`[${new Date().toISOString()}] [structures] fenced areas of park ${parkFeature.properties?.proposalId} could not be drawn`, error);
+        }
+
         // Sprinkle tree emojis; avoid placing trees in ponds
         try {
             // Skip trees that fall outside the rendered geometry (e.g. on a road cut through the park)
@@ -367,6 +371,25 @@
         try { drawFurnitureGlyphs(group, parkFeature, decorations, pane); } catch (_) { }
     }
 
+    // A park's fenced areas (park-enclosures.js): the gravel or rubber ground of a dog or play area,
+    // and the fence in its style (css/structure-geometry-editor.css) with an opening at each gate.
+    // The gates and the area's sign are glyphs (drawFurnitureGlyphs).
+    function drawParkEnclosures(group, feature, decorations, pane) {
+        const api = window.ParkEnclosures;
+        const list = Array.isArray(decorations.enclosures) ? decorations.enclosures : [];
+        if (!api || !list.length) return;
+        const latlngs = points => points.map(([lng, lat]) => [lat, lng]);
+        list.forEach(enclosure => {
+            const ring = api.enclosureRing(enclosure, feature.geometry);
+            if (!ring) return;
+            const surface = api.USE_SURFACE[enclosure.use];
+            if (surface) L.polygon(latlngs(ring), { className: `park-enclosure-ground is-${surface}`, interactive: false, pane }).addTo(group);
+            api.fenceRuns(ring, enclosure.gates).runs.forEach(run => {
+                L.polyline(latlngs(run), { className: `park-fence is-${enclosure.fence}`, interactive: false, pane }).addTo(group);
+            });
+        });
+    }
+
     // A furniture record's point: a bare [lng, lat] (generated stalls) or { coordinate } (editor records).
     function furniturePoint(entry) {
         const coord = Array.isArray(entry) ? entry : entry?.coordinate;
@@ -396,6 +419,23 @@
         (Array.isArray(decorations.lamps) ? decorations.lamps : []).forEach(lamp => {
             const coord = furniturePoint(lamp);
             if (coord && pointInFeature(turf.point(coord), feature)) glyph(coord, 'is-lamp', 'fa-lightbulb', 14);
+        });
+        // Play equipment, and each fenced area's gates and its sign (a dog or play area).
+        for (const [key, icon] of [['swings', 'fa-child-reaching'], ['seesaws', 'fa-scale-unbalanced'], ['slides', 'fa-stairs']]) {
+            (Array.isArray(decorations[key]) ? decorations[key] : []).forEach(item => {
+                const coord = furniturePoint(item);
+                if (coord && pointInFeature(turf.point(coord), feature)) glyph(coord, 'is-play', icon, 14);
+            });
+        }
+        const enclosures = window.ParkEnclosures;
+        (Array.isArray(decorations.enclosures) && enclosures ? decorations.enclosures : []).forEach(enclosure => {
+            const ring = enclosures.enclosureRing(enclosure, feature.geometry);
+            if (!ring) return;
+            enclosures.fenceRuns(ring, enclosure.gates).gates.forEach(gate => glyph(gate.centre, 'is-gate', 'fa-door-open', 12));
+            if (enclosure.use === 'none') return;
+            let sign = null;
+            try { sign = turf.pointOnFeature(turf.polygon([ring])).geometry.coordinates; } catch (_) { sign = null; }
+            if (sign) glyph(sign, `is-area is-${enclosure.use}`, enclosure.use === 'dog' ? 'fa-dog' : 'fa-children', 18);
         });
     }
 

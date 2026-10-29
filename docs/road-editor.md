@@ -51,7 +51,7 @@ Update the status column as pieces land.
    pedestrian crossings) are collected while drawing and reviewed once at Finish.
 6. **The editor is honest**: a footprint-changing save lists the parcels it adds or frees and asks
    first; every refusal says why; a road-scope save keeps per-stretch cross-sections unless told
-   otherwise; OSM import puts backward lanes on the left like the presets; node drags are undoable;
+   otherwise; OSM import puts the oncoming lanes on the oncoming side like the presets; node drags are undoable;
    ⌥-click cannot empty a stretch.
 
 Deferred on purpose: curves, turn-lane solving and guide lines, roundabouts, signals, a full
@@ -68,6 +68,20 @@ stations editor, junction treatments against existing streets that are not recor
 | P4 | Pen lift, Escape, double-click, conflicts reviewed at Finish | road-drawing.js, road-stroke-state.js | done |
 | P6 | The record as an OSM document + import adapters (roads.md §11) | corridor-osm-form.js (`toRecord`/`toView`), corridor-import.js (format chooser), corridor-import-osm.js (new), corridor-import-opendrive.js, formation-depth.js, proposals/data.js, backend/proposals/prepare.js, routes/proposals.js, serializer.js, footprint.js, plans/plan-hash.js, scripts/migrate-corridor-osm-form.mjs | done, both steps: a stored road is its OSM document alone (no stretch fields); the store, the publish body and the server row hold the record, every load decodes it into the view the readers consume; the API serves record and view side by side. Plan member hashes are content hashes (stretches + cross-sections), re-stamped by the migration, minted plans keep their chain hash. Import chooser in the road panel: OpenStreetMap (.osm/.json), OpenDRIVE (.xodr) and GeoJSON (.geojson/.json: LineString/MultiLineString in WGS84, one road per line, properties read as OSM tags; a .json is OSM or GeoJSON by content) live; LandXML, Streetmix, Shapefile named and greyed until someone asks |
 | P5 | Editor honesty | corridor-editor.js, road-node-edit.js, corridor-profile.js | done; also: an in-place road edit and a Finish-time join now declare the parcels the new land reaches (road-drawing.js `declareParcelsUnderRoadLand`, proposal-manager.js), and a road-scope preview respects kept per-stretch cross-sections |
+
+## Side of the road
+
+A road keeps its traffic on its city's side (`CityConfigManager.getDrivingSide()`: left in the UK,
+India, Japan and the other left-hand countries). The record says so with OSM's own way tag
+`driving_side=left`; without it a road keeps right. The tag decides which side of the centre line
+`lanes:forward` and the per-side cycle lanes mean (`corridorProfileFromOsmTags` /
+`corridorProfileToOsmTags` take the side), so the same tags read right in London and in Zagreb.
+The presets and the default cross-section are laid out for right-hand traffic and mirrored for a
+left-hand city (`corridorProfileForDrivingSide` swaps each directed lane in place); a remembered
+cross-section from a city that keeps the other side is mirrored the same way. A reopened road keeps
+its own side. OSM and GeoJSON imports take the city's side for ways that do not say; the MCP drafts
+and imports roads with the side of their `city` (`cityDrivingSide`,
+backend/scripts/lib/frontend-city-money.mjs). Records drawn before the tag existed read as right.
 
 Tests: `cd backend && npx vitest run` (fast, headless). Browser checks are done by hand in a
 launched Chrome, not by a suite.

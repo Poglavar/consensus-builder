@@ -131,9 +131,21 @@ describe('Atlas parcel study', () => {
         const first = { type: 'Feature', properties: properties(), geometry: turf.bboxPolygon([-105.002,39.999,-105,40.001]).geometry };
         await expect(context(provider({}, [first, { ...first, properties: { ...properties(), slice_id: 'other' } }]))).rejects.toMatchObject({ code: 'study-multiple-zoning-areas' });
     });
-    it('rejects unsupported concavity instead of replacing the source shape', async () => {
+    it('bounds a concave lot by the ground beyond its yard strips, never by a replaced shape', async () => {
         const feature = parcel(); feature.geometry = turf.polygon([[[-105.001,40],[-105.0005,40],[-105.0008,40.0001],[-105.0005,40.0004],[-105.001,40.0004],[-105.001,40]]]).geometry;
-        await expect(context(provider(), feature)).rejects.toMatchObject({ code: 'unsupported-parcel-shape' });
+        const ctx = await context(provider(), feature);
+        expect(ctx.parcel.geometry).toEqual(feature.geometry);
+        const bound = core.derive(ctx, 0, turf);
+        expect(bound.points).toEqual([]);
+        expect(bound.areaM2).toBeGreaterThan(0); expect(bound.areaM2).toBeLessThan(turf.area(feature));
+        const outside = turf.difference(turf.feature(bound.geometry), feature);
+        expect(outside ? turf.area(outside) : 0).toBeLessThan(0.01);
+        // The study's design and its checks work from the same strips.
+        const result = assessment(ctx, { scale: 0.4 });
+        expect(check(result, 'parcelContainment').status).toBe('pass');
+        expect(check(result, 'rearSetback').status).toBe('pass');
+        // The fixture's front setback is a source estimate, so its check stays unknown on any shape.
+        expect(check(result, 'frontSetback').status).toBe('unknown');
     });
     it('rejects ambiguous or incomplete parcel point reads', async () => {
         const options = { sources: [provider()], parcelProvider: () => ({ queryBounds: async () => ({ complete: true, features: [parcel(), { ...parcel(), id: 'another' }] }) }) };

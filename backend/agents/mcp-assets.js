@@ -11,6 +11,7 @@ import { createPublicSourceFetch, validatePublicSourceUrl } from '../parcels/pub
 import { renderMapPreview, PREVIEW_WIDTH, PREVIEW_HEIGHT } from '../thumbnails/map-preview.js';
 import { renderProposalThumbnailSet } from '../thumbnails/tile-stitch.js';
 import { trustedMetadata } from './mcp-results.js';
+import { cityDrivingSide } from '../scripts/lib/frontend-city-money.mjs';
 const require = createRequire(import.meta.url);
 const imports = require('../../frontend/js/corridor-import.js');
 const modelGeometry = require('../../frontend/js/building-model-geometry.js');
@@ -159,11 +160,13 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
         const bytes = await dataOf(args), text = bytes.toString('utf8'), format = args.format;
         const createdAt = args.authoredAt || new Date().toISOString();
         if (args.kind === 'space' && !SPACE_KINDS.includes(args.spaceKind)) fail('space-kind-required', 'A space import needs spaceKind park, square or lake.');
-        const designs = []; let warnings = [], placement = 'georeference';
+        const designs = [], roads = []; let warnings = [], placement = 'georeference';
         // Road files, and GeoJSON centrelines, go through the site's own corridor import: the format's
         // parser makes the OSM form and recordsFromImport makes one record per road.
         async function corridorDesigns(parsed, source) {
-            const records = imports.recordsFromImport(parsed, { author: args.author, description: args.description, createdAt, source, fallbackTitle: args.title || 'Imported road' });
+            // OSM and GeoJSON ways do not say which side their traffic keeps to: the city's.
+            const records = imports.recordsFromImport(parsed, { author: args.author, description: args.description, createdAt, source, fallbackTitle: args.title || 'Imported road',
+                drivingSide: ['osm', 'geojson'].includes(source) ? cityDrivingSide(args.city) : undefined });
             if (!records.length) fail('import-empty', 'The file contains no road supported by the app importer.');
             for (const record of records) {
                 const definition = record.roadProposal.definition;
@@ -172,8 +175,7 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
                 record.city = args.city;
                 record.toleranceM = args.toleranceM;
                 record.roadProposal.definition = corridorRuntime.osm.toRecord(definition);
-                const content = designObject(record).content;
-                designs.push(await privateResult(content, args.parcelSourceId));
+                roads.push(designObject(record).content);
             }
         }
         if (['osm', 'opendrive'].includes(format)) {
@@ -204,6 +206,8 @@ export function createMcpAssetTools({ read, drafts, appOrigin, resolveDraftRefer
                 warnings = parsed.warnings || [];
             }
         } else fail('import-format-unsupported', 'Use geojson, osm or opendrive.');
+        // Imported roads are placed in the working plan in turn (agent-working-plan.md), so they join its roads and each other.
+        for (const content of roads) designs.push(await privateResult(content, args.parcelSourceId));
         return { designs, publication: 'private', warnings, import: { format, placement, count: designs.length, parser: format === 'geojson' ? 'app-intent-builders+app-corridor-import' : 'app-corridor-import' } };
     }
     async function upload(bytes, args) {

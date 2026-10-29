@@ -51,7 +51,7 @@
         if(existing)return existing;
         const known = await win.DesignSync.fetchDesigns(row.content.designCids);
         // Check every dependency before publishing any. The same policy applies to single-design
-        // publication; parcel layouts travel with the agreement which settles their ground.
+        // publication.
         const records = win.PlanComposition.localRecords(row, { apiBase: backend() });
         const missing = new Set(known.missing);
         for (const record of records) if (missing.has(win.DesignRecord.cidOf(record))) {
@@ -61,7 +61,8 @@
         const blocked = win.guestPolicyBlocks('publish');
         if (blocked) throw new Error(blocked);
         for (const member of row.designs) if (missing.has(member.cid)) {
-            await win.DesignSync.pinObject('design', member.content);
+            // Refuses a design over the publication limit before anything is sent.
+            win.DesignSync.addressObject(member.content);
             const source = row.designSources?.[member.cid]?.sourceId;
             const response = await win.fetch(backend() + '/designs', { method:'POST', signal:AbortSignal.timeout(120000), headers:{'Content-Type':'application/json'},
                 body:JSON.stringify({ cid:member.cid, content:member.content,

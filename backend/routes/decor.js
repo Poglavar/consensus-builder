@@ -1,5 +1,5 @@
 // Route for 3D "decor" — toggleable OSM-derived scenery (currently trees) around a proposal/camera.
-// Mirrors /buildings/near: the client posts a GeoJSON geometry + radius, and gets back the nearby
+// The client asks with a GET for a box + radius (the scene's area), and gets back the nearby
 // scenery in a compact shape the Three.js renderer instances. No city: where the geometry lies
 // decides (location-first.md). Trees come from the generic
 // provider (backend/decor/overture-trees.js), reading the shared `osm_decor` table that
@@ -43,24 +43,39 @@ export function setupDecorRoute(app, pool, options = {}) {
         }
     });
 
-    // POST /decor/near - scenery within `buffer_meters` of a GeoJSON geometry, anywhere.
-    // Body: { geometry: <GeoJSON Geometry EPSG:4326>, buffer_meters?: number,
-    //         kinds?: string[] }  — kinds defaults to ['trees']; unknown/unsupported kinds yield [].
+    // The area of a scenery read: `?bbox=west,south,east,north` (a point when the corners meet) and
+    // `?buffer_meters` (0..1000, default 150), as the GeoJSON geometry the providers take. Scenery is
+    // read for a box (the scene's buildings extent, or a point and a radius), so these are GETs:
+    // cacheable, and never counted against the write budget. Null after answering a 400.
+    function sceneryArea(req, res) {
+        const bbox = String(req.query.bbox || '').split(',').map(value => (value.trim() === '' ? NaN : Number(value)));
+        const [west, south, east, north] = bbox;
+        if (bbox.length !== 4 || bbox.some(value => !Number.isFinite(value)) || west > east || south > north
+            || west < -180 || east > 180 || south < -90 || north > 90) {
+            res.status(400).json({ error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in EPSG:4326.' });
+            return null;
+        }
+        const bufferMeters = req.query.buffer_meters === undefined ? 150 : Number(req.query.buffer_meters);
+        if (!Number.isFinite(bufferMeters) || bufferMeters < 0 || bufferMeters > 1000) {
+            res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
+            return null;
+        }
+        const geometry = west === east && south === north
+            ? { type: 'Point', coordinates: [west, south] }
+            : { type: 'Polygon', coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]] };
+        return { geometry, bufferMeters };
+    }
+
+    // GET /decor/near?bbox=…&buffer_meters=…&kinds=trees - scenery within `buffer_meters` of the box,
+    // anywhere. `kinds` (comma-separated) defaults to trees; unknown/unsupported kinds yield [].
     //
     // Response: { trees: [[lng, lat], ...], count: N, source: '<provider id>' }
-    app.post('/decor/near', async (req, res) => {
+    app.get('/decor/near', async (req, res) => {
         try {
-            const body = req.body || {};
-            const geometry = body.geometry;
-            const bufferMeters = Number.isFinite(Number(body.buffer_meters)) ? Number(body.buffer_meters) : 150;
-            const kinds = Array.isArray(body.kinds) && body.kinds.length ? body.kinds : ['trees'];
-
-            if (!geometry || typeof geometry !== 'object' || !geometry.type) {
-                return res.status(400).json({ error: 'Missing or invalid `geometry` (expected GeoJSON Geometry in EPSG:4326).' });
-            }
-            if (!isFinite(bufferMeters) || bufferMeters < 0 || bufferMeters > 1000) {
-                return res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
-            }
+            const area = sceneryArea(req, res);
+            if (!area) return;
+            const { geometry, bufferMeters } = area;
+            const kinds = typeof req.query.kinds === 'string' && req.query.kinds ? req.query.kinds.split(',') : ['trees'];
 
             const out = { trees: [], count: 0, source: 'overture-trees' };
 
@@ -73,50 +88,36 @@ export function setupDecorRoute(app, pool, options = {}) {
             out.count = out.trees.length;
             res.json(out);
         } catch (err) {
-            console.error('Error in POST /decor/near:', err);
+            console.error('Error in GET /decor/near:', err);
             res.status(500).json({ error: 'Internal server error' });
         }
     });
 
-    // POST /decor/water - sea, lakes, rivers and streams within `buffer_meters` of a GeoJSON geometry,
-    // anywhere on Earth. Body: { geometry, buffer_meters? }.
+    // GET /decor/water?bbox=…&buffer_meters=… - sea, lakes, rivers and streams within `buffer_meters`
+    // of the box, anywhere on Earth.
     // Response: { areas: [{ geometry: Polygon|MultiPolygon, kind }], count, source: 'openfreemap' }
-    app.post('/decor/water', async (req, res) => {
+    app.get('/decor/water', async (req, res) => {
         try {
-            const body = req.body || {};
-            const geometry = body.geometry;
-            const bufferMeters = Number.isFinite(Number(body.buffer_meters)) ? Number(body.buffer_meters) : 150;
-            if (!geometry || typeof geometry !== 'object' || !geometry.type) {
-                return res.status(400).json({ error: 'Missing or invalid `geometry` (expected GeoJSON Geometry in EPSG:4326).' });
-            }
-            if (!isFinite(bufferMeters) || bufferMeters < 0 || bufferMeters > 1000) {
-                return res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
-            }
-            res.json(await waterProvider.near(geometry, bufferMeters));
+            const area = sceneryArea(req, res);
+            if (!area) return;
+            res.json(await waterProvider.near(area.geometry, area.bufferMeters));
         } catch (err) {
             // Scenery: the scene draws without water, and the log says why.
-            console.error('Error in POST /decor/water:', err.message);
+            console.error('Error in GET /decor/water:', err.message);
             res.status(502).json({ error: 'Water could not be loaded.' });
         }
     });
-    // POST /decor/green - lawns, parks, meadows, farmland and woods within `buffer_meters` of a GeoJSON
-    // geometry, anywhere on Earth. Body: { geometry, buffer_meters? }.
+    // GET /decor/green?bbox=…&buffer_meters=… - lawns, parks, meadows, farmland and woods within
+    // `buffer_meters` of the box, anywhere on Earth.
     // Response: { areas: [{ geometry: Polygon|MultiPolygon, kind: 'lawn'|'meadow'|'forest' }], count, source }
-    app.post('/decor/green', async (req, res) => {
+    app.get('/decor/green', async (req, res) => {
         try {
-            const body = req.body || {};
-            const geometry = body.geometry;
-            const bufferMeters = Number.isFinite(Number(body.buffer_meters)) ? Number(body.buffer_meters) : 150;
-            if (!geometry || typeof geometry !== 'object' || !geometry.type) {
-                return res.status(400).json({ error: 'Missing or invalid `geometry` (expected GeoJSON Geometry in EPSG:4326).' });
-            }
-            if (!isFinite(bufferMeters) || bufferMeters < 0 || bufferMeters > 1000) {
-                return res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
-            }
-            res.json(await greenProvider.near(geometry, bufferMeters));
+            const area = sceneryArea(req, res);
+            if (!area) return;
+            res.json(await greenProvider.near(area.geometry, area.bufferMeters));
         } catch (err) {
             // Scenery: the scene draws without green areas, and the log says why.
-            console.error('Error in POST /decor/green:', err.message);
+            console.error('Error in GET /decor/green:', err.message);
             res.status(502).json({ error: 'Green areas could not be loaded.' });
         }
     });

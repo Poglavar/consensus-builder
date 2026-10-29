@@ -402,6 +402,7 @@ describe('editor sites (refuse)', () => {
             window: { __parcelArrangement: A },
             singleMap: { removeLayer() {} },
             singleGroundPreviewLayer: null,
+            singleGroundPreviewSuspended: false,
             currentGroundSurface: () => { throw refusal; },
             buildingGroundApi: () => null
         });

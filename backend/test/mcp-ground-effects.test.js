@@ -47,7 +47,7 @@ describe('MCP road cut effects', () => {
         expect(describeRoadCuts([surface, earlierRoad, laterFarRoad])).toEqual([]);
     });
 
-    it('includes cut notices in agreement drafts and plan revisions', async () => {
+    it('includes cut notices in agreement drafts; a terms revision keeps their ground', async () => {
         const site = box(-0.1, 51.5, -0.098, 51.502);
         const store = createPreviewLinks({ origin: 'https://mcp.example', appOrigin: 'https://app.example' });
         const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: { UGT_APP_ORIGIN: 'https://app.example' },
@@ -64,7 +64,8 @@ describe('MCP road cut effects', () => {
         const common = { city: 'london', parcelSourceId: 'test-source' };
         const building = await tools.draftBuilding({ ...common, title: 'Earlier building', outline: box(-0.0995, 51.5007, -0.0985, 51.5013), floors: 2, authoredAt: '2020-01-01T00:00:00.000Z' });
         const road = await tools.draftRoad({ ...common, title: 'Later road', points: [[-0.0999, 51.501], [-0.0981, 51.501]], preset: '1+1', authoredAt: '2021-01-01T00:00:00.000Z' });
-        const drafted = await tools.draftAgreement({ currency: 'GBP', designs: [building.design, road.design], title: 'Road cut', ...common });
+        const named = await tools.draftPlan({ designs: [building.design, road.design], title: 'Road cut plan' });
+        const drafted = await tools.draftAgreement({ currency: 'GBP', plan: named.draftArtifact, rulePreset: 'community-vote', title: 'Road cut' });
         expect(drafted.groundEffects).toEqual([expect.objectContaining({
             designCid: building.cid, roadTitle: 'Later road', surfaceKind: 'building',
             behavior: 'effective-ground-carved; authored-geometry-unchanged'
@@ -72,8 +73,10 @@ describe('MCP road cut effects', () => {
         expect(drafted.groundEffects[0].remainingAreaM2AfterAllRoadCuts).toBeLessThan(drafted.groundEffects[0].authoredAreaM2);
         expect(drafted.warnings.join(' ')).toMatch(/map views/);
         const revised = await tools.editAgreement({ plan: drafted, expectedCid: drafted.cid, terms: { title: 'Revised road cut' } });
-        expect(revised.groundEffects).toEqual(drafted.groundEffects);
-        expect(revised.warnings.join(' ')).toMatch(/map views/);
+        // A terms revision keeps the named plan and its derived ground, so the cut notices above still describe it.
+        expect(revised.plan).toEqual(drafted.plan);
+        expect(revised.agreement.outputs).toEqual(drafted.agreement.outputs);
+        expect(revised.agreement.title).toBe('Revised road cut');
     });
 
     it('keeps structure-over-road details and gives an actionable recovery', () => {

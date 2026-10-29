@@ -275,6 +275,13 @@
             : dependents;
     }
 
+    // Who stands on a record's ground when it comes off the map: the later applied records that an
+    // edit removing all of its ground would name (editDependents with nothing left). Unapply offers
+    // to take them off too, or to leave them to cut the ground again on their own. Oldest first.
+    function unapplyDependents(record, records, options = {}) {
+        return editDependents(record, {}, records, options);
+    }
+
     // A short human label for a base parcel id: "HR-339270-823/1" -> "823/1".
     function shortParcelLabel(parcelId) {
         const s = String(parcelId || '');
@@ -295,6 +302,7 @@
         displacesBuildingContent,
         appliedRivals,
         editDependents,
+        unapplyDependents,
         shortParcelLabel
     };
 

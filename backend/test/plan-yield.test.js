@@ -1,4 +1,4 @@
-// What a plan yields: floor area, apartments, people, per epoch.
+// What a plan yields: floor area, apartments, people, per construction period.
 //
 // Two things these tests exist to stop. First, an area formula that is subtly wrong — so the ring
 // area is checked against turf on real Šibenik coordinates rather than against itself. Second, a
@@ -44,10 +44,10 @@ const blockRule = {
 };
 
 /** A rule-driven building proposal, in the shape the server row has. */
-function ruleProposal({ epoch = null, applied = true, heights = [17.5], rings = SIBENIK } = {}) {
+function ruleProposal({ id = 'design', applied = true, heights = [17.5], rings = SIBENIK } = {}) {
     return {
+        proposalId: id,
         applied,
-        epoch_year: epoch,
         building_proposal: {
             parameters: { rule: blockRule },
             buildings: heights.map(height => polygon(rings, {
@@ -153,36 +153,43 @@ describe('proposals arrive in both shapes', () => {
         expect(buildingFeaturesOf({})).toEqual([]);
     });
 
-    it('reads the epoch from either casing', () => {
-        const byRow = planYield([ruleProposal({ epoch: 2045 })]);
-        expect(byRow.byEpoch.map(b => b.year)).toEqual([2045]);
-        const client = { applied: true, epochYear: 2045, buildingProposal: { buildings: [] } };
-        expect(planYield([client]).byEpoch.map(b => b.year)).toEqual([2045]);
+    it('takes each period from the caller only, as an integer year', () => {
+        // Periods belong to the plan's schedule: with no periodOf, no design is in one.
+        const dated = ruleProposal({ id: 'a' });
+        expect(planYield([dated]).byPeriod).toEqual([]);
+        expect(planYield([dated]).unassigned.proposals).toBe(1);
+        expect(planYield([dated], { periodOf: () => 2045 }).byPeriod.map(b => b.year)).toEqual([2045]);
+        expect(planYield([dated], { periodOf: () => 2045.5 }).byPeriod).toEqual([]);
+        expect(planYield([dated], { periodOf: () => null }).unassigned.proposals).toBe(1);
     });
 });
 
+// The periods a plan's schedule gives its members: the year each construction window ends.
+const PERIODS = { a: 2035, b: 2035, c: 2045 };
+const periodOf = proposal => PERIODS[proposal.proposalId] ?? null;
+
 describe('the plan splits by period', () => {
     const plan = () => [
-        ruleProposal({ epoch: 2035 }),
-        ruleProposal({ epoch: 2035 }),
-        ruleProposal({ epoch: 2045 }),
-        ruleProposal({ epoch: null })
+        ruleProposal({ id: 'a' }),
+        ruleProposal({ id: 'b' }),
+        ruleProposal({ id: 'c' }),
+        ruleProposal({ id: 'unscheduled' })
     ];
 
     it('reports what each period adds', () => {
-        const result = planYield(plan());
-        expect(result.byEpoch.map(b => b.year)).toEqual([2035, 2045]);
-        expect(result.byEpoch[0].proposals).toBe(2);
-        expect(result.byEpoch[1].proposals).toBe(1);
+        const result = planYield(plan(), { periodOf });
+        expect(result.byPeriod.map(b => b.year)).toEqual([2035, 2045]);
+        expect(result.byPeriod[0].proposals).toBe(2);
+        expect(result.byPeriod[1].proposals).toBe(1);
         expect(result.unassigned.proposals).toBe(1);
         expect(result.total.proposals).toBe(4);
     });
 
-    it('carries proposals with no epoch into every cumulative year', () => {
-        const result = planYield(plan());
+    it('carries unscheduled proposals into every cumulative year', () => {
+        const result = planYield(plan(), { periodOf });
         const [first, second] = result.cumulative;
         expect(first.year).toBe(2035);
-        expect(first.proposals).toBe(3);     // two 2035 + the undated one
+        expect(first.proposals).toBe(3);     // two 2035 + the unscheduled one
         expect(second.year).toBe(2045);
         expect(second.proposals).toBe(4);
         expect(second.grossFloorAreaM2).toBeCloseTo(result.total.grossFloorAreaM2, 6);
@@ -222,18 +229,18 @@ describe('apartments and people follow from floor area', () => {
         const empty = planYield([]);
         expect(empty.total.apartments).toBe(0);
         expect(empty.total.people).toBe(0);
-        expect(empty.byEpoch).toEqual([]);
+        expect(empty.byPeriod).toEqual([]);
     });
 });
 
 describe('changing an assumption re-derives without re-measuring', () => {
     const plan = () => [
-        ruleProposal({ epoch: 2035 }),
-        ruleProposal({ epoch: 2045 }),
-        ruleProposal({ epoch: null })
+        ruleProposal({ id: 'a' }),
+        ruleProposal({ id: 'c' }),
+        ruleProposal({ id: 'unscheduled' })
     ];
-    const A = { housingShare: 0.75, efficiency: 0.8, avgApartmentM2: 65, personsPerApartment: 2.4, m2PerJob: 30 };
-    const B = { housingShare: 0.5, efficiency: 0.7, avgApartmentM2: 90, personsPerApartment: 3, m2PerJob: 25 };
+    const A = { housingShare: 0.75, efficiency: 0.8, avgApartmentM2: 65, personsPerApartment: 2.4, m2PerJob: 30, periodOf };
+    const B = { housingShare: 0.5, efficiency: 0.7, avgApartmentM2: 90, personsPerApartment: 3, m2PerJob: 25, periodOf };
 
     it('lands on exactly what a full run under the new assumptions gives', () => {
         expect(rederive(planYield(plan(), A), B)).toEqual(planYield(plan(), B));
@@ -344,15 +351,15 @@ describe('freeform structures', () => {
 
     it('measures a park as open space, with no floor area', () => {
         const park = {
+            proposalId: 'a',
             applied: true,
-            epoch_year: 2035,
             structure_proposal: { kind: 'park', geometry: { type: 'Polygon', coordinates: SIBENIK } }
         };
-        const result = planYield([park]);
+        const result = planYield([park], { periodOf });
         expect(result.total.openSpaces).toBe(1);
         expect(result.total.openSpaceM2).toBeCloseTo(geometryAreaM2(polygon(SIBENIK)), 3);
         expect(result.total.grossFloorAreaM2).toBe(0);
-        expect(result.byEpoch[0].openSpaceM2).toBeGreaterThan(0);
+        expect(result.byPeriod[0].openSpaceM2).toBeGreaterThan(0);
     });
 
     it('counts a park as it stands when the caller knows its applied body (a road built through it)', () => {

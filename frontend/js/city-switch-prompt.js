@@ -36,7 +36,7 @@
             if (current) url.searchParams.set('city', current);
             else url.searchParams.delete('city');
             url.searchParams.delete('bets');
-            url.searchParams.delete('focusProposal');
+            Object.values(global.SelectionAddress.PARAMS).forEach(param => url.searchParams.delete(param));
             const path = ['/proposals/', '/designs/', '/agreements/', '/bets/'].some(prefix => url.pathname.startsWith(prefix)) ? '/' : url.pathname;
             global.history.replaceState(null, '', `${path}${url.search}${url.hash}`);
         } catch (_) { /* a stale URL is better than a thrown error */ }
@@ -94,14 +94,15 @@
     }
 
     // Opens a proposal that belongs to another city's store (CityConfigManager.foreignCityFor; storage
-    // refuses to import it here): reload into that city with ?focusProposal=<id>, which
-    // world/proposal-entry.js opens on arrival. A click in a list, the search box or a feed is the
+    // refuses to import it here): reload into that city with ?design=<id>, which
+    // world/proposal-entry.js opens and frames on arrival (the view here is not its city's). A click in a list, the search box or a feed is the
     // request itself; a link opened from outside asks first (`ask`), as shared links do. Resolves true
     // when the caller must stop (the page is leaving, or the route was dropped).
     async function openProposalInItsCity(proposalId, cityId, { ask = false } = {}) {
         const target = new URL(global.location.href);
         target.pathname = '/';
-        target.searchParams.set('focusProposal', String(proposalId));
+        ['at', 'camera', ...Object.values(global.SelectionAddress.PARAMS)].forEach(param => target.searchParams.delete(param));
+        target.searchParams.set('design', String(proposalId));
         if (ask) return promptCityMismatchForProposal(cityId, { url: target.href });
         if (await global.CityConfigManager.switchCity(cityId, { requireConfirmation: false, url: target.href })) return true;
         stripSharedRouteFromUrl();

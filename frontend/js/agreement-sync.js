@@ -1,5 +1,5 @@
 // agreement-sync.js — an agreement leaves the device and comes back (plan-design-agreement.md, M2
-// "Browser"). Propose pins and indexes its designs (a parcel layout travels with its agreement), pins
+// "Browser"). Propose pins and indexes its designs, pins
 // the agreement/v1 object, indexes it (POST /agreements) and marks the local record
 // `published: { cid, publishedAt, apiBase, sponsor }`; an /agreements/<cid> link reads the agreement
 // and its designs from the index, applies the designs, stores the agreement as a local record and
@@ -68,12 +68,10 @@
         const matches = !!derivedOutputs && derivedOutputs.length === published.size
             && derivedOutputs.every(output => published.has(output.hash));
         const localOutputs = new Map((matches ? derivedOutputs : []).map(output => [output.hash, output]));
-        const inputHolders = new Map(content.inputs.parcels.map(parcel => [String(parcel.parcelId), parcel.holders]));
         // Geometry and local piece ids are reconstructed, not the published terms. In particular,
         // a fresh area measurement must not silently change the agreement's committed content.
         const outputs = content.outputs.map(output => {
             const local = localOutputs.get(output.hash);
-            const unchangedParcel = output.role === 'parcel' && !output.producedBy && output.fromParcelIds.length === 1;
             return {
                 hash: output.hash,
                 pieceId: local?.pieceId || output.hash,
@@ -81,9 +79,6 @@
                 fromParcelIds: output.fromParcelIds,
                 producedBy: output.producedBy ? localIdOf(output.producedBy) || null : null,
                 role: output.role,
-                // No allocation on unchanged land means the published input holding carries over;
-                // an unrelated receiving browser's owner cache does not define that agreement.
-                holders: unchangedParcel ? inputHolders.get(String(output.fromParcelIds[0])) || [] : local?.holders || [],
                 geometry: local?.geometry || null
             };
         });
@@ -98,7 +93,7 @@
             plan,
             designs,
             inputs: {
-                parcels: content.inputs.parcels.map(parcel => ({ parcelId: parcel.parcelId, ...(parcel.parcelSourceId ? { parcelSourceId: parcel.parcelSourceId } : {}), areaM2: parcel.areaM2, holders: parcel.holders })),
+                parcels: content.inputs.parcels.map(parcel => ({ parcelId: parcel.parcelId, ...(parcel.parcelSourceId ? { parcelSourceId: parcel.parcelSourceId } : {}), areaM2: parcel.areaM2 })),
                 openGroundM2: content.inputs.openGroundM2
             },
             outputs,
@@ -143,7 +138,6 @@
                 const parcels = [...(body.missing || []), ...(body.extra || [])].join(', ');
                 return t('agreement.publish.errors.inputsDifferFromBinding', 'The agreement’s land is not the land its designs take on the server ({{parcels}}). Edit the agreement on the current map and propose it again.', { parcels });
             }
-            if (code === 'pinning-unconfigured') return t('agreement.publish.errors.pinningUnconfigured', 'This server cannot pin published agreements yet (pinning is not configured).');
             if (code === 'deadline-past') return t('agreement.publish.errors.deadlinePast', 'The agreement’s deadline has passed. Edit the deadline and propose it again.');
             const reason = (body && body.error) || `HTTP ${status}`;
             return t('agreement.publish.errors.refused', 'The server refused this agreement: {{reason}}', { reason });
@@ -215,9 +209,8 @@
         }
 
         /**
-         * Proposes a local agreement: publishes each design (a parcel layout is pinned and sent with the
-         * agreement, which indexes it), pins the agreement/v1 object, indexes it and marks the record
-         * published. The caller checks the agreement still matches the map (AgreementGround.check).
+         * Proposes a local agreement: publishes each design, addresses its plan and the agreement/v1
+         * object, indexes the agreement with its plan and marks the record published. The caller checks the agreement still matches the map (AgreementGround.check).
          * Throws an Error with `code` and a translated `message`; a guest without a name gets
          * `cancelled: true`.
          * @returns {Promise<{ cid, row, link }>}
@@ -235,19 +228,10 @@
 
             // Each design as it is published (an own draft carries the current profile's name first).
             const cids = new Map();
-            const carried = [];
-            const layouts = [];
             for (const design of agreement.designs) {
                 const record = designOf(design.proposalId);
                 if (!record) throw failure('design-missing', t('agreement.publish.errors.designMissing', 'A design of this agreement is no longer on this device.'));
-                if (win.ProposalPublishTerms.publishRefusal(record)) {
-                    const pinned = await win.DesignSync.pinDesign(record);
-                    cids.set(design.proposalId, pinned.cid);
-                    carried.push(pinned);
-                    layouts.push({ record, cid: pinned.cid });
-                } else {
-                    cids.set(design.proposalId, (await win.DesignSync.publishDesign(record)).cid);
-                }
+                cids.set(design.proposalId, (await win.DesignSync.publishDesign(record)).cid);
             }
             // Stamping an author changes a design's CID: the record follows what was published.
             if (agreement.designs.some(design => design.cid !== cids.get(design.proposalId))) {
@@ -263,7 +247,6 @@
                     plan?.content.view || win.MapShare.capture(win));
                 plan = { cid: cidApi().cidOfObject(planContent), content: planContent };
             }
-            await win.DesignSync.pinObject('plan', plan.content);
             agreement = store().save({ ...agreement, plan });
 
             const parcelSourceId = win.DesignSync.parcelSourceIdOf(agreement.city);
@@ -276,17 +259,8 @@
                     parcels: agreement.inputs.parcels.map(parcel => (parcelSourceId ? { ...parcel, parcelSourceId } : parcel))
                 }
             }, proposalId => (cids.has(proposalId) ? cids.get(proposalId) : null));
-            let cid;
-            try {
-                cid = (await win.DesignSync.pinObject('agreement', content)).cid;
-            } catch (error) {
-                // The courier's refusal, worded for an agreement.
-                if (error && (error.body || error.code === 'cid-mismatch')) {
-                    throw failure(error.code, refusalMessage(error.status || 0, error.body || { code: error.code }), { status: error.status, body: error.body });
-                }
-                throw error;
-            }
-            const response = await request('POST', '/agreements', { cid, content, plan, ...(carried.length ? { designs: carried } : {}) });
+            const { cid } = win.DesignSync.addressObject(content);
+            const response = await request('POST', '/agreements', { cid, content, plan });
             if (!response.ok && response.status !== 409) {
                 const code = (response.body && response.body.code) || `http-${response.status}`;
                 throw failure(code, refusalMessage(response.status, response.body), { status: response.status, body: response.body });
@@ -295,10 +269,8 @@
             if (!row || row.cid !== cid) throw failure('cid-mismatch', t('agreement.publish.errors.cidMismatch', 'The server computed a different identity for this agreement, so it was not proposed.'));
             const apiBase = win.DesignSync.apiBase();
             const publishedAt = row.createdAt || new Date().toISOString();
-            // A parcel layout is published with its agreement.
-            layouts.forEach(({ record, cid: layoutCid }) => win.DesignSync.markPublished(record, { cid: layoutCid, publishedAt, apiBase }));
             store().save({ ...agreement, published: { cid, publishedAt, apiBase, sponsor: content.sponsor } });
-            log(`proposed ${agreementId} as ${cid} (${agreement.designs.length} design(s), ${carried.length} sent with it, sponsor ${content.sponsor || 'none'})`);
+            log(`proposed ${agreementId} as ${cid} (${agreement.designs.length} design(s), sponsor ${content.sponsor || 'none'})`);
             return { cid, row, link: agreementLink(cid, { city: agreement.city }) };
         }
 
@@ -414,7 +386,6 @@
             return ground.derive({
                 designs: records, fabric,
                 originals: win.AgreementDialog.originalsById(features, fabric && fabric.featureId),
-                ownerOf: ground.localHolders({ storage: win.PersistentStorage, agents: win.agentStorage }),
                 area: ground.areaOf
             });
         }

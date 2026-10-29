@@ -80,9 +80,9 @@
         body.className = 'cb-tiles station-level-choices';
         let dialog;
         for (const [type, icon, labelKey, fallback] of [
-            ['tram', 'ground', 'groundLevel', 'Ground level'],
-            ['elevated', 'elevated', 'elevated', 'Elevated station'],
-            ['underground', 'underground', 'underground', 'Underground']
+            ['tram', 'ground', 'stationEditor.groundLevel', 'Ground level'],
+            ['elevated', 'elevated', 'panel.parcel.build.elevatedStation', 'Elevated station'],
+            ['underground', 'underground', 'stationEditor.underground', 'Underground']
         ]) {
             const button = global.document.createElement('button');
             button.type = 'button';
@@ -93,13 +93,13 @@
             symbol.setAttribute('aria-hidden', 'true');
             const label = global.document.createElement('span');
             label.className = 'cb-tile__label';
-            label.textContent = stationEditorText(labelKey, fallback);
+            label.textContent = appText(labelKey, fallback);
             button.append(symbol, label);
             button.addEventListener('click', () => dialog.close(type));
             body.appendChild(button);
         }
         dialog = global.CbDialog.open({
-            title: stationEditorText('trackStation', 'Track station'), size: 'sm', body,
+            title: appText('panel.parcel.build.trackStation', 'Track station'), size: 'sm', body,
             actions: [{ id: 'cancel', label: stationEditorText('cancel', 'Cancel'), value: null }]
         });
         return dialog ? dialog.closed.then(type => type && type !== 'cancel' ? startTransitStationPlacement(type) : false) : Promise.resolve(false);
@@ -737,13 +737,17 @@
 
     const STATION_EDITOR_PANE = 'onMapEditorPane';
 
-    function stationEditorText(key, fallback, params = {}) {
-        const fullKey = `stationEditor.${key}`;
+    function appText(fullKey, fallback, params = {}) {
         try {
             const translated = global.i18n?.t?.(fullKey, params);
             if (translated && translated !== fullKey) return translated;
         } catch (_) { }
         return fallback;
+    }
+
+    function stationEditorText(key, fallback, params = {}) {
+        const fullKey = `stationEditor.${key}`;
+        return appText(fullKey, fallback, params);
     }
 
     function platformHeightBounds(typeValue) {

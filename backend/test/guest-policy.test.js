@@ -58,13 +58,11 @@ describe('GuestPolicy.check', () => {
     });
 });
 
-// The browser part of proposals/design-sync.js over a fake index: POST /pins echoes the CID it is
-// sent, POST /designs answers the indexed row.
+// The browser part of proposals/design-sync.js over a fake index: POST /designs answers the indexed row.
 function designPublisher(profile) {
     const fetch = vi.fn(async (url, init = {}) => {
         const body = init.body ? JSON.parse(init.body) : null;
-        const answer = url.endsWith('/pins') ? { cid: body.cid, pinnedAt: '2026-10-21T10:00:00.000Z' }
-            : { cid: body.cid, createdAt: '2026-10-21T10:00:01.000Z' };
+        const answer = { cid: body.cid, createdAt: '2026-10-21T10:00:01.000Z' };
         return { ok: true, status: 201, json: async () => answer };
     });
     const win = {
@@ -108,7 +106,7 @@ describe('browser gates follow the policy', () => {
         for (const action of calls) expect(policy.requires(action)).toBe('name');
     });
 
-    it('a guest publishing a design is stopped before anything is pinned or restamped', async () => {
+    it('a guest publishing a design is stopped before anything is sent or restamped', async () => {
         const { win, api, fetch } = designPublisher(GUEST);
         await expect(api.publishDesign(park())).rejects.toMatchObject({ code: 'name-needed', cancelled: true });
         expect(win.guestPolicyBlocks).toHaveBeenCalledWith('publish');
@@ -116,14 +114,14 @@ describe('browser gates follow the policy', () => {
         expect(win.stampCurrentAuthor).not.toHaveBeenCalled();
     });
 
-    it('a named profile publishes: the author is stamped before the design is pinned and indexed', async () => {
+    it('a named profile publishes: the author is stamped before the design is indexed', async () => {
         const { win, api, fetch } = designPublisher(NAMED);
         const design = park();
         const result = await api.publishDesign(design);
         expect(win.guestPolicyBlocks).toHaveBeenCalledWith('publish');
         expect(win.stampCurrentAuthor).toHaveBeenCalledWith(design);
         expect(win.stampCurrentAuthor.mock.invocationCallOrder[0]).toBeLessThan(fetch.mock.invocationCallOrder[0]);
-        expect(fetch.mock.calls.map(([url]) => url)).toEqual(['https://api.example.test/pins', 'https://api.example.test/designs']);
+        expect(fetch.mock.calls.map(([url]) => url)).toEqual(['https://api.example.test/designs']);
         expect(design.published).toEqual({ cid: result.cid, publishedAt: '2026-10-21T10:00:01.000Z', apiBase: 'https://api.example.test' });
     });
 

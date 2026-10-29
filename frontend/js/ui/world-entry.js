@@ -95,12 +95,10 @@
     function land(input) {
         if (state.landing) return Promise.resolve(null);
         try {
-            const url = new URL(global.location.href);
-            if (url.searchParams.has('focusProposal')) {
-                url.searchParams.delete('focusProposal');
-                global.history.replaceState(global.history.state, '', url.toString());
-            }
-        } catch (error) { console.warn('[world-entry] could not clear proposal focus from the URL', error); }
+            // A new place: the selection the address named is left behind (selection-address.js).
+            const next = global.SelectionAddress.withSelection(global.location.href, null);
+            if (next) global.history.replaceState(global.history.state, '', next);
+        } catch (error) { console.warn('[world-entry] could not clear the selection from the URL', error); }
         const m = manager();
         const decision = Model.resolveLanding({
             cityId: input.cityId,
@@ -126,7 +124,7 @@
             if (!camera) { state.landing = false; return null; } // the view was closed mid-flight
             const proposalId = await latest;
             if (proposalId) {
-                const event = { proposalId, cityId: decision.cityId, href: `/?focusProposal=${encodeURIComponent(proposalId)}` };
+                const event = { proposalId, cityId: decision.cityId, href: `/?design=${encodeURIComponent(proposalId)}` };
                 return global.WorldProposalEntry.open(event, { arrive: 'latest' }).finally(() => { state.landing = false; });
             }
             const dataUrl = global.WorldView.captureHandoffFrame();
@@ -338,7 +336,7 @@
         if (!slot || !slot.parentNode) return;
         if (!state.banner) {
             state.banner = el('div', 'explore-banner cb-banner cb-banner--warning', { id: 'explore-banner', role: 'status' });
-            // The shared banner card (js/ui/banner-stack.js; ephemerals.md), else under the search.
+            // The shared banner card (js/ui/banner-stack.js; design-language.md, Messages), else under the search.
             const stackApi = global.__BannerStack;
             if (!(stackApi && typeof stackApi.mount === 'function' && stackApi.mount(state.banner))) {
                 slot.parentNode.insertBefore(state.banner, slot.nextSibling);

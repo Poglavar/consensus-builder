@@ -299,6 +299,10 @@
             message = t('blocked', `The provider denied access (HTTP ${deniedStatus}). It may restrict IP addresses or require authentication. Choose another source or try again later.`, { status: deniedStatus });
         } else if (status === 504 || error?.name === 'TimeoutError' || error?.name === 'AbortError') {
             message = t('timeout', 'This parcel source timed out. Try again shortly.');
+        } else if (/^(live-fabric-|cadastral-)/.test(code)) {
+            // The source answered; the map refused to take the parcels in (the live fabric's own
+            // checks), which is not the source being unavailable.
+            message = t('notIntegrated', 'The parcels arrived but could not be added to the map.');
         } else {
             message = t('unavailable', 'This parcel source is temporarily unavailable.');
         }

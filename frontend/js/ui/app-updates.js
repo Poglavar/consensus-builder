@@ -52,8 +52,27 @@
                 || win.MapShell?.isBlockingDialogOpen() || doc.querySelector('[aria-busy="true"]')) {
                 blocked = true; render(); return false;
             }
+            saveResume();
             win.location.reload(); // Native beforeunload handlers and draft flushes still run.
             return true;
+        }
+        // The person continues where they were: the address gets the current pose now rather than
+        // after its debounce, and the open click stack is recorded for the next page of this tab.
+        function saveResume() {
+            try { win.MapShare?.createAddressSync(win).write(); } catch (error) {
+                console.error(`[${new Date().toISOString()}] [app-updates] the address could not take the current view`, error);
+            }
+            const three = doc.body.classList.contains('three-mode-active');
+            const stackApi = three ? win.ThreeClickStack : win.ClickStack;
+            const stack = stackApi?.isOpen?.() ? stackApi.current() : null;
+            const record = win.ReleaseUpdates.resumeRecord({
+                mode: win.__mapModeState?.desired || '2d', pathname: win.location.pathname, now: Date.now(), stack,
+                selectedInstance: (three ? win.ThreeClickStack : win.__clickStackModel)?.selectedInstance,
+                point: three ? null : win.ClickStack?.point?.()
+            });
+            try { win.sessionStorage.setItem(win.ReleaseUpdates.RESUME_KEY, JSON.stringify(record)); } catch (error) {
+                console.warn(`[${new Date().toISOString()}] [app-updates] the open selection could not be kept for the reload`, error);
+            }
         }
         checkButton.addEventListener('click', () => {
             if (win.BusyControl.isBusy(checkButton)) return;
@@ -75,6 +94,50 @@
         win.i18n.onChange?.(() => render());
         win.AppUpdates = Object.freeze({ check: () => checker.check(), snapshot: checker.snapshot });
         render(); automaticCheck();
+        resumeAfterUpdate();
+    }
+
+    // After "Update now": reopen what the click stack held once its designs and parcels are back.
+    // Each data or mode event retries; a click or key press of the person's own ends the attempt.
+    const RESUME_WINDOW_MS = 60 * 1000;
+    function resumeAfterUpdate() {
+        let record = null;
+        try {
+            record = win.ReleaseUpdates.readResume(win.sessionStorage.getItem(win.ReleaseUpdates.RESUME_KEY),
+                { now: Date.now(), pathname: win.location.pathname });
+            win.sessionStorage.removeItem(win.ReleaseUpdates.RESUME_KEY);
+        } catch (_) { return; }
+        if (!record) return;
+        const deadline = Date.now() + RESUME_WINDOW_MS;
+        let active = true;
+        const log = message => console.log(`[${new Date().toISOString()}] [app-updates] resume after update: ${message}`);
+        const listeners = [[win, 'parcelDataLoaded'], [win, 'parcelFabricCommitted'], [doc, 'proposalStorageChanged'],
+            [win, 'planninggeometrychange'], [win, 'buildingsLayerUpdated'], [win, 'threeModeReady'], [win, 'mapmodechange']];
+        const stop = reason => {
+            if (!active) return;
+            active = false;
+            listeners.forEach(([target, name]) => target.removeEventListener(name, attempt));
+            doc.removeEventListener('pointerdown', takeOver, true);
+            doc.removeEventListener('keydown', takeOver, true);
+            log(reason);
+        };
+        const takeOver = () => stop('the person took over');
+        function attempt() {
+            if (!active) return;
+            if (Date.now() > deadline) { stop(`gave up; ${Object.keys(record.selected).join(', ')} not found again`); return; }
+            const three = record.mode !== '2d';
+            if (three !== doc.body.classList.contains('three-mode-active')) return;
+            if (!Object.keys(record.selected).length) { stop('nothing was open'); return; }
+            const done = three ? win.resumeThreeModeStack?.(record)
+                : win.ClickStack?.resume(win.L.latLng(record.point[0], record.point[1]), record);
+            if (done) stop(`reopened ${record.selectedKind || 'stack'}`);
+        }
+        win.UpdateResume = Object.freeze({ pending: () => active && Date.now() <= deadline });
+        listeners.forEach(([target, name]) => target.addEventListener(name, attempt));
+        doc.addEventListener('pointerdown', takeOver, true);
+        doc.addEventListener('keydown', takeOver, true);
+        log(`${record.mode} view, ${JSON.stringify(record.selected)}`);
+        attempt();
     }
     if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', mount, { once: true });
     else mount();

@@ -132,7 +132,7 @@
     let sinceAnyLoadS = 0;
     let profT = null; // transition profile timestamps (activate -> lib -> setup -> stream -> seat)
     let statusRemovalTimer = null;
-    let streamingRelease = null; // the status line's hold while tiles stream (ephemerals.md)
+    let streamingRelease = null; // the status line's hold while tiles stream (design-language.md, Messages)
     let streamingText = '';
     let fpsEl = null;
     let seatDebugEl = null;
@@ -182,7 +182,7 @@
         return fallback;
     }
 
-    // A photo view that could not compose is an outcome: an error notice (ephemerals.md).
+    // A photo view that could not compose is an outcome: an error notice (design-language.md, Messages).
     function setStatus(msg) {
         if (!msg) return;
         if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(msg, 8000, 'error');
@@ -2319,9 +2319,12 @@
         // frame, on which the hook runs again.
         // OrbitControls recomputes the position from its spherical state on every update, so a still
         // camera's matrix differs by float noise from frame to frame: compare with a tolerance.
+        // Until the mesh is seated the hook never parks: the root tileset's download is not counted
+        // in loadProgress (it reads 1 before any tile is queued), nothing wakes the loop when it
+        // arrives, and the startup timeout below only advances on frames.
         const cameraMoved = !lastCameraWorld || !matricesNearlyEqual(lastCameraWorld, camera.matrixWorld, CAMERA_STILL_EPS);
         if (cameraMoved) lastCameraWorld = (lastCameraWorld || camera.matrixWorld.clone()).copy(camera.matrixWorld);
-        settledFrames = (cameraMoved || tilesStillLoading() || seatDebugActive()) ? 0 : settledFrames + 1;
+        settledFrames = (cameraMoved || !grounded || tilesStillLoading() || seatDebugActive()) ? 0 : settledFrames + 1;
         if (settledFrames > SETTLED_FRAMES) return false;
         tiles.update();
         const prog = Number(tiles.loadProgress);

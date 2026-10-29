@@ -225,9 +225,13 @@ describe('the Origin gate lets read-only POSTs through and still stops writes', 
         // request got past the gate, whose refusal is 403 { error: 'Forbidden' }.
         const server = app();
         expect(READ_ONLY_POST_PATHS).toContain('/buildings/footprints');
-        // 3D scenery reads: one per scene, never counted against the write budget.
-        expect(READ_ONLY_POST_PATHS).toContain('/decor/near');
-        expect(READ_ONLY_POST_PATHS).toContain('/decor/water');
+        // A read whose input fits a URL is a GET, not a POST on this list: 3D scenery (asked again on
+        // every pan in model mode; as POSTs counted as writes it ran out the budget and the green
+        // stopped following the view) and the source checks.
+        for (const path of ['/decor/near', '/decor/water', '/decor/green',
+            '/parcel-sources/discover', '/building-sources/discover', '/imagery-sources/discover']) {
+            expect(READ_ONLY_POST_PATHS.has(path), path).toBe(false);
+        }
         for (const path of READ_ONLY_POST_PATHS) {
             const res = await request(server).post(path).send({});
             expect(res.status, path).toBe(400);
@@ -248,8 +252,9 @@ describe('the Origin gate lets read-only POSTs through and still stops writes', 
     });
 });
 
-// M2 (plan-design-agreement.md) removed every write into the proposal table and the named plans: the
-// routes are not registered at all, so each answers the app's 404, even with an allowed Origin.
+// M2 (plan-design-agreement.md) removed every write into the proposal table and the slug-named plans: the
+// routes are not registered at all, so each answers the app's 404, even with an allowed Origin. Plans
+// came back as immutable CID-addressed plan/v1 records (7e9803af8, routes/plans.js; named-plans.test.js).
 describe('removed publication routes', () => {
     it.each([
         ['post', '/proposals'], ['post', '/proposals/mirror'], ['post', '/proposals/prepare'], ['post', '/proposals/binding'],
@@ -257,11 +262,18 @@ describe('removed publication routes', () => {
         ['patch', '/proposals/41/screenshot'], ['patch', '/proposals/41/epoch'], ['patch', '/proposals/epochs'], ['patch', '/proposals/41/name'],
         ['get', '/proposals/41/binding-drift'], ['get', '/proposals/41/owner-decisions'], ['post', '/proposals/41/owner-decisions'],
         ['post', '/proposals/41/owner-decisions/bundle'],
-        ['get', '/plans'], ['get', '/plans/borovje'], ['post', '/plans'], ['post', '/walrus/upload'], ['post', '/reparcellization/validate']
+        ['post', '/walrus/upload'], ['post', '/reparcellization/validate']
     ])('%s %s is gone', async (method, path) => {
         const pool = recordingPool();
         const res = await request(app(pool))[method](path).set('Origin', 'http://localhost:5173').send({});
         expect(res.status).toBe(404);
+        expect(pool.calls).toHaveLength(0);
+    });
+
+    it('refuses an old slug-named plan as an invalid plan link before querying', async () => {
+        const pool = recordingPool();
+        const res = await request(app(pool)).get('/plans/borovje').set('Origin', 'http://localhost:5173');
+        expect(res.status).toBe(400);
         expect(pool.calls).toHaveLength(0);
     });
 

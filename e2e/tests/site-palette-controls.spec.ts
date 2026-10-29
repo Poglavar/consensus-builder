@@ -231,13 +231,7 @@ test.describe('Site build palette controls @core', () => {
       await track.scrollIntoViewIfNeeded();
       await page.screenshot({path:testInfo.outputPath('track-icon.png')});
     }
-    await panel.locator(`.parcel-transport-btn--${item.key === 'bus' ? 'roadStation' : 'trackStation'}`).click();
-    if (item.key !== 'bus') {
-      const chooser = page.getByRole('dialog', { name: 'Track station', exact: true });
-      await expect(chooser).toBeVisible();
-      await chooser.locator(`[data-station-level="${item.key}"]`).click();
-      await expect(chooser).toBeHidden();
-    }
+    await panel.locator(`.parcel-transport-btn--${item.key}`).click();
     if (item.key === 'track') {
       await expect(page.locator('#track-speed-confirm-btn')).toBeVisible();
       await page.locator('#track-speed-confirm-btn').click();

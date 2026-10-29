@@ -207,8 +207,9 @@ test.describe('3D rendering and controls @features', () => {
     await expect.poll(selection).toMatchObject({ kind: 'designs', representation: 'ground', pattern: 'hatch', hatches: 1 });
     const stack = page.locator('#three-click-stack');
     await page.screenshot({ path: '/private/tmp/selection-ground-design-390.png' });
-    await stack.locator('.click-stack__section[data-kind="parcels"] .click-stack__row').click();
-    await expect.poll(selection).toMatchObject({ kind: 'parcels', representation: 'ground', pattern: 'outline', hatches: 0 });
+    // An applied park forms the ground it stands on, so the coincident parcel is the Formed section (fa52dcba8).
+    await stack.locator('.click-stack__section[data-kind="formed"] .click-stack__row').click();
+    await expect.poll(selection).toMatchObject({ kind: 'formed', representation: 'ground', pattern: 'outline', hatches: 0 });
     await page.screenshot({ path: '/private/tmp/selection-ground-parcel-390.png' });
     await page.keyboard.press('Escape');
     await expect.poll(selection).toBeNull();
@@ -685,9 +686,13 @@ test('3D suggested-existing toggle and floor cutaway change rendered floor plans
 
 test('3D trees use real instanced geometry, toggle off and restore their saved preference', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
-  const layerUrls: string[] = [], treeBodies: any[] = [];
+  const layerUrls: string[] = [], treeQueries: URLSearchParams[] = [];
   await page.route('**/decor/layers**', route => { layerUrls.push(route.request().url()); return route.fulfill({ json: { layers: ['trees'] } }); });
-  await page.route('**/decor/near', route => { treeBodies.push(route.request().postDataJSON()); return route.fulfill({ json: { trees: [[15.9822, 45.8002], [15.9827, 45.8003]] } }); });
+  await page.route(/\/decor\/near\?/, route => {
+    expect(route.request().method()).toBe('GET');
+    treeQueries.push(new URL(route.request().url()).searchParams);
+    return route.fulfill({ json: { trees: [[15.9822, 45.8002], [15.9827, 45.8003]] } });
+  });
   await openCity(page);
   await enter3D(page);
   await openModelLayers(page);
@@ -695,13 +700,13 @@ test('3D trees use real instanced geometry, toggle off and restore their saved p
   const layersQuery = new URL(layerUrls.at(-1)!).searchParams;
   expect(layersQuery.get('bbox')).toMatch(/^-?\d+\.\d+(,-?\d+\.\d+){3}$/);
   expect(layersQuery.has('city')).toBe(false);
-  await expect.poll(() => treeBodies.length).toBeGreaterThan(0);
-  expect(treeBodies[0].geometry).toBeTruthy();
-  expect(treeBodies[0].city).toBeUndefined();
+  await expect.poll(() => treeQueries.length).toBeGreaterThan(0);
+  expect(treeQueries[0].get('bbox')).toMatch(/^-?\d+(\.\d+)?(,-?\d+(\.\d+)?){3}$/);
+  expect(treeQueries[0].has('city')).toBe(false);
   const trees = page.locator('.three-mode-trees-toggle').filter({ hasText: 'Trees' }).locator('input');
   const instances = () => page.evaluate(() => {
     const counts: number[] = [];
-    (window as any).getThreeModeInternals().scene.traverse((o: any) => { if (o.isInstancedMesh && o.visible && o.parent.visible && ['5c3d1e', '3a6b35'].includes(o.material.color.getHexString())) counts.push(o.count); });
+    (window as any).getThreeModeInternals().scene.traverse((o: any) => { if (o.isInstancedMesh && o.visible && o.parent.visible && o.userData.treeShadowStandIn) counts.push(o.count); });
     return counts;
   });
   await expect(trees).toBeChecked();

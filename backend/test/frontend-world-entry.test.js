@@ -57,7 +57,7 @@ describe('shared routes and first visit', () => {
         { pathname: `/designs/${DESIGN_A}` }, { pathname: `/designs/${DESIGN_A},${DESIGN_B}` }, { pathname: `/agreements/${AGREEMENT}` },
         { pathname: `/plans/${DESIGN_A}` },
         { pathname: '/parcel/HR-335240-1323/2' }, { pathname: '/monitors/4' },
-        { pathname: '/', search: '?parcel=HR-1' }, { pathname: '/', search: `?focusProposal=${DESIGN_A}` }, { pathname: '/', search: '?activity=agent:7' },
+        { pathname: '/', search: '?parcel=HR-1' }, { pathname: '/', search: `?design=${DESIGN_A}` }, { pathname: '/', search: '?activity=agent:7' },
         { pathname: '/', search: '?scene=slug' }, { pathname: '/', search: '?photo' }, { pathname: '/', search: '?model=1' },
         { pathname: '/', search: '?at=-1.264,36.840,17' }, { pathname: '/', search: '?at=51.5,-0.1' },
         { pathname: '/bets/Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR', search: '?city=zg' },

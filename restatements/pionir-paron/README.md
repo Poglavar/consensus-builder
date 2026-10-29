@@ -134,3 +134,22 @@ Work order:
 Official eDozvola source snapshots are refreshed reproducibly with `backend/scripts/fetch-pionir-edozvola-sources.mjs`. They use `consensus-builder.edozvola-source.v1`; these are evidence layers, not app designs. Canonical building exports use `consensus-builder.reconstruction.v1`; companion road exports use `consensus-builder.corridor-reconstruction.v1`; both must pass an export/import/export identity check. Project manifests use `consensus-builder.reconstruction-plan.v1`.
 
 The current authored floor corpus spans 67 floors, nine owners and four sites: Borongajska–Čavićeva 54 floors across six buildings including A1; Savica F3 levels −1 and 0–7 with its shared basement owned once under F3; Špansko-Sjever F levels 1, 7 and 8 only; and Lovinčićeva's shared C1/CG/C2 basement once under C1. Elevations are estimated, missing levels are not cloned, and native identities preserve `sourceFeatureId`, `dguBuildingId` or `sourceLayerId`.
+
+## Published links
+
+Proposal addresses published on 2026-08-13, before the design/agreement rework; verify each before relying on it.
+
+| Project | Link |
+|---|---|
+| Borongajska–Čavićeva | [Open plan](https://urbangametheory.xyz/proposals/pionir-borongajska-caviceva?city=zagreb) |
+| Folnegovićeva–Rapska | [Open plan](https://urbangametheory.xyz/proposals/pionir-folnegoviceva-rapska?city=zagreb) |
+| Lovinčićeva 4090/1 | [Open plan](https://urbangametheory.xyz/proposals/pionir-lovinciceva-4090-1?city=zagreb) |
+| Lovinčićeva F1–F5 | [Open plan](https://urbangametheory.xyz/proposals/pionir-lovinciceva-f1-f5?city=zagreb) |
+| Pergošićeva A1–A4 | [Open plan](https://urbangametheory.xyz/proposals/pionir-pergosiceva-a1-a4?city=zagreb) |
+| Savica F1–F3 | [Open plan](https://urbangametheory.xyz/proposals/pionir-savica-f1-f3?city=zagreb) |
+| Selska–Baštijanova–Vitezićeva | [Open plan](https://urbangametheory.xyz/proposals/pionir-selska-bastijanova-viteziceva?city=zagreb) |
+| Selska–Drniška | [Open plan](https://urbangametheory.xyz/proposals/pionir-selska-drniska?city=zagreb) |
+| Špansko C–D | [Open plan](https://urbangametheory.xyz/proposals/pionir-spansko-c-d?city=zagreb) |
+| Špansko-Sjever A–F | [Open plan](https://urbangametheory.xyz/proposals/pionir-spansko-sjever-a-f?city=zagreb) |
+| Špansko–Stenjevečki odvojak | [Open plan](https://urbangametheory.xyz/proposals/pionir-spansko-stenjevecki-odvojak?city=zagreb) |
+| Zagrebačka avenija–Rudeš | [Open plan](https://urbangametheory.xyz/proposals/pionir-zagrebacka-avenija-rudes?city=zagreb) |

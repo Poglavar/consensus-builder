@@ -45,7 +45,7 @@ function makeEnvironment({ selectedId = 'p-42', previewId = 'p-42', proposalExis
     );
     const handleProposalSheetClosed = new Function(
         'closeProposalList', 'closeSharePlanPanel', 'setDesignsPanelTab',
-        `let _designsPanelRequest = 0; ${extractFunction(listUi, 'function handleProposalSheetClosed(event)', '\n\nif (typeof document')}; return handleProposalSheetClosed;`
+        `let _designsPanelRequest = 0; ${extractFunction(listUi, 'function handleProposalSheetClosed(event)', '\nif (typeof document')}; return handleProposalSheetClosed;`
     )(closeProposalList, vi.fn(), vi.fn());
 
     return {

@@ -84,6 +84,16 @@ describe('demolishedBuildingRecordsFrom', () => {
         expect(records.map(r => r.id)).toEqual(['b1', 'b2', 'b3']);
     });
 
+    it('names the design that demolishes each building, without changing the stored record', () => {
+        const stored = { ...record };
+        const records = demolishedBuildingRecordsFrom([
+            { proposalId: 'road-1', applied: true, roadProposal: { definition: { demolishedBuildings: [stored] } } },
+            { proposalId: 7, applied: true, structureProposal: { demolishedBuildings: [{ ...record, id: 'b2' }] } }
+        ]);
+        expect(records.map(r => [r.id, r.proposalId])).toEqual([['b1', 'road-1'], ['b2', '7']]);
+        expect(stored).toEqual(record);
+    });
+
     it('ignores proposals that are not applied — unapplying gives the buildings back', () => {
         const records = demolishedBuildingRecordsFrom([
             { applied: false, roadProposal: { definition: { demolishedBuildings: [record] } } },

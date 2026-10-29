@@ -1,0 +1,57 @@
+{
+  "schema": "parcel-rights/v1",
+  "source": {
+    "provider": "upload",
+    "reference": "bogota-demo-synthetic-rights-v1"
+  },
+  "parcels": [
+    {
+      "parcelId": "CO-BOGOTA-006104024010",
+      "complete": true,
+      "areaM2": 118.00225,
+      "owners": [
+        {
+          "ownerId": "DEMO-PERSON-BRUNO",
+          "share": "1/2"
+        },
+        {
+          "ownerId": "DEMO-PERSON-CAMILA",
+          "share": "1/2"
+        }
+      ]
+    },
+    {
+      "parcelId": "CO-BOGOTA-006104024011",
+      "complete": true,
+      "areaM2": 117.68432,
+      "owners": [
+        {
+          "ownerId": "DEMO-PERSON-ALMA",
+          "share": "1/1"
+        }
+      ]
+    },
+    {
+      "parcelId": "CO-BOGOTA-006104024012",
+      "complete": true,
+      "areaM2": 117.685806,
+      "owners": [
+        {
+          "ownerId": "DEMO-PERSON-ALMA",
+          "share": "1/1"
+        }
+      ]
+    },
+    {
+      "parcelId": "CO-BOGOTA-006104024013",
+      "complete": true,
+      "areaM2": 330.415882,
+      "owners": [
+        {
+          "ownerId": "DEMO-PERSON-BRUNO",
+          "share": "1/1"
+        }
+      ]
+    }
+  ]
+}

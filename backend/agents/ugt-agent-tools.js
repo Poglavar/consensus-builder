@@ -31,7 +31,7 @@ import { createPaidClient } from './x402-client.js';
 import { fetchLensMembers, parseLensList } from './lens-directory-client.js';
 import { requestOwnershipAttestation } from './lens-ownership-client.js';
 import { createIndexClient } from './publication-client.js';
-import { AGREEMENT_SCHEMA, DESIGN_SCHEMA, agreementObject, cidOfObject, designObject, isParcelLayout, isCid } from './agreement-objects.js';
+import { AGREEMENT_SCHEMA, DESIGN_SCHEMA, agreementObject, cidOfObject, designObject, isCid } from './agreement-objects.js';
 import {
     AGREEMENT_PROGRAM_ID, AGREEMENT_STATUS, agreementAccountOf, fundAgreement, mintAgreement, readAgreementAccount
 } from './agreement-minter.js';
@@ -309,7 +309,7 @@ export function createUrbanGameTheoryTools({
             ? { ...inspect, action: 'Inspect this reference and correct the reported fields. Confirm the exact returned CID before publication.' }
             : { tool, arguments: args, action: 'Retry this same confirmed immutable revision. The index will be checked before any publication write.' };
         return Object.assign(error, { code: error.code || 'publication-failed', cid: state.cid,
-            stage: error.stage || state.stage, pinnedCids: [...new Set([...state.pinnedCids, ...(error.pinnedCids || [])])],
+            stage: error.stage || state.stage, publishedCids: [...new Set([...state.publishedCids, ...(error.publishedCids || [])])],
             indexed: error.indexed ?? state.indexed, url: state.cid ? `${appOrigin}/${state.kind}s/${state.cid}` : null,
             next });
     }
@@ -455,12 +455,12 @@ export function createUrbanGameTheoryTools({
             }
         },
 
-        // Pin and index one design/v1 object. The index derives its binding (the parcels its site takes)
-        // and answers the row. A parcel layout is indexed only with its agreement.
+        // Index one design/v1 object. The index derives its binding (the parcels its site takes)
+        // and answers the row.
         async publishDesign({ design, parcelSourceId = null, expectedCid, confirm } = {}) {
             requirePublish(confirm);
             const args = { design, parcelSourceId, ...(expectedCid ? { expectedCid } : {}), confirm };
-            const state = { kind: 'design', cid: expectedCid || null, stage: 'resolve', pinnedCids: [], indexed: false };
+            const state = { kind: 'design', cid: expectedCid || null, stage: 'resolve', publishedCids: [], indexed: false };
             try {
                 const reference = referenceInput(design);
                 if (reference && !expectedCid) checkRevision(null, expectedCid, true);
@@ -468,18 +468,16 @@ export function createUrbanGameTheoryTools({
                 const { content, cid } = publishedDesign(resolved ? resolved.content : design);
                 state.cid = cid; checkRevision(cid, expectedCid, reference);
                 parcelSourceId ||= resolved?.parcelSourceId || null;
-                // A layout can already be indexed through its agreement, but cannot be published alone.
-                if (isParcelLayout(content)) throw Object.assign(new Error(`design ${cid} is a parcel layout: a layout is published only with the agreement that settles its land; pass it to ugt_propose_agreement in designs: [{ content }]`), { code: 'layout-agreement-required' });
                 state.stage = 'lookup';
                 const existing = await index().getDesign(cid);
                 if (existing) {
                     verifiedRow(existing, cid, 'design'); state.indexed = true;
                     return { cid, created: false, row: existing, publication: 'published', url: `${appOrigin}/designs/${cid}`, previewUrl: `${appOrigin}/designs/${cid}` };
                 }
-                state.stage = 'pin-design';
+                state.stage = 'index-design';
                 const published = await index().publishDesign(content, { parcelSourceId });
                 if (published.cid !== cid) throw Object.assign(new Error(`the index filed design ${published.cid}, not ${cid}`), { code: 'cid-mismatch' });
-                state.pinnedCids.push(cid); state.indexed = true; state.stage = 'readback';
+                state.publishedCids.push(cid); state.indexed = true; state.stage = 'readback';
                 const row = verifiedRow(await index().getDesign(cid), cid, 'design');
                 return { cid, created: published.created, row, publication: 'published', url: `${appOrigin}/designs/${cid}`, previewUrl: `${appOrigin}/designs/${cid}` };
             } catch (error) { throw publicationError(error, state, 'ugt_publish_design', args); }
@@ -488,7 +486,7 @@ export function createUrbanGameTheoryTools({
         async proposeAgreement({ agreement, designs = [], expectedCid, confirm } = {}) {
             requirePublish(confirm);
             const args = { agreement, designs, ...(expectedCid ? { expectedCid } : {}), confirm };
-            const state = { kind: 'agreement', cid: expectedCid || null, stage: 'resolve', pinnedCids: [], indexed: false };
+            const state = { kind: 'agreement', cid: expectedCid || null, stage: 'resolve', publishedCids: [], indexed: false };
             try {
                 const source = await agreementSource(agreement, expectedCid), { content, cid } = source;
                 state.cid = cid; checkRevision(cid, expectedCid, referenceInput(agreement));
@@ -508,16 +506,11 @@ export function createUrbanGameTheoryTools({
                 let row, created;
                 if (existing) { row = verifiedRow(existing, cid, 'agreement'); created = false; state.indexed = true; }
                 else {
-                    for (const entry of carried) {
-                        state.stage = 'pin-design';
-                        try { await client.pin('design', entry.content); }
-                        catch (error) { error.stage = 'pin-design'; throw error; }
-                        state.pinnedCids.push(entry.cid);
-                    }
-                    state.stage = 'pin-agreement';
+                    // Carried designs are indexed with the agreement, in one transaction.
+                    state.stage = 'index-agreement';
                     const published = await client.publishAgreement(content, { plan, designs: carried });
                     if (published.cid !== cid) throw Object.assign(new Error(`the index filed agreement ${published.cid}, not ${cid}`), { code: 'cid-mismatch' });
-                    state.pinnedCids.push(cid); state.indexed = true; state.stage = 'readback';
+                    state.publishedCids.push(cid); state.indexed = true; state.stage = 'readback';
                     row = verifiedRow(await client.getAgreement(cid), cid, 'agreement'); created = published.created;
                 }
                 const sponsor = content.sponsor ?? null;
@@ -735,6 +728,30 @@ export function createUrbanGameTheoryTools({
     agreements.setPlanResolver(namedPlanTools.resolvePlan);
     Object.assign(actions, namedPlanTools);
     Object.assign(actions, createMcpAssetTools({ read: companion, drafts, plans: actions, appOrigin, apiBase, fetchImpl, resolveDraftReference }));
+    // Every authored design is placed in the agent's working plan, its applied map (docs/agent-working-plan.md).
+    // The result keeps the design's own fields and adds the plan revision, the placement and its consequences.
+    const placing = (method, beforeOf = () => null) => {
+        const author = actions[method];
+        return async ({ plan, displace = false, ...args }) => {
+            const drafted = await author(args);
+            const rows = drafted.designs || [drafted];
+            const placed = await namedPlanTools.placeDesigns({ plan, displace,
+                designs: rows.map(row => ({ cid: row.cid, content: row.design, parcelSourceId: row.parcelSourceId, before: beforeOf(row, args) })) });
+            // Joining the plan's roads can revise the placed design itself; its preview follows the placed revision.
+            const final = placed.placement.status === 'placed'
+                ? await Promise.all(rows.map((row, index) => placed.designs[index].cid === row.cid ? row
+                    : drafts.designResult(placed.designs[index].content, row.parcelSourceId)))
+                : rows;
+            // Junctions are the plan's now: neighbours revised by this placement are in consequences.junctions.
+            const own = ({ changes, revisedCorridors, ...row }) => row;
+            const { designs, ...rest } = own(drafted);
+            return { ...(designs ? { ...rest, designs: final.map(own) } : own(final[0])),
+                plan: placed.plan, placement: placed.placement, consequences: placed.consequences };
+        };
+    };
+    for (const method of ['draftRoad', 'draftTrack', 'draftStation', 'draftBuilding', 'draftSpace', 'draftParcelLayout', 'draftUrbanRule', 'importDesign']) actions[method] = placing(method);
+    actions.editDesign = placing('editDesign', (_row, args) => args.expectedCid);
+    actions.modifyDesign = placing('modifyDesign', row => row.design.origin?.cid || null);
     Object.assign(actions, createMcpValidationTools({ read: companion, drafts, plans: actions }));
     actions.compare = createMcpComparison({ read: companion, resolveDesign: drafts.resolveDesign, plans: actions, appOrigin, resolveDraftReference });
     return actions;

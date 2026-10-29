@@ -1,8 +1,8 @@
 # Canton / DAML contracts
 
-DAML smart contracts for the Canton chain option (the third blockchain backend
-alongside EVM and Solana). See `../../feature-daml.md` for the spec/plan and
-`../../feature-daml-readme.md` for what's built and how it works.
+DAML smart contracts for a single-parcel purchase on Canton. The map app's Canton integration was
+removed on 2026-10-22; the model and the decisions that shape it are in
+[docs/feature-daml-readme.md](../../docs/feature-daml-readme.md).
 
 SDK **3.4.11**; package **`consensus-builder-daml` 0.3.0** (the DevNet target).
 
@@ -40,15 +40,9 @@ daml test       # runs the Daml Script tests in daml/Test.daml
 
 ## Deploy
 
-The DAR is deployed to the 5n sandbox DevNet validator via the **JSON Ledger API**
-(`POST /v2/packages`) — the backend client does this:
-
-```bash
-DAR_PATH=blockchain/daml/.daml/dist/consensus-builder-daml-0.3.0.dar \
-  node backend/canton/check.js      # uploads the DAR, then runs the full flow
-```
-
-(or via the Seaport web IDE). Bump `version` in `daml.yaml` on contract changes so
+The DAR is deployed to the 5n sandbox DevNet validator through the **JSON Ledger API**
+(`POST /v2/packages`) or the Seaport web IDE. The backend client that used to upload it
+(`backend/canton/check.js`) was removed with the app integration. Bump `version` in `daml.yaml` on contract changes so
 `#consensus-builder-daml` resolves to the newest; additive changes must stay
 upgrade-compatible (e.g. new fields are `Optional`).
 

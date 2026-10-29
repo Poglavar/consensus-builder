@@ -11,7 +11,7 @@ async function server(t, env = {}, result = { accepted: 1 }) {
     const inserts = [], app = express();
     setupPlanningDiagnostics(app, {}, { env, store: { insert: async rows => { inserts.push(rows); return result; } } });
     app.post('/plans', (_req, res) => res.status(201).json({ ok: true }));
-    const http = createServer(app).listen(0, '127.0.0.1'); await once(http, 'listening');
+    const http = createServer(app).listen(0); await once(http, 'listening');
     t.after(() => { app.locals.stopPlanningDiagnosticCleanup?.(); http.closeAllConnections(); return new Promise(resolve => http.close(resolve)); });
     const url = `http://127.0.0.1:${http.address().port}`;
     return { inserts, app, post: (body, headers = {}) => fetch(url + '/diagnostics/reports', {

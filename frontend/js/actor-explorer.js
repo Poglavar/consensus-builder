@@ -17,7 +17,7 @@
         create: 'Created', design: 'Published design', propose: 'Proposed agreement', mint: 'Minted',
         fund: 'Funded escrow', decide: 'Owner decision', 'lens-decision': 'Lens decision', attest: 'Recorded decision',
         execute: 'Executed', cancel: 'Cancelled', expire: 'Expired',
-        createMarket: 'Opened market', stake: 'Bet / stake', resolve: 'Resolved market', claim: 'Claimed winnings',
+        createMarket: 'Opened market', stake: 'Bet / stake', sell: 'Sold bet', resolve: 'Resolved market', claim: 'Claimed winnings',
         donate: 'Donated', pledge: 'Pledged', revokePledge: 'Revoked pledge', fulfillPledge: 'Fulfilled pledge',
         voidPledge: 'Voided pledge', refundMyDonations: 'Refunded donation', releaseDonations: 'Released donations',
         run_status: 'Run status'

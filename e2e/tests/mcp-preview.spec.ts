@@ -61,8 +61,8 @@ test('MCP agreement reference imports matching ground as an unpublished local ag
   const local = { schema: 'agreement/v1', id: 'fixture-agreement', title: 'MCP preview agreement', author: 'Preview author', sponsor: '11111111111111111111111111111111', city: 'zagreb', createdAt: design.authoredAt,
     plan,
     designs: [{ proposalId: designCid, cid: designCid, goal: design.goal, title: design.title }],
-    inputs: { parcels: [{ parcelId: PARCEL_ID, parcelSourceId: 'oss-wfs', areaM2, holders: [] }], openGroundM2: 0 },
-    outputs: [{ hash: agreementRecord.outputHash(PARCEL_GEOMETRY), pieceId: 'fixture-piece', areaM2, fromParcelIds: [PARCEL_ID], producedBy: designCid, role: 'parcel', holders: [], geometry: PARCEL_GEOMETRY }],
+    inputs: { parcels: [{ parcelId: PARCEL_ID, parcelSourceId: 'oss-wfs', areaM2 }], openGroundM2: 0 },
+    outputs: [{ hash: agreementRecord.outputHash(PARCEL_GEOMETRY), pieceId: 'fixture-piece', areaM2, fromParcelIds: [PARCEL_ID], producedBy: designCid, role: 'parcel', geometry: PARCEL_GEOMETRY }],
     allocations: [], money: { currency: 'EUR', lines: [] }, rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] }, deadline: null };
   const agreement = agreementRecord.published(local, (id: string) => id);
   const url = await privatePreview(page, baseURL!, { agreement, plan, designs: [design] });

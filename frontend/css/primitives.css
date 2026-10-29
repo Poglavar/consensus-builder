@@ -243,6 +243,7 @@
 
 /* Monochrome authoring icons inherit the control colour. */
 .cb-icon-track,
+.cb-icon-road-in-parcel,
 .cb-icon-freeform,
 .cb-icon-station-ground,
 .cb-icon-station-elevated,
@@ -258,6 +259,10 @@
 
 .cb-icon-track {
     mask-image: url('../assets/icons/track.svg');
+}
+
+.cb-icon-road-in-parcel {
+    mask-image: url('../assets/icons/road-in-parcel.svg');
 }
 
 .cb-icon-freeform {
@@ -485,7 +490,7 @@ textarea {
 }
 
 /* ---- Toast ----
-   One typography for every floating message (ephemerals.md): a centred pill that wraps to at
+   One typography for every floating message (design-language.md, Messages): a centred pill that wraps to at
    most three lines and never grows past 480px, on every width. The families differ in colour and
    place only: a notice (an outcome, top centre, auto-dismiss; js/ui-helpers.js
    showEphemeralMessage) is the dark pill with success / warning / error variants; the status
@@ -517,6 +522,22 @@ textarea {
 .cb-toast--status {
     background: var(--cb-glass);
     color: var(--cb-text);
+}
+
+/* A message a click copies (js/ui-helpers.js makeMessageCopyable). */
+.cb-toast.is-copyable {
+    cursor: copy;
+}
+
+.cb-toast.is-copyable:hover {
+    box-shadow: var(--cb-shadow-md);
+}
+
+/* Every other message on screen copies its text on a click too (js/ui-helpers.js messageTextAt):
+   a status or alert line in a panel or an editor. A 3D preview that carries the role is not one. */
+[role="status"]:not(:empty):not(:has(canvas)),
+[role="alert"]:not(:empty) {
+    cursor: copy;
 }
 
 /* The status line's spinner: shown while anything holds a status activity (js/ui-helpers.js). */
@@ -590,7 +611,7 @@ textarea {
 }
 
 /* ---- Banner ----
-   Persistent notices that need an action (ephemerals.md): source failures, the other-tab lock, the
+   Persistent notices that need an action (design-language.md, Messages): source failures, the other-tab lock, the
    explore banner. They mount in one stack (js/ui/banner-stack.js) that reads as ONE card under the
    top row of controls, each banner a section divided from the next: a 560px card centred on a wide
    map, the width minus the gutters on a phone. Notices sit below it (--cb-banner-stack-height). */
@@ -759,6 +780,10 @@ button.cb-link {
     padding: 0;
     border-bottom: 1px solid var(--cb-line);
     overflow-x: auto;
+    /* The tabs overlap the strip's rule by 1px (margin-bottom: -1px); with overflow-y left to
+       follow overflow-x that pixel made every strip a vertical scroller that swallowed wheel
+       and touch scrolling meant for the panel around it. */
+    overflow-y: hidden;
     scrollbar-width: none;
 }
 

@@ -114,7 +114,9 @@ function repositoryOf(facts) {
     };
 }
 
-async function harness({ facts = [], records = [] } = {}) {
+// fabricFacts: the ground already in the fabric (default all facts); the rest is in the repository
+// only, as a tile that has just arrived.
+async function harness({ facts = [], records = [], fabricFacts = facts } = {}) {
     install('window', globalThis);
     install('turf', turf);
     install('__formationEdit', formationEdit);
@@ -145,9 +147,9 @@ async function harness({ facts = [], records = [] } = {}) {
     install('_resolveRootParcelNumberFromProperties', props => (props && (props.rootParcelNumber || props.BROJ_CESTICE)) || '');
     install('_calculateGeoJsonArea', geometry => turf.area(turf.feature(geometry)));
     install('getProposalKey', record => record.proposalId);
-    if (facts.length) {
+    if (fabricFacts.length) {
         const mutation = fabric.beginMutation({ kind: 'test-seed' });
-        mutation.seedCadastre(facts);
+        mutation.seedCadastre(fabricFacts);
         await mutation.prepare();
         mutation.publish();
     }
@@ -856,12 +858,13 @@ describe('corridors on bare ground', () => {
             roadProposal: { definition: { polygon: rect(-5, 4, 40, 6), points: [[LAT, LON], [LAT, LON + 4e-3]], width: 6 } }
         };
         const HR2 = parcel('HR-330264-2', rect(100, 0, 110, 10));
-        const { manager, fabric } = await harness({ facts: [HR1, HR2], records: [road] });
+        const { manager, fabric } = await harness({ facts: [HR1, HR2], fabricFacts: [HR1], records: [road] });
         await expect(manager.applyProposal('road-bare')).resolves.toBe(true);
         expect(globalThis.proposalStorage.getProposal('road-bare').applied).toBe(true);
-        expect(liveIds(fabric)).toEqual(['HR-330264-1', 'HR-330264-2']);
+        expect(liveIds(fabric)).toEqual(['HR-330264-1']);
         // A later cadastral derivation with that road standing does not trip over its empty scope.
-        await expect(manager.integrateCadastralGround([HR2])).resolves.toMatchObject({ ok: true });
+        await expect(manager.integrateCadastralGround([HR2])).resolves.toMatchObject({ ok: true, parcels: 1 });
+        expect(liveIds(fabric)).toEqual(['HR-330264-1', 'HR-330264-2']);
     });
 
     it('still refuses a corridor whose binding names parcels its declaration lacks', async () => {
@@ -875,9 +878,29 @@ describe('corridors on bare ground', () => {
             roadProposal: { definition: { polygon: rect(-5, 4, 40, 6), points: [[LAT, LON], [LAT, LON + 4e-3]], width: 6 } }
         };
         const HR2 = parcel('HR-330264-2', rect(100, 0, 110, 10));
-        const { manager } = await harness({ facts: [HR1, HR2], records: [road] });
+        const { manager } = await harness({ facts: [HR1, HR2], fabricFacts: [HR1], records: [road] });
         await expect(manager.integrateCadastralGround([HR2]))
             .rejects.toMatchObject({ code: 'corridor-cadastre-scope-missing' });
+    });
+
+    it('leaves ground a design took while the arrival waited: a plot across two parcels is not cut', async () => {
+        // The tile loader saw HR-1 absent and queued it; the boot replay then laid a plot across
+        // HR-1 and HR-2. Re-deriving HR-1 alone was refused as "scope is not closed".
+        const HR2 = parcel('HR-330264-2', rect(20, 0, 40, 10));
+        const road = {
+            proposalId: 'road-over-plot', title: 'Road', goal: 'road-track', applied: true,
+            cadastreParcelIds: ['HR-330264-1'],
+            roadProposal: { definition: { polygon: rect(-5, 4, 15, 6), points: [[LAT, LON], [LAT, LON + 1e-4]], width: 2 } }
+        };
+        const { manager, fabric } = await harness({ facts: [HR1, HR2], records: [road] });
+        const plot = { type: 'Feature', geometry: rect(0, 0, 40, 10),
+            properties: { parcelId: 'HR-330264-1#p-joint', cadastreParcelIds: ['HR-330264-1', 'HR-330264-2'], producedByProposalId: 'layout' } };
+        const mutation = fabric.beginMutation({ kind: 'test-layout' });
+        mutation.replaceCadastreScope(['HR-330264-1', 'HR-330264-2'], [plot]);
+        await mutation.prepare();
+        mutation.publish();
+        await expect(manager.integrateCadastralGround([HR1])).resolves.toMatchObject({ ok: true, parcels: 0 });
+        expect(liveIds(fabric)).toEqual(['HR-330264-1#p-joint']);
     });
 });
 
@@ -981,14 +1004,29 @@ describe('a road built through an applied park', () => {
         expect(pieces.reduce((sum, feature) => sum + turf.area(feature), 0)).toBeCloseTo(turf.area(P), -1);
     });
 
-    it('still refuses a newer park laid over an applied road', async () => {
+    it('still refuses a newer park laid over an applied road when nothing chose between them', async () => {
+        // A replay chooses no alternatives, so the earlier road keeps its ground and the park is refused.
         const older = road('road-first', { createdAt: '2026-09-30T00:00:00.000Z' });
         const park = structureRecord('park-later', 'park', PARK, { binding: { parcels: [], coverage: 'none' } });
         const { manager, fabric } = await harness({ records: [older, park] });
         await expect(manager.applyProposal('road-first')).resolves.toBe(true);
-        await expect(manager.applyProposal('park-later')).resolves.toBe(false);
+        await expect(manager.applyProposal('park-later', { replay: true })).resolves.toBe(false);
         expect(manager.getLastApplyFailure('park-later')).toMatch(/stand on .* of the applied road/);
         expect(fabric.list().some(feature => feature.properties.structureType === 'park')).toBe(false);
+    });
+
+    it('an explicit Apply of a newer park over an applied road takes the road off the map', async () => {
+        // Direct Apply chooses occupied corridor ground like a confirmed plan replacement
+        // (docs/plan-application-tab-workspace-audit-2026-10-25.md): the park stands whole.
+        const older = road('road-first', { createdAt: '2026-09-30T00:00:00.000Z' });
+        const park = structureRecord('park-later', 'park', PARK, { binding: { parcels: [], coverage: 'none' } });
+        const { manager, fabric } = await harness({ records: [older, park] });
+        await expect(manager.applyProposal('road-first')).resolves.toBe(true);
+        await expect(manager.applyProposal('park-later')).resolves.toBe(true);
+        expect(globalThis.proposalStorage.getProposal('road-first').applied).toBe(false);
+        const parkPieces = fabric.list().filter(feature => feature.properties.structureType === 'park');
+        expect(parkPieces).toHaveLength(1);
+        expect(turf.area(parkPieces[0])).toBeCloseTo(areaOf(PARK), -1);
     });
 
     it('keeps stored decorations to the carved ground', () => {
@@ -1088,7 +1126,7 @@ describe('proposal ground refusal diagnostics', () => {
         });
         const { manager } = await harness({ records: [lake] });
         expect(manager.getProposalGroundFailure(lake)).toMatchObject({
-            code: 'proposal-footprint-outside-site', message: expect.stringContaining('beyond its site')
+            code: 'proposal-footprint-outside-site', message: expect.stringContaining('beyond its saved land boundary')
         });
         await expect(manager.applyProposal(lake.proposalId)).resolves.toBe(false);
         expect(manager.getLastApplyFailureInfo(lake.proposalId)?.code).toBe('proposal-footprint-outside-site');

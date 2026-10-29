@@ -169,6 +169,11 @@
         function clear() { abortExcept([]); entries.clear(); }
         return { keyOf, find, load, abortExcept, clear, get size() { return entries.size; }, get pending() { return inFlight.size; } };
     }
-    return { roles, displayStates, choices, defaults, settings, displayPolicy, permittedRepresentationControl, itemAppearance, createStore, builtGeometry, queryKey, parcelItemOf,
+    // The loading ring on the Buildings and massing button: a third of the rim for each role still
+    // loading and shown, in role order, packed from the first slot.
+    function loadingArcs(loading = {}, shown = {}) {
+        return roles.filter(role => loading[role] && shown[role] !== false).map((role, slot) => ({ role, slot }));
+    }
+    return { roles, displayStates, choices, defaults, settings, displayPolicy, permittedRepresentationControl, itemAppearance, createStore, builtGeometry, queryKey, parcelItemOf, loadingArcs,
         VIEWPORT_CELL_DEGREES, viewportCellSize, snapBbox, bboxContains, bboxIntersects, bboxAreaKm2, createViewportCache };
 });

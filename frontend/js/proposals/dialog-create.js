@@ -43,13 +43,14 @@ function renderProposalBuildingPreview(proposal) {
     if (groups.buildingPreview.bringToFront) groups.buildingPreview.bringToFront();
 }
 
-function renderPreviewOverlay(proposal, { blink = false } = {}) {
+function renderPreviewOverlay(proposal, { blink = false, append = false } = {}) {
     const groups = ensureProposalOverlayGroups();
     if (!groups.preview) {
         return { parcelFeatures: [], primaryFeatures: [] };
     }
 
-    groups.preview.clearLayers();
+    // `append` adds to what is drawn: one preview of several designs (previewRecordsOnMap).
+    if (!append) groups.preview.clearLayers();
 
     if (!proposal) {
         return { parcelFeatures: [], primaryFeatures: [] };
@@ -214,6 +215,39 @@ function previewProposalOnMap(proposalIdOrHash, { center = true, blink = true } 
             }
         }
     }
+}
+
+// Shows design records on the map without selecting or opening them: a listed design, or the
+// designs of a listed plan or agreement (lists-panel.js). The records need not be stored. The map, or
+// the model view's camera, frames them in the area the lists sheet leaves visible. False when none of
+// them has a place on the map.
+function previewRecordsOnMap(records, previewKey) {
+    clearProposalPreview();
+    if (typeof map === 'undefined' || !map || typeof L === 'undefined') return false;
+    const features = [];
+    records.forEach(record => {
+        const { parcelFeatures, primaryFeatures } = collectProposalFeatureSets(record);
+        features.push(...(primaryFeatures.length ? primaryFeatures : parcelFeatures));
+    });
+    let bounds = computeBoundsFromFeatures(features);
+    records.map(record => window.__proposalCounts?.proposalBounds(record)).filter(Boolean).forEach(([west, south, east, north]) => {
+        const box = L.latLngBounds([south, west], [north, east]);
+        bounds = bounds ? bounds.extend(box) : box;
+    });
+    if (!bounds || !bounds.isValid()) return false;
+    if (window.isThreeModeActive?.()) {
+        window.frameThreeModeFeatures([turf.bboxPolygon([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()])]);
+    } else {
+        try {
+            window.suppressCameraMoves = true;
+            map.fitBounds(bounds, { ...getProposalPanelFitPadding(40), maxZoom: 19, animate: false });
+        } finally {
+            window.suppressCameraMoves = false;
+        }
+    }
+    records.forEach(record => renderPreviewOverlay(record, { append: true }));
+    currentProposalPreviewId = previewKey;
+    return true;
 }
 
 function setProposalModalDimmed(dimmed) {
@@ -492,8 +526,6 @@ function showProposalDialog(overrides = null) {
         multiple: t('modal.createProposal.ownershipOptions.multiple', 'Multiple owners')
     };
     const nameLabel = t('modal.createProposal.nameLabel', 'Name');
-    // Epoha plana: koje desetljeće ovaj prijedlog gradi (vremenska crta u listi).
-    const epochLabel = t('modal.roadWidth.proposalList.epoch.rowLabel', 'Plan epoch');
     const namePlaceholder = t('modal.createProposal.namePlaceholderProposal', 'Design name');
     const unknownParcelLabel = t('modal.createProposal.unknownParcel', 'Unknown');
     const unknownOwnerLabel = t('modal.createProposal.ownerUnknown', 'Unknown');
@@ -746,12 +778,6 @@ function showProposalDialog(overrides = null) {
                 <div class="form-group">
                     <label for="proposalDescription">${descriptionLabel}</label>
                     <input type="text" id="proposalDescription" class="proposal-description-input" placeholder="${descriptionPlaceholder}">
-                </div>
-                <div class="form-group">
-                    <label for="proposalEpochYear" class="proposal-inline-field">
-                        <span>${epochLabel}</span>
-                        <select id="proposalEpochYear"></select>
-                    </label>
                 </div>
                 <div class="proposal-similar-section" id="proposalSimilarSection" style="display:none;">
                     <h4>${similarTitle}</h4>
@@ -1181,14 +1207,6 @@ function showProposalDialog(overrides = null) {
     // this only fills the empty do-nothing default).
     updateProposalNameAndDescription(DEFAULT_PROPOSAL_TYPE);
 
-    // Epoha: ponudi zadnju korištenu, da niz prijedloga za isto desetljeće ne
-    // traži isti odabir svaki put.
-    try {
-        if (window.__proposalEpoch && typeof window.__proposalEpoch.initCreateDialogSelect === 'function') {
-            window.__proposalEpoch.initCreateDialogSelect(document.getElementById('proposalEpochYear'));
-        }
-    } catch (_) { }
-
     const nameInputEl = document.getElementById('proposalName');
     const descriptionInputEl = document.getElementById('proposalDescription');
     if (nameInputEl && overridePrefill.name) {
@@ -1385,9 +1403,9 @@ function finishProposalDialogClose() {
 }
 
 // The walk view (three-mode.js) loads published designs by their CID, so every applied design is
-// published first: one row per unpublished design, "Publish all" the dialog's primary action. A parcel
-// layout is published only with its agreement (ProposalPublishTerms.publishRefusal): its row says so
-// and the walk goes on without it. onComplete runs once nothing publishable is left.
+// published first: one row per unpublished design, "Publish all" the dialog's primary action. A design
+// that cannot be published (ProposalPublishTerms.publishRefusal: invalid or too large) shows why on
+// its row and the walk goes on without it. onComplete runs once nothing publishable is left.
 function showWalkUploadGateModal(options = {}) {
     try {
         if (typeof proposalStorage === 'undefined' || typeof showSimpleShareModal !== 'function') return null;
@@ -1511,12 +1529,13 @@ function showWalkUploadGateModal(options = {}) {
             left.appendChild(meta);
             row.appendChild(left);
 
-            // A parcel layout is not published alone: the row says why and has nothing to press.
-            if (refusalOf(proposal)) {
+            // A design that cannot be published: the row says why and has nothing to press.
+            const refusal = refusalOf(proposal);
+            if (refusal) {
                 row.dataset.skipped = 'true';
                 const note = document.createElement('div');
                 note.className = 'walk-upload-gate__meta';
-                note.textContent = t('threeMode.walkGate.layoutSkipped', 'A parcel layout is published with its agreement, so the walk goes on without it.');
+                note.textContent = refusal.message;
                 left.appendChild(note);
                 listWrap.appendChild(row);
                 return;

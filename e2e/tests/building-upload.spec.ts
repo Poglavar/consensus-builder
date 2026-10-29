@@ -14,6 +14,10 @@ async function openImporter(page: any, failure = 'none') {
   await page.route('**/upload-test', route => route.fulfill({ contentType: 'text/html', body:
     `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="/css/primitives.css"><link rel="stylesheet" href="/css/modals.css">${scripts}</head><body></body></html>` }));
   await page.goto('/upload-test');
+  // The app's main bundle provides the shared busy spinner on the confirm button and the optional
+  // tool loader that fetches js/model-upload.js for the upload itself.
+  await page.addScriptTag({ url: '/js/ui/busy-control.js' });
+  await page.addScriptTag({ url: '/js/optional-tools-loader.js' });
   await page.addScriptTag({ url: '/js/building-model-geometry.js' });
   await page.addScriptTag({ url: '/js/building-upload.js' });
   await page.evaluate(async (mode: string) => {

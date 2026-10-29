@@ -87,6 +87,22 @@ export function knownLimitFor(descriptor, error) {
     return Object.hasOwn(KNOWN_LIMIT_FAILURES, kind) && KNOWN_LIMIT_FAILURES[kind](error) ? kind : undefined;
 }
 
+// The query of a GET …-sources/discover check (parcel, building and imagery): `url`, `city`,
+// `bbox=west,south,east,north`, and for imagery `layers=a,b`, for buildings `heightUnit`. A check
+// stores nothing, so it is a GET; the routes validate each field as before.
+export function discoverQuery(query = {}) {
+    const text = value => (typeof value === 'string' ? value : undefined);
+    const bbox = text(query.bbox);
+    const layers = text(query.layers);
+    return {
+        url: text(query.url),
+        city: text(query.city),
+        bbox: bbox === undefined ? undefined : bbox.split(',').map(value => (value.trim() === '' ? NaN : Number(value))),
+        heightUnit: text(query.heightUnit),
+        layers: layers === undefined ? undefined : layers.split(',')
+    };
+}
+
 export function validateBounds(bbox, maxKm2 = 25, limits = {}) {
     if (!Array.isArray(bbox) || bbox.length !== 4 || !bbox.every(value => typeof value === 'number' && Number.isFinite(value))) {
         throw new HttpError(400, 'Expected a finite WGS84 bbox: west,south,east,north.');

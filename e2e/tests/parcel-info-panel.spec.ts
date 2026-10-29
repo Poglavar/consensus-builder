@@ -83,8 +83,8 @@ test.describe('Parcel inspector @core', () => {
     await openParcel(page);
     await page.locator('#parcel-info-panel').getByRole('tab', { name: 'Design', exact: true }).click();
     await expect(page.locator('#propose-content .parcel-build-palette')).toBeVisible();
-    // 14 tools: the Offer tile left with owner offers (M2).
-    await expect(page.locator('.parcel-build-btn')).toHaveCount(14);
+    // 13 tools: 8 design tiles; transport Road, Road in parcel, Track, Road station, Track station.
+    await expect(page.locator('.parcel-build-btn')).toHaveCount(13);
     await page.locator('#parcel-info-panel').getByRole('tab', { name: 'Tools', exact: true }).click();
     await expect(page.locator('#parcelBuilderButton')).toBeVisible();
     await closeParcel(page);

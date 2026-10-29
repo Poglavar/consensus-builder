@@ -65,6 +65,15 @@
     --cb-warning-soft: #fffbeb;
     --cb-warning-soft-ink: #92400e;
 
+    /* Build-out over time on the 2D map (css/buildout-clock.css): a planned design is veiled to its
+       outline; one under construction is hatched and carries a crane. The map tiles stay light in
+       every theme, so these do too. */
+    --cb-buildout-veil: rgba(255, 255, 255, 0.72);
+    --cb-buildout-outline: #6b7280;
+    --cb-buildout-hatch: #b45309;
+    --cb-buildout-hatch-ground: rgba(255, 251, 235, 0.45);
+    --cb-buildout-crane: #92400e;
+
     /* Sun and shadows (css/three-sun.css): the icon runs from dawn to noon colour with the sun's
        height; the slider's band shows day against night. */
     --cb-sun-noon: #f59e0b;
@@ -93,6 +102,22 @@
     --cb-planning-permitted: #168b87;
     --cb-planning-proposed: #c26336;
     --cb-planning-control-width: 440px;
+
+    /* A pavement tree's pit on the map (css/structure-geometry-editor.css): rim, grille bars and gaps, grass, soil. */
+    --cb-tree-pit-rim: #8f8b80;
+    --cb-tree-pit-grille: #3d3f42;
+    --cb-tree-pit-grille-gap: #6b5a48;
+    --cb-tree-pit-grass: #6f9a3e;
+    --cb-tree-pit-soil: #6b4f3a;
+
+    /* Park fences, enclosure grounds and play equipment on the map (css/structure-geometry-editor.css). */
+    --cb-park-fence-rail: #8a5a2b;
+    --cb-park-fence-mesh: #2f4f3a;
+    --cb-park-fence-iron: #1c1c1c;
+    --cb-park-fence-plinth: #9a4b35;
+    --cb-park-ground-gravel: #cdbf9f;
+    --cb-park-ground-rubber: #b8573f;
+    --cb-park-play-equipment: #1f6fb2;
 
     /* The night-sky artwork stays dark; its controls use the shared dark theme below. */
     --cb-scene-sky: #87ceeb;
@@ -205,6 +230,8 @@
     --cb-z-map-pane-estimate-imagery: 350; /* estimate satellite crop: above tiles, below parcel vectors */
     --cb-z-map-pane-parcel-preview: 390;   /* parcels previewed while a council imports: above tiles, below the real parcel vectors (400) */
     --cb-z-map-pane-plan: 620;      /* the Schelling plan layer: over parcels and blocks, under the site tool (640) */
+    --cb-z-map-pane-buildout: 659;  /* build-out veils, hatching and cranes: over every design pane, road strips (655-658) included; takes no clicks */
+    --cb-z-map-pane-compare: 645;   /* the Compare tab's two map halves (js/compare-on-map.js): where the designs' buildings draw, under road strips (655) */
     --cb-z-map-pane-site: 640;      /* the site tool's Leaflet pane: over the markers (600), under tooltips (650) */
     --cb-z-map-pane-pick-highlight: 690; /* the designs a surface picking on the map highlights (js/map-pick.js, css/proposals.css): over every fabric pane, under popups (700) */
     --cb-z-map-compare: 800;        /* before/after overlay inside a Leaflet container: above its panes (<= 700) */

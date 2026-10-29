@@ -158,6 +158,11 @@ uniform vec3 cbFacadeWindows;
 uniform vec3 cbFacadeShutterColor;
 uniform vec3 cbFacadeGlassColor;
 float cbFacadeGlazing = 0.0;
+// A window's open glass (0 elsewhere and behind closed shutters; its average share at distance) and
+// its address (column, storey, building), lit at night by three-night-windows.js.
+#define CB_FACADE_WINDOWS
+float cbFacadeWindowGlass = 0.0;
+vec3 cbFacadeWindowCell = vec3(0.0);
 float cbFacadeBox(vec2 p, vec2 halfSize, vec2 aa) {
     vec2 edge = smoothstep(halfSize - aa, halfSize + aa, abs(p));
     return (1.0 - edge.x) * (1.0 - edge.y);
@@ -186,6 +191,8 @@ vec3 cbFacadeCurtainWall(int style) {
     float pane = cbFacadeJointCoverage(grid.x, footprint.x, gap.x)
         * cbFacadeJointCoverage(grid.y, footprint.y, gap.y);
     cbFacadeGlazing = pane;
+    cbFacadeWindowGlass = pane;
+    cbFacadeWindowCell = vec3(floor(grid.x) + floor(vCbFacadeFace * 100.0) * 7.0, floor(vCbFacade.y / cbFacadeBuilding.y), cbFacadeBuilding.z);
     float detail = 1.0 - smoothstep(0.35, 1.3, max(footprint.x, footprint.y));
     float variation = cbFacadeNoise(floor(grid) + vec2(cbFacadeBuilding.z, floor(vCbFacadeFace * 100.0)));
     // A restrained sky gradient and pane-to-pane reflectance keep the glazing legible.
@@ -310,6 +317,10 @@ vec3 cbFacadeColor(vec3 original) {
     wall = mix(wall, trim, surround * allowed);
     wall = mix(wall, trim * 0.52, reveal * allowed);
     wall = mix(wall, glazing, glass * allowed);
+    float inWall = step(margin, p.x) * step(p.x, width - margin) * step(1.8, width);
+    float windowShare = 4.0 * windowSize.x * windowSize.y / (bay * floorHeight);
+    cbFacadeWindowGlass = inWall * mix(windowShare * 0.7, glass * (1.0 - closedSide * hasShutters), detail);
+    cbFacadeWindowCell = vec3(column + faceAddress * 7.0, floorIndex, cbFacadeBuilding.z);
     vec2 closedPanel = vec2(abs(opening.x) - windowSize.x * 0.5, opening.y);
     vec3 closedPaint = cbFacadeShutter(closedPanel, vec2(windowSize.x * 0.5, windowSize.y), aa,
         cbFacadeShutterColor * mix(0.95, 1.05, step(0.0, opening.x)));

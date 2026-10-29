@@ -8,9 +8,9 @@
     'use strict';
     // What the landing feed shows: agreements proposed to the index, their outcomes on chain, and the
     // bets and support on them (backend/routes/agent-activity.js RECENT_CHAIN_ACTIONS).
-    const TYPES = ['propose', 'execute', 'cancel', 'expire', 'createMarket', 'stake', 'resolve', 'claim', 'donate', 'pledge', 'fulfillPledge'];
+    const TYPES = ['propose', 'execute', 'cancel', 'expire', 'createMarket', 'stake', 'sell', 'resolve', 'claim', 'donate', 'pledge', 'fulfillPledge'];
     // A bet's own actions open that bet (its dialog, at /bets/<agreement account>), not the agreement.
-    const BET_TYPES = ['createMarket', 'stake', 'resolve', 'claim'];
+    const BET_TYPES = ['createMarket', 'stake', 'sell', 'resolve', 'claim'];
     const ACCOUNT = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
     const CID = /^baf(?:krei|ybei)[a-z2-7]{52}$/;
     // The design type of the agreement's first design (its goal), the key of its label.

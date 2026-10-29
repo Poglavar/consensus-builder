@@ -158,7 +158,13 @@
         });
         const counts = (measure, of) => progress.tests.some(test => test.measure === measure && test.of.split('+').includes(of));
         const unanimous = progress.policy.type === 'unanimous';
-        if (!counts('headcount', 'owners')) {
+        if (progress.participants) {
+            const p = progress.participants;
+            html.push(meter('participants', t('proposalApproval.meterDistinctOwners', 'Distinct approving owners'),
+                t('proposalApproval.ownersCount', '{{accepted}} of {{total}} accepted', { accepted: p.support, total: p.total }),
+                p.support, Math.max(p.total, p.needed), needText(p, false)));
+        }
+        if (!counts('headcount', 'owners') && !progress.participants) {
             html.push(meter('owners', t('proposalApproval.meterOwners', 'Owners'),
                 t('proposalApproval.ownersCount', '{{accepted}} of {{total}} accepted', { accepted: progress.acceptedOwners, total: progress.totalOwners }),
                 progress.acceptedOwners, progress.totalOwners, t('proposalApproval.rules.heard', 'Heard, not counted')));
@@ -567,7 +573,9 @@
                 : t('proposalApproval.amountOf', '{{amount}} of {{total}}', { amount: test.support, total: test.total })}`);
         const authority = (progress.authorities || []).length
             ? [progress.authorityMet ? t('proposalApproval.authority.given', 'authority approved') : t('proposalApproval.authority.awaited', 'authority pending')] : [];
-        return [base, ...others, ...authority].join('; ');
+        const minimum = progress.participants
+            ? [t('proposalApproval.review.minimumOwners', '{{count}} distinct owner approvals needed', { count: progress.participants.needed })] : [];
+        return [base, ...others, ...minimum, ...authority].join('; ');
     }
 
     function reviewProgressHtml(review, voice) {

@@ -9,7 +9,39 @@
     // declared(cid): the parcel ids of this device's copy of a member, or null. That copy's own
     // declaration is what applying it on the map uses; a design not yet published has never been
     // checked against its binding, which can name fewer parcels than its pieces stand on.
-    async function prepare(plan, { resolve, bind, parcels, materialize, declared = () => null }) {
+    // A replay refusal told in the plan's terms. The private fabric names the piece it refused
+    // (`<root parcel>#<design cid>-<plot>`) and the vertex that lies outside the piece's declared
+    // parcels; here that becomes the member's title, the plot number and the parcel under the
+    // vertex (inside(vertex, feature) decides) among the parcels the plan was read with, with
+    // what to do about it. Any other error passes through unchanged.
+    function explainRefusal(error, designs, cadastralFeatures, inside = null) {
+        if (error?.code !== 'live-fabric-replacement-outside' || !Array.isArray(error.vertex)) return error;
+        const match = /#(.+)-(\d+)$/.exec(String(error.parcelId || ''));
+        const member = match ? (designs || []).find(design => String(design.cid) === match[1]) : null;
+        const title = member?.content?.title || (match ? match[1] : 'a design');
+        const plot = match ? `plot ${match[2]}` : 'a piece';
+        const idOf = feature => String(feature?.properties?.parcelId ?? feature?.id ?? '');
+        const host = typeof inside === 'function'
+            ? (cadastralFeatures || []).find(feature => { try { return inside(error.vertex, feature); } catch (_) { return false; } }) : null;
+        const declared = (member?.parcelIds || []).map(String);
+        let message;
+        if (host && declared.includes(idOf(host))) {
+            message = `"${title}": ${plot} lies in its declared parcel ${idOf(host)}, but the plan replay did not form it there.`;
+        } else if (host) {
+            message = `"${title}": ${plot} reaches parcel ${idOf(host)}, which the design does not declare (its parcels: ${declared.join(', ') || 'none'}). Save the design again over every parcel its plots stand on.`;
+        } else {
+            message = `"${title}": ${plot} reaches ground outside the parcels the plan was read with (${declared.join(', ') || 'none'}). Save the design again over every parcel its plots stand on.`;
+        }
+        const explained = new Error(message);
+        explained.code = error.code;
+        explained.parcelId = error.parcelId;
+        explained.vertex = error.vertex;
+        explained.designCid = member ? String(member.cid) : null;
+        explained.cause = error;
+        return explained;
+    }
+
+    async function prepare(plan, { resolve, bind, parcels, materialize, declared = () => null, inside = null }) {
         const snapshot = await resolve(plan);
         const designs = [];
         const sources = new Map();
@@ -32,7 +64,9 @@
             if ([...ids].some(id => !features.some(f => String(f.properties?.parcelId ?? f.id) === id))) throw new Error('Some source parcels could not be loaded.');
             cadastralFeatures.push(...features.filter(f => ids.has(String(f.properties?.parcelId ?? f.id))));
         }
-        const result = await materialize({ designs, parcels: cadastralFeatures });
+        let result;
+        try { result = await materialize({ designs, parcels: cadastralFeatures }); }
+        catch (error) { throw explainRefusal(error, designs, cadastralFeatures, inside); }
         const ids = [...sources.values()].flatMap(ids => [...ids]);
         const materializedFeatures = result.fabric.entriesForCadastre(ids, { includeCorridors: false });
         // Road corridor pieces apart: they are land too (public land in Compare plans), but not parcels.
@@ -78,6 +112,7 @@
             },
             parcels,
             materialize: args => win.AgreementHeadless.materialize(args),
+            inside: (vertex, feature) => win.turf.booleanPointInPolygon(vertex, feature),
             declared: cid => {
                 const record = win.proposalStorage.getAllProposals().find(row => {
                     try { return win.DesignRecord.cidOf(row) === cid; } catch (_) { return false; }
@@ -86,5 +121,5 @@
             }
         }) };
     }
-    return { prepare, browser };
+    return { prepare, explainRefusal, browser };
 });

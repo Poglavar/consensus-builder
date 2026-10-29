@@ -136,11 +136,36 @@ describe('first-class named plans',()=>{
         read.request.mockImplementationOnce(async()=>{throw Object.assign(new Error('missing'),{code:'http-404'});}).mockImplementationOnce(async()=>({cid:plan.cid,content:plan.plan})).mockImplementationOnce(async()=>({cid:plan.cid,content:{...plan.plan,title:'Wrong'}}));
         await expect(tools.publishPlan({plan,expectedCid:plan.cid,confirm:true})).rejects.toMatchObject({code:'cid-mismatch'});
     });
-    it('requires confirmation and exact revision, and reports layouts before publishing dependencies',async()=>{
-        const {tools,tower,layout,publishDesign,calls}=fixture();const plan=await tools.draftPlan({title:'Layout',designs:[tower,layout],view});
+    it('requires confirmation and exact revision, and publishes a parcel layout member like any design',async()=>{
+        const {tools,tower,layout,publishDesign}=fixture();const plan=await tools.draftPlan({title:'Layout',designs:[tower,layout],view});
         await expect(tools.publishPlan({plan,expectedCid:plan.cid,confirm:false})).rejects.toMatchObject({code:'confirmation-required'});
         await expect(tools.publishPlan({plan,expectedCid:tower.cid,confirm:true})).rejects.toMatchObject({code:'plan-revision-mismatch'});
-        await expect(tools.publishPlan({plan,expectedCid:plan.cid,confirm:true})).rejects.toMatchObject({code:'layout-agreement-required',next:{tool:'ugt_propose_agreement',designCid:layout.cid}});
-        expect(publishDesign).not.toHaveBeenCalled();expect(calls).toEqual([`/plans/${plan.cid}`]);
+        expect(publishDesign).not.toHaveBeenCalled();
+        await tools.publishPlan({plan,expectedCid:plan.cid,confirm:true}).catch(()=>null);
+        expect(publishDesign).toHaveBeenCalledWith({design:layout.content,parcelSourceId:layout.parcelSourceId||null,expectedCid:layout.cid,confirm:true});
+    });
+    it('schedules construction windows that follow revised designs and open previews at a month',async()=>{
+        const {tools,tower,park,other}=fixture();
+        const plan=await tools.draftPlan({title:'Phased',designs:[tower,park],view,schedule:{[tower.cid]:{start:'2027-03',end:'2028-10'}},when:'2027-06'});
+        expect(plan.plan.schedule).toEqual({[tower.cid]:{start:'2027-03',end:'2028-10'}});
+        expect(plan.draftArtifact.when).toBe('2027-06');
+        const simulated=await tools.getPlan({plan,buildout:'seed-1',when:'2027-02'});
+        expect(simulated.draftArtifact).toMatchObject({when:'2027-02',buildout:'seed-1'});
+        const unscheduled=await tools.draftPlan({title:'Phased',designs:[tower,park],view});
+        expect(unscheduled.plan).not.toHaveProperty('schedule');expect(unscheduled.cid).not.toBe(plan.cid);
+        const inventory=await tools.inspectPlan({plan,filter:{kind:'design'}});
+        expect(inventory.schedule).toEqual(plan.plan.schedule);
+        expect(inventory.items.find(item=>item.designCid===tower.cid).construction).toEqual({start:'2027-03',end:'2028-10'});
+        expect(inventory.items.find(item=>item.designCid===park.cid).construction).toBeNull();
+        // The tower's window follows its revision; the park gets one by ref; a removed member's window goes.
+        const next=await tools.editPlan({plan,expectedCid:plan.cid,operations:[
+            {type:'modify',ref:`building:${tower.cid}:0`,changes:[{type:'set_floors',value:3}]},{type:'add',design:other}],
+            schedule:{[`design:${park.cid}`]:{start:'2029-01',end:'2029-06'},[other.cid]:{start:'2030-01',end:'2030-02'}}});
+        const revised=next.designs.find(row=>row.content.title==='Tower').cid;
+        expect(next.plan.schedule).toEqual({[revised]:{start:'2027-03',end:'2028-10'},[park.cid]:{start:'2029-01',end:'2029-06'},[other.cid]:{start:'2030-01',end:'2030-02'}});
+        const cleared=await tools.editPlan({plan:next,expectedCid:next.cid,operations:[{type:'remove',ref:`design:${other.cid}`}],schedule:{[park.cid]:null}});
+        expect(cleared.plan.schedule).toEqual({[revised]:{start:'2027-03',end:'2028-10'}});
+        await expect(tools.editPlan({plan:cleared,expectedCid:cleared.cid,schedule:{[other.cid]:{start:'2030-01',end:'2030-02'}}})).rejects.toMatchObject({code:'schedule-member-not-found'});
+        await expect(tools.editPlan({plan:cleared,expectedCid:cleared.cid,schedule:{[park.cid]:{start:'2030-05',end:'2030-01'}}})).rejects.toMatchObject({code:'invalid-plan'});
     });
 });

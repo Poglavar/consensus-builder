@@ -7,6 +7,7 @@ const require = createRequire(import.meta.url);
 const layoutValidation = require('../../frontend/js/parcel-layout-validation.js');
 const goals = require('../../frontend/js/proposals/design-goals.js');
 const FurnitureModels = require('../../frontend/js/furniture-models.js');
+const ParkEnclosures = require('../../frontend/js/park-enclosures.js');
 const forbidden = new Set(['__proto__', 'prototype', 'constructor']);
 const protectedFields = new Set(['schema', 'origin', 'authoredAt']);
 const fail = (code, message) => { throw Object.assign(new Error(message), { code }); };
@@ -133,14 +134,23 @@ export function normalizeSpaceFurniture(record) {
         if (Object.keys(models).length !== Object.keys(normalized || {}).length) fail('invalid-decoration', 'Each decorationDesign.models entry needs a url string; upload the asset with ugt_import_model kind furniture.');
         if (normalized) decorations.models = normalized; else delete decorations.models;
     }
-    // Lamps {coordinate, bearing} and stalls {coordinate, bearing, color?}; an invalid stall colour is dropped.
-    for (const [key, kind, normalize] of [['lamps', 'lamp', FurnitureModels.normalizeLamps], ['stalls', 'stall', FurnitureModels.normalizeStalls]]) {
+    // Lamps {coordinate, bearing}, stalls {coordinate, bearing, color?} (an invalid stall colour is dropped)
+    // and play equipment {coordinate, bearing}.
+    const equipment = Object.entries(ParkEnclosures.EQUIPMENT).map(([kind, key]) => [key, kind, ParkEnclosures.normalizeEquipment]);
+    for (const [key, kind, normalize] of [['lamps', 'lamp', FurnitureModels.normalizeLamps], ['stalls', 'stall', FurnitureModels.normalizeStalls], ...equipment]) {
         if (!Object.hasOwn(decorations, key)) continue;
         if (!allowed.includes(kind)) refuse(kind);
         if (!Array.isArray(decorations[key])) fail('invalid-decoration', `${key} must be an array.`);
         const items = normalize(decorations[key], furniturePoint);
         if (items.length !== decorations[key].length) fail('invalid-decoration', `A ${kind} needs coordinate [longitude, latitude] and an optional bearing in degrees.`);
         decorations[key] = items;
+    }
+    // Fenced areas { fence, use, gates, ring? } (checked by intentEditing.reconcile) exist only in parks.
+    if (Object.hasOwn(decorations, 'enclosures')) {
+        if (space.kind !== 'park') fail('furniture-kind-not-allowed', `A ${space.kind} has no fenced areas; only a park takes enclosures.`);
+        const items = ParkEnclosures.normalizeEnclosures(decorations.enclosures, furniturePoint);
+        if (items.length !== decorations.enclosures.length) fail('invalid-decoration', 'An enclosure needs { fence, use, gates: [[longitude, latitude]], ring? }.');
+        decorations.enclosures = items;
     }
     return record;
 }

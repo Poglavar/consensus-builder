@@ -43,14 +43,19 @@
     // The stencil bit the lid marks. The ghost-building pass owns ref 1 under a full mask, but it
     // runs in the transparent list after every opaque surface here has been drawn, so the two
     // never meet; a NotEqual-1 test also passes on this bit exactly as it does on a clear pixel.
-    const STENCIL_BIT = 0x02;
+    // The lid's bit is above the claim bit, so one Greater test (parcelSurface) refuses both.
+    const STENCIL_BIT = 0x08;
     const PARCEL_BIT = 0x04;
     // Draw order inside the opaque list: the lid must mark the stencil before any pavement-level
     // surface tests it.
-    // Parcel surfaces draw at the default order (0), marking the pixels they own. The background
-    // fills only unclaimed pixels afterwards; a polygon offset cannot reliably separate two
-    // coplanar surfaces, especially the large background triangles viewed at changing distances.
-    const ORDER = Object.freeze({ lid: -20, roadbed: -10, kerb: -10, markings: -10, pavement: 1 });
+    // Flat ground at pavement level is layered by draw order, never by depth: a polygon offset or a
+    // lift of a few centimetres cannot reliably separate coplanar surfaces, especially large
+    // triangles viewed at changing distances, and not at all on a phone's coarser depth buffer
+    // (green areas striped through the parcels on Android, 2026-10-28). Each claiming surface
+    // (parcelSurface) draws only on pixels nothing claimed before it and claims them: the ground
+    // cover (`cover`, the real-world lawns, meadows and woods, most specific first) before the
+    // parcel slabs at the default order (0), and the background fills what is left afterwards.
+    const ORDER = Object.freeze({ lid: -20, roadbed: -10, kerb: -10, markings: -10, cover: -5, pavement: 1 });
 
     function create(options) {
         const THREE = options.THREE;
@@ -72,9 +77,14 @@
             return material;
         }
 
+        // A claiming surface: it draws only where neither the lid nor an earlier claim marked the
+        // pixel (ref PARCEL_BIT is greater than the masked stencil only when both bits are clear),
+        // and marks it claimed.
         function parcelSurface(material) {
             cutHoles(material);
-            material.stencilRef = STENCIL_BIT | PARCEL_BIT;
+            material.stencilRef = PARCEL_BIT;
+            material.stencilFuncMask = STENCIL_BIT | PARCEL_BIT;
+            material.stencilFunc = THREE.GreaterStencilFunc;
             material.stencilWriteMask = PARCEL_BIT;
             material.stencilZPass = THREE.ReplaceStencilOp;
             return material;

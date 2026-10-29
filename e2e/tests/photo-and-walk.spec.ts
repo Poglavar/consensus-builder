@@ -276,7 +276,7 @@ async function photoPixel(page: Page, lat: number, lng: number) {
   }, { lat, lng });
 }
 
-test('Photo design clicks select, cycle sections, collapse and retain the camera like model view', async ({ mockApi: page }) => {
+test('Photo design clicks select, keep their section on repeat, collapse and retain the camera like model view', async ({ mockApi: page }) => {
   test.setTimeout(60_000);
   await mockBuildingScene(page);
   await mockPhotoTiles(page);
@@ -298,8 +298,10 @@ test('Photo design clicks select, cycle sections, collapse and retain the camera
   await expect.poll(focus).toMatchObject({ kind: 'designs' });
   await canvas.click({ position: pixel });
   await expect.poll(() => page.evaluate(() => (window as any).ThreeClickStack.expanded())).toBe('designs');
+  // A repeat click keeps the selected section; 3D clicks no longer cycle into the parcel (fa52dcba8).
   await canvas.click({ position: pixel });
-  await expect(page.locator('#three-click-stack .click-stack__section[data-kind="parcels"]')).toHaveClass(/is-selected/);
+  await expect(design).toHaveClass(/is-selected/);
+  await expect.poll(() => page.evaluate(() => (window as any).ThreeClickStack.expanded())).toBe('designs');
   const after = await page.evaluate(() => (window as any).getThreeModeInternals().camera.position.toArray());
   after.forEach((coordinate: number, index: number) => expect(coordinate).toBeCloseTo(camera[index], 6));
   await page.keyboard.press('Escape');

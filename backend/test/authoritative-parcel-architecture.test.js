@@ -24,7 +24,12 @@ describe('authoritative parcel source contracts', () => {
         files.forEach(path => expect(read(path), rel(path)).not.toMatch(retiredMutationPlumbing));
 
         const directFabricBegins = files.filter(path => /\.beginMutation(?:\?\.)?\s*\(/.test(read(path))).map(rel);
-        expect(directFabricBegins).toEqual(['proposals/apply/transaction.js']);
+        // The headless agreement host (9f09f57bf) begins its mutation on a private fabric it creates
+        // itself, never on the shared live fabric, so it needs no shared serializer.
+        expect(directFabricBegins).toEqual(['agreement-headless.js', 'proposals/apply/transaction.js']);
+        const headless = read(join(frontendRoot, 'agreement-headless.js'));
+        expect(headless).toMatch(/const fabric = root\.createLiveParcelFabric\(\{ geometry: turf \}\);\s*const mutation = fabric\.beginMutation\(/);
+        expect(headless).not.toMatch(/\bLiveParcelFabric\b/);
     });
 
     it('keeps cadastral transport and arbitrary ingestion private', () => {

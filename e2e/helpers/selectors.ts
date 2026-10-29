@@ -11,7 +11,7 @@ export const selectors = {
   leafletZoomOut: '.leaflet-control-zoom-out', // Note: may be disabled (zoomControl: false)
   parcelLayer: '.leaflet-overlay-pane svg, .leaflet-overlay-pane canvas',
 
-  // Map shell (replaced the left sidebar; see UI-REWORK.md). Each button toggles the sheet named in
+  // Map shell (replaced the left sidebar; see design-language.md, Element names). Each button toggles the sheet named in
   // its data-sheet-target; the controls inside the sheets kept their old sidebar ids.
   mapShellButton: '[data-sheet-target]',
   openSheet: '.map-sheet:not([hidden])',
@@ -29,9 +29,11 @@ export const selectors = {
   measurementSheet: '#measurement-sheet',
   activityButton: '#activity-button',
   activitySheet: '#activity-sheet',
-  // Simulation lives in its own top-level Settings accordion section.
-  simulationSection: '#settings-sheet details.activity-simulation[data-section="game"]',
-  simulationSummary: '#settings-sheet details.activity-simulation[data-section="game"] > summary',
+  // Advanced is the only Settings accordion; MapShell collapses it on every open. Simulation is a
+  // flat section inside it.
+  settingsAdvanced: '#settings-sheet details.accordion-section[data-section="advanced"]',
+  settingsAdvancedSummary: '#settings-sheet details.accordion-section[data-section="advanced"] > summary',
+  simulationSection: '#settings-sheet section.activity-simulation[data-section="game"]',
   simulationPlayPause: '#game-play-pause-btn',
   simulationSettings: '#settings-sheet .activity-simulation-settings',
   simulationRunningDot: '#activity-running-dot',

@@ -247,15 +247,15 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     usdcMint: USDC_DEVNET_MINT
                 },
                 writes: {
-                    origin: 'POST /pins, /designs, /agreements, /agreements/{cid}/decisions and /agreements/{cid}/onchain need an Origin header of the app: https://urbangametheory.xyz in production (any localhost origin in development).',
+                    origin: 'POST /designs, /plans, /agreements, /pins, /agreements/{cid}/decisions and /agreements/{cid}/onchain need an Origin header of the app: https://urbangametheory.xyz in production (any localhost origin in development).',
                     readOnlyPosts: ['/designs/binding', '/designs/batch', '/parcels/under', '/buildings/footprints'],
-                    pinLimit: '30 pins per 15 minutes per client; a 429 carries retryAfterSeconds',
+                    uploadLimit: 'POST /plans and /pins: 30 per 15 minutes per client; a 429 carries retryAfterSeconds',
                     idempotence: 'every object is filed under its CID: publishing it again answers 409 with the row the index holds'
                 },
                 flow: [
                     'POST /designs/binding { site, toleranceM? }: the parcels a site takes (free; nothing stored)',
-                    'POST /pins { kind: "design", cid, bytes }, then POST /designs { cid, content }: one per design; the row carries its binding (a parcel layout waits for its agreement)',
-                    'POST /pins { kind: "agreement", cid, bytes }, then POST /agreements { cid, content, designs? }: inputs are exactly the union of the designs\' bindings; designs carries the linked designs the index does not hold yet',
+                    'POST /designs { cid, content }: one per design; the row carries its binding (a parcel layout waits for its agreement)',
+                    'POST /agreements { cid, content, designs? }: inputs are exactly the union of the designs\' bindings; designs carries the linked designs the index does not hold yet',
                     'a non-binding agreement (an owner or community vote) stops here: it is a poll in the index, never minted, with no market',
                     'a binding owners\' agreement, as its sponsor: create (and fund) the account on the agreement program, then POST /agreements/{cid}/onchain { chain: "solana", cluster: "devnet", account, signature }',
                     'its owners relay signed decisions to /agreements/{cid}/decisions and its lens member attests AgreementDecision-v1 once the rule passes; anyone records it (attest) and executes; meanwhile anyone may bet, pledge and donate on the account; after the deadline anyone may expire it'
@@ -316,11 +316,12 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                 agreement: {
                     schema: 'agreement/v1',
                     jsonSchema: '#/schema/$defs/agreement',
-                    inputs: 'exactly the parcels the designs take (the union of their server bindings), with a holders snapshot, plus openGroundM2',
+                    inputs: 'exactly the parcels the designs take (the union of their server bindings) with parcelId, parcelSourceId and areaM2, plus openGroundM2; each input parcel is one abstract party, parcel-owner:<parcelId> ("Owner(s) of parcel X"), and names no people',
                     outputs: 'every piece on the input land after the designs are applied, by hash (piece1-sha256:…), with areaM2, fromParcelIds, role and producedBy',
                     outputRoles: ['plot', 'remainder', 'corridor', 'part', 'parcel'],
-                    allocations: { holders: 'the carried-over holding (no line means the same)', party: 'one holder of the input land', public: 'the public', joint: 'shares summing to 1' },
-                    money: '{ currency: "EUR", lines: [{ ownerKey, amountCents }] }: + receives, − pays',
+                    allocations: { party: 'the owners of one input parcel: { kind: "party", ownerKey: "parcel-owner:<parcelId>" }', proposer: 'the proposer', public: 'the public', rule: 'an owners\' agreement gives every output exactly one recipient' },
+                    money: '{ currency: "EUR", lines: [{ ownerKey: "parcel-owner:<parcelId>", amountCents }] }: + receives, − pays; derived from the settlement rule',
+                    persons: 'never stored: with the rule\'s ownership rights (rule.approvalConfig.rights), person k with share s in parcel i co-owns every output allocated to that parcel\'s party at s and receives s of its cash, rounded per parcel to whole cents by largest remainder',
                     rules: {
                         ownerDeal: { electorate: 'owners', binding: true },
                         ownerVote: { electorate: 'owners', binding: false },

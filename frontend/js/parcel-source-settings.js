@@ -205,9 +205,13 @@
             const requestController = controller;
             const timer = setTimeout(() => requestController.abort(), 90000);
             try {
-                const response = await global.fetch(backend(global) + spec.discover, { method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }, cache: 'no-store', signal: requestController.signal,
-                    body: JSON.stringify({ url: input.value, city: city.id, bbox: smallProbeBounds(global.map), heightUnit: chosenUnit || undefined, layers: chosenLayers }) });
+                // A check stores nothing: a GET with the source, the label and a small probe box.
+                const query = new URLSearchParams({ url: input.value, bbox: smallProbeBounds(global.map).join(',') });
+                if (city.id) query.set('city', city.id);
+                if (chosenUnit) query.set('heightUnit', chosenUnit);
+                if (chosenLayers && chosenLayers.length) query.set('layers', chosenLayers.join(','));
+                const response = await global.fetch(`${backend(global)}${spec.discover}?${query}`, {
+                    cache: 'no-store', signal: requestController.signal });
                 const data = await response.json();
                 if (requestController.signal.aborted || requestController !== controller) return;
                 recordCheck(city.id, input.value, data, global, kind);
@@ -276,7 +280,7 @@
         global.document.body.append(dialog); dialog.showModal(); input.focus();
         return dialog;
     }
-    // The failure banners, one per kind, are sections of the shared banner card (ephemerals.md): both
+    // The failure banners, one per kind, are sections of the shared banner card (design-language.md, Messages): both
     // failing at once reads as one card with one line per source. Parcel choices live in the ground
     // fallback dialog; building failures retain their own retry/source actions.
     const BANNERS = {

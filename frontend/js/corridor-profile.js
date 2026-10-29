@@ -542,14 +542,28 @@ function corridorDefaultTrackProfile(gauge = CORRIDOR_DEFAULT_RAIL_GAUGE) {
     return { strips: [{ type: 'rail', width: corridorStandardWidth('rail', value), gauge: value }] };
 }
 
+// The presets and the legacy profile are laid out for right-hand traffic. Where traffic keeps
+// left, the same cross-section carries its traffic the other way round: every directed lane swaps
+// forward and backward in place, so the near (left) kerb carries the drawing direction.
+function corridorProfileForDrivingSide(profile, drivingSide = 'right') {
+    if (!profile || drivingSide !== 'left') return profile;
+    const swapped = { forward: 'backward', backward: 'forward' };
+    return { ...profile, strips: profile.strips.map(strip => (swapped[strip.direction] ? { ...strip, direction: swapped[strip.direction] } : { ...strip })) };
+}
+
 // The profile a corridor should have when it predates this model (or was drawn by the older picker,
 // which only ever produced a total width and an unused sidewalk number).
 //
 // It must SUM TO THE WIDTH IT IS GIVEN: the footprint of an existing corridor — and every parcel split
 // and proposal derived from it — is that width. So a legacy track stays one rail lane stretched to its
 // recorded width, however far that is from a standard track. New tracks are seeded by the drawing tool
-// with corridorDefaultTrackProfile() instead; this function never sees them.
-function corridorProfileFromLegacy(width, sidewalkWidth, isTrack) {
+// with corridorDefaultTrackProfile() instead; this function never sees them. Laid out for the
+// city's side of the road (corridorProfileForDrivingSide).
+function corridorProfileFromLegacy(width, sidewalkWidth, isTrack, drivingSide = 'right') {
+    return corridorProfileForDrivingSide(corridorProfileFromLegacyRightHand(width, sidewalkWidth, isTrack), drivingSide);
+}
+
+function corridorProfileFromLegacyRightHand(width, sidewalkWidth, isTrack) {
     const total = Number(width);
     if (!Number.isFinite(total) || total <= 0) return null;
     if (isTrack) return { strips: [{ type: 'rail', width: total, gauge: CORRIDOR_DEFAULT_RAIL_GAUGE }] };
@@ -653,7 +667,10 @@ function corridorParkingTypeFromOsm(orientation) {
 // lanes at their class's typical width plus the furniture. Guessing a total from the highway class and
 // then subtracting furniture from it does the opposite, and throws away every street whose guess was
 // too narrow for the furniture it actually has.
-function corridorProfileFromOsmTags(tags, fallbackWidth) {
+// `drivingSide` is the side of the road the way's traffic keeps to (its city's, or the record's
+// `driving_side` tag): OSM's `lanes:forward` and the per-side cycle lanes mean different sides of
+// the centre line where traffic keeps left.
+function corridorProfileFromOsmTags(tags, fallbackWidth, drivingSide = 'right') {
     const source = tags || {};
     if (source.railway) {
         // OSM's `gauge` is the same millimetre figure a rail lane carries, so it maps straight across —
@@ -700,6 +717,7 @@ function corridorProfileFromOsmTags(tags, fallbackWidth) {
     // two-way street carries the oncoming flow, so its cycle lane runs backward and the right one
     // forward. A oneway's cycle lanes run with the oneway, and `cycleway:<side>:oneway` overrides
     // either. corridorProfileToOsmTags writes that tag exactly when this default would be wrong.
+    const oncomingSide = drivingSide === 'left' ? 'right' : 'left';
     const cyclewayDirection = side => {
         const own = source[`cycleway:${side}:oneway`] ?? source['cycleway:both:oneway'];
         if (own === 'yes') return 'forward';
@@ -707,7 +725,7 @@ function corridorProfileFromOsmTags(tags, fallbackWidth) {
         if (own === 'no') return 'both';
         if (source.oneway === 'yes') return 'forward';
         if (source.oneway === '-1') return 'backward';
-        return side === 'left' ? 'backward' : 'forward';
+        return side === oncomingSide ? 'backward' : 'forward';
     };
 
     const left = [];
@@ -749,20 +767,23 @@ function corridorProfileFromOsmTags(tags, fallbackWidth) {
     // Left of travel to right, as every profile runs: the backward (oncoming) lanes first, then any
     // centre turn lanes, then the forward ones on the right — the order the presets use, so an
     // imported street and a drawn one put their traffic on the same side.
+    // Where traffic keeps left the order is mirrored: the forward lanes first, on the left.
     const laneWidth = roundStripWidth(carriageway / laneCount);
+    const [nearCount, near, far] = drivingSide === 'left'
+        ? [forwardCount, 'forward', 'backward'] : [backwardCount, 'backward', 'forward'];
     const driving = Array.from({ length: laneCount }, (unused, index) => ({
         type: 'driving',
         width: laneWidth,
-        direction: index < backwardCount
-            ? 'backward'
-            : (index < backwardCount + bothWaysCount ? 'both' : 'forward')
+        direction: index < nearCount
+            ? near
+            : (index < nearCount + bothWaysCount ? 'both' : far)
     }));
     // Rounding the lane width loses up to a millimetre per lane; give the remainder back to the last one
     // so the cross-section sums to exactly the width the corridor has.
     driving[driving.length - 1].width = roundStripWidth(carriageway - laneWidth * (laneCount - 1));
 
     const carriagewayLanes = medianWidth
-        ? [...driving.slice(0, backwardCount), { type: 'median', width: medianWidth }, ...driving.slice(backwardCount)]
+        ? [...driving.slice(0, nearCount), { type: 'median', width: medianWidth }, ...driving.slice(nearCount)]
         : driving;
 
     // Left flank runs outside-in; the right flank mirrors it, so it is emitted inside-out.
@@ -778,7 +799,7 @@ function corridorProfileFromOsmTags(tags, fallbackWidth) {
 // parking). Reordering lanes within one side is expressible in a stored profile and not in OSM tags.
 // Directions survive: the traffic lanes as counts (backward ones come back on the left, as in the
 // presets), and each side's cycle lane through `cycleway:<side>:oneway` when it needs one.
-function corridorProfileToOsmTags(profile) {
+function corridorProfileToOsmTags(profile, drivingSide = 'right') {
     const normalized = normalizeCorridorProfile(profile);
     if (!normalized) return null;
 
@@ -869,9 +890,10 @@ function corridorProfileToOsmTags(profile) {
     ['left', 'right'].forEach(side => {
         const lane = lanes.find((candidate, index) => candidate.type === 'cycleway' && sideOf(index) === side);
         if (!lane) return;
+        const oncomingSide = drivingSide === 'left' ? 'right' : 'left';
         const assumed = tags.oneway === 'yes'
             ? 'forward'
-            : (tags.oneway === '-1' ? 'backward' : (side === 'left' ? 'backward' : 'forward'));
+            : (tags.oneway === '-1' ? 'backward' : (side === oncomingSide ? 'backward' : 'forward'));
         const actual = directionOf(lane);
         if (actual === assumed) return;
         tags[`cycleway:${side}:oneway`] = actual === 'forward' ? 'yes' : (actual === 'backward' ? '-1' : 'no');
@@ -880,11 +902,11 @@ function corridorProfileToOsmTags(profile) {
 }
 
 // The profile for an OSM road feature as produced by road-detection.js `osmToGeoJSON`.
-function corridorProfileFromOsmFeature(feature) {
+function corridorProfileFromOsmFeature(feature, drivingSide = 'right') {
     const properties = (feature && feature.properties) || {};
     const tags = properties.osmTags || {};
     const width = parseOsmNumber(properties.width) || parseOsmNumber(tags.width);
-    return corridorProfileFromOsmTags({ highway: properties.highway, railway: properties.railway, ...tags }, width);
+    return corridorProfileFromOsmTags({ highway: properties.highway, railway: properties.railway, ...tags }, width, drivingSide);
 }
 
 // Read the profile off a stored corridor definition, synthesising one for corridors drawn before
@@ -2426,6 +2448,7 @@ if (typeof window !== 'undefined') {
     window.normalizeCorridorProfile = normalizeCorridorProfile;
     window.corridorProfileWidth = corridorProfileWidth;
     window.corridorProfileFromLegacy = corridorProfileFromLegacy;
+    window.corridorProfileForDrivingSide = corridorProfileForDrivingSide;
     window.corridorProfileOf = corridorProfileOf;
     window.corridorStripSpans = corridorStripSpans;
     window.CORRIDOR_STANDARD_WIDTHS = CORRIDOR_STANDARD_WIDTHS;
@@ -2487,6 +2510,7 @@ if (typeof module !== 'undefined' && module.exports) {
         corridorProfileWidth,
         reversedCorridorProfile,
         corridorProfileFromLegacy,
+        corridorProfileForDrivingSide,
         corridorDefaultTrackProfile,
         corridorProfileOf,
         corridorProfileHasRail,

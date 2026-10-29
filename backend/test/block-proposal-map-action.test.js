@@ -51,7 +51,9 @@ describe('a block proposal row’s map action', () => {
             const row = context.buildBlockProposalListItem(road({ lifecycleStatus: 'cancelled', applied }));
             expect(row, `applied=${applied}`).not.toContain('applyProposalToMap(');
             expect(row, `applied=${applied}`).not.toContain('removeProposalFromMap(');
-            expect(row).toContain('proposal-delete-btn');
+            expect(row, `applied=${applied}`).toContain('data-proposal-id="p-1"');
+            // Record removal belongs only to the Lists panel (docs/development.md, 01268caee).
+            expect(row).not.toContain('proposal-delete-btn');
         }
     });
 });

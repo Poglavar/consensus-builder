@@ -109,7 +109,7 @@
             const icon = doc.createElement('i'); icon.className = `fas fa-${name}`;
             icon.setAttribute('aria-hidden', 'true'); button.prepend(icon);
         }
-        function controls({ getRecords = null, getView = () => win.MapShare.capture(win), getTitle = () => 'My plan', getSources = () => ({}), importAllowed = true } = {}) {
+        function controls({ getRecords = null, getView = () => win.MapShare.capture(win), getTitle = () => 'My plan', getSources = () => ({}), getSchedule = () => null, importAllowed = true } = {}) {
             const group = doc.createElement('div'); group.className = 'plan-file-controls';
             let busy = false;
             const buttons = [];
@@ -130,7 +130,7 @@
                 buttons.push(b); group.appendChild(b); return b;
             };
             if (getRecords) {
-                const make = () => win.PlanFile.create(structuredClone(getRecords()), { title: getTitle(), view: structuredClone(getView()), designSources: getSources(), fetchModel });
+                const make = () => win.PlanFile.create(structuredClone(getRecords()), { title: getTitle(), view: structuredClone(getView()), schedule: getSchedule(), designSources: getSources(), fetchModel });
                 button(t('json', 'Download editable plan'), async () => download(win.PlanFile.stringify(await make()), 'plan.ugt.json', 'application/json'), 'json');
                 button(t('geojson', 'Download GeoJSON'), () => download(JSON.stringify(win.PlanFile.geojsonRecords(structuredClone(getRecords()), { title: getTitle(), view: structuredClone(getView()) }), null, 2) + '\n', 'plan.geojson', 'application/geo+json'), 'geojson');
             }

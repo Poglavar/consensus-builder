@@ -53,8 +53,10 @@ describe('parcelIdToCityId — unambiguous and shared prefixes', () => {
         expect(route.parcelIdToCityId('ZM-LUSAKA-GID-11111111-2222-3333-4444-555555555555')).toBe('lusaka');
         expect(route.parcelIdToCityId('JP-MOJ-2026-27128~sheet1~H000000001')).toBeNull();
         expect(route.parcelIdToCityId('AO-LUANDA-AGT-11111111-2222-3333-4444-555555555555')).toBe('luanda');
-        expect(route.parcelIdToCityId('ML-NINACAD-00103010001')).toBe('bamako');
-        expect(route.parcelIdToCityId('BJ-ANDF-101413974')).toBe('cotonou');
+        // Mali's NINACAD prefix is shared by Bamako, Sikasso and Ségou since 2026-10-20, so it names none of them.
+        expect(route.parcelIdToCityId('ML-NINACAD-00103010001')).toBeNull();
+        // Benin's ANDF prefix is shared by Cotonou, Djougou, Kandi and Aplahoué, so it names none of them.
+        expect(route.parcelIdToCityId('BJ-ANDF-101413974')).toBeNull();
         expect(route.parcelIdToCityId('CO-CALI-NPN-760010100010000100010000000000')).toBe(null);
         expect(route.parcelIdToCityId('PE-SEDAPAL-LOT-{11111111-2222-3333-4444-555555555555}')).toBe('lima');
         expect(route.parcelIdToCityId('CO-BOGOTA-006106001009')).toBe('bogota');

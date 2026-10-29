@@ -29,7 +29,7 @@ const renderEnd = source.indexOf('\nfunction rerenderProposalDetailsForLanguage(
 if (renderStart < 0 || renderEnd <= renderStart) throw new Error('Could not isolate proposal details renderer');
 const renderSource = `let proposalDetailsEscapeHandler = null;\n${source.slice(renderStart, renderEnd)}`;
 
-function render(proposal, { applied = false, road = false, lifecycle = 'Active', actionError = '', forkOffer = false, sourceFeature = null, sourceFeatures = null, sourceReplaced = false, relatedProposals = null } = {}) {
+function render(proposal, { applied = false, road = false, lifecycle = 'Active', actionError = '', forkOffer = false, sourceFeature = null, sourceFeatures = null, sourceReplaced = false, relatedProposals = null, formed = null } = {}) {
     // Model the renderer's deferred HTML mount as well as its direct innerHTML path.
     const timers = [];
     const htmlContainer = () => ({ innerHTML: '', appendChild(node) { this.innerHTML += node.innerHTML; } });
@@ -83,7 +83,9 @@ function render(proposal, { applied = false, road = false, lifecycle = 'Active',
         ParcelSetRelations: relatedProposals ? referenceRelations : null,
         RoadActions: road ? { factsFor: () => ({ proposalKey: proposal.proposalId, applied: true }), runAction() {} } : null,
         RoadActionsModel: road ? { isActionAvailable: () => true } : null,
-        __claims: { materializedParcelIdsOf: () => [] }
+        // formed: the parcels the design has formed so far, which the fabric's listeners hear grow.
+        __claims: { materializedParcelIdsOf: () => formed ? formed.ids : [] },
+        LiveParcelFabric: formed ? { subscribe: listener => { formed.listeners.push(listener); } } : undefined
     };
     const globals = {
         CbFormat: require('../../frontend/js/format.js'),
@@ -283,15 +285,13 @@ describe('proposal details action footer', () => {
         expect(footer('.btn-duplicate-design').length).toBe(1);
     });
 
-    it('keeps a parcel layout local: Share disabled with its reason, no Duplicate, Bet or approval action', () => {
+    it('keeps a parcel layout local: no Share or note about it, no Duplicate, Bet or approval action', () => {
         const proposal = { proposalId: 'layout-1', goal: 'parcel-layout', title: 'Layout', cadastreParcelIds: ['source-1'], parcelLayout: { plots: [] } };
         const result = render(proposal, { applied: true });
         const footer = parse(result.footer.innerHTML);
-        const share = footer('.btn-share-proposal');
-        expect(share.length).toBe(1);
-        expect(share.attr('disabled')).toBeDefined();
-        expect(share.attr('onclick')).toBeUndefined();
-        expect(footer('.proposal-publish-later').text()).toBe('A parcel layout is published with its agreement. Propose an agreement that includes it.');
+        // Its agreement publishes it, so there is no Share to disable and explain.
+        expect(footer('.btn-share-proposal').length).toBe(0);
+        expect(footer('.proposal-publish-later').length).toBe(0);
         expect(footer('.btn-duplicate-design').length).toBe(0);
         expect(footer('.btn-bet-proposal').length).toBe(0);
         expect(parse(result.content.innerHTML)('.btn-edit-approval').length).toBe(0);
@@ -301,13 +301,45 @@ describe('proposal details action footer', () => {
         expect(park('.proposal-publish-later').length).toBe(0);
     });
 
+    it('gives a parcel layout Overview, Input parcels and Output parcels, and every other design Overview and Details', () => {
+        const tabs = content => content('[data-proposal-tab]').map((_, tab) => content(tab).attr('data-proposal-tab')).get();
+        const layout = parse(render({ proposalId: 'layout-3', goal: 'parcel-layout', title: 'Layout', cadastreParcelIds: ['source-1', 'source-2'], parcelLayout: { plots: [] } }).content.innerHTML);
+        expect(tabs(layout)).toEqual(['overview', 'inputs', 'outputs']);
+        expect(layout('[data-proposal-tab="inputs"]').text().trim()).toBe('Input parcels (2)');
+        expect(layout('[data-proposal-tabpanel="inputs"] .proposal-parcel-row')).toHaveLength(2);
+        // The tabs say what Land & ownership, the record and the source-parcel count said.
+        expect(layout('[data-proposal-section]')).toHaveLength(0);
+        expect(layout('.metric-label').map((_, label) => layout(label).text()).get()).not.toContain('Source parcels:');
+
+        const park = parse(render({ proposalId: 'park-4', goal: 'park', title: 'Park', cadastreParcelIds: ['source-1'] }).content.innerHTML);
+        expect(tabs(park)).toEqual(['overview', 'details']);
+        expect(park('[data-proposal-tabpanel="details"] [data-proposal-section="land"] .proposal-parcel-row')).toHaveLength(1);
+        expect(park('[data-proposal-tabpanel="details"] [data-proposal-section="record"]')).toHaveLength(1);
+    });
+
+    it('re-renders a layout\'s counts once its plots replay onto the map after the panel opened', () => {
+        const formed = { ids: [], listeners: [] };
+        const result = render({ proposalId: 'layout-4', goal: 'parcel-layout', title: 'Layout', cadastreParcelIds: ['source-1'], parcelLayout: { plots: [] } }, { applied: true, formed });
+        const outputs = () => parse(result.content.innerHTML)('[data-proposal-tab="outputs"]').text().trim();
+        expect(outputs()).toBe('Output parcels (0)');
+        expect(formed.listeners).toHaveLength(1);
+        formed.ids = ['plot-1', 'plot-2'];
+        result.content.innerHTML = '';
+        formed.listeners[0]({});
+        expect(outputs()).toBe('Output parcels (2)');
+        // A commit that forms nothing new leaves the panel alone.
+        result.content.innerHTML = 'unchanged';
+        formed.listeners[0]({});
+        expect(result.content.innerHTML).toBe('unchanged');
+    });
+
     it('keeps design actions separate from agreement creation and preserves publication availability', () => {
         const layout = { proposalId: 'layout-2', goal: 'parcel-layout', title: 'Layout', cadastreParcelIds: ['source-1'], parcelLayout: { plots: [] } };
         const appliedLayout = render(layout, { applied: true });
         const layoutFooter = parse(appliedLayout.footer.innerHTML);
         expect(layoutFooter('.btn-create-agreement').length).toBe(0);
         expect(layoutFooter('.btn-add-to-plan').length).toBe(1);
-        expect(layoutFooter('.btn-share-proposal').attr('disabled')).toBeDefined();
+        expect(layoutFooter('.btn-share-proposal').length).toBe(0);
 
         const park = { proposalId: 'park-3', goal: 'park', title: 'Park', cadastreParcelIds: [] };
         const appliedPark = render(park, { applied: true });

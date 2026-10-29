@@ -38,7 +38,8 @@
                 if (!navigating) throw new Error('City navigation could not open');
                 return;
             }
-            let proposal = global.getProposalByIdOrHash(event.proposalId);
+            // A published design is named by its CID (?design=<cid>): its local copy, when there is one.
+            let proposal = global.getProposalByIdOrHash(event.proposalId) || global.DesignSync?.localCopyOf?.(event.proposalId) || null;
             if (!proposal) {
                 try {
                     proposal = await global.importServerProposal(event.proposalId);
@@ -52,7 +53,10 @@
             }
             // The local copy is preferred above: downloading must never reset its applied state.
             if (!fromUrl) global.history.pushState(null, '', target);
-            const opened = global.openProposalFromList(global.getProposalKey(proposal) || event.proposalId, { proposal, closeSheets: true });
+            // A reload of a selection (?design= with the view in ?at=) keeps the camera where it was.
+            const keepView = fromUrl && global.SelectionAddress.keepsView();
+            if (keepView) global.ClickStack.keepNextView();
+            const opened = global.openProposalFromList(global.getProposalKey(proposal) || event.proposalId, { proposal, closeSheets: true, centerOnProposal: !keepView });
             if (!opened) throw new Error('Proposal selection could not open');
             // Selection normally opens a compact card; feed arrivals also need its Activity link.
             global.setProposalDetailsPanelMinimized(global.document.getElementById('proposal-details-panel'), false);
@@ -61,7 +65,7 @@
             // The globe's cover (released in finally) stays over the 3D load.
             if (arrive) await global.WorldArrival.enter3D(proposal);
         } finally {
-            if (fromUrl) global.WorldHandoff.proposalReady(event.proposalId);
+            if (fromUrl) { global.WorldHandoff.proposalReady(event.proposalId); global.ClickStack?.keepNextView(false); }
             opening = false;
         }
     }
@@ -117,11 +121,11 @@
     global.WorldProposalEntry = { href, open, openAgreement, openBet, isOpening: () => opening };
     async function fromUrl() {
         const params = new URLSearchParams(global.location.search);
-        const id = params.get('focusProposal');
+        const id = params.get('design');
         if (!id) return;
         const arrive = params.get('arrive');
         if (arrive) {
-            // Consumed once: a reload of this URL reopens the proposal without diving again.
+            // Consumed once: a reload of this URL reopens the design without diving again.
             params.delete('arrive');
             global.history.replaceState(global.history.state, '', global.location.pathname + '?' + params);
         }

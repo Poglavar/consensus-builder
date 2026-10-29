@@ -1,6 +1,7 @@
 // Unit tests for frontend/js/agreement-ground.js: an agreement's inputs and outputs derived from a
-// fake live fabric, the current/stale check of a stored agreement (its designs named by CID), and the
-// holders the local owner records name, joint pools included.
+// fake live fabric (naming nobody: each input parcel is its owners' abstract party), the current/stale
+// check of a stored agreement (its designs named by CID), and the local owner records behind the
+// default rights snapshot, joint pools included.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -63,10 +64,6 @@ const designs = () => [
     { proposalId: 'layout-1', goal: 'parcel-layout', cadastreParcelIds: [' k9 ', 'k9'], parcelLayout: { algorithm: 'equal' } },
     { proposalId: 'road-1', goal: 'road', cadastreParcelIds: [] }
 ];
-const ana = { ownerKey: 'agent-ana', displayName: 'Ana', share: 1 };
-const boris = { ownerKey: 'agent-boris', displayName: 'Boris', share: 1 };
-const holders = { k9: [ana], k10: [boris], 'k9-p1': [ana], 'k9-p2': [ana] };
-const ownerOf = id => holders[id] || [];
 const area = feature => turf.area(feature);
 
 describe('derive', () => {
@@ -81,7 +78,7 @@ describe('derive', () => {
         expect(fabric.get('k9').geometry.type).toBe('Polygon');
 
         const design = { proposalId: 'building-1', cadastreParcelIds: ['k9'] };
-        const context = { designs: [design], fabric, originals: new Map([['k9', source]]), ownerOf, area };
+        const context = { designs: [design], fabric, originals: new Map([['k9', source]]), area };
         const derived = ground.derive(context);
         expect(derived.outputs[0]).toMatchObject({ hash: record.outputHash(source.geometry), role: 'parcel', geometry: source.geometry });
         const stored = { ...derived, designs: [{ proposalId: design.proposalId, cid: 'unchanged-design' }] };
@@ -99,7 +96,7 @@ describe('derive', () => {
         const originals = new Map([['k9', piece('k9', { type: 'MultiPolygon', coordinates: [polygon.coordinates] })]]);
         for (const properties of [{ producedByProposalId: 'design-1' }, { cadastralPart: true }]) {
             const fabric = fakeFabric([piece('k9', polygon, { cadastreParcelIds: ['k9'], ...properties })]);
-            const { outputs } = ground.derive({ designs: [{ proposalId: 'design-1', cadastreParcelIds: ['k9'] }], fabric, originals, ownerOf, area });
+            const { outputs } = ground.derive({ designs: [{ proposalId: 'design-1', cadastreParcelIds: ['k9'] }], fabric, originals, area });
             expect(outputs[0].hash).toBe(record.outputHash(polygon));
             expect(outputs[0].geometry).toEqual(polygon);
         }
@@ -117,11 +114,12 @@ describe('derive', () => {
         } finally { Math.sin = native; }
     });
     it('takes each design\'s declared parcels and the anchors of what it produced, in numeric order', () => {
-        const { inputs } = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, ownerOf, area });
+        const { inputs } = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, area });
         expect(inputs.parcels.map(parcel => parcel.parcelId)).toEqual(['k9', 'k10']);
         expect(inputs.parcels[0].areaM2).toBeCloseTo(turf.area(originals.get('k9')), 6);
         expect(inputs.parcels[1].areaM2).toBeCloseTo(turf.area(originals.get('k10')), 6);
-        expect(inputs.parcels.map(parcel => parcel.holders)).toEqual([[ana], [boris]]);
+        // Nobody is named: each input parcel is its owners' abstract party.
+        expect(inputs.parcels.every(parcel => !Object.hasOwn(parcel, 'holders'))).toBe(true);
         expect(inputs.openGroundM2).toBe(0);
     });
 
@@ -139,7 +137,7 @@ describe('derive', () => {
             binding: { coverage: 'partial', unsurveyedM2: 1 }
         };
         const { inputs, outputs } = ground.derive({ designs: [design], fabric,
-            originals: new Map([['k9', original]]), ownerOf, area, openGround, siteBinding, turf });
+            originals: new Map([['k9', original]]), area, openGround, siteBinding, turf });
         const expectedOpen = turf.area(turf.feature(rect(5, 0, 10, 10)));
         expect(inputs.openGroundM2).toBeCloseTo(expectedOpen, 3);
         expect(inputs.openGroundM2).not.toBe(1); // never turn binding.unsurveyedM2 into geometry
@@ -159,7 +157,7 @@ describe('derive', () => {
         const design = id => ({ proposalId: id, cadastreParcelIds: ['k9'], site: rect(0, 0, 10, 10),
             binding: { coverage: 'partial', unsurveyedM2: 1 } });
         const { inputs, outputs } = ground.derive({ designs: [design('design-1'), design('design-2')], fabric,
-            originals: new Map([['k9', original]]), ownerOf, area, openGround, siteBinding, turf });
+            originals: new Map([['k9', original]]), area, openGround, siteBinding, turf });
         expect(inputs.openGroundM2).toBeCloseTo(turf.area(turf.feature(rect(5, 0, 10, 10))), 3);
         expect(outputs.map(output => output.pieceId).sort()).toEqual(['ground-remainder', 'shared-ground']);
     });
@@ -170,7 +168,7 @@ describe('derive', () => {
         });
         const design = { proposalId: 'building-1', cadastreParcelIds: ['k9'], site: rect(0, 0, 10, 10),
             binding: { coverage: 'partial', unsurveyedM2: 1000 } };
-        expect(() => ground.derive({ designs: [design], fabric: fakeFabric([body]), originals: new Map(), ownerOf, area,
+        expect(() => ground.derive({ designs: [design], fabric: fakeFabric([body]), originals: new Map(), area,
             openGround, siteBinding, turf })).toThrow(/original parcel geometry is missing/);
     });
 
@@ -181,7 +179,7 @@ describe('derive', () => {
         const design = { proposalId: 'building-1', cadastreParcelIds: ['k9'], site: rect(0, 0, 10, 10),
             binding: { coverage: 'partial', unsurveyedM2: 1000 } };
         expect(() => ground.derive({ designs: [design], fabric: fakeFabric([body]),
-            originals: new Map([['k9', piece('k9', rect(0, 0, 5, 10))]]), ownerOf, area,
+            originals: new Map([['k9', piece('k9', rect(0, 0, 5, 10))]]), area,
             openGround: {}, siteBinding, turf })).toThrow(/without its geometry services/);
     });
 
@@ -191,10 +189,10 @@ describe('derive', () => {
         const design = { proposalId: 'multi-building', cadastreParcelIds: ['k9'], site: rect(0, 0, 10, 10),
             binding: { coverage: 'partial', unsurveyedM2: 1 } };
         const { inputs, outputs } = ground.derive({ designs: [design], fabric,
-            originals: new Map([['k9', original]]), ownerOf, area, openGround, siteBinding, turf });
+            originals: new Map([['k9', original]]), area, openGround, siteBinding, turf });
         expect(inputs.openGroundM2).toBeCloseTo(turf.area(turf.feature(rect(5, 0, 10, 10))), 3);
         const host = outputs.find(output => output.pieceId.startsWith('open-ground:'));
-        expect(host).toMatchObject({ role: 'parcel', fromParcelIds: [], producedBy: null, holders: [] });
+        expect(host).toMatchObject({ role: 'parcel', fromParcelIds: [], producedBy: null });
         expect(host.geometry).toEqual(rect(5, 0, 10, 10));
         expect(host.hash).toBe(record.outputHash(host.geometry));
     });
@@ -205,18 +203,18 @@ describe('derive', () => {
         const design = id => ({ proposalId: id, cadastreParcelIds: ['k9'], site: rect(0, 0, 10, 10),
             binding: { coverage: 'partial', unsurveyedM2: 1 } });
         const { inputs, outputs } = ground.derive({ designs: [design('first'), design('second')], fabric,
-            originals: new Map([['k9', original]]), ownerOf, area, openGround, siteBinding, turf });
+            originals: new Map([['k9', original]]), area, openGround, siteBinding, turf });
         expect(inputs.openGroundM2).toBeCloseTo(turf.area(turf.feature(rect(5, 0, 10, 10))), 3);
         expect(outputs.filter(output => output.pieceId.startsWith('open-ground:'))).toHaveLength(1);
     });
 
     it('reads every piece on the input land, corridors included, once each, sorted by parcels then area', () => {
-        const { outputs } = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, ownerOf, area });
+        const { outputs } = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, area });
         expect(outputs.map(output => output.pieceId)).toEqual(['k9-p2', 'k9-p1', 'road-1#1', 'k10']);
         expect(outputs.map(output => output.role)).toEqual(['plot', 'plot', 'corridor', 'parcel']);
         expect(outputs.map(output => output.producedBy)).toEqual(['layout-1', 'layout-1', 'road-1', null]);
         expect(outputs.map(output => output.fromParcelIds)).toEqual([['k9'], ['k9'], ['k9', 'k10'], ['k10']]);
-        expect(outputs.map(output => output.holders)).toEqual([[ana], [ana], [], [boris]]);
+        expect(outputs.some(output => Object.hasOwn(output, 'holders'))).toBe(false);
         const byId = new Map(pieces().map(p => [p.properties.parcelId, p]));
         outputs.forEach(output => {
             expect(output.geometry).toEqual(byId.get(output.pieceId).geometry);
@@ -233,23 +231,23 @@ describe('derive', () => {
             piece('part', rect(2, 0, 3, 1), { cadastreParcelIds: ['k9'], cadastralPart: true }),
             piece('other', rect(3, 0, 4, 1), { cadastreParcelIds: ['k9'], readjustmentPiece: { role: 'courtyard' }, cadastralPart: true })
         ]);
-        const { outputs } = ground.derive({ designs: [{ proposalId: 'layout-1', cadastreParcelIds: ['k9'] }], fabric, originals, ownerOf, area });
+        const { outputs } = ground.derive({ designs: [{ proposalId: 'layout-1', cadastreParcelIds: ['k9'] }], fabric, originals, area });
         expect(Object.fromEntries(outputs.map(output => [output.pieceId, output.role])))
             .toEqual({ rest: 'remainder', track: 'corridor', part: 'part', other: 'part' });
     });
 
     it('leaves the area of an input without its original cadastral feature unknown', () => {
-        const { inputs } = ground.derive({ designs: [{ proposalId: 'road-2', cadastreParcelIds: ['k12', 'k9'] }], fabric: fakeFabric([]), originals, ownerOf, area });
+        const { inputs } = ground.derive({ designs: [{ proposalId: 'road-2', cadastreParcelIds: ['k12', 'k9'] }], fabric: fakeFabric([]), originals, area });
         expect(inputs.parcels).toEqual([
-            { parcelId: 'k9', areaM2: expect.any(Number), holders: [ana] },
-            { parcelId: 'k12', areaM2: null, holders: [{ ownerKey: 'parcel-owner:k12', displayName: 'Owner(s) of parcel k12', share: 1 }] }
+            { parcelId: 'k9', areaM2: expect.any(Number) },
+            { parcelId: 'k12', areaM2: null }
         ]);
         expect(inputs.openGroundM2).toBe(0);
     });
 
     it('produces the land of a record that normalizes and validates', () => {
         const selected = designs().slice(0, 1);
-        const derived = ground.derive({ designs: selected, fabric: fakeFabric(pieces().filter(piece => !piece.properties.isCorridor)), originals, ownerOf, area });
+        const derived = ground.derive({ designs: selected, fabric: fakeFabric(pieces().filter(piece => !piece.properties.isCorridor)), originals, area });
         const designRecords = selected.map(design => ({ proposalId: design.proposalId, goal: design.goal, cid: Cid.cidOfObject({ design: design.proposalId }) }));
         const planContent = require('../../frontend/js/plan-record.js').create('Test plan', designRecords.map(design => design.cid), { at: '45.8,15.96,16', mode: '2d' });
         const plan = { cid: Cid.cidOfObject(planContent), content: planContent };
@@ -258,9 +256,9 @@ describe('derive', () => {
             plan, designs: designRecords,
             ...derived,
             money: { currency: 'EUR', lines: [] },
-            allocations: derived.outputs.map(output => ({ output: output.hash, to: { kind: 'party', ownerKey: 'agent-ana' } })),
+            allocations: derived.outputs.map(output => ({ output: output.hash, to: { kind: 'party', ownerKey: record.partyKey(output.fromParcelIds[0]) } })),
             rule: { electorate: 'owners', binding: true, lens: ['lens-member-1'],
-                approvalConfig: { schema: 'proposal-approval/v1', rights: record.rightsFromInputs(derived.inputs), policy: { type: 'unanimous' } } }
+                approvalConfig: { schema: 'proposal-approval/v1', rights: record.rightsFromInputs(derived.inputs, id => [{ ownerKey: `agent-${id}`, share: 1 }]), policy: { type: 'unanimous' } } }
         };
         const result = record.validate(record.settle(agreement));
         expect(result.valid).toBe(true);
@@ -273,7 +271,7 @@ describe('check', () => {
     // The panel passes DesignRecord.cidOf; any content identity that moves with the design will do.
     const fingerprintOf = design => Cid.cidOfObject({ design: design.proposalId, version: design.version || 1 });
     function storedAgreement() {
-        const derived = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, ownerOf, area });
+        const derived = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, area });
         return {
             schema: record.SCHEMA, id: 'ag-1',
             designs: designs().map(design => ({ proposalId: design.proposalId, title: null, goal: design.goal, cid: fingerprintOf(design) })),
@@ -284,7 +282,7 @@ describe('check', () => {
     }
     function context(overrides = {}) {
         const byId = new Map(designs().map(design => [design.proposalId, design]));
-        return { designOf: id => byId.get(id) || null, isApplied: () => true, fingerprintOf, fabric: fakeFabric(pieces()), originals, ownerOf, area, ...overrides };
+        return { designOf: id => byId.get(id) || null, isApplied: () => true, fingerprintOf, fabric: fakeFabric(pieces()), originals, area, ...overrides };
     }
     // A fabric that must not be read: the ground is derived again only when every design is there.
     const untouchable = {
@@ -365,8 +363,8 @@ describe('localHolders', () => {
     });
 
     it('feeds a rights snapshot in which the pool members are the owners', () => {
-        const { inputs } = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, ownerOf: ground.localHolders({ storage, agents }), area });
-        const rights = record.rightsFromInputs(inputs);
+        const { inputs } = ground.derive({ designs: designs(), fabric: fakeFabric(pieces()), originals, area });
+        const rights = record.rightsFromInputs(inputs, ground.localHolders({ storage, agents }));
         expect(rights.parcels.map(parcel => parcel.owners)).toEqual([
             [{ ownerId: 'agent-ana', share: '10000/10000' }],
             [{ ownerId: 'agent-boris', share: '2500/10000' }, { ownerId: 'agent-cyril', share: '7500/10000' }]

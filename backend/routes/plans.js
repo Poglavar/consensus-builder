@@ -2,14 +2,14 @@
 import { normalizeCityCode } from '../utils/city-code.js';
 import { createRequire } from 'node:module';
 import { canonicalBytes, cidOf, isCid } from '../cid.js';
-import { pinBytes as defaultPinBytes } from '../storage/pinning.js';
 import { createUploadRateLimiter } from '../utils/nft-asset-upload.js';
 const require = createRequire(import.meta.url);
 const PlanRecord = require('../../frontend/js/plan-record.js');
 
 export function validatePlanContent(content) { return PlanRecord.validate(content); }
 
-export function setupPlansRoute(app, { pool, pinBytes = defaultPinBytes, uploadRateLimiter } = {}) {
+// Saving a plan indexes it only; nothing is pinned to IPFS (docs/ipfs-storage.md).
+export function setupPlansRoute(app, { pool, uploadRateLimiter } = {}) {
     const read = async cid => (await pool.query('SELECT cid, content FROM consensus.plan WHERE cid = $1', [cid])).rows[0] || null;
     const listLimit = raw => {
         if (raw === undefined) return 20;
@@ -24,8 +24,6 @@ export function setupPlansRoute(app, { pool, pinBytes = defaultPinBytes, uploadR
         return Number.isSafeInteger(value) && value <= 1000000 ? value : null;
     };
     const fail = (res, error) => {
-        if (error?.code === 'pinning-quota-exhausted') return res.status(409).json({ code: error.code, error: error.message,
-            next: { action: 'Restore quota on the configured pinning account, then retry saving this plan.' } });
         console.error(`[${new Date().toISOString()}] [plans] ${error.message}`);
         return res.status(503).json({ error: 'The plan could not be saved or loaded. Please retry.' });
     };
@@ -42,8 +40,6 @@ export function setupPlansRoute(app, { pool, pinBytes = defaultPinBytes, uploadR
             const present = new Set(rows.map(row => row.cid));
             const missing = content.designCids.filter(id => !present.has(id));
             if (missing.length) return res.status(409).json({ error: 'Publish every selected design before saving the plan.', missing });
-            const pinned = await pinBytes({ bytes, cid, name: `plan-${cid}` });
-            if (pinned.cid !== cid) throw new Error('The pinned plan did not match its content identifier.');
             await pool.query('INSERT INTO consensus.plan (cid, content) VALUES ($1, $2::jsonb) ON CONFLICT (cid) DO NOTHING', [cid, JSON.stringify(content)]);
             return res.status(201).json(await read(cid));
         } catch (error) { return fail(res, error); }

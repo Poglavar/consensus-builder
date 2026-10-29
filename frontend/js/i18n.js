@@ -8,6 +8,7 @@
         { locale: 'en-GB', name: 'English (United Kingdom)', flag: '🇬🇧', key: 'language.switcher.to_en' },
         { locale: 'en-US', name: 'English (United States)', flag: '🇺🇸', key: 'language.switcher.to_en_us' },
         { locale: 'es-ES', name: 'Español', flag: '🇪🇸', key: 'language.switcher.to_es' },
+        { locale: 'es-CO', name: 'Español (Colombia)', flag: '🇨🇴', key: 'language.switcher.to_es' },
         { locale: 'sr-Latn-RS', name: 'Srpski', flag: '🇷🇸', key: 'language.switcher.to_sr' },
         { locale: 'hr-HR', name: 'Hrvatski', flag: '🇭🇷', key: 'language.switcher.to_hr' },
         { locale: 'ar-EG', name: 'العربية', flag: '🌐', key: 'language.switcher.to_ar', direction: 'rtl' },

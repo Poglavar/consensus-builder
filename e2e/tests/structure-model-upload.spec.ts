@@ -17,7 +17,7 @@ test('uploads a GLB for a park and builds its structure record from the model fo
   await page.route('**/upload-test', route => route.fulfill({ contentType: 'text/html', body:
     `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="/css/primitives.css"><link rel="stylesheet" href="/css/modals.css">${scripts}</head><body></body></html>` }));
   await page.goto('/upload-test');
-  for (const url of ['/vendor/turf-6.5.0/turf.min.js', '/vendor/proj4-2.22.0/proj4.js', '/js/ui/busy-control.js', '/js/metric-frame.js',
+  for (const url of ['/vendor/turf-6.5.0/turf.min.js', '/vendor/proj4-2.22.0/proj4.js', '/js/ui/busy-control.js', '/js/optional-tools-loader.js', '/js/metric-frame.js',
     '/js/single-building-geometry.js', '/js/proposals/apply/structures.js',
     '/js/building-model-geometry.js', '/js/building-upload.js']) {
     await page.addScriptTag({ url });

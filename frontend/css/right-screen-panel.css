@@ -32,8 +32,14 @@
 
 .right-screen-panel > :is(.map-sheet-body, .panel-body, .urban-block-info, .urban-block-list-view, .proposal-editor-body) {
     min-height: 0;
-    overscroll-behavior: contain;
     overflow-wrap: anywhere;
+}
+
+/* A docked panel keeps the wheel off the map. A panel hosted in a click-stack card does not: its body
+   is usually not scrollable there, and a contained non-scrolling box swallows the wheel, so the card
+   (which scrolls and contains) could not be scrolled from over the panel. */
+.right-screen-panel:not(.is-hosted) > :is(.map-sheet-body, .panel-body, .urban-block-info, .urban-block-list-view, .proposal-editor-body) {
+    overscroll-behavior: contain;
 }
 
 .right-screen-panel > :is(.map-sheet-header, .urban-block-panel-header, .urban-block-list-view, .proposal-editor-body) {

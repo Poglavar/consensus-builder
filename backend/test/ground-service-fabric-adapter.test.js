@@ -36,6 +36,8 @@ function boot({ features, absent = [], mutation } = {}) {
         withCorridorStripRefreshHeld: run => run()
     };
     window.__workSlicer = workSlicer;
+    // Loaded before ground-service.js on the page: the shared coordinate grid.
+    window.GeometryTolerances = require('../../frontend/js/geometry-tolerances.js');
     vm.runInNewContext(source, { window, Promise, console, performance, AbortController });
     return { window, fabric, fetchBounds, integrate, mutation };
 }

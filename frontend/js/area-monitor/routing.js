@@ -78,15 +78,7 @@
             return false;
         }
 
-        if (typeof manager.switchCity === 'function') {
-            await manager.switchCity(monitorCityId);
-            return false;
-        }
-
-        if (typeof manager.setCurrentCityId === 'function') {
-            manager.setCurrentCityId(monitorCityId);
-        }
-        global.location.reload();
+        await manager.switchCity(monitorCityId);
         return false;
     }
 

@@ -5,10 +5,11 @@
 // account), market accounts from one batched RPC read; the payload is cached briefly per city because
 // every sheet open would otherwise be an RPC. The dated LMSR recipe is registered separately in
 // routes/lmsr-recipes.js; the old agreement-execution-v1 endpoint serves historical parimutuel proof.
+// GET /markets?city=<id>&scope=other: the same for every other city, each contest naming its city.
 
 import { createRequire } from 'node:module';
 import { Connection } from '@solana/web3.js';
-import { buildContests, subjectAccountOf } from '../markets/contests.js';
+import { buildContests, buildOtherCityContests, subjectAccountOf } from '../markets/contests.js';
 import { AGREEMENT_PROGRAM_ID, AgreementClient, DEVNET_GENESIS_HASH, ONCHAIN_STATUSES } from '../agreements/onchain.js';
 import { MARKET_LIQUIDITY, MARKET_GRACE_SECONDS } from '../markets/agreement-source.js';
 import { AGREEMENT_EXECUTION_RECIPE_ID, buildAgreementExecutionRecipe, chainStatusOf } from '../oracle/market-recipe.js';
@@ -37,6 +38,7 @@ async function assertMarketNetwork(connection) {
 }
 
 export const AGREEMENTS_SQL = currentPlanAgreementSelect({ predicate: 'a.city = $1', orderBy: 'a.created_at DESC', limit: '$2' });
+export const OTHER_CITY_AGREEMENTS_SQL = currentPlanAgreementSelect({ predicate: 'a.city <> $1', orderBy: 'a.created_at DESC', limit: '$2' });
 
 // The agreements whose index pointer names an account; rowToAgreement keeps the account only when it
 // is the one that row's CID and sponsor derive, so at most one row is it.
@@ -139,29 +141,31 @@ export function setupMarketsRoute(app, pool, options = {}) {
         // ?fresh=1 skips the cache: the sheet asks for it right after a confirmed transaction, when a
         // 20-second-old answer would show the pool it just opened as missing.
         const fresh = String(req.query.fresh || '') === '1';
-        const cached = fresh ? null : cache.get(city);
+        const other = req.query.scope === 'other';
+        const key = `${other ? 'other' : 'city'}:${city}`;
+        const cached = fresh ? null : cache.get(key);
         if (cached && now().getTime() - cached.at < cacheTtlMs) {
             res.set('Cache-Control', 'public, max-age=10');
             return res.json(cached.payload);
         }
         try {
-            const { rows } = await pool.query(AGREEMENTS_SQL, [city, MAX_AGREEMENTS]);
+            const { rows } = await pool.query(other ? OTHER_CITY_AGREEMENTS_SQL : AGREEMENTS_SQL, [city, MAX_AGREEMENTS]);
             const agreements = rows.map(rowToAgreement);
             const accounts = Array.from(new Set(agreements.map(item => item.account).filter(Boolean)));
             const markets = accounts.length ? await readMarkets(accounts, agreements) : new Map();
             const payload = {
-                ...buildContests({ city, agreements, markets, now: now() }),
+                ...(other ? buildOtherCityContests : buildContests)({ city, agreements, markets, now: now() }),
                 cluster: 'devnet',
                 agreementProgram: AGREEMENT_PROGRAM_ID,
                 marketProgram: MARKET_PROGRAM_ID,
                 stakeMint: DEVNET_USDC_MINT,
                 stakeDecimals: 6
             };
-            cache.set(city, { at: now().getTime(), payload });
+            cache.set(key, { at: now().getTime(), payload });
             res.set('Cache-Control', 'public, max-age=10');
             res.json(payload);
         } catch (error) {
-            console.error(`[${new Date().toISOString()}] GET /markets?city=${city} failed:`, error);
+            console.error(`[${new Date().toISOString()}] GET /markets?city=${city}${other ? '&scope=other' : ''} failed:`, error);
             res.status(502).json({ error: 'Markets are unavailable right now' });
         }
     });

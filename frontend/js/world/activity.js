@@ -6,7 +6,7 @@
     const ACTION_FALLBACKS = Object.freeze({
         propose: 'Agreement proposed', execute: 'Agreement executed', cancel: 'Agreement cancelled',
         expire: 'Agreement expired', createMarket: 'Market opened', resolve: 'Market resolved',
-        claim: 'Winnings claimed', donate: 'Donation made', pledge: 'Pledge made', fulfillPledge: 'Pledge fulfilled'
+        claim: 'Winnings claimed', sell: 'Bet sold', donate: 'Donation made', pledge: 'Pledge made', fulfillPledge: 'Pledge fulfilled'
     });
     function mount(root, { t, reducedMotion, coverage }) {
         const panel = document.createElement('section');

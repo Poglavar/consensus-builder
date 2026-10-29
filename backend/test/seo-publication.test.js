@@ -21,7 +21,7 @@ describe('public SEO entry points', () => {
         expect(html).toContain('<title>Free urban planning software for real parcels · Consensus Builder</title>');
         expect(html).toContain('<h1>Consensus Builder: free urban planning software</h1>');
         expect(html).toContain('<meta property="og:site_name" content="Consensus Builder" />');
-        expect(html).toMatch(/<meta name="description" content="[^"]*community zoning proposals[^"]*"/);
+        expect(html).toMatch(/<meta name="description" content="[^"]*community zoning designs[^"]*"/);
         expect(html).toContain('an open ArcGIS alternative'); // search description only
         expect(html).toContain('does not create an adopted zoning plan');
         expect(html).toContain('href="/">Explore the urban planning map</a>');

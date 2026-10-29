@@ -12,7 +12,8 @@ for (const width of [1280, 390]) {
     }, id);
     await page.locator('#proposals-button').click();
     await page.locator('#shareAppliedProposalsButton').click();
-    await page.locator('#designs-plans').getByRole('button',{name:'Create plan',exact:true}).click();
+    // Lists (01268caee): the Plans tab's Create plan sits in the shared #lists-actions row.
+    await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();
     const list=page.locator('.plan-dialog__choices');
     await expect(list.locator('input[type=checkbox]')).toHaveCount(24);
     await expect.poll(()=>list.evaluate(el=>el.scrollHeight>el.clientHeight)).toBe(true);

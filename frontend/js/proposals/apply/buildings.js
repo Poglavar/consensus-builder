@@ -78,7 +78,7 @@
 
         // Legacy buildingFeatures ignored; do not mutate
 
-        const candidateFeatures = Array.isArray(proposalData?.geometry?.buildings)
+        const savedFeatures = Array.isArray(proposalData?.geometry?.buildings)
             ? proposalData.geometry.buildings
                 .map(raw => {
                     const cloned = cloneFeature(raw);
@@ -86,6 +86,14 @@
                 })
                 .filter(Boolean)
             : [];
+        // A Block or Row drawn on parcels that are no longer under it (a parcel layout came off the
+        // map and it was left standing) is cut again by the live parcels it stands on now.
+        const variation = typeof window !== 'undefined' ? window.UrbanRuleVariation : null;
+        const candidateFeatures = variation && savedFeatures.length && proposalData.geometry?.ruleMassing
+            ? variation.piecesOnGround(savedFeatures, cloneFeature(proposalData.geometry.ruleMassing),
+                liveParents.features.map((feature, index) => ({ feature, parcelId: liveParents.ids[index] })),
+                { turf: typeof turf !== 'undefined' ? turf : null })
+            : savedFeatures;
 
         if (!candidateFeatures.length) {
             const message = 'Building proposal missing geometry; cannot apply.';

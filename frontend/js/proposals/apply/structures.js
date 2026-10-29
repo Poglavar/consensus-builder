@@ -65,7 +65,8 @@
 
     // A structure's stored decorations kept to the ground it actually stands on (a body carved by a
     // later formation): points outside are dropped, polylines are split into their inside runs, rings
-    // (ponds, flowerbeds) are kept only when wholly inside. Pure; never written back to the record.
+    // (ponds, flowerbeds) are kept only when wholly inside, and so is a fenced area's ring (a fence
+    // around the whole park has none and follows the ground). Pure; never written back to the record.
     function decorationsOnGround(decorations, geometry, turfRef) {
         if (!decorations || typeof decorations !== 'object' || !geometry || !turfRef) return decorations;
         const ground = { type: 'Feature', properties: {}, geometry };
@@ -84,6 +85,10 @@
             value.forEach(entry => {
                 if (isCoord(entry)) { if (inside(entry)) kept.push(entry); return; }
                 if (entry && isCoord(entry.coordinate)) { if (inside(entry.coordinate)) kept.push(entry); return; }
+                if (key === 'enclosures' && entry && Array.isArray(entry.ring)) {
+                    if (entry.ring.every(coord => isCoord(coord) && inside(coord))) kept.push(entry);
+                    return;
+                }
                 if (Array.isArray(entry) && entry.length && entry.every(isCoord)) {
                     if (isRing(entry)) { if (entry.every(inside)) kept.push(entry); return; }
                     let run = [];

@@ -113,6 +113,27 @@ describe('randomTarget and randomSpawn', () => {
     });
 });
 
+describe('park fences', () => {
+    // A 40 × 40 m park in real coordinates, fenced all round with one gate in its south side.
+    const M = Math.PI * 6378137 / 180, LAT = 45.8, LNG = 16, MX = M * Math.cos(LAT * Math.PI / 180);
+    const ll = ([x, y]) => [LNG + x / MX, LAT + y / M];
+    const project = (lng, lat) => [(lng - LNG) * MX, (lat - LAT) * M];
+    const park = { type: 'Feature', geometry: { type: 'Polygon', coordinates: [square(0, 0, 40, 40).map(ll)] },
+        properties: { decorations: { enclosures: [{ fence: 'iron', use: 'none', gates: [ll([20, 0])] }], swings: [{ coordinate: ll([10, 30]), bearing: 0 }] } } };
+
+    it('keeps walkers to the gates of a fence, and clear of play equipment', () => {
+        const b = lifeGraph.createGraphBuilder();
+        b.addPark(park, project);
+        const graph = b.build();
+        const surface = buildWalkableSurface({ bounds: [-20, -20, 60, 60], fills: [{ rings: [square(-20, -20, 60, 60)], zcode: 0 }], ...graph.surface });
+        // Into the park through the gate, but not through the fence beside it.
+        expect(surface.legOk(20, -10, 20, 10)).toBe(true);
+        expect(surface.legOk(8, -10, 8, 10)).toBe(false);
+        expect(surface.legOk(-10, 20, 10, 20)).toBe(false);
+        expect(surface.classAt(10, 30)).toBe(CLASS.BLOCKED);
+    });
+});
+
 describe('graph → surface hand-off', () => {
     it('paints OSM streets, sidewalks, footways, pedestrian areas, parks and blocked footprints', () => {
         const b = lifeGraph.createGraphBuilder();

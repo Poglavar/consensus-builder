@@ -1,6 +1,7 @@
 // Planning dataset services selected explicitly by consumers; one representation schema.
 import { queryZagrebGup, readZagrebParcel, zagrebGupSource, zagrebGup2016Source } from './providers/zagreb-gup.js';
 import { queryNycPilot, readNycPilotParcel, nycPilotSource } from './providers/nyc-pilot.js';
+import { createBogotaPotProvider, bogotaPotSource } from './providers/bogota-pot.js';
 import { createHash } from 'node:crypto';
 import configuredSources from '../../frontend/data/planning-sources.json' with { type: 'json' };
 import { parseAtlasSources, createAtlasUrlProvider } from './atlas-url-sources.js';
@@ -11,6 +12,7 @@ const SourceRuntime = createRequire(import.meta.url)('../../frontend/js/source-r
 const builtInDefinitions = [zagrebGupSource, zagrebGup2016Source].map(descriptor =>
     SourceRuntime.source('planning', 'gup', descriptor, { label: descriptor.label }));
 builtInDefinitions.push(SourceRuntime.source('planning', 'nyc-pilot', nycPilotSource, { label: nycPilotSource.label }));
+builtInDefinitions.push(SourceRuntime.source('planning', 'bogota-pot', bogotaPotSource, { label: bogotaPotSource.label }));
 export const planningSourceRegistry = SourceRuntime.createRegistry({
     abstraction: 'planning',
     adapters: {
@@ -24,7 +26,8 @@ export const planningSourceRegistry = SourceRuntime.createRegistry({
             descriptor, query: queryNycPilot, parcel: readNycPilotParcel,
             record: (pool, query) => readNycPilotParcel(pool, { ...query, parcel: `US-NY-${query.recordId}` })
         }) },
-        'atlas-url': { create: createAtlasUrlProvider }
+        'atlas-url': { create: createAtlasUrlProvider },
+        'bogota-pot': { custom: false, create: (descriptor, context) => createBogotaPotProvider(descriptor, context) }
     },
     sources: [...builtInDefinitions, ...parseAtlasSources(JSON.stringify(configuredSources.sources))
         .map(metadata => SourceRuntime.source('planning', 'atlas-url', metadata, { label: metadata.label }))],

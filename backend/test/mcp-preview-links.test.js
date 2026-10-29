@@ -42,6 +42,14 @@ describe('temporary hosted MCP object references', () => {
         const copy = store.get(tokenOf(preview.draftRef)); copy.record.title = 'Changed outside store';
         expect((await store.resolve(preview.draftRef)).design.title).toBe('Private site');
     });
+    it('opens a plan preview at a build-out month and simulation seed when asked', async () => {
+        const store = storeOf(), designs = [design('Phase one')];
+        const plan = { schema: 'plan/v1', title: 'Phased', designCids: designs.map(cidOfObject), view: { at: '45,15,17', mode: '2d' } };
+        const url = new URL(store.create({ plan, designs, parcelSourceId: 'ground', when: '2027-06', buildout: 'seed-1' }).previewUrl);
+        expect(url.searchParams.get('when')).toBe('2027-06');
+        expect(url.searchParams.get('buildout')).toBe('seed-1');
+        expect(new URL(store.create({ plan, designs, parcelSourceId: 'ground' }).previewUrl).searchParams.has('when')).toBe(false);
+    });
     it('keeps a large plan as references and fetches member objects individually with CID checks', async () => {
         const store = storeOf(), designs = Array.from({ length: 20 }, (_, i) => design(`Building ${i}`));
         const plan = { schema: 'plan/v1', title: 'A neighbourhood', designCids: designs.map(cidOfObject).sort(), view: {} };

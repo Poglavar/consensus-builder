@@ -11,10 +11,10 @@ import { Keypair } from '@solana/web3.js';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import {
-    agreementObject, communityRule, designObject, holdersFromRights, noMoney, ownersRule, parcelOutputs, registryRights
+    agreementObject, communityRule, designObject, noMoney, ownersRule, parcelOutputs, planForDesigns, registryRights
 } from '../agents/agreement-objects.js';
 import { agreementAccountOf, AGREEMENT_PROGRAM_ID } from '../agents/agreement-minter.js';
-import { canonicalBytes, cidOfObject } from '../cid.js';
+import { cidOfObject } from '../cid.js';
 import { layoutContent } from './helpers/content-fixtures.js';
 
 const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'ugt-tools-test-'));
@@ -43,8 +43,9 @@ function agreementOf({ sponsor = AGENT, rule = null, title = 'Six storeys on the
     const rights = registryRights([{ parcelId: PARCEL, owners: [{ owner: AGENT, ownerCount: 1 }] }]);
     return agreementObject({
         title, author: 'agent-01', sponsor, city: 'zagreb', createdAt: '2026-10-22T09:05:00.000Z',
+        plan: planForDesigns(title, [design], { at: '45.8132,15.97725,17', mode: '2d', city: 'zagreb' }),
         designs: [{ cid: design.cid, goal: design.content.goal, title: design.content.title }],
-        parcels: [{ parcelId: PARCEL, areaM2: 612.4, holders: holdersFromRights(rights, PARCEL) }],
+        parcels: [{ parcelId: PARCEL, areaM2: 612.4 }],
         outputs: parcelOutputs([{ parcelId: PARCEL, geometry: box(15.977, 45.813, 15.9775, 45.8133), areaM2: 612.4 }]),
         rule: rule || ownersRule({ lens: LENS, rights }), deadline, money: noMoney('EUR')
     });
@@ -53,7 +54,8 @@ function agreementOf({ sponsor = AGENT, rule = null, title = 'Six storeys on the
 const json = (value, status = 200) => new Response(JSON.stringify(value), { status, headers: { 'content-type': 'application/json' } });
 const rowOf = ({ cid, content }) => ({ cid, city: 'zagreb', title: content.title, author: content.author, content, onchain: null, status: 'active' });
 
-// The public API over a fake fetch: the index's pins, designs and agreements, and plain JSON reads.
+// The public API over a fake fetch: the index's designs and agreements, and plain JSON reads. There is
+// no /pins: publication pins nothing, and the tests assert every POST.
 function fakeApi({ agreements = [], plans = [] } = {}) {
     const rows = new Map(agreements.map(item => [item.cid, rowOf(item)]));
     const planRows = new Map(plans.map(plan => [plan.cid, plan]));
@@ -65,7 +67,6 @@ function fakeApi({ agreements = [], plans = [] } = {}) {
         const body = init.body ? JSON.parse(init.body) : undefined;
         calls.push({ method, path: `${target.pathname}${target.search}`, body, origin: init.headers?.origin ?? null });
         const onchain = target.pathname.match(/^\/agreements\/([^/]+)\/onchain$/);
-        if (method === 'POST' && target.pathname === '/pins') return json({ cid: body.cid, pinnedAt: '2026-10-22T09:06:00.000Z' }, 201);
         if (method === 'POST' && target.pathname === '/designs') {
             designRows.set(body.cid, { cid: body.cid, content: body.content, binding: { parcels: [{ parcelId: PARCEL }] } });
             return json(designRows.get(body.cid), 201);
@@ -176,26 +177,32 @@ describe('the live gate', () => {
 });
 
 describe('publishing designs and agreements', () => {
-    it('pins and indexes a design exactly in its published form, sending the app origin', async () => {
+    it('indexes a design exactly in its published form in one write, sending the app origin', async () => {
         const api = fakeApi();
         const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl });
         const result = await tools.publishDesign({ design: design.content, parcelSourceId: 'hr-cadastre', confirm: true });
         expect(result).toMatchObject({ cid: design.cid, created: true, row: { cid: design.cid } });
         expect(api.posts()).toEqual([
-            { method: 'POST', path: '/pins', origin: 'https://urbangametheory.xyz',
-                body: { kind: 'design', cid: design.cid, bytes: canonicalBytes(design.content).toString('base64') } },
             { method: 'POST', path: '/designs', origin: 'https://urbangametheory.xyz',
                 body: { cid: design.cid, content: design.content, parcelSourceId: 'hr-cadastre' } }
         ]);
     });
 
-    it('refuses a design that is not its published form, naming where, and a parcel layout on its own', async () => {
+    it('publishes a parcel layout on its own, like any design', async () => {
+        const api = fakeApi();
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl });
+        const layout = designObject(layoutContent());
+        const result = await tools.publishDesign({ design: layout.content, confirm: true });
+        expect(result).toMatchObject({ cid: layout.cid, created: true });
+        expect(api.posts().map(post => post.path)).toEqual(['/designs']);
+    });
+
+    it('refuses a design that is not its published form, naming where', async () => {
         const api = fakeApi();
         const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl });
         await expect(tools.publishDesign({ design: { ...design.content, note: 'extra' }, confirm: true }))
             .rejects.toThrow(/not in its published design\/v1 form; it differs at note \(published: absent\)/);
         await expect(tools.publishDesign({ design: { ...design.content, schema: 'design/v0' }, confirm: true })).rejects.toThrow(/must be a design\/v1 object/);
-        await expect(tools.publishDesign({ design: layoutContent(), confirm: true })).rejects.toThrow(/is a parcel layout: a layout is published only with the agreement/);
         expect(api.calls).toEqual([]);
     });
 
@@ -208,10 +215,9 @@ describe('publishing designs and agreements', () => {
         expect(result).toMatchObject({
             cid: agreement.cid, created: true, carried: [design.cid], sponsor: AGENT, account: agreementAccountOf(agreement.cid, AGENT)
         });
-        expect(api.posts().map(call => [call.path, call.body.kind ?? null, call.body.cid])).toEqual([
-            ['/pins', 'design', design.cid], ['/pins', 'agreement', agreement.cid], ['/agreements', null, agreement.cid]
-        ]);
-        expect(api.posts()[2].body).toEqual({ cid: agreement.cid, content: agreement.content, plan: agreement.plan, designs: [{ cid: design.cid, content: design.content }] });
+        // The carried design and the plan go to the index with the agreement, in one write.
+        expect(api.posts().map(call => [call.path, call.body.cid])).toEqual([['/agreements', agreement.cid]]);
+        expect(api.posts()[0].body).toEqual({ cid: agreement.cid, content: agreement.content, plan: agreement.plan, designs: [{ cid: design.cid, content: design.content }] });
         // A poll without a sponsor has no account.
         expect(await tools.proposeAgreement({ agreement: poll.content, confirm: true })).toMatchObject({ cid: poll.cid, sponsor: null, account: null, carried: [] });
     });

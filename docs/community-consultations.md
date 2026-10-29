@@ -40,6 +40,11 @@ relay. The website must allow cross-origin access, for example `Access-Control-A
 Resolution is capped at 64 KiB and 15 seconds. Root domains, ASCII purpose paths and encoded HTTPS
 ports are supported; local hosts, IP addresses, traversal and ambiguous URLs are refused.
 
+A website builder that cannot serve these files can use any static host the organiser controls,
+such as GitHub Pages; the badge then names that host. There is no DNS-record fallback, because no
+widely used standard exists for one. Relaying the document through our server for a host without
+cross-origin access needs the user's approval first.
+
 References: [DID Web](https://w3c-ccg.github.io/did-method-web/),
 [DID verification relationships](https://www.w3.org/TR/did-core/#verification-relationships),
 [CAIP-10](https://chainagnostic.org/CAIPs/caip-10),
@@ -63,7 +68,9 @@ times remain separate database timestamps. The browser reads the report back bef
 `POST` to the same path accepts `{ cid, content }`; identical reports are idempotent. The server
 checks CID, shape, signature and snapshot consistency before indexing, and checks that the indexed
 agreement names the same organiser. It never fetches the organiser website. Deployments apply
-`backend/db/community-report-ddl.sql` as `geo_user`, after the agreement table.
+`backend/db/community-report-ddl.sql` as `geo_user`, after the agreement table, and install the
+nginx CSP in `backend/nginx/snippets/urbangametheory-headers.conf`, whose `connect-src` permits the
+direct HTTPS DID fetches.
 
 Readers recompute each report CID, verify its signature and independently resolve the current
 website document. The latest currently authorized statement takes precedence; earlier statements
@@ -74,6 +81,15 @@ listing only. Eligibility, counting, methods and result correctness remain the o
 
 The former proposal kinds, chain-account report subjects and vote mints are not read or migrated.
 Changed experimental records must be recreated with the current agreement contract.
+
+## Planned: devnet mint sponsorship
+
+Publishing a community agreement and signing its reports cost nothing. Minting is paid by the
+author's wallet (`feePayer: wallet` in `frontend/js/solana/`), and devnet users get SOL and USDC
+from the public faucets linked in the bet dialog. Planned, not built: a rate-limited drip from a
+server demo wallet that sends devnet SOL to an author short of the mint cost, so the author still
+signs. It is limited per wallet and IP and refuses a mainnet cluster. A co-signing fee payer would
+hide the cost entirely and is kept for the case where the drip proves too clumsy.
 
 ## Voting on the site
 

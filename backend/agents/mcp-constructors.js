@@ -86,10 +86,13 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
     if (typology === 'row' && entries.length && new Set(entries.map(entry => entry.parcelId)).size < 2) fail('row-needs-two-parcels', 'Row houses need at least two selected parcels.', 'parcelIds', { minItems: 2, unique: true });
     if (!entries.length && typology !== 'row') fail('parcel-source-required', 'Building rules need exact source parcels.', 'parcelIds', { minItems: 1 });
     const minPlotAreaM2 = number(intent.minPlotAreaM2, 50, 'minPlotAreaM2', 0, 1_000_000);
+    // Balconies may stand out of the envelope by balconyDepthM; a pitched roof adds an attic on top.
+    if (intent.roof != null && !['flat', 'pitched'].includes(intent.roof)) fail('invalid-roof', 'Choose a flat or pitched roof.', 'roof', { enum: ['flat', 'pitched'] });
+    const extras = { balconyDepthM: number(intent.balconyDepthM, 0, 'balconyDepthM', 0, 5), roof: intent.roof };
     if (typology === 'detached') {
         const rule = runtime.rules.normalizeParcelRule({ typology: 'parcelBased', kind: ruleKind(intent, 'max'), maxFloors: floors,
             floorHeightM, minDistance: number(intent.setbackM, 3, 'setbackM', 0, 50), minFloors: number(intent.minFloors, 0, 'minFloors', 0, floors, true),
-            minFootprintAreaM2: number(intent.minFootprintAreaM2, 0, 'minFootprintAreaM2', 0, 1_000_000), minPlotAreaM2 });
+            minFootprintAreaM2: number(intent.minFootprintAreaM2, 0, 'minFootprintAreaM2', 0, 1_000_000), minPlotAreaM2, ...extras });
         const buildings = [], excluded = [];
         for (const [index, entry] of entries.entries()) {
             const outcome = runtime.rules.evaluateParcel(entry.feature, rule, { turf, largestPolygon: runtime.footprints.toSingleLargestPolygon });
@@ -103,7 +106,7 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
     }
     const rule = runtime.rules.normalizeBlockRule({ typology: typology === 'row' ? 'row' : 'block', kind: ruleKind(intent, 'exact'),
         maxHeightM: height, minHeightM: number(intent.minHeightM, 0, 'minHeightM', 0, height),
-        minDepthM: number(intent.minDepthM, 0, 'minDepthM', 0, 50), floorHeightM, minPlotAreaM2 });
+        minDepthM: number(intent.minDepthM, 0, 'minDepthM', 0, 50), floorHeightM, minPlotAreaM2, ...extras });
     let depth = number(intent.depthM, typology === 'row' ? 10 : 15, 'depthM', 1, 1000);
     let massing, parameters;
     if (typology === 'row') {

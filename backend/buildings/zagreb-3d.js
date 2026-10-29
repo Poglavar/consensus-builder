@@ -8,7 +8,7 @@
 //   z_min, z_max real                        — vertical extent
 //   geom2d_3765 geometry(Geometry,3765)      — 2D footprint for the spatial filter (GiST-indexed)
 // So a query is just "spatial filter + read JSONB" — no ST_Dump/ST_Transform/ST_AsGeoJSON at request
-// time. This took /buildings/near from ~11s to ~60ms. See db/precompute-building-3d-faces.sql.
+// time. This took /buildings/near from ~11s to ~60ms. See backend/buildings/building-3d-precompute.sql.
 
 export function createZagrebProvider(pool) {
     async function near(geometry, bufferMeters) {

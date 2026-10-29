@@ -57,12 +57,18 @@ Four classic scripts, three of them pure and node-tested:
    - OSM roads (the same feature shape whether they come from `/osm-road` or Overpass): driveable
      classes (motorway … residential and their `_link`s; no service) split at shared vertices (0.5 m
      snap key), lanes from `lanes` or a class default, `oneway` respected (yes/1/true/-1/reverse),
-     lane centres at 3.5 m with right-hand traffic, the carriageway as wide as `width` or lanes×3.5;
+     lane centres at 3.5 m on the city's side of the road, the carriageway as wide as `width` or lanes×3.5;
+     the side comes from `CityConfigManager.getDrivingSide()`: a city config's own `drivingSide`
+     (`'left'` or `'right'`), else left for the countries that drive on the left (read from the region
+     of the city's `currency.locale`: `en-GB`, `en-IN`, `ja-JP` and so on), else right. Applied
+     corridors keep the lane directions their profile records;
      a 4.5 m sidewalk band outside the carriageway on each side unless `sidewalk=no|none|separate`;
      footway/path/pedestrian/steps/cycleway/track/living_street as walking bands, closed
      `area=yes` pedestrian ways as walking polygons;
    - park lawns and plazas as walking polygons, park paths as bands, ponds and plaza furniture
-     (fountain, stalls, statues, benches, trees) as blocked; buildings, water and lakes as blocked.
+     (fountain, stalls, statues, benches, trees, swings, seesaws, slides) as blocked; park fences
+     as blocked lines with a 3 m opening at each gate (wider than the gate drawn, so the 1 m walking
+     grid keeps it passable); buildings, water and lakes as blocked.
    Tracks connect through node ids, so a driver reaching the end of one picks another outgoing
    track. Turns (2026-10-17): `junctionCurve` trims both lanes back by the tangent length of the
    vehicle's turn radius (car 7 m, bus 11 m, moto 6 m; hairpins and U-turns turn at the node) and
@@ -102,6 +108,9 @@ Four classic scripts, three of them pure and node-tested:
    simulation with the real dt clamped to 0.1 s and writes matrices straight into the instance
    attribute arrays. The hook is unregistered when the layer is off, hidden (photo mode) or the scene
    is disposed, so the loop goes back to on-demand.
+   At dusk and night (`setNight`, the lamps' darkness from the sun's altitude) two more draws switch
+   on: unlit headlamps and red tail lamps (four per vehicle, two on a motorcycle) and an additive
+   pool of headlight on the road ahead of each vehicle. By day both are hidden and not rewritten.
 
 Streets come from OSM everywhere, through one endpoint: `/osm-road` answers from the ingested
 `osm_road` table where the city has rows, and otherwise (a scene-sized bbox with no rows) from the
@@ -123,7 +132,7 @@ ms and render ms, worst frame per second window) so the cost is measured, not as
 |---|---|
 | People cap | 64 |
 | Vehicle cap | 100 |
-| Draw calls added | 7 |
+| Draw calls added | 7 (9 at dusk and night) |
 | Target CPU per frame | under 1 ms on a quiet laptop |
 
 ## Phases

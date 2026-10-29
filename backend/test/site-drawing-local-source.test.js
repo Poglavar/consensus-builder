@@ -27,7 +27,9 @@ function harness(kind) {
     const context = vm.createContext({
         state, cityId: () => 'explore', backendBase: () => 'https://example.test',
         log: vi.fn(), renderLayers: vi.fn(), renderPanel: vi.fn(), console: { ...console, warn: vi.fn() }, t: (_key, fallback) => fallback,
-        win: { fetch, ParcelGroundFallback: { activeSource: () => provider } }
+        // The request carries the city and parcel source chosen by frontend configuration (87a04d800).
+        win: { fetch, ParcelGroundFallback: { activeSource: () => provider },
+            CityConfigManager: { getParcelContext: (_site, city) => ({ city, parcelSourceId: 'custom-url:one' }) } }
     });
     vm.runInContext(functions.join('\n') + '\nthis.check = requestServerBinding; this.coverage = coverageText;', context);
     // Answers the request number `index` (the latest by default) as the index would.
@@ -71,7 +73,7 @@ describe('site binding for browser-local estimates', () => {
         const [url, init] = test.fetch.mock.calls[0];
         expect(url).toBe('https://example.test/designs/binding');
         expect(init.method).toBe('POST');
-        expect(JSON.parse(init.body)).toEqual({ site: { type: 'Polygon' }, toleranceM: 0.5, city: 'explore' });
+        expect(JSON.parse(init.body)).toEqual({ site: { type: 'Polygon' }, toleranceM: 0.5, city: 'explore', parcelSourceId: 'custom-url:one' });
         expect(test.state.serverPending).toBe(true);
         test.respond(200, { city: 'zagreb', binding: { coverage: 'complete', parcels: [{ parcelId: 'official-one' }] } });
         await settle();

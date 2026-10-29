@@ -1,5 +1,5 @@
 -- Daml Script tests for the minimal purchase flow (lens -> buyer -> owner).
--- Run with `daml test`. See feature-daml.md §10.
+-- Run with `daml test`. See docs/feature-daml-readme.md.
 module Test where
 
 import Daml.Script

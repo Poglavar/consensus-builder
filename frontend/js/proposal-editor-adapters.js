@@ -282,6 +282,7 @@
             tunnels: clone(definition?.tunnels || []),
             gradeSeparations: clone(definition?.gradeSeparations || []),
             segmentProfiles: clone(definition?.segmentProfiles || {}),
+            drivingSide: definition?.drivingSide === 'left' ? 'left' : 'right',
             trackSpeed: definition?.metadata?.trackSpeed,
             trackMinRadius: definition?.metadata?.trackMinRadius,
             kind
@@ -302,6 +303,8 @@
             tunnels: clone(seed?.tunnels || []),
             gradeSeparations: clone(seed?.gradeSeparations || sourceDefinition?.gradeSeparations || []),
             segmentProfiles: clone(seed?.segmentProfiles || sourceDefinition?.segmentProfiles || {}),
+            // The drawing's side of the road; a new road has no source definition to fall back on.
+            drivingSide: (seed?.drivingSide || sourceDefinition?.drivingSide) === 'left' ? 'left' : 'right',
             polygon: clone(seed?.polygon !== undefined ? seed.polygon : sourceDefinition?.polygon || null),
             latLngPairs: clone(seed?.latLngPairs !== undefined ? seed.latLngPairs : sourceDefinition?.latLngPairs || null),
             metadata: {

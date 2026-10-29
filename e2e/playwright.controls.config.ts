@@ -14,6 +14,8 @@ export default defineConfig({
     ['list'],
     ['json', { outputFile: process.env.UI_CONTROL_RESULTS || './test-results/control-results.json' }],
     ['html', { outputFolder: process.env.UI_CONTROL_HTML_OUTPUT || './playwright-report', open: 'never' }],
+    // Named runs keep each test's coverage in the ledger, so a killed run continues; see scripts/run-controls.mjs.
+    ...(process.env.TEST_RUN ? [['./helpers/run-ledger-reporter.cjs'] as [string]] : []),
   ],
   webServer: {
     command: `node scripts/control-server.mjs ${port}`,

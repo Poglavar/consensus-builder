@@ -8,7 +8,7 @@ test('context trees clear applied road footprints and return on unapply without 
   const trees = [[15.9822, 45.80025], [15.9827, 45.8003]];
   let treeRequests = 0;
   await page.route('**/decor/layers**', route => route.fulfill({ json: { layers: ['trees'] } }));
-  await page.route('**/decor/near', route => {
+  await page.route(/\/decor\/near\?/, route => {
     treeRequests++;
     return route.fulfill({ json: { trees } });
   });
@@ -27,7 +27,8 @@ test('context trees clear applied road footprints and return on unapply without 
     const w = window as any;
     const counts: number[] = [];
     w.getThreeModeInternals?.()?.scene.traverseVisible((o: any) => {
-      if (o.isInstancedMesh && ['5c3d1e', '3a6b35'].includes(o.material.color.getHexString())) counts.push(o.count);
+      // Each drawn tree has one shadow stand-in trunk and crown, whatever its species or tier.
+      if (o.isInstancedMesh && o.userData.treeShadowStandIn) counts.push(o.count);
     });
     return counts;
   });

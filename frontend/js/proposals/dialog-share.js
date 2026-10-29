@@ -103,30 +103,3 @@ function showSimpleShareModal(options = {}) {
     };
     return modalApi;
 }
-
-// Number of list filters that currently narrow the result (sort order is not a filter). Shown on
-// the phone Filters toggle so a collapsed filter panel never silently hides proposals.
-function countActiveProposalListFilters(listState) {
-    const st = listState || {};
-    let count = 0;
-    if (st.filterType && st.filterType !== 'all') count++;
-    if (st.publicationFilter && st.publicationFilter !== 'all') count++;
-    if (String(st.searchText || '').trim()) count++;
-    return count;
-}
-
-// Autofocus the search box only with a real keyboard on a wide screen: on touch or narrow
-// viewports focusing it opens the on-screen keyboard, which covers the bottom-sheet list.
-function shouldAutofocusProposalListSearch(win) {
-    try {
-        if (!win || typeof win.matchMedia !== 'function') return false;
-        return !win.matchMedia('(max-width: 767.98px), (pointer: coarse)').matches;
-    } catch (_) {
-        return false;
-    }
-}
-
-// Node-only: lets backend tests exercise the pure helpers above. Inert in the browser.
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { countActiveProposalListFilters, shouldAutofocusProposalListSearch };
-}

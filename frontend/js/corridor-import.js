@@ -160,8 +160,13 @@
     // The proposal records an import's OSM form makes: one per road (the ways tagged `cb:road`),
     // each a definition read back from that road's ways, shaped like a drawn road's record so the
     // same authoring path junctions and lands it. `author` and `createdAt` come from the caller.
+    // `options.drivingSide`: the side of the road the source's ways keep to when they do not say
+    // (OSM data carries no `driving_side` on a way; a UK extract keeps left). Only for formats whose
+    // ways are OSM data: a form this app wrote already says its side.
     function recordsFromImport(parsed, options = {}) {
         const form = parsed && parsed.form;
+        const sided = way => (options.drivingSide === 'left' && !(way.tags && way.tags.driving_side)
+            ? { ...way, tags: { ...(way.tags || {}), driving_side: 'left' } } : way);
         const elements = (form && Array.isArray(form.elements)) ? form.elements : [];
         const nodes = elements.filter(element => element && element.type === 'node');
         const ways = elements.filter(element => element && element.type === 'way');
@@ -173,7 +178,7 @@
         roads.forEach((road, index) => {
             const roadWays = ways.filter(way => road.wayIds.includes(way.id));
             if (!roadWays.length) return;
-            const definition = api.definitionFromOsmForm({ elements: [...nodes, ...roadWays] });
+            const definition = api.definitionFromOsmForm({ elements: [...nodes, ...roadWays.map(sided)] });
             if (!definition) return;
             const isTrack = definition.profile.strips.every(lane => lane.type === 'rail');
             const highway = roadWays[0].tags && roadWays[0].tags.highway;
@@ -330,7 +335,8 @@
             return null;
         }
         const author = (typeof global.getProposalAuthorValue === 'function' && global.getProposalAuthorValue()) || 'import';
-        const records = recordsFromImport(parsed, { author, source: chosen.label.toLowerCase(), fallbackTitle: t('panel.road.importedRoad', 'Imported road') });
+        const records = recordsFromImport(parsed, { author, source: chosen.label.toLowerCase(), fallbackTitle: t('panel.road.importedRoad', 'Imported road'),
+            drivingSide: ['osm', 'geojson'].includes(chosen.id) ? global.CityConfigManager.getDrivingSide() : undefined });
         const skippedNote = parsed.skipped ? ' ' + t('panel.road.importSkippedFeatures', '{{count}} feature(s) that are not lines (points, polygons) were left out.', { count: parsed.skipped }) : '';
         if (!records.length) {
             status(t('panel.road.importNone', '{{file}} holds no road this app can draw.', { file: file.name }) + skippedNote);

@@ -114,6 +114,11 @@ describe('buildSurface', () => {
         expect(moved.trees).toEqual([{ coordinate: [2, 4], kind: 'conifer', heightM: 12 }]);
         expect(moved.paths).toEqual([[[2, 4], [3, 5]]]);
         expect(source.trees[0].coordinate).toEqual([1, 2]);
+        // A fenced area moves its ring and gates; one around the whole ground has no ring to move.
+        const fenced = BuildingGround.moveDecorationDesign({ enclosures: [{ fence: 'mesh', use: 'play', gates: [[1, 2]], ring: [[1, 2], [2, 2], [2, 3], [1, 2]] },
+            { fence: 'iron', use: 'none', gates: [[0, 0]] }], swings: [{ coordinate: [1, 1], bearing: 90 }] }, null, null, shift);
+        expect(fenced.enclosures).toEqual([{ fence: 'mesh', use: 'play', gates: [[2, 4]], ring: [[2, 4], [3, 4], [3, 5], [2, 4]] }, { fence: 'iron', use: 'none', gates: [[1, 2]] }]);
+        expect(fenced.swings).toEqual([{ coordinate: [2, 3], bearing: 90 }]);
     });
     it('builds a persisted surface for a real treatment', () => {
         const surface = BuildingGround.buildSurface('paved', BLOCK, [BUILDING]);

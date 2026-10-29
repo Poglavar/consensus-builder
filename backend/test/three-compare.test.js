@@ -1,6 +1,7 @@
 // The model view's side-by-side comparison (frontend/js/three-compare.js): which sides are offered,
 // what each side shows, how a scene splits between the two passes, and the scissor rectangles.
-// The divider and the Compare tab are checked in the browser; these are the pure rules.
+// The divider and the Compare tab are checked in the browser; these are the pure rules. The map's
+// halves are in compare-on-map.test.js.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
@@ -24,8 +25,8 @@ describe('compare sides', () => {
 });
 
 describe('what a side shows', () => {
-    const intact = { role: 'existing', demolishedBy: null };
-    const razed = { role: 'existing', demolishedBy: 'd1' };
+    const intact = { role: 'existing', demolishedBy: [] };
+    const razed = { role: 'existing', demolishedBy: [{ id: 'd1', unapplied: false }] };
     const block = { role: 'proposed', designId: 'd1' };
     const park = { role: 'proposed', designId: 'd2' };
     const shared = { role: 'proposed', designId: null };
@@ -40,6 +41,18 @@ describe('what a side shows', () => {
         expect(shows('design:d2', razed)).toBe(true);
         expect(shows('plan:plan-a', razed)).toBe(false);
         expect(shows('plan:plan-b', razed)).toBe(true);
+        // A building two designs cut is gone wherever either applies.
+        const twice = { role: 'existing', demolishedBy: [{ id: 'd2', unapplied: false }, { id: 'd1', unapplied: false }] };
+        expect(['built', 'design:d1', 'design:d2', 'plan:plan-a', 'plan:plan-b'].map(value => shows(value, twice))).toEqual([true, false, false, false, true]);
+    });
+
+    it('applies a design on Proposed, on its own side and on a plan holding it; a plan applies its unapplied members too', () => {
+        const options = compare.sideOptions({ designs: [{ id: 'd1' }], plans: [{ id: 'p', members: ['d1', 'cidX'], unapplied: ['cidX'] }] });
+        const applies = (value, by) => compare.appliesDesign(compare.parseSide(value, options), by);
+        expect(['built', 'permitted', 'proposed', 'design:d1', 'plan:p'].map(value => applies(value, { id: 'd1' }))).toEqual([false, false, true, true, true]);
+        expect(['proposed', 'design:d1', 'plan:p'].map(value => applies(value, { id: 'cidX', unapplied: true }))).toEqual([false, false, true]);
+        expect(applies('plan:p', { id: 'd9' })).toBe(false);
+        expect(options[4].unapplied).toEqual(['cidX']);
     });
 
     it('draws proposed work only on Proposed, its own design or a plan holding it', () => {
@@ -75,5 +88,21 @@ describe('scissor rectangles', () => {
         expect(compare.scissorRects(1001, 600, 33.3)).toEqual({ left: [0, 0, 333, 600], right: [333, 0, 668, 600] });
         expect(compare.scissorRects(800, 600, -5)).toEqual({ left: [0, 0, 0, 600], right: [0, 0, 800, 600] });
         expect(compare.scissorRects(800, 600, 140)).toEqual({ left: [0, 0, 800, 600], right: [800, 0, 0, 600] });
+    });
+});
+
+describe('whether two sides can be compared yet', () => {
+    const plan = (id, unapplied = ['c1']) => ({ kind: 'plan', id, unapplied });
+    it('waits for every plan side with unapplied members to be read, and names the one that failed', () => {
+        const { readiness } = compare;
+        const statuses = { a: { status: 'ready' }, b: { status: 'loading' }, c: { status: 'failed', error: 'plot 7 refused' } };
+        const statusOf = id => statuses[id] || null;
+        expect(readiness([{ kind: 'built' }, plan('a')], statusOf)).toEqual({ ready: true, reading: [], failed: [] });
+        expect(readiness([plan('a'), plan('x', [])], statusOf).ready).toBe(true);
+        const waiting = readiness([plan('b'), plan('z')], statusOf);
+        expect(waiting.ready).toBe(false);
+        expect(waiting.reading.map(side => side.id)).toEqual(['b', 'z']);
+        const broken = readiness([plan('a'), plan('c')], statusOf);
+        expect(broken).toEqual({ ready: false, reading: [], failed: [{ side: plan('c'), error: 'plot 7 refused' }] });
     });
 });

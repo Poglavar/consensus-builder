@@ -16,16 +16,11 @@
     }
 
     /**
-     * Why a design may not be published on its own, or null. A parcel layout (plan-design-agreement.md,
-     * M1 (a)) is published with the agreement that includes it (POST /agreements), never alone; the
-     * code is the index's own refusal of one (POST /designs).
+     * Why a design may not be published on its own, or null: invalid content, or more than the
+     * publication limit. Every kind of design, parcel layouts included, is shareable by itself.
      */
     function publishRefusal(record) {
         if (!record) return null;
-        if (record.goal === 'parcel-layout') return {
-            code: 'layout-needs-agreement',
-            message: text('parcelLayout.publishWithAgreement', 'A parcel layout is published with its agreement. Propose an agreement that includes it.')
-        };
         const api = root.DesignRecord || (typeof require === 'function' ? require('../design-record.js') : null);
         if (!api) throw new Error('DesignRecord is not loaded.');
         let bytes;

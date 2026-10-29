@@ -222,7 +222,7 @@ export function flattenJson(obj, prefix = '', out = {}) {
 }
 
 const PROTECTED_WORDS = new Set(['OSM', 'DGU', 'GUP', 'GDI', 'NFT', 'AI', '2D', '3D', 'USDC', 'USDT', 'ETH', 'SOL', 'EUR', 'IPFS',
-    'URL', 'JSON', 'GeoJSON', 'API', 'ID', 'GPS', 'HR', 'EN', 'ES', 'SR', 'X', 'YES', 'NO', 'OK', 'I', 'A', 'Schelling', 'Solana']);
+    'URL', 'JSON', 'GeoJSON', 'API', 'ID', 'GPS', 'HR', 'EN', 'ES', 'SR', 'X', 'YES', 'NO', 'OK', 'I', 'A', 'Schelling', 'Solana', 'Hyperstition']);
 
 function isCapitalised(word) {
     return /^[A-Z][a-z]/.test(word);
@@ -243,7 +243,9 @@ export function titleCaseLabels(flat) {
         if (PROPER_NOUN_KEY_PREFIXES.some(prefix => key.startsWith(prefix))) return;
         const words = value.replace(/\{\{[^}]+\}\}/g, '').trim().split(/\s+/).filter(Boolean);
         if (words.length < 2 || words.length > 5 || value.length > 50) return;
-        const caps = words.slice(1).filter(w => isCapitalised(w.replace(/[^A-Za-z]/g, '')) && !PROTECTED_WORDS.has(w.replace(/[^A-Za-z0-9]/g, '')));
+        // A word after a phrase break ("Land in: … · Land out: …") starts its own phrase.
+        const caps = words.slice(1).filter((w, i) => !/[:.!?·]$/.test(words[i])
+            && isCapitalised(w.replace(/[^A-Za-z]/g, '')) && !PROTECTED_WORDS.has(w.replace(/[^A-Za-z0-9]/g, '')));
         if (caps.length >= 1 && isCapitalised(words[0].replace(/[^A-Za-z]/g, ''))) out.push(`${key} = ${value}`);
     });
     return out.sort();

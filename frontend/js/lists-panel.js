@@ -12,11 +12,20 @@
             .sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title)
                 : String(b.createdAt || '').localeCompare(String(a.createdAt || '')) || a.title.localeCompare(b.title));
     }
+    // One page of the public index. Explore has no city: its designs are those whose site meets the
+    // visible area (area = getProposalCountAreaContext()), as the index matches a bbox.
+    function indexQuery(kind, { city, area = null, offset = 0 }) {
+        const params = new URLSearchParams({ limit: kind === 'designs' ? '1000' : '50' });
+        if (kind === 'designs' && area?.explore && area.bbox) params.set('bbox', area.bbox.join(','));
+        else params.set('city', city);
+        if (kind !== 'designs') params.set('offset', String(offset));
+        return params;
+    }
     function browser(win) {
         const doc = win.document;
         const state = { tab: 'designs', source: 'local', search: '', publication: 'all', sort: 'title',
             // selecting: the tab whose rows show checkboxes (designs → Create plan, plans → Compare plans).
-            filtersOpen: false, selecting: null, selected: new Map(), active: null, remote: new Map() };
+            filtersOpen: false, selecting: null, selected: new Map(), active: null, previewing: null, remote: new Map() };
         let ready = false;
         const t = (key, params) => win.i18n.t(key, params || {});
         const node = (tag, cls, text) => {
@@ -36,7 +45,8 @@
             return el;
         }
         const city = () => win.normalizeCityCodeForApi(win.resolveCurrentCityCode());
-        const cacheKey = () => `${win.DesignSync.apiBase()}:${city()}:${state.tab}`;
+        const area = () => state.tab === 'designs' ? win.getProposalCountAreaContext() : null;
+        const cacheKey = () => { const view = area(); return `${win.DesignSync.apiBase()}:${view?.explore ? view.key : city()}:${state.tab}`; };
         const host = () => doc.getElementById({ designs: 'proposal-list-host', plans: 'plan-list-host', agreements: 'designs-agreements' }[state.tab]);
         const opened = () => win.MapShell?.isOpen('proposals-sheet');
         function localRows(kind) {
@@ -64,8 +74,7 @@
             const page = { rows: more ? previous.rows : [], next: more ? previous.next : 0, loading: true, error: null };
             state.remote.set(key, page); renderRows();
             try {
-                const params = new URLSearchParams({ city: city(), limit: kind === 'designs' ? '1000' : '50' });
-                if (kind !== 'designs') params.set('offset', String(page.next));
+                const params = indexQuery(kind, { city: city(), area: area(), offset: page.next });
                 const response = await win.fetch(`${win.DesignSync.apiBase()}/${kind}?${params}`, { cache: 'no-store', signal: AbortSignal.timeout(30000) });
                 const result = await response.json();
                 if (!response.ok || !Array.isArray(result[kind])) throw new Error(result.error || `HTTP ${response.status}`);
@@ -82,8 +91,28 @@
             const plan = row.record.content ? row.record : await win.NamedPlans.fetchPlan(row.key);
             return row.published ? { ...plan, published: true } : plan;
         }
+        // The designs a row stands for, as records that need not be stored: the design itself, or
+        // the members of a plan (an agreement shows its plan's).
+        async function designRecords(row, kind) {
+            const apiBase = win.DesignSync.apiBase();
+            if (kind === 'designs') return [row.local || { ...win.DesignSync.localDesignFromRow(await win.DesignSync.fetchDesign(row.key), { apiBase }), proposalId: row.key }];
+            const plan = kind === 'plans' ? await planOf(row)
+                : row.local ? row.local.plan : await win.NamedPlans.fetchPlan(row.record.content.planCid);
+            if (!plan) return [];
+            return win.PlanComposition.localRecords(await win.PlanWorkspace.resolve(plan), { apiBase });
+        }
+        // A row shows its object on the map and keeps the list open: browsing commits to nothing.
+        // Closing the list by hand, like Open, then selects it (previewing).
+        async function focus(row, kind) {
+            state.active = `${kind}:${row.key}`; state.previewing = { row, kind }; renderRows();
+            if (!win.previewRecordsOnMap(await designRecords(row, kind), `list:${state.active}`)) {
+                win.showEphemeralMessage(t('lists.noPlace'), 4000, 'info');
+            }
+        }
+        // Open selects the row's object as a click on it would, closing the list.
         async function inspect(row, kind) {
-            state.active = `${kind}:${row.key}`;
+            state.active = `${kind}:${row.key}`; state.previewing = null;
+            win.clearProposalPreview();
             if (kind === 'designs') {
                 const record = await designOf(row);
                 return win.openListedProposal(record, record.proposalId, 'details');
@@ -117,7 +146,8 @@
             else win.AgreementStore.remove(row.local.id);
             state.selected.delete(row.key);
             if (state.active === `${kind}:${row.key}`) {
-                win.ClickStack?.close(); win.ThreeClickStack?.close(); state.active = null;
+                win.ClickStack?.close(); win.ThreeClickStack?.close(); state.active = null; state.previewing = null;
+                win.clearProposalPreview();
             }
             refresh();
         }
@@ -130,7 +160,7 @@
             if (state.tab === 'designs') {
                 if (state.selecting !== 'designs') actions.append(button(t('planDialog.createPlan'), startSelecting, 'btn-primary', 'cb-icon-plan'));
                 else {
-                    const next = button(t('lists.continue'), async () => {
+                    const next = button(t('modal.track.curvature.continue'), async () => {
                         const members = [...state.selected.values()];
                         win.MapShell.closeSheets(); stopSelecting();
                         await win.PlanDialog.create({ members });
@@ -191,13 +221,18 @@
                         finally { check.disabled = false; item.removeAttribute('aria-busy'); renderActions(); }
                     }); label.append(check); heading.append(label);
                 }
-                const title = button(row.title, () => inspect(row, kind), 'btn-quiet lists-item__title');
+                const title = button(row.title, () => focus(row, kind), 'btn-quiet lists-item__title');
+                title.title = t('modal.roadWidth.polygonError.showOnMap');
+                // The whole row shows it; its own controls keep their actions.
+                item.addEventListener('click', event => {
+                    if (!event.target.closest('button, a, input, label, select, summary')) title.click();
+                });
                 const mark = node('span', 'lists-item__icon'); mark.append(icon(appearance[0]));
                 title.prepend(mark); heading.append(title); item.append(heading);
                 const badges = node('div', 'lists-item__badges');
                 if (kind === 'designs' && row.local) badges.innerHTML = win.proposalLadderBadgesHtml(row.local);
                 else badges.append(node('span', `cb-badge cb-badge--${row.published ? 'published' : 'draft'}`, t(row.published ? 'common.lifecycle.published' : 'common.lifecycle.draft')));
-                if (row.local) badges.append(node('span', 'cb-badge', t('lists.thisBrowser')));
+                if (row.local) badges.append(node('span', 'cb-badge', t('modal.roadWidth.proposalList.sources.local')));
                 if (kind === 'agreements' && (row.record.onchain || row.record.status)) {
                     const status = row.record.onchain?.status || row.record.status;
                     badges.append(node('span', 'cb-badge', win.AgreementPanel.chainStatusText(status)));
@@ -206,12 +241,15 @@
                 if (kind === 'plans') item.append(node('p', 'sheet-note', t('agreement.list.designs', { count: row.record.content?.designCids.length ?? row.record.designCount })));
                 if (kind === 'agreements' && row.local) item.append(node('p', 'sheet-note', win.AgreementPanel.ruleShort(row.local.rule)));
                 const actions = node('div', 'cb-actions lists-item__actions');
+                const open = button(t('lists.open'), () => inspect(row, kind), 'btn-primary lists-item__open', 'arrow-pointer');
+                open.setAttribute('aria-label', t('lists.openNamed', { title: row.title }));
+                actions.append(open);
                 const shareButton = button(t('panel.proposal.actions.share'), () => share(row, kind), '', 'share-nodes');
                 shareButton.querySelector('i').classList.add('lists-share-icon');
                 if (kind === 'agreements' && !row.published) shareButton.title = t('lists.proposeFirst');
                 actions.append(shareButton);
                 if (kind === 'plans') {
-                    actions.append(button(t('sidebar.proposals.planStats.buttonLabel'), async () => {
+                    actions.append(button(t('sidebar.proposals.planStats.modalTitle'), async () => {
                         await win.showPlanStatsModal(await planOf(row));
                     }, '', 'chart-pie'));
                     const rooster = button(t('sidebar.proposals.grainScore.buttonLabel'), async () => {
@@ -225,6 +263,10 @@
                         const plan = await win.PlanWorkspace.resolve(await planOf(row));
                         win.MapShell.closeSheets(); return win.AgreementDialog.open({ plan });
                     }, '', 'cb-icon-agreement'));
+                    actions.append(button(t('planDialog.schedule'), async () => {
+                        const plan = await planOf(row);
+                        win.MapShell.closeSheets(); return win.PlanDialog.schedule(plan);
+                    }, '', 'hourglass-half'));
                 }
                 if (row.local) {
                     const trash = button('', () => remove(row, kind), 'btn-danger btn-icon lists-item__remove', 'trash-can');
@@ -240,7 +282,7 @@
             const box = doc.getElementById('lists-controls'); box.replaceChildren();
             const scopes = node('div', 'cb-segmented cb-segmented--fill'); scopes.setAttribute('role', 'group');
             scopes.setAttribute('aria-label', t('lists.source'));
-            for (const [value, key] of [['local', 'lists.thisBrowser'], ['published', 'common.lifecycle.published']]) {
+            for (const [value, key] of [['local', 'modal.roadWidth.proposalList.sources.local'], ['published', 'common.lifecycle.published']]) {
                 const el = button(t(key), async () => {
                     state.source = value;
                     for (const toggle of box.querySelectorAll('[data-list-source]')) toggle.setAttribute('aria-pressed', String(toggle.dataset.listSource === value));
@@ -290,6 +332,13 @@
                     tabs[next].focus(); tabs[next].click();
                 });
             });
+            // Leaving the list by hand (×, Escape, the Lists button) selects the row being shown,
+            // as Open does; a sheet closed for anything else (a dialog, another selection) does not.
+            doc.addEventListener('mapshell:sheetclosed', event => {
+                if (event.detail?.id !== 'proposals-sheet') return;
+                const pending = state.previewing; state.previewing = null;
+                if (pending && event.detail.byHand) inspect(pending.row, pending.kind).catch(error => win.showStyledAlert(error.message));
+            });
             win.AgreementStore.subscribe(refresh);
             win.addEventListener('planschange', refresh);
             win.addEventListener('i18n:translationsLoaded', () => { if (opened()) { controls(); refresh(); } });
@@ -311,5 +360,5 @@
         function refresh() { if (ready && opened()) { renderActions(); renderRows(); } }
         return { open: async () => { await win.i18n.translationsReady; init(); controls(); return select(state.tab); }, select, refresh };
     }
-    return { filterRows, browser };
+    return { filterRows, indexQuery, browser };
 });

@@ -132,23 +132,77 @@
 .scheme-guide__section p, .scheme-guide__section ul, .scheme-guide__section ol { margin: 0; }
 .scheme-guide__section ul, .scheme-guide__section ol { padding-left: var(--cb-space-4); display: grid; gap: var(--cb-space-1); }
 .scheme-guide__caption { color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
-.scheme-guide__svg { display: block; width: 100%; max-width: 32rem; height: auto; margin-top: var(--cb-space-2); }
-.scheme-guide__slice { stroke: var(--cb-surface); stroke-width: 1; }
-.scheme-guide__slice--owner-1 { fill: var(--cb-primary-soft); }
-.scheme-guide__slice--owner-2 { fill: var(--cb-info-soft); }
-.scheme-guide__slice--owner-3 { fill: var(--cb-success-soft); }
-.scheme-guide__slice--owner-4 { fill: var(--cb-warning-soft); }
-.scheme-guide__slice--owner-5 { fill: var(--cb-surface-3); }
-.scheme-guide__slice--public { fill: var(--cb-danger-soft); stroke: var(--cb-danger); stroke-dasharray: 3 2; }
-.scheme-guide__slice-label { fill: var(--cb-text-strong); font-size: 11px; font-weight: var(--cb-weight-medium); }
-.scheme-guide__bar-label { fill: var(--cb-text-muted); font-size: 10px; }
-.scheme-guide__table { width: 100%; border-collapse: collapse; font-size: var(--cb-text-sm); }
-.scheme-guide__table th, .scheme-guide__table td { padding: var(--cb-space-1) var(--cb-space-2); border-bottom: 1px solid var(--cb-line); text-align: start; vertical-align: top; }
-.scheme-guide__table thead { background: var(--cb-surface-2); }
-.scheme-guide__table td { font-variant-numeric: tabular-nums; }
 .scheme-guide__fix-title { font-weight: var(--cb-weight-semibold); color: var(--cb-text-strong); }
 .scheme-guide__sources { overflow-wrap: anywhere; }
 .scheme-guide__pick { margin-bottom: var(--cb-space-3); }
+
+/* The scheme's dimensions: the same labels for every scheme, the short value as a badge. */
+.scheme-dimensions { display: grid; gap: var(--cb-space-1); margin: 0; font-size: var(--cb-text-sm); }
+.scheme-dimensions__item { display: grid; grid-template-columns: minmax(7rem, 12rem) 1fr; gap: var(--cb-space-2); padding: var(--cb-space-1) 0; border-bottom: 1px solid var(--cb-line); }
+.scheme-dimensions__item dt { color: var(--cb-text-muted); }
+.scheme-dimensions__item dd { margin: 0; }
+.scheme-dimensions__item .cb-badge { margin-inline-end: var(--cb-space-1); }
+
+/* How it is decided: who starts it → owner support → the authority → what passing unlocks. */
+.scheme-guide .scheme-flow { display: flex; flex-wrap: wrap; gap: var(--cb-space-2); margin: 0; padding: 0; list-style: none; }
+.scheme-flow__step { position: relative; display: grid; gap: var(--cb-space-1); align-content: start; flex: 1 1 8rem; padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-md); background: var(--cb-surface-2); font-size: var(--cb-text-sm); }
+.scheme-flow__step + .scheme-flow__step::before { content: "→"; position: absolute; inset-inline-start: calc(-1 * var(--cb-space-2)); top: 50%; transform: translate(-25%, -50%); color: var(--cb-text-muted); }
+.scheme-flow__step--owners { border-color: var(--cb-primary); }
+.scheme-flow__step--authority { border-color: var(--cb-warning); }
+.scheme-flow__step--result { background: var(--cb-success-soft); color: var(--cb-success-soft-ink); }
+.scheme-flow__kicker { color: var(--cb-text-muted); font-size: var(--cb-text-xs); text-transform: uppercase; letter-spacing: 0.04em; }
+.scheme-flow__step--result .scheme-flow__kicker { color: inherit; }
+
+/* A threshold gauge: the track is everyone counted, the fill the share the test needs. */
+.scheme-gauge { display: grid; gap: 2px; }
+.scheme-gauge__track { position: relative; display: block; height: 0.5rem; border-radius: var(--cb-radius-pill); background: var(--cb-surface-3); overflow: hidden; }
+.scheme-gauge__need { position: absolute; inset-block: 0; inset-inline-start: 0; width: var(--scheme-length); background: var(--cb-primary); }
+.scheme-gauge__limit { position: absolute; inset-block: 0; inset-inline-start: var(--scheme-at); width: 2px; background: var(--cb-danger); }
+.scheme-gauge__label { font-size: var(--cb-text-xs); font-variant-numeric: tabular-nums; }
+.scheme-gauge--pool { margin-top: var(--cb-space-2); }
+.scheme-gauge--pool.is-over-cap .scheme-gauge__need { background: var(--cb-danger); }
+
+/* The guide's two parts: the scheme's rules, and this agreement under them (a card of its own). */
+.scheme-guide__part { display: grid; gap: var(--cb-space-3); }
+.scheme-guide__part > h3 { margin: 0; font-size: var(--cb-text-lg); font-weight: var(--cb-weight-semibold); color: var(--cb-text-strong); }
+.scheme-guide__section h4 { margin: 0; font-size: var(--cb-text-md); font-weight: var(--cb-weight-semibold); color: var(--cb-text-strong); }
+.scheme-guide__part--applied { padding: var(--cb-space-3); border: 1px solid var(--cb-primary); border-radius: var(--cb-radius-md); background: var(--cb-surface-2); }
+.scheme-guide__part--applied > p, .scheme-guide__part--applied > ul { margin: 0; }
+.scheme-guide__part--applied > ul { display: grid; gap: var(--cb-space-1); padding-left: var(--cb-space-4); }
+
+/* The owners table: owners in rows; Puts in and Gets back, each a land line and a money line. */
+.scheme-owners-figure { display: grid; gap: var(--cb-space-2); margin: 0; }
+.scheme-owners__scroll { max-height: 24rem; overflow-y: auto; }
+.scheme-owners { width: 100%; border-collapse: collapse; font-size: var(--cb-text-sm); }
+.scheme-owners th, .scheme-owners td { padding: var(--cb-space-1) var(--cb-space-2); border-bottom: 1px solid var(--cb-line); text-align: start; vertical-align: top; }
+.scheme-owners thead th { position: sticky; top: 0; background: var(--cb-surface-2); z-index: var(--cb-z-local-1); }
+.scheme-owners tbody th { font-weight: var(--cb-weight-medium); min-width: 6rem; }
+.scheme-owners td { font-variant-numeric: tabular-nums; }
+.scheme-owners__line { display: block; }
+.scheme-owners__line small { display: block; color: var(--cb-text-muted); }
+.scheme-owners__line--money { color: var(--cb-success); }
+.scheme-owners__row.is-over-cap td:last-child .scheme-owners__line--land { color: var(--cb-danger); }
+.scheme-owners__row.is-over-cap td:last-child .scheme-owners__line--land small { color: var(--cb-danger); }
+
+/* Every scheme in the same dimensions, one row each. */
+.scheme-compare { margin-bottom: var(--cb-space-3); }
+.scheme-compare summary { cursor: pointer; font-weight: var(--cb-weight-medium); }
+.scheme-compare__table { width: 100%; border-collapse: collapse; font-size: var(--cb-text-xs); }
+.scheme-compare__table th, .scheme-compare__table td { padding: var(--cb-space-1) var(--cb-space-2); border-bottom: 1px solid var(--cb-line); text-align: start; vertical-align: top; }
+.scheme-compare__table thead { background: var(--cb-surface-2); }
+.scheme-compare__table tbody th { min-width: 10rem; font-weight: var(--cb-weight-normal); }
+.scheme-compare__table tr[aria-current="true"] { background: var(--cb-primary-soft); }
+
+@media (max-width: 480px) {
+    .scheme-dimensions__item { grid-template-columns: 1fr; gap: 0; }
+    /* Three columns fit a phone; long parcel labels wrap, amounts do not. */
+    .scheme-owners { font-size: var(--cb-text-xs); }
+    .scheme-owners th, .scheme-owners td { padding-inline: var(--cb-space-1); }
+    .scheme-owners tbody th { min-width: 4.5rem; overflow-wrap: anywhere; }
+    .scheme-owners__line { white-space: nowrap; }
+    .scheme-owners__line small { white-space: normal; }
+    .scheme-flow__step + .scheme-flow__step::before { content: none; }
+}
 
 .approval-setup__research {
     background: var(--cb-warning-soft);

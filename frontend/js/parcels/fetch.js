@@ -822,7 +822,7 @@
         const message = error && error.message ? error.message : String(error || 'unknown error');
         console.error(`[${new Date().toISOString()}] [ParcelFetch] cadastral ground failed to load (${source || 'unknown caller'}): ${message}`, error);
         const userMessage = parcelFailureMessage(error);
-        // The banner says it (ephemerals.md); the status log keeps the line without the status line repeating it.
+        // The banner says it (design-language.md, Messages); the status log keeps the line without the status line repeating it.
         global.updateStatus?.(userMessage, { floating: false });
         if (!global.ParcelGroundFallback) global.ParcelSourceSettings?.reportFailure?.(global, userMessage);
     }

@@ -134,6 +134,15 @@
         return hits;
     }
 
+    // Photo view adds the cadastral parcels its tiles show under the point (photoreal-parcels.js)
+    // to the Parcel section. Formed pieces stay in the Formed section: listed among the cadastral
+    // parcels too, a piece showed as a second parcel of the same name. The ground the click stands
+    // on is the formed piece when there is one, else the cadastral parcel.
+    function withSourceParcels(hits, sourceParcels) {
+        const parcels = [...(sourceParcels || []), ...hits.parcels];
+        return { hits: { ...hits, parcels }, groundParcelId: hits.formed[0]?.id || parcels[0]?.id || null };
+    }
+
     // The app's lookups behind the neighbour rule (click-stack-neighbours.js): a selected object's
     // own references, read the same way in the map and the model view. `onPublished` runs once a
     // parcel's published proposals arrive after the lookup answered; `overrides` replace lookups
@@ -195,5 +204,5 @@
         return features.filter(feature => feature?.geometry && ['Polygon', 'MultiPolygon', 'LineString', 'MultiLineString'].includes(feature.geometry.type));
     }
 
-    global.ClickStackHits = Object.freeze({ hitsAt, withNeighbours, neighbourLookups, parcelLabel, buildingLabel, featuresFor });
+    global.ClickStackHits = Object.freeze({ hitsAt, withSourceParcels, withNeighbours, neighbourLookups, parcelLabel, buildingLabel, featuresFor });
 })(window);

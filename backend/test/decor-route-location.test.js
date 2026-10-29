@@ -39,15 +39,17 @@ describe('GET /decor/layers', () => {
     });
 });
 
-describe('POST /decor/near', () => {
-    // The labels each tree query was asked with, in order (data-scope.js ladder rungs).
-    function treesFor(geometry, body = {}) {
+describe('GET /decor/near', () => {
+    // The labels each tree query was asked with, in order (data-scope.js ladder rungs). A point is
+    // asked for as the box whose corners meet.
+    function treesFor(geometry, query = {}) {
         const labels = [];
         const pool = { query: vi.fn(async (sql, params) => { labels.push(params[1]); return { rows: [{ lng: 1, lat: 2 }] }; }) };
         const server = app();
         setupDecorRoute(server, pool, { waterProvider: { near: vi.fn() } });
         const res = response();
-        return server.routes['POST /decor/near']({ body: { geometry, buffer_meters: 200, ...body } }, res).then(() => ({ res, labels }));
+        const [lon, lat] = geometry.coordinates;
+        return server.routes['GET /decor/near']({ query: { bbox: [lon, lat, lon, lat].join(','), buffer_meters: '200', ...query } }, res).then(() => ({ res, labels }));
     }
 
     it('gives Zagreb trees from the geometry alone, where it used to give none', async () => {

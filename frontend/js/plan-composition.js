@@ -31,7 +31,8 @@
         });
         return true;
     }
-    function create(title, records, view) {
+    // schedule: { [designCid]: { start, end } } (plan-record.js); windows of non-members are dropped.
+    function create(title, records, view, schedule = null) {
         const PlanRecord = dependency('PlanRecord', './plan-record.js');
         const DesignRecord = dependency('DesignRecord', './design-record.js');
         const Cid = dependency('Cid', './cid.js');
@@ -48,11 +49,22 @@
         });
         if ([...byCid.values()].some(member => !member.memberId)) throw new Error('Every selected design needs a local proposal identity.');
         const designs = [...byCid.values()].sort((a,b)=>a.cid < b.cid ? -1 : a.cid > b.cid ? 1 : 0);
-        const content = PlanRecord.create(title, designs.map(d=>d.cid), view);
+        const content = PlanRecord.create(title, designs.map(d=>d.cid), view, schedule);
         const row = { cid: Cid.cidOfObject(content), content: deepCopy(content), designs: designs.map(({cid,content})=>({cid,content})),
             memberIds: designs.map(d=>d.memberId), designSources: Object.fromEntries(designs.filter(d=>d.source).map(d=>[d.cid,d.source])) };
         validate(row);
         return freeze(row);
+    }
+    // The same members and view with another construction schedule: a new immutable revision.
+    function withSchedule(row, schedule) {
+        validate(row);
+        const PlanRecord = dependency('PlanRecord', './plan-record.js');
+        const Cid = dependency('Cid', './cid.js');
+        const content = PlanRecord.create(row.content.title, row.content.designCids, row.content.view, schedule);
+        const next = { ...deepCopy(row), cid: Cid.cidOfObject(content), content: deepCopy(content) };
+        delete next.published;
+        validate(next);
+        return freeze(next);
     }
     function localRecords(row, { apiBase } = {}) {
         validate(row);
@@ -60,5 +72,5 @@
         return row.designs.map(member => ({ ...DesignSync.localDesignFromRow(member, { apiBase, proposalId: `plan-member-${member.cid}` }),
             ...(row.designSources?.[member.cid] ? { planFileSource: deepCopy(row.designSources[member.cid]) } : {}) }));
     }
-    return Object.freeze({ create, validate, localRecords });
+    return Object.freeze({ create, validate, withSchedule, localRecords });
 });

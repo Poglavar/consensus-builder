@@ -6920,13 +6920,6 @@
       "controlType": "text"
     },
     {
-      "id": "control-977f24f1b0b5a1-1",
-      "source": "js/proposals/dialog-create.js",
-      "markup": "<select id=\"proposalEpochYear\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
       "id": "control-4cb840e0606f16-1",
       "source": "js/proposals/dialog-create.js",
       "markup": "<div class=\"collapsible-header proposal-collapsible-header\" tabindex=\"0\" role=\"button\" aria-expanded=\"false\" aria-controls=\"proposalOptionsContent\" onclick=\"(function(){ var section = document.getElementById('proposalOptionsSection'); var content = document.getElementById('proposalOptionsContent'); var icon = document.getElementById('proposalOptionsChevron'); section.classList.toggle('collapsed'); if (section.classList.contains('collapsed')) { content.style.display = 'none'; icon.classList.remove('fa-chevron-up'); icon.classList.add('fa-chevron-down'); section.setAttribute('aria-expanded', 'false'); } else { content.style.display = ''; icon.classList.remove('fa-chevron-down'); icon.classList.add('fa-chevron-up'); section.setAttribute('aria-expanded', 'true'); } })()\">",
@@ -6964,20 +6957,6 @@
     {
       "id": "control-e3261ea7078417-2",
       "source": "js/proposals/dialog-create.js",
-      "markup": "document.createElement('button')",
-      "interaction": "click",
-      "controlType": "button"
-    },
-    {
-      "id": "control-5ea11b34e3cfd2-1",
-      "source": "js/proposals/epoch.js",
-      "markup": "<select class=\"proposal-epoch-card-select${trenutna === null ? ' is-empty' : ''}\"` + ` data-proposal-id=\"${esc(proposalId)}\" title=\"${esc(naslov)}\" aria-label=\"${esc(naslov)}\">",
-      "interaction": "change",
-      "controlType": "select"
-    },
-    {
-      "id": "control-60e49c69fe554c-1",
-      "source": "js/proposals/epoch.js",
       "markup": "document.createElement('button')",
       "interaction": "click",
       "controlType": "button"
@@ -7101,13 +7080,13 @@
         {
           "name": "Added per period",
           "attrs": {
-            "data-epoch-view": "added"
+            "data-period-view": "added"
           }
         },
         {
           "name": "Standing per period",
           "attrs": {
-            "data-epoch-view": "cumulative"
+            "data-period-view": "cumulative"
           }
         },
         {

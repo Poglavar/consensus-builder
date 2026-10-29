@@ -73,7 +73,7 @@ test.describe('Deep link and URL parameters @core', () => {
     await waitForMapReady(page);
     await page.evaluate(() => {
       const w = window as any;
-      w.CityConfigManager?.setCurrentCityId?.('belgrade');
+      w.CityConfigManager.setStoredCityId('belgrade');
     });
 
     // Now navigate with ?city=ba — should override stored belgrade

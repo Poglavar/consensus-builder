@@ -7,6 +7,7 @@ import { parcelSourceIdOf } from './mcp-read-tools.js';
 import { editedDesign, valueAt } from './mcp-edit.js';
 import { buildTypedDesign, validateTrackDesign } from './mcp-constructors.js';
 import { trustedMetadata } from './mcp-results.js';
+import { cityDrivingSide } from '../scripts/lib/frontend-city-money.mjs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const DesignRecord = require('../../frontend/js/design-record.js');
@@ -30,12 +31,22 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
         // A new artifact needs its actual authoring time. A null time would be filled by browser
         // import, changing its CID as soon as the person opened the supposedly exact preview.
         let intent = { ...args, kind, authoredAt: args.authoredAt ?? new Date().toISOString() };
+        // A road keeps its traffic on the city's side, as one drawn in the app does.
+        if (kind === 'road' || kind === 'track') intent.drivingSide = cityDrivingSide(args.city);
         let parcelFeatures = [];
         if (kind === 'station') {
-            intent.corridors = await Promise.all((args.corridors || []).map(async input => {
-                const resolved = await resolveDesignSource(input);
-                return { cid: cidOfObject(resolved.content), content: resolved.content };
-            }));
+            intent.corridors = await roadCorridors(args.corridors);
+        } else if (kind === 'road' && !intent.points && (args.parcelIds?.length || args.outline)) {
+            // A road placed into a parcel (docs/road-in-parcel.md): the site is its land and its
+            // streets are read from the site's shape.
+            if (args.parcelIds?.length && args.outline) throw fail('site-ambiguous', 'Choose either source parcels or an outline, not both.', { action: 'Remove one of parcelIds or outline.' });
+            if (args.parcelIds?.length) {
+                const source = await read.parcels(args);
+                parcelFeatures = source.features;
+                intent.site = union(source.features);
+                intent.parcelSourceId = source.parcelSourceId;
+            } else intent.site = geometry(args.outline);
+            intent.bounded = true;
         } else if ((kind === 'road' || kind === 'track') && !intent.points) {
             let bbox = args.bbox;
             if (!bbox && args.street) {
@@ -73,7 +84,16 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
         const design = ['building', 'station', 'track'].includes(kind)
             ? buildTypedDesign(intent, { parcels: parcelFeatures }) : builder.build(intent, { turf });
         const checked = designObject({ ...design, createdAt: design.authoredAt });
+        // Roads join the roads of the plan the caller places them in (agent-working-plan.md), not here.
         return result(checked.content, intent.parcelSourceId || args.parcelSourceId);
+    }
+    // A station's named corridor designs, resolved as immutable references.
+    async function roadCorridors(inputs = []) {
+        return Promise.all(inputs.map(async input => {
+            const resolved = await resolveDesignSource(input);
+            if (!resolved.content.roadProposal) throw fail('corridor-road-required', 'Name only road or track designs in corridors.', { action: 'Remove designs that are not roads or tracks from corridors.' });
+            return { cid: cidOfObject(resolved.content), content: resolved.content, parcelSourceId: resolved.parcelSourceId };
+        }));
     }
     async function resolveDesignSource(value) {
         if (typeof value === 'string' && !isCid(value)) {
@@ -103,7 +123,7 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
     }
     const resolveDesign = async value => (await resolveDesignSource(value)).content;
     return {
-        resolveDesign, resolveDesignSource,
+        resolveDesign, resolveDesignSource, roadCorridors, designResult: result,
         draftRoad: args => draft('road', args), draftTrack: args => draft('track', args), draftStation: args => draft('station', args), draftBuilding: args => draft('building', args),
         draftSpace: args => draft('space', args), draftParcelLayout: args => draft('parcel-layout', args), draftUrbanRule: args => draft('urban-rule', args),
         async inspectDesign({ design, paths = [''] }) {

@@ -514,7 +514,7 @@ body.corridor-editor-open .leaflet-interactive {
 /* A parking lane's depth is a fixed standard: its width field is disabled, and the base disabled
    input (css/primitives.css) says so. */
 
-/* The apply itself is said by the status line (ephemerals.md); only the busy pointer stays here. */
+/* The apply itself is said by the status line (design-language.md, Messages); only the busy pointer stays here. */
 
 /* The pointer says "busy" for as long as the indicator is up. Leaflet's grab/crosshair cursors are
    set on descendants, so they are named here rather than left to inherit from body. The map's own

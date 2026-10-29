@@ -1,8 +1,8 @@
 # Urban rules: permitted massing vs. example build-out
 
-Design agreed 2026-08-08. Companion to `URBAN-RULE-BLOCKS-ROADMAP.md` (which covers making the
-*block form* more expressive); this one covers the separation between **what a rule permits** and
-**what a plausible result of that rule looks like**, for all three urban-rule typologies.
+Design agreed 2026-08-08. This covers the separation between **what a rule permits** and **what a
+plausible result of that rule looks like**, for all three urban-rule typologies.
+[Block-form flexibility](#block-form-flexibility) covers making the *block form* more expressive.
 
 ## The problem
 
@@ -181,6 +181,24 @@ to open.
 
 Validation of imported massing is a prerequisite — see BACKLOG.
 
+## Balconies and slanted roof
+
+All three typologies can permit **balconies** that stand out of the envelope by `balconyDepthM`
+(the editors default to 2 m, capped at 5 m) and a **slanted roof** (`roof: "pitched"`). Both are
+stored on the normalized rule only when used, so earlier rules keep their exact shape.
+
+The roof starts where the top floor ends. Its ridge runs along the facade holding the most exterior
+wall length; walls shared with another building of the same design (party walls) do not count, so a
+terrace house turns its ridge to the street even when it is deeper than wide. The attic has walls
+only where the roof rises above the eave line (the gables), and windows only in gables that are not
+party walls. Balconies line the exterior facades parallel to the ridge, one row per storey above the
+ground floor. A footprint with a courtyard hole gets balconies but stays flat.
+
+These are drawn on the build-out and on a massing shown as the primary volume; the see-through
+envelope behind a build-out stays a plain box. Floor area, gain and stats still read the envelope:
+neither the attic nor the balconies add to them. Geometry: `frontend/js/rule-building-details.js`
+(pure, tested); meshes: `frontend/js/three-rule-roofs.js`.
+
 ## Minimum parcel size
 
 All three typologies carry a **minimum building-plot size**, as GUP does (najmanja površina
@@ -315,10 +333,39 @@ so the applied 3D street has the varied heights the editor showed) and the compl
 in `geometry.ruleMassing`, the same shape the MCP Block constructor writes. `row-house.js` saves
 a terrace the same way; both go through `UrbanRuleVariation.ruleDesignGeometry`. An agent draft
 without an explicit seed takes a stable seed from its site, so drafts do not share one variation.
+Applying a Block or Row (`proposals/apply/buildings.js`) checks its saved pieces against the live
+parcels under it (`UrbanRuleVariation.piecesOnGround`): they stand as saved while each lies on one
+of those parcels and no two share one. When the ground has changed under it, as when a parcel
+layout it was drawn on comes off the map and it is left applied, a piece straddles today's parcels
+or two pieces share one, and the map cuts `geometry.ruleMassing` again by today's parcels: one
+building per parcel it now stands on, in 2D, 3D and the build-out. The saved record keeps the
+pieces it was drawn with.
 The height controls of all three rules count whole floors; Block and Row store the metres.
 Illustrate advances the seed; a slider does not, so raising the height limit no longer reshuffles
 every footprint on the street. `three-mode.js` gains the **Planned as** row and the 🎲, whose salt
 is session-only — it never writes to a proposal.
+
+## Block-form flexibility
+
+`generateBuildingInModal()` in `frontend/js/building-blocks.js` is parametric: it discards the old
+geometry and rebuilds the footprint from the sliders every time (superparcel, simplify, setback,
+inset, ring with hole, gaps, wings, chamfer), so a block is always regenerable and shareable. The
+Simplify (m) slider runs Douglas–Peucker on the merged outline before the setback, so blocks stop
+inheriting parcel jaggies; 0 follows the parcels exactly. Gaps and wings are fractions along the
+outer ring: the count sliders add or remove them and dragging a handle fine-tunes one position.
+
+Manual mode (Edit shape manually) is the one-way escape hatch. Outer-ring vertices become
+draggable, the footprint sliders are inert and height stays live; returning to generated geometry
+regenerates from the sliders and discards the manual edits. Import Freeform GeoJSON supplies the
+same arbitrary footprint. Sharing stores both the parameters and the
+final footprint, so a manual or imported footprint re-applies as geometry. Chamfer is parametric only.
+
+Open:
+
+- Alternative base shapes (convex hull, oriented bounding box) as selectable base geometry.
+- A rotate handle for gaps and wings, as an angle offset from perpendicular.
+- Block typologies (fully closed, one side open, circular, Buenos Aires) behind the disabled
+  Algorithm select.
 
 ## Risks
 

@@ -31,7 +31,7 @@ test.describe('Imagery area sources', () => {
     const source = descriptor();
     let failTiles = false;
     let tileRequests = 0;
-    await page.route('**/imagery-sources/discover', route => route.fulfill({ json: { source, attempts: [] } }));
+    await page.route(/\/imagery-sources\/discover\?/, route => route.fulfill({ json: { source, attempts: [] } }));
     await page.route('**/imagery-sources/*/tiles/**', route => {
       tileRequests += 1;
       return failTiles ? route.fulfill({ status: 503, body: 'Imagery unavailable' })
@@ -75,8 +75,9 @@ test.describe('Imagery area sources', () => {
   });
   test('asks for a WMS layer and invalidates verification after editing URL', async ({ mockApi: page }) => {
     const requests: any[] = [];
-    await page.route('**/imagery-sources/discover', async route => {
-      const body = route.request().postDataJSON(); requests.push(body);
+    await page.route(/\/imagery-sources\/discover\?/, async route => {
+      const query = new URL(route.request().url()).searchParams;
+      const body = { url: query.get('url'), layers: query.get('layers')?.split(',') }; requests.push(body);
       await route.fulfill({ json: body.layers ? { source: descriptor('wms', body.layers[0]), attempts: [] }
         : { selectionRequired: true, layers: [{ name: 'ortho', title: 'Orthophoto' }, { name: 'older', title: 'Older' }], attempts: [] } });
     });
@@ -94,7 +95,7 @@ test.describe('Imagery area sources', () => {
     await expect(dialog.getByRole('button', { name: 'Use this source', exact: true })).toBeHidden();
   });
   test('a failed image check keeps use disabled', async ({ mockApi: page }) => {
-    await page.route('**/imagery-sources/discover', route => route.fulfill({ status: 422, json: { code: 'imagery-not-image', error: 'Imagery provider did not return a PNG or JPEG map.' } }));
+    await page.route(/\/imagery-sources\/discover\?/, route => route.fulfill({ status: 422, json: { code: 'imagery-not-image', error: 'Imagery provider did not return a PNG or JPEG map.' } }));
     await page.goto('/?city=new_york&lang=en', { waitUntil: 'domcontentloaded' }); await waitForMapReady(page);
     const dialog = await openChooser(page);
     await dialog.locator('#parcel-source-url').fill('https://public.example/wms');

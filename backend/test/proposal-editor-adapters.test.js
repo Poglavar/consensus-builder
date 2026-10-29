@@ -359,6 +359,26 @@ describe('corridor proposal adapter', () => {
         expect(replacement.proposalId).toBeUndefined();
     });
 
+    it('keeps the side of the road a drawing was made on, from the drawing seed to the record and back into the editor', () => {
+        const osmForm = require('../../frontend/js/corridor-osm-form.js');
+        const { centerline, segmentIds, profile, width } = { centerline: proposal.roadProposal.definition.points, ...proposal.roadProposal.definition };
+        // A new road has no source definition: the drawing's own side is all there is.
+        const { definition } = corridorAdapter.payloadFromDrawingSeed({ kind: 'road', centerline, segmentIds, profile, width, drivingSide: 'left' }, null);
+        expect(definition.drivingSide).toBe('left');
+        const record = osmForm.toRecord(definition);
+        expect(record.osm.elements.find(element => element.type === 'way').tags.driving_side).toBe('left');
+
+        const seeds = [];
+        globalThis.startSeededCorridorDrawing = (kind, seed) => { seeds.push(seed); return true; };
+        try {
+            const reopened = { ...proposal, roadProposal: { definition: { ...osmForm.toView(record), metadata: proposal.roadProposal.definition.metadata } } };
+            corridorAdapter.openDesignEditor(draftFor(corridorAdapter, reopened));
+        } finally {
+            delete globalThis.startSeededCorridorDrawing;
+        }
+        expect(seeds.map(seed => seed.drivingSide)).toEqual(['left']);
+    });
+
     it('updates an extended road site instead of retaining its source boundary and binding', () => {
         const oldSite = turf.bboxPolygon([15.9, 45.8, 15.91, 45.81]).geometry;
         const newSite = turf.bboxPolygon([15.9, 45.8, 15.92, 45.81]).geometry;
@@ -1713,17 +1733,17 @@ describe('published source identity classification', () => {
     });
 });
 
-// A parcel layout is shared together with its agreement (plan-design-agreement.md, M1 (a)): the
-// create dialog never opens for one; the refusal is publish-terms.js publishRefusal (M2).
-describe('parcel layouts are not staged for publishing', () => {
-    it('refuses with the publish-later message and opens no create dialog', async () => {
+// The create dialog has no parcel-layout form: a layout draft becomes a design the way its editor's
+// Done makes one (instantCreateProposalFromDraft), never through the dialog.
+describe('parcel layout drafts are created without the create dialog', () => {
+    it('takes the instant-create path and opens no create dialog', async () => {
         const shellPath = '../../frontend/js/proposal-editor-shell.js';
-        require('../../frontend/js/proposals/publish-terms.js');
         const previous = {
             proposalDraftStore: globalThis.proposalDraftStore,
             prepare: globalThis.prepareProposalDraftParcelSelection,
             show: globalThis.showProposalDialog,
-            alert: globalThis.showStyledAlert
+            alert: globalThis.showStyledAlert,
+            indicator: globalThis.beginApplyIndicator
         };
         const draft = {
             id: 'draft-layout', goal: 'parcel-layout', adapterKey: 'parcel-layout',
@@ -1733,7 +1753,9 @@ describe('parcel layouts are not staged for publishing', () => {
         };
         let opened = 0;
         let prepared = 0;
+        let instant = 0;
         const alerts = [];
+        globalThis.beginApplyIndicator = () => { instant += 1; };
         globalThis.proposalDraftStore = {
             getDraft: () => draft,
             validateDraft: () => draft,
@@ -1747,16 +1769,17 @@ describe('parcel layouts are not staged for publishing', () => {
         delete require.cache[require.resolve(shellPath)];
         require(shellPath);
         try {
-            await expect(globalThis.stageProposalDraftForPublishing(draft.id)).resolves.toBe(false);
+            await globalThis.stageProposalDraftForPublishing(draft.id);
+            expect(instant).toBe(1);
             expect(opened).toBe(0);
             expect(prepared).toBe(0);
-            expect(alerts).toEqual(['A parcel layout is published with its agreement. Propose an agreement that includes it.']);
         } finally {
             Object.entries({
                 proposalDraftStore: previous.proposalDraftStore,
                 prepareProposalDraftParcelSelection: previous.prepare,
                 showProposalDialog: previous.show,
-                showStyledAlert: previous.alert
+                showStyledAlert: previous.alert,
+                beginApplyIndicator: previous.indicator
             }).forEach(([key, value]) => {
                 if (value === undefined) delete globalThis[key];
                 else globalThis[key] = value;

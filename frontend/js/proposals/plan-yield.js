@@ -1,5 +1,5 @@
 // proposals/plan-yield.js — what a plan actually yields: parcels, floor area, apartments, people,
-// per epoch.
+// per construction period (the caller says which year each design is built by).
 //
 // The plan is drawn as geometry, but the question asked of it is arithmetic: how much floor area did
 // those blocks add, how many homes is that, how many people live in them. This file is the one place
@@ -223,10 +223,10 @@
         return bucket;
     }
 
-    function epochYearOf(proposal) {
-        if (!proposal || typeof proposal !== 'object') return null;
-        const raw = proposal.epochYear ?? proposal.epoch_year;
-        const n = num(raw);
+    /** The period a proposal is built by, from the caller's periodOf(proposal), or null. */
+    function periodYearOf(proposal, periodOf) {
+        if (typeof periodOf !== 'function') return null;
+        const n = num(periodOf(proposal));
         return (n !== null && Number.isInteger(n)) ? n : null;
     }
 
@@ -236,10 +236,10 @@
         return proposal.applied === true;
     }
 
-    /** One proposal's contribution, before any per-epoch grouping. */
+    /** One proposal's contribution, before any per-period grouping. */
     function measureProposal(proposal, assumptions) {
         const opts = { ...DEFAULTS, ...(assumptions || {}) };
-        const bucket = emptyBucket(epochYearOf(proposal));
+        const bucket = emptyBucket(null);
         bucket.proposals = 1;
 
         const bp = buildingProposalOf(proposal);
@@ -276,12 +276,14 @@
     /**
      * The whole plan.
      *
-     * `byEpoch` is what each period ADDS; `cumulative` is what stands once that period is finished,
-     * which is the figure a timeline wants. Proposals with no epoch are the plan's existing state —
-     * they belong to every cumulative year, exactly as epoch.js's belongsCumulative() reads them.
+     * `byPeriod` is what each period ADDS; `cumulative` is what stands once that period is finished,
+     * which is the figure a timeline wants. A period is a year: the one `periodOf(proposal)` names,
+     * for a plan the year its construction window ends. Proposals without one are unscheduled —
+     * built at every date — so they belong to every cumulative year.
      *
      * @param {Array} proposals raw proposals, either client- or server-shaped
-     * @param {Object} [assumptions] overrides of DEFAULTS, plus { appliedOnly:boolean }
+     * @param {Object} [assumptions] overrides of DEFAULTS, plus { appliedOnly:boolean,
+     *        periodOf:(proposal) → integer year | null }
      */
     function planYield(proposals, assumptions) {
         const opts = { ...DEFAULTS, ...(assumptions || {}) };
@@ -296,7 +298,7 @@
         list.forEach(proposal => {
             const measured = measureProposal(proposal, opts);
             addInto(total, measured);
-            const year = measured.year;
+            const year = periodYearOf(proposal, opts.periodOf);
             if (year === null) {
                 addInto(unassigned, measured);
                 return;
@@ -306,7 +308,7 @@
         });
 
         const years = [...byYear.keys()].sort((a, b) => a - b);
-        const byEpoch = years.map(year => deriveBucket(byYear.get(year), opts));
+        const byPeriod = years.map(year => deriveBucket(byYear.get(year), opts));
 
         const cumulative = [];
         const running = emptyBucket(null);
@@ -328,7 +330,7 @@
             },
             total: deriveBucket(total, opts),
             unassigned: deriveBucket(unassigned, opts),
-            byEpoch,
+            byPeriod,
             cumulative
         };
     }
@@ -356,7 +358,7 @@
             },
             total: again(result.total),
             unassigned: again(result.unassigned),
-            byEpoch: (result.byEpoch || []).map(again),
+            byPeriod: (result.byPeriod || []).map(again),
             cumulative: (result.cumulative || []).map(again)
         };
     }
@@ -485,7 +487,6 @@
         heightMetresOf,
         measureBuilding,
         measureProposal,
-        epochYearOf,
         planYield,
         rederive,
         combinedTotal,

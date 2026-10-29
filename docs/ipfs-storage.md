@@ -1,13 +1,32 @@
 # IPFS storage
 
-The application publishes through `backend/storage/pinning.js`. This boundary owns
+The application pins IPFS content through `backend/storage/pinning.js`. This boundary owns
 byte limits, the fixed UnixFS CID profile, provider selection and confirmation that
 the provider retained the expected CID. Routes do not call provider APIs directly.
 
-`pinBytes({ bytes, cid, name })` publishes an immutable record; `pinFile(...)` also
+`pinBytes({ bytes, cid, name })` pins an immutable JSON record; `pinFile(...)` also
 handles NFT images and metadata. Both return `{ cid, pinnedAt }`. All new objects,
 including NFT metadata, use the same CIDv1 scheme. Existing publication CIDs remain
 valid and are not rewritten.
+
+## What is pinned
+
+Pinned on IPFS:
+
+- owner-decision bundles anchored on Solana (`POST /agreements/:cid/decisions/bundle`,
+  `approval-anchor.js`);
+- signed community reports, which the UI links on `ipfs.io`;
+- parcel NFT images and metadata (`/ipfs/upload`).
+
+Not pinned: designs, named plans and agreements. Publishing one is server-only. The
+client computes the CID from the canonical bytes, and `POST /designs`, `POST /plans`
+or `POST /agreements` indexes the object after checking that CID. Readers get these
+objects only from the server index, never from IPFS.
+
+`POST /pins` stays available, but no publication path calls it. It is kept for the
+objects a chain record will reference, so the blockchain work can pin them again.
+Until then, an agreement minted on Solana points at agreement, plan and design CIDs
+that only our index holds.
 
 ## Configuration
 

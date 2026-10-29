@@ -131,10 +131,11 @@ function openDialog(proposals, options = {}) {
 const rect = (lon0, lat0, lon1, lat1) => [[[lon0, lat0], [lon1, lat0], [lon1, lat1], [lon0, lat1], [lon0, lat0]]];
 const SIBENIK = rect(15.8850, 43.7350, 15.8870, 43.7365);
 
-function block(epochYear) {
+// A prepared plan record carries its design CID as proposalId (PlanAnalysis.prepare).
+function block(cid) {
     return {
         applied: true,
-        epochYear,
+        proposalId: cid,
         cadastreParcelIds: ['HR-330264-628'],
         buildingProposal: {
             parameters: { rule: { minHeightM: 17.5, maxHeightM: 17.5, floorHeightM: 3.5 } },
@@ -155,7 +156,7 @@ const digits = text => Number(String(text).split('(')[0].replace(/[^\d]/g, '') |
 let plan;
 
 beforeEach(() => {
-    plan = [block(2035), block(2045), block(null), { applied: false, buildingProposal: { buildings: [] } }];
+    plan = [block('d-2035'), block('d-2045'), block('d-unscheduled'), { applied: false, buildingProposal: { buildings: [] } }];
 });
 
 describe('opening the dialog', () => {
@@ -296,37 +297,44 @@ describe('changing an assumption', () => {
 });
 
 describe('the period table', () => {
-    it('lists each epoch plus the undated proposals', async () => {
-        const window = openDialog(plan);
-        await window.showPlanStatsModal({ content: { title: 'Garden plan' } });
+    // Periods come from the plan's schedule: the year each member's construction window ends.
+    const scheduled = { title: 'Garden plan', schedule: {
+        'd-2035': { start: '2034-03', end: '2035-11' },
+        'd-2045': { start: '2045-01', end: '2045-12' }
+    } };
 
-        const table = window.document.querySelector('[data-plan-stat="epoch-table"]');
+    it('lists the year each construction window ends in, plus the unscheduled designs', async () => {
+        const window = openDialog(plan);
+        await window.showPlanStatsModal({ content: scheduled });
+
+        const table = window.document.querySelector('[data-plan-stat="period-table"]');
         const rows = table.children[0].children;
         expect(rows).toHaveLength(4);                    // header + 2035 + 2045 + no period
         expect(rows[1].children[0].textContent).toBe('2035');
+        expect(rows[1].children[1].textContent).toBe('1');
         expect(rows[2].children[0].textContent).toBe('2045');
         expect(rows[3].children[0].textContent).toBe('no period');
     });
 
-    it('switches to standing totals, where the undated ones are already inside each year', async () => {
+    it('switches to standing totals, where the unscheduled ones are already inside each year', async () => {
         const window = openDialog(plan);
-        await window.showPlanStatsModal({ content: { title: 'Garden plan' } });
+        await window.showPlanStatsModal({ content: scheduled });
 
-        const toggle = window.document.querySelector('[data-epoch-view="cumulative"]');
+        const toggle = window.document.querySelector('[data-period-view="cumulative"]');
         toggle.listeners.click.forEach(fn => fn());
 
-        const rows = window.document.querySelector('[data-plan-stat="epoch-table"]').children[0].children;
-        expect(rows).toHaveLength(3);                    // header + 2035 + 2045, no separate undated row
+        const rows = window.document.querySelector('[data-plan-stat="period-table"]').children[0].children;
+        expect(rows).toHaveLength(3);                    // header + 2035 + 2045, no separate unscheduled row
         const added = digits(rows[1].children[1].textContent);
         const standing = digits(rows[2].children[1].textContent);
         expect(standing).toBeGreaterThan(added);
     });
 
-    it('stays hidden when no proposal carries an epoch', async () => {
-        const window = openDialog([block(null)]);
+    it('stays hidden when the plan schedules no member', async () => {
+        const window = openDialog(plan);
         await window.showPlanStatsModal({ content: { title: 'Garden plan' } });
 
-        expect(window.document.querySelector('[data-plan-stat="epoch-section"]').hidden).toBe(true);
+        expect(window.document.querySelector('[data-plan-stat="period-section"]').hidden).toBe(true);
     });
 });
 
@@ -340,8 +348,8 @@ describe('comparing plans', () => {
     it('shows every plan’s figures in its own column, and swaps to plans as rows', async () => {
         const window = openDialog(plan);
         await window.comparePlanStats([
-            { content: { title: 'Two blocks' }, records: [block(2035), block(2045)], withExisting: true },
-            { content: { title: 'One block' }, records: [block(2035)], withExisting: true },
+            { content: { title: 'Two blocks' }, records: [block('d-1'), block('d-2')], withExisting: true },
+            { content: { title: 'One block' }, records: [block('d-1')], withExisting: true },
             { content: { title: 'Broken' }, failure: 'Parcel coverage is unavailable.' }
         ]);
         // The present state is measured after the dialog opens; let its promise settle.

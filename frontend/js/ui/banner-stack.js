@@ -1,4 +1,4 @@
-// The one home for persistent notices (ephemerals.md): a parcel or building source that failed,
+// The one home for persistent notices (design-language.md, Messages): a parcel or building source that failed,
 // another tab holding this city, the explore banner. They mount in one stack under the top row of
 // controls that reads as one card, each banner a section of it; the notices (js/ui-helpers.js)
 // move below it through --cb-banner-stack-height, set on the map container as the stack grows

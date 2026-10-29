@@ -230,3 +230,17 @@ describe('replacement with a whole multipart cadastral parcel', () => {
         expect(fabric.snapshot().parcelIds.sort()).toEqual(['HR-M#cadastre-1', 'HR-M#cadastre-2']);
     });
 });
+
+describe('which cadastral parcels hold a vertex', () => {
+    it('answers by the rule a replacement is checked with: inside, or on the boundary within tolerance', async () => {
+        const fabric = createLiveParcelFabric();
+        await commit(fabric, mutation => mutation.seedCadastre([box('HR-A', 15, 45, 15.001, 45.001), box('HR-B', 15.001, 45, 15.002, 45.001)]), { kind: 'ground-load' });
+        const mutation = fabric.beginMutation({ kind: 'proposal-apply' });
+        try {
+            expect(mutation.cadastreIdsHolding([15.0015, 45.0005], ['HR-A', 'HR-B'])).toEqual(['HR-B']);
+            // A vertex 1 cm past HR-A's east edge still belongs to HR-A (VERTEX_TOLERANCE_M), and lies in HR-B.
+            expect(mutation.cadastreIdsHolding([15.00100013, 45.0005], ['HR-A', 'HR-B'])).toEqual(['HR-A', 'HR-B']);
+            expect(mutation.cadastreIdsHolding([15.003, 45.0005], ['HR-A', 'HR-B', 'HR-X'])).toEqual([]);
+        } finally { mutation.rollback(); }
+    });
+});

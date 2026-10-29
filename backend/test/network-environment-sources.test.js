@@ -75,7 +75,7 @@ describe('network and environment adapter dispatch', () => {
         app.use(express.json());
         const sources = setupDecorRoute(app, { query: vi.fn() }, { waterProvider });
         const geometry = { type: 'Point', coordinates: [1, 2] };
-        const res = await request(app).post('/decor/water').send({ geometry, buffer_meters: 80 });
+        const res = await request(app).get('/decor/water').query({ bbox: '1,2,1,2', buffer_meters: '80' });
         expect(res.status).toBe(200);
         expect(res.body).toEqual(result);
         expect(waterProvider.near).toHaveBeenCalledExactlyOnceWith(geometry, 80);

@@ -1,7 +1,7 @@
 <!-- Practical entry point for local development and documentation/media maintenance. -->
 # Local development
 
-[Overview](../readme.md) · [Documentation index](README.md) · [Test scope](TEST.md)
+[Overview](../readme.md) · [Documentation index](README.md) · [Test scope](#verify-a-change)
 
 ## Choose the code you need
 
@@ -105,7 +105,63 @@ cd backend
 npx vitest run test/product-guides.test.js
 ```
 
-See [TEST.md](TEST.md) for browser fixtures, database-backed checks and their limitations. An entire suite is a separate, potentially expensive run; choose it deliberately rather than treating it as a quick smoke check. Browser fixtures with mocked APIs do not verify production data or live wallet transactions.
+Name the test files by hand and run backend tests from `backend/`. An entire suite is a separate,
+potentially expensive run; choose it deliberately rather than treating it as a quick smoke check.
+
+### Test layers
+
+| Layer | Tooling and location | Targeted run | Whole suite |
+| --- | --- | --- | --- |
+| Backend API and frontend characterization | Vitest and Supertest in `backend/test/`; Node test runner for `*.node.test.js` (`backend/scripts/run-node-tests.mjs`, two files at a time) | `cd backend && npx vitest run test/<file>.test.js` | `cd backend && npm test` |
+| Browser | Playwright in `e2e/tests/`, local frontend with fixture-backed API responses | `cd e2e && npx playwright test tests/<file>.spec.ts` | `cd e2e && npm test` (headless) or `npm run test:headed`; tagged subsets `test:smoke`, `test:core`, `test:features` |
+| Feature and control inventories | `e2e/feature-inventory.json`, `e2e/control-contract.json` | `cd e2e && npm run check:features`, `npm run check:controls` | |
+| EVM contracts | Foundry in `blockchain/forge-test/` (Hardhat tooling remains but holds no regression coverage) | | `cd blockchain && forge test` |
+| Solana programs | Anchor and TypeScript in `blockchain/solana/tests/`, against a local validator | | `cd blockchain/solana && yarn test` |
+| Production parcel smoke | `backend/scripts/smoke-production-bbox.mjs`, read-only | `cd backend && npm run smoke:prod:parcels` | |
+
+### Resumable test runs
+
+A whole-suite run can be named, and then continues instead of starting over when it is killed:
+the runner records every finished unit as it ends, and running it again under the same name skips
+what is recorded. Name every whole-suite run.
+
+| Suite | Named run | Unit recorded | Ledger |
+| --- | --- | --- | --- |
+| Vitest | `cd backend && TEST_RUN=<name> npm run test:unit` | test file | `backend/test-runs/<name>/vitest.jsonl` |
+| Node test runner | `cd backend && TEST_RUN=<name> npm run test:node` | test file | `backend/test-runs/<name>/node.jsonl` |
+| Playwright | `cd e2e && node scripts/run-resumable.mjs <name> [playwright args]` | test | `e2e/test-runs/<name>/playwright.jsonl` |
+| Controls coverage | `cd e2e && TEST_RUN=<name> npm run test:controls` | test, with its control events | `e2e/test-runs/<name>/playwright.controls.jsonl` |
+
+- A unit counts as finished when it passed, failed, timed out or was skipped. A unit that was
+  running when the run was killed is not recorded and runs again; failures are not rerun (use a new
+  name, or Playwright's `--last-failed`, for that).
+- Every part ends with a summary across all parts, and its exit code is non-zero when any part
+  had a failure. The controls report is built from the ledger, so it covers every part.
+- Playwright runs need the wrapper, which passes the finished tests back as `--test-list-invert`;
+  `TEST_RUN` without it is refused. An explicit `--reporter=<name>` keeps the ledger reporter.
+- A failed Playwright test keeps its error messages and artefact paths in the ledger, and each part
+  writes artefacts to its own folder (`<output>/playwright-<start time>`), because Playwright empties
+  its output folder at the start of a run.
+- A new name starts a fresh run. Delete `test-runs/<name>/` to reuse a name from the start.
+
+### What the tests do not establish
+
+- Browser specs check user actions and observable UI, map-layer, storage, geometry and request
+  effects. Their API responses are fixtures and their wallet providers and RPC are mocked, so they
+  do not verify production data, real wallet signing, RPC availability or devnet transactions.
+  Real chain behaviour uses the local validator or the explicitly opt-in devnet path in the
+  [hackathon build guide](hackathon-build.md).
+- The feature inventory check confirms that the command registry and its index agree. Only a
+  behavioral assertion in a passing run shows that a command works.
+- The production parcel smoke checks `/health` and `/parcels?bbox=...` (response shape, CORS header,
+  timings and a small concurrent burst). It does not establish broad production API parity.
+- Visual regression and load testing are deliberately out of scope; accessibility testing is not
+  set up yet.
+
+Known gaps: read-only live checks for critical endpoints beyond the parcel bbox; one real,
+low-value devnet transaction lifecycle verified apart from the mocked browser specs; documented
+prerequisites for skipped cases; and browser-global calculations that are still tested through DOM
+or script globals rather than as pure modules.
 
 ### MCP parity check
 
@@ -160,6 +216,20 @@ discovery (`imports.furnitureKinds`/`furnitureLimits`, `public-spaces.furnitureK
 `backend/test/mcp-assets.test.js` (upload, limits, upload-then-patch of a drafted park) and
 `backend/test/mcp-edit.test.js` (normalization and refused kinds), each confirmed red with its
 check removed, with `mcp-discovery` and `mcp-agent-boundary` passing.
+
+### Park enclosures and play equipment: MCP parity (2026-10-29)
+
+The park editor's Fenced area, Gate and Fence the whole park tools, the fenced area's card (fence
+style and use) and the Swing, Seesaw and Slide tools write `decorationDesign.enclosures` and
+`swings`/`seesaws`/`slides`, the records an agent patches with `ugt_edit_design`. No MCP tool was
+added. `intentEditing` checks each enclosure with the shared `ParkEnclosures.enclosureIssue` and
+keeps a ring inside the park (`enclosure-outside`); `normalizeSpaceFurniture` normalizes both with
+`ParkEnclosures` and refuses them on squares (`furniture-kind-not-allowed`); swing, seesaw and slide
+joined `FurnitureModels.KINDS_BY_STRUCTURE.park`, so `ugt_import_model` furniture uploads and
+discovery list them. Discovery's `public-spaces` entry names the fences and uses, and
+[MCP editing](mcp-editing.md) documents the records. Verified by headless unit tests
+`backend/test/mcp-edit.test.js` (patching fenced areas and equipment, and each refusal) and
+`backend/test/mcp-discovery.test.js`.
 
 ### Tree height steps and pavement trees: MCP parity (2026-10-28)
 
@@ -329,6 +399,20 @@ The deployed guide sources and [current packaged media](https://github.com/Pogla
 Use the intended branch’s `frontend/deploy-frontend.sh` after committing and pushing the reviewed changes. The protocol branch supports a `BRANCH` override; inspect the entrypoint before running it. A normal frontend deploy builds and mirrors a complete release. A documentation-only publication must include its CSS and media before swapping HTML, and the committed files must also reach the production branch so a later release preserves them.
 
 Verify the served HTML, captions, media content types and byte-range playback after publication. A successful upload alone does not establish that the CDN serves the new files.
+
+### Newer-deployment check
+
+Settings → Information shows the running build, which is the deployment-stamped `__BUILD_INFO`, and
+a Check for updates button. `frontend/js/ui/app-updates.js` reads the same-origin `release.json`
+with a fresh query parameter, `no-store` and a 15-second timeout, and validates its component,
+schema, deployment counter, build ID and date. A larger deployment counter is an update, including
+a redeployed rollback; an invalid or older response is a failed check and never reports the tab as
+current. Deployed tabs check at startup, every five minutes while visible and on returning to the
+tab, and overlapping checks share one request. An update shows a notice in the feedback stack.
+Reloading is always explicit, uses the ordinary browser reload and is refused while an editor, road
+drawing, blocking dialog or busy control is active. Local development builds are labelled
+Development build and do not poll. `AppUpdates.check()` and `snapshot()` give browser agents the
+same read-only state; no authored record or MCP operation is involved.
 
 
 ## Verified local preview links

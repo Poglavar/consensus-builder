@@ -77,10 +77,8 @@ test.describe('Settings maintenance @features', () => {
     await expect(page.locator('body')).toHaveClass(/debug-mode/);
     await openResets(page);
     await expect(page.locator('#settings-sheet [data-section="parcels"] .btn-danger')).toBeVisible();
-
-    const clearProposals = page.locator('#settings-sheet [data-section="proposals"] button.btn-danger');
-    await clearProposals.click();
-    await expect(page.locator('#floating-status-text')).toContainText(/Cleared .*proposal/i);
+    // Designs are deleted from their list (Lists panel), not from Settings, since bfc91e9bf.
+    await expect(page.locator('#settings-sheet [data-section="proposals"]')).toHaveCount(0);
 
     const wipe = page.locator('#wipeLocalDataButton');
     await wipe.click();

@@ -716,3 +716,48 @@ describe('a clip the sweep line cannot do', () => {
         expect(() => arrangement.arrangementOf(PARCEL, PARCEL_ID, [EAST_WEST])).toThrow(/sweep line/);
     });
 });
+
+// A road entering a parcel across a shared cadastral border: Zagreb 3018 under a road coming in from
+// 2092, both as the API served them. The remainder used to come back as the whole parcel with the
+// road as a HOLE: the take's hit, snapped to the clip grid, sat 0.05 mm inside the border, and that
+// sliver closed the notch. In a Block's site the hairline doubled the shared edge, and the setback
+// opened a channel along it.
+describe('a road entering a parcel across a shared border (real Zagreb geometry)', () => {
+    const fixture = require('./fixtures/road-into-parcel-3018.json');
+    const ROAD = { id: 'road', geometry: fixture.road };
+    const ringsOf = geometry => (geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates);
+    const key = position => position.join(',');
+
+    beforeAll(() => { globalThis.turf = turf; });
+
+    it('cuts the parcel into two remainders without holes, on the road piece\'s own crossing points', () => {
+        const { pieces } = arrangement.arrangementOf(turf.feature(fixture.parcel3018), 'HR-1-3018', [ROAD]);
+        expect(kinds(pieces)).toEqual({ road: 1, remainder: 2 });
+        pieces.forEach(piece => ringsOf(piece.geometry).forEach(rings => expect(rings).toHaveLength(1)));
+        const road = pieces.find(piece => piece.kind === 'road');
+        const roadVertices = new Set(road.geometry.coordinates[0].map(key));
+        const roadLines = turf.flatten(turf.polygonToLine(turf.feature(road.geometry))).features;
+        // Every remainder vertex on the road's edge IS a vertex of the road piece: nothing between them.
+        let onSeam = 0;
+        pieces.filter(piece => piece.kind === 'remainder').forEach(piece => turf.explode(turf.feature(piece.geometry)).features.forEach(vertex => {
+            const toRoad = Math.min(...roadLines.map(line => turf.pointToLineDistance(vertex, line, { units: 'meters' })));
+            if (toRoad > 0.5) return;
+            onSeam += 1;
+            expect(roadVertices.has(key(vertex.geometry.coordinates))).toBe(true);
+        }));
+        expect(onSeam).toBeGreaterThanOrEqual(4);
+    });
+
+    it('keeps the border the two parcels share exact, so their remainders union without a seam', () => {
+        const land = [];
+        for (const [id, geometry] of [['HR-1-3018', fixture.parcel3018], ['HR-1-2092', fixture.parcel2092]]) {
+            arrangement.arrangementOf(turf.feature(geometry), id, [ROAD]).pieces
+                .filter(piece => piece.kind === 'remainder')
+                .forEach(piece => land.push(turf.feature(piece.geometry)));
+        }
+        const union = land.reduce((acc, piece) => (acc ? turf.union(acc, piece) : piece), null);
+        // North of the road and south of it: two rings, no hole and no doubled edge along the border.
+        expect(ringsOf(union.geometry).map(rings => rings.length)).toEqual([1, 1]);
+        expect(turf.area(union)).toBeCloseTo(land.reduce((sum, piece) => sum + turf.area(piece), 0), 0);
+    });
+});

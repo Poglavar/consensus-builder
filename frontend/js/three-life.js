@@ -1,6 +1,7 @@
 // Life renderer for the 3D model view: draws a life-agents simulation (life/life-agents.js) as a
 // handful of InstancedMesh draws — vehicle bodies, glass and wheels; person heads, bodies, arms and
-// legs — and advances it from three-mode's frame hook. The group works in TRUE metres and is mounted
+// legs; at dusk and night headlamps, tail lamps and the pool of light ahead of each vehicle — and
+// advances it from three-mode's frame hook. The group works in TRUE metres and is mounted
 // with scale (k, k, 1) because the scene's XY is Mercator-inflated while Z is metric. Matrix writes go
 // straight into the instance attribute arrays; the matrix maths is pure and exported for tests.
 (function (root, factory) {
@@ -109,6 +110,64 @@
         };
     }
 
+    // Lamps on a vehicle (metres, vehicle frame; box parts with z from oz up): two headlamps on the
+    // front face and two tail lamps on the back, one of each on a motorcycle. Each stands a few
+    // centimetres proud of the body so it is never buried in it.
+    const LAMP_DEPTH_M = 0.06;
+    function vehicleLamps(v) {
+        const front = v.len / 2 + LAMP_DEPTH_M / 2 - 0.01;
+        const back = -front;
+        if (v.kind === 'moto') {
+            return [
+                { ox: front, oy: 0, oz: 0.72, sx: LAMP_DEPTH_M, sy: 0.16, sz: 0.14, head: true },
+                { ox: back, oy: 0, oz: 0.7, sx: LAMP_DEPTH_M, sy: 0.12, sz: 0.08, head: false }
+            ];
+        }
+        const bus = v.kind === 'bus';
+        const y = v.width / 2 - (bus ? 0.35 : 0.3);
+        const headZ = bus ? 0.75 : 0.6;
+        const tailZ = bus ? 0.9 : 0.66;
+        return [
+            { ox: front, oy: y, oz: headZ, sx: LAMP_DEPTH_M, sy: 0.3, sz: 0.14, head: true },
+            { ox: front, oy: -y, oz: headZ, sx: LAMP_DEPTH_M, sy: 0.3, sz: 0.14, head: true },
+            { ox: back, oy: y, oz: tailZ, sx: LAMP_DEPTH_M, sy: 0.22, sz: 0.14, head: false },
+            { ox: back, oy: -y, oz: tailZ, sx: LAMP_DEPTH_M, sy: 0.22, sz: 0.14, head: false }
+        ];
+    }
+    const LAMPS_PER_VEHICLE = 4;
+
+    // The pool of headlight on the road ahead: a flat patch from the front bumper, `sx` long and
+    // `sy` wide at its far end (the pool geometry spans x 0…1 and y ±0.5), just above the road.
+    function headlightPool(v) {
+        if (v.kind === 'moto') return { ox: v.len / 2, oy: 0, oz: 0.03, sx: 11, sy: 4.5 };
+        if (v.kind === 'bus') return { ox: v.len / 2, oy: 0, oz: 0.03, sx: 18, sy: 8 };
+        return { ox: v.len / 2, oy: 0, oz: 0.03, sx: 16, sy: 7 };
+    }
+
+    // Alpha of the pool texture, `size`×`size`, row-major with u (forward, 0 at the bumper) along a
+    // row and v across: a beam widening from the lamps, brightest a few metres out and fading to
+    // nothing at its far end and sides. Values 0…1.
+    function poolAlpha(size) {
+        const out = new Float32Array(size * size);
+        const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+        for (let row = 0; row < size; row++) {
+            const v = (row + 0.5) / size;
+            for (let col = 0; col < size; col++) {
+                const u = (col + 0.5) / size;
+                const halfWidth = 0.18 + 0.32 * u;
+                const across = Math.abs(v - 0.5) / halfWidth;
+                const side = 1 - smooth(0.55, 1, across);
+                const along = smooth(0, 0.12, u) * Math.pow(1 - u, 1.6);
+                out[row * size + col] = side * along;
+            }
+        }
+        return out;
+    }
+    const POOL_TEXTURE_SIZE = 64;
+    const POOL_OPACITY = 0.45;          // at full night
+    const HEADLAMP_COLOR = 0xfff3d6;
+    const TAIL_LAMP_COLOR = 0xff2a1a;
+
     const RIDER_SKIN = [0xf1c9a5, 0xe0ac69, 0xc68642, 0x8d5524];
     const RIDER_SHIRT = [0x1f1f1f, 0x2f4f7f, 0x8b1e3f, 0x5b5b5b];
 
@@ -130,6 +189,22 @@
             glass: new THREE.MeshLambertMaterial({ color: 0x1b2a3a }),
             wheel: new THREE.MeshLambertMaterial({ color: 0x1c1c1c })
         };
+        // Lamps glow regardless of the scene's light; the pool adds light to whatever road it lies on.
+        materials.lamp = new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false });
+        const poolTexels = poolAlpha(POOL_TEXTURE_SIZE);
+        const poolData = new Uint8Array(poolTexels.length * 4);
+        poolTexels.forEach((value, i) => poolData.fill(Math.round(value * 255), i * 4, i * 4 + 4));
+        const poolTexture = new THREE.DataTexture(poolData, POOL_TEXTURE_SIZE, POOL_TEXTURE_SIZE, THREE.RGBAFormat);
+        poolTexture.magFilter = THREE.LinearFilter;
+        poolTexture.minFilter = THREE.LinearFilter;
+        poolTexture.needsUpdate = true;
+        materials.pool = new THREE.MeshBasicMaterial({
+            color: HEADLAMP_COLOR, alphaMap: poolTexture, transparent: true, opacity: 0,
+            blending: THREE.AdditiveBlending, depthWrite: false,
+            polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2
+        });
+        geometries.pool = new THREE.PlaneGeometry(1, 1).translate(0.5, 0, 0);
+        let night = 0;
 
         let sim = null;
         let meshes = null;
@@ -172,9 +247,17 @@
                 heads: instanced(geometries.head, materials.tinted, figures),
                 torsos: instanced(geometries.column, materials.tinted, figures),
                 arms: instanced(geometries.limb, materials.tinted, figures * 2),
-                legs: instanced(geometries.limb, materials.tinted, figures * 2)
+                legs: instanced(geometries.limb, materials.tinted, figures * 2),
+                lamps: instanced(geometries.box, materials.lamp, vehicles.length * LAMPS_PER_VEHICLE),
+                pools: instanced(geometries.pool, materials.pool, vehicles.length)
             };
-            vehicles.forEach((v, i) => meshes.bodies.setColorAt(i, color.setHex(v.color)));
+            meshes.pools.renderOrder = 1;
+            vehicles.forEach((v, i) => {
+                meshes.bodies.setColorAt(i, color.setHex(v.color));
+                for (let slot = 0; slot < LAMPS_PER_VEHICLE; slot++) {
+                    meshes.lamps.setColorAt(i * LAMPS_PER_VEHICLE + slot, color.setHex(slot < 2 ? HEADLAMP_COLOR : TAIL_LAMP_COLOR));
+                }
+            });
             people.forEach((p, i) => {
                 meshes.heads.setColorAt(i, color.setHex(p.colors.skin));
                 meshes.torsos.setColorAt(i, color.setHex(p.colors.shirt));
@@ -199,7 +282,40 @@
                 group.add(mesh);
             });
             lastNow = 0;
+            applyNight();
             writeAll();
+        }
+
+        function applyNight() {
+            if (!meshes) return;
+            meshes.lamps.visible = night > 0;
+            meshes.pools.visible = night > 0;
+            materials.pool.opacity = POOL_OPACITY * night;
+        }
+
+        // How dark it is, 0 (day: no lamps, nothing drawn) … 1 (night: full beams).
+        function setNight(strength) {
+            const next = Number.isFinite(strength) ? Math.min(1, Math.max(0, strength)) : 0;
+            if (next === night) return;
+            const switchedOn = night === 0 && next > 0;
+            night = next;
+            applyNight();
+            if (switchedOn) writeAll();
+        }
+
+        // Lamps and pools ride on the vehicle; written only while they are shown.
+        function writeLamps(v, i) {
+            const lamps = meshes.lamps.instanceMatrix.array;
+            const parts = vehicleLamps(v);
+            for (let slot = 0; slot < LAMPS_PER_VEHICLE; slot++) {
+                const offset = (i * LAMPS_PER_VEHICLE + slot) * 16;
+                // A motorcycle's two lamps fill the head slot 0 and the tail slot 2.
+                const lamp = v.kind === 'moto' ? (slot === 0 ? parts[0] : slot === 2 ? parts[1] : null) : parts[slot];
+                if (!lamp) { writeHidden(lamps, offset); continue; }
+                writeMatrix(lamps, offset, v.x, v.y, v.z, v.heading, 0, lamp.sx, lamp.sy, lamp.sz, lamp.ox, lamp.oy, lamp.oz);
+            }
+            const pool = headlightPool(v);
+            writeMatrix(meshes.pools.instanceMatrix.array, i * 16, v.x, v.y, v.z, v.heading, 0, pool.sx, pool.sy, 1, pool.ox, pool.oy, pool.oz);
         }
 
         function writeFigure(index, x, y, z, yaw, parts) {
@@ -242,12 +358,14 @@
                     writeMatrix(wheels, slot, v.x + c * wheel.ox - s * wheel.oy, v.y + s * wheel.ox + c * wheel.oy, v.z, yaw, 0, wheel.r, wheel.w, wheel.r, 0, 0, wheel.oz);
                 }
                 if (parts.rider) { writeFigure(riderIndex, v.x, v.y, v.z, v.heading, rider); riderIndex++; }
+                if (night > 0) writeLamps(v, i);
             });
             sim.people.forEach((p, i) => {
                 const swing = Math.sin(p.stride) * LIMB_SWING_RAD * (p.amp == null ? 1 : p.amp) * (p.swing == null ? 1 : p.swing);
                 writeFigure(i, p.x, p.y, p.z, p.heading, personParts(p.height, swing, !!p.child));
             });
-            Object.values(m).forEach(mesh => { mesh.instanceMatrix.needsUpdate = true; });
+            // Hidden lamps are not rewritten, so they need no upload either.
+            Object.values(m).forEach(mesh => { if (mesh.visible) mesh.instanceMatrix.needsUpdate = true; });
         }
 
         // Frame hook body: advance the simulation by real elapsed time (clamped) and rewrite poses.
@@ -269,16 +387,17 @@
             clear();
             Object.values(geometries).forEach(g => { try { g.dispose(); } catch (_) { } });
             Object.values(materials).forEach(mat => { try { mat.dispose(); } catch (_) { } });
+            try { poolTexture.dispose(); } catch (_) { }
         }
 
         return {
-            group, setSimulation, onFrame, clear, dispose,
+            group, setSimulation, setNight, onFrame, clear, dispose,
             stats: () => ({
-                frameMs: lastFrameMs, simMs: lastSimMs, drawCalls: meshes ? Object.keys(meshes).length : 0,
+                frameMs: lastFrameMs, simMs: lastSimMs, drawCalls: meshes ? Object.values(meshes).filter(mesh => mesh.visible).length : 0,
                 vehicles: sim ? sim.vehicles.length : 0, people: sim ? sim.people.length : 0
             })
         };
     }
 
-    return { create, writeMatrix, writeHidden, vehicleParts, personParts, riderParts, LIMB_SWING_RAD };
+    return { create, writeMatrix, writeHidden, vehicleParts, vehicleLamps, headlightPool, poolAlpha, personParts, riderParts, LIMB_SWING_RAD };
 });

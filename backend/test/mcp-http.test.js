@@ -19,7 +19,7 @@ afterEach(async () => { await Promise.all(clients.splice(0).map(client => client
 async function host(options = {}) {
     const storeDirectory = mkdtempSync(join(tmpdir(), 'mcp-http-')); directories.push(storeDirectory);
     const service = createMcpHttpService({ storeDirectory, env: {}, fetchImpl: async () => new Response(JSON.stringify({ sources: [] })), ...options });
-    services.push(service); service.http.listen(0, '127.0.0.1'); await once(service.http, 'listening');
+    services.push(service); service.http.listen(0); await once(service.http, 'listening');
     return `http://127.0.0.1:${service.http.address().port}`;
 }
 describe('hosted MCP HTTP', () => {
@@ -28,7 +28,7 @@ describe('hosted MCP HTTP', () => {
         const design = { schema: 'design/v1', title: 'Private draft', geometry: { coordinates: [1, 2, 3] } };
         const cid = cidOfObject(design);
         const base = await host({ now: () => now, previewTtlMs: 100, previewOrigin: 'https://preview.example', factory: options => createUrbanGameTheoryMcpServer({ ...options, mode: 'hosted', env: {}, tools: {
-            draftSpace: async () => ({ ...await previewArtifact({ design }), design, cid })
+            draftSpace: async () => ({ ...await previewArtifact({ design }), design, cid, plan: null, placement: { status: 'placed' }, consequences: { removed: [], junctions: [], cuts: [] } })
         } }) });
         const client = new Client({ name: 'private-link', version: '1' }); clients.push(client);
         await client.connect(new StreamableHTTPClientTransport(new URL(`${base}/mcp`)));
@@ -134,7 +134,7 @@ describe('hosted MCP HTTP', () => {
         const storeDirectory = mkdtempSync(join(tmpdir(), 'mcp-drain-')); directories.push(storeDirectory);
         const options = { storeDirectory, env: {}, previewOrigin: 'https://preview.example' };
         const base = await host({ ...options, factory: settings => createUrbanGameTheoryMcpServer({ ...settings, mode: 'hosted', env: {}, tools: {
-            draftSpace: async () => { entered(); await pending; return { design, cid: cidOfObject(design), ...await previewArtifact({ design }) }; }
+            draftSpace: async () => { entered(); await pending; return { design, cid: cidOfObject(design), plan: null, placement: { status: 'placed' }, consequences: { removed: [], junctions: [], cuts: [] }, ...await previewArtifact({ design }) }; }
         } }) });
         const service = services.at(-1);
         const client = new Client({ name: 'shutdown-draft', version: '1' }); clients.push(client);

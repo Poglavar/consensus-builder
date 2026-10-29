@@ -65,6 +65,20 @@ describe('betting asset trading client', () => {
         expect(tokenKeys[0]).toContain('https://api.example::agent-a');
     });
 
+    it('asks for every other city with scope=other, and only then', async () => {
+        const urls = [];
+        const fetch = vi.fn(async url => {
+            urls.push(String(url));
+            if (String(url).includes('/bets/points/markets?')) return response({ markets: {}, subjects: {} });
+            return response({ contests: [] });
+        });
+        const { api } = harness({ fetch });
+        await api.loadCity('rijeka', { scope: 'other' });
+        await api.loadCity('rijeka');
+        const lists = urls.filter(url => url.includes('/markets?city=')).map(url => new URL(url).searchParams);
+        expect(lists.map(params => [params.get('city'), params.get('scope')])).toEqual([['rijeka', 'other'], ['rijeka', null]]);
+    });
+
     it('keeps credentials isolated by profile, backend, and simulation run', async () => {
         const storage = makeStorage();
         const tokens = [];

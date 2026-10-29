@@ -106,6 +106,13 @@
     color: var(--cb-danger-soft-ink);
 }
 
+.agreement-panel-note--warning {
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+}
+
+.agreement-panel-status-text { margin: 0; }
+
 /* A proposed agreement (M2): its CID, Copy link and the index's status on one wrapping row, then
    where its parties decide (the owners' card, proposals/approval-panel.js, or the community note). */
 .agreement-panel-published {

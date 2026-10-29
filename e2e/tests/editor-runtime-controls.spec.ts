@@ -60,7 +60,7 @@ test.describe('Leaflet runtime control effects @features', () => {
     await openCity(page);
     await drawCorridor(page, 'road');
     await openParcelTabAt(page, 15.9822, 45.80045, 'propose-tab');
-    await page.locator('#parcel-info-panel .parcel-transport-btn--bus').click();
+    await page.locator('#parcel-info-panel .parcel-transport-btn--roadStation').click();
     await clickMapPoint(page, 15.9822, 45.80025);
     const station = await page.evaluate(() => {
       const proposal = (window as any).proposalStorage.getAllProposals()

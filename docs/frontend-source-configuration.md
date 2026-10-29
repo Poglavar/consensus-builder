@@ -78,8 +78,3 @@ of consumer city. Scenery uses geometry-scoped data without a city configuration
 
 Offline publication/agent CLI consumers can read the frontend's money settings through
 `backend/scripts/lib/frontend-city-money.mjs`; the HTTP/MCP service does not infer currency that way.
-
-## Verification
-
-Targeted checks and local source read-back are recorded in
-[source-configuration-validation-2026-10-23.md](source-configuration-validation-2026-10-23.md).

@@ -227,7 +227,9 @@ describe('atomic corridor authoring plan', () => {
     it('refreshes every peer at a new edge join in a three-way junction', () => {
         const eastWest = corridor('east-west', [[P(0, -5), P(0, 5)]]);
         const northSouth = corridor('north-south', [[P(-5, 0), P(5, 0)]]);
-        const existing = authoring.planCorridorComposition([eastWest, northSouth], { geometry });
+        // The second road is drawn across the first, as on the map.
+        const crossed = plan(northSouth, [eastWest]);
+        const existing = [{ ...eastWest, roadProposal: { definition: crossed.existingChanges[0].definition } }, crossed.proposal];
         const branch = corridor(null, [[P(5, 5), P(0, 0)]]);
 
         const result = planEdit(branch, branch, existing);

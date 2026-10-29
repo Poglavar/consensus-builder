@@ -86,16 +86,16 @@ async function proposeOwnerAgreement(page: Page, memberKeys: string[], approvalC
     const designCid = w.DesignRecord.cidOf(design);
     const planContent = w.PlanRecord.create('Lens-backed owner agreement', [designCid], w.MapShare.capture(w));
     const plan = { cid: w.Cid.cidOfObject(planContent), content: planContent };
-    const holder = (ownerKey: string, share: number) => ({ ownerKey, displayName: ownerKey, share });
     const record = {
       schema: 'agreement/v1', id: 'ag-0123456789abcdef0123456789abcdef', title: 'Lens-backed owner agreement',
       city: w.CityConfigManager.getCurrentCityId(), createdAt,
       plan,
       designs: [{ proposalId: designId, title: design.title, goal: design.goal, cid: designCid }],
+      // Input parcels are abstract parties; their owners are in approvalConfig's rights snapshot.
       inputs: { parcels: [
-        { parcelId: parcels.a, areaM2: 100, holders: [holder('owner-a', 1)] },
-        { parcelId: parcels.b, areaM2: 50, holders: [holder('owner-b', 1)] },
-        { parcelId: parcels.c, areaM2: 25, holders: [holder('owner-c', 0.5), holder('owner-d', 0.5)] }
+        { parcelId: parcels.a, areaM2: 100 },
+        { parcelId: parcels.b, areaM2: 50 },
+        { parcelId: parcels.c, areaM2: 25 }
       ], openGroundM2: 0 },
       outputs: [], allocations: [], money: { currency: 'EUR', lines: [] },
       rule: { electorate: 'owners', binding: true, approvalConfig, lens: members },
@@ -514,9 +514,12 @@ test('the review shows what an owner contributes and signs, on a phone', async (
     await w.i18n.setLanguage('es');
     w.ProposalApprovalPanel.renderCards();
   });
-  await card(page).scrollIntoViewIfNeeded();
-  expect(await card(page).evaluate(element => element.scrollWidth <= element.clientWidth + 1),
-    'localized approval status must fit a 320px viewport').toBe(true);
+  // The language change re-renders the agreement panel as well, which can replace the card mid-scroll.
+  await expect(async () => {
+    await card(page).scrollIntoViewIfNeeded({ timeout: 2_000 });
+    expect(await card(page).evaluate(element => element.scrollWidth <= element.clientWidth + 1),
+      'localized approval status must fit a 320px viewport').toBe(true);
+  }).toPass();
   await screenshot(page, testInfo, 'approval-status-es-320');
 });
 
@@ -547,7 +550,6 @@ test('a scheme with an authority: owner support by area, then the municipality a
 
   await openAgreement(page, agreement);
   await expect(card(page).locator('[data-approval-regime="es-ct-basic"]')).toContainText('Catalonia — basic compensation');
-  await expect(card(page).locator('[data-approval-regime="es-ct-basic"]')).toContainText('Research template');
   await expect(card(page).locator('.approval-card__rule')).toHaveText('Configured approval rules require more than 1/2 of the area and the municipality’s approval of the compensation project.');
   await expect(card(page).locator('[data-approval-meter="area"]')).toContainText('Needs more than 87.5');
   // Heads are not a test here: owners are shown, not counted.

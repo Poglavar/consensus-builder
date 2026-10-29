@@ -18,7 +18,7 @@ describe('MCP production routing', () => {
     it('launches the guarded CLI as a real credential-isolated listener', async () => {
         expect(mcp.interpreter).toBe('none');
         const reserved = createServer();
-        reserved.listen(0, '127.0.0.1');
+        reserved.listen(0);
         await once(reserved, 'listening');
         const listenPort = reserved.address().port;
         await new Promise(resolve => reserved.close(resolve));

@@ -121,7 +121,8 @@ describe('provider-independent pins', () => {
             return Buffer.concat([Buffer.from(UnixFS.unmarshal(node.Data).data || []), ...node.Links.map(link => payload(link.Hash))]);
         };
         expect(payload(root)).toEqual(source);
-    });
+    // The 1 MiB case chunks and hashes in JS (~1.5 s alone); under the parallel suite it outran 5 s.
+    }, 20000);
 
     it('uses the selected provider and independent gateway for both NFT image and metadata', async () => {
         const image = Buffer.from('iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA', 'base64');

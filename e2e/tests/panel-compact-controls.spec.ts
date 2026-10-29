@@ -27,10 +27,11 @@ async function addLocalProposal(page: import('@playwright/test').Page, key: stri
 
 async function openProposalFromList(page: import('@playwright/test').Page, proposalId: string): Promise<void> {
   await page.locator('#proposals-button').click();
-  const list = page.locator('#proposals-sheet .proposal-list-modal');
-  const row = list.locator(`.proposal-list-item[data-proposal-id="${proposalId}"]`);
+  // Lists (01268caee): a design row's title opens its details.
+  const list = page.locator('#proposals-sheet #proposal-list-host');
+  const row = list.locator(`.lists-item[data-list-id="${proposalId}"]`);
   await expect(row).toBeVisible();
-  await row.locator('.proposal-list-details-btn').click();
+  await row.locator('.lists-item__open').click();
   await expect(page.locator('#proposal-details-panel')).toBeVisible();
 }
 

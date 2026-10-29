@@ -131,19 +131,33 @@ test('Escape dismisses the bare-ground section', async ({ mockApi: page }) => {
   await expect(stack).toBeHidden();
 });
 
-for (const kind of ['road', 'tramStation', 'undergroundStation', 'elevatedStation']) {
+// Stations are two ground actions (1f2fae6e1): Road station places a bus stop, Track station asks
+// for the level (ground, elevated, underground) first.
+for (const kind of ['road', 'roadStation', 'tram', 'underground', 'elevated']) {
   test(`ground section ${kind} starts its real editor`, async ({ mockApi: page }) => {
     await openCity(page);
     await clickMapPoint(page, 15.98255, 45.80025);
-    await page.locator(`#click-stack [data-command="ground.${kind}"]`).click();
+    const command = kind === 'road' || kind === 'roadStation' ? kind : 'trackStation';
+    await page.locator(`#click-stack [data-command="ground.${command}"]`).click();
+    if (command === 'trackStation') {
+      // The stack stays behind the level chooser; placement closes it.
+      const chooser = page.getByRole('dialog', { name: 'Track station', exact: true });
+      await chooser.locator(`[data-station-level="${kind}"]`).click();
+      await expect(chooser).toBeHidden();
+    }
     await expect(page.locator('#click-stack')).toBeHidden();
     if (kind === 'road') {
       await expect(page.locator('#road-drawing-controls')).toBeVisible();
       await expect.poll(() => page.evaluate(() => (window as any).roadDrawingMode)).toBe(true);
     } else {
       await expect(page.locator('#station-placement-toolbar')).toBeVisible();
-      await expect(page.locator('#station-placement-status')).toContainText(kind === 'tramStation' ? /tram/i : kind === 'undergroundStation' ? /metro|underground/i : /elevated/i);
       await expect.poll(() => page.evaluate(() => (window as any).transitStationPlacementMode)).toBe(true);
+      // The carried station is the chosen type: its preview shows that type's icon.
+      const box = (await page.locator('#map').boundingBox())!;
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      const type = kind === 'roadStation' ? 'bus' : kind;
+      const icon = await page.evaluate(type => (window as any).TransitStationModels.specFor(type).icon, type);
+      await expect(page.locator('.transit-station-marker--preview span')).toHaveText(icon);
     }
   });
 }

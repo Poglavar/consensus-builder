@@ -223,7 +223,7 @@ describe.each(samples)('$city capital final batch runtime',s=>{
         expect(binding.parcels.map(row=>row.parcelId)).toEqual([f.id]);
         const previous=globalThis.CityConfigManager;globalThis.CityConfigManager=cities;
         try{expect(route.parcelIdToCityId(f.id)).toBe(s.city);}finally{globalThis.CityConfigManager=previous;}
-        const city=cities.getCityConfig(s.city);expect(city.parcels.sourceId).toBe(s.sourceId);expect(city.buildings.source).toBe('overture-tiles');
+        const city=cities.getCityConfig(s.city);expect(city.parcels.sourceId).toBe(s.sourceId);expect(city.buildings.source).toBe('osm');
         expect(city.projection.metricDefinition).toBeUndefined();
         for(const locale of ['en','es','hr','sr'])expect(JSON.parse(read('../../frontend/i18n/'+locale+'.json')).city.labels[s.city]).toBeTruthy();
     });

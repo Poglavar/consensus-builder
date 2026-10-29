@@ -132,9 +132,10 @@
                 bettable: Boolean(market && !market.resolved && chainStatus === 'active' && now < market.closesAt),
                 canSettle: Boolean(market && !market.resolved && (['executed', 'cancelled', 'expired'].includes(chainStatus) || chainStatus === 'active' && now >= market.closesAt + market.graceSeconds)) };
         }
-        async function loadCity(city, { fresh = false } = {}) {
+        // scope 'other': every city but `city`, each contest naming its own city.
+        async function loadCity(city, { fresh = false, scope = null } = {}) {
             const chosen = selected;
-            const response = await fetch(`${baseUrl()}/markets?${new URLSearchParams({ city, ...(fresh ? { fresh: '1' } : {}) })}`, { cache: 'no-store' });
+            const response = await fetch(`${baseUrl()}/markets?${new URLSearchParams({ city, ...(scope === 'other' ? { scope } : {}), ...(fresh ? { fresh: '1' } : {}) })}`, { cache: 'no-store' });
             if (!response.ok) throw error('Markets are unavailable.', 'MARKETS_UNAVAILABLE', response.status);
             const payload = await response.json();
             if (chosen === 'devnet-usdc') return { ...payload, asset: chosen };

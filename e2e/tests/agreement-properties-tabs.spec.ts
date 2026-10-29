@@ -12,8 +12,9 @@ for (const width of [1280, 390]) {
       const ids = w.AgreementDialog.inputParcelIds([design], fabric);
       const originals = (await w.CadastralParcelRepository.ensureIds(ids, { retainOnly: true })).features;
       const land = ground.derive({ designs: [design], fabric, originals: w.AgreementDialog.originalsById(originals, fabric.featureId),
-        ownerOf: ground.localHolders({ storage: w.PersistentStorage, agents: w.agentStorage }), area: (feature: any) => w.turf.area(feature) });
-      const ownerKey = land.inputs.parcels[0].holders[0].ownerKey;
+        area: (feature: any) => w.turf.area(feature) });
+      // The input parcel is its owners' abstract party; the agreement names no people.
+      const ownerKey = w.AgreementRecord.partyKey(land.inputs.parcels[0].parcelId);
       const saved = w.AgreementStore.save(w.AgreementRecord.settle({ schema: 'agreement/v1', id: w.AgreementRecord.newId(), title: 'Land agreement', city: 'zagreb',
         createdAt: new Date().toISOString(), plan: { cid: snapshot.cid, content: snapshot.content },
         designs: [{ proposalId: layoutId, title: design.title, goal: design.goal, cid: w.DesignRecord.cidOf(design) }],
@@ -48,7 +49,8 @@ for (const width of [1280, 390]) {
     const output = panel.locator('[data-agreement-inspect="output"]').first(); await output.click();
     await expect(output).toHaveAttribute('aria-pressed', 'true'); await expect(page.locator('path.agreement-map-focus').first()).toBeVisible();
     await panel.getByRole('tab', { name: /^Persons \(\d+\)$/ }).click();
-    await panel.locator('[data-agreement-inspect="person"]').first().click();
+    // The Persons tab's own row: Output parcels also names the party (it holds several pieces), but that tab is hidden now.
+    await panel.getByRole('tabpanel', { name: /^Persons \(\d+\)$/ }).locator('[data-agreement-inspect="person"]').first().click();
     expect(await page.locator('path.agreement-map-focus').count()).toBeGreaterThanOrEqual(3);
     await panel.getByRole('tab', { name: 'Rules', exact: true }).click();
     await expect(panel.getByRole('tabpanel', { name: 'Rules', exact: true })).toContainText('Decision rule');

@@ -20,6 +20,6 @@ export async function mockBuildingScene(page: Page): Promise<any[]> {
     await route.fulfill({ json: { buildings: buildings3D } });
   });
   await page.route('**/decor/layers**', route => route.fulfill({ json: { layers: [] } }));
-  await page.route('**/decor/near', route => route.fulfill({ json: { trees: [] } }));
+  await page.route(/\/decor\/near\?/, route => route.fulfill({ json: { trees: [] } }));
   return requests;
 }

@@ -127,7 +127,7 @@
         modal.querySelector('#building-upload-cancel').addEventListener('click', close);
         modal.querySelector('#building-upload-confirm').addEventListener('click', event => {
             const button = event.currentTarget;
-            if (!window.BusyControl || window.BusyControl.isBusy(button)) return;
+            if (window.BusyControl.isBusy(button)) return;
             window.BusyControl.track(button, confirmUpload);
         });
         modal.querySelector('#building-upload-file').addEventListener('change', onFileChosen);

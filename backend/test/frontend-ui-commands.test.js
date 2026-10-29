@@ -1,5 +1,5 @@
 // The UI command registry (frontend/js/ui/commands.js) and the floating shell that replaced the left
-// sidebar (frontend/js/ui/map-shell.js, UI-REWORK.md). The registry names every capability the map
+// sidebar (frontend/js/ui/map-shell.js, design-language.md). The registry names every capability the map
 // UI offers; these tests fail when a capability has nowhere to appear, when a control the old sidebar
 // held (and existing code still finds by id) goes missing from index.html, when an inline handler in
 // the sheets has no command, when a label is untranslated, and when the sidebar comes back.
@@ -60,10 +60,11 @@ const NOT_COMMANDS = {
     'planning-view-retry': 'retry the current source request after an error',
     'planning-tab-display': 'Buildings and massing sheet tab, handled by three-compare.js',
     'planning-tab-compare': 'Buildings and massing sheet tab, handled by three-compare.js',
-    'planning-compare-enable': 'model-view comparison view setting, handled by three-compare.js',
-    'planning-compare-left': 'model-view comparison view setting, handled by three-compare.js',
-    'planning-compare-right': 'model-view comparison view setting, handled by three-compare.js',
-    'planning-compare-swap': 'model-view comparison view setting, handled by three-compare.js',
+    'planning-compare-enable': 'comparison view setting, handled by three-compare.js',
+    'planning-compare-left': 'comparison view setting, handled by three-compare.js',
+    'planning-compare-right': 'comparison view setting, handled by three-compare.js',
+    'planning-compare-swap': 'comparison view setting, handled by three-compare.js',
+    'planning-compare-open-model': 'Compare tab link to the model view, handled by three-compare.js',
     'planning-open-model': 'same model navigation as mode-3d-toggle',
     areaMonitorUploadButton: 'permanently disabled (upload not built)',
     showClaimsCounts: 'permanently disabled (claims counts not built)',

@@ -8,7 +8,7 @@ trade and a complete devnet trading journey remain to be verified. No outside hu
 The San Francisco pair is still an intent, not a published market. See [the current contract](betting-lmsr-points.md)
 and [the two proposed Candlestick agreement bets](sf-agreement-bets.md).
 
-Release update (2026-10-02): the UI regression suite collects 253 headed tests across 64 specs; the complete 250-test run and 30 affected final checks passed, alongside 6,366 fast tests (6 existing skips). The 99-command inventory maps 47 specs. Fixture-backed HTTP/RPC tests cover the app workflows, while a fresh production/human-wallet journey remains a separate next step. Current SEO entry points are a vendor-free planning guide, descriptive metadata and a sitemap. See [TEST.md](TEST.md) and [next-steps.md](next-steps.md).
+Release update (2026-10-02): the UI regression suite collects 253 headed tests across 64 specs; the complete 250-test run and 30 affected final checks passed, alongside 6,366 fast tests (6 existing skips). The 99-command inventory maps 47 specs. Fixture-backed HTTP/RPC tests cover the app workflows, while a fresh production/human-wallet journey remains a separate next step. Current SEO entry points are a vendor-free planning guide, descriptive metadata and a sitemap. See [test scope](development.md#verify-a-change) and [remaining product work](streamline.md#remaining-product-work).
 
 **An Urban Game Theory project by Consensus Builder · Colosseum World's Fair 2026**
 

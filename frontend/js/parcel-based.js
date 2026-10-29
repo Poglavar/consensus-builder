@@ -55,6 +55,7 @@
     let currentMinFloors = DEFAULT_MIN_FLOORS;
     let currentMinFootprintM2 = DEFAULT_MIN_FOOTPRINT_M2;
     let currentMinPlotAreaM2 = DEFAULT_MIN_PLOT_AREA_M2;
+    let currentRuleExtras = {}; // balconies and slanted roof (UrbanRuleVariation.normalizeRuleExtras)
 
     // The variation seed for this design. Every house is derived from it, so the same seed always
     // redraws the same street — on reload, in a shared link, and in a server-rendered thumbnail.
@@ -184,7 +185,8 @@
             minFloors: currentMinFloors,
             minFootprintAreaM2: currentMinFootprintM2,
             minPlotAreaM2: currentMinPlotAreaM2,
-            floorHeightM: DEFAULT_FLOOR_HEIGHT
+            floorHeightM: DEFAULT_FLOOR_HEIGHT,
+            ...currentRuleExtras
         };
         return Variation ? Variation.normalizeParcelRule(params) : params;
     }
@@ -198,6 +200,7 @@
 
         const regenerate = document.getElementById('btn-parcelbased-regenerate');
         if (regenerate) regenerate.style.display = currentRuleKind === 'exact' ? 'none' : '';
+        if (Variation) Variation.syncExtrasControls(document, 'parcelbased', currentRuleExtras);
 
         // Min floors can never exceed the ceiling it sits under.
         const minFloorsSlider = document.getElementById('parcelbased-minfloors-slider');
@@ -782,6 +785,7 @@
                         </label>
                         <input type="range" id="parcelbased-minplot-slider" min="0" max="10000" value="${DEFAULT_MIN_PLOT_AREA_M2}" step="10">
                     </div>
+                    ${Variation ? Variation.extrasControlsMarkup('parcelbased') : ''}
                     <details class="on-map-editor__more-options">
                         <summary data-i18n-key="onMapEditor.moreOptions">${translateParcelBasedText('onMapEditor.moreOptions', 'More options')}</summary>
                         <div class="parameter-metrics">
@@ -915,6 +919,11 @@
                 generateBuildingsInModal();
             });
 
+            if (Variation) Variation.bindExtrasControls(document, 'parcelbased', extras => {
+                currentRuleExtras = extras;
+                generateBuildingsInModal();
+            });
+
             // No outside-click close: a stray click on the backdrop would throw the design away.
             // The editor is left only via the X (discard, after confirming) or Done (save).
 
@@ -930,6 +939,7 @@
         currentMinFloors = DEFAULT_MIN_FLOORS;
         currentMinFootprintM2 = DEFAULT_MIN_FOOTPRINT_M2;
         currentMinPlotAreaM2 = DEFAULT_MIN_PLOT_AREA_M2;
+        currentRuleExtras = {};
 
         // Restore a saved design over the defaults (e.g. a copied proposal). Geometry here is a
         // pure function of (rule, seed), so restoring both reproduces the design exactly — houses
@@ -948,6 +958,7 @@
             restore(rule.minFloors, v => { currentMinFloors = Math.max(1, v); });
             restore(rule.minFootprintAreaM2, v => { currentMinFootprintM2 = v; });
             restore(rule.minPlotAreaM2, v => { currentMinPlotAreaM2 = v; });
+            if (Variation) currentRuleExtras = Variation.normalizeRuleExtras(rule);
             if (Variation && Variation.RULE_KINDS.includes(rule.kind)) currentRuleKind = rule.kind;
             restore(saved.seed, v => { currentVariationSeed = v >>> 0; });
         }
@@ -1089,6 +1100,7 @@
         currentMinFloors = DEFAULT_MIN_FLOORS;
         currentMinFootprintM2 = DEFAULT_MIN_FOOTPRINT_M2;
         currentMinPlotAreaM2 = DEFAULT_MIN_PLOT_AREA_M2;
+        currentRuleExtras = {};
 
         if (!preservePending) {
             setPendingParcelBasedProposalContext(null);

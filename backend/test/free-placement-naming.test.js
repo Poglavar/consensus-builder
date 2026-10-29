@@ -33,6 +33,8 @@ async function saveFreeformBuilding({ boundParcels }) {
         editorPayload: { placement: { free: true, site, bindingStatus: 'pending' } }
     });
     c.resolveBackendBaseUrl = () => 'https://example.invalid';
+    // The binding request names the site's city and parcel source (city-config.js getParcelContext).
+    c.CityConfigManager = { getParcelContext: () => ({ city: 'zagreb', parcelSourceId: 'hr-dgu' }) };
     // The site's binding comes from the design index (POST /designs/binding, nothing stored).
     const requests = [];
     c.fetch = async (url, init) => {
@@ -60,6 +62,7 @@ describe('free-placement naming', () => {
         expect(id).toBe('single-saved');
         expect(requests.map(request => request.url)).toEqual(['https://example.invalid/designs/binding']);
         expect(requests[0].body.site).toEqual(site);
+        expect(requests[0].body).toMatchObject({ city: 'zagreb', parcelSourceId: 'hr-dgu' });
         expect(saved.title).toBe('Freeform building · parcel 2972');
         expect(saved.description).toBe('Freeform building: Freeform building · parcel 2972');
         // A design carries no terms (plan-design-agreement.md, M2).

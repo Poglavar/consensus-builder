@@ -151,7 +151,8 @@ describe('the stages of one pick', () => {
         expect(agreement.content).toMatchObject({
             sponsor: WALLET, author: 'densifier-01', city: 'zagreb', deadline: agreement.deadline,
             planCid: agreement.plan.cid,
-            inputs: { parcels: [{ parcelId: PARCEL_ID, holders: [{ ownerKey: WALLET, displayName: 'densifier-01', share: 1 }] }], openGroundM2: 0 },
+            inputs: { parcels: [{ parcelId: PARCEL_ID }], openGroundM2: 0 },
+            allocations: [{ output: agreementRecord.outputHash(PARCEL), to: { kind: 'party', ownerKey: `parcel-owner:${PARCEL_ID}` } }],
             outputs: [{ hash: agreementRecord.outputHash(PARCEL), role: 'parcel', producedBy: null, fromParcelIds: [PARCEL_ID] }],
             rule: { electorate: 'owners', binding: true, lens: [LENS], approvalConfig: { policy: { type: 'unanimous' } } }
         });
@@ -297,9 +298,21 @@ describe('what the index binds and who owns the land', () => {
         expect(h.state.owners[pick.candidateId]).toMatchObject({ soleOwner: false, owners: [{ owner, ownerCount: 1 }] });
         const { content } = h.state.agreements[pick.candidateId];
         expect(content.sponsor).toBe(WALLET);
-        expect(content.inputs.parcels[0].holders).toEqual([{ ownerKey: owner, displayName: owner, share: 1 }]);
+        expect(content.inputs.parcels[0]).not.toHaveProperty('holders');
         expect(content.rule.approvalConfig.rights.parcels[0].owners).toEqual([{ ownerId: owner, share: '1/1' }]);
         expect(h.actions.find(item => item.type === 'propose').message).toBe(`gentle-01 proposed "${pick.name}" to the owners of parcel ${PARCEL_ID}.`);
+    });
+
+    it('proposes to a co-owned parcel: the unchanged parcel goes back to its owners\' party, the co-owners stand in the rights', async () => {
+        const coOwner = Keypair.generate().publicKey.toBase58();
+        const h = harness({ owners: [{ parcelUid: PARCEL_ID, owner: null, ownerCount: 2 }, { parcelUid: PARCEL_ID, owner: coOwner, ownerCount: 2 }], until: 'proposed' });
+        await h.go();
+        const { content } = h.state.agreements[pick.candidateId];
+        // publishAgreement checks the content with the index's own validateAgreementContent.
+        expect(index.publishAgreement).toHaveBeenCalledTimes(1);
+        expect(content.allocations).toEqual([{ output: agreementRecord.outputHash(PARCEL), to: { kind: 'party', ownerKey: `parcel-owner:${PARCEL_ID}` } }]);
+        expect(content.rule.approvalConfig.rights.parcels[0].owners).toEqual([WALLET, coOwner].sort().map(ownerId => ({ ownerId, share: '1/2' })));
+        expect(JSON.stringify(content.inputs)).not.toContain(coOwner);
     });
 });
 
@@ -307,6 +320,8 @@ describe('the runner as a command', () => {
     const RUNNER = fileURLToPath(new URL('../agents/run.mjs', import.meta.url));
     // From a neutral directory, so no .env is read; these paths exit before any database or chain use.
     const cli = (...args) => spawnSync(process.execPath, [RUNNER, ...args], { cwd: tmpdir(), encoding: 'utf8', env: { PATH: process.env.PATH }, timeout: 60000 });
+    // Each case starts the runner several times (about 0.8 s each when idle), so a busy machine needs more than the default 5 s.
+    const CLI_TEST_TIMEOUT_MS = 60000;
 
     it('prints its usage without parameters or with --help, and runs nothing', () => {
         for (const args of [[], ['--help']]) {
@@ -315,14 +330,14 @@ describe('the runner as a command', () => {
             expect(result.stdout).toContain('--until STAGE        Stop after STAGE: planned | chosen | designed | proposed | minted | recorded | staked');
             expect(result.stdout).toContain('--seed-owners');
         }
-    });
+    }, CLI_TEST_TIMEOUT_MS);
 
     it('refuses to be both a dry run and a live run, and an unknown stage or controller', () => {
         expect(cli('--live', '--dry-run').stderr).toContain('choose exactly one of --dry-run or --live');
         for (const args of [['--live', '--dry-run'], ['--dry-run', '--until', 'executed'], ['--dry-run', '--controller', 'oracle'], ['--dry-run', '--candidates', '0']]) {
             expect(cli(...args).status, args.join(' ')).toBe(2);
         }
-    });
+    }, CLI_TEST_TIMEOUT_MS);
 });
 
 describe('run.mjs helpers', () => {

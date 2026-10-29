@@ -311,13 +311,14 @@ button.status-log-message {
     display: none;
 }
 
-/* Status line (ephemerals.md): what the app is doing now, replaced never stacked, gone when idle.
-   Its visual treatment is .cb-toast--status (css/primitives.css); Activity holds the full log. */
+/* Status line (design-language.md, Messages): what the app is doing now, replaced never stacked, gone when idle.
+   Its visual treatment is .cb-toast--status (css/primitives.css); Activity holds the full log.
+   The stack lets clicks through to the map; the line takes them, since a click copies it. */
 .floating-status {
     position: static;
     transform: none;
     max-width: 100%;
-    pointer-events: none;
+    pointer-events: auto;
 }
 
 .floating-status:has(#floating-status-text:empty) {
@@ -884,6 +885,34 @@ button.status-log-message {
     margin-right: 8px;
 }
 
+/* Balconies and slanted roof, shared by the Block, Row and Detached editors
+   (UrbanRuleVariation.extrasControlsMarkup). */
+.urban-rule-extras {
+    display: grid;
+    gap: 8px;
+}
+
+.parameter-group .urban-rule-extras__toggle,
+.parameter-group .urban-rule-extras__depth {
+    margin-bottom: 0;
+}
+
+.parameter-group .urban-rule-extras__depth {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 24px;
+    font-weight: normal;
+}
+
+.parameter-group .urban-rule-extras__depth[hidden] {
+    display: none;
+}
+
+.urban-rule-extras__depth input[type="number"] {
+    width: 5em;
+}
+
 .parameter-hint {
     margin-top: 5px;
     font-size: 12px;
@@ -1035,7 +1064,7 @@ input.proposal-author-name {
     text-align: center;
 }
 
-/* Notices (ephemerals.md): an outcome, one pill at a time (js/ui/notice-queue.js), top centre
+/* Notices (design-language.md, Messages): an outcome, one pill at a time (js/ui/notice-queue.js), top centre
    under the top row of controls, above anything the notice may answer. The look is .cb-toast
    (css/primitives.css); only the entrance and exit live here. */
 #ephemeral-message-container {
@@ -1060,6 +1089,7 @@ input.proposal-author-name {
 .ephemeral-message.visible {
     opacity: 1;
     transform: translateY(0);
+    pointer-events: auto;
 }
 
 .takeover-buttons .btn {

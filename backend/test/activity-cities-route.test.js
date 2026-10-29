@@ -1,5 +1,5 @@
 // GET /activity/cities: the per-city agreement counts behind the globe's painted dots and label badges
-// (routes/agent-activity.js) — agreements in the index grouped by city, city codes folded into ids,
+// (routes/agent-activity.js) — agreements in the index grouped by city, city codes trimmed and lower-cased into ids,
 // largest first.
 import express from 'express';
 import request from 'supertest';
@@ -7,9 +7,9 @@ import { describe, expect, it } from 'vitest';
 import { cityAgreementCounts, setupAgentActivityRoute } from '../routes/agent-activity.js';
 
 describe('cityAgreementCounts', () => {
-    it('folds city codes into ids, drops rows without a city or a count, and orders largest first', () => {
+    it('folds city codes into ids (trimmed, lower-cased, no alias lookup), drops rows without a city or a count, and orders largest first', () => {
         const rows = [
-            { city: 'zagreb', agreements: 200 }, { city: 'ZG', agreements: 31 }, { city: 'sibenik', agreements: 275 },
+            { city: 'zagreb', agreements: 200 }, { city: ' Zagreb ', agreements: 31 }, { city: 'sibenik', agreements: 275 },
             { city: null, agreements: 6 }, { city: 'belgrade', agreements: 0 }, { city: 'split', agreements: '1' },
             { city: 'lima', agreements: 1 }, { city: 'oslo', agreements: 'many' }
         ];

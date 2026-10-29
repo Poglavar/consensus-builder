@@ -1081,7 +1081,7 @@
             log('GeoJSON import failed', error);
             notify(error && error.code === 'disconnected'
                 ? t('siteTool.errors.importDisconnected', 'The file holds separate areas. A site must be one connected area.')
-                : t('siteTool.errors.importInvalid', 'This file is not a GeoJSON polygon in longitude/latitude.'), 'error');
+                : t('structureEditor.importInvalid', 'This file is not a GeoJSON polygon in longitude/latitude.'), 'error');
             return false;
         }
         if (geometry.coordinates.length > 1) log('the imported polygon has holes; the site keeps its outer outline only');

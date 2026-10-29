@@ -29,7 +29,7 @@
         }
         else if (!value.startsWith('did:web:') && value.includes('/')) value = value.replace(/^\/+|\/+$/g, '').replace(/\//g, ':');
         if (!value.startsWith('did:web:')) value = 'did:web:' + value;
-        if (value.includes('?') || value.includes('#') || value.includes('@') || /[\\\s]/.test(value)) throw new TypeError('Invalid DID Web identifier');
+        if (/[?#@\\\s]/.test(value)) throw new TypeError('Invalid DID Web identifier');
         const parts = value.slice('did:web:'.length).split(':');
         if (!parts[0] || parts.some((p, i) => !p || (i > 0 && (!/^[A-Za-z0-9._~-]+$/.test(p) || p === '.' || p === '..')))) throw new TypeError('Invalid DID Web host or path');
         let host = parts.shift();

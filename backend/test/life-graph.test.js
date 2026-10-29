@@ -16,8 +16,8 @@ function road(tags, coordinates, properties = {}) {
     return { type: 'Feature', properties: { highway_type: tags.highway, tags, ...properties }, geometry: { type, coordinates } };
 }
 
-function osmGraph(features) {
-    const builder = createGraphBuilder();
+function osmGraph(features, options) {
+    const builder = createGraphBuilder(options);
     builder.addOsmRoads(features, project);
     return builder.build();
 }
@@ -157,6 +157,21 @@ describe('addOsmRoads: drive lanes', () => {
         expect(lanes[0].to).toBe(nodeKey(0, 0));
         expect(first(lanes[0])[0]).toBe(100);
         expect(last(lanes[0])[0]).toBe(0);
+    });
+
+    it('keeps traffic on the left where the city drives on the left (a UK street)', () => {
+        const lanesOf = (tags, drivingSide) => {
+            const graph = osmGraph([road({ highway: 'residential', ...tags }, [[0, 0], [100, 0]])], { drivingSide });
+            const offsets = x => driveTracks(graph).filter(track => track.from === nodeKey(x, 0)).map(track => first(track)[1]).sort(byNumber);
+            return { forward: offsets(0), backward: offsets(100) };
+        };
+        // Drawn eastwards: the forward (eastbound) lane is north of the centre line, left of travel.
+        expect(lanesOf({ lanes: '2' }, 'left')).toEqual({ forward: [1.75], backward: [-1.75] });
+        expect(lanesOf({ lanes: '3', 'lanes:forward': '2', 'lanes:backward': '1' }, 'left')).toEqual({ forward: [1.75, 5.25], backward: [-1.75] });
+        expect(lanesOf({ lanes: '2' }, 'right')).toEqual({ forward: [-1.75], backward: [1.75] });
+        // A one-way street fills its carriageway either way.
+        expect(lanesOf({ lanes: '2', oneway: 'yes' }, 'left')).toEqual(lanesOf({ lanes: '2', oneway: 'yes' }, 'right'));
+        expect(() => createGraphBuilder({ drivingSide: 'middle' })).toThrow(/unknown driving side/);
     });
 
     it('takes the lanes of each direction from lanes:forward / lanes:backward', () => {

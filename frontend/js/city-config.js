@@ -381,21 +381,19 @@
 
 
 
+    // Stores the city the next page load opens. The running page stays in its own city: it holds
+    // only that city's full configuration, so a switch is always a reload (switchCity).
     function setStoredCityId(id) {
-        currentCityId = hasCity(id) && id !== EXPLORE_CITY_ID ? id : DEFAULT_CITY_ID;
+        const nextId = hasCity(id) && id !== EXPLORE_CITY_ID ? id : DEFAULT_CITY_ID;
         try {
             if (typeof localStorage !== 'undefined' && localStorage) {
-                localStorage.setItem(STORAGE_KEY, currentCityId);
+                localStorage.setItem(STORAGE_KEY, nextId);
             }
         } catch (_) { /* ignore */ }
         try {
             if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.setItem === 'function') {
-                PersistentStorage.setItem(STORAGE_KEY, currentCityId);
+                PersistentStorage.setItem(STORAGE_KEY, nextId);
             }
-        } catch (_) { /* ignore */ }
-        applyCityLanguagePreference(configOf(currentCityId));
-        try {
-            window.dispatchEvent(new CustomEvent('cityChanged', { detail: { cityId: currentCityId } }));
         } catch (_) { /* ignore */ }
     }
 
@@ -538,6 +536,21 @@
 
     function requiresBackendDataSource() {
         return Boolean(getParcelSettings().requiresBackend);
+    }
+
+    // The side of the road traffic keeps to (the 3D cars): a city's own `drivingSide` ('left' or
+    // 'right'), else its country's, read from the region of its currency locale (en-GB: GB). These
+    // countries and territories drive on the left; everywhere else drives on the right.
+    const LEFT_HAND_TRAFFIC = new Set(['GB', 'IE', 'IM', 'JE', 'GG', 'MT', 'CY', 'IN', 'PK', 'BD', 'LK', 'NP',
+        'BT', 'MV', 'JP', 'MY', 'SG', 'BN', 'ID', 'TH', 'TL', 'HK', 'MO', 'AU', 'NZ', 'PG', 'FJ', 'WS', 'TO',
+        'SB', 'KI', 'TV', 'NR', 'ZA', 'ZM', 'ZW', 'BW', 'NA', 'LS', 'SZ', 'MZ', 'MW', 'TZ', 'KE', 'UG', 'MU',
+        'SC', 'JM', 'TT', 'BS', 'BB', 'GY', 'SR', 'AG', 'DM', 'GD', 'KN', 'LC', 'VC', 'AI', 'BM', 'VG', 'KY',
+        'MS', 'TC', 'FK', 'SH', 'CK', 'NU']);
+    function getDrivingSide(cityId = null) {
+        const config = cityId ? configOf(resolveCityId(cityId) || cityId) : getCurrentCityConfig();
+        if (config?.drivingSide === 'left' || config?.drivingSide === 'right') return config.drivingSide;
+        const region = String(config?.currency?.locale || '').split('-')[1] || '';
+        return LEFT_HAND_TRAFFIC.has(region.toUpperCase()) ? 'left' : 'right';
     }
 
     function getCurrencyConfig() {
@@ -726,10 +739,10 @@
             url.searchParams.delete('world');
             if (options.at && window.WorldEntryModel) url.searchParams.set('at', window.WorldEntryModel.formatAt(options.at));
             if (options.clearRoute) {
-                // Every route the boot acts on: left in, a proposal focused before the switch reopened
+                // Every route the boot acts on: left in, a selection made before the switch reopened
                 // in the next city, and a monitor asked to switch back.
                 if (/^\/(proposals|designs|agreements|plans|parcel|bets|monitors)(?:\/|$)/.test(url.pathname)) url.pathname = '/';
-                ['parcel', 'bets', 'focusProposal', 'arrive', 'activity', 'scene', 'draft',
+                ['parcel', 'design', 'plan', 'agreement', 'bets', 'arrive', 'activity', 'scene', 'draft',
                     'planningSelection', 'camera', 'rotate']
                     .forEach(param => url.searchParams.delete(param));
             }
@@ -1021,7 +1034,7 @@
         // A deep link needs the difference: following the link's city over an untouched default is
         // doing what the reader asked, while overriding a city they picked themselves is not.
         hasStoredCityId: () => !!getStoredCityId(),
-        setCurrentCityId: setStoredCityId,
+        setStoredCityId,
         switchCity,
         navigateToCity,
         getCityLabel,
@@ -1070,6 +1083,7 @@
         getParcelZoomRange,
         requiresBackendDataSource,
         getCurrencyConfig,
+        getDrivingSide,
         getMapConfig: () => getCurrentCityConfig().map || {},
         getSidebarConfig,
         getParcelBuilderConfig,

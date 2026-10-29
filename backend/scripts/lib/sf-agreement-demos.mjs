@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import * as turf from '@turf/turf';
 import { canonicalBytes } from '../../cid.js';
 import { footprintParts } from '../../proposals/footprint.js';
-import { designObject, agreementObject, holdersFromRights, noMoney, ownersRule, planForDesigns } from '../../agents/agreement-objects.js';
+import { designObject, agreementObject, noMoney, ownersRule, planForDesigns } from '../../agents/agreement-objects.js';
 
 export function prepareSfDemoDesigns(records, intents, { authoredAt } = {}) {
     if (!Array.isArray(records) || !Array.isArray(intents?.intents) || intents.intents.length !== 2) {
@@ -44,8 +44,8 @@ export function buildSfDemoAgreement({ item, sponsor, lens, rights, binding, gro
         throw new Error('Captured open ground must be explicitly measured.');
     }
     const plan = planForDesigns(item.title, [item.design]);
-    const contentParcels = ground.inputs.map(parcel => ({ ...parcel, parcelSourceId: item.parcelSourceId,
-        holders: holdersFromRights(rights, parcel.parcelId, { [sponsor]: 'Simulated devnet demo holder' }) }));
+    // Each parcel is its owners' abstract party; the simulated holders live only in the rule's rights.
+    const contentParcels = ground.inputs.map(parcel => ({ ...parcel, parcelSourceId: item.parcelSourceId }));
     return agreementObject({ title: item.title, author: 'devnet-demonstration', sponsor, city: 'san_francisco',
         createdAt: authoredAt, deadline: item.deadline, designs: [{ cid: item.design.cid, goal: 'buildings', title: item.title }],
         plan, parcels: contentParcels, outputs: ground.outputs, openGroundM2: ground.openGroundM2, money: noMoney('USD'),

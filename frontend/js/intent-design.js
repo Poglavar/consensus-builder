@@ -32,6 +32,9 @@
         if (bounds[0] < -180 || bounds[2] > 180 || bounds[1] < -85 || bounds[3] > 85 || d.turf.area(shape) > 1_000_000) fail('Draft area must be within one square kilometre and latitudes ±85°');
         return shape.geometry;
     }
+    // The side of the road the street's traffic keeps to: the city's, which the caller supplies
+    // (mcp-drafts from the city's config), or the record's own on an edit.
+    const drivingSideOf = intent => (intent.drivingSide === 'left' ? 'left' : 'right');
     function roadProfile(intent, d) {
         if (intent.lanes) {
             if (!intent.lanes.length || intent.lanes.length > 32 || intent.lanes.some(lane => !d.profile.CORRIDOR_LANE_TYPES[lane.type]
@@ -46,9 +49,41 @@
             : intent.preset === '1+1 with cycle lanes' ? { highway: 'residential', lanes: '2', sidewalk: 'both', cycleway: 'lane' }
                 : intent.preset === '1+1' || !intent.preset ? { highway: 'residential', lanes: '2', sidewalk: 'both' } : null;
         if (!tags) fail('Road preset must be 2+2, 1+1 or 1+1 with cycle lanes');
-        return d.profile.corridorProfileFromOsmTags(tags);
+        return d.profile.corridorProfileFromOsmTags(tags, undefined, drivingSideOf(intent));
+    }
+    // A road placed into a parcel (docs/road-in-parcel.md): its land is the site, its streets are
+    // read from the site's shape, and the lanes asked for (or the automatic ones) are fitted to each
+    // street's width with pavements and verges to the edges. One connected site, one road; a site
+    // whose streets do not meet is shared between them, and `part` picks which road to draft.
+    function buildBoundedRoad(intent, d) {
+        const site = polygon(intent.site, d);
+        const inSite = load('__roadInSite', './proposals/road-in-site.js');
+        const fit = load('__corridorSiteFit', './proposals/corridor-site-fit.js');
+        const core = (intent.lanes || intent.preset) ? fit.coreOf(roadProfile(intent, d)) : null;
+        const plan = inSite.roadsInSite(site, { core: core && core.length ? core : null, turn: intent.turn === true, drivingSide: drivingSideOf(intent), turf: d.turf });
+        const issue = inSite.blocking(plan.issues)[0];
+        if (issue) {
+            const group = plan.groups.find(g => g.key === issue.key);
+            fail(issue.code === 'not-a-grid' ? 'The site does not read as straight streets; supply points for this road instead'
+                : issue.code === 'disconnected' ? 'Parts of the site do not connect as one street network; draft one road per part'
+                    : issue.code === 'too-narrow' ? `A street of the site is ${issue.widthM} m wide, too narrow for a lane`
+                        : `The lanes need ${group ? group.requiredM : '?'} m with their pavements; a street of the site is ${issue.widthM} m wide`);
+        }
+        const count = plan.roads.length;
+        if (count > 1 && !(Number.isInteger(intent.part) && intent.part >= 0 && intent.part < count)) {
+            fail(`The site holds ${count} streets that do not meet, each a road on its own share of the site; draft each with part 0–${count - 1}`);
+        }
+        if (count === 1 && intent.part != null && intent.part !== 0) fail('The site holds one road; leave part out');
+        const definition = inSite.boundedDefinition(plan.roads[count > 1 ? intent.part : 0]);
+        Object.assign(definition, { kind: 'road', tunnels: [], drivingSide: drivingSideOf(intent) });
+        definition.metadata = { ...intent.metadata, mode: 'bounded', type: 'road', isRoad: true, isTrack: false, isCorridor: true };
+        const material = d.footprint.materialize(definition);
+        definition.polygon = material.polygon;
+        definition.constructionFrame = material.constructionFrame;
+        return { goal: 'road-track', site: material.polygon, geometry: null, roadProposal: { definition: d.osm.toRecord(definition) } };
     }
     function buildRoad(intent, d) {
+        if (intent.bounded === true && intent.kind === 'road') return buildBoundedRoad(intent, d);
         if (!Array.isArray(intent.points) || intent.points.length < 2 || intent.points.length > 200
             || intent.points.some(p => !Array.isArray(p) || p.length !== 2 || !p.every(finite) || Math.abs(p[0]) > 180 || Math.abs(p[1]) > 85)) fail('A road needs 2–200 WGS84 [longitude, latitude] points');
         let profile = roadProfile(intent, d);
@@ -60,7 +95,7 @@
         profile = d.osm.profileAtMillimetre(profile);
         if (d.profile.corridorProfileWidth(profile) > 100) fail('Road cross-section must be at most 100 metres');
         const points = intent.points.map(([lng, lat]) => ({ lat, lng }));
-        const definition = { kind: 'road', points: [points], segments: [points], segmentIds: ['intent-street'], profile, width: d.profile.corridorProfileWidth(profile), tunnels: [] };
+        const definition = { kind: 'road', points: [points], segments: [points], segmentIds: ['intent-street'], profile, width: d.profile.corridorProfileWidth(profile), tunnels: [], drivingSide: drivingSideOf(intent) };
         if (profile.strips.some(lane => lane.type === 'rail')) {
             const speed = intent.speed ?? intent.trackSpeed ?? 120;
             if (![50, 80, 120, 160, 200, 250].includes(speed)) fail('Track speed must be 50, 80, 120, 160, 200 or 250 km/h');
@@ -153,13 +188,19 @@
         for (const change of changes) {
             if (change.type === 'retitle') record.title = change.value;
             else if (change.type === 'redescribe') record.description = change.value;
-            else if (record.roadProposal) {
+            else if (record.roadProposal && d.osm.toView(record.roadProposal.definition).bound) {
+                // A road in a parcel keeps its ground: only its lanes change, fitted again to every
+                // street of the same site.
+                const view = d.osm.toView(record.roadProposal.definition);
+                if (change.type !== 'set_profile') fail('A road in a parcel keeps its parcel; change its lanes with set_profile');
+                Object.assign(record, buildBoundedRoad({ ...change, kind: 'road', bounded: true, site: view.bound.site, drivingSide: view.drivingSide, metadata: view.metadata }, d));
+            } else if (record.roadProposal) {
                 const view = d.osm.toView(record.roadProposal.definition);
                 const entries = d.profile.corridorSegmentEntries(view);
                 let points = streetPoints(entries, d);
                 let lanes = copy(view.profile.strips);
                 const oldWidth = d.profile.corridorProfileWidth(view.profile);
-                if (change.type === 'set_profile') lanes = roadProfile(change, d).strips;
+                if (change.type === 'set_profile') lanes = roadProfile({ ...change, drivingSide: view.drivingSide }, d).strips;
                 else if (change.type === 'shift') points = move(points, change.metres, change.toward, d);
                 else if (['widen', 'add_lane', 'remove_lane'].includes(change.type)) {
                     // Positive normal is the first strip. Reject a compass side parallel to the street.
@@ -184,7 +225,7 @@
                         lanes.splice(change.index, 1);
                     }
                 } else fail('This change does not apply to a road');
-                const built = buildRoad({ points, lanes, metadata: view.metadata, trackSpeed: view.metadata?.trackSpeed, trackMinRadius: view.metadata?.trackMinRadius, ...(view.metadata?.isTrack ? { kind: 'track' } : {}) }, d);
+                const built = buildRoad({ points, lanes, drivingSide: view.drivingSide, metadata: view.metadata, trackSpeed: view.metadata?.trackSpeed, trackMinRadius: view.metadata?.trackMinRadius, ...(view.metadata?.isTrack ? { kind: 'track' } : {}) }, d);
                 Object.assign(record, built);
             } else if (record.structureProposal && change.type === 'set_kind') {
                 if (!['park', 'square', 'lake'].includes(change.value)) fail('Unknown space kind');

@@ -54,3 +54,39 @@ describe('release checks', () => {
         expect(request).not.toHaveBeenCalled();
     });
 });
+
+describe('resume after an update reload', () => {
+    const { resumeRecord, readResume, RESUME_MAX_AGE_MS } = require('../../frontend/js/release-updates.js');
+    const selectedInstance = (stack, kind) => {
+        const section = stack.sections.find(item => item.kind === kind);
+        return section ? section.instances[section.selectedIndex] : null;
+    };
+    const section = (kind, ids, selectedIndex = 0) => ({ kind, instances: ids.map(id => ({ id })), selectedIndex });
+    const stack = { selectedKind: 'designs', expanded: 'designs', sections: [
+        section('plans', ['plan-1']), section('designs', ['d-1', 'd-2'], 1), section('formed', ['p#1']), section('parcels', ['HR-1'])] };
+    const at = { now: 1_000, pathname: '/plans/abc' };
+
+    it('records the selected instance of every point-located section, never plans', () => {
+        const record = resumeRecord({ mode: '2d', pathname: at.pathname, stack, selectedInstance, point: { lat: 45.8, lng: 15.98 }, now: at.now });
+        expect(record).toMatchObject({ version: 1, mode: '2d', point: [45.8, 15.98], selectedKind: 'designs', expanded: 'designs',
+            selected: { designs: 'd-2', formed: 'p#1', parcels: 'HR-1' } });
+        expect(readResume(JSON.stringify(record), at)).toEqual({ mode: '2d', point: [45.8, 15.98],
+            selected: { designs: 'd-2', formed: 'p#1', parcels: 'HR-1' }, selectedKind: 'designs', expanded: 'designs' });
+    });
+    it('records nothing open for a closed stack or one showing a plan, agreement or multi-selection', () => {
+        expect(resumeRecord({ mode: 'model', pathname: '/', stack: null, selectedInstance, point: null, now: 1 }).selected).toEqual({});
+        expect(resumeRecord({ mode: '2d', pathname: '/', stack: { ...stack, selectedKind: 'plans', expanded: 'plans' },
+            selectedInstance, point: { lat: 1, lng: 1 }, now: 1 })).toMatchObject({ selected: {}, selectedKind: null, expanded: null });
+    });
+    it('ignores a record from another page, an old session, a malformed one or an unknown kind', () => {
+        const record = resumeRecord({ mode: 'model', pathname: at.pathname, stack, selectedInstance, point: null, now: at.now });
+        const raw = JSON.stringify(record);
+        expect(readResume(raw, { ...at, pathname: '/' })).toBeNull();
+        expect(readResume(raw, { ...at, now: at.now + RESUME_MAX_AGE_MS + 1 })).toBeNull();
+        expect(readResume('{', at)).toBeNull();
+        expect(readResume(null, at)).toBeNull();
+        expect(readResume(JSON.stringify({ ...record, selected: { plans: 'x', designs: 7 } }), at).selected).toEqual({});
+        // A 2D selection has nothing to stand on without its point.
+        expect(readResume(JSON.stringify({ ...record, mode: '2d' }), at)).toBeNull();
+    });
+});

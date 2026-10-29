@@ -6,11 +6,13 @@
 
 Create a named plan independently before creating an agreement. Agreement creation belongs to the plan’s actions. The Input parcels tab selects an existing exact plan revision; its designs are read-only. Neither the editor nor MCP agreement editing creates or edits a plan.
 
-The editor has Rules, Input parcels, Output parcels and Persons tabs. Each output of an owners’ agreement has exactly one explicit input party, Proposer or Public recipient. Output parcels can be assigned individually or all to Proposer/Public land; bulk assignment writes the same explicit allocation lines and disables per-parcel controls. Proposer can receive land without owning inputs, while the sponsor funds the derived compensation. Input co-ownership remains valid; joint output allocation and implicit carried holdings are retired. When input owners are unknown, an abstract “Owner(s) of parcel X” party supports allocation and accounting; ownership rights and lens settings are separate dialogs.
+The editor has Rules, Input parcels, Output parcels and Persons tabs. Agreement parties are abstract: every input parcel is represented by exactly one party, “Owner(s) of parcel X” (`parcel-owner:<parcelId>`), whether or not its owners are known. Allocations and money lines name no people; the rule’s rights snapshot can name their holders. Each output of an owners’ agreement has exactly one explicit recipient: one input parcel’s party, Proposer or Public. Output parcels can be assigned individually or all to Proposer/Public land; bulk assignment writes the same explicit allocation lines and disables per-parcel controls. Proposer can receive land without owning inputs, while the sponsor funds the derived compensation. Ownership rights and lens settings are separate dialogs; the rights snapshot lives only in the rule (`rule.approvalConfig.rights`), and owner decisions are verified against it.
 
-Rules state an area compensation rate in the city’s fiat currency and, where allowed by the selected scheme, a proportional land contribution. Cash is computed in whole cents from entitlement minus allocated area. Persons shows contributed/received land and cash, including the balancing sponsor; it has no cash editing. Input and output land areas and the derived cash schedule must balance before saving or publication. A no-cash rule records no transfers. Community agreements retain no allocations or financial settlement.
+Per-person allocation positions are derived from the rule’s ownership snapshot, never stored as allocation terms. With a rights snapshot giving person k the exact share s[k][i] of parcel i (a complete parcel’s shares sum to 1), person k co-owns every output allocated to parcel i’s party at s[k][i] and receives s[k][i] of that party’s cash. Cash is split per parcel into whole cents by largest remainder (ties by owner id), so each parcel’s total stays exact and the totals by person equal the totals by party; a balanced agreement stays balanced. Parcels without complete rights stay one party. `AgreementPersons.personPositions(agreement, rights)` (`frontend/js/agreement-persons.js`) computes this for the editor, the agreement panel and MCP.
 
-This intentionally breaks older experimental joint-output, implicit-holder and manually entered cash agreements. Recreate those agreements from an existing plan; no compatibility reader or migration is supplied. Historical implementation notes below do not override this current contract.
+Rules state an area compensation rate in the city’s fiat currency and, where allowed by the selected scheme, a proportional land contribution. Cash is computed in whole cents per party from entitlement minus allocated area. Persons shows each party’s contributed/received land and cash, including the balancing sponsor, and, when ownership rights name people, each person’s derived land and cash; it has no cash editing. Input and output land areas and the derived cash schedule must balance before saving or publication. A no-cash rule records no transfers. Community agreements retain no allocations or financial settlement.
+
+This intentionally breaks older experimental joint-output, implicit-holder, manually entered cash and named-input-holder agreements: an input parcel carrying `holders` is refused by the record, the HTTP index and MCP, which also changes the published object and so the CID of any re-created agreement. Recreate those agreements from an existing plan; no compatibility reader or migration is supplied. Historical implementation notes below do not override this current contract.
 
 ## Current contract
 
@@ -33,6 +35,11 @@ only the selected level and the nearest available level above and below it, with
 Plans and Agreements retain separate share URLs. Execution markets and bets remain attached to
 eligible binding Agreements, so agreements concerning the same plan retain independent markets.
 
+Publishing a design, plan or agreement is server-only and pins nothing on IPFS: the client computes
+the CID from the canonical bytes, and `POST /designs`, `POST /plans` or `POST /agreements` checks it
+and indexes the object ([ipfs-storage.md](ipfs-storage.md) lists what is pinned). An agreement
+minted on Solana therefore points at agreement, plan and design CIDs that only our index holds,
+until the chain work pins what chain records reference ([blockchain-flows.md](blockchain-flows.md)).
 Publication verifies the Plan CID and its exact member set. A local agreement's `designs` field is
 an editing/replay projection; it is not published. `POST /agreements` accepts a carried
 `plan: {cid, content}` and missing designs, indexing all three atomically. The index's `design_cids`
@@ -45,8 +52,7 @@ reader or automatic conversion of signed or published records. Plan and Design r
 
 Named snapshots were added on 2026-10-24. “Name this plan” in Designs → Share saves the selected
 published designs and view, with a permanent `/plans/<cid>` link. Changing its title, selection or
-view creates a new snapshot; existing links retain their content. See
-[named-plan validation and release notes](named-plans-validation.md).
+view creates a new snapshot; existing links retain their content.
 
 The notes below preserve historical reasoning, implementation milestones and unresolved findings.
 The current glossary is [vocabulary.md](vocabulary.md); the contract above supersedes the former
@@ -110,7 +116,7 @@ above supersedes historical statements where indicated.
   inside the app, so there is nothing to sign and nothing for a market to settle on.
 - Markets, ENS names and mints attach to agreements only. A design on its own is shareable; nobody
   decides on it and it is not bettable until an agreement includes it.
-- **Decision rule** replaces the publish-time **decision kind** of `proposal-kinds.md`: owner deal,
+- **Decision rule** replaces the publish-time **decision kind** of the retired proposal-kinds model: owner deal,
   owner vote and community vote become rules an agreement can have. Decision 7 there (every
   published record carries a kind) is reversed: a bare design carries none. "Kind" is left to mean
   the design type.
@@ -185,7 +191,7 @@ above supersedes historical statements where indicated.
 - Named plans as records (`plans.md`). Their machinery (member hashes, aggregate hash, site-only
   mint, ENS name, one market) is re-pointed at agreements, with the terms moved from the members
   onto the bundle. "Which plan gets built" becomes "which agreement executes".
-- Decision kinds (`proposal-kinds.md`): moved onto the agreement as its decision rule.
+- Decision kinds (the retired proposal-kinds model): moved onto the agreement as its decision rule.
 - The land-readjustment record that bundles layout, allocations, cash and approval in one proposal
   (`land-readjustmend.md`): split into a parcel-layout design and an agreement. The approval engine
   of its §23 becomes the agreement's decision-rule engine.
@@ -304,9 +310,9 @@ build follows; it changes only by a recorded decision.
   approval forcing in publish-terms, the LR consent-hash special case and the LR "ownership and
   approval" action in details. The draft editor has no Ownership, Approval or Terms section for a
   layout.
-- **Publishing a layout is refused in M1** with a message that layouts are shared with their
-  agreement (M2); the server is untouched. Sharing and minting paths check this at their one choke
-  point.
+- **A layout is published and shared on its own**, like every other design (`POST /designs`, the
+  details panel's Share, a plan's Share). It is geometry only, so publishing it settles nothing;
+  `ProposalPublishTerms.publishRefusal` refuses only invalid or oversized content.
 - **Tests:** the editor's characterization test and its fake-browser helper are rebuilt for the new
   editor; apply, audit and subdivision tests adapt to ownership carry-over; pure tests for the
   layouts, validation, record and ownership modules; Playwright specs for the editor (handles,
@@ -337,21 +343,18 @@ the `proposal:<id>` rows. It never takes part in `ParcelMutation`: an agreement 
   designs: [{ proposalId, title, goal, fingerprint }],     // authored order; fingerprint = the
                                                            // design's content fingerprint (c2-…)
   inputs: {                                                // the land the designs take, on the ground
-    parcels: [{ parcelId, areaM2: number | null,           // they were applied to: base cadastral ids
-                holders: [{ ownerKey, displayName, share }] }],   // holders from the local owner
-    openGroundM2: number                                   // records; [] = unowned
+    parcels: [{ parcelId, areaM2: number | null }],        // they were applied to: base cadastral ids;
+    openGroundM2: number                                   // each is one party, parcel-owner:<parcelId>
   },
   outputs: [{ hash, pieceId, areaM2, fromParcelIds: [], producedBy: proposalId | null,
-              role: 'plot' | 'remainder' | 'corridor' | 'part' | 'parcel',
-              holders: [{ ownerKey, displayName, share }], geometry }],
+              role: 'plot' | 'remainder' | 'corridor' | 'part' | 'parcel', geometry }],
                                                            // every piece standing on the input land
                                                            // after the designs are applied; hash =
                                                            // 'piece1-sha256:' + sha256 of the canonical
                                                            // geometry (coordinates rounded to 7 decimals)
-  allocations: [{ output: hash, to: { kind: 'holders' } | { kind: 'party', ownerKey }
-                                     | { kind: 'public' } | { kind: 'joint', shares: [{ ownerKey, share }] } }],
-                                                           // an output without a line is 'holders'
-                                                           // (the carried-over holding)
+  allocations: [{ output: hash, to: { kind: 'party', ownerKey: 'parcel-owner:<parcelId>' }
+                                     | { kind: 'proposer' } | { kind: 'public' } }],
+                                                           // one line per output of an owners' agreement
   money: { currency: 'EUR', lines: [{ ownerKey, amountCents }] },   // + receives, − pays; the
                                                            // sponsor line is computed, never stored
   rule: { electorate: 'owners' | 'community', binding: boolean,
@@ -363,8 +366,8 @@ the `proposal:<id>` rows. It never takes part in `ParcelMutation`: an agreement 
 
 - **Inputs are derived, never typed.** For each design: its declared `cadastreParcelIds` plus the
   cadastral ids of the pieces the fabric says it produced. Area comes from the original cadastral
-  feature; holders from the local owner records (`parcel_<id>_owner`; a joint-pool agent expands to
-  its members). Open ground is measured from the union of qualifying design sites outside their
+  feature. Nobody is named: the local owner records (`parcel_<id>_owner`; a joint-pool agent
+  expands to its members) feed only the default rights snapshot. Open ground is measured from the union of qualifying design sites outside their
   bound original parcel geometries; a binding's area summary cannot replace that geometry.
 - **Outputs include the current ground**: `LiveParcelFabric.entriesForCadastre(inputIds, { includeCorridors: true })`
   supplies plots, remainders, corridor bodies, split parts and untouched parcels. Current fabric
@@ -375,16 +378,19 @@ the `proposal:<id>` rows. It never takes part in `ParcelMutation`: an agreement 
   `proposal-approval/v1` config (rights, policy, regime) and the engine's `inspect`/`tally` take
   `{ cadastreParcelIds: input ids, approvalConfig, lens }`. The three decision kinds become
   `electorate` + `binding`: owner deal = owners, binding; owner vote = owners, non-binding; community
-  vote = community, non-binding (no config). The default rights snapshot is built from the inputs'
-  local holders (`parcel-rights/v1`, provider `local-owners`, shares in basis points, the last
-  holder taking the remainder); importing a rights file replaces it.
-- **Ledger** (reuse): per party, contributed m² (inputs × share), assigned m² (outputs × share by
-  allocation), the change, and cash; the money schedule and its balance come from
-  `ReparcellizationDeal.schedule`; joint shares parse with `ReparcellizationAllocation.parsePercentShares`.
+  vote = community, non-binding (no config). The default rights snapshot is built from the local
+  owner records of the input parcels (`rightsFromInputs(inputs, ownerOf)`: `parcel-rights/v1`,
+  provider `local-owners`, shares in basis points, the last holder taking the remainder; a parcel
+  nobody is recorded for keeps its abstract party and is incomplete); importing a rights file
+  replaces it.
+- **Ledger** (reuse): per party (one per input parcel), contributed m² (the parcel), assigned m²
+  (whole outputs by allocation), the change, and cash; the money schedule and its balance come from
+  `ReparcellizationDeal.schedule`. Per-person positions come from `AgreementPersons.personPositions`.
 - **Current or stale**: the panel re-derives inputs and outputs from the fabric and compares them
   with the record (`AgreementGround.check`): a missing, unapplied or changed design, or different
-  input ids or output hashes, mark the agreement stale and disable Compare. Nothing is auto-updated;
-  Edit recomputes.
+  input ids or output hashes, mark the agreement stale and disable Compare and Propose. A current
+  agreement shows no status; a stale one shows one warning naming why, with Apply plan designs when
+  unapplied designs are the only reason. Nothing is auto-updated; Edit recomputes.
 - Flattened (not carried over): deposit, decay, conditional and disbursement terms (chain funding
   mechanics, revisited in M3); per-input child agreements; the LR deal payload and its fingerprint
   (the agreement's CID replaces it in M2); `reparcellizationAgreement` on records.
@@ -429,7 +435,7 @@ the `proposal:<id>` rows. It never takes part in `ParcelMutation`: an agreement 
   agreements (`.agreement-item[data-agreement-id]`) with "Create agreement" (`[data-agreement-action=create]`).
 - Entry points: the sidebar button `#agreementsButton` ("Agreements", command `proposals.agreements`)
   and the details panel's "Create agreement" (`.btn-create-agreement`, shown for an applied design;
-  for a layout it is the main action next to the disabled Share).
+  for a layout it is the main action).
 - CSS: `frontend/css/agreement-dialog.css` (the dialog) and `frontend/css/agreement.css` (panel, list, sidebar button) on the tokens; i18n namespace `agreement.*`
   plus `sidebar.proposals.agreementsButton` and `panel.proposal.actions.createAgreement`, in en, es,
   hr and sr.
@@ -465,22 +471,23 @@ had to be made are marked **(call)**.
   fingerprint and the LR design fingerprint; `designs[].fingerprint` of a local agreement becomes
   `designs[].cid`.
 - **Agreement object** `agreement/v1` (published form of the M1 (b) record): `designs: [{ cid, goal,
-  title }]` in authored order; `inputs` (parcel ids with `parcelSourceId`, areas, the holders
-  snapshot) and `openGroundM2`; `outputs: [{ hash, areaM2, fromParcelIds, role, producedBy: cid | null }]`
+  title }]` in authored order; `inputs` (parcel ids with `parcelSourceId` and areas, each
+  parcel one abstract party; no holders) and `openGroundM2`; `outputs: [{ hash, areaM2, fromParcelIds, role, producedBy: cid | null }]`
   without geometry (the hash commits to it; a reader re-derives the pieces by applying the designs
   and checks the hashes); `allocations`, `money`, `rule` (with the rights snapshot and lens keys),
   `deadline`, `title`, `author`, `sponsor` (the base58 wallet that will mint and fund it, null when
   proposed without one; M3 derives the on-chain address from it), `city`, `createdAt`. Its CID
   commits to the design CIDs and so to everything transitively; a counter-agreement reuses the
   design objects.
-- Drafts stay local records with local ids; publishing computes the CIDs, pins the designs that have
-  none, then the agreement.
+- Drafts stay local records with local ids; publishing computes the CIDs, indexes the designs the
+  index lacks, then the agreement.
 
 ### Courier and index (server)
 
 - `POST /pins` `{ kind: 'design' | 'agreement', cid, bytes (base64) }`: recompute the CID, pin the
   exact bytes through the configured provider adapter, compare, answer `{ cid, pinnedAt }` or 409
-  `cid-mismatch`. 10 MiB per object. Upload provider and HTTP read gateway are configured independently.
+  `cid-mismatch`. 10 MiB per object. No publication path calls it; it is kept for the objects chain
+  records reference. Upload provider and HTTP read gateway are configured independently.
   Walrus is removed entirely (storage module, route, scripts,
   frontend provider switch, CSP entry, tests).
 - Tables, one definition each under `backend/db/`: `design` (`cid` PK, `city`, `goal`, `title`,
@@ -500,7 +507,7 @@ had to be made are marked **(call)**.
 - `POST /designs` `{ cid, content }`: verify the CID and the schema, derive the city from the site,
   derive the binding (which parcels the site takes, as `checkProposalBinding` derives it today, no
   declaration to compare), insert, queue the thumbnail. `GET /designs/:cid`, `GET /designs?city|bbox`,
-  `POST /designs/batch`. A parcel layout is indexed only as part of an agreement publish.
+  `POST /designs/batch`. Every kind of design, a parcel layout included, is indexed this way.
 - `POST /agreements` `{ cid, content }`: verify the CID, every design CID indexed, the inputs equal
   the union of the designs' server bindings (the former "declaration equals binding" check, now
   agreement-level), the rights snapshot well-formed, the deadline in the future; insert; thumbnail.
@@ -514,12 +521,12 @@ had to be made are marked **(call)**.
 
 ### Browser
 
-- Publishing a design: "Share" on an applied design pins and indexes it and copies
+- Publishing a design: "Share" on an applied design indexes it and copies
   `/designs/<cid>`; several applied designs share as `/designs/<cid>,<cid>`. The upload modal, the
   terms dialog, the "Who decides" row, "Create named plan", `?shared=` payload links and the
   `/proposals/<ids>` route go; the reader of `/designs/<cids>` imports from the index (from IPFS in M3).
 - Publishing an agreement: "Propose" on the agreement panel (the verb for putting an agreement to
-  its parties): pin designs, pin the agreement, index, copy `/agreements/<cid>`. The panel then
+  its parties): index the designs the index lacks, then the agreement, copy `/agreements/<cid>`. The panel then
   shows the decision tally and the owner Accept / Withdraw actions (today's owner-acceptance card,
   moved from the design details to the agreement and signing the agreement CID). Design details
   lose their consent card, lifecycle badges, expiry and funding rows.

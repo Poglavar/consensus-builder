@@ -74,20 +74,16 @@
     // deterministic live-fabric materialization, never by looking an old piece id up. Ids stay
     // stable across rebuilds, which is what they are for; they are not stable across a change in
     // how the fabric is computed, and nothing is entitled to assume they are.
-    const CLIP_SNAP_DECIMALS = 9;
+    // The shared grid (geometry-tolerances.js): parcels arrive on it, so a clip on it adds nothing new.
+    const geometryGrid = (typeof window !== 'undefined' && window.GeometryTolerances)
+        || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
+    const CLIP_SNAP_DECIMALS = geometryGrid.GRID_DECIMALS;
 
     // Whatever still fails gets a coarser grid: 1.1 mm, then 1.1 cm. If every attempt fails the
     // error is rethrown, because a clip that cannot be done must stay loud.
     const CLIP_RETRY_DECIMALS = [8, 7];
 
-    function snapCoordinates(value, factor) {
-        if (Array.isArray(value)) {
-            return typeof value[0] === 'number'
-                ? value.map(n => Math.round(n * factor) / factor)
-                : value.map(entry => snapCoordinates(entry, factor));
-        }
-        return value;
-    }
+    const snapCoordinates = (value, factor) => geometryGrid.snapCoordinates(value, factor);
 
     function snapFeature(feature, decimals) {
         if (!feature || !feature.geometry || !Array.isArray(feature.geometry.coordinates)) return feature;
@@ -553,10 +549,19 @@
         // And it must NOT be caught. A failed difference means the parcel's remaining ground could
         // not be computed; swallowing it returned road pieces with no remainders, i.e. it silently
         // deleted 1,282 m² of someone's land from the map while every test stayed green.
+        //
+        // Subtract the TAKE, not its hit. The hit (take ∩ parcel) carries the computed crossing
+        // points of the take's kerbs with the parcel boundary; snapped to the clip grid they sit up
+        // to 0.05 mm off that boundary, so subtracting the hit left a 0.05 mm sliver of parcel
+        // between the road and the outside: a remainder with a HOLE where the road enters it (Zagreb
+        // 3018 under a road coming in from 2092), and the hairline doubled the two parcels' shared
+        // edge in a Block's site, where the setback then opened a 2 × setback channel along it.
+        // The take crosses the boundary transversally, and its crossing points are computed from
+        // the same segments as the hit's, so the road piece and the remainder share them exactly.
         let leftover = parcelFeature;
         for (let index = 0; index < takenParts.length; index += 1) {
             if (!leftover) break;
-            leftover = clip('difference', leftover, takenParts[index], {
+            leftover = clip('difference', leftover, featureOf(hits[index].take.geometry), {
                 site: 'parcel-arrangement.remainder',
                 parcelId: id,
                 takeId: hits[index] && hits[index].take && hits[index].take.id

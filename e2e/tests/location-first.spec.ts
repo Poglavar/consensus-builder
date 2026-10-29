@@ -84,7 +84,7 @@ test.describe('Location first @core', () => {
   });
 
   test('a record link still opens in the city it names', async ({ mockApi: page }) => {
-    await page.goto(`/?city=zagreb&focusProposal=999999&at=${MANHATTAN_AT}&lang=en`);
+    await page.goto(`/?city=zagreb&activity=agent:7&at=${MANHATTAN_AT}&lang=en`);
     await page.waitForFunction(() => !!(window as any).CityConfigManager);
     const state = await bootState(page);
     expect(state.cityId).toBe('zagreb');

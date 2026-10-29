@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
-const { prepare } = require('../../frontend/js/plan-analysis.js');
+const { prepare, explainRefusal } = require('../../frontend/js/plan-analysis.js');
 
 const snapshot = { cid: 'saved-plan', content: { title: 'Garden plan' },
     designs: [{ cid: 'saved-design', content: { title: 'Original garden' } }],
@@ -64,5 +64,27 @@ describe('exact plan analysis', () => {
         const result = await prepare(snapshot, deps);
         expect(deps.parcels).not.toHaveBeenCalled();
         expect(result.records[0]).toMatchObject({ cid: 'saved-design', parcelIds: [], binding: { unsurveyedM2: 200 } });
+    });
+    it("tells a replay refusal in the plan's terms: the member, the plot and the parcel it reaches", async () => {
+        const refusal = () => Object.assign(new Error('Replacement parcel A#saved-design-6 lies outside immutable cadastral ground at [1, 2].'),
+            { code: 'live-fabric-replacement-outside', parcelId: 'A#saved-design-6', vertex: [1, 2] });
+        const b = { type: 'Feature', id: 'B', properties: { parcelId: 'B' } };
+        const deps = ports();
+        deps.bind.mockResolvedValue({ coverage: 'complete', parcels: [{ parcelId: 'A' }, { parcelId: 'B' }], parcelSource: { sourceId: 'source-a' } });
+        deps.parcels.mockResolvedValue([{ type: 'Feature', id: 'A', properties: { parcelId: 'A' } }, b]);
+        deps.materialize.mockRejectedValue(refusal());
+        // The vertex lies in B, which the member declares: the replay, not the design, is at fault.
+        await expect(prepare(snapshot, { ...deps, inside: (vertex, feature) => feature.id === 'B' })).rejects.toThrow(
+            '"Original garden": plot 6 lies in its declared parcel B, but the plan replay did not form it there.');
+        // The vertex lies in B, loaded for another member but not declared by this one: the design must be saved over it.
+        const members = [{ cid: 'saved-design', content: { title: 'Original garden' }, parcelIds: ['A'] }];
+        expect(explainRefusal(refusal(), members, [b], (vertex, feature) => feature.id === 'B').message).toBe(
+            '"Original garden": plot 6 reaches parcel B, which the design does not declare (its parcels: A). Save the design again over every parcel its plots stand on.');
+        // No loaded parcel holds the vertex (the usual case: the plan loads only the declared parcels).
+        deps.materialize.mockRejectedValue(refusal());
+        await expect(prepare(snapshot, { ...deps, inside: () => false })).rejects.toThrow(/reaches ground outside the parcels the plan was read with \(A, B\)/);
+        // Other errors pass through unchanged.
+        deps.materialize.mockRejectedValue(new Error('Layout could not form'));
+        await expect(prepare(snapshot, deps)).rejects.toThrow('Layout could not form');
     });
 });

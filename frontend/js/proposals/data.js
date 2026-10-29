@@ -742,17 +742,6 @@ const proposalStorage = {
         return true;
     },
 
-    // Epoch bucket ("Kumulativno do godine" timeline) — authored record metadata, ne lokalna vidljivost.
-    setProposalEpochYear(proposalId, epochYear) {
-        const proposal = this.getProposal(proposalId);
-        if (!proposal) return false;
-        proposal.epochYear = (typeof epochYear === 'number' && Number.isInteger(epochYear)) ? epochYear : null;
-        proposal.updatedAt = new Date().toISOString();
-        this._indexProposal(proposal);
-        this.save();
-        return true;
-    },
-
     // Label-only mutation. name and title move together because the lists read `title || name`;
     // setting one and not the other renames the proposal in some views and not in others.
     setProposalName(proposalId, name) {

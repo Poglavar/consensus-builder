@@ -87,6 +87,32 @@ describe('notice queue', () => {
         expect(hidden).toEqual(['A']);
     });
 
+    it('keeps a held notice up past its duration, and takes it down the minimum time after release', () => {
+        const { queue, hidden } = harness();
+        queue.push({ message: 'Save failed: 500', duration: 3000, type: 'error' });
+        queue.hold();
+        vi.advanceTimersByTime(10000);
+        expect(hidden).toEqual([]);
+        queue.release();
+        vi.advanceTimersByTime(999);
+        expect(hidden).toEqual([]);
+        vi.advanceTimersByTime(1);
+        expect(hidden).toEqual(['Save failed: 500']);
+    });
+
+    it('still lets a new notice replace a held one', () => {
+        const { queue, shown, hidden } = harness();
+        queue.push({ message: 'Save failed: 500', duration: 3000, type: 'error' });
+        queue.hold();
+        vi.advanceTimersByTime(1500);
+        queue.push({ message: 'Copied', duration: 1400 });
+        expect(hidden).toEqual(['Save failed: 500']);
+        expect(shown).toEqual(['Save failed: 500', 'Copied']);
+        queue.release();
+        vi.advanceTimersByTime(1400);
+        expect(hidden).toEqual(['Save failed: 500', 'Copied']);
+    });
+
     it('uses the default duration for a notice without one', () => {
         const { queue, hidden } = harness();
         queue.push({ message: 'Default' });

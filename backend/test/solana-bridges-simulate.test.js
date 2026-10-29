@@ -62,25 +62,40 @@ describe('wallet bridges preflight through real web3 simulateTransaction', () =>
         await expect(connection.simulateTransaction(transaction)).resolves.toMatchObject({ value: { err: null } });
     });
 
-    it('market bridge stakes: simulate → sign → send → confirm', async () => {
+    // The parimutuel stake() was replaced by LMSR buy() in c2cf630e1 ("Move agreement betting to LMSR").
+    it('market bridge buys: simulate → sign → send → confirm', async () => {
         const calls = [];
         const connection = realConnection(calls);
+        connection.getSlot = vi.fn(async () => 1);
+        connection.getBlockTime = vi.fn(async () => 1_800_000_000);
+        connection.getAccountInfo = vi.fn(async () => ({ data: Buffer.alloc(0) }));
         const signer = provider();
+        const proposal = PROGRAM.toBase58();
+        const sponsor = new web3.PublicKey(Uint8Array.from({ length: 32 }, () => 22)).toBase58();
+        const deadline = 1_800_001_000;
+        const SEED = 69_314_718n;
+        const market = { kind: 0, proposal, creator: sponsor, stakeMint: USDC, b: 100_000_000n, closesAt: BigInt(deadline),
+            graceSeconds: 0, maxPosition: 0n, seed: SEED, resolved: false };
+        const lmsr = {
+            constants: { SIDE_YES: 1, SIDE_NO: 0, KIND_PROPOSAL: 0 },
+            getMarketPda: vi.fn(() => [PROGRAM]),
+            readMarket: vi.fn(async () => market),
+            getAssociatedTokenAddress: vi.fn(() => WALLET),
+            buildBuyIx: vi.fn(() => instruction())
+        };
         const window = {
             solanaWeb3: web3,
-            SolanaMarketClient: {
-                constants: { SIDE_YES: 1, SIDE_NO: 0 },
-                readMarket: vi.fn(async () => ({ stakeMint: USDC, resolved: false })),
-                getAssociatedTokenAddress: vi.fn(() => WALLET),
-                buildStakeIx: vi.fn(() => instruction())
-            },
-            SolanaChainDataLoader: { getConnection: () => connection },
+            SolanaLmsrClient: lmsr,
+            AgreementClient: { fetchAgreement: vi.fn(async () => ({ authority: sponsor, lens: LENS, deadline, status: 'Active' })) },
+            Lmsr: { maxLoss: () => SEED },
+            SolanaChainDataLoader: { getVerifiedConnection: async () => connection },
             solanaWalletManager: { getCluster: () => 'devnet', getProvider: () => signer }
         };
         vm.runInNewContext(source('market-bridge.js'), { window });
         const statuses = [];
-        const result = await window.SolanaMarketBridge.stake({ proposal: PROGRAM.toBase58(), side: 0, amount: 50_000n, onStatus: s => statuses.push(s.state) });
+        const result = await window.SolanaMarketBridge.buy({ proposal, side: 0, shares: 50_000n, maxCost: 60_000n, onStatus: s => statuses.push(s.state) });
         expect(calls).toEqual(['simulateTransaction', 'sendRawTransaction', 'confirmTransaction']);
+        expect(lmsr.buildBuyIx).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ proposal, side: 0, shares: 50_000n, maxCost: 60_000n, stakeMint: USDC }));
         expect(signer.signTransaction).toHaveBeenCalledTimes(1);
         expect(statuses).toEqual(['preparing', 'awaiting_signature', 'submitted', 'confirmed']);
         expect(result.transactionHash).toBe('signature-1');

@@ -286,7 +286,10 @@ export function createShenzhenLandCertainSource({ fetchImpl = globalThis.fetch }
         const params = new URLSearchParams(url.search);
         if (typeof init.body === 'string') for (const [key, value] of new URLSearchParams(init.body)) params.set(key, value);
         for (const key of params.keys()) if (!ALLOWED_PARAMS.has(key)) throw upstreamError('Shenzhen parcel query contains an unsupported parameter.');
-        if (params.get('outFields') && params.get('outFields') !== shenzhenLandCertainDescriptor.outFields.join(',')) {
+        // Full rows read the whole whitelist; geometry-free count/manifest reads ask for the object ID alone.
+        const requestedFields = params.get('outFields');
+        const idOnlyRead = requestedFields === shenzhenLandCertainDescriptor.objectIdField && params.get('returnGeometry') === 'false';
+        if (requestedFields && requestedFields !== shenzhenLandCertainDescriptor.outFields.join(',') && !idOnlyRead) {
             throw upstreamError('Shenzhen parcel query requested fields outside the approved ID whitelist.');
         }
         if (params.get('returnGeometry') === 'true' && params.get('outSR') !== '4326') {

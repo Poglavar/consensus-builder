@@ -116,7 +116,10 @@
             if (!Array.isArray(moved[key])) return;
             moved[key] = moved[key].map(item => item?.coordinate
                 ? { ...item, coordinate: moveCoordinates(item.coordinate, from, to) }
-                : moveCoordinates(item, from, to));
+                // A fenced area: its gates, and its ring unless it follows the ground's own outline.
+                : key === 'enclosures' && item && typeof item === 'object' && !Array.isArray(item)
+                    ? { ...item, gates: (item.gates || []).map(gate => moveCoordinates(gate, from, to)), ...(item.ring ? { ring: moveCoordinates(item.ring, from, to) } : {}) }
+                    : moveCoordinates(item, from, to));
         });
         return moved;
     }

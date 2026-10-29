@@ -375,6 +375,24 @@ are shared code that two tracks each depend on, so they come first in theirs.
 | 4. Points | I3, D3 | full stack | B4's module, A1 |
 | 5. Pitch | J1 to J7, E1, C1, C3, C4, F1, G1 to G4, I1, I2 | content, ops | the others' first visible results |
 
+## Remaining product work
+
+Open work outside the workstreams above. Outside participants map to C3 and G4, the judge package
+to J, the court market to H2 and evidence adapters to H3.
+
+- **Fresh-profile journey.** From a new browser profile on desktop and phone: explore parcels and
+  buildings, create and share a design, open the link in a second profile, apply it, reload, and
+  complete one real devnet wallet action. Record first-run and phone failures.
+- **Search indexing.** Confirm sitemap ingestion and `/urban-planning.html` indexing in Search
+  Console; the sitemap report still needs resolution. Keep visible planning copy vendor-free.
+- **Workflow examples.** Short screen recordings and posts, each showing one complete planning
+  workflow with a direct map or share link and an invitation to try it.
+- **Pledge program callers.** Decide whether `void_pledge` and `release_donations` in
+  `proposal_pledge` stay callable by anyone; complete verified builds and explorer registration
+  when practical. Keep "unaudited, devnet only" prominent until a contract review.
+- **After the contract review.** Mainnet preparation (I4), governance and tokenomics, more cities
+  and broader agent autonomy.
+
 ## Appendix: critique ledger
 
 C = this Claude session, X = Codex session `01a12d64-9098-7891-b946-07bffa3aa802`.

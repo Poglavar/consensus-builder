@@ -21,7 +21,7 @@ const TYPE = "'([A-Za-z0-9_-]+)'";
 // agent creates, and run status.
 const VOCABULARY = [
     'create', 'design', 'propose', 'mint', 'fund', 'decide', 'lens-decision', 'attest', 'execute', 'cancel', 'expire',
-    'createMarket', 'stake', 'resolve', 'claim', 'donate', 'pledge', 'revokePledge', 'fulfillPledge', 'voidPledge',
+    'createMarket', 'stake', 'sell', 'resolve', 'claim', 'donate', 'pledge', 'revokePledge', 'fulfillPledge', 'voidPledge',
     'refundMyDonations', 'releaseDonations', 'run_status'
 ];
 

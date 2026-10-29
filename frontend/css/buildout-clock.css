@@ -1,0 +1,72 @@
+/* The build-out time control (js/buildout-clock.js) and how the 2D map draws designs that are not
+   built yet at the month in view. Map shapes are Leaflet paths styled through their classes; these
+   rules take precedence over Leaflet's presentation attributes. Colours: tokens.css (--cb-buildout-*). */
+
+.leaflet-pane.buildout-pane { z-index: var(--cb-z-map-pane-buildout); pointer-events: none; }
+/* An open editor works on the map as it is now: the build-out overlay stands down meanwhile. */
+body.map-edit-locked .leaflet-pane.buildout-pane { display: none; }
+.buildout-shape--planned { fill: var(--cb-buildout-veil); fill-opacity: 1; stroke: var(--cb-buildout-outline); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.buildout-shape--construction { fill: url(#buildout-hatch); fill-opacity: 1; stroke: var(--cb-buildout-hatch); stroke-width: 1.5; }
+.buildout-hatch__ground { fill: var(--cb-buildout-hatch-ground); }
+.buildout-hatch__line { stroke: var(--cb-buildout-hatch); stroke-width: 2; }
+.buildout-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* A tower crane: mast, jib, counter-jib tie and hook, drawn as a mask in the crane colour. */
+.buildout-crane-marker { background: none; border: 0; }
+.buildout-crane {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--cb-buildout-crane);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 4h2v17H7zM4 21h8v2H4zM2 4h20v2H2zM8 1l3 3H5zM19 6h1v7h-1zM17.5 13h4v2h-4z'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 4h2v17H7zM4 21h8v2H4zM2 4h20v2H2zM8 1l3 3H5zM19 6h1v7h-1zM17.5 13h4v2h-4z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* The control: a floating card at the bottom centre of the map, above the dock. */
+.buildout-clock {
+    position: absolute;
+    left: 50%;
+    bottom: var(--map-shell-bottom-clearance);
+    transform: translateX(-50%);
+    z-index: var(--cb-z-map-chrome);
+    width: min(28rem, calc(100% - 2 * var(--cb-space-4)));
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-3);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(var(--cb-panel-blur));
+    border: 1px solid var(--cb-line-glass);
+    border-radius: var(--cb-radius-lg);
+    box-shadow: var(--cb-shadow-md);
+    color: var(--cb-text);
+}
+.buildout-clock[hidden] { display: none; }
+.buildout-clock__head { display: flex; align-items: center; gap: var(--cb-space-2); }
+.buildout-clock__head > .fas { color: var(--cb-buildout-crane); }
+.buildout-clock__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-semibold);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.buildout-clock__badge {
+    display: none;
+    padding: 0 var(--cb-space-2);
+    border-radius: var(--cb-radius-pill);
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+    font-size: var(--cb-text-sm);
+}
+.buildout-clock--simulated .buildout-clock__badge { display: inline-block; }
+.buildout-clock__reroll { display: none; }
+.buildout-clock--simulated .buildout-clock__reroll { display: inline-flex; }
+.buildout-clock__row { display: flex; align-items: center; gap: var(--cb-space-1); }
+.buildout-clock__month { margin-left: auto; color: var(--cb-text-strong); font-weight: var(--cb-weight-semibold); font-variant-numeric: tabular-nums; }
+.buildout-clock__slider { width: 100%; }
+.buildout-clock__summary { margin: 0; }
+.buildout-clock__summary:empty { display: none; }

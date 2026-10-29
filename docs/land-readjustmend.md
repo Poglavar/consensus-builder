@@ -249,7 +249,7 @@ sum to one. Nor does it mean that no building, rule or alternative proposal may 
 | §15d, August 7 | Notes record a later whole-cadastral-parcel/tessellation restriction. **Superseded in current LR apply.** |
 | [apply/parcels.js](../frontend/js/proposals/apply/parcels.js), lines 48–76 and 111–175 | Current code permits untaken partial parcels/road remainders, citing an August 10 ruling. Later roads carve a private copy of the LR layout; removing those roads can restore the authored plots. The direct August 10 transcript was not found locally. |
 | `rethink-proposals.md` §0, August 27/September 3 | Current authority boundary: immutable cadastral repository + authored flat records; mutable derived fabric; one `ParcelMutation` transaction boundary. Older experimental sections must be read through this current contract. |
-| [advanced-readjustment.md](advanced-readjustment.md) and `dacbf94e`, September 9 | Plan and separate implementation for courtyard/joint ownership/individual agreements. Selectively integrated on October 11, not cherry-picked wholesale. Retired sibling HEAD: `1550d96f`; its local branch/worktree are deleted and archived. §13 records current verification and remaining settlement/consent limits. |
+| The retired `advanced-readjustment.md` plan and `dacbf94e`, September 9 | Plan and separate implementation for courtyard/joint ownership/individual agreements. Selectively integrated on October 11, not cherry-picked wholesale. Retired sibling HEAD: `1550d96f`; its local branch/worktree are deleted and archived. §13 records current verification and remaining settlement/consent limits. |
 | September 28 prompt, session `01a0e7bd-91ab-7911-a99e-ca424b0a6fc2` | Prior request for worldwide LR schemes found. No completed legal comparison was found in the bounded local notes/history search. |
 | named plans (removed 2026-10-21), October 10 | Immutable named plans had member/content hashes and a market identity; the agreement record replaced them ([plan-design-agreement.md](plan-design-agreement.md)). |
 
@@ -707,9 +707,8 @@ regressions are now **green** following the integration in §13.
   atomicity and statutory authority are explicit later capabilities, not implied by map apply.
 - Extend the integrated courtyard case only after defining source-binding, legal severability
   and partial-participation share semantics; arbitrary repartition is not automatically separable.
-- Use this file for current LR status. Keep [advanced-readjustment.md](advanced-readjustment.md),
-  [rethink-proposals.md](rethink-proposals.md) and [feature-proposal-execution.md](feature-proposal-execution.md)
-  as dated supporting history; do not treat their unchecked/older phase descriptions as current code.
+- Use this file for current LR status. Treat [rethink-proposals.md](rethink-proposals.md) as dated
+  supporting history; do not treat its unchecked/older phase descriptions as current code.
 
 ## 12. Historical review before integration
 
