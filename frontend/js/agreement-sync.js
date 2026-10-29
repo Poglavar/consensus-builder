@@ -1,5 +1,5 @@
 // agreement-sync.js — an agreement leaves the device and comes back (plan-design-agreement.md, M2
-// "Browser"). Propose pins and indexes its designs (a parcel layout travels with its agreement), pins
+// "Browser"). Propose pins and indexes its designs, pins
 // the agreement/v1 object, indexes it (POST /agreements) and marks the local record
 // `published: { cid, publishedAt, apiBase, sponsor }`; an /agreements/<cid> link reads the agreement
 // and its designs from the index, applies the designs, stores the agreement as a local record and
@@ -230,19 +230,10 @@
 
             // Each design as it is published (an own draft carries the current profile's name first).
             const cids = new Map();
-            const carried = [];
-            const layouts = [];
             for (const design of agreement.designs) {
                 const record = designOf(design.proposalId);
                 if (!record) throw failure('design-missing', t('agreement.publish.errors.designMissing', 'A design of this agreement is no longer on this device.'));
-                if (win.ProposalPublishTerms.publishRefusal(record)) {
-                    const pinned = await win.DesignSync.pinDesign(record);
-                    cids.set(design.proposalId, pinned.cid);
-                    carried.push(pinned);
-                    layouts.push({ record, cid: pinned.cid });
-                } else {
-                    cids.set(design.proposalId, (await win.DesignSync.publishDesign(record)).cid);
-                }
+                cids.set(design.proposalId, (await win.DesignSync.publishDesign(record)).cid);
             }
             // Stamping an author changes a design's CID: the record follows what was published.
             if (agreement.designs.some(design => design.cid !== cids.get(design.proposalId))) {
@@ -281,7 +272,7 @@
                 }
                 throw error;
             }
-            const response = await request('POST', '/agreements', { cid, content, plan, ...(carried.length ? { designs: carried } : {}) });
+            const response = await request('POST', '/agreements', { cid, content, plan });
             if (!response.ok && response.status !== 409) {
                 const code = (response.body && response.body.code) || `http-${response.status}`;
                 throw failure(code, refusalMessage(response.status, response.body), { status: response.status, body: response.body });
@@ -290,10 +281,8 @@
             if (!row || row.cid !== cid) throw failure('cid-mismatch', t('agreement.publish.errors.cidMismatch', 'The server computed a different identity for this agreement, so it was not proposed.'));
             const apiBase = win.DesignSync.apiBase();
             const publishedAt = row.createdAt || new Date().toISOString();
-            // A parcel layout is published with its agreement.
-            layouts.forEach(({ record, cid: layoutCid }) => win.DesignSync.markPublished(record, { cid: layoutCid, publishedAt, apiBase }));
             store().save({ ...agreement, published: { cid, publishedAt, apiBase, sponsor: content.sponsor } });
-            log(`proposed ${agreementId} as ${cid} (${agreement.designs.length} design(s), ${carried.length} sent with it, sponsor ${content.sponsor || 'none'})`);
+            log(`proposed ${agreementId} as ${cid} (${agreement.designs.length} design(s), sponsor ${content.sponsor || 'none'})`);
             return { cid, row, link: agreementLink(cid, { city: agreement.city }) };
         }
 

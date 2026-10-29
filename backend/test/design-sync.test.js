@@ -309,7 +309,7 @@ describe('publishDesign', () => {
         expect(record.published).toBeUndefined();
     });
 
-    it('reuses an already published parcel layout without a publication or author gate', async () => {
+    it('reuses an already published parcel layout without a publication or author gate; a revision publishes like any design', async () => {
         const record = road({ goal: 'parcel-layout', parcelLayout: { plots: [] } });
         record.published = { cid: DesignRecord.cidOf(record), apiBase: API };
         const { sync, server, win } = fakeWindow({ records: [record], blocked: 'Choose a name' });
@@ -317,7 +317,7 @@ describe('publishDesign', () => {
         expect(await sync.publishDesign(record)).toEqual({ cid: record.published.cid, row: null, alreadyPublished: true });
         expect(server.calls).toEqual([]);
         record.title = 'Revised layout';
-        expect(await thrown(() => sync.publishDesign(record))).toMatchObject({ code: 'layout-needs-agreement' });
+        expect(await thrown(() => sync.publishDesign(record))).toMatchObject({ code: 'name-needed' });
     });
 
     it('refuses oversized designs locally before pinning or indexing, retaining the draft', async () => {
@@ -327,8 +327,6 @@ describe('publishDesign', () => {
         expect(server.calls).toEqual([]);
         expect(record.published).toBeUndefined();
         expect(record.buildingProposal.notes.length).toBe(10 * 1024 * 1024);
-        expect(await thrown(() => sync.pinDesign(record))).toMatchObject({ code: 'too-large' });
-        expect(server.calls).toEqual([]);
     });
 
     it.each(['block', 'row', 'parcelBased', 'single', 'park', 'square'])('pins and imports the exact authored %s furniture', async kind => {
@@ -380,14 +378,15 @@ describe('publishDesign', () => {
         expect(server.calls).toHaveLength(4);
     });
 
-    it('refuses a parcel layout and a guest without a name before anything leaves the device', async () => {
+    it('publishes a parcel layout on its own, and refuses a guest without a name before anything leaves the device', async () => {
         const layout = { proposalId: 'layout-1', goal: 'parcel-layout', site: square(15.96, 45.8), parcelLayout: { algorithm: 'equal', plots: [] } };
         const { sync, server } = fakeWindow({ records: [layout] });
-        const refused = await thrown(() => sync.publishDesign(layout));
-        expect(refused).toMatchObject({ code: 'layout-needs-agreement' });
+        const published = await sync.publishDesign(layout);
+        expect(published).toMatchObject({ alreadyPublished: false });
+        expect(layout.published).toMatchObject({ cid: published.cid });
+        expect(server.calls.map(call => call.pathname).slice(0, 2)).toEqual(['/pins', '/designs']);
         const guest = fakeWindow({ records: [road()], blocked: 'Choose a name before publishing.' });
         expect(await thrown(() => guest.sync.publishDesign(road()))).toMatchObject({ code: 'name-needed', cancelled: true, message: 'Choose a name before publishing.' });
-        expect(server.calls).toEqual([]);
         expect(guest.server.calls).toEqual([]);
     });
 
@@ -548,7 +547,6 @@ describe('links, parcel sources and refusals', () => {
         const { sync, win } = fakeWindow();
         expect(sync.refusalMessage(409, { code: 'cid-mismatch' })).toMatch(/different identity/);
         expect(sync.refusalMessage(503, { code: 'pinning-unconfigured' })).toMatch(/pinning is not configured/);
-        expect(sync.refusalMessage(422, { code: 'layout-needs-agreement' })).toMatch(/published with the agreement/);
         expect(sync.refusalMessage(413, { code: 'too-large' })).toMatch(/10 MiB/);
         expect(sync.refusalMessage(429, {})).toBe('Too many publications for now. Wait a few minutes and try again.');
         expect(sync.refusalMessage(429, { retryAfterSeconds: 30 })).toBe('Too many publications for now. Try again in about 1 min.');

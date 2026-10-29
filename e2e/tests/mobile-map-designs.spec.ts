@@ -23,11 +23,14 @@ test('Designs cards fit a phone; Plans is a tab of the same Lists panel',async({
   await expect(sheet.locator('#designs-plans')).toContainText('No loaded items match these filters.');await expect(sheet.locator('#designs-plans a[href*="/plans/"]')).toHaveCount(0);
 });
 
-test('a parcel-layout plan stays local; sharing explains it needs its agreement and plan details still create one',async({mockApi:page})=>{
-  test.setTimeout(120_000);const {layoutId}=await applyLayout(page);await openPlans(page);const plan=await savePlan(page,'Layout agreement plan');expect(writes(page)).toHaveLength(0);
+test('a parcel-layout plan shares like any plan, publishing its layout, and plan details still create an agreement',async({mockApi:page})=>{
+  test.setTimeout(120_000);const {layoutId}=await applyLayout(page);await page.evaluate(()=>(window as any).guestPolicyBlocks('publish'));await chooseProfileName(page,'Layout publisher');
+  await openPlans(page);const plan=await savePlan(page,'Layout agreement plan');expect(writes(page)).toHaveLength(0);await page.context().grantPermissions(['clipboard-read','clipboard-write']);
   await planSection(page).getByRole('button',{name:'Share plan',exact:true}).click();const share=page.locator('.plan-share');
-  await share.getByRole('button',{name:'Publish and copy link',exact:true}).click();await expect(share.locator('.plan-dialog__status')).toContainText(/published with its agreement|Create an agreement/i);
-  expect(writes(page)).toHaveLength(0);await page.keyboard.press('Escape');
+  await share.getByRole('button',{name:'Publish and copy link',exact:true}).click();
+  await expect(share.getByLabel('Plan link',{exact:true})).toHaveValue(/\/plans\/bafkrei/);
+  expect([...pageIndex(page).designs.values()].some((row:any)=>row.content?.goal==='parcel-layout')).toBe(true);
+  await page.keyboard.press('Escape');
   await openPlans(page);const row=page.locator('#plan-list-host .lists-item').filter({has:page.getByRole('button',{name:'Layout agreement plan',exact:true})});
   await row.getByRole('button',{name:'Create agreement',exact:true}).click();const editor=agreementEditor(page);
   await expect(editor).toBeVisible();await expect(editor.locator('#agreement-editor-title')).toHaveText('Create agreement');await expect(editor.locator('[data-agreement-plan]')).toHaveValue(plan.cid);

@@ -35,7 +35,7 @@ export function designContent(overrides = {}) {
     };
 }
 
-/** A parcel layout of SITE in two plots: published only with the agreement that settles its land. */
+/** A parcel layout of SITE in two plots. */
 export function layoutContent(overrides = {}) {
     const { structureProposal: _park, ...design } = designContent();
     return {

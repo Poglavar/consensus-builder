@@ -31,7 +31,7 @@ import { createPaidClient } from './x402-client.js';
 import { fetchLensMembers, parseLensList } from './lens-directory-client.js';
 import { requestOwnershipAttestation } from './lens-ownership-client.js';
 import { createIndexClient } from './publication-client.js';
-import { AGREEMENT_SCHEMA, DESIGN_SCHEMA, agreementObject, cidOfObject, designObject, isParcelLayout, isCid } from './agreement-objects.js';
+import { AGREEMENT_SCHEMA, DESIGN_SCHEMA, agreementObject, cidOfObject, designObject, isCid } from './agreement-objects.js';
 import {
     AGREEMENT_PROGRAM_ID, AGREEMENT_STATUS, agreementAccountOf, fundAgreement, mintAgreement, readAgreementAccount
 } from './agreement-minter.js';
@@ -456,7 +456,7 @@ export function createUrbanGameTheoryTools({
         },
 
         // Pin and index one design/v1 object. The index derives its binding (the parcels its site takes)
-        // and answers the row. A parcel layout is indexed only with its agreement.
+        // and answers the row.
         async publishDesign({ design, parcelSourceId = null, expectedCid, confirm } = {}) {
             requirePublish(confirm);
             const args = { design, parcelSourceId, ...(expectedCid ? { expectedCid } : {}), confirm };
@@ -468,8 +468,6 @@ export function createUrbanGameTheoryTools({
                 const { content, cid } = publishedDesign(resolved ? resolved.content : design);
                 state.cid = cid; checkRevision(cid, expectedCid, reference);
                 parcelSourceId ||= resolved?.parcelSourceId || null;
-                // A layout can already be indexed through its agreement, but cannot be published alone.
-                if (isParcelLayout(content)) throw Object.assign(new Error(`design ${cid} is a parcel layout: a layout is published only with the agreement that settles its land; pass it to ugt_propose_agreement in designs: [{ content }]`), { code: 'layout-agreement-required' });
                 state.stage = 'lookup';
                 const existing = await index().getDesign(cid);
                 if (existing) {

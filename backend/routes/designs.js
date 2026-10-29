@@ -6,8 +6,9 @@
 // checkProposalBinding derives them for a new proposal, with nothing declared to compare. GET
 // /designs/:cid, GET /designs?city&bbox (rows without content) and POST /designs/batch read the index
 // back. The content is stored exactly as addressed; the other columns index it and never stand in for
-// it. A parcel layout is indexed only with the agreement that settles its land (routes/agreements.js,
-// through prepareDesign and insertDesign inside its own publish).
+// it. Every kind of design, a parcel layout included, is indexed here on its own; an agreement may
+// also carry designs the index does not hold yet (routes/agreements.js, through prepareDesign and
+// insertDesign inside its own publish).
 
 import { createRequire } from 'node:module';
 import { canonicalBytes, cidOf, isCid } from '../cid.js';
@@ -151,11 +152,10 @@ function bindingFailure(error) {
  *   { prepared }                  — the row to insert: { cid, content, city, goal, title, author,
  *                                   originCid, site, bounds, binding }.
  * @param {{ cid: string, content: object }} input
- * @param {{ allowLayout?: boolean, parcelSourceId?: string|null }} options  allowLayout: the caller is
- *   the agreement that settles a parcel layout's land; parcelSourceId: the parcel source to bind with
+ * @param {{ parcelSourceId?: string|null }} options  parcelSourceId: the parcel source to bind with
  *   (the city's default when null)
  */
-export async function prepareDesign(db, { cid, content } = {}, { allowLayout = false, parcelSourceId = null } = {}) {
+export async function prepareDesign(db, { cid, content } = {}, { parcelSourceId = null } = {}) {
     if (!isCid(cid)) return refusal(400, 'invalid-cid', 'cid must be a CIDv1 UnixFS sha2-256 base32 CID.');
     if (!isPlainObject(content)) return refusal(400, 'invalid-design', `content must be a ${designRecord.SCHEMA} object.`);
     let bytes;
@@ -173,10 +173,6 @@ export async function prepareDesign(db, { cid, content } = {}, { allowLayout = f
 
     const existing = await loadDesign(db, cid);
     if (existing) return { existing };
-    if (content.parcelLayout != null && !allowLayout) {
-        return refusal(422, 'layout-needs-agreement',
-            'A parcel layout is published with the agreement that settles its land: send it in the designs of POST /agreements.');
-    }
 
     let shape;
     try { shape = bindingShape(content); } catch (error) {

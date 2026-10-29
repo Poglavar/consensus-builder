@@ -139,7 +139,7 @@ export function createIndexClient({
         return { row: result.body, created: result.status === 201 };
     }
 
-    /** Pin and index one design/v1 object: { cid, row, created }. A parcel layout is refused by the index: pin it and send it with its agreement. */
+    /** Pin and index one design/v1 object: { cid, row, created }. */
     async function publishDesign(content, { parcelSourceId = null } = {}) {
         const { cid } = addressOf(content);
         let stage = 'pin-design'; const pinnedCids = [];
@@ -185,7 +185,7 @@ export function createIndexClient({
 
     /**
      * POST /agreements: { row, created }. `designs` carries [{ cid, content }] of linked designs the index
-     * does not hold yet (a parcel layout is indexed only with its agreement).
+     * does not hold yet, indexed in the same transaction.
      */
     async function indexAgreement(cid, content, { plan, designs = [] } = {}) {
         requireCid(cid);

@@ -7,7 +7,7 @@ import { createRequire } from 'node:module';
 import { Keypair } from '@solana/web3.js';
 import {
     AGREEMENT_SCHEMA, DESIGN_SCHEMA, noMoney, REGISTRY_RIGHTS_PROVIDER, agreementObject, boundParcelIds, cidOfObject, communityRule,
-    deadlineAfterDays, designObject, isParcelLayout, mapViewFromGeometry, ownersRule, parcelOutputs, partyKey, personPositions, registryRights
+    deadlineAfterDays, designObject, mapViewFromGeometry, ownersRule, parcelOutputs, partyKey, personPositions, registryRights
 } from '../agents/agreement-objects.js';
 import { buildDesignRecord } from '../agents/record-builder.js';
 import { validateDesignContent } from '../routes/designs.js';
@@ -64,8 +64,6 @@ describe('the design object', () => {
         expect(validateDesignContent(design.content)).toMatchObject({ ok: true });
         expect(design.cid).toBe(cidOf(canonicalBytes(design.content)));
         expect(design.cid).toBe(cidOfObject(design.content));
-        expect(isParcelLayout(design.content)).toBe(false);
-        expect(isParcelLayout({ parcelLayout: { plots: [] } })).toBe(true);
     });
 
     it('refuses a record the index would refuse', () => {

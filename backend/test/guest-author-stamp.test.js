@@ -3,7 +3,7 @@
 // records, other agents' records and unclaimed records keep theirs. Also drives the real store
 // (proposals/data.js addProposal claims, setProposalAuthor), storage.js stampCurrentAuthor with the
 // real immutability rule (proposals/lineage.js isPublished: published under a CID), and the
-// one outgoing path that pins a design (proposals/design-sync.js publishDesign and pinDesign).
+// one outgoing path that pins a design (proposals/design-sync.js publishDesign).
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -189,18 +189,6 @@ describe('every outgoing path stamps the current author', () => {
         expect(Cid.cidOfObject(pinned[0])).toBe(cid);
         // The local draft carries the name it left the device with, and is now that published design.
         expect(store.getProposal(id)).toMatchObject({ author: 'Mara', authorAgentId: 'user_agent_1', published: { cid, apiBase: API } });
-    });
-
-    it('a design pinned for an agreement carries the current name too', async () => {
-        const { store, state, stampCurrentAuthor } = boot({ ...GUEST });
-        const id = store.addProposal(park('Guest 4232'));
-        state.agent = { ...NAMED };
-        const { api, pinned, fetch } = publisher(store, stampCurrentAuthor);
-        const { content } = await api.pinDesign(store.getProposal(id));
-        expect(content.author).toBe('Mara');
-        expect(pinned[0].author).toBe('Mara');
-        // Pinned only: a parcel layout is indexed with its agreement.
-        expect(fetch.mock.calls.map(([url]) => url)).toEqual([`${API}/pins`]);
     });
 
     it('a published design is not sent again under a new name', async () => {

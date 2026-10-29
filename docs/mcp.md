@@ -150,7 +150,7 @@ load. Links carry no secret and are safe to forward.
 - Hosted: Host and Origin validation; request bodies up to 15 MiB, matching the API's JSON budget
   (per-object limit 10 MiB); 8 concurrent and 600 requests per minute; 10 publishes per minute;
   `no-store`; no keys or tokens in the environment. Large agreements reference published design CIDs
-  and carry only unpublished linked content, such as a parcel layout.
+  and carry only unpublished linked content.
 - Local: the spend cap and confirmation flags above; the operator's own key, devnet only until mainnet.
 
 ## Tests and evaluation

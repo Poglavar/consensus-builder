@@ -71,7 +71,7 @@ const published = await call('ugt_publish_plan', {
 // Deliver published.url, verified from the indexed /plans/<cid> content.
 ```
 
-The plan publisher first checks for the exact existing snapshot, publishes missing member designs with their source context, saves `plan/v1` and reads it back. Old links keep their original content. An unpublished parcel layout must first be published with the agreement that settles its land; the tool returns that correction rather than bypassing it.
+The plan publisher first checks for the exact existing snapshot, publishes missing member designs with their source context, saves `plan/v1` and reads it back. Old links keep their original content.
 
 `ugt_publish_design` and `ugt_propose_agreement` likewise accept canonical objects or a saved reference in `design`/`agreement`. Reference publication requires `expectedCid`. Agreement references resolve their carried child designs server-side. Publication success includes `cid`, `publication: "published"`, `url` and the verified index row. A failure reports observed progress through `stage`, `pinnedCids`, `indexed` and a locally authored retry instruction. Retry the same immutable revision. A failed readback does not prove the preceding write failed; retries check the index before writing again.
 

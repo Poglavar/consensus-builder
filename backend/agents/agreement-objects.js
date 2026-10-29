@@ -84,9 +84,6 @@ export function designObject(localDesign) {
     return { content, cid: cidApi.cidOfObject(content) };
 }
 
-/** A parcel layout publishes only with its agreement (POST /agreements carries it). */
-export const isParcelLayout = content => !!(content && content.parcelLayout);
-
 /**
  * parcel-rights/v1 of input parcels as the lens member's devnet owner registry records them: each parcel
  * complete, its owners with equal shares (1/owner_count; the registry keeps no shares) and no area (it

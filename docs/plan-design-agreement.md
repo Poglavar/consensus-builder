@@ -305,9 +305,9 @@ build follows; it changes only by a recorded decision.
   approval forcing in publish-terms, the LR consent-hash special case and the LR "ownership and
   approval" action in details. The draft editor has no Ownership, Approval or Terms section for a
   layout.
-- **Publishing a layout is refused in M1** with a message that layouts are shared with their
-  agreement (M2); the server is untouched. Sharing and minting paths check this at their one choke
-  point.
+- **A layout is published and shared on its own**, like every other design (`POST /designs`, the
+  details panel's Share, a plan's Share). It is geometry only, so publishing it settles nothing;
+  `ProposalPublishTerms.publishRefusal` refuses only invalid or oversized content.
 - **Tests:** the editor's characterization test and its fake-browser helper are rebuilt for the new
   editor; apply, audit and subdivision tests adapt to ownership carry-over; pure tests for the
   layouts, validation, record and ownership modules; Playwright specs for the editor (handles,
@@ -430,7 +430,7 @@ the `proposal:<id>` rows. It never takes part in `ParcelMutation`: an agreement 
   agreements (`.agreement-item[data-agreement-id]`) with "Create agreement" (`[data-agreement-action=create]`).
 - Entry points: the sidebar button `#agreementsButton` ("Agreements", command `proposals.agreements`)
   and the details panel's "Create agreement" (`.btn-create-agreement`, shown for an applied design;
-  for a layout it is the main action; a layout has no Share, since its agreement publishes it).
+  for a layout it is the main action).
 - CSS: `frontend/css/agreement-dialog.css` (the dialog) and `frontend/css/agreement.css` (panel, list, sidebar button) on the tokens; i18n namespace `agreement.*`
   plus `sidebar.proposals.agreementsButton` and `panel.proposal.actions.createAgreement`, in en, es,
   hr and sr.
@@ -501,7 +501,7 @@ had to be made are marked **(call)**.
 - `POST /designs` `{ cid, content }`: verify the CID and the schema, derive the city from the site,
   derive the binding (which parcels the site takes, as `checkProposalBinding` derives it today, no
   declaration to compare), insert, queue the thumbnail. `GET /designs/:cid`, `GET /designs?city|bbox`,
-  `POST /designs/batch`. A parcel layout is indexed only as part of an agreement publish.
+  `POST /designs/batch`. Every kind of design, a parcel layout included, is indexed this way.
 - `POST /agreements` `{ cid, content }`: verify the CID, every design CID indexed, the inputs equal
   the union of the designs' server bindings (the former "declaration equals binding" check, now
   agreement-level), the rights snapshot well-formed, the deadline in the future; insert; thumbnail.

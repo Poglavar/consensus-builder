@@ -259,7 +259,6 @@
             const code = body && body.code;
             if (code === 'cid-mismatch') return t('proposals.share.errors.cidMismatch', 'The server computed a different identity for this design, so nothing was published.');
             if (code === 'pinning-unconfigured') return t('proposals.share.errors.pinningUnconfigured', 'This server cannot pin published designs yet (pinning is not configured).');
-            if (code === 'layout-needs-agreement') return t('proposals.share.errors.layoutNeedsAgreement', 'A parcel layout is published with the agreement that settles its land.');
             if (code === 'too-large') return t('proposals.share.errors.tooLarge', 'This design exceeds the 10 MiB publication limit. Reduce its extent or detail before sharing; it is saved locally.');
             if (code === 'footprint-outside-site') return t('proposals.share.errors.outsideSite', 'The design extends {{area}} m² beyond its saved land boundary. The land boundary must include the geometry before it can be published.', { area: body.outsideM2 });
             if (status === 429) {
@@ -352,8 +351,8 @@
         /**
          * Publishes one local design: pins its design/v1 object, indexes it and marks the record.
          * A design already published here (it still hashes to its published CID) is not sent again.
-         * Throws an Error with `code` and a translated `message`: a parcel layout ('layout-needs-agreement'
-         * or the refusal's code), a guest without a name ('name-needed', `cancelled: true`), and the
+         * Throws an Error with `code` and a translated `message`: a local refusal
+         * (ProposalPublishTerms.publishRefusal's code), a guest without a name ('name-needed', `cancelled: true`), and the
          * courier's and index's refusals ('cid-mismatch', 'pinning-unconfigured', 'network-failed', …).
          * @returns {Promise<{ cid: string, row: object | null, alreadyPublished: boolean }>}
          */
@@ -364,7 +363,7 @@
             const already = publishedCid(localDesign, apiBase);
             if (already) return { cid: already, row: null, alreadyPublished: true };
             const refusal = win.ProposalPublishTerms.publishRefusal(localDesign);
-            if (refusal) throw failure(refusal.code || 'layout-needs-agreement', refusal.message);
+            if (refusal) throw failure(refusal.code, refusal.message);
             // Publishing leaves the device and the design carries its author (GuestPolicy 'publish').
             const nameNeeded = win.guestPolicyBlocks('publish');
             if (nameNeeded) throw failure('name-needed', nameNeeded, { cancelled: true });
@@ -382,16 +381,6 @@
             markPublished(localDesign, { cid, publishedAt: row.createdAt || new Date().toISOString(), apiBase });
             log(`published ${localDesign.proposalId} as ${cid}${response.status === 409 ? ' (already indexed)' : ''}`);
             return { cid, row, alreadyPublished: false };
-        }
-
-        /** Pins a design for an agreement publish without indexing it (a parcel layout is indexed with its
-         *  agreement): { cid, content }. The author is stamped first, as for publishDesign. */
-        async function pinDesign(localDesign) {
-            if (!isObject(localDesign)) throw new TypeError('pinDesign needs a local design record.');
-            win.stampCurrentAuthor(localDesign);
-            const content = designRecord().published(localDesign);
-            const { cid } = await pinObject('design', content);
-            return { cid, content };
         }
 
         // GET /designs/:cid → the row; a missing design throws code 'design-not-found'.
@@ -705,7 +694,7 @@
         return {
             api: {
                 publishDesign: record => observe('publish', 'design-publish-failed', () => publishDesign(record)),
-                pinDesign, pinObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf,
+                pinObject, markPublished, fetchDesign, fetchDesigns, importDesign, importDraft, localCopyOf,
                 designLink, copyLink, prepareMapPreview, parcelSourceIdOf, refusalMessage, clearPublicationProblem,
                 // A local record's exact CID at the current index, or an index summary's own.
                 publishedCid: record => (isObject(record) && record.indexed === true && cidApi().isCid(record.cid)

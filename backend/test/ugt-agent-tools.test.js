@@ -190,13 +190,21 @@ describe('publishing designs and agreements', () => {
         ]);
     });
 
-    it('refuses a design that is not its published form, naming where, and a parcel layout on its own', async () => {
+    it('publishes a parcel layout on its own, like any design', async () => {
+        const api = fakeApi();
+        const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl });
+        const layout = designObject(layoutContent());
+        const result = await tools.publishDesign({ design: layout.content, confirm: true });
+        expect(result).toMatchObject({ cid: layout.cid, created: true });
+        expect(api.posts().map(post => post.path)).toEqual(['/pins', '/designs']);
+    });
+
+    it('refuses a design that is not its published form, naming where', async () => {
         const api = fakeApi();
         const tools = createUrbanGameTheoryTools({ env: LIVE, fetchImpl: api.fetchImpl });
         await expect(tools.publishDesign({ design: { ...design.content, note: 'extra' }, confirm: true }))
             .rejects.toThrow(/not in its published design\/v1 form; it differs at note \(published: absent\)/);
         await expect(tools.publishDesign({ design: { ...design.content, schema: 'design/v0' }, confirm: true })).rejects.toThrow(/must be a design\/v1 object/);
-        await expect(tools.publishDesign({ design: layoutContent(), confirm: true })).rejects.toThrow(/is a parcel layout: a layout is published only with the agreement/);
         expect(api.calls).toEqual([]);
     });
 

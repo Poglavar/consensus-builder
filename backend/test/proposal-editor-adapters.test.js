@@ -1733,17 +1733,17 @@ describe('published source identity classification', () => {
     });
 });
 
-// A parcel layout is shared together with its agreement (plan-design-agreement.md, M1 (a)): the
-// create dialog never opens for one; the refusal is publish-terms.js publishRefusal (M2).
-describe('parcel layouts are not staged for publishing', () => {
-    it('refuses with the publish-later message and opens no create dialog', async () => {
+// The create dialog has no parcel-layout form: a layout draft becomes a design the way its editor's
+// Done makes one (instantCreateProposalFromDraft), never through the dialog.
+describe('parcel layout drafts are created without the create dialog', () => {
+    it('takes the instant-create path and opens no create dialog', async () => {
         const shellPath = '../../frontend/js/proposal-editor-shell.js';
-        require('../../frontend/js/proposals/publish-terms.js');
         const previous = {
             proposalDraftStore: globalThis.proposalDraftStore,
             prepare: globalThis.prepareProposalDraftParcelSelection,
             show: globalThis.showProposalDialog,
-            alert: globalThis.showStyledAlert
+            alert: globalThis.showStyledAlert,
+            indicator: globalThis.beginApplyIndicator
         };
         const draft = {
             id: 'draft-layout', goal: 'parcel-layout', adapterKey: 'parcel-layout',
@@ -1753,7 +1753,9 @@ describe('parcel layouts are not staged for publishing', () => {
         };
         let opened = 0;
         let prepared = 0;
+        let instant = 0;
         const alerts = [];
+        globalThis.beginApplyIndicator = () => { instant += 1; };
         globalThis.proposalDraftStore = {
             getDraft: () => draft,
             validateDraft: () => draft,
@@ -1767,16 +1769,17 @@ describe('parcel layouts are not staged for publishing', () => {
         delete require.cache[require.resolve(shellPath)];
         require(shellPath);
         try {
-            await expect(globalThis.stageProposalDraftForPublishing(draft.id)).resolves.toBe(false);
+            await globalThis.stageProposalDraftForPublishing(draft.id);
+            expect(instant).toBe(1);
             expect(opened).toBe(0);
             expect(prepared).toBe(0);
-            expect(alerts).toEqual(['A parcel layout is published with its agreement. Propose an agreement that includes it.']);
         } finally {
             Object.entries({
                 proposalDraftStore: previous.proposalDraftStore,
                 prepareProposalDraftParcelSelection: previous.prepare,
                 showProposalDialog: previous.show,
-                showStyledAlert: previous.alert
+                showStyledAlert: previous.alert,
+                beginApplyIndicator: previous.indicator
             }).forEach(([key, value]) => {
                 if (value === undefined) delete globalThis[key];
                 else globalThis[key] = value;

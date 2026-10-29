@@ -1,8 +1,8 @@
 // The agreement index (plan-design-agreement.md, M2 "Courier and index"). POST /agreements takes an
 // agreement/v1 object the browser addressed itself, { cid, content, plan?, designs? }, and indexes it once the
 // server has checked what it can: the CID is the content's; the shape is agreement/v1; every design it
-// links is indexed (one not yet indexed, such as a parcel layout, which publishes only with its
-// agreement, comes along in `designs` and is indexed in the same transaction as the agreement); its
+// links is indexed (one not yet indexed may come along in `designs` and is indexed in the same
+// transaction as the agreement); its
 // input parcels are exactly the parcels its designs' sites take on the server (the former
 // "declaration equals binding" rule, now per agreement); its rights snapshot is well formed; its
 // deadline lies ahead. GET /agreements/:cid and GET /agreements?city&design&parcel&minted read the index
@@ -417,7 +417,7 @@ export function setupAgreementsRoute(app, deps) {
             // Designs sent along are checked and bound now; they are written with the agreement or not at all.
             const prepared = new Map();
             for (const entry of carried) {
-                const outcome = await prepareDesign(pool, entry, { allowLayout: true, parcelSourceId: checked.parcelSourceId });
+                const outcome = await prepareDesign(pool, entry, { parcelSourceId: checked.parcelSourceId });
                 if (outcome.refusal) return send(res, outcome.refusal.status, { ...outcome.refusal.body, design: entry.cid });
                 if (outcome.prepared) prepared.set(entry.cid, outcome.prepared);
             }

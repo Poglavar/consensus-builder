@@ -153,8 +153,8 @@ function showDesignLinkDialog(link, title) {
 }
 
 // Share on a design: publish it (pinned and indexed once; DesignSync.publishDesign) and copy its
-// /designs/<cid> link. A parcel layout is published with its agreement, so it is refused
-// (ProposalPublishTerms.publishRefusal). Resolves { cid, link } or null.
+// /designs/<cid> link. A design that cannot be published (ProposalPublishTerms.publishRefusal: invalid
+// or too large) is refused. Resolves { cid, link } or null.
 async function shareSingleProposal(proposalIdOrProposal) {
     const t = getProposalI18nHelper();
     const proposal = resolveDesignToShare(proposalIdOrProposal);

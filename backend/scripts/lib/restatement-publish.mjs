@@ -5,14 +5,12 @@
 // designs: [{ key, record }] } with the local design records in authored (replay) order. The steps:
 //   --dry-run    build every design/v1 object (no network) and print it, and the agreement's CID when the
 //                plan's ground file is current;
-//   --designs    pin and index each design that is not a parcel layout (POST /pins, POST /designs); pin
-//                each parcel layout and ask the binding of its site (POST /designs/binding): the index
-//                takes a layout only with its agreement;
+//   --designs    pin and index every design (POST /pins, POST /designs);
 //   --capture    open the running app with agent-browser, apply the designs exactly as an agreement link
 //                does and derive the agreement's land as agreement-sync.js deriveLand does, into the
 //                plan's committed ground file;
 //   --agreement  build the agreement/v1 object from the ground file, pin it and index it (POST
-//                /agreements) with its parcel layouts.
+//                /agreements).
 // --apply gates every write to the courier and the index. Progress is checkpointed per design in
 // ~/.config/ugt/restatements/<api host>/<plan key>.json, so a rerun skips what is published and a 429
 // (waited out by the client) or a crash loses nothing. The same content always gives the same CIDs,
@@ -26,7 +24,7 @@ import { createRequire } from 'node:module';
 import { parseArgs } from 'node:util';
 import { canonicalBytes } from '../../cid.js';
 import { MAX_PINNED_OBJECT_BYTES } from '../../storage/pinning.js';
-import { agreementObject, communityRule, designObject, isParcelLayout, noMoney, planForDesigns } from '../../agents/agreement-objects.js';
+import { agreementObject, communityRule, designObject, noMoney, planForDesigns } from '../../agents/agreement-objects.js';
 import { cityMoney } from './frontend-city-money.mjs';
 import { cleanApiBase, createIndexClient } from '../../agents/publication-client.js';
 
@@ -98,10 +96,9 @@ export function canonicalDesignRecord(local, label) {
 }
 
 /**
- * The design/v1 objects of a plan, in its order: [{ key, content, cid, layout, bytes }]. Refuses what
- * the courier or the index would refuse later (an object over the pin limit, more designs than an
- * agreement links, a parcel layout without its site, a design of another city), and two designs that
- * are one object.
+ * The design/v1 objects of a plan, in its order: [{ key, content, cid, bytes }]. Refuses what the
+ * courier or the index would refuse later (an object over the pin limit, more designs than an
+ * agreement links, a design of another city), and two designs that are one object.
  */
 export function planObjects(plan) {
     if (!Array.isArray(plan.designs) || !plan.designs.length) fail(`${plan.key}: the plan has no designs`);
@@ -121,9 +118,7 @@ export function planObjects(plan) {
         if (seen.has(cid)) fail(`${plan.key}: designs ${seen.get(cid)} and ${key} are the same object (${cid})`);
         seen.set(cid, key);
         if (content.city !== plan.city) fail(`${label}: the design names city ${content.city}, the plan ${plan.city}`);
-        const layout = isParcelLayout(content);
-        if (layout && !content.site) fail(`${label}: a parcel layout is published with its site (its pool), so its binding can be asked before its agreement`);
-        return { key, content, cid, layout, bytes };
+        return { key, content, cid, bytes };
     });
 }
 
@@ -210,24 +205,9 @@ const saveState = state => writeJsonAtomic(state.file, state.value, 2);
 
 // ---- steps ---------------------------------------------------------------------------------------------
 
-// A parcel layout's binding: what its site takes on the server (POST /designs/binding, a read), kept in
-// the checkpoint. The index binds the layout the same way when its agreement carries it.
-async function layoutBinding(client, state, plan, object) {
-    const entry = state.value.designs[object.cid] || { goal: object.content.goal, title: object.content.title, layout: true };
-    state.value.designs[object.cid] = entry;
-    if (!entry.binding) {
-        entry.binding = (await client.designBinding({
-            site: object.content.site, toleranceM: object.content.toleranceM, city: plan.city, parcelSourceId: plan.parcelSourceId
-        })).binding;
-        await saveState(state);
-    }
-    return entry.binding;
-}
-
 function printObjects(plan, objects) {
     objects.forEach((object, index) => {
-        const tag = object.layout ? ' [parcel layout: published with the agreement]' : '';
-        log(`${plan.key} ${index + 1}/${objects.length} ${object.content.goal} ${object.cid} "${object.content.title}" (${object.bytes} bytes)${tag}`);
+        log(`${plan.key} ${index + 1}/${objects.length} ${object.content.goal} ${object.cid} "${object.content.title}" (${object.bytes} bytes)`);
     });
 }
 
@@ -248,21 +228,18 @@ async function stepDesigns(plan, objects, ctx) {
         const state = ctx.api ? (await readState(ctx.api, plan)).value : { designs: {} };
         objects.forEach((object, index) => {
             const entry = state.designs[object.cid] || {};
-            const done = entry.indexed || (object.layout && entry.pinned && entry.binding);
-            const action = object.layout ? 'pin and ask its binding' : 'pin and index';
-            log(`${plan.key} ${index + 1}/${objects.length} ${object.content.goal} ${object.cid} "${object.content.title}": ${done ? 'done (checkpoint)' : `would ${action}`}`);
+            log(`${plan.key} ${index + 1}/${objects.length} ${object.content.goal} ${object.cid} "${object.content.title}": ${entry.indexed ? 'done (checkpoint)' : 'would pin and index'}`);
         });
         log(`${plan.key}: DRY RUN: nothing pinned or indexed (add --apply)`);
         return;
     }
     const client = ctx.client();
     const state = await readState(ctx.api, plan);
-    // What the index holds already (a layout once another plan's agreement carried it): a rerun, or a
-    // run from another machine, skips it.
+    // What the index holds already: a rerun, or a run from another machine, skips it.
     const held = await client.getDesigns(objects.map(object => object.cid));
     for (const [index, object] of objects.entries()) {
         const prefix = `${plan.key} ${index + 1}/${objects.length} ${object.content.goal} ${shortCid(object.cid)} "${object.content.title}"`;
-        const entry = state.value.designs[object.cid] || { goal: object.content.goal, title: object.content.title, layout: object.layout };
+        const entry = state.value.designs[object.cid] || { goal: object.content.goal, title: object.content.title };
         state.value.designs[object.cid] = entry;
         const row = held.get(object.cid);
         if (row) {
@@ -271,15 +248,6 @@ async function stepDesigns(plan, objects, ctx) {
                 await saveState(state);
             }
             log(`${prefix}: already indexed (${row.binding?.parcels?.length ?? 0} parcels)`);
-            continue;
-        }
-        if (object.layout) {
-            if (!entry.pinned) {
-                Object.assign(entry, { pinned: true, pinnedAt: (await client.pin('design', object.content)).pinnedAt ?? null });
-                await saveState(state);
-            }
-            const binding = await layoutBinding(client, state, plan, object);
-            log(`${prefix}: pinned; binds ${binding.parcels.length} parcels (coverage ${binding.coverage}); indexed with the agreement`);
             continue;
         }
         if (!entry.pinned) {
@@ -294,8 +262,8 @@ async function stepDesigns(plan, objects, ctx) {
     log(`${plan.key}: ${objects.length} designs published to ${ctx.api} · checkpoint ${state.file}`);
 }
 
-// The page job (an async IIFE): wait for the app, serve the parcel layouts the index does not hold
-// yet, apply the designs as an agreement link does (handleSharedDesignRoute) and derive the land as
+// The page job (an async IIFE): wait for the app, apply the designs as an agreement link does
+// (handleSharedDesignRoute, which reads them from the index) and derive the land as
 // agreement-sync.js deriveLand does. It runs in the background and leaves its outcome on
 // window.__restatementCapture, which the node side waits on, so no single browser command outlives
 // the tool's own timeout.
@@ -322,27 +290,6 @@ export function capturePageScript(config) {
         }
         // A link opens without the newcomer's profile dialog (user-management.js isProposalDeepLinkPath).
         window.shouldSkipWelcomeForProposalLink = () => true;
-        // The index holds every design but the parcel layouts, which it takes only with their agreement:
-        // the batch read answers them from here, as the rows the index will hold.
-        const layoutRows = new Map(config.layoutRows.map(row => [row.cid, row]));
-        const nativeFetch = window.fetch.bind(window);
-        window.fetch = async (input, init) => {
-            const url = new URL(typeof input === 'string' ? input : input.url, location.href);
-            const method = String((init && init.method) || (typeof input === 'object' && input.method) || 'GET').toUpperCase();
-            if (method !== 'POST' || !/\\/designs\\/batch\\/?$/.test(url.pathname) || !init || typeof init.body !== 'string') return nativeFetch(input, init);
-            const asked = JSON.parse(init.body).cids || [];
-            if (!asked.some(cid => layoutRows.has(cid))) return nativeFetch(input, init);
-            const rest = asked.filter(cid => !layoutRows.has(cid));
-            const items = new Map();
-            if (rest.length) {
-                const response = await nativeFetch(input, { ...init, body: JSON.stringify({ cids: rest }) });
-                if (!response.ok) return response;
-                (await response.json()).items.forEach(item => items.set(item.cid, item));
-            }
-            const merged = asked.map(cid => (layoutRows.has(cid) ? { cid, design: layoutRows.get(cid) } : items.get(cid) || { cid, design: null }));
-            return new Response(JSON.stringify({ items: merged, count: merged.filter(item => item.design).length }),
-                { status: 200, headers: { 'Content-Type': 'application/json' } });
-        };
         note('applying ' + config.cids.length + ' design(s)');
         const opened = await window.handleSharedDesignRoute(config.cids, { openDetails: false, enter3D: false, summary: false, frame: false });
         if (opened.blocked) fail('the app opened the designs in another city');
@@ -460,24 +407,13 @@ async function captureInApp(plan, config, ctx) {
 
 async function stepCapture(plan, objects, ctx) {
     const client = ctx.client();
-    const state = await readState(ctx.api, plan);
     const held = await client.getDesigns(objects.map(object => object.cid));
-    const unpublished = objects.filter(object => !object.layout && !held.has(object.cid));
+    const unpublished = objects.filter(object => !held.has(object.cid));
     if (unpublished.length) {
         fail(`${plan.key}: the index at ${ctx.api} does not hold ${unpublished.length} design(s) (${unpublished.map(object => object.key).join(', ')}): run --designs --apply first`);
     }
-    // The rows the index will hold for the parcel layouts once their agreement carries them (a layout
-    // another agreement carried already is read from the index like any design).
-    const layoutRows = [];
-    for (const object of objects.filter(candidate => candidate.layout && !held.has(candidate.cid))) {
-        layoutRows.push({
-            cid: object.cid, city: plan.city, goal: object.content.goal, title: object.content.title, author: object.content.author,
-            originCid: null, binding: await layoutBinding(client, state, plan, object), content: object.content,
-            screenshotUrl: null, screenshotBeforeUrl: null, screenshotPairUrl: null, createdAt: null
-        });
-    }
     const cids = objects.map(object => object.cid);
-    const result = await captureInApp(plan, { cids, layoutRows, readyMs: CAPTURE_READY_MS }, ctx);
+    const result = await captureInApp(plan, { cids, readyMs: CAPTURE_READY_MS }, ctx);
     if (!result || !Array.isArray(result.designs) || !Array.isArray(result.inputs) || !Array.isArray(result.outputs)) {
         fail(`${plan.key}: the app answered no land: ${JSON.stringify(result).slice(0, 300)}`);
     }
@@ -491,9 +427,8 @@ async function stepCapture(plan, objects, ctx) {
     const stray = result.outputs.filter(output => output.producedBy !== null && !known.has(output.producedBy));
     if (stray.length) fail(`${plan.key}: ${stray.length} output(s) name a producer outside the plan`);
     // The index admits the agreement only when its inputs are exactly what the designs bind there.
-    const layoutBindings = new Map(layoutRows.map(row => [row.cid, row.binding]));
     const land = inputsAgainstBindings(result.inputs.map(parcel => parcel.parcelId),
-        objects.map(object => (held.has(object.cid) ? held.get(object.cid).binding : layoutBindings.get(object.cid))));
+        objects.map(object => held.get(object.cid).binding));
     if (land.missing.length || land.extra.length) {
         fail(`${plan.key}: the app derives input parcels the index would refuse${land.missing.length ? `; bound on the server but not derived: ${land.missing.join(', ')}` : ''}`
             + `${land.extra.length ? `; derived but bound by no design: ${land.extra.join(', ')}` : ''}`);
@@ -518,8 +453,7 @@ async function stepAgreement(plan, objects, ctx) {
         fail(`${plan.key}: the ground file was captured over other designs than the plan's current ones: recapture (--capture)`);
     }
     const agreement = planAgreement(plan, objects, ground);
-    const layouts = objects.filter(object => object.layout);
-    log(`${plan.key}: agreement ${agreement.cid} "${plan.title}": ${objects.length} designs (${layouts.length} parcel layout(s)), ${ground.inputs.length} input parcels, ${ground.outputs.length} outputs (${agreement.bytes} bytes)`);
+    log(`${plan.key}: agreement ${agreement.cid} "${plan.title}": ${objects.length} designs, ${ground.inputs.length} input parcels, ${ground.outputs.length} outputs (${agreement.bytes} bytes)`);
     const link = ctx.app ? agreementLink(ctx.app, agreement.cid, plan.city) : null;
     if (!ctx.apply) {
         log(`${plan.key}: DRY RUN: the agreement is not pinned or indexed (add --apply --api <api>)`);
@@ -534,35 +468,19 @@ async function stepAgreement(plan, objects, ctx) {
         log(`${plan.key}: agreement ${agreement.cid} is already indexed${link ? ` · ${link}` : ''}`);
         return;
     }
-    // Every design the agreement links must be indexed, or travel with it (the layouts).
+    // Every design the agreement links must be indexed.
     const held = await client.getDesigns(objects.map(object => object.cid));
-    const unpublished = objects.filter(object => !object.layout && !held.has(object.cid));
+    const unpublished = objects.filter(object => !held.has(object.cid));
     if (unpublished.length) fail(`${plan.key}: the index does not hold ${unpublished.length} design(s) (${unpublished.map(object => object.key).join(', ')}): run --designs --apply first`);
-    const bindings = [];
-    for (const object of objects) {
-        bindings.push(held.has(object.cid) ? held.get(object.cid).binding : await layoutBinding(client, state, plan, object));
-    }
-    const land = inputsAgainstBindings(ground.inputs.map(parcel => parcel.parcelId), bindings);
+    const land = inputsAgainstBindings(ground.inputs.map(parcel => parcel.parcelId), objects.map(object => held.get(object.cid).binding));
     if (land.missing.length || land.extra.length) {
         fail(`${plan.key}: the index would refuse the agreement's inputs: they must be exactly the parcels its designs bind on the server`
             + `${land.missing.length ? `; bound but not inputs: ${land.missing.join(', ')}` : ''}${land.extra.length ? `; inputs no design binds: ${land.extra.join(', ')}` : ''}`);
     }
-    // The layouts the index does not hold yet travel with the agreement, pinned (one it holds was pinned
-    // when another agreement carried it).
-    const carried = layouts.filter(object => !held.has(object.cid));
-    for (const object of carried) {
-        const entry = state.value.designs[object.cid];
-        if (!entry.pinned) {
-            Object.assign(entry, { pinned: true, pinnedAt: (await client.pin('design', object.content)).pinnedAt ?? null });
-            await saveState(state);
-        }
-    }
-    const published = await client.publishAgreement(agreement.content, { plan: agreement.plan,
-        designs: carried.map(object => ({ cid: object.cid, content: object.content })) });
-    for (const object of carried) state.value.designs[object.cid].indexed = true;
+    const published = await client.publishAgreement(agreement.content, { plan: agreement.plan });
     state.value.agreements[agreement.cid] = { indexedAt: published.row.createdAt ?? null };
     await saveState(state);
-    log(`${plan.key}: agreement ${agreement.cid} ${published.created ? 'indexed' : 'was already indexed'} with ${carried.length} parcel layout(s) carried${link ? ` · ${link}` : ''}`);
+    log(`${plan.key}: agreement ${agreement.cid} ${published.created ? 'indexed' : 'was already indexed'}${link ? ` · ${link}` : ''}`);
 }
 
 // ---- the command line ------------------------------------------------------------------------------
@@ -576,11 +494,10 @@ Publishes ${describe} as designs plus one agreement per plan (backend/scripts/li
 Steps (run in this order when several are given):
   --dry-run      Build the design objects from the committed data and print each design's goal, title
                  and CID, and the agreement's CID when the plan's ground file is current. No network.
-  --designs      Pin and index every design that is not a parcel layout; pin each parcel layout and ask
-                 the binding of its site (the index takes a layout with its agreement).
+  --designs      Pin and index every design.
   --capture      Open the running app with agent-browser, apply the designs as an agreement link does and
                  write the land it derives (input parcels, output pieces) to the plan's ground file.
-  --agreement    Build the agreement from the ground file; pin it and index it with its parcel layouts.
+  --agreement    Build the agreement from the ground file; pin it and index it.
 
 Options:
   --api <url>     The API (required by --designs, --capture and --agreement --apply).
@@ -654,7 +571,7 @@ export async function runRestatementCli({ script, describe, planKeys, plans, opt
         const built = (await plans(values)).filter(plan => !only || only.has(plan.key));
         for (const [index, plan] of built.entries()) {
             const objects = planObjects(plan);
-            log(`plan ${index + 1}/${built.length} ${plan.key} "${plan.title}": ${objects.length} designs (${objects.filter(object => object.layout).length} parcel layout(s))`);
+            log(`plan ${index + 1}/${built.length} ${plan.key} "${plan.title}": ${objects.length} designs`);
             const planned = { ...plan, script };
             if (steps.includes('dry-run')) await stepDryRun(planned, objects, ctx);
             if (steps.includes('designs')) await stepDesigns(planned, objects, ctx);

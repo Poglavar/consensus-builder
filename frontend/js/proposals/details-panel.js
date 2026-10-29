@@ -423,15 +423,12 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
         `;
     }
 
-    // A parcel layout cannot be shared on its own: it is published with the agreement that includes
-    // it (ProposalPublishTerms.publishRefusal).
+    // A design that cannot be published yet (ProposalPublishTerms.publishRefusal) shows a disabled Share.
     const publishRefusal = window.DesignSync.publishedCid(fullProposal || proposal)
         ? null : window.ProposalPublishTerms.publishRefusal(fullProposal || proposal);
-    const agreementOnlyPublication = publishRefusal?.code === 'layout-needs-agreement';
-    // Share publishes this exact design; adding it to a plan is a separate action. A parcel layout has
-    // no Share at all: its agreement publishes it, so there is no button to disable and explain.
-    const shareRefusalNote = publishRefusal && !agreementOnlyPublication ? publishRefusal.message : '';
-    const shareButtonHtml = agreementOnlyPublication ? '' : publishRefusal
+    // Share publishes this exact design; adding it to a plan is a separate action.
+    const shareRefusalNote = publishRefusal ? publishRefusal.message : '';
+    const shareButtonHtml = publishRefusal
         ? `
         <button type="button" class="btn btn-share-proposal" disabled aria-disabled="true" aria-describedby="proposal-publish-later-note">
             <i class="fas fa-share-alt"></i> ${tProposal('panel.proposal.actions.share', 'Share')}

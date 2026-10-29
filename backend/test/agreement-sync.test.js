@@ -310,12 +310,12 @@ describe('agreementLink', () => {
 });
 
 describe('publishAgreement', () => {
-    it('publishes the designs, sends a layout with the agreement, pins and indexes it and marks it proposed', async () => {
+    it('publishes every design, the layout included, then pins and indexes the agreement and marks it proposed', async () => {
         const { sync, server, proposals, agreements } = fakeWindow();
         const result = await sync.publishAgreement('ag-1');
         expect(server.calls.map(call => `${call.method} ${call.pathname}`)).toEqual([
-            'POST /pins', // the layout, pinned only
-            'POST /pins', 'POST /designs', // the road, published on its own
+            'POST /pins', 'POST /designs', // the layout, published on its own like any design
+            'POST /pins', 'POST /designs', // the road
             'POST /pins', // the plan snapshot
             'POST /pins', 'POST /agreements'
         ]);
@@ -323,8 +323,8 @@ describe('publishAgreement', () => {
         const layoutCid = DesignRecord.cidOf(proposals.get('layout-1'));
         const roadCid = DesignRecord.cidOf(proposals.get('road-1'));
         expect(proposals.get('layout-1').author).toBe('Ana');
-        const body = server.calls[5].body;
-        expect(body.designs).toEqual([{ cid: layoutCid, content: DesignRecord.published(proposals.get('layout-1')) }]);
+        const body = server.calls[6].body;
+        expect(body).not.toHaveProperty('designs');
         expect(body.cid).toBe(NodeCid.cidOfObject(body.content));
         expect(result.cid).toBe(body.cid);
         expect(body.content).toMatchObject({ schema: 'agreement/v1', author: 'Ana', sponsor: SPONSOR, city: 'zagreb', planCid: body.plan.cid });
@@ -338,13 +338,13 @@ describe('publishAgreement', () => {
         expect(stored.published).toEqual({ cid: result.cid, publishedAt: '2026-10-21T12:00:05.000Z', apiBase: API, sponsor: SPONSOR });
         expect(stored.designs.map(design => design.cid)).toEqual([layoutCid, roadCid]);
         expect(stored.plan.cid).toBe(body.content.planCid);
-        expect(proposals.get('layout-1').published).toEqual({ cid: layoutCid, publishedAt: '2026-10-21T12:00:05.000Z', apiBase: API });
+        expect(proposals.get('layout-1').published).toMatchObject({ cid: layoutCid, apiBase: API });
         expect(proposals.get('road-1').published.cid).toBe(roadCid);
         expect(result.link).toBe(`https://app.example.test/agreements/${result.cid}?city=zg&lang=hr`);
 
         // Proposed once: proposing again sends nothing and answers the same CID.
         expect(await sync.publishAgreement('ag-1')).toEqual({ cid: result.cid, row: null, link: result.link });
-        expect(server.calls).toHaveLength(6);
+        expect(server.calls).toHaveLength(7);
     });
 
     it('proposes without a sponsor when no wallet is connected', async () => {

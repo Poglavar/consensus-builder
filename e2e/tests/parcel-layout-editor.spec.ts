@@ -531,7 +531,7 @@ test('a plot laid across two owners\' parcels is held jointly by both, pro rata 
   }
 });
 
-test('a parcel layout\'s details offer no sharing or duplicate: it is published with its agreement', async ({ mockApi: page }) => {
+test('a parcel layout\'s details offer Share like any design, and no duplicate', async ({ mockApi: page }) => {
   const editor = await openLayoutEditor(page);
   await editor.locator('[data-reparcel-commit]').click();
   await expect(editor).toHaveCount(0);
@@ -539,8 +539,8 @@ test('a parcel layout\'s details offer no sharing or duplicate: it is published 
   await page.setViewportSize({ width: 390, height: 844 });
   await showProposal(page, proposalId);
   const panel = page.locator('#proposal-details-panel');
-  // Its agreement publishes it: no Share, and no note explaining a disabled one.
-  await expect(panel.locator('.btn-share-proposal')).toHaveCount(0);
+  // Shared on its own like any design: an enabled Share, and no note explaining a disabled one.
+  await expect(panel.locator('.btn-share-proposal')).toBeEnabled();
   await expect(panel.locator('#proposal-publish-later-note')).toHaveCount(0);
   await expect(panel.locator('.btn-duplicate-design')).toHaveCount(0);
   const actionGrid = panel.locator('.proposal-primary-actions');
