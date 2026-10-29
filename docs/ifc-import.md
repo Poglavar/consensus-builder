@@ -66,8 +66,7 @@ stay; IFC names are used only at the import (and any later export) boundary.
 | Building use, by storey | `Pset_BuildingCommon.OccupancyType`, `Pset_SpaceCommon` and `IfcClassificationReference` (Uniclass, OmniClass) | IFC has no fixed list of uses. Known occupancy labels and classification codes map to our six uses; anything else leaves the use not stated. |
 | Placement (WGS84 registration) | `IfcMapConversion` and `IfcProjectedCRS` (IFC4) | IFC2x3 files carry only `IfcSite.RefLatitude` / `RefLongitude`, which places but does not orient. |
 
-A whole Plan at city scale has a better counterpart in CityGML / CityJSON (OGC), which models
-terrain, transport, vegetation and land use as well as buildings.
+A whole Plan at city scale maps onto CityGML / CityJSON instead; see [CityGML and CityJSON](citygml.md).
 
 ## Open questions
 
