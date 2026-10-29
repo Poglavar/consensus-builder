@@ -1,7 +1,8 @@
 // Unit tests for backend/agents/planner.js — the step that turns candidate parcels into candidate
 // proposals. Four properties matter, and each of them is a way the runner could publish a lie:
 //   1. a parcel the rule excludes must be skipped, not silently built on;
-//   2. a sample over a rule's ceiling must be rejected, never hidden by a smaller statistic;
+//   2. a rule's ceiling shapes the envelope, and a sample still over it is rejected, never hidden
+//      by a smaller statistic;
 //   3. a missing rule value must take a documented default, never Number(null) = 0;
 //   4. the sampled massing must lie inside the parcel it claims — a building over the neighbour's
 //      land is not a proposal, it is a trespass.
@@ -207,14 +208,22 @@ describe('a missing rule value never becomes a real one', () => {
 });
 
 describe('rule ceilings apply to the published geometry', () => {
-    it('rejects a sample above max_gbp instead of lowering only its reported area', () => {
+    it('builds within max_gbp: the cap shapes the envelope and the published building', () => {
         const [uncapped] = planCandidates([parcel()], PERSONA, OPTS);
         const capAt = Math.floor(uncapped.proposedGfaM2 / 2);
-        expect(planCandidates([parcel({ rule: { maxFloors: 4, minSetbackM: 3, maxGfaM2: capAt } })], PERSONA, OPTS)).toEqual([]);
+        const [candidate] = planCandidates([parcel({ rule: { maxFloors: 4, minSetbackM: 3, maxGfaM2: capAt } })], PERSONA, OPTS);
+        expect(candidate.proposedGfaM2).toBeGreaterThan(0);
+        expect(candidate.proposedGfaM2).toBeLessThanOrEqual(capAt);
+        expect(candidate.envelope.properties.floors * turf.area(candidate.envelope)).toBeLessThanOrEqual(capAt + 1e-3);
+        expect(candidate.normalizedRule.maxFloorAreaRatio).toBeCloseTo(capAt / turf.area(candidate.geometry), 9);
     });
 
-    it('rejects a sample above max_izgradenost (coverage)', () => {
-        expect(planCandidates([parcel({ rule: { maxFloors: 4, minSetbackM: 3, maxCoveragePct: 5 } })], PERSONA, OPTS)).toEqual([]);
+    it('builds within max_izgradenost (coverage) of the parcel\'s stated area', () => {
+        const [candidate] = planCandidates([parcel({ rule: { maxFloors: 4, minSetbackM: 3, maxCoveragePct: 5 } })], PERSONA, OPTS);
+        const { footprintM2 } = measureBuilding(candidate.massing, {}, { floorHeightM: 3 });
+        expect(footprintM2).toBeGreaterThan(0);
+        expect(footprintM2).toBeLessThanOrEqual(candidate.areaM2 * 0.05 + 1e-6);
+        expect(turf.area(candidate.envelope)).toBeLessThanOrEqual(candidate.areaM2 * 0.05 + 1e-3);
     });
 
     it('cannot claim to meet a coverage limit without a positive parcel area', () => {
@@ -231,7 +240,8 @@ describe('rule ceilings apply to the published geometry', () => {
         const record = buildDesignRecord({ candidate, pick: { name: 'Sample' }, persona: PERSONA, city: 'test-city', authoredAt: '2026-10-22T00:00:00.000Z' });
         const measured = measureBuilding(record.geometry.buildings[0], {}, { floorHeightM: 3 });
         expect(candidate.proposedGfaM2).toBe(measured.gfaM2);
-        expect(measured.gfaM2).toBe(reference.proposedGfaM2);
+        expect(measured.gfaM2).toBeGreaterThan(0);
+        expect(measured.gfaM2).toBeLessThanOrEqual(reference.proposedGfaM2);
         expect(measured.footprintM2).toBeLessThanOrEqual(candidate.areaM2);
         expect(candidate.gain).toBeCloseTo(measured.gfaM2 * 4000, 3);
         // The planner's offer stays a share of that gain; the design itself carries no money.
