@@ -456,7 +456,7 @@ it('does not let a cancelled warm rebuild restart the render loop after re-entry
     expect(calls.rebuild).toBe(1);
 });
 
-it('does not apply parcel visibility or emphasis after an async ground rebuild is cancelled', async () => {
+it('does not apply parcel visibility after an async ground rebuild is cancelled', async () => {
     const calls = [];
     let completeBuild;
     const group = { children: [] };
@@ -465,12 +465,10 @@ it('does not apply parcel visibility or emphasis after an async ground rebuild i
         flatGroup: group,
         sceneAbort: new AbortController(),
         parcelGroundGeneration: 0,
-        restoreParcelEmphasis() { calls.push('restore'); },
         buildParcels3D() { return new Promise(resolve => { completeBuild = resolve; }); },
         threeResources: { disposeOwnedSubtree() {} },
         derivedParcelVisibilityMode: () => 'built',
-        applyParcelVisibilityForMode() { calls.push('visibility'); },
-        applyParcelEmphasis() { calls.push('emphasis'); }
+        applyParcelVisibilityForMode() { calls.push('visibility'); }
     });
 
     const rebuilding = context.rebuildParcelGround3D();
@@ -479,7 +477,7 @@ it('does not apply parcel visibility or emphasis after an async ground rebuild i
     completeBuild();
     await rebuilding;
 
-    expect(calls).toEqual(['restore']);
+    expect(calls).toEqual([]);
 });
 
 it('requests a frame when the facade toggle or style changes, because the view renders on demand', () => {

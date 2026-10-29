@@ -470,10 +470,12 @@
     let buildingModeControlsEl = null;
     let decorTogglesEl = null; // container for per-layer scenery toggles, populated from /decor/layers
 
-    // Parcel selection emphasizes the clicked ground while keeping the city and camera in place.
-    // Proposal isolation remains a separate view with its own framing and visibility rules.
+    // The parcel view, which the 3D click stack's parcel section opens: the parcel with what stands
+    // on it and its permitted massing, every other parcel and road as bare flat ground, camera in
+    // place. Proposal isolation (the design view) is separate, with its own framing.
     let isolatedParcelId = null;
-    let parcelEmphasisOriginals = new WeakMap();
+    // What the parcel or design view hid (three-scene-isolation.js), shown again when it ends.
+    let isolationHidden = [];
     // Proposal isolation: showing a whole proposal (all its parcels + their buildings) at once,
     // reached via the [show] button in the parcel panel. null = not isolating a proposal.
     let isolatedProposalId = null;
@@ -509,7 +511,7 @@
     }
     let parcelClickHandler = null;
     // The parcel under the last click (three-click-plan.js): its panel, its massing and its outline,
-    // without dimming the city. Isolation (isolatedParcelId) is the deliberate second click.
+    // without dimming the city. The parcel view (isolatedParcelId) follows when its section opens.
     let viewedParcelId = null;
     let parcelPointerDownHandler = null;
     let inputHandler = null;      // pointermove/wheel on the canvas: noteInput
@@ -725,19 +727,6 @@
     function getParcelFeatureById(parcelId) {
         return window.LiveParcelFabric?.get?.(String(parcelId))
             || window.CadastralParcelRepository?.get?.(String(parcelId)) || null;
-    }
-
-    function applyParcelEmphasis() {
-        const emphasis = window.ThreeParcelEmphasis;
-        if (!emphasis || !scene) return;
-        parcelEmphasisOriginals = emphasis.apply(scene, isolatedParcelId, parcelEmphasisOriginals,
-            { dimOthers: isolatedParcelId !== null });
-    }
-
-    function restoreParcelEmphasis() {
-        const emphasis = window.ThreeParcelEmphasis;
-        if (!emphasis || !scene) return;
-        parcelEmphasisOriginals = emphasis.apply(scene, null, parcelEmphasisOriginals);
     }
 
     // Ground-plane footprint polygon (lng/lat) of a nearby 3D building, from the convex hull of all
@@ -1079,40 +1068,37 @@
         return true;
     }
 
-    // Show only the given set of parcels (and the buildings on them). Used for whole-proposal
-    // isolation. parcelFeatures are the polygons for testing existing
-    // (untagged) context buildings by footprint centre.
-    function applyIsolationVisibility(parcelIdSet, parcelFeatures) {
-        // flatGroup holds parcels (tagged) and roads (untagged) — show only members of the set.
-        if (flatGroup) flatGroup.children.forEach(c => {
-            const pid = c.userData && c.userData.parcelId;
-            c.visible = (pid != null) && parcelIdSet.has(String(pid));
-        });
-        // buildingGroup holds proposed slices (tagged with their parcelId) and existing context
-        // buildings (untagged). Show proposed slices on member parcels, plus existing buildings
-        // whose footprint centre falls inside any member parcel polygon.
-        [existingBuildingsGroup, proposedBuildingsGroup, ineligibleBuildingsGroup, floorPlanGroup].filter(Boolean).forEach(group => group.children.forEach(c => {
-            const ud = c.userData || {};
-            if (ud.parcelId != null) { c.visible = parcelIdSet.has(String(ud.parcelId)); return; }
-            if (ud.isNearbyBuilding3D && ud.footprintLatLng && parcelFeatures.length) {
-                let inside = false;
-                try {
-                    const pt = turf.point(ud.footprintLatLng);
-                    for (let i = 0; i < parcelFeatures.length; i++) {
-                        if (turf.booleanPointInPolygon(pt, parcelFeatures[i])) { inside = true; break; }
-                    }
-                } catch (_) { }
-                c.visible = inside;
-                return;
-            }
-            c.visible = false;
-        }));
+    // Show only the given parcels and what stands on them, after showing again what the view hid
+    // before; nothing is rebuilt. parcelFeatures place existing (untagged) context buildings by
+    // footprint centre. The design view shows only its own parcels. The parcel view (`keepGround`)
+    // keeps every other parcel and road as bare flat ground, and also hides trees, people and
+    // vehicles, and every permitted massing except `permittedId`.
+    function applyIsolationVisibility(parcelIdSet, parcelFeatures, options = {}) {
+        const isolation = window.__threeSceneIsolation;
+        isolationHidden = isolation.showAgain(isolationHidden);
+        const contains = latLng => {
+            try {
+                const point = turf.point(latLng);
+                return parcelFeatures.some(feature => turf.booleanPointInPolygon(point, feature));
+            } catch (_) { return false; }
+        };
+        const onGround = child => isolation.standsOn(child.userData, parcelIdSet, contains);
+        // flatGroup holds parcels (tagged) and roads (untagged).
+        if (!options.keepGround) isolation.hideChildren([flatGroup], onGround, isolationHidden);
+        // Proposed slices are tagged with their parcel; existing context buildings stand by footprint centre.
+        isolation.hideChildren([existingBuildingsGroup, proposedBuildingsGroup, ineligibleBuildingsGroup, floorPlanGroup], onGround, isolationHidden);
+        // Planned decorations aren't parcel-specific; hide them while isolated. Planned grounds are
+        // flat, so the parcel view keeps them.
+        isolation.hideChildren([options.keepGround ? null : plannedFlatGroup, parkGroup, squareGroup, lakeGroup, stationGroup, existingTransitAlignmentGroup], undefined, isolationHidden);
+        if (options.keepGround) {
+            isolation.hideChildren([treesGroup, lifeGroup], undefined, isolationHidden);
+            isolation.hideChildren([planningSourcesGroup], child => options.permittedId != null
+                && child.userData?.planningRepresentationId === options.permittedId, isolationHidden);
+        }
         updateXrayControls();
-        // Planned decorations aren't parcel-specific; hide them while isolated.
-        [plannedFlatGroup, parkGroup, squareGroup, lakeGroup, stationGroup, existingTransitAlignmentGroup].forEach(g => { if (g) g.visible = false; });
+        invalidateThreeView();
     }
 
-    // Hide everything except the given parcel and the building footprint(s) on it.
     // The photoreal layer carves the mesh for every applied proposal; when isolation hides
     // some proposals' surfaces, their carve holes would gape open — so it listens for this.
     function notifyIsolationChanged() {
@@ -1125,18 +1111,32 @@
         } catch (_) { }
     }
 
+    // The parcel view. The photo mesh cannot be flattened, and its carve holes follow the designs on
+    // show, so the photo view keeps the city and only outlines the parcel.
     function isolateParcel(parcelId) {
         if (!parcelId) return;
         // If the current view is a whole-proposal isolation, restore it before changing view type.
         if (isolatedProposalId !== null) clearIsolation();
-        isolatedParcelId = parcelId;
-        viewedParcelId = parcelId;
-        isolatedProposalId = null;
+        viewedParcelId = String(parcelId);
+        if (realisticLayerActive) return;
+        isolatedParcelId = viewedParcelId;
         updateIsolationButton();
-        applyParcelEmphasis();
-        // A parcel selection does not isolate photoreal proposal cuts either: all city surfaces
-        // remain present while the selected parcel receives the bright outline/fill.
-        notifyIsolationChanged();
+        applyParcelIsolation();
+    }
+
+    function applyParcelIsolation() {
+        const feature = getParcelFeatureById(isolatedParcelId);
+        applyIsolationVisibility(new Set([isolatedParcelId]), feature ? [feature] : [],
+            { keepGround: true, permittedId: parcelMassingItem(isolatedParcelId)?.id ?? null });
+    }
+
+    // The parcel section closed or gave way to another: the city returns, the parcel stays in view.
+    function endParcelView() {
+        if (isolatedParcelId === null) return;
+        isolatedParcelId = null;
+        isolationHidden = window.__threeSceneIsolation.showAgain(isolationHidden);
+        updateIsolationButton();
+        invalidateThreeView();
     }
 
     // Isolation hides the whole city around the chosen ground, so leaving the camera where it was
@@ -1291,27 +1291,17 @@
     // Null ends the parcel view.
     function viewParcel(parcelId) {
         viewedParcelId = parcelId ? String(parcelId) : null;
-        applyParcelEmphasis();
     }
 
     function clearIsolation() {
         if (isolatedParcelId === null && isolatedProposalId === null) { if (viewedParcelId !== null) viewParcel(null); return; }
         viewedParcelId = null;
-        const wasProposalIsolated = isolatedProposalId !== null;
         isolatedParcelId = null;
         isolatedProposalId = null;
         updateIsolationButton();
-        restoreParcelEmphasis();
-        if (!wasProposalIsolated) {
-            notifyIsolationChanged();
-            return;
-        }
-        // Restore every flatGroup child (roads + all parcels) before re-applying the mode,
-        // which may then re-hide applied-descendant parcels in Built mode.
-        if (flatGroup) flatGroup.children.forEach(c => { c.visible = true; });
-        // Rebuild buildings so their per-object visibility resets cleanly to the mode default.
-        rebuild3DBuildingsOnly();
-        applyModeVisibility();
+        // Show again exactly what the view hid; the layers kept their own visibility meanwhile.
+        isolationHidden = window.__threeSceneIsolation.showAgain(isolationHidden);
+        invalidateThreeView();
         notifyIsolationChanged();
     }
 
@@ -1537,7 +1527,7 @@
                 });
                 body.appendChild(actions);
             } else if (kind === 'parcels' || kind === 'formed') {
-                if (viewedParcelId !== instance.id) viewParcel(instance.id);
+                isolateParcel(instance.id);
                 if (updateParcelInfoPanel(instance.id)) body.appendChild(parcelInfoPanelEl);
             } else if (kind === 'built') {
                 hostInspector(body);
@@ -1560,6 +1550,7 @@
             return true;
         },
         release({ keepSelection = false } = {}) {
+            endParcelView();
             clearStackFocus();
             parcelInfoPanelEl?.remove();
             const hosted = stackInspector;
@@ -2617,7 +2608,6 @@
                 console.warn('[3D] proposal pick surface failed; skipping one proposal', proposalError);
             }
         });
-        applyParcelEmphasis();
     }
 
     // Park lawns and green proposal ground: the procedural grass pattern (three-grass.js), in true
@@ -3955,9 +3945,7 @@
             if (!root.children.length) return;
             existingTransitAlignmentGroup = root;
             const builtPolicy = buildingDisplayPolicy.resolveBuiltDisplayPolicy(builtDisplay, window.PlanningViews?.getState()?.existingScope);
-            existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail
-                && isolatedParcelId === null
-                && isolatedProposalId === null;
+            existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail;
             targetScene.add(existingTransitAlignmentGroup);
         };
 
@@ -4045,7 +4033,6 @@
             }
         }
         buildPlannedParcelLayout3D(parcelLayoutGroup);
-        applyParcelEmphasis();
     }
 
     // Recessed lakes and underground station entrances need openings in the otherwise opaque
@@ -4148,7 +4135,6 @@
         const signal = sceneAbort?.signal;
         const generation = ++parcelGroundGeneration;
         const stillCurrent = () => isActive && !signal?.aborted && generation === parcelGroundGeneration && targetGroup === flatGroup;
-        restoreParcelEmphasis();
         for (let index = targetGroup.children.length - 1; index >= 0; index--) {
             const child = targetGroup.children[index];
             if (child?.userData?.isParcel) { threeResources.disposeOwnedSubtree(child); targetGroup.remove(child); }
@@ -4157,7 +4143,6 @@
         if (!stillCurrent()) return;
         rebuildGroundOnly(null);
         applyParcelVisibilityForMode(derivedParcelVisibilityMode());
-        applyParcelEmphasis();
     }
 
     // Set of parcel IDs that exist *only* because of an applied/executed proposal.
@@ -6532,10 +6517,8 @@
 
     function rebuildTreesOnly() {
         if (!isActive || !treesGroup) return;
-        restoreParcelEmphasis();
         disposeTreesGroup();
         if (treesEnabled) buildTreesGroup();
-        applyParcelEmphasis();
         invalidateThreeView();
     }
 
@@ -8351,7 +8334,6 @@
         corridorTerrainCommittedKeys = completedKeys;
         corridorGroup.visible = false;
         scene.add(group);
-        applyParcelEmphasis();
         const stationHeights = profiles.flatMap(profile => profile.stations.map(station => station.z))
             .filter(Number.isFinite);
         const minZ = stationHeights.length ? Math.min(...stationHeights) : null;
@@ -9027,7 +9009,6 @@
             || previous.builtPolicy.showSurviving !== builtPolicy.showSurviving
             || previous.builtPolicy.showDemolished !== builtPolicy.showDemolished)) return false;
         if (proposedVisible && !previous.proposedReady) return false;
-        restoreParcelEmphasis();
         existingBuildingsGroup.visible = existingVisible;
         proposedBuildingsGroup.visible = proposedVisible;
         const update = (group, opacity, existing) => buildingDisplayPolicy.updateRetainedBuildingMaterials(group, {
@@ -9038,7 +9019,8 @@
         if (existingVisible) update(existingBuildingsGroup, builtPolicy.material === 'solid' ? 1 : 0.5, true);
         if (proposedVisible) update(proposedBuildingsGroup, plannedDisplay === 'solid' ? 1 : 0.5, false);
         if (existingTransitAlignmentGroup) existingTransitAlignmentGroup.visible = builtPolicy.showExistingRail && !realisticLayerActive;
-        if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
+        if (isolatedParcelId !== null) applyParcelIsolation();
+        else if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
         refreshClickStackFigures();
         invalidateThreeView();
         return true;
@@ -9057,7 +9039,6 @@
         const previous = buildingDisplaySnapshot;
         buildingBuildPending = true;
         buildingDisplaySnapshot = null;
-        restoreParcelEmphasis();
         // Build replacements off-scene. Cooperative work yields between buildings; clearing
         // the displayed groups first would expose an empty or partially rebuilt city each time.
         const nextExisting = rebuildExisting ? new THREE.Group() : existingBuildingsGroup;
@@ -9121,7 +9102,7 @@
             ensureNearbyTrees();
             ensureNearbyWater();
             ensureNearbyGreen();
-            if (isolatedParcelId !== null) applyParcelEmphasis();
+            if (isolatedParcelId !== null) applyParcelIsolation();
             else if (isolatedProposalId !== null) isolateProposal(isolatedProposalId);
             refreshClickStackFigures();
             updateXrayControls();
@@ -9931,6 +9912,7 @@
         try { window.ThreeClickStack?.close({ silent: true }); } catch (_) { }
         isolatedParcelId = null;
         isolatedProposalId = null;
+        isolationHidden = [];
         isolationResetEl = null;
         isolationBannerEl = null;
         parcelInfoPanelEl = null;
@@ -10890,6 +10872,7 @@
             stopBuildingRadiusPreview?.();
             isolatedParcelId = null;
             isolatedProposalId = null;
+            isolationHidden = window.__threeSceneIsolation.showAgain(isolationHidden);
             try { updateIsolationButton(); } catch (_) { }
         }
         if (options.exiting) buildingViewDirty = true;

@@ -67,13 +67,13 @@ describe('three-mode Xray wiring', () => {
         const stubs = {
             window: {},
             enabled, built, planned, isolated, existingGroup: existingBuildingsGroup, proposedGroup: proposedBuildingsGroup, ineligibleGroup: ineligibleBuildingsGroup,
-            clearGroupChildren: clear, retireGroupAfterFrame: group => clear(group), disposeFloorPlans: vi.fn(), restoreParcelEmphasis: vi.fn(),
+            clearGroupChildren: clear, retireGroupAfterFrame: group => clear(group), disposeFloorPlans: vi.fn(),
             buildingDisplayPolicy: { resolveBuiltDisplayPolicy: mode => ({ visible: mode !== 'off', material: mode, showSurviving: true, showDemolished: false }) },
             buildingMaterials: { xray: 'xray-material', solid: 'solid-material', ghost: 'ghost-material' },
             buildNearbyProposalBuildings3D: vi.fn(async () => {}), buildProposedBuildings3D: vi.fn(async () => {}), appendSuggestedExistingFloorPlans: vi.fn(),
             buildIneligibleParcels3D: vi.fn(), ensureNearbyProposalBuildings: vi.fn(),
             ensureNearbyTrees: vi.fn(), rebuildTreesOnly: vi.fn(), ensureNearbyWater: vi.fn(), rebuildWaterOnly: vi.fn(),
-            applyParcelEmphasis: vi.fn(), isolateProposal: vi.fn(), updateXrayControls: vi.fn(), refreshClickStackFigures: vi.fn(),
+            applyParcelIsolation: vi.fn(), isolateProposal: vi.fn(), updateXrayControls: vi.fn(), refreshClickStackFigures: vi.fn(),
             invalidateThreeView: vi.fn(), ensureNearbyGreen: vi.fn(),
             // Replacements are built off-scene and swapped into the scene group (7ed6200e9).
             THREE: { Group: class { constructor() { this.children = []; this.userData = {}; } } },
@@ -108,7 +108,7 @@ describe('three-mode Xray wiring', () => {
         expect(c.disposeFloorPlans).toHaveBeenCalledOnce();
         expect(c.buildNearbyProposalBuildings3D).not.toHaveBeenCalled();
         expect(c.buildProposedBuildings3D).not.toHaveBeenCalled();
-        expect(c.applyParcelEmphasis).toHaveBeenCalledOnce();
+        expect(c.applyParcelIsolation).toHaveBeenCalledOnce();
     });
     it('an existing-context refresh preserves proposed families and does not rebuild scene scenery', async () => {
         const [rebuild, c] = rebuildHarness(false);
@@ -170,7 +170,7 @@ describe('three-mode Xray wiring', () => {
         disposePlans(); expect(dispose).toHaveBeenCalledTimes(2); expect(remove).toHaveBeenCalledTimes(2); expect(keys.size).toBe(0);
     });
     it('applyIsolationVisibility filters floor-plan wrappers by parcel identity', () => {
-        const [apply, context] = extracted('applyIsolationVisibility', `let flatGroup=null; let buildingGroup=null; let existingBuildingsGroup={children:[]}; let proposedBuildingsGroup={children:[]}; let ineligibleBuildingsGroup={children:[]}; let floorPlanGroup=this.fpGroup; let plannedFlatGroup=null; let parkGroup=null; let squareGroup=null; let lakeGroup=null; let stationGroup=null; let existingTransitAlignmentGroup=null;`, { fpGroup: { children: [{ userData: { parcelId: 'keep' } }, { userData: { parcelId: 'hide' } }] }, turf: { point: () => ({}), booleanPointInPolygon: () => false }, updateXrayControls: vi.fn() });
+        const [apply, context] = extracted('applyIsolationVisibility', `let flatGroup=null; let buildingGroup=null; let existingBuildingsGroup={children:[]}; let proposedBuildingsGroup={children:[]}; let ineligibleBuildingsGroup={children:[]}; let floorPlanGroup=this.fpGroup; let plannedFlatGroup=null; let parkGroup=null; let squareGroup=null; let lakeGroup=null; let stationGroup=null; let existingTransitAlignmentGroup=null; let treesGroup=null; let lifeGroup=null; let planningSourcesGroup=null; let isolationHidden=[];`, { fpGroup: { children: [{ userData: { parcelId: 'keep' }, visible: true }, { userData: { parcelId: 'hide' }, visible: true }] }, turf: { point: () => ({}), booleanPointInPolygon: () => false }, updateXrayControls: vi.fn(), invalidateThreeView: vi.fn(), window: { __threeSceneIsolation: require('../../frontend/js/three-scene-isolation.js') } });
         apply(new Set(['keep']), []);
         expect(context.fpGroup.children.map(child => child.visible)).toEqual([true, false]);
     });
