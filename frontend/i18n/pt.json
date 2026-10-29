@@ -8207,7 +8207,7 @@
             "right": "Direita",
             "swap": "Trocar lados",
             "sliderLabel": "Divisor de comparação",
-            "modelOnly": "Abra a vista de modelo para desenhar a comparação.",
+            "mapNote": "No mapa, cada lado desenha os seus próprios edifícios e a volumetria permitida como implantações. As parcelas, as ruas e os parques aparecem nos dois lados.",
             "options": {
                 "built": "Edificado hoje",
                 "permitted": "Volumetria permitida",

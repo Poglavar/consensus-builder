@@ -8207,7 +8207,7 @@
             "right": "Droite",
             "swap": "Inverser les côtés",
             "sliderLabel": "Séparateur de comparaison",
-            "modelOnly": "Ouvrez la vue modèle pour dessiner la comparaison.",
+            "mapNote": "Sur la carte, chaque côté dessine ses propres bâtiments et la volumétrie autorisée en emprise au sol. Les parcelles, les rues et les parcs apparaissent des deux côtés.",
             "options": {
                 "built": "Bâti existant",
                 "permitted": "Volumétrie autorisée",

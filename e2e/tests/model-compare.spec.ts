@@ -1,10 +1,14 @@
 // The Compare tab of Buildings and massing (js/three-compare.js): in the model view the canvas splits
-// at a divider, each half drawing one chosen state of the scene (Built today, a design, ...); outside
-// the model view the tab only says to open it. Swap trades the sides; unticking ends the split.
+// at a divider, each half drawing one chosen state of the scene (Built today, a design, ...); on the
+// 2D map the halves draw their buildings as footprints (js/compare-on-map.js). Swap trades the sides;
+// unticking ends the split.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createBuilding } from '../helpers/runtime';
 import { mockBuildingScene } from '../helpers/mocks/building-data';
 import { Page } from '@playwright/test';
+
+// A Leaflet pane has no box of its own, so whether it draws is its computed display.
+const paneDisplay = (page: Page, name: string) => page.evaluate(pane => getComputedStyle((window as any).map.getPane(pane)).display, name);
 
 async function openCompareTab(page: Page) {
   if (!(await page.locator('#planning-views').isVisible())) await page.locator('#planning-views-button').click();
@@ -49,19 +53,47 @@ async function recordPasses(page: Page, designId: string) {
   });
 }
 
-test('Compare draws Built today and a design side by side in the model view, swaps and ends', async ({ mockApi: page }) => {
+test('Compare draws Built today and a design side by side on the map and in the model view, swaps and ends', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
   await openCity(page);
   const designId = await createBuilding(page);
   const title = await page.evaluate(id => (window as any).proposalStorage.getProposal(id).title, designId);
 
-  // On the 2D map the tab only points to the model view.
+  // On the 2D map each half draws its side's buildings; the note says so and leads to the model view.
   await page.keyboard.press('Escape');
   await openCompareTab(page);
   const enable = page.locator('#planning-compare-enable');
-  await expect(enable).toBeDisabled();
-  await expect(page.locator('#planning-compare-left')).toBeDisabled();
-  await expect(page.locator('.planning-compare-note')).toHaveText('Open the model view to draw the comparison.');
+  const left = page.locator('#planning-compare-left');
+  const right = page.locator('#planning-compare-right');
+  await expect(enable).toBeEnabled();
+  await expect(page.locator('.planning-compare-note .sheet-note')).toHaveText(/^On the map, each side draws its own buildings/);
+  await expect(page.locator('#planning-compare-open-model')).toBeVisible();
+  await right.selectOption(`design:${designId}`);
+  await enable.check();
+  await expect(page.locator('#map .map-compare__handle')).toBeVisible();
+  await expect(page.locator('#map')).toHaveClass(/\bmap-comparing\b/);
+  await expect(page.locator('#map .map-compare__label--after')).toHaveText(`Design: ${title}`);
+  // The design's buildings move from their shared pane into the right half alone, clipped at the divider.
+  expect(await paneDisplay(page, 'proposedBuildingsPane')).toBe('none');
+  await expect.poll(() => page.locator('.leaflet-compareRight-pane path.map-compare-shape--proposed').count()).toBeGreaterThan(0);
+  await expect(page.locator('.leaflet-compareLeft-pane path.map-compare-shape--proposed')).toHaveCount(0);
+  const clips = await page.evaluate(() => {
+    const w = window as any;
+    const pane = (name: string) => w.map.getPane(name).style.clipPath;
+    const middle = w.map.containerPointToLayerPoint([w.map.getSize().x / 2, 0]).x;
+    return { left: pane('compareLeftPane'), right: pane('compareRightPane'), middle };
+  });
+  expect(clips.right.startsWith(`polygon(${clips.middle}px`)).toBe(true);
+  expect(clips.left).toContain(`${clips.middle}px`);
+  await page.locator('#planning-compare-swap').click();
+  await expect.poll(() => page.locator('.leaflet-compareLeft-pane path.map-compare-shape--proposed').count()).toBeGreaterThan(0);
+  await expect(page.locator('.leaflet-compareRight-pane path.map-compare-shape--proposed')).toHaveCount(0);
+  await page.locator('#planning-compare-swap').click();
+  await enable.uncheck();
+  await expect(page.locator('#map .map-compare__handle')).toHaveCount(0);
+  await expect(page.locator('#map')).not.toHaveClass(/\bmap-comparing\b/);
+  await expect(page.locator('.leaflet-compareRight-pane path')).toHaveCount(0);
+  expect(await paneDisplay(page, 'proposedBuildingsPane')).toBe('block');
   await page.locator('#planning-views [data-sheet-close]').click();
 
   await page.locator('#mode-3d-toggle').click();
@@ -75,8 +107,6 @@ test('Compare draws Built today and a design side by side in the model view, swa
   await openCompareTab(page);
   await expect(page.locator('.planning-compare-note')).toBeHidden();
   await expect(enable).toBeEnabled();
-  const left = page.locator('#planning-compare-left');
-  const right = page.locator('#planning-compare-right');
   await expect(left.locator('option')).toHaveText(['Built today', 'Permitted massing', 'Proposed (all applied designs)', `Design: ${title}`]);
   await expect(left).toHaveValue('built');
   await right.selectOption(`design:${designId}`);

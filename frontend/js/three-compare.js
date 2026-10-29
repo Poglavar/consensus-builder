@@ -1,10 +1,11 @@
-// Side-by-side comparison in the model view: the canvas is split at a draggable divider and each
-// half draws one chosen state of the same scene from the same camera. A state ("side") is Built
+// Side-by-side comparison in the model view and on the map: the view is split at a draggable divider
+// and each half draws one chosen state of the same scene from the same camera. A state ("side") is Built
 // today, Permitted massing, Proposed (every applied design), one applied design or one plan.
 // Objects that both sides show are drawn once per half untouched; only what differs is switched.
 // The pure rules (which object a side shows, how a scene splits, the option lists, the scissor
 // rectangles) come first and are unit tested; the Compare tab of the Buildings and massing sheet
-// and the divider are wired below them. three-mode.js draws the two passes (renderComparePasses).
+// and the divider are wired below them. three-mode.js draws the two passes (renderComparePasses);
+// compare-on-map.js draws the two halves of the 2D map.
 (function (root, factory) {
     const api = factory(root);
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -86,7 +87,10 @@
     // ── the Compare tab and the divider ──────────────────────────────────────────────────────
 
     const doc = global.document;
-    const state = { enabled: false, left: 'built', right: 'proposed', percent: 50, options: pure.sideOptions(), scene: null, divider: null };
+    // model: the model view while it is open; map: the 2D map. The model view wins while open.
+    const state = { enabled: false, left: 'built', right: 'proposed', percent: 50, options: pure.sideOptions(), model: null, map: null,
+        divider: null, dividerScene: null };
+    const scene = () => state.model || state.map;
 
     function t(key, fallback, params = {}) {
         const value = global.i18n?.t?.(key, params);
@@ -134,9 +138,10 @@
         return { left: pure.parseSide(state.left, state.options), right: pure.parseSide(state.right, state.options), percent: state.percent };
     }
 
-    function isActive() {
+    // Whether the comparison draws; given a scene, whether it draws in that one.
+    function isActive(of = null) {
         const current = sides();
-        return state.enabled && !!state.scene && !!current.left && !!current.right;
+        return state.enabled && !!scene() && (!of || of === scene()) && !!current.left && !!current.right;
     }
 
     function refresh() {
@@ -146,25 +151,31 @@
         state.left = el('planning-compare-left')?.value || state.left;
         state.right = el('planning-compare-right')?.value || state.right;
         const enable = el('planning-compare-enable');
-        if (enable) { enable.checked = state.enabled; enable.disabled = !state.scene; }
+        if (enable) { enable.checked = state.enabled; enable.disabled = !scene(); }
         for (const id of ['planning-compare-left', 'planning-compare-right', 'planning-compare-swap']) {
             const control = el(id);
-            if (control) control.disabled = !state.scene;
+            if (control) control.disabled = !scene();
         }
+        // On the map: what the halves draw there, and the way to the model view.
         const note = doc.querySelector('.planning-compare-note');
-        if (note) note.hidden = !!state.scene;
+        if (note) note.hidden = !!state.model;
         syncDivider();
     }
 
-    // The divider over the canvas: present while the comparison draws, labelled with the two sides.
+    // The divider over the canvas or map: present while the comparison draws, labelled with the two
+    // sides. It moves to the other view when the model view opens or closes.
     function syncDivider() {
         const active = isActive();
-        if (!active) {
-            state.divider?.dispose();
+        if (state.divider && (!active || state.dividerScene !== scene())) {
+            state.divider.dispose();
             state.divider = null;
             state.before?.remove();
             state.before = null;
-            state.scene?.invalidate();
+            state.dividerScene?.invalidate();
+            state.dividerScene = null;
+        }
+        if (!active) {
+            scene()?.invalidate();
             return;
         }
         const current = sides();
@@ -172,10 +183,10 @@
         if (state.divider) {
             state.divider.labelEls[0].textContent = labels.before;
             state.divider.labelEls[1].textContent = labels.after;
-            state.scene.invalidate();
+            scene().invalidate();
             return;
         }
-        const container = state.scene.container;
+        const container = scene().container;
         const before = doc.createElement('div');
         before.className = 'map-compare__before';
         container.appendChild(before);
@@ -183,19 +194,26 @@
         state.divider = global.__MapBeforeAfter.attachDivider(container, before, {
             labels, percent: state.percent, labelPlacement: 'divider',
             sliderLabel: t('planningViews.compare.sliderLabel', 'Comparison divider'),
-            onChange: percent => { state.percent = percent; state.scene?.invalidate(); }
+            onChange: percent => { state.percent = percent; scene()?.invalidate(); }
         });
-        state.scene.invalidate();
+        state.dividerScene = scene();
+        scene().invalidate();
     }
 
     // three-mode.js attaches on entering the model view: { container, invalidate }.
-    function attach(scene) {
-        state.scene = scene;
+    function attach(model) {
+        state.model = model;
         refresh();
     }
 
     function detach() {
-        state.scene = null;
+        state.model = null;
+        refresh();
+    }
+
+    // compare-on-map.js attaches the 2D map once it is ready: { container, invalidate }.
+    function attachMap(map) {
+        state.map = map;
         refresh();
     }
 
@@ -219,6 +237,7 @@
             fillSelect(el('planning-compare-right'), state.right);
             syncDivider();
         });
+        el('planning-compare-open-model')?.addEventListener('click', () => global.requestMapMode?.('model'));
         doc.addEventListener('mapshell:sheetopened', event => { if (event.detail?.id === 'planning-views') refresh(); });
         refresh();
     }
@@ -226,5 +245,6 @@
     if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', wire, { once: true });
     else wire();
 
-    return Object.freeze({ ...pure, attach, detach, refresh, isActive, sides, getState: () => ({ ...state, scene: undefined, divider: undefined, before: undefined }) });
+    return Object.freeze({ ...pure, attach, detach, attachMap, refresh, isActive, sides,
+        getState: () => ({ ...state, model: undefined, map: undefined, divider: undefined, dividerScene: undefined, before: undefined, onMap: !!state.map && !state.model }) });
 });

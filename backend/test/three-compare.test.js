@@ -1,6 +1,7 @@
 // The model view's side-by-side comparison (frontend/js/three-compare.js): which sides are offered,
 // what each side shows, how a scene splits between the two passes, and the scissor rectangles.
-// The divider and the Compare tab are checked in the browser; these are the pure rules.
+// The divider and the Compare tab are checked in the browser; these are the pure rules. The map's
+// halves are in compare-on-map.test.js.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 

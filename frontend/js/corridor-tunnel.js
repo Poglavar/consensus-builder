@@ -957,12 +957,16 @@
                 console.warn('[corridor-tunnel] cross-proposal cut remainder unavailable — demolishing whole', id);
             }
             const remainderArea = remainder ? (Number(api.area(remainder)) || 0) : 0;
+            // The joint cut names the last design that cuts the building, as later records win.
+            const owner = buildingRecords[buildingRecords.length - 1].proposalId;
+            const named = owner == null ? {} : { proposalId: owner };
             if (!remainder || remainderArea < Math.max(10, Math.max(0, footprintArea) * 0.15)) {
-                consolidated.push({ id, geometry: JSON.parse(JSON.stringify(footprintGeometry)) });
+                consolidated.push({ id, ...named, geometry: JSON.parse(JSON.stringify(footprintGeometry)) });
                 return;
             }
             consolidated.push({
                 id,
+                ...named,
                 geometry: JSON.parse(JSON.stringify(footprintGeometry)),
                 demolishedPart: JSON.parse(JSON.stringify(removed.geometry)),
                 remainder: JSON.parse(JSON.stringify(remainder.geometry))

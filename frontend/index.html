@@ -164,7 +164,7 @@
                 'css/agreement.css?v=20261027-agreement-tabs',
                 'css/agreement-dialog.css?v=20261027-panel-buttons',
                 'css/mobile-sheets.css?v=20261027-style',
-                'css/planning-views.css?v=20261027-stack-semantics',
+                'css/planning-views.css?v=20261029-compare-map',
                 'css/three-sun.css',
                 'css/three-click-stack.css?v=20261027-stack-semantics',
                 'css/right-screen-panel.css',
@@ -547,7 +547,7 @@
                     <details class="planning-coverage"><summary></summary><p></p><p class="planning-cache-summary"></p><dl class="planning-result-counts"></dl></details>
                     <button type="button" id="planning-open-model" class="cb-link planning-open-model" hidden></button>
                 </div>
-                <!-- Side by side comparison in the model view (js/three-compare.js). -->
+                <!-- Side by side comparison in the model view and on the map (js/three-compare.js, js/compare-on-map.js). -->
                 <div id="planning-views-compare" class="planning-compare" role="tabpanel" data-planning-tab-panel="compare" hidden>
                     <label class="planning-compare-toggle">
                         <input type="checkbox" id="planning-compare-enable">
@@ -565,7 +565,10 @@
                             <select id="planning-compare-right" class="planning-layer-select"></select>
                         </label>
                     </div>
-                    <p class="planning-compare-note sheet-note" data-i18n-key="planningViews.compare.modelOnly">Open the model view to draw the comparison.</p>
+                    <div class="planning-compare-note" hidden>
+                        <p class="sheet-note" data-i18n-key="planningViews.compare.mapNote">On the map, each side draws its own buildings and permitted massing as footprints. Parcels, roads and parks show on both sides.</p>
+                        <button type="button" id="planning-compare-open-model" class="cb-link" data-i18n-key="planningViews.openModel">Open 3D model view</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -2207,7 +2210,8 @@
             'js/click-stack/click-stack-hits.js?v=20261028-neighbours',
             'js/click-stack/click-stack-panel.js?v=20261029-buildout',
             'js/buildout-clock.js?v=20261029-undated',
-            'js/three-compare.js?v=20261028-compare',
+            'js/three-compare.js?v=20261029-compare-map',
+            'js/compare-on-map.js?v=20261029-compare-map',
             'js/proposals/market-view.js?v=20261019-market-evidence',
             'js/proposals/parcel-set-relations.js?v=20261020-reference-relations',
             'js/proposals/approval-panel.js?v=20261027-experimental',

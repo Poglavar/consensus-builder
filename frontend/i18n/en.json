@@ -8049,7 +8049,7 @@
             "right": "Right",
             "swap": "Swap sides",
             "sliderLabel": "Comparison divider",
-            "modelOnly": "Open the model view to draw the comparison.",
+            "mapNote": "On the map, each side draws its own buildings and permitted massing as footprints. Parcels, roads and parks show on both sides.",
             "options": {
                 "built": "Built today",
                 "permitted": "Permitted massing",

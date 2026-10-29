@@ -35,6 +35,7 @@ recorded, nothing deployed without a say-so.
 | M5 | Replacement versions | For a plan with a newer version, before is the version currently applied and after the new one | done 2026-10-12 for proposal versions (`sourceProposalId`); plan versions (`ens_plan.supersedes`) are a follow-up, see Decisions |
 | M6 | Owner acceptance review | An owner reading a readjustment in the details panel compares their parcel before with their plot after, without opening the editor | done 2026-10-12 |
 | M7 | Model view | The Buildings and massing sheet's Compare tab splits the 3D canvas at a draggable divider; each side is any of Built today, Permitted massing, Proposed, one applied design or one plan (`three-compare.js`, two scissor passes in `three-mode.js`); the pure rules are unit tested; the divider and the passes are checked in a headed Chrome | done 2026-10-28 |
+| M8 | 2D map | The same Compare tab splits the 2D map: buildings no side removes stay in their pane; the buildings applied designs demolish and the designs' buildings draw again per side into two panes clipped at the divider, and the permitted massing pane is clipped to the Permitted side (`compare-on-map.js`); parcels, roads and parks show on both halves; the pure rules are unit tested; the halves are checked in a headed Chrome | done 2026-10-29 |
 
 ## Parked
 

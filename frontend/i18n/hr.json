@@ -8095,7 +8095,7 @@
             "right": "Desno",
             "swap": "Zamijeni strane",
             "sliderLabel": "Razdjelnik usporedbe",
-            "modelOnly": "Otvorite prikaz modela da se usporedba iscrta.",
+            "mapNote": "Na karti svaka strana crta svoje zgrade i dopuštenu građevnu masu kao tlocrte. Čestice, ceste i parkovi vide se na obje strane.",
             "options": {
                 "built": "Izgrađeno danas",
                 "permitted": "Dopuštena građevna masa",

@@ -8077,7 +8077,7 @@
             "right": "Derecha",
             "swap": "Intercambiar lados",
             "sliderLabel": "Divisor de comparación",
-            "modelOnly": "Abre la vista de modelo para dibujar la comparación.",
+            "mapNote": "En el mapa, cada lado dibuja sus propios edificios y el volumen permitido como huellas. Las parcelas, las calles y los parques se ven en ambos lados.",
             "options": {
                 "built": "Construido hoy",
                 "permitted": "Volumen permitido",
