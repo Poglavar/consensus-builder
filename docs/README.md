@@ -66,7 +66,7 @@ Each document describes a current contract, an open plan or research. Verificati
 
 **Agents and MCP**
 
-- [Student AI assistance trial](student-ai.md).
+- [Student AI assistance and collaboration next steps](student-ai.md).
 - [MCP design of record](mcp.md), [workflow](mcp-workflow.md), [editing contract](mcp-editing.md), [agent working plan](agent-working-plan.md) (open plan), [directory listings](mcp-directory-submissions.md).
 
 **Hackathon and plans**

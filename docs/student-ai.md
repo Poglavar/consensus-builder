@@ -75,6 +75,43 @@ undo through `ugt_edit_shared_plan` while it holds control.
   Experimental file-backed sessions must be recreated; they are no longer read.
 - Sharing/publishing, wallet approval and blockchain actions keep their existing explicit flows.
 
+## Remaining work
+
+Prioritize integration and the shared-plan trial before deployment. PostgreSQL session storage,
+transactional version/control checks, hashed capabilities and protection of the private upload
+path are part of the current implementation. The following work remains, in order:
+
+1. **Integrate the latest Colosseum changes.** Merge `colosseum-worlds-fair` into `student-ai`,
+   resolve overlap and run targeted headless tests for the combined editor, renderer and
+   collaboration paths. A conflict-free Git merge alone does not establish working integration.
+2. **Complete the collaboration trial.** Exercise human-to-agent-to-human handover, pending local
+   edits, undo, reconnect, service restart and stale-save rejection on the integrated code. Check
+   movement and rotation in 2D and 3D, reduced motion, a narrow viewport and the student's actual
+   input or assistive technology. Use independent clients to confirm both see the accepted revision.
+3. **Merge and deploy the verified revision.** Apply the PostgreSQL schema before starting code
+   that requires it, update the API and unbuffered nginx session routes, then update MCP and the
+   frontend. Follow the [MCP deployment contract](mcp.md#deployment). Verify a real shared-session
+   edit and notification through the public site, and retain the previous release for rollback.
+   Recreate experimental file-backed sessions; their old links are not database sessions.
+4. **Add session management.** List and reopen accessible sessions, delete finished sessions,
+   manage invitations and show storage-limit errors clearly. Define deletion and retention behavior
+   for connected participants and keep private sessions out of the publication index.
+5. **Add revision history.** Attribute accepted changes to their actor, show what changed, allow
+   inspection of earlier revisions and restore a selected revision as a new accepted version.
+   Extend beyond the current single agent-change undo without mutating prior content.
+6. **Extend collaboration to people.** Introduce individual invitations, participant identities,
+   viewer/editor permissions, presence, Request control and Pass control. Retain owner takeover
+   and one editor at a time initially. Replace the fixed owner/agent editing distinction with
+   participant identity and permissions so an AI can participate through the same contract.
+   Reuse ordinary plan revisions, the existing human editors and live notifications.
+7. **Consider simultaneous editing after turn-taking works well.** Start with participants editing
+   different designs within the same plan. Define how membership changes and competing edits to
+   the same design are detected and resolved before permitting concurrent saves. Automatic offline
+   merging is outside the current contract.
+
+New human editing and session-management operations must have MCP parity through shared
+operations and validation; update the affected schemas and discovery alongside implementation.
+
 ## Optional browser-control trial
 
 An AI can also operate the student's existing tab when its browser permissions allow it. That
