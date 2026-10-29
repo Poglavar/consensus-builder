@@ -8,14 +8,17 @@ rework ([plan-design-agreement.md](plan-design-agreement.md)), which kept the pr
 lost it in code: publication pins only through `POST /pins`, reading comes only from the index, and the
 chain reader (`chain-proposal-loader.js`) was removed with the proposal-era readers.
 
-Decisions taken 2026-10-29 are stated as rules; what is still open is listed at the end. Terms here
+Decisions taken 2026-10-29 are stated as rules; what is still open is listed at the end. Every
+program and contract may be changed, rewritten or replaced to fit this plan (user, 2026-10-29):
+existing devnet accounts and testnet deployments are not kept for compatibility, and records on them
+are re-created where needed, as the experimental-records rule in `AGENTS.md` already says. Terms here
 are proposed; [vocabulary.md](vocabulary.md) changes when a milestone lands, not before.
 
 ## The objects on chain
 
 | Object | Identity | On chain | Needs first | Who mints | Chains |
 |---|---|---|---|---|---|
-| **Parcel anchor** | cadastral parcel id | an ownerless account per parcel: id, fixed metadata URI. Created once, never transferred, never closed. The parcel's public address and inbox. | nothing | anyone (pays rent only) | Solana (`parcel_nft` v2, built); EVM (to build: `ParcelNFT.sol` is a transferable ERC-721 minted to an address, which contradicts this row) |
+| **Parcel anchor** | cadastral parcel id | an ownerless account per parcel: id, fixed metadata URI. Created once, never transferred, never closed. The parcel's public address and inbox. | nothing | anyone (pays rent only) | Solana (`parcel_nft` v2 today; moves into the one program, see Chain contracts); EVM (to build: `ParcelNFT.sol` is a transferable ERC-721 minted to an address, which contradicts this row) |
 | **Design record** | design CID | the CID, the minter, the chain time | the content retrievable from IPFS | anyone | both, to build |
 | **Plan record** | plan CID | the CID, the minter, the chain time | the plan and every member design retrievable from IPFS. Member designs need no record of their own: the plan's CID commits to their CIDs. | anyone | both, to build |
 | **Agreement** | agreement CID + sponsor | the account the agreement program keeps: escrow, lens, deadline, decision, status ([program README](../blockchain/solana/programs/agreement/README.md)) | the content retrievable; **every input parcel anchored**; the plan it names retrievable | the sponsor's wallet | Solana (built, devnet); EVM (to build) |
@@ -134,14 +137,23 @@ the link today. With a wallet connected to a chain this app has programs on:
 
 **Solana** (`blockchain/solana/programs/`):
 
-- `parcel_nft` v2: unchanged; it is the anchor.
-- `agreement`: unchanged for the sponsor's account. (Open: whether `create` should also take the
-  plan CID so a reader can find agreements of a plan by memcmp instead of fetching every agreement.)
-- **`record`** (new): `Record` at `PDA(["design" | "plan", sha256(cid)])` with `kind u8`, `cid
-  string`, `minter Pubkey`, `created_at i64`, `bump u8`. One instruction, `create(kind, cid)`, refused
-  when the account exists. Fixed fields first so memcmp on `kind` works.
-- `proposal_nft` is retired by this plan (its consent machinery moved to `agreement`); `proposal_market`
-  and `proposal_pledge` stay as they are, reading agreement accounts.
+Since the programs may be rewritten, the anchors, records and agreements become **one program**
+(working name `ugt`): one deploy and one rent instead of three, one IDL and one client for the
+adapter, and the agreement can check anchors and records it owns without cross-program reads.
+
+- **`ParcelAnchor`** at `PDA(["parcel", parcelId])`: `parcel_nft` v2's account, moved here unchanged
+  in meaning (ownerless, fixed metadata URI, never closed). `anchor_parcels(ids[])` creates several per
+  transaction and skips ones that exist, so a resumed batch never fails on its own earlier work.
+- **`Record`** at `PDA([kind, sha256(cid)])` for `kind` design or plan: `kind u8`, `cid string`,
+  `minter Pubkey`, `created_at i64`, `bump u8`, fixed fields first so memcmp on `kind` works.
+  `create_record(kind, cid)` is refused when the account exists.
+- **`Agreement`**: the current program's account and lifecycle, plus `plan_cid` stored at a fixed
+  offset (as its sha256, so memcmp finds the agreements of a plan without fetching every agreement).
+  Anchoring stays the browser's guard, as in Flow 3; the account records `input_count` from the
+  content for readers.
+- `proposal_nft`, the separate `parcel_nft` and the separate `agreement` program are retired.
+  `proposal_market` and `proposal_pledge` are repointed at the new agreement account layout; they
+  may be merged into the same program later if their deploy cost argues for it.
 
 **EVM** (`blockchain/contracts/`, Foundry):
 
@@ -166,7 +178,7 @@ so every account layout above is final at that deploy; devnet and testnet carry 
 ## Browser and server pieces
 
 - `frontend/js/chain/` (new): the adapter interface, `solana-adapter.js` over `AgreementClient`,
-  `AgreementBridge`, `SolanaParcelClient` and a new `record-client.js`; `evm-adapter.js` over
+  `AgreementBridge` and `SolanaParcelClient` (rewritten as one codec for the one program); `evm-adapter.js` over
   `ChainDataLoader`'s provider and `contracts-loader.js`. UMD, so the agents use the same code in
   node (the pattern of `agreement-client.js`).
 - The mint checklist dialog on the shared dialog chrome (`js/ui/dialogs.js`), with busy controls on
@@ -190,7 +202,8 @@ mock API and a local validator), then docs and the vocabulary entries it changes
 1. **R1, Solana reader.** From chain in Lists for agreements, their plans and designs, on devnet,
    with the verify step and chain state on the records. No server involved. Done when a devnet
    agreement opens from a browser whose `backend` is unreachable.
-2. **R2, Solana records and the checklist.** The `record` program on devnet; Flow 2's courier
+2. **R2, Solana records and the checklist.** The one program on devnet, replacing `parcel_nft` and
+   `agreement` (R1's reader moves to its layout; devnet agreements are re-created); Flow 2's courier
    order and gate; the mint checklist for designs, plans and agreements including parcel anchoring;
    Flow 4 in the Share dialog; the server chain watcher; the MCP tools. Done when a design drawn in
    a browser with no `backend` is minted and later listed by the index.
@@ -217,7 +230,11 @@ four days, R4 about a week; R4 is the only new money-holding contract.
 4. **Plan records at all?** A plan is addressable by CID without a record. The record adds a
    timestamp and a place to find plans on chain; if that is not wanted, plans are read through the
    agreements that name them and R2 shrinks.
-5. **Agreement `create` carrying the plan CID**, for the reader's benefit (see Chain contracts).
+5. **Anchors checked by the program?** Freedom to rewrite makes it possible: the agreement commits a
+   Merkle root of its input parcel ids, `bind_parcels` takes a batch of anchor accounts with proofs,
+   and `fund` / `execute` refuse until every input is bound. It makes "every party has an inbox" a
+   chain fact instead of a browser check, at the cost of more transactions per agreement and a
+   Merkle codec in both clients. The plan above keeps the browser guard until this is decided.
 6. **Anchors for input parcels of a non-binding agreement.** A community vote names parcels but
    moves nothing and is never minted today; it stays off chain unless a reason to mint it appears.
 
