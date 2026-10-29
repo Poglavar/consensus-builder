@@ -75,10 +75,15 @@ These stay evidence (status, reason text, `sourceEvidence`) rather than geometry
 - Side yards start at the second floor; the bound applies them from the ground, so a TA ground floor
   may legally extend further than drawn.
 
-The shared evaluator draws convex lots of at most 100 vertices covered by exactly one treatment
-polygon. In a Chapinero test block (28 lots) 9 bounds were drawn; 13 lots were non-convex and 6
-crossed two treatment polygons, two of them whole-block properties with slivers under 0.2 % of
-their area.
+The shared evaluator bounds any simple lot outline of up to 500 vertices: a convex lot by exact
+half-planes, a lot with inward corners by subtracting each edge's yard strip (a rectangle of the
+yard's depth along the edge, extended by that depth past both ends), with sub-centimetre edges
+ignored as digitising duplicates. A lot that several treatment polygons partition gets one envelope
+per part (`…~<recordId>`), each the whole lot's bound clipped to that part; a zone under 2 % of
+the lot is boundary noise kept as evidence; zones stacked over the same ground stay ambiguous.
+In a Chapinero test block (28 lots) 26 bounds are drawn; a 203-lot zoom-19 cell draws 154 in
+about 6 s cold and 3 s warm, the rest being overlapping lot identities in the parcel source (19),
+lots too small for their yards (24) and sectors without an assigned height (6).
 
 ## Checking the source
 

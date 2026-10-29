@@ -530,7 +530,7 @@ The maximum building form derived under an identified rule and its supported ass
 
 ### Outer bound
 
-The combined extent of the drawable building configurations and their supported interpretations. It bounds possible forms rather than defining one constructible building.
+The combined extent of the drawable building configurations and their supported interpretations. It bounds possible forms rather than defining one constructible building. A lot that several zoning areas partition has one outer bound per part, each the whole lot's bound clipped to that part; a zoning area under 2 % of the lot is evidence, not a part.
 
 The comparison controls label this **Max envelope**, as they do an authored rule's maximum envelope. This display label does not make alternative configurations simultaneously buildable or remove the source's qualifications.
 

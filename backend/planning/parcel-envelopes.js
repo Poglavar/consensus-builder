@@ -3,7 +3,7 @@
 import * as turf from '@turf/turf';
 import { createRequire } from 'node:module';
 import { sourcesFor } from './sources.js';
-import { assembleParcelStudy, parcelRecords, readStudyZoning, studyParcelSource, withScenarioSource } from './parcel-study.js';
+import { assembleParcelStudy, parcelRecords, parcelZones, readStudyZoning, studyParcelSource, withScenarioSource } from './parcel-study.js';
 import { runtimeParcelSource } from '../parcels/sources.js';
 import { validateBounds } from '../parcels/source-contract.js';
 import { configurationTreatments } from './providers/atlas.js';
@@ -124,7 +124,8 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
     const descriptor = studyParcelSource(provider, query.city);
     const parcels = await parcelProvider(descriptor).queryBounds(query.bbox);
     if (parcels.complete !== true) fail('study-parcel-incomplete', 503);
-    if (parcels.features.length > 400) fail('envelope-area-too-large', 400);
+    // A work bound, not a secret: 500 lots cost a few seconds, most of it the upstream parcel read.
+    if (parcels.features.length > 500) fail('envelope-area-too-large', 400);
     const records = parcels.features.map(parcel => ({ parcel, bbox: turf.bbox(parcel) }));
     // Query zoning across full parcel outlines, not just the viewport (a corner can cross a zone).
     const fullBounds = records.length ? [Math.min(...records.map(r => r.bbox[0])), Math.min(...records.map(r => r.bbox[1])),
@@ -142,28 +143,43 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
             if (overlapProblems.has(parcel.id)) fail(overlapProblems.get(parcel.id));
             const zones = provider.parcelRecords ? Object.fromEntries(await Promise.all(scenarios.map(async scenario =>
                 [scenario, await parcelRecords(provider, parcel, zonesByScenario[scenario])]))) : zonesByScenario;
-            const context = assembleParcelStudy(parcel, descriptor, zones[scenarios[0]]);
+            const scenarioZones = zones[scenarios[0]], found = parcelZones(parcel, scenarioZones);
+            if (found.stacked) fail('study-multiple-zoning-areas');
+            if (!found.major.length) fail('study-zoning-missing');
             const frontage = parcelFrontage(parcel, streets);
-            const { configurations, excluded, frontEdges } = parcelConfigurations(context, scenarios, zones, turf, frontage.frontEdge);
-            const bound = outerBound(configurations);
-            if (!bound) fail(omissionReason(configurations, excluded));
-            const id = `envelope:${provider.descriptor.id}:${parcel.id}`;
-            items.push({ id, role: 'permitted', proposalId: null, parcelEnvelope: true,
-                title: `${context.source.title} · ${parcel.properties.parcelNumber}`,
-                source: { ...context.source.source, scenario: null, parcel: parcel.id }, site: bound.geometry, areas: [],
-                volumes: [{ id: `${id}:bound`, geometry: bound.geometry, baseM: 0, topM: bound.heightM }],
-                configurations: configurations.map(configuration => ({ ...configuration,
-                    volumes: configuration.volumes.map(volume => ({ ...volume, id: `${id}:${volume.id}` })) })),
-                // Retain original lot lines and the edge interpretations used by the evaluator.
-                derivation: { parcel: parcel.geometry, covered: context.coveredGeometry, frontEdges },
-                spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
-                authority: { effect: 'unknown', applicability: 'unresolved' },
-                assessment: { meaning: 'outer-bound', status: 'unresolved', geometry: 'derived-parcel', constraints: 'partial', current: true },
-                metrics: { footprintM2: bound.areaM2, heightM: bound.heightM }, constraints: [],
-                sourceEvidence: { zoningRecordId: context.source.source.recordId, parcelReference: context.parcelReference,
-                    sourceCoverage: context.sourceCoverage, frontEdge: frontage.frontEdge, frontage: frontage.evidence,
-                    excludedConfigurations: excluded, envelopeMeaning: frontage.frontEdge === null
-                        ? 'outer-bound-across-configurations-and-front-edge-interpretations' : 'outer-bound-across-configurations' } });
+            const failures = [];
+            // One envelope per zoning area that partitions the lot: the whole lot's bound, clipped to that part.
+            for (const part of found.major) {
+                try {
+                    const recordId = part.source.source.recordId;
+                    const context = assembleParcelStudy(parcel, descriptor, scenarioZones, { zone: recordId, zones: found });
+                    const { configurations, excluded, frontEdges } = parcelConfigurations(context, scenarios, zones, turf, frontage.frontEdge);
+                    const bound = outerBound(configurations);
+                    if (!bound) fail(omissionReason(configurations, excluded));
+                    const id = `envelope:${provider.descriptor.id}:${parcel.id}${found.major.length > 1 ? `~${recordId}` : ''}`;
+                    items.push({ id, role: 'permitted', proposalId: null, parcelEnvelope: true,
+                        title: `${context.source.title} · ${parcel.properties.parcelNumber}`,
+                        source: { ...context.source.source, scenario: null, parcel: parcel.id }, site: bound.geometry, areas: [],
+                        volumes: [{ id: `${id}:bound`, geometry: bound.geometry, baseM: 0, topM: bound.heightM }],
+                        configurations: configurations.map(configuration => ({ ...configuration,
+                            volumes: configuration.volumes.map(volume => ({ ...volume, id: `${id}:${volume.id}` })) })),
+                        // Retain original lot lines and the edge interpretations used by the evaluator.
+                        derivation: { parcel: parcel.geometry, covered: context.coveredGeometry, frontEdges },
+                        spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
+                        authority: { effect: 'unknown', applicability: 'unresolved' },
+                        assessment: { meaning: 'outer-bound', status: 'unresolved', geometry: 'derived-parcel', constraints: 'partial', current: true },
+                        metrics: { footprintM2: bound.areaM2, heightM: bound.heightM }, constraints: [],
+                        sourceEvidence: { zoningRecordId: recordId, parcelReference: context.parcelReference,
+                            sourceCoverage: context.sourceCoverage, parts: found.major.length, frontEdge: frontage.frontEdge, frontage: frontage.evidence,
+                            excludedConfigurations: excluded, envelopeMeaning: frontage.frontEdge === null
+                                ? 'outer-bound-across-configurations-and-front-edge-interpretations' : 'outer-bound-across-configurations' } });
+                } catch (error) {
+                    if (error.status === 503) throw error;
+                    failures.push(error.code || error.message);
+                }
+            }
+            // A lot is unavailable only when none of its parts could be drawn.
+            if (failures.length === found.major.length) fail(failures[0]);
         } catch (error) {
             // A failed upstream read is the whole request's failure, never one parcel's geometry problem.
             if (error.status === 503) throw error;

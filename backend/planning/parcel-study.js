@@ -67,26 +67,54 @@ export async function parcelRecords(provider, parcel, records) {
     return provider.parcelRecords ? provider.parcelRecords(parcel, records) : records;
 }
 
-export function assembleParcelStudy(parcel, descriptor, records) {
-    if (turf.area(parcel) > 1000000 || parcel.geometry.type !== 'Polygon') fail('unsupported-parcel-shape');
-    const bounds = turf.bbox(parcel);
+// A zone under less than this share of the lot is boundary digitising noise: evidence, not a part.
+export const MINOR_ZONE_SHARE = 0.02;
+// The zoning areas under a parcel, largest first. Major zones are parts when they partition the
+// lot; zones stacked over the same ground (an overlay, a duplicate record) leave its rules ambiguous.
+export function parcelZones(parcel, records) {
+    const bounds = turf.bbox(parcel), parcelM2 = turf.area(parcel);
     const overlaps = records.flatMap(source => {
         const geometry = zoningNearParcel(source.site, bounds);
         const covered = geometry && turf.intersect(parcel, turf.feature(geometry));
-        return covered && turf.area(covered) > 0.01 ? [{ source, geometry, covered }] : [];
-    });
-    if (overlaps.length !== 1) fail(overlaps.length ? 'study-multiple-zoning-areas' : 'study-zoning-missing');
-    const { source, geometry, covered } = overlaps[0];
-    const uncovered = turf.difference(parcel, turf.feature(geometry));
+        const areaM2 = covered ? turf.area(covered) : 0;
+        return areaM2 > 0.01 ? [{ source, geometry, covered, areaM2, share: areaM2 / parcelM2 }] : [];
+    }).sort((a, b) => b.areaM2 - a.areaM2);
+    const major = overlaps.filter(zone => zone.share >= MINOR_ZONE_SHARE), minor = overlaps.filter(zone => zone.share < MINOR_ZONE_SHARE);
+    let stacked = false;
+    for (let a = 0; a < major.length && !stacked; a++) for (let b = a + 1; b < major.length && !stacked; b++) {
+        // A failed comparison is never evidence that two zones keep apart.
+        let shared = null;
+        try { shared = turf.intersect(major[a].covered, major[b].covered); } catch (_) { stacked = true; }
+        if (shared && turf.area(shared) / parcelM2 >= MINOR_ZONE_SHARE) stacked = true;
+    }
+    return { overlaps, major, minor, stacked, parcelM2 };
+}
+
+// `zone` names the part to study on a lot that several zones partition; without it the dominant
+// zone is studied, and two parts without a clear majority stay ambiguous for a single study.
+export function assembleParcelStudy(parcel, descriptor, records, { zone = null, zones = parcelZones(parcel, records) } = {}) {
+    if (turf.area(parcel) > 1000000 || parcel.geometry.type !== 'Polygon') fail('unsupported-parcel-shape');
+    if (zones.stacked) fail('study-multiple-zoning-areas');
+    let entry;
+    if (zone !== null) entry = zones.major.find(item => item.source.source.recordId === zone);
+    else if (zones.major.length > 1 && zones.major[0].share - zones.major[1].share < 0.1) fail('study-multiple-zoning-areas');
+    else entry = zones.major[0];
+    if (!entry) fail('study-zoning-missing');
+    const { source, covered } = entry;
+    let uncovered = parcel;
+    for (const item of zones.overlaps) { if (!uncovered) break; uncovered = turf.difference(uncovered, turf.feature(item.geometry)); }
+    const otherZones = zones.overlaps.filter(item => item !== entry).map(item => ({ recordId: item.source.source.recordId,
+        areaM2: Math.round(item.areaM2 * 100) / 100, share: Math.round(item.share * 10000) / 10000, minor: item.share < MINOR_ZONE_SHARE }));
     const context = { schemaVersion: 'planning-parcel-study.v1', source, sourceReference: reference(source.proposal),
         parcel, parcelReference: { sourceId: descriptor.id, parcelId: parcel.id,
             revision: sourceRevision({ id: parcel.id, geometry: parcel.geometry }) },
         parcelSource: { id: descriptor.id, label: descriptor.name, url: descriptor.catalogueUrl || descriptor.endpoint },
         coveredGeometry: covered.geometry,
-        sourceCoverage: { uncoveredM2: uncovered ? turf.area(uncovered) : 0, parcelAreaM2: turf.area(parcel) },
+        sourceCoverage: { uncoveredM2: uncovered ? turf.area(uncovered) : 0, parcelAreaM2: zones.parcelM2,
+            zoneM2: entry.areaM2, zoneShare: entry.share, otherZones },
         frame: { horizontal: 'local-equirectangular', vertical: 'relative-ground', unit: 'm', maximumExtentM: 1000 } };
     // Fail explicitly on unsupported topology rather than silently simplifying the source parcel.
-    try { assessment.derive(context, 0, turf); } catch (error) { fail(error.message); }
+    try { assessment.inspect(parcel.geometry); } catch (error) { fail(error.message); }
     return context;
 }
 

@@ -158,18 +158,33 @@ describe('viewport parcel envelopes', () => {
         const source=provider();source.record=async()=>{throw new Error('Source transport unavailable');};
         await expect(loadParcelEnvelopes(query,options([parcel()],source))).rejects.toThrow('Source transport unavailable');
     });
-    it('examines zoning over the full parcel, including parts outside the viewport', async () => {
+    it('draws one envelope per zoning area that partitions a lot, each the whole lot\'s bound clipped to its part', async () => {
         const source = createAtlasProvider({type:'FeatureCollection',features:[
             {...turf.bboxPolygon([-105.002,39.999,-105.00075,40.001]),properties},
             {...turf.bboxPolygon([-105.00075,39.999,-105,40.001]),properties:{...properties,slice_id:'two'}}
         ]},metadata);
+        // Zoning is read over the full parcel, including the part outside the viewport.
         const result = await loadParcelEnvelopes({...query,bbox:[-105.001,40,-105.0009,40.0001]},options([parcel()],source));
-        expect(result.items).toEqual([]);
-        expect(result.unavailable[0].reason).toBe('study-multiple-zoning-areas');
+        expect(result.unavailable).toEqual([]);
+        expect(result.items.map(item => item.id)).toEqual(['envelope:atlas-envelope-test:parcel-one~one','envelope:atlas-envelope-test:parcel-one~two']);
+        const [west, east] = result.items.map(item => turf.bbox(turf.feature(item.site)));
+        expect(west[2]).toBeCloseTo(-105.00075, 6); expect(east[0]).toBeCloseTo(-105.00075, 6);
+        expect(result.items[0].sourceEvidence).toMatchObject({ parts: 2, zoningRecordId: 'one',
+            sourceCoverage: { zoneShare: expect.closeTo(0.5, 2), otherZones: [{ recordId: 'two', minor: false }] } });
+    });
+    it('keeps a sliver of a neighbouring zone as evidence instead of splitting or refusing the lot', async () => {
+        const source = createAtlasProvider({type:'FeatureCollection',features:[
+            {...turf.bboxPolygon([-105.002,39.999,-105.000505,40.001]),properties},
+            {...turf.bboxPolygon([-105.000505,39.999,-105,40.001]),properties:{...properties,slice_id:'two'}}
+        ]},metadata);
+        const result = await loadParcelEnvelopes(query,options([parcel()],source));
+        expect(result.items.map(item => item.id)).toEqual(['envelope:atlas-envelope-test:parcel-one']);
+        expect(result.items[0].sourceEvidence.sourceCoverage).toMatchObject({ uncoveredM2: 0, otherZones: [{ recordId: 'two', minor: true }] });
+        expect(result.items[0].sourceEvidence.sourceCoverage.zoneShare).toBeGreaterThan(0.98);
     });
     it('refuses incomplete or oversized parcel reads instead of displaying a convenient subset', async () => {
         await expect(loadParcelEnvelopes(query,options([],provider(),false))).rejects.toMatchObject({code:'study-parcel-incomplete'});
-        await expect(loadParcelEnvelopes(query,options(Array.from({length:401},(_,i)=>parcel(String(i)))))).rejects.toMatchObject({code:'envelope-area-too-large'});
+        await expect(loadParcelEnvelopes(query,options(Array.from({length:501},(_,i)=>parcel(String(i)))))).rejects.toMatchObject({code:'envelope-area-too-large'});
     });
     it('requires an explicitly pinned parcel source instead of inferring one from the requesting city', async () => {
         const source = createAtlasProvider({type:'FeatureCollection',features:[{...turf.bboxPolygon([-105.002,39.999,-105,40.001]),properties}]},

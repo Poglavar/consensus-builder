@@ -177,8 +177,41 @@ describe('Bogotá parcel envelopes', () => {
     });
 });
 
-describe('parcel assessment units', () => {
-    const study = constraints => ({ parcel: parcel(), source: { constraints, assessment: {}, source: { scenario: 'general' } }, coveredGeometry: null });
+describe('parcel assessment units and shapes', () => {
+    const study = (constraints, lot = parcel()) => ({ parcel: lot, source: { constraints, assessment: {}, source: { scenario: 'general' } }, coveredGeometry: null });
+    // An L-shaped lot: a 30 m square missing its 12 m north-east corner; the street is to the south.
+    const metre = 1 / 111320, metreX = metre / Math.cos(centre[1] * Math.PI / 180);
+    const at = (x, y) => [centre[0] + x * metreX, centre[1] + y * metre];
+    const lShape = () => ({ type: 'Feature', id: 'L', properties: {}, geometry: { type: 'Polygon',
+        coordinates: [[at(0, 0), at(30, 0), at(30, 18), at(18, 18), at(18, 30), at(0, 30), at(0, 0)]] } });
+    const yards = (front, side, rear) => [{ quantity: 'frontSetback', value: front, unit: 'm', evidence: 'direct' },
+        { quantity: 'sideSetback', value: side, unit: 'm', evidence: 'direct' }, { quantity: 'rearSetback', value: rear, unit: 'm', evidence: 'direct' },
+        { quantity: 'height', value: 20, unit: 'm', evidence: 'direct' }];
+    it('keeps the ground of a concave lot beyond each yard, measured from its own boundary segments', () => {
+        const bound = core.derive(study(yards(3, 0, 5), lShape()), 0, turf);
+        // 756 m² minus the 30×3 front strip, the two north-facing 5 m rear strips (12 m and 18 m long)
+        // and the 5×5 pocket the inner rear strip's extension clears at the inward corner.
+        expect(bound.areaM2).toBeCloseTo(756 - 90 - 150 - 25, 0);
+        expect(bound.edges.map(edge => edge.role[0]).join('')).toBe('fsrsrs');
+        expect(bound.points).toEqual([]);
+        expect(turf.area(turf.difference(turf.feature(bound.geometry), lShape()) || turf.polygon([[at(0,0),at(1,0),at(0,1),at(0,0)]]))).toBeLessThan(1);
+        // Without street evidence every edge keeps the smallest yard any role assigns: none here.
+        expect(core.unorientedEnvelope(study(yards(3, 0, 5), lShape()), turf)).toMatchObject({ interpretations: 6, areaM2: expect.closeTo(756, 0) });
+        // A 3 m yard on every edge: the 120 m perimeter strip, less the five convex corners it
+        // double-counts, plus the 3×3 pocket inside the inward corner.
+        expect(core.unorientedEnvelope(study(yards(3, 3, 5), lShape()), turf).areaM2).toBeCloseTo(756 - (3 * 120 - 5 * 9 + 9), 0);
+        const design = core.designFromForm(study(yards(3, 0, 5), lShape()), { frontEdge: 0, scale: 0.5, eastM: 0, northM: 0, heightM: 9 }, turf);
+        const result = core.assess(study(yards(3, 0, 5), lShape()), design, 0, turf);
+        expect(result.checks.find(c => c.key === 'parcelContainment').status).toBe('pass');
+        expect(result.checks.find(c => c.key === 'rearSetback')).toMatchObject({ status: 'pass', limit: 5 });
+        expect(result.checks.find(c => c.key === 'rearSetback').measured).toBeGreaterThan(4.99);
+    });
+    it('still bounds a convex lot by exact half-planes', () => {
+        const bound = core.derive(study(yards(3, 0, 5)), 0, turf);
+        expect(bound.points).toHaveLength(4);
+        const box = turf.bbox(parcel()), widthM = turf.distance([box[0], box[1]], [box[2], box[1]], { units: 'meters' }), depthM = turf.distance([box[0], box[1]], [box[0], box[3]], { units: 'meters' });
+        expect(Math.abs(bound.areaM2 - widthM * (depthM - 8))).toBeLessThan(1);
+    });
     it('reads setbacks and heights in metres or feet into metric limits', () => {
         const metres = core.derive(study([{ quantity: 'frontSetback', value: 2, unit: 'm', evidence: 'direct' }, { quantity: 'height', value: 9, unit: 'm', evidence: 'direct' }]), 0, turf);
         expect(metres.limits).toEqual({ frontSetback: 2, sideSetback: null, rearSetback: null }); expect(metres.heightM).toBe(9);
