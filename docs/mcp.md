@@ -171,6 +171,11 @@ load. Links carry no secret and are safe to forward.
 - PM2 app `ugt-mcp` in `backend/ecosystem.config.cjs`, loopback port 3097, launched through
   `agents/mcp-launch.mjs`. The draft store (`MCP_DRAFT_DIRECTORY`, default
   `backend/uploads/mcp-drafts/`) needs one service process per directory.
+- Shared plan sessions are durable private server state in
+  `MCP_DRAFT_DIRECTORY/shared-plans/` (or the explicit shared-plan directory). Back up that child
+  directory with the draft store. Sessions do not expire; the service refuses new or enlarged
+  state once its 1,024-session or 128 MiB bound is reached, rather than evicting an active plan.
+  One MCP process owns the directory at a time.
 - nginx `location = /mcp`, `= /mcp/`, `^~ /mcp/previews/` and `= /mcp/server-card` in
   `backend/nginx/urbangametheory.xyz.nginx.conf`, ahead of the app fallback. Directory ownership
   proofs are in `backend/nginx/ugt-mcp-directory-verification.conf`.

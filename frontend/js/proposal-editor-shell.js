@@ -741,6 +741,11 @@
 
     async function editProposal(proposalIdOrHash, options = {}) {
         const proposal = proposalById(proposalIdOrHash);
+        if (proposal && global.SharedPlanSession?.editBlocked?.(proposal)) {
+            const message = global.SharedPlanSession.blockedMessage();
+            if (typeof global.showStyledAlert === 'function') global.showStyledAlert(message);
+            return null;
+        }
         const capability = getProposalEditCapability(proposal);
         if (!capability.editable) {
             const message = capability.reason || tDraft('proposalDrafts.errors.readOnly', 'This proposal is view-only.');
@@ -819,6 +824,9 @@
     async function editProposalGeometry(proposalIdOrHash) {
         if (global.OnMapEditor?.isActive?.()) return false;
         const proposal = proposalById(proposalIdOrHash);
+        if (proposal && global.SharedPlanSession?.editBlocked?.(proposal)) {
+            return reportGeometryEditFailure(global.SharedPlanSession.blockedMessage(), proposalIdOrHash);
+        }
         if (!proposal) {
             return reportGeometryEditFailure(
                 tDraft('proposalDrafts.errors.sourceMissing', 'Design source not found.'),
@@ -1872,6 +1880,8 @@
     // Where the seconds between "Done" and a finished object go. Clicking Done runs a validation, a
     // record build and a fabric derivation, and until this existed the whole thing happened with no
     // sign at all that anything was under way — the same complaint the drawing tool had.
+    const savingProposalSources = new Set();
+    global.isProposalEditSaving = id => savingProposalSources.has(String(id));
     const createNow = () => ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now());
 
     function createPhaseReporter(label) {
@@ -1908,6 +1918,7 @@
         // twice still shows one indicator.
         const profile = createPhaseReporter(draft.proposalType || draft.adapterKey || draft.goal || 'proposal');
         let savingPreview = null;
+        if (draft.sourceLocalProposalId) savingProposalSources.add(String(draft.sourceLocalProposalId));
         try { global.beginApplyIndicator?.(); } catch (_) { }
         try {
             // The map editor has closed, but the applied layers may take seconds to appear.
@@ -1921,6 +1932,7 @@
             reopenFailedProposalDraftOnce(draftId, store, { commitOnFinish: true });
             return null;
         } finally {
+            if (draft.sourceLocalProposalId) savingProposalSources.delete(String(draft.sourceLocalProposalId));
             // A new editor/comparison may have taken over while application was pending.
             if (savingPreview && global.activeProposalDraftComparison === savingPreview) paintProposalDraftComparison(null);
             try { global.endApplyIndicator?.(); } catch (_) { }

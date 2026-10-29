@@ -9,7 +9,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createMcpHttpService, MCP_MAX_REQUEST_BYTES } from '../agents/mcp-http.mjs';
 import { createUrbanGameTheoryMcpServer } from '../agents/mcp-server.mjs';
 import { hostedEnvironment } from '../agents/mcp-launch.mjs';
-import { MCP_HOSTED_TOOLS } from '../agents/mcp-catalog.js';
+import { MCP_HOSTED_SHARED_TOOLS } from '../agents/mcp-catalog.js';
 import { cidOfObject } from '../cid.js';
 import { previewArtifact } from '../agents/mcp-preview.js';
 import { checkContracts } from '../scripts/mcp-check-contracts.mjs';
@@ -50,7 +50,7 @@ describe('hosted MCP HTTP', () => {
         const client = new Client({ name: 'protocol-test', version: '1' }, { versionNegotiation: { mode } }); clients.push(client);
         await client.connect(new StreamableHTTPClientTransport(new URL(`${base}/mcp`)));
         const { tools } = await client.listTools();
-        expect(tools.map(t => t.name)).toEqual(MCP_HOSTED_TOOLS);
+        expect(tools.map(t => t.name)).toEqual(MCP_HOSTED_SHARED_TOOLS);
         for (const tool of tools) {
             expect(tool.title).toEqual(expect.any(String));
             expect(tool.annotations.title).toBe(tool.title);
@@ -84,6 +84,28 @@ describe('hosted MCP HTTP', () => {
         const health = await fetch(`${base}/healthz`);
         expect(health.headers.get('cache-control')).toBe('no-store');
         expect(await health.json()).toMatchObject({ upstreamChecked: false });
+    });
+    it('shares a real private park revision through REST and MCP without publication', async () => {
+        const fetchImpl = vi.fn(async (url, options = {}) => {
+            const path = new URL(url).pathname;
+            if (path === '/designs/binding') return Response.json({ parcelSourceId: 'fixture', binding: { coverage: 'complete', unknownM2: 0, parcels: [] } });
+            if (path === '/source-system') return Response.json({ abstractions: [], sources: [] });
+            throw new Error(`unexpected ${path}`);
+        });
+        const base = await host({ env: { UGT_API_BASE: 'https://api.example', UGT_APP_ORIGIN: 'https://app.example' }, publicOrigin: 'https://app.example', fetchImpl });
+        const client = new Client({ name: 'shared-park', version: '1' }); clients.push(client);
+        await client.connect(new StreamableHTTPClientTransport(new URL(`${base}/mcp`)));
+        const draft = (await client.callTool({ name: 'ugt_draft_space', arguments: { city: 'london', parcelSourceId: 'fixture', spaceKind: 'park', outline: { type: 'Polygon', coordinates: [[[-.1,51.5],[-.099,51.5],[-.099,51.501],[-.1,51.501],[-.1,51.5]]] } } })).structuredContent;
+        expect(draft.draftRef).toBeTruthy();
+        const preflight = await fetch(`${base}/mcp/plan-sessions`, { method: 'OPTIONS', headers: { origin: 'https://app.example' } });
+        expect(preflight.headers.get('access-control-allow-headers')).toContain('Authorization');
+        const created = await (await fetch(`${base}/mcp/plan-sessions`, { method: 'POST', headers: { origin: 'https://app.example', 'content-type': 'application/json' }, body: JSON.stringify({ plan: draft.plan?.draftRef || draft.draftRef }) })).json();
+        expect(created).toMatchObject({ controller: 'owner', version: 0 });
+        const handover = await (await fetch(`${base}/mcp/plan-sessions/${created.id}/control`, { method: 'POST', headers: { authorization: `Bearer ${created.ownerToken}`, 'content-type': 'application/json' }, body: JSON.stringify({ expectedVersion: 0, controller: 'agent' }) })).json();
+        const edited = await client.callTool({ name: 'ugt_edit_shared_plan', arguments: { sessionId: created.id, capability: created.inviteToken, expectedVersion: handover.version, expectedCid: created.cid, title: 'Shared park', operations: [] } });
+        expect(edited.isError).not.toBe(true);
+        const read = await (await fetch(`${base}/mcp/plan-sessions/${created.id}`, { headers: { authorization: `Bearer ${created.ownerToken}` } })).json();
+        expect(read.version).toBe(2); expect(fetchImpl.mock.calls.map(([url]) => new URL(url).pathname)).not.toContain('/pins');
     });
     it('accepts an ordinary full-plan request above the former 32 KiB ceiling', async () => {
         const proposeAgreement = vi.fn(async () => ({ cid: 'tested-without-publication' }));
@@ -160,6 +182,8 @@ describe('hosted MCP HTTP', () => {
         expect(report.checks.find(c => c.tool === 'ugt_capabilities').status).toBe('passed');
         expect(report.checks.some(c => c.status === 'missing-fixture')).toBe(true);
         expect(report.checks.filter(c => c.status === 'write-refused-without-confirmation')).toHaveLength(0);
+        expect(report.checks.filter(c => c.status === 'shared-refused-without-capability').map(c => c.tool))
+            .toEqual(['ugt_inspect_shared_plan', 'ugt_edit_shared_plan']);
         expect(paths).not.toContain('/pins');
         expect(paths).not.toContain('/agreements');
     });

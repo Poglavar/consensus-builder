@@ -902,7 +902,7 @@
         show({ ...stack, topRef: null }, latlng, hits, { frame: true });
     }
 
-    async function showPlan(plan, { designs = [], draft = false } = {}) {
+    async function showPlan(plan, { designs = [], draft = false, frame = true } = {}) {
         if (!global.DesignMemberships) await global.ensureOptionalTool('designMemberships');
         const instance = { id: plan.cid, cid: plan.cid, content: plan.content, label: plan.content.title, draft, localDesigns: designs };
         Object.assign(instance, await global.DesignMemberships.inspect('plans', instance, global));
@@ -912,7 +912,7 @@
         const hits = { plans: [instance], planContext: instance, designs: instance.members };
         const stack = model.expand(model.buildClickStack(hits, { selected: { plans: instance.id } }), 'plans');
         state.lastClick = null;
-        show({ ...stack, topRef: null }, global.map.getCenter(), hits, { frame: true });
+        show({ ...stack, topRef: null }, global.map.getCenter(), hits, { frame });
     }
 
     async function showAgreement(agreement, { readOnly = false, designs = [] } = {}) {

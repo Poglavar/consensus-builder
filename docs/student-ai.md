@@ -1,24 +1,59 @@
 # Student AI assistance
 
-The initial approach is an AI operating the student's existing map tab through the same visible
-controls the student uses. The student and agent take turns. The browser workspace, active draft
-and Undo history remain the app's existing ones; there is no separate AI draft to synchronize.
+A student and an MCP agent can work on the same plan through a private server session. The
+browser keeps its normal map and editors; the agent uses the hosted MCP. Completed, accepted
+revisions are reflected in the browser. The two take turns rather than editing concurrently.
 
-## Current boundaries
+## What is shared
 
-- Use the existing tab and browser profile. A separate profile has separate local work. A second
-  tab in the same profile is intentionally blocked by the [saved workspace](saved-workspace.md)
-  lock; do not weaken that protection to connect an agent.
-- Browser connection, authorization, stopping the agent and manual takeover belong to the chosen
-  AI product. The site does not grant an agent access or show a misleading connected status.
-- Draft editing uses the existing local save paths. Publishing and sharing stay explicit actions.
-- The hosted MCP remains useful for browser-independent authoring: inspect/edit a design, review
-  its preview, import the result and continue manually. It does not mutate an already-open local
-  editor. Its immutable artifacts are separate from local editor gestures.
-- Shared backend drafts, concurrent editing, offline merging, an embedded assistant and WebMCP
-  are deferred. Revisit them only after a concrete need emerges from the trial.
+The session points to an ordinary immutable `plan/v1` revision and carries its exact `design/v1`
+members. A published plan can be the starting point. Editing creates private revisions or forks
+through the existing authoring operations; it never mutates the published source. There is no
+second design format or special AI draft editor. A CID identifies content and does not require
+an IPFS upload. Saving to the session is private server storage; Share remains explicit publication.
 
-## First trial
+The mutable session holds only the current revision, a version counter and editing control.
+Every save checks the expected version and the current controller atomically. Taking control
+invalidates an agent request that was still computing its edit. Old snapshots remain ordinary
+records; the session is not a public release or a shared global map.
+
+## Shared-plan trial
+
+1. Open a saved plan containing an editable park and a bench, then choose **Collaborate**.
+2. Copy the invitation to an agent connected to the same MCP service. The invitation grants access
+   to this session; it does not connect or configure the AI application itself.
+3. Choose **Let agent edit**. Ask the agent to inspect the current plan and move the bench two
+   metres north using the shared-plan editing tool. Watch the accepted revision appear on the map.
+4. Choose **Take control**, open the usual geometry editor and move the bench using **Objects** or
+   the mouse. Finish the editor and choose **Save to shared plan**. The agent's next inspection
+   must report that saved coordinate.
+5. Give control back, then take it during an agent edit. The late save must be refused; the agent
+   must inspect the current version before trying another change.
+6. Disconnect and confirm the retained local plan can still be edited normally. Reload while
+   connected to check recovery. Repeat at a narrow viewport and with the student's own assistive
+   technology.
+
+The copied invitation is a private capability. Keep it out of public plan descriptions and links.
+The owner capability remains in the browser's private workspace storage. Revoking the invitation
+or disconnecting ends its access. Polling sends completed changes, not every mouse gesture.
+
+## Boundaries
+
+- One editor at a time; no concurrent or automatic offline merge.
+- Finish local editing and save before handing control over. Network errors retain local work;
+  they do not imply a successful shared save.
+- A session is scoped to a plan. Camera position and unrelated local designs are not shared work.
+- The existing single-tab browser workspace lock remains in force.
+- The service stores sessions on disk across restarts, independently of expiring preview links.
+  It runs with one writer per storage directory and rejects writes when storage is full.
+- Sharing/publishing, wallet approval and blockchain actions keep their existing explicit flows.
+
+## Optional browser-control trial
+
+The earlier route—an AI operating the student's exact existing tab—remains an option when the AI
+product's browser permissions allow it. That connection, its permission prompts and stopping the
+agent belong to the AI product. It is separate from the server session above. On the initial
+computer this route could not be established under the available privacy settings.
 
 Use the available computer and AI product, an ordinary existing map tab, and a disposable garden
 draft containing a bench, tree and path. Keep any unpublished real work out of the trial. The
@@ -49,8 +84,11 @@ accessibility or the student's ability to take control.
 
 ## MCP parity
 
-No new authoring operation or record type is introduced. Human controls use the existing local
-editor functions; `ugt_inspect_design` and `ugt_edit_design` already inspect and patch the same
-canonical geometry, decorations and tree properties. `mcp-edit.test.js` exercises those operations.
-The accessibility guide maps the controls to those primitives. Browser connection and takeover
-are client capabilities, not new hosted MCP operations.
+Human edits use the normal local editor and save ordinary plan/design content. The shared MCP
+inspection and editing tools read the same accepted artifact; editing delegates to `ugt_edit_plan`
+operations, including granular design patches. Session version and control checks apply to both
+browser and MCP saves. Existing standalone MCP authoring and preview/import remain available.
+The [accessible editing guide](accessible-map-editing.md) maps geometry controls to the underlying
+MCP primitives. Browser takeover remains a client capability, separate from this protocol.
+
+See [verification results](student-ai-verification.md) for targeted tests, live checks and remaining verification gaps.

@@ -8720,6 +8720,22 @@
         "publicationFailed": "A plan design could not be published.",
         "shareDesignHint": "Share this design"
     },
+    "sharedPlan": {
+        "title": "Work with an agent",
+        "collaborate": "Collaborate",
+        "notConnected": "Create a private shared session for this exact plan revision.",
+        "youEditing": "You are editing. Save this revision before giving the agent control.",
+        "agentEditing": "The agent is editing this shared plan. Take control before editing it here.",
+        "save": "Save to shared plan",
+        "letAgentEdit": "Let agent edit",
+        "copyInvite": "Copy invitation",
+        "inviteCopied": "Invitation copied. Give it to the agent you choose.",
+        "takeControl": "Take control",
+        "disconnect": "Disconnect",
+        "updated": "The shared plan has been updated.",
+        "localConflict": "A local revision differs from the shared plan. Save it to keep your version, or reload the shared revision.",
+        "reload": "Reload shared revision"
+    },
     "pageHeader": {
         "backToMap": "Back to the map"
     },

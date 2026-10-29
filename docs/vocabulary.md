@@ -319,7 +319,7 @@ When shared designs conflict with the current map, the person chooses whether to
 
 ### Plan
 
-An immutable `plan/v1` snapshot containing a title, a selected set of published design CIDs and a map view. Its canonical content has its own CID and permanent `/plans/<cid>` link. Changing the title, membership or saved view creates a new snapshot and link; existing links keep their original content. It references existing designs without changing their authorship, geometry or publication. It carries no land allocations, money or decision rules; those belong to an agreement. The backend address used to access a plan is transport configuration, not part of its content.
+An immutable `plan/v1` snapshot containing a title, a selected set of design CIDs and a map view. Its canonical content has its own CID; publication gives it a permanent `/plans/<cid>` link. Changing the title, membership or saved view creates a new snapshot and link; existing links keep their original content. It references existing designs without changing their authorship, geometry or publication. It carries no land allocations, money or decision rules; those belong to an agreement. The backend address used to access a plan is transport configuration, not part of its content.
 
 Plan stats and Compare plans evaluate one exact saved plan revision, including unapplied members. Parcel figures derive from its members and source cadastral ground in isolation; unrelated map designs and the current map extent do not affect them. Evaluation does not apply the plan. The Compare tab's divider takes a saved plan as a side the same way: a member an applied design stands for is that design; the rest are read as Plan stats reads them and drawn on that side alone, with the standing buildings they clear taken off it. Built today is the present state of that comparison. The urban rooster scores a plan only when every member is applied, from the live map.
 
@@ -329,7 +329,13 @@ A plan contains one or more designs and can exist without an agreement. Each agr
 
 ### Working plan
 
-The private plan an MCP agent authors in, standing in for the map a person applies designs to. Each agent draft or design edit is placed into it with the map's explicit Apply rules and makes a new plan revision: roads join its roads, and ground another member holds is refused until the person agrees to displace that member. Without a named plan the first design starts one. A working plan is an ordinary plan; it is not a shared applied state.
+The private plan an MCP agent authors in, standing in for the map a person applies designs to. Each agent draft or design edit is placed into it with the map's explicit Apply rules and makes a new plan revision: roads join its roads, and ground another member holds is refused until the person agrees to displace that member. Without a named plan the first design starts one. A working plan is an ordinary plan. A shared plan session can name its current revision for a browser and an agent.
+
+### Shared plan session
+
+A private server connection that names the current accepted ordinary plan revision and carries its exact design members. It adds no new design or plan format. A published plan can start a session; subsequent edits create private revisions without changing the published source. Publication remains a separate explicit action.
+
+The owner controls whether the browser or the invited agent may save the next revision. The session version changes on both content and control changes; a save must match that version and the current editing authority. The owner capability controls the session; the separate invitation capability permits inspection and, only when granted, editing. Neither capability belongs to authored plan content or a public link. The browser's local workspace remains separate and retains its single-tab lock.
 
 ### Plan area
 

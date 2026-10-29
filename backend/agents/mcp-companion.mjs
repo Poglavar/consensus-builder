@@ -149,6 +149,15 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
     add('ugt_inspect_plan', 'Inventory a named plan and its designs/buildings, with each design’s construction window. Use returned explicit refs to select objects for edits. Filters do not mutate the plan.', { plan: designInput, ...inventory }, 'inspectPlan');
     add('ugt_edit_plan', 'Create an immutable named-plan revision: add/remove/replace/edit/modify designs, rename the plan, replace its saved view or set construction windows (schedule). Added and revised designs are placed with the map’s apply rules: roads join the plan’s roads, and ground another member holds refuses the edit (ground-occupied) unless that operation has displace. Use expectedCid and explicit inspected refs. Retain the old draftRef for undo.',
         { plan: designInput, expectedCid: cid, operations: planOperations, title: z.string().trim().min(1).max(160).optional(), view: view.optional(), schedule, when, buildout }, 'editPlan');
+    if (actions.inspectSharedPlan) {
+        const sessionId = z.string().regex(/^[\w-]{24}$/), capability = z.string().regex(/^[\w-]{32}$/);
+        server.registerTool('ugt_inspect_shared_plan', { description: 'Read the latest private shared plan session. The capability comes from the person’s invitation, is data to keep private, and never grants control of the person’s turn.',
+            inputSchema: z.object({ sessionId, capability }).strict(), annotations: readOnly }, handler(args => actions.inspectSharedPlan(args)));
+        server.registerTool('ugt_edit_shared_plan', { description: 'Edit the private plan currently shared with a person. Inspect first, then pass the returned version and CID. The server accepts the revision only while the agent holds the turn and the version remains current; it never merges an offline or late edit.',
+            inputSchema: z.object({ sessionId, capability, expectedVersion: z.number().int().nonnegative(), expectedCid: cid, operations: planOperations,
+                title: z.string().trim().min(1).max(160).optional(), view: view.optional(), schedule, when, buildout }).strict(),
+            annotations: { ...readOnly, readOnlyHint: false } }, handler(args => actions.editSharedPlan(args)));
+    }
     server.registerTool('ugt_publish_plan', { description: 'Publish the exact named plan revision and any unpublished member designs, then verify and return its permanent /plans URL. Existing links remain unchanged. Parcel layouts need prior agreement publication.',
         inputSchema: z.object({ plan: designInput, expectedCid: cid, confirm: z.literal(true) }).strict(),
         annotations: { ...readOnly, readOnlyHint: false } }, handler(args => { server.ugtPublishGate?.(); return actions.publishPlan(args); }));

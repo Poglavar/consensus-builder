@@ -8556,6 +8556,22 @@
         "publicationFailed": "Une conception du plan n’a pas pu être publiée.",
         "shareDesignHint": "Partager ce projet"
     },
+    "sharedPlan": {
+        "title": "Travailler avec un agent",
+        "collaborate": "Collaborer",
+        "notConnected": "Créez une session privée partagée pour cette révision précise du plan.",
+        "youEditing": "Vous modifiez le plan. Enregistrez cette révision avant de donner le contrôle à l’agent.",
+        "agentEditing": "L’agent modifie ce plan partagé. Reprenez le contrôle avant de le modifier ici.",
+        "save": "Enregistrer dans le plan partagé",
+        "letAgentEdit": "Laisser l’agent modifier",
+        "copyInvite": "Copier l’invitation",
+        "inviteCopied": "Invitation copiée. Donnez-la à l’agent de votre choix.",
+        "takeControl": "Reprendre le contrôle",
+        "disconnect": "Déconnecter",
+        "updated": "Le plan partagé a été mis à jour.",
+        "localConflict": "Une révision locale diffère du plan partagé. Enregistrez-la pour conserver votre version ou rechargez la révision partagée.",
+        "reload": "Recharger la révision partagée"
+    },
     "pageHeader": {
         "backToMap": "Retour à la carte"
     },

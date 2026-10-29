@@ -43,6 +43,8 @@ const placement = {
 const placedDesign = designDraft.extend(placement);
 const agreementDraft = mcpResultSchema.extend({ cid, untrusted: authored('agreement/v1'), designs: z.array(object), ...privatePreview });
 const planResult = mcpResultSchema.extend({ cid, untrusted: authored('plan/v1'), designs: z.array(z.object({ cid }).passthrough()).min(1), publication: z.enum(['private', 'published']) });
+const sharedPlanSession = mcpResultSchema.extend({ id: z.string().regex(/^[\w-]{24}$/), version: z.number().int().nonnegative(),
+    controller: z.enum(['owner', 'agent']), cid, updatedAt: z.string(), artifact: object });
 const inventory = mcpResultSchema.extend({ cid, items: z.array(z.object({ ref: z.string(), kind: z.enum(['design', 'building', 'piece']) }).passthrough()), total: count, offset: count, truncated: z.boolean() });
 const shapes = new Map();
 const assign = (names, schema) => { for (const name of names) shapes.set(name, schema); };
@@ -50,6 +52,7 @@ assign(['ugt_draft_building', 'ugt_draft_station', 'ugt_draft_space', 'ugt_draft
     'ugt_draft_road', 'ugt_draft_track', 'ugt_modify_design', 'ugt_edit_design'], placedDesign);
 assign(['ugt_draft_agreement', 'ugt_edit_agreement'], agreementDraft);
 assign(['ugt_draft_plan', 'ugt_get_plan', 'ugt_edit_plan'], planResult);
+assign(['ugt_inspect_shared_plan', 'ugt_edit_shared_plan'], sharedPlanSession);
 assign(['ugt_inspect_plan', 'ugt_inspect_agreement'], inventory);
 assign(['ugt_inspect_design'], mcpResultSchema.extend({ cid, values: z.array(z.object({ path: z.string(), untrustedValue: z.unknown() })).min(1) }));
 assign(['ugt_publish_plan'], mcpResultSchema.extend({ cid, untrusted: authored('plan/v1'), publication: z.literal('published'), url: z.string().url(), publishedDesignCids: z.array(cid) }));

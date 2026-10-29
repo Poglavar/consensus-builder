@@ -17,6 +17,7 @@ const PLURAL_FORMS = ['zero', 'one', 'two', 'few', 'many', 'other'];
 // listed here on purpose; a new dynamic call site with an unlisted prefix fails the test.
 const DYNAMIC_KEY_PREFIXES = [
     'planDialog.',
+    'sharedPlan.',
     'diagnostics.errors.',
     'diagnostics.ui.',
     'alerts.messages.',
@@ -84,6 +85,7 @@ const DYNAMIC_KEY_PREFIXES = [
 // Helpers that prepend a namespace to the key they are given, per file.
 const PREFIXING_HELPERS = {
     'js/structure-geometry-editor.js': { fn: 't', prefix: 'structureEditor.' },
+    'js/shared-plan-session.js': { fn: 't', prefix: 'sharedPlan.' },
 };
 
 // Call names that take a dotted string first but are not translation lookups.

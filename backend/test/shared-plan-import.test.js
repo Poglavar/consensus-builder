@@ -707,6 +707,26 @@ describe('opening a /designs link', () => {
         expect(moved.map.setView).not.toHaveBeenCalled();
     });
 
+    it('keeps the camera unchanged when a remote shared-plan revision replaces the current plan', async () => {
+        const link = conflictingLink('replace', { arrivalView: { lat: 52.50539, lon: -1.95889, zoom: 19 } });
+
+        await link.open([link.tower.cid, park.cid], { sharedPlanSessionRemote: true, replaceAppliedIds: ['old-tower'], frame: false });
+
+        expect(link.ProposalManager.applyProposalPlan).toHaveBeenCalledOnce();
+        expect(link.map.fitBounds).not.toHaveBeenCalled();
+        expect(link.map.setView).not.toHaveBeenCalled();
+    });
+
+    it('refuses a remote revision that would replace unrelated local work', async () => {
+        const link = conflictingLink('replace');
+        const result = await link.open([link.tower.cid, park.cid], { sharedPlanSessionRemote: true, replaceAppliedIds: ['another-member'] });
+        expect(result.blocked).toBe(true);
+        expect(link.window.CbDialog.choice).not.toHaveBeenCalled();
+        expect(link.ProposalManager.applyProposalPlan).not.toHaveBeenCalled();
+        expect(link.ProposalManager.applyProposal).not.toHaveBeenCalled();
+        expect(link.records.get('old-tower').applied).toBe(true);
+    });
+
     it('skips conflicting incoming designs by choice, keeping existing work and applying clear members', async () => {
         const link = conflictingLink('skip');
         const result = await link.open([link.tower.cid, park.cid]);

@@ -300,6 +300,17 @@
             const scheduleButton = action(win.i18n.t('planDialog.schedule'), () => editSchedule());
             scheduleButton.className = 'btn click-stack__schedule-plan';
             actions.appendChild(scheduleButton);
+            const collaborate = action(win.i18n.t('sharedPlan.collaborate'), async () => {
+                try {
+                    await win.BusyControl.track(collaborate, async () => {
+                        const data = session ? await session.details(kind, instance) : await inspect(kind, instance, win);
+                        const saved = win.NamedPlans.remember({ cid: instance.cid, content: data.content }, data.members.map(member => member.id));
+                        await win.PlanDialog.details(saved);
+                    });
+                } catch (error) { win.showStyledAlert(error.message); }
+            });
+            collaborate.className = 'btn click-stack__collaborate-plan';
+            actions.appendChild(collaborate);
             host.appendChild(actions);
             if (instance.content?.schedule && win.PlanDialog?.scheduleStrip) {
                 const strip = node('div', 'click-stack__schedule');

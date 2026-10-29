@@ -8772,6 +8772,22 @@
         "publicationFailed": "Пројекат из плана није могуће објавити.",
         "shareDesignHint": "Podeli ovaj dizajn"
     },
+    "sharedPlan": {
+        "title": "Rad sa agentom",
+        "collaborate": "Sarađuj",
+        "notConnected": "Napravite privatnu zajedničku sesiju za ovu tačnu reviziju plana.",
+        "youEditing": "Uređujete. Sačuvajte ovu reviziju pre predaje kontrole agentu.",
+        "agentEditing": "Agent uređuje ovaj zajednički plan. Preuzmite kontrolu pre uređivanja ovde.",
+        "save": "Sačuvaj u zajednički plan",
+        "letAgentEdit": "Dozvoli agentu uređivanje",
+        "copyInvite": "Kopiraj pozivnicu",
+        "inviteCopied": "Pozivnica je kopirana. Dajte je agentu kog izaberete.",
+        "takeControl": "Preuzmi kontrolu",
+        "disconnect": "Prekini vezu",
+        "updated": "Zajednički plan je ažuriran.",
+        "localConflict": "Lokalna revizija se razlikuje od zajedničkog plana. Sačuvajte je da zadržite svoju verziju ili ponovo učitajte zajedničku reviziju.",
+        "reload": "Ponovo učitaj zajedničku reviziju"
+    },
     "pageHeader": {
         "backToMap": "Nazad na mapu"
     },

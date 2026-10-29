@@ -124,6 +124,7 @@ describe('one-click structure creation focus', () => {
         operation.mockImplementation(() => new Promise(resolve => { finish = resolve; }));
         const saving = globalThis.instantCreateProposalFromDraft('draft-park');
         const snapshot = globalThis.activeProposalDraftComparison;
+        if (editOf) expect(globalThis.isProposalEditSaving(editOf.proposalId)).toBe(true);
         expect(snapshot).toMatchObject({ saving: true, sourceProposal: null, draftPreview: preview });
         expect(paint.mock.calls.map(([detail]) => detail)).toEqual([snapshot]);
         // Creation has consumed the draft already; its snapshot must remain independently visible.
@@ -132,6 +133,7 @@ describe('one-click structure creation focus', () => {
         if (editOf) editOf.applied = true;
         finish({ applied: true });
         await saving;
+        if (editOf) expect(globalThis.isProposalEditSaving(editOf.proposalId)).toBe(false);
         expect(globalThis.activeProposalDraftComparison).toBeNull();
         expect(paint).toHaveBeenLastCalledWith(null);
         expect(paint.mock.invocationCallOrder.at(-1)).toBeGreaterThan(ProposalManager._refreshUIAfterProposalChange.mock.invocationCallOrder[0]);

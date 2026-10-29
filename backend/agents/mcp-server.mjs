@@ -13,6 +13,7 @@ import { markUntrusted, toolError } from './mcp-results.js';
 import { resultSchemaFor, argumentError } from './mcp-contracts.js';
 import { createMcpDiscoveryTools } from './mcp-discovery.js';
 import { createMcpObserver } from '../operations/planning-diagnostics.js';
+import { createSharedPlanMcpTools } from './mcp-shared-plan-tools.js';
 
 const BASE58_KEY = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 // CIDv1, raw codec, sha2-256, base32 lower case (backend/cid.js).
@@ -94,10 +95,11 @@ class UrbanGameTheoryMcpServer extends McpServer {
     }
 }
 
-export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.env, fetchImpl, tools, decorateResult = value => value, resolveDraftReference, diagnosticRecorder = null } = {}) {
+export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.env, fetchImpl, tools, decorateResult = value => value, resolveDraftReference, diagnosticRecorder = null, sharedPlans = null } = {}) {
     if (!['hosted', 'local'].includes(mode)) throw new Error('mode must be hosted or local');
     if (mode === 'hosted' && env.UGT_AGENT_KEYPAIR) throw new Error('Hosted MCP must have no UGT_AGENT_KEYPAIR');
     const actions = tools || createUrbanGameTheoryTools({ mode, env, fetchImpl, resolveDraftReference });
+    Object.assign(actions, createSharedPlanMcpTools({ actions, sharedPlans }));
     const handler = fn => toolHandler(async args => decorateResult(await fn(args)));
     const server = new UrbanGameTheoryMcpServer(
         { name: 'xyz.urbangametheory/urban-game-theory', version: '0.4.0' },

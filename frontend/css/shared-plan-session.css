@@ -1,0 +1,9 @@
+.shared-plan-session {
+    border-top: 1px solid var(--border-color, #d8dee8);
+    margin-top: 1rem;
+    padding-top: 1rem;
+}
+
+.shared-plan-session h3 { margin: 0 0 .35rem; }
+.shared-plan-session__status { margin: 0 0 .75rem; }
+.shared-plan-session__actions { align-items: stretch; }

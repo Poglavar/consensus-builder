@@ -908,8 +908,17 @@ async function handleSharedDesignRoute(cids, options = {}) {
                 conflicts.set(String(blocker.proposalId), blocker);
             }
         }
-        let replaceConflicts = false;
-        if (conflicts.size && !result.failed.length) {
+        const replaceIds = new Set((options.replaceAppliedIds || []).map(String));
+        // A shared revision is accepted as a whole. Conflicts outside its previous membership
+        // belong to unrelated local work and cannot be parked by a background refresh.
+        if (options.sharedPlanSessionRemote === true && (result.failed.length
+            || [...conflicts.keys()].some(id => !replaceIds.has(String(id))))) {
+            result.blocked = true;
+            hideProposalLoadOverlay();
+            return result;
+        }
+        let replaceConflicts = replaceIds.size > 0 && [...conflicts.keys()].every(id => replaceIds.has(String(id)));
+        if (conflicts.size && !result.failed.length && !replaceConflicts) {
             // Decide before applying any new member. The existing dialog primitive escapes the
             // titles as plain text and gives the same choice on phones and desktops.
             hideProposalLoadOverlay();
@@ -935,7 +944,9 @@ async function handleSharedDesignRoute(cids, options = {}) {
             updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting design preparation…') });
             const members = [...result.localIds.values()];
             const chosen = await ProposalManager.applyProposalPlan(members, {
-                silent: true, onProgress: reportSharedPlanProgress
+                silent: true, onProgress: reportSharedPlanProgress,
+                ...(options.sharedPlanSessionRemote === true ? { sharedPlanSessionRemote: true } : {}),
+                ...(replaceIds.size ? { releaseProposalIds: [...replaceIds] } : {})
             });
             if (chosen && chosen.ok === true) {
                 result.applied.push(...members);
@@ -984,7 +995,10 @@ async function handleSharedDesignRoute(cids, options = {}) {
         const focusId = latestAuthoredDesignId(standing);
         const userTookOver = () => !!(replayTakeover && replayTakeover.tookOver());
         const replacedPlan = replaceConflicts && result.applied.length > 0 && !result.failed.length;
-        if (focusId && (replacedPlan || options.frame !== false) && !userTookOver()) {
+        // A remote session revision changes the composition beneath the current viewport. It must
+        // not frame the new composition or restore this browser's saved URL view.
+        const preserveRemoteCamera = options.sharedPlanSessionRemote === true;
+        if (focusId && !preserveRemoteCamera && (replacedPlan || options.frame !== false) && !userTookOver()) {
             const focusIds = replacedPlan ? standing : [focusId];
             if (typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()) {
                 window.focusThreeModeOnProposals(focusIds);
@@ -1020,7 +1034,7 @@ async function handleSharedDesignRoute(cids, options = {}) {
             }
         }
 
-        if (sharedView && !replacedPlan && !userTookOver()) {
+        if (sharedView && !preserveRemoteCamera && !replacedPlan && !userTookOver()) {
             map.setView([sharedView.lat, sharedView.lon], sharedView.zoom ?? map.getZoom(), { animate: false });
         }
         // A link that asks for 3D restores its captured camera when supplied.

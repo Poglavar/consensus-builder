@@ -68,7 +68,8 @@
         const save=button(t(baseRow ? 'saveRevision' : 'createPlan'), async () => {
             // Members kept from the base revision keep their construction windows.
             const row=win.PlanComposition.create(name.value,[...selected].map(cid=>sources.get(cid)),view,baseRow?.content.schedule);
-            win.PlanWorkspace.save(row); dialog.close();
+            if (!win.SharedPlanSession?.saveLocalRevision(baseRow,row)) win.PlanWorkspace.save(row);
+            dialog.close();
             await win.ClickStack.showPlan(row, { designs: win.PlanComposition.localRecords(row, { apiBase: win.DesignSync.apiBase() }), draft: !row.published });
         },true);
         const cancel=button(t('cancel'),()=>dialog.close()); footer.append(cancel,save); body.append(footer);
@@ -168,7 +169,8 @@
         const current=()=>Object.fromEntries([...windows].filter(([,window])=>window.start||window.end));
         const save=button(t('saveSchedule'),async()=>{
             const next=win.PlanComposition.withSchedule(row,current());
-            win.PlanWorkspace.save(next);dialog.close();
+            if (!win.SharedPlanSession?.saveLocalRevision(row,next)) win.PlanWorkspace.save(next);
+            dialog.close();
             const month=win.BuildoutClock?.month();
             await win.ClickStack.showPlan(next,{designs:win.PlanComposition.localRecords(next,{apiBase:win.DesignSync.apiBase()}),draft:true});
             if(month)win.BuildoutClock.open(month);
@@ -225,17 +227,49 @@
         (inputs.get(focus)?.[0]||inputs.values().next().value?.[0])?.focus();
         return dialog;
     }
+    async function syncSharedPlanOnMap(next, previous) {
+        const draftRows = new Map();
+        for (const member of next.designs) {
+            const declared = next.designSources?.[member.cid];
+            const sourceId = (typeof declared === 'string' ? declared : declared?.sourceId) || win.DesignSync.parcelSourceIdOf(member.content.city);
+            const parcelSourceId = sourceId === 'hr-cadastre' ? 'oss-wfs' : sourceId;
+            const response = await win.fetch(`${win.DesignSync.apiBase()}/designs/binding`, { method: 'POST', headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ site: win.__siteBinding.siteOf(member.content, { turf: win.turf }), city: member.content.city, toleranceM: member.content.toleranceM, parcelSourceId }) });
+            const binding = await response.json();
+            if (!response.ok) throw new Error(binding.error || binding.code || 'The shared plan ground is unavailable.');
+            draftRows.set(member.cid, { cid: member.cid, content: member.content, city: member.content.city, parcelSourceId, binding: binding.binding });
+        }
+        const opened = await win.handleSharedDesignRoute(next.content.designCids, { draftRows, enter3D: false, openDetails: false, summary: false,
+            replaceAppliedIds: previous.memberIds || [], sharedPlanSessionRemote: true });
+        if (opened.failed.length || opened.blocked) throw new Error('The accepted shared revision could not be shown on this map.');
+        next.memberIds = next.content.designCids.map(cid => opened.localIds.get(cid) || `shared-plan-${cid}`);
+        win.PlanWorkspace.save(next);
+        await win.ClickStack.showPlan(next, { designs: win.PlanComposition.localRecords(next, { apiBase: win.DesignSync.apiBase() }), draft: true, frame: false });
+        win.showEphemeralMessage?.(win.i18n.t('sharedPlan.updated'), 5000, 'success');
+    }
     async function details(plan) {
         const row=await win.PlanWorkspace.resolve(plan);const body=node('div','plan-details');
-        body.append(node('h3','',row.content.title),memberList(row));
-        const actions=node('div','cb-actions');let dialog;
-        actions.append(button(t('sharePlan'),async()=>{dialog.close();await share(row);},true));
-        actions.append(button(t('editPlan'),async()=>{dialog.close();await create({base:row});}));
-        actions.append(button(t('schedule'),async()=>{dialog.close();await schedule(row);}));
-        actions.append(button(t('createAgreement'),async()=>{dialog.close();await win.AgreementDialog.open({plan:row});}));
-        body.append(actions,win.PlanFileUI.controls({ getRecords:()=>win.PlanComposition.localRecords(row,{apiBase:win.DesignSync.apiBase()}),
-            getView:()=>row.content.view,getTitle:()=>row.content.title,getSources:()=>row.designSources||{},getSchedule:()=>row.content.schedule||null,importAllowed:false }));
-        dialog=openDialog(t('plan'),body);return dialog;
+        const heading=node('h3','',row.content.title), members=memberList(row);
+        body.append(heading,members);
+        let dialog,sharedSession;
+        const current=()=>sharedSession?.row||row;
+        const actions=node('div','cb-actions');
+        actions.append(button(t('sharePlan'),async()=>{const latest=current();dialog.close();await share(latest);},true));
+        actions.append(button(t('editPlan'),async()=>{const latest=current();dialog.close();await create({base:latest});}));
+        actions.append(button(t('schedule'),async()=>{const latest=current();dialog.close();await schedule(latest);}));
+        actions.append(button(t('createAgreement'),async()=>{const latest=current();dialog.close();await win.AgreementDialog.open({plan:latest});}));
+        body.append(actions,win.PlanFileUI.controls({ getRecords:()=>win.PlanComposition.localRecords(current(),{apiBase:win.DesignSync.apiBase()}),
+            getView:()=>current().content.view,getTitle:()=>current().content.title,getSources:()=>current().designSources||{},getSchedule:()=>current().content.schedule||null,importAllowed:false }));
+        const collaboration=node('div','plan-details__collaboration');
+        body.append(collaboration);
+        sharedSession=win.SharedPlanSession?.mount({ row, host: collaboration, onChange:latest=>{
+            heading.textContent=latest.content.title;
+            members.replaceChildren(...memberList(latest).childNodes);
+        } });
+        dialog=openDialog(t('plan'),body);
+        dialog.closed.then(()=>sharedSession?.dispose?.());
+        await sharedSession?.ready;
+        return dialog;
     }
-    win.PlanDialog=Object.freeze({create,addDesign,share,details,schedule,scheduleStrip});
+    win.PlanDialog=Object.freeze({create,addDesign,share,details,schedule,scheduleStrip,syncSharedPlanOnMap});
 })(window);

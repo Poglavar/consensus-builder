@@ -45,6 +45,8 @@ export const MCP_FEATURES = Object.freeze([
     { feature: 'community-code-voting', prepare: 'ugt_draft_agreement', edit: 'ugt_edit_agreement', inspect: 'ugt_voting_status', vote: 'ugt_cast_community_vote',
         eligibility: 'Fixed code hashes in consultation.voting; generate codes and retain contact assignments locally. Changing eligibility creates a new agreement without transferring votes.' },
     { feature: 'named-plans', create: 'ugt_draft_plan', inspect: 'ugt_inspect_plan', edit: 'ugt_edit_plan', publish: 'ugt_publish_plan' },
+    { feature: 'shared-plan-session', inspect: 'ugt_inspect_shared_plan', edit: 'ugt_edit_shared_plan',
+        control: 'The person creates the session and changes turns through the private browser session API. The invitation capability grants an agent only its active turn.' },
     { feature: 'individual-designs', inspect: 'ugt_inspect_design', edit: 'ugt_modify_design', granularEdit: 'ugt_edit_design', publish: 'ugt_publish_design' },
     { feature: 'agreements', create: 'ugt_draft_agreement', inspect: 'ugt_inspect_agreement', edit: 'ugt_edit_agreement', publish: 'ugt_propose_agreement' },
     { feature: 'source-discovery', inspect: 'ugt_list_sources', instructions: 'ugt_help' },
@@ -74,7 +76,7 @@ const bounded = (value, maximum = 400) => typeof value === 'string' ? value.slic
 export function createMcpDiscoveryTools({ read, contracts = new Map(), mode = 'hosted', appOrigin = 'https://urbangametheory.xyz' }) {
     function capabilities() {
         return { version: '0.4.0', mode, endpoint: `${appOrigin}/mcp`, workflow: steps,
-            features: MCP_FEATURES, tools: (contracts.size ? [...contracts.values()] : (mode === 'hosted' ? MCP_HOSTED_TOOLS : MCP_LOCAL_TOOLS).map(name => ({ name })))
+            features: MCP_FEATURES.filter(item => item.feature !== 'shared-plan-session' || contracts.has('ugt_inspect_shared_plan')), tools: (contracts.size ? [...contracts.values()] : (mode === 'hosted' ? MCP_HOSTED_TOOLS : MCP_LOCAL_TOOLS).map(name => ({ name })))
                 .map(({ name, title, annotations }) => trustedMetadata({ name, ...(title ? { title } : {}), ...(annotations ? { readOnly: annotations.readOnlyHint === true } : {}) })),
             coordinates: 'GeoJSON WGS84 [longitude, latitude]; distances metres; areas square metres. Missing measurements stay null.',
             publication: { public: true, permanent: true, confirmRequired: true, expectedCidRequiredForReferences: true },

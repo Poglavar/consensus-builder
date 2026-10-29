@@ -159,6 +159,47 @@ describe('ProposalManager mutation boundary', () => {
         expect(store.getProposal('untouched').applied).toBe(true);
     });
 
+    it('releases an explicitly replaced member even after its replacement moves elsewhere', async () => {
+        store.proposals.set('unrelated', { proposalId: 'unrelated', applied: true });
+        ProposalManager._collectAppliedAlternativesForExplicitApply = () => [];
+        ProposalManager._loadReplayGround = async () => {};
+        ProposalManager._rematerializeResolvedScope = async (records, _scope, options) => {
+            expect(records.map(record => record.proposalId)).toEqual(['target', 'conflict']);
+            expect(options._parcelMutation.proposals.getProposal('conflict').applied).toBe(false);
+            return { ok: true, failed: [] };
+        };
+        await expect(ProposalManager.applyProposalPlan(['target'], {
+            releaseProposalIds: ['conflict'], sharedPlanSessionRemote: true
+        })).resolves.toMatchObject({ ok: true, releasedIds: ['conflict'] });
+        expect(store.getProposal('target').applied).toBe(true);
+        expect(store.getProposal('conflict').applied).toBe(false);
+        expect(store.getProposal('unrelated').applied).toBe(true);
+    });
+
+    it('rolls back a late local edit when shared control changes before commit', async () => {
+        const previous = globalThis.SharedPlanSession;
+        let controller = 'owner';
+        const blocked = Object.assign(new Error('The agent is editing'), { code: 'shared-plan-agent-editing' });
+        globalThis.SharedPlanSession = {
+            editBlocked: () => false,
+            assertMutationAllowed: (live, draft) => {
+                expect(live.getProposal('conflict').value).toBe('before');
+                if (controller === 'agent' && draft.getProposal('conflict').value !== 'before') throw blocked;
+            }
+        };
+        try {
+            await expect(ProposalManager.runParcelMutation('edit', null, async options => {
+                options._parcelMutation.proposals.getProposal('conflict').value = 'edited';
+                controller = 'agent';
+                return true;
+            }, { _mapMutation: false })).rejects.toBe(blocked);
+            expect(store.getProposal('conflict').value).toBe('before');
+        } finally {
+            if (previous === undefined) delete globalThis.SharedPlanSession;
+            else globalThis.SharedPlanSession = previous;
+        }
+    });
+
     it('keeps the entire previous composition when any incoming plan member refuses', async () => {
         store.proposals.set('second', { proposalId: 'second', applied: false });
         const before = structuredClone([...store.proposals]);

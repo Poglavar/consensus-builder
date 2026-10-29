@@ -306,10 +306,17 @@ async function _runProposalMutationBoundary(manager, kind, proposalId, options, 
         const result = await parcelMutationCoordinator.run({
             kind,
             proposalId: _normalizeProposalId(proposalId)
-        }, async context => operation(context, {
+        }, async context => {
+            const result = await operation(context, {
                 ...(options || {}),
                 _parcelMutation: context
-            }), {
+            });
+            // Entry-point guards cannot see indirect effects such as an apply-plan releasing a
+            // connected rival. Check the completed private draft before ParcelMutation prepares
+            // or publishes anything.
+            browserRoot.SharedPlanSession?.assertMutationAllowed?.(proposalStore, context.proposals, options || {});
+            return result;
+        }, {
             runtime: browserRoot,
             proposalStore,
             agentStore: agents,
@@ -774,9 +781,19 @@ const ProposalManager = {
     _reapplyInFlight: false,
     _reapplyProgressListeners: new Set(),
 
+    _sharedPlanEditBlocked(proposalId, options = {}) {
+        if (options.sharedPlanSessionRemote === true || proposalId == null) return false;
+        const runtime = typeof window !== 'undefined' ? window : globalThis;
+        const record = _getProposalRecord(proposalId, options);
+        return !!(record && runtime.SharedPlanSession?.editBlocked?.(record));
+    },
+
     runParcelMutation(kind, proposalId, operation, options = {}) {
         if (typeof operation !== 'function') {
             return Promise.reject(new TypeError('runParcelMutation requires an operation function.'));
+        }
+        if (this._sharedPlanEditBlocked(proposalId, options)) {
+            return Promise.reject(new Error((typeof window !== 'undefined' ? window : globalThis).SharedPlanSession.blockedMessage()));
         }
         return _runProposalMutationBoundary(this, kind, proposalId, options,
             (_context, transactionOptions) => operation(transactionOptions));
@@ -2582,6 +2599,7 @@ const ProposalManager = {
     // dependents the user agreed to take off the map (findEditDependents). They come off in the same
     // transaction, so a refused edit leaves the record and its dependents exactly as they were.
     async updateProposalInPlace(proposalId, edited, options = {}) {
+        if (this._sharedPlanEditBlocked(proposalId, options)) throw new Error((typeof window !== 'undefined' ? window : globalThis).SharedPlanSession.blockedMessage());
         if (!options._parcelMutation) {
             const result = await _runProposalMutationBoundary(this, 'proposal-derive', proposalId, options,
                 (_context, transactionOptions) => this.updateProposalInPlace(proposalId, edited, transactionOptions));
@@ -3088,6 +3106,7 @@ const ProposalManager = {
     // rolls back both the incoming plan and the released rivals through ParcelMutation.
     async applyProposalPlan(proposalIds, options = {}) {
         const ids = Array.from(new Set((proposalIds || []).map(String).filter(Boolean)));
+        if (ids.some(id => this._sharedPlanEditBlocked(id, options))) throw new Error((typeof window !== 'undefined' ? window : globalThis).SharedPlanSession.blockedMessage());
         if (!ids.length) return { ok: true, applied: 0, failed: [] };
         if (!options._parcelMutation) {
             this._lastFailedPlanApplySummary = null;
@@ -3109,6 +3128,10 @@ const ProposalManager = {
         const candidates = _peekProposals(store).filter(record => appliedOf(record)
             && !memberIds.has(String(record.proposalId)));
         const released = new Map();
+        for (const id of (options.releaseProposalIds || []).map(String)) {
+            const record = _getProposalRecord(id, options);
+            if (record && appliedOf(record) && !memberIds.has(String(record.proposalId))) released.set(String(record.proposalId), record);
+        }
         for (let i = 0; i < members.length; i += 1) {
             const member = members[i];
             this._clearLastApplyFailure?.(member.proposalId);
@@ -3480,6 +3503,7 @@ const ProposalManager = {
 
     async unapplyProposal(proposalId, options = {}) {
         const opts = options || {};
+        if (this._sharedPlanEditBlocked(proposalId, opts)) throw new Error((typeof window !== 'undefined' ? window : globalThis).SharedPlanSession.blockedMessage());
         // A structure can park an earlier building while the structure itself is being derived.
         // That state change belongs to the enclosing scope fold, so it must neither enqueue behind
         // its own root transaction nor start a second parcel derivation.
@@ -3681,6 +3705,7 @@ const ProposalManager = {
     },
 
     async deleteProposal(proposalId) {
+        if (this._sharedPlanEditBlocked(proposalId)) throw new Error((typeof window !== 'undefined' ? window : globalThis).SharedPlanSession.blockedMessage());
         return this._deleteProposalConfirmed(proposalId);
     },
 

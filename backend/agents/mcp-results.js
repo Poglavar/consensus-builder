@@ -36,14 +36,16 @@ export function markUntrusted(value) {
 export function toolError(error) {
     const code = typeof error?.code === 'string' && /^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$/.test(error.code) ? error.code : 'tool-failed';
     // body.next is supplied by another service and must never become an instruction.
-    const next = error?.next || (code === 'structure-over-road'
+    const next = error?.next || (code.startsWith('shared-plan-')
+        ? { tool: 'ugt_inspect_shared_plan', action: 'Inspect this shared session again. Use its latest version and CID, and edit only while the person has given you control.' }
+        : code === 'structure-over-road'
         ? { action: 'Move or resize the structure clear of the applied road, or revise/remove the road design itself.' }
         : /^(design|plan)-revision-mismatch$/.test(code)
             ? { tool: code.startsWith('design') ? 'ugt_inspect_design' : 'ugt_inspect_plan', action: 'Inspect the intended revision and use its CID as expectedCid.' }
             : { action: 'Correct the arguments using the tool schema, or retry an unavailable source.' });
     const result = { code, message: error?.upstream !== undefined || error?.body !== undefined ? 'Source request failed.' : 'Tool request failed.', next, untrusted: { message: error?.message || String(error),
         ...(error?.upstream !== undefined || error?.body !== undefined ? { upstream: error.upstream ?? error.body } : {}) } };
-    for (const key of ['field', 'constraints', 'currentCid', 'expectedCid', 'arguments']) {
+    for (const key of ['field', 'constraints', 'currentCid', 'expectedCid', 'currentVersion', 'controller', 'arguments']) {
         if (error?.[key] !== undefined) result[key] = error[key];
     }
     if (Number.isInteger(error?.status) && error.status >= 100 && error.status <= 599) result.status = error.status;

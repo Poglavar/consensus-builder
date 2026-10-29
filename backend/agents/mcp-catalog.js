@@ -17,3 +17,9 @@ export const MCP_HOSTED_TOOLS = Object.freeze([
     ...MCP_LOCAL_TOOLS.slice(0, MCP_LOCAL_TOOLS.indexOf('ugt_chain_agreements')),
     ...MCP_LOCAL_TOOLS.slice(MCP_LOCAL_TOOLS.indexOf('ugt_voting_status'))
 ]);
+export const MCP_SHARED_PLAN_TOOLS = Object.freeze(['ugt_inspect_shared_plan', 'ugt_edit_shared_plan']);
+export const MCP_HOSTED_SHARED_TOOLS = Object.freeze([
+    ...MCP_HOSTED_TOOLS.slice(0, MCP_HOSTED_TOOLS.indexOf('ugt_publish_plan')),
+    ...MCP_SHARED_PLAN_TOOLS,
+    ...MCP_HOSTED_TOOLS.slice(MCP_HOSTED_TOOLS.indexOf('ugt_publish_plan'))
+]);

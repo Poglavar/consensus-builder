@@ -8769,6 +8769,22 @@
         "publicationFailed": "Projekt iz plana nije moguće objaviti.",
         "shareDesignHint": "Podijeli ovaj dizajn"
     },
+    "sharedPlan": {
+        "title": "Rad s agentom",
+        "collaborate": "Surađuj",
+        "notConnected": "Stvorite privatnu zajedničku sesiju za ovu točnu reviziju plana.",
+        "youEditing": "Uređujete. Spremite ovu reviziju prije predaje kontrole agentu.",
+        "agentEditing": "Agent uređuje ovaj zajednički plan. Preuzmite kontrolu prije uređivanja ovdje.",
+        "save": "Spremi u zajednički plan",
+        "letAgentEdit": "Dopusti agentu uređivanje",
+        "copyInvite": "Kopiraj pozivnicu",
+        "inviteCopied": "Pozivnica je kopirana. Dajte je agentu kojeg odaberete.",
+        "takeControl": "Preuzmi kontrolu",
+        "disconnect": "Prekini vezu",
+        "updated": "Zajednički plan je ažuriran.",
+        "localConflict": "Lokalna se revizija razlikuje od zajedničkog plana. Spremite je da zadržite svoju verziju ili ponovno učitajte zajedničku reviziju.",
+        "reload": "Ponovno učitaj zajedničku reviziju"
+    },
     "pageHeader": {
         "backToMap": "Natrag na kartu"
     },

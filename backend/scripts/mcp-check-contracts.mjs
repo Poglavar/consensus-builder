@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// Exercise hosted contracts with concrete fixtures. Writes are refused through their real confirmation contract.
+// Exercise hosted contracts with concrete fixtures. Public writes use false confirmation; private shared writes use an invalid capability.
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
 import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client';
-import { MCP_HOSTED_TOOLS } from '../agents/mcp-catalog.js';
+import { MCP_HOSTED_SHARED_TOOLS } from '../agents/mcp-catalog.js';
 import { cidOfObject } from '../cid.js';
 const require = createRequire(import.meta.url);
 const PlanRecord = require('../../frontend/js/plan-record.js');
@@ -51,7 +51,7 @@ export async function checkContracts({ origin, fixtures = {}, constructionCases 
     try {
         await client.connect(new StreamableHTTPClientTransport(new URL('/mcp', origin)));
         const { tools } = await client.listTools();
-        if (JSON.stringify(tools.map(t=>t.name)) !== JSON.stringify(MCP_HOSTED_TOOLS)) throw new Error('Hosted tool catalogue differs from registration');
+        if (JSON.stringify(tools.map(t=>t.name)) !== JSON.stringify(MCP_HOSTED_SHARED_TOOLS)) throw new Error('Hosted tool catalogue differs from registration');
         if (tools.some(t=>t.annotations?.destructiveHint)) throw new Error('Hosted server advertises a signing or paid tool');
         const resolve = async (value, stack = []) => {
             if (!value || typeof value !== 'object') return value;
@@ -75,25 +75,32 @@ export async function checkContracts({ origin, fixtures = {}, constructionCases 
             try {
                 const confirmation=tool.inputSchema?.properties?.confirmAssetUpload ? 'confirmAssetUpload' : 'confirm';
                 const args=await resolve(fixture);
-                const result=await client.callTool({name:tool.name,arguments:write?{...args,[confirmation]:false}:args});
-                if(write){if(!result.isError||!confirmationRefused(result.structuredContent,confirmation))throw new Error('Write was not rejected specifically by its confirmation contract');}
+                const sharedSession = ['ugt_inspect_shared_plan', 'ugt_edit_shared_plan'].includes(tool.name);
+                const sharedWrite = tool.name === 'ugt_edit_shared_plan';
+                const probe = sharedSession ? { ...args, capability: 'A'.repeat(32) } : write ? { ...args, [confirmation]: false } : args;
+                const result = await client.callTool({ name: tool.name, arguments: probe });
+                if (sharedSession) {
+                    if (!result.isError || !['shared-plan-forbidden', 'shared-plan-not-found'].includes(result.structuredContent?.code)) throw new Error('Shared write was not rejected by its capability check');
+                } else if(write){if(!result.isError||!confirmationRefused(result.structuredContent,confirmation))throw new Error('Write was not rejected specifically by its confirmation contract');}
                 else {
                     if(result.isError)throw new Error(`Tool error: ${result.structuredContent?.code || 'unknown'}`);
                     assertContractResult(tool.name,result.structuredContent,args);results.set(tool.name,result.structuredContent);
                 }
-                record({tool:tool.name,...(label?{case:label}:{}),status:write?'write-refused-without-confirmation':'passed'});
+                record({tool:tool.name,...(label?{case:label}:{}),status:sharedSession?'shared-refused-without-capability':write?'write-refused-without-confirmation':'passed'});
             } catch(error){record({tool:tool.name,...(label?{case:label}:{}),status:'failed',error:error.message});}
         };
-        const defaults={ugt_capabilities:{},ugt_explain:{term:'Parcel binding'},ugt_help:{topic:'workflow'},ugt_list_sources:{limit:2}};
+        const shared = { sessionId: 'A'.repeat(24), capability: 'A'.repeat(32) };
+        const defaults={ugt_capabilities:{},ugt_explain:{term:'Parcel binding'},ugt_help:{topic:'workflow'},ugt_list_sources:{limit:2},
+            ugt_inspect_shared_plan: shared, ugt_edit_shared_plan: { ...shared, expectedVersion: 0, expectedCid: `bafkrei${'a'.repeat(52)}`, operations: [] }};
         for(const tool of tools)await run(tool,fixtures[tool.name]||defaults[tool.name]);
         for(const test of constructionCases){const tool=tools.find(tool=>tool.name===test.tool);if(!tool)record({case:test.id,status:'failed',error:'Construction tool is absent'});else await run(tool,test.arguments,test.id);}
         for(const resource of(await client.listResources()).resources){try{await client.readResource({uri:resource.uri});record({resource:resource.uri,status:'passed'});}catch(error){record({resource:resource.uri,status:'failed',error:error.message});}}
         for(const prompt of(await client.listPrompts()).prompts){try{await client.getPrompt({name:prompt.name,arguments:{request:'Explain the next review step.'}});record({prompt:prompt.name,status:'passed'});}catch(error){record({prompt:prompt.name,status:'failed',error:error.message});}}
-        return {version:2,ok:checks.every(check=>['passed','write-refused-without-confirmation'].includes(check.status)),checks};
+        return {version:2,ok:checks.every(check=>['passed','write-refused-without-confirmation','shared-refused-without-capability'].includes(check.status)),checks};
     } finally {await client.close();}
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     const args=process.argv.slice(2),option=name=>args[args.indexOf(name)+1];
-    if(!args.includes('--origin'))console.log('Usage: node scripts/mcp-check-contracts.mjs --origin <url> --fixtures tools.json\nPublic reads/drafts run. Every write uses false confirmation. Missing fixtures fail. Fixture files may contain {fixtures,constructionCases}.');
+    if(!args.includes('--origin'))console.log('Usage: node scripts/mcp-check-contracts.mjs --origin <url> --fixtures tools.json\nPublic reads/drafts run. Public writes use false confirmation; shared writes use an invalid capability. Missing fixtures fail. Fixture files may contain {fixtures,constructionCases}.');
     else {const input=args.includes('--fixtures')?JSON.parse(readFileSync(option('--fixtures'),'utf8')):{};const report=await checkContracts({origin:option('--origin'),fixtures:input.fixtures||input,constructionCases:input.constructionCases||[]});console.log(JSON.stringify(report,null,2));if(!report.ok)process.exitCode=1;}
 }

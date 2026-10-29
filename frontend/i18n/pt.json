@@ -8559,6 +8559,22 @@
         "publicationFailed": "Não foi possível publicar uma proposta do plano.",
         "shareDesignHint": "Compartilhar este projeto"
     },
+    "sharedPlan": {
+        "title": "Trabalhar com um agente",
+        "collaborate": "Colaborar",
+        "notConnected": "Crie uma sessão privada partilhada para esta revisão exata do plano.",
+        "youEditing": "Está a editar. Guarde esta revisão antes de entregar o controlo ao agente.",
+        "agentEditing": "O agente está a editar este plano partilhado. Retome o controlo antes de editar aqui.",
+        "save": "Guardar no plano partilhado",
+        "letAgentEdit": "Permitir que o agente edite",
+        "copyInvite": "Copiar convite",
+        "inviteCopied": "Convite copiado. Entregue-o ao agente que escolher.",
+        "takeControl": "Retomar controlo",
+        "disconnect": "Desligar",
+        "updated": "O plano partilhado foi atualizado.",
+        "localConflict": "Uma revisão local difere do plano partilhado. Guarde-a para manter a sua versão ou recarregue a revisão partilhada.",
+        "reload": "Recarregar revisão partilhada"
+    },
     "pageHeader": {
         "backToMap": "Voltar ao mapa"
     },
