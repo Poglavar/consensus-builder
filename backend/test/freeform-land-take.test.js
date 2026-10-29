@@ -83,44 +83,6 @@ describe('Freeform reviewed land take', () => {
  });
 });
 
-describe('the ground a design is reviewed on', () => {
- // A layout's plots 10 and 11 on cadastral parcel C; an applied tower cut its footprint out of plot 10.
- const piece = (x, y, w, h, parcelId, properties = {}) => ({ ...rect(x, y, w, h, parcelId), properties: { parcelId, cadastreParcelIds: ['C'], producedByProposalId: 'layout', ...properties } });
- const plot10 = piece(0, 0, .002, .002, 'C#layout-10'), plot11 = piece(.002, 0, .002, .002, 'C#layout-11');
- const towerAt = (x, y) => ({ ...rect(x, y, .0005, .001, 'C#tower-1'), properties: { parcelId: 'C#tower-1', cadastreParcelIds: ['C'], producedByProposalId: 'tower', buildingParcel: true } });
- const cut = (plot, tower) => ({ ...plot, geometry: turf.difference(plot, tower).geometry });
- it('returns the tower to the plot it was cut from, so Whole parcel takes that plot alone', () => {
-  for (const tower of [towerAt(.0005, .0005), towerAt(.0015, .0005)]) {
-   const ground = land.groundBefore({ pieces: [cut(plot10, tower), plot11, tower], ownId: 'tower', ownFootprint: tower, turf });
-   expect(ground.map(item => item.properties.parcelId)).toEqual(['C#layout-10', 'C#layout-11']);
-   sameArea(ground[0], plot10);
-   const review = land.plan({ buildings: [tower], parcels: ground, turf });
-   expect(review.rows.map(row => row.id)).toEqual(['C#layout-10']);
-   const whole = land.plan({ buildings: [tower], parcels: ground, whole: new Set([review.rows[0].key]), turf });
-   sameArea(whole.take, plot10);
-  }
- });
- it('keeps a whole plot the tower already took as one piece, beside the untouched plots', () => {
-  const tower = { ...plot10, properties: { parcelId: 'C#tower-1', cadastreParcelIds: ['C'], producedByProposalId: 'tower', buildingParcel: true } };
-  const ground = land.groundBefore({ pieces: [plot11, tower], ownId: 'tower', ownFootprint: towerAt(.0005, .0005), turf });
-  expect(ground.map(item => item.properties.parcelId)).toEqual(['C#layout-11', 'C#tower-1']);
-  sameArea(ground[1], plot10);
- });
- it('joins a tower on bare cadastral ground back into its cadastral parcel', () => {
-  const C = piece(0, 0, .002, .002, 'C', { producedByProposalId: undefined });
-  const tower = towerAt(.0005, .0005);
-  const remainder = { ...cut(C, tower), properties: { ...C.properties, producedByProposalId: 'tower' } };
-  const ground = land.groundBefore({ pieces: [remainder, tower], ownId: 'tower', ownFootprint: tower, turf });
-  expect(ground).toHaveLength(1);
-  sameArea(ground[0], C);
- });
- it('leaves the live pieces as they are for a design that is not applied', () => {
-  const pieces = [plot10, plot11];
-  expect(land.groundBefore({ pieces, ownId: null, turf })).toBe(pieces);
-  expect(land.groundBefore({ pieces, ownId: 'tower', turf })).toBe(pieces);
- });
-});
-
 describe('land-take source completeness', () => {
  const { loadBuildingStock } = require('../../frontend/js/proposals/demolition-prefetch.js');
  it('accepts an authoritative empty answer', async () => {

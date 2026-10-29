@@ -16,10 +16,21 @@
         let whole = new Set(), parcels = [], current = null, savedTake = initialTake;
         let sequence = 0, timer = null, closed = false;
         let geometryKey = null, stock = [], outcomes = null, pending = false, baseline = null;
-        // The applied design under edit, if any, and its footprint as it stood when the edit opened:
-        // the review reads the ground as it was before that design (FreeformLandTake.groundBefore).
+        // The applied design under edit, if any: the review reads the ground as it stood before it.
         const ownId = env.getActiveProposalDesignDraft?.()?.sourceLocalProposalId || null;
-        const ownFootprint = ownId && getBuildings().length ? api.union(getBuildings(), env.turf) : null;
+        // That ground, replayed once (freeform-ground-before.js) and kept while the building stays on
+        // the parcels it was read for.
+        let before = null;
+        async function groundUnder(region) {
+            const fabric = env.LiveParcelFabric;
+            // A design that is not applied left nothing on the live pieces: they are that ground.
+            if (!ownId || !fabric.producedBy(ownId).length) return fabric.queryBounds(env.turf.bbox(region), { includeCorridors: false });
+            const declared = env.proposalStorage.getProposal(ownId)?.cadastreParcelIds || [];
+            const ids = [...new Set([...env.__cadastreAncestry.loadedCadastreParcels(env.turf.bbox(region)).map(item => item.id),
+                ...declared.map(String)])];
+            if (!before || ids.some(id => !before.ids.includes(id))) before = await env.FreeformGroundBefore.read({ ownId, cadastreIds: ids });
+            return before.pieces;
+        }
         const text = (key, params = {}) => env.i18n.t(`landTake.${key}`, params);
         function style(kind) {
             const css = getComputedStyle(panel);
@@ -111,15 +122,11 @@
                 const region = footprint;
                 await env.CadastralParcelRepository.ensureFootprint(region);
                 if (closed || ticket !== sequence) return false;
-                // The live pieces as they stood before this design: a layout's plot under the
-                // building, not the cadastral parcel the layout stands on, and never this design's own
-                // fragments. Its own pieces are read wherever they are, so a moved building still
-                // finds the piece it was cut from.
-                const live = env.LiveParcelFabric.queryBounds(env.turf.bbox(region), { includeCorridors: false });
-                const seen = new Set(live.map(piece => env.LiveParcelFabric.featureId(piece)));
-                const ownPieces = ownId ? env.LiveParcelFabric.producedBy(ownId)
-                    .filter(piece => !seen.has(env.LiveParcelFabric.featureId(piece))) : [];
-                parcels = api.groundBefore({ pieces: [...live, ...ownPieces], ownId, ownFootprint, turf: env.turf });
+                // The pieces as they stood before this design: a layout's plots under the building,
+                // each with its own outline, not the cadastral parcel the layout stands on, and never
+                // this design's own fragments.
+                parcels = await groundUnder(region);
+                if (closed || ticket !== sequence) return false;
                 current = api.plan({ buildings, parcels, whole, savedTake, turf: env.turf });
                 savedTake = null;
                 whole = new Set(current.rows.filter(row => row.mode === 'whole').map(row => row.key));
