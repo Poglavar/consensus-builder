@@ -67,7 +67,7 @@ view changes as one undoable edit; **Try another** reruns with a random seed.
 The generator is DOM-free (`camera-flight-auto.js`); only the height render and building boxes
 read the live scene.
 
-**Sound.** Every flight plays one looping CC0 score ("Scaling Up" by Ruskerdax), an intro voice
+**Sound.** Every flight plays one looping CC0 score ("Feel Good Island Loop" by AntumDeluge), an intro voice
 line when it starts from the beginning and an outro line at the end, the score ducking under the
 voice and fading out after the outro. Lines exist for en, hr, es and sr; other languages use
 English. **Sound** in the player and editor toggles it, remembered on the device. Sources and
