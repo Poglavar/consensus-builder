@@ -1,7 +1,7 @@
-<!-- Plan for CityGML and CityJSON: CityJSON plan files (open), CityGML city models as building sources (Vienna built), and how our records map onto CityGML and LADM. -->
+<!-- Plan for CityGML and CityJSON beside our own formats: imports wherever they are used to exchange what we import, exports as an extra option, and how our records map onto CityGML and LADM. -->
 # CityGML and CityJSON (plan)
 
-Status: plan files not started; the building source is built for Vienna (`wien-lod2`).
+Status: the city-model building source is built for Vienna (`wien-lod2`); the other imports and the exports are not started.
 
 CityGML (OGC) is the open standard for 3D city models: buildings and their storeys, rooms and
 units, roads and rail, vegetation, water, land use, terrain and city furniture, each with
@@ -9,15 +9,42 @@ geometry at a level of detail (LOD) and attributes. CityJSON is its JSON encodin
 web and for tools. Cadastral and mapping agencies publish city models in it, among them the
 Netherlands (3D BAG), the German states (LoD2 buildings), Vienna, Helsinki and New York.
 
-Our physical content is CityGML's domain, so we use it for files and as a source instead of our
-own formats. Three things are outside it: parcels and ownership (LADM, ISO 19152), planning rules
-(only loosely in INSPIRE planned land use) and agreements (no standard). Our Design, Plan and
-Agreement records stay; CityJSON carries what they describe.
+Our internal model stays as it is, and so do our own file formats: they fit our records exactly,
+and CityGML, close as it is, is an odd fit for some of them. CityGML and CityJSON are converted at
+the import and export boundaries only:
 
-## 1. Plan files are CityJSON
+1. Our own formats (`ugt-plan-file/v1`, design, road, parcel-layout and agreement downloads) keep
+   being exported and imported.
+2. CityGML and CityJSON are imported wherever they are what the world uses to exchange the objects
+   we import.
+3. CityGML and CityJSON are exported as an additional option beside our files, never instead of them.
 
-Export a Plan as one CityJSON 2.0 file, replacing `ugt-plan-file/v1`
-([portable plan files](portable-plan-files.md)) once import reads it back without loss.
+Three things are outside CityGML: parcels and ownership (LADM, ISO 19152), planning rules (only
+loosely in INSPIRE planned land use) and agreements (no standard).
+
+## Where each applies
+
+| Our import or export | CityGML / CityJSON | Why |
+|---|---|---|
+| City building sources (`backend/buildings/`) | Import: CityGML sheets (built: Vienna); CityJSON tiles (3D BAG), German state LoD2 (CityGML), NYC's 3D model (CityGML) | How cities publish their 3D buildings. |
+| A person's building source URL (Data sources) | Import: a CityJSON / CityJSONSeq or CityGML URL, beside ArcGIS, WFS, OGC API and GeoJSON | The same files, chosen by the person. |
+| Building model upload (`building-upload.js`, MCP `ugt_import_model`) | Import: a CityGML or CityJSON building beside GLB/glTF, with its storeys and units when present | GIS tools and city portals hand out single buildings this way. |
+| Footprint import in the building editors (Freeform, Row, Block) | Import: CityGML / CityJSON buildings as footprints with heights | Same files, when only the outline is wanted. |
+| Plan file import and download | Import and export: CityJSON beside `ugt-plan-file/v1` | Opens in QGIS, FME, ninja and cjio. |
+| Design download | Export: CityJSON for building, park, square, lake and road designs | Same, one design at a time. |
+| Roads (OSM document, OpenDRIVE) | Export only: road surfaces in the plan or design CityJSON | Roads are exchanged as OSM and OpenDRIVE, rarely as CityGML. |
+| Parcels, parcel layouts, ownership, agreements | None | Parcels travel as cadastral GML/GeoJSON (LADM concepts), not CityGML; agreements have no standard. |
+| Parks, land use, terrain, trees as imports | None for now | Little exchanged as CityGML; revisit when a source needs it. |
+
+Order: a CityJSON tile source (3D BAG), then building upload and footprint import from one shared
+reader, then the CityJSON plan and design export, then CityJSON plan import, then the person's URL
+sources and the remaining city sources. CityGML XML and CityJSON share one reader output (the
+`citygml.js` building shape), so each import point reads both.
+
+## 1. CityJSON plan and design files
+
+Export a Plan, or one Design, as one CityJSON 2.0 file, as an option beside `ugt-plan-file/v1`
+([portable plan files](portable-plan-files.md)); import reads it back without loss.
 
 - The physical content of each Design becomes standard city objects (mapping below), so QGIS, FME,
   ninja and cjio open the file as it is.
