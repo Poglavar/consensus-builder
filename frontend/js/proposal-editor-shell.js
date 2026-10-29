@@ -1621,10 +1621,7 @@
                 Promise.resolve(instantCreateProposalFromDraft(commitId, { commitOnFinish: true }))
                     .then(result => {
                         if (result) freeformSiblingDrafts.delete(String(commitId));
-                        // A Schelling layout whose street strips become roads places them once it
-                        // stands (road-in-parcel.js); every other session has nothing pending.
-                        return Promise.resolve(saveFreeformSiblings(result, siblings))
-                            .then(() => global.RoadInParcel?.placeAfterLayout?.(commitId, result));
+                        return saveFreeformSiblings(result, siblings);
                     }).catch(error => {
                     console.warn('[ProposalEditor] Geometry edit commit failed; draft kept', error);
                     reportProposalDesignSaveFailure(error);

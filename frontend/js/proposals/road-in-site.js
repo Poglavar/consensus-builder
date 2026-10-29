@@ -74,8 +74,8 @@
 
         graph.parts.forEach((part, partIndex) => {
             // `skipUnreadable`: a part that does not read as streets is left out (and named), not a
-            // reason to place nothing (the parcel layout's strips: ragged pieces where the pool
-            // boundary cuts the plan).
+            // reason to place nothing (several selected strips, one of them ragged where a pool
+            // boundary cuts it).
             const skip = issue => options.skipUnreadable && ['not-a-grid', 'disconnected'].includes(issue.code);
             part.issues.forEach(issue => issues.push(skip(issue) ? { code: 'skipped', reason: issue.code, part: partIndex } : { ...issue, part: partIndex }));
             if (!part.lines.length) return;

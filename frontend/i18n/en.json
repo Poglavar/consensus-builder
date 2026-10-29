@@ -3281,7 +3281,8 @@
             "notGrid": "This ground does not read as straight streets. Draw the road by hand with the Road tool.",
             "disconnected": "Parts of this ground do not connect as one street network. Select the parts separately.",
             "tooNarrow": "A street here is {{width}} m wide, too narrow for a lane.",
-            "tooWide": "The lanes chosen for the {{width}} m streets need {{required}} m with their pavements."
+            "tooWide": "The lanes chosen for the {{width}} m streets need {{required}} m with their pavements.",
+            "skipped": "Pieces that do not read as straight streets stay as they are: {{count}}."
         },
         "failed": "Could not place the road: {{reason}}",
         "done": "Roads placed in the parcel: {{count}}.",
@@ -3289,13 +3290,7 @@
         "taken": "A road or track already holds this ground. Unapply it first, or select other parcels.",
         "joinFailed": "The selected parcels could not be joined into one site.",
         "roadName": "Streets",
-        "description": "Streets fitted into the ground left for them.",
-        "layoutNotPlaced": "The layout is not on the map, so no roads were fitted into its street strips.",
-        "layoutPlacing": "Fitting roads into the street strips…",
-        "layoutRoadName": "Streets of {{layout}}",
-        "layoutFailed": "The layout is saved, but no road could be fitted into its street strips: {{reason}}",
-        "layoutDone": "The layout and the roads in its street strips ({{count}}) are on the map. Share them together as a plan.",
-        "layoutDoneSkipped": "The layout and the roads in its street strips ({{count}}) are on the map; ragged pieces at the edge of the pool ({{skipped}}) stay plots. Share them together as a plan."
+        "description": "Streets fitted into the ground left for them."
     },
     "parcelLayout": {
         "publishWithAgreement": "A parcel layout is published with its agreement. Propose an agreement that includes it.",
@@ -3311,8 +3306,6 @@
             "plotCount": "Number of plots",
             "courtyard": "Courtyard",
             "courtyardHint": "Carves the inner courtyard of a planned building block out as a plot of its own.",
-            "streetRoads": "Make the street strips roads",
-            "streetRoadsHint": "On Done, a road is fitted into the street strips: lanes along their middle, pavements to their edges.",
             "saved": "Saved the parcel layout to this design.",
             "discardMessage": "The edits you made here have not been saved to the design. Closing now discards them.",
             "coverageComplete": "The plots cover the whole pool ({{area}}).",

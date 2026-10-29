@@ -87,6 +87,18 @@ describe('roadsInSite', () => {
         for (let k = 20; k >= 0; k -= 1) { const t = k / 20 * Math.PI / 2; ring.push([88 * Math.cos(t), 88 * Math.sin(t)]); }
         expect(RoadInSite.blocking(RoadInSite.roadsInSite(polygon(ring)).issues)[0].code).toBe('not-a-grid');
     });
+
+    it('places the readable strips of a selection and names the ragged one it leaves out', () => {
+        const arc = [];
+        for (let k = 0; k <= 20; k += 1) { const t = k / 20 * Math.PI / 2; arc.push([300 + 100 * Math.cos(t), 100 * Math.sin(t)]); }
+        for (let k = 20; k >= 0; k -= 1) { const t = k / 20 * Math.PI / 2; arc.push([300 + 88 * Math.cos(t), 88 * Math.sin(t)]); }
+        const site = { type: 'MultiPolygon', coordinates: [polygon([[0, 0], [100, 0], [100, 12], [0, 12]]).coordinates, polygon(arc).coordinates] };
+        expect(RoadInSite.blocking(RoadInSite.roadsInSite(site).issues)[0].code).toBe('not-a-grid');
+        const planned = RoadInSite.roadsInSite(site, { skipUnreadable: true });
+        expect(RoadInSite.blocking(planned.issues)).toEqual([]);
+        expect(planned.roads).toHaveLength(1);
+        expect(planned.issues).toEqual([{ code: 'skipped', reason: 'not-a-grid', part: 1 }]);
+    });
 });
 
 describe('the bounded record', () => {

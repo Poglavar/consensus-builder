@@ -3308,7 +3308,8 @@
             "notGrid": "Este terreno no se lee como calles rectas. Dibuja la calle a mano con la herramienta Calle.",
             "disconnected": "Partes de este terreno no se conectan como una sola red de calles. Selecciónalas por separado.",
             "tooNarrow": "Aquí una calle mide {{width}} m de ancho, demasiado estrecha para un carril.",
-            "tooWide": "Los carriles elegidos para las calles de {{width}} m necesitan {{required}} m con sus aceras."
+            "tooWide": "Los carriles elegidos para las calles de {{width}} m necesitan {{required}} m con sus aceras.",
+            "skipped": "Los trozos que no se leen como calles rectas quedan como están: {{count}}."
         },
         "failed": "No se pudo colocar la calle: {{reason}}",
         "done": "Calles colocadas en la parcela: {{count}}.",
@@ -3316,13 +3317,7 @@
         "taken": "Una calle o vía ya ocupa este terreno. Quítala del mapa primero o selecciona otras parcelas.",
         "joinFailed": "Las parcelas seleccionadas no se pudieron unir en un solo terreno.",
         "roadName": "Calles",
-        "description": "Calles ajustadas al terreno reservado para ellas.",
-        "layoutNotPlaced": "La distribución no está en el mapa, así que no se ajustó ninguna calle a sus franjas.",
-        "layoutPlacing": "Ajustando calles a las franjas…",
-        "layoutRoadName": "Calles de {{layout}}",
-        "layoutFailed": "La distribución está guardada, pero no se pudo ajustar ninguna calle a sus franjas: {{reason}}",
-        "layoutDone": "La distribución y las calles de sus franjas ({{count}}) están en el mapa. Compártelas juntas como un plan.",
-        "layoutDoneSkipped": "La distribución y las calles de sus franjas ({{count}}) están en el mapa; los trozos irregulares del borde ({{skipped}}) siguen siendo parcelas. Compártelas juntas como un plan."
+        "description": "Calles ajustadas al terreno reservado para ellas."
     },
     "parcelLayout": {
         "publishWithAgreement": "Una distribución de parcelas se publica con su acuerdo. Propón un acuerdo que la incluya.",
@@ -3338,8 +3333,6 @@
             "plotCount": "Número de parcelas",
             "courtyard": "Patio",
             "courtyardHint": "Separa el patio interior de un bloque de edificios planificado como una parcela propia.",
-            "streetRoads": "Convertir las franjas de calle en calles",
-            "streetRoadsHint": "Al pulsar Hecho se ajusta una calle a las franjas: carriles por el centro y aceras hasta los bordes.",
             "saved": "El trazado de parcelas se guardó en este diseño.",
             "discardMessage": "Los cambios que hiciste aquí no se han guardado en el diseño. Si cierras ahora, se descartan.",
             "coverageComplete": "Las parcelas cubren todo el terreno agrupado ({{area}}).",

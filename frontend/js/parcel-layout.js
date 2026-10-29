@@ -477,11 +477,6 @@
                             <button type="button" class="btn" data-reparcel-courtyard-building>${t('reparcellization.modal.courtyardFromBuilding', 'From a building block')}</button>
                             <p class="reparcel-courtyard-hint">${t('parcelLayout.editor.courtyardHint', 'Carves the inner courtyard of a planned building block out as a plot of its own.')}</p>
                         </div>
-                        <label class="reparcel-street-roads" data-reparcel-street-roads hidden>
-                            <input type="checkbox" data-reparcel-street-roads-toggle checked>
-                            <span>${t('parcelLayout.editor.streetRoads', 'Make the street strips roads')}</span>
-                            <span class="reparcel-street-roads-hint">${t('parcelLayout.editor.streetRoadsHint', 'On Done, a road is fitted into the street strips: lanes along their middle, pavements to their edges.')}</span>
-                        </label>
                         <div class="reparcel-edit-tools">
                             <div class="reparcel-legend-actions">
                                 ${tool('data-reparcel-draw aria-pressed="false"', 'reparcellization.modal.drawPlot', 'Draw plot', 'fa-draw-polygon')}
@@ -565,7 +560,6 @@
         state.redoEditBtn = root.querySelector('[data-reparcel-redo-edit]');
         state.drawBtn = root.querySelector('[data-reparcel-draw]');
         state.courtyardToolsEl = root.querySelector('[data-reparcel-courtyard-tools]');
-        state.streetRoadsEl = root.querySelector('[data-reparcel-street-roads]');
         root.querySelector('[data-reparcel-courtyard-building]').addEventListener('click', openBuiltFormPicker);
         state.lineBtn = root.querySelector('[data-reparcel-line]');
         state.eraseBtn = root.querySelector('[data-reparcel-erase]');
@@ -594,7 +588,6 @@
             btn.addEventListener('click', () => {
                 if (btn.disabled) return;
                 if (!persistResult()) return;
-                handOverStreetStrips();
                 closeModal({ skipPersist: true });
                 if (typeof showEphemeralMessage === 'function') {
                     showEphemeralMessage(t('parcelLayout.editor.saved', 'Saved the parcel layout to this design.'), 4000, 'success');
@@ -1394,7 +1387,6 @@
     // tools are always available; only the courtyard tool belongs to Keep existing borders.
     function updateDrawToolButtons() {
         if (state.courtyardToolsEl) state.courtyardToolsEl.hidden = state.algorithm !== 'amend' || state.plotsTab === 'old';
-        updateStreetRoadsToggle();
     }
 
     function setDrawButtonsActive() {
@@ -3042,40 +3034,8 @@
         }).addTo(state.map);
     }
 
-    // The street strips a Schelling layout leaves (its plots of source 'schelling-remainder') can
-    // become roads: offered while the layout has any, hand edits included.
-    function streetStripPlots() {
-        return (state.slices || []).filter(slice => slice && slice.source === 'schelling-remainder' && slice.geometry);
-    }
-
-    function updateStreetRoadsToggle() {
-        if (state.streetRoadsEl) state.streetRoadsEl.hidden = !streetStripPlots().length || state.plotsTab === 'old';
-    }
-
-    // Done with "Make the street strips roads" on: the strips' ground goes to the design session,
-    // which fits a road into it once the layout stands (road-in-parcel.js placeAfterLayout). Roads
-    // stay roads: the layout record itself keeps only its plots (plan-design-agreement.md).
-    function handOverStreetStrips() {
-        window.pendingLayoutStreetRoads = null;
-        const toggle = state.streetRoadsEl && state.streetRoadsEl.querySelector('[data-reparcel-street-roads-toggle]');
-        const draftId = window.activeProposalDesignDraftId || null;
-        const strips = streetStripPlots();
-        if (!toggle || !toggle.checked || state.streetRoadsEl.hidden || !draftId || !strips.length) return;
-        let site = null;
-        try {
-            site = strips.slice(1).reduce((merged, slice) => turf.union(merged, turf.feature(slice.geometry)) || merged,
-                turf.feature(strips[0].geometry)).geometry;
-        } catch (error) {
-            log('warn', 'the street strips could not be joined; no roads are placed', error);
-            return;
-        }
-        window.pendingLayoutStreetRoads = { draftId: String(draftId), site };
-        log('debug', 'street strips handed to the road tool', { draftId, strips: strips.length });
-    }
-
     function drawPreview() {
         if (!state.map) return;
-        updateStreetRoadsToggle();
         if (state.previewLayer) {
             state.previewLayer.remove();
             state.previewLayer = null;

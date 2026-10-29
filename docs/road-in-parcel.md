@@ -46,7 +46,8 @@ or MultiPolygon) and `metadata.mode: 'bounded'`.
 
 `proposals/corridor-site-centreline.js`, in the metric frame:
 
-1. The site's two street directions are the length-weighted mean of its edge directions modulo 90°.
+1. The site's two street directions are the direction (modulo 90°) that the most edge length agrees
+   with, so oblique boundary edges cannot skew it.
 2. A kerb is an edge within 3° of a direction. Each lower kerb is paired with the nearest upper kerb
    above it, exactly, between the vertices' positions: a piece of street 3–60 m wide.
 3. Touching pieces of one street are one run; runs on both sides of a crossing or a T opening (no
@@ -67,12 +68,10 @@ each bounded by its own part. Arms are grouped by width (to the half metre) for 
   `cb-icon-road-in-parcel`). It takes the selected parcel, or the union of a multi-selection, and
   refuses ground a road or track already holds. Its on-map panel (`road-in-parcel.js`) previews the
   lanes, offers lanes per street width, "Turn 90°" for a square, and **Place road**.
-- **Parcel layout, Schelling**: "Make the street strips roads" (on by default, shown while the
-  layout has street-strip plots). On Done the strips' union goes to the design session, which
-  fits the roads once the layout is saved and applied (`proposal-editor-shell.js`,
-  `RoadInParcel.placeAfterLayout`). Roads applied after a layout take their land out of its plots
-  (`proposals/apply/parcels.js`), so the strip plots give way to the roads; the layout record keeps
-  only its plots and roads remain road designs.
+- **After a parcel layout**: a layout never places roads. Its street strips stay plots; the author
+  places a road in them as a separate act and a separate design, by selecting the strip plots of
+  the applied layout and choosing "Road in parcel". A road applied after a layout takes its land
+  out of the layout's plots (`proposals/apply/parcels.js`), so the strip plots give way to it.
 - **MCP**: `ugt_draft_road` with `parcelIds` or `outline` and no points drafts a bounded road
   (preset or lanes as the core for every street, automatic otherwise); `ugt_modify_design` changes
   its lanes with `set_profile` only; OSM edits re-fit and refuse as in the browser

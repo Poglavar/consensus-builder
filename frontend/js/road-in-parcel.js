@@ -1,5 +1,5 @@
 // "Road in parcel": a road fitted into ground already left for one (docs/road-in-parcel.md). The
-// parcel card's Transport tile and the parcel layout's street strips open it on a site; it reads
+// parcel card's Transport tile opens it on the selected parcels (a layout's street strips too); it reads
 // the streets the site holds (proposals/road-in-site.js), lets the author choose the lanes for
 // each street width, previews them and places the roads through the corridor import, each bounded
 // by its part of the site: its land is that ground and nothing beyond it.
@@ -62,6 +62,7 @@
         state.plan = win.__roadInSite.roadsInSite(state.site, {
             cores: state.cores,
             turn: state.turn,
+            skipUnreadable: true,
             drivingSide: win.CityConfigManager?.getDrivingSide?.() === 'left' ? 'left' : 'right'
         });
         log('debug', 'planned', { roads: state.plan.roads.length, groups: state.plan.groups, issues: state.plan.issues });
@@ -156,7 +157,13 @@
         const blocking = win.__roadInSite.blocking(state.plan.issues);
         const square = state.plan.issues.some(issue => issue.code === 'square');
         root.querySelector('[data-action="turn"]').hidden = !square;
-        root.querySelector('.road-in-parcel__status').textContent = blocking.map(issueText).filter(Boolean).join(' ');
+        // Parts that do not read as streets: with nothing else to place that is the refusal; beside
+        // readable parts they are named here, before Place, and stay as they are.
+        const skipped = state.plan.issues.filter(issue => issue.code === 'skipped');
+        const notes = blocking.map(issueText);
+        if (skipped.length && !state.plan.roads.length) notes.push(issueText({ code: skipped[0].reason }));
+        else if (skipped.length) notes.push(t('issue.skipped', 'Pieces that do not read as straight streets stay as they are: {{count}}.', { count: skipped.length }));
+        root.querySelector('.road-in-parcel__status').textContent = notes.filter(Boolean).join(' ');
         const summary = state.plan.roads.length
             ? t('summary', 'Streets: {{streets}} · parcels: {{parcels}}', {
                 streets: state.plan.groups.reduce((sum, group) => sum + group.count, 0),
@@ -230,7 +237,7 @@
         const plan = win.__roadInSite.roadsInSite(site, {
             cores: options.cores || {},
             turn: options.turn === true,
-            skipUnreadable: options.skipUnreadable === true,
+            skipUnreadable: true,
             drivingSide: win.CityConfigManager?.getDrivingSide?.() === 'left' ? 'left' : 'right'
         });
         const blocking = win.__roadInSite.blocking(plan.issues);
@@ -254,7 +261,7 @@
         });
         const result = await win.__corridorImport.createRoadRecords(records);
         if (result.failed.length) log('warn', `${result.failed.length} of ${records.length} roads failed`, result.failed);
-        return { ...result, issues: [], skipped: plan.issues.filter(issue => issue.code === 'skipped').length };
+        return { ...result, issues: [] };
     }
 
     async function place() {
@@ -297,32 +304,5 @@
         return open(site, { parcelIds: list });
     }
 
-    // A Schelling layout confirmed with "Make the street strips roads" (parcel-layout.js
-    // handOverStreetStrips): once its design session has saved and applied it, the strips get their
-    // roads, with the automatic lanes. Roads applied after a layout take their land out of its
-    // plots (proposals/apply/parcels.js), so the strip plots give way to the roads.
-    async function placeAfterLayout(draftId, proposalId) {
-        const pending = win.pendingLayoutStreetRoads;
-        if (!pending || String(pending.draftId) !== String(draftId)) return null;
-        win.pendingLayoutStreetRoads = null;
-        const layout = proposalId ? win.proposalStorage?.getProposal?.(String(proposalId)) : null;
-        if (!layout || typeof win.isProposalApplied !== 'function' || !win.isProposalApplied(layout)) {
-            win.updateStatus?.(t('layoutNotPlaced', 'The layout is not on the map, so no roads were fitted into its street strips.'));
-            return null;
-        }
-        win.updateStatus?.(t('layoutPlacing', 'Fitting roads into the street strips…'));
-        const title = t('layoutRoadName', 'Streets of {{layout}}', { layout: layout.title || layout.name || '' });
-        const result = await placeRoadsInSite(pending.site, { title, skipUnreadable: true });
-        if (!result.created.length) {
-            const reason = result.issues.length ? result.issues.map(issueText).join(' ') : result.failed.filter(Boolean).join(' ');
-            win.updateStatus?.(t('layoutFailed', 'The layout is saved, but no road could be fitted into its street strips: {{reason}}', { reason: reason || '?' }));
-            return result;
-        }
-        win.updateStatus?.(result.skipped
-            ? t('layoutDoneSkipped', 'The layout and the roads in its street strips ({{count}}) are on the map; ragged pieces at the edge of the pool ({{skipped}}) stay plots. Share them together as a plan.', { count: result.created.length, skipped: result.skipped })
-            : t('layoutDone', 'The layout and the roads in its street strips ({{count}}) are on the map. Share them together as a plan.', { count: result.created.length }));
-        return result;
-    }
-
-    win.RoadInParcel = { open, openForParcels, placeRoadsInSite, placeAfterLayout, close, isTaken };
+    win.RoadInParcel = { open, openForParcels, placeRoadsInSite, close, isTaken };
 })(typeof window !== 'undefined' ? window : null);
