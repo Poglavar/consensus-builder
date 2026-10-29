@@ -326,3 +326,4 @@
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-md);
 }
+.structure-geometry-enclosure-card[hidden] { display: none; }
