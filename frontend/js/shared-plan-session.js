@@ -75,6 +75,17 @@
             }
         });
     }
+    function composeCurrentPlan(row, members, runtime) {
+        // Construction windows follow the corresponding design when its content CID changes.
+        const schedule = {};
+        row.designs.forEach((member, index) => {
+            const cid = runtime.DesignRecord.cidOf(members[index]);
+            const window = row.content.schedule?.[member.cid];
+            if (cid && window) schedule[cid] = copy(window);
+        });
+        return runtime.PlanComposition.create(row.content.title, members, row.content.view,
+            Object.keys(schedule).length ? schedule : null);
+    }
     function endpoint(win) {
         // Hosted MCP and the app deliberately share an origin. A local frontend may override it
         // for a test or a self-hosted MCP through ?mcp=; capabilities never travel in that URL.
@@ -192,17 +203,7 @@
                     || [...ids].some(id => win.isProposalEditSaving?.(id))) {
                     throw fail('Finish or cancel the local edit before saving or changing turns.', 'shared-plan-editor-active');
                 }
-                // A fork changes a member CID. Carry its build-out window to the fork instead of
-                // passing a schedule keyed by the retired CID (PlanComposition drops those keys).
-                const currentCids = members.map(member => win.DesignRecord.cidOf(member));
-                const schedule = {};
-                row.designs.forEach((member, index) => {
-                    const cid = currentCids[index];
-                    const window = row.content.schedule?.[member.cid];
-                    if (cid && window) schedule[cid] = copy(window);
-                });
-                return win.PlanComposition.create(row.content.title, members, row.content.view,
-                    Object.keys(schedule).length ? schedule : null);
+                return composeCurrentPlan(row, members, win);
             };
             const publishActive = () => {
                 active = session ? { controller: session.controller || 'pending', designCids: new Set(row.content.designCids),
@@ -348,6 +349,17 @@
             notifyPanels({ id: connected.pointer.id, row: next });
             return true;
         }
+        function captureLocalRevision() {
+            const connected = pendingSession();
+            const row = connected?.local || connected?.old;
+            if (!row || connected.capability.controller !== 'owner' || !win.proposalStorage?.getAllProposals) return row || null;
+            const members = currentMembers(row, win.proposalStorage.getAllProposals(), win);
+            const next = composeCurrentPlan(row, members, win);
+            // Only the browser's pending plan advances. The accepted server pointer and every
+            // previous immutable plan stay intact until the owner explicitly saves or hands over.
+            if (next.cid !== row.cid) saveLocalRevision(row, next);
+            return next;
+        }
         const pause = (error, detail = {}) => {
             if (pollTimer) { win.clearInterval(pollTimer); pollTimer = null; }
             active = active ? { ...active, paused: true } : active;
@@ -365,8 +377,9 @@
             active = { ...active, paused: false };
             let { base, pointer, capability, old, local } = currentPending;
             const latest = await client(base).read(pointer.id);
-            local = pendingSession()?.local || local;
             const nextCid = win.Cid.cidOfObject(latest.artifact?.plan);
+            if (latest.controller === 'owner' && nextCid === pointer.cid) captureLocalRevision();
+            local = pendingSession()?.local || local;
             let current = local || old;
             if (old && nextCid && old.cid !== nextCid && latest.controller === 'owner' && !acceptOwnerConflict) {
                 // A local owner fork may have been edited while this tab was offline. Never
@@ -417,7 +430,7 @@
                 if (!active?.paused) ensurePolling();
             } catch (error) { pause(error); }
         };
-        return Object.freeze({ start, saveLocalRevision, endpoint: () => endpoint(win), client, artifactOf, rowOf: (artifact, memberIds) => rowOf(artifact, memberIds, win), invitation, mount, resumeActive,
+        return Object.freeze({ start, saveLocalRevision, captureLocalRevision, endpoint: () => endpoint(win), client, artifactOf, rowOf: (artifact, memberIds) => rowOf(artifact, memberIds, win), invitation, mount, resumeActive,
             assertMutationAllowed(proposalStore, proposalDraft, options = {}) {
                 if (options.sharedPlanSessionRemote === true || !active || active.controller === 'owner') return;
                 const record = (store, id) => store?.getProposal?.(id) || null;

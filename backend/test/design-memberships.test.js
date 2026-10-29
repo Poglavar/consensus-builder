@@ -123,6 +123,23 @@ describe('design membership sessions', () => {
         expect(f.win.fetch).not.toHaveBeenCalled();
     });
 
+    it('retains exact plan membership after a connected owner edits a member', async () => {
+        const f = fixture({ published: false });
+        const saved = [{ cid: 'accepted-plan', content: { title: 'Garden', designCids: ['old-design'] }, designs: [] }];
+        f.win.DesignRecord = { cidOf: () => 'edited-design' };
+        f.win.NamedPlans.list = () => saved;
+        f.win.SharedPlanSession = { captureLocalRevision: vi.fn(() => saved.push({
+            cid: 'pending-plan', content: { title: 'Garden', designCids: ['edited-design'] }, designs: []
+        })) };
+        const session = f.session();
+        await session.ready;
+        expect(f.win.SharedPlanSession.captureLocalRevision).toHaveBeenCalledTimes(1);
+        expect(session.instances('plans')).toMatchObject([{ id: 'pending-plan', label: 'Garden', draft: true, membershipDesignCid: 'edited-design' }]);
+        expect(session.cid).toBe('edited-design');
+        expect(session.instances('plans').some(plan => plan.id === 'accepted-plan')).toBe(false);
+        expect(f.win.fetch).not.toHaveBeenCalled();
+    });
+
     it('disposes a session so late lookup results cannot write or notify', async () => {
         const pending = [];
         const fetch = vi.fn(url => new Promise(resolve => pending.push({ url, resolve })));

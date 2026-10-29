@@ -26,7 +26,9 @@ records; the session is not a public release or a shared global map.
    metres north using the shared-plan editing tool. Watch the accepted revision appear on the map.
 4. Choose **Take control**, open the usual geometry editor and move the bench using **Objects** or
    the mouse. Finish the editor and choose **Save to shared plan**. The agent's next inspection
-   must report that saved coordinate.
+   must report that saved coordinate. Local member edits also create a pending plan revision, so the
+   Plan section stays above the edited Design section and reopens Collaborate. The server keeps its
+   previous accepted revision until Save to shared plan or handover.
 5. Give control back, then take it during an agent edit. The late save must be refused; the agent
    must inspect the current version before trying another change.
 6. Disconnect and confirm the retained local plan can still be edited normally. Reload while

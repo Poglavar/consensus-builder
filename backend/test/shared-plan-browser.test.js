@@ -106,6 +106,42 @@ describe('shared plan browser client', () => {
         expect(() => fixture.api.saveLocalRevision(revision, row)).toThrow(/Take control/);
     });
 
+    it.each(['in-place', 'fork'])('keeps the local plan attached to a committed %s member edit without saving to the server', mode => {
+        const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
+        const window = { start: '2027-01', end: '2027-03' };
+        const original = { ...row, content: { ...row.content, schedule: { 'design-cid': window } } };
+        const source = { proposalId: 'bench-local', cid: 'design-cid', applied: mode !== 'fork' };
+        const changed = mode === 'fork'
+            ? { proposalId: 'bench-fork', cid: 'edited-design', applied: true,
+                proposalOrigin: { relation: 'revision', source: { kind: 'local', localProposalId: 'bench-local' } } }
+            : { ...source, cid: 'edited-design' };
+        const records = mode === 'fork' ? [source, changed] : [changed];
+        records.push({ proposalId: 'unrelated', cid: 'unrelated-design', applied: true });
+        const fixture = browser({ plans: [original], stored: {
+            [`${prefix}active`]: { id: 'session-a', cid: original.cid, memberIds: original.memberIds },
+            [`${prefix}session-a`]: { ownerToken: 'owner-secret', controller: 'owner', version: 4 }
+        } });
+        fixture.win.proposalStorage = { getAllProposals: () => records };
+        fixture.win.PlanComposition.create = (title, members, view, schedule) => ({
+            cid: 'edited-plan', content: { ...original.content, title, view, designCids: members.map(member => member.cid), schedule },
+            designs: members.map(member => ({ cid: member.cid, content: { title: 'Edited bench' } })),
+            memberIds: members.map(member => member.proposalId), designSources: {}
+        });
+        const next = fixture.api.captureLocalRevision();
+        expect(next.content.designCids).toEqual(['edited-design']);
+        expect(next.memberIds).toEqual([changed.proposalId]);
+        expect(next.content.schedule).toEqual({ 'edited-design': window });
+        expect(original.content.designCids).toEqual(['design-cid']);
+        expect(JSON.parse(fixture.values.get(`${prefix}active`))).toMatchObject({ cid: original.cid, localCid: next.cid });
+        expect(fixture.values.get(`${prefix}plan:${next.cid}`)).toBe('session-a');
+        expect(fixture.win.fetch).not.toHaveBeenCalled();
+        fixture.api.captureLocalRevision();
+        expect(fixture.win.PlanWorkspace.save).toHaveBeenCalledTimes(1);
+        fixture.values.set(`${prefix}session-a`, JSON.stringify({ ownerToken: 'owner-secret', controller: 'agent', version: 5 }));
+        fixture.api.captureLocalRevision();
+        expect(fixture.win.PlanWorkspace.save).toHaveBeenCalledTimes(1);
+    });
+
     it('does not request or poll when this workspace has no active shared session', async () => {
         const fixture = browser();
         await fixture.api.start();

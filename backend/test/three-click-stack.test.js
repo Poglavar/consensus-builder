@@ -243,13 +243,14 @@ describe('3D click stack contextual selection', () => {
         expect(api.isOpen()).toBe(false);
     });
 
-    it('rejects an in-flight membership result when the same local design publishes a new CID, then resyncs', () => {
+    it.each(['published', 'private'])('rejects an outdated %s membership revision on the same local design, then resyncs', kind => {
         const document = makeDocument();
         const proposal = { proposalId: 'd1', cid: 'current' };
         const pending = [];
         const context = {
             document, console, __clickStackModel: model, ClickStackRelations: relations,
-            DesignSync: { publishedCid: record => record?.cid || null },
+            DesignSync: { publishedCid: record => kind === 'private' ? null : record?.cid || null },
+            DesignRecord: { cidOf: record => record?.cid || null },
             loadDesignMemberships: vi.fn((record, callback) => new Promise(resolve => pending.push({ record, callback, resolve })))
         };
         context.__clickStackModel = model;

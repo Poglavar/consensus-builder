@@ -85,3 +85,23 @@ same page automatically applied the exact returned design CID. The collaboration
 open with Take control available. No preview navigation, publication or deployment was needed
 for that update. A new private preview was generated; opening that final link in a fresh browser
 profile remains separate from the verified live session.
+
+## Owner edit retains the Plan section
+
+The live local trial exposed a navigation gap: editing a member changed its content CID, so
+exact membership lookup no longer found the previously saved plan. The browser now captures a
+pending ordinary plan revision from committed local members, follows applied revision forks,
+and retains construction windows. Both click stacks identify private revisions by their content
+CID as well as published revisions. Previous plans and the accepted server revision stay fixed.
+
+Targeted headless unit runs: the two initial files passed 35 tests; after adding regressions,
+the same two files passed 38 tests; the final four files (`shared-plan-browser`,
+`design-memberships`, `click-stack-panel`, `three-click-stack`) passed all 98 tests. No full suite
+was run for this fix.
+
+In the user's local browser, the saved design was backed up before reloading the corrected
+frontend. Its complete canonical content, four benches and edited boundary matched exactly
+after reload. The collapsed Plan section appeared above Design, and Collaborate exposed Save
+to shared plan. MCP inspection before and after confirmed the accepted server revision and
+version had not changed and still contained one bench. The user's four-bench revision remained
+pending locally for their explicit save.

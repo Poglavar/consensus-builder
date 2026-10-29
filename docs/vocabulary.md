@@ -337,6 +337,8 @@ A private server connection that names the current accepted ordinary plan revisi
 
 The owner controls whether the browser or the invited agent may save the next revision. The session version changes on both content and control changes; a save must match that version and the current editing authority. The owner capability controls the session; the separate invitation capability permits inspection and, only when granted, editing. Neither capability belongs to authored plan content or a public link. The browser's local workspace remains separate and retains its single-tab lock.
 
+While the owner edits a connected member, the browser keeps a pending ordinary plan revision containing that member’s current local revision. The Plan section follows this pending revision. The accepted server revision changes only on Save to shared plan or handover; earlier plan revisions remain immutable.
+
 ### Plan area
 
 The land a plan covers: every cadastral parcel its members stand on, counted once, plus their open ground (site area on no parcel), in m².

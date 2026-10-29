@@ -217,6 +217,14 @@ The browser uses ordinary plan import and parcel mutation for accepted changes, 
 camera and unrelated local designs, and guards connected members before a local mutation commits.
 See [Student AI assistance](student-ai.md) for the handover and save workflow.
 
+Owner edits of a connected member advance a pending local ordinary plan revision, retaining
+construction windows and exact membership in both click stacks. The accepted server pointer
+stays fixed until explicit save or handover. No MCP schema or operation change is needed:
+`ugt_edit_shared_plan` already revises the same canonical plan/design content. Focused browser
+unit tests cover in-place edits, forks, private revision identity and stale membership responses;
+a live local check preserved the user's four-bench design and restored Collaborate while MCP
+inspection confirmed the server's one-bench revision remained unchanged.
+
 ### Space models and GeoJSON corridor import: MCP parity (2026-10-28)
 
 Parks, squares and lakes can carry an uploaded GLB (`/structureProposal/modelUrl`, `modelName`,

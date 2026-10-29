@@ -839,7 +839,7 @@
             state.membershipVersion++;
             return;
         }
-        const key = `${design.id}:${global.DesignSync?.publishedCid(proposal) || ''}`;
+        const key = `${design.id}:${global.DesignRecord?.cidOf(proposal) || global.DesignSync?.publishedCid(proposal) || ''}`;
         if (!force && state.membershipDesign === key) return;
         state.memberships?.dispose();
         state.memberships = null;
@@ -849,7 +849,7 @@
             if (!isOpen() || version !== state.membershipVersion) return;
             const current = model.selectedInstance(state.stack, 'designs');
             const currentProposal = global.proposalStorage?.getProposal?.(current?.id) || current?.proposal;
-            if (current?.id !== design.id || (global.DesignSync?.publishedCid(currentProposal) || null) !== session.cid) {
+            if (current?.id !== design.id || (global.DesignRecord?.cidOf(currentProposal) || global.DesignSync?.publishedCid(currentProposal) || null) !== session.cid) {
                 session.dispose();
                 syncMemberships(true);
                 return;

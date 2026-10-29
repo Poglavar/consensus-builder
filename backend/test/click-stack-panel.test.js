@@ -307,8 +307,10 @@ describe('click stack selected objects and contextual navigation', () => {
         expect(h.api.isOpen()).toBe(false);
     });
 
-    it('rejects a pending result for an outdated CID on the same local design and resyncs', () => {
+    it.each(['published', 'private'])('rejects an outdated %s revision on the same local design and resyncs', kind => {
         const h = loadPanel();
+        h.context.DesignRecord = { cidOf: record => record?.cid || null };
+        if (kind === 'private') h.context.DesignSync.publishedCid = () => null;
         const proposal = { proposalId: 'd1', cid: 'current' };
         const pending = [];
         h.context.ClickStackHits.hitsAt.mockReturnValue({ designs: [{ id: 'd1', label: 'Road', proposal }] });
