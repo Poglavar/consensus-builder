@@ -158,7 +158,7 @@
         const selection = selected();
         if (selection?.site && (selection.role !== 'permitted' || !selection.volumes.length)) {
             root.L.geoJSON(selection.site, { pane: 'planningSources', interactive: false,
-                style: root.MapHighlight.style({ fill: false }) }).addTo(selectionLayer);
+                style: root.MapHighlight.style({ fill: false, className: 'planning-site-selection' }) }).addTo(selectionLayer);
         }
         // Each item is drawn into its own group, remembered with what it was drawn from. A redraw
         // replaces only the items whose record or appearance changed and removes the ones gone, so

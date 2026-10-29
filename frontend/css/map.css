@@ -925,8 +925,25 @@ body.three-mode-active #agent-bubbles-container {
     pointer-events: none;
 }
 
+/* A design shown from Lists is marked like a selection; the selection the list was opened over
+   steps back (is-list-previewing on the map container, dialog-create.js) until the preview clears. */
+.list-preview-focus {
+    animation: click-stack-focus-pulse 1.4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.leaflet-container.is-list-previewing :is(.click-stack-map-focus, .proposal-primary-outline, .proposal-parcel-outline,
+    .proposal-road-outline, .proposal-road-selected-outline, .planning-site-selection) {
+    animation: none;
+    stroke-opacity: .35;
+    stroke-width: 2;
+    fill-opacity: .05;
+    filter: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .click-stack-map-focus { animation: none; }
+    .click-stack-map-focus,
+    .list-preview-focus { animation: none; }
 }
 
 /* A section pairs a selector with the separate card for its selected item. */
@@ -995,6 +1012,7 @@ body.three-mode-active #agent-bubbles-container {
 
 /* The same dark halo keeps selected map geometry readable over pale imagery and paving. */
 .click-stack-map-focus,
+.list-preview-focus,
 .proposal-primary-outline,
 .proposal-parcel-outline,
 .proposal-road-outline,
