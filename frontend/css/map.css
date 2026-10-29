@@ -1450,7 +1450,6 @@ body.three-mode-active #agent-bubbles-container {
     #click-stack .click-stack__body .click-stack__choices .click-stack__strip {
         max-height: calc(3 * var(--cb-control-height) + 2 * var(--cb-space-1));
         overflow-y: auto;
-        overscroll-behavior: contain;
     }
 }
 

@@ -58,9 +58,14 @@
 #proposal-details-panel .panel-body {
     min-height: 0;
     padding: 12px 14px;
-    overscroll-behavior: contain;
     scroll-padding: 16px;
     -webkit-overflow-scrolling: touch;
+}
+
+/* Docked, the panel keeps the wheel off the map; hosted in a click-stack card it hands the wheel on
+   to the card (right-screen-panel.css). */
+#proposal-details-panel:not(.is-hosted) .panel-body {
+    overscroll-behavior: contain;
 }
 
 #proposal-details-panel .proposal-badges-row {
