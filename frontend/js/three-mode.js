@@ -1672,7 +1672,7 @@
             designs: designs.map(p => ({ id: String(proposalIdOf(p)), label: proposalDisplayTitle(p), proposal: p,
                 preserveView: plan.preserveView === true })),
             permitted: massingIds.map(id => ({ id, label: items.find(item => item.id === id)?.title || '' })),
-            formed: ground?.kind === 'formed' ? [ground.instance] : [],
+            formed: [...(ground?.kind === 'formed' ? [ground.instance] : []), ...(hits?.formed || [])],
             parcels: [...(ground?.kind === 'parcels' ? [ground.instance] : []), ...(hits?.parcels || [])]
         };
         const focus = plan.focus || (plan.proposal ? 'designs'
@@ -10440,13 +10440,12 @@
             hits.built = [...built, ...hits.built];
             const source = photo.sourceParcelsAt(point).map(parcel => ({ id: parcel.id,
                 feature: parcel.feature, label: window.ThreeClickStack.parcelLabel(parcel.id), live: false }));
-            hits.parcels = [...(hits.formed || []), ...source, ...hits.parcels];
-            return hits;
+            return window.ClickStackHits.withSourceParcels(hits, source);
         };
-        let hits = recordsAt(sourcePoint);
-        const hit = window.__threeClickPlan.photoHit({ authored, surface, designs: hits.designs, built: hits.built });
-        if (hit?.point && hit.point !== sourcePoint) hits = recordsAt(hit.point);
-        return { picked: hit?.picked || null, groundParcelId: hits.parcels[0]?.id || null, hits };
+        let records = recordsAt(sourcePoint);
+        const hit = window.__threeClickPlan.photoHit({ authored, surface, designs: records.hits.designs, built: records.hits.built });
+        if (hit?.point && hit.point !== sourcePoint) records = recordsAt(hit.point);
+        return { picked: hit?.picked || null, groundParcelId: records.groundParcelId, hits: records.hits };
     }
 
     function handleParcelClick(evt) {
