@@ -80,10 +80,13 @@ for (const width of [1280, 390]) {
     await expect(agreementRow.locator('.lists-item__icon .cb-icon-agreement')).toBeVisible();
     await expectInsets();
     await page.evaluate(() => (window as any).map.setView([45.70, 15.80], 17, { animate: false }));
-    await agreementRow.getByRole('button', { name: 'Residents agreement', exact: true }).click();
+    // Anywhere on the row shows the agreement's plan; closing the list by hand selects it, as Open does.
+    await agreementRow.locator('.lists-item__badges').click();
     await expect.poll(parkInView).toBe(true);
+    await expect(agreementRow).toHaveClass(/is-selected/);
     await expect(sheet).toBeVisible();
-    await agreementRow.getByRole('button', { name: 'Open Residents agreement', exact: true }).click();
+    await page.locator('#proposals-button').click();
+    await expect(sheet).toBeHidden();
     await expect(page.locator('#click-stack')).toContainText('Residents agreement');
     await expect(page.locator('[data-agreement-action="delete"]')).toHaveCount(0);
     await page.locator('#proposals-button').click();

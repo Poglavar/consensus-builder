@@ -25,7 +25,7 @@
         const doc = win.document;
         const state = { tab: 'designs', source: 'local', search: '', publication: 'all', sort: 'title',
             // selecting: the tab whose rows show checkboxes (designs → Create plan, plans → Compare plans).
-            filtersOpen: false, selecting: null, selected: new Map(), active: null, remote: new Map() };
+            filtersOpen: false, selecting: null, selected: new Map(), active: null, previewing: null, remote: new Map() };
         let ready = false;
         const t = (key, params) => win.i18n.t(key, params || {});
         const node = (tag, cls, text) => {
@@ -91,28 +91,27 @@
             const plan = row.record.content ? row.record : await win.NamedPlans.fetchPlan(row.key);
             return row.published ? { ...plan, published: true } : plan;
         }
-        // The designs a row stands for, as records that need not be stored: the design itself, a
-        // plan's members, an agreement's plan's designs.
+        // The designs a row stands for, as records that need not be stored: the design itself, or
+        // the members of a plan (an agreement shows its plan's).
         async function designRecords(row, kind) {
             const apiBase = win.DesignSync.apiBase();
             if (kind === 'designs') return [row.local || { ...win.DesignSync.localDesignFromRow(await win.DesignSync.fetchDesign(row.key), { apiBase }), proposalId: row.key }];
-            if (kind === 'plans') return win.PlanComposition.localRecords(await win.PlanWorkspace.resolve(await planOf(row)), { apiBase });
-            if (!row.local) return (await win.AgreementSync.resolveDetails(row.key)).designs;
-            const stored = row.local.designs.map(design => win.proposalStorage.getProposal(design.proposalId));
-            const missing = row.local.designs.filter((design, index) => !stored[index] && design.cid).map(design => design.cid);
-            const fetched = missing.length ? (await win.DesignSync.fetchDesigns(missing)).rows : new Map();
-            return [...stored.filter(Boolean), ...[...fetched.values()].map(design => win.DesignSync.localDesignFromRow(design, { apiBase }))];
+            const plan = kind === 'plans' ? await planOf(row)
+                : row.local ? row.local.plan : await win.NamedPlans.fetchPlan(row.record.content.planCid);
+            if (!plan) return [];
+            return win.PlanComposition.localRecords(await win.PlanWorkspace.resolve(plan), { apiBase });
         }
-        // A row's title shows it on the map and keeps the list open: browsing commits to nothing.
+        // A row shows its object on the map and keeps the list open: browsing commits to nothing.
+        // Closing the list by hand, like Open, then selects it (previewing).
         async function focus(row, kind) {
-            state.active = `${kind}:${row.key}`; renderRows();
+            state.active = `${kind}:${row.key}`; state.previewing = { row, kind }; renderRows();
             if (!win.previewRecordsOnMap(await designRecords(row, kind), `list:${state.active}`)) {
                 win.showEphemeralMessage(t('lists.noPlace'), 4000, 'info');
             }
         }
         // Open selects the row's object as a click on it would, closing the list.
         async function inspect(row, kind) {
-            state.active = `${kind}:${row.key}`;
+            state.active = `${kind}:${row.key}`; state.previewing = null;
             win.clearProposalPreview();
             if (kind === 'designs') {
                 const record = await designOf(row);
@@ -147,7 +146,8 @@
             else win.AgreementStore.remove(row.local.id);
             state.selected.delete(row.key);
             if (state.active === `${kind}:${row.key}`) {
-                win.ClickStack?.close(); win.ThreeClickStack?.close(); state.active = null;
+                win.ClickStack?.close(); win.ThreeClickStack?.close(); state.active = null; state.previewing = null;
+                win.clearProposalPreview();
             }
             refresh();
         }
@@ -223,6 +223,10 @@
                 }
                 const title = button(row.title, () => focus(row, kind), 'btn-quiet lists-item__title');
                 title.title = t('modal.roadWidth.polygonError.showOnMap');
+                // The whole row shows it; its own controls keep their actions.
+                item.addEventListener('click', event => {
+                    if (!event.target.closest('button, a, input, label, select, summary')) title.click();
+                });
                 const mark = node('span', 'lists-item__icon'); mark.append(icon(appearance[0]));
                 title.prepend(mark); heading.append(title); item.append(heading);
                 const badges = node('div', 'lists-item__badges');
@@ -327,6 +331,13 @@
                     const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
                     tabs[next].focus(); tabs[next].click();
                 });
+            });
+            // Leaving the list by hand (×, Escape, the Lists button) selects the row being shown,
+            // as Open does; a sheet closed for anything else (a dialog, another selection) does not.
+            doc.addEventListener('mapshell:sheetclosed', event => {
+                if (event.detail?.id !== 'proposals-sheet') return;
+                const pending = state.previewing; state.previewing = null;
+                if (pending && event.detail.byHand) inspect(pending.row, pending.kind).catch(error => win.showStyledAlert(error.message));
             });
             win.AgreementStore.subscribe(refresh);
             win.addEventListener('planschange', refresh);

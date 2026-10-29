@@ -13,6 +13,7 @@ const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const cityConfigText = cityConfigSource();
 const promptSource = read('../../frontend/js/city-switch-prompt.js');
 const Cid = createRequire(import.meta.url)('../../frontend/js/cid.js');
+const SelectionAddress = createRequire(import.meta.url)('../../frontend/js/selection-address.js');
 // Design and agreement links name published objects by CID (plan-design-agreement.md, M2).
 const DESIGN = Cid.cidOf(new TextEncoder().encode('design-a'));
 const AGREEMENT = Cid.cidOf(new TextEncoder().encode('agreement-a'));
@@ -43,7 +44,7 @@ function fakeWindow(href) {
 
 function boot(href) {
     const fake = fakeWindow(href);
-    const context = { URL, URLSearchParams, console, setTimeout, clearTimeout, location: fake.location, history: fake.history, localStorage: fake.localStorage, navigator: {} };
+    const context = { URL, URLSearchParams, console, setTimeout, clearTimeout, location: fake.location, history: fake.history, localStorage: fake.localStorage, navigator: {}, SelectionAddress };
     context.window = context;
     context.globalThis = context;
     vm.createContext(context);
@@ -54,14 +55,14 @@ function boot(href) {
 
 describe('a city switch', () => {
     it('clears every route the boot acts on, keeping the rest of the address', async () => {
-        const { manager, visits } = boot('http://localhost:8080/monitors/12?city=zagreb&focusProposal=7&arrive=pick&activity=run-1&scene=s&bets=1&lang=hr');
+        const { manager, visits } = boot('http://localhost:8080/monitors/12?city=zagreb&design=7&arrive=pick&activity=run-1&scene=s&bets=1&lang=hr');
         expect(manager.getCurrentCityId()).toBe('zagreb');
         await expect(manager.switchCity('split', { clearRoute: true })).resolves.toBe(true);
         const next = new URL(visits.at(-1));
         expect(next.pathname).toBe('/');
         expect(next.searchParams.get('city')).toBe('split');
         expect(next.searchParams.get('lang')).toBe('hr');
-        for (const param of ['focusProposal', 'arrive', 'activity', 'scene', 'bets']) expect(next.searchParams.has(param), param).toBe(false);
+        for (const param of ['design', 'arrive', 'activity', 'scene', 'bets']) expect(next.searchParams.has(param), param).toBe(false);
     });
 
     it.each([`/designs/${DESIGN}`, `/agreements/${AGREEMENT}`, `/plans/${PLAN}`])('clears the record link %s too, so it does not reopen in the next city', async pathname => {
@@ -98,9 +99,9 @@ describe('a city switch', () => {
 
     it('goes to the address it is given, leaving the current entry for Back', async () => {
         const { manager, visits, history } = boot('http://localhost:8080/?city=zagreb&lang=hr');
-        await manager.switchCity('new_york', { url: 'http://localhost:8080/?focusProposal=9&city=zagreb&lang=hr' });
+        await manager.switchCity('new_york', { url: 'http://localhost:8080/?design=9&city=zagreb&lang=hr' });
         const next = new URL(visits.at(-1));
-        expect(next.searchParams.get('focusProposal')).toBe('9');
+        expect(next.searchParams.get('design')).toBe('9');
         expect(next.searchParams.get('city')).toBe('new_york');
         expect(history.replaceState).not.toHaveBeenCalled();
         expect(history.pushState).not.toHaveBeenCalled();
@@ -134,13 +135,13 @@ describe('a proposal of another city', () => {
         await expect(context.openProposalInItsCity('41', 'new_york')).resolves.toBe(true);
         const next = new URL(visits.at(-1));
         expect(next.pathname).toBe('/');
-        expect(next.searchParams.get('focusProposal')).toBe('41');
+        expect(next.searchParams.get('design')).toBe('41');
         expect(next.searchParams.get('city')).toBe('new_york');
         expect(history.replaceState).not.toHaveBeenCalled();
     });
 
     it('when it cannot open there, drops the route and keeps the city stayed in — explore too', async () => {
-        const { context, visits, history } = boot(`http://localhost:8080/agreements/${AGREEMENT}?city=explore&focusProposal=5`);
+        const { context, visits, history } = boot(`http://localhost:8080/agreements/${AGREEMENT}?city=explore&design=5`);
         expect(context.CityConfigManager.getCurrentCityId()).toBe('explore');
         // a city the switch refuses (the current one): nothing to open there
         await expect(context.openProposalInItsCity('5', 'explore')).resolves.toBe(true);
@@ -148,7 +149,7 @@ describe('a proposal of another city', () => {
         const stayed = new URL(history.replaceState.mock.calls.at(-1)[2], 'http://localhost:8080');
         expect(stayed.pathname).toBe('/');
         expect(stayed.searchParams.get('city')).toBe('explore');
-        expect(stayed.searchParams.has('focusProposal')).toBe(false);
+        expect(stayed.searchParams.has('design')).toBe(false);
     });
 });
 

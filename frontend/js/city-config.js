@@ -739,10 +739,10 @@
             url.searchParams.delete('world');
             if (options.at && window.WorldEntryModel) url.searchParams.set('at', window.WorldEntryModel.formatAt(options.at));
             if (options.clearRoute) {
-                // Every route the boot acts on: left in, a proposal focused before the switch reopened
+                // Every route the boot acts on: left in, a selection made before the switch reopened
                 // in the next city, and a monitor asked to switch back.
                 if (/^\/(proposals|designs|agreements|plans|parcel|bets|monitors)(?:\/|$)/.test(url.pathname)) url.pathname = '/';
-                ['parcel', 'bets', 'focusProposal', 'arrive', 'activity', 'scene', 'draft',
+                ['parcel', 'design', 'plan', 'agreement', 'bets', 'arrive', 'activity', 'scene', 'draft',
                     'planningSelection', 'camera', 'rotate']
                     .forEach(param => url.searchParams.delete(param));
             }

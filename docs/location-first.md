@@ -43,8 +43,8 @@ and the city a publication is filed in can never disagree.
 
 Reading, first match wins:
 
-1. **A record deep link** (`focusProposal`, `proposalShare`, `parcel`, `shared`, `bets`, `scene`,
-   `activity`) puts the view on that record and keeps its stored city (records are immutable). Unchanged.
+1. **A record deep link** (`proposalShare`, `shared`, `bets`, `scene`, `activity`, or a selection
+   without `?at=`) puts the view on that record and keeps its stored city (records are immutable).
 2. **`?at=` present** → jurisdiction = resolver(at). A `?city=` alongside it is ignored when it
    disagrees, with one console line saying so (`city=new_york ignored: at= lies in zagreb`).
 3. **Only `?city=`** (id or short code) → view = that city's centre and default zoom; jurisdiction =
@@ -57,8 +57,28 @@ for: a legacy `?city=explore` beside `?at=` is just the point (user, 2026-10-17:
 the coordinates), and alone it opens explore at its last view. A failing parcel source does not need
 an escape into explore: the city view degrades on its own (the parcel-register notice).
 
-Writing: the app writes only `?at=` (map-core already does on every `moveend`). After boot the
-address bar drops `city=` (and the legacy `city=explore`), so every copied link is a plain location.
+Writing: the app writes the view (`?at=` on every `moveend`; in the model and photo views also
+`camera`, `rotate` and the mode) and the selection. After boot the address bar drops `city=` (and
+the legacy `city=explore`), so every copied link is a plain location.
+
+The selection is what the click stack has selected, one parameter at a time, written in place
+(`replaceState`, so Back does not step through clicks) on every selection and dropped when nothing
+is selected (`selection-address.js`):
+
+| Selected | Parameter |
+|---|---|
+| a parcel, or a parcel a design forms on it | `?parcel=<id>` |
+| a building or a permitted volume | `?planningSelection=<record id>` (`planning/views.js`) |
+| a design | `?design=<cid>` when published, else its local key |
+| a plan | `?plan=<cid>` |
+| an agreement | `?agreement=<local id>`, or its CID when it is read from the index |
+
+A reload reopens the selection without applying anything. With a view in the address (`?at=`, and
+`camera` in the model and photo views) the camera stays where it was; without one the selection is framed, as a link is. A share
+link that opened a record (`/designs/<cid>`, `/plans/<cid>`, `/agreements/<cid>`, `/parcel/<id>`)
+gives way to the selection parameter as soon as the stack shows it, so a reload does not import and
+apply its designs again. A design, plan or agreement that exists only in this browser reopens only
+here; a link for others is the Share button's.
 
 Moving the camera across a coverage edge inside a session: geography follows the camera without
 asking (phase 2). Parcels, proposals and the local database stay with the boot jurisdiction until

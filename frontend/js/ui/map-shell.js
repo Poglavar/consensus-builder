@@ -196,7 +196,8 @@
         doc.body.classList.remove('map-sheet-open');
         sheetResizeObserver?.unobserve(sheet);
         updateMapViewportInsets();
-        doc.dispatchEvent(new win.CustomEvent('mapshell:sheetclosed', { detail: { id: sheet.id } }));
+        // byHand: the person closed it (×, Escape, its button), not something that needed the map.
+        doc.dispatchEvent(new win.CustomEvent('mapshell:sheetclosed', { detail: { id: sheet.id, byHand: options.byHand === true } }));
         if (options.restoreFocus && trigger && typeof trigger.focus === 'function') {
             try { trigger.focus({ preventScroll: true }); } catch (_) { }
         }
@@ -205,7 +206,7 @@
     function toggleSheet(sheetId, trigger) {
         const sheet = doc.getElementById(sheetId);
         if (!sheet) throw new Error(`MapShell: no sheet ${sheetId}`);
-        if (state.openSheet === sheet) closeSheet({ restoreFocus: false });
+        if (state.openSheet === sheet) closeSheet({ restoreFocus: false, byHand: true });
         else openSheet(sheet, { trigger });
     }
 
@@ -478,7 +479,7 @@
             || (state.trigger && state.trigger.contains(active));
         if (!ours) return;
         event.preventDefault();
-        closeSheet({ restoreFocus: true });
+        closeSheet({ restoreFocus: true, byHand: true });
     }
 
     function initializeMapShell() {
@@ -492,7 +493,7 @@
             button.addEventListener('click', () => toggleSheet(button.getAttribute('data-sheet-target'), button));
         });
         doc.querySelectorAll('[data-sheet-close]').forEach(button => {
-            button.addEventListener('click', () => closeSheet({ restoreFocus: true }));
+            button.addEventListener('click', () => closeSheet({ restoreFocus: true, byHand: true }));
         });
         doc.addEventListener('pointerdown', onDocumentPointerDown, true);
         doc.addEventListener('click', onLockedClickCapture, true);

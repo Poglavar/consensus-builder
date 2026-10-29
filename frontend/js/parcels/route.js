@@ -245,8 +245,12 @@
             const resolvedId = presenter.getIdForLayer?.(layer) || parcelId;
             if (!layer) throw new Error('Parcel not found');
             // selectParcel centres + zooms (and now bumps zoom up for very large
-            // parcels so the grid stays visible — see selection.js).
-            selectParcel(resolvedId);
+            // parcels so the grid stays visible — see selection.js). A reload of a selection
+            // (?parcel= with the view in ?at=) keeps the camera where it was (selection-address.js).
+            const keepView = !!global.SelectionAddress?.keepsView();
+            const previous = global.suppressCameraMoves;
+            if (keepView) { global.suppressCameraMoves = true; global.ClickStack?.keepNextView(); }
+            try { selectParcel(resolvedId); } finally { global.suppressCameraMoves = previous; }
         } catch (error) {
             global.ParcelGroundFallback?.onGroundUnavailable?.({ error, city: currentCityId });
             reportParcelRouteFailure(parcelId, (error && error.message) || String(error));

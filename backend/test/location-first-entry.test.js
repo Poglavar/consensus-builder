@@ -75,8 +75,10 @@ describe('WorldEntryModel.resolveEntry', () => {
         expect(resolve('?city=explore')).toMatchObject({ cityId: 'explore', view: null, source: 'city' });
     });
 
-    it('keeps a record link in the city it names, ignoring ?at=', () => {
-        expect(resolve('?focusProposal=12&city=split&at=40.7484,-73.9857,17')).toMatchObject({ cityId: 'split', view: null, source: 'record', dropCityParam: false });
+    it('keeps a record link in the city it names; a selection with ?at= stays where the view is', () => {
+        expect(resolve('?design=12&city=split')).toMatchObject({ cityId: 'split', view: null, source: 'record', dropCityParam: false });
+        expect(resolve('?activity=agent:7&city=split&at=40.7484,-73.9857,17')).toMatchObject({ cityId: 'split', view: null, source: 'record' });
+        expect(resolve('?design=12&city=split&at=40.7484,-73.9857,17')).toMatchObject({ cityId: 'new_york', source: 'at' });
         // The ?proposalShare= and ?shared= payload links are gone (M2): they name no record any more.
         expect(resolve('?proposalShare=abc', { storedCityId: 'zagreb' })).toMatchObject({ cityId: 'zagreb', source: 'stored' });
         expect(resolve('?shared=abc&city=split', { storedCityId: 'zagreb' })).toMatchObject({ cityId: 'split', source: 'city' });
@@ -205,7 +207,7 @@ describe('city-config boot', () => {
     });
 
     it('keeps a record link in its ?city=', () => {
-        const { manager } = boot('?city=split&focusProposal=4&at=40.7484,-73.9857,17');
+        const { manager } = boot('?city=split&design=4');
         expect(manager.getCurrentCityId()).toBe('split');
     });
 

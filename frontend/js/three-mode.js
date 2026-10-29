@@ -1322,6 +1322,7 @@
     // inspector change only ends the old view, so it can retain the selection it just made.
     function deselectScene() {
         endSelectionView();
+        window.SelectionAddress?.write(null);
         window.ProposalSelection?.clear?.();
     }
 

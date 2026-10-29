@@ -516,7 +516,8 @@
         if (lastSelectedId !== state.selectedId) {
             lastSelectedId = state.selectedId;
             const url = new URL(location.href);
-            if (state.selectedId) url.searchParams.set('planningSelection', state.selectedId);
+            // A building or permitted volume is named here; a design by ?design= (selection-address.js).
+            if (state.selectedId && !state.selectedId.startsWith('proposed:')) url.searchParams.set('planningSelection', state.selectedId);
             else url.searchParams.delete('planningSelection');
             if (sourceId) url.searchParams.set('planningSource', sourceId);
             if (scenarioId) url.searchParams.set('planningScenario', scenarioId);
@@ -635,6 +636,12 @@
     async function restoreSelection() {
         if (!restoreId || restoring) return;
         const id = restoreId;
+        // A reload with the view in its address (?at=) reopens the selection without moving the camera.
+        const keepView = !!root.SelectionAddress?.keepsView();
+        if (keepView) root.ClickStack?.keepNextView();
+        try { await reopenSelection(id); } finally { if (keepView) root.ClickStack?.keepNextView(false); }
+    }
+    async function reopenSelection(id) {
         const found = items.find(item => item.id === id);
         if (found) { select(found.id); return; }
         const city = root.CityConfigManager.getCurrentCityId();
@@ -642,11 +649,6 @@
             const key = id.slice(`built:${city}:`.length);
             const feature = root.buildingFeaturePool?.find(feature => root.buildingPoolFeatureKey(feature) === key);
             if (feature) inspectBuilding(feature, key);
-            return;
-        }
-        if (id.startsWith('proposed:')) {
-            const proposal = root.proposalStorage?.getProposal(id.slice('proposed:'.length));
-            if (proposal) root.ClickStack.showDesign(root.getProposalKey(proposal));
             return;
         }
         const provider = sourceOptions.find(source => id.startsWith(`${source.id}:`));

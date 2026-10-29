@@ -74,15 +74,17 @@
     // Every link form that already says what to show. Mirrors the app's own route handlers:
     // /proposals, /proposals/<chain>/…, /designs/<cids> and /agreements/<cid>
     // (handleProposalRouteFromUrl, isProposalDeepLinkPath), /parcel/<id> and
-    // ?parcel= (parcels/route.js), /monitors/<id> (area-monitor/routing.js), ?focusProposal=
-    // (world/proposal-entry.js), ?activity= (game.js), ?scene= (ai-scene-follow.js),
+    // ?parcel= (parcels/route.js), /monitors/<id> (area-monitor/routing.js), the selection ?design=,
+    // ?plan= and ?agreement= (selection-address.js, world/proposal-entry.js), ?activity= (game.js), ?scene= (ai-scene-follow.js),
     // /bets/<account> and ?bets= (bets/bets-link.js) and the view-mode params (?model/?mode3d/?3d,
     // ?photo/?real/?rl/?rw: is3DModeRequestedFromUrl), or a valid shared map view (?at=).
     const SHARED_PATHS = [/^\/proposals\/?$/i, /^\/proposals\/[a-z0-9-]+\/[^/]+\/[^/]+\/./i, /^\/designs\/./i, /^\/agreements\/./i,
         /^\/plans\/[^/]+\/?$/i, /^\/parcel\/./i, /^\/bets\/./i, /\/monitors\/\d+\/?$/];
-    const SHARED_PARAMS = ['parcel', 'focusProposal', 'activity', 'scene', 'bets', 'model', 'mode3d', '3d', 'photo', 'real', 'rl', 'rw'];
-    // The shared routes that open a stored record, which keeps the city it was made in.
-    const RECORD_PARAMS = ['parcel', 'focusProposal', 'activity', 'scene', 'bets'];
+    const SHARED_PARAMS = ['parcel', 'design', 'plan', 'agreement', 'activity', 'scene', 'bets', 'model', 'mode3d', '3d', 'photo', 'real', 'rl', 'rw'];
+    // The shared routes that open a stored record, which keeps the city it was made in. A selection
+    // (selection-address.js) is one only without ?at=: with it, it was made where the view is.
+    const RECORD_PARAMS = ['activity', 'scene', 'bets'];
+    const SELECTION_PARAMS = ['parcel', 'design', 'plan', 'agreement'];
 
     // A user zooming out through the map scale opens the globe at the last map centre. Keep the
     // decision pure; the UI separately proves a native zoom gesture happened.
@@ -199,7 +201,8 @@
         const entry = (cityId, view, source, extra) => Object.assign(
             { cityId, view, source, cityParam, ignoredCity: null, dropCityParam: false }, extra || {});
 
-        const record = SHARED_PATHS.some(pattern => pattern.test(pathname)) || RECORD_PARAMS.some(name => params.has(name));
+        const record = SHARED_PATHS.some(pattern => pattern.test(pathname)) || RECORD_PARAMS.some(name => params.has(name))
+            || (SELECTION_PARAMS.some(name => params.has(name)) && !params.has('at'));
         if (record) return entry(cityParam || storedCityId, null, 'record');
 
         // Without a coverage to ask, ?at= cannot choose (guessing explore would hide every city).

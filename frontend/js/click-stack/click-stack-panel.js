@@ -31,7 +31,7 @@
     const relationsFor = (kind, instance) => model.visibleContextFor(kind, instance, state.hits)
         .filter(group => kind !== 'designs' || instance?.proposal?.goal !== 'parcel-layout' || !PANEL_RELATIONS.has(group.relation));
 
-    const state = { el: null, stack: null, frameRequest: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null , baseHits: null, derived: {} };
+    const state = { el: null, stack: null, frameRequest: null, keepView: false, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null , baseHits: null, derived: {} };
 
     // A key with a dot is a full key shared with the rest of the app; a bare one is clickStack's own.
     function t(key, fallback, params = {}) {
@@ -227,6 +227,7 @@
         if (!keepBody) global.AgreementPanel?.release?.(state.el);
         const el = ensureElement();
         const { stack } = state;
+        global.SelectionAddress?.write(global.SelectionAddress.selectionOf(stack, model.selectedInstance));
         // The hosted panel goes home (still open) before the old bodies are dropped; the section
         // that expands next hosts it again.
         if (state.hosted && !keepBody) unhost({ hide: false });
@@ -693,9 +694,14 @@
     }
 
     // frame: the stack was opened from a list or link, not a scene click (see frameFeatures).
+    // keepNextView: a reload reopening its selection keeps the view in its address (?at=), so the
+    // next stack opened is not framed (selection-address.js).
+    function keepNextView(keep = true) { state.keepView = keep; }
+
     function show(stack, latlng, hits, { frame = false } = {}) {
         observePanels();
-        state.frameRequest = frame ? stack.selectedKind : null;
+        state.frameRequest = frame && !state.keepView ? stack.selectedKind : null;
+        state.keepView = false;
         ensureElement().classList.remove('is-folded');
         state.expanding = true;
         try {
@@ -739,6 +745,7 @@
                 else hosted.classList.remove('visible');
             }
         } else {
+            global.SelectionAddress?.write(null);
             unhost();
             if (['parcels', 'formed'].includes(state.stack?.selectedKind)) global.hideParcelInfoPanel?.();
             if (['built', 'permitted'].includes(state.stack?.selectedKind)) global.PlanningViews?.select(null);
@@ -1045,6 +1052,6 @@
 
     // Selection owns the map focus, including while its details are collapsed.
     const holdsHighlight = () => isOpen() && !!state.stack?.selectedKind;
-    global.ClickStack = Object.freeze({ handleClick, resume, showDesign, showPlan, showAgreement, showParcel, showBuilding, restoreFocus, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
+    global.ClickStack = Object.freeze({ handleClick, resume, showDesign, showPlan, showAgreement, showParcel, showBuilding, restoreFocus, keepNextView, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
         current: () => state.stack, point: () => state.latlng });
 })(window);
