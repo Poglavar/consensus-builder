@@ -140,6 +140,11 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
 .map-comparing :is(.leaflet-proposedBuildings-pane, .buildout-pane),
 .map-comparing[data-compare-permitted="none"] .planning-sources-pane,
 .map-comparing .map-compare-hidden { display: none; }
+/* A plan side's unapplied roads and spaces, drawn as footprints in the Proposed colour (js/compare-on-map.js). */
+.map-compare-shape--road,
+.map-compare-shape--structure { fill: var(--cb-planning-proposed); stroke: var(--cb-planning-proposed); stroke-width: 1.5; }
+.map-compare-shape--road { fill-opacity: 0.28; stroke-dasharray: 6 4; }
+.map-compare-shape--structure { fill-opacity: 0.18; stroke-dasharray: 2 4; }
 body[data-planning-proposed="ghost"] .map-compare-shape--proposed { opacity: 0.4; }
 body[data-planning-existing="ghost"] .map-compare-shape--existing { opacity: 0.5; }
 body[data-planning-proposed="off"] .map-compare-shape--proposed,

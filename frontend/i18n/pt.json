@@ -8207,7 +8207,9 @@
             "right": "Direita",
             "swap": "Trocar lados",
             "sliderLabel": "Divisor de comparação",
-            "mapNote": "No mapa, cada lado desenha os seus próprios edifícios e a volumetria permitida como implantações. As parcelas, as ruas e os parques aparecem nos dois lados.",
+            "reading": "{{label}} (a ler…)",
+            "unreadable": "{{label}} (não foi possível ler: {{reason}})",
+            "mapNote": "No mapa, cada lado desenha os seus próprios edifícios e a volumetria permitida como implantações; um plano não aplicado desenha também as suas ruas e espaços como implantações. As parcelas e as ruas e parques aplicados aparecem nos dois lados.",
             "options": {
                 "built": "Edificado hoje",
                 "permitted": "Volumetria permitida",
@@ -8811,6 +8813,7 @@
     "basisCompared": "Todos os planos comparados",
     "measuring": "A medir…",
     "landDefinition": "O terreno público são as ruas e os parques e praças do OpenStreetMap; o privado é o resto das parcelas. O estado atual conta cada edifício existente nesse terreno; um plano conta, ao lado dos novos, os existentes que os seus projetos não removem.",
-    "noBasis": "Não há nenhum plano guardado de onde tirar o terreno."
+    "noBasis": "Não há nenhum plano guardado de onde tirar o terreno.",
+    "sideBySide": "Lado a lado no mapa"
   }
 }

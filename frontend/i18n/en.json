@@ -8049,7 +8049,9 @@
             "right": "Right",
             "swap": "Swap sides",
             "sliderLabel": "Comparison divider",
-            "mapNote": "On the map, each side draws its own buildings and permitted massing as footprints. Parcels, roads and parks show on both sides.",
+            "reading": "{{label}} (reading…)",
+            "unreadable": "{{label}} (could not be read: {{reason}})",
+            "mapNote": "On the map, each side draws its own buildings and permitted massing as footprints; a plan that is not applied also draws its roads and spaces as footprints. Parcels and applied roads and parks show on both sides.",
             "options": {
                 "built": "Built today",
                 "permitted": "Permitted massing",
@@ -8811,6 +8813,7 @@
     "basisCompared": "All compared plans",
     "measuring": "Measuring…",
     "landDefinition": "Public land is roads and OpenStreetMap parks and squares; private land is the rest of the parcels. The present state counts every existing building on that land; a plan counts the existing buildings its designs do not clear beside its new ones.",
-    "noBasis": "No saved plan to take the land from."
+    "noBasis": "No saved plan to take the land from.",
+    "sideBySide": "Side by side on the map"
   }
 }

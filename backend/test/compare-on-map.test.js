@@ -24,8 +24,8 @@ describe('the map halves', () => {
 
     it('keeps a demolished building whole where its design is not applied, and leaves the remainder where it is', () => {
         const affected = [
-            { id: 'cut', geometry: 'whole-cut', remainder: 'rest', demolishedBy: 'd1' },
-            { id: 'gone', geometry: 'whole-gone', remainder: null, demolishedBy: 'd2' }
+            { id: 'cut', geometry: 'whole-cut', cuts: [{ by: { id: 'd1', unapplied: false }, remainder: 'rest' }] },
+            { id: 'gone', geometry: 'whole-gone', cuts: [{ by: { id: 'd2', unapplied: false }, remainder: null }] }
         ];
         expect(onMap.demolishedOn(side('built'), affected)).toEqual([
             { id: 'cut', geometry: 'whole-cut', outcome: null }, { id: 'gone', geometry: 'whole-gone', outcome: null }]);
@@ -33,6 +33,25 @@ describe('the map halves', () => {
         expect(onMap.demolishedOn(side('design:d1'), affected)).toEqual([
             { id: 'cut', geometry: 'rest', outcome: 'cut' }, { id: 'gone', geometry: 'whole-gone', outcome: null }]);
         expect(onMap.demolishedOn(side('plan:plan-a'), affected)).toEqual(onMap.demolishedOn(side('design:d1'), affected));
+    });
+
+    it("draws a plan's unapplied members where the plan is a side, and what they leave of the buildings they cut", () => {
+        const withUnapplied = compare.sideOptions({ designs: [{ id: 'd1' }], plans: [{ id: 'p', members: ['d1', 'cidX'], unapplied: ['cidX'] }] });
+        const on = value => compare.parseSide(value, withUnapplied);
+        const affected = [
+            { id: 'shared', geometry: 'whole', cuts: [{ by: { id: 'd1', unapplied: false }, remainder: 'rest-d1' }, { by: { id: 'cidX', unapplied: true }, remainder: null }] },
+            { id: 'halved', geometry: 'whole-halved', cuts: [{ by: { id: 'cidX', unapplied: true }, remainder: 'rest-x' }] }
+        ];
+        // Proposed applies d1 alone: the first building keeps d1's remainder, the second stands whole.
+        expect(onMap.demolishedOn(on('proposed'), affected)).toEqual([
+            { id: 'shared', geometry: 'rest-d1', outcome: 'cut' }, { id: 'halved', geometry: 'whole-halved', outcome: null }]);
+        // The plan applies both: the unapplied member clears the first building and halves the second.
+        expect(onMap.demolishedOn(on('plan:p'), affected)).toEqual([{ id: 'halved', geometry: 'rest-x', outcome: 'cut' }]);
+        expect(onMap.demolishedOn(on('built'), affected).map(piece => piece.outcome)).toEqual([null, null]);
+        const part = { rows: [{ proposalId: 'cidX', geometry: { buildings: [{ type: 'Feature', properties: {}, geometry: 'b' }] } }] };
+        const footprints = record => record.geometry.buildings.map(feature => ({ kind: 'building', feature }));
+        expect(onMap.unappliedOn(part, footprints)).toEqual([{ kind: 'building', feature: { type: 'Feature', properties: {}, geometry: 'b' }, designId: 'cidX' }]);
+        expect(onMap.unappliedOn(null, footprints)).toEqual([]);
     });
 
     it("draws a design's buildings on Proposed, on that design and on a plan holding it", () => {

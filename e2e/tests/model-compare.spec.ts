@@ -161,3 +161,47 @@ test('Compare draws Built today and a design side by side on the map and in the 
     return visible;
   }, designId)).toBe(true);
 });
+
+test('a saved plan that is not applied is a side: it is read without applying and its building draws on its half alone', async ({ mockApi: page }) => {
+  test.setTimeout(120_000);
+  await mockBuildingScene(page);
+  await openCity(page);
+  const designId = await createBuilding(page);
+  const { cid, memberCid } = await page.evaluate(id => {
+    const w = window as any;
+    const record = w.proposalStorage.getProposal(id);
+    const plan = w.PlanComposition.create('Unapplied plan', [record], { city: w.resolveCurrentCityCode(), at: '45.8,15.98,17', mode: '2d', language: 'en' });
+    w.PlanWorkspace.save(plan);
+    return { cid: plan.cid as string, memberCid: w.DesignRecord.cidOf(record) as string };
+  }, designId);
+  await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), designId);
+  await page.keyboard.press('Escape');
+  await openCompareTab(page);
+  const enable = page.locator('#planning-compare-enable');
+  const right = page.locator('#planning-compare-right');
+  await expect(right.locator(`option[value="plan:${cid}"]`)).toHaveText('Plan: Unapplied plan');
+  await right.selectOption(`plan:${cid}`);
+  await enable.check();
+  // The plan is read as Plan stats reads it, then its unapplied building draws in the right half alone.
+  await expect(page.locator('#map .map-compare__label--after')).toHaveText('Plan: Unapplied plan', { timeout: 45_000 });
+  await expect.poll(() => page.locator('.leaflet-compareRight-pane path.map-compare-shape--unapplied').count()).toBeGreaterThan(0);
+  await expect(page.locator('.leaflet-compareLeft-pane path.map-compare-shape--unapplied')).toHaveCount(0);
+  expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id).applied === true, designId)).toBe(false);
+  await page.locator('#planning-views [data-sheet-close]').click();
+
+  // The model view builds the member's meshes under the plan's CID and draws them in the right pass only.
+  await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 20_000 });
+  await openCompareTab(page);
+  await expect(page.locator('#three-container .map-compare__handle')).toBeVisible();
+  await expect(page.locator('#three-container .map-compare__label--after')).toHaveText('Plan: Unapplied plan');
+  await expect.poll(() => page.evaluate(id => {
+    let found = false;
+    (window as any).getThreeModeInternals?.()?.scene.traverse((object: any) => { if (object.isMesh && object.userData?.proposalId === id) found = true; });
+    return found;
+  }, memberCid), { timeout: 20_000 }).toBe(true);
+  const split = await recordPasses(page, memberCid);
+  expect(split.passes.map((pass: any) => pass.designDrawn)).toEqual([false, true]);
+  await enable.uncheck();
+  await expect(page.locator('#three-container .map-compare__handle')).toHaveCount(0);
+});

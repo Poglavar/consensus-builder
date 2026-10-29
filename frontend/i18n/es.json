@@ -8077,7 +8077,9 @@
             "right": "Derecha",
             "swap": "Intercambiar lados",
             "sliderLabel": "Divisor de comparación",
-            "mapNote": "En el mapa, cada lado dibuja sus propios edificios y el volumen permitido como huellas. Las parcelas, las calles y los parques se ven en ambos lados.",
+            "reading": "{{label}} (leyendo…)",
+            "unreadable": "{{label}} (no se pudo leer: {{reason}})",
+            "mapNote": "En el mapa, cada lado dibuja sus propios edificios y el volumen permitido como huellas; un plan no aplicado dibuja también sus calles y espacios como huellas. Las parcelas y las calles y parques aplicados se ven en ambos lados.",
             "options": {
                 "built": "Construido hoy",
                 "permitted": "Volumen permitido",
@@ -8839,6 +8841,7 @@
     "basisCompared": "Todos los planes comparados",
     "measuring": "Midiendo…",
     "landDefinition": "El suelo público son las calles y los parques y plazas de OpenStreetMap; el privado es el resto de las parcelas. El estado actual cuenta cada edificio existente en ese suelo; un plan cuenta, junto a los nuevos, los existentes que sus diseños no eliminan.",
-    "noBasis": "No hay ningún plan guardado del que tomar el suelo."
+    "noBasis": "No hay ningún plan guardado del que tomar el suelo.",
+    "sideBySide": "Lado a lado en el mapa"
   }
 }

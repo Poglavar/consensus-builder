@@ -619,6 +619,18 @@
         const swap = el('button', 'btn btn-sm plan-compare__swap', tPlanStats('planCompare.swap', 'Swap rows and columns'));
         swap.type = 'button';
         swap.dataset.planCompareSwap = '';
+        // The same plans under the map's divider (three-compare.js, no apply): the first two chosen
+        // plans side by side, or one plan beside Built today.
+        const measured = prepared.filter(row => row.cid);
+        const sideBySide = el('button', 'btn btn-sm plan-compare__side-by-side', tPlanStats('planCompare.sideBySide', 'Side by side on the map'));
+        sideBySide.type = 'button';
+        sideBySide.dataset.planCompareSideBySide = '';
+        sideBySide.disabled = !measured.length || !window.ThreeCompare?.show;
+        sideBySide.addEventListener('click', () => {
+            const [first, second] = measured;
+            dialog?.close?.();
+            window.ThreeCompare.show({ left: second ? `plan:${first.cid}` : 'built', right: `plan:${(second || first).cid}` });
+        });
         const scroll = el('div', 'plan-compare__scroll');
         const draw = () => {
             scroll.innerHTML = '';
@@ -654,6 +666,7 @@
             'Public land is roads and OpenStreetMap parks and squares; private land is the rest of the parcels. The present state counts every existing building on that land.'));
         body.appendChild(basisField);
         body.appendChild(swap);
+        body.appendChild(sideBySide);
         body.appendChild(scroll);
         body.appendChild(note);
         body.appendChild(definition);

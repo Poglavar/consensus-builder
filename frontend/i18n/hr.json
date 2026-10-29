@@ -8095,7 +8095,9 @@
             "right": "Desno",
             "swap": "Zamijeni strane",
             "sliderLabel": "Razdjelnik usporedbe",
-            "mapNote": "Na karti svaka strana crta svoje zgrade i dopuštenu građevnu masu kao tlocrte. Čestice, ceste i parkovi vide se na obje strane.",
+            "reading": "{{label}} (čita se…)",
+            "unreadable": "{{label}} (nije se mogao pročitati: {{reason}})",
+            "mapNote": "Na karti svaka strana crta svoje zgrade i dopuštenu građevnu masu kao tlocrte; plan koji nije primijenjen crta kao tlocrte i svoje ceste i prostore. Čestice te primijenjene ceste i parkovi vide se na obje strane.",
             "options": {
                 "built": "Izgrađeno danas",
                 "permitted": "Dopuštena građevna masa",
@@ -8863,6 +8865,7 @@
     "basisCompared": "Svi uspoređeni planovi",
     "measuring": "Mjerenje…",
     "landDefinition": "Javna površina su ceste te parkovi i trgovi iz OpenStreetMapa; privatna je ostatak čestica. Postojeće stanje broji svaku postojeću zgradu na tom zemljištu; plan uz svoje nove zgrade broji postojeće koje njegovi dizajni ne uklanjaju.",
-    "noBasis": "Nema spremljenog plana s čijeg bi se zemljišta uzelo stanje."
+    "noBasis": "Nema spremljenog plana s čijeg bi se zemljišta uzelo stanje.",
+    "sideBySide": "Usporedno na karti"
   }
 }

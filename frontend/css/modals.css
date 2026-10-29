@@ -409,7 +409,8 @@ body.site-intro-open { overflow: hidden; }
     gap: var(--cb-space-3);
 }
 
-.plan-compare__swap {
+.plan-compare__swap,
+.plan-compare__side-by-side {
     justify-self: start;
 }
 

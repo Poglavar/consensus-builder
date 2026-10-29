@@ -114,6 +114,17 @@ describe('existing buildings a plan leaves standing', () => {
         expect(left[1]).toBe(grazed);
     });
 
+    it('tells one footprint kept, cut or gone by the same thresholds', () => {
+        const regions = [box(15.8999, 45.7999, 0.0004), box(15.9011, 45.7999, 0.0004), box(15.90219999, 45.7999, 0.0004)];
+        const footprint = record => record.buildingProposal.buildings[0];
+        expect(State.clearance(footprint(whole), regions, ops)).toEqual({ outcome: 'gone', feature: null });
+        const cut = State.clearance(footprint(halved), regions, ops);
+        expect(cut.outcome).toBe('cut');
+        expect(ops.areaOf(cut.feature) / ops.areaOf(footprint(halved))).toBeCloseTo(0.5, 1);
+        expect(State.clearance(footprint(grazed), regions, ops)).toEqual({ outcome: 'kept', feature: footprint(grazed) });
+        expect(State.clearance(footprint(whole), [], ops).outcome).toBe('kept');
+    });
+
     it('adds remaining and new floor area before deriving apartments once', () => {
         const designs = planYield.planYield([whole], {});
         const remaining = planYield.planYield([halved], {});
