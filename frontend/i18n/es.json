@@ -1119,7 +1119,6 @@
             "linkLabel": "Enlace al diseño publicado",
             "errors": {
                 "cidMismatch": "El servidor calculó una identidad distinta para este diseño, así que no se publicó nada.",
-                "pinningUnconfigured": "Este servidor aún no puede fijar diseños publicados (la fijación no está configurada).",
                 "tooLarge": "Este diseño supera el límite de publicación de 10 MiB. Reduce su extensión o detalle antes de compartirlo; está guardado localmente.",
                 "invalidDesign": "Este diseño contiene datos no válidos. Corrígelos antes de compartirlo.",
                 "rateLimitedFor": "Demasiadas publicaciones por ahora. Inténtalo de nuevo en unos {{minutes}} min.",
@@ -7895,7 +7894,6 @@
                     "other": "El servidor no tiene {{count}} de los diseños del acuerdo, así que no se propuso."
                 },
                 "inputsDifferFromBinding": "El suelo del acuerdo no es el que sus diseños ocupan en el servidor ({{parcels}}). Edita el acuerdo en el mapa actual y vuelve a proponerlo.",
-                "pinningUnconfigured": "Este servidor aún no puede fijar acuerdos publicados (la fijación no está configurada).",
                 "deadlinePast": "El plazo del acuerdo ya ha pasado. Edita el plazo y vuelve a proponerlo.",
                 "refused": "El servidor rechazó este acuerdo: {{reason}}",
                 "notACid": "Este no es un enlace de acuerdo.",

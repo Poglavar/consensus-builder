@@ -3,7 +3,7 @@
 // records, other agents' records and unclaimed records keep theirs. Also drives the real store
 // (proposals/data.js addProposal claims, setProposalAuthor), storage.js stampCurrentAuthor with the
 // real immutability rule (proposals/lineage.js isPublished: published under a CID), and the
-// one outgoing path that pins a design (proposals/design-sync.js publishDesign).
+// one outgoing path that publishes a design (proposals/design-sync.js publishDesign).
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -159,34 +159,31 @@ describe('publishing a record made as a guest (the store and stampCurrentAuthor)
 
 describe('every outgoing path stamps the current author', () => {
     // The browser part of proposals/design-sync.js over the real store and stamp, with a fake index:
-    // POST /pins echoes the CID it is sent, POST /designs answers the indexed row.
+    // POST /designs records the content it is sent and answers the indexed row.
     function publisher(store, stampCurrentAuthor) {
-        const pinned = [];
+        const sent = [];
         const fetch = vi.fn(async (url, init = {}) => {
             const body = JSON.parse(init.body);
-            if (url.endsWith('/pins')) {
-                pinned.push(JSON.parse(Buffer.from(body.bytes, 'base64').toString('utf8')));
-                return { ok: true, status: 201, json: async () => ({ cid: body.cid, pinnedAt: '2026-10-21T10:00:00.000Z' }) };
-            }
+            sent.push(body.content);
             return { ok: true, status: 201, json: async () => ({ cid: body.cid, createdAt: '2026-10-21T10:00:01.000Z' }) };
         });
         const win = {
             fetch, btoa: text => Buffer.from(text, 'binary').toString('base64'), resolveBackendBaseUrl: () => API,
             ProposalPublishTerms: PublishTerms, guestPolicyBlocks: () => null, stampCurrentAuthor, proposalStorage: store
         };
-        return { api: DesignSync.browser(win).api, pinned, fetch };
+        return { api: DesignSync.browser(win).api, sent, fetch };
     }
 
-    it('publishing a guest-made design pins it under the current name, without the agent id that proves ownership', async () => {
+    it('publishing a guest-made design sends it under the current name, without the agent id that proves ownership', async () => {
         const { store, state, stampCurrentAuthor } = boot({ ...GUEST });
         const id = store.addProposal(park('Guest 4232'));
         state.agent = { ...NAMED };
-        const { api, pinned } = publisher(store, stampCurrentAuthor);
+        const { api, sent } = publisher(store, stampCurrentAuthor);
         const { cid } = await api.publishDesign(store.getProposal(id));
-        expect(pinned).toHaveLength(1);
-        expect(pinned[0].author).toBe('Mara');
-        expect(pinned[0]).not.toHaveProperty('authorAgentId');
-        expect(Cid.cidOfObject(pinned[0])).toBe(cid);
+        expect(sent).toHaveLength(1);
+        expect(sent[0].author).toBe('Mara');
+        expect(sent[0]).not.toHaveProperty('authorAgentId');
+        expect(Cid.cidOfObject(sent[0])).toBe(cid);
         // The local draft carries the name it left the device with, and is now that published design.
         expect(store.getProposal(id)).toMatchObject({ author: 'Mara', authorAgentId: 'user_agent_1', published: { cid, apiBase: API } });
     });
@@ -201,7 +198,7 @@ describe('every outgoing path stamps the current author', () => {
         const again = await api.publishDesign(store.getProposal(id));
         expect(again).toEqual({ cid: first.cid, row: null, alreadyPublished: true });
         expect(store.getProposal(id).author).toBe('Mara');
-        expect(fetch).toHaveBeenCalledTimes(2);
+        expect(fetch).toHaveBeenCalledTimes(1);
     });
 
     it('the stamp is the window global the publisher calls', () => {

@@ -247,15 +247,15 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     usdcMint: USDC_DEVNET_MINT
                 },
                 writes: {
-                    origin: 'POST /pins, /designs, /agreements, /agreements/{cid}/decisions and /agreements/{cid}/onchain need an Origin header of the app: https://urbangametheory.xyz in production (any localhost origin in development).',
+                    origin: 'POST /designs, /plans, /agreements, /pins, /agreements/{cid}/decisions and /agreements/{cid}/onchain need an Origin header of the app: https://urbangametheory.xyz in production (any localhost origin in development).',
                     readOnlyPosts: ['/designs/binding', '/designs/batch', '/parcels/under', '/buildings/footprints'],
-                    pinLimit: '30 pins per 15 minutes per client; a 429 carries retryAfterSeconds',
+                    uploadLimit: 'POST /plans and /pins: 30 per 15 minutes per client; a 429 carries retryAfterSeconds',
                     idempotence: 'every object is filed under its CID: publishing it again answers 409 with the row the index holds'
                 },
                 flow: [
                     'POST /designs/binding { site, toleranceM? }: the parcels a site takes (free; nothing stored)',
-                    'POST /pins { kind: "design", cid, bytes }, then POST /designs { cid, content }: one per design; the row carries its binding (a parcel layout waits for its agreement)',
-                    'POST /pins { kind: "agreement", cid, bytes }, then POST /agreements { cid, content, designs? }: inputs are exactly the union of the designs\' bindings; designs carries the linked designs the index does not hold yet',
+                    'POST /designs { cid, content }: one per design; the row carries its binding (a parcel layout waits for its agreement)',
+                    'POST /agreements { cid, content, designs? }: inputs are exactly the union of the designs\' bindings; designs carries the linked designs the index does not hold yet',
                     'a non-binding agreement (an owner or community vote) stops here: it is a poll in the index, never minted, with no market',
                     'a binding owners\' agreement, as its sponsor: create (and fund) the account on the agreement program, then POST /agreements/{cid}/onchain { chain: "solana", cluster: "devnet", account, signature }',
                     'its owners relay signed decisions to /agreements/{cid}/decisions and its lens member attests AgreementDecision-v1 once the rule passes; anyone records it (attest) and executes; meanwhile anyone may bet, pledge and donate on the account; after the deadline anyone may expire it'

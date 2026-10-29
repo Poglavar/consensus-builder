@@ -1119,7 +1119,6 @@
             "linkLabel": "Link to the published design",
             "errors": {
                 "cidMismatch": "The server computed a different identity for this design, so nothing was published.",
-                "pinningUnconfigured": "This server cannot pin published designs yet (pinning is not configured).",
                 "tooLarge": "This design exceeds the 10 MiB publication limit. Reduce its extent or detail before sharing; it is saved locally.",
                 "invalidDesign": "This design contains invalid data. Correct it before sharing.",
                 "rateLimitedFor": "Too many publications for now. Try again in about {{minutes}} min.",
@@ -7868,7 +7867,6 @@
                     "other": "The server does not hold {{count}} of the agreement’s designs, so it was not proposed."
                 },
                 "inputsDifferFromBinding": "The agreement’s land is not the land its designs take on the server ({{parcels}}). Edit the agreement on the current map and propose it again.",
-                "pinningUnconfigured": "This server cannot pin published agreements yet (pinning is not configured).",
                 "deadlinePast": "The agreement’s deadline has passed. Edit the deadline and propose it again.",
                 "refused": "The server refused this agreement: {{reason}}",
                 "notACid": "This is not an agreement link.",

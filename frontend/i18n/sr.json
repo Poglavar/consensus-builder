@@ -1121,7 +1121,6 @@
             "linkLabel": "Link ka objavljenom dizajnu",
             "errors": {
                 "cidMismatch": "Server je izračunao drugačiji identitet ovog dizajna, pa ništa nije objavljeno.",
-                "pinningUnconfigured": "Ovaj server još ne može da čuva objavljene dizajne (čuvanje nije konfigurisano).",
                 "tooLarge": "Dizajn prelazi ograničenje objavljivanja od 10 MiB. Smanjite njegov obuhvat ili detalje pre deljenja; sačuvan je lokalno.",
                 "invalidDesign": "Dizajn sadrži neispravne podatke. Ispravite ih pre deljenja.",
                 "rateLimitedFor": "Zasad je previše objava. Pokušajte ponovo za otprilike {{minutes}} min.",
@@ -7912,7 +7911,6 @@
                     "other": "Na serveru nedostaje {{count}} dizajna sporazuma, pa sporazum nije predložen."
                 },
                 "inputsDifferFromBinding": "Zemljište sporazuma nije zemljište koje njegovi dizajni zauzimaju na serveru ({{parcels}}). Uredite sporazum na trenutnoj mapi i ponovo ga predložite.",
-                "pinningUnconfigured": "Ovaj server još ne može da čuva objavljene sporazume (čuvanje nije konfigurisano).",
                 "deadlinePast": "Rok sporazuma je istekao. Uredite rok i ponovo predložite sporazum.",
                 "refused": "Server je odbio ovaj sporazum: {{reason}}",
                 "notACid": "Ovo nije link sporazuma.",

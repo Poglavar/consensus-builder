@@ -309,7 +309,7 @@ export function createUrbanGameTheoryTools({
             ? { ...inspect, action: 'Inspect this reference and correct the reported fields. Confirm the exact returned CID before publication.' }
             : { tool, arguments: args, action: 'Retry this same confirmed immutable revision. The index will be checked before any publication write.' };
         return Object.assign(error, { code: error.code || 'publication-failed', cid: state.cid,
-            stage: error.stage || state.stage, pinnedCids: [...new Set([...state.pinnedCids, ...(error.pinnedCids || [])])],
+            stage: error.stage || state.stage, publishedCids: [...new Set([...state.publishedCids, ...(error.publishedCids || [])])],
             indexed: error.indexed ?? state.indexed, url: state.cid ? `${appOrigin}/${state.kind}s/${state.cid}` : null,
             next });
     }
@@ -455,12 +455,12 @@ export function createUrbanGameTheoryTools({
             }
         },
 
-        // Pin and index one design/v1 object. The index derives its binding (the parcels its site takes)
+        // Index one design/v1 object. The index derives its binding (the parcels its site takes)
         // and answers the row.
         async publishDesign({ design, parcelSourceId = null, expectedCid, confirm } = {}) {
             requirePublish(confirm);
             const args = { design, parcelSourceId, ...(expectedCid ? { expectedCid } : {}), confirm };
-            const state = { kind: 'design', cid: expectedCid || null, stage: 'resolve', pinnedCids: [], indexed: false };
+            const state = { kind: 'design', cid: expectedCid || null, stage: 'resolve', publishedCids: [], indexed: false };
             try {
                 const reference = referenceInput(design);
                 if (reference && !expectedCid) checkRevision(null, expectedCid, true);
@@ -474,10 +474,10 @@ export function createUrbanGameTheoryTools({
                     verifiedRow(existing, cid, 'design'); state.indexed = true;
                     return { cid, created: false, row: existing, publication: 'published', url: `${appOrigin}/designs/${cid}`, previewUrl: `${appOrigin}/designs/${cid}` };
                 }
-                state.stage = 'pin-design';
+                state.stage = 'index-design';
                 const published = await index().publishDesign(content, { parcelSourceId });
                 if (published.cid !== cid) throw Object.assign(new Error(`the index filed design ${published.cid}, not ${cid}`), { code: 'cid-mismatch' });
-                state.pinnedCids.push(cid); state.indexed = true; state.stage = 'readback';
+                state.publishedCids.push(cid); state.indexed = true; state.stage = 'readback';
                 const row = verifiedRow(await index().getDesign(cid), cid, 'design');
                 return { cid, created: published.created, row, publication: 'published', url: `${appOrigin}/designs/${cid}`, previewUrl: `${appOrigin}/designs/${cid}` };
             } catch (error) { throw publicationError(error, state, 'ugt_publish_design', args); }
@@ -486,7 +486,7 @@ export function createUrbanGameTheoryTools({
         async proposeAgreement({ agreement, designs = [], expectedCid, confirm } = {}) {
             requirePublish(confirm);
             const args = { agreement, designs, ...(expectedCid ? { expectedCid } : {}), confirm };
-            const state = { kind: 'agreement', cid: expectedCid || null, stage: 'resolve', pinnedCids: [], indexed: false };
+            const state = { kind: 'agreement', cid: expectedCid || null, stage: 'resolve', publishedCids: [], indexed: false };
             try {
                 const source = await agreementSource(agreement, expectedCid), { content, cid } = source;
                 state.cid = cid; checkRevision(cid, expectedCid, referenceInput(agreement));
@@ -506,16 +506,11 @@ export function createUrbanGameTheoryTools({
                 let row, created;
                 if (existing) { row = verifiedRow(existing, cid, 'agreement'); created = false; state.indexed = true; }
                 else {
-                    for (const entry of carried) {
-                        state.stage = 'pin-design';
-                        try { await client.pin('design', entry.content); }
-                        catch (error) { error.stage = 'pin-design'; throw error; }
-                        state.pinnedCids.push(entry.cid);
-                    }
-                    state.stage = 'pin-agreement';
+                    // Carried designs are indexed with the agreement, in one transaction.
+                    state.stage = 'index-agreement';
                     const published = await client.publishAgreement(content, { plan, designs: carried });
                     if (published.cid !== cid) throw Object.assign(new Error(`the index filed agreement ${published.cid}, not ${cid}`), { code: 'cid-mismatch' });
-                    state.pinnedCids.push(cid); state.indexed = true; state.stage = 'readback';
+                    state.publishedCids.push(cid); state.indexed = true; state.stage = 'readback';
                     row = verifiedRow(await client.getAgreement(cid), cid, 'agreement'); created = published.created;
                 }
                 const sponsor = content.sponsor ?? null;

@@ -1,6 +1,6 @@
 import { openPlanActions } from '../helpers/plan-actions';
 // Exercise proposal action buttons and assert the resulting UI and stored state: the related-design
-// link, the grain-score Repeat control, and Share publishing a design (POST /pins, /designs).
+// link, the grain-score Repeat control, and Share publishing a design (POST /designs).
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, showProposal, PARCEL_ID, showProposalTab } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
@@ -97,7 +97,7 @@ test.describe('proposal detail button controls @features', () => {
     await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(link);
     const individualLink = new URL(link);
     expect(individualLink.pathname).toBe('/designs/' + cid);
-    expect(index.requests.filter(request => request.method === 'POST').map(request => request.path)).toEqual(['/pins', '/designs']);
+    expect(index.requests.filter(request => request.method === 'POST').map(request => request.path)).toEqual(['/designs']);
     await expect(page.locator(`#proposal-details-content [data-proposal-published-cid="${cid}"]`)).toBeAttached();
 
     // A plan is composed locally from published designs, then published from its own actions.

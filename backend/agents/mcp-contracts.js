@@ -18,7 +18,7 @@ export const mcpResultSchema = z.object({
     constraints: z.unknown().optional(), issues: z.array(object).optional(),
     currentCid: z.string().optional(), expectedCid: z.string().optional(),
     status: z.number().int().optional(), retryable: z.boolean().optional(), retryAfter: z.number().nonnegative().optional(),
-    stage: z.string().optional(), pinnedCids: z.array(z.string()).optional(), indexed: z.boolean().optional()
+    stage: z.string().optional(), publishedCids: z.array(z.string()).optional(), indexed: z.boolean().optional()
 }).passthrough();
 
 // Successful authoring responses have stable envelopes even though their authored records and

@@ -54,7 +54,7 @@ flowchart LR
     P -- reviews and signs --> APP[urbangametheory.xyz app + wallet]
     A -- Streamable HTTP --> H["Hosted /mcp<br/>reads, drafts, edits, private previews,<br/>confirmed unsigned publish, approval links"]
     A2[Autonomous agent] -- stdio --> L["Local package<br/>everything hosted has +<br/>signing with UGT_AGENT_KEYPAIR"]
-    H --> API[api.urbangametheory.xyz<br/>index, pins, parcels, planning]
+    H --> API[api.urbangametheory.xyz<br/>index, parcels, planning]
     L --> API
     L --> SOL[Solana devnet<br/>agreement, market, pledge programs]
     APP --> SOL

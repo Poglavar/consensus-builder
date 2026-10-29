@@ -119,26 +119,19 @@ const writeGround = (plan, ground) => {
 };
 
 /**
- * A fake index (courier and index routes) as a fetch: it checks every pinned CID against its bytes and
- * answers the reads the steps make. `failIndexOf` answers POST /designs of that title with 422.
+ * A fake index as a fetch: it answers the writes and reads the steps make and has no /pins (publication
+ * pins nothing). `failIndexOf` answers POST /designs of that title with 422.
  */
 function fakeIndex({ held = [], failIndexOf = null, bindings = BINDINGS } = {}) {
     const calls = [];
     const designs = new Map(held.map(row => [row.cid, row]));
     const agreements = new Map();
-    const pins = [];
     const json = (status, body) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
     async function fetchImpl(input, init = {}) {
         const url = new URL(String(input));
         const method = String(init.method || 'GET').toUpperCase();
         const body = typeof init.body === 'string' ? JSON.parse(init.body) : null;
         calls.push({ method, path: url.pathname, body, origin: init.headers?.origin ?? null });
-        if (method === 'POST' && url.pathname === '/pins') {
-            const bytes = Buffer.from(body.bytes, 'base64');
-            if (cidOf(bytes) !== body.cid) return json(409, { code: 'cid-mismatch', error: 'not these bytes' });
-            pins.push({ kind: body.kind, cid: body.cid, content: JSON.parse(bytes.toString('utf8')) });
-            return json(201, { cid: body.cid, pinnedAt: '2026-10-22T08:00:00.000Z' });
-        }
         if (method === 'POST' && url.pathname === '/designs/batch') {
             const items = body.cids.map(cid => ({ cid, design: designs.get(cid) || null }));
             return json(200, { items, count: items.filter(item => item.design).length });
@@ -163,7 +156,7 @@ function fakeIndex({ held = [], failIndexOf = null, bindings = BINDINGS } = {}) 
         }
         return json(404, { code: 'unexpected', error: `${method} ${url.pathname}` });
     }
-    return { fetchImpl, calls, designs, agreements, pins, writes: () => calls.filter(call => call.method === 'POST' && call.path !== '/designs/batch') };
+    return { fetchImpl, calls, designs, agreements, writes: () => calls.filter(call => call.method === 'POST' && call.path !== '/designs/batch') };
 }
 
 /** A design row as the index answers it, for a design object of the plan. */
@@ -217,7 +210,7 @@ describe('planObjects', () => {
         expect(lib.planObjects(makePlan()).map(object => object.cid)).toEqual(objects.map(object => object.cid));
     });
 
-    it('refuses what the courier or the index would refuse later, naming the design', () => {
+    it('refuses what the index would refuse later, naming the design', () => {
         expect(() => lib.planObjects(makePlan({ designs: [] }))).toThrow(/the plan has no designs/);
         const many = Array.from({ length: lib.MAX_AGREEMENT_DESIGNS + 1 }, (_, index) => ({ key: `b${index}`, record: buildingRecord({ title: `Block ${index}` }) }));
         expect(() => lib.planObjects(makePlan({ designs: many }))).toThrow(`201 designs, but an agreement links at most ${lib.MAX_AGREEMENT_DESIGNS}`);
@@ -501,24 +494,24 @@ describe('--designs', () => {
         const run = await cli(['--designs'], { plans: [plan] });
         expect(run.exitCode).toBe(0);
         expect(run.networkCalls).toBe(0);
-        expect(run.out).toMatch(/1\/3 park bafkrei\S+ "Park on the corner": would pin and index/);
-        expect(run.out).toMatch(/3\/3 parcel-layout bafkrei\S+ "New plots": would pin and index/);
-        expect(run.out).toContain(`${plan.key}: DRY RUN: nothing pinned or indexed (add --apply)`);
+        expect(run.out).toMatch(/1\/3 park bafkrei\S+ "Park on the corner": would index$/m);
+        expect(run.out).toMatch(/3\/3 parcel-layout bafkrei\S+ "New plots": would index$/m);
+        expect(run.out).toContain(`${plan.key}: DRY RUN: nothing indexed (add --apply)`);
         expect(fs.existsSync(statePathOf(API, plan))).toBe(false);
     });
 
-    it('pins and indexes each design, the parcel layout included, and checkpoints every step', async () => {
+    it('indexes each design, the parcel layout included, and checkpoints every step', async () => {
         const plan = makePlan({ parcelSourceId: 'hr-cadastre' });
         const objects = lib.planObjects(plan);
         const index = fakeIndex();
         const run = await cli(['--designs', '--apply', '--api', API, '--origin', 'http://localhost:4998'], { plans: [plan], index });
         expect(run.err).toBe('');
         expect(run.exitCode).toBe(0);
-        // Exactly the canonical bytes of each design were pinned, the layout included.
-        expect(index.pins.map(pin => pin.cid)).toEqual(objects.map(object => object.cid));
-        index.pins.forEach((pin, i) => expect(pin.content).toEqual(objects[i].content));
-        const indexed = index.calls.filter(call => call.method === 'POST' && call.path === '/designs');
+        // One POST /designs per design, the layout included, and no other write (nothing is pinned).
+        expect(index.writes().map(call => call.path)).toEqual(['/designs', '/designs', '/designs']);
+        const indexed = index.writes();
         expect(indexed.map(call => call.body.cid)).toEqual(objects.map(object => object.cid));
+        indexed.forEach((call, i) => expect(call.body.content).toEqual(objects[i].content));
         expect(indexed.every(call => call.body.parcelSourceId === 'hr-cadastre')).toBe(true);
         expect(index.calls.some(call => call.path === '/designs/binding')).toBe(false);
         expect(index.writes().every(call => call.origin === 'http://localhost:4998')).toBe(true);
@@ -526,16 +519,16 @@ describe('--designs', () => {
 
         const state = readState(API, plan);
         expect(state).toMatchObject({ api: API, plan: plan.key });
-        expect(state.designs[objects[0].cid]).toMatchObject({ pinned: true, indexed: true, binding: bindingOf(['A']) });
-        expect(state.designs[objects[1].cid]).toMatchObject({ pinned: true, indexed: true, binding: bindingOf(['B']) });
-        expect(state.designs[objects[2].cid]).toMatchObject({ pinned: true, indexed: true, binding: bindingOf(['B', 'C']) });
+        expect(state.designs[objects[0].cid]).toMatchObject({ indexed: true, binding: bindingOf(['A']) });
+        expect(state.designs[objects[1].cid]).toMatchObject({ indexed: true, binding: bindingOf(['B']) });
+        expect(state.designs[objects[2].cid]).toMatchObject({ indexed: true, binding: bindingOf(['B', 'C']) });
         expect(state.designs[objects[2].cid]).not.toHaveProperty('layout');
+        objects.forEach(object => expect(state.designs[object.cid]).not.toHaveProperty('pinned'));
 
         // A rerun publishes nothing new: the index holds the designs.
         const again = await cli(['--designs', '--apply', '--api', API], { plans: [plan], index });
         expect(again.exitCode).toBe(0);
-        expect(index.pins).toHaveLength(3);
-        expect(index.calls.filter(call => call.method === 'POST' && call.path === '/designs')).toHaveLength(3);
+        expect(index.writes()).toHaveLength(3);
         expect(again.out).toMatch(/1\/3 park \S+ "Park on the corner": already indexed \(1 parcels\)/);
         expect(again.out).toMatch(/3\/3 parcel-layout \S+ "New plots": already indexed \(2 parcels\)/);
         // And the dry run now reads the checkpoint.
@@ -543,31 +536,29 @@ describe('--designs', () => {
         expect(dry.out.match(/done \(checkpoint\)/g)).toHaveLength(3);
     });
 
-    it('resumes after a refused write without pinning anything twice', async () => {
+    it('resumes after a refused write without indexing anything twice', async () => {
         const plan = makePlan();
         const objects = lib.planObjects(plan);
         const refusing = fakeIndex({ failIndexOf: 'Block on plot 2' });
         const failed = await cli(['--designs', '--apply', '--api', API], { plans: [plan], index: refusing });
         expect(failed.exitCode).toBe(1);
         expect(failed.err).toMatch(/index design bafkrei\S+ refused \(422 invalid-design\): refused for the test/);
-        expect(refusing.pins.map(pin => pin.cid)).toEqual([objects[0].cid, objects[1].cid]);
+        expect(refusing.writes().map(call => `${call.path} ${call.body.cid}`)).toEqual([`/designs ${objects[0].cid}`, `/designs ${objects[1].cid}`]);
         const state = readState(API, plan);
-        expect(state.designs[objects[0].cid]).toMatchObject({ pinned: true, indexed: true });
-        expect(state.designs[objects[1].cid]).toMatchObject({ pinned: true });
-        expect(state.designs[objects[1].cid]).not.toHaveProperty('indexed');
+        expect(state.designs[objects[0].cid]).toMatchObject({ indexed: true });
+        expect(state.designs[objects[1].cid]).toBeUndefined();
         expect(state.designs[objects[2].cid]).toBeUndefined();
 
-        // The same index, healthy now: the park is held, the building is pinned already.
+        // The same index, healthy now: the park is held, the building and the layout are indexed.
         const healthy = fakeIndex({ held: [...refusing.designs.values()] });
         const resumed = await cli(['--designs', '--apply', '--api', API], { plans: [plan], index: healthy });
         expect(resumed.exitCode).toBe(0);
-        expect(healthy.pins.map(pin => pin.cid)).toEqual([objects[2].cid]);
-        expect(healthy.calls.filter(call => call.method === 'POST' && call.path === '/designs').map(call => call.body.cid)).toEqual([objects[1].cid, objects[2].cid]);
-        expect(readState(API, plan).designs[objects[1].cid]).toMatchObject({ pinned: true, indexed: true });
-        expect(readState(API, plan).designs[objects[2].cid]).toMatchObject({ pinned: true, indexed: true });
+        expect(healthy.writes().map(call => `${call.path} ${call.body.cid}`)).toEqual([`/designs ${objects[1].cid}`, `/designs ${objects[2].cid}`]);
+        expect(readState(API, plan).designs[objects[1].cid]).toMatchObject({ indexed: true });
+        expect(readState(API, plan).designs[objects[2].cid]).toMatchObject({ indexed: true });
     });
 
-    it('takes what another run already indexed from the index, pinning nothing', async () => {
+    it('takes what another run already indexed from the index, writing nothing', async () => {
         const plan = makePlan();
         const objects = lib.planObjects(plan);
         const index = fakeIndex({ held: objects.map(rowOf) });
@@ -722,10 +713,10 @@ describe('--agreement', () => {
         expect(run.exitCode).toBe(0);
         expect(run.networkCalls).toBe(0);
         expect(run.out).toContain(`agreement ${lib.planAgreement(plan, objects, ground).cid} "Test plan": 3 designs, 3 input parcels, 3 outputs`);
-        expect(run.out).toContain('DRY RUN: the agreement is not pinned or indexed');
+        expect(run.out).toContain('DRY RUN: the agreement is not indexed');
     });
 
-    it('pins the agreement and indexes it over the designs the index holds, once', async () => {
+    it('indexes the agreement with its named plan over the designs the index holds, once', async () => {
         const plan = makePlan();
         const objects = lib.planObjects(plan);
         const ground = groundOver(plan, objects);
@@ -735,12 +726,9 @@ describe('--agreement', () => {
         const run = await cli(['--agreement', '--api', API, '--app', APP, '--apply'], { plans: [plan], index });
         expect(run.err).toBe('');
         expect(run.exitCode).toBe(0);
-        // The named plan is pinned before the agreement; no design travels with it.
-        expect(index.pins.map(pin => [pin.kind, pin.cid])).toEqual([['plan', agreement.plan.cid], ['agreement', agreement.cid]]);
-        expect(index.pins[0].content).toEqual(agreement.plan.content);
-        expect(index.pins[1].content).toEqual(agreement.content);
-        const posted = index.calls.find(call => call.method === 'POST' && call.path === '/agreements');
-        expect(posted.body).toEqual({ cid: agreement.cid, content: agreement.content, plan: agreement.plan });
+        // One write: the named plan travels with the agreement; no design travels with it, nothing is pinned.
+        expect(index.writes().map(call => call.path)).toEqual(['/agreements']);
+        expect(index.writes()[0].body).toEqual({ cid: agreement.cid, content: agreement.content, plan: agreement.plan });
         expect(index.calls.some(call => call.path === '/designs/binding')).toBe(false);
         expect(run.out).toContain(`${plan.key}: agreement ${agreement.cid} indexed · ${APP}/agreements/${agreement.cid}?city=zagreb`);
         const state = readState(API, plan);

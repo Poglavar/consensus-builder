@@ -19,7 +19,7 @@ async function cityDevice(browser: import('@playwright/test').Browser, index: Sh
   return { context, page };
 }
 
-// A park published from Zagreb through Share (POST /pins, POST /designs); returns its CID.
+// A park published from Zagreb through Share (POST /designs); returns its CID.
 async function publishSharedPark(page: import('@playwright/test').Page): Promise<string> {
   await openCity(page);
   await page.locator('#username-display').click();

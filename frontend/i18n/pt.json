@@ -1851,7 +1851,6 @@
                     "other": "O servidor não tem {{count}} dos projetos do acordo, pelo que este não foi proposto."
                 },
                 "inputsDifferFromBinding": "Os terrenos do acordo não correspondem aos terrenos ocupados pelos seus projetos no servidor ({{parcels}}). Edite o acordo no mapa atual e volte a propô-lo.",
-                "pinningUnconfigured": "Este servidor ainda não consegue fixar acordos publicados (a fixação não está configurada).",
                 "deadlinePast": "O prazo do acordo terminou. Edite o prazo e volte a propô-lo.",
                 "refused": "O servidor recusou este acordo: {{reason}}",
                 "notACid": "Esta ligação não corresponde a um acordo.",
@@ -4071,7 +4070,6 @@
             "linkLabel": "Ligação para o projeto publicado",
             "errors": {
                 "cidMismatch": "O servidor calculou uma identidade diferente para este projeto, pelo que nada foi publicado.",
-                "pinningUnconfigured": "Este servidor ainda não consegue fixar projetos publicados (a fixação não está configurada).",
                 "tooLarge": "Este projeto excede o limite de publicação de 10 MiB. Reduza a sua extensão ou o nível de detalhe antes de partilhar; está guardado localmente.",
                 "invalidDesign": "Este projeto contém dados inválidos. Corrija-os antes de partilhar.",
                 "rateLimitedFor": "Demasiadas publicações de momento. Tente novamente dentro de cerca de {{minutes}} min.",

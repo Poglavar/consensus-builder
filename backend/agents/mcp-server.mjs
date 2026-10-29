@@ -58,7 +58,7 @@ function toolHandler(fn) {
 }
 
 const READ_ONLY = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true };
-// Pinning and indexing a content-addressed object only adds it: the same object is the same CID.
+// Indexing a content-addressed object only adds it: the same object is the same CID.
 const PUBLISH = { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true };
 const PAID_IDEMPOTENT = { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: true };
 const PAID_NON_IDEMPOTENT = { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: true };
@@ -167,7 +167,7 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
 
     server.registerTool('ugt_publish_design', {
         title: 'Publish a design',
-        description: 'Permanently publish public content: pin (POST /pins) and index (POST /designs) one design/v1 object; confirm=true required. Its CID is computed and the object checked locally first: it must be exactly the published form. Returns the CID and the index row, whose binding lists the parcels its site takes (an agreement\'s inputs are the union of its designs\' bindings).',
+        description: 'Permanently publish public content: index one design/v1 object (POST /designs); confirm=true required. Its CID is computed and the object checked locally first: it must be exactly the published form. Returns the CID and the index row, whose binding lists the parcels its site takes (an agreement\'s inputs are the union of its designs\' bindings).',
         inputSchema: z.object({
             design: z.union([design, z.string().min(1).max(3507), z.object({ draftRef: z.string().url(), cid: designCid.optional() }).strict()]),
             expectedCid: designCid.optional().describe('Required for a reference; publish exactly the revision returned by inspection.'),
@@ -179,7 +179,7 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
 
     server.registerTool('ugt_propose_agreement', {
         title: 'Propose an agreement',
-        description: 'Permanently publish public content: pin and index one agreement/v1 object (POST /pins, POST /agreements); confirm=true required. Its CID is computed and the object checked locally first: it must be exactly the published form, and sponsor must be the wallet that will mint it. designs carries linked designs the index does not hold yet (a parcel layout is published only this way). The index refuses inputs that differ from the union of the designs\' bindings. A community vote (rule electorate community, binding false, no approvalConfig) stays a poll in the index; a binding owners\' agreement (electorate owners, binding true, an approvalConfig with the owners\' parcel-rights and policy, rule.lens one lens key) can be minted. Returns the CID and, with a sponsor, the chain account a binding agreement will be minted as.',
+        description: 'Permanently publish public content: index one agreement/v1 object (POST /agreements); confirm=true required. Its CID is computed and the object checked locally first: it must be exactly the published form, and sponsor must be the wallet that will mint it. designs carries linked designs the index does not hold yet (a parcel layout is published only this way). The index refuses inputs that differ from the union of the designs\' bindings. A community vote (rule electorate community, binding false, no approvalConfig) stays a poll in the index; a binding owners\' agreement (electorate owners, binding true, an approvalConfig with the owners\' parcel-rights and policy, rule.lens one lens key) can be minted. Returns the CID and, with a sponsor, the chain account a binding agreement will be minted as.',
         inputSchema: z.object({
             agreement: z.union([agreement, z.string().min(1).max(3507), z.object({ draftRef: z.string().url(), cid: agreementCid.optional() }).strict()]),
             expectedCid: agreementCid.optional().describe('Required for a reference; retain the CID from the reviewed revision.'),

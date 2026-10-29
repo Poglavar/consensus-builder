@@ -79,11 +79,11 @@ async function storedIn(page: Page, proposalId: string): Promise<{ city: string;
 }
 
 test.describe('Worldwide publication and city routing @core', () => {
-  test('a publish pins the design and indexes it with the parcel source of its city', async ({ mockApi: page }) => {
+  test('a publish indexes the design with the parcel source of its city', async ({ mockApi: page }) => {
     const cid = await publishPark(page);
     const posts = pageIndex(page).requests.filter(request => request.method === 'POST');
-    expect(posts.map(request => request.path)).toEqual(['/pins', '/designs']);
-    const indexed = posts[1].body;
+    expect(posts.map(request => request.path)).toEqual(['/designs']);
+    const indexed = posts[0].body;
     expect(indexed.cid).toBe(cid);
     expect(indexed.content.city).toBe('zagreb');
     // The client-selected parcel source is a binding parameter, never part of the design: the CID

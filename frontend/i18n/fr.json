@@ -1851,7 +1851,6 @@
                     "other": "Le serveur ne dispose pas de {{count}} projets de l’accord ; celui-ci n’a donc pas été proposé."
                 },
                 "inputsDifferFromBinding": "Les terrains de l’accord ne correspondent pas à ceux occupés par ses projets sur le serveur ({{parcels}}). Modifiez l’accord sur la carte actuelle et proposez-le à nouveau.",
-                "pinningUnconfigured": "Ce serveur ne peut pas encore épingler les accords publiés (l’épinglage n’est pas configuré).",
                 "deadlinePast": "La date limite de l’accord est dépassée. Modifiez-la et proposez l’accord à nouveau.",
                 "refused": "Le serveur a refusé cet accord : {{reason}}",
                 "notACid": "Ce lien ne correspond pas à un accord.",
@@ -4071,7 +4070,6 @@
             "linkLabel": "Lien vers le projet publié",
             "errors": {
                 "cidMismatch": "Le serveur a calculé une identité différente pour ce projet ; rien n’a donc été publié.",
-                "pinningUnconfigured": "Ce serveur ne peut pas encore épingler les projets publiés (l’épinglage n’est pas configuré).",
                 "tooLarge": "Ce projet dépasse la limite de publication de 10 MiB. Réduisez son étendue ou son niveau de détail avant de le partager ; il est enregistré localement.",
                 "invalidDesign": "Ce projet contient des données invalides. Corrigez-les avant de le partager.",
                 "rateLimitedFor": "Trop de publications pour le moment. Réessayez dans environ {{minutes}} min.",

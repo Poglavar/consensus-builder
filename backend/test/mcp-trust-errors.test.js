@@ -132,8 +132,8 @@ describe('MCP schemas, data and recovery trust boundaries', () => {
     });
     it('preserves local publication progress and concrete resume instructions', () => {
         const next = { tool: 'ugt_publish_design', arguments: { design: 'local-reference', confirm: true } };
-        const result = toolError(Object.assign(new Error('Index unavailable'), { code: 'index-failed', cid: 'cid', stage: 'index', pinnedCids: ['cid'], indexed: false, url: 'https://app.example/designs/cid', next }));
-        expect(markUntrusted(result)).toMatchObject({ cid: 'cid', stage: 'index', pinnedCids: ['cid'], indexed: false, url: 'https://app.example/designs/cid', next });
+        const result = toolError(Object.assign(new Error('Index unavailable'), { code: 'index-failed', cid: 'cid', stage: 'index', publishedCids: ['cid'], indexed: false, url: 'https://app.example/designs/cid', next }));
+        expect(markUntrusted(result)).toMatchObject({ cid: 'cid', stage: 'index', publishedCids: ['cid'], indexed: false, url: 'https://app.example/designs/cid', next });
     });
     it('directs missing parcel sources to source discovery with the city and abstraction', async () => {
         let caught;

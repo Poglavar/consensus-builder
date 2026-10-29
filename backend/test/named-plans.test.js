@@ -17,7 +17,7 @@ const view = { at: '52.47935,-1.87943,18', city: 'birmingham', language: 'en', m
 const content = PlanRecord.create('Digbeth Green Quarter', [a, b], view);
 const cid = cidOf(canonicalBytes(content));
 
-function server({ records = new Map(), designs = [a, b], pin = vi.fn(async ({ cid }) => ({ cid })) } = {}) {
+function server({ records = new Map(), designs = [a, b], failInsert = false } = {}) {
     const pool = { query: vi.fn(async (sql, params) => {
         if (sql.includes('FROM consensus.plan') && sql.includes("content->'designCids'")) {
             const matching = [...records.values()].filter(row => row.content.designCids.includes(params[0])).sort((x, y) => x.cid.localeCompare(y.cid));
@@ -29,22 +29,16 @@ function server({ records = new Map(), designs = [a, b], pin = vi.fn(async ({ ci
         }
         if (sql.startsWith('SELECT cid, content')) return { rows: records.has(params[0]) ? [records.get(params[0])] : [] };
         if (sql.startsWith('SELECT cid FROM consensus.design')) return { rows: designs.map(cid => ({ cid })) };
-        if (sql.startsWith('INSERT INTO consensus.plan')) { records.set(params[0], { cid: params[0], content: JSON.parse(params[1]) }); return { rows: [] }; }
+        if (sql.startsWith('INSERT INTO consensus.plan')) { if (failInsert) throw new Error('database unavailable'); records.set(params[0], { cid: params[0], content: JSON.parse(params[1]) }); return { rows: [] }; }
         throw new Error(`Unexpected query: ${sql}`);
     }) };
     const app = express(); app.use(express.json());
-    setupPlansRoute(app, { pool, pinBytes: pin, uploadRateLimiter: (_req, _res, next) => next() });
-    return { app, records, pin, pool };
+    setupPlansRoute(app, { pool, uploadRateLimiter: (_req, _res, next) => next() });
+    const inserts = () => pool.query.mock.calls.filter(([sql]) => sql.startsWith('INSERT INTO consensus.plan'));
+    return { app, records, pool, inserts };
 }
 
 describe('named plan records and API', () => {
-    it('reports exhausted storage quota without saving a partially published plan', async () => {
-        const { app, records } = server({ pin: async () => { throw Object.assign(new Error('Storage account quota exhausted'), { code: 'pinning-quota-exhausted' }); } });
-        const response = await request(app).post('/plans').send({ content });
-        expect(response.status).toBe(409);
-        expect(response.body).toMatchObject({ code: 'pinning-quota-exhausted', next: { action: expect.stringContaining('Restore quota') } });
-        expect(records.size).toBe(0);
-    });
     it('addresses the exact title, selected versions and view, excluding the backend override', () => {
         expect(PlanRecord.create(' Digbeth Green Quarter ', [b, a, b], { ...view, backend: 'https://api.example' })).toEqual(content);
         for (const changed of [PlanRecord.create('Another name', [a, b], view), PlanRecord.create(content.title, [a], view),
@@ -66,28 +60,28 @@ describe('named plan records and API', () => {
         { ...content, view: { ...content.view, at: '90,0,18' } },
         { ...content, view: { ...content.view, camera: { ...view.camera, range: -1 } } },
         { ...content, view: { ...content.view, settings: { backend: 'https://api.example' } } }
-    ])('refuses malformed or extra data before pinning', async bad => {
-        const { app, pin } = server();
+    ])('refuses malformed or extra data before touching the database', async bad => {
+        const { app, pool } = server();
         expect((await request(app).post('/plans').send({ content: bad })).status).toBe(400);
-        expect(pin).not.toHaveBeenCalled();
+        expect(pool.query).not.toHaveBeenCalled();
     });
-    it('pins canonical content, persists it, reads it after restart and makes repeated saves idempotent', async () => {
-        const { app, records, pin } = server();
+    it('indexes canonical content under its CID, reads it after restart and makes repeated saves idempotent', async () => {
+        const { app, records, inserts } = server();
         const first = await request(app).post('/plans').send({ content });
         expect(first.status).toBe(201); expect(first.body).toEqual({ cid, content });
-        expect(pin).toHaveBeenCalledWith({ cid, bytes: canonicalBytes(content), name: `plan-${cid}` });
+        expect(inserts().map(([, params]) => params)).toEqual([[cid, JSON.stringify(content)]]);
         expect((await request(app).post('/plans').send({ content })).status).toBe(200);
-        expect(pin).toHaveBeenCalledTimes(1);
+        expect(inserts()).toHaveLength(1);
         expect((await request(server({ records }).app).get(`/plans/${cid}`)).body).toEqual(first.body);
     });
-    it('refuses missing designs and pin failures without persisting a plan', async () => {
+    it('refuses missing designs and database failures without persisting a plan', async () => {
         const missing = server({ designs: [a] });
         const response = await request(missing.app).post('/plans').send({ content });
         expect(response.status).toBe(409); expect(response.body.missing).toEqual([b]);
-        expect(missing.pin).not.toHaveBeenCalled(); expect(missing.records.size).toBe(0);
-        const badPin = server({ pin: async () => ({ cid: a }) });
-        expect((await request(badPin.app).post('/plans').send({ content })).status).toBe(503);
-        expect(badPin.records.size).toBe(0);
+        expect(missing.inserts()).toHaveLength(0); expect(missing.records.size).toBe(0);
+        const broken = server({ failInsert: true });
+        expect((await request(broken.app).post('/plans').send({ content })).status).toBe(503);
+        expect(broken.records.size).toBe(0);
     });
     it('distinguishes invalid and missing links', async () => {
         const { app } = server();

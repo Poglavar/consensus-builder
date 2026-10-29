@@ -76,23 +76,19 @@ async function publishBuildingCollection(page: import('@playwright/test').Page, 
   await expect(details.locator('.cb-badge--published')).toBeVisible({ timeout: 30_000 });
 
   const posts = postsOf(page);
-  expect(posts.map(request => request.path)).toEqual(['/pins', '/designs']);
-  const [pin, indexed] = posts;
-  const bytes = Buffer.from(pin.body.bytes, 'base64');
+  expect(posts.map(request => request.path)).toEqual(['/designs']);
+  const [indexed] = posts;
   const content = indexed.body.content;
+  const bytes = Buffer.from(canonicalJson(content), 'utf8');
   if (options.size === 'compact') {
     expect(bytes.byteLength).toBeLessThan(64 * 1024);
-    expect(pin.body.cid).toMatch(/^bafkrei/); // Single-chunk UnixFS file: raw root.
+    expect(indexed.body.cid).toMatch(/^bafkrei/); // Single-chunk UnixFS file: raw root.
   } else {
     expect(bytes.byteLength).toBeGreaterThan(256 * 1024);
-    expect(pin.body.cid).toMatch(/^bafybei/); // Multi-chunk UnixFS file: dag-pb root.
+    expect(indexed.body.cid).toMatch(/^bafybei/); // Multi-chunk UnixFS file: dag-pb root.
   }
   expect(bytes.byteLength).toBeLessThanOrEqual(prepared.maxBytes);
-  expect(pin.body.kind).toBe('design');
-  expect(cidOfBytes(bytes)).toBe(pin.body.cid);
-  expect(bytes.toString('utf8')).toBe(canonicalJson(content));
-  expect(bytes.byteLength).toBe(Buffer.byteLength(canonicalJson(content), 'utf8'));
-  expect(indexed.body.cid).toBe(pin.body.cid);
+  expect(cidOfBytes(bytes)).toBe(indexed.body.cid);
   expect(cidOfObject(content)).toBe(indexed.body.cid);
   expect(content).toMatchObject({ schema: 'design/v1', goal: 'buildings', site: null, city: prepared.city });
   expect(content.buildingProposal.typologyType).toBe('block');
@@ -133,14 +129,10 @@ for (const kind of ['road', 'track'] as const) {
     await expect(details.locator('.cb-badge--published')).toBeVisible({ timeout: 30_000 });
 
     const posts = postsOf(page);
-    expect(posts.map(request => request.path)).toEqual(['/pins', '/designs']);
-    const [pin, indexed] = posts;
-    const bytes = Buffer.from(pin.body.bytes, 'base64');
+    expect(posts.map(request => request.path)).toEqual(['/designs']);
+    const [indexed] = posts;
     const content = indexed.body.content;
-    expect(pin.body.kind).toBe('design');
-    expect(cidOfBytes(bytes)).toBe(pin.body.cid);
-    expect(bytes.toString('utf8')).toBe(canonicalJson(content));
-    expect(indexed.body.cid).toBe(pin.body.cid);
+    expect(cidOfBytes(Buffer.from(canonicalJson(content), 'utf8'))).toBe(indexed.body.cid);
     expect(cidOfObject(content)).toBe(indexed.body.cid);
     // The corridor polygon is the authored road land. It is stored as the design site as well as
     // in the road payload, so later footprint edits have one durable land boundary to update.

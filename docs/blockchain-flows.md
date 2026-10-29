@@ -5,8 +5,10 @@ The chain plus IPFS is an independent source of published records. Our server is
 uploads and a searchable mirror of what is published; nothing a person can do with a connected wallet
 may require it. This document is the plan for restoring that property after the plan/design/agreement
 rework ([plan-design-agreement.md](plan-design-agreement.md)), which kept the principle in writing and
-lost it in code: publication pins only through `POST /pins`, reading comes only from the index, and the
-chain reader (`chain-proposal-loader.js`) was removed with the proposal-era readers.
+lost it in code: publishing a design, plan or agreement only indexes it and pins nothing, reading
+comes only from the index, and the chain reader (`chain-proposal-loader.js`) was removed with the
+proposal-era readers. An agreement minted on Solana therefore points at agreement, plan and design
+CIDs that only our index holds, until Flow 2 puts what chain records reference on IPFS.
 
 Decisions taken 2026-10-29 are stated as rules; what is still open is listed at the end. Every
 program and contract may be changed, rewritten or replaced to fit this plan (user, 2026-10-29):
@@ -77,7 +79,8 @@ filters.
 Content must be retrievable before anything references it on chain. The courier order, each step
 used only when the one before is unavailable:
 
-1. **Our server**: `POST /pins` as today (Filebase, [ipfs-storage.md](ipfs-storage.md)).
+1. **Our server**: `POST /pins` (Filebase, [ipfs-storage.md](ipfs-storage.md)), which is kept for
+   this and which no publication path calls.
 2. **The person's own provider key**, kept in their browser only: a pin-scoped Pinata JWT
    (Pinata's API accepts browser requests; Filebase needs S3 request signing and is unsuitable here).
    The dialog that asks for it says that the key stays in this browser and should be scoped to

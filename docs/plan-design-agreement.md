@@ -35,6 +35,11 @@ only the selected level and the nearest available level above and below it, with
 Plans and Agreements retain separate share URLs. Execution markets and bets remain attached to
 eligible binding Agreements, so agreements concerning the same plan retain independent markets.
 
+Publishing a design, plan or agreement is server-only and pins nothing on IPFS: the client computes
+the CID from the canonical bytes, and `POST /designs`, `POST /plans` or `POST /agreements` checks it
+and indexes the object ([ipfs-storage.md](ipfs-storage.md) lists what is pinned). An agreement
+minted on Solana therefore points at agreement, plan and design CIDs that only our index holds,
+until the chain work pins what chain records reference ([blockchain-flows.md](blockchain-flows.md)).
 Publication verifies the Plan CID and its exact member set. A local agreement's `designs` field is
 an editing/replay projection; it is not published. `POST /agreements` accepts a carried
 `plan: {cid, content}` and missing designs, indexing all three atomically. The index's `design_cids`
@@ -474,14 +479,15 @@ had to be made are marked **(call)**.
   proposed without one; M3 derives the on-chain address from it), `city`, `createdAt`. Its CID
   commits to the design CIDs and so to everything transitively; a counter-agreement reuses the
   design objects.
-- Drafts stay local records with local ids; publishing computes the CIDs, pins the designs that have
-  none, then the agreement.
+- Drafts stay local records with local ids; publishing computes the CIDs, indexes the designs the
+  index lacks, then the agreement.
 
 ### Courier and index (server)
 
 - `POST /pins` `{ kind: 'design' | 'agreement', cid, bytes (base64) }`: recompute the CID, pin the
   exact bytes through the configured provider adapter, compare, answer `{ cid, pinnedAt }` or 409
-  `cid-mismatch`. 10 MiB per object. Upload provider and HTTP read gateway are configured independently.
+  `cid-mismatch`. 10 MiB per object. No publication path calls it; it is kept for the objects chain
+  records reference. Upload provider and HTTP read gateway are configured independently.
   Walrus is removed entirely (storage module, route, scripts,
   frontend provider switch, CSP entry, tests).
 - Tables, one definition each under `backend/db/`: `design` (`cid` PK, `city`, `goal`, `title`,
@@ -515,12 +521,12 @@ had to be made are marked **(call)**.
 
 ### Browser
 
-- Publishing a design: "Share" on an applied design pins and indexes it and copies
+- Publishing a design: "Share" on an applied design indexes it and copies
   `/designs/<cid>`; several applied designs share as `/designs/<cid>,<cid>`. The upload modal, the
   terms dialog, the "Who decides" row, "Create named plan", `?shared=` payload links and the
   `/proposals/<ids>` route go; the reader of `/designs/<cids>` imports from the index (from IPFS in M3).
 - Publishing an agreement: "Propose" on the agreement panel (the verb for putting an agreement to
-  its parties): pin designs, pin the agreement, index, copy `/agreements/<cid>`. The panel then
+  its parties): index the designs the index lacks, then the agreement, copy `/agreements/<cid>`. The panel then
   shows the decision tally and the owner Accept / Withdraw actions (today's owner-acceptance card,
   moved from the design details to the agreement and signing the agreement CID). Design details
   lose their consent card, lifecycle badges, expiry and funding rows.

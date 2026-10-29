@@ -194,6 +194,6 @@ test.describe('proposal button controls sixth pass @features', () => {
     await expect(modal.locator('.design-link__input')).toHaveValue(link);
     await modal.locator('.share-modal .cb-dialog__footer .btn-primary').click();
     await expect(modal).toBeHidden();
-    expect(index.requests.filter(request => request.method === 'POST').map(request => request.path)).toEqual(['/pins', '/designs']);
+    expect(index.requests.filter(request => request.method === 'POST').map(request => request.path)).toEqual(['/designs']);
   });
 });

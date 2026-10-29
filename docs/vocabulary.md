@@ -126,11 +126,11 @@ Removal of a browser-local agreement copy. Its designs retain their map applicat
 
 ### Publication
 
-The retention of canonical record bytes and their inclusion in the publication index. A locally computed CID, preview, saved draft or local map application does not by itself constitute publication.
+The retention of canonical record bytes and their inclusion in the publication index. Publishing a design, named plan or agreement is server-only: the server checks the client's CID and indexes the object, and nothing is pinned on IPFS. A locally computed CID, preview, saved draft or local map application does not by itself constitute publication.
 
 ### Pinning provider
 
-The configured service retaining published IPFS content. Filebase is the current upload provider; Pinata remains selectable in reserve through `IPFS_PINNING_PROVIDER`. Provider adapters retain the application's CID scheme and verify the service's returned CID. An upload failure does not automatically publish through another provider.
+The configured service retaining the content the application pins on IPFS: owner-decision bundles, community reports and parcel NFT images and metadata ([ipfs-storage.md](ipfs-storage.md)). Filebase is the current upload provider; Pinata remains selectable in reserve through `IPFS_PINNING_PROVIDER`. Provider adapters retain the application's CID scheme and verify the service's returned CID. An upload failure does not automatically publish through another provider.
 
 ### Read gateway
 
@@ -353,7 +353,7 @@ An existing building a plan's designs do not clear. A plan's standing buildings 
 
 ### Private draft reference
 
-An expiring bearer URL resolving to an immutable unpublished design, agreement or named plan and its exact member revisions. It persists independently of an MCP client session; its stated expiry limits retention. Exported canonical content can restore it after expiry. A private preview is not publication, application, consent or a permanent share link.
+A bearer URL resolving to an immutable unpublished design, agreement or named plan and its exact member revisions. It persists independently of an MCP client session. Hosted references have a stated expiry; local demos can retain references without expiry in persistent local storage. Exported canonical content can restore an expired reference's content. A private preview is not publication, application, consent or a public share link.
 
 The MCP preview flow carries this reference in the `draft` URL parameter for review before publication. The Designs sharing panel requires publication for every included design and does not carry a private draft reference into a permanent link.
 
@@ -723,7 +723,7 @@ The agreement program account identified by network, program, sponsor and agreem
 
 ### Minting
 
-The creation of a binding agreement's chain account. Publishing a design, creating a local fabric piece and computing a CID are separate operations.
+The creation of a binding agreement's chain account. Publishing a design, creating a local fabric piece and computing a CID are separate operations. The account commits to an agreement CID whose content, with its plan and designs, only the publication index holds; none of it is pinned on IPFS.
 
 ### Settlement
 
@@ -1001,7 +1001,7 @@ Wallet maintenance on Solana devnet that tops up a configured bot wallet with te
 
 ### Draft artifact
 
-Canonical design, named-plan or agreement content returned with its recomputed CID without a pin or index write. Its content address remains meaningful even when its private preview is unavailable.
+Canonical design, named-plan or agreement content returned with its recomputed CID without an index write. Its content address remains meaningful even when its private preview is unavailable.
 
 ### Portable plan file
 

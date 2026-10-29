@@ -152,7 +152,7 @@ function showDesignLinkDialog(link, title) {
     input.select();
 }
 
-// Share on a design: publish it (pinned and indexed once; DesignSync.publishDesign) and copy its
+// Share on a design: publish it (indexed once; DesignSync.publishDesign) and copy its
 // /designs/<cid> link. A design that cannot be published (ProposalPublishTerms.publishRefusal: invalid
 // or too large) is refused. Resolves { cid, link } or null.
 async function shareSingleProposal(proposalIdOrProposal) {

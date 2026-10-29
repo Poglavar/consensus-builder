@@ -5,13 +5,13 @@
 // designs: [{ key, record }] } with the local design records in authored (replay) order. The steps:
 //   --dry-run    build every design/v1 object (no network) and print it, and the agreement's CID when the
 //                plan's ground file is current;
-//   --designs    pin and index every design (POST /pins, POST /designs);
+//   --designs    index every design (POST /designs);
 //   --capture    open the running app with agent-browser, apply the designs exactly as an agreement link
 //                does and derive the agreement's land as agreement-sync.js deriveLand does, into the
 //                plan's committed ground file;
-//   --agreement  build the agreement/v1 object from the ground file, pin it and index it (POST
+//   --agreement  build the agreement/v1 object from the ground file and index it (POST
 //                /agreements).
-// --apply gates every write to the courier and the index. Progress is checkpointed per design in
+// --apply gates every write to the index. Progress is checkpointed per design in
 // ~/.config/ugt/restatements/<api host>/<plan key>.json, so a rerun skips what is published and a 429
 // (waited out by the client) or a crash loses nothing. The same content always gives the same CIDs,
 // so a rerun of a published plan publishes nothing new.
@@ -97,7 +97,7 @@ export function canonicalDesignRecord(local, label) {
 
 /**
  * The design/v1 objects of a plan, in its order: [{ key, content, cid, bytes }]. Refuses what the
- * courier or the index would refuse later (an object over the pin limit, more designs than an
+ * index would refuse later (an object over the publication limit, more designs than an
  * agreement links, a design of another city), and two designs that are one object.
  */
 export function planObjects(plan) {
@@ -114,7 +114,7 @@ export function planObjects(plan) {
         catch (error) { fail(`${label}: ${error.message}`); }
         const { content, cid } = object;
         const bytes = canonicalBytes(content).length;
-        if (bytes > MAX_PINNED_OBJECT_BYTES) fail(`${label}: the design is ${bytes} bytes; the courier pins at most ${MAX_PINNED_OBJECT_BYTES}`);
+        if (bytes > MAX_PINNED_OBJECT_BYTES) fail(`${label}: the design is ${bytes} bytes; the index takes at most ${MAX_PINNED_OBJECT_BYTES}`);
         if (seen.has(cid)) fail(`${plan.key}: designs ${seen.get(cid)} and ${key} are the same object (${cid})`);
         seen.set(cid, key);
         if (content.city !== plan.city) fail(`${label}: the design names city ${content.city}, the plan ${plan.city}`);
@@ -151,7 +151,7 @@ export function planAgreement(plan, objects, ground) {
         deadline: null
     });
     const bytes = canonicalBytes(content).length;
-    if (bytes > MAX_PINNED_OBJECT_BYTES) fail(`${plan.key}: the agreement is ${bytes} bytes; the courier pins at most ${MAX_PINNED_OBJECT_BYTES}`);
+    if (bytes > MAX_PINNED_OBJECT_BYTES) fail(`${plan.key}: the agreement is ${bytes} bytes; the index takes at most ${MAX_PINNED_OBJECT_BYTES}`);
     return { content, cid, bytes, plan: namedPlan };
 }
 
@@ -228,9 +228,9 @@ async function stepDesigns(plan, objects, ctx) {
         const state = ctx.api ? (await readState(ctx.api, plan)).value : { designs: {} };
         objects.forEach((object, index) => {
             const entry = state.designs[object.cid] || {};
-            log(`${plan.key} ${index + 1}/${objects.length} ${object.content.goal} ${object.cid} "${object.content.title}": ${entry.indexed ? 'done (checkpoint)' : 'would pin and index'}`);
+            log(`${plan.key} ${index + 1}/${objects.length} ${object.content.goal} ${object.cid} "${object.content.title}": ${entry.indexed ? 'done (checkpoint)' : 'would index'}`);
         });
-        log(`${plan.key}: DRY RUN: nothing pinned or indexed (add --apply)`);
+        log(`${plan.key}: DRY RUN: nothing indexed (add --apply)`);
         return;
     }
     const client = ctx.client();
@@ -249,10 +249,6 @@ async function stepDesigns(plan, objects, ctx) {
             }
             log(`${prefix}: already indexed (${row.binding?.parcels?.length ?? 0} parcels)`);
             continue;
-        }
-        if (!entry.pinned) {
-            Object.assign(entry, { pinned: true, pinnedAt: (await client.pin('design', object.content)).pinnedAt ?? null });
-            await saveState(state);
         }
         const indexed = await client.indexDesign(object.cid, object.content, { parcelSourceId: plan.parcelSourceId });
         Object.assign(entry, { indexed: true, binding: indexed.row.binding });
@@ -456,7 +452,7 @@ async function stepAgreement(plan, objects, ctx) {
     log(`${plan.key}: agreement ${agreement.cid} "${plan.title}": ${objects.length} designs, ${ground.inputs.length} input parcels, ${ground.outputs.length} outputs (${agreement.bytes} bytes)`);
     const link = ctx.app ? agreementLink(ctx.app, agreement.cid, plan.city) : null;
     if (!ctx.apply) {
-        log(`${plan.key}: DRY RUN: the agreement is not pinned or indexed (add --apply --api <api>)`);
+        log(`${plan.key}: DRY RUN: the agreement is not indexed (add --apply --api <api>)`);
         return;
     }
     const client = ctx.client();
@@ -494,10 +490,10 @@ Publishes ${describe} as designs plus one agreement per plan (backend/scripts/li
 Steps (run in this order when several are given):
   --dry-run      Build the design objects from the committed data and print each design's goal, title
                  and CID, and the agreement's CID when the plan's ground file is current. No network.
-  --designs      Pin and index every design.
+  --designs      Index every design.
   --capture      Open the running app with agent-browser, apply the designs as an agreement link does and
                  write the land it derives (input parcels, output pieces) to the plan's ground file.
-  --agreement    Build the agreement from the ground file; pin it and index it.
+  --agreement    Build the agreement from the ground file and index it.
 
 Options:
   --api <url>     The API (required by --designs, --capture and --agreement --apply).
