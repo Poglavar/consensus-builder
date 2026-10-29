@@ -6378,6 +6378,8 @@
             "suggestedPendingStreets": "Podaci o ulicama se učitavaju; ulazi gledaju na najdulje pročelje dok ne stignu.",
             "suggestedExisting": "I postojeće zgrade",
             "suggestedExistingTooltip": "Prikaži i tipične tlocrte po razdoblju gradnje za postojeće zgrade u okolici: procjena iz tlocrta i visine, a ne snimka.",
+            "xraySolidExisting": "Postojeće zgrade su pune pa se njihova unutrašnjost ne vidi.",
+            "xrayMakeTransparent": "Učini prozirnima",
             "suggestedExistingCount": "Postojeće: {{count}} zgrada s tipičnim tlocrtom po razdoblju.",
             "facadeStyles": {
                 "mixed": "Mješovito",

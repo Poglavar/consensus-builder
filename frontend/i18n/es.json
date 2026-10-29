@@ -6371,6 +6371,8 @@
             "suggestedPendingStreets": "Los datos de calles se están cargando; las entradas miran a la fachada más larga hasta que lleguen.",
             "suggestedExisting": "También los edificios existentes",
             "suggestedExistingTooltip": "Mostrar también distribuciones típicas por época para los edificios existentes del entorno: una estimación a partir de la huella y la altura, no un levantamiento.",
+            "xraySolidExisting": "Los edificios existentes son sólidos y ocultan su interior.",
+            "xrayMakeTransparent": "Hacer transparentes",
             "suggestedExistingCount": "Existentes: {{count}} edificios con una distribución típica por época.",
             "facadeStyles": {
                 "mixed": "Mixto",

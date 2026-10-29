@@ -187,7 +187,7 @@ describe('three-mode Xray wiring', () => {
         const stubs = {
             suggestedFloorPlans: {}, suggestedPlanContext: { planBuilding: vi.fn(() => ({ slices, floors: 4 })), neighbourPool: vi.fn(() => []) },
             window: { UrbanRuleVariation: { plannedDrawPlan: feature => ({ buildOut: feature, massing: null }) }, LiveParcelFabric: { queryBounds: () => ['parcel'] },
-                proposedBuildings: [], buildingFeaturePool: [], STOREY_HEIGHT_M: 3.3 },
+                proposedBuildings: [], buildingFeaturePool: [], STOREY_HEIGHT_M: 3.3, BuildingUse: require('../../frontend/js/building-use.js') },
             turf: { bbox: () => [0, 0, 1, 1] }, estimateBuildingHeightMeters: () => 12, suggestedRoadsFor: vi.fn(() => ['road']), suggestedRegion: () => 'HR',
             recordSuggestedSlice: vi.fn(), buildingFacades: { buildingKey: () => 'k', buildingDesign: () => ({ bayWidth: 3.2 }) },
             appendBuildingFloorPlans: vi.fn(() => true), polygonFeatureToMeshes: vi.fn(() => [{ userData: {} }]), createBuildingSlices: vi.fn(),
@@ -239,7 +239,7 @@ describe('three-mode Xray wiring', () => {
         const massing = { geometry: {}, properties: {} };
         const { append, c } = suggestedHarness({ stubs: { window: {
             UrbanRuleVariation: { plannedDrawPlan: feature => ({ buildOut: feature, massing, massingStyle: 'envelope' }) },
-            LiveParcelFabric: null, proposedBuildings: [], buildingFeaturePool: [], STOREY_HEIGHT_M: 3.3
+            LiveParcelFabric: null, proposedBuildings: [], buildingFeaturePool: [], STOREY_HEIGHT_M: 3.3, BuildingUse: require('../../frontend/js/building-use.js')
         } } });
         expect(append({ geometry: {}, properties: {} }, 'm', { add: vi.fn() }, {})).toBe(true);
         expect(c.createBuildingSlices).toHaveBeenCalledExactlyOnceWith(massing, 12, 'massing-material', expect.anything(), null);
@@ -286,5 +286,44 @@ describe('three-mode Xray wiring', () => {
         expect(streetsFor({ cell: 'fresh' })).toBeNull();
         expect(fetch).toHaveBeenCalledExactlyOnceWith('http://api/streets/near?bbox=1%2C2%2C3%2C4');
         expect(c.totals.pendingStreets).toBe(true);
+    });
+    it('the solid-existing notice shows only while typical layouts of existing buildings sit inside solid volumes', () => {
+        const notice = { hidden: true };
+        const [update, c] = extracted('updateXrayControls', `
+            let xrayButton=null, suggestedPlansButton=null, suggestedExistingRow=null, suggestedExistingCheckbox=null;
+            let floorCutawayControl=null, floorCutawaySelect=null, xrayNote=null, xraySolidNotice=this.notice;
+            let xrayEnabled=true, suggestedPlansEnabled=true, suggestedExistingEnabled=true, builtDisplay='solid';
+            this.set=(key, value)=>{ eval(key + '=value'); };`, { notice });
+        update();
+        expect(notice.hidden).toBe(false);
+        for (const [key, value] of [['builtDisplay', 'ghost'], ['suggestedExistingEnabled', false], ['suggestedPlansEnabled', false], ['xrayEnabled', false]]) {
+            c.set(key, value);
+            update();
+            expect(notice.hidden).toBe(true);
+            c.set(key, key === 'builtDisplay' ? 'solid' : true);
+            update();
+            expect(notice.hidden).toBe(false);
+        }
+    });
+    it('typical layouts of existing buildings ask once for the whole radius and plan the nearest first', () => {
+        const ensure = vi.fn(() => Promise.resolve());
+        const pool = [40, 5, 400, 20].map(d => ({ geometry: {}, properties: { id: `b${d}`, d, floors: 3 } }));
+        const turf = { point: coordinates => ({ coordinates }), circle: () => 'circle', bbox: () => [-74.11, 4.61, -74.10, 4.62],
+            centroid: feature => feature, distance: (_, feature) => feature.properties.d };
+        const planBuilding = vi.fn(feature => ({ slices: [{ footprint: feature, result: { floorPlans: {}, summary: { heightM: 9.9 } } }] }));
+        const [append, c] = extracted('appendSuggestedExistingFloorPlans', `
+            let xrayEnabled=true, suggestedPlansEnabled=true, suggestedExistingEnabled=true, floorPlanGroup={};
+            let nearbyProposalBuildingsKey='near', buildingLoadRadiusM=300, suggestedExistingPoolKey=null, floorPlanErrors=0;
+            const SUGGESTED_EXISTING_CAP=2, suggestedFloorPlans={}, suggestedPlanCache=new Map();
+            const suggestedPlanTotals={existing:0,existingCapped:false}; this.totals=suggestedPlanTotals;`,
+        { turf, suggestedPlanContext: { planBuilding, neighbourPool: () => [] },
+            window: { buildingFeaturePool: pool, proposedBuildings: [], STOREY_HEIGHT_M: 3.3, ensureBuildingFootprintsForBounds: ensure },
+            getGeoCameraView: () => ({ targetLng: -74.105, targetLat: 4.615 }), suggestedRegion: () => 'CO', suggestedRoadsFor: () => null,
+            estimateBuildingHeightMeters: () => null, reportThreeClip: vi.fn(), appendBuildingFloorPlans: vi.fn(() => true) });
+        append('material');
+        append('material');
+        expect(ensure).toHaveBeenCalledExactlyOnceWith([[4.61, -74.11], [4.62, -74.10]], { pad: 0 });
+        expect(planBuilding.mock.calls.map(([feature]) => feature.properties.id)).toEqual(['b5', 'b20', 'b5', 'b20']);
+        expect(c.totals).toMatchObject({ existing: 4, existingCapped: true });
     });
 });

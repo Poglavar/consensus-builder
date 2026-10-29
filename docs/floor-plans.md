@@ -186,13 +186,15 @@ that is settled.
 
 The same generator can guess a typical interior for the existing buildings around a proposal
 ("Existing buildings too", inside the Suggested layouts toggle). Footprints and heights come from the
-2D building pool; a footprint without a height stays a plain volume, and one a proposal builds over
-is skipped. Era presets choose the rules from whatever the footprint says: a construction year where
+2D building pool, which X-ray asks once to cover the whole 3D radius (the pool otherwise holds only the
+viewports the map has shown); the nearest 400 are planned. A footprint without a height stays a plain
+volume, and one a proposal builds over is skipped. Era presets choose the rules from whatever the footprint says: a construction year where
 one exists, else the storey height as a proxy. Pre-war (or storeys of 3.4 m and more): no lift,
 flats up to 160 m², shops on the ground floor from three storeys. Post-war slabs (or storeys up to
 3.05 m from four floors): the default scheme without a lift up to five storeys. Anything else uses
 the contemporary defaults. The interiors draw inside the transparent built volumes and are never
-painted red; they are labelled as a guess in the note. This is the first step of the pending "old
+painted red; while existing buildings are solid, X-ray shows a notice that their interiors are hidden,
+with a **Make transparent** button that switches existing buildings to transparent; they are labelled as a guess in the note. This is the first step of the pending "old
 buildings" work, not evidence.
 
 ### How it is wired

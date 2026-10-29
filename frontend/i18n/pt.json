@@ -4697,6 +4697,8 @@
             "suggestedPendingStreets": "Os dados das ruas estão a carregar; até estarem disponíveis, as entradas ficam viradas para a fachada mais comprida.",
             "suggestedExisting": "Também nos edifícios existentes",
             "suggestedExistingTooltip": "Mostrar também distribuições típicas de cada época nos edifícios existentes em redor: uma estimativa baseada na implantação e na altura, sem levantamento no local.",
+            "xraySolidExisting": "Os edifícios existentes estão opacos, por isso o interior fica oculto.",
+            "xrayMakeTransparent": "Tornar transparentes",
             "suggestedExistingCount": "Existentes: {{count}} edifícios com uma distribuição típica da época.",
             "representationMassing": "Envolvente máxima",
             "representationMassingTooltip": "Envolvente máxima — o volume exterior permitido definido pelo projeto",

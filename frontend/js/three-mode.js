@@ -65,6 +65,9 @@
     let xrayEnabled = new URLSearchParams(window.location.search).get('xray') === '1';
     let xrayButton = null;
     let xrayNote = null;
+    let xraySolidNotice = null;
+    // The radius the footprint pool was last asked to cover for typical layouts (one request each).
+    let suggestedExistingPoolKey = null;
     let floorCutawayControl = null;
     let floorCutawaySelect = null;
     let floorCutawayLevel = null;
@@ -659,6 +662,7 @@
         plannedDisplay = policy.proposed;
         plannedRepresentation = state.proposedForm;
         buildOutDisplaySalt = state.proposedVariation;
+        updateXrayControls();
         if (isActive) {
             const retained = applyRetainedBuildingDisplay();
             if (!retained) rebuild3DBuildingsOnly();
@@ -1940,6 +1944,27 @@
         });
         floorCutawayControl.append(cutawayLabel, floorCutawaySelect);
         xrayRow.appendChild(floorCutawayControl);
+        // Typical layouts draw inside the existing volumes, which X-ray does not cut: solid ones hide
+        // them. Said here, with the one click that turns existing buildings transparent.
+        xraySolidNotice = document.createElement('div');
+        xraySolidNotice.className = 'three-mode-xray-solid-notice';
+        const solidNoticeText = document.createElement('span');
+        solidNoticeText.textContent = threeI18n('threeMode.controls.xraySolidExisting',
+            'Existing buildings are solid, so their interiors are hidden.');
+        const makeTransparentButton = document.createElement('button');
+        makeTransparentButton.type = 'button';
+        makeTransparentButton.id = 'three-mode-xray-make-transparent';
+        makeTransparentButton.className = 'btn three-mode-xray-button';
+        makeTransparentButton.textContent = threeI18n('threeMode.controls.xrayMakeTransparent', 'Make transparent');
+        makeTransparentButton.addEventListener('click', () => {
+            if (window.BusyControl.isBusy(makeTransparentButton)) return;
+            window.BusyControl.track(makeTransparentButton, async () => {
+                window.PlanningViews.configure('existing', 'ghost');
+                await window.ThreeSceneReady.wait({ requireExisting: true });
+            }).catch(error => console.error(`[${new Date().toISOString()}] [3D] Could not make existing buildings transparent`, error));
+        });
+        xraySolidNotice.append(solidNoticeText, makeTransparentButton);
+        xrayRow.appendChild(xraySolidNotice);
         xrayNote = document.createElement('div');
         xrayNote.id = 'three-mode-xray-note';
         xrayNote.className = 'three-mode-xray-note';
@@ -8648,20 +8673,34 @@
     // gets nothing, and buildings being replaced by a proposal are skipped.
     function appendSuggestedExistingFloorPlans(buildingMaterial) {
         if (!xrayEnabled || !suggestedPlansEnabled || !suggestedExistingEnabled || !floorPlanGroup || !suggestedFloorPlans || !suggestedPlanContext) return;
-        const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
-        if (!pool.length) return;
         const view = getGeoCameraView();
         if (!view) return;
         const centre = turf.point([view.targetLng, view.targetLat]);
+        // The pool holds what the 2D map loaded, often a single close viewport. Ask once for the
+        // footprints of the whole loaded radius; their arrival (buildingsLayerUpdated) rebuilds this.
+        const radiusKey = `${nearbyProposalBuildingsKey}|${view.targetLng.toFixed(4)},${view.targetLat.toFixed(4)}|r${buildingLoadRadiusM}`;
+        if (suggestedExistingPoolKey !== radiusKey) {
+            suggestedExistingPoolKey = radiusKey;
+            const [west, south, east, north] = turf.bbox(turf.circle(centre, buildingLoadRadiusM / 1000, { units: 'kilometers' }));
+            window.ensureBuildingFootprintsForBounds?.([[south, west], [north, east]], { pad: 0 })?.catch(error =>
+                console.error(`[${new Date().toISOString()}] [3D] Footprints for typical layouts could not be loaded`, error));
+        }
+        const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];
+        if (!pool.length) return;
         const proposed = Array.isArray(window.proposedBuildings) ? window.proposedBuildings : [];
         const storeyM = window.STOREY_HEIGHT_M || 3.3;
         let count = 0;
+        // Nearest first, so the cap keeps the buildings around the view rather than the oldest loaded.
+        const nearby = [];
         for (const feature of pool) {
             if (!feature?.geometry) continue;
+            let distanceM = Infinity;
+            try { distanceM = turf.distance(centre, turf.centroid(feature), { units: 'meters' }); } catch (_) { distanceM = Infinity; }
+            if (distanceM <= buildingLoadRadiusM) nearby.push({ feature, distanceM });
+        }
+        nearby.sort((a, b) => a.distanceM - b.distanceM);
+        for (const { feature } of nearby) {
             if (count >= SUGGESTED_EXISTING_CAP) { suggestedPlanTotals.existingCapped = true; break; }
-            let within = false;
-            try { within = turf.distance(centre, turf.centroid(feature), { units: 'meters' }) <= buildingLoadRadiusM; } catch (_) { within = false; }
-            if (!within) continue;
             const props = feature.properties || {};
             // The pool carries height_m and floors; a footprint with neither stays a plain volume.
             const height = Number.isFinite(props.height_m) && props.height_m > 0 ? props.height_m
@@ -8938,6 +8977,7 @@
             if (suggestedExistingCheckbox) suggestedExistingCheckbox.checked = suggestedExistingEnabled;
         }
         if (floorCutawayControl) floorCutawayControl.hidden = !xrayEnabled;
+        if (xraySolidNotice) xraySolidNotice.hidden = !(xrayEnabled && suggestedPlansEnabled && suggestedExistingEnabled && builtDisplay === 'solid');
         if (xrayEnabled && floorCutawaySelect) {
             const levels = [...new Set((floorPlanGroup?.children || []).filter(group => group.visible !== false)
                 .flatMap(group => group.userData.availableLevels || []))].sort((a,b) => a-b);
@@ -9921,6 +9961,7 @@
         facadeNote = null;
         xrayButton = null;
         xrayNote = null;
+        xraySolidNotice = null;
         floorCutawayControl = null;
         floorCutawaySelect = null;
         sunLayer?.detach();

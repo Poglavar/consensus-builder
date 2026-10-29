@@ -309,15 +309,16 @@ function boundsCoveredByBuildingFetch(bounds) {
 }
 
 // Ensure footprints exist for `bounds` (an L.LatLngBounds or anything L.latLngBounds accepts).
-// Fetches with generous padding so neighbouring corridor edges reuse one fetch.
-async function ensureBuildingFootprintsForBounds(rawBounds) {
+// Fetches with generous padding so neighbouring corridor edges reuse one fetch; `pad: 0` asks for
+// exactly the bounds (a source refuses or truncates a box over its own size limit).
+async function ensureBuildingFootprintsForBounds(rawBounds, { pad = 0.5 } = {}) {
     if (!rawBounds) return;
     let bounds = null;
     try { bounds = L.latLngBounds(rawBounds); } catch (_) { return; }
     if (!bounds || !bounds.isValid()) return;
     if (buildingsConfigAt(bounds)?.source === 'none') return;
     if (boundsCoveredByBuildingFetch(bounds)) return;
-    await fetchBuildings(bounds.pad(0.5));
+    await fetchBuildings(pad ? bounds.pad(pad) : bounds);
 }
 window.ensureBuildingFootprintsForBounds = ensureBuildingFootprintsForBounds;
 

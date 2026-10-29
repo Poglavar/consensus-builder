@@ -667,6 +667,15 @@ test('3D suggested-existing toggle and floor cutaway change rendered floor plans
   await expect.poll(existingFloorPlans).toBeGreaterThan(0);
   await expect(page.locator('#three-mode-xray-note')).toContainText(/Existing: [1-9]/);
 
+  // Solid existing volumes hide those layouts: the notice says so and its button turns them transparent.
+  const solidNotice = page.locator('.three-mode-xray-solid-notice');
+  await page.evaluate(() => (window as any).PlanningViews.configure('existing', 'solid'));
+  await expect(solidNotice).toBeVisible();
+  await page.locator('#three-mode-xray-make-transparent').click();
+  await expect(solidNotice).toBeHidden();
+  expect(await page.evaluate(() => (window as any).PlanningViews.getState().existing)).toBe('ghost');
+  await expect.poll(existingFloorPlans).toBeGreaterThan(0);
+
   const floorCutaway = page.locator('#three-mode-floor-cutaway');
   await expect(floorCutaway).toBeEnabled();
   const visibleFloorCount = () => page.evaluate(() => {

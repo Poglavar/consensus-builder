@@ -281,6 +281,17 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     color: var(--cb-text-muted);
 }
 
+/* Solid existing buildings hide their typical layouts: a notice with the switch to transparent. */
+#model-layer-controls .three-mode-xray-solid-notice:not([hidden]) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-2);
+    max-width: 240px;
+    font-size: var(--cb-text-xs);
+    line-height: var(--cb-leading);
+}
+
 #model-layer-controls .three-mode-floor-cutaway:not([hidden]) {
     display: flex;
     align-items: center;

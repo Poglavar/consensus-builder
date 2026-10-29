@@ -6344,6 +6344,8 @@
             "suggestedPendingStreets": "Street data is loading; entrances face the longest facade until it arrives.",
             "suggestedExisting": "Existing buildings too",
             "suggestedExistingTooltip": "Also show typical layouts by era for the existing buildings around: a guess from footprint and height, not a survey.",
+            "xraySolidExisting": "Existing buildings are solid, so their interiors are hidden.",
+            "xrayMakeTransparent": "Make transparent",
             "suggestedExistingCount": "Existing: {{count}} buildings with a typical layout by era.",
             "facadeStyles": {
                 "mixed": "Mixed",

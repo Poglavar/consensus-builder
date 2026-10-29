@@ -4697,6 +4697,8 @@
             "suggestedPendingStreets": "Les données des rues sont en cours de chargement ; les entrées sont orientées vers la façade la plus longue en attendant.",
             "suggestedExisting": "Inclure les bâtiments existants",
             "suggestedExistingTooltip": "Afficher aussi les agencements types par époque pour les bâtiments existants alentour : une estimation à partir de l’emprise au sol et de la hauteur, sans relevé sur place.",
+            "xraySolidExisting": "Les bâtiments existants sont opaques : leur intérieur est masqué.",
+            "xrayMakeTransparent": "Rendre transparents",
             "suggestedExistingCount": "Existant : {{count}} bâtiments avec un agencement type selon l’époque.",
             "representationMassing": "Enveloppe maximale",
             "representationMassingTooltip": "Enveloppe maximale — le volume extérieur autorisé défini par le projet",

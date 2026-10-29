@@ -4874,6 +4874,8 @@
             "suggestedPendingStreets": "جار تحميل بيانات الشوارع؛ تتجه المداخل نحو أطول واجهة حتى تصل البيانات.",
             "suggestedExisting": "المباني القائمة أيضا",
             "suggestedExistingTooltip": "عرض توزيعات نموذجية بحسب الحقبة للمباني القائمة المحيطة أيضا: تقدير يستند إلى المسقط والارتفاع، وليس إلى مسح ميداني.",
+            "xraySolidExisting": "المباني القائمة معتمة، لذلك تُخفى تصميماتها الداخلية.",
+            "xrayMakeTransparent": "اجعلها شفافة",
             "suggestedExistingCount": "القائم: {{count}} مبنى بتوزيع نموذجي بحسب الحقبة.",
             "representationMassing": "الغلاف الأقصى",
             "representationMassingTooltip": "الغلاف الأقصى — الحجم الخارجي المسموح به الذي يحدده التصميم",
