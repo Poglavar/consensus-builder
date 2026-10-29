@@ -94,7 +94,24 @@
         return { left: [0, 0, x, height], right: [x, 0, Math.max(0, width - x), height] };
     }
 
-    const pure = { BASE, sideOptions, parseSide, appliesDesign, showsOn, splitDescriptors, scissorRects };
+    // Whether two sides can be compared yet: a plan side whose members no applied design stands for
+    // draws only once they are read. statusOf(planId): { status: 'loading'|'ready'|'failed', error }
+    // or null before a read starts. Returns { ready, reading: [side], failed: [{ side, error }] }; the
+    // comparison draws (and its divider shows) only when ready, so a side that cannot be read is
+    // told in the Compare tab and never reaches the divider.
+    function readiness(sides, statusOf) {
+        const reading = [];
+        const failed = [];
+        for (const side of sides || []) {
+            if (side?.kind !== 'plan' || !side.unapplied?.length) continue;
+            const read = statusOf(side.id);
+            if (read?.status === 'failed') failed.push({ side, error: read.error });
+            else if (read?.status !== 'ready') reading.push(side);
+        }
+        return { ready: !reading.length && !failed.length, reading, failed };
+    }
+
+    const pure = { BASE, sideOptions, parseSide, appliesDesign, showsOn, splitDescriptors, scissorRects, readiness };
     if (!global || !global.document) return Object.freeze(pure);
 
     // ── the Compare tab and the divider ──────────────────────────────────────────────────────
@@ -151,15 +168,40 @@
         if (side?.kind === 'plan' && side.unapplied.length && planRows.has(side.id)) global.CompareUnapplied.load(planRows.get(side.id));
     }
 
-    // The divider's label for a side: the option's name, with the read's state while a plan's
-    // unapplied members are being read or could not be.
-    function sideLabel(option) {
-        const label = optionLabel(option);
-        const reading = option.kind === 'plan' && option.unapplied.length ? global.CompareUnapplied.status(option.id) : null;
-        if (!reading || reading.status === 'ready') return label;
-        return reading.status === 'failed'
-            ? t('planningViews.compare.unreadable', '{{label}} (could not be read: {{reason}})', { label, reason: reading.error })
-            : t('planningViews.compare.reading', '{{label}} (reading…)', { label });
+    function readinessOf(current = sides()) {
+        return pure.readiness([current.left, current.right], id => global.CompareUnapplied?.status?.(id) || null);
+    }
+
+    // Under the sides: a plan being read, or one that could not be read with its reason and Retry.
+    // Hidden when both sides are ready or the comparison is off.
+    function renderStatus(readiness) {
+        const box = el('planning-compare-status');
+        if (!box) return;
+        box.replaceChildren();
+        const shown = state.enabled && !!readiness && !readiness.ready;
+        box.hidden = !shown;
+        box.classList.toggle('is-error', shown && readiness.failed.length > 0);
+        if (!shown) return;
+        for (const { side, error } of readiness.failed) {
+            const line = doc.createElement('p');
+            line.className = 'planning-compare-status__line';
+            line.textContent = t('planningViews.compare.unreadable', '{{label}} (could not be read: {{reason}})', { label: optionLabel(side), reason: error });
+            const retry = doc.createElement('button');
+            retry.type = 'button';
+            retry.className = 'cb-link planning-compare-status__retry';
+            retry.textContent = t('designMemberships.retry', 'Retry');
+            retry.addEventListener('click', () => { if (planRows.has(side.id)) global.CompareUnapplied.retry(planRows.get(side.id)); syncDivider(); });
+            box.append(line, retry);
+        }
+        for (const side of readiness.reading) {
+            const line = doc.createElement('p');
+            line.className = 'planning-compare-status__line';
+            const spinner = doc.createElement('i');
+            spinner.className = 'fas fa-spinner fa-spin';
+            spinner.setAttribute('aria-hidden', 'true');
+            line.append(spinner, ' ', t('planningViews.compare.reading', '{{label}} (reading…)', { label: optionLabel(side) }));
+            box.appendChild(line);
+        }
     }
 
     function fillSelect(select, value) {
@@ -173,10 +215,12 @@
         return { left: pure.parseSide(state.left, state.options), right: pure.parseSide(state.right, state.options), percent: state.percent };
     }
 
-    // Whether the comparison draws; given a scene, whether it draws in that one.
+    // Whether the comparison draws; given a scene, whether it draws in that one. Not before both
+    // sides are read (readiness).
     function isActive(of = null) {
         const current = sides();
-        return state.enabled && !!scene() && (!of || of === scene()) && !!current.left && !!current.right;
+        return state.enabled && !!scene() && (!of || of === scene()) && !!current.left && !!current.right
+            && readinessOf(current).ready;
     }
 
     function refresh() {
@@ -200,6 +244,12 @@
     // The divider over the canvas or map: present while the comparison draws, labelled with the two
     // sides. It moves to the other view when the model view opens or closes.
     function syncDivider() {
+        if (state.enabled && scene()) {
+            const chosen = sides();
+            readUnapplied(chosen.left);
+            readUnapplied(chosen.right);
+        }
+        renderStatus(state.enabled && scene() ? readinessOf() : null);
         const active = isActive();
         if (state.divider && (!active || state.dividerScene !== scene())) {
             state.divider.dispose();
@@ -215,11 +265,9 @@
             return;
         }
         const current = sides();
-        readUnapplied(current.left);
-        readUnapplied(current.right);
         // The scene draws what the sides' unapplied plan members add (the model view builds meshes).
         scene().compareChanged?.();
-        const labels = { before: sideLabel(current.left), after: sideLabel(current.right) };
+        const labels = { before: optionLabel(current.left), after: optionLabel(current.right) };
         if (state.divider) {
             state.divider.labelEls[0].textContent = labels.before;
             state.divider.labelEls[1].textContent = labels.after;

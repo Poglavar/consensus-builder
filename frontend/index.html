@@ -166,7 +166,7 @@
                 'css/agreement.css?v=20261027-agreement-tabs',
                 'css/agreement-dialog.css?v=20261027-panel-buttons',
                 'css/mobile-sheets.css?v=20261027-style',
-                'css/planning-views.css?v=20261029-compare-map',
+                'css/planning-views.css?v=20261029-compare-status',
                 'css/three-sun.css',
                 'css/three-click-stack.css?v=20261027-stack-semantics',
                 'css/right-screen-panel.css',
@@ -569,6 +569,7 @@
                             <select id="planning-compare-right" class="planning-layer-select"></select>
                         </label>
                     </div>
+                    <div id="planning-compare-status" class="planning-compare-status" role="status" aria-live="polite" hidden></div>
                     <div class="planning-compare-note" hidden>
                         <p class="sheet-note" data-i18n-key="planningViews.compare.mapNote">On the map, each side draws its own buildings and permitted massing as footprints. Parcels, roads and parks show on both sides.</p>
                         <button type="button" id="planning-compare-open-model" class="cb-link" data-i18n-key="planningViews.openModel">Open 3D model view</button>
@@ -2213,8 +2214,8 @@
             'js/click-stack/click-stack-hits.js?v=20261028-neighbours',
             'js/click-stack/click-stack-panel.js?v=20261029-selection',
             'js/buildout-clock.js?v=20261029-undated',
-            'js/compare-unapplied.js?v=20261029-compare-unapplied',
-            'js/three-compare.js?v=20261029-compare-unapplied',
+            'js/compare-unapplied.js?v=20261029-compare-status',
+            'js/three-compare.js?v=20261029-compare-status',
             'js/compare-on-map.js?v=20261029-compare-unapplied',
             'js/proposals/market-view.js?v=20261019-market-evidence',
             'js/proposals/parcel-set-relations.js?v=20261020-reference-relations',
@@ -2306,7 +2307,7 @@
             'js/proposals/apply/road.js',
             'js/proposals/apply/buildings.js',
             'js/proposals/apply/structures.js',
-            'js/proposals/apply/parcels.js?v=20261019-plot-provenance',
+            'js/proposals/apply/parcels.js?v=20261029-vertex-provenance',
             // bundle:end proposal-apply
             'js/proposal-manager.js',
             // bundle:start reparcellization

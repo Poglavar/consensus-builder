@@ -90,3 +90,19 @@ describe('scissor rectangles', () => {
         expect(compare.scissorRects(800, 600, 140)).toEqual({ left: [0, 0, 800, 600], right: [800, 0, 0, 600] });
     });
 });
+
+describe('whether two sides can be compared yet', () => {
+    const plan = (id, unapplied = ['c1']) => ({ kind: 'plan', id, unapplied });
+    it('waits for every plan side with unapplied members to be read, and names the one that failed', () => {
+        const { readiness } = compare;
+        const statuses = { a: { status: 'ready' }, b: { status: 'loading' }, c: { status: 'failed', error: 'plot 7 refused' } };
+        const statusOf = id => statuses[id] || null;
+        expect(readiness([{ kind: 'built' }, plan('a')], statusOf)).toEqual({ ready: true, reading: [], failed: [] });
+        expect(readiness([plan('a'), plan('x', [])], statusOf).ready).toBe(true);
+        const waiting = readiness([plan('b'), plan('z')], statusOf);
+        expect(waiting.ready).toBe(false);
+        expect(waiting.reading.map(side => side.id)).toEqual(['b', 'z']);
+        const broken = readiness([plan('a'), plan('c')], statusOf);
+        expect(broken).toEqual({ ready: false, reading: [], failed: [{ side: plan('c'), error: 'plot 7 refused' }] });
+    });
+});

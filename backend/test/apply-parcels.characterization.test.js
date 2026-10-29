@@ -263,3 +263,24 @@ describe('_applyParcelLayoutProposal — record shape', () => {
         expect(manager.added).toHaveLength(0);
     });
 });
+
+describe('_applyParcelLayoutProposal — a vertex in a parcel the area floor leaves out', () => {
+    it('anchors the plot on that parcel too, so the fabric accepts the plot', async () => {
+        // Plot 1 is HR-A with a spike 0.4 m into HR-B over 0.7 m: 0.14 m², under the 0.25 m² floor of
+        // overlappingBaseIds, but its tip lies 0.4 m inside HR-B. Plot 2 is HR-B with the notch.
+        const LON = 15.96, LAT = 45.80, X = LON + 2e-3, Y = LAT + 1e-3, d = 0.4 / 78000, h = 0.7 / 111000;
+        const spike = [[X, Y], [X + d, Y + h / 2], [X, Y + h]];
+        const manager = makeManager();
+        const data = proposalData();
+        data.parcelLayout.plots = [
+            { geometry: { type: 'Polygon', coordinates: [[[LON, LAT], [X, LAT], ...spike, [X, LAT + 2e-3], [LON, LAT + 2e-3], [LON, LAT]]] }, source: 'manual' },
+            { geometry: { type: 'Polygon', coordinates: [[[X, LAT], [LON + 4e-3, LAT], [LON + 4e-3, LAT + 2e-3], [X, LAT + 2e-3], ...spike.slice().reverse(), [X, LAT]]] }, source: 'manual' }
+        ];
+        const byId = new Map(manager.parents.map(feature => [feature.properties.parcelId, feature]));
+        const fabric = { cadastreIdsHolding: (vertex, ids) => ids.filter(id => byId.has(id) && turf.booleanPointInPolygon(vertex, byId.get(id))) };
+        expect(await manager._applyParcelLayoutProposal('p-layout', data, { _parcelMutation: { fabric } })).toBe(true);
+        const [plot1, plot2] = plotsOf(manager);
+        expect(plot1.properties.cadastreParcelIds).toEqual(['HR-A', 'HR-B']);
+        expect(plot2.properties.cadastreParcelIds).toEqual(['HR-B']);
+    });
+});

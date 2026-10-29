@@ -107,6 +107,13 @@
         return entry;
     }
 
+    // Reads a plan again after a failed read (the Compare tab's Retry).
+    function retry(plan) {
+        const cid = String(plan?.cid || '');
+        if (entries.get(cid)?.status === 'failed') entries.delete(cid);
+        return load(plan);
+    }
+
     function status(cid) {
         const entry = entries.get(String(cid));
         return entry ? { status: entry.status, error: entry.error } : null;
@@ -159,5 +166,5 @@
         } catch (_) { return true; }
     }
 
-    return Object.freeze({ ...pure, load, status, partOf });
+    return Object.freeze({ ...pure, load, retry, status, partOf });
 });

@@ -289,8 +289,24 @@
         if (!parentEntries.length && !groundEntries.length) {
             throw new Error('Parcel-layout parents carry no explicit cadastral or open-ground provenance.');
         }
+        // The fabric accepts a plot only when every vertex lies in one of its own cadastral
+        // parcels (live-fabric.js vertexInsideFact). A plot can reach into a parcel of the layout
+        // by less than the area floor above and still put a vertex well inside it (a 0.13 m² sliver
+        // 0.37 m deep, on ground a street already carved from that parcel's pieces): that parcel
+        // holds its ground too, so it joins the plot's provenance.
+        const fabricDraft = options?._parcelMutation?.fabric;
+        const layoutIds = [...new Set(parentEntries.map(entry => String(entry.baseId)))];
+        const anchorVertices = (feature, ids) => {
+            if (typeof fabricDraft?.cadastreIdsHolding !== 'function') return ids;
+            turfRef.coordAll(feature).forEach(vertex => {
+                if (fabricDraft.cadastreIdsHolding(vertex, ids).length) return;
+                const host = fabricDraft.cadastreIdsHolding(vertex, layoutIds.filter(id => !ids.includes(id)))[0];
+                if (host) ids.push(host);
+            });
+            return ids;
+        };
         childFeatures.forEach(feature => {
-            const ids = parentEntries.length ? formationEdit.overlappingBaseIds(feature, parentEntries, anchorCtx) : [];
+            const ids = parentEntries.length ? anchorVertices(feature, formationEdit.overlappingBaseIds(feature, parentEntries, anchorCtx)) : [];
             const groundIds = groundEntries.length ? formationEdit.overlappingBaseIds(feature, groundEntries, anchorCtx) : [];
             if (!ids.length && !groundIds.length) {
                 throw new Error('A layout plot lies on no declared cadastral parcel and no open ground of its site.');

@@ -131,6 +131,11 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
 .planning-compare-sides { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: var(--cb-space-2); align-items: end; }
 .planning-compare-sides .planning-source-field { flex-direction: column; align-items: stretch; margin-top: 0; }
 .planning-compare-swap { width: var(--cb-control-height); height: var(--cb-control-height); }
+/* A plan side being read, or one that could not be read (is-error) with its Retry. */
+.planning-compare-status { display: grid; gap: var(--cb-space-1); justify-items: start; padding: var(--cb-space-2) var(--cb-space-3); border-radius: var(--cb-radius-md); background: var(--cb-surface-2); color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+.planning-compare-status.is-error { background: var(--cb-danger-soft); color: var(--cb-danger-soft-ink); }
+.planning-compare-status[hidden] { display: none; }
+.planning-compare-status__line { margin: 0; overflow-wrap: anywhere; }
 .planning-compare-note { display: grid; gap: var(--cb-space-1); justify-items: start; }
 .planning-compare-note .sheet-note { margin: 0; }
 .planning-compare-note[hidden] { display: none; }

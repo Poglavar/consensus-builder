@@ -918,6 +918,16 @@
                 // The draft's pieces themselves (deep-frozen), for readers that copy nothing.
                 peekList: () => (assertActive(draft), Array.from(draft.data.byId.values())),
                 entriesForCadastre: (ids, query) => (assertActive(draft), entriesForCadastreFrom(draft.data, ids, query)),
+                // Which of `cadastreIds` hold `vertex` by the rule a replacement is checked with
+                // (validateReplacementSteps: inside the immutable parcel or within VERTEX_TOLERANCE_M).
+                cadastreIdsHolding(vertex, cadastreIds) {
+                    assertActive(draft);
+                    const cache = new Map();
+                    return (Array.isArray(cadastreIds) ? cadastreIds : []).map(String).filter(id => {
+                        const fact = draft.data.cadastreFacts.get(id);
+                        return !!fact && vertexInsideFact(vertex, fact, cache);
+                    });
+                },
                 hasCadastreEntries: (ids, query) => (assertActive(draft), hasCadastreEntriesFrom(draft.data, ids, query)),
                 absentCadastreIds: (ids, query) => (assertActive(draft), absentCadastreIdsFrom(draft.data, ids, query)),
                 producedBy(proposalId) {
