@@ -8,7 +8,9 @@ uploads
 frontend/.deploy-build-counter
 blockchain/solana/.anchor
 e2e/playwright-report*/
-e2e/test-results/
+e2e/test-results*/
+# Ledgers of named, resumable test runs (TEST_RUN=<name>).
+test-runs/
 test-results/
 blockchain/solana/.prospective-external-market.private.json
 

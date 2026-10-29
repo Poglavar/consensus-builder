@@ -156,14 +156,16 @@ describe('POST /designs', () => {
         expect([res.status, res.body.code]).toEqual([413, 'too-large']);
     });
 
-    it('refuses a parcel layout on its own: it is published with the agreement that settles its land', async () => {
+    it('indexes a parcel layout on its own, like any design', async () => {
         const pool = indexPool();
         const { app, thumbnailQueue } = appFor(pool);
-        const res = await request(app).post('/designs').send(body(layoutContent()));
-        expect([res.status, res.body.code]).toEqual([422, 'layout-needs-agreement']);
-        expect(pool.getBindingCalls()).toEqual([]);
-        expect(inserts(pool)).toEqual([]);
-        expect(thumbnailQueue.enqueue).not.toHaveBeenCalled();
+        const content = layoutContent();
+        const res = await request(app).post('/designs').send(body(content));
+        expect(res.status).toBe(201);
+        expect(res.body).toMatchObject({ cid: cidOf(content), goal: 'parcel-layout', content });
+        expect(res.body.binding.parcels.map(hit => hit.parcelId)).toEqual(['HR-335649-100', 'HR-335649-101']);
+        expect(inserts(pool)).toHaveLength(1);
+        expect(thumbnailQueue.enqueue).toHaveBeenCalledOnce();
     });
 
     it('answers 409 with the indexed row for a CID already indexed, and binds nothing again', async () => {

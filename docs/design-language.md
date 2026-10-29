@@ -180,7 +180,7 @@ meaningful colours when they are not selected.
   notice replaces the current one after at least 1.2 s, and a repeat of the notice showing or
   waiting is dropped. A notice is written to the Activity log, never to the status line.
 - The **status line** (`#floating-status`, `updateStatus`) says what the app is doing now: above the
-  dock, a light pill (`cb-toast--status`), replaced and never stacked, click-through. Holders of
+  dock, a light pill (`cb-toast--status`), replaced and never stacked; a click copies it. Holders of
   `beginStatusActivity` are counted; while any is open the line is `is-busy` with a spinner, and
   8 s after its last line with nothing busy it turns `is-idle` and fades. Loaders draw no pill of
   their own: 3D start-up, building loading, photo tile streaming and a slow road apply write the
@@ -189,6 +189,10 @@ meaningful colours when they are not selected.
   (one section per kind), the other-tab lock and the explore banner mount as sections of one card
   under the top row (`js/ui/banner-stack.js`, `.cb-banner-stack` / `.cb-banner`), which sets
   `--cb-banner-stack-height` so notices sit below it.
+- Every message copies its text on a click: a notice, the status line, and any status or alert line
+  in a panel or an editor (`role="status"` / `role="alert"`, one page listener in js/ui-helpers.js
+  `messageTextAt`). The copy cursor says so and "Copied" confirms it; a control inside a message
+  keeps its own click, and a click that ends a text selection does not copy.
 
 ## Phone layout
 

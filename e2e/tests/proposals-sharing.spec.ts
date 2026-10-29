@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, openOnAnotherDevice, chooseProfileName } from '../helpers/runtime';
+import { openCity, createSpace, openOnAnotherDevice, chooseProfileName, stackSection } from '../helpers/runtime';
 import { pageIndex } from '../helpers/mocks/shared-server';
 
 test('sharing a plan publishes its exact selected designs and another device restores the snapshot', async ({ mockApi: page, browser, baseURL }) => {
@@ -10,17 +10,18 @@ test('sharing a plan publishes its exact selected designs and another device res
   await createSpace(page, 'square');
   await page.locator('#proposals-button').click();
   await page.locator('#shareAppliedProposalsButton').click();
-  await page.locator('#designs-plans').getByRole('button', { name: 'Create plan', exact: true }).click();
+  // Lists (01268caee): Create plan sits in #lists-actions; the saved plan opens in the click stack.
+  await page.locator('#lists-actions').getByRole('button', { name: 'Create plan', exact: true }).click();
   const form = page.locator('.plan-composer');
   await form.getByLabel('Plan name', { exact: true }).fill('Two gardens');
   await expect(form.locator('input[type=checkbox]')).toHaveCount(2);
   await form.locator('input[type=checkbox]').nth(0).check();
   await form.locator('input[type=checkbox]').nth(1).uncheck();
   await form.getByRole('button', { name: 'Create plan', exact: true }).click();
-  await expect(page.locator('.plan-details')).toBeVisible();
+  await expect(stackSection(page, 'plans')).toContainText('Two gardens');
   const row = await page.evaluate(() => (window as any).PlanWorkspace.list()[0]);
   expect(row.content.designCids).toHaveLength(1);
-  await page.locator('.plan-details').getByRole('button', { name: 'Share plan', exact: true }).click();
+  await stackSection(page, 'plans').getByRole('button', { name: 'Share plan', exact: true }).click();
   const share = page.locator('.plan-share');
   await expect(share.locator('.plan-dialog__members li')).toHaveCount(1);
   await share.getByRole('button', { name: 'Publish and copy link', exact: true }).click();

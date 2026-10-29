@@ -197,61 +197,125 @@ describe('agreement scheme presentation', () => {
 
 describe('the scheme guide', () => {
     const regimes = () => require('../../frontend/js/proposals/approval-regimes.js');
-    it('explains a scheme from its own data: who decides, the distribution with a schematic, the setup steps and the sources', () => {
+    const words = () => require('../../frontend/js/proposals/approval-text.js');
+    const t = (key, fallback, params = {}) => String(fallback).replace(/\{\{(\w+)\}\}/g, (_, name) => params[name]);
+
+    it('describes every scheme in the same dimensions, derived from its own data', () => {
+        const ids = regimes().DIMENSIONS.flatMap(group => group.ids);
+        expect(ids).toEqual(['initiator', 'decider', 'support', 'electorate', 'dissenters', 'stage', 'basis', 'publicLand', 'levelling', 'valueGain', 'minParties']);
+        const short = id => ids.map(key => words().dimensionText(key, regimes().dimensionsOf(regimes().latest(id)), t, 'short'));
+        expect(short('nl-kavelruil')).toEqual(['Owners', 'Owners alone', 'Owners 100%', 'All owners', 'Veto', 'Agreement', 'Area or value', 'No cap', 'In money', 'Kept in land', 'At least 3']);
+        expect(short('tw-owner-organized')).toEqual(['Owners', 'Owners, then authority', 'Private owners ≥ 1/2 · Private land > 1/2', 'Private owners only', 'Bound by the majority',
+            'Plan', 'Value', '≤ 45% of the pool', 'In money', 'Kept in land', 'Any number']);
+        expect(short('de-umlegung-developed')).toEqual(['Authority', 'Authority alone', 'No vote', 'Nobody', 'Bound by the authority', 'Plan', 'Area or value',
+            '≤ 10% per owner (by area)', 'In money', 'All in money', 'Any number']);
+        expect(short('tr-article-18')[9]).toBe('—');
+        expect(short('in-gj-tps')[9]).toBe('50% in money');
+        expect(short('jp-joint')[4]).toBe('Veto');
+        // Every scheme has a value in every dimension, short and long.
+        for (const template of regimes().list()) {
+            const dimensions = regimes().dimensionsOf(template);
+            for (const id of ids) for (const form of ['short', 'long']) expect(words().dimensionText(id, dimensions, t, form)).toMatch(/\S/);
+        }
+    });
+
+    it('organizes the guide by those dimensions: a decision flow, each dimension, an example, the setup steps and the sources', () => {
         const html = Setup.schemeGuideHtml({ template: regimes().latest('de-umlegung-developed') });
         expect(html).toContain('data-scheme-guide="de-umlegung-developed"');
         expect(html).toContain('Rules checked 2026-10-28');
-        expect(html).toContain('Configured approval rules require only the Umlegung authority’s decision on the readjustment plan.');
-        expect(html).toContain('Owners are heard; the authority decides.');
-        expect(html).toContain('Distributed by area, no owner gives up more than 10% of their land.');
-        // The schematic: three example owners above, the public take and the owners' plots below.
-        expect(html).toContain('<svg class="scheme-guide__svg"');
-        expect(html.match(/scheme-guide__slice--owner-/g)).toHaveLength(6);
-        expect(html).toContain('scheme-guide__slice--public');
-        expect(html).toContain('Each owner gives up at most 10% of their land for public use without compensation and gets a plot back');
-        expect(html).toContain('Three example owners');
+        // Decided: the authority starts it, nobody votes, the authority decides, the plan follows.
+        const decision = html.slice(html.indexOf('data-scheme-guide-group="decision"'), html.indexOf('data-scheme-guide-group="distribution"'));
+        expect(decision.match(/class="scheme-flow__step /g)).toHaveLength(4);
+        expect(decision).toContain('data-scheme-flow-step="authority"');
+        expect(decision).toContain('the Umlegung authority’s decision on the readjustment plan');
+        expect(decision).not.toContain('class="scheme-gauge"');
+        expect(decision.match(/data-scheme-dimension="/g)).toHaveLength(6);
+        expect(decision).toContain('The authority’s decision binds every owner.');
+        // Shared: every distribution dimension, then three example owners at the 10% cap.
+        expect(html).toContain('Shared by area, each owner gives up at most 10% of their land for public use without compensation.');
+        expect(html).toContain('data-scheme-owners-example');
+        expect(html.match(/data-scheme-owner-row="/g)).toHaveLength(4);
+        expect(html).not.toContain('scheme-owners__line--money');
+        expect(html).not.toContain('data-scheme-guide-part="applied"');
+        expect(html).toContain('Three example owners giving up the most the scheme allows.');
         expect(html).toContain('Rules › Land contribution: the slider stops at 10%');
         expect(html).toContain('Proposer is not available under this scheme.');
-        expect(html).toContain('Rules › Authority: an id for the Umlegung authority’s decision on the readjustment plan');
         expect(html).toContain('gesetze-im-internet.de');
         expect(html).not.toContain('This agreement against the scheme');
-        // A voluntary exchange: no public slice, every party agrees, the party count.
+        // A voluntary exchange: one owner-support gauge filled to all owners, no authority step, no cap.
         const exchange = Setup.schemeGuideHtml({ template: regimes().latest('nl-kavelruil') });
-        expect(exchange).not.toContain('scheme-guide__slice--public');
-        expect(exchange).toContain('The parties agree what each gets back; the scheme sets no cap on public land');
+        expect(exchange.match(/class="scheme-gauge"/g)).toHaveLength(1);
+        expect(exchange).toContain('--scheme-length: 100.0%');
+        expect(exchange).not.toContain('data-scheme-flow-step="authority"');
+        expect(exchange).toContain('Three example owners giving up a quarter of their land: the scheme sets no cap.');
         expect(exchange).toContain('At least 3 parties bring land in.');
-        expect(exchange).toContain('Rules › Compensation: by area (a rate per m²) or by value');
-        // A value scheme with leases in its tests: the rights file and the value compensation step.
+        // A value scheme with three tests at once: three gauges, the rights file and the value step.
         const japan = Setup.schemeGuideHtml({ template: regimes().latest('jp-association') });
+        expect(japan.match(/class="scheme-gauge"/g)).toHaveLength(3);
+        expect(japan).toContain('aria-label="at least 2/3 of the private owners"');
         expect(japan).toContain('Rules › Compensation: “Balance land value differences in money”');
         expect(japan).toContain('Parcel ownership rights: import a rights file (parcel-rights/v2) that lists every lease and its holders and which holders are public bodies.');
-        expect(japan).toContain('at least 2/3 of the private owners');
         expect(Setup.schemeGuideHtml({})).toBe('');
     });
 
-    it('shows the host’s agreement against the scheme, with the parties and what would meet a broken rule', () => {
+    it('shows this agreement apart from the rules: owners in rows, land and money put in and got back, an owner over the cap marked', () => {
         const template = regimes().latest('de-umlegung-developed');
-        const ledger = { valued: false, parties: [
-            { ownerKey: 'o-a', displayName: 'Ana', contributedM2: 1000, assignedM2: 400, areaUnknown: false },
-            { ownerKey: 'o-b', displayName: 'Ben', contributedM2: 500, assignedM2: 500, areaUnknown: false }
+        const ledger = { valued: false, publicM2: 600, proposerM2: 0, money: { sponsorCents: -47500 }, parties: [
+            { ownerKey: 'o-b', parcelId: 'B', displayName: 'Owner(s) of parcel B', contributedM2: 500, assignedM2: 500, entitlementM2: 450, cashCents: -2500, areaUnknown: false },
+            { ownerKey: 'o-a', parcelId: 'A', displayName: 'Owner(s) of parcel A', contributedM2: 1000, assignedM2: 400, entitlementM2: 900, cashCents: 50000, areaUnknown: false }
         ] };
+        const model = Setup.ownersModel(regimes().dimensionsOf(template), ledger);
+        expect(model.rows.map(row => [row.key, row.kind, row.landIn, row.landOut, row.paysCents, row.receivesCents, row.floor, row.overCap])).toEqual([
+            ['o-a', 'party', 1000, 400, 0, 50000, 900, true], ['o-b', 'party', 500, 500, 2500, 0, 450, false],
+            ['public', 'public', 0, 600, 0, 0, null, false], ['sponsor', 'sponsor', 0, 0, 47500, 0, null, false]]);
+        expect([model.withMoney, model.contribution, model.unnamed]).toEqual([true, expect.closeTo(0.1, 9), 2]);
         const rules = [{ kind: 'cap', per: 'owner', limit: { numerator: 1, denominator: 10 }, worst: { ownerKey: 'o-a', given: 0.6 }, ok: false }, { kind: 'proposer', areaM2: 0, ok: true }];
-        const html = Setup.schemeGuideHtml({ template, ledger, rules, check: { ok: false, lines: [{ ok: false, text: 'Ana gives up 60% of their land; the cap is 10%.' }, { ok: true, text: 'No land goes to a proposer.' }] } });
-        expect(html).toContain('<li data-check-ok="false">Ana gives up 60% of their land; the cap is 10%.</li>');
-        expect(html).toContain('<th scope="row">Ana</th>');
-        expect(html).toContain('<td>60%</td>'); expect(html).toContain('<td>0%</td>');
-        // Ana put in 1000 and may give up 100: 500 m² have to come back.
-        expect(html).toContain('In Output parcels, give Ana at least 500 m² more land back, or lower the Land contribution');
-        // The real parties replace the example owners in the schematic, largest first.
-        expect(html.match(/scheme-guide__slice--owner-/g)).toHaveLength(4);
-        expect(html).not.toContain('Three example owners');
-        expect(html.indexOf('>Ana<')).toBeLessThan(html.indexOf('>Ben<'));
-        const value = Setup.schemeGuideHtml({ template: regimes().latest('jp-association'), ledger: { ...ledger, valued: true, parties: ledger.parties.map(party => ({ ...party, contributedValueCents: 1000000, assignedValueCents: 2500000 })) },
-            rules: [{ kind: 'basis', required: 'value', actual: 'area', ok: false }], check: { ok: false, lines: [{ ok: false, text: 'basis' }] }, currency: 'EUR' });
-        expect(value).toContain('10000 EUR'); expect(value).toContain('25000 EUR');
-        expect(value).toContain('set Compensation to “Balance land value differences in money”');
+        const html = Setup.schemeGuideHtml({ template, ledger, rules, currency: 'EUR', check: { ok: false, lines: [{ ok: false, text: 'A gives up 60% of their land; the cap is 10%.' }] } });
+        // The rules come first with their example; this agreement is its own part after them.
+        const rulesPart = html.slice(html.indexOf('data-scheme-guide-part="rules"'), html.indexOf('data-scheme-guide-part="applied"'));
+        const applied = html.slice(html.indexOf('data-scheme-guide-part="applied"'));
+        expect(rulesPart).toContain('data-scheme-owners-example');
+        expect(rulesPart).not.toContain('data-scheme-guide-check');
+        expect(applied).toContain('<li data-check-ok="false">A gives up 60% of their land; the cap is 10%.</li>');
+        expect(applied).not.toContain('data-scheme-owners-example');
+        expect(applied).toMatch(/class="scheme-owners__row scheme-owners__row--party is-over-cap" data-scheme-owner-row="o-a">/);
+        expect(applied.indexOf('data-scheme-owner-row="o-a"')).toBeLessThan(applied.indexOf('data-scheme-owner-row="o-b"'));
+        // Each column has a land line and a money line: A puts in land only and gets land and 500 EUR back.
+        const rowA = applied.slice(applied.indexOf('data-scheme-owner-row="o-a"'), applied.indexOf('data-scheme-owner-row="o-b"'));
+        expect(rowA.match(/scheme-owners__line--land/g)).toHaveLength(2);
+        expect(rowA.match(/scheme-owners__line--money/g)).toHaveLength(2);
+        expect(rowA).toContain('gives up 60%');
+        expect(rowA).toContain('Least back under the cap: 900 m²');
+        expect(applied).not.toMatch(/scheme-owners__(bar|tick|track)|--scheme-length|--scheme-at: [^"]*">\s*<\/span><\/span>\s*<span class="scheme-owners/);
+        expect(rowA).toContain('<th scope="row">Owner(s) of parcel A</th>');
+        expect(rowA).toContain('500 EUR');
+        expect(applied).toContain('scheme-owners__row--sponsor');
+        expect(applied).toContain('less the 10% contribution taken without compensation');
+        expect(applied).toContain('the owners of 2 parcel(s) stay one party');
+        expect(applied).toContain('In Output parcels, give A at least 500 m² more land back, or lower the Land contribution'.replace('A at', 'Owner(s) of parcel A at'));
+        // With ownership rights the rows are the people: one person holding both parcels.
+        const persons = { persons: [{ personId: 'p-1', contributedM2: 1500, landM2: 900, cashCents: 47500, areaUnknown: false }], unresolved: [] };
+        const people = Setup.ownersModel(regimes().dimensionsOf(template), ledger, persons, new Map([['p-1', 'Ana Horvat']]));
+        expect(people.rows.filter(row => row.kind === 'person').map(row => [row.label, row.landIn, row.landOut, row.receivesCents])).toEqual([['Ana Horvat', 1500, 900, 47500]]);
+        expect(people.unnamed).toBe(0);
+        // By value: money settles the value difference.
+        const valued = { ...ledger, valued: true, parties: ledger.parties.map(party => ({ ...party, contributedValueCents: 1000000, assignedValueCents: 2500000 })) };
+        expect(Setup.schemeGuideHtml({ template: regimes().latest('jp-association'), ledger: valued, currency: 'EUR' })).toContain('a share of the new land’s value matching the value they put in');
+        // A pool cap draws the pool's share not returned to owners against the cap.
+        expect(Setup.ownersModel(regimes().dimensionsOf(regimes().latest('tw-owner-organized')), ledger).pool).toEqual({ given: 0.4, limit: 0.45 });
         const few = Setup.schemeGuideHtml({ template: regimes().latest('nl-kavelruil'), ledger, rules: [{ kind: 'parties', required: 3, actual: 2, ok: false }], check: { ok: false, lines: [{ ok: false, text: 'few' }] } });
         expect(few).toContain('2 parties bring land in and this scheme needs 3');
+    });
+
+    it('compares every scheme in the same dimensions, the picked one marked and the broken ones flagged', () => {
+        const html = Setup.compareHtml('nl-kavelruil', { 'de-umlegung-developed': false });
+        expect(html.match(/data-scheme-compare-row="/g)).toHaveLength(regimes().list().length);
+        expect(html.match(/<th scope="col">/g)).toHaveLength(12);
+        expect(html).toContain('<tr aria-current="true" data-scheme-compare-row="nl-kavelruil">');
+        expect(html).toContain('data-scheme-guide-choose="jp-association"');
+        expect(html).toMatch(/data-scheme-guide-choose="de-umlegung-developed">[^<]+<\/button> <span class="cb-badge cb-badge--warning">not met by this plan/);
+        expect(html).not.toMatch(/<details[^>]* open/);
+        expect(Setup.compareHtml('nl-kavelruil', null, true)).toMatch(/<details class="scheme-compare" data-scheme-compare open>/);
     });
 
     it('offers the whole catalogue in its picker, the current scheme selected and the broken ones marked', () => {

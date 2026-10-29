@@ -18,7 +18,7 @@ export function createPreviewLinks({ origin, appOrigin, storeDirectory, now = Da
     const store = createDraftStore({ directory: storeDirectory, now, maxEntries, maxBytes });
     const ref = token => new URL(`/mcp/previews/${token}`, base).href;
     function create(artifact) {
-        const { design, agreement, plan, designs = [], parcelSourceId = null, designSources } = artifact;
+        const { design, agreement, plan, designs = [], parcelSourceId = null, designSources, when = null, buildout = null } = artifact;
         const record = design || agreement || plan;
         if (!record || !['design/v1', 'agreement/v1', 'plan/v1'].includes(record.schema)) throw new Error('A preview needs a canonical draft record');
         let verifiedPlan = plan;
@@ -60,6 +60,8 @@ export function createPreviewLinks({ origin, appOrigin, storeDirectory, now = Da
         const url = new URL(view?.at ? mapShare.link(new URL('/designs', app).href, view) : new URL('/designs', app));
         url.searchParams.set('draft', ref(stored.token));
         if (record.city) url.searchParams.set('city', record.city);
+        if (when) url.searchParams.set('when', when);
+        if (buildout) url.searchParams.set('buildout', buildout);
         return { previewUrl: url.href, draftRef: ref(stored.token), previewStatus: 'private-link', previewExpiresAt: new Date(stored.expiresAt).toISOString() };
     }
     function decorate(value) {

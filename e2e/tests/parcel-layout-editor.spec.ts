@@ -2,9 +2,9 @@
 // layouts and hand edits shape the plots, and Done applies them as a parcel layout whose live pieces
 // keep their plot references and are held by the owners of the ground under them.
 import { test, expect } from '../helpers/fixtures';
-import { clickMapPoint, openCity, openParcel, showProposal, PARCEL_ID, closeParcel, showSelectionDesignTab } from '../helpers/runtime';
+import { clickMapPoint, openCity, openParcel, showProposal, PARCEL_ID, closeParcel, showSelectionDesignTab, stackSection } from '../helpers/runtime';
 import { sampleParcels } from '../helpers/mocks/parcel-data';
-import { editorOpen, editorClosed, editorCancel } from '../helpers/agreements';
+import { createFromPlan, editorClosed, editorCancel } from '../helpers/agreements';
 import type { Locator, Page } from '@playwright/test';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -531,7 +531,7 @@ test('a plot laid across two owners\' parcels is held jointly by both, pro rata 
   }
 });
 
-test('a parcel layout\'s details offer no sharing or duplicate: it is published with its agreement', async ({ mockApi: page }) => {
+test('a parcel layout\'s details offer Share like any design, and no duplicate', async ({ mockApi: page }) => {
   const editor = await openLayoutEditor(page);
   await editor.locator('[data-reparcel-commit]').click();
   await expect(editor).toHaveCount(0);
@@ -539,43 +539,29 @@ test('a parcel layout\'s details offer no sharing or duplicate: it is published 
   await page.setViewportSize({ width: 390, height: 844 });
   await showProposal(page, proposalId);
   const panel = page.locator('#proposal-details-panel');
-  const share = panel.locator('.btn-share-proposal');
-  await expect(share).toHaveCount(1);
-  await expect(share).toBeDisabled();
-  await expect(share).toHaveAttribute('aria-describedby', 'proposal-publish-later-note');
-  await expect(panel.locator('#proposal-publish-later-note')).toHaveText('A parcel layout is published with its agreement. Propose an agreement that includes it.');
+  // Shared on its own like any design: an enabled Share, and no note explaining a disabled one.
+  await expect(panel.locator('.btn-share-proposal')).toBeEnabled();
+  await expect(panel.locator('#proposal-publish-later-note')).toHaveCount(0);
   await expect(panel.locator('.btn-duplicate-design')).toHaveCount(0);
   const actionGrid = panel.locator('.proposal-primary-actions');
   const layout = await actionGrid.evaluate(grid => {
     const buttons = [...grid.querySelectorAll<HTMLElement>(':scope > button')].filter(button => getComputedStyle(button).display !== 'none');
-    const note = grid.querySelector<HTMLElement>('.proposal-publish-later')!;
-    const gridRect = grid.getBoundingClientRect(), noteRect = note.getBoundingClientRect();
-    const buttonRects = buttons.map(button => button.getBoundingClientRect());
     const panelRect = document.querySelector('#proposal-details-panel')!.getBoundingClientRect();
     const footerRect = grid.closest('.panel-footer')!.getBoundingClientRect();
     return { columns: getComputedStyle(grid).gridTemplateColumns.split(' ').length,
-      heights: buttonRects.map(rect => rect.height), buttonBottom: Math.max(...buttonRects.map(rect => rect.bottom)),
-      gridLeft: gridRect.left, gridWidth: gridRect.width, noteLeft: noteRect.left, noteWidth: noteRect.width,
-      noteTop: noteRect.top, noteBottom: noteRect.bottom, panelBottom: panelRect.bottom, footerBottom: footerRect.bottom };
+      heights: buttons.map(button => button.getBoundingClientRect().height), panelBottom: panelRect.bottom, footerBottom: footerRect.bottom };
   });
   expect(layout.columns).toBe(2);
-  expect(layout.heights.length).toBeGreaterThanOrEqual(4);
+  expect(layout.heights.length).toBeGreaterThanOrEqual(3);
   expect(layout.heights.every(height => height <= 56)).toBe(true);
-  expect(layout.noteTop).toBeGreaterThanOrEqual(layout.buttonBottom);
-  expect(Math.abs(layout.noteLeft - layout.gridLeft)).toBeLessThanOrEqual(1);
-  expect(Math.abs(layout.noteWidth - layout.gridWidth)).toBeLessThanOrEqual(1);
-  expect(layout.noteBottom).toBeLessThanOrEqual(layout.footerBottom);
   expect(layout.footerBottom).toBeLessThanOrEqual(layout.panelBottom);
   // Nobody decides on or bets on a design by itself (M3): only an agreement over it is minted and bet on.
   await expect(panel.getByRole('button', { name: /\bbet\b/i })).toHaveCount(0);
-  // What it offers instead: Add to agreement, the layout's main action, which opens the agreement
-  // editor over it.
-  const add = panel.locator('.btn-create-agreement');
-  await expect(add).toHaveClass(/\bbtn-primary\b/);
-  await expect(add).toHaveText('Add to agreement');
-  await add.click();
-  const agreementEditor = await editorOpen(page, 'Create agreement');
-  await expect(agreementEditor.locator(`input[data-agreement-design="${proposalId}"]`)).toBeChecked();
+  // What it offers instead: Add to plan, which heads its design card in the click stack. An agreement
+  // is created from a saved plan, whose membership is fixed (e6fabf0b4 retired Add to agreement).
+  await expect(panel.locator('.btn-create-agreement')).toHaveCount(0);
+  await expect(stackSection(page, 'designs').locator('.click-stack__actions--design .btn-add-to-plan')).toBeVisible();
+  const agreementEditor = await createFromPlan(page, proposalId);
   await editorCancel(agreementEditor).click();
   await editorClosed(page);
 });

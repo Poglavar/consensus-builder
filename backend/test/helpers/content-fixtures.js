@@ -2,6 +2,7 @@
 // M2), the index rows the server stores for them, and a scripted cadastre that answers the binding
 // statements a design's site runs (proposals/binding.js) as a mock pool's `bindingAnswer`.
 import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
 import { cidOfObject } from '../../cid.js';
 import { BINDING_COUNT_SQL, BINDING_SQL, FOOTPRINT_OUTSIDE_SITE_SQL, PARCEL_ACT_SITE_SQL } from '../../proposals/binding.js';
 
@@ -11,6 +12,7 @@ export const PARK = box(15.97, 45.80, 15.971, 45.801);
 export const SITE = box(15.969, 45.799, 15.972, 45.802);
 export const SITE_MULTI = { type: 'MultiPolygon', coordinates: [SITE.coordinates] };
 export const AUTHORED_AT = '2026-10-21T08:00:00.000Z';
+const AgreementRecord = createRequire(import.meta.url)('../../../frontend/js/agreement-record.js');
 
 export const cidOf = cidOfObject;
 
@@ -33,7 +35,7 @@ export function designContent(overrides = {}) {
     };
 }
 
-/** A parcel layout of SITE in two plots: published only with the agreement that settles its land. */
+/** A parcel layout of SITE in two plots. */
 export function layoutContent(overrides = {}) {
     const { structureProposal: _park, ...design } = designContent();
     return {
@@ -109,36 +111,40 @@ export function planContent(designs, overrides = {}) {
 export function planForAgreement(content) { return agreementPlans.get(content.planCid); }
 
 /**
- * An owner deal over the parcels two designs take, one output per design, owners as holders.
+ * An owner deal over the parcels the designs take, in its published form (AgreementRecord.published):
+ * one output per design splitting the input land evenly, each output allocated in turn to one input
+ * parcel's abstract owners' party, and the cash derived from the default area settlement. `overrides` replace whole fields of
+ * the published object afterwards, as given.
  * @param designs design/v1 objects (linked by CID in this order)
  */
 export function agreementContent(designs, overrides = {}) {
     const cids = designs.map(design => cidOfObject(design));
     const plan = planContent(designs);
-    const content = {
-        schema: 'agreement/v1',
-        planCid: cidOfObject(plan),
-        title: 'Riverside deal',
-        author: 'Studio North',
-        sponsor: null,
-        city: 'zagreb',
-        createdAt: '2026-10-21T09:00:00.000Z',
-        inputs: {
-            parcels: [
-                { parcelId: 'HR-335649-100', parcelSourceId: 'oss-wfs', areaM2: 600, holders: [{ ownerKey: 'owner-a', displayName: 'Ana', share: 1 }] },
-                { parcelId: 'HR-335649-101', parcelSourceId: 'oss-wfs', areaM2: 400, holders: [{ ownerKey: 'owner-b', displayName: 'Boris', share: 0.5 }, { ownerKey: 'owner-c', displayName: 'Cvita', share: 0.5 }] }
-            ],
-            openGroundM2: 0
-        },
-        outputs: cids.map((cid, index) => ({
-            hash: pieceHash(`piece-${index}`), areaM2: 500, fromParcelIds: ['HR-335649-100', 'HR-335649-101'], role: 'plot', producedBy: cid
-        })),
-        allocations: [{ output: pieceHash('piece-0'), to: { kind: 'holders' } }],
-        money: { currency: 'EUR', lines: [{ ownerKey: 'owner-a', amountCents: 150000 }, { ownerKey: 'owner-b', amountCents: -150000 }] },
-        rule: { electorate: 'owners', binding: true, approvalConfig: null, lens: [] },
-        deadline: '2099-01-01T00:00:00.000Z',
-        ...overrides
+    const planCid = cidOfObject(plan);
+    const inputs = {
+        parcels: [
+            { parcelId: 'HR-335649-100', parcelSourceId: 'oss-wfs', areaM2: 600 },
+            { parcelId: 'HR-335649-101', parcelSourceId: 'oss-wfs', areaM2: 400 }
+        ],
+        openGroundM2: 0
     };
+    const parties = inputs.parcels.map(parcel => AgreementRecord.partyKey(parcel.parcelId));
+    const outputs = cids.map((cid, index) => ({
+        pieceId: pieceHash(`piece-${index}`), hash: pieceHash(`piece-${index}`), areaM2: 1000 / cids.length,
+        fromParcelIds: ['HR-335649-100', 'HR-335649-101'], role: 'plot', producedBy: cid, geometry: null
+    }));
+    const local = AgreementRecord.settle({
+        schema: AgreementRecord.SCHEMA, id: 'content-fixture', title: 'Riverside deal', author: 'Studio North', sponsor: null, city: 'zagreb',
+        createdAt: '2026-10-21T09:00:00.000Z', updatedAt: null,
+        plan: { cid: planCid, content: plan },
+        designs: cids.map((cid, index) => ({ proposalId: cid, cid, title: designs[index].title ?? null, goal: designs[index].goal ?? null })),
+        inputs, outputs,
+        allocations: outputs.map((output, index) => ({ output: output.hash, to: { kind: 'party', ownerKey: parties[index % parties.length] } })),
+        money: { currency: 'EUR', lines: [] },
+        rule: { electorate: 'owners', binding: true, approvalConfig: null, lens: [], settlement: { ...AgreementRecord.DEFAULT_SETTLEMENT } },
+        deadline: '2099-01-01T00:00:00.000Z'
+    });
+    const content = { ...AgreementRecord.published(local, cid => cid), ...overrides };
     agreementPlans.set(content.planCid, plan);
     return content;
 }

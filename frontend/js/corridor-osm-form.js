@@ -27,8 +27,12 @@
     };
     const normalizeProfile = profile => profileApi('normalizeCorridorProfile')(profile);
     const profileWidth = profile => profileApi('corridorProfileWidth')(profile);
-    const standardTags = profile => profileApi('corridorProfileToOsmTags')(profile);
-    const standardProfile = tags => profileApi('corridorProfileFromOsmTags')(tags);
+    const standardTags = (profile, drivingSide) => profileApi('corridorProfileToOsmTags')(profile, drivingSide);
+    const standardProfile = (tags, drivingSide) => profileApi('corridorProfileFromOsmTags')(tags, undefined, drivingSide);
+    // The side of the road a way's traffic keeps to, on OSM's own key: `driving_side=left` where it
+    // keeps left (a UK street), absent where it keeps right. It decides which side of the centre
+    // line `lanes:forward` and the per-side cycle lanes mean.
+    const drivingSideOf = tags => (tags && tags.driving_side === 'left' ? 'left' : 'right');
     const segmentEntries = definition => profileApi('corridorSegmentEntries')(definition);
     const parkingOrientation = type => profileApi('corridorParkingOrientation')(type);
 
@@ -82,11 +86,12 @@
     // scheme rounds — per-lane widths (`width:lanes`), bus lanes (`bus:lanes`), footway surfaces —
     // then the namespaced attributes OSM has no key for. If reading those back would still not give
     // the lanes exactly (an order the per-side scheme cannot hold), `cb:lanes` carries them whole.
-    function laneTagsOf(profile) {
+    function laneTagsOf(profile, drivingSide = 'right') {
         const normalized = normalizeProfile(profile);
         if (!normalized) return null;
         const lanes = normalized.strips;
-        const tags = standardTags(normalized) || { width: String(round3(profileWidth(normalized))) };
+        const tags = standardTags(normalized, drivingSide) || { width: String(round3(profileWidth(normalized))) };
+        if (drivingSide === 'left') tags.driving_side = 'left';
 
         const carriageway = lanes.filter(lane => CARRIAGEWAY_TYPES.has(lane.type));
         if (carriageway.length) {
@@ -137,7 +142,7 @@
         if (source['cb:lanes']) {
             return normalizeProfile({ strips: String(source['cb:lanes']).split('|').map(decodeLane) });
         }
-        const base = standardProfile({ ...source, highway: source.highway || (source.railway ? undefined : 'road') });
+        const base = standardProfile({ ...source, highway: source.highway || (source.railway ? undefined : 'road') }, drivingSideOf(source));
         if (!base) return null;
         const lanes = base.strips.map(lane => ({ ...lane }));
         const carriageway = lanes.filter(lane => CARRIAGEWAY_TYPES.has(lane.type));
@@ -206,7 +211,7 @@
             return nodes.get(key).id;
         };
         const ways = entries.map((entry, index) => {
-            const tags = { ...classTags(definition, entry.profile), ...(laneTagsOf(entry.profile) || {}) };
+            const tags = { ...classTags(definition, entry.profile), ...(laneTagsOf(entry.profile, definition.drivingSide === 'left' ? 'left' : 'right') || {}) };
             if (entry.segmentId !== null && entry.segmentId !== undefined) tags['cb:segment'] = String(entry.segmentId);
             const sources = Array.isArray(raw[index]) ? raw[index] : [];
             return { type: 'way', id: -(index + 1), nodes: entry.points.map((point, p) => nodeFor(point, sources[p])), tags };
@@ -239,7 +244,7 @@
             const profile = profileFromLaneTags(way.tags || {});
             if (points.length < 2 || !profile) return;
             const tagged = way.tags && way.tags['cb:segment'];
-            stretches.push({ points, profile, id: (tagged !== undefined && tagged !== null) ? String(tagged) : null, wayId: way.id });
+            stretches.push({ points, profile, id: (tagged !== undefined && tagged !== null) ? String(tagged) : null, wayId: way.id, drivingSide: drivingSideOf(way.tags) });
         });
         if (!stretches.length) return null;
         const profile = stretches[0].profile;
@@ -250,7 +255,7 @@
             segmentProfiles[stretch.id] = stretch.profile;
         });
         const segments = stretches.map(stretch => stretch.points);
-        const definition = { points: segments, segments, profile, width: round3(profileWidth(profile)) };
+        const definition = { points: segments, segments, profile, width: round3(profileWidth(profile)), drivingSide: stretches[0].drivingSide };
         if (stretches.some(stretch => stretch.id !== null)) definition.segmentIds = stretches.map(stretch => stretch.id);
         if (Object.keys(segmentProfiles).length) definition.segmentProfiles = segmentProfiles;
         return definition;
@@ -266,7 +271,7 @@
     // never disagree. A definition that is not a drawn road or track (a designation: land with no
     // centre line, or a polygon alone) has no form and keeps its fields in both shapes.
 
-    const VIEW_FIELDS = ['points', 'segments', 'segmentIds', 'profile', 'segmentProfiles', 'width', 'sidewalkWidth'];
+    const VIEW_FIELDS = ['points', 'segments', 'segmentIds', 'profile', 'segmentProfiles', 'width', 'sidewalkWidth', 'drivingSide'];
 
     const withoutViewFields = definition => {
         const record = { ...definition };
@@ -286,6 +291,7 @@
         const storedRaw = rawStretches(view);
         const decodedRaw = rawStretches(decoded);
         if (stored.length !== derived.length) return `the form has ${derived.length} stretches, the view ${stored.length}`;
+        if ((view.drivingSide === 'left' ? 'left' : 'right') !== decoded.drivingSide) return 'the driving side differs';
         for (let index = 0; index < stored.length; index += 1) {
             const a = stored[index];
             const b = derived[index];

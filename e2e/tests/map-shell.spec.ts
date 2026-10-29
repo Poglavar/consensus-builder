@@ -213,12 +213,14 @@ test.describe('Map shell sheets @features', () => {
     await expect(dot).toBeHidden();
 
     await page.locator(selectors.settingsButton).click();
+    const advanced = page.locator(selectors.settingsAdvanced);
     const section = page.locator(selectors.simulationSection);
+    // Simulation is a flat section inside the collapsed Advanced accordion.
+    await expect(advanced).not.toHaveAttribute('open');
+    await expect(section).toBeHidden();
+    await page.locator(selectors.settingsAdvancedSummary).click();
+    await expect(advanced).toHaveAttribute('open', '');
     await expect(section).toBeVisible();
-    // Simulation is a top-level Settings section; its controls are a regular content div.
-    await expect(section).not.toHaveAttribute('open');
-    await page.locator(selectors.simulationSummary).click();
-    await expect(section).toHaveAttribute('open', '');
     const gameEnabled = page.locator('#gameCheckbox');
     await gameEnabled.check();
     await expect(gameEnabled).toBeChecked();
@@ -233,9 +235,9 @@ test.describe('Map shell sheets @features', () => {
 
     await page.locator(selectors.settingsButton).click();
     // MapShell intentionally resets Settings accordions on every open.
-    await expect(section).not.toHaveAttribute('open');
-    await page.locator(selectors.simulationSummary).click();
-    await expect(section).toHaveAttribute('open', '');
+    await expect(advanced).not.toHaveAttribute('open');
+    await page.locator(selectors.settingsAdvancedSummary).click();
+    await expect(advanced).toHaveAttribute('open', '');
     await expect(gameEnabled).toBeChecked();
     await page.locator(selectors.simulationPlayPause).click();
     await expect(page.locator(selectors.simulationPlayPause)).toHaveAttribute('aria-pressed', 'false');

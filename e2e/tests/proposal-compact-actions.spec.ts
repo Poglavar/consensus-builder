@@ -43,11 +43,12 @@ async function expectSharedAsDesign(page: import('@playwright/test').Page, propo
 
 async function openCompactFromProposalList(page: import('@playwright/test').Page, proposalId: string): Promise<void> {
   await page.locator('#proposals-button').click();
-  const list = page.locator('#proposals-sheet .proposal-list-modal');
-  const row = list.locator(`.proposal-list-item[data-proposal-id="${proposalId}"]`);
+  const list = page.locator('#proposals-sheet #proposal-list-host');
+  const row = list.locator(`.lists-item[data-list-id="${proposalId}"]`);
   await expect(row).toBeVisible();
-  // This is the actual list action that opens proposal details, not a direct JS call to the panel.
-  await row.locator('.proposal-list-details-btn').click();
+  // This is the actual list action that opens proposal details (Lists: the row's Open),
+  // not a direct JS call to the panel.
+  await row.locator('.lists-item__open').click();
   await expect(page.locator('#planning-inspector')).toBeHidden();
   await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(proposalId);
   await showProposal(page, proposalId);

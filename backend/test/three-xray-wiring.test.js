@@ -19,10 +19,10 @@ function collectFunctions(node) {
 }
 collectFunctions(ast);
 
-function extracted(name, variables = '', stubs = {}) {
+function extracted(name, variables = '', stubs = {}, helpers = []) {
     const calls = [];
     const context = { console, ...stubs, calls };
-    const code = `${variables}\n${Array.from(Object.entries(stubs)).map(([key]) => `const ${key}=this.${key};`).join('\n')}\n${declarations.get(name)}\nthis.fn=${name};`;
+    const code = `${variables}\n${Array.from(Object.entries(stubs)).map(([key]) => `const ${key}=this.${key};`).join('\n')}\n${[name, ...helpers].map(helper => declarations.get(helper)).join('\n')}\nthis.fn=${name};`;
     vm.runInNewContext(code, context);
     return [context.fn, context];
 }
@@ -60,23 +60,28 @@ describe('three-mode Xray wiring', () => {
     });
 
     function rebuildHarness(enabled, built = 'ghost', planned = 'solid', isolated = null) {
-        const existingBuildingsGroup = { children: [] };
-        const proposedBuildingsGroup = { children: [{ id: 'proposal-survives' }] };
+        const existingBuildingsGroup = { children: [], userData: {} };
+        const proposedBuildingsGroup = { children: [{ id: 'proposal-survives' }], userData: {} };
         const ineligibleBuildingsGroup = { children: [{ id: 'ineligible-survives' }] };
+        const clear = vi.fn();
         const stubs = {
             window: {},
             enabled, built, planned, isolated, existingGroup: existingBuildingsGroup, proposedGroup: proposedBuildingsGroup, ineligibleGroup: ineligibleBuildingsGroup,
-            clearGroupChildren: vi.fn(), disposeFloorPlans: vi.fn(), restoreParcelEmphasis: vi.fn(),
+            clearGroupChildren: clear, retireGroupAfterFrame: group => clear(group), disposeFloorPlans: vi.fn(), restoreParcelEmphasis: vi.fn(),
             buildingDisplayPolicy: { resolveBuiltDisplayPolicy: mode => ({ visible: mode !== 'off', material: mode, showSurviving: true, showDemolished: false }) },
             buildingMaterials: { xray: 'xray-material', solid: 'solid-material', ghost: 'ghost-material' },
             buildNearbyProposalBuildings3D: vi.fn(async () => {}), buildProposedBuildings3D: vi.fn(async () => {}), appendSuggestedExistingFloorPlans: vi.fn(),
             buildIneligibleParcels3D: vi.fn(), ensureNearbyProposalBuildings: vi.fn(),
             ensureNearbyTrees: vi.fn(), rebuildTreesOnly: vi.fn(), ensureNearbyWater: vi.fn(), rebuildWaterOnly: vi.fn(),
             applyParcelEmphasis: vi.fn(), isolateProposal: vi.fn(), updateXrayControls: vi.fn(), refreshClickStackFigures: vi.fn(),
-            invalidateThreeView: vi.fn()
+            invalidateThreeView: vi.fn(), ensureNearbyGreen: vi.fn(),
+            // Replacements are built off-scene and swapped into the scene group (7ed6200e9).
+            THREE: { Group: class { constructor() { this.children = []; this.userData = {}; } } },
+            sceneWork
         };
         const [rebuild, context] = extracted('rebuild3DBuildingsOnly', `
-            let isActive=true, buildingGroup={};
+            let isActive=true, buildingGroup={ add() {}, remove() {} }, sunLayer=null;
+            const buildingRefreshQueue = this.sceneWork.createRefreshQueue(family => build3DBuildingFamilies(family));
             let buildingBuildPending=false, buildingDisplaySnapshot=null, buildingsWorkGeneration=0, pendingModelLoads=0;
             let nearbyBuildingsRevision=0;
             let buildingsRenderGeneration=0, sceneAbort=null;
@@ -85,7 +90,7 @@ describe('three-mode Xray wiring', () => {
             let xrayEnabled=this.enabled, builtDisplay=this.built, plannedDisplay=this.planned;
             let realisticLayerActive=false, existingTransitAlignmentGroup={ visible: true }, showIneligibleParcels=false;
             let isolatedParcelId=this.isolated, isolatedProposalId=null;
-        `, stubs);
+        `, stubs, ['build3DBuildingFamilies']);
         return [rebuild, context];
     }
 
@@ -153,10 +158,11 @@ describe('three-mode Xray wiring', () => {
         const [build] = extracted('buildProposedBuildings3D', 'let plannedRepresentation="both",buildOutDisplaySalt=0;let buildingMaterials={};', {
             window:{ proposedBuildings:[model,ordinary], UrbanRuleVariation:{plannedDrawPlan:feature=>({buildOut:feature})} },
             turf:{}, appendBuildingFloorPlans:feature=>feature===model, appendSuggestedFloorPlans:()=>false,
-            createBuildingSlices:draw, estimateBuildingHeightMeters:()=>9, sceneWork
+            createBuildingSlices:draw, estimateBuildingHeightMeters:()=>9, sceneWork,
+            displayedFeatures:features=>features, buildoutSiteOf:()=>null
         });
         await build(group,'solid');
-        expect(draw).toHaveBeenCalledExactlyOnceWith(ordinary,9,'solid',group,ordinary);
+        expect(draw).toHaveBeenCalledExactlyOnceWith(ordinary,9,'solid',group,ordinary,null);
     });
     it('disposeFloorPlans disposes every owned child, removes them, and resets bookkeeping', () => {
         const children = [{}, {}], remove = vi.fn(), dispose = vi.fn(), keys = new Set(['a']);

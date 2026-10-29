@@ -174,11 +174,9 @@
     global.getActiveCorridorDraft = getActiveCorridorDraft;
     global.clearActiveCorridorDraft = clearActiveCorridorDraft;
 
-    if (global.addEventListener) {
-        global.addEventListener('beforeunload', () => {
-            try { resolveDraftStore()?.flush(); } catch (_) { }
-        });
-    }
+    // No unload flush here: proposal-drafts.js flushes the shared store, and only in the tab that
+    // owns the saved workspace. A flush from here made a tab showing "Already open in another tab"
+    // build a store of its own on close, and its refused write flashed a draft-storage error.
 
     if (typeof module !== 'undefined' && module.exports) {
         module.exports = {

@@ -22,11 +22,16 @@
     // Right-dock panels the stack never hosts: when one opens, the stack steps aside.
     const DOCKED_ELSEWHERE = ['block-info-panel', 'road-info-panel', 'road-analysis-panel'];
     // Sections whose object has a shape on the map, so the Focus button can bring it into view.
+    // A parcel layout's panel has Input parcels and Output parcels tabs of its own, so its section skips them.
+    const PANEL_RELATIONS = new Set(['designParcels', 'formedParcels', 'affectsParcels']);
     const FRAMEABLE = new Set(['agreements', 'plans', 'designs', 'built', 'permitted', 'formed', 'parcels', 'selection']);
-    const ICONS = Object.freeze({ agreements: 'fas fa-file-signature', plans: 'fas fa-layer-group', designs: 'fas fa-drafting-compass', built: 'fas fa-building',
+    const ICONS = Object.freeze({ agreements: 'fas cb-icon-agreement', plans: 'fas cb-icon-plan', designs: 'fas cb-icon-design', built: 'fas fa-building',
         permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
-    const state = { el: null, stack: null, frameRequest: null, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null , baseHits: null, derived: {} };
+    const relationsFor = (kind, instance) => model.visibleContextFor(kind, instance, state.hits)
+        .filter(group => kind !== 'designs' || instance?.proposal?.goal !== 'parcel-layout' || !PANEL_RELATIONS.has(group.relation));
+
+    const state = { el: null, stack: null, frameRequest: null, keepView: false, latlng: null, hits: null, hosted: null, expanding: false, lastClick: null, observing: false, memberships: null, membershipVersion: 0, membershipDesign: null , baseHits: null, derived: {} };
 
     // A key with a dot is a full key shared with the rest of the app; a bare one is clickStack's own.
     function t(key, fallback, params = {}) {
@@ -222,6 +227,7 @@
         if (!keepBody) global.AgreementPanel?.release?.(state.el);
         const el = ensureElement();
         const { stack } = state;
+        global.SelectionAddress?.write(global.SelectionAddress.selectionOf(stack, model.selectedInstance));
         // The hosted panel goes home (still open) before the old bodies are dropped; the section
         // that expands next hosts it again.
         if (state.hosted && !keepBody) unhost({ hide: false });
@@ -496,8 +502,7 @@
                 else actions?.remove();
             }
             if (kind !== 'plans') {
-                const relations = model.visibleContextFor(kind, instance, state.hits);
-                for (const group of relations) body.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
+                for (const group of relationsFor(kind, instance)) body.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
             }
             if (!instance.serverId) highlightSection(kind, instance);
         } catch (error) {
@@ -689,9 +694,14 @@
     }
 
     // frame: the stack was opened from a list or link, not a scene click (see frameFeatures).
+    // keepNextView: a reload reopening its selection keeps the view in its address (?at=), so the
+    // next stack opened is not framed (selection-address.js).
+    function keepNextView(keep = true) { state.keepView = keep; }
+
     function show(stack, latlng, hits, { frame = false } = {}) {
         observePanels();
-        state.frameRequest = frame ? stack.selectedKind : null;
+        state.frameRequest = frame && !state.keepView ? stack.selectedKind : null;
+        state.keepView = false;
         ensureElement().classList.remove('is-folded');
         state.expanding = true;
         try {
@@ -735,6 +745,7 @@
                 else hosted.classList.remove('visible');
             }
         } else {
+            global.SelectionAddress?.write(null);
             unhost();
             if (['parcels', 'formed'].includes(state.stack?.selectedKind)) global.hideParcelInfoPanel?.();
             if (['built', 'permitted'].includes(state.stack?.selectedKind)) global.PlanningViews?.select(null);
@@ -857,7 +868,7 @@
             render({ keepBody });
             if (keepBody) {
                 [...keepBody.children].filter(child => child.classList.contains('click-stack__choices')).forEach(child => child.remove());
-                for (const group of model.visibleContextFor(previous.expanded, model.selectedInstance(state.stack, previous.expanded), state.hits)) {
+                for (const group of relationsFor(previous.expanded, model.selectedInstance(state.stack, previous.expanded))) {
                     keepBody.appendChild(global.ClickStackRelations.renderGroup(group, doc, global));
                 }
             } else if (state.stack.expanded) activate(state.stack.expanded);
@@ -895,6 +906,8 @@
         if (!global.DesignMemberships) await global.ensureOptionalTool('designMemberships');
         const instance = { id: plan.cid, cid: plan.cid, content: plan.content, label: plan.content.title, draft, localDesigns: designs };
         Object.assign(instance, await global.DesignMemberships.inspect('plans', instance, global));
+        // A plan with a construction schedule brings the build-out time control (js/buildout-clock.js).
+        global.BuildoutClock?.show({ cid: plan.cid, content: plan.content });
         if (doc.body.classList.contains('three-mode-active')) return global.showThreeModePlan(instance);
         const hits = { plans: [instance], planContext: instance, designs: instance.members };
         const stack = model.expand(model.buildClickStack(hits, { selected: { plans: instance.id } }), 'plans');
@@ -957,6 +970,19 @@
         const stack = model.expand(model.buildClickStack(hits, { selected: { built: id } }), 'built');
         state.lastClick = null;
         show({ ...stack, topRef: null }, latlng, hits, { frame: true });
+        return true;
+    }
+
+    // A reload for a new release reopens the spot the person had open with the same instances
+    // selected, leaving the map where the address put it. False until all of them are back there.
+    function resume(latlng, { selected, selectedKind, expanded }) {
+        if (!latlng || blocked({})) return false;
+        const hits = global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) });
+        let stack = model.buildClickStack(hits, { selected });
+        if (!Object.entries(selected).every(([kind, id]) => model.selectedInstance(stack, kind)?.id === id)) return false;
+        stack = expanded ? model.expand(stack, expanded) : { ...stack, expanded: null, selectedKind: selectedKind || stack.selectedKind };
+        state.lastClick = null;
+        show(stack, latlng, hits);
         return true;
     }
 
@@ -1026,6 +1052,6 @@
 
     // Selection owns the map focus, including while its details are collapsed.
     const holdsHighlight = () => isOpen() && !!state.stack?.selectedKind;
-    global.ClickStack = Object.freeze({ handleClick, showDesign, showPlan, showAgreement, showParcel, showBuilding, restoreFocus, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
+    global.ClickStack = Object.freeze({ handleClick, resume, showDesign, showPlan, showAgreement, showParcel, showBuilding, restoreFocus, keepNextView, isDriving: () => state.expanding, syncSelection, fold, close, isOpen, expand, collapse, holdsHighlight,
         current: () => state.stack, point: () => state.latlng });
 })(window);

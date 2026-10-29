@@ -129,9 +129,12 @@ write into the proposal.
 - **Two apartments per core**, one each side of the core's axis, both reaching the front and the
   back facade (double orientation). A dividing wall runs behind the core to the back facade.
 - **Blind walls.** Party walls stay blind: slices of the same building, neighbouring proposed
-  buildings and touching existing footprints make them. So do facades whose outside, at the
-  boundary setback (3 m), already lies beyond the parcel and not on a road. The entrance facade is
-  never blind. Without a parcel nothing is blind.
+  buildings and touching existing footprints make them. A neighbour often covers only part of a
+  facade, so the party wall is the stretch it stands against (found within 0.7 m outside, plus
+  0.3 m of blind wall either side): windows, shop glazing and entrances use the rest of the facade
+  and never that stretch. A facade more than half covered counts as a party wall for choosing the
+  front. Facades whose outside, at the boundary setback (3 m), already lies beyond the parcel and
+  not on a road are blind too. The entrance facade is never blind. Without a parcel nothing is blind.
 - **One parcel, one building.** The building drawn by the tool is cut into its parcel slices (the
   same intersection the 3D view already uses for exterior slices), and each slice gets its own
   core, entrance and apartments. A block rule over many parcels therefore produces one building per

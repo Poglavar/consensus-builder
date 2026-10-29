@@ -82,8 +82,9 @@ test('the expanded technical status buttons copy the log and follow a proposal e
   // Seed a real status record using the same boundary used by background proposal events.
   await page.evaluate(id => (window as any).updateStatus('Button coverage park event', { proposalId: id }), proposalId);
   await page.locator('#settings-button').click();
-  const technical = page.locator('#settings-sheet details[data-section="diagnostics"]');
-  await technical.locator('> summary').click();
+  // Diagnostics sits inside the Advanced accordion.
+  await page.locator('#settings-sheet details[data-section="advanced"] > summary').click();
+  const technical = page.locator('#settings-sheet section[data-section="diagnostics"]');
   await technical.locator('.status-bar').click();
   await expect(technical.locator('#status-log-expanded')).toBeVisible();
   await technical.locator('[data-status-copy-all]').click();

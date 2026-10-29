@@ -222,6 +222,21 @@ describe('click stack hits', () => {
         expect(plain.parcels.map(p => p.id)).toEqual(['HR-1-12']);
     });
 
+    it('in photo view adds the tiles\' cadastral parcels to the Parcel section, never the formed piece', () => {
+        const leftover = { kind: 'parcel', id: 'HR-1-1234#pg62kpz', depth: 0, producerId: null, feature: parcelFeature({ cadastreParcelIds: ['HR-1-1234'] }) };
+        const { hits, context } = loadHits({ stack: [leftover] });
+        const source = [{ id: 'HR-1-1234', label: '1234', live: false }];
+        const photo = context.ClickStackHits.withSourceParcels(hits, source);
+        // The piece is ground (Formed); the parcel it was cut from is the only cadastral parcel.
+        expect(photo.groundParcelId).toBe('HR-1-1234#pg62kpz');
+        expect(photo.hits.formed.map(f => f.id)).toEqual(['HR-1-1234#pg62kpz']);
+        expect([...new Set(photo.hits.parcels.map(p => p.id))]).toEqual(['HR-1-1234']);
+        // No formed land: the cadastral parcel is the ground.
+        const whole = { kind: 'parcel', id: 'HR-1-12', depth: 0, producerId: null, feature: parcelFeature({ cadastreParcelIds: ['HR-1-12'] }) };
+        const { hits: plain, context: plainContext } = loadHits({ stack: [whole] });
+        expect(plainContext.ClickStackHits.withSourceParcels(plain, [{ id: 'HR-1-12', live: false }]).groundParcelId).toBe('HR-1-12');
+    });
+
     it('takes a design\'s own cadastreParcelIds when no formed parcel is under the point', () => {
         const { hits } = loadHits({ stack: [proposalEntry('d1', { cadastreParcelIds: ['HR-1-5', 'HR-1-6'] })] });
         expect(hits.parcels.map(p => [p.id, p.live])).toEqual([['HR-1-5', false], ['HR-1-6', false]]);

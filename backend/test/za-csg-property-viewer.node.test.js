@@ -104,7 +104,8 @@ test('malformed references fail before network I/O and unsafe identity modes are
         await assert.rejects(source.queryIds([bad]), /Invalid|different source/);
     }
     assert.equal(calls.length, 0);
-    for (const extra of [{ queryFormat: 'esri-json' }, { nativeGeometryMode: 'parts' }, { boundsQueryMode: 'offset' }, { overlapResolution: 'derived-ground-v1' }]) {
+    // Esri JSON became a supported native-key geometry format in 90dc8d45a (South Australia uses it).
+    for (const extra of [{ queryFormat: 'pbf' }, { nativeGeometryMode: 'parts' }, { boundsQueryMode: 'offset' }, { overlapResolution: 'derived-ground-v1' }]) {
         assert.throws(() => createArcgisParcelSource({ ...descriptor, ...extra }), /Invalid ArcGIS/);
     }
 });

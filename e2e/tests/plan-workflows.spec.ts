@@ -1,7 +1,9 @@
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal, chooseProfileName } from '../helpers/runtime';
+import { openCity, createSpace, showProposal, chooseProfileName, stackSection } from '../helpers/runtime';
 import { pageIndex, cidOfObject } from '../helpers/mocks/shared-server';
 
+// Lists (01268caee) puts Create plan in #lists-actions; a saved plan opens in the click stack's Plan
+// section, which holds Share plan and Create agreement. Add to plan heads the design card (7cc412330).
 const writes = (page:any) => pageIndex(page).requests.filter(request => request.method==='POST' && ['/pins','/designs','/plans','/agreements'].includes(request.path));
 async function openPlans(page:any) {
   if(!await page.locator('#proposals-sheet').isVisible())await page.locator('#proposals-button').click();
@@ -14,7 +16,9 @@ async function savePlan(page:any, title:string) {
   const choices=composer.locator('input[type="checkbox"]');
   for(const choice of await choices.all())await choice.check();
   await composer.getByRole('button',{name:'Create plan',exact:true}).click();
-  await expect(page.locator('.plan-details')).toBeVisible();
+  await expect(composer).toBeHidden();
+  await expect(stackSection(page,'plans').locator('.click-stack__row')).toHaveAttribute('aria-expanded','true');
+  await expect(stackSection(page,'plans')).toContainText(title);
   return page.evaluate(title => (window as any).PlanWorkspace.list().find((row:any)=>row.content.title===title),title);
 }
 
@@ -26,18 +30,16 @@ test('Plan creation is local; sharing publishes only the saved immutable snapsho
   const first=await createSpace(page,'park');
   await openPlans(page);
   const heading=page.locator('#proposals-sheet-title');
-  await expect(heading).toHaveText('Plan');
+  await expect(heading).toHaveText('Lists');
   await expect(page.locator('#designs-agreements-button')).toHaveCount(0);
-  const center=await heading.evaluate(el=>{const a=el.getBoundingClientRect(),b=el.closest('.map-sheet-header')!.getBoundingClientRect();return Math.abs(a.x+a.width/2-b.x-b.width/2);});
-  expect(center).toBeLessThanOrEqual(1);
-  await page.locator('#designs-plans').getByRole('button',{name:'Create plan',exact:true}).click();
+  await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();
   await expect(page.locator('.plan-composer').getByRole('button',{name:/Share|Publish|agreement/i})).toHaveCount(0);
   const plan=await savePlan(page,'Original park plan');
   expect(writes(page)).toHaveLength(0);
   // A later edit to the live design does not silently update this saved plan's source bytes.
   await page.evaluate(id=>{const w=window as any,r=w.proposalStorage.getProposal(id);r.title='Later local edit';w.proposalStorage._indexProposal(r);},first);
   await page.context().grantPermissions(['clipboard-read','clipboard-write']);
-  await page.locator('.plan-details').getByRole('button',{name:'Share plan',exact:true}).click();
+  await stackSection(page,'plans').getByRole('button',{name:'Share plan',exact:true}).click();
   const share=page.locator('.plan-share');
   await expect(share).toBeVisible();
   const box=(await share.locator('..').locator('..').boundingBox())!;
@@ -63,26 +65,26 @@ test('Add to plan creates a reviewed revision and retains the old membership',as
   test.setTimeout(120000);await page.setViewportSize({width:390,height:844});
   await openCity(page);const first=await createSpace(page,'park');
   await showProposal(page,first);
-  await page.locator('#proposal-details-panel .btn-add-to-plan').click();
+  await stackSection(page,'designs').locator('[data-design-action="add-to-plan"]').click();
   const original=await savePlan(page,'Pocket spaces');
   await page.keyboard.press('Escape');
-  await expect(page.locator('.plan-details')).toHaveCount(0);
+  await expect(stackSection(page,'plans')).toHaveCount(0);
   await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), first);
   const second=await createSpace(page,'square');
   await showProposal(page,second);
-  await page.locator('#proposal-details-panel .btn-add-to-plan').click();
+  await stackSection(page,'designs').locator('[data-design-action="add-to-plan"]').click();
   await page.getByRole('button',{name:'Pocket spaces',exact:true}).click();
   const composer=page.locator('.plan-composer');
   await expect(composer.getByText('Saving changes creates a new plan revision. Existing links stay unchanged.')).toBeVisible();
   await expect(composer.locator('input[type="checkbox"]:checked')).toHaveCount(2);
   await composer.getByRole('button',{name:'Save new revision',exact:true}).click();
-  await expect(page.locator('.plan-details')).toBeVisible();
+  await expect(stackSection(page,'plans').locator('.click-stack__row')).toHaveAttribute('aria-expanded','true');
   const saved=await page.evaluate(()=>(window as any).PlanWorkspace.list().filter((row:any)=>row.content.title==='Pocket spaces'));
   expect(saved).toHaveLength(2);
   expect(saved.find((row:any)=>row.cid===original.cid).content.designCids).toEqual(original.content.designCids);
   const next=saved.find((row:any)=>row.cid!==original.cid);expect(next.content.designCids).toHaveLength(2);
   expect(writes(page)).toHaveLength(0);
-  await page.locator('.plan-details').getByRole('button',{name:'Create agreement',exact:true}).click();
+  await stackSection(page,'plans').getByRole('button',{name:'Create agreement',exact:true}).click();
   await expect(page.locator('#agreement-editor')).toBeVisible();
   await expect(page.locator('#agreement-editor [data-agreement-plan]')).toHaveValue(next.cid);
   await expect(page.locator('#agreement-editor .plan-composer')).toHaveCount(0);

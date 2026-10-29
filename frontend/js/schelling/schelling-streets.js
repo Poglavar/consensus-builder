@@ -3,15 +3,15 @@
 // Pure: lattice indices in, OSM elements out, so a stranger choosing the same blocks gets the same
 // streets (backend/test/schelling-streets.test.js).
 (function (root, factory) {
-    // The grid loads later than this file in index.html, so it is looked up when first used.
+    // The grid and the street fit load later than this file in index.html, so they are looked up
+    // when first used.
     const grid = () => (root && root.SchellingGrid) || require('../parcels/schelling-grid.js');
-    const api = factory(grid);
+    const fit = () => (root && root.__corridorSiteFit) || require('../proposals/corridor-site-fit.js');
+    const api = factory(grid, fit);
     if (typeof module === 'object' && module.exports) module.exports = api;
     if (root) root.SchellingStreets = api;
-})(typeof window !== 'undefined' ? window : null, function (grid) {
+})(typeof window !== 'undefined' ? window : null, function (grid, fit) {
     'use strict';
-
-    const round3 = value => Math.round(value * 1000) / 1000;
 
     // Angel's arterial: two lanes each way (the outer one for buses), a planted median, cycleways,
     // verges with trees and wide pavements, 30 m in all. Strips run left of travel to right.
@@ -26,20 +26,12 @@
     ]);
 
     // A local street of any width: two lanes, a parking lane each side once there is room for one
-    // beside a 2 m pavement, and the rest to the pavements.
+    // beside a 2 m pavement, and the rest to the pavements up to 3 m, beyond that to a verge. The
+    // same fit a road placed into a parcel gets (corridor-site-fit.js autoProfile).
     function localStrips(widthM) {
         const width = Number(widthM);
         if (!(width >= 7)) throw new RangeError('A local street needs at least 7 m.');
-        const lane = width < 10 ? 2.75 : 3.25;
-        const rest = width - 2 * lane;
-        const parking = rest >= 8 ? 2 : 0;
-        const sidewalk = round3((rest - 2 * parking) / 2);
-        const strips = [{ type: 'sidewalk', width: sidewalk }];
-        if (parking) strips.push({ type: 'parking', width: parking });
-        strips.push({ type: 'driving', width: lane, direction: 'backward' }, { type: 'driving', width: lane, direction: 'forward' });
-        if (parking) strips.push({ type: 'parking', width: parking });
-        strips.push({ type: 'sidewalk', width: sidewalk });
-        return strips;
+        return fit().autoProfile(width).strips;
     }
 
     function profileFor(plan, roadClass) {

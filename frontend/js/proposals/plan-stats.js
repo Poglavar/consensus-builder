@@ -4,7 +4,7 @@
     const salesPrice = () => window.CityMoney.currentAssumptions();
 
     let latestStats = null;
-    let epochView = 'added';
+    let periodView = 'added';
     function yieldApi() {
         return (typeof window !== 'undefined' && window.__planYield) ? window.__planYield : null;
     }
@@ -95,7 +95,14 @@
                 && f.properties?.structureType === proposal.structureProposal?.kind);
             return pieces.length ? pieces.reduce((sum, f) => sum + api.geometryAreaM2(f), 0) : null;
         };
-        const result = api.planYield(records, { ...assumptions, openSpaceAreaOf });
+        // A member's period is the year its construction window ends (built by then). The prepared
+        // records carry their design CID as proposalId; members without a window are unscheduled.
+        const schedule = plan.content.schedule || {};
+        const periodOf = record => {
+            const end = schedule[record.proposalId]?.end;
+            return end ? Number(end.slice(0, 4)) : null;
+        };
+        const result = api.planYield(records, { ...assumptions, openSpaceAreaOf, periodOf });
         const parcels = api.resultingParcels(records, { materializedFeatures });
         const byId = new Map([...cadastralFeatures, ...materializedFeatures].map(f => [String(f.properties?.parcelId ?? f.id), f]));
         let measuredArea = 0, measuredCount = 0;
@@ -158,7 +165,7 @@
         { id: 'plan-stats-persons', i18nKey: 'sidebar.proposals.planStats.personsSuffix', label: 'people per apartment', min: 0.1, step: 0.1, value: d => d.personsPerApartment ?? 2.4 }
     ];
 
-    const EPOCH_COLUMNS = [
+    const PERIOD_COLUMNS = [
         { i18nKey: 'sidebar.proposals.planStats.colProposals', label: 'designs', get: b => formatNumber(b.proposals) },
         { i18nKey: 'sidebar.proposals.planStats.colBuildings', label: 'buildings', get: b => formatNumber(b.buildings) },
         { i18nKey: 'sidebar.proposals.planStats.colFloorArea', label: 'GFA m²', get: b => formatNumber(b.grossFloorAreaM2) },
@@ -241,15 +248,15 @@
         });
         assumptions.appendChild(grid);
 
-        const epochSection = el('div', 'plan-stats-section');
-        epochSection.hidden = true;
-        epochSection.dataset.planStat = 'epoch-section';
+        const periodSection = el('div', 'plan-stats-section');
+        periodSection.hidden = true;
+        periodSection.dataset.planStat = 'period-section';
 
-        const epochHeader = el('div', 'plan-stats-epoch-head');
-        const epochTitle = el('div', 'plan-stats-heading',
+        const periodHeader = el('div', 'plan-stats-period-head');
+        const periodTitle = el('div', 'plan-stats-heading',
             tPlanStats('sidebar.proposals.planStats.byPeriod', 'By period'));
-        epochTitle.setAttribute('data-i18n-key', 'sidebar.proposals.planStats.byPeriod');
-        epochHeader.appendChild(epochTitle);
+        periodTitle.setAttribute('data-i18n-key', 'sidebar.proposals.planStats.byPeriod');
+        periodHeader.appendChild(periodTitle);
 
         // Added · Standing: a segmented control; the chosen view carries aria-pressed.
         const toggle = el('div', 'cb-segmented');
@@ -262,20 +269,20 @@
             const button = el('button', 'cb-segmented__option', tPlanStats(option.i18nKey, option.label));
             button.type = 'button';
             button.setAttribute('data-i18n-key', option.i18nKey);
-            button.setAttribute('aria-pressed', String(option.mode === epochView));
-            button.dataset.epochView = option.mode;
+            button.setAttribute('aria-pressed', String(option.mode === periodView));
+            button.dataset.periodView = option.mode;
             button.addEventListener('click', () => {
-                epochView = option.mode;
-                if (latestStats) renderEpochTable(document.getElementById('plan-stats-modal'), latestStats);
+                periodView = option.mode;
+                if (latestStats) renderPeriodTable(document.getElementById('plan-stats-modal'), latestStats);
             });
             toggle.appendChild(button);
         });
-        epochHeader.appendChild(toggle);
-        epochSection.appendChild(epochHeader);
+        periodHeader.appendChild(toggle);
+        periodSection.appendChild(periodHeader);
 
-        const epochTable = el('div', 'plan-stats-epoch-table');
-        epochTable.dataset.planStat = 'epoch-table';
-        epochSection.appendChild(epochTable);
+        const periodTable = el('div', 'plan-stats-period-table');
+        periodTable.dataset.planStat = 'period-table';
+        periodSection.appendChild(periodTable);
 
         const notes = el('div', 'plan-stats-notes');
         notes.dataset.planStat = 'notes';
@@ -283,7 +290,7 @@
         body.appendChild(scope);
         body.appendChild(summaryList);
         body.appendChild(assumptions);
-        body.appendChild(epochSection);
+        body.appendChild(periodSection);
         body.appendChild(notes);
 
         dialog.appendChild(header);
@@ -300,27 +307,28 @@
         return overlay;
     }
 
-    function renderEpochTable(modal, stats) {
-        const section = modal.querySelector('[data-plan-stat="epoch-section"]');
-        const host = modal.querySelector('[data-plan-stat="epoch-table"]');
+    // Periods are the years the plan's construction windows end in (computePlanStatsSync).
+    function renderPeriodTable(modal, stats) {
+        const section = modal.querySelector('[data-plan-stat="period-section"]');
+        const host = modal.querySelector('[data-plan-stat="period-table"]');
         if (!section || !host) return;
 
         const result = stats.yield;
-        const periods = epochView === 'cumulative' ? result.cumulative : result.byEpoch;
+        const periods = periodView === 'cumulative' ? result.cumulative : result.byPeriod;
         if (!periods || !periods.length) {
             section.hidden = true;
             return;
         }
         section.hidden = false;
 
-        modal.querySelectorAll('[data-epoch-view]').forEach(button => {
-            button.setAttribute('aria-pressed', String(button.dataset.epochView === epochView));
+        modal.querySelectorAll('[data-period-view]').forEach(button => {
+            button.setAttribute('aria-pressed', String(button.dataset.periodView === periodView));
         });
 
         const rows = periods.slice();
-        // "Added" is the only view where the undated proposals are a row of their own; in the
+        // "Added" is the only view where the unscheduled designs are a row of their own; in the
         // cumulative view they are already inside every year, and repeating them would double them.
-        if (epochView === 'added' && result.unassigned.proposals > 0) rows.push(result.unassigned);
+        if (periodView === 'added' && result.unassigned.proposals > 0) rows.push(result.unassigned);
 
         const table = el('table', 'plan-stats-table');
 
@@ -328,7 +336,7 @@
         const periodTh = el('th', null, tPlanStats('sidebar.proposals.planStats.colPeriod', 'period'));
         periodTh.setAttribute('data-i18n-key', 'sidebar.proposals.planStats.colPeriod');
         head.appendChild(periodTh);
-        EPOCH_COLUMNS.forEach(column => {
+        PERIOD_COLUMNS.forEach(column => {
             const th = el('th', 'plan-stats-table__number', tPlanStats(column.i18nKey, column.label));
             th.setAttribute('data-i18n-key', column.i18nKey);
             head.appendChild(th);
@@ -338,10 +346,10 @@
         rows.forEach(bucket => {
             const tr = document.createElement('tr');
             const td = el('td', null, bucket.year === null
-                ? tPlanStats('sidebar.proposals.planStats.noEpoch', 'no period')
+                ? tPlanStats('sidebar.proposals.planStats.noPeriod', 'no period')
                 : String(bucket.year));
             tr.appendChild(td);
-            EPOCH_COLUMNS.forEach(column => {
+            PERIOD_COLUMNS.forEach(column => {
                 tr.appendChild(el('td', 'plan-stats-table__number', column.get(bucket)));
             });
             table.appendChild(tr);
@@ -457,7 +465,7 @@
         }
         set('notes', notes.join(' '));
 
-        renderEpochTable(modal, stats);
+        renderPeriodTable(modal, stats);
 
         const wasHidden = modal.hidden;
         modal.hidden = false;
@@ -611,6 +619,18 @@
         const swap = el('button', 'btn btn-sm plan-compare__swap', tPlanStats('planCompare.swap', 'Swap rows and columns'));
         swap.type = 'button';
         swap.dataset.planCompareSwap = '';
+        // The same plans under the map's divider (three-compare.js, no apply): the first two chosen
+        // plans side by side, or one plan beside Built today.
+        const measured = prepared.filter(row => row.cid);
+        const sideBySide = el('button', 'btn btn-sm plan-compare__side-by-side', tPlanStats('planCompare.sideBySide', 'Side by side on the map'));
+        sideBySide.type = 'button';
+        sideBySide.dataset.planCompareSideBySide = '';
+        sideBySide.disabled = !measured.length || !window.ThreeCompare?.show;
+        sideBySide.addEventListener('click', () => {
+            const [first, second] = measured;
+            dialog?.close?.();
+            window.ThreeCompare.show({ left: second ? `plan:${first.cid}` : 'built', right: `plan:${(second || first).cid}` });
+        });
         const scroll = el('div', 'plan-compare__scroll');
         const draw = () => {
             scroll.innerHTML = '';
@@ -646,6 +666,7 @@
             'Public land is roads and OpenStreetMap parks and squares; private land is the rest of the parcels. The present state counts every existing building on that land.'));
         body.appendChild(basisField);
         body.appendChild(swap);
+        body.appendChild(sideBySide);
         body.appendChild(scroll);
         body.appendChild(note);
         body.appendChild(definition);

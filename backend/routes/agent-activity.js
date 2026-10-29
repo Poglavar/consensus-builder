@@ -495,8 +495,8 @@ function runDetail(row, costs = [], book = null) {
 }
 
 // Agreements per city, for the globe's city markers: rows of GROUP BY city folded by the city's id
-// ('zg' and 'zagreb' are one city), largest first. Rows without a city are not a place on the globe
-// and are left out.
+// (trimmed and lower-cased, no alias lookup: ' Zagreb ' and 'zagreb' are one city), largest first.
+// Rows without a city are not a place on the globe and are left out.
 export function cityAgreementCounts(rows = []) {
     const counts = new Map();
     for (const row of rows) {

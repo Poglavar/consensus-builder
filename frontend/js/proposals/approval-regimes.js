@@ -340,5 +340,48 @@
         return gain ? gain.numerator / gain.denominator : 0;
     }
 
-    return { CHECKED, CHECKED_VALUE, FAMILIES, REGIMES, list, get, latest, policyOf, needs, checkAllocation, valueGainRatio };
+    // The dimensions every scheme is described and compared by, in this order and grouped as the
+    // scheme guide shows them (approval-text.js words each value the same way for every scheme).
+    const DIMENSIONS = [
+        { group: 'decision', ids: ['initiator', 'decider', 'support', 'electorate', 'dissenters', 'stage'] },
+        { group: 'distribution', ids: ['basis', 'publicLand', 'levelling', 'valueGain', 'minParties'] }
+    ];
+
+    /**
+     * A template in those dimensions, as codes. The catalogue does not store who starts a scheme or
+     * what happens to owners who say no: the initiator follows from the family (an authority-led
+     * scheme is started by the authority, the others by owners gathering support), and dissenters
+     * follow from the tests (a test of every owner is a veto) and the family.
+     * @returns {{ initiator: 'owners'|'authority', decider: 'owners'|'owners-and-authority'|'authority',
+     *   support: object[], electorate: null|{ holders: 'owners'|'owners-and-leaseholders', privateOnly: boolean },
+     *   dissenters: 'veto'|'bound-by-majority'|'bound-by-authority', stage: string,
+     *   basis: 'area'|'value'|'either', publicLand: null|{ per: 'owner'|'pool', ratio: number, basis: string|null },
+     *   levelling: 'money', valueGain: null|number, minParties: number }}
+     *   valueGain is the share of each owner's value gain settled in money (0: kept in land), null when
+     *   the scheme shares land by area only.
+     */
+    function dimensionsOf(regime) {
+        const tests = regime.tests || [];
+        const allocation = regime.allocation || {};
+        const cap = allocation.cap;
+        const unanimous = tests.some(row => row.measure === 'headcount' && row.numerator === row.denominator && !row.strict);
+        return {
+            initiator: regime.family === 'authority-led' ? 'authority' : 'owners',
+            decider: regime.family === 'voluntary' ? 'owners' : regime.family === 'authority-led' ? 'authority' : 'owners-and-authority',
+            support: tests.map(row => ({ ...row })),
+            electorate: tests.length ? {
+                holders: tests.some(row => row.of !== 'owners') ? 'owners-and-leaseholders' : 'owners',
+                privateOnly: tests.every(row => row.scope === 'private')
+            } : null,
+            dissenters: unanimous ? 'veto' : regime.family === 'authority-led' ? 'bound-by-authority' : 'bound-by-majority',
+            stage: regime.stage,
+            basis: allocation.basis || 'either',
+            publicLand: cap ? { per: cap.per, ratio: ratio(cap), basis: cap.basis || null } : null,
+            levelling: 'money',
+            valueGain: allocation.basis === 'area' ? null : valueGainRatio(regime),
+            minParties: regime.minParties || 1
+        };
+    }
+
+    return { CHECKED, CHECKED_VALUE, FAMILIES, REGIMES, DIMENSIONS, list, get, latest, policyOf, needs, checkAllocation, valueGainRatio, dimensionsOf };
 });

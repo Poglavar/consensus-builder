@@ -436,11 +436,6 @@ function applyProposalListFilters(dataset) {
     // Publication is independent of whether the design is applied on this map.
     const publicationFilter = proposalListState.publicationFilter || 'all';
 
-    // Vremenska crta plana: kumulativni filtar po epohi (null = bez filtra).
-    if (window.__proposalEpoch) {
-        dataset = window.__proposalEpoch.filterEntriesCumulative(dataset, window.__proposalEpoch.getSelectedYear());
-    }
-
     return dataset.filter(entry => {
         const { metrics } = entry;
         if (goalFilter !== 'all' && metrics.goalKey !== goalFilter) {
@@ -635,7 +630,6 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                         ${proposalLadderBadgesHtml(proposal, { applied: appliedState })}
                         ${agentProvenance ? `<span class="cb-badge cb-badge--published proposal-agent-badge" title="${escapeHtml(agentBadgeTitle)}"><i class="fas fa-robot" aria-hidden="true"></i> ${escapeHtml(agentBadgeLabel)}</span>` : ''}
                     </div>
-                    ${window.__proposalEpoch ? window.__proposalEpoch.cardEpochSelectHtml(proposal, proposalId) : ''}
                 </div>
             </div>
         `;
@@ -694,8 +688,6 @@ async function handleProposalListItemClick(event) {
     const item = event.currentTarget;
     if (!item) return;
 
-    // Izbornik epohe na kartici mijenja godinu, ne otvara prijedlog.
-    if (event.target && event.target.closest && event.target.closest('.proposal-epoch-card-select')) return;
     if (event.target && event.target.closest && event.target.closest('.proposal-list-details-btn')) return;
 
     const proposalIdAttr = item.getAttribute('data-proposal-id');
@@ -927,9 +919,8 @@ function proposalPanelFitPadding(rect, viewport, margin = 40) {
 function getProposalPanelFitPadding(margin = 40) {
     let rect = null;
     try {
-        const listModal = document.querySelector('.proposal-list-modal');
-        const listPanel = document.querySelector('.proposal-list-modal-content');
-        if (listModal && window.MapShell?.isOpen?.('proposals-sheet') && listPanel) {
+        const listPanel = document.getElementById('proposals-sheet');
+        if (window.MapShell?.isOpen?.('proposals-sheet') && listPanel) {
             rect = listPanel.getBoundingClientRect();
         } else {
             const details = ['agreement-panel', 'proposal-details-panel'].map(id => document.getElementById(id))

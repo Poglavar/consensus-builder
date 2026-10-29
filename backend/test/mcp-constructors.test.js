@@ -23,6 +23,12 @@ describe('MCP shared construction generators', () => {
         expect(buildTypedDesign({ ...common, typology }, selected)).toEqual(design);
         for (const building of design.geometry.buildings) expect(turf.booleanWithin(building, parcel)).toBe(true);
     });
+    it.each([['block', options], ['row', rowOptions], ['detached', options]])('carries balconies and a slanted roof on every %s building', (typology, selected) => {
+        const design = buildTypedDesign({ ...common, typology, balconyDepthM: 2, roof: 'pitched' }, selected);
+        for (const building of design.geometry.buildings) expect(building.properties.urbanRule).toMatchObject({ balconyDepthM: 2, roof: 'pitched' });
+        expect(() => buildTypedDesign({ ...common, typology, roof: 'gabled' }, selected)).toThrow(/flat or pitched/);
+        expect(() => buildTypedDesign({ ...common, typology, balconyDepthM: 6 }, selected)).toThrow(/balconyDepthM/);
+    });
     it('derives freeform floors from an explicit height when floors are omitted', () => {
         const design = buildTypedDesign({ kind: 'building', typology: 'freeform', site, height: 21 }, options);
         expect(design.geometry.buildings[0].properties).toMatchObject({ floors: 7, height: 21 });

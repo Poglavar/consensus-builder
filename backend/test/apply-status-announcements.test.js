@@ -132,7 +132,8 @@ describe('the existing-buildings fetch', () => {
     function loadGate() {
         const start = dataSource.indexOf('    function buildBuildingRequestParams(bounds, source = \'gdi\') {');
         expect(start, 'buildBuildingRequestParams not found').toBeGreaterThan(-1);
-        const end = dataSource.indexOf('    function initDataSourceUI() {', start);
+        const end = dataSource.indexOf('    function resolveBackendAssetUrl(url) {', start);
+        expect(end, 'end of buildBuildingRequestParams not found').toBeGreaterThan(start);
         const body = dataSource.slice(start, end);
         // eslint-disable-next-line no-new-func
         const factory = new Function('CityConfigManager', 'getBackendBase', 'URLSearchParams', 'window',

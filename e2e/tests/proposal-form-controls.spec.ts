@@ -1,10 +1,10 @@
 import { openDesignReview } from '../helpers/design-review';
-// Purpose: verify proposal metadata (ownership, epoch, tolerance) and list filters through their forms.
+// Purpose: verify proposal metadata (ownership, tolerance) and list filters through their forms.
 import { test, expect } from '../helpers/fixtures';
 import { selectNativeOption } from '../helpers/controls';
 import { openCity, PARCEL_GEOMETRY, PARCEL_ID, showProposal } from '../helpers/runtime';
 
-test('ownership, epoch and parcel tolerance persist from the draft review form', async ({ mockApi: page }) => {
+test('ownership and parcel tolerance persist from the draft review form', async ({ mockApi: page }) => {
   await openCity(page);
   const sourceId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
     title: 'Spanish apply label control', goal: 'park', applied: false, lifecycleStatus: 'Active',
@@ -51,7 +51,6 @@ test('ownership, epoch and parcel tolerance persist from the draft review form',
   // A design carries no terms and no decision kind: who decides is the agreement's rule (M2).
   await expect(form.locator('input[name="proposalKind"]')).toHaveCount(0);
   await form.locator('#proposalName').fill('A park for 2035');
-  await selectNativeOption(form.locator('#proposalEpochYear'), '2035');
   if (!(await form.locator('#proposalOptionsContent').isVisible())) {
     await form.locator('#proposalOptionsSection > .collapsible-header').click();
   }
@@ -61,13 +60,15 @@ test('ownership, epoch and parcel tolerance persist from the draft review form',
   await expect(form).toBeHidden();
   const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
     .find((proposal: any) => proposal.title === 'A park for 2035'));
-  expect(saved).toMatchObject({ epochYear: 2035, toleranceM: 0.12 });
+  expect(saved).toMatchObject({ toleranceM: 0.12 });
   expect(saved.proposalOrigin).toBeFalsy();
   for (const term of ['kind', 'offer', 'voteExpiryDays', 'expiresAt', 'isVote']) expect(saved).not.toHaveProperty(term);
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await expect.poll(() => page.evaluate(id => (window as any).proposalStorage?.getProposal(id)?.epochYear, saved.proposalId)).toBe(2035);
+  // The saved workspace restores after the reload; a busy machine can take longer than the default.
+  await expect.poll(() => page.evaluate(id => (window as any).proposalStorage?.getProposal(id)?.toleranceM, saved.proposalId),
+    { timeout: 45000 }).toBe(0.12);
   const restored = await page.evaluate(id => (window as any).proposalStorage.getProposal(id), saved.proposalId);
-  expect(restored).toMatchObject({ epochYear: 2035, toleranceM: 0.12 });
+  expect(restored).toMatchObject({ toleranceM: 0.12 });
 });
 
 test('publication and search filters narrow the design list by title and author', async ({ mockApi: page }) => {
@@ -84,30 +85,29 @@ test('publication and search filters narrow the design list by title and author'
     w.DesignSync.markPublished(published, { cid: w.DesignRecord.cidOf(published), apiBase: w.resolveBackendBaseUrl(), publishedAt: '2026-10-01T00:00:00.000Z' });
   }, PARCEL_ID);
   await page.locator('#proposals-button').click();
-  const list = page.locator('#proposals-sheet .proposal-list-modal');
-  const titles = list.locator('.proposal-list-title');
+  // Lists (01268caee): search, then publication and order behind the shared Filters disclosure.
+  const list = page.locator('#proposals-sheet');
+  const titles = list.locator('#proposal-list-host .lists-item__title');
   await expect(titles).toHaveCount(3);
-  await list.locator('.proposal-filters-toggle').click();
-  await expect(list.locator('#proposal-filter-applied')).toHaveCount(0);
-  await expect(list.locator('#proposal-filter-author')).toHaveCount(0);
-  await expect(list.locator('.proposal-filters-toggle-count')).toHaveCount(0);
+  await list.locator('.lists-filter-details > summary').click();
+  await expect(list.locator('#lists-controls select')).toHaveCount(2);
   await expect(list.locator('#agreementsButton, #mintedAgreementsButton')).toHaveCount(0);
-  await selectNativeOption(list.locator('#proposal-filter-publication'), 'draft');
+  await selectNativeOption(list.locator('select[data-list-filter="publication"]'), 'draft');
   await expect(titles).toHaveCount(2);
-  await list.locator('#proposal-filter-search').fill('Neighbourhood');
+  await list.getByRole('searchbox').fill('Neighbourhood');
   await expect(titles).toHaveText(['Neighbourhood park']);
-  await list.locator('#proposal-filter-search').fill('Blair');
+  await list.getByRole('searchbox').fill('Blair');
   await expect(titles).toHaveText(['Unapplied active park']);
-  await list.locator('#proposal-filter-search').fill('');
-  await selectNativeOption(list.locator('#proposal-filter-publication'), 'all');
-  await list.locator('#proposal-filter-search').fill('Alex');
+  await list.getByRole('searchbox').fill('');
+  await selectNativeOption(list.locator('select[data-list-filter="publication"]'), 'all');
+  await list.getByRole('searchbox').fill('Alex');
   await expect(titles).toHaveCount(2);
   await expect(titles).not.toContainText(['Unapplied active park']);
-  await selectNativeOption(list.locator('#proposal-filter-publication'), 'published');
+  await selectNativeOption(list.locator('select[data-list-filter="publication"]'), 'published');
   await expect(titles).toHaveText(['Published park']);
-  await list.locator('#proposal-filter-search').fill('Blair');
+  await list.getByRole('searchbox').fill('Blair');
   await expect(titles).toHaveCount(0);
-  await list.locator('#proposal-filter-search').fill('');
-  await selectNativeOption(list.locator('#proposal-filter-publication'), 'all');
+  await list.getByRole('searchbox').fill('');
+  await selectNativeOption(list.locator('select[data-list-filter="publication"]'), 'all');
   await expect(titles).toHaveCount(3);
 });

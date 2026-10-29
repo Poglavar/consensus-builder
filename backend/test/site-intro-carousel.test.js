@@ -110,7 +110,7 @@ describe('site intro carousel', () => {
         { pathname: '/bets/market-account', search: '' },
         { pathname: '/monitors/4', search: '' },
         { pathname: '/', search: '?parcel=HR-1' },
-        { pathname: '/', search: '?focusProposal=851&photo=1' },
+        { pathname: '/', search: '?design=851&photo=1' },
         { pathname: '/', search: '?activity=proposal%3A851' },
         { pathname: '/', search: '?scene=courtyard' },
         { pathname: '/', search: '?at=-1.264,36.840,17' },

@@ -320,8 +320,8 @@ test('parcel block inspector tabs switch to their supported information and tool
   await page.locator('#showBlockListButton').click();
   const blockItem = page.locator('#blocks-content .block-item').first();
   await expect(blockItem).toBeVisible();
+  // Picking a block closes the Layers sheet itself (e9e20e1e1).
   await blockItem.click();
-  await page.locator('#layers-sheet [data-sheet-close]').click();
   await expect(sheet).toBeHidden();
 
   const panel = page.locator('#block-info-panel');

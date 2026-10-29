@@ -30,3 +30,9 @@ export function cityMoney(cityId) {
     if (!config || config.id !== cityId) throw new Error(`No city config for "${cityId}"; its currency is unknown.`);
     return CityMoney.forCity(() => config);
 }
+
+// The side of the road a city's traffic keeps to ('left' or 'right'), as the browser's
+// CityConfigManager.getDrivingSide reads it: the MCP drafts and imports roads for that city with it.
+export function cityDrivingSide(cityId) {
+    return cityConfigs().getDrivingSide(cityId);
+}

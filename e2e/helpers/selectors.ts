@@ -29,9 +29,11 @@ export const selectors = {
   measurementSheet: '#measurement-sheet',
   activityButton: '#activity-button',
   activitySheet: '#activity-sheet',
-  // Simulation lives in its own top-level Settings accordion section.
-  simulationSection: '#settings-sheet details.activity-simulation[data-section="game"]',
-  simulationSummary: '#settings-sheet details.activity-simulation[data-section="game"] > summary',
+  // Advanced is the only Settings accordion; MapShell collapses it on every open. Simulation is a
+  // flat section inside it.
+  settingsAdvanced: '#settings-sheet details.accordion-section[data-section="advanced"]',
+  settingsAdvancedSummary: '#settings-sheet details.accordion-section[data-section="advanced"] > summary',
+  simulationSection: '#settings-sheet section.activity-simulation[data-section="game"]',
   simulationPlayPause: '#game-play-pause-btn',
   simulationSettings: '#settings-sheet .activity-simulation-settings',
   simulationRunningDot: '#activity-running-dot',

@@ -4,7 +4,7 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity } from '../helpers/runtime';
 import { cidOfObject, pageIndex } from '../helpers/mocks/shared-server';
-import { fileIndexedAgreement, proposeOverPark } from '../helpers/agreements';
+import { closeAgreementPanel, fileIndexedAgreement, proposeOverPark } from '../helpers/agreements';
 import { Page } from '@playwright/test';
 
 const shortCid = (cid: string) => `${cid.slice(0, 12)}…${cid.slice(-6)}`;
@@ -326,8 +326,8 @@ test.describe('Activity and simulation controls @features', () => {
     await expect(panel).toBeVisible({ timeout: 30_000 });
     await expect(page.locator('#agreement-panel-title')).toHaveText(title);
     await expect(panel.locator('code.agreement-panel-cid')).toHaveAttribute('title', cid);
-    await panel.locator('[data-agreement-action="close"]').click();
-    await expect(panel).toBeHidden();
+    // The panel is hosted in the click stack, which has no × of its own: Escape closes it (bfc91e9bf).
+    await closeAgreementPanel(page);
 
     // A design's link opens the design this device holds under that CID.
     await openActivityPanel(page);

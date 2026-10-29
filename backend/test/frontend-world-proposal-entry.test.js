@@ -5,7 +5,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 const source = readFileSync(new URL('../../frontend/js/world/proposal-entry.js', import.meta.url), 'utf8');
-function setup(proposal) {
+function setup(proposal, { keepsView = false } = {}) {
     const win = {
         location: { origin: 'http://localhost:8107', href: 'http://localhost:8107/?world=1&lang=hr&backend=http%3A%2F%2Flocalhost%3A3037', search: '' },
         document: { readyState: 'loading', getElementById: () => 'details-panel' }, addEventListener: vi.fn(), history: { pushState: vi.fn(), replaceState: vi.fn() },
@@ -18,6 +18,7 @@ function setup(proposal) {
         setProposalDetailsPanelMinimized: vi.fn(),
         whenAppBooted: vi.fn(async () => {}), openBetDialog: vi.fn(async () => ({})),
         AgreementSync: { handleAgreementRoute: vi.fn(async () => true) },
+        SelectionAddress: { keepsView: () => keepsView }, ClickStack: { keepNextView: vi.fn() },
     };
     win.location.assign = vi.fn();
     vm.runInNewContext(source, { window: win, URL, URLSearchParams });
@@ -26,13 +27,13 @@ function setup(proposal) {
 // A city pick on the globe arrives on that city's latest published design, by its CID (ui/world-entry.js);
 // a design read from the index is stored locally as design-<cid>.
 const DESIGN = 'bafkreiehkrtqnkc7fjuviaz4oyqis7wexv3zsq3vfzknyf43rc5qvygce4';
-const event = { proposalId: DESIGN, cityId: 'zagreb', href: `/?focusProposal=${DESIGN}&city=zagreb` };
+const event = { proposalId: DESIGN, cityId: 'zagreb', href: `/?design=${DESIGN}&city=zagreb` };
 describe('opening a globe design on the map', () => {
     for (const applied of [true,false]) it(`preserves the local ${applied ? 'applied' : 'unapplied'} copy and opens existing selection`, async () => {
         const proposal = { proposalId: `design-${DESIGN}`, applied }; const win = setup(proposal);
         await win.WorldProposalEntry.open(event);
         expect(win.importServerProposal).not.toHaveBeenCalled();
-        expect(win.openProposalFromList).toHaveBeenCalledWith(`design-${DESIGN}`, { proposal, closeSheets: true });
+        expect(win.openProposalFromList).toHaveBeenCalledWith(`design-${DESIGN}`, { proposal, closeSheets: true, centerOnProposal: true });
         expect(win.applyProposalToMap).not.toHaveBeenCalled();
         expect(proposal.applied).toBe(applied);
         expect(win.WorldView.close).toHaveBeenCalledOnce();
@@ -49,14 +50,14 @@ describe('opening a globe design on the map', () => {
         expect(win.applyProposalToMap).not.toHaveBeenCalled();
     });
     it('switches city with a map-focus route and preserves language and local backend routing', async () => {
-        const win = setup(null); const other = { ...event, cityId: 'new_york', href: `/?focusProposal=${DESIGN}&city=new_york` };
+        const win = setup(null); const other = { ...event, cityId: 'new_york', href: `/?design=${DESIGN}&city=new_york` };
         await win.WorldProposalEntry.open(other);
         expect(win.CityConfigManager.switchCity).toHaveBeenCalledWith('new_york', { requireConfirmation: false, url: expect.any(String) });
         expect(win.WorldHandoff.store).toHaveBeenCalledWith({ dataUrl: 'data:image/jpeg;base64,globe', cityId: 'new_york', proposalId: DESIGN });
         // the switch goes to the design's address; the entry being left is not rewritten (Back)
         expect(win.history.replaceState).not.toHaveBeenCalled();
         const route = new URL(win.CityConfigManager.switchCity.mock.calls[0][1].url, win.location.origin);
-        expect(route.searchParams.get('focusProposal')).toBe(DESIGN);
+        expect(route.searchParams.get('design')).toBe(DESIGN);
         expect(route.searchParams.get('lang')).toBe('hr');
         expect(route.searchParams.get('backend')).toBe('http://localhost:3037');
         expect(route.searchParams.has('world')).toBe(false);
@@ -90,6 +91,18 @@ describe('opening a globe design on the map', () => {
         win.importServerProposal.mockRejectedValue(new Error('offline'));
         await expect(win.WorldProposalEntry.open(event, { fromUrl: true })).rejects.toThrow('offline');
         expect(win.WorldHandoff.proposalReady).toHaveBeenCalledTimes(2);
+    });
+    it('reopens a reloaded selection where the view in the address left it, framing it only without one', async () => {
+        const proposal = { proposalId: `design-${DESIGN}`, applied: false };
+        const kept = setup(proposal, { keepsView: true });
+        await kept.WorldProposalEntry.open(event, { fromUrl: true });
+        expect(kept.ClickStack.keepNextView).toHaveBeenCalledWith();
+        expect(kept.openProposalFromList.mock.calls[0][1].centerOnProposal).toBe(false);
+        expect(kept.ClickStack.keepNextView).toHaveBeenLastCalledWith(false);
+        const framed = setup(proposal, { keepsView: true });
+        await framed.WorldProposalEntry.open(event);
+        expect(framed.ClickStack.keepNextView).not.toHaveBeenCalled();
+        expect(framed.openProposalFromList.mock.calls[0][1].centerOnProposal).toBe(true);
     });
 });
 

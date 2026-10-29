@@ -124,6 +124,8 @@
                 remember(current);
                 win.document.title = `${current.content.title} · Consensus Builder`;
                 const loaded = await win.handleSharedDesignRoute(current.content.designCids, { frame: false, openDetails: false });
+                // A scheduled plan opens its time control; ?when= opens it at that month, ?buildout= simulates it.
+                win.BuildoutClock?.arrive(current);
                 if (!loaded.blocked && !loaded.failed.length) {
                     win.showEphemeralMessage(t('proposals.share.named.opened', 'Opened “{{title}}”.', { title: current.content.title }), 6000, 'success');
                 }

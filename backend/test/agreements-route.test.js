@@ -28,13 +28,13 @@ function agreementContent(designs, overrides = {}) {
     const initial = rawAgreementContent(designs, overrides);
     delete initial.designs;
     const inputM2 = initial.inputs.parcels.reduce((sum, parcel) => sum + parcel.areaM2, initial.inputs.openGroundM2 || 0);
-    const partyKeys = [...new Set(initial.inputs.parcels.flatMap(parcel => parcel.holders.map(holder => holder.ownerKey)))];
+    const partyKeys = initial.inputs.parcels.map(parcel => AgreementRecord.partyKey(parcel.parcelId));
     initial.outputs = initial.outputs.map((output, index, list) => ({
         ...output, pieceId: undefined,
         hash: pieceHash(`explicit-output-${index}-${designs.length}`),
         areaM2: inputM2 / list.length,
         fromParcelIds: initial.inputs.parcels.map(parcel => parcel.parcelId),
-        holders: [], geometry: null
+        geometry: null
     }));
     initial.allocations = initial.rule.electorate === 'community' ? [] : initial.outputs.map((output, index) => ({
         output: output.hash, to: partyKeys.length ? { kind: 'party', ownerKey: partyKeys[index % partyKeys.length] } : { kind: 'public' }
@@ -190,8 +190,8 @@ describe('POST /agreements', () => {
         const { app, thumbnailQueue } = appFor(pool);
         const content = agreementContent([park, layout], { inputs: {
             parcels: [
-                { parcelId: 'HR-335649-100', parcelSourceId: 'oss-wfs', areaM2: 600, holders: [{ ownerKey: 'owner-a', share: 1 }] },
-                { parcelId: 'HR-335649-999', parcelSourceId: 'oss-wfs', areaM2: 10, holders: [{ ownerKey: 'owner-z', share: 1 }] }
+                { parcelId: 'HR-335649-100', parcelSourceId: 'oss-wfs', areaM2: 600 },
+                { parcelId: 'HR-335649-999', parcelSourceId: 'oss-wfs', areaM2: 10 }
             ],
             openGroundM2: 0
         } });
@@ -212,9 +212,9 @@ describe('POST /agreements', () => {
         pool.answer(DESIGN_MANY, (sql, params) => ({ rows: params[0].map(cid => rows[cid]).filter(Boolean) }));
         pool.answer(INSERT_AGREEMENT, (sql, params) => ({ rows: [insertedAgreement(params)] }));
         const inputs = { parcels: [
-            { parcelId: 'HR-335649-100', parcelSourceId: 'oss-wfs', areaM2: 600, holders: [{ ownerKey: 'owner-a', share: 1 }] },
-            { parcelId: 'HR-335649-101', areaM2: 400, holders: [{ ownerKey: 'owner-b', share: 1 }] },
-            { parcelId: 'BG-77-1', areaM2: 80, holders: [{ ownerKey: 'owner-d', share: 1 }] }
+            { parcelId: 'HR-335649-100', parcelSourceId: 'oss-wfs', areaM2: 600 },
+            { parcelId: 'HR-335649-101', areaM2: 400 },
+            { parcelId: 'BG-77-1', areaM2: 80 }
         ], openGroundM2: 0 };
         expect((await post(appFor(pool).app, agreementContent([park, unknown], { inputs }))).status).toBe(201);
         // A parcel a design takes is still required.
@@ -324,7 +324,7 @@ describe('validateAgreementContent', () => {
             ok: true, designCids: [cidOf(park), cidOf(layout)], inputParcelIds: ['HR-335649-100', 'HR-335649-101'],
             parcelSourceId: 'oss-wfs', deadline: '2099-01-01T00:00:00.000Z'
         });
-        const sourcedContent = agreementContent([park, layout], { inputs: { parcels: [{ parcelId: 'US-NY-1', parcelSourceId: 'nyc-mappluto', areaM2: 10, holders: [holder('a')] }], openGroundM2: 0 } });
+        const sourcedContent = agreementContent([park, layout], { inputs: { parcels: [{ parcelId: 'US-NY-1', parcelSourceId: 'nyc-mappluto', areaM2: 10 }], openGroundM2: 0 } });
         const sourced = validateAgreementContent(sourcedContent, { now: NOW });
         expect(sourced).toMatchObject({ ok: true, parcelSourceId: 'nyc-mappluto', inputParcelIds: ['US-NY-1'] });
         expect(validateAgreementContent(agreementContent([park, layout], { inputs: { parcels: [], openGroundM2: 120 } }), { now: NOW }).ok).toBe(true);
@@ -360,8 +360,10 @@ describe('validateAgreementContent', () => {
         ['allocation', { allocations: [{ output: valid.outputs[0].hash, to: { kind: 'joint', shares: [holder('a', 0.5), holder('b', 0.4)] } }] }],
         ['money', { money: { currency: 'SOL', lines: [] } }],
         ['money', { money: { currency: 'usd', lines: [] } }],
-        ['money', { money: { currency: 'EUR', lines: [{ ownerKey: 'owner-a', amountCents: 1 }, { ownerKey: 'owner-a', amountCents: 2 }] } }],
-        ['money', { money: { currency: 'EUR', lines: [{ ownerKey: 'owner-a', amountCents: 10.5 }] } }],
+        ['money', { money: { currency: 'EUR', lines: [{ ownerKey: 'parcel-owner:HR-335649-100', amountCents: 1 }, { ownerKey: 'parcel-owner:HR-335649-100', amountCents: 2 }] } }],
+        ['money', { money: { currency: 'EUR', lines: [{ ownerKey: 'parcel-owner:HR-335649-100', amountCents: 10.5 }] } }],
+        ['money', { money: { currency: 'EUR', lines: [{ ownerKey: 'owner-a', amountCents: 100 }] } }],
+        ['allocation', { allocations: valid.allocations.map((line, index) => (index ? line : { ...line, to: { kind: 'party', ownerKey: 'owner-a' } })) }],
         ['rule', { rule: { electorate: 'everyone', binding: true, lens: [] } }],
         ['rule', { rule: { electorate: 'owners', binding: 'yes', lens: [] } }],
         ['rule', { rule: { electorate: 'owners', binding: true, lens: 'member' } }],
@@ -373,19 +375,19 @@ describe('validateAgreementContent', () => {
         expect(refused(patch)).toMatchObject({ ok: false, status: 400, code: 'invalid-agreement', section });
     });
 
-    it('refuses broken input parcels and holders', () => {
+    it('refuses broken input parcels and any named holders', () => {
         for (const parcels of [
-            [{ areaM2: 1, holders: [] }],
-            [{ parcelId: 'p', areaM2: 1, holders: [holder('a')] }, { parcelId: 'p', areaM2: 1, holders: [holder('b')] }],
-            [{ parcelId: 'p', areaM2: -1, holders: [holder('a')] }],
-            [{ parcelId: 'p', areaM2: 1 }],
-            [{ parcelId: 'p', areaM2: 1, holders: [holder('a', 0)] }],
-            [{ parcelId: 'p', areaM2: 1, holders: [holder('a', 1.5)] }],
-            [{ parcelId: 'p', areaM2: 1, holders: [holder('a', 0.5), holder('a', 0.5)] }],
-            [{ parcelId: 'p', parcelSourceId: 'one', areaM2: 1, holders: [holder('a')] }, { parcelId: 'q', parcelSourceId: 'two', areaM2: 1, holders: [holder('b')] }]
+            [{ areaM2: 1 }],
+            [{ parcelId: 'p', areaM2: 1 }, { parcelId: 'p', areaM2: 1 }],
+            [{ parcelId: 'p', areaM2: -1 }],
+            [{ parcelId: 'p', areaM2: 1, holders: [holder('a')] }],
+            [{ parcelId: 'p', areaM2: 1, holders: [] }],
+            [{ parcelId: 'p', areaM2: 1, holders: [holder('parcel-owner:p')] }],
+            [{ parcelId: 'p', parcelSourceId: 'one', areaM2: 1 }, { parcelId: 'q', parcelSourceId: 'two', areaM2: 1 }]
         ]) {
             expect(withInputs(parcels), JSON.stringify(parcels)).toMatchObject({ ok: false, code: 'invalid-agreement', section: 'land' });
         }
+        expect(withInputs([{ parcelId: 'p', areaM2: 1, holders: [holder('a')] }]).error).toMatch(/names holders.*parcel-owner:p/);
     });
 
     it('requires planCid and forbids agreement-owned membership', () => {

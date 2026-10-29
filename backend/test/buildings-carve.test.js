@@ -99,7 +99,11 @@ function primePool() {
     ]);
 }
 
-const NEAR_BODY = { geometry: { type: 'Point', coordinates: [15.971, LAT0] }, buffer_meters: 300 };
+// The caller names the building dataset; geography never selects one (87a04d800). These rows are
+// Zagreb's GDI meshes, so the requests name 'gdi-3d' and, as Zagreb's city config does, the 'zagreb'
+// floor-model namespace (no namespace means no floor-model lookup).
+const SOURCE = 'gdi-3d';
+const NEAR_BODY = { geometry: { type: 'Point', coordinates: [15.971, LAT0] }, buffer_meters: 300, source: SOURCE, floorModelNamespace: 'zagreb' };
 
 describe('POST /buildings/near with `proposals`', () => {
     it('leaves the response untouched when `proposals` is absent', async () => {
@@ -234,7 +238,7 @@ describe('POST /buildings/carve', () => {
             { rows: BUILDINGS, rowCount: BUILDINGS.length }
         ]);
 
-        const res = await request(app).post('/buildings/carve').send({ proposals: ['p-carve-test'] });
+        const res = await request(app).post('/buildings/carve').send({ proposals: ['p-carve-test'], source: SOURCE });
 
         expect(res.status).toBe(200);
         expect(res.body.count).toBe(2);
@@ -266,7 +270,7 @@ describe('POST /buildings/carve', () => {
     it('returns an empty carve list when the ids match no applied proposal', async () => {
         pool.setResults([{ rows: [], rowCount: 0 }]);
 
-        const res = await request(app).post('/buildings/carve').send({ proposals: ['p-nope'] });
+        const res = await request(app).post('/buildings/carve').send({ proposals: ['p-nope'], source: SOURCE });
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ carves: [], count: 0, source: null });
@@ -280,7 +284,7 @@ describe('POST /buildings/carve', () => {
             { rows: BUILDINGS, rowCount: BUILDINGS.length }
         ]);
 
-        const res = await request(app).post('/buildings/carve').send({ proposals: ['p-carve-test'] });
+        const res = await request(app).post('/buildings/carve').send({ proposals: ['p-carve-test'], source: SOURCE });
 
         expect(res.status).toBe(200);
         // The whole point: no dgu_gdi_building_match query is issued, because a record already
@@ -316,7 +320,7 @@ describe('POST /buildings/carve', () => {
             { rows: BUILDINGS, rowCount: BUILDINGS.length }
         ]);
 
-        const res = await request(app).post('/buildings/carve').send({ proposals: ['p-carve-test'] });
+        const res = await request(app).post('/buildings/carve').send({ proposals: ['p-carve-test'], source: SOURCE });
 
         expect(res.status).toBe(200);
         expect(res.body.carves).toEqual([]);

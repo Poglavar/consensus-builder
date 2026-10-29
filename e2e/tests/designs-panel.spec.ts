@@ -14,13 +14,18 @@ async function openPlans(page:any) {
   await page.locator('#shareAppliedProposalsButton').click();
   await expect(page.locator('#designs-plans')).toBeVisible();
 }
+// Lists (01268caee) puts Create plan in the shared #lists-actions row; a created plan opens in the
+// click stack's Plan section (0d7bf0e8d), which holds Share plan.
+const planSection=(page:any)=>page.locator('#click-stack .click-stack__section[data-kind="plans"]');
 async function createLocalPlan(page:any,title:string) {
-  await page.locator('#designs-plans').getByRole('button',{name:'Create plan',exact:true}).click();
+  await page.locator('#lists-actions').getByRole('button',{name:'Create plan',exact:true}).click();
   const composer=page.locator('.plan-composer');
   await composer.getByLabel('Plan name',{exact:true}).fill(title);
   for(const choice of await composer.locator('input[type="checkbox"]').all()) await choice.check();
   await composer.getByRole('button',{name:'Create plan',exact:true}).click();
-  await expect(page.locator('.plan-details')).toBeVisible();
+  await expect(composer).toBeHidden();
+  await expect(planSection(page).locator('.click-stack__row')).toHaveAttribute('aria-expanded','true');
+  await expect(planSection(page)).toContainText(title);
   return page.evaluate(title => (window as any).PlanWorkspace.list().find((row:any)=>row.content.title===title),title);
 }
 
@@ -42,8 +47,10 @@ test('desktop Designs library and saved plans start local with no public plan li
   const panel=page.locator('#proposals-sheet');
   expect((await panel.boundingBox())!.x).toBeGreaterThan(1280/2);
   await expect(panel.getByRole('tab',{name:'Designs',exact:true})).toHaveAttribute('aria-selected','true');
-  await panel.getByRole('tab',{name:'Saved plans',exact:true}).click();
-  await expect(panel.locator('#designs-plans')).toContainText('No saved plans yet.');
+  await panel.getByRole('tab',{name:'Plans',exact:true}).click();
+  await expect(panel.locator('#designs-plans')).toBeVisible();
+  await expect(panel.locator('#lists-status')).toHaveText('0 of 0 loaded items');
+  await expect(panel.locator('#designs-plans .lists-item')).toHaveCount(0);
   await expect(panel.locator('#designs-plans input[readonly]')).toHaveCount(0);
   await expect(panel.locator('#designs-plans a[href*="/plans/"]')).toHaveCount(0);
   expect(writes(page)).toHaveLength(0);
@@ -60,7 +67,7 @@ test('a local plan publishes its exact snapshot only on Share plan and copy repe
   expect(writes(page)).toHaveLength(0);
   await page.evaluate(id=>{const w=window as any,r=w.proposalStorage.getProposal(id);r.title='Changed live';w.proposalStorage._indexProposal(r);},sourceId);
   await page.context().grantPermissions(['clipboard-read','clipboard-write']);
-  await page.locator('.plan-details').getByRole('button',{name:'Share plan',exact:true}).click();
+  await planSection(page).getByRole('button',{name:'Share plan',exact:true}).click();
   const share=page.locator('.plan-share');await expect(share).toBeVisible();
   await expect(share.getByLabel('Plan link',{exact:true})).toBeHidden();expect(writes(page)).toHaveLength(0);
   await share.getByRole('button',{name:'Publish and copy link',exact:true}).click();
@@ -73,16 +80,18 @@ test('a local plan publishes its exact snapshot only on Share plan and copy repe
   expect(sent.filter(r=>r.path==='/agreements')).toHaveLength(0);
   const count=sent.length;await share.getByRole('button',{name:'Copy link',exact:true}).click();expect(writes(page)).toHaveLength(count);
   await page.keyboard.press('Escape');await expect(share).toBeHidden();
-  await expect(page.locator('#designs-plans')).toBeVisible();
+  await page.locator('#proposals-button').click();
+  await page.locator('#shareAppliedProposalsButton').click();
+  await expect(page.locator('#designs-plans .lists-item').filter({hasText:'Pocket park plan'})).toContainText('Published');
   await page.locator('#designs-browse-tab').click();await expect(page.locator('#designs-browse')).toBeVisible();
   await page.keyboard.press('Escape');await expect(page.locator('#proposals-sheet')).toBeHidden();
 });
 
-test('phone Designs and Saved plans use keyboard tabs in one resizable sheet', async ({ mockApi: page }) => {
+test('phone Designs and Plans use keyboard tabs in one resizable sheet', async ({ mockApi: page }) => {
   await page.setViewportSize({ width:390,height:844 });await openCity(page);await openLibrary(page);
   const panel=page.locator('#proposals-sheet');
   await expect(panel.locator(':scope > .mobile-dock-sheet-handle')).toHaveCount(1);
-  const designs=panel.getByRole('tab',{name:'Designs',exact:true}),plans=panel.getByRole('tab',{name:'Saved plans',exact:true});
+  const designs=panel.getByRole('tab',{name:'Designs',exact:true}),plans=panel.getByRole('tab',{name:'Plans',exact:true});
   await designs.focus();await page.keyboard.press('ArrowRight');await expect(plans).toHaveAttribute('aria-selected','true');
   await expect(panel.locator('#designs-plans')).toBeVisible();await expect(panel.locator(':scope > .mobile-dock-sheet-handle')).toHaveCount(1);
   const box=(await panel.boundingBox())!;expect(box.x).toBe(0);expect(box.width).toBe(390);expect(box.y+box.height).toBeLessThanOrEqual(844);

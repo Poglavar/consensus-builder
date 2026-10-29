@@ -1138,6 +1138,15 @@ body.three-mode-active #agent-bubbles-container {
     pointer-events: auto;
 }
 
+/* A design's input and output parcels (model view): .cb-tabs over one strip each, the other strip hidden. */
+.click-stack__choices[hidden] {
+    display: none;
+}
+
+.click-stack__choices--tabs > .click-stack__choices {
+    padding: 0;
+}
+
 .click-stack__relation-label,
 .click-stack__selector-label {
     display: block;
@@ -1424,11 +1433,23 @@ body.three-mode-active #agent-bubbles-container {
 
 /* On desktop, let the hosted proposal panel fill the expanded card's bounded body. Its header and
    footer stay in view while the panel-body supplies the scroll viewport for long Details content.
-   Phones scroll the click-stack sheet as a whole and keep the hosted body overflow visible below. */
+   Phones scroll the click-stack sheet as a whole and keep the hosted body overflow visible below.
+   A related list below it scrolls within a few rows of chips, and the panel never shrinks below
+   its header and a three-row footer: uncapped, a parcel layout's plots squeezed the panel to
+   nothing and drew over its buttons. The section body scrolls what still does not fit. */
 @media (min-width: 768px) {
     #click-stack .click-stack__body > #proposal-details-panel.is-hosted {
         flex: 1 1 auto;
         min-height: 0;
+    }
+
+    #click-stack .click-stack__body > #proposal-details-panel.is-hosted:not(:last-child) {
+        min-height: 14rem;
+    }
+
+    #click-stack .click-stack__body .click-stack__choices .click-stack__strip {
+        max-height: calc(3 * var(--cb-control-height) + 2 * var(--cb-space-1));
+        overflow-y: auto;
     }
 }
 

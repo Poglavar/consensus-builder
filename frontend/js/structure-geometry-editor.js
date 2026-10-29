@@ -9,6 +9,12 @@
         decorations: null,
         tool: null,
         pathPoints: [],
+        // The outline of a fenced area being drawn, and the pointer while drawing it.
+        areaPoints: [],
+        areaCursor: null,
+        // Index of the fenced area whose card is open, and the vertex editor of its ring.
+        selectedEnclosure: null,
+        enclosureEditor: null,
         // Index of the tree whose card is open (Taller / Shorter / New look, and a square's pit), or null.
         selectedTree: null,
         pathCursor: null,
@@ -61,6 +67,13 @@
         return Number.isFinite(lng) && Number.isFinite(lat) ? [lng, lat] : null;
     }
 
+    // Fenced areas and play equipment in parks (park-enclosures.js), shared with the map and 3D view.
+    function parkEnclosures() {
+        const api = global.ParkEnclosures || (typeof require === 'function' ? require('./park-enclosures.js') : null);
+        if (!api) throw new Error('park-enclosures.js is not loaded');
+        return api;
+    }
+
     function parkPlanting() {
         const api = global.__parkPlanting || (typeof require === 'function' ? require('./park-planting.js') : null);
         if (!api) throw new Error('park-planting.js is not loaded');
@@ -74,9 +87,10 @@
         return api;
     }
 
-    // Records that carry metadata beside their point: a bench's, lamp's or stall's bearing (and a
-    // stall's canopy colour), a tree's look.
-    const POINT_RECORD_TYPES = ['benches', 'trees', 'lamps', 'stalls'];
+    // Records that carry metadata beside their point: a bench's, lamp's, stall's or play item's bearing
+    // (and a stall's canopy colour), a tree's look.
+    const EQUIPMENT_TYPES = ['swings', 'seesaws', 'slides'];
+    const POINT_RECORD_TYPES = ['benches', 'trees', 'lamps', 'stalls', ...EQUIPMENT_TYPES];
 
     function translateCoordinateCollection(value, deltaLng, deltaLat) {
         if (!Array.isArray(value)) return value;
@@ -91,9 +105,12 @@
         if (typeof moveCoordinates !== 'function' || !value) return value;
         const moved = { ...clone(value) };
         for (const [key, coordinates] of Object.entries(value)) {
-            if (!POINT_RECORD_TYPES.includes(key) && Array.isArray(coordinates)) {
+            if (!POINT_RECORD_TYPES.includes(key) && key !== 'enclosures' && Array.isArray(coordinates)) {
                 moved[key] = moveCoordinates(coordinates, from, to);
             }
+        }
+        if (Array.isArray(value.enclosures)) {
+            moved.enclosures = value.enclosures.map(entry => parkEnclosures().moveEnclosure(entry, item => moveCoordinates(item, from, to)));
         }
         // Bench, lamp, stall and tree records carry metadata beside their point, so move the nested coordinate
         // explicitly and preserve each bearing and look without mutating the drag's starting snapshot.
@@ -123,6 +140,8 @@
                 }).filter(Boolean),
                 stalls: furnitureModels().normalizeStalls(value.stalls, coordinate),
                 lamps: furnitureModels().normalizeLamps(value.lamps, coordinate),
+                ...Object.fromEntries(EQUIPMENT_TYPES.map(key => [key, parkEnclosures().normalizeEquipment(value[key], coordinate)])),
+                enclosures: parkEnclosures().normalizeEnclosures(value.enclosures, coordinate),
                 ...withModels(kind, value.models),
                 version: 3
             };
@@ -182,7 +201,7 @@
     function hasExplicitDecorationDesign(kind, decorations) {
         if (!decorations || typeof decorations !== 'object') return false;
         const decorationKeys = kind === 'park'
-            ? ['trees', 'flowerbeds', 'ponds', 'paths', 'benches', 'stalls', 'lamps', 'models']
+            ? ['trees', 'flowerbeds', 'ponds', 'paths', 'benches', 'stalls', 'lamps', ...EQUIPMENT_TYPES, 'enclosures', 'models']
             : ['fountains', 'fountain', 'trees', 'benches', 'stalls', 'statues', 'lamps', 'models'];
         return Number.isFinite(Number(decorations.version))
             || decorationKeys.some(key => Object.prototype.hasOwnProperty.call(decorations, key));
@@ -270,6 +289,7 @@
         recordHistory();
         list.splice(index, 1);
         if (type === 'trees') state.selectedTree = null;
+        if (type === 'enclosures') state.selectedEnclosure = null;
         render();
         state.session?.announce?.(global.GeometryCoordinateControls?.text('objectRemoved', 'Object removed.'));
     }
@@ -538,6 +558,8 @@
         (state.decorations.benches || []).forEach((bench, index) => addPointMarker(group, 'benches', bench.coordinate, index, makeIcon('is-bench', '▰')));
         renderStalls(group);
         renderLamps(group);
+        renderEnclosures(group);
+        renderEquipment(group);
         if (state.pathPoints.length) {
             global.L.polyline(state.pathPoints.map(([lng, lat]) => [lat, lng]), {
                 color: '#f59e0b', weight: 4, dashArray: '5 5', pane: EDITOR_PANE,
@@ -547,20 +569,241 @@
         updateRubberBand();
     }
 
+    // Fenced areas: the ground of a dog or play area, the fence in its style split at its gates, and a
+    // marker at each gate. A fence is clicked to select its area (or, with the Gate tool, to add a gate;
+    // with Remove, to remove the area); the selected area is outlined and its card open.
+    function renderEnclosures(group) {
+        const api = parkEnclosures();
+        const interactive = !boundaryEditing();
+        (state.decorations.enclosures || []).forEach((enclosure, index) => {
+            const ring = api.enclosureRing(enclosure, state.boundary?.geometry);
+            if (!ring) return;
+            const latlngs = points => points.map(([lng, lat]) => [lat, lng]);
+            const surface = api.USE_SURFACE[enclosure.use];
+            const selected = index === state.selectedEnclosure;
+            global.L.polygon(latlngs(ring), {
+                pane: EDITOR_PANE, interactive: false,
+                className: `structure-geometry-enclosure${surface ? ` is-${surface}` : ''}${selected ? ' is-selected' : ''}`
+            }).addTo(group);
+            const { runs, gates } = api.fenceRuns(ring, enclosure.gates);
+            runs.forEach(run => {
+                const line = global.L.polyline(latlngs(run), { pane: EDITOR_PANE, interactive, className: `park-fence is-${enclosure.fence} structure-geometry-fence` }).addTo(group);
+                if (interactive) line.on('click', event => onFenceClick(event, index));
+            });
+            gates.forEach(gate => {
+                const marker = global.L.marker([gate.centre[1], gate.centre[0]], {
+                    icon: makeIcon('is-gate', '<i class="fa-solid fa-door-open" aria-hidden="true"></i>', 20),
+                    interactive, keyboard: false, pane: state.session.handlePane
+                }).addTo(group);
+                if (interactive) marker.on('click', event => {
+                    global.L.DomEvent.stopPropagation(event);
+                    if (state.tool === 'gate' || state.tool === 'erase') toggleGate(index, gate.centre);
+                    else selectEnclosure(index);
+                });
+            });
+        });
+        if (state.areaPoints.length) {
+            global.L.polyline(latlngsOf(state.areaPoints), { color: '#1f2937', weight: 3, dashArray: '5 5', pane: EDITOR_PANE, interactive: false }).addTo(group);
+            const [lng, lat] = state.areaPoints[0];
+            global.L.circleMarker([lat, lng], { radius: 6, pane: EDITOR_PANE, interactive: false, className: 'structure-geometry-area-start' }).addTo(group);
+        }
+    }
+
+    function latlngsOf(points) { return points.map(([lng, lat]) => [lat, lng]); }
+
+    function renderEquipment(group) {
+        const icons = { swings: 'fa-child-reaching', seesaws: 'fa-scale-unbalanced', slides: 'fa-stairs' };
+        EQUIPMENT_TYPES.forEach(type => (state.decorations[type] || []).forEach((item, index) => addPointMarker(group, type, item.coordinate, index,
+            makeIcon('is-play', `<i class="fa-solid ${icons[type]}" aria-hidden="true"></i>`))));
+    }
+
+    function onFenceClick(event, index) {
+        global.L.DomEvent.stopPropagation(event);
+        const coord = [event.latlng.lng, event.latlng.lat];
+        if (state.tool === 'erase') return removeDecoration('enclosures', index);
+        if (state.tool === 'gate') return toggleGate(index, coord);
+        if (state.tool === 'enclosure' && state.areaPoints.length) return placeAt(coord);
+        selectEnclosure(index);
+    }
+
+    function selectEnclosure(index) {
+        state.selectedEnclosure = state.selectedEnclosure === index ? null : index;
+        render();
+    }
+
+    function selectedEnclosure() {
+        const list = state.decorations?.enclosures;
+        return Array.isArray(list) && Number.isInteger(state.selectedEnclosure) ? list[state.selectedEnclosure] || null : null;
+    }
+
+    function paths() { return state.decorations?.paths || []; }
+
+    // The ring a fenced area's fence follows: its own, or the park's outline.
+    function fenceRingOf(enclosure) {
+        return parkEnclosures().enclosureRing(enclosure, state.boundary?.geometry);
+    }
+
+    // A gate where the fence was clicked, or the gate there removed. The last gate of an area stays:
+    // without it nobody can get in.
+    function toggleGate(index, coord) {
+        const enclosure = state.decorations.enclosures?.[index];
+        const ring = enclosure ? fenceRingOf(enclosure) : null;
+        if (!ring) return;
+        const api = parkEnclosures();
+        const existing = enclosure.gates.findIndex(gate => {
+            const a = global.turf.point(gate), b = global.turf.point(coord);
+            try { return global.turf.distance(a, b, { units: 'meters' }) <= api.GATE_WIDTH_M; } catch (_) { return false; }
+        });
+        if (existing >= 0) {
+            if (enclosure.gates.length === 1) {
+                global.updateStatus?.(t('statusLastGate', 'A fenced area keeps at least one gate.'));
+                return;
+            }
+            recordHistory();
+            enclosure.gates.splice(existing, 1);
+        } else {
+            const hit = api.snapToRing(ring, coord);
+            if (!hit) return;
+            recordHistory();
+            enclosure.gates.push(hit.point);
+        }
+        state.selectedEnclosure = index;
+        render();
+    }
+
+    // The nearest fence to a click with the Gate tool, within a few pixels.
+    function gateAt(coord) {
+        const api = parkEnclosures();
+        let reachM = 3;
+        try {
+            const origin = global.map.latLngToContainerPoint([coord[1], coord[0]]);
+            reachM = global.map.distance([coord[1], coord[0]], global.map.containerPointToLatLng([origin.x + 16, origin.y]));
+        } catch (_) { }
+        let best = null;
+        (state.decorations.enclosures || []).forEach((enclosure, index) => {
+            const ring = fenceRingOf(enclosure);
+            const hit = ring ? api.snapToRing(ring, coord) : null;
+            if (hit && hit.distM <= reachM && (!best || hit.distM < best.distM)) best = { index, distM: hit.distM };
+        });
+        if (best) toggleGate(best.index, coord);
+        else global.updateStatus?.(t('statusGateOffFence', 'Click a fence to put a gate in it.'));
+    }
+
+    // Close the fenced area being drawn: it must lie inside the park; its gates go where footpaths
+    // cross it, else in the middle of its longest side.
+    function finishArea() {
+        const api = parkEnclosures();
+        const ring = state.areaPoints.length >= 3 ? api.closedRing(state.areaPoints) : null;
+        state.areaPoints = [];
+        state.areaCursor = null;
+        if (!ring) return render();
+        if (!ringInside(ring)) { rejectOutside(); return render(); }
+        recordHistory();
+        state.decorations.enclosures.push({ fence: api.DEFAULT_FENCE.none, use: 'none', gates: api.defaultGates(ring, paths()), ring });
+        state.selectedEnclosure = state.decorations.enclosures.length - 1;
+        render();
+    }
+
+    // One fence around the whole park, following its outline (and any later reshape).
+    function fenceWholePark() {
+        const api = parkEnclosures();
+        const existing = (state.decorations.enclosures || []).findIndex(enclosure => !enclosure.ring);
+        if (existing < 0) {
+            const ring = api.outerRing(state.boundary?.geometry);
+            if (!ring) return;
+            recordHistory();
+            state.decorations.enclosures.push({ fence: api.DEFAULT_FENCE.none, use: 'none', gates: api.defaultGates(ring, paths()) });
+        }
+        if (state.tool !== 'enclosure') state.tool = 'enclosure';
+        if (state.polygonEditor) { state.polygonEditor.destroy(); state.polygonEditor = null; }
+        state.selectedEnclosure = existing < 0 ? state.decorations.enclosures.length - 1 : existing;
+        render();
+    }
+
+    // A change to the selected area from its card. Picking a use also changes the fence when the
+    // fence is still the previous use's default (a play area gets mesh unless iron was chosen).
+    function changeSelectedEnclosure(change) {
+        const enclosure = selectedEnclosure();
+        if (!enclosure) return;
+        const api = parkEnclosures();
+        const next = { ...enclosure };
+        if (change.fence && api.FENCE_KINDS.includes(change.fence)) next.fence = change.fence;
+        if (change.use && api.USES.includes(change.use)) {
+            if (enclosure.fence === api.DEFAULT_FENCE[enclosure.use]) next.fence = api.DEFAULT_FENCE[change.use];
+            next.use = change.use;
+        }
+        if (JSON.stringify(next) === JSON.stringify(enclosure)) return;
+        recordHistory();
+        state.decorations.enclosures[state.selectedEnclosure] = next;
+        render();
+    }
+
+    // A dragged, inserted or removed vertex of the selected area's ring. A ring that leaves the park
+    // is refused; gates follow the new fence line.
+    function commitEnclosureRing(index, ring, reason) {
+        const api = parkEnclosures();
+        const enclosure = state.decorations.enclosures?.[index];
+        const closed = api.closedRing(ring);
+        if (!enclosure || !closed || !ringInside(closed)) {
+            if (reason === 'move') historyCtl?.discardLast?.();
+            if (enclosure) rejectOutside();
+            state.enclosureEditor?.editor?.render?.({ refreshRing: true });
+            return false;
+        }
+        if (reason !== 'move') recordHistory();
+        state.decorations.enclosures[index] = api.regate({ ...enclosure, ring: closed }, closed, paths());
+        render();
+        return true;
+    }
+
+    // The selected area's ring gets vertex handles while the Fenced area tool is on (a whole-park
+    // fence is reshaped with the park's own boundary).
+    function syncEnclosureEditor() {
+        const index = state.tool === 'enclosure' && !state.areaPoints.length ? state.selectedEnclosure : null;
+        const enclosure = Number.isInteger(index) ? state.decorations?.enclosures?.[index] : null;
+        const wanted = enclosure?.ring && state.session && typeof global.PolygonGeometryEditor?.create === 'function' ? index : null;
+        if (state.enclosureEditor && state.enclosureEditor.index !== wanted) {
+            try { state.enclosureEditor.editor.destroy(); } catch (_) { }
+            state.enclosureEditor = null;
+        }
+        if (wanted === null) return;
+        if (state.enclosureEditor) { state.enclosureEditor.editor.render?.({ refreshRing: true }); return; }
+        const editor = global.PolygonGeometryEditor.create({
+            map: global.map,
+            pane: state.session.handlePane || EDITOR_PANE,
+            leaflet: global.L,
+            turf: global.turf,
+            ring: enclosure.ring,
+            getRing: () => state.decorations?.enclosures?.[wanted]?.ring || enclosure.ring,
+            boundary: () => state.boundary,
+            undo: false,
+            showUndoButton: false,
+            onDragStart: () => recordHistory(),
+            vertexTitle: t('enclosure.vertexTitle', 'Drag to reshape the fenced area'),
+            deleteTitle: t('enclosure.deleteVertexTitle', 'Delete this fence point'),
+            undoTitle: t('undo', 'Undo'),
+            onCommit: ({ ring, reason }) => commitEnclosureRing(wanted, ring, reason)
+        });
+        state.enclosureEditor = { index: wanted, editor };
+    }
+
     // The segment from the last placed point to the pointer. Without it a half-drawn path just
     // sits there and the editor gives no sign that it is waiting for the next click. Red while
     // the pointer is outside the boundary, because finishing there is refused anyway.
     function updateRubberBand() {
-        const live = state.tool === 'path' && state.pathPoints.length && state.pathCursor && state.layer;
+        const area = state.tool === 'enclosure';
+        const points = area ? state.areaPoints : state.pathPoints;
+        const cursor = area ? state.areaCursor : state.pathCursor;
+        const live = (state.tool === 'path' || area) && points.length && cursor && state.layer;
         if (!live) {
             if (state.rubberBand && state.layer) state.layer.removeLayer(state.rubberBand);
             state.rubberBand = null;
             return;
         }
-        const [fromLng, fromLat] = state.pathPoints[state.pathPoints.length - 1];
-        const [toLng, toLat] = state.pathCursor;
+        const [fromLng, fromLat] = points[points.length - 1];
+        const [toLng, toLat] = cursor;
         const latlngs = [[fromLat, fromLng], [toLat, toLng]];
-        const color = pointInside(state.pathCursor) ? '#f59e0b' : '#dc2626';
+        const color = pointInside(cursor) ? (area ? '#1f2937' : '#f59e0b') : '#dc2626';
         if (state.rubberBand) {
             state.rubberBand.setLatLngs(latlngs);
             state.rubberBand.setStyle({ color });
@@ -609,14 +852,17 @@
                 boundary: clone(state.boundary),
                 decorations: clone(state.decorations),
                 pathPoints: clone(state.pathPoints),
+                areaPoints: clone(state.areaPoints),
                 model: clone(state.model)
             }),
             restore: (snapshot) => {
                 state.boundary = clone(snapshot.boundary);
                 state.decorations = clone(snapshot.decorations);
                 state.pathPoints = clone(snapshot.pathPoints);
+                state.areaPoints = clone(snapshot.areaPoints || []);
                 state.model = clone(snapshot.model);
                 state.selectedTree = null;
+                state.selectedEnclosure = null;
                 state.pathCursor = null;
                 state.session?.placement?.update?.(state.boundary);
                 render();
@@ -666,6 +912,7 @@
         }
         if (state.kind === 'park') renderPark(state.layer);
         else renderSquare(state.layer);
+        syncEnclosureEditor();
         updatePanelState();
     }
 
@@ -698,12 +945,20 @@
         }
         if (reason !== 'move') recordHistory();
         state.boundary = candidate;
-        if (state.decorations) state.decorations = global.ProposalApplyStructures.decorationsOnGround(
-            state.decorations, candidate.geometry, global.turf);
+        if (state.decorations) state.decorations = regateWholePark(global.ProposalApplyStructures.decorationsOnGround(
+            state.decorations, candidate.geometry, global.turf));
         state.session?.placement?.update?.(state.boundary);
         render();
         state.polygonEditor?.render?.({ refreshRing: true });
         return true;
+    }
+
+    // A fence around the whole park follows a reshaped outline; its gates move onto the new line.
+    function regateWholePark(decorations) {
+        if (!Array.isArray(decorations?.enclosures) || !decorations.enclosures.some(enclosure => !enclosure.ring)) return decorations;
+        const api = parkEnclosures(), ring = api.outerRing(state.boundary?.geometry);
+        if (!ring) return decorations;
+        return { ...decorations, enclosures: decorations.enclosures.map(enclosure => (enclosure.ring ? enclosure : api.regate(enclosure, ring, decorations.paths || []))) };
     }
 
     function lakeBoundaryFailure(graphics) {
@@ -769,6 +1024,16 @@
             } else if (state.tool === 'lamp') {
                 recordHistory();
                 state.decorations.lamps.push({ coordinate: coord, bearing: 0 });
+            } else if (EQUIPMENT_TOOLS[state.tool]) {
+                recordHistory();
+                state.decorations[EQUIPMENT_TOOLS[state.tool]].push({ coordinate: coord, bearing: 0 });
+            } else if (state.tool === 'enclosure') {
+                // A click on the first point (within 12 px) closes the outline.
+                if (state.areaPoints.length >= 3 && nearFirstAreaPoint(coord)) return finishArea();
+                state.areaPoints.push(coord);
+                state.selectedEnclosure = null;
+            } else if (state.tool === 'gate') {
+                return gateAt(coord);
             }
         } else {
             if (state.tool === 'fountain') {
@@ -799,6 +1064,16 @@
         return true;
     }
 
+    const EQUIPMENT_TOOLS = Object.freeze({ swing: 'swings', seesaw: 'seesaws', slide: 'slides' });
+
+    function nearFirstAreaPoint(coord) {
+        try {
+            const first = global.map.latLngToContainerPoint([state.areaPoints[0][1], state.areaPoints[0][0]]);
+            const here = global.map.latLngToContainerPoint([coord[1], coord[0]]);
+            return Math.hypot(first.x - here.x, first.y - here.y) <= 12;
+        } catch (_) { return false; }
+    }
+
     function finishPath() {
         if (state.pathPoints.length > 1) {
             let valid = false;
@@ -820,6 +1095,11 @@
     // Cheap: the rubber band is moved in place rather than through a full render, so dragging the
     // pointer across the park does not rebuild every tree, bench and pond on every frame.
     function onMapMouseMove(event) {
+        if (state.tool === 'enclosure' && state.areaPoints.length) {
+            state.areaCursor = [event.latlng.lng, event.latlng.lat];
+            updateRubberBand();
+            return;
+        }
         if (state.tool !== 'path' || !state.pathPoints.length) return;
         state.pathCursor = [event.latlng.lng, event.latlng.lat];
         updateRubberBand();
@@ -942,8 +1222,10 @@
     function setTool(tool) {
         const nextTool = state.tool === tool && tool === 'boundary' ? null : tool;
         if (state.tool === 'path' && nextTool !== 'path' && finishPath() === false) return;
+        if (state.tool === 'enclosure' && nextTool !== 'enclosure') finishArea();
         state.tool = nextTool;
         if (!TREE_TOOLS.includes(nextTool)) state.selectedTree = null;
+        if (!['enclosure', 'gate', 'erase'].includes(nextTool)) state.selectedEnclosure = null;
         if (!state.subeditor && (!state.tool || state.tool === 'boundary')) createBoundaryPolygonEditor();
         else if (state.polygonEditor) {
             state.polygonEditor.destroy();
@@ -983,7 +1265,13 @@
                 toolButton('path', 'fa-shoe-prints', t('tools.path', 'Footpath')),
                 toolButton('bench', 'fa-chair', t('tools.bench', 'Bench')),
                 toolButton('stall', 'fa-store', t('tools.stall', 'Market stall')),
-                toolButton('lamp', 'fa-lightbulb', t('tools.lamp', 'Lamp'))
+                toolButton('lamp', 'fa-lightbulb', t('tools.lamp', 'Lamp')),
+                toolButton('swing', 'fa-child-reaching', t('tools.swing', 'Swing')),
+                toolButton('seesaw', 'fa-scale-unbalanced', t('tools.seesaw', 'Seesaw')),
+                toolButton('slide', 'fa-stairs', t('tools.slide', 'Slide')),
+                toolButton('enclosure', 'fa-vector-square', t('tools.enclosure', 'Fenced area')),
+                toolButton('gate', 'fa-door-open', t('tools.gate', 'Gate')),
+                `<button type="button" class="btn btn-sm" data-action="fence-park"><i class="fa-solid fa-border-all" aria-hidden="true"></i>${t('enclosure.fencePark', 'Fence the whole park')}</button>`
             ].join('')
             : [
                 toolButton('fountain', 'fa-droplet', t('tools.fountain', 'Fountain')),
@@ -996,7 +1284,7 @@
             ].join('');
         const boundaryTool = state.subeditor ? '' : toolButton('boundary', 'fa-draw-polygon', t('tools.boundary', 'Boundary'));
         return `
-            <div class="structure-geometry-tools">${boundaryTool}${toolButton('select', 'fa-arrow-pointer', t('tools.select', 'Select'))}${tools}${toolButton('erase', 'fa-eraser', t('tools.erase', 'Remove'))}</div>${treeCardMarkup()}${importsMarkup()}${furnitureModelsMarkup()}`;
+            <div class="structure-geometry-tools">${boundaryTool}${toolButton('select', 'fa-arrow-pointer', t('tools.select', 'Select'))}${tools}${toolButton('erase', 'fa-eraser', t('tools.erase', 'Remove'))}</div>${treeCardMarkup()}${enclosureCardMarkup()}${importsMarkup()}${furnitureModelsMarkup()}`;
     }
 
     // The selected tree's card: its kind and height, Shorter / Taller / New look, and on a square the
@@ -1016,6 +1304,53 @@
                     <button type="button" class="btn btn-sm" data-action="tree-reroll"><i class="fa-solid fa-shuffle" aria-hidden="true"></i>${t('tree.reroll', 'New look')}</button>
                 </div>${pits}
             </section>`;
+    }
+
+    // The selected fenced area's card: its fence style and its use. updatePanelState shows it.
+    function enclosureCardMarkup() {
+        if (state.kind !== 'park') return '';
+        const api = parkEnclosures();
+        return `
+            <section class="structure-geometry-enclosure-card" data-role="enclosure-card" aria-label="${t('enclosure.title', 'Selected fenced area')}" hidden>
+                <p class="structure-geometry-tree-summary" data-role="enclosure-summary"></p>
+                <div class="structure-geometry-tree-pits" role="group" aria-label="${t('enclosure.fence', 'Fence')}">
+                    <span class="structure-geometry-tree-label">${t('enclosure.fence', 'Fence')}</span>
+                    ${api.FENCE_KINDS.map(kind => `<button type="button" class="btn btn-sm" data-enclosure-fence="${kind}" aria-pressed="false">${fenceLabel(kind)}</button>`).join('')}
+                </div>
+                <div class="structure-geometry-tree-pits" role="group" aria-label="${t('enclosure.use', 'Use')}">
+                    <span class="structure-geometry-tree-label">${t('enclosure.use', 'Use')}</span>
+                    ${api.USES.map(use => `<button type="button" class="btn btn-sm" data-enclosure-use="${use}" aria-pressed="false">${useLabel(use)}</button>`).join('')}
+                </div>
+                <div class="structure-geometry-tools">
+                    <button type="button" class="btn btn-sm" data-action="remove-enclosure"><i class="fa-solid fa-trash" aria-hidden="true"></i>${t('enclosure.remove', 'Remove fenced area')}</button>
+                </div>
+            </section>`;
+    }
+
+    function fenceLabel(kind) {
+        return { rail: t('enclosure.fenceRail', 'Low rail'), mesh: t('enclosure.fenceMesh', 'Mesh'), iron: t('enclosure.fenceIron', 'Wrought iron'),
+            plinth: t('enclosure.fencePlinth', 'Iron on brick') }[kind] || kind;
+    }
+
+    function useLabel(use) {
+        return { none: t('enclosure.useNone', 'Open'), dog: t('enclosure.useDog', 'Dog area'), play: t('enclosure.usePlay', 'Play area') }[use] || use;
+    }
+
+    function updateEnclosureCard(panel) {
+        const card = panel.querySelector?.('[data-role="enclosure-card"]');
+        if (!card) return;
+        const enclosure = selectedEnclosure();
+        card.hidden = !enclosure;
+        if (!enclosure) return;
+        const summary = card.querySelector('[data-role="enclosure-summary"]');
+        if (summary) {
+            summary.textContent = t('enclosure.summary', '{{area}}, gates: {{gates}}', {
+                area: enclosure.ring ? t('enclosure.drawn', 'Fenced area') : t('enclosure.wholePark', 'Fence around the whole park'),
+                gates: enclosure.gates.length
+            });
+        }
+        card.querySelectorAll('[data-enclosure-fence]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.enclosureFence === enclosure.fence)));
+        card.querySelectorAll('[data-enclosure-use]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.enclosureUse === enclosure.use)));
     }
 
     function pitLabel(pit) {
@@ -1048,7 +1383,8 @@
     function furnitureKindLabel(kind) {
         return {
             bench: t('tools.bench', 'Bench'), statue: t('tools.statue', 'Statue'), fountain: t('tools.fountain', 'Fountain'),
-            stall: t('tools.stall', 'Market stall'), tree: t('tools.tree', 'Tree'), lamp: t('tools.lamp', 'Lamp')
+            stall: t('tools.stall', 'Market stall'), tree: t('tools.tree', 'Tree'), lamp: t('tools.lamp', 'Lamp'),
+            swing: t('tools.swing', 'Swing'), seesaw: t('tools.seesaw', 'Seesaw'), slide: t('tools.slide', 'Slide')
         }[kind] || kind;
     }
 
@@ -1076,6 +1412,7 @@
         const undo = `<button type="button" class="btn btn-sm" data-action="undo" aria-label="${undoLabel}"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i>${undoLabel}</button>`;
         const finish = state.kind === 'park'
             ? `<button type="button" class="btn btn-sm" data-action="finish-path" hidden>${t('finishPath', 'Finish path')}</button>`
+                + `<button type="button" class="btn btn-sm" data-action="finish-area" hidden>${t('enclosure.finish', 'Finish area')}</button>`
             : '';
         return `${error}<div class="structure-geometry-footer-tools">${undo}${finish}</div>
             <div class="structure-geometry-footer-actions"><button type="button" class="btn btn-primary" data-action="save">${t('done', 'Done')}</button></div>`;
@@ -1104,10 +1441,16 @@
             if (remove) remove.disabled = !model;
         });
         updateTreeCard(panel);
+        updateEnclosureCard(panel);
         const finish = panel.querySelector('[data-action="finish-path"]');
         if (finish) {
             finish.hidden = state.kind !== 'park' || state.tool !== 'path';
             finish.disabled = state.pathPoints.length < 2;
+        }
+        const finishArea = panel.querySelector('[data-action="finish-area"]');
+        if (finishArea) {
+            finishArea.hidden = state.kind !== 'park' || state.tool !== 'enclosure';
+            finishArea.disabled = state.areaPoints.length < 3;
         }
         if (state.session?.setHint) {
             if (state.kind === 'lake') {
@@ -1124,7 +1467,9 @@
                     pond: t('tools.pond', 'Pond'), path: t('tools.path', 'Footpath'),
                     bench: t('tools.bench', 'Bench'), fountain: t('tools.fountain', 'Fountain'),
                     stall: t('tools.stall', 'Market stall'), statue: t('tools.statue', 'Statue'),
-                    lamp: t('tools.lamp', 'Lamp'), erase: t('tools.erase', 'Remove')
+                    lamp: t('tools.lamp', 'Lamp'), erase: t('tools.erase', 'Remove'),
+                    swing: t('tools.swing', 'Swing'), seesaw: t('tools.seesaw', 'Seesaw'), slide: t('tools.slide', 'Slide'),
+                    enclosure: t('tools.enclosure', 'Fenced area'), gate: t('tools.gate', 'Gate')
                 };
                 const instruction = state.tool === 'erase'
                     ? t('hintErase', 'Click an item to remove it.')
@@ -1134,7 +1479,11 @@
                             ? t('hintTree', 'Click the map to plant a tree. Click a planted tree to make it taller or shorter or give it a new look.')
                             : (state.tool === 'pavementTree'
                                 ? t('hintPavementTree', 'Click the paving to plant a tree in a pit. Click a planted tree to change its height, look or base.')
-                                : t('hintPlace', 'Click the map to place the selected item.'))));
+                                : (state.tool === 'enclosure'
+                                    ? t('hintEnclosure', 'Click to outline a fenced area, then click its first point or choose Finish area. Click a fence to choose its style and use; drag its points to reshape it.')
+                                    : (state.tool === 'gate'
+                                        ? t('hintGate', 'Click a fence to put a gate in it; click a gate to remove it.')
+                                        : t('hintPlace', 'Click the map to place the selected item.'))))));
                 state.session.setHint(`${toolLabels[state.tool] || ''}: ${instruction}`);
             }
         }
@@ -1156,6 +1505,9 @@
         const actionButton = event.target?.closest?.('[data-action]');
         const action = actionButton?.dataset.action;
         if (action === 'finish-path') finishPath();
+        else if (action === 'finish-area') finishArea();
+        else if (action === 'fence-park') fenceWholePark();
+        else if (action === 'remove-enclosure') { if (Number.isInteger(state.selectedEnclosure)) removeDecoration('enclosures', state.selectedEnclosure); }
         else if (action === 'save') saveEditor();
         else if (action === 'upload-model' && !global.BusyControl?.isBusy?.(actionButton)) {
             global.BusyControl.track(actionButton, openModelUpload);
@@ -1169,6 +1521,10 @@
         else {
             const pit = event.target?.closest?.('[data-tree-pit]')?.dataset.treePit;
             if (pit) changeSelectedTree(tree => parkPlanting().withPit(tree, pit === 'none' ? null : pit));
+            const fence = event.target?.closest?.('[data-enclosure-fence]')?.dataset.enclosureFence;
+            if (fence) changeSelectedEnclosure({ fence });
+            const use = event.target?.closest?.('[data-enclosure-use]')?.dataset.enclosureUse;
+            if (use) changeSelectedEnclosure({ use });
         }
     }
 
@@ -1214,8 +1570,8 @@
         recordHistory();
         state.boundary = candidate;
         if (model !== undefined) state.model = clone(model);
-        if (state.decorations) state.decorations = global.ProposalApplyStructures.decorationsOnGround(
-            state.decorations, candidate.geometry, global.turf);
+        if (state.decorations) state.decorations = regateWholePark(global.ProposalApplyStructures.decorationsOnGround(
+            state.decorations, candidate.geometry, global.turf));
         state.pathPoints = [];
         state.pathCursor = null;
         state.session?.placement?.update?.(state.boundary);
@@ -1344,10 +1700,14 @@
             event.preventDefault();
             finishPath();
         }
+        if (event.key === 'Enter' && state.tool === 'enclosure' && state.areaPoints.length) {
+            event.preventDefault();
+            finishArea();
+        }
     }
 
     function designSignature() {
-        return JSON.stringify([state.boundary, state.decorations, state.pathPoints, state.model]);
+        return JSON.stringify([state.boundary, state.decorations, state.pathPoints, state.areaPoints, state.model]);
     }
 
     async function requestCloseEditor() {
@@ -1380,6 +1740,10 @@
             try { state.polygonEditor.destroy(); } catch (_) { }
             state.polygonEditor = null;
         }
+        if (state.enclosureEditor) {
+            try { state.enclosureEditor.editor.destroy(); } catch (_) { }
+            state.enclosureEditor = null;
+        }
         if (global.map) {
             global.map.off('click', onMapClick);
             global.map.off('mousemove', onMapMouseMove);
@@ -1408,8 +1772,11 @@
         if (historyCtl) { historyCtl.destroy(); historyCtl = null; }
         state.tool = null;
         state.selectedTree = null;
+        state.selectedEnclosure = null;
         state.pathPoints = [];
         state.pathCursor = null;
+        state.areaPoints = [];
+        state.areaCursor = null;
         state.rubberBand = null;
         state.geometryDrag = null;
         state.layer = null;
@@ -1450,6 +1817,7 @@
     function saveEditor() {
         if (!state.draftId) return false;
         if (state.tool === 'path' && finishPath() === false) return false;
+        if (state.tool === 'enclosure' && state.areaPoints.length) finishArea();
         if (state.subeditor) {
             const complete = state.subeditor.onSave;
             const decorations = clone(state.decorations);
@@ -1520,8 +1888,11 @@
         state.lakeError = null;
         state.tool = state.subeditor ? null : 'boundary';
         state.selectedTree = null;
+        state.selectedEnclosure = null;
         state.pathPoints = [];
         state.pathCursor = null;
+        state.areaPoints = [];
+        state.areaCursor = null;
         state.rubberBand = null;
         state.reselectKey = global.ProposalSelection?.getKey?.() || null;
         const title = kind === 'lake'

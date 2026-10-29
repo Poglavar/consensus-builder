@@ -25,7 +25,7 @@
     margin-bottom: var(--cb-space-4);
 }
 
-/* Name and Plan epoch: the label and its field on one line. */
+/* Name: the label and its field on one line. */
 .form-group > .proposal-inline-field {
     display: flex;
     align-items: center;

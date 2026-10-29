@@ -16,7 +16,7 @@ const plan = { cid: cidOf(canonicalBytes(planContent)), content: planContent };
 const ACCOUNT = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin';
 
 // The index as an in-memory emulator of the routes the client calls.
-function fakeIndex({ onchainUnseen = 0, answerCid = null } = {}) {
+function fakeIndex({ onchainUnseen = 0, answerCid = null, refuseDesigns = null } = {}) {
     const pins = new Map();
     const designs = new Map();
     const agreements = new Map();
@@ -38,7 +38,7 @@ function fakeIndex({ onchainUnseen = 0, answerCid = null } = {}) {
         }
         if (method === 'POST' && pathname === '/designs') {
             if (designs.has(body.cid)) return json(409, designs.get(body.cid));
-            if (body.content.parcelLayout) return json(422, { code: 'layout-needs-agreement', error: 'a parcel layout is published with its agreement' });
+            if (refuseDesigns) return json(refuseDesigns.status, refuseDesigns.body);
             const row = { cid: body.cid, city: 'zagreb', binding: { parcels: [{ parcelId: 'HR-1' }], coverage: 'complete' }, content: body.content, parcelSourceId: body.parcelSourceId };
             designs.set(body.cid, row);
             return json(201, row);
@@ -133,13 +133,13 @@ describe('publishing designs and agreements', () => {
         const otherCid = addressOf({ other: true }).cid;
         await expect(clientOver(fakeIndex({ answerCid: otherCid })).pin('design', design))
             .rejects.toMatchObject({ code: 'cid-mismatch', expected: addressOf(design).cid, received: otherCid });
-        const index = fakeIndex();
-        await expect(clientOver(index).publishDesign(layout)).rejects.toMatchObject({ status: 422, code: 'layout-needs-agreement' });
+        const index = fakeIndex({ refuseDesigns: { status: 422, body: { code: 'invalid-design', error: 'not a design' } } });
+        await expect(clientOver(index).publishDesign(design)).rejects.toMatchObject({ status: 422, code: 'invalid-design' });
         await expect(clientOver(index).pin('invalid', design)).rejects.toThrow(/kind must be design, plan or agreement/);
         await expect(clientOver(index).indexDesign('not-a-cid', design)).rejects.toThrow(/must be a CIDv1/);
     });
 
-    it('publishes an agreement with the parcel layout it links, indexed in the same request', async () => {
+    it('publishes an agreement with a linked design the index does not hold, indexed in the same request', async () => {
         const index = fakeIndex();
         const client = clientOver(index);
         const layoutCid = addressOf(layout).cid;

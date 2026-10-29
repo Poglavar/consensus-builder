@@ -153,9 +153,10 @@ test.describe('Remaining UI controls @features', () => {
   test('parcel coverage header close returns to Settings', async ({ mockApi: page }) => {
     await openCity(page);
     await page.locator('#settings-button').click();
-    const data = page.locator('#settings-sheet details.accordion-section[data-section="data"]');
-    if (!(await data.evaluate((details: HTMLDetailsElement) => details.open))) await data.locator(':scope > summary').click();
-    await page.locator('#showParcelCoverageButton').click();
+    // Local (browser) data sits inside the Advanced accordion.
+    const advanced = page.locator('#settings-sheet details.accordion-section[data-section="advanced"]');
+    if (!(await advanced.evaluate((details: HTMLDetailsElement) => details.open))) await advanced.locator(':scope > summary').click();
+    await page.locator('#settings-sheet section[data-section="data"] #showParcelCoverageButton').click();
     const modal = page.locator('#parcel-coverage-modal');
     await expect(modal).toBeVisible();
     await modal.locator('[data-parcel-coverage-close]').click();
@@ -167,8 +168,10 @@ test.describe('Remaining UI controls @features', () => {
     await openCity(page);
     await page.evaluate(() => (window as any).updateStatus('Status close control fixture'));
     await page.locator('#settings-button').click();
-    const diagnostics = page.locator('#settings-sheet details.accordion-section[data-section="diagnostics"]');
-    if (!(await diagnostics.evaluate((details: HTMLDetailsElement) => details.open))) await diagnostics.locator(':scope > summary').click();
+    // Diagnostics sits inside the Advanced accordion.
+    const advanced = page.locator('#settings-sheet details.accordion-section[data-section="advanced"]');
+    if (!(await advanced.evaluate((details: HTMLDetailsElement) => details.open))) await advanced.locator(':scope > summary').click();
+    const diagnostics = page.locator('#settings-sheet section[data-section="diagnostics"]');
     await diagnostics.locator('.status-bar').click();
     await expect(diagnostics.locator('#status-log-expanded')).toBeVisible();
     await diagnostics.locator('[data-status-open-log]').click();
@@ -434,33 +437,5 @@ test.describe('Remaining UI controls @features', () => {
       };
     }, saved.id);
     expect(reloaded).toEqual({ bearing: 53, height: 14.5, geometry: saved.geometry });
-  });
-
-  test('proposal epoch card validates and saves a custom year through its real selector', async ({ mockApi: page }) => {
-    await openCity(page);
-    const proposalId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
-      title: 'Custom epoch park fixture', goal: 'park', city: 'zagreb', applied: false,
-      lifecycleStatus: 'Active', cadastreParcelIds: [parcelId], epochYear: 2035,
-      geometry, structureProposal: { kind: 'park', applied: false, geometry },
-    }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
-    await showProposal(page, proposalId);
-    await page.locator('#proposals-button').click();
-    const select = page.locator(`.proposal-epoch-card-select[data-proposal-id="${proposalId}"]`);
-    await expect(select).toBeVisible();
-    await selectNativeOption(select, 'custom');
-    const input = page.locator('.cb-dialog__prompt');
-    await expect(input).toHaveValue('2077');
-    await input.fill('2000');
-    await page.getByRole('button', { name: 'OK', exact: true }).click();
-    await expect(input).toHaveAttribute('aria-invalid', 'true');
-    await expect(page.locator('.cb-dialog--prompt')).toBeVisible();
-    await input.fill('2077');
-    await page.getByRole('button', { name: 'OK', exact: true }).click();
-    await expect.poll(() => page.evaluate(id => {
-      const storage = (window as any).proposalStorage;
-      const proposal = storage.getAllProposals().find((item: any) => item.proposalId === id || item.id === id);
-      return proposal?.epochYear ?? proposal?.epoch?.year ?? null;
-    }, proposalId)).toBe(2077);
-    await expect(page.locator('.cb-dialog--prompt')).toHaveCount(0);
   });
 });

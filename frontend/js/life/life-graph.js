@@ -12,6 +12,9 @@
     'use strict';
 
     const NODE_SNAP_M = 0.5;          // vertices closer than this are one node (Station3D uses the same)
+    // A gate in a park fence is opened this wide for walkers, so the walking grid (1 m cells or
+    // coarser) keeps it passable; the fence itself is drawn with the real gate width.
+    const WALK_GATE_M = 3;
     const LANE_WIDTH_M = 3.5;         // default OSM lane width
     const SIDEWALK_DEPTH_M = 4.5;     // walking band beyond the carriageway edge of a street
     const LOOSE_END_SNAP_M = 8;       // a corridor end this close to an OSM node joins the network
@@ -156,7 +159,13 @@
         return Math.abs(a[0] - b[0]) < 1e-9 && Math.abs(a[1] - b[1]) < 1e-9;
     }
 
-    function createGraphBuilder() {
+    // drivingSide: the side of the road traffic keeps to ('right' or 'left', the city's), which
+    // decides where a two-way street's forward and oncoming lanes lie.
+    function createGraphBuilder({ drivingSide = 'right' } = {}) {
+        if (drivingSide !== 'right' && drivingSide !== 'left') throw new Error(`life graph: unknown driving side "${drivingSide}"`);
+        // Offsets are positive to the left of travel: right-hand traffic keeps its forward lanes at
+        // negative offsets, left-hand traffic at positive ones.
+        const keep = drivingSide === 'left' ? 1 : -1;
         const ways = [];       // { id, points, lanes:[{offset, dir, speed, kind}], carriageway:{offset, halfWidth}|null, bands:[{offset, halfWidth, zcode}], source }
         const areas = [];
         const fills = [];      // preferred walking polygons: { rings, zcode, kind }
@@ -231,8 +240,8 @@
                         } else {
                             const forward = parseCount(tags['lanes:forward']) || Math.ceil(total / 2);
                             const backward = parseCount(tags['lanes:backward']) || Math.max(1, total - forward);
-                            for (let i = 0; i < forward; i++) lanes.push({ offset: -(i + 0.5) * laneWidth, dir: 1, speed, kind: 'driving' });
-                            for (let i = 0; i < backward; i++) lanes.push({ offset: (i + 0.5) * laneWidth, dir: -1, speed, kind: 'driving' });
+                            for (let i = 0; i < forward; i++) lanes.push({ offset: keep * (i + 0.5) * laneWidth, dir: 1, speed, kind: 'driving' });
+                            for (let i = 0; i < backward; i++) lanes.push({ offset: -keep * (i + 0.5) * laneWidth, dir: -1, speed, kind: 'driving' });
                         }
                         // The carriageway reaches the outer edge of the outermost lane actually laid
                         // out (an odd two-way lane count puts lanes past lanes×width/2), or the
@@ -280,7 +289,15 @@
                 .map(rings => rings.map(ring => ring.map(c => project(c[0], c[1]))));
         }
 
-        // A park: its lawn is walking space, its footpaths preferred bands, its ponds are water.
+        // The park-enclosures.js rules, when the page has them (node tests require them).
+        function enclosureRules() {
+            if (typeof ParkEnclosures !== 'undefined') return ParkEnclosures;
+            if (typeof self !== 'undefined' && self.ParkEnclosures) return self.ParkEnclosures;
+            return typeof require === 'function' ? require('../park-enclosures.js') : null;
+        }
+
+        // A park: its lawn is walking space, its footpaths preferred bands, its ponds are water, and
+        // its fences walls that people pass only at the gates.
         function addPark(feature, project) {
             const deco = feature && feature.properties && feature.properties.decorations;
             (deco && Array.isArray(deco.paths) ? deco.paths : []).forEach(coords => {
@@ -295,6 +312,14 @@
                 addArea(rings, 'park');
             });
             obstaclesOf(deco, project).forEach(o => blocked.push(o));
+            const enclosures = deco && Array.isArray(deco.enclosures) && deco.enclosures.length ? enclosureRules() : null;
+            (enclosures ? deco.enclosures : []).forEach(enclosure => {
+                const ring = enclosures.enclosureRing(enclosure, feature.geometry);
+                if (!ring) return;
+                enclosures.fenceRuns(ring, enclosure.gates, { gateWidthM: WALK_GATE_M }).runs.forEach(run => {
+                    blocked.push({ pts: run.map(c => project(c[0], c[1])), halfWidth: 0.2 });
+                });
+            });
         }
 
         // A plaza: paved walking space; its fountain, stalls, statues, trees and benches are kept clear.
@@ -338,6 +363,7 @@
             (Array.isArray(deco.benches) ? deco.benches : []).forEach(b => push(Array.isArray(b && b.coordinate) ? b.coordinate : b, 1.0));
             (Array.isArray(deco.stalls) ? deco.stalls : []).forEach(s => push(Array.isArray(s && s.coordinate) ? s.coordinate : s, 2.0));
             (Array.isArray(deco.statues) ? deco.statues : []).forEach(s => push(Array.isArray(s && s.coordinate) ? s.coordinate : s, 1.5));
+            ['swings', 'seesaws', 'slides'].forEach(key => (Array.isArray(deco[key]) ? deco[key] : []).forEach(item => push(Array.isArray(item && item.coordinate) ? item.coordinate : item, 2.0)));
             if (deco.fountain) push(Array.isArray(deco.fountain.coordinate) ? deco.fountain.coordinate : deco.fountain, Number(deco.fountain.radius) || 2.5);
             return out;
         }

@@ -36,6 +36,11 @@
             "lockOutside": "Mova o projeto para dentro do terreno inicial antes de o bloquear."
         }
     },
+    "urbanRule": {
+        "balconies": "Varandas",
+        "balconyDepth": "Podem sair da envolvente até (m):",
+        "slantedRoof": "Telhado inclinado com sótão"
+    },
     "common": {
         "maxFloors": "Máximo de pisos:",
         "minFloors": "Mínimo de pisos:",
@@ -243,7 +248,6 @@
             "mintedAgreementsButton": "Acordos na cadeia",
             "clearButton": "Repor projetos (neste navegador)",
             "planStats": {
-                "buttonLabel": "Estatísticas do plano",
                 "calculating": "A calcular…",
                 "modalTitle": "Estatísticas do plano",
                 "planArea": "Área do plano (m²)",
@@ -276,7 +280,7 @@
                 "colFloorArea": "ABC m²",
                 "colApartments": "apartamentos",
                 "colPeople": "pessoas",
-                "noEpoch": "sem período",
+                "noPeriod": "sem período",
                 "scope": "{{title}} · Projetos: {{counted}}",
                 "noteUnmeasured": "{{n}} de {{total}} edifícios não têm altura indicada — a sua área de construção não é contabilizada.",
                 "noteParcelArea": "A dimensão média das parcelas é calculada sobre as {{measured}} parcelas cuja geometria está carregada; {{missing}} são contabilizadas, mas não medidas.",
@@ -341,10 +345,6 @@
         "stations": {
             "title": "Estações",
             "placeTitle": "Colocar uma estação",
-            "bus": "Estação rodoviária",
-            "tram": "Ao nível do solo",
-            "underground": "Subterrânea",
-            "elevated": "Estação elevada",
             "cancel": "Cancelar colocação",
             "hint": "As estações ferroviárias ajustam-se às vias férreas. As estações de autocarros ajustam-se ao lado da via selecionado."
         },
@@ -641,19 +641,7 @@
                 "detailsTooltip": "Ver detalhes",
                 "deleteTooltip": "Eliminar projeto",
                 "empty": "Nenhum projeto corresponde aos filtros atuais.",
-                "downloadConfirm": "O projeto ainda não está no armazenamento local. Descarregar?",
-                "epoch": {
-                    "rowLabel": "Época do plano",
-                    "none": "Sem época",
-                    "custom": "Outro ano…",
-                    "customPrompt": "Ano da cronologia (2026–2966):",
-                    "saveError": "Não foi possível guardar a época.",
-                    "timelineLabel": "Cronologia",
-                    "all": "Todos",
-                    "cumulative": "Acumulado até {year}.",
-                    "toApply": "a aplicar: {n}",
-                    "toUnapply": "a remover: {n}"
-                }
+                "downloadConfirm": "O projeto ainda não está no armazenamento local. Descarregar?"
             },
             "proposalChoice": {
                 "parcels": "Parcelas",
@@ -1624,7 +1612,6 @@
         },
         "errors": {
             "importDisconnected": "O ficheiro contém áreas separadas. A área de intervenção tem de ser uma única área contínua.",
-            "importInvalid": "Este ficheiro não é um polígono GeoJSON em longitude/latitude.",
             "tooFew": "Uma área de intervenção precisa de pelo menos três vértices.",
             "tooMany": "Uma área de intervenção pode ter no máximo 500 vértices.",
             "selfIntersecting": "O contorno cruza-se consigo próprio; mova um vértice para evitar o cruzamento.",
@@ -1886,14 +1873,15 @@
             "title": "Acordo",
             "untitled": "Acordo de {{date}}",
             "status": {
-                "current": "Corresponde ao mapa",
-                "stale": "Já não corresponde ao mapa",
+                "stale": "Não corresponde ao mapa: {{reasons}}. Antes / depois exige que corresponda.",
+                "staleDraft": "Não corresponde ao mapa: {{reasons}}. Propor e Antes / depois exigem que corresponda.",
                 "error": "Não foi possível verificar o acordo face ao mapa: {{reason}}",
                 "reasons": {
                     "designMissing": "um projeto foi eliminado",
-                    "designNotApplied": "um projeto já não está aplicado",
+                    "designNotApplied": "um projeto não está aplicado",
                     "designChanged": "um projeto foi alterado",
-                    "groundChanged": "o terreno foi alterado"
+                    "groundChanged": "o terreno foi alterado",
+                    "unknown": "o mapa mudou"
                 }
             },
             "ledgerHeading": "Registo de movimentos",
@@ -1906,7 +1894,6 @@
             "deadline": "Prazo: {{date}}",
             "collapse": "Fechar acordo",
             "removeLocalConfirm": "Remover este acordo deste dispositivo? Os respetivos projetos permanecem no mapa. Qualquer acordo publicado continua disponível através da sua ligação.",
-            "compareUnavailable": "A comparação antes/depois está disponível quando este acordo corresponde aos projetos aplicados no mapa.",
             "designs": "Projetos do plano"
         },
         "addTo": {
@@ -2021,14 +2008,18 @@
         "plan": {
             "untitled": "Plano sem título"
         },
+        "party": {
+            "parcelOwners": "Proprietário(s) da parcela {{parcelId}}"
+        },
         "workflow": {
+            "personsByRights": "Pessoas segundo os direitos de propriedade",
+            "personsUnresolved": "Sem direitos de propriedade completos, os proprietários de {{count}} parcela(s) continuam a ser uma só parte.",
             "choosePlan": "Escolher um plano guardado",
             "noPlans": "Crie primeiro um plano. Abra Planos e escolha Criar plano.",
             "savePlan": "Guardar plano neste dispositivo",
             "planSaved": "Plano guardado neste dispositivo. Já pode criar o respetivo acordo.",
             "applyPlan": "Aplicar projetos do plano",
             "planNotApplied": "Aplique todos os projetos deste plano guardado antes de consultar o terreno.",
-            "rules": "Regras",
             "inputs": "Parcelas de entrada",
             "outputs": "Parcelas resultantes",
             "persons": "Pessoas",
@@ -2241,17 +2232,8 @@
             "guide": {
                 "open": "Como funciona este regime…",
                 "checked": "Regras verificadas em {{date}}",
-                "distribution": "Como é distribuído o terreno",
-                "before": "Terreno de entrada",
-                "after": "Terreno após o reparcelamento",
-                "schematicOwnerCap": "Cada proprietário cede, sem compensação, no máximo {{percent}}% do seu terreno para uso público e recebe de volta um lote; qualquer diferença adicional é liquidada em dinheiro.",
-                "schematicPoolCap": "Até {{percent}}% do conjunto destina-se, sem compensação, a equipamentos públicos e custos; as partes repartem o resto, e as diferenças são liquidadas em dinheiro.",
-                "schematicValue": "Cada proprietário recebe de volta uma parte do novo terreno com o valor com que contribuiu; o terreno público reduz essa parte por igual para todos, e as diferenças são liquidadas em dinheiro.",
-                "schematicNone": "As partes acordam o que cada uma recebe de volta; o regime não fixa limite ao terreno público, e as diferenças são liquidadas em dinheiro.",
-                "example": "Três proprietários de exemplo; com um plano aberto, as barras mostram as suas partes.",
                 "against": "Este acordo face ao regime",
                 "getsBack": "Recebe de volta",
-                "givesUp": "Cede",
                 "fixes": "O que permitiria cumpri-lo",
                 "fixBasisValue": "Em Regras, defina Compensação como «Equilibrar diferenças de valor do terreno em dinheiro» e, depois, atribua um valor por m² a cada parcela de entrada e a cada porção resultante.",
                 "fixBasisArea": "Em Regras, defina Compensação como «Equilibrar diferenças de terreno em dinheiro».",
@@ -2460,6 +2442,30 @@
         "holeVertices": "Vértices da abertura {{hole}} do contorno {{number}}"
     },
     "structureEditor": {
+        "hintEnclosure": "Clique para desenhar uma área vedada e depois clique no seu primeiro ponto ou escolha Terminar área. Clique numa vedação para escolher o tipo e o uso; arraste os pontos para mudar a forma.",
+        "hintGate": "Clique numa vedação para pôr um portão; clique num portão para o retirar.",
+        "statusLastGate": "Uma área vedada mantém pelo menos um portão.",
+        "statusGateOffFence": "Clique numa vedação para pôr um portão.",
+        "enclosure": {
+            "fencePark": "Vedar todo o parque",
+            "title": "Área vedada selecionada",
+            "fence": "Vedação",
+            "use": "Uso",
+            "remove": "Retirar área vedada",
+            "fenceRail": "Corrimão baixo",
+            "fenceMesh": "Rede",
+            "fenceIron": "Ferro forjado",
+            "fencePlinth": "Ferro sobre tijolo",
+            "useNone": "Aberta",
+            "useDog": "Área para cães",
+            "usePlay": "Parque infantil",
+            "summary": "{{area}}, portões: {{gates}}",
+            "drawn": "Área vedada",
+            "wholePark": "Vedação à volta de todo o parque",
+            "finish": "Terminar área",
+            "vertexTitle": "Arraste para mudar a forma da área vedada",
+            "deleteVertexTitle": "Apagar este ponto da vedação"
+        },
         "furniture": {
             "title": "Modelos de mobiliário",
             "upload": "Carregar",
@@ -2503,6 +2509,11 @@
         "titleSquare": "Editor de praças",
         "instructions": "Escolha um elemento e clique dentro do limite. Arraste qualquer elemento para o mover.",
         "tools": {
+            "swing": "Baloiço",
+            "seesaw": "Balancé",
+            "slide": "Escorrega",
+            "enclosure": "Área vedada",
+            "gate": "Portão",
             "lamp": "Candeeiro",
             "tree": "Árvore",
             "flowerbed": "Canteiro de flores",
@@ -2561,9 +2572,7 @@
         "saved": "Geometria da estação guardada.",
         "moveHint": "Arraste a implantação da estação ou o marcador central para a reposicionar. O tipo, as dimensões, a rotação e a altura da plataforma mantêm-se.",
         "dragCenter": "Arraste para mover a estação",
-        "trackStation": "Estação ferroviária",
         "groundLevel": "Ao nível do solo",
-        "elevated": "Estação elevada",
         "underground": "Subterrânea",
         "cancel": "Cancelar"
     },
@@ -2937,7 +2946,6 @@
                 "track": "Via férrea",
                 "park": "Parque",
                 "square": "Praça",
-                "busStation": "Estação rodoviária",
                 "tramStation": "Estação ao nível do solo",
                 "title": "Construir",
                 "block": "Quarteirão",
@@ -2949,6 +2957,8 @@
                 "layOutParcels": "Definir parcelamento",
                 "lake": "Lago",
                 "transport": "Transportes",
+                "roadInParcel": "Rua no lote",
+                "roadInParcelTooltip": "Encaixar uma rua neste lote: as faixas ocupam a largura e nada fora dele é tomado",
                 "undergroundStation": "Estação subterrânea",
                 "elevatedStation": "Estação elevada",
                 "selectParcelFirst": "Selecione primeiro uma parcela.",
@@ -3140,6 +3150,12 @@
                 "restoringGround": "A repor o terreno local…",
                 "saving": "A guardar…",
                 "unappliedStatus": "O projeto «{{name}}» foi removido do mapa e permanece na sua lista de projetos.",
+                "dependents": {
+                    "title": "Projetos construídos sobre este",
+                    "message": "Sobre «{{name}}» assentam: {{names}}. Retirá-los também do mapa ou deixá-los? Se ficarem, cada um volta a ocupar o seu terreno por si.",
+                    "all": "Retirar todos",
+                    "leave": "Deixá-los no mapa"
+                },
                 "remove": "Remover do mapa",
                 "includedInRoad": "Incluído na estrada combinada",
                 "includedInRoadHint": "Remova {{name}} do mapa para repor esta estrada.",
@@ -3171,7 +3187,6 @@
                 "convertToFreeformHint": "Mantenha a volumetria da regra à altura máxima permitida, como um único edifício que pode editar diretamente. Os parâmetros da regra deixam de se aplicar depois."
             },
             "tabs": {
-                "details": "Detalhes",
                 "overview": "Visão geral"
             },
             "title": "Detalhes do projeto",
@@ -3434,6 +3449,10 @@
             "edgeActionsProtectedHint": "Não é possível adicionar um nó numa rampa, num túnel ou num troço desnivelado · × Demolir este troço",
             "addNodeProtectedStatus": "Não é possível adicionar um nó numa rampa, num túnel ou num troço desnivelado.",
             "editRevertedStatus": "Não foi possível concluir essa alteração da estrada — foi revertida.",
+            "editRevertedReason": "Não foi possível concluir essa alteração da estrada — foi revertida: {{reason}}",
+            "boundedSplit": "Uma rua num lote continua a ser uma só rede ligada: ocupa o lote inteiro. Desfaça, ou apague a rua e coloque-a de novo.",
+            "boundedTooWide": "Estas faixas precisam de {{required}} m e o lote deixa {{available}} m aqui. Escolha menos faixas ou faixas mais estreitas.",
+            "boundedOutside": "Uma rua num lote fica dentro desse lote. Volte a pôr o ponto sobre ele.",
             "splitIntoStretches": "A edição desligou partes da estrada — esta foi dividida em {{count}} projetos de estrada separados.",
             "buildingRoad": "A criar a estrada…",
             "closeDrawnRoadPrompt": "Esta estrada ainda não foi criada. Pretende criá-la ou descartar o desenho?",
@@ -3646,6 +3665,182 @@
                 "area-leaseholders-private": "Área arrendada por privados",
                 "area-owners-and-leaseholders-all": "Área detida em propriedade e arrendada",
                 "area-owners-and-leaseholders-private": "Área detida em propriedade e arrendada por privados"
+            }
+        },
+        "dimensions": {
+            "rules": "As regras do esquema",
+            "labels": {
+                "initiator": "Quem inicia",
+                "decider": "Quem tem a palavra final",
+                "support": "Apoio dos proprietários necessário",
+                "electorate": "Quem é contado",
+                "dissenters": "Proprietários que dizem não",
+                "stage": "O que a aprovação permite",
+                "basis": "O terreno é repartido por",
+                "publicLand": "Terreno público sem compensação",
+                "levelling": "Diferenças",
+                "valueGain": "Mais-valia",
+                "minParties": "Partes"
+            },
+            "groups": {
+                "decision": "Como se decide",
+                "distribution": "Como o terreno é repartido"
+            },
+            "stages": {
+                "agreement": "Acordo",
+                "initiative": "Iniciativa",
+                "association": "Associação",
+                "plan": "Plano",
+                "execution": "Execução"
+            },
+            "supportLong": "É preciso {{tests}}.",
+            "stageLong": "A aprovação serve para {{stage}}.",
+            "flowAuthority": "Depois",
+            "compare": "Comparar todos os esquemas",
+            "values": {
+                "initiator": {
+                    "owners": {
+                        "short": "Os proprietários",
+                        "long": "Os proprietários iniciam."
+                    },
+                    "authority": {
+                        "short": "A autoridade",
+                        "long": "A autoridade inicia."
+                    }
+                },
+                "decider": {
+                    "owners": {
+                        "short": "Só os proprietários",
+                        "long": "O acordo dos proprietários é a decisão."
+                    },
+                    "owners-and-authority": {
+                        "short": "Proprietários, depois autoridade",
+                        "long": "Primeiro o apoio dos proprietários, depois decide a autoridade."
+                    },
+                    "authority": {
+                        "short": "Só a autoridade",
+                        "long": "Decide a autoridade; os proprietários são ouvidos."
+                    }
+                },
+                "support": {
+                    "none": {
+                        "short": "Sem votação",
+                        "long": "Os proprietários não votam."
+                    }
+                },
+                "electorate": {
+                    "none": {
+                        "short": "Ninguém",
+                        "long": "Ninguém é contado; os proprietários são ouvidos."
+                    },
+                    "owners": {
+                        "short": "Todos os proprietários",
+                        "long": "Contam-se os proprietários.",
+                        "private": {
+                            "short": "Só proprietários privados",
+                            "long": "Contam-se os proprietários privados; os titulares públicos ficam de fora."
+                        }
+                    },
+                    "owners-and-leaseholders": {
+                        "short": "Proprietários e arrendatários",
+                        "long": "Contam-se proprietários e arrendatários.",
+                        "private": {
+                            "short": "Só proprietários e arrendatários privados",
+                            "long": "Contam-se proprietários e arrendatários privados; os titulares públicos ficam de fora."
+                        }
+                    }
+                },
+                "dissenters": {
+                    "veto": {
+                        "short": "Veto",
+                        "long": "Cada proprietário pode bloqueá-lo."
+                    },
+                    "bound-by-majority": {
+                        "short": "Vinculados pela maioria",
+                        "long": "Reunido o apoio e com a aprovação da autoridade, os proprietários que disseram não ficam vinculados."
+                    },
+                    "bound-by-authority": {
+                        "short": "Vinculados pela autoridade",
+                        "long": "A decisão da autoridade vincula todos os proprietários."
+                    }
+                },
+                "basis": {
+                    "area": {
+                        "short": "Área",
+                        "long": "Os novos lotes são repartidos por área."
+                    },
+                    "value": {
+                        "short": "Valor",
+                        "long": "Os novos lotes são repartidos pelo valor do terreno."
+                    },
+                    "either": {
+                        "short": "Área ou valor",
+                        "long": "Os novos lotes são repartidos por área ou pelo valor do terreno; as partes escolhem."
+                    }
+                },
+                "publicLand": {
+                    "none": {
+                        "short": "Sem limite",
+                        "long": "O esquema não fixa limite; as partes acordam quanto se torna terreno público."
+                    },
+                    "owner": {
+                        "short": "≤ {{percent}}% por proprietário",
+                        "long": "Cada proprietário cede no máximo {{percent}}% do seu terreno para uso público sem compensação.",
+                        "area": {
+                            "short": "≤ {{percent}}% por proprietário (por área)",
+                            "long": "Repartido por área, cada proprietário cede no máximo {{percent}}% do seu terreno para uso público sem compensação."
+                        }
+                    },
+                    "pool": {
+                        "short": "≤ {{percent}}% do conjunto",
+                        "long": "No máximo {{percent}}% do terreno reunido torna-se terreno público e custos sem compensação."
+                    }
+                },
+                "levelling": {
+                    "money": {
+                        "short": "Em dinheiro",
+                        "long": "O que um proprietário recebe acima ou abaixo do que lhe cabe é liquidado em dinheiro."
+                    }
+                },
+                "valueGain": {
+                    "none": {
+                        "short": "—",
+                        "long": "Não se aplica: o terreno é repartido por área."
+                    },
+                    "kept": {
+                        "short": "Fica no terreno",
+                        "long": "Os proprietários mantêm a mais-valia no seu novo terreno."
+                    },
+                    "all": {
+                        "short": "Toda em dinheiro",
+                        "long": "Toda a mais-valia de cada proprietário é liquidada em dinheiro."
+                    },
+                    "share": {
+                        "short": "{{percent}}% em dinheiro",
+                        "long": "{{percent}}% da mais-valia de cada proprietário é liquidada em dinheiro; o resto fica no terreno."
+                    }
+                },
+                "minParties": {
+                    "any": {
+                        "short": "Qualquer número",
+                        "long": "Sem número mínimo de partes."
+                    },
+                    "some": {
+                        "short": "Pelo menos {{count}}",
+                        "long": "Pelo menos {{count}} partes trazem terreno."
+                    }
+                }
+            },
+            "outcome": {
+                "givesUp": "cede {{percent}}%",
+                "gains": "ganha {{percent}}%",
+                "pool": "{{given}}% do conjunto não volta aos proprietários; o limite é {{limit}}%.",
+                "owed": "A cada proprietário cabe o terreno que traz; o dinheiro liquida a diferença entre isso e o terreno que recebe de volta.",
+                "floor": "Retorno mínimo pelo limite",
+                "exampleCap": "Três proprietários de exemplo que cedem o máximo que o esquema permite. Com um plano aberto, o gráfico mostra as suas partes.",
+                "exampleNoCap": "Três proprietários de exemplo que cedem um quarto do seu terreno: o esquema não fixa limite. Com um plano aberto, o gráfico mostra as suas partes.",
+                "owedContribution": "A cada proprietário cabe o terreno que traz menos a contribuição de {{percent}}% tomada sem compensação; o dinheiro liquida a diferença entre isso e o terreno que recebe de volta.",
+                "owedValue": "A cada proprietário cabe uma parte do valor do novo terreno igual ao valor que traz; o dinheiro liquida a diferença entre isso e o valor do terreno que recebe de volta."
             }
         },
         "regime": {
@@ -3889,8 +4084,7 @@
                 "listing": "A listar {{done}}/{{total}} projetos…",
                 "checking": "A verificar {{done}}/{{total}} projetos…",
                 "publishSelected": "Publicar projetos selecionados",
-                "selectionCount": "{{selected}} de {{total}} projetos incluídos · {{excluded}} excluídos",
-                "layoutNeedsAgreement": "{{title}} é publicado com o respetivo acordo. Crie um acordo que o inclua ou desmarque-o para partilhar os outros projetos."
+                "selectionCount": "{{selected}} de {{total}} projetos incluídos · {{excluded}} excluídos"
             },
             "view": {
                 "camera": "Incluir a posição e o ângulo da câmara",
@@ -3923,7 +4117,6 @@
             "errors": {
                 "cidMismatch": "O servidor calculou uma identidade diferente para este projeto, pelo que nada foi publicado.",
                 "pinningUnconfigured": "Este servidor ainda não consegue fixar projetos publicados (a fixação não está configurada).",
-                "layoutNeedsAgreement": "Uma disposição de parcelas é publicada com o acordo que define a afetação do respetivo terreno.",
                 "tooLarge": "Este projeto excede o limite de publicação de 10 MiB. Reduza a sua extensão ou o nível de detalhe antes de partilhar; está guardado localmente.",
                 "invalidDesign": "Este projeto contém dados inválidos. Corrija-os antes de partilhar.",
                 "rateLimitedFor": "Demasiadas publicações de momento. Tente novamente dentro de cerca de {{minutes}} min.",
@@ -4297,6 +4490,7 @@
                 "donate": "Donativo efetuado",
                 "pledge": "Compromisso assumido",
                 "stake": "Aposta / participação",
+                "sell": "Aposta vendida",
                 "createMarket": "Mercado aberto",
                 "resolve": "Mercado resolvido",
                 "claim": "Ganhos reclamados",
@@ -4584,7 +4778,6 @@
             "title": "Publicar antes de passear",
             "intro": "Estes projetos aplicados ainda não foram publicados. A vista de passeio carrega apenas projetos publicados, pelo que são publicados primeiro. A caixa de diálogo fecha-se e o passeio começa assim que todos estiverem publicados.",
             "publishAll": "Publicar todos",
-            "layoutSkipped": "Uma configuração de parcelas é publicada com o respetivo acordo, pelo que o passeio prossegue sem ela.",
             "openFailed": "Não foi possível abrir a caixa de diálogo de publicação."
         },
         "sun": {
@@ -4998,6 +5191,34 @@
             "badUrl": "Introduza um URL http(s) de um serviço de membro da lente."
         }
     },
+    "roadInParcel": {
+        "hint": "As faixas seguem o centro de cada rua e cabem na sua parte mais estreita; passeios e faixas verdes preenchem o resto. Nada fora deste terreno é tomado.",
+        "turn": "Rodar 90°",
+        "place": "Colocar rua",
+        "summary": "Ruas: {{streets}} · lotes: {{parcels}}",
+        "group": {
+            "label": "{{count}} × {{width}} m"
+        },
+        "preset": {
+            "automatic": "Automático",
+            "label": "Faixas: {{lanes}}, {{width}} m"
+        },
+        "issue": {
+            "notGrid": "Este terreno não se lê como ruas retas. Desenhe a rua à mão com a ferramenta Estrada.",
+            "disconnected": "Partes deste terreno não se ligam como uma só rede de ruas. Selecione-as em separado.",
+            "tooNarrow": "Aqui uma rua tem {{width}} m de largura, estreita demais para uma faixa.",
+            "tooWide": "As faixas escolhidas para as ruas de {{width}} m precisam de {{required}} m com os passeios.",
+            "skipped": "Os pedaços que não se leem como ruas retas ficam como estão: {{count}}."
+        },
+        "failed": "Não foi possível colocar a rua: {{reason}}",
+        "done": "Ruas colocadas no lote: {{count}}.",
+        "donePartly": "Ruas colocadas na parcela: {{count}}. Não colocadas: {{failed}}",
+        "noParcel": "Selecione primeiro o lote reservado para a rua.",
+        "taken": "Uma estrada ou via-férrea já ocupa este terreno. Retire-a do mapa primeiro, ou selecione outros lotes.",
+        "joinFailed": "Não foi possível juntar os lotes selecionados num só terreno.",
+        "roadName": "Ruas",
+        "description": "Ruas encaixadas no terreno reservado para elas."
+    },
     "parcelLayout": {
         "editor": {
             "algorithms": {
@@ -5047,8 +5268,7 @@
                 "uploadUnavailable": "O carregamento de GeoJSON requer o motor de geometria, que não foi carregado.",
                 "uploadTooMany": "Use no máximo {{count}} polígonos em uma divisão."
             }
-        },
-        "publishWithAgreement": "Uma disposição parcelar é publicada com o respetivo acordo. Proponha um acordo que a inclua."
+        }
     },
     "languages": {
         "en": "Inglês",
@@ -8047,7 +8267,9 @@
             "right": "Direita",
             "swap": "Trocar lados",
             "sliderLabel": "Divisor de comparação",
-            "modelOnly": "Abra a vista de modelo para desenhar a comparação.",
+            "reading": "{{label}} (a ler…)",
+            "unreadable": "{{label}} (não foi possível ler: {{reason}})",
+            "mapNote": "No mapa, cada lado desenha os seus próprios edifícios e a volumetria permitida como implantações; um plano não aplicado desenha também as suas ruas e espaços como implantações. As parcelas e as ruas e parques aplicados aparecem nos dois lados.",
             "options": {
                 "built": "Edificado hoje",
                 "permitted": "Volumetria permitida",
@@ -8092,7 +8314,8 @@
             "empty-supported-bound": "Sem espaço dentro dos afastamentos suportados",
             "unsupported-parcel-shape": "Forma de parcela não suportada",
             "study-multiple-zoning-areas": "Várias áreas de zonamento na mesma parcela",
-            "study-zoning-missing": "Sem fonte de zonamento para a parcela"
+            "study-zoning-missing": "Sem fonte de zonamento para a parcela",
+            "status-not-configurable": "O estado registado não dá uma altura edificável"
         },
         "refreshPending": "A aguardar atualização",
         "refreshCount": {
@@ -8147,6 +8370,7 @@
             "sideSetback": "Afastamento lateral mínimo",
             "rearSetback": "Afastamento posterior mínimo",
             "height": "Altura máxima",
+                "storeys": "Pisos máximos",
             "lotArea": "Área mínima do lote"
         },
         "photoNote": "Explore a volumetria permitida no mapa ou na vista do modelo 3D.",
@@ -8217,7 +8441,8 @@
             "accessory": "Habitação acessória",
             "plannedresidential": "Residencial planeado",
             "cached-calculation": "Cálculo guardado",
-            "new-attached-multifamily": "Novo edifício multifamiliar em banda"
+            "new-attached-multifamily": "Novo edifício multifamiliar em banda",
+            "general": "Geral (mapa de tratamentos)"
         },
         "evidence": {
             "direct": "Valor direto da fonte",
@@ -8272,7 +8497,35 @@
         "contact": "Utilize o formulário de comentários abaixo para contactar o responsável pela manutenção sobre privacidade, acesso, retificação ou eliminação de dados sob o nosso controlo. Inclua um comprovativo de receção do relato ou outra referência para podermos identificar o registo. Os pedidos são analisados tendo em conta as informações disponíveis e as limitações do armazenamento público e de terceiros. As futuras alterações a este aviso serão datadas nesta página.",
         "contactLink": "Contactar o responsável pela manutenção / pedir revisão de dados"
     },
+    "buildout": {
+        "summaryUndated": "{{construction}} em obra, {{planned}} por começar, {{undated}} sem datas (mostrados como construídos)",
+        "reroll": "Outra construção simulada",
+        "open": "Construção ao longo do tempo",
+        "close": "Voltar a hoje",
+        "back": "Mês anterior",
+        "forward": "Mês seguinte",
+        "play": "Reproduzir",
+        "pause": "Pausar",
+        "month": "Mês",
+        "simulation": "Construção simulada",
+        "simulationBadge": "Simulação",
+        "summary": "{{construction}} em obra, {{planned}} por começar",
+        "underConstruction": "Em obra, {{percent}}% construído"
+    },
     "planDialog": {
+        "scheduleUndated": "Sem datas (mostrados como construídos)",
+        "simulate": "Simular construção",
+        "simulateNothing": "Todos os projetos deste plano já têm datas.",
+        "schedule": "Calendário de obras",
+        "scheduleTitle": "Calendário de obras: {{title}}",
+        "scheduleHint": "Indique quando cada projeto é construído. Guardar cria uma nova revisão do plano; a ampulheta no mapa reprodu-la depois.",
+        "scheduleEmpty": "Ainda sem datas de obra.",
+        "scheduleStart": "Início",
+        "scheduleEnd": "Fim",
+        "scheduleClear": "Limpar datas",
+        "saveSchedule": "Guardar calendário",
+        "scheduleSaved": "Calendário de obras guardado como nova revisão do plano.",
+        "scheduleInvalid": "Introduza meses entre {{first}} e {{last}}, cada início no máximo no mês do fim.",
         "plan": "Plano",
         "savedPlans": "Planos guardados",
         "createPlan": "Criar plano",
@@ -8367,6 +8620,7 @@
         "unsupportedCrs": "Este WMS precisa de um sistema de coordenadas geográficas ou Web Mercator suportado."
     },
     "parcelSourceHealth": {
+        "notIntegrated": "Os lotes chegaram, mas não foi possível adicioná-los ao mapa.",
         "countryRestricted": "Este registo só aceita ligações de {{country}}. Fora de {{country}}, continue sem parcelas ou escolha outra fonte.",
         "requestTimedOut": "O pedido excedeu o tempo limite.",
         "offline": "Parece estar sem ligação. Ligue-se à Internet e tente novamente.",
@@ -8567,15 +8821,16 @@
     "lists": {
         "title": "Listas",
         "plans": "Planos",
-        "thisBrowser": "Este navegador",
         "source": "Origem",
         "search": "Pesquisar itens carregados",
         "byTitle": "Título",
         "newest": "Mais recentes primeiro",
         "remove": "Remover do navegador",
         "removeConfirm": "Remover “{{title}}” deste navegador? Os links publicados e os outros registos continuam disponíveis.",
-        "continue": "Continuar",
         "select": "Selecionar {{title}}",
+        "open": "Abrir",
+        "openNamed": "Abrir {{title}}",
+        "noPlace": "Isto não tem lugar no mapa.",
         "agreementHint": "Crie um acordo a partir de um plano no separador Planos.",
         "proposeFirst": "Abra o acordo para o rever e propor antes de o partilhar.",
         "loading": "A carregar…",
@@ -8621,6 +8876,7 @@
     "basisCompared": "Todos os planos comparados",
     "measuring": "A medir…",
     "landDefinition": "O terreno público são as ruas e os parques e praças do OpenStreetMap; o privado é o resto das parcelas. O estado atual conta cada edifício existente nesse terreno; um plano conta, ao lado dos novos, os existentes que os seus projetos não removem.",
-    "noBasis": "Não há nenhum plano guardado de onde tirar o terreno."
+    "noBasis": "Não há nenhum plano guardado de onde tirar o terreno.",
+    "sideBySide": "Lado a lado no mapa"
   }
 }

@@ -11,11 +11,15 @@ const agreementRecord = require('../../frontend/js/agreement-record.js');
 const cidApi = require('../../frontend/js/cid.js');
 const approval = require('../../frontend/js/proposals/approval.js');
 const planRecord = require('../../frontend/js/plan-record.js');
+const agreementPersons = require('../../frontend/js/agreement-persons.js');
 
 export const DESIGN_SCHEMA = designRecord.SCHEMA;
 export const AGREEMENT_SCHEMA = agreementRecord.PUBLISHED_SCHEMA;
 export const OUTPUT_ROLES = agreementRecord.ROLES;
-export const abstractHolder = agreementRecord.abstractHolder;
+// Agreement parties are abstract, one per input parcel (`parcel-owner:<parcelId>`); people are
+// derived from a rights snapshot with personPositions, never stored in the agreement.
+export const partyKey = agreementRecord.partyKey;
+export const personPositions = agreementPersons.personPositions;
 export const defaultAllocations = agreementRecord.defaultAllocations;
 export const settle = agreementRecord.settle;
 export const DEFAULT_SETTLEMENT = agreementRecord.DEFAULT_SETTLEMENT;
@@ -80,9 +84,6 @@ export function designObject(localDesign) {
     return { content, cid: cidApi.cidOfObject(content) };
 }
 
-/** A parcel layout publishes only with its agreement (POST /agreements carries it). */
-export const isParcelLayout = content => !!(content && content.parcelLayout);
-
 /**
  * parcel-rights/v1 of input parcels as the lens member's devnet owner registry records them: each parcel
  * complete, its owners with equal shares (1/owner_count; the registry keeps no shares) and no area (it
@@ -105,19 +106,6 @@ export function registryRights(parcels) {
                 owners: owners.map(row => ({ ownerId: row.owner, share: `1/${owners.length}` }))
             };
         })
-    });
-}
-
-/**
- * The input holders (the agreement's parties) of one parcel of a rights snapshot: each owner by its owner
- * id, with its share as a number and a display name from `names` (owner id → name) when one is known.
- */
-export function holdersFromRights(rights, parcelId, names = {}) {
-    const parcel = (rights?.parcels || []).find(row => row.parcelId === String(parcelId));
-    if (!parcel) throw fail('invalid-agreement', `the rights snapshot has no parcel ${parcelId}`);
-    return parcel.owners.map(owner => {
-        const [numerator, denominator] = owner.share.split('/').map(Number);
-        return { ownerKey: owner.ownerId, displayName: names[owner.ownerId] || owner.ownerId, share: numerator / denominator };
     });
 }
 
@@ -192,11 +180,11 @@ export function parcelOutputs(parcels) {
  * @param {object} parts
  *   plan      { cid, content: plan/v1 } the exact existing named plan selected for this agreement
  *   designs   [{ cid, goal, title }] local projection used to validate output producers
- *   parcels   [{ parcelId, parcelSourceId?, areaM2 (number | null), holders? }] the input parcels
+ *   parcels   [{ parcelId, parcelSourceId?, areaM2 (number | null) }] the input parcels, each its owners' abstract party
  *   outputs   [{ hash, areaM2, fromParcelIds, role, producedBy (a linked design CID | null), geometry? }]
  *   rule      { electorate, binding, approvalConfig, lens, settlement } (ownersRule() for a binding owners' agreement, communityRule() for a poll)
  *   title, author, sponsor (base58 wallet that mints and funds it, or null), city, createdAt (ISO | null),
- *   deadline (ISO | null), openGroundM2 (default 0), allocations (defaulted when unambiguous), money (settlement-derived),
+ *   deadline (ISO | null), openGroundM2 (default 0), allocations (default: a piece on one input parcel goes to that parcel's party), money (settlement-derived),
  *   valuation ({ inputs: [{ parcelId, unitValueCents }], outputs: [{ output, unitValueCents }] } for settlement by value, else null)
  * @returns {{ content: object, cid: string }}
  */
@@ -231,7 +219,8 @@ export function agreementObject({
             parcels: (parcels || []).map(parcel => ({
                 parcelId: parcel.parcelId,
                 areaM2: finite(parcel.areaM2) ? parcel.areaM2 : null,
-                holders: Array.isArray(parcel.holders) ? parcel.holders : [],
+                // Named holders are refused by the record (AgreementRecord.normalize), never dropped.
+                ...(Object.hasOwn(parcel, 'holders') ? { holders: parcel.holders } : {}),
                 ...(parcel.parcelSourceId ? { parcelSourceId: parcel.parcelSourceId } : {})
             })),
             openGroundM2
@@ -243,10 +232,9 @@ export function agreementObject({
             fromParcelIds: output.fromParcelIds,
             producedBy: output.producedBy ?? null,
             role: output.role,
-            holders: [],
             geometry: output.geometry ?? null
         })),
-        allocations: allocations ?? (rule?.electorate === 'owners' ? agreementRecord.defaultAllocations({ parcels: (parcels || []).map(parcel => ({ ...parcel, holders: parcel.holders?.length ? parcel.holders : [agreementRecord.abstractHolder(parcel.parcelId)] })) }, outputs || []) : []),
+        allocations: allocations ?? (rule?.electorate === 'owners' ? agreementRecord.defaultAllocations({ parcels: parcels || [] }, outputs || []) : []),
         money,
         valuation,
         rule,

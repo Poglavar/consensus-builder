@@ -26,43 +26,41 @@ test.describe('Proposal browsing @features', () => {
       ];
     }, PARCEL_ID);
 
-    // The Proposals sheet mounts the list itself (fbe3758d).
+    // Lists (01268caee): one Source and filters section above the Designs rows; search stays out,
+    // publication and order fold behind Filters; removal asks before dropping the browser copy.
     await page.locator('#proposals-button').click();
-    const list = page.locator('#proposals-sheet .proposal-list-modal');
-    await expect(list.locator('.proposal-list-item')).toHaveCount(3);
-    // The list sits in the capped 340px Proposals sheet (fbe3758d); on this 720px-tall window the
-    // filters fold behind the Filters toggle so the list keeps its height.
-    await expect(list.locator('.proposal-list-item').first()).toBeInViewport();
-    await expect(list.locator('#proposal-list-controls')).toBeHidden();
-    await list.locator('.proposal-filters-toggle').click();
-    await expect(list.locator('.proposal-filters-toggle')).toHaveAttribute('aria-expanded', 'true');
-    await expect(list.locator('#proposal-list-controls')).toBeVisible();
-    await list.locator('#proposal-filter-search').fill('North');
-    await expect(list.locator('.proposal-list-item')).toHaveCount(1);
-    await expect(list.locator('.proposal-list-title')).toHaveText('North park plan');
+    const list = page.locator('#proposals-sheet');
+    const rows = list.locator('#proposal-list-host .lists-item');
+    const titles = rows.locator('.lists-item__title');
+    await expect(rows).toHaveCount(3);
+    await expect(rows.first()).toBeInViewport();
+    const order = list.locator('select[data-list-filter="sort"]');
+    await expect(order).toBeHidden();
+    await list.locator('.lists-filter-details > summary').click();
+    await expect(order).toBeVisible();
+    await list.getByRole('searchbox').fill('North');
+    await expect(titles).toHaveText(['North park plan']);
+    // Search also matches the author.
+    await list.getByRole('searchbox').fill('Ada');
+    await expect(titles).toHaveText(['North park plan', 'Road safety plan']);
 
-    await list.locator('#proposal-filter-search').fill('');
-    await selectNativeOption(list.locator('#proposal-filter-type'), 'park');
-    await expect(list.locator('.proposal-list-item')).toHaveCount(2);
-    await selectNativeOption(list.locator('#proposal-sort'), 'created-asc');
-    await expect(list.locator('.proposal-list-item').first().locator('.proposal-list-title')).toHaveText('North park plan');
-    await expect(list.locator('.proposal-list-item').last().locator('.proposal-list-title')).toHaveText('South park plan');
+    await list.getByRole('searchbox').fill('');
+    await expect(titles).toHaveText(['North park plan', 'Road safety plan', 'South park plan']);
+    await selectNativeOption(order, 'newest');
+    await expect(titles).toHaveText(['South park plan', 'North park plan', 'Road safety plan']);
 
     // Designs come from this device or from the server's index; none are read from a chain (M3).
-    await expect(list.locator('.proposal-source-btn')).toHaveCount(2);
-    await list.locator('.proposal-source-btn[data-source="server"]').click();
-    await expect(list.locator('.proposal-source-btn[data-source="server"]')).toHaveAttribute('aria-pressed', 'true');
-    // Restore local source before deleting; deletion is offered only for locally held records.
-    await list.locator('.proposal-source-btn[data-source="local"]').click();
-    await selectNativeOption(list.locator('#proposal-filter-type'), 'all');
-    await expect(list.locator('.proposal-list-item')).toHaveCount(3);
-    // Fold the filters away again to reach the list rows.
-    await list.locator('.proposal-filters-toggle').click();
-    await expect(list.locator('#proposal-list-controls')).toBeHidden();
-    const target = list.locator(`.proposal-list-item[data-proposal-id="${ids[2]}"]`);
-    await target.locator('.proposal-delete-btn').click();
+    await expect(list.locator('[data-list-source]')).toHaveCount(2);
+    await list.locator('[data-list-source="published"]').click();
+    await expect(list.locator('[data-list-source="published"]')).toHaveAttribute('aria-pressed', 'true');
+    // Restore local source before removing; removal is offered only for locally held records.
+    await list.locator('[data-list-source="local"]').click();
+    await expect(rows).toHaveCount(3);
+    const target = list.locator(`#proposal-list-host .lists-item[data-list-id="${ids[2]}"]`);
+    await target.getByRole('button', { name: 'Remove from browser', exact: true }).click();
+    await page.locator('.cb-dialog').getByRole('button', { name: 'Remove from browser', exact: true }).click();
     await expect.poll(() => page.evaluate(id => (window as any).getProposalByIdOrHash(id) == null, ids[2])).toBe(true);
-    await expect(list.locator('.proposal-list-item')).toHaveCount(2);
+    await expect(rows).toHaveCount(2);
   });
 
   test('Duplicate on the details starts placement and cancellation leaves the source unchanged', async ({ mockApi: page }) => {

@@ -62,15 +62,6 @@
     const sortedUnique = list => Array.from(new Set(list)).sort(numeric);
     const sameSet = (a, b) => a.size === b.size && Array.from(a).every(item => b.has(item));
 
-    function holdersOf(ownerOf, id) {
-        const list = ownerOf(id);
-        return (Array.isArray(list) ? list : []).map(holder => ({
-            ownerKey: String(holder.ownerKey),
-            displayName: holder.displayName ? String(holder.displayName) : String(holder.ownerKey),
-            share: holder.share
-        }));
-    }
-
     // A layout's own role wins; then the fabric's corridor test (live-fabric.js isCorridor), then a
     // split part; anything else is a whole parcel.
     function roleOf(props) {
@@ -100,11 +91,11 @@
      * @param designs applied design records ({ proposalId, cadastreParcelIds?, parcelLayout?, … })
      * @param fabric the live parcel fabric: producedBy(proposalId) and entriesForCadastre(ids, query)
      * @param originals Map of cadastral id → original cadastral Feature (may lack some)
-     * @param ownerOf (parcelId) → [{ ownerKey, displayName, share }], [] when nobody holds it
      * @param area (feature) → m² (turf.area)
-     * @returns {{ inputs: { parcels: { parcelId, areaM2, holders }[], openGroundM2 }, outputs: object[] }}
+     * @returns {{ inputs: { parcels: { parcelId, areaM2 }[], openGroundM2 }, outputs: object[] }}
+     *   Each input parcel stands for its abstract owners' party; nobody is named here.
      */
-    function derive({ designs, fabric, originals, ownerOf, area = areaOf,
+    function derive({ designs, fabric, originals, area = areaOf,
         openGround: openGroundOption, siteBinding: siteBindingOption, turf: turfOption } = {}) {
         if (!Array.isArray(designs) || designs.some(design => !design || design.proposalId == null)) {
             throw new TypeError('derive needs design records with a proposalId.');
@@ -112,7 +103,7 @@
         if (!fabric || typeof fabric.producedBy !== 'function' || typeof fabric.entriesForCadastre !== 'function') {
             throw new TypeError('derive needs the live parcel fabric.');
         }
-        if (typeof ownerOf !== 'function' || typeof area !== 'function') throw new TypeError('derive needs ownerOf and area functions.');
+        if (typeof area !== 'function') throw new TypeError('derive needs an area function.');
 
         // Each design's declared parcels and the cadastral anchors of every piece it produced.
         const parcelIds = sortedUnique(designs.flatMap(design => [
@@ -122,9 +113,7 @@
         const parcels = parcelIds.map(parcelId => {
             const original = originals && typeof originals.get === 'function' ? originals.get(parcelId) : null;
             const measured = original ? area(original) : null;
-            const holders = holdersOf(ownerOf, parcelId);
-            return { parcelId, areaM2: finite(measured) && measured >= 0 ? committedArea(measured) : null,
-                holders: holders.length ? holders : [record().abstractHolder(parcelId)] };
+            return { parcelId, areaM2: finite(measured) && measured >= 0 ? committedArea(measured) : null };
         });
         const featureById = new Map();
         (fabric.entriesForCadastre(parcelIds, { includeCorridors: true }) || []).forEach(feature => {
@@ -208,7 +197,7 @@
                 if (!finite(residualArea) || residualArea <= 0) throw new Error('Residual open-ground geometry could not be measured.');
                 syntheticOutputs.push({ hash, pieceId: `open-ground:${hash.slice('piece1-sha256:'.length)}`,
                     areaM2: committedArea(residualArea), fromParcelIds: [], producedBy: null,
-                    role: 'parcel', holders: [], geometry });
+                    role: 'parcel', geometry });
             }
         }
         const outputFeatures = Array.from(featureById.values());
@@ -234,7 +223,6 @@
                 fromParcelIds: sortedUnique(idsOf(props.cadastreParcelIds)),
                 producedBy: props.producedByProposalId ? String(props.producedByProposalId) : null,
                 role,
-                holders: holdersOf(ownerOf, pieceId),
                 geometry
             });
         });
@@ -251,7 +239,7 @@
      * @returns {{ current: boolean, reasons: { code: 'design-missing' | 'design-not-applied'
      *   | 'design-changed' | 'ground-changed', proposalId?: string }[] }}
      */
-    function check(agreement, { designOf, isApplied, fingerprintOf, fabric, originals, ownerOf, area = areaOf } = {}) {
+    function check(agreement, { designOf, isApplied, fingerprintOf, fabric, originals, area = areaOf } = {}) {
         if (typeof designOf !== 'function' || typeof isApplied !== 'function' || typeof fingerprintOf !== 'function') {
             throw new TypeError('check needs designOf, isApplied and fingerprintOf functions.');
         }
@@ -271,7 +259,7 @@
             return found;
         });
         if (records.every(Boolean)) {
-            const fresh = derive({ designs: records, fabric, originals, ownerOf, area });
+            const fresh = derive({ designs: records, fabric, originals, area });
             const storedInputs = new Set(((agreement.inputs && agreement.inputs.parcels) || []).map(parcel => String(parcel.parcelId)));
             const storedOutputs = new Set((agreement.outputs || []).map(output => output.hash));
             if (!sameSet(storedInputs, new Set(fresh.inputs.parcels.map(parcel => parcel.parcelId)))
@@ -283,9 +271,10 @@
     }
 
     /**
-     * The ownerOf lookup over the local owner records (parcel_<id>_owner → agent id). A joint-pool
-     * agent stands for its members and their shares; an owner record without an agent record still
-     * names its holder.
+     * The ownerOf lookup over the local owner records (parcel_<id>_owner → agent id), the people
+     * behind the default local rights snapshot (AgreementRecord.rightsFromInputs). A joint-pool agent
+     * stands for its members and their shares; an owner record without an agent record still names
+     * its holder.
      * @param storage { getItem(key) } (PersistentStorage)
      * @param agents { getAgent(id) } (agentStorage)
      */

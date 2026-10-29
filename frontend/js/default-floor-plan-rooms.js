@@ -28,6 +28,7 @@
     const KITCHEN_WIDTH_M = 2.6;
     const BALCONY_DEPTH_M = 1.5;
     const BALCONY_MAX_WIDTH_M = 4.5;
+    const PARTY_CLEARANCE_M = 0.3; // blind wall kept beside a neighbour's wall
     const WINDOW_SPECS = Object.freeze({
         bedroom: { widthM: 1.4, sillM: 0.9, heightM: 1.4 },
         living: { widthM: 2.4, sillM: 0.9, heightM: 1.4 },
@@ -91,6 +92,17 @@
             t0 = Math.min(t0, along); t1 = Math.max(t1, along);
         }
         return t1 - t0 > 0.5 ? [t0, t1] : null;
+    }
+
+    // The stretches of `run` ([t0, t1] along a facade) that no neighbour stands against, each longer
+    // than minM. facade.partyRuns lists where neighbours stand; openings never go there.
+    function freeRuns(facade, run, minM = 0.5) {
+        let pieces = [run.slice()];
+        for (const [s0, s1] of facade.partyRuns || []) {
+            const lo = s0 - PARTY_CLEARANCE_M, hi = s1 + PARTY_CLEARANCE_M;
+            pieces = pieces.flatMap(([p0, p1]) => [[p0, Math.min(p1, lo)], [Math.max(p0, hi), p1]]).filter(([p0, p1]) => p1 > p0);
+        }
+        return pieces.filter(([p0, p1]) => p1 - p0 > minM);
     }
 
     function openingOn(facade, t0, t1, widthM, spec, wallM, kind = 'window') {
@@ -206,13 +218,16 @@
         }
         out.rooms.push({ kind: 'hall', polygon: hall, areaM2: Math.round(area(hall) * 10) / 10 });
 
-        // --- windows for every room on every free facade, a balcony for the living room ----------
-        const facades = env.facades.filter(f => !f.party && !f.blind);
+        // --- windows for every room on every free facade stretch, a balcony for the living room --
+        const facades = env.facades.filter(f => !f.blind);
         let balconyDone = false;
         for (const entry of out.rooms) {
             const spec = WINDOW_SPECS[entry.kind];
             if (!spec) continue;
-            const runs = facades.map(f => ({ f, run: facadeRun(t, entry.polygon, f, env.wallM) })).filter(x => x.run);
+            const runs = facades.flatMap(f => {
+                const run = facadeRun(t, entry.polygon, f, env.wallM);
+                return run ? freeRuns(f, run).map(free => ({ f, run: free })) : [];
+            });
             for (const { f, run } of runs) {
                 const [t0, t1] = run;
                 const wantsBalcony = env.balconies && !env.isGround && entry.kind === 'living' && !balconyDone && !f.isFront
@@ -258,25 +273,28 @@
         if (sales && area(sales) >= 1.5) out.rooms.push({ kind: 'shop', polygon: sales, areaM2: Math.round(area(sales) * 10) / 10 });
         if (stock && area(stock) >= 1.5) out.rooms.push({ kind: 'storage', polygon: stock, areaM2: Math.round(area(stock) * 10) / 10 });
         const cutFor = opening => out.cuts.push(strip(t, opening.a, opening.b, opening.depthM + 0.06));
-        for (const f of env.facades.filter(f => !f.party && !f.blind)) {
+        let doorDone = false;
+        for (const f of env.facades.filter(f => !f.blind)) {
             const run = sales ? facadeRun(t, sales, f, env.wallM) : null;
             if (!run) continue;
-            const [t0, t1] = run;
-            if (f.isFront && t1 - t0 >= 2.2) {
-                // The shop door sits nearest the building entrance, the glazing fills the rest.
-                const doorT = env.doorNearU !== undefined && Math.abs(f.d[0]) > 0.5 && (env.doorNearU - f.a[0]) / f.d[0] > (t0 + t1) / 2 ? t1 - 0.8 : t0 + 0.8;
-                const door = openingOn(f, doorT - 0.6, doorT + 0.6, 1.1, { sillM: 0, heightM: Math.min(2.4, env.wallHeightM - 0.3) }, env.wallM, 'glazedDoor');
-                out.openings.push({ ...door, room: 'shop' }); cutFor(door);
-                const glazing = doorT > (t0 + t1) / 2 ? [t0 + 0.3, doorT - 0.9] : [doorT + 0.9, t1 - 0.3];
-                const panes = Math.max(0, Math.floor((glazing[1] - glazing[0] + 0.6) / 3.0));
-                for (let i = 0; i < panes; i++) {
-                    const seg = [glazing[0] + (glazing[1] - glazing[0]) * i / panes, glazing[0] + (glazing[1] - glazing[0]) * (i + 1) / panes];
-                    const window = openingOn(f, seg[0], seg[1], WINDOW_SPECS.shop.widthM, WINDOW_SPECS.shop, env.wallM);
+            for (const [t0, t1] of freeRuns(f, run)) {
+                if (f.isFront && !doorDone && t1 - t0 >= 2.2) {
+                    doorDone = true;
+                    // The shop door sits nearest the building entrance, the glazing fills the rest.
+                    const doorT = env.doorNearU !== undefined && Math.abs(f.d[0]) > 0.5 && (env.doorNearU - f.a[0]) / f.d[0] > (t0 + t1) / 2 ? t1 - 0.8 : t0 + 0.8;
+                    const door = openingOn(f, doorT - 0.6, doorT + 0.6, 1.1, { sillM: 0, heightM: Math.min(2.4, env.wallHeightM - 0.3) }, env.wallM, 'glazedDoor');
+                    out.openings.push({ ...door, room: 'shop' }); cutFor(door);
+                    const glazing = doorT > (t0 + t1) / 2 ? [t0 + 0.3, doorT - 0.9] : [doorT + 0.9, t1 - 0.3];
+                    const panes = Math.max(0, Math.floor((glazing[1] - glazing[0] + 0.6) / 3.0));
+                    for (let i = 0; i < panes; i++) {
+                        const seg = [glazing[0] + (glazing[1] - glazing[0]) * i / panes, glazing[0] + (glazing[1] - glazing[0]) * (i + 1) / panes];
+                        const window = openingOn(f, seg[0], seg[1], WINDOW_SPECS.shop.widthM, WINDOW_SPECS.shop, env.wallM);
+                        out.openings.push({ ...window, room: 'shop' }); cutFor(window);
+                    }
+                } else if (t1 - t0 >= 2.0) {
+                    const window = openingOn(f, t0, t1, Math.min(WINDOW_SPECS.shop.widthM, t1 - t0 - 0.6), WINDOW_SPECS.shop, env.wallM);
                     out.openings.push({ ...window, room: 'shop' }); cutFor(window);
                 }
-            } else if (t1 - t0 >= 2.0) {
-                const window = openingOn(f, t0, t1, Math.min(WINDOW_SPECS.shop.widthM, t1 - t0 - 0.6), WINDOW_SPECS.shop, env.wallM);
-                out.openings.push({ ...window, room: 'shop' }); cutFor(window);
             }
         }
         return out;
@@ -327,7 +345,7 @@
         return out;
     }
 
-    const api = { furnishApartment, furnishShop, garageLayout, facadeRun, WINDOW_SPECS, PARTITION_M,
+    const api = { furnishApartment, furnishShop, garageLayout, facadeRun, freeRuns, WINDOW_SPECS, PARTITION_M,
         // The clip helpers, exported so their failure reporting is tested directly.
         _clip: { intersect, difference, unionAll } };
     global.__defaultFloorPlanRooms = api;

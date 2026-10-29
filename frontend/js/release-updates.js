@@ -41,5 +41,41 @@
         }
         return { check, snapshot: () => ({ ...state }), deployed };
     }
-    return { INTERVAL_MS, validBuild, readRelease, createChecker };
+    // "Update now" reloads the tab. The address already carries the view and camera; this record
+    // carries what the click stack had open, for this tab only (sessionStorage), and is read once.
+    // Only point-located sections can be found again under the saved point; a plan, agreement or
+    // multi-parcel selection is not recorded.
+    const RESUME_KEY = 'cb.updateResume';
+    const RESUME_MAX_AGE_MS = 2 * 60 * 1000;
+    const RESUMABLE = new Set(['designs', 'built', 'permitted', 'formed', 'parcels']);
+    function resumeRecord({ mode, pathname, stack, selectedInstance, point, now }) {
+        const selected = {};
+        const expandable = stack && RESUMABLE.has(stack.selectedKind);
+        if (expandable) {
+            for (const section of stack.sections || []) {
+                if (!RESUMABLE.has(section.kind)) continue;
+                const instance = selectedInstance(stack, section.kind);
+                if (instance && instance.id != null) selected[section.kind] = String(instance.id);
+            }
+        }
+        const lat = Number(point?.lat), lng = Number(point?.lng);
+        return { version: 1, savedAt: now, pathname, mode: mode || '2d',
+            point: Number.isFinite(lat) && Number.isFinite(lng) ? [lat, lng] : null,
+            selected, selectedKind: expandable ? stack.selectedKind : null, expanded: expandable ? stack.expanded || null : null };
+    }
+    // A record from another page, an old session or another format is ignored, never half-applied.
+    function readResume(raw, { now, pathname }) {
+        let value;
+        try { value = JSON.parse(raw); } catch (_) { return null; }
+        if (!value || value.version !== 1 || typeof value.savedAt !== 'number' || now - value.savedAt > RESUME_MAX_AGE_MS
+            || now < value.savedAt || value.pathname !== pathname || !value.selected || typeof value.selected !== 'object') return null;
+        const selected = Object.fromEntries(Object.entries(value.selected)
+            .filter(([kind, id]) => RESUMABLE.has(kind) && typeof id === 'string' && id));
+        const point = Array.isArray(value.point) && value.point.length === 2 && value.point.every(Number.isFinite) ? value.point : null;
+        if (value.mode === '2d' && Object.keys(selected).length && !point) return null;
+        return { mode: typeof value.mode === 'string' ? value.mode : '2d', point, selected,
+            selectedKind: RESUMABLE.has(value.selectedKind) ? value.selectedKind : null,
+            expanded: RESUMABLE.has(value.expanded) ? value.expanded : null };
+    }
+    return { INTERVAL_MS, RESUME_KEY, RESUME_MAX_AGE_MS, validBuild, readRelease, createChecker, resumeRecord, readResume };
 });

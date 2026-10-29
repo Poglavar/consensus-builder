@@ -248,45 +248,148 @@
         return format && typeof format.formatMoney === 'function' ? format.formatMoney(cents / 100, currency, { maxFractionDigits: digits, minFractionDigits: digits }) : `${(cents / 100).toFixed(digits)} ${currency}`;
     }
 
-    // The before/after bars: the land each party puts in, and what comes back after the public take
-    // the scheme allows (per owner, per pool, or none). Real parties when the host has them (the
-    // largest five), else three example owners. Colours and type come from the stylesheet.
-    function schematicSvg(template, parties) {
-        const cap = capOf(template);
-        const shares = (parties && parties.length ? parties.slice(0, 5).map(party => ({ label: party.label, share: party.contributedM2 }))
-            : [{ label: 'A', share: 40 }, { label: 'B', share: 35 }, { label: 'C', share: 25 }]);
-        const total = shares.reduce((sum, row) => sum + row.share, 0) || 1;
-        const width = 320, height = 112, barHeight = 24, top = 18, bottom = 72;
-        const taken = cap ? capRatio(cap) : 0;
-        // A label only where it fits (about 6.5 px per character at the label's size).
-        const slice = (x, w, y, className, label) => `<rect class="${className}" x="${x.toFixed(1)}" y="${y}" width="${Math.max(0, w).toFixed(1)}" height="${barHeight}" rx="3"></rect>`
-            + (label && w > String(label).length * 6.5 + 8 ? `<text class="scheme-guide__slice-label" x="${(x + w / 2).toFixed(1)}" y="${y + barHeight / 2 + 4}" text-anchor="middle">${esc(label)}</text>` : '');
-        let before = '', after = '', x = 0, afterX = taken * width;
-        shares.forEach((row, index) => {
-            const w = width * row.share / total;
-            before += slice(x, w, top, `scheme-guide__slice scheme-guide__slice--owner-${(index % 5) + 1}`, row.label);
-            after += slice(afterX, w * (1 - taken), bottom, `scheme-guide__slice scheme-guide__slice--owner-${(index % 5) + 1}`, row.label);
-            x += w; afterX += w * (1 - taken);
-        });
-        const publicSlice = taken > 0 ? slice(0, taken * width, bottom, 'scheme-guide__slice scheme-guide__slice--public', t('agreement.allocation.public', 'Public')) : '';
-        return `<svg class="scheme-guide__svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(schematicCaption(template))}">
-            <text class="scheme-guide__bar-label" x="0" y="12">${esc(t('proposalDrafts.approval.guide.before', 'Land put in'))}</text>${before}
-            <text class="scheme-guide__bar-label" x="0" y="${bottom - 6}">${esc(t('proposalDrafts.approval.guide.after', 'Land after the readjustment'))}</text>${publicSlice}${after}
-        </svg>`;
+    const dimensionsOf = template => regimes().dimensionsOf(template);
+    // A bar length or tick position as a share of the chart's scale, for the stylesheet's custom properties.
+    const share = (value, scale) => `${(scale > 0 ? Math.max(0, Math.min(1, value / scale)) * 100 : 0).toFixed(1)}%`;
+
+    // One group of the scheme's dimensions (approval-regimes.js DIMENSIONS): the shared label, the
+    // short value as a badge and the long value as a sentence, so every scheme reads the same way.
+    function dimensionListHtml(group, dimensions) {
+        const ids = regimes().DIMENSIONS.find(entry => entry.group === group).ids;
+        return `<dl class="scheme-dimensions" data-scheme-dimensions="${esc(group)}">${ids.map(id => `<div class="scheme-dimensions__item" data-scheme-dimension="${esc(id)}">
+            <dt>${esc(words().dimensionLabel(id, t))}</dt>
+            <dd><span class="cb-badge">${esc(words().dimensionText(id, dimensions, t, 'short'))}</span> ${esc(words().dimensionText(id, dimensions, t, 'long'))}</dd>
+        </div>`).join('')}</dl>`;
     }
 
-    function schematicCaption(template) {
-        const cap = capOf(template);
-        const percent = percentOf(capRatio(cap));
-        if (cap && cap.per === 'pool') return t('proposalDrafts.approval.guide.schematicPoolCap', 'Up to {{percent}}% of the pool goes to public facilities and costs without compensation; the parties share the rest, and differences are settled in money.', { percent });
-        if (cap) return t('proposalDrafts.approval.guide.schematicOwnerCap', 'Each owner gives up at most {{percent}}% of their land for public use without compensation and gets a plot back; any further difference is settled in money.', { percent });
-        if (template?.allocation?.basis === 'value') return t('proposalDrafts.approval.guide.schematicValue', 'Every owner gets back a share of the new land worth what they put in; public land reduces that share for everyone alike, and differences are settled in money.');
-        return t('proposalDrafts.approval.guide.schematicNone', 'The parties agree what each gets back; the scheme sets no cap on public land, and differences are settled in money.');
+    // Who starts it → the owner support it needs (one gauge per test, filled to its threshold) → the
+    // authority's decision → what passing unlocks.
+    function decisionFlowHtml(template, dimensions) {
+        const step = (role, kind, kicker, body) => `<li class="scheme-flow__step scheme-flow__step--${kind}" data-scheme-flow-step="${role}"><span class="scheme-flow__kicker">${esc(kicker)}</span>${body}</li>`;
+        const gauge = test => `<div class="scheme-gauge" role="img" aria-label="${esc(words().testText(test, t))}">
+            <span class="scheme-gauge__track"><span class="scheme-gauge__need" style="--scheme-length: ${share(test.numerator, test.denominator)}"></span></span>
+            <span class="scheme-gauge__label">${esc(`${words().meterLabel(test, t)} ${words().thresholdShort(test, t)}`)}</span>
+        </div>`;
+        const steps = [step('initiator', dimensions.initiator, words().dimensionLabel('initiator', t), `<strong>${esc(words().dimensionText('initiator', dimensions, t, 'short'))}</strong>`)];
+        steps.push(dimensions.support.length
+            ? step('support', 'owners', words().dimensionLabel('support', t), words().orderTests(dimensions.support).map(gauge).join(''))
+            : step('support', 'owners', words().dimensionLabel('support', t), `<strong>${esc(words().dimensionText('electorate', dimensions, t, 'long'))}</strong>`));
+        if (template.authorities) steps.push(step('authority', 'authority', t('proposalApproval.dimensions.flowAuthority', 'Then'), `<strong>${esc(words().authorityText({ id: template.id, version: template.version }, t))}</strong>`));
+        steps.push(step('stage', 'result', words().dimensionLabel('stage', t), `<strong>${esc(words().dimensionText('stage', dimensions, t, 'short'))}</strong>`));
+        return `<ol class="scheme-flow" aria-label="${esc(words().dimensionGroupLabel('decision', t))}">${steps.join('')}</ol>`;
+    }
+
+    // The owners chart as plain data: one row per owner with the land and the money each puts in and
+    // gets back. Owners are the people the rule's ownership rights name (`persons`:
+    // AgreementPersons.personPositions; `names`: their display names); the owners of a parcel without
+    // complete rights stay one party, as do all parcels when the rule has no rights. Public land and
+    // the proposer or sponsor follow. Without a ledger, three example owners give up the scheme's cap,
+    // or a quarter of their land where it sets none, uncompensated. `floor` is the least land an owner
+    // may get back under a per-owner cap; `contribution` the share of each owner's land taken without
+    // compensation before money settles the rest (null when settled by value).
+    function ownersModel(dimensions, ledger = null, persons = null, names = new Map()) {
+        const cap = dimensions.publicLand;
+        const ownerCap = cap && cap.per === 'owner' ? cap.ratio : null;
+        const owner = (key, label, landIn, landOut, cashCents, party = false) => {
+            const floor = ownerCap === null ? null : landIn * (1 - ownerCap);
+            return { key, label, kind: party ? 'party' : 'person', landIn, landOut: landOut || 0, paysCents: Math.max(0, -(cashCents || 0)), receivesCents: Math.max(0, cashCents || 0),
+                floor, overCap: floor !== null && (landOut || 0) < floor - landIn * 1e-9 };
+        };
+        let rows, example = false, contribution = null;
+        if (ledger && ledger.parties.some(party => !party.areaUnknown && party.contributedM2 > 0)) {
+            const parties = ledger.parties.filter(party => !party.areaUnknown && party.contributedM2 > 0);
+            const people = persons ? persons.persons.filter(person => !person.areaUnknown && person.contributedM2 > 0) : [];
+            const unresolved = new Set((persons && people.length ? persons.unresolved : parties).map(entry => entry.ownerKey));
+            rows = [...people.map(person => owner(`person:${person.personId}`, names.get(person.personId) || person.personId, person.contributedM2, person.landM2, person.cashCents)),
+                ...parties.filter(party => unresolved.has(party.ownerKey)).map(party => owner(party.ownerKey, party.parcelId ? t('agreement.party.parcelOwners', 'Owner(s) of parcel {{parcelId}}', { parcelId: party.parcelId }) : party.displayName,
+                    party.contributedM2, party.assignedM2, party.cashCents, true))]
+                .sort((a, b) => b.landIn - a.landIn);
+            const shares = parties.filter(party => typeof party.entitlementM2 === 'number').map(party => 1 - party.entitlementM2 / party.contributedM2);
+            contribution = ledger.valued ? null : Math.max(0, shares[0] || 0);
+            const others = [];
+            if (ledger.publicM2 > 0) others.push({ key: 'public', kind: 'public', label: t('agreement.allocation.public', 'Public'), landIn: 0, landOut: ledger.publicM2, paysCents: 0, receivesCents: 0, floor: null, overCap: false });
+            const sponsor = ledger.money?.sponsorCents || 0;
+            if (sponsor || ledger.proposerM2 > 0) others.push({ key: 'sponsor', kind: 'sponsor', label: ledger.proposerM2 > 0 ? t('agreement.allocation.proposer', 'Proposer') : t('agreement.workflow.sponsor', 'Sponsor'),
+                landIn: 0, landOut: ledger.proposerM2 || 0, paysCents: Math.max(0, -sponsor), receivesCents: Math.max(0, sponsor), floor: null, overCap: false });
+            rows = rows.concat(others);
+        } else {
+            example = true;
+            const take = cap ? cap.ratio : 0.25;
+            rows = [['A', 4000], ['B', 3500], ['C', 2500]].map(([label, landIn]) => owner(label, label, landIn, landIn * (1 - take), 0));
+            rows.push({ key: 'public', kind: 'public', label: t('agreement.allocation.public', 'Public'), landIn: 0, landOut: 10000 * take, paysCents: 0, receivesCents: 0, floor: null, overCap: false });
+        }
+        const owners = rows.filter(row => row.kind === 'person' || row.kind === 'party');
+        const landIn = owners.reduce((sum, row) => sum + row.landIn, 0);
+        // A pool cap bounds the share of the pool not returned to the owners.
+        const pool = cap && cap.per === 'pool' && landIn > 0
+            ? { given: Math.max(0, 1 - owners.reduce((sum, row) => sum + row.landOut, 0) / landIn), limit: cap.ratio } : null;
+        return { example, rows, pool, ownerCap, contribution, valued: !!(ledger && ledger.valued), unnamed: owners.filter(row => row.kind === 'party').length,
+            withMoney: rows.some(row => row.paysCents > 0 || row.receivesCents > 0) };
+    }
+
+    // The owners table: owners in rows; Puts in and Gets back in columns, each with a land line and,
+    // when money moves, a money line.
+    function ownersHtml(dimensions, { ledger = null, persons = null, names = new Map(), currency = '' } = {}) {
+        const model = ownersModel(dimensions, ledger, persons, names);
+        const line = (kind, text) => `<span class="scheme-owners__line scheme-owners__line--${kind}">${text}</span>`;
+        const land = (value, note = '') => line('land', `${esc(value > 0 ? areaText(value) : '—')}${note}`);
+        const money = cents => (model.withMoney ? line('money', esc(cents > 0 ? moneyText(Math.round(cents), currency) : '—')) : '');
+        const change = row => {
+            if (!(row.landIn > 0)) return '';
+            const ratio = (row.landIn - row.landOut) / row.landIn;
+            if (Math.abs(ratio) < 0.0005) return '';
+            return ` <small>${esc(ratio > 0 ? t('proposalApproval.dimensions.outcome.givesUp', 'gives up {{percent}}%', { percent: percentOf(ratio) })
+                : t('proposalApproval.dimensions.outcome.gains', 'gains {{percent}}%', { percent: percentOf(-ratio) }))}</small>`;
+        };
+        // An owner below a per-owner cap is told the least the cap lets them get back.
+        const floor = row => (row.overCap ? `<small>${esc(`${t('proposalApproval.dimensions.outcome.floor', 'Least back under the cap')}: ${areaText(row.floor)}`)}</small>` : '');
+        const rows = model.rows.map(row => `<tr class="scheme-owners__row scheme-owners__row--${row.kind}${row.overCap ? ' is-over-cap' : ''}" data-scheme-owner-row="${esc(row.key)}">
+            <th scope="row">${esc(row.label)}</th>
+            <td>${land(row.landIn)}${money(row.paysCents)}</td>
+            <td>${land(row.landOut, change(row) + floor(row))}${money(row.receivesCents)}</td>
+        </tr>`).join('');
+        const poolText = model.pool ? t('proposalApproval.dimensions.outcome.pool', '{{given}}% of the pool is not returned to the owners; the cap is {{limit}}%.', { given: percentOf(model.pool.given), limit: percentOf(model.pool.limit) }) : '';
+        const pool = model.pool ? `<div class="scheme-gauge scheme-gauge--pool${model.pool.given > model.pool.limit + 1e-9 ? ' is-over-cap' : ''}" role="img" aria-label="${esc(poolText)}">
+            <span class="scheme-gauge__track"><span class="scheme-gauge__need" style="--scheme-length: ${share(model.pool.given, 1)}"></span><span class="scheme-gauge__limit" style="--scheme-at: ${share(model.pool.limit, 1)}"></span></span>
+            <span class="scheme-gauge__label">${esc(poolText)}</span></div>` : '';
+        const captions = model.example
+            ? [dimensions.publicLand ? t('proposalApproval.dimensions.outcome.exampleCap', 'Three example owners giving up the most the scheme allows. With a plan open, the chart shows its parties.')
+                : t('proposalApproval.dimensions.outcome.exampleNoCap', 'Three example owners giving up a quarter of their land: the scheme sets no cap. With a plan open, the chart shows its parties.')]
+            : [model.valued ? t('proposalApproval.dimensions.outcome.owedValue', 'Each owner is owed a share of the new land’s value matching the value they put in; money settles the difference between that and the value of the land they get back.')
+                : model.contribution > 0 ? t('proposalApproval.dimensions.outcome.owedContribution', 'Each owner is owed the land they put in less the {{percent}}% contribution taken without compensation; money settles the difference between that and the land they get back.', { percent: percentOf(model.contribution) })
+                    : t('proposalApproval.dimensions.outcome.owed', 'Each owner is owed the land they put in; money settles the difference between that and the land they get back.'),
+            model.unnamed ? t('agreement.workflow.personsUnresolved', 'Without complete ownership rights, the owners of {{count}} parcel(s) stay one party.', { count: model.unnamed }) : null].filter(Boolean);
+        return `<figure class="scheme-owners-figure"${model.example ? ' data-scheme-owners-example' : ''}>
+            <div class="agreement-table-scroll scheme-owners__scroll"><table class="scheme-owners" data-scheme-owners>
+                <thead><tr><th scope="col">${esc(t('proposalDrafts.approval.ownerPrefix', 'Owner'))}</th><th scope="col">${esc(t('agreement.workflow.putsIn', 'Puts in'))}</th><th scope="col">${esc(t('proposalDrafts.approval.guide.getsBack', 'Gets back'))}</th></tr></thead>
+                <tbody>${rows}</tbody></table></div>${pool}
+            ${captions.map(text => `<figcaption class="scheme-guide__caption">${esc(text)}</figcaption>`).join('')}
+        </figure>`;
+    }
+
+    // Every scheme in the same dimensions, one row each; the picked one is marked and the names pick.
+    function compareHtml(pickedId, schemeStatus = null, open = false) {
+        const ids = regimes().DIMENSIONS.flatMap(entry => entry.ids);
+        const rows = latestRegimes().map(template => {
+            const dimensions = dimensionsOf(template);
+            const broken = schemeStatus && schemeStatus[template.id] === false;
+            return `<tr${template.id === pickedId ? ' aria-current="true"' : ''} data-scheme-compare-row="${esc(template.id)}">
+                <th scope="row"><button type="button" class="cb-link" data-scheme-guide-choose="${esc(template.id)}">${esc(t(`proposalApproval.schemes.${template.id}.name`, template.text.name))}</button>${broken ? ` <span class="cb-badge cb-badge--warning">${esc(t('proposalDrafts.approval.schemeNotMet', 'not met by this plan'))}</span>` : ''}</th>
+                ${ids.map(id => `<td data-scheme-dimension="${esc(id)}">${esc(words().dimensionText(id, dimensions, t, 'short'))}</td>`).join('')}
+            </tr>`;
+        }).join('');
+        return `<details class="scheme-compare" data-scheme-compare${open ? ' open' : ''}><summary>${esc(t('proposalApproval.dimensions.compare', 'Compare all schemes'))}</summary>
+            <div class="agreement-table-scroll"><table class="scheme-compare__table"><thead><tr><th scope="col">${esc(t('proposalDrafts.approval.guide.pick', 'Scheme'))}</th>${ids.map(id => `<th scope="col">${esc(words().dimensionLabel(id, t))}</th>`).join('')}</tr></thead>
+            <tbody>${rows}</tbody></table></div></details>`;
     }
 
     // What would satisfy a rule the agreement breaks, in this editor's own controls.
     function fixText(rule, template, ledger) {
-        const name = id => (ledger && ledger.parties.find(party => party.ownerKey === id)?.displayName) || id;
+        const name = id => {
+            const party = ledger && ledger.parties.find(row => row.ownerKey === id);
+            if (party && party.parcelId) return t('agreement.party.parcelOwners', 'Owner(s) of parcel {{parcelId}}', { parcelId: party.parcelId });
+            return (party && party.displayName) || id;
+        };
         if (rule.kind === 'basis') {
             return rule.required === 'value'
                 ? t('proposalDrafts.approval.guide.fixBasisValue', 'In Rules, set Compensation to “Balance land value differences in money”, then give every input parcel and resulting piece a value per m².')
@@ -328,47 +431,45 @@
     }
 
     /**
-     * The guide's body. `check`: { ok, lines: [{ ok, text }] } as rulesCardHtml takes it; `ledger`:
-     * AgreementRecord.ledger of the host's draft (parties with contributedM2, assignedM2 and, by
-     * value, the value fields); `rules`: the failing rules of AgreementRecord.schemeCheck, for the fixes.
+     * The guide's body, in two parts. The scheme's rules, organized by the dimensions every scheme
+     * shares (approval-regimes.js DIMENSIONS): how it is decided (a flow from who starts it to what
+     * passing unlocks, then each dimension in words) and how the land is shared (each dimension, then
+     * three example owners). Then, when the host has an agreement, this agreement under those rules:
+     * the check, its owners chart and what would meet a broken rule.
+     * `check`: { ok, lines: [{ ok, text }] } as rulesCardHtml takes it; `ledger`: AgreementRecord.ledger
+     * of the host's draft; `persons`, `names`: AgreementPersons.personPositions of it and the owners'
+     * names, when its rule has ownership rights; `rules`: the failing rules of
+     * AgreementRecord.schemeCheck, for the fixes.
      */
-    function schemeGuideHtml({ template, regime = null, check = null, rules = [], ledger = null, currency = '' } = {}) {
+    function schemeGuideHtml({ template, check = null, rules = [], ledger = null, persons = null, names = new Map(), currency = '' } = {}) {
         if (!template) return '';
-        const pin = regime && regime.id === template.id ? regime : { id: template.id, version: template.version };
-        const policy = regimes().policyOf(template, Array.from({ length: template.authorities }, () => 'authority'));
-        const tests = words().orderTests(template.tests).map(test => `<li>${esc(words().testText(test, t))}</li>`).join('');
-        const parties = ledger ? ledger.parties.filter(party => !party.areaUnknown && party.contributedM2 > 0).sort((a, b) => b.contributedM2 - a.contributedM2)
-            .map(party => ({ ...party, label: party.displayName })) : null;
-        const byValue = !!(ledger && ledger.valued);
-        const partyRows = parties && parties.length ? `<div class="agreement-table-scroll"><table class="scheme-guide__table"><thead><tr>
-            <th scope="col">${esc(t('agreement.workflow.person', 'Person'))}</th><th scope="col">${esc(t('agreement.workflow.putsIn', 'Puts in'))}</th>
-            <th scope="col">${esc(t('proposalDrafts.approval.guide.getsBack', 'Gets back'))}</th><th scope="col">${esc(t('proposalDrafts.approval.guide.givesUp', 'Gives up'))}</th></tr></thead>
-            <tbody>${parties.map(party => `<tr><th scope="row">${esc(party.displayName)}</th>
-                <td>${esc(areaText(party.contributedM2))}${byValue ? `<br><small>${esc(moneyText(party.contributedValueCents, currency))}</small>` : ''}</td>
-                <td>${esc(areaText(party.assignedM2))}${byValue ? `<br><small>${esc(moneyText(party.assignedValueCents, currency))}</small>` : ''}</td>
-                <td>${esc(`${percentOf(Math.max(0, party.contributedM2 - party.assignedM2) / party.contributedM2)}%`)}</td></tr>`).join('')}</tbody></table></div>` : '';
+        const dimensions = dimensionsOf(template);
         const fixes = rules.filter(rule => !rule.ok).map(rule => `<li>${esc(fixText(rule, template, ledger))}</li>`).join('');
-        const against = check && check.lines && check.lines.length ? `<section class="scheme-guide__section">
+        const lines = check && check.lines && check.lines.length
+            ? `<ul class="approval-setup__check" data-scheme-guide-check>${check.lines.map(line => `<li data-check-ok="${line.ok ? 'true' : 'false'}">${esc(line.text)}</li>`).join('')}</ul>` : '';
+        const applied = ledger && ledger.parties && ledger.parties.length ? `<section class="scheme-guide__part scheme-guide__part--applied" data-scheme-guide-part="applied">
             <h3>${esc(t('proposalDrafts.approval.guide.against', 'This agreement against the scheme'))}</h3>
-            <ul class="approval-setup__check" data-scheme-guide-check>${check.lines.map(line => `<li data-check-ok="${line.ok ? 'true' : 'false'}">${esc(line.text)}</li>`).join('')}</ul>
-            ${partyRows}${fixes ? `<p class="scheme-guide__fix-title">${esc(t('proposalDrafts.approval.guide.fixes', 'What would meet it'))}</p><ul class="scheme-guide__fixes" data-scheme-guide-fixes>${fixes}</ul>` : ''}
+            ${lines}
+            ${ownersHtml(dimensions, { ledger, persons, names, currency })}
+            ${fixes ? `<p class="scheme-guide__fix-title">${esc(t('proposalDrafts.approval.guide.fixes', 'What would meet it'))}</p><ul class="scheme-guide__fixes" data-scheme-guide-fixes>${fixes}</ul>` : ''}
         </section>` : '';
         const sources = template.sources.map(source => `<li><a class="cb-link cb-link--external" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.label)}</a></li>`).join('');
         return `<div class="scheme-guide" data-scheme-guide="${esc(template.id)}">
-            <p class="scheme-guide__meta">${esc(words().familyText(template, t))} · ${esc(words().stageText(template, t))} · ${esc(t('proposalDrafts.approval.guide.checked', 'Rules checked {{date}}', { date: template.version }))}</p>
-            <section class="scheme-guide__section">
-                <h3>${esc(t('agreement.rule.who', 'Who decides'))}</h3>
-                <p>${esc(words().rulesText(policy, t, pin))}</p>
-                ${tests ? `<ul>${tests}</ul>` : `<p>${esc(t('proposalApproval.rules.ownersHeard', 'Owners are heard; the authority decides.'))}</p>`}
+            <section class="scheme-guide__part scheme-guide__part--rules" data-scheme-guide-part="rules">
+                <h3>${esc(t('proposalApproval.dimensions.rules', 'The scheme’s rules'))}</h3>
+                <p class="scheme-guide__meta">${esc(t(`proposalApproval.schemes.${template.id}.note`, template.text.note))} ${esc(t('proposalDrafts.approval.guide.checked', 'Rules checked {{date}}', { date: template.version }))}</p>
+                <section class="scheme-guide__section" data-scheme-guide-group="decision">
+                    <h4>${esc(words().dimensionGroupLabel('decision', t))}</h4>
+                    ${decisionFlowHtml(template, dimensions)}
+                    ${dimensionListHtml('decision', dimensions)}
+                </section>
+                <section class="scheme-guide__section" data-scheme-guide-group="distribution">
+                    <h4>${esc(words().dimensionGroupLabel('distribution', t))}</h4>
+                    ${dimensionListHtml('distribution', dimensions)}
+                    ${ownersHtml(dimensions)}
+                </section>
             </section>
-            <section class="scheme-guide__section">
-                <h3>${esc(t('proposalDrafts.approval.guide.distribution', 'How land is distributed'))}</h3>
-                <p>${esc(t(`proposalApproval.schemes.${template.id}.note`, template.text.note))}</p>
-                <ul>${words().allocationLines(template, t).map(line => `<li>${esc(line)}</li>`).join('')}</ul>
-                ${schematicSvg(template, parties)}
-                <p class="scheme-guide__caption">${esc(schematicCaption(template))}${parties && parties.length ? '' : ' ' + esc(t('proposalDrafts.approval.guide.example', 'Three example owners; with a plan open, the bars show its parties.'))}</p>
-            </section>
-            ${against}
+            ${applied}
             <section class="scheme-guide__section">
                 <h3>${esc(t('proposalDrafts.approval.guide.setup', 'Set it up here'))}</h3>
                 <ol>${setupSteps(template).map(step => `<li>${esc(step)}</li>`).join('')}</ol>
@@ -381,27 +482,39 @@
     }
 
     // The guide as a dialog over the host (`parent`: the host's modal when it has one). With
-    // `guideFor(template) → { check, rules, ledger }` the dialog carries a scheme picker and re-reads
-    // the host's agreement against whichever scheme is picked (`schemeStatus` marks the broken ones);
-    // `action: { label, run(template) }` is the host's button for the picked scheme (use it in the
-    // editor, counter with it in the panel). Returns the dialog handle, or null without a document.
-    function openSchemeGuide({ parent = null, template, regime = null, check = null, rules = [], ledger = null, currency = '', schemeStatus = null, guideFor = null, action = null } = {}) {
+    // `guideFor(template) → { check, rules, ledger, persons, names }` the dialog carries a scheme picker and the
+    // comparison of all schemes, and re-reads the host's agreement against whichever scheme is picked
+    // (`schemeStatus` marks the broken ones); `action: { label, run(template) }` is the host's button
+    // for the picked scheme (use it in the editor, counter with it in the panel). Returns the dialog
+    // handle, or null without a document.
+    function openSchemeGuide({ parent = null, template, check = null, rules = [], ledger = null, persons = null, names = new Map(), currency = '', schemeStatus = null, guideFor = null, action = null } = {}) {
         const dialogs = root.CbDialog;
         if (!dialogs || !template || typeof root.document === 'undefined') return null;
         const container = root.document.createElement('div');
-        let picked = template, facts = { check, rules, ledger };
+        let picked = template, facts = { check, rules, ledger, persons, names }, compareOpen = false;
         const render = () => {
-            container.innerHTML = (guideFor ? schemePickerHtml(picked.id, schemeStatus) : '')
-                + schemeGuideHtml({ template: picked, regime, currency, ...facts });
+            container.innerHTML = (guideFor ? schemePickerHtml(picked.id, schemeStatus) + compareHtml(picked.id, schemeStatus, compareOpen) : '')
+                + schemeGuideHtml({ template: picked, currency, ...facts });
+        };
+        const pick = id => {
+            if (!guideFor) return;
+            picked = regimes().latest(id) || picked;
+            facts = guideFor(picked) || { check: null, rules: [], ledger: null };
+            render();
         };
         render();
         container.addEventListener('change', event => {
             const select = event.target.closest('[data-scheme-guide-pick]');
-            if (!select || !guideFor) return;
-            picked = regimes().latest(select.value) || picked;
-            facts = guideFor(picked) || { check: null, rules: [], ledger: null };
-            render();
+            if (select) pick(select.value);
         });
+        container.addEventListener('click', event => {
+            const choose = event.target.closest('[data-scheme-guide-choose]');
+            if (choose) pick(choose.dataset.schemeGuideChoose);
+        });
+        // <details> toggle does not bubble; the capture keeps the comparison open across re-renders.
+        container.addEventListener('toggle', event => {
+            if (event.target.matches?.('[data-scheme-compare]')) compareOpen = event.target.open;
+        }, true);
         return dialogs.open({ parent, size: 'lg', title: guideFor ? t('proposalDrafts.approval.guide.title', 'Schemes') : t(`proposalApproval.schemes.${template.id}.name`, template.text.name), body: container,
             actions: [action ? { label: action.label, primary: true, onClick: () => action.run(picked) } : null, { label: t('common.close', 'Close') }] });
     }
@@ -711,7 +824,7 @@
         return dialog;
     }
 
-    return { schemeGuideHtml, schemePickerHtml, openSchemeGuide, schematicCaption, withScheme,
+    return { schemeGuideHtml, schemePickerHtml, compareHtml, ownersModel, openSchemeGuide, withScheme,
         openDialog,
         html, previewHtml, summaryText, policyText, fractionText, parseFraction, lensKeys, lensFromText,
         normalizedConfig, syncSourceControls, withPolicyFromForm, withRuleAction, ruleChoice, lensFromForm, importRights, withoutRights, downloadTemplate

@@ -141,6 +141,31 @@ describe('default floor plan generator', () => {
         expect(eastOpenings(blind)).toEqual([]);
     });
 
+    it('keeps openings off the stretch of a facade a neighbour stands against, and on the rest of it', () => {
+        // A neighbour covers the western 8 m of the 20 m back (north) facade; the facade's midpoint stays free.
+        const result = plan({ footprint: rectangle(0, 0, 20, 12), floors: 4, storeyHeightM: 3, front: southEdge(0, 0, 20, 12),
+            neighbours: [rectangle(-6, 11, 8, 10)] });
+        const g = groundOf(result);
+        for (const index of [0, 1]) {
+            const back = layoutOf(result, index).openings.filter(o => ['window', 'glazedDoor'].includes(o.kind) && Math.abs(g(o.a)[1] - latOf(5.85)) < 1e-8);
+            expect(back.length).toBeGreaterThan(0);
+            // Nothing west of the neighbour's corner (x = -2) plus the blind clearance beside it.
+            back.forEach(o => expect(Math.min(g(o.a)[0], g(o.b)[0])).toBeGreaterThan(lngOf(-1.75)));
+        }
+        // Without the neighbour, the same facade carries openings west of x = -2.
+        const open = house();
+        const westBack = layoutOf(open, 1).openings.filter(o => o.kind === 'window' && Math.abs(groundOf(open)(o.a)[1] - latOf(5.85)) < 1e-8 && groundOf(open)(o.a)[0] < lngOf(-2));
+        expect(westBack.length).toBeGreaterThan(0);
+    });
+
+    it('cuts a facade run around the stretches neighbours stand against', () => {
+        const facade = { partyRuns: [[2, 5], [9, 9.5]] };
+        expect(rooms.freeRuns(facade, [0, 12])).toEqual([[0, 1.7], [5.3, 8.7], [9.8, 12]]);
+        expect(rooms.freeRuns(facade, [0, 12], 2)).toEqual([[5.3, 8.7], [9.8, 12]]);
+        expect(rooms.freeRuns({ partyRuns: [[0, 12]] }, [1, 11])).toEqual([]);
+        expect(rooms.freeRuns({}, [1, 4])).toEqual([[1, 4]]);
+    });
+
     it('flags a footprint that cannot hold the minimum core instead of inventing one', () => {
         const result = plan({ footprint: rectangle(0, 0, 6, 5), floors: 3, storeyHeightM: 3 });
         expect(result.floorPlans).toBeNull();

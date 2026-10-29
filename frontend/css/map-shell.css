@@ -593,7 +593,7 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     outline-offset: 2px;
 }
 
-.map-sheet select:not(.proposal-epoch-card-select) {
+.map-sheet select {
     width: 100%;
     min-height: var(--sheet-row-height);
     padding: 6px 10px;

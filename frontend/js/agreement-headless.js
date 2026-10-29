@@ -75,9 +75,9 @@
         await mutation.prepare(); mutation.publish();
         return { records: rows, fabric, originals };
     }
-    async function derive({ designs, parcels, ownerOf = () => [] }) {
+    async function derive({ designs, parcels }) {
         const result = await materialize({ designs, parcels });
-        return root.AgreementGround.derive({ designs: result.records, fabric: result.fabric, originals: result.originals, ownerOf });
+        return root.AgreementGround.derive({ designs: result.records, fabric: result.fabric, originals: result.originals });
     }
     return { derive, materialize };
 });

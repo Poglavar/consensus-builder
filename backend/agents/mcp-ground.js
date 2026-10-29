@@ -1,10 +1,10 @@
 // Derive agreement ground on a fresh, isolated fabric using the app's arrangement and hash modules.
 // Only complete cadastral ground is admitted; open or ambiguous ground must be reviewed in the app.
-import { abstractHolder, agreementObject, cidOfObject, communityRule, defaultAllocations, holdersFromRights, ownersRule } from './agreement-objects.js';
+import { agreementObject, cidOfObject, communityRule, defaultAllocations, ownersRule, personPositions } from './agreement-objects.js';
 import { previewArtifact } from './mcp-preview.js';
 import { deriveWithApp } from './mcp-ground-runtime.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
-import { describeRoadCuts } from './mcp-ground-effects.js';
+import { describeRoadCuts, roadCutWarning } from './mcp-ground-effects.js';
 const fail = (code, message) => Object.assign(new Error(message), { code, next: { action: 'Review these designs and their ground in the app before proposing an agreement.' } });
 export const deriveAgreementGround = deriveWithApp;
 
@@ -25,7 +25,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
         }
         return { designs, city, parcelSourceId };
     }
-    async function groundFor(resolved, rights) {
+    async function groundFor(resolved) {
         const { designs, city } = resolved;
         let { parcelSourceId } = resolved;
         const ids = new Set();
@@ -39,9 +39,7 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
         }
         if (!ids.size || ids.size > 200) throw fail('agreement-scope', 'An agreement draft needs 1–200 cadastral input parcels.');
         const source = await read.parcels({ city, parcelSourceId, parcelIds: [...ids] });
-        const ownerOf = id => rights?.parcels?.some(p => p.parcelId === id) ? holdersFromRights(rights, id)
-            : [{ ownerKey: `parcel-owner:${id}`, displayName: `Owner(s) of parcel ${id}`, share: 1 }];
-        const land = await deriveAgreementGround({ designs: bound, parcels: source.features, ownerOf });
+        const land = await deriveAgreementGround({ designs: bound, parcels: source.features });
         return { land, source, ids };
     }
     const tools = {
@@ -63,21 +61,25 @@ export function createMcpAgreementTools({ read, drafts, appOrigin }) {
                 : rulePreset === 'owner-vote' ? { ...communityRule(), electorate: 'owners', approvalConfig: effectiveRights ? { schema: 'proposal-approval/v1', rights: effectiveRights, policy: { type: 'unanimous' } } : null, lens: [] }
                     : ownersRule({ lens, rights: effectiveRights });
             const rule = ruleOverride ? structuredClone(ruleOverride) : presetRule;
+            // Ownership rights live only in the rule: the parties stay one per input parcel.
+            if (rights && rule.electorate === 'owners') rule.approvalConfig = { ...(rule.approvalConfig || { schema: 'proposal-approval/v1', policy: { type: 'unanimous' } }), rights };
             if (rule.electorate !== 'community' && !rule.settlement) rule.settlement = { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 0 };
             if (settlement) rule.settlement = settlement;
             if (rule.electorate === 'community') rule.settlement = null;
-            const { land, source, ids } = await groundFor({ ...resolved, designs }, effectiveRights);
+            const { land, source, ids } = await groundFor({ ...resolved, designs });
             const plan = { cid: selected.cid, content: selected.plan };
-            const parcels = land.inputs.parcels.map(parcel => ({ ...parcel, parcelSourceId: source.parcelSourceId,
-                holders: parcel.holders?.length ? parcel.holders : effectiveRights?.parcels?.some(row => row.parcelId === parcel.parcelId)
-                    ? holdersFromRights(effectiveRights, parcel.parcelId) : [abstractHolder(parcel.parcelId)] }));
-            const finalAllocations = allocations ?? defaultAllocations({ ...land.inputs, parcels }, land.outputs);
+            // Each input parcel is its owners' abstract party; the rights snapshot stays in the rule.
+            const parcels = land.inputs.parcels.map(parcel => ({ ...parcel, parcelSourceId: source.parcelSourceId }));
+            const finalAllocations = allocations ?? (rule.electorate === 'owners' ? defaultAllocations({ ...land.inputs, parcels }, land.outputs) : []);
             const published = agreementObject({ title, author, sponsor, city, createdAt, plan,
                 designs: designs.map(d => ({ cid: d.cid, goal: d.content.goal, title: d.content.title })),
                 parcels, openGroundM2: land.inputs.openGroundM2, outputs: land.outputs, allocations: finalAllocations,
                 money: { currency, lines: [] }, valuation: rule.electorate === 'community' ? null : valuation, rule, deadline, consultation });
-            return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], groundEffects, ...(includeGround ? { ground: land } : {}), warnings: ['This agreement references the existing named plan. Review its derived ground and terms before publishing.',
-                ...(!effectiveRights && rule.electorate !== 'community' ? ['Parcel parties are abstract placeholders because no rights snapshot was supplied.'] : [])],
+            const ruleRights = published.content.rule.approvalConfig?.rights;
+            return { agreement: published.content, cid: published.cid, parcelSourceId: source.parcelSourceId, takes: [...ids], groundEffects,
+                persons: ruleRights ? personPositions(published.content, ruleRights) : null, ...(includeGround ? { ground: land } : {}), warnings: ['This agreement references the existing named plan. Review its derived ground and terms before publishing.',
+                ...(roadCutWarning(groundEffects) ? [roadCutWarning(groundEffects)] : []),
+                ...(!effectiveRights && rule.electorate !== 'community' ? ['No rights snapshot was supplied, so no owner decision can be counted and no person positions can be derived from the parcel parties.'] : [])],
                 ...await previewArtifact({ origin: appOrigin, agreement: published.content, plan, designs: designs.map(d => d.content), parcelSourceId: source.parcelSourceId }),
                 plan, designs: designs.map(d => ({ cid: d.cid, content: d.content })) };
         }

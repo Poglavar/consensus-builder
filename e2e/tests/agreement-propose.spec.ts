@@ -7,7 +7,9 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { fillNativeDateTime } from '../helpers/controls';
 import { chooseProfileName, openOnAnotherDevice, stubBasemapTiles, PARCEL_ID } from '../helpers/runtime';
-import { applyLayout, agreementPanel, storedAgreements, createFromDetails, openAgreementsList, panelStatus, editorSave, editorClosed } from '../helpers/agreements';
+import {
+  applyLayout, agreementPanel, storedAgreements, createFromPlan, openStackAgreement, openAgreementsList, openListedAgreement, closeAgreementPanel, panelStatus, editorSave, editorClosed,
+} from '../helpers/agreements';
 import { canonicalJson, cidOfBytes, cidOfObject, pageIndex, SharedIndex } from '../helpers/mocks/shared-server';
 
 test.beforeEach(async ({ mockApi: page }) => {
@@ -24,14 +26,14 @@ test('Propose publishes a community agreement with its parcel layout, and its li
   const { layoutId } = await applyLayout(page);
   const index = pageIndex(page);
 
-  const editor = await createFromDetails(page, layoutId);
+  const editor = await createFromPlan(page, layoutId);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await editor.locator('input[name="agreement-electorate"][value="community"]').check();
   await editor.locator('[data-agreement-title]').fill(TITLE);
   await fillNativeDateTime(editor.locator('[data-agreement-deadline]'), '2030-12-31');
   await editorSave(editor).click();
   await editorClosed(page);
-  await panelStatus(page, 'current');
-  const panel = agreementPanel(page);
+  const panel = await openStackAgreement(page);
   const propose = panel.locator('[data-agreement-action="propose"]');
   await expect(propose).toHaveClass(/\bbtn-primary\b/);
   await expect(panel.locator('[data-agreement-action="edit"]')).toBeVisible();
@@ -52,7 +54,6 @@ test('Propose publishes a community agreement with its parcel layout, and its li
   await expect(panel.locator('[data-agreement-community-note]')).toBeVisible();
   await expect(panel.locator('[data-agreement-action="edit"]')).toHaveCount(0);
   await expect(panel.locator('[data-agreement-action="propose"]')).toHaveCount(0);
-  await expect(panel.locator('[data-agreement-action="delete"]')).toBeVisible();
   // A vote binds nobody, so it is never minted: the chain section says so and offers no chain action.
   await expect(panel.locator('[data-agreement-chain="non-binding"]')).toHaveText('A vote is not minted; its decisions are counted off-chain.');
   await expect(panel.locator('[data-agreement-action="mint"], [data-agreement-action="repropose"], [data-agreement-action="bet"]')).toHaveCount(0);
@@ -144,15 +145,16 @@ test('a proposed owners’ agreement shows the owners’ decisions card, reads i
   const { layoutId } = await applyLayout(page);
   const index = pageIndex(page);
 
-  // The owners decide by default, and their decision binds.
-  const editor = await createFromDetails(page, layoutId);
+  // The owners decide by default, in a non-binding vote; the author ticks Binding to make it bind.
+  const editor = await createFromPlan(page, layoutId);
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await expect(editor.locator('input[name="agreement-electorate"][value="owners"]')).toBeChecked();
-  await expect(editor.locator('[data-agreement-binding]')).toBeChecked();
+  await expect(editor.locator('[data-agreement-binding]')).not.toBeChecked();
+  await editor.locator('[data-agreement-binding]').check();
   await editor.locator('[data-agreement-title]').fill('Owners decide');
   await editorSave(editor).click();
   await editorClosed(page);
-  await panelStatus(page, 'current');
-  const panel = agreementPanel(page);
+  const panel = await openStackAgreement(page);
   await panel.locator('[data-agreement-action="propose"]').click();
   await chooseProfileName(page, AUTHOR);
   await panel.locator('[data-agreement-action="propose"]').click();
@@ -174,10 +176,10 @@ test('a proposed owners’ agreement shows the owners’ decisions card, reads i
 
   // Once the index reads the agreement as expired, it takes no more decisions.
   index.agreements.get(cid)!.status = 'expired';
-  await panel.locator('[data-agreement-action="close"]').click();
-  await expect(panel).toBeHidden();
+  await closeAgreementPanel(page);
+  const [{ id }] = await storedAgreements(page);
   const list = await openAgreementsList(page);
-  await list.locator('.agreement-item').click();
+  await openListedAgreement(list, id);
   await expect(panel.locator('[data-agreement-remote-status="expired"]')).toHaveText('Expired', { timeout: 30_000 });
   await expect(card.locator('[data-approval-closed]')).toHaveText('This agreement no longer takes decisions.');
   await expect(card.locator('[data-approval-action="verify"]')).toHaveCount(0);

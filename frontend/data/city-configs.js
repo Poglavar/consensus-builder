@@ -14536,6 +14536,8 @@
         },
         bogota: {
             id: 'bogota',
+            // Permitted massing from the POT 555 treatment map (backend/planning/providers/bogota-pot.js).
+            planning: { sourceIds: ['bogota-pot-555'] },
             label: 'Bogotá, Colombia',
             currency: { locale: 'es-CO', code: 'COP' },
             map: {

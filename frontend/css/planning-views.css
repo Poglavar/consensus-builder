@@ -131,5 +131,21 @@ body[data-planning-existing-scope="removed"] .leaflet-observedReferences-pane { 
 .planning-compare-sides { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: var(--cb-space-2); align-items: end; }
 .planning-compare-sides .planning-source-field { flex-direction: column; align-items: stretch; margin-top: 0; }
 .planning-compare-swap { width: var(--cb-control-height); height: var(--cb-control-height); }
-.planning-compare-note { margin: 0; }
+.planning-compare-note { display: grid; gap: var(--cb-space-1); justify-items: start; }
+.planning-compare-note .sheet-note { margin: 0; }
 .planning-compare-note[hidden] { display: none; }
+/* The Compare tab on the map (js/compare-on-map.js): each half draws the demolished buildings and the
+   designs' buildings of its side, so the shared panes give those up while it compares. */
+.leaflet-pane.map-compare-pane { z-index: var(--cb-z-map-pane-compare); pointer-events: none; }
+.map-comparing :is(.leaflet-proposedBuildings-pane, .buildout-pane),
+.map-comparing[data-compare-permitted="none"] .planning-sources-pane,
+.map-comparing .map-compare-hidden { display: none; }
+/* A plan side's unapplied roads and spaces, drawn as footprints in the Proposed colour (js/compare-on-map.js). */
+.map-compare-shape--road,
+.map-compare-shape--structure { fill: var(--cb-planning-proposed); stroke: var(--cb-planning-proposed); stroke-width: 1.5; }
+.map-compare-shape--road { fill-opacity: 0.28; stroke-dasharray: 6 4; }
+.map-compare-shape--structure { fill-opacity: 0.18; stroke-dasharray: 2 4; }
+body[data-planning-proposed="ghost"] .map-compare-shape--proposed { opacity: 0.4; }
+body[data-planning-existing="ghost"] .map-compare-shape--existing { opacity: 0.5; }
+body[data-planning-proposed="off"] .map-compare-shape--proposed,
+body[data-planning-existing="off"] .map-compare-shape--existing { visibility: hidden; }

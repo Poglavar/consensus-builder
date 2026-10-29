@@ -13,8 +13,9 @@ test('the Rules tab opens the scheme guide and drafts a counter-agreement from t
     const ids = w.AgreementDialog.inputParcelIds([design], fabric);
     const originals = (await w.CadastralParcelRepository.ensureIds(ids, { retainOnly: true })).features;
     const land = ground.derive({ designs: [design], fabric, originals: w.AgreementDialog.originalsById(originals, fabric.featureId),
-      ownerOf: ground.localHolders({ storage: w.PersistentStorage, agents: w.agentStorage }), area: (feature: any) => w.turf.area(feature) });
-    const ownerKey = land.inputs.parcels[0].holders[0].ownerKey;
+      area: (feature: any) => w.turf.area(feature) });
+    // The input parcel is its owners' abstract party; the agreement names no people.
+    const ownerKey = w.AgreementRecord.partyKey(land.inputs.parcels[0].parcelId);
     const saved = w.AgreementStore.save(w.AgreementRecord.settle({ schema: 'agreement/v1', id: w.AgreementRecord.newId(), title: 'Land agreement', city: 'zagreb',
       createdAt: new Date().toISOString(), plan: { cid: snapshot.cid, content: snapshot.content },
       designs: [{ proposalId: layoutId, title: design.title, goal: design.goal, cid: w.DesignRecord.cidOf(design) }],

@@ -134,7 +134,12 @@
         // Observed buildings are baseline objects, not members of the surrounding authored plan.
         if (stack.selectedKind === 'built') return stack.sections.filter(section => section.kind === 'built' || section.kind === 'parcels');
         const selected = Math.max(0, stack.sections.findIndex(section => section.kind === stack.selectedKind));
-        return stack.sections.slice(Math.max(0, selected - 1), selected + 2);
+        // Observed buildings and permitted massing are not the authored chain, so when they sit
+        // directly above the selected level the design above them shows too (the design that
+        // formed a parcel stays one step away).
+        let first = Math.max(0, selected - 1);
+        while (first > 0 && ['built', 'permitted'].includes(stack.sections[first].kind)) first -= 1;
+        return stack.sections.slice(first, selected + 2);
     }
 
     function selectedInstance(stack, kind) {
@@ -227,9 +232,19 @@
                 || instance.affectedDesign || { id: String(by), label: String(by) }]);
         } else if (kind === 'designs') {
             add('above', 'plans', 'memberPlans', (hits.plans || []).filter(item => includesDesign(item, instance)));
+            // A design that forms parcels (a parcel layout, a road) lists the ground it takes and
+            // the parcels it forms as two tabs of one group, the ground it takes first.
             const pieces = formed.filter(item => String(item.designId) === id);
-            if (pieces.length) add('below', 'formed', 'formedParcels', pieces);
-            else add('below', 'parcels', 'affectsParcels', parcels.filter(item => designUsesParcel(instance, item)));
+            const inputs = parcels.filter(item => designUsesParcel(instance, item));
+            if (pieces.length && inputs.length) {
+                const tabs = [];
+                const tab = (target, property, items) => { const before = groups.length; add('below', target, property, items); tabs.push(...groups.splice(before)); };
+                tab('parcels', 'affectsParcels', inputs);
+                tab('formed', 'formedParcels', pieces);
+                groups.push({ position: 'below', kind: 'formed', relation: 'designParcels', tabs, instances: tabs.flatMap(item => item.instances),
+                    count: tabs.reduce((sum, item) => sum + item.count, 0) });
+            } else if (pieces.length) add('below', 'formed', 'formedParcels', pieces);
+            else add('below', 'parcels', 'affectsParcels', inputs);
         } else if (kind === 'formed') {
             if (instance.designId) add('above', 'designs', 'createdBy', [designs.find(item => identities(item).has(String(instance.designId))) || { id: String(instance.designId), label: instance.designLabel || String(instance.designId) }]);
             add('below', 'parcels', 'formedFrom', parcels.filter(item => sourceIds(instance).includes(String(item.id))));
@@ -243,10 +258,13 @@
 
     // A relationship strip is redundant only when its sole target is also the sole visible
     // instance in that target section. Missing/offscreen targets remain useful navigation.
+    // The stack shows only the selected level and its neighbours, so a target section it leaves
+    // out (a formed parcel's design, above the buildings on it) cannot stand in for the strip.
     function visibleContextFor(kind, instance, hits = {}) {
+        const shown = new Set(visibleSections({ ...buildClickStack(hits), selectedKind: kind }).map(section => section.kind));
         return contextFor(kind, instance, hits).filter(group => {
             if (['memberPlans', 'designsOnParcel', 'affectedBy'].includes(group.relation)) return true;
-            if (group.count !== 1) return true;
+            if (group.count !== 1 || !shown.has(group.kind)) return true;
             const visible = instancesOf(group.kind, hits[group.kind]);
             return visible.length !== 1 || visible[0].id !== group.instances[0].id;
         });

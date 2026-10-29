@@ -13,7 +13,7 @@ const files = [
   'vendor/proj4-2.22.0/proj4.js', 'vendor/turf-6.5.0/turf.min.js', 'vendor/noble-hashes-1.8.0/sha256.js',
   'vendor/ipfs-file-cid/ipfs-file-cid.js', 'js/cid.js', 'js/metric-frame.js', 'js/corridor-profile.js', 'js/corridor-osm-form.js', 'js/corridor-junction.js',
   'js/corridor-transition.js', 'js/proposals/corridor-levels.js', 'js/corridor-footprint.js', 'js/proposals/formation-depth.js',
-  'js/proposals/authored-record.js', 'js/proposals/footprint-parts.js', 'js/design-record.js', 'js/parcel-layout-validation.js', 'js/parcel-layout-layouts.js', 'js/reparcellization-slice.js',
+  'js/proposals/authored-record.js', 'js/proposals/footprint-parts.js', 'js/design-record.js', 'js/proposals/parcel-arrangement.js', 'js/parcel-layout-validation.js', 'js/parcel-layout-layouts.js', 'js/reparcellization-slice.js',
   'js/parcels/schelling-grid.js', 'js/single-building-geometry.js', 'js/park-planting.js', 'js/urban-rule-variation.js', 'js/intent-editing.js', 'js/intent-design.js', 'js/draft-link.js', 'js/approval-link.js'
 ];
 test.beforeEach(async ({ page }) => {

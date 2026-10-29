@@ -6,8 +6,7 @@ async function openEconomicSources(page: import('@playwright/test').Page): Promi
   await page.locator('#settings-button').click();
   const settings = page.locator('#settings-sheet');
   await expect(settings).toBeVisible();
-  await settings.locator('details[data-section="economics"] > summary').click();
-  await settings.locator('#economic-source-settings-button').click();
+  await settings.locator('[data-section="assumptions"] #economic-source-settings-button').click();
   await expect(page.locator('#economic-source-settings')).toBeVisible();
 }
 
@@ -93,14 +92,17 @@ test.describe('Valuation and costs sources @features', () => {
     await dialog.locator('#economic-rate-land').fill('777');
     await reloadAfter(page, () => dialog.locator('button[form="economic-source-form"]').click());
 
-    await page.evaluate(() => (window as any).CityConfigManager.setCurrentCityId('birmingham'));
+    // A page runs one city: each city's rates are read on its own page.
+    await page.goto('/?city=birmingham');
+    await waitForApp(page);
     const birmingham = await economicState(page);
     expect(birmingham.cityId).toBe('birmingham');
     expect(birmingham.currency).toBe('GBP');
     expect(birmingham.land).not.toBe(777);
     expect(birmingham.landSource?.sourceId).not.toBe('local-rates');
 
-    await page.evaluate(() => (window as any).CityConfigManager.setCurrentCityId('new_york'));
+    await page.goto('/?city=new_york');
+    await waitForApp(page);
     expect((await economicState(page)).land).toBe(777);
   });
 

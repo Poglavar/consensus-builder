@@ -29,6 +29,7 @@
     let rowRuleKind = DEFAULT_ROW_RULE_KIND;
     let rowMinHeightM = 0;
     let rowMinPlotAreaM2 = DEFAULT_ROW_MIN_PLOT_AREA_M2;
+    let rowRuleExtras = {};   // balconies and slanted roof (UrbanRuleVariation.normalizeRuleExtras)
     let rowVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
     let rowUnits = [];        // per-parcel permitted massing — what the proposal saves
     let rowBuildOut = [];     // one example built under it — presentation only
@@ -868,7 +869,8 @@
             maxHeightM: Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT,
             minHeightM: rowMinHeightM,
             floorHeightM: ROW_FLOOR_HEIGHT_M,
-            minPlotAreaM2: rowMinPlotAreaM2
+            minPlotAreaM2: rowMinPlotAreaM2,
+            ...rowRuleExtras
         });
     }
 
@@ -921,6 +923,7 @@
         if (group) group.style.display = rowRuleKind === 'range' ? '' : 'none';
         const regenerate = document.getElementById('btn-rowhouse-regenerate');
         if (regenerate) regenerate.hidden = rowRuleKind === 'exact';
+        window.UrbanRuleVariation.syncExtrasControls(document, 'rowhouse', rowRuleExtras);
         const slider = document.getElementById('rowhouse-minheight-slider');
         if (!slider) return;
         const ceiling = Number(currentBuildingHeight) || DEFAULT_BUILDING_HEIGHT;
@@ -1231,6 +1234,7 @@
                         </label>
                         <input type="range" id="rowhouse-minplot-slider" min="0" max="10000" value="${DEFAULT_ROW_MIN_PLOT_AREA_M2}" step="10">
                     </div>
+                    ${window.UrbanRuleVariation.extrasControlsMarkup('rowhouse')}
                     <div class="parameter-group">
                         <label for="rowhouse-length-slider">
                             <span data-i18n-key="rowHouses.modal.labels.length" data-i18n-attr="text">Length (m):</span>
@@ -1427,6 +1431,12 @@
                 });
             }
 
+            window.UrbanRuleVariation.bindExtrasControls(document, 'rowhouse', extras => {
+                rowRuleExtras = extras;
+                if (generatedRowHouseFeature) displayRowHouseBuildingInModal(generatedRowHouseFeature);
+                autosaveRowHouseDraft();
+            });
+
             // Leaving the rule: one Freeform building, kept where it stands (proposal-editor-shell.js).
             document.getElementById('btn-rowhouse-freeform')?.addEventListener('click', convertRowHouseToFreeform);
             const rowRegenerate = document.getElementById('btn-rowhouse-regenerate');
@@ -1474,6 +1484,7 @@
         rowRuleKind = DEFAULT_ROW_RULE_KIND;
         rowMinHeightM = 0;
         rowMinPlotAreaM2 = DEFAULT_ROW_MIN_PLOT_AREA_M2;
+        rowRuleExtras = {};
         rowVariationSeed = (Math.floor(Math.random() * 0xffffffff) >>> 0);
         rowHouseManualMode = false;
         rowUnits = [];
@@ -1508,6 +1519,7 @@
                 if (window.UrbanRuleVariation.RULE_KINDS.includes(savedRule.kind)) rowRuleKind = savedRule.kind;
                 if (num(savedRule.minHeightM) !== null) rowMinHeightM = num(savedRule.minHeightM);
                 if (num(savedRule.minPlotAreaM2) !== null) rowMinPlotAreaM2 = num(savedRule.minPlotAreaM2);
+                rowRuleExtras = window.UrbanRuleVariation.normalizeRuleExtras(savedRule);
             }
             if (num(seed.seed) !== null) rowVariationSeed = num(seed.seed) >>> 0;
             rowHouseManualMode = seed.manualMode === true;

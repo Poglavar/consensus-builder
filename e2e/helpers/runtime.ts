@@ -305,8 +305,9 @@ export async function proposalState(page: Page, id: string): Promise<any> {
 }
 
 // The proposal panel's tabs: Overview (name, rung, type, author, size) and Details (land and
-// ownership, verification, the record). The actions stay in the footer under both.
-export async function showProposalTab(page: Page, tab: 'overview' | 'details'): Promise<void> {
+// ownership, verification, the record); a parcel layout has Overview, Input parcels and Output
+// parcels instead. The actions stay in the footer under every tab.
+export async function showProposalTab(page: Page, tab: 'overview' | 'details' | 'inputs' | 'outputs'): Promise<void> {
   const button = page.locator(`#proposal-details-panel [data-proposal-tab="${tab}"]`);
   if (await button.getAttribute('aria-selected') !== 'true') await button.click();
   await expect(page.locator(`#proposal-details-panel [data-proposal-tabpanel="${tab}"]`)).toBeVisible();

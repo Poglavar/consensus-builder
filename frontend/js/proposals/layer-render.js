@@ -912,6 +912,28 @@ function proposalUnapplyPhaseLabel(event, t) {
     return null;
 }
 
+// Designs standing on the one being unapplied (ProposalManager.findUnapplyDependents) are named, and
+// the user chooses: unapply them too, or leave them, each then cutting its ground again on its own.
+// Resolves to the ids to unapply alongside ([] to leave them), or null when the user cancels.
+async function chooseUnapplyDependents(proposalId, proposalLabel, t) {
+    const dependents = ProposalManager.findUnapplyDependents?.(proposalId) || [];
+    if (!dependents.length || !window.CbDialog?.choice) return [];
+    const say = (key, fallback, params) => (t ? t(key, fallback, params) : fallback);
+    const names = dependents.map(record => `“${record.title || record.name || record.proposalId}”`).join(', ');
+    const answer = await window.CbDialog.choice(
+        say('panel.proposal.actions.dependents.message',
+            'These designs stand on “{{name}}”: {{names}}. Unapply them too, or leave them on the map? Left in place, each takes its ground again on its own.',
+            { name: proposalLabel, names }),
+        [
+            { value: 'all', label: say('panel.proposal.actions.dependents.all', 'Unapply all'), role: 'danger' },
+            { value: 'leave', label: say('panel.proposal.actions.dependents.leave', 'Leave them on the map'), primary: true },
+            { value: 'cancel', label: say('common.cancel', 'Cancel') }
+        ],
+        { title: say('panel.proposal.actions.dependents.title', 'Designs built on this one') });
+    if (answer === 'all') return dependents.map(record => String(record.proposalId));
+    return answer === 'leave' ? [] : null;
+}
+
 async function removeProposalFromMap(proposalId, options = {}) {
     if (!proposalId || typeof ProposalManager === 'undefined' || typeof ProposalManager.unapplyProposal !== 'function') {
         if (typeof reportProposalMapActionFailure === 'function') {
@@ -943,6 +965,8 @@ async function removeProposalFromMap(proposalId, options = {}) {
     const t = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
     const proposalLabel = proposalSnapshot?.title || proposalSnapshot?.name || String(proposalId);
     let succeeded = false;
+    const alsoUnapplyIds = await chooseUnapplyDependents(proposalId, proposalLabel, t);
+    if (alsoUnapplyIds === null) return false;
 
     if (button) {
         button.disabled = true;
@@ -964,6 +988,7 @@ async function removeProposalFromMap(proposalId, options = {}) {
         // Unapply commits authored state first; the local fabric system then restores this record's
         // flat cadastral scope without making map geometry a precondition for the state change.
         const unapplied = await ProposalManager.unapplyProposal(proposalId, {
+            alsoUnapplyIds,
             onProgress: event => {
                 const phaseLabel = proposalUnapplyPhaseLabel(event, t);
                 if (!phaseLabel) return;
@@ -1008,40 +1033,25 @@ async function removeProposalFromMap(proposalId, options = {}) {
     }
 }
 
+// The outline a parcel had before a formation replaced it in the map model: the row's own copy, or
+// the immutable cadastral repository. Null when neither has it, so there is nothing to show.
+function removedParcelSourceFeature(parcelId, parcelItem) {
+    if (!parcelId) return null;
+    try {
+        const geometry = JSON.parse(parcelItem?.getAttribute?.('data-parcel-geometry') || 'null');
+        if (geometry?.type && Array.isArray(geometry.coordinates)) {
+            return { type: 'Feature', properties: { parcelId: String(parcelId) }, geometry };
+        }
+    } catch (_) { }
+    // Generated identities have no durable geometry and must carry it in the row if they need it.
+    const stored = window.CadastralParcelRepository?.get?.(parcelId) || null;
+    return stored?.geometry ? stored : null;
+}
+
 function focusOnRemovedParcelLocation(parcelId, parcelItem) {
     if (!parcelId || typeof map === 'undefined' || !map) return;
 
-    let geometry = null;
-    let feature = null;
-
-    // Try to get geometry from data attribute first
-    if (parcelItem) {
-        try {
-            const geometryAttr = parcelItem.getAttribute('data-parcel-geometry');
-            if (geometryAttr) {
-                geometry = JSON.parse(geometryAttr);
-                if (geometry?.type && Array.isArray(geometry.coordinates)) {
-                    feature = {
-                        type: 'Feature',
-                        properties: { parcelId: String(parcelId) },
-                        geometry
-                    };
-                }
-            }
-        } catch (_) { }
-    }
-
-    // A removed cadastral row can be located from the immutable repository. Generated identities
-    // have no durable geometry and must carry it in the row's data attribute if they need focus.
-    if (!geometry && !feature) {
-        try {
-            const stored = window.CadastralParcelRepository?.get?.(parcelId) || null;
-            if (stored?.geometry) {
-                feature = stored;
-                geometry = stored.geometry;
-            }
-        } catch (_) { }
-    }
+    const feature = removedParcelSourceFeature(parcelId, parcelItem);
 
     // Create bounds from geometry and focus map
     if (feature && feature.geometry && typeof L !== 'undefined') {
@@ -1056,23 +1066,6 @@ function focusOnRemovedParcelLocation(parcelId, parcelItem) {
             }
         } catch (error) {
             console.warn('focusOnRemovedParcelLocation: failed to focus on removed parcel', parcelId, error);
-        }
-    } else if (geometry && Array.isArray(geometry) && geometry.length > 0 && typeof L !== 'undefined') {
-        // Try to create bounds from raw geometry coordinates
-        try {
-            // Geometry is expected to be an array of [lng, lat] pairs
-            const coords = geometry;
-            if (coords.length > 0) {
-                const latlngs = coords.map(coord => [coord[1], coord[0]]); // Convert [lng, lat] to [lat, lng]
-                const polygon = L.polygon(latlngs);
-                const bounds = polygon.getBounds();
-                if (bounds && bounds.isValid()) {
-                    map.fitBounds(bounds, { padding: [50, 50] });
-                    return;
-                }
-            }
-        } catch (error) {
-            console.warn('focusOnRemovedParcelLocation: failed to focus on removed parcel from geometry', parcelId, error);
         }
     }
 }

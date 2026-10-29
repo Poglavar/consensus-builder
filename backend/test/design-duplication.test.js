@@ -12,7 +12,9 @@ const source = { proposalId: 'original', goal: 'park', city: 'london', title: 'G
     site, geometry: site, cadastreParcelIds: ['old-ground'], published: { cid: 'old-cid' },
     agreementIds: ['old-agreement'], lifecycleStatus: 'Executed', applied: true,
     structureProposal: { kind: 'park', geometry: site, decorationDesign: {
-        trees: [{ coordinate: [-0.1279, 51.5071], heightM: 5, species: 'oak' }], paths: [[[-0.128, 51.507], [-0.1278, 51.5072]]]
+        trees: [{ coordinate: [-0.1279, 51.5071], heightM: 5, species: 'oak' }], paths: [[[-0.128, 51.507], [-0.1278, 51.5072]]],
+        swings: [{ coordinate: [-0.1279, 51.5071], bearing: 90 }],
+        enclosures: [{ fence: 'mesh', use: 'dog', gates: [[-0.1279, 51.507]], ring: [[-0.1279, 51.507], [-0.1278, 51.507], [-0.1278, 51.5071], [-0.1279, 51.507]] }]
     } } };
 function environment() {
     return { ProposalDesignGoals: goals, DesignRecord: require('../../frontend/js/design-record.js'),
@@ -35,6 +37,15 @@ describe('fresh design duplication', () => {
         const tree = result.editorPayload.structureProposal.decorationDesign.trees[0];
         expect(tree).toMatchObject({ heightM: 5, species: 'oak' });
         expect(tree.coordinate).not.toEqual(source.structureProposal.decorationDesign.trees[0].coordinate);
+        // Play equipment and fenced areas travel with the copy, by the same shift as the tree.
+        const moved = result.editorPayload.structureProposal.decorationDesign, original = source.structureProposal.decorationDesign;
+        const shift = (a, b) => [b[0] - a[0], b[1] - a[1]].map(value => Math.round(value * 1e7));
+        const treeShift = shift(original.trees[0].coordinate, tree.coordinate);
+        expect(moved.swings[0]).toMatchObject({ bearing: 90 });
+        expect(shift(original.swings[0].coordinate, moved.swings[0].coordinate)).toEqual(treeShift);
+        expect(moved.enclosures[0]).toMatchObject({ fence: 'mesh', use: 'dog' });
+        expect(shift(original.enclosures[0].gates[0], moved.enclosures[0].gates[0])).toEqual(treeShift);
+        expect(shift(original.enclosures[0].ring[2], moved.enclosures[0].ring[2])).toEqual(treeShift);
         const a = globalThis.turf.area(template.fields.site), b = globalThis.turf.area(result.fields.site);
         expect(Math.abs(b - a) / a).toBeLessThan(0.001);
         expect(JSON.stringify(source)).toBe(before);

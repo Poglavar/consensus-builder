@@ -9,7 +9,7 @@ import { Keypair } from '@solana/web3.js';
 import {
     OPERATOR_TOKEN_HEADER, currentApprovals, decisionSubject, ensureOwnerApproval, requestAgreementDecision, signOwnerApproval
 } from '../agents/lens-approval-client.js';
-import { agreementObject, deadlineAfterDays, designObject, holdersFromRights, noMoney, ownersRule, parcelOutputs, registryRights } from '../agents/agreement-objects.js';
+import { agreementObject, deadlineAfterDays, designObject, mapViewFromGeometry, noMoney, ownersRule, parcelOutputs, planForDesigns, registryRights } from '../agents/agreement-objects.js';
 import { createIndexClient } from '../agents/publication-client.js';
 import { executeAgreement, mintAgreement, recordAgreementDecision } from '../agents/agreement-minter.js';
 import { createAgreementDecisionHandlers, createMemoryAgreementDecisionStore } from '../agreements/decisions.js';
@@ -47,8 +47,9 @@ function proposerAgreement({ lens = LENS, owners = [{ owner: OWNER, ownerCount: 
     const rights = registryRights([{ parcelId: PARCEL_ID, owners }]);
     return agreementObject({
         title: 'Six storeys', author: 'densifier-01', sponsor: OWNER, city: 'zagreb', createdAt: new Date().toISOString(),
+        plan: planForDesigns('Six storeys', [design], mapViewFromGeometry([PARCEL], 'zagreb')),
         designs: [{ cid: design.cid, goal: design.content.goal, title: design.content.title }],
-        parcels: [{ parcelId: PARCEL_ID, areaM2: 612.4, holders: holdersFromRights(rights, PARCEL_ID) }],
+        parcels: [{ parcelId: PARCEL_ID, areaM2: 612.4 }],
         outputs: parcelOutputs([{ parcelId: PARCEL_ID, geometry: PARCEL, areaM2: 612.4 }]),
         rule: ownersRule({ lens, rights }), deadline: deadlineAfterDays(Date.now(), 7), money: noMoney('EUR')
     });
@@ -127,6 +128,8 @@ describe('the owner\'s approval', () => {
     });
 
     it('refuses rights the registry does not hold: a snapshot naming a co-owner the member never recorded', async () => {
+        // A co-owned parcel's one output goes back to its owners' party by default; the co-owners
+        // stand only in the rule's rights, which the lens checks against its registry.
         const coOwned = proposerAgreement({ owners: [{ owner: OWNER, ownerCount: 2 }, { owner: Keypair.generate().publicKey.toBase58(), ownerCount: 2 }] });
         await expect(signOwnerApproval({ serviceUrl: SERVICE, lensKey: LENS, cid: coOwned.cid, content: coOwned.content, keypair: owner, fetchImpl: lensFetch }))
             .rejects.toMatchObject({ status: 409, code: 'rights_mismatch' });

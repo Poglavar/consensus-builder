@@ -3,7 +3,7 @@
 // Zašto test: nedostajuća `}` NE ruši ništa glasno — preglednik samo prestane
 // parsirati taj file na tom mjestu i sva pravila IZA nestanu. Točno se to
 // dogodilo pri razrješavanju merge konflikta u modals.css: pojedena zatvorena
-// zagrada u `.proposal-epoch-select` progutala je i epoch bulk traku i tuđe
+// zagrada u jednom pravilu liste prijedloga progutala je i bulk traku i tuđe
 // `.reparcel-node-popup__consequence` stilove. Stranica se i dalje učitavala,
 // testovi su bili zeleni, a dva sloja UI-a su bila nevidljivo neostilizirana.
 

@@ -104,8 +104,9 @@ test.describe('proposal detail button controls @features', () => {
     await page.locator('#proposals-button').click();
     const sheet = page.locator('#proposals-sheet');
     await sheet.locator('#shareAppliedProposalsButton').click();
-    const plans = sheet.locator('#designs-plans');
-    await plans.getByRole('button', { name: 'Create plan', exact: true }).click();
+    // Lists (01268caee): the Plans tab's Create plan sits in #lists-actions; the saved plan opens in
+    // the click stack's Plan section, which holds Share plan.
+    await sheet.locator('#lists-actions').getByRole('button', { name: 'Create plan', exact: true }).click();
     const composer = page.locator('.plan-composer');
     await expect(composer.locator('.plan-dialog__count')).toHaveText('0 selected');
     const save = composer.getByRole('button', { name: 'Create plan', exact: true });
@@ -117,11 +118,12 @@ test.describe('proposal detail button controls @features', () => {
     await expect(save).toBeEnabled();
     const beforeSave = index.requests.filter(request => request.method === 'POST').length;
     await save.click();
-    const details = page.locator('.plan-details');
-    await expect(details.locator('.plan-dialog__members li')).toHaveText(['Park · parcel 1234']);
+    const details = page.locator('#click-stack .click-stack__section[data-kind="plans"]');
+    await expect(details).toContainText('Garden plan');
     expect(index.requests.filter(request => request.method === 'POST')).toHaveLength(beforeSave);
     await details.getByRole('button', { name: 'Share plan', exact: true }).click();
     const planShare = page.locator('.plan-share');
+    await expect(planShare.locator('.plan-dialog__members li')).toHaveText(['Park · parcel 1234']);
     const beforePlanShare = index.requests.filter(request => request.method === 'POST').length;
     await planShare.getByRole('button', { name: 'Publish and copy link', exact: true }).click();
     const planLink = planShare.getByLabel('Plan link', { exact: true });
@@ -135,7 +137,6 @@ test.describe('proposal detail button controls @features', () => {
     expect(planPosts.some(request => request.path === '/agreements')).toBe(false);
     await page.keyboard.press('Escape');
     await expect(planShare).toBeHidden();
-    await page.keyboard.press('Escape');
     await expect(sheet).toBeHidden();
   });
 });

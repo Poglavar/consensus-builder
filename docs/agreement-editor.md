@@ -1,17 +1,17 @@
 <!-- Implementation contract and verification evidence for the plan-first agreement editor. -->
 # Plan-first agreement editor
 
-Agreement creation selects an independently saved immutable plan. Its designs are read-only in the Input parcels tab. Rules contains the decision scheme, compensation controls and buttons for the separate ownership-rights and lens dialogs. Output parcels assigns each piece to one input party or Public. Persons shows land and cash contributed/received, including the balancing sponsor, with no person-level cash edits.
+Agreement creation selects an independently saved immutable plan. Its designs are read-only in the Input parcels tab. Rules contains the decision scheme, compensation controls and buttons for the separate ownership-rights and lens dialogs. Output parcels assigns each piece to one input parcel's party, Proposer or Public. Persons shows each party's land and cash contributed/received, including the balancing sponsor, with no person-level cash edits.
 
-Each unidentified input parcel has a stable abstract party, `parcel-owner:<parcelId>`. These parties support drafting and accounting; their generated rights snapshot remains incomplete. Plugged-in rights replace the input holders, and invalid recipient choices must be reviewed again.
+Every input parcel is exactly one abstract party, `parcel-owner:<parcelId>`, shown as “Owner(s) of parcel X”. The agreement never names people. Ownership rights (the Parcel ownership rights dialog, or the default snapshot from local owner records) live only in the rule and do not change the parties or allocations. When they name people, Input parcels lists each parcel's owners and shares and Persons adds **Persons by ownership rights**: per person, land put in and received and cash, derived by `AgreementPersons.personPositions` (person k co-owns every output allocated to parcel i's party at share s[k][i] and receives that share of the party's cash, split per parcel into whole cents by largest remainder). Parcels without complete rights stay one party and are counted under it.
 
-Area compensation is `(contributed area × (1 − contribution ratio) − allocated area) × rate`, rounded to integer cents per party. The selected scheme caps the allowed contribution ratio. The sponsor supplies or receives the cash difference. No-cash rules generate no cash lines. Saving and HTTP publication reject unbalanced land, unknown input areas, incomplete input shares, missing or multiple output recipients, unknown input-party recipients and cash inconsistent with the rules.
+Area compensation is `(contributed area × (1 − contribution ratio) − allocated area) × rate`, rounded to integer cents per party. The selected scheme caps the allowed contribution ratio. The sponsor supplies or receives the cash difference. No-cash rules generate no cash lines. Saving and HTTP publication reject unbalanced land, unknown input areas, named input holders, missing or multiple output recipients, recipients that are not an input parcel's party and cash inconsistent with the rules.
 
-This intentionally retires joint output allocations, implicit carried-holder outputs and manually entered cash terms. Recreate affected experimental agreements. Input co-ownership remains supported.
+This intentionally retires joint output allocations, implicit carried-holder outputs, manually entered cash terms and named input holders. Recreate affected experimental agreements. Input co-ownership is expressed by the rights snapshot, not by the agreement's parties.
 
 ## MCP parity
 
-`ugt_draft_agreement` requires an existing named plan. `ugt_edit_agreement` accepts terms, allocations, ownership rights, full decision rules (including authority policies, scheme identity and lens members) and settlement controls. It can select another existing plan, but cannot edit designs or invent a plan. Shared `AgreementRecord` normalization, settlement and validation drive browser, MCP and HTTP accounting. Runtime checks cover German authority rules, lens/rights revisions, derived payments, retained plan identity and rejection of composition edits.
+`ugt_draft_agreement` requires an existing named plan. `ugt_edit_agreement` accepts terms, allocations, ownership rights, full decision rules (including authority policies, scheme identity and lens members) and settlement controls. Both draft the same abstract parties as the editor; supplied rights go into `rule.approvalConfig.rights` only. `ugt_draft_agreement` and `ugt_inspect_agreement` return `persons` (the derived per-person positions) when the rule carries rights, else null. It can select another existing plan, but cannot edit designs or invent a plan. Shared `AgreementRecord` normalization, settlement and validation drive browser, MCP and HTTP accounting. Runtime checks cover German authority rules, lens/rights revisions, derived payments, retained plan identity and rejection of composition edits.
 
 ## Verification
 
@@ -96,7 +96,7 @@ Two targeted headed Playwright layout cases passed, followed by three targeted h
 
 ## Plan click-stack layout and return context
 
-Plan section actions now share a two-column row with equal-sized Share plan and Create agreement buttons. Agreements and included designs use full-width rows with matching group insets and spacing, in both stack renderers. Creating an agreement from this section retains the caller behind the native modal. Header close, Cancel and Escape return to the same expanded plan, map point and selection, with map focus restored. Creating successfully returns to that section and refreshes its agreement list instead of opening a different dock. Other entry points retain their existing post-save behavior. Phone dismissal uses the shared sheet handle, Cancel and Escape; its header X is intentionally hidden by the shared mobile sheet style.
+Plan section actions now share a two-column row with equal-sized Share plan and Create agreement buttons. Agreements and included designs use full-width rows with matching group insets and spacing, in both stack renderers. Creating an agreement from this section retains the caller behind the native modal. Header close, Cancel and Escape return to the same expanded plan, map point and selection, with map focus restored. Creating successfully opens the new agreement in the same stack, in its expanded Agreements section (ClickStack.showAgreement, as a counter-agreement does), instead of a different dock. Other entry points retain their existing post-save behavior. Phone dismissal uses the shared sheet handle, Cancel and Escape; its header X is intentionally hidden by the shared mobile sheet style.
 
 MCP parity: these changes affect navigation, focus and presentation only. The authored plan and agreement formats and editing fields are unchanged. Existing plan inspection and agreement draft/edit operations still edit the same content; no new MCP mutation or schema is needed.
 
@@ -273,12 +273,32 @@ scheme refused, and reads the catalogue.
 ### Scheme guide
 
 The scheme card's "How this scheme works…" opens a dialog generated from the template's data
-(`ProposalApprovalSetup.schemeGuideHtml`, `openSchemeGuide`): who decides and what the support
-is for; how land is distributed, with a before/after schematic drawn from the scheme's cap and
-basis (the plan's own parties when one is open, else three example owners); this agreement against
-the scheme, with the parties' land and what would meet a broken rule, in the editor's own controls;
-how to set the scheme up here (Compensation, Land contribution, Output parcels, Parcel ownership
-rights, Authority, Persons); and the sources. Colours and type come from `proposal-editor.css`.
+(`ProposalApprovalSetup.schemeGuideHtml`, `openSchemeGuide`), organized by the scheme dimensions
+(`ProposalApprovalRegimes.DIMENSIONS`, `dimensionsOf`; worded by `ProposalApprovalText.dimensionText`),
+so every scheme reads in the same vocabulary:
+
+- **How it is decided:** a flow (who starts it → owner support, one gauge per test filled to its
+  threshold → the authority's decision → what passing unlocks), then each decision dimension as a
+  badge and a sentence.
+- **How the land is shared:** each distribution dimension, then three example owners giving up the
+  cap (or a quarter of their land where the scheme sets none), uncompensated.
+
+Those two groups are **The scheme's rules**. With an agreement open, **this agreement against the
+scheme** follows as a part of its own: the check, the owners chart (`ownersModel`) and what would
+meet a broken rule in the editor's own controls. The chart has the owners in rows (the people the
+rule's ownership rights name, via `AgreementPersons.personPositions`; a parcel without complete
+rights stays one party, its owners), then Public and the proposer or sponsor; its columns are Puts in
+and Gets back, each a land line and a money line. An owner below a per-owner cap is shown in red with
+the least land the cap lets them get back; a pool cap is a gauge. The
+caption says what an owner is owed (the land put in less the uncompensated contribution, or by value
+a share of the new land's value), so the money reads as the difference. Then how to set the scheme
+up here (Compensation, Land contribution, Output parcels, Parcel ownership rights, Authority,
+Persons) and the sources.
+
+With a picker (from the agreement editor and panel), **Compare all schemes** (`compareHtml`) lists
+every scheme in the same dimensions, one row each; a name picks it. Colours and type come from
+`proposal-editor.css`; bar lengths reach it as `--scheme-length` and `--scheme-at`. MCP's `schemes`
+help topic carries each scheme's `dimensions` (coded value, short and long wording).
 
 ### Verification (2026-10-28)
 

@@ -356,10 +356,6 @@ async function createProposal() {
             applied: false,
             bounds: bounds, // Store bounds for reliable positioning
             createdAt: new Date().toISOString(), // Add creation timestamp
-            // Which decade of the plan this builds — set in the dialog, sticky between creates.
-            epochYear: (typeof window !== 'undefined' && window.__proposalEpoch)
-                ? window.__proposalEpoch.readCreateDialogEpoch()
-                : null,
             // The city this proposal's parcels belong to. Stamped at creation, not at upload, so a
             // proposal made in Zagreb and uploaded later from New York is still labelled Zagreb —
             // and so a shared link can be recognised as cross-city even without a ?city= param.
@@ -551,6 +547,9 @@ async function createProposal() {
                     gradeSeparations: safeClone(roadDrawingContext.gradeSeparations) || [],
                     segmentProfiles: safeClone(roadDrawingContext.segmentProfiles) || {},
                     polygon: roadDrawingContext.polygon ? safeClone(roadDrawingContext.polygon) : null,
+                    // The side of the road its traffic keeps to: the city's (the record's
+                    // `driving_side` tag), so its forward lanes lie on that side of the centre line.
+                    drivingSide: roadDrawingContext.drivingSide || window.CityConfigManager.getDrivingSide(),
                     metadata: resolvedMetadata
                 };
 

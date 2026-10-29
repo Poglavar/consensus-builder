@@ -224,6 +224,30 @@ describe('granular authored editing', () => {
         expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/lamps',value:[{bearing:0}]}])).toThrow(expect.objectContaining({code:'invalid-decoration'}));
         expect(()=>edit(park,[{op:'add',path:'/structureProposal/decorationDesign/lamps',value:{coordinate:[-.0995,51.5005]}}])).toThrow(expect.objectContaining({code:'invalid-decoration'}));
     });
+    it('fences a park and its play area, adds play equipment, and refuses fences without gates or outside the park', () => {
+        const park=make('space',{spaceKind:'park',treeCount:0});
+        const [w,s,e,n]=turf.bbox(park.structureProposal.geometry), x=t=>w+(e-w)*t, y=t=>s+(n-s)*t;
+        const ring=[[x(.3),y(.3)],[x(.6),y(.3)],[x(.6),y(.6)],[x(.3),y(.6)],[x(.3),y(.3)]];
+        const outline=park.structureProposal.geometry.coordinates[0];
+        const parkGate=[(outline[0][0]+outline[1][0])/2,(outline[0][1]+outline[1][1])/2];
+        const next=edit(park,[
+            {op:'add',path:'/structureProposal/decorationDesign/enclosures',value:[{fence:'plinth',use:'none',gates:[parkGate]},{fence:'mesh',use:'play',gates:[[x(.45),y(.3)]],ring}]},
+            {op:'add',path:'/structureProposal/decorationDesign/swings',value:[{coordinate:[x(.4),y(.4)],bearing:370}]},
+            {op:'add',path:'/structureProposal/decorationDesign/slides',value:[[x(.5),y(.5)]]}]).structureProposal.decorationDesign;
+        expect(next.enclosures).toEqual([{fence:'plinth',use:'none',gates:[parkGate]},{fence:'mesh',use:'play',gates:[[x(.45),y(.3)]],ring}]);
+        expect(next.swings).toEqual([{coordinate:[x(.4),y(.4)],bearing:10}]);
+        expect(next.slides).toEqual([{coordinate:[x(.5),y(.5)],bearing:0}]);
+        const play=(change)=>[{op:'add',path:'/structureProposal/decorationDesign/enclosures',value:[{fence:'mesh',use:'play',gates:[[x(.45),y(.3)]],ring,...change}]}];
+        expect(()=>edit(park,play({gates:[]}))).toThrow(expect.objectContaining({code:'enclosure-gate-missing'}));
+        expect(()=>edit(park,play({gates:[[x(.45),y(.45)]]}))).toThrow(expect.objectContaining({code:'enclosure-gate-off-fence'}));
+        expect(()=>edit(park,play({fence:'hedge'}))).toThrow(expect.objectContaining({code:'enclosure-fence'}));
+        expect(()=>edit(park,play({use:'tennis'}))).toThrow(expect.objectContaining({code:'enclosure-use'}));
+        const outside=[[x(.8),y(.8)],[x(1.2),y(.8)],[x(1.2),y(1.2)],[x(.8),y(1.2)],[x(.8),y(.8)]];
+        expect(()=>edit(park,play({ring:outside,gates:[[x(1),y(.8)]]}))).toThrow(expect.objectContaining({code:'enclosure-outside'}));
+        const square=make('space',{spaceKind:'square'});
+        expect(()=>edit(square,[{op:'add',path:'/structureProposal/decorationDesign',value:{version:2,enclosures:[]}}])).toThrow(expect.objectContaining({code:'furniture-kind-not-allowed'}));
+        expect(()=>edit(square,[{op:'add',path:'/structureProposal/decorationDesign',value:{version:2,swings:[[x(.5),y(.5)]]}}])).toThrow(expect.objectContaining({code:'furniture-kind-not-allowed'}));
+    });
     it('moves a shared plot boundary with granular vertex edits and rejects gaps or overlap', () => {
         const design=make('parcel-layout',{algorithm:'equal',count:2});
         const shifted=structuredClone(design.parcelLayout.plots);

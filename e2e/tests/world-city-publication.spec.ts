@@ -101,10 +101,10 @@ test.describe('Worldwide publication and city routing @core', () => {
     const cid = await publishPark(author);
     const baseURL = new URL(author.url()).origin;
 
-    // the feed/search route: ?focusProposal=<cid> in New York for a Zagreb design
+    // the feed/search route: ?design=<cid> in New York for a Zagreb design
     const device = await deviceIn(browser, pageIndex(author), 'new_york', baseURL);
     try {
-      await device.page.goto(`/?city=new_york&reduceMotion=1&focusProposal=${cid}`);
+      await device.page.goto(`/?city=new_york&reduceMotion=1&design=${cid}`);
       await expect.poll(() => storedIn(device.page, `design-${cid}`), { timeout: 30_000 }).toEqual({ city: 'new_york', stored: true });
       await expect.poll(() => device.page.evaluate(cid => {
         const w = window as any, record = w.proposalStorage.getProposal(`design-${cid}`);
@@ -115,7 +115,7 @@ test.describe('Worldwide publication and city routing @core', () => {
         return { city: record.city, cid: w.DesignRecord.cidOf(record) };
       }, cid)).toEqual({ city: 'zagreb', cid });
       await expect(device.page.locator('.city-switch-dialog')).toHaveCount(0);
-      expect(new URL(device.page.url()).searchParams.get('focusProposal')).toBe(cid);
+      expect(new URL(device.page.url()).searchParams.get('design')).toBe(cid);
       expect(device.errors).toEqual([]);
     } finally {
       await device.context.close();
@@ -203,7 +203,7 @@ test.describe('Worldwide publication and city routing @core', () => {
       await mockAllApiRoutes(duplicate);
       await attachSharedIndex(duplicate, pageIndex(owner));
       const incomingUrl = `/designs/${cid}?city=zg&reduceMotion=1`;
-      await duplicate.goto(incomingUrl, { waitUntil: 'domcontentloaded' });
+      await duplicate.goto(incomingUrl, { waitUntil: 'commit' }); // a blocked tab never reaches DOMContentLoaded
       await expect.poll(() => duplicate.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('blocked');
       const screen = duplicate.locator('#workspace-screen');
       await expect(screen).toBeVisible();

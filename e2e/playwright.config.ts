@@ -7,6 +7,11 @@ enableBackgroundChromium();
 const baseURL = process.env.BASE_URL || 'http://localhost:8080';
 const serverURL = new URL(baseURL);
 
+// Only the wrapper passes the finished tests back to Playwright; a bare TEST_RUN would redo them.
+if (process.env.TEST_RUN && !process.env.TEST_RUN_RESUMABLE) {
+  throw new Error('Start a named test run with `node scripts/run-resumable.mjs <name> [args]`');
+}
+
 export default defineConfig({
   testDir: './tests',
   // Screenshot authoring is an opt-in utility, not regression coverage.
@@ -21,6 +26,8 @@ export default defineConfig({
   reporter: [
     ['html', { outputFolder: 'playwright-report' }],
     ['list'],
+    // Named runs (TEST_RUN=<name>) record finished tests so they can be continued; see scripts/run-resumable.mjs.
+    ...(process.env.TEST_RUN ? [['./helpers/run-ledger-reporter.cjs'] as [string]] : []),
   ],
 
   use: {

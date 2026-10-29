@@ -270,6 +270,182 @@
                 "area-owners-and-leaseholders-private": "Private owned and leased area"
             }
         },
+        "dimensions": {
+            "rules": "The scheme’s rules",
+            "labels": {
+                "initiator": "Who starts it",
+                "decider": "Who has the final say",
+                "support": "Owner support needed",
+                "electorate": "Who is counted",
+                "dissenters": "Owners who say no",
+                "stage": "What passing unlocks",
+                "basis": "Land is shared by",
+                "publicLand": "Public land without compensation",
+                "levelling": "Differences",
+                "valueGain": "Value gain",
+                "minParties": "Parties"
+            },
+            "groups": {
+                "decision": "How it is decided",
+                "distribution": "How the land is shared"
+            },
+            "stages": {
+                "agreement": "Agreement",
+                "initiative": "Initiative",
+                "association": "Association",
+                "plan": "Plan",
+                "execution": "Execution"
+            },
+            "supportLong": "It needs {{tests}}.",
+            "stageLong": "Passing it is for {{stage}}.",
+            "flowAuthority": "Then",
+            "compare": "Compare all schemes",
+            "values": {
+                "initiator": {
+                    "owners": {
+                        "short": "Owners",
+                        "long": "The owners start it."
+                    },
+                    "authority": {
+                        "short": "Authority",
+                        "long": "The authority starts it."
+                    }
+                },
+                "decider": {
+                    "owners": {
+                        "short": "Owners alone",
+                        "long": "The owners’ agreement is the decision."
+                    },
+                    "owners-and-authority": {
+                        "short": "Owners, then authority",
+                        "long": "Owner support first, then the authority decides."
+                    },
+                    "authority": {
+                        "short": "Authority alone",
+                        "long": "The authority decides; owners are heard."
+                    }
+                },
+                "support": {
+                    "none": {
+                        "short": "No vote",
+                        "long": "There is no owner vote."
+                    }
+                },
+                "electorate": {
+                    "none": {
+                        "short": "Nobody",
+                        "long": "Nobody is counted; owners are heard."
+                    },
+                    "owners": {
+                        "short": "All owners",
+                        "long": "Owners are counted.",
+                        "private": {
+                            "short": "Private owners only",
+                            "long": "Private owners are counted; public holders are left out."
+                        }
+                    },
+                    "owners-and-leaseholders": {
+                        "short": "Owners and leaseholders",
+                        "long": "Owners and leaseholders are counted.",
+                        "private": {
+                            "short": "Private owners and leaseholders only",
+                            "long": "Private owners and leaseholders are counted; public holders are left out."
+                        }
+                    }
+                },
+                "dissenters": {
+                    "veto": {
+                        "short": "Veto",
+                        "long": "Each owner can block it."
+                    },
+                    "bound-by-majority": {
+                        "short": "Bound by the majority",
+                        "long": "Once the support is there and the authority approves, owners who said no are bound."
+                    },
+                    "bound-by-authority": {
+                        "short": "Bound by the authority",
+                        "long": "The authority’s decision binds every owner."
+                    }
+                },
+                "basis": {
+                    "area": {
+                        "short": "Area",
+                        "long": "New plots are shared out by area."
+                    },
+                    "value": {
+                        "short": "Value",
+                        "long": "New plots are shared out by land value."
+                    },
+                    "either": {
+                        "short": "Area or value",
+                        "long": "New plots are shared out by area or by land value; the parties choose."
+                    }
+                },
+                "publicLand": {
+                    "none": {
+                        "short": "No cap",
+                        "long": "The scheme sets no cap; the parties agree how much becomes public land."
+                    },
+                    "owner": {
+                        "short": "≤ {{percent}}% per owner",
+                        "long": "Each owner gives up at most {{percent}}% of their land for public use without compensation.",
+                        "area": {
+                            "short": "≤ {{percent}}% per owner (by area)",
+                            "long": "Shared by area, each owner gives up at most {{percent}}% of their land for public use without compensation."
+                        }
+                    },
+                    "pool": {
+                        "short": "≤ {{percent}}% of the pool",
+                        "long": "At most {{percent}}% of the pooled land becomes public land and costs without compensation."
+                    }
+                },
+                "levelling": {
+                    "money": {
+                        "short": "In money",
+                        "long": "What an owner gets back above or below what they are owed is settled in money."
+                    }
+                },
+                "valueGain": {
+                    "none": {
+                        "short": "—",
+                        "long": "Not applicable: land is shared by area."
+                    },
+                    "kept": {
+                        "short": "Kept in land",
+                        "long": "Owners keep their value gain in their new land."
+                    },
+                    "all": {
+                        "short": "All in money",
+                        "long": "Each owner’s whole value gain is settled in money."
+                    },
+                    "share": {
+                        "short": "{{percent}}% in money",
+                        "long": "{{percent}}% of each owner’s value gain is settled in money; the rest stays in land."
+                    }
+                },
+                "minParties": {
+                    "any": {
+                        "short": "Any number",
+                        "long": "No minimum number of parties."
+                    },
+                    "some": {
+                        "short": "At least {{count}}",
+                        "long": "At least {{count}} parties bring land in."
+                    }
+                }
+            },
+            "outcome": {
+                "givesUp": "gives up {{percent}}%",
+                "gains": "gains {{percent}}%",
+                "pool": "{{given}}% of the pool is not returned to the owners; the cap is {{limit}}%.",
+                "owed": "Each owner is owed the land they put in; money settles the difference between that and the land they get back.",
+                "floor": "Least back under the cap",
+                "exampleCap": "Three example owners giving up the most the scheme allows. With a plan open, the chart shows its parties.",
+                "exampleNoCap": "Three example owners giving up a quarter of their land: the scheme sets no cap. With a plan open, the chart shows its parties.",
+                "owedContribution": "Each owner is owed the land they put in less the {{percent}}% contribution taken without compensation; money settles the difference between that and the land they get back.",
+                "owedValue": "Each owner is owed a share of the new land’s value matching the value they put in; money settles the difference between that and the value of the land they get back."
+            }
+        },
         "regime": {
             "research": "Research template",
             "stage": "What this support is for: {{stage}}",
@@ -627,17 +803,8 @@
             "guide": {
                 "open": "How this scheme works…",
                 "checked": "Rules checked {{date}}",
-                "distribution": "How land is distributed",
-                "before": "Land put in",
-                "after": "Land after the readjustment",
-                "schematicOwnerCap": "Each owner gives up at most {{percent}}% of their land for public use without compensation and gets a plot back; any further difference is settled in money.",
-                "schematicPoolCap": "Up to {{percent}}% of the pool goes to public facilities and costs without compensation; the parties share the rest, and differences are settled in money.",
-                "schematicValue": "Every owner gets back a share of the new land worth what they put in; public land reduces that share for everyone alike, and differences are settled in money.",
-                "schematicNone": "The parties agree what each gets back; the scheme sets no cap on public land, and differences are settled in money.",
-                "example": "Three example owners; with a plan open, the bars show its parties.",
                 "against": "This agreement against the scheme",
                 "getsBack": "Gets back",
-                "givesUp": "Gives up",
                 "fixes": "What would meet it",
                 "fixBasisValue": "In Rules, set Compensation to “Balance land value differences in money”, then give every input parcel and resulting piece a value per m².",
                 "fixBasisArea": "In Rules, set Compensation to “Balance land differences in money”.",
@@ -849,6 +1016,11 @@
         "fr": "Français",
         "pt": "Português"
     },
+    "urbanRule": {
+        "balconies": "Balconies",
+        "balconyDepth": "May stand out of the envelope by (m):",
+        "slantedRoof": "Slanted roof with attic"
+    },
     "common": {
         "maxFloors": "Max floors:",
         "minFloors": "Min floors:",
@@ -946,7 +1118,6 @@
             "errors": {
                 "cidMismatch": "The server computed a different identity for this design, so nothing was published.",
                 "pinningUnconfigured": "This server cannot pin published designs yet (pinning is not configured).",
-                "layoutNeedsAgreement": "A parcel layout is published with the agreement that settles its land.",
                 "tooLarge": "This design exceeds the 10 MiB publication limit. Reduce its extent or detail before sharing; it is saved locally.",
                 "invalidDesign": "This design contains invalid data. Correct it before sharing.",
                 "rateLimitedFor": "Too many publications for now. Try again in about {{minutes}} min.",
@@ -980,8 +1151,7 @@
                 "listing": "Listing {{done}}/{{total}} designs…",
                 "checking": "Checking {{done}}/{{total}} designs…",
                 "publishSelected": "Publish selected designs",
-                "selectionCount": "{{selected}} of {{total}} designs included · {{excluded}} excluded",
-                "layoutNeedsAgreement": "{{title}} is published with its agreement. Create an agreement that includes it, or deselect it to share the other designs."
+                "selectionCount": "{{selected}} of {{total}} designs included · {{excluded}} excluded"
             },
             "route": {
                 "fetching": "Fetching the shared designs…",
@@ -1112,7 +1282,6 @@
             "mintedAgreementsButton": "On-chain agreements",
             "clearButton": "Reset designs (this browser)",
             "planStats": {
-                "buttonLabel": "Plan stats",
                 "calculating": "Calculating…",
                 "modalTitle": "Plan stats",
                 "planArea": "Plan area (m²)",
@@ -1145,7 +1314,7 @@
                 "colFloorArea": "GFA m²",
                 "colApartments": "apartments",
                 "colPeople": "people",
-                "noEpoch": "no period",
+                "noPeriod": "no period",
                 "scope": "{{title}} · Designs: {{counted}}",
                 "noteUnmeasured": "{{n}} of {{total}} buildings state no height — their floor area is not counted.",
                 "noteParcelArea": "The average parcel size is over the {{measured}} parcels whose shape is loaded; {{missing}} are counted but not measured.",
@@ -1303,10 +1472,6 @@
         "stations": {
             "title": "Stations",
             "placeTitle": "Place a station",
-            "bus": "Road station",
-            "tram": "Ground level",
-            "underground": "Underground",
-            "elevated": "Elevated station",
             "cancel": "Cancel placement",
             "hint": "Rail stations snap to rail tracks. Bus stations snap to the selected roadside."
         },
@@ -1524,8 +1689,9 @@
                 "lake": "Lake",
                 "transport": "Transport",
                 "road": "Road",
+                "roadInParcel": "Road in parcel",
+                "roadInParcelTooltip": "Fit a road into this parcel: its lanes fill the width and nothing outside it is taken",
                 "track": "Track",
-                "busStation": "Road station",
                 "tramStation": "Ground-level station",
                 "undergroundStation": "Underground station",
                 "elevatedStation": "Elevated station",
@@ -1693,6 +1859,12 @@
                 "restoringGround": "Restoring local terrain…",
                 "saving": "Saving…",
                 "unappliedStatus": "The design “{{name}}” was unapplied and remains in your designs list.",
+                "dependents": {
+                    "title": "Designs built on this one",
+                    "message": "These designs stand on “{{name}}”: {{names}}. Unapply them too, or leave them on the map? Left in place, each takes its ground again on its own.",
+                    "all": "Unapply all",
+                    "leave": "Leave them on the map"
+                },
                 "remove": "Unapply",
                 "includedInRoad": "Included in combined road",
                 "includedInRoadHint": "Remove {{name}} from the map to restore this road.",
@@ -1886,8 +2058,7 @@
             },
             "forkedFrom": "Forked from {{cid}}",
             "tabs": {
-                "overview": "Overview",
-                "details": "Details"
+                "overview": "Overview"
             }
         },
         "block": {
@@ -1999,6 +2170,10 @@
             "edgeActionsProtectedHint": "A node cannot be added on a ramp, tunnel, or grade-separated stretch · × Bulldoze this stretch",
             "addNodeProtectedStatus": "A node cannot be added on a ramp, tunnel, or grade-separated stretch.",
             "editRevertedStatus": "Could not complete that road change — reverted.",
+            "editRevertedReason": "Could not complete that road change — reverted: {{reason}}",
+            "boundedSplit": "A road in a parcel stays one connected network: it holds the whole parcel. Undo, or delete the road and place it again.",
+            "boundedTooWide": "These lanes need {{required}} m, and the parcel leaves {{available}} m here. Choose fewer or narrower lanes.",
+            "boundedOutside": "A road in a parcel stays inside that parcel. Move the point back onto it.",
             "splitIntoStretches": "The edit disconnected the road — it was split into {{count}} separate road designs.",
             "applyingEdit": "Applying…",
             "buildingRoad": "Building the road…",
@@ -2752,19 +2927,7 @@
                     "inMemory": "In-memory",
                     "awaitingFunding": "Awaiting funding"
                 },
-                "downloadConfirm": "Design is not in local storage yet. Download?",
-                "epoch": {
-                    "rowLabel": "Plan epoch",
-                    "none": "No epoch",
-                    "custom": "Other year…",
-                    "customPrompt": "Timeline year (2026–2966):",
-                    "saveError": "Failed to save the epoch.",
-                    "timelineLabel": "Timeline",
-                    "all": "All",
-                    "cumulative": "Cumulative to {year}.",
-                    "toApply": "to apply: {n}",
-                    "toUnapply": "to remove: {n}"
-                }
+                "downloadConfirm": "Design is not in local storage yet. Download?"
             },
             "proposalChoice": {
                 "title": "Choose design",
@@ -3265,8 +3428,35 @@
             }
         }
     },
+    "roadInParcel": {
+        "hint": "The lanes run along the middle of each street and fit its narrowest part; pavements and verges fill the rest. Nothing outside this ground is taken.",
+        "turn": "Turn 90°",
+        "place": "Place road",
+        "summary": "Streets: {{streets}} · parcels: {{parcels}}",
+        "group": {
+            "label": "{{count}} × {{width}} m"
+        },
+        "preset": {
+            "automatic": "Automatic",
+            "label": "Lanes: {{lanes}}, {{width}} m"
+        },
+        "issue": {
+            "notGrid": "This ground does not read as straight streets. Draw the road by hand with the Road tool.",
+            "disconnected": "Parts of this ground do not connect as one street network. Select the parts separately.",
+            "tooNarrow": "A street here is {{width}} m wide, too narrow for a lane.",
+            "tooWide": "The lanes chosen for the {{width}} m streets need {{required}} m with their pavements.",
+            "skipped": "Pieces that do not read as straight streets stay as they are: {{count}}."
+        },
+        "failed": "Could not place the road: {{reason}}",
+        "done": "Roads placed in the parcel: {{count}}.",
+        "donePartly": "Roads placed in the parcel: {{count}}. Not placed: {{failed}}",
+        "noParcel": "Select the parcel left for the road first.",
+        "taken": "A road or track already holds this ground. Unapply it first, or select other parcels.",
+        "joinFailed": "The selected parcels could not be joined into one site.",
+        "roadName": "Streets",
+        "description": "Streets fitted into the ground left for them."
+    },
     "parcelLayout": {
-        "publishWithAgreement": "A parcel layout is published with its agreement. Propose an agreement that includes it.",
         "editor": {
             "title": "Lay out parcels",
             "mapHint": "Draw the plots here. Who receives which plot is decided later, in the agreement.",
@@ -5978,6 +6168,7 @@
                 "donate": "Donated",
                 "pledge": "Pledged",
                 "stake": "Bet / stake",
+                "sell": "Sold bet",
                 "createMarket": "Opened market",
                 "resolve": "Resolved market",
                 "claim": "Claimed winnings",
@@ -6260,7 +6451,6 @@
             "title": "Publish before walking",
             "intro": "These applied designs are not published yet. The walk view loads published designs only, so they are published first. The dialog closes and the walk starts as soon as all of them are published.",
             "publishAll": "Publish all",
-            "layoutSkipped": "A parcel layout is published with its agreement, so the walk goes on without it.",
             "openFailed": "The publish dialog could not open."
         },
         "sun": {
@@ -6322,6 +6512,30 @@
         "holeVertices": "Outline {{number}}, hole {{hole}} vertices"
     },
     "structureEditor": {
+        "hintEnclosure": "Click to outline a fenced area, then click its first point or choose Finish area. Click a fence to choose its style and use; drag its points to reshape it.",
+        "hintGate": "Click a fence to put a gate in it; click a gate to remove it.",
+        "statusLastGate": "A fenced area keeps at least one gate.",
+        "statusGateOffFence": "Click a fence to put a gate in it.",
+        "enclosure": {
+            "fencePark": "Fence the whole park",
+            "title": "Selected fenced area",
+            "fence": "Fence",
+            "use": "Use",
+            "remove": "Remove fenced area",
+            "fenceRail": "Low rail",
+            "fenceMesh": "Mesh",
+            "fenceIron": "Wrought iron",
+            "fencePlinth": "Iron on brick",
+            "useNone": "Open",
+            "useDog": "Dog area",
+            "usePlay": "Play area",
+            "summary": "{{area}}, gates: {{gates}}",
+            "drawn": "Fenced area",
+            "wholePark": "Fence around the whole park",
+            "finish": "Finish area",
+            "vertexTitle": "Drag to reshape the fenced area",
+            "deleteVertexTitle": "Delete this fence point"
+        },
         "furniture": {
             "title": "Furniture models",
             "upload": "Upload",
@@ -6357,6 +6571,11 @@
         "instructions": "Choose an item, then click inside the boundary. Drag any item to move it.",
         "closeLabel": "Close",
         "tools": {
+            "swing": "Swing",
+            "seesaw": "Seesaw",
+            "slide": "Slide",
+            "enclosure": "Fenced area",
+            "gate": "Gate",
             "lamp": "Lamp",
             "tree": "Tree",
             "flowerbed": "Flowerbed",
@@ -6416,9 +6635,7 @@
         "moveHint": "Drag the station footprint or centre marker to reposition it. Its type, size, rotation and platform height stay the same.",
         "dragCenter": "Drag to move the station",
         "undo": "Undo",
-        "trackStation": "Track station",
         "groundLevel": "Ground level",
-        "elevated": "Elevated station",
         "underground": "Underground",
         "cancel": "Cancel"
     },
@@ -6927,7 +7144,6 @@
         },
         "errors": {
             "importDisconnected": "The file holds separate areas. A site must be one connected area.",
-            "importInvalid": "This file is not a GeoJSON polygon in longitude/latitude.",
             "tooFew": "A site needs at least three corners.",
             "tooMany": "A site can have at most 500 corners.",
             "selfIntersecting": "The outline crosses itself; move a corner so it does not.",
@@ -7079,6 +7295,7 @@
         "unsupportedCrs": "This WMS needs a supported geographic or Web Mercator coordinate system."
     },
     "parcelSourceHealth": {
+        "notIntegrated": "The parcels arrived but could not be added to the map.",
         "countryRestricted": "This register only accepts connections from {{country}}. Outside {{country}}, continue without parcels or choose another source.",
         "requestTimedOut": "The request timed out.",
         "offline": "You appear to be offline. Connect to the internet and try again.",
@@ -7625,14 +7842,15 @@
             "title": "Agreement",
             "untitled": "Agreement of {{date}}",
             "status": {
-                "current": "Matches the map",
-                "stale": "No longer matches the map",
+                "stale": "Does not match the map: {{reasons}}. Before / after needs it to match.",
+                "staleDraft": "Does not match the map: {{reasons}}. Propose and Before / after need it to match.",
                 "error": "The agreement could not be checked against the map: {{reason}}",
                 "reasons": {
                     "designMissing": "a design was deleted",
-                    "designNotApplied": "a design is no longer applied",
+                    "designNotApplied": "a design is not applied",
                     "designChanged": "a design changed",
-                    "groundChanged": "the ground changed"
+                    "groundChanged": "the ground changed",
+                    "unknown": "the map changed"
                 }
             },
             "ledgerHeading": "Ledger",
@@ -7652,7 +7870,6 @@
             },
             "collapse": "Close agreement",
             "removeLocalConfirm": "Remove this agreement from this device? Its designs stay on the map. Any published agreement remains available through its link.",
-            "compareUnavailable": "Before / after is available when this agreement matches the designs applied on the map.",
             "designs": "Designs in the plan"
         },
         "list": {
@@ -7831,14 +8048,18 @@
         "plan": {
             "untitled": "Untitled plan"
         },
+        "party": {
+            "parcelOwners": "Owner(s) of parcel {{parcelId}}"
+        },
         "workflow": {
+            "personsByRights": "Persons by ownership rights",
+            "personsUnresolved": "Without complete ownership rights, the owners of {{count}} parcel(s) stay one party.",
             "choosePlan": "Choose a saved plan",
             "noPlans": "Create a plan first. Open Plans and choose Create plan.",
             "savePlan": "Save plan on this device",
             "planSaved": "Plan saved on this device. You can now create its agreement.",
             "applyPlan": "Apply plan designs",
             "planNotApplied": "Apply every design of this saved plan before reading its land.",
-            "rules": "Rules",
             "inputs": "Input parcels",
             "outputs": "Output parcels",
             "persons": "Persons",
@@ -7881,7 +8102,9 @@
             "right": "Right",
             "swap": "Swap sides",
             "sliderLabel": "Comparison divider",
-            "modelOnly": "Open the model view to draw the comparison.",
+            "reading": "{{label}} (reading…)",
+            "unreadable": "{{label}} (could not be read: {{reason}})",
+            "mapNote": "On the map, each side draws its own buildings and permitted massing as footprints; a plan that is not applied also draws its roads and spaces as footprints. Parcels and applied roads and parks show on both sides.",
             "options": {
                 "built": "Built today",
                 "permitted": "Permitted massing",
@@ -7925,7 +8148,8 @@
             "empty-supported-bound": "No space within supported setbacks",
             "unsupported-parcel-shape": "Unsupported parcel shape",
             "study-multiple-zoning-areas": "Multiple zoning areas on one parcel",
-            "study-zoning-missing": "No zoning source for parcel"
+            "study-zoning-missing": "No zoning source for parcel",
+            "status-not-configurable": "Recorded status gives no buildable height"
         },
         "refreshPending": "Awaiting refresh",
         "refreshCount": {
@@ -7980,6 +8204,7 @@
             "sideSetback": "Minimum side setback",
             "rearSetback": "Minimum rear setback",
             "height": "Maximum height",
+                "storeys": "Maximum storeys",
             "lotArea": "Minimum lot area"
         },
         "photoNote": "Explore permitted massing in the map or 3D model view.",
@@ -8051,7 +8276,8 @@
             "accessory": "Accessory housing",
             "plannedresidential": "Planned residential",
             "cached-calculation": "Saved calculation",
-            "new-attached-multifamily": "New attached multifamily"
+            "new-attached-multifamily": "New attached multifamily",
+            "general": "General (treatment map)"
         },
         "evidence": {
             "direct": "Direct source value",
@@ -8432,7 +8658,35 @@
         "countryNone": "No national source established",
         "countryUnchecked": "No completed national finding"
     },
+    "buildout": {
+        "summaryUndated": "{{construction}} under construction, {{planned}} not started, {{undated}} without dates (shown as built)",
+        "reroll": "Another simulated build-out",
+        "open": "Build-out over time",
+        "close": "Back to now",
+        "back": "Previous month",
+        "forward": "Next month",
+        "play": "Play",
+        "pause": "Pause",
+        "month": "Month",
+        "simulation": "Simulated build-out",
+        "simulationBadge": "Simulation",
+        "summary": "{{construction}} under construction, {{planned}} not started",
+        "underConstruction": "Under construction, {{percent}}% built"
+    },
     "planDialog": {
+        "scheduleUndated": "Without dates (shown as built)",
+        "simulate": "Simulate build-out",
+        "simulateNothing": "Every design in this plan already has dates.",
+        "schedule": "Construction schedule",
+        "scheduleTitle": "Construction schedule: {{title}}",
+        "scheduleHint": "Set when each design is built. Saving makes a new revision of the plan; the hourglass on the map then plays it back.",
+        "scheduleEmpty": "No construction dates yet.",
+        "scheduleStart": "Start",
+        "scheduleEnd": "End",
+        "scheduleClear": "Clear dates",
+        "saveSchedule": "Save schedule",
+        "scheduleSaved": "Construction schedule saved as a new plan revision.",
+        "scheduleInvalid": "Enter months between {{first}} and {{last}}, each start no later than its end.",
         "plan": "Plan",
         "savedPlans": "Saved plans",
         "createPlan": "Create plan",
@@ -8560,15 +8814,16 @@
     "lists": {
         "title": "Lists",
         "plans": "Plans",
-        "thisBrowser": "This browser",
         "source": "Source",
         "search": "Search loaded items",
         "byTitle": "Title",
         "newest": "Newest first",
         "remove": "Remove from browser",
         "removeConfirm": "Remove “{{title}}” from this browser? Published links and other records remain available.",
-        "continue": "Continue",
         "select": "Select {{title}}",
+        "open": "Open",
+        "openNamed": "Open {{title}}",
+        "noPlace": "This has no place on the map.",
         "agreementHint": "Create an agreement from a plan in the Plans tab.",
         "proposeFirst": "Open the agreement to review and propose it before sharing.",
         "loading": "Loading…",
@@ -8614,6 +8869,7 @@
     "basisCompared": "All compared plans",
     "measuring": "Measuring…",
     "landDefinition": "Public land is roads and OpenStreetMap parks and squares; private land is the rest of the parcels. The present state counts every existing building on that land; a plan counts the existing buildings its designs do not clear beside its new ones.",
-    "noBasis": "No saved plan to take the land from."
+    "noBasis": "No saved plan to take the land from.",
+    "sideBySide": "Side by side on the map"
   }
 }

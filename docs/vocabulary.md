@@ -98,11 +98,11 @@ Land represented by the included designs, with source-qualified cadastral refere
 
 A land piece standing on the input land after the included designs are applied. Outputs include materialized fabric pieces and any remaining modeled open-ground host that has no materialized piece. Such a host is carried as geometry with no claimed holder or cadastral identity. Its committed identity is a `piece1-sha256:` hash of the defined output projection, not a permanent cadastral identifier.
 
-An unchanged whole cadastral parcel commits to its source geometry, including its Polygon or MultiPolygon type. Splits and designed pieces commit to their resulting geometry. Even an unchanged whole parcel needs an explicit single recipient in an owners’ agreement.
+An unchanged whole cadastral parcel commits to its source geometry, including its Polygon or MultiPolygon type. Splits and designed pieces commit to their resulting geometry. Even an unchanged whole parcel needs an explicit single recipient in an owners’ agreement; by default that is its own parcel party.
 
 ### Allocation
 
-The proposed assignment of an agreement output to exactly one input-land party, to the proposer or to the public. Every output in an owners’ agreement has an explicit allocation. Joint output ownership and implicit carried-holder allocations are not supported; separate recipients require separate output parcels. Input parcels can still have several owners with stated shares.
+The proposed assignment of an agreement output to exactly one recipient: an input parcel party (`parcel-owner:<parcelId>`), the proposer or the public. Every output in an owners’ agreement has an explicit allocation. An output allocated to a parcel party is held by that parcel's co-owners in their ownership shares; agreements never name persons as recipients.
 
 ### Proposer allocation
 
@@ -114,7 +114,7 @@ The wallet named in a published agreement that creates its chain account and con
 
 ### Agreement currentness
 
-Whether a local agreement still matches its referenced designs, their application, and the derived input and output land. A stale agreement retains its published identity but no longer describes the current working composition.
+Whether a local agreement still matches its referenced designs, their application, and the derived input and output land. A stale agreement retains its published identity but no longer describes the current working composition. The agreement panel warns only about a stale agreement, and Propose and Before / after need a current one.
 
 ### Local key
 
@@ -180,7 +180,7 @@ A land unit represented by a particular cadastral, tax or other parcel provider.
 
 The provider of parcel identities and geometry, identified by `sourceId`. Jurisdiction and legal authority describe the source but do not replace its identity. A custom source descriptor identifies the selected service and its interpretation. Map lookup and server-side site binding use that same selected parcel source.
 
-The frontend consumer owns source configuration and sends its selected source explicitly. Backend services validate and serve that selection; they do not infer a city default. A retained cadastral namespace and the API gateway selector can have different identifiers while referring to the same parcel source; choosing a gateway does not rewrite the retained source observation.
+The frontend consumer owns source configuration and sends its selected source explicitly. When a design is shared, that source is chosen by where the design's ground lies (its site, else its drawn polygons), not by its city label. Backend services validate and serve that selection; they do not infer a city default. A retained cadastral namespace and the API gateway selector can have different identifiers while referring to the same parcel source; choosing a gateway does not rewrite the retained source observation.
 
 ### Source-qualified parcel reference
 
@@ -287,7 +287,7 @@ A shared same-level centerline node and its incident street arms, with the cross
 
 A level is a discrete topology label, with omitted levels treated as ground level zero; it is not an elevation in metres. Editing a participating road refreshes the affected neighbouring arm definitions. Drawing a road that joins an existing one, or editing a participating road, updates a neighbour that is still the author's own unpublished design in place; a published neighbour is immutable, so its updated junction is saved as a new revision that names it by CID and replaces it on the map, and the person is told which roads were revised. The junction owns its shared visible surface, including during drawing previews, so participating road strips do not paint over that surface.
 
-MCP agreement drafting and revision author the included roads as a complete network before parcel binding and agreement output calculation. Changed junctions produce revised road designs and CIDs. Reading, applying or comparing published records does not rewrite their topology.
+An MCP road draft, import or edit is joined to the roads and tracks of the agent's working plan, by the same junction planning as the map editor; a neighbour whose junctions change is replaced in the plan by a revised design naming it by `origin.cid`. Agreement drafting does not revise designs. Reading, applying or comparing published records does not rewrite their topology.
 
 ### Map share
 
@@ -301,7 +301,7 @@ After a successful confirmed replacement, the view frames all incoming applied d
 
 Selecting an object in model or Google 3D, including a design from a list or a click-stack section, retains the camera and surrounding composition. A yellow pulsing outline follows the selected building or massing's drawn volume, or the authored ground boundary for parcels and ground-only designs; reduced-motion views use a steady outline. Ground-only designs also show a transparent yellow hatch across their authored surface; formed and cadastral parcels use an unfilled boundary, including when a formed parcel shares the design's geometry. Selection does not recolor underlying parcel surfaces or isolate the design. Both 3D views use the same selection sections, inspectors, repeat-click retention and deselection rules, and both views build the stack from the selected object outward. Google imagery supplies a visible surface position; cadastral and building identities come from source records. Where the Google mesh has no addressable object volume, selection outlines the known source footprint on the loaded surface. Cadastral boundary visibility controls drawing independently of selection.
 
-**Side-by-side comparison** (model view): the Buildings and massing sheet's Compare tab splits the canvas at a draggable divider; each side draws one state of the same scene from the same camera. A side is Built today, Permitted massing, Proposed (every applied design), one applied design or one plan. The standing city is shared; a side adds only the work it applies and removes the buildings that work demolishes, and shows no other design's work. Permitted massing draws on the Permitted side alone. Display settings still decide what each side may draw. The comparison is a view, not a record.
+**Side-by-side comparison** (model view and map): the Buildings and massing sheet's Compare tab splits the view at a draggable divider; each side draws one state of the same scene from the same camera. A side is Built today, Permitted massing, Proposed (every applied design), one applied design or one plan. The standing city is shared; a side adds only the work it applies and removes the buildings that work demolishes, and shows no other design's work. Permitted massing draws on the Permitted side alone. Display settings still decide what each side may draw. On the map the sides differ in building footprints and permitted massing; parcels, roads and parks show on both. The comparison is a view, not a record.
 
 Restoring a saved camera retains the map's display settings and surrounding context. Its selected design is highlighted without isolating it from the shared composition.
 
@@ -321,11 +321,15 @@ When shared designs conflict with the current map, the person chooses whether to
 
 An immutable `plan/v1` snapshot containing a title, a selected set of published design CIDs and a map view. Its canonical content has its own CID and permanent `/plans/<cid>` link. Changing the title, membership or saved view creates a new snapshot and link; existing links keep their original content. It references existing designs without changing their authorship, geometry or publication. It carries no land allocations, money or decision rules; those belong to an agreement. The backend address used to access a plan is transport configuration, not part of its content.
 
-Plan stats and Compare plans evaluate one exact saved plan revision, including unapplied members. Parcel figures derive from its members and source cadastral ground in isolation; unrelated map designs and the current map extent do not affect them. Evaluation does not apply the plan. The urban rooster scores a plan only when every member is applied, from the live map.
+Plan stats and Compare plans evaluate one exact saved plan revision, including unapplied members. Parcel figures derive from its members and source cadastral ground in isolation; unrelated map designs and the current map extent do not affect them. Evaluation does not apply the plan. The Compare tab's divider takes a saved plan as a side the same way: a member an applied design stands for is that design; the rest are read as Plan stats reads them and drawn on that side alone, with the standing buildings they clear taken off it. Built today is the present state of that comparison. The urban rooster scores a plan only when every member is applied, from the live map.
 
-A private named-plan draft can reference unpublished design revisions carried with it. Publishing that draft first publishes its missing designs, then the named snapshot, and verifies the same content identifiers. Drafting and editing a named plan do not derive agreement ground or reconnect roads.
+A private named-plan draft can reference unpublished design revisions carried with it. Publishing that draft first publishes its missing designs, then the named snapshot, and verifies the same content identifiers. Drafting or editing a named plan derives no agreement ground. Editing places added and revised designs as an agent's working plan does; drafting assembles the given designs as they are.
 
 A plan contains one or more designs and can exist without an agreement. Each agreement references one exact plan revision; any number of agreements may reference that revision. Editing a plan never changes an existing agreement’s subject. Plans and agreements have separate share links. The map click stack orders Agreements above Plans, scoped to the selected exact plan revision, followed by Designs and source objects; it displays the selected level and its nearest available neighbours. Whatever opened the stack, the selected object's own references supply the sections above and below it. Agreements inherit their plan’s extent for inspection; they are not independent spatial picks. Multiple agreements share a selector. The expanded Agreement section contains the full scrollable properties and actions. Its Plan button selects that exact plan in the current view without navigation, importing or applying its designs.
+
+### Working plan
+
+The private plan an MCP agent authors in, standing in for the map a person applies designs to. Each agent draft or design edit is placed into it with the map's explicit Apply rules and makes a new plan revision: roads join its roads, and ground another member holds is refused until the person agrees to displace that member. Without a named plan the first design starts one. A working plan is an ordinary plan; it is not a shared applied state.
 
 ### Plan area
 
@@ -359,13 +363,23 @@ Whether a design currently contributes to the working composition. Application e
 
 Import retains a design definition independently of the currently viewed ground context. Reconstruction uses its authored geography and actual cadastral source references; descriptive city text does not determine eligibility.
 
+Unapplying a design that later applied designs stand on (their footprints lie on its ground) names them first. The person unapplies them with it, in one change, or leaves them applied; a design left applied takes its ground again from what remains, as in any replay.
+
 ### Replay
 
-The reconstruction of a working composition by applying designs in their defined formation and dependency order. Display order, agreement membership order and display year do not themselves determine replay order.
+The reconstruction of a working composition by applying designs in their defined formation and dependency order. Display order, agreement membership order and construction windows do not themselves determine replay order.
 
-### Display year
+### Construction window
 
-The year assigned to a design for its timeline presentation, represented by `epochYear`. It is distinct from a promised construction date and from replay precedence.
+A plan member's start and end month (`YYYY-MM`, both inclusive), stored in the plan's `schedule` under the member's design CID. Dates belong to the plan, not the design: the same design can be built at different times in different plans. Members without a window are unscheduled and count as built at every date. The time control only displays a plan's windows; it does not set them. A window is distinct from replay precedence, and Plan stats counts a member in the year its window ends.
+
+### Time control
+
+The map's control that moves one month back and forth over the construction windows of the plan in view. At that month each scheduled member is planned (before its start), under construction (progress grows linearly over its window's months) or built (after its end). It only displays: nothing is applied, unapplied or replayed. Closing it returns to now, where everything on the map stands as applied. `when=YYYY-MM` in an address opens it at that month.
+
+### Simulated build-out
+
+A seeded, repeatable scenario giving the plan's undated members construction windows: a start month drawn from a yearly start rate and a duration from floor area; an urban rule builds parcel by parcel, one window per building. Members the plan dates keep their windows. It is shown on the time control and in an address as `buildout=<seed>`, and is never stored in a plan or agreement.
 
 ### Footprint
 
@@ -395,6 +409,14 @@ Transport land and its authored road or track design. Its alignment and cross-se
 
 A corridor design's canonical stored form is `roadProposal.definition.osm`. Expanded drawing fields are a view of that form and do not independently determine the design's CID.
 
+### Bounded road
+
+A road placed into ground already left for it (`definition.bound.site`): its land is that site, not
+what its lanes cut, and it declares only the parcels the site covers. Its lanes (the core) are
+fitted along the middle of each street to the street's narrowest part; pavements up to 3 m and verges
+fill the rest. Edits keep the site: one that moves the road off it or leaves its lanes too little
+room is refused. See [road in a parcel](road-in-parcel.md).
+
 ### Alignment
 
 The ordered line or curve of a corridor, with its horizontal position and any stated levels or elevations. An alignment is distinct from the corridor's width and occupied polygon.
@@ -409,7 +431,7 @@ The application's area-feature design category, including parks, squares, lakes 
 
 A park, square or lake may carry an uploaded glTF model: `structureProposal.modelUrl` (the served model reference), `modelName` (at most 120 characters), `rotation` (degrees, default 0) and `source: 'upload'`. Its geometry stays the site polygon; an upload sets it to the model's projected footprint placed unrotated at a point on the site. In the 3D view the model replaces the generated ground (lawn, paving or lake basin), fitted to the geometry's bounding box in the rotation frame at its native height, while authored decorations still render; a model that fails to load falls back to the generated ground.
 
-A park or square's furniture may also use uploaded models, one per furniture kind: `decorationDesign.models` maps a kind (parks: bench, tree, lamp; squares: bench, statue, fountain, stall, tree, lamp) to `{ url, name? }`, and every item of that kind draws that model, instanced, with its +X facing the item's bearing; the key is absent when no kind has a model. A furniture model is limited to 5000 triangles, 1024 px textures and 4 MiB (`furniture-models.js`). Lamps are placed points, `decorationDesign.lamps = [{ coordinate, bearing }]`, that glow in the 3D view while the sun layer shows night.
+A park or square's furniture may also use uploaded models, one per furniture kind: `decorationDesign.models` maps a kind (parks: bench, stall, tree, lamp, swing, seesaw, slide; squares: bench, statue, fountain, stall, tree, lamp) to `{ url, name? }`, and every item of that kind draws that model, instanced, with its +X facing the item's bearing; the key is absent when no kind has a model. A furniture model is limited to 5000 triangles, 1024 px textures and 4 MiB (`furniture-models.js`). Lamps are placed points, `decorationDesign.lamps = [{ coordinate, bearing }]`, that glow in the 3D view while the sun layer shows night.
 
 A **pavement tree** is a tree on paving (a square, or paved building surroundings) standing in a pit in the paving rather than straight out of it: `decorationDesign.trees[i].pit` is `grille` (a cast-iron grate over the soil), `grass` or `soil`, a 1.4 m square edged in stone except under a grille, laid square to the square's longest edge. A tree's `heightM` stays within its kind's range (`park-planting.js`); trees on green ground (parks, green surroundings) stand on lawn and have no pit.
 
@@ -424,6 +446,10 @@ model, footprint and attachment. The current record identifiers are `bus` for ro
 ### Decoration design
 
 An explicitly authored arrangement of furniture, trees or similar surroundings. Authored layouts belong to the design commitment; generated decoration caches are local rendering data.
+
+### Enclosure
+
+A fenced area inside a park: `decorationDesign.enclosures = [{ fence, use, gates, ring? }]` (`park-enclosures.js`). Without `ring` the fence follows the park's own outline and moves with any reshape; with `ring` it encloses that closed ring, which must lie inside the park (a ring left outside by a reshape or a road is dropped from the ground it no longer stands on). `fence` is one of four styles, lightest first: `rail` (a 0.6 m timber rail), `mesh` (1.2 m), `iron` (1.8 m wrought iron) and `plinth` (2.2 m iron on a brick plinth with stone-capped pillars). `use` is `none`, `dog` (a dog area, gravel ground) or `play` (a play area, rubber safety surface); a new dog or play area takes a mesh fence, any other a wrought-iron one. `gates` are points on the fence, at least one, each within 2 m of it; a gate is a 1.2 m opening, and walkers in the model view cross a fence only at its gates. Swings, seesaws and slides are park furniture placed like benches (`swings`, `seesaws`, `slides`: `[{ coordinate, bearing }]`), inside an enclosure or anywhere in the park.
 
 ### Map claim
 
@@ -455,6 +481,8 @@ The connected horizontal projection of a GLB model's visible mesh triangles, inc
 ### Urban-rule design
 
 An authored rule governing possible building form on land, such as Block, Row or Detached. The design's permitted envelopes express that rule; an example build-out illustrates one realization.
+
+Any of the three may also permit **balconies** (`balconyDepthM`: how far, in metres, they may stand out of the envelope; absent means none) and a **slanted roof** (`roof: "pitched"`: a roof with its attic set on the top floor, ridge parallel to the street side; absent means flat). Both ride on the rule each building carries.
 
 ### Block rule
 
@@ -502,7 +530,7 @@ The maximum building form derived under an identified rule and its supported ass
 
 ### Outer bound
 
-The combined extent of the drawable building configurations and their supported interpretations. It bounds possible forms rather than defining one constructible building.
+The combined extent of the drawable building configurations and their supported interpretations. It bounds possible forms rather than defining one constructible building. A lot that several zoning areas partition has one outer bound per part, each the whole lot's bound clipped to that part; a zoning area under 2 % of the lot is evidence, not a part.
 
 The comparison controls label this **Max envelope**, as they do an authored rule's maximum envelope. This display label does not make alternative configurations simultaneously buildable or remove the source's qualifications.
 
@@ -536,6 +564,14 @@ The comparison controls label this **Illustration**. A source's one calculated o
 ### Zoning area
 
 The geographic area to which supplied zoning evidence refers. It is distinct from a cadastral parcel, a permitted building volume and a completed compliance assessment.
+
+### Treatment area (Bogotá)
+
+A zoning area of Bogotá's POT treatment map (Decreto 555/2021): one polygon with a treatment (consolidación, renovación, desarrollo, mejoramiento integral, conservación), an optional typology (`TA`, detached) and a height code. A storey count on the map is the base height; a range's upper number, development ranges, instrument codes and blanks are evidence, not geometry. Storeys become metres through the decree's clear height plus an assumed slab ([Bogotá POT source](bogota-pot-source.md)).
+
+### Antejardín
+
+Bogotá's front yard: the private strip between the lot line and the building line whose minimum depth the POT front-yard map assigns to Consolidación lots. It is read under the parcel, not from the treatment area, and becomes the parcel's front setback.
 
 ### Applicability
 
@@ -573,7 +609,11 @@ The source-qualified building footprints considered by an operation, with any kn
 
 ### Party
 
-An agreement can name an abstract input party as `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”, when no ownership source is plugged in. This identifies the unknown owner group of that input parcel for allocation and accounting; it is not verified ownership. Imported ownership rights can replace the abstract group with identified holders and their shares. Abstract parties can draft allocations and compensation without a lens or names.
+Each input parcel of an agreement is exactly one party, `parcel-owner:<parcelId>`, displayed as “Owner(s) of parcel X”. Agreements name no persons: input parcels carry no holders, and allocations and money lines name a parcel party, the proposer or the public. The parcel party is the owner group of that parcel whoever its members are; it is not verified ownership.
+
+### Persons
+
+The people behind parcel parties, derived from a rights snapshot and never stored in an agreement. A person holding share s of parcel i co-owns every output allocated to that parcel's party at fraction s and receives s of its cash; each parcel's cash is split in minor currency units by largest remainder, so per-person totals equal per-party totals exactly. Parcels whose rights do not name complete holders stay one unresolved party. Owner approvals and lens decisions read the rights snapshot, not the agreement.
 
 A person, organization or authority identified for rights, allocations or decisions. A party can hold different rights in different parcels; the rights engine's `ownerId` is a party identifier, not an assertion of universal ownership.
 
@@ -713,7 +753,7 @@ The transfer specified by a chain agreement's settlement terms. A configured rec
 
 ### Deadline
 
-The time limiting the agreement's decision or settlement process. It is distinct from a design's display year and an estimated construction date.
+The time limiting the agreement's decision or settlement process. It is distinct from a plan member's construction window.
 
 ## Money, value and markets
 
@@ -744,6 +784,10 @@ An agreement's `valuation`: one whole-cent value per m² for every input parcel 
 ### Scheme distribution rules
 
 The land rules a pinned scheme (`rule.approvalConfig.regime`) adds to its decision tests: a cap on the land an owner or the pool gives up, the area or value basis of distribution, the share of each owner's value gain settled in money, the fewest parties, and, under an authority-led scheme, no proposer acquisition. The record, the HTTP index and MCP check them with one shared function; the editor marks schemes the plan does not meet before they are chosen.
+
+### Scheme dimensions
+
+The eleven properties every scheme is described and compared by, in two groups. How it is decided: who starts it (owners or the authority), who has the final say (owners alone, owners then the authority, or the authority alone), the owner support needed (the tests), who is counted (owners or owners and leaseholders, all or private only), what happens to owners who say no (veto, bound by the majority, bound by the authority), and what passing unlocks (the stage). How the land is shared: the basis (area, value or either), public land without compensation (no cap, per owner or per pool), how differences are levelled (in money), the value gain (kept in land or a share settled in money; not applicable by area) and the fewest parties. `dimensionsOf` derives them from a scheme's data: the starter from its family, the outcome for dissenters from its tests and family. The scheme guide, its comparison table and the MCP `schemes` topic word them the same way.
 
 ### Readjustment cash
 

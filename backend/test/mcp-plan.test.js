@@ -115,13 +115,17 @@ describe('agreement MCP editing surface', () => {
         // Giving all the land to public breaks the scheme's 30% cap: the edit is refused with the owner and the cap.
         await expect(tools.editAgreement({ plan: original.draftArtifact, expectedCid: original.cid,
             terms: { rule: firstRule, rights, allocations: original.agreement.outputs.map(output => ({ output: output.hash, to: { kind: 'public' } })) } }))
-            .rejects.toThrow(/party-de gives up 100% of their land; Germany — Umlegung, land developed for the first time allows at most 30%/);
-        const allocations = original.agreement.outputs.map(output => ({ output: output.hash, to: { kind: 'party', ownerKey: 'party-de' } }));
+            .rejects.toThrow(/Owner\(s\) of parcel A gives up 100% of their land; Germany — Umlegung, land developed for the first time allows at most 30%/);
+        const allocations = original.agreement.outputs.map(output => ({ output: output.hash, to: { kind: 'party', ownerKey: 'parcel-owner:A' } }));
         const german = await tools.editAgreement({ plan: original.draftArtifact, expectedCid: original.cid,
             terms: { rule: firstRule, rights, allocations } });
         expect(german.agreement.rule.approvalConfig.regime).toEqual({ id: germanRegime.id, version: germanRegime.version });
-        expect(german.agreement.inputs.parcels[0].holders).toEqual([{ ownerKey: 'party-de', displayName: 'party-de', share: 1 }]);
+        // The parcel stays its owners' abstract party; the rights name the person, only in the rule.
+        expect(german.agreement.inputs.parcels[0]).not.toHaveProperty('holders');
+        expect(german.agreement.rule.approvalConfig.rights.parcels[0].owners).toEqual([{ ownerId: 'party-de', share: '1/1' }]);
         const inspected = await tools.inspectAgreement({ plan: german.draftArtifact });
+        expect(inspected.persons).toMatchObject({ resolved: true, persons: [{ personId: 'party-de', parcels: [{ parcelId: 'A', share: '1/1' }] }], totals: { balanced: true } });
+        expect(inspected.persons.persons[0].landM2).toBeCloseTo(inspected.parties[0].assignedM2, 9);
         expect(inspected.scheme).toMatchObject({ id: 'de-umlegung-new', version: germanRegime.version, ok: true });
         expect(inspected.scheme.rules.map(rule => rule.kind)).toEqual(['cap', 'proposer']);
 
@@ -163,9 +167,14 @@ describe('agreement MCP editing surface', () => {
         const config = Approval.normalizeConfig({ schema: 'proposal-approval/v1', rights, policy: ApprovalRegimes.policyOf(gujarat, ['authority:state']), regime: { id: gujarat.id, version: gujarat.version } });
         const rule = { electorate: 'owners', binding: true, approvalConfig: config, lens: ['11111111111111111111111111111111'], settlement };
         const edited = await tools.editAgreement({ plan: drafted.draftArtifact, expectedCid: drafted.cid, terms: { rule, rights,
-            allocations: outputs.map(output => ({ output: output.hash, to: { kind: 'party', ownerKey: 'party-in' } })) } });
-        const owner = (await tools.inspectAgreement({ plan: edited.draftArtifact })).parties[0];
-        expect(edited.agreement.money.lines).toEqual([{ ownerKey: 'party-in', amountCents: -Math.round((owner.entitlementValueCents - owner.contributedValueCents) / 2) }]);
+            allocations } });
+        const editedInspection = await tools.inspectAgreement({ plan: edited.draftArtifact });
+        const owner = editedInspection.parties[0];
+        const gainCents = -Math.round((owner.entitlementValueCents - owner.contributedValueCents) / 2);
+        expect(edited.agreement.money.lines).toEqual([{ ownerKey: 'parcel-owner:A', amountCents: gainCents }]);
+        // The one person behind the party pays all of it.
+        expect(editedInspection.persons.persons).toMatchObject([{ personId: 'party-in', cashCents: gainCents }]);
+        expect(drafted.persons).toBeNull();
         expect((await tools.inspectAgreement({ plan: edited.draftArtifact })).scheme).toMatchObject({ id: 'in-gj-tps', ok: true });
         await expect(tools.editAgreement({ plan: edited.draftArtifact, expectedCid: edited.cid, terms: { settlement: { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 0 }, valuation: null } }))
             .rejects.toThrow(/distributes by land value; this agreement settles by surface area/);

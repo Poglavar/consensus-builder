@@ -312,6 +312,8 @@
             position: light.position.clone(),
             intensity: light.intensity,
             hemiIntensity: hemi ? hemi.intensity : null,
+            hemiSky: hemi ? hemi.color.clone() : null,
+            hemiGround: hemi ? hemi.groundColor.clone() : null,
             targetParent: light.target.parent
         };
         renderer.shadowMap.enabled = true;
@@ -361,7 +363,11 @@
         a.light.target.updateMatrixWorld();
         a.light.intensity = a.defaults.intensity;
         a.light.castShadow = false;
-        if (a.hemi && a.defaults.hemiIntensity !== null) a.hemi.intensity = a.defaults.hemiIntensity;
+        if (a.hemi && a.defaults.hemiIntensity !== null) {
+            a.hemi.intensity = a.defaults.hemiIntensity;
+            a.hemi.color.copy(a.defaults.hemiSky);
+            a.hemi.groundColor.copy(a.defaults.hemiGround);
+        }
         a.showingSun = false;
     }
 
@@ -423,8 +429,12 @@
             light.intensity = a.defaults.intensity * strength;
             light.castShadow = strength > 0;
             if (a.hemi && a.defaults.hemiIntensity !== null) {
-                // Night is readable but darker than day: sky light alone, dimmed.
-                a.hemi.intensity = a.defaults.hemiIntensity * (0.6 + 0.4 * strength);
+                // The sky's light follows the sky: warm at sunset, a dim moonlit blue at night.
+                const skyLight = c.skyLight(sun.altitude * 180 / Math.PI);
+                const srgb = a.THREE.SRGBColorSpace;
+                a.hemi.intensity = a.defaults.hemiIntensity * skyLight.intensity;
+                a.hemi.color.setRGB(skyLight.sky[0], skyLight.sky[1], skyLight.sky[2], srgb);
+                a.hemi.groundColor.setRGB(skyLight.ground[0], skyLight.ground[1], skyLight.ground[2], srgb);
             }
             a.frame = frame;
             a.showingSun = true;

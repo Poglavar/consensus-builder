@@ -149,8 +149,8 @@ test.describe('SimCity proposal lifecycle @core', () => {
     const palette = page.locator('.parcel-build-palette');
     await expect(palette).toBeVisible();
     // Rules, structures and transport tools; no retired Create proposal button, and no Offer tile
-    // since owner offers left (M2).
-    await expect(palette.locator('.parcel-build-btn')).toHaveCount(14);
+    // since owner offers left (M2). Stations are two tiles (Road station, Track station).
+    await expect(palette.locator('.parcel-build-btn')).toHaveCount(13);
     await expect(page.locator('#createProposalFromParcelButton')).toHaveCount(0);
 
     await palette.locator('.parcel-build-btn--park').click();
@@ -363,6 +363,8 @@ test('structure furniture can be dragged, erased and restored with Undo; cancell
   await page.keyboard.press('Meta+z');
   await expect.poll(async () => (await trees.last().boundingBox())!.x).toBeCloseTo(before!.x, 0);
   await editor.locator('.on-map-editor__header .close-circle-btn').click();
+  // The planted tree is an unsaved change: closing asks before discarding it (e9e20e1e1).
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Discard', exact: true }).click();
   await expect(editor).toHaveCount(0);
   expect(await page.evaluate(id => JSON.stringify((window as any).getProposalByIdOrHash(id)), source.proposalId)).toBe(original);
   expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(1);

@@ -87,18 +87,20 @@ function makeEditorHarness(decorations, options = {}) {
             }));
         },
         querySelector(selector) {
-            const element = { hidden: false, disabled: false, textContent: '', setAttribute() {} };
+            const element = { hidden: false, disabled: false, textContent: '', setAttribute() {}, querySelector: () => null, querySelectorAll: () => [] };
             if (selector === '[data-role="lake-error"]') return lakeError;
             if (selector === '[data-action="save"]') return lakeSave;
             if (selector === '[data-action="undo"]') return undoButton;
             if (selector === '[data-role="tree-card"]') return treeCard;
             return /finish-path/.test(selector) ? finishButton : (/data-role/.test(selector) ? element : null);
         },
-        fireClick({ tool, action, furnitureKind, pit }) {
+        fireClick({ tool, action, furnitureKind, pit, enclosureFence, enclosureUse }) {
             const target = {
                 closest(selector) {
                     if (tool && selector === '.structure-geometry-tools [data-tool]') return { dataset: { tool } };
                     if (pit && selector === '[data-tree-pit]') return { dataset: { treePit: pit } };
+                    if (enclosureFence && selector === '[data-enclosure-fence]') return { dataset: { enclosureFence } };
+                    if (enclosureUse && selector === '[data-enclosure-use]') return { dataset: { enclosureUse } };
                     if (action && selector === '[data-action]') {
                         return { dataset: { action }, closest: () => (furnitureKind ? { dataset: { furnitureKind } } : null) };
                     }
@@ -207,6 +209,7 @@ function makeEditorHarness(decorations, options = {}) {
             previewLayers.push(layer);
             return layer;
         },
+        circleMarker(latlng, options) { return Object.assign(makeLayer(options), { latlng }); },
         DomEvent: { stopPropagation() {}, stop() {} }
     };
     const historyFactory = {
@@ -265,6 +268,7 @@ function makeEditorHarness(decorations, options = {}) {
         ProposalApplyStructures,
         __parkPlanting: require('../../frontend/js/park-planting.js'),
         FurnitureModels: require('../../frontend/js/furniture-models.js'),
+        ParkEnclosures: require('../../frontend/js/park-enclosures.js'),
         BusyControl: { isBusy: () => false, track: (_control, work) => Promise.resolve().then(work) },
         ensureOptionalTool: vi.fn(async () => true),
         ModelUpload: options.modelUpload || null,
@@ -583,6 +587,8 @@ describe('structure geometry editor history wiring', () => {
             }));
         }
         expectedDecorations.version = kind === 'park' ? 3 : 2;
+        // A park's editor also saves its (here empty) play equipment and fenced areas.
+        if (kind === 'park') Object.assign(expectedDecorations, { swings: [], seesaws: [], slides: [], enclosures: [] });
         const originalPoints = [
             ...(decorations.fountains || []), ...(decorations.statues || []),
             ...(decorations.stalls || []).map(stall => stall.coordinate),
@@ -716,7 +722,8 @@ describe('structure geometry editor history wiring', () => {
         harness.fireMap('mouseup');
         expect(harness.boundaryLayer().feature.geometry).toEqual(geometry);
         expect(harness.undoButton.disabled).toBe(true);
-        expect(harness.save()).toEqual({ trees: [tree(15.0004, 45.8004)], flowerbeds: [], ponds: [], paths: [], benches: [], stalls: [], lamps: [], version: 3 });
+        expect(harness.save()).toEqual({ trees: [tree(15.0004, 45.8004)], flowerbeds: [], ponds: [], paths: [], benches: [], stalls: [], lamps: [],
+            swings: [], seesaws: [], slides: [], enclosures: [], version: 3 });
         expect(harness.syncOptions.placement).toEqual({ site: geometry, free: true });
     });
 
@@ -1119,6 +1126,71 @@ describe('structure geometry editor history wiring', () => {
         expect(harness.save().lamps).toEqual([{ coordinate: [0.2, 0.3], bearing: 0 }]);
     });
 
+    it('draws a fenced play area with gates where the footpath crosses, keeps its last gate, and saves it', () => {
+        const harness = makeEditorHarness({ trees: [], paths: [[[0.1, 0.5], [0.9, 0.5]]], version: 3 }, { kind: 'park' });
+        expect(harness.open()).toBe(true);
+        expect(harness.panel.innerHTML).toContain('data-tool="enclosure"');
+        expect(harness.panel.innerHTML).toContain('data-action="fence-park"');
+        harness.panel.fireClick({ tool: 'enclosure' });
+        for (const [lng, lat] of [[0.3, 0.3], [0.7, 0.3], [0.7, 0.7], [0.3, 0.7]]) harness.fireMap('click', { latlng: { lng, lat } });
+        harness.panel.fireClick({ action: 'finish-area' });
+        // The selected area's ring gets vertex handles, held inside the park.
+        expect(harness.polygonEditorOptions.ring).toHaveLength(5);
+        expect(harness.polygonEditorOptions.boundary().geometry.type).toBe('Polygon');
+        // A play area keeps the fence when it was chosen; a default fence follows the use.
+        harness.panel.fireClick({ enclosureUse: 'play' });
+        const fences = () => harness.groups.at(-1).items.filter(item => /structure-geometry-fence/.test(item.options?.className || ''));
+        expect(fences().every(line => /is-mesh/.test(line.options.className))).toBe(true);
+        harness.panel.fireClick({ enclosureFence: 'iron' });
+        harness.panel.fireClick({ enclosureUse: 'dog' });
+        // Gates: where the footpath crosses at x = 0.3 and x = 0.7; a click on the fence adds one, a click
+        // on a gate with the Gate tool removes it, and the last one stays.
+        harness.panel.fireClick({ tool: 'gate' });
+        fences()[0].fire('click', { latlng: { lng: 0.5, lat: 0.3 } });
+        let area = harness.save().enclosures[0];
+        expect(area).toMatchObject({ fence: 'iron', use: 'dog' });
+        expect(area.gates.map(([lng, lat]) => [Math.round(lng * 10) / 10, Math.round(lat * 10) / 10]).sort((a, b) => a[0] - b[0] || a[1] - b[1]))
+            .toEqual([[0.3, 0.5], [0.5, 0.3], [0.7, 0.5]]);
+        expect(area.ring).toEqual([[0.3, 0.3], [0.7, 0.3], [0.7, 0.7], [0.3, 0.7], [0.3, 0.3]]);
+    });
+
+    it('fences the whole park once, removes a gate but never the last, and undoes a removed area', () => {
+        const harness = makeEditorHarness({ trees: [], version: 3 }, { kind: 'park' });
+        expect(harness.open()).toBe(true);
+        harness.panel.fireClick({ action: 'fence-park' });
+        harness.panel.fireClick({ action: 'fence-park' });
+        const gates = () => currentMarkers(harness).filter(marker => /is-gate/.test(marker.options.icon.className));
+        const fences = () => harness.groups.at(-1).items.filter(item => /structure-geometry-fence/.test(item.options?.className || ''));
+        // One fence around the park (the unit square), with one gate in the middle of a side.
+        expect(gates()).toHaveLength(1);
+        harness.panel.fireClick({ tool: 'gate' });
+        gates()[0].fire('click');
+        expect(harness.statusMessages.at(-1)).toMatch(/at least one gate/);
+        expect(gates()).toHaveLength(1);
+        harness.panel.fireClick({ tool: 'enclosure' });
+        harness.panel.fireClick({ action: 'remove-enclosure' });
+        expect(fences()).toHaveLength(0);
+        harness.undo();
+        expect(fences().length).toBeGreaterThan(0);
+        const saved = harness.save().enclosures;
+        expect(saved).toHaveLength(1);
+        expect(saved[0]).not.toHaveProperty('ring');
+        expect(saved[0]).toMatchObject({ fence: 'iron', use: 'none' });
+        expect(saved[0].gates).toHaveLength(1);
+    });
+
+    it('places swings, seesaws and slides as bearing records', () => {
+        const harness = makeEditorHarness({ trees: [], version: 3 }, { kind: 'park' });
+        expect(harness.open()).toBe(true);
+        for (const [tool, lng] of [['swing', 0.2], ['seesaw', 0.4], ['slide', 0.6]]) {
+            harness.panel.fireClick({ tool });
+            harness.fireMap('click', { latlng: { lng, lat: 0.5 } });
+        }
+        expect(currentMarkers(harness).filter(marker => /is-play/.test(marker.options.icon.className))).toHaveLength(3);
+        const saved = harness.save();
+        expect([saved.swings, saved.seesaws, saved.slides]).toEqual([[{ coordinate: [0.2, 0.5], bearing: 0 }], [{ coordinate: [0.4, 0.5], bearing: 0 }], [{ coordinate: [0.6, 0.5], bearing: 0 }]]);
+    });
+
     it.each(['park', 'square'])('places %s market stalls as bearing records with a coloured marker', kind => {
         const harness = makeEditorHarness(kind === 'park' ? { trees: [], version: 3 } : { fountains: [], stalls: [[0.1, 0.1]], version: 2 }, { kind });
         expect(harness.open()).toBe(true);
@@ -1137,7 +1209,7 @@ describe('structure geometry editor history wiring', () => {
     it('offers a model row for each furniture kind the structure has', () => {
         const park = makeEditorHarness({ trees: [], version: 3 }, { kind: 'park' });
         expect(park.open()).toBe(true);
-        expect([...park.panel.innerHTML.matchAll(/data-furniture-kind="([^"]+)"/g)].map(match => match[1])).toEqual(['bench', 'stall', 'tree', 'lamp']);
+        expect([...park.panel.innerHTML.matchAll(/data-furniture-kind="([^"]+)"/g)].map(match => match[1])).toEqual(['bench', 'stall', 'tree', 'lamp', 'swing', 'seesaw', 'slide']);
         const square = makeEditorHarness({ fountains: [], version: 2 }, { kind: 'square' });
         expect(square.open()).toBe(true);
         expect([...square.panel.innerHTML.matchAll(/data-furniture-kind="([^"]+)"/g)].map(match => match[1]))

@@ -102,6 +102,35 @@
         return Math.min(1, Math.sin(altitude) / Math.sin(FULL_SUN_ALTITUDE));
     }
 
+    // The sky's own light (the scene's hemisphere light) by sun altitude in degrees, as a fraction of
+    // its daytime intensity plus sRGB sky and ground colours (0…1): white by day, warm at sunset, a
+    // dim moonlit blue at night, so the ground darkens with the sky instead of staying day-grey.
+    const SKY_LIGHT_KEYS = [
+        { altitude: 10, intensity: 1, sky: 0xffffff, ground: 0x888888 },
+        { altitude: 2, intensity: 0.9, sky: 0xfff0e0, ground: 0x857f7a },
+        { altitude: -2, intensity: 0.65, sky: 0xd9d4e6, ground: 0x6f6c78 },
+        { altitude: -6, intensity: 0.42, sky: 0xa3afd8, ground: 0x3e4352 },
+        { altitude: -12, intensity: 0.3, sky: 0x8296cc, ground: 0x262a36 }
+    ];
+    const hexRgb = hex => [(hex >> 16) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255];
+    function skyLight(altitudeDeg) {
+        const keys = SKY_LIGHT_KEYS;
+        let upper = keys[0], lower = keys[0], t = 0;
+        // No altitude (the sun layer off) keeps the plain daytime light, as the sky keeps its neutral one.
+        if (isNumber(altitudeDeg) && altitudeDeg < keys[0].altitude) {
+            upper = lower = keys[keys.length - 1];
+            for (let i = 1; i < keys.length; i++) {
+                if (altitudeDeg >= keys[i].altitude) {
+                    upper = keys[i - 1]; lower = keys[i];
+                    t = (upper.altitude - altitudeDeg) / (upper.altitude - lower.altitude);
+                    break;
+                }
+            }
+        }
+        const mix = (a, b) => hexRgb(a).map((value, i) => value + (hexRgb(b)[i] - value) * t);
+        return { intensity: upper.intensity + (lower.intensity - upper.intensity) * t, sky: mix(upper.sky, lower.sky), ground: mix(upper.ground, lower.ground) };
+    }
+
     // How bright the sun icon burns: dim at the horizon, full from 45° up. The light itself uses
     // sunStrength, which saturates much lower; this one keeps changing through the day.
     const FULL_GLOW_ALTITUDE = 45 * Math.PI / 180;
@@ -169,6 +198,6 @@
 
     return {
         MINUTES_PER_DAY, zoneParts, zoneOffsetMs, localToInstant, localDateISO, localMinutes, formatMinutes,
-        sunDirection, sunStrength, sunGlow, daylight, initialMinutes, advanceMinutes, shadowFrame
+        sunDirection, sunStrength, sunGlow, skyLight, daylight, initialMinutes, advanceMinutes, shadowFrame
     };
 });

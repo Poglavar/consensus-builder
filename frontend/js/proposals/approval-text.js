@@ -96,10 +96,12 @@
         return template ? t(`proposalApproval.schemes.${template.id}.name`, template.text.name) : null;
     }
 
+    const STAGES = { agreement: 'a voluntary agreement', initiative: 'starting the procedure (initiative)', association: 'forming the association',
+        plan: 'the readjustment plan', execution: 'carrying out the readjustment' };
+    const stageName = (stage, t) => t(`proposalApproval.regime.stages.${stage}`, STAGES[stage] || stage);
+
     function stageText(template, t) {
-        const fallback = { agreement: 'a voluntary agreement', initiative: 'starting the procedure (initiative)', association: 'forming the association',
-            plan: 'the readjustment plan', execution: 'carrying out the readjustment' }[template.stage] || template.stage;
-        return t('proposalApproval.regime.stage', 'What this support is for: {{stage}}', { stage: t(`proposalApproval.regime.stages.${template.stage}`, fallback) });
+        return t('proposalApproval.regime.stage', 'What this support is for: {{stage}}', { stage: stageName(template.stage, t) });
     }
 
     function familyText(template, t) {
@@ -133,6 +135,84 @@
         if (template?.minParties > 1) lines.push(t('proposalApproval.regime.minParties', 'At least {{count}} parties bring land in.', { count: template.minParties }));
         if (template?.family === 'authority-led') lines.push(t('proposalApproval.regime.noProposer', 'Land returns to its owners or goes to public use; a proposer cannot acquire it.'));
         return lines;
+    }
+
+    // ---- scheme dimensions (approval-regimes.js dimensionsOf): one vocabulary for every scheme ----
+    const DIMENSION_LABELS = {
+        initiator: 'Who starts it', decider: 'Who has the final say', support: 'Owner support needed', electorate: 'Who is counted',
+        dissenters: 'Owners who say no', stage: 'What passing unlocks', basis: 'Land is shared by', publicLand: 'Public land without compensation',
+        levelling: 'Differences', valueGain: 'Value gain', minParties: 'Parties'
+    };
+    const GROUP_LABELS = { decision: 'How it is decided', distribution: 'How the land is shared' };
+    const STAGE_SHORT = { agreement: 'Agreement', initiative: 'Initiative', association: 'Association', plan: 'Plan', execution: 'Execution' };
+    // [short, long] English fallbacks for the coded values; the long form is a sentence.
+    const VALUES = {
+        'initiator.owners': ['Owners', 'The owners start it.'],
+        'initiator.authority': ['Authority', 'The authority starts it.'],
+        'decider.owners': ['Owners alone', 'The owners’ agreement is the decision.'],
+        'decider.owners-and-authority': ['Owners, then authority', 'Owner support first, then the authority decides.'],
+        'decider.authority': ['Authority alone', 'The authority decides; owners are heard.'],
+        'support.none': ['No vote', 'There is no owner vote.'],
+        'electorate.none': ['Nobody', 'Nobody is counted; owners are heard.'],
+        'electorate.owners': ['All owners', 'Owners are counted.'],
+        'electorate.owners-and-leaseholders': ['Owners and leaseholders', 'Owners and leaseholders are counted.'],
+        'electorate.owners.private': ['Private owners only', 'Private owners are counted; public holders are left out.'],
+        'electorate.owners-and-leaseholders.private': ['Private owners and leaseholders only', 'Private owners and leaseholders are counted; public holders are left out.'],
+        'dissenters.veto': ['Veto', 'Each owner can block it.'],
+        'dissenters.bound-by-majority': ['Bound by the majority', 'Once the support is there and the authority approves, owners who said no are bound.'],
+        'dissenters.bound-by-authority': ['Bound by the authority', 'The authority’s decision binds every owner.'],
+        'basis.area': ['Area', 'New plots are shared out by area.'],
+        'basis.value': ['Value', 'New plots are shared out by land value.'],
+        'basis.either': ['Area or value', 'New plots are shared out by area or by land value; the parties choose.'],
+        'publicLand.none': ['No cap', 'The scheme sets no cap; the parties agree how much becomes public land.'],
+        'publicLand.owner': ['≤ {{percent}}% per owner', 'Each owner gives up at most {{percent}}% of their land for public use without compensation.'],
+        'publicLand.owner.area': ['≤ {{percent}}% per owner (by area)', 'Shared by area, each owner gives up at most {{percent}}% of their land for public use without compensation.'],
+        'publicLand.pool': ['≤ {{percent}}% of the pool', 'At most {{percent}}% of the pooled land becomes public land and costs without compensation.'],
+        'levelling.money': ['In money', 'What an owner gets back above or below what they are owed is settled in money.'],
+        'valueGain.none': ['—', 'Not applicable: land is shared by area.'],
+        'valueGain.kept': ['Kept in land', 'Owners keep their value gain in their new land.'],
+        'valueGain.all': ['All in money', 'Each owner’s whole value gain is settled in money.'],
+        'valueGain.share': ['{{percent}}% in money', '{{percent}}% of each owner’s value gain is settled in money; the rest stays in land.'],
+        'minParties.any': ['Any number', 'No minimum number of parties.'],
+        'minParties.some': ['At least {{count}}', 'At least {{count}} parties bring land in.']
+    };
+    const percentText = value => Math.round(value * 1000) / 10;
+
+    function dimensionLabel(id, t) { return t(`proposalApproval.dimensions.labels.${id}`, DIMENSION_LABELS[id] || id); }
+    function dimensionGroupLabel(group, t) { return t(`proposalApproval.dimensions.groups.${group}`, GROUP_LABELS[group] || group); }
+
+    // "≥ 2/3" / "> 1/2" / "100%": a test's threshold in the short form.
+    function thresholdShort(test) {
+        if (test.numerator === test.denominator && !test.strict) return '100%';
+        return `${test.strict ? '>' : '≥'} ${test.numerator}/${test.denominator}`;
+    }
+
+    // One dimension of `dimensions` (approval-regimes.js dimensionsOf) in words: `form` 'short' for a
+    // table cell or a chip, 'long' for a sentence.
+    function dimensionText(id, dimensions, t, form = 'long') {
+        const pick = (key, params = {}) => t(`proposalApproval.dimensions.values.${key}.${form}`, (VALUES[key] || [key, key])[form === 'short' ? 0 : 1], params);
+        const value = dimensions[id];
+        switch (id) {
+            case 'initiator': case 'decider': case 'dissenters': case 'basis': case 'levelling': return pick(`${id}.${value}`);
+            case 'support': {
+                if (!value.length) return pick('support.none');
+                const tests = orderTests(value);
+                if (form === 'short') return tests.map(test => `${meterLabel(test, t)} ${thresholdShort(test, t)}`).join(' · ');
+                const parts = tests.map(test => testText(test, t));
+                const joined = parts.length === 1 ? parts[0] : parts.slice(0, -1).join(', ') + t('proposalApproval.rules.and', ' and ') + parts[parts.length - 1];
+                return t('proposalApproval.dimensions.supportLong', 'It needs {{tests}}.', { tests: joined });
+            }
+            case 'electorate': return value ? pick(`electorate.${value.holders}${value.privateOnly ? '.private' : ''}`) : pick('electorate.none');
+            case 'stage': return form === 'short' ? t(`proposalApproval.dimensions.stages.${value}`, STAGE_SHORT[value] || value)
+                : t('proposalApproval.dimensions.stageLong', 'Passing it is for {{stage}}.', { stage: stageName(value, t) });
+            case 'publicLand': return value ? pick(`publicLand.${value.per}${value.per === 'owner' && value.basis === 'area' ? '.area' : ''}`, { percent: percentText(value.ratio) }) : pick('publicLand.none');
+            case 'valueGain':
+                if (value === null) return pick('valueGain.none');
+                if (value <= 0) return pick('valueGain.kept');
+                return value >= 1 ? pick('valueGain.all') : pick('valueGain.share', { percent: percentText(value) });
+            case 'minParties': return value > 1 ? pick('minParties.some', { count: value }) : pick('minParties.any');
+            default: return String(value ?? '');
+        }
     }
 
     // A plan's check against the scheme (approval-regimes.js checkAllocation), one line per rule.
@@ -178,5 +258,6 @@
         ];
     }
 
-    return { orderTests, meterName, meterLabel, thresholdText, testText, rulesText, authorityText, regimeName, regimeOf, stageText, familyText, allocationLines, checkLines, reviewBasisLines };
+    return { orderTests, meterName, meterLabel, thresholdText, thresholdShort, testText, rulesText, authorityText, regimeName, regimeOf, stageText, familyText, allocationLines,
+        dimensionLabel, dimensionGroupLabel, dimensionText, checkLines, reviewBasisLines };
 });

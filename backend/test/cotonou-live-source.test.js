@@ -17,8 +17,10 @@ function fetcher(feature = raw) { return vi.fn(async () => new Response(JSON.str
 describe('Cotonou live NUP parcels', () => {
     it('resolves the configured official provider without claiming national completeness', () => {
         const configured = parcelSourceForCity('cotonou').descriptor;
+        // The live catalogue reads the NUP alone (7b202c086); local labels are not requested.
         expect(configured).toMatchObject({ id: descriptor.id, idField: 'nup', idPrefix: 'BJ-ANDF-',
-            idType: 'string', parcelNumberField: 'local_parcel_identification', metricSrid: 32631 });
+            idType: 'string', outFields: ['nup'], metricSrid: 32631 });
+        expect(configured).not.toHaveProperty('parcelNumberField');
         expect(configured.scope).toContain('national completeness are unverified');
         expect(configured.licenceNote).toContain('service defaults');
     });

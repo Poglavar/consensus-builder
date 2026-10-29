@@ -1,4 +1,4 @@
-// Water for the 3D scene (decor/openfreemap-water.js and POST /decor/water): which z14 tiles cover a
+// Water for the 3D scene (decor/openfreemap-water.js and GET /decor/water): which z14 tiles cover a
 // scene, which tile features become water (areas clipped, lines widened, tunnels dropped), and the
 // route that serves it in every city.
 import { describe, it, expect, vi } from 'vitest';
@@ -33,7 +33,7 @@ describe('water tiles', () => {
     });
 });
 
-describe('POST /decor/water', () => {
+describe('GET /decor/water', () => {
     function app() {
         const routes = {};
         return { routes, get: (path, handler) => { routes['GET ' + path] = handler; }, post: (path, handler) => { routes['POST ' + path] = handler; } };
@@ -53,9 +53,16 @@ describe('POST /decor/water', () => {
         await server.routes['GET /decor/layers']({ query: { bbox: '2.34,48.84,2.36,48.86' } }, layers);
         expect(layers.body.layers).toContain('water');
         const water = response();
-        await server.routes['POST /decor/water']({ body: { geometry: { type: 'Point', coordinates: [2.35, 48.85] }, buffer_meters: 300 } }, water);
+        await server.routes['GET /decor/water']({ query: { bbox: '2.35,48.85,2.35,48.85', buffer_meters: '300' } }, water);
         expect(water.body).toMatchObject({ count: 1, source: 'openfreemap' });
         expect(waterProvider.near).toHaveBeenCalledWith({ type: 'Point', coordinates: [2.35, 48.85] }, 300);
+        // A box is read as its rectangle; a malformed one is refused before the tiles are asked.
+        await server.routes['GET /decor/water']({ query: { bbox: '2.34,48.84,2.36,48.86' } }, response());
+        expect(waterProvider.near).toHaveBeenLastCalledWith({ type: 'Polygon', coordinates: [[[2.34, 48.84], [2.36, 48.84], [2.36, 48.86], [2.34, 48.86], [2.34, 48.84]]] }, 150);
+        const bad = response();
+        await server.routes['GET /decor/water']({ query: { bbox: '2.36,48.84,2.34' } }, bad);
+        expect(bad.statusCode).toBe(400);
+        expect(waterProvider.near).toHaveBeenCalledTimes(2);
     });
 
     it('answers 502 when the tiles cannot be read, so the scene draws without water', async () => {
@@ -63,7 +70,7 @@ describe('POST /decor/water', () => {
         setupDecorRoute(server, { query: vi.fn() }, { waterProvider: { near: async () => { throw new Error('OpenFreeMap HTTP 503'); } } });
         const res = response();
         vi.spyOn(console, 'error').mockImplementation(() => {});
-        await server.routes['POST /decor/water']({ body: { geometry: { type: 'Point', coordinates: [2.35, 48.85] } } }, res);
+        await server.routes['GET /decor/water']({ query: { bbox: '2.35,48.85,2.35,48.85' } }, res);
         expect(res.statusCode).toBe(502);
     });
 });

@@ -1693,6 +1693,7 @@
                 centerline: JSON.parse(JSON.stringify(points)),
                 segmentIds: JSON.parse(JSON.stringify(definition.segmentIds || [])),
                 profile: JSON.parse(JSON.stringify(definition.profile || null)),
+                drivingSide: definition.drivingSide,
                 width: definition.width,
                 sidewalkWidth: definition.sidewalkWidth,
                 tunnels: JSON.parse(JSON.stringify(definition.tunnels || [])),
@@ -1743,13 +1744,9 @@
     async function stageProposalDraftForPublishing(draftId, options = {}) {
         const store = global.proposalDraftStore;
         let draft = store?.getDraft?.(draftId) || null;
-        // A parcel layout is shared only with its agreement (ProposalPublishTerms.publishRefusal).
-        const refusal = draft ? global.ProposalPublishTerms?.publishRefusal?.({ goal: draft.goal }) : null;
-        if (refusal) {
-            if (typeof global.showStyledAlert === 'function') global.showStyledAlert(refusal.message);
-            else if (typeof global.updateStatus === 'function') global.updateStatus(refusal.message);
-            return false;
-        }
+        // The create dialog has no parcel-layout form: a layout draft becomes a design the way its
+        // editor's Done makes one.
+        if (draft?.goal === 'parcel-layout') return instantCreateProposalFromDraft(draftId);
         if (draft && global.proposalDraftPlacement?.isFreePlacementDraft?.(draft)) {
             try {
                 draft = await rebindFreePlacementDraft(draftId);

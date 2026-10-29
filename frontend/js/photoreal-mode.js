@@ -2319,9 +2319,12 @@
         // frame, on which the hook runs again.
         // OrbitControls recomputes the position from its spherical state on every update, so a still
         // camera's matrix differs by float noise from frame to frame: compare with a tolerance.
+        // Until the mesh is seated the hook never parks: the root tileset's download is not counted
+        // in loadProgress (it reads 1 before any tile is queued), nothing wakes the loop when it
+        // arrives, and the startup timeout below only advances on frames.
         const cameraMoved = !lastCameraWorld || !matricesNearlyEqual(lastCameraWorld, camera.matrixWorld, CAMERA_STILL_EPS);
         if (cameraMoved) lastCameraWorld = (lastCameraWorld || camera.matrixWorld.clone()).copy(camera.matrixWorld);
-        settledFrames = (cameraMoved || tilesStillLoading() || seatDebugActive()) ? 0 : settledFrames + 1;
+        settledFrames = (cameraMoved || !grounded || tilesStillLoading() || seatDebugActive()) ? 0 : settledFrames + 1;
         if (settledFrames > SETTLED_FRAMES) return false;
         tiles.update();
         const prog = Number(tiles.loadProgress);

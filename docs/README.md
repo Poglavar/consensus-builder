@@ -40,14 +40,14 @@ Each document describes a current contract, an open plan or research. Verificati
 **Editing and the map**
 
 - [Design language](design-language.md): components, tokens, messages and element names. [Click stack](click-stack.md), [dividers](dividers.md), [language expansion](language-expansion.md).
-- Roads and rail: [road editor](road-editor.md), [corridor elevation](corridor-elevation.md) and its [levels plan](corridor-levels-plan.md), [schelling plans](schelling-parcels.md).
+- Roads and rail: [road editor](road-editor.md), [corridor elevation](corridor-elevation.md) and its [levels plan](corridor-levels-plan.md), [road in a parcel](road-in-parcel.md), [schelling plans](schelling-parcels.md).
 - Buildings: [urban rules and massing](urban-rule-massing.md), [freeform buildings](freeform-building.md), [floor plans](floor-plans.md), [building floor models](building-floor-models.md), [planning rule audit](planning-rule-audit.md).
-- [Agreement editor](agreement-editor.md), [accessible map editing](accessible-map-editing.md).
+- [Agreement editor](agreement-editor.md), [accessible map editing](accessible-map-editing.md), [build-out timeline](buildout-timeline.md).
 
 **Sources and cities**
 
 - [Source adapters](source-adapters.md), [frontend source configuration](frontend-source-configuration.md), [Atlas public sources](atlas-public-sources.md), [economic sources](economic-sources.md), [world parcels](world-parcels.md).
-- [GUP scenario integration](gup-scenario-integration.md), [zoning standards research](zoning-standards-research.md), [planning usage and diagnostics](planning-usage-and-diagnostics.md).
+- [GUP scenario integration](gup-scenario-integration.md), [Bogotá POT source](bogota-pot-source.md), [zoning standards research](zoning-standards-research.md), [planning usage and diagnostics](planning-usage-and-diagnostics.md).
 
 **3D views**
 
@@ -56,6 +56,7 @@ Each document describes a current contract, an open plan or research. Verificati
 
 **Markets and chain**
 
+- [Blockchain flows](blockchain-flows.md): reading and minting designs, plans and agreements on the connected chain without our server; an open plan.
 - [LMSR market](lmsr-market.md), [betting on agreements](betting-lmsr-points.md), [betting instrumentation](betting-instrumentation.md), [San Francisco demos](sf-agreement-bets.md) and their [publication record](sf-demo-validation-2026-10-26.md), [prediction market research](prediction-market-integration.md).
 - [Agreement recreation, 2026-10-26](agreement-recreation-2026-10-26.md) stays until its deadlines pass.
 - [ENS](feature-ens-readme.md) and [Canton/DAML](feature-daml-readme.md): dated integration notes; verify the configuration before a chain operation.
@@ -63,7 +64,7 @@ Each document describes a current contract, an open plan or research. Verificati
 **Agents and MCP**
 
 - [Student AI assistance trial](student-ai.md).
-- [MCP design of record](mcp.md), [workflow](mcp-workflow.md), [editing contract](mcp-editing.md), [directory listings](mcp-directory-submissions.md).
+- [MCP design of record](mcp.md), [workflow](mcp-workflow.md), [editing contract](mcp-editing.md), [agent working plan](agent-working-plan.md) (open plan), [directory listings](mcp-directory-submissions.md).
 
 **Hackathon and plans**
 

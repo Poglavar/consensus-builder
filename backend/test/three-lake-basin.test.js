@@ -84,6 +84,7 @@ describe('recessed lake solids', () => {
             window: { lakes: [{ ...lake, properties: { lakeGraphics: graphics } }],
                 __threeLakeBasin: { partitionLakeBasin }, __parcelArrangement: { clip } },
             markOwnedMaterial() {}, markOwnedGeometry() {}, attachBuildingDepthPrepass() {},
+            displayedFeatures: features => features, buildoutSiteOf: () => null,
             reportThreeClip(_operation, error) { throw error; }
         };
         vm.createContext(context);

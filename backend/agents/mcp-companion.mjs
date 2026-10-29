@@ -57,12 +57,18 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
     add('ugt_markets', 'Read city contests, pools and devnet USDC stakes.', { city }, 'markets');
     add('ugt_explain', 'Look up a term in the maintained domain vocabulary.', { term: z.string().min(1).max(100) }, 'explain');
 
+    // The agent's working plan (docs/agent-working-plan.md): every authored design is placed in it with the map's apply rules.
+    const working = {
+        plan: designInput.optional().describe('The working plan (draftRef, CID, /plans link or canonical plan) this design is placed in. Omit to start a new private plan. Use the plan draftRef each result returns for the next call.'),
+        displace: z.boolean().optional().describe('Only after the person agrees: take the plan designs standing on this ground off the plan, as Apply does on the map. Without it such a placement is refused and lists them.')
+    };
+    const { displace } = working;
     const site = { city, parcelSourceId: z.string().max(3507).optional(), parcelIds: z.array(z.string().min(1).max(250)).min(1).max(100).optional(), outline: z.record(z.string(), z.unknown()).optional(),
-        title: z.string().max(200).optional(), description: z.string().max(2000).optional(), author: z.string().max(100).optional(), authoredAt: z.iso.datetime().optional() };
+        title: z.string().max(200).optional(), description: z.string().max(2000).optional(), author: z.string().max(100).optional(), authoredAt: z.iso.datetime().optional(), ...working };
     const lane = z.object({ type: z.enum(laneTypes), width: z.number().min(0.25).max(20), direction: z.enum(['forward', 'backward', 'both']).optional(), landscape: z.enum(['trees', 'grass']).optional(), gauge: z.union([z.literal(1000), z.literal(1435)]).optional() }).strict();
     const profile = { preset: z.enum(['2+2', '1+1', '1+1 with cycle lanes']).optional(), lanes: z.array(lane).min(1).max(32).optional() };
-    add('ugt_draft_road', 'Draft a road from WGS84 points or a street name/id with a small bbox and a cross-section. Nothing is published. Returns canonical design, CID, land take and private preview.',
-        { ...site, points: z.array(point).min(2).max(200).optional(), street: z.string().max(200).optional(), streetId: z.string().max(100).optional(), bbox: bbox.optional(), ...profile, width: z.number().min(1).max(100).optional() }, 'draftRoad');
+    add('ugt_draft_road', 'Draft a road from WGS84 points or a street name/id with a small bbox and a cross-section. Without points, parcelIds or an outline place the road into that ground (road in a parcel): the streets are read from its straight-grid shape, the lanes (a preset, explicit lanes, or automatic per street width) run along each street\'s middle, pavements and verges fill to its edges, and nothing outside it is taken; ground whose streets do not meet is shared between them, each its own road, drafted one at a time with part (0, 1, …). A preset keeps its traffic on the city’s side of the road (left in the UK, India, Japan); explicit lanes list from the left kerb of the drawing direction. It is placed in the working plan (plan): it joins the plan’s roads, and the result lists changed neighbours in consequences.junctions. Nothing is published. Returns canonical design, CID, land take and private preview.',
+        { ...site, points: z.array(point).min(2).max(200).optional(), street: z.string().max(200).optional(), streetId: z.string().max(100).optional(), bbox: bbox.optional(), ...profile, width: z.number().min(1).max(100).optional(), part: z.number().int().min(0).max(50).optional() }, 'draftRoad');
     add('ugt_draft_building', 'Draft a building from selected parcels or an outline. Row needs at least two selected parcels; an outline is cut into row plots. Coverage is a fraction (0,1]. permitted uses the selected planning source envelope; its applicability remains unresolved.',
         { ...site, typology: z.enum(['freeform', 'block', 'row', 'detached']).default('freeform').describe('Uses the same generator as the app. Freeform creates an independent single-building design.'),
             floors: z.number().int().min(1).max(200).optional(), height: z.number().positive().max(800).optional(), floorHeightM: z.number().min(0.5).max(20).optional(),
@@ -74,6 +80,8 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
             offsetEastM: z.number().min(-1000).max(1000).optional(), offsetNorthM: z.number().min(-1000).max(1000).optional(), rotationDegrees: z.number().min(-360).max(360).optional(),
             ruleKind: z.enum(['max', 'range', 'exact']).optional(), minHeightM: z.number().positive().max(800).optional(), minDepthM: z.number().positive().max(1000).optional(),
             minFloors: z.number().int().min(1).max(200).optional(), minPlotAreaM2: z.number().min(0).optional(), minFootprintAreaM2: z.number().min(1).optional(),
+            balconyDepthM: z.number().min(0).max(5).optional().describe('Block, row and detached: balconies on the long facades may stand out of the envelope by this many metres; 0 or omitted means none.'),
+            roof: z.enum(['flat', 'pitched']).optional().describe('Block, row and detached: pitched adds a slanted roof with its attic on top of the last floor, ridge along the street side.'),
             seed: z.number().int().min(0).max(4294967295).optional(), permitted: z.boolean().optional(), planningSource: z.string().max(100).optional() }, 'draftBuilding');
     add('ugt_draft_track', 'Draft a rail corridor with an explicit gauge and speed target using the app geometry. Curvature is checked against the required radius; subsequent edits retain the constraints.',
         { ...site, points: z.array(point).min(2).max(200), gauge: z.union([z.literal(1000), z.literal(1435)]).default(1435),
@@ -81,7 +89,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
             lanes: z.array(lane).min(1).max(32).optional() }, 'draftTrack');
     add('ugt_draft_station', 'Place a road station or a ground-level, elevated or underground track station on compatible authored corridor designs. Supply a WGS84 point and corridor references; the shared app placement engine checks alignment and snaps within 24 metres.',
         { city, parcelSourceId: z.string().max(3507).optional(), title: z.string().max(200).optional(), description: z.string().max(2000).optional(), author: z.string().max(100).optional(),
-            stationType: z.enum(['bus', 'tram', 'underground', 'elevated']).describe('bus: Road station; tram: Ground-level track station; elevated: Elevated track station; underground: Underground track station.'), point, corridors: z.array(designInput).min(1).max(100), platformHeightM: z.number().min(3).max(40).optional() }, 'draftStation');
+            stationType: z.enum(['bus', 'tram', 'underground', 'elevated']).describe('bus: Road station; tram: Ground-level track station; elevated: Elevated track station; underground: Underground track station.'), point, corridors: z.array(designInput).min(1).max(100), platformHeightM: z.number().min(3).max(40).optional(), ...working }, 'draftStation');
     add('ugt_draft_space', 'Draft a park, square or lake over parcel ids or an outline; no pin or index write. Parks have explicit authored planting; treeCount defaults to zero.', { ...site, spaceKind: z.enum(['park', 'square', 'lake']), treeCount: z.number().int().min(0).max(500).optional() }, 'draftSpace');
     add('ugt_draft_parcel_layout', 'Draft automatic plots using the same equal-area or Schelling layout algorithm as the app.', { ...site, algorithm: z.enum(['equal', 'schelling']).default('schelling'), count: z.number().int().min(2).max(64).optional(), plotLevel: z.number().int().min(0).max(5).optional() }, 'draftParcelLayout');
     add('ugt_draft_urban_rule', 'Draft an authored urban rule. A row rule {typology:"row", floors:3, floorHeightM:3, setbackM:3, depthM:10} builds a visible envelope using the app rule renderer. Other parameters are retained as authored intent. It makes no claim of statutory authority.', { ...site, rule: z.record(z.string(), z.unknown()) }, 'draftUrbanRule');
@@ -102,11 +110,11 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
         z.object({ type: z.literal('set_tree_count'), count: z.number().int().min(0).max(500), spacingM: z.number().min(1).max(30).optional() })
     ]);
     add('ugt_modify_design', 'Fork a published CID, hosted draftRef or canonical draft with typed changes. For private drafts use draftRef; never retype geometry or pass an unpublished CID. Compass sides are across the street; ambiguous or multi-stretch edits are refused. origin.cid records the source.',
-        { design: designInput, changes: z.array(changes).min(1).max(20), parcelSourceId: z.string().max(3507).optional() }, 'modifyDesign');
+        { design: designInput, changes: z.array(changes).min(1).max(20), parcelSourceId: z.string().max(3507).optional(), ...working }, 'modifyDesign');
     add('ugt_inspect_design', 'Read exact authored JSON at JSON Pointer paths, including private drafts. Empty path reads the whole design. Returned untrustedValue is exact editable data. Use this for granular editor parity: buildings, OSM nodes/tags, furniture/trees/paths, layouts, materials/models and rules.',
         { design: designInput, paths: z.array(z.string().max(1000)).min(1).max(50).default(['']) }, 'inspectDesign');
     add('ugt_edit_design', 'Atomically fork an exact design revision with JSON Patch add/replace/remove/test/copy/move, or geometry transform/union/difference/intersection/buffer at pointers. All authored fields are editable; schema/lineage/time and runtime caches are managed. Edits are sequential on a private clone. Road OSM edits rebuild footprint/site; layouts must still tile. Building surroundings stay within geometry.landTake; a footprint-only take removes surrounding ground and furniture. Parameters that affect shape require corresponding geometry edits. Use ugt://editing for coupled fields. Nothing is published.',
-        { design: designInput, expectedCid: cid, edits: editOperations, parcelSourceId: z.string().max(3507).optional() }, 'editDesign');
+        { design: designInput, expectedCid: cid, edits: editOperations, parcelSourceId: z.string().max(3507).optional(), ...working }, 'editDesign');
     add('ugt_compare', 'Compare named plans, designs or agreements using canonical artifacts, hosted draftRef references, CIDs or published URLs. Use draftRef for private drafts instead of copying geometry. Areas are square metres; absent measurements remain null.',
         { targets: z.array(designInput).min(2).max(10), buildingSourceId: z.string().max(3507).optional(), parcelSourceId: z.string().max(3507).optional() }, 'compare');
 
@@ -117,9 +125,9 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
     const filter = z.object({ kind: z.enum(['design', 'building', 'piece']).optional(), goal: z.string().max(80).optional(), role: z.string().max(80).optional(), text: z.string().max(200).optional(), withinBbox: bbox.optional(), relativeTo: z.object({ ref, direction: side }).optional() }).default({});
     const inventory = { filter, includeGeometry: z.boolean().default(false), offset: z.number().int().min(0).default(0), limit: z.number().int().min(1).max(200).default(100) };
     const planOperations = z.array(z.discriminatedUnion('type', [
-        z.object({ type: z.literal('add'), design: designInput }), z.object({ type: z.literal('remove'), ref }),
-        z.object({ type: z.literal('replace'), ref, design: designInput }), z.object({ type: z.literal('edit'), ref, edits: editOperations }),
-        z.object({ type: z.literal('modify'), ref, changes: z.array(changes).min(1).max(20) })
+        z.object({ type: z.literal('add'), design: designInput, displace }), z.object({ type: z.literal('remove'), ref }),
+        z.object({ type: z.literal('replace'), ref, design: designInput, displace }), z.object({ type: z.literal('edit'), ref, edits: editOperations, displace }),
+        z.object({ type: z.literal('modify'), ref, changes: z.array(changes).min(1).max(20), displace })
     ])).max(100).default([]);
     add('ugt_inspect_agreement', 'Inventory an agreement composition by CID, /agreements link or draftRef. Returns exact design/building refs and derived land pieces. Derived pieces are read-only; edit their source designs.',
         { plan: designInput, ...inventory }, 'inspectAgreement');
@@ -128,13 +136,19 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
             title: z.string().max(200).nullable().optional(), author: z.string().max(100).nullable().optional(), sponsor: z.string().nullable().optional(), deadline: z.iso.datetime().nullable().optional(), consultation, rulePreset: z.enum(['owner-deal', 'owner-vote']).optional()
         }).default({}) }, 'editAgreement');
     const view = createNamedPlanViewSchema();
-    add('ugt_draft_plan', 'Create a private named plan from design references and a title. No agreement, rights snapshot or complete cadastre is required. A view is derived when omitted.',
-        { designs: z.array(designInput).min(1).max(1000), title: z.string().trim().min(1).max(160), view: view.optional() }, 'draftPlan');
-    add('ugt_get_plan', 'Open a named plan/v1 by CID, /plans URL, private draftRef or parsed ugt-plan-file/v1 JSON, with exact members and preview URL. Portable files are validated with the browser codec and remain private.', { plan: designInput }, 'getPlan');
+    // Construction windows (docs/buildout-timeline.md): months YYYY-MM, inclusive; null clears one.
+    const month = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/);
+    const when = month.optional().describe('Open the preview at this month on the plan’s build-out time control.');
+    const buildout = z.string().regex(/^[a-z0-9-]{1,32}$/).optional().describe('Seed of a simulated build-out: undated members (an urban rule parcel by parcel) get repeatable dates on the preview’s time control. Display only; never stored.');
+    const schedule = z.record(z.string().max(200), z.object({ start: month, end: month }).strict().nullable()).optional()
+        .describe('Construction window per member: key = design CID or design ref, value = { start, end } months (YYYY-MM, inclusive) or null to clear. Windows are merged over the current ones and follow revised designs.');
+    add('ugt_draft_plan', 'Create a private named plan from design references and a title. No agreement, rights snapshot or complete cadastre is required. A view is derived when omitted. A construction schedule (when each design is built) is optional.',
+        { designs: z.array(designInput).min(1).max(1000), title: z.string().trim().min(1).max(160), view: view.optional(), schedule, when, buildout }, 'draftPlan');
+    add('ugt_get_plan', 'Open a named plan/v1 by CID, /plans URL, private draftRef or parsed ugt-plan-file/v1 JSON, with exact members, its construction schedule and preview URL. Portable files are validated with the browser codec and remain private.', { plan: designInput, when, buildout }, 'getPlan');
     add('ugt_validate_plan', 'Validate canonical design geometry, retained constraints, building overlaps and station attachments in a named plan. Returns affected refs and issues. Source coverage, existing buildings and statutory compliance remain unknown unless separately assessed.', { plan: designInput }, 'validatePlan');
-    add('ugt_inspect_plan', 'Inventory a named plan and its designs/buildings. Use returned explicit refs to select objects for edits. Filters do not mutate the plan.', { plan: designInput, ...inventory }, 'inspectPlan');
-    add('ugt_edit_plan', 'Create an immutable named-plan revision: add/remove/replace/edit/modify designs, rename the plan or replace its saved view. Use expectedCid and explicit inspected refs. Retain the old draftRef for undo.',
-        { plan: designInput, expectedCid: cid, operations: planOperations, title: z.string().trim().min(1).max(160).optional(), view: view.optional() }, 'editPlan');
+    add('ugt_inspect_plan', 'Inventory a named plan and its designs/buildings, with each design’s construction window. Use returned explicit refs to select objects for edits. Filters do not mutate the plan.', { plan: designInput, ...inventory }, 'inspectPlan');
+    add('ugt_edit_plan', 'Create an immutable named-plan revision: add/remove/replace/edit/modify designs, rename the plan, replace its saved view or set construction windows (schedule). Added and revised designs are placed with the map’s apply rules: roads join the plan’s roads, and ground another member holds refuses the edit (ground-occupied) unless that operation has displace. Use expectedCid and explicit inspected refs. Retain the old draftRef for undo.',
+        { plan: designInput, expectedCid: cid, operations: planOperations, title: z.string().trim().min(1).max(160).optional(), view: view.optional(), schedule, when, buildout }, 'editPlan');
     server.registerTool('ugt_publish_plan', { description: 'Publish the exact named plan revision and any unpublished member designs, then verify and return its permanent /plans URL. Existing links remain unchanged. Parcel layouts need prior agreement publication.',
         inputSchema: z.object({ plan: designInput, expectedCid: cid, confirm: z.literal(true) }).strict(),
         annotations: { ...readOnly, readOnlyHint: false } }, handler(args => { server.ugtPublishGate?.(); return actions.publishPlan(args); }));
@@ -150,7 +164,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
             url: z.string().url().optional(), title: z.string().max(200).optional(), description: z.string().max(2000).optional(), author: z.string().max(100).optional(), authoredAt: z.iso.datetime().optional(),
             toleranceM: z.number().positive().max(1).optional(), kind: z.enum(['building', 'space']).optional().describe('GeoJSON polygons: building (default) or space.'),
             spaceKind: z.enum(['park', 'square', 'lake']).optional().describe('Required with kind space.'), floors: z.number().int().min(1).max(200).optional(), height: z.number().positive().max(800).optional(),
-            anchor: z.object({ lng: z.number().min(-180).max(180), lat: z.number().min(-85).max(85) }).optional() }, 'importDesign');
+            anchor: z.object({ lng: z.number().min(-180).max(180), lat: z.number().min(-85).max(85) }).optional(), ...working }, 'importDesign');
     server.registerTool('ugt_import_model', { description: 'Upload a self-contained GLB/glTF model and draft a building, park, square or lake (kind) with its actual projected mesh footprint placed at center and rotation. A space keeps the model in structureProposal modelUrl/modelName/rotation/source. kind furniture only checks the asset against the furniture limits (triangles, texture size, bytes) and uploads it, returning asset {modelUrl, name} and no design; center and rotation are not used. Assign it with ugt_edit_design at /structureProposal/decorationDesign/models/<kind> = {url, name}. The model asset is durable and public; confirmAssetUpload=true requires user authorization. Any design stays private.',
         inputSchema: z.object({ city: city.optional().describe('Required unless kind is furniture.'), parcelSourceId: z.string().max(3507).optional(), kind: z.enum(['building', 'park', 'square', 'lake', 'furniture']).default('building'), modelData: z.string().max(14 * 1024 * 1024).optional(), url: z.string().url().optional(),
             fileName: z.string().max(250).optional(), title: z.string().max(200).optional(), center: point.optional().describe('Required unless kind is furniture.'), rotation: z.number().min(-360).max(360).default(0), confirmAssetUpload: z.literal(true) }).strict()

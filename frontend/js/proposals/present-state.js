@@ -214,18 +214,29 @@
     function remainingBuildings({ built, regions, ops }) {
         return built.map(record => {
             const original = record.buildingProposal.buildings[0];
-            const footprintM2 = ops.areaOf(original);
-            let feature = original;
-            for (const region of regions) {
-                const clip = ops.intersect(feature, region);
-                if (!clip || ops.areaOf(clip) < 2) continue;
-                const rest = ops.difference(feature, region);
-                const restM2 = rest ? ops.areaOf(rest) : 0;
-                if (!rest || restM2 < Math.max(10, footprintM2 * 0.15)) return null;
-                feature = { ...feature, geometry: rest.geometry };
-            }
-            return feature === original ? record : { ...record, buildingProposal: { buildings: [feature] } };
+            const { outcome, feature } = clearance(original, regions, ops);
+            if (outcome === 'gone') return null;
+            return outcome === 'kept' ? record : { ...record, buildingProposal: { buildings: [feature] } };
         }).filter(Boolean);
+    }
+
+    /**
+     * What demolition ground does to one existing building footprint (a Feature), by the thresholds
+     * above: { outcome: 'kept' | 'cut' | 'gone', feature } where feature is the footprint itself
+     * when kept, what is left of it when cut, and null when gone.
+     */
+    function clearance(footprint, regions, ops) {
+        const footprintM2 = ops.areaOf(footprint);
+        let feature = footprint;
+        for (const region of regions) {
+            const clip = ops.intersect(feature, region);
+            if (!clip || ops.areaOf(clip) < 2) continue;
+            const rest = ops.difference(feature, region);
+            const restM2 = rest ? ops.areaOf(rest) : 0;
+            if (!rest || restM2 < Math.max(10, footprintM2 * 0.15)) return { outcome: 'gone', feature: null };
+            feature = { ...feature, geometry: rest.geometry };
+        }
+        return { outcome: feature === footprint ? 'kept' : 'cut', feature };
     }
 
     // A box around features, [w, s, e, n].
@@ -392,8 +403,10 @@
                 parcelMeasuredArea: parcelAreaM2, openGroundM2: null, planAreaM2: parcelAreaM2, ...land };
         }
 
-        return Object.freeze({ groundOf, measure, publicSpaces });
+        // Compare's unapplied plan sides clear standing buildings with the same ground and rule.
+        const clearanceOf = (footprint, regions) => clearance(footprint, regions, ops);
+        return Object.freeze({ groundOf, measure, publicSpaces, demolitionGround, clearanceOf });
     }
 
-    return { OVERPASS_URLS, PUBLIC_STRUCTURES, publicSpaceQuery, publicSpacesFromOverpass, splitLand, builtRecords, remainingBuildings, coveredM2, bboxOf, browser };
+    return { OVERPASS_URLS, PUBLIC_STRUCTURES, publicSpaceQuery, publicSpacesFromOverpass, splitLand, builtRecords, remainingBuildings, clearance, coveredM2, bboxOf, browser };
 });

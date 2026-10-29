@@ -10,6 +10,8 @@ test('background paving never leaks through parcels while zooming and orbiting',
   }));
   await page.setContent('<!doctype html><body></body>');
   await page.addScriptTag({ type: 'module', content: "import * as THREE from 'http://ground.test/three/three.module.js'; window.THREE = THREE;" });
+  // An inline module runs once its imports have loaded, after addScriptTag has returned.
+  await page.waitForFunction(() => !!(window as any).THREE);
   for (const file of ['life/ground-geometry', 'three-ground']) {
     await page.addScriptTag({ path: path.resolve(__dirname, `../../frontend/js/${file}.js`) });
   }

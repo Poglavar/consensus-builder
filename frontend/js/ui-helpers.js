@@ -462,7 +462,8 @@ function applyStatusBarHighlight() {
 // A notice announces an outcome and goes away: one pill at a time, top centre, the look of
 // .cb-toast with a variant per type. It is also written to the status LOG (not the status line):
 // "4 proposals removed: …" names records that are no longer on the map, and if you looked away you
-// cannot get the list back from a pill that has gone; the log keeps it.
+// cannot get the list back from a pill that has gone; the log keeps it. A click copies the
+// notice (an error to paste into a report); the pointer on it holds it up until it leaves.
 const NOTICE_VARIANTS = { info: 'notice', success: 'success', warning: 'warning', error: 'error' };
 const NOTICE_EXIT_MS = 400;
 let noticeQueue = null;
@@ -485,6 +486,9 @@ function presentNotice(entry) {
     messageEl.className = `ephemeral-message cb-toast cb-toast--${variant}`;
     messageEl.setAttribute('role', variant === 'error' ? 'alert' : 'status');
     messageEl.textContent = entry.message;
+    makeMessageCopyable(messageEl, () => entry.message);
+    messageEl.addEventListener('mouseenter', () => noticeQueue?.hold());
+    messageEl.addEventListener('mouseleave', () => noticeQueue?.release());
     noticeContainer().appendChild(messageEl);
     requestAnimationFrame(() => messageEl.classList.add('visible'));
     return messageEl;
@@ -507,6 +511,53 @@ function showEphemeralMessage(message, duration = 5000, type = 'info') {
     const messageEl = presentNotice(entry);
     setTimeout(() => retireNotice(messageEl), duration);
     return true;
+}
+
+// A message on screen (a notice, the status line) copies its text on a click: the copy cursor says
+// it will, the "Copied" notice that it did.
+function makeMessageCopyable(el, readText) {
+    el.classList.add('is-copyable');
+    const key = 'common.copyToClipboard';
+    const translated = window.i18n?.t ? window.i18n.t(key) : '';
+    el.title = translated && translated !== key ? translated : 'Copy to clipboard';
+    el.addEventListener('click', () => copyTextWithFeedback(readText()));
+}
+
+// Every other message copies on a click too, whatever shows it: a status or alert line in a panel
+// or an editor ([role=status], [role=alert]) — a refusal, a failed save, a progress line. One
+// listener for the whole page, so a message added later needs nothing but its role. A click on a
+// control inside the message (a link, a button, a field, a 3D preview) is that control's, and a
+// click that ends a text selection selects; neither copies.
+const MESSAGE_SELECTOR = '[role="status"], [role="alert"]';
+const MESSAGE_CONTROL_SELECTOR = 'a, button, input, select, textarea, label, summary, canvas, [contenteditable]';
+
+function messageTextAt(target) {
+    const message = target && typeof target.closest === 'function' ? target.closest(MESSAGE_SELECTOR) : null;
+    // A notice and the status line copy themselves (makeMessageCopyable).
+    if (!message || message.closest('.is-copyable')) return null;
+    if (target.closest(MESSAGE_CONTROL_SELECTOR)) return null;
+    const text = String(message.textContent || '').replace(/\s+/g, ' ').trim();
+    return text || null;
+}
+
+if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+    document.addEventListener('click', event => {
+        const text = messageTextAt(event.target);
+        if (!text) return;
+        try {
+            const selection = window.getSelection?.();
+            if (selection && !selection.isCollapsed && String(selection).trim()) return;
+        } catch (_) { }
+        return copyTextWithFeedback(text);
+    });
+    document.addEventListener('mouseover', event => {
+        if (!messageTextAt(event.target)) return;
+        const message = event.target.closest(MESSAGE_SELECTOR);
+        if (message.title) return;
+        const key = 'common.copyToClipboard';
+        const translated = window.i18n?.t ? window.i18n.t(key) : '';
+        message.title = translated && translated !== key ? translated : 'Copy to clipboard';
+    });
 }
 
 // "Copied": a short notice, the same pill as every other outcome.
@@ -642,6 +693,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (floatingStatusText && statusSpan.textContent) {
         floatingStatusText.textContent = statusSpan.textContent;
     }
+    const floatingStatus = document.getElementById('floating-status');
+    if (floatingStatus && floatingStatusText) makeMessageCopyable(floatingStatus, () => floatingStatusText.textContent);
 
     // Expanding is a CLICK on the summary line. Three things it must not be:
     //

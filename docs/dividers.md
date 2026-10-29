@@ -35,9 +35,24 @@ recorded, nothing deployed without a say-so.
 | M5 | Replacement versions | For a plan with a newer version, before is the version currently applied and after the new one | done 2026-10-12 for proposal versions (`sourceProposalId`); plan versions (`ens_plan.supersedes`) are a follow-up, see Decisions |
 | M6 | Owner acceptance review | An owner reading a readjustment in the details panel compares their parcel before with their plot after, without opening the editor | done 2026-10-12 |
 | M7 | Model view | The Buildings and massing sheet's Compare tab splits the 3D canvas at a draggable divider; each side is any of Built today, Permitted massing, Proposed, one applied design or one plan (`three-compare.js`, two scissor passes in `three-mode.js`); the pure rules are unit tested; the divider and the passes are checked in a headed Chrome | done 2026-10-28 |
+| M8 | 2D map | The same Compare tab splits the 2D map: buildings no side removes stay in their pane; the buildings applied designs demolish and the designs' buildings draw again per side into two panes clipped at the divider, and the permitted massing pane is clipped to the Permitted side (`compare-on-map.js`); parcels, roads and parks show on both halves; the pure rules are unit tested; the halves are checked in a headed Chrome | done 2026-10-29 |
+| M9 | Any saved plan | A plan is a side whether or not it is applied: members an applied design stands for are that design; the rest are read as Plan stats reads a plan (`PlanAnalysis`, no apply) by `compare-unapplied.js` and drawn on that side alone, as buildings, road corridors and space grounds, with the standing buildings they clear taken off that side by the demolition scan's rule; Compare plans (Lists → Plans) opens the chosen pair, or one plan against Built today, on the map; the pure rules are unit tested; both views are checked in a headed Chrome | done 2026-10-29 |
 
 ## Parked
 
+- **Applied roads, parks, squares and lakes in the model view (M7).** Their meshes carry no design
+  id (corridors are built in one batched loop; the park, square and lake builders add untagged
+  meshes), so `compareDescriptors` reads them as shared drawings: Proposed shows them, a design or
+  plan side hides them, even its own. The 2D map is not affected (both halves show them). The fix
+  is tagging per-feature meshes with their `proposalId` in `three-mode.js`: the park and square
+  builders take a features list, so one call per feature can tag what it added; the lake builder
+  needs that parameter first; the corridor loop needs per-road grouping before batching. An
+  unapplied member's road and ground plates (M9) are tagged and switch correctly.
+- **Unapplied members in the model view (M9)** are drawn from the record alone: a building is
+  sliced by the live parcels, not the plan's own pieces; a road is a flat plate, not a laid
+  corridor; a building two members of one plan cut keeps the first member's remainder. The scene's
+  context (existing buildings, parcels) is loaded around applied work and the camera, so a plan far
+  from both has nothing to clear until the view moves there.
 - **Photo mode (Google tiles).** The model view's comparison (M7) draws two scissor passes of one
   scene and switches only the objects the two sides disagree on. In photo mode the tiles are the
   built state and the carve under a design is a GPU effect, so a side-aware carve is needed before
@@ -99,7 +114,7 @@ recorded, nothing deployed without a say-so.
   the plots that came out of it (`LiveParcelFabric.entriesForCadastre`) in solid blue on the after
   side, the modal's own colours. Asking for another parcel moves the focus; asking for the same one
   closes. The rows read "Removed" once the readjustment is applied, which is exactly the case.
-- 2026-10-12 (observation, not changed): `?focusProposal=` shows a server proposal without
+- 2026-10-12 (observation, not changed): `?design=` (then `?focusProposal=`) shows a server proposal without
   importing it into local storage, so "Apply to map" on such a readjustment is silently skipped
   ("unsupported map apply action"); opening it from the Proposals list imports it and apply works.
   Pre-existing, outside this work.

@@ -148,17 +148,17 @@ describe('OpenStreetMap mirror as a building source', () => {
         expect(result).toMatchObject({ source: 'osm-3d', count: 1, heights: { measured: 0, levels: 1, estimated: 0 } });
     });
 
-    it('is discovered by POST /building-sources/discover without trying the feature-service adapters', async () => {
+    it('is discovered by GET /building-sources/discover without trying the feature-service adapters', async () => {
         const { setupBuildingSourcesRoute } = await import('../routes/building-sources.js');
         const routes = {};
-        const app = { post: (path, ...handlers) => { routes[path] = handlers[handlers.length - 1]; } };
+        const app = { get: (path, ...handlers) => { routes[path] = handlers[handlers.length - 1]; } };
         const discover = vi.fn();
         const discoverOverpass = vi.fn(async () => ({ source: { id: 'building.x', adapter: 'overpass' }, buildingCount: 7 }));
         setupBuildingSourcesRoute(app, { discover, discoverOverpass, publicFetch: vi.fn() });
         let sent;
         const res = { writableEnded: false, destroyed: false, once() {}, off() {}, set() { return this; },
             status() { return this; }, json(body) { sent = body; return this; } };
-        await routes['/building-sources/discover']({ body: { url: 'https://overpass.example/api/interpreter', city: 'lima', bbox: [-77.03, -12.05, -77.0295, -12.0495] } }, res);
+        await routes['/building-sources/discover']({ query: { url: 'https://overpass.example/api/interpreter', city: 'lima', bbox: '-77.03,-12.05,-77.0295,-12.0495' } }, res);
         expect(discover).not.toHaveBeenCalled();
         expect(sent).toMatchObject({ source: { adapter: 'overpass' }, buildingCount: 7 });
     });

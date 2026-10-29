@@ -7,7 +7,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 globalThis.turf = turf;
-const { appliedRivals, editDependents } = require('../../frontend/js/proposals/claims.js');
+const { appliedRivals, editDependents, unapplyDependents } = require('../../frontend/js/proposals/claims.js');
 const lineage = require('../../frontend/js/proposals/lineage.js');
 const Cid = require('../../frontend/js/cid.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
@@ -353,6 +353,32 @@ describe('editDependents: who stands on ground an in-place edit changes', () => 
         const before = layout([plotA, plotB]);
         const onB = blockOnPlot('block-on-b', 15.9012, 15.9014);
         expect(editDependents(before, layout([plotA, plotB]), [before, onB], options)).toEqual([]);
+    });
+});
+
+// "Unapplying a proposal on top of which there is another proposal should offer to unapply all or to
+// leave the other ones in place" (the user, 2026-10-29): a road placed in a parcel layout's street
+// strip survived the layout's unapply without being named.
+describe('unapplyDependents: who stands on a record that comes off the map', () => {
+    const box = (west, east) => ({
+        type: 'Polygon',
+        coordinates: [[[west, 45.8], [east, 45.8], [east, 45.8004], [west, 45.8004], [west, 45.8]]]
+    });
+    const layout = { proposalId: 'layout', goal: 'parcel-layout', applied: true, createdAt: '2026-10-01T10:00:00.000Z',
+        parcelLayout: { pool: box(15.9000, 15.9020), plots: [box(15.9000, 15.9010), box(15.9010, 15.9020)].map(geometry => ({ geometry, source: 'manual' })) } };
+    const road = (proposalId, west, east, extra = {}) => ({ proposalId, goal: 'road-track', applied: true, createdAt: '2026-10-02T10:00:00.000Z',
+        roadProposal: { definition: { polygon: box(west, east) } }, ...extra });
+    const options = { planOrder, area: turf.area, isApplied };
+
+    it('names a later applied road in one of its plots, oldest first, and nothing parked, older or elsewhere', () => {
+        const inStrip = road('road-in-strip', 15.9012, 15.9014);
+        const later = road('later-road', 15.9002, 15.9004, { createdAt: '2026-10-03T10:00:00.000Z' });
+        const parked = road('parked', 15.9012, 15.9014, { applied: false });
+        const older = road('older', 15.9012, 15.9014, { createdAt: '2026-09-01T10:00:00.000Z' });
+        const elsewhere = road('elsewhere', 15.9100, 15.9104);
+        const records = [later, layout, parked, older, elsewhere, inStrip];
+        expect(unapplyDependents(layout, records, options).map(record => record.proposalId)).toEqual(['road-in-strip', 'later-road']);
+        expect(unapplyDependents(inStrip, records, options).map(record => record.proposalId)).toEqual([]);
     });
 });
 

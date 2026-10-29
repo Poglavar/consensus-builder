@@ -305,7 +305,7 @@ function bodyOf(request: Request): any {
 }
 
 // A design as POST /designs and the carried designs of POST /agreements index it, or a refusal.
-function indexDesign(index: SharedIndex, entry: any, { allowLayout }: { allowLayout: boolean }):
+function indexDesign(index: SharedIndex, entry: any):
     { row: Record<string, any>; existing: boolean } | { status: number; code: string; error: string; extra?: Record<string, unknown> } {
   if (!entry || !isCid(entry.cid)) return { status: 400, code: 'invalid-cid', error: 'cid must be a CIDv1 raw sha2-256 base32 CID (bafkrei…).' };
   const content = entry.content;
@@ -314,9 +314,6 @@ function indexDesign(index: SharedIndex, entry: any, { allowLayout }: { allowLay
   if (computedCid !== entry.cid) return { status: 400, code: 'cid-mismatch', error: `The content is ${computedCid}, not ${entry.cid}.`, extra: { cid: entry.cid, computedCid } };
   const existing = index.designs.get(entry.cid);
   if (existing) return { row: existing, existing: true };
-  if (content.parcelLayout != null && !allowLayout) {
-    return { status: 422, code: 'layout-needs-agreement', error: 'A parcel layout is published with the agreement that settles its land: send it in the designs of POST /agreements.' };
-  }
   const row = designRow(index, entry.cid, content);
   index.designs.set(entry.cid, row);
   return { row, existing: false };
@@ -406,7 +403,7 @@ export async function attachSharedIndex(page: Page, index: SharedIndex): Promise
 
     if (root === 'designs') {
       if (!rest && method === 'POST') {
-        const outcome = indexDesign(index, body, { allowLayout: false });
+        const outcome = indexDesign(index, body);
         if ('row' in outcome) return json(route, outcome.existing ? 409 : 201, outcome.row);
         return refuse(route, outcome.status, outcome.code, outcome.error, outcome.extra);
       }
@@ -460,7 +457,7 @@ export async function attachSharedIndex(page: Page, index: SharedIndex): Promise
         const linked: string[] = plan.content.designCids;
         for (const entry of body.designs || []) {
           if (!linked.includes(entry?.cid)) return refuse(route, 400, 'design-not-in-agreement', `Design ${entry?.cid} is not linked by the agreement.`, { design: entry?.cid });
-          const outcome = indexDesign(index, entry, { allowLayout: true });
+          const outcome = indexDesign(index, entry);
           if (!('row' in outcome)) return refuse(route, outcome.status, outcome.code, outcome.error, { ...outcome.extra, design: entry.cid });
         }
         const missing = linked.filter(cid => !index.designs.has(cid));

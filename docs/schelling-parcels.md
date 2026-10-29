@@ -97,7 +97,8 @@ yet proposable. This section is the living plan; update it as steps finish.
 3. **Propose plots.** The plot rule as a layout: in Subdivide on open ground (pool = the site,
    plots to public land, execution through a lens verdict), and as a Layout option in land
    readjustment on real parcels, entered from the layer ("Subdivide / readjust this block") or from
-   the LR editor.
+   the LR editor. Built in the parcel layout as the Schelling algorithm. Its street strips stay
+   plots; a road is placed in them separately, as its own design ([road in a parcel](road-in-parcel.md)).
 4. **Move network** for draft road networks.
 5. **Grid tool** on the same pipeline with a free frame.
 

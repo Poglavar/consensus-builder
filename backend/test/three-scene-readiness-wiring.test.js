@@ -52,6 +52,7 @@ function harness({ request = vi.fn(async () => ({ buildings: [] })), build = vi.
         buildingMaterials: { solid: {}, ghost: {} },
         buildingDisplayPolicy: { resolveBuiltDisplayPolicy: () => ({ visible: true, material: 'ghost', showSurviving: true, showDemolished: true, showExistingRail: false }) },
         clearGroupChildren: group => { group.children = []; },
+        retireGroupAfterFrame: group => { group.children = []; },
         restoreParcelEmphasis: vi.fn(), disposeFloorPlans: vi.fn(),
         buildNearbyProposalBuildings3D: build,
         buildProposedBuildings3D: vi.fn(async () => {}),

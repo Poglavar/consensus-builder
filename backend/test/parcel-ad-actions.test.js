@@ -16,7 +16,8 @@ it('updates the Marketplace button without adding a second handler to its label'
     button.onclick = () => open('https://example.invalid/old', '_blank', 'noopener,noreferrer');
     const label = { ...element(), closest: selector => selector === 'button' ? button : null };
     const dialog = {
-        style: { display: 'none' },
+        // Visibility is the hidden attribute, not an inline style, since 18c80ee42.
+        hidden: true,
         setAttribute: vi.fn(),
         querySelector: selector => selector === '[data-i18n-key="panel.parcel.marketplace"]' ? label : null
     };
@@ -27,7 +28,7 @@ it('updates the Marketplace button without adding a second handler to its label'
 
     for (const link of ['https://example.invalid/first', "https://example.invalid/owner's-ad"]) {
         window.toggleAdActionsDialog(link);
-        expect(dialog.style.display).toBe('flex');
+        expect(dialog.hidden).toBe(false);
         // A click bubbles from the label to the enclosing button.
         label.onclick?.();
         button.onclick?.();
@@ -35,7 +36,7 @@ it('updates the Marketplace button without adding a second handler to its label'
         expect(label.onclick).toBeNull();
         open.mockClear();
         window.toggleAdActionsDialog(link);
-        expect(dialog.style.display).toBe('none');
+        expect(dialog.hidden).toBe(true);
         expect(open).not.toHaveBeenCalled();
     }
 });

@@ -5,30 +5,41 @@ import { MCP_HOSTED_TOOLS, MCP_LOCAL_TOOLS } from './mcp-catalog.js';
 import { createRequire } from 'node:module';
 const PlanRecord = createRequire(import.meta.url)('../../frontend/js/plan-record.js');
 const FurnitureModels = createRequire(import.meta.url)('../../frontend/js/furniture-models.js');
+const ParkEnclosures = createRequire(import.meta.url)('../../frontend/js/park-enclosures.js');
 const ApprovalRegimes = createRequire(import.meta.url)('../../frontend/js/proposals/approval-regimes.js');
 const ApprovalText = createRequire(import.meta.url)('../../frontend/js/proposals/approval-text.js');
 const plainText = (_key, fallback, params = {}) => String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (_, name) => params[name] ?? '');
 
 // The agreement schemes a rule can pin (rule.approvalConfig.regime = { id, version }): the newest
 // version of each, with its decision tests, authority count, distribution rules and sources.
+// The scheme guide's dimensions, the same vocabulary for every scheme: each one's coded value with its
+// short and long wording (approval-regimes.js dimensionsOf, approval-text.js dimensionText).
+function schemeDimensions(regime) {
+    const dimensions = ApprovalRegimes.dimensionsOf(regime);
+    return Object.fromEntries(ApprovalRegimes.DIMENSIONS.flatMap(group => group.ids).map(id => [id, {
+        value: dimensions[id], short: ApprovalText.dimensionText(id, dimensions, plainText, 'short'), long: ApprovalText.dimensionText(id, dimensions, plainText, 'long')
+    }]));
+}
+
 function schemeCatalogue() {
     return ApprovalRegimes.list().map(regime => ({
         id: regime.id, version: regime.version, name: regime.text.name, family: regime.family, country: regime.country, ...(regime.region ? { region: regime.region } : {}), stage: regime.stage,
         tests: regime.tests, authorities: regime.authorities, ...(regime.text.authority ? { authority: regime.text.authority } : {}),
         allocation: regime.allocation, ...(regime.minParties ? { minParties: regime.minParties } : {}),
-        distribution: ApprovalText.allocationLines(regime, plainText), note: regime.text.note, sources: regime.sources
+        distribution: ApprovalText.allocationLines(regime, plainText), dimensions: schemeDimensions(regime), note: regime.text.note, sources: regime.sources
     }));
 }
 
 const steps = [
     'Find the place with ugt_find_place; choose a candidate instead of guessing a site.',
     'Use ugt_list_sources for the relevant location and abstraction. Coverage, source identity and missing evidence stay explicit.',
-    'Create designs privately, then ugt_draft_plan with their references and a title. A named plan does not need agreement terms.',
+    'Work in a plan: it is your applied map. Every draft and design edit takes plan (omit it once to start one, or start one from existing designs with ugt_draft_plan) and returns the new plan revision; pass that draftRef to the next call. A named plan does not need agreement terms.',
+    'Read each result’s placement and consequences and tell the person: designs it would take off the plan (refused until they agree, then retry with displace), roads it joins, ground roads cut.',
     'Inspect objects with ugt_inspect_plan, then edit explicit refs with expectedCid. Retain the prior draftRef for undo.',
     'Portable ugt-plan-file/v1 JSON can be passed as plan to ugt_get_plan, ugt_inspect_plan and ugt_edit_plan. It embeds canonical plan/v1 and design/v1 content; importing conveys no publication or consent.',
     'Validate and compare the result, render a preview, and show its URL. An unavailable source is not evidence of empty land.',
     'When publication is authorized, publish the exact reviewed reference and expectedCid. Return the verified permanent URL.',
-    'Use agreement tools only for allocations and decision rules. Assemble agreements before publication because roads may be reconnected.'
+    'Use agreement tools only for allocations and decision rules. An agreement uses its named plan exactly and revises no design.'
 ];
 export const MCP_FEATURES = Object.freeze([
     { feature: 'community-code-voting', prepare: 'ugt_draft_agreement', edit: 'ugt_edit_agreement', inspect: 'ugt_voting_status', vote: 'ugt_cast_community_vote',
@@ -40,10 +51,13 @@ export const MCP_FEATURES = Object.freeze([
     { feature: 'private-draft-recovery', export: 'ugt_export_draft' },
     { feature: 'buildings', create: 'ugt_draft_building', typologies: ['freeform', 'block', 'row', 'detached'] },
     { feature: 'public-spaces', create: 'ugt_draft_space', kinds: ['park', 'square', 'lake'], model: 'ugt_import_model', edit: 'ugt_edit_design',
-        furniture: 'Park/square decorationDesign: lamps [{coordinate, bearing}], stalls [{coordinate, bearing, color?}] and models {kind: {url, name}} per furniture kind (upload with ugt_import_model kind furniture).',
+        furniture: 'Park/square decorationDesign: lamps [{coordinate, bearing}], stalls [{coordinate, bearing, color?}] and models {kind: {url, name}} per furniture kind (upload with ugt_import_model kind furniture). Parks also take swings, seesaws and slides [{coordinate, bearing}] and enclosures [{fence, use, gates, ring?}]: fenced areas (no ring = around the whole park), fence one of rail, mesh, iron, plinth; use one of none, dog, play; at least one gate [lng, lat] on the fence.',
+        enclosures: { fences: ParkEnclosures.FENCE_KINDS, uses: ParkEnclosures.USES },
         furnitureKinds: FurnitureModels.KINDS_BY_STRUCTURE },
     { feature: 'parcel-layout', create: 'ugt_draft_parcel_layout', algorithms: ['equal', 'schelling'] },
-    { feature: 'corridors', create: ['ugt_draft_road', 'ugt_draft_track'] },
+    { feature: 'corridors', create: ['ugt_draft_road', 'ugt_draft_track'],
+        junctions: { tools: ['ugt_draft_road', 'ugt_draft_track', 'ugt_import_design', 'ugt_edit_design', 'ugt_modify_design'], input: 'plan', output: ['consequences.junctions'],
+            rule: 'Same-level crossings and touches with the plan’s roads and tracks become junctions on both, as in the map editor. A changed neighbour is replaced in the returned plan revision by a new revision with origin.cid.' } },
     { feature: 'stations', create: 'ugt_draft_station', kinds: ['bus', 'tram', 'underground', 'elevated'],
         categories: { road: ['bus'], track: ['tram', 'elevated', 'underground'] },
         trackPlacement: { ground: 'tram', elevated: 'elevated', underground: 'underground' } },

@@ -89,8 +89,9 @@ describe('explicit Esri JSON ArcGIS parcel format', () => {
         await expect(createArcgisParcelSource({ ...descriptor, boundsQueryMode: 'object-ids' }, { fetchImpl }).queryBounds(bounds))
             .rejects.toMatchObject({ code: 'parcel-source-unavailable' });
         raw.exceededTransferLimit = false; raw.features[0].geometry.curveRings = [exterior];
+        // An unsupported parcel representation fails the read without marking the provider down.
         await expect(createArcgisParcelSource(descriptor, { fetchImpl }).queryBounds(bounds))
-            .rejects.toMatchObject({ code: 'parcel-source-unavailable' });
+            .rejects.toMatchObject({ status: 502, code: 'parcel-source-geometry-unsupported' });
         expect(() => createArcgisParcelSource({ ...descriptor, queryFormat: 'guess' })).toThrow();
     });
 });

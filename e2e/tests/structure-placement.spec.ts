@@ -187,6 +187,7 @@ test.describe('Whole-site placement editing @features', () => {
         return reroll(tree, () => values[index++ % values.length]);
       };
     });
+    // A tree click opens its card; New look re-rolls it (aece604c6).
     const tree = page.locator('.structure-geometry-icon.is-tree').first();
     await tree.click();
     const newLook = editor.getByRole('button', { name: 'New look', exact: true });

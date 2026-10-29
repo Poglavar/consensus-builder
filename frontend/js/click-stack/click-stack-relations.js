@@ -10,7 +10,8 @@
     const keys = Object.freeze({
         memberPlans: 'memberPlans', includedDesigns: 'includedDesigns',
         createdBy: 'createdBy', formedFrom: 'formedFrom', formedParcels: 'formedParcels',
-        affectsParcels: 'affectsParcels', designsOnParcel: 'designsOnParcel', affectedBy: 'affectedBy'
+        affectsParcels: 'affectsParcels', designsOnParcel: 'designsOnParcel', affectedBy: 'affectedBy',
+        designParcels: 'designParcels'
     });
 
     function translate(key, win) {
@@ -48,8 +49,47 @@
         return pill;
     }
 
+    // A group with tabs (a design's formed and input parcels): one tab per group, each showing its
+    // own strip. The tabs switch here, so both stacks (2D and 3D) get them without wiring.
+    function renderTabs(group, doc, win) {
+        const choices = doc.createElement('div');
+        choices.className = 'click-stack__choices click-stack__choices--tabs';
+        choices.dataset.kind = group.kind || '';
+        choices.setAttribute('role', 'group');
+        choices.setAttribute('aria-label', translate(keys[group.relation] || group.relation, win));
+        const tablist = doc.createElement('div');
+        tablist.className = 'cb-tabs cb-tabs--fill';
+        tablist.setAttribute('role', 'tablist');
+        const panels = group.tabs.map((tab, index) => {
+            const id = `click-stack-relation-${++selectorId}`;
+            const button = doc.createElement('button');
+            button.type = 'button';
+            button.className = 'cb-tab';
+            button.id = `${id}-tab`;
+            button.setAttribute('role', 'tab');
+            button.setAttribute('aria-controls', id);
+            button.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+            button.textContent = `${translate(`${keys[tab.relation] || tab.relation}Tab`, win)} (${tab.count})`;
+            tablist.appendChild(button);
+            const panel = renderGroup({ ...tab, tabs: null }, doc, win);
+            panel.id = id;
+            panel.setAttribute('role', 'tabpanel');
+            panel.setAttribute('aria-labelledby', button.id);
+            panel.hidden = index !== 0;
+            panel.querySelector('.click-stack__relation-label')?.remove();
+            button.addEventListener('click', () => {
+                [...tablist.children].forEach(other => other.setAttribute('aria-selected', other === button ? 'true' : 'false'));
+                panels.forEach(other => { other.hidden = other !== panel; });
+            });
+            return panel;
+        });
+        choices.append(tablist, ...panels);
+        return choices;
+    }
+
     function renderGroup(group, doc, win) {
         if (!group || !doc) return null;
+        if (Array.isArray(group.tabs) && group.tabs.length) return renderTabs(group, doc, win);
         const choices = doc.createElement('div');
         choices.className = 'click-stack__choices';
         choices.dataset.kind = group.kind || '';

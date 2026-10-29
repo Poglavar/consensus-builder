@@ -298,12 +298,18 @@ describe('whole-block fresh-proposal suggestion', () => {
         context.window = context;
         vm.runInNewContext(listUiSource, context);
 
+        context.getProposalI18nHelper = () => (_key, fallback) => fallback;
+
         await context.launchSingleBuildingToolForSelection();
+        // Row houses need at least two parcels (e9e20e1e1): one parcel stops before the preflight.
+        await expect(context.launchRowHouseToolForSelection()).resolves.toBe(false);
+        expect(context.updateStatus).toHaveBeenCalledWith(expect.stringContaining('Row houses need at least two parcels'));
+        context.multiParcelSelection = { selectedParcels: new Set(['parcel-1', 'parcel-2']) };
         await context.launchRowHouseToolForSelection();
 
         expect(maybeSuggestWholeBlockForFreshProposal.mock.calls).toEqual([
             ['single', ['parcel-1']],
-            ['row', ['parcel-1']]
+            ['row', ['parcel-1', 'parcel-2']]
         ]);
         expect(openSingleBuildingForParcels).not.toHaveBeenCalled();
         expect(openRowHouseForParcels).not.toHaveBeenCalled();

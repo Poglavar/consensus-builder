@@ -386,11 +386,12 @@ describe('GET /agreements?minted=1', () => {
     };
 
     it('keeps the agreements the index holds a chain account for', async () => {
-        const { res, call } = await listed('?city=zg&minted=1&limit=5');
+        const { res, call } = await listed('?city=Zagreb&minted=1&limit=5');
         expect(res.status).toBe(200);
         expect(res.body.agreements[0].onchain).toEqual({ account: ACCOUNT, status: 'active' });
-        expect(call.sql).toMatch(/WHERE city = \$1 AND onchain IS NOT NULL\s+ORDER BY created_at DESC, cid\s+LIMIT \$2/);
-        expect(call.params).toEqual(['zagreb', 5]);
+        // One row beyond the limit tells the page whether another exists (agreements-route.test.js).
+        expect(call.sql).toMatch(/AND city = \$1 AND onchain IS NOT NULL\s+ORDER BY created_at DESC, cid\s+LIMIT \$2 OFFSET \$3/);
+        expect(call.params).toEqual(['zagreb', 6, 0]);
         const { call: all } = await listed('');
         expect(all.sql).not.toMatch(/onchain IS NOT NULL/);
     });

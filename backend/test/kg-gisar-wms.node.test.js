@@ -53,7 +53,9 @@ test('bounds enumerate a scale-safe envelope without pixels, retaining complete 
     assert.match(params.get('FILTER'), /LIKE '_-__-__-____-____'/);
     assert.equal(isGisarParcelUrl(calls[0]), true);
     await assert.rejects(source.queryBounds([74.5,42.8,74.6,42.9]), { status: 400 });
-    await assert.rejects(source.queryBounds([75,43,75.001,43.001]), { status: 502 });
+    // QGIS legitimately returns candidates outside the requested envelope (aed8a6269): they are
+    // filtered by the exact full-polygon scope, not treated as a provider failure.
+    assert.deepEqual((await source.queryBounds([75,43,75.001,43.001])).features, []);
 });
 
 test('fail closed on mismatched, duplicate, partial, truncated or malformed native parcels', async () => {

@@ -20,9 +20,9 @@ describe('hackathon pitch deck page', () => {
         expect(html).toContain('Ideas can be believed into reality, if tools exist');
         expect(html).toContain('Humans and AI agents imagine');
         expect(html).toContain('<strong><b>REAL</b><b>PARCELS</b></strong>');
-        expect(html).toContain('a multitude of proposals can reference');
+        expect(html).toContain('a multitude of designs can reference');
         expect(html).toContain('Belief is not the last stage. It is a force.');
-        expect(html).toContain('Forecasting opens as soon as a proposal exists.');
+        expect(html).toContain('Forecasting opens as soon as a design exists.');
         expect(html).toContain('Stake YES or NO as soon as the agreement is minted.');
         expect(html).toContain('No donation or pledge is required first.');
         expect(html).toContain('Visible belief focuses attention');

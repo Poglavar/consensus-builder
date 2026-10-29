@@ -23,6 +23,8 @@
 
     const format = () => root.CbFormat || (typeof require === 'function' ? require('./format.js') : null);
     const dialogApi = () => root.AgreementDialog || (typeof require === 'function' ? require('./agreement-dialog.js') : null);
+    const recordApi = () => root.AgreementRecord || (typeof require === 'function' ? require('./agreement-record.js') : null);
+    const personsApi = () => root.AgreementPersons || (typeof require === 'function' ? require('./agreement-persons.js') : null);
     const bridgeApi = () => root.AgreementBridge || (typeof require === 'function' ? require('./solana/agreement-bridge.js') : null);
 
     function t(key, fallback, params = {}) {
@@ -63,13 +65,15 @@
     // One literal key per reason code of AgreementGround.check, so the locale coverage test sees them.
     const REASON_TEXT = {
         'design-missing': tr => tr('agreement.panel.status.reasons.designMissing', 'a design was deleted'),
-        'design-not-applied': tr => tr('agreement.panel.status.reasons.designNotApplied', 'a design is no longer applied'),
+        'design-not-applied': tr => tr('agreement.panel.status.reasons.designNotApplied', 'a design is not applied'),
         'design-changed': tr => tr('agreement.panel.status.reasons.designChanged', 'a design changed'),
-        'ground-changed': tr => tr('agreement.panel.status.reasons.groundChanged', 'the ground changed')
+        'ground-changed': tr => tr('agreement.panel.status.reasons.groundChanged', 'the ground changed'),
+        unknown: tr => tr('agreement.panel.status.reasons.unknown', 'the map changed')
     };
 
-    // "Matches the map", or "No longer matches the map" and why (AgreementGround.check). Each reason
-    // is said once; a reason about one design names it by proposalId.
+    // Why the agreement does not match the map (AgreementGround.check); a matching one has nothing to
+    // say. Each reason is said once; a reason about one design names it by proposalId. When every
+    // reason is an unapplied design, applying them is the fix (`applicable`).
     function statusOf(check, tr = t) {
         const current = !!check && check.current === true;
         const seen = new Set();
@@ -84,14 +88,9 @@
                 reasons.push({ code, proposalId, text: text(tr) });
             });
         }
-        return {
-            current,
-            tone: current ? 'success' : 'warning',
-            label: current
-                ? tr('agreement.panel.status.current', 'Matches the map')
-                : tr('agreement.panel.status.stale', 'No longer matches the map'),
-            reasons
-        };
+        if (!current && !reasons.length) reasons.push({ code: 'unknown', proposalId: null, text: REASON_TEXT.unknown(tr) });
+        const applicable = !current && reasons.every(reason => reason.code === 'design-not-applied');
+        return { current, reasons, applicable };
     }
 
     // The land in numbers: input parcels, their recorded area (null when any of it is unknown: a
@@ -109,42 +108,24 @@
         };
     }
 
-    function percentText(share) {
-        return finite(share) ? format().formatPercent(share) : '';
+    // The abstract party standing for an input parcel's owner(s) (AgreementRecord.partyKey).
+    function partyLabel(parcelId, tr = t) {
+        return tr('agreement.party.parcelOwners', 'Owner(s) of parcel {{parcelId}}', { parcelId });
     }
 
-    // "Ana 50%, Ben 50%", or that nobody is recorded (the dialog words holders the same way).
-    function holdersLine(holders, tr = t, names = new Map()) {
-        const list = (Array.isArray(holders) ? holders : []).filter(holder => holder && idOf(holder.ownerKey));
-        if (!list.length) return tr('agreement.land.unowned', 'No recorded owner');
-        return list.map(holder => {
-            const key = idOf(holder.ownerKey);
-            return `${holder.displayName || names.get(key) || key} ${percentText(holder.share)}`.trim();
-        }).join(', ');
+    // Every party's name: one abstract party per input parcel.
+    function partyNames(agreement, tr = t) {
+        return new Map(((agreement && agreement.inputs && agreement.inputs.parcels) || [])
+            .map(parcel => [recordApi().partyKey(idOf(parcel.parcelId)), partyLabel(idOf(parcel.parcelId), tr)]));
     }
 
-    // Every party's name the record knows: the holders of the inputs and of the outputs.
-    function partyNames(agreement) {
-        const names = new Map();
-        const add = holder => {
-            const key = idOf(holder && holder.ownerKey);
-            if (key && holder.displayName && !names.has(key)) names.set(key, String(holder.displayName));
-        };
-        ((agreement && agreement.inputs && agreement.inputs.parcels) || []).forEach(parcel => ((parcel && parcel.holders) || []).forEach(add));
-        ((agreement && agreement.outputs) || []).forEach(output => ((output && output.holders) || []).forEach(add));
-        return names;
-    }
-
-    // Who receives one piece, in words. No allocation line keeps the carried-over holders.
-    function recipientText(to, output, names, tr) {
+    // Who receives one piece, in words; an owners' agreement allocates every piece.
+    function recipientText(to, names, tr) {
         const kind = to && to.kind;
         if (kind === 'public') return tr('agreement.allocation.public', 'Public');
         if (kind === 'proposer') return tr('agreement.allocation.proposer', 'Proposer');
         if (kind === 'party') return names.get(idOf(to.ownerKey)) || idOf(to.ownerKey);
-        if (kind === 'joint') return holdersLine(to.shares, tr, names);
-        const holders = output && Array.isArray(output.holders) ? output.holders : [];
-        if (!holders.length) return tr('agreement.land.unowned', 'No recorded owner');
-        return `${tr('agreement.allocation.holders', 'Current holders')} (${holdersLine(holders, tr, names)})`;
+        return NO_VALUE;
     }
 
     // One line per resulting piece, in the record's order: "Piece n", its area and who receives it.
@@ -152,42 +133,32 @@
         const outputs = agreement && Array.isArray(agreement.outputs) ? agreement.outputs : [];
         const lines = new Map((agreement && Array.isArray(agreement.allocations) ? agreement.allocations : [])
             .filter(line => line && idOf(line.output)).map(line => [idOf(line.output), line.to || null]));
-        const names = partyNames(agreement);
+        const names = partyNames(agreement, tr);
         return outputs.map((output, index) => {
-            const to = lines.get(idOf(output && output.hash)) || { kind: 'holders' };
+            const to = lines.get(idOf(output && output.hash)) || null;
             return {
                 hash: idOf(output && output.hash),
                 label: `${tr('agreement.land.piece', 'Piece')} ${index + 1}`,
                 areaM2: finite(output && output.areaM2) ? output.areaM2 : null,
                 hasGeometry: !!output?.geometry,
                 area: format().formatArea(output && output.areaM2, { missing: NO_VALUE }),
-                kind: ['public', 'proposer', 'party', 'joint'].includes(to.kind) ? to.kind : 'holders',
-                to: recipientText(to, output, names, tr)
+                kind: to && ['public', 'proposer', 'party'].includes(to.kind) ? to.kind : null,
+                to: recipientText(to, names, tr)
             };
         });
     }
 
-    // How many resulting pieces each owner of an input parcel receives: alone (party), as a co-owner
-    // (joint) or by keeping the carried-over holders. Public and proposer pieces go to no owner.
-    // { owners, none: [{ ownerKey, name, pieces }], several: [...] } — the owners left without land and
-    // the ones receiving more than one piece.
-    function ownerOutcomes(agreement) {
-        const owners = [];
-        ((agreement && agreement.inputs && agreement.inputs.parcels) || []).forEach(parcel => ((parcel && parcel.holders) || []).forEach(holder => {
-            const key = idOf(holder && holder.ownerKey);
-            if (key && !owners.includes(key)) owners.push(key);
-        }));
+    // How many resulting pieces each input parcel's party (its owners) receives. Public and proposer
+    // pieces go to no party. { owners, none: [{ ownerKey, name, pieces }], several: [...] } — the
+    // parties left without land and the ones receiving more than one piece.
+    function ownerOutcomes(agreement, tr = t) {
+        const names = partyNames(agreement, tr);
+        const owners = [...names.keys()];
         const counts = new Map(owners.map(key => [key, 0]));
-        const lines = new Map((agreement && Array.isArray(agreement.allocations) ? agreement.allocations : [])
-            .filter(line => line && idOf(line.output)).map(line => [idOf(line.output), line.to || null]));
-        ((agreement && agreement.outputs) || []).forEach(output => {
-            const to = lines.get(idOf(output && output.hash)) || { kind: 'holders' };
-            const receivers = to.kind === 'party' ? [to.ownerKey]
-                : to.kind === 'joint' ? (to.shares || []).map(share => share && share.ownerKey)
-                    : to.kind === 'public' || to.kind === 'proposer' ? [] : ((output && output.holders) || []).map(holder => holder && holder.ownerKey);
-            new Set(receivers.map(idOf).filter(key => counts.has(key))).forEach(key => counts.set(key, counts.get(key) + 1));
+        ((agreement && Array.isArray(agreement.allocations) ? agreement.allocations : [])).forEach(line => {
+            const key = line && line.to && line.to.kind === 'party' ? idOf(line.to.ownerKey) : '';
+            if (counts.has(key)) counts.set(key, counts.get(key) + 1);
         });
-        const names = partyNames(agreement);
         const named = keys => keys.map(key => ({ ownerKey: key, name: names.get(key) || key, pieces: counts.get(key) }));
         return { owners: owners.length, none: named(owners.filter(key => counts.get(key) === 0)), several: named(owners.filter(key => counts.get(key) > 1)) };
     }
@@ -220,7 +191,7 @@
         const rows = (ledger && Array.isArray(ledger.parties) ? ledger.parties : []).map(party => ({
             ownerKey: idOf(party.ownerKey),
             recipientKind: 'party',
-            name: party.displayName || idOf(party.ownerKey),
+            name: party.parcelId ? partyLabel(party.parcelId, tr) : party.displayName || idOf(party.ownerKey),
             contributes: party.areaUnknown ? NO_VALUE : withValue(area(party.contributedM2), party.contributedValueCents),
             receives: withValue(area(party.assignedM2), party.assignedValueCents),
             change: party.areaUnknown ? NO_VALUE : signedArea(party.changeM2),
@@ -238,6 +209,32 @@
             });
         }
         return rows;
+    }
+
+    // People are never stored in an agreement. With ownership rights in its rule, what each person
+    // holds of the parcel parties (AgreementPersons.personPositions) as table rows; null without rights.
+    function personRows(agreement, currency, names = new Map()) {
+        const rights = agreement && agreement.rule && agreement.rule.approvalConfig ? agreement.rule.approvalConfig.rights : null;
+        if (!rights) return null;
+        const derived = personsApi().personPositions(agreement, rights);
+        const area = value => format().formatArea(value, { missing: NO_VALUE });
+        return {
+            rows: derived.persons.map(person => ({
+                personId: person.personId, name: names.get(person.personId) || person.personId,
+                contributes: area(person.contributedM2), receives: area(person.landM2), cash: signedMoney(person.cashCents, currency)
+            })),
+            unresolved: derived.unresolved.length
+        };
+    }
+
+    function personsHtml(derived, tr = t) {
+        if (!derived || !derived.rows.length) return '';
+        const head = [tr('agreement.workflow.person', 'Person'), tr('agreement.panel.ledger.contributes', 'Contributes'),
+            tr('agreement.panel.ledger.receives', 'Receives'), tr('agreement.panel.ledger.cash', 'Cash')];
+        const body = derived.rows.map(row => `<tr data-agreement-person="${esc(row.personId)}"><th scope="row">${esc(row.name)}</th><td>${esc(row.contributes)}</td><td>${esc(row.receives)}</td><td>${esc(row.cash)}</td></tr>`).join('');
+        return sectionHtml(tr('agreement.workflow.personsByRights', 'Persons by ownership rights'), '<div class="agreement-panel-ledger-scroll"><table class="agreement-panel-ledger" data-agreement-derived-persons>'
+            + `<thead><tr>${head.map(label => `<th scope="col">${esc(label)}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`
+            + (derived.unresolved ? `<p class="agreement-panel-meta" data-agreement-persons-unresolved>${esc(tr('agreement.workflow.personsUnresolved', 'Without complete ownership rights, the owners of {{count}} parcel(s) stay one party.', { count: derived.unresolved }))}</p>` : ''));
     }
 
     // Who decides and whether it binds; for the owners, the approval rule in one line.
@@ -292,7 +289,8 @@
 
     const sectionHtml = (title, content) => `<section class="agreement-panel-section"><h3 class="agreement-panel-heading">${esc(title)}</h3>${content}</section>`;
 
-    function statusHtml({ checking, error, status, designTitles, readOnly = false }, tr = t) {
+    // Nothing while the agreement matches the map; otherwise one warning saying why and what waits on it.
+    function statusHtml({ checking, error, status, designTitles, readOnly = false, published = false }, tr = t) {
         if (readOnly) return `<p class="agreement-panel-note" data-agreement-read-only-status>${esc(tr('agreement.publish.readOnlyStatus', 'Read-only view. Local map status is not evaluated.'))}</p>`;
         if (error) {
             return `<p class="agreement-panel-note agreement-panel-note--danger" role="alert">${esc(tr('agreement.panel.status.error', 'The agreement could not be checked against the map: {{reason}}', { reason: error }))}</p>`;
@@ -301,9 +299,13 @@
         const titles = designTitles instanceof Map ? designTitles : new Map();
         const reasons = status.reasons.map(reason => (reason.proposalId && titles.get(reason.proposalId)
             ? `${reason.text} (${titles.get(reason.proposalId)})` : reason.text)).join('; ');
-        return `<div class="agreement-panel-status" role="status" data-agreement-status="${status.current ? 'current' : 'stale'}">`
-            + `<span class="cb-badge cb-badge--${status.tone}">${esc(status.label)}</span>`
-            + (reasons ? `<p class="agreement-panel-reasons">${esc(reasons)}</p>` : '')
+        if (status.current) return '';
+        const text = published
+            ? tr('agreement.panel.status.stale', 'Does not match the map: {{reasons}}. Before / after needs it to match.', { reasons })
+            : tr('agreement.panel.status.staleDraft', 'Does not match the map: {{reasons}}. Propose and Before / after need it to match.', { reasons });
+        return '<div class="agreement-panel-note agreement-panel-note--warning agreement-panel-status" role="status" data-agreement-status="stale">'
+            + `<p class="agreement-panel-status-text">${esc(text)}</p>`
+            + (status.applicable ? `<button type="button" class="btn btn-sm" data-agreement-action="apply-designs">${esc(tr('agreement.workflow.applyPlan', 'Apply plan designs'))}</button>` : '')
             + '</div>';
     }
 
@@ -608,7 +610,7 @@
 
     function inputsHtml(agreement, tr = t) {
         const rows = (agreement.inputs?.parcels || []).map(parcel => `<li><button type="button" class="cb-option agreement-panel-object" data-agreement-inspect="input" data-agreement-object-id="${esc(parcel.parcelId)}" aria-pressed="false">`
-            + `<span class="agreement-panel-design__text"><span>${esc(parcel.parcelId)}</span><span class="agreement-panel-design__type">${esc(holdersLine(parcel.holders, tr))}</span></span>`
+            + `<span class="agreement-panel-design__text"><span>${esc(parcel.parcelId)}</span><span class="agreement-panel-design__type">${esc(dialogApi().ownersText(parcel.parcelId, agreement.rule?.approvalConfig?.rights))}</span></span>`
             + `<span>${esc(format().formatArea(parcel.areaM2, { missing: NO_VALUE }))}</span></button></li>`).join('');
         return `<ul class="agreement-panel-inputs">${rows}</ul>`;
     }
@@ -621,8 +623,9 @@
         if (kind === 'design') { const design = designOf(key); return design ? outlineOf(design) : []; }
         if (kind === 'input') return input(key);
         if (kind === 'output') return output((agreement.outputs || []).find(item => item.hash === key));
-        const inputs = kind === 'person' ? (agreement.inputs?.parcels || [])
-            .filter(parcel => (parcel.holders || []).some(holder => holder.ownerKey === key)).flatMap(parcel => input(parcel.parcelId)) : [];
+        const party = kind === 'person' ? recordApi().parcelOfParty(key) : null;
+        const inputs = party !== null ? (agreement.inputs?.parcels || [])
+            .filter(parcel => idOf(parcel.parcelId) === party).flatMap(parcel => input(parcel.parcelId)) : [];
         const hashes = new Set((agreement.allocations || []).filter(line => kind === 'person'
             ? line.to?.kind === 'party' && line.to.ownerKey === key : line.to?.kind === kind).map(line => line.output));
         return [...inputs, ...(agreement.outputs || []).filter(item => hashes.has(item.hash)).flatMap(output)];
@@ -631,7 +634,7 @@
     // counts: { inputs, outputs, persons } shown in brackets, since inputs and outputs differ in number.
     function tabbedHtml(panels, selected, tr = t, counts = {}) {
         const labels = { overview: tr('panel.proposal.tabs.overview', 'Overview'), inputs: tr('agreement.workflow.inputs', 'Input parcels'),
-            outputs: tr('agreement.workflow.outputs', 'Output parcels'), persons: tr('agreement.workflow.persons', 'Persons'), rules: tr('agreement.workflow.rules', 'Rules') };
+            outputs: tr('agreement.workflow.outputs', 'Output parcels'), persons: tr('agreement.workflow.persons', 'Persons'), rules: tr('proposalDrafts.approval.policyType', 'Rules') };
         const label = kind => labels[kind] + (Number.isInteger(counts[kind]) ? ` (${counts[kind]})` : '');
         const kinds = Object.keys(panels);
         return `<div class="cb-tabs cb-tabs--fill agreement-properties-tabs" role="tablist" aria-label="${esc(tr('agreement.panel.title', 'Agreement'))}">`
@@ -698,7 +701,6 @@
                 fingerprintOf: record => win.DesignRecord.cidOf(record),
                 fabric,
                 originals: dialogApi().originalsById(features, fabric && fabric.featureId),
-                ownerOf: ground.localHolders({ storage: win.PersistentStorage, agents: win.agentStorage }),
                 area: win.AgreementGround.areaOf
             });
         }
@@ -731,18 +733,20 @@
             const agreement = state.agreement;
             const readOnly = !!state.readOnlyAgreement;
             const status = statusHtml({
-                checking: state.checking, error: state.error, readOnly,
+                checking: state.checking, error: state.error, readOnly, published: !!(agreement && agreement.published),
                 status: state.check ? statusOf(state.check) : null,
                 designTitles: new Map(((agreement && agreement.designs) || []).map(design => [idOf(design.proposalId), design.title || '']))
             });
             if (!agreement) return status;
             let ledger = { rows: [], sponsor: '', error: null };
+            let persons = null;
             const counts = { inputs: (agreement.inputs?.parcels || []).length, outputs: (agreement.outputs || []).length };
             try {
                 const computed = win.AgreementRecord.ledger(agreement);
                 counts.persons = computed.parties.length;
                 const sponsor = dialogApi().sponsorLine(computed.money);
                 ledger = { rows: ledgerRows(computed), sponsor: sponsor ? sponsor.text : '', error: null };
+                persons = personRows(agreement, computed.currency);
             } catch (error) {
                 console.error(`[${new Date().toISOString()}] [AgreementPanel] the ledger of ${state.id} could not be computed`, error);
                 ledger.error = error && error.message ? error.message : String(error);
@@ -770,12 +774,11 @@
             const separateOutputs = agreement.rule?.electorate !== 'community';
             const land = landSummary(agreement);
             const panels = { overview, inputs: landHtml(land, t, { outputs: !separateOutputs }) + inputsHtml(agreement),
-                ...(separateOutputs ? { outputs: byHashOnly + piecesHtml(land, ownerOutcomes(agreement)) + allocationHtml(allocationLines(agreement)), persons: ledgerHtml(ledger) } : {}),
+                ...(separateOutputs ? { outputs: byHashOnly + piecesHtml(land, ownerOutcomes(agreement)) + allocationHtml(allocationLines(agreement)), persons: ledgerHtml(ledger) + personsHtml(persons) } : {}),
                 rules: ruleHtml(rule, deadline, t, { owners: agreement.rule?.electorate === 'owners', scheme: !!win.AgreementRecord.schemeOf(agreement.rule), counter: true }) };
             if (!(state.tab in panels)) state.tab = 'overview';
             return status
                 + actionsHtml({ canCompare: current, comparing: comparing(state.id), canPropose: current && !published, published, canBet: binding && betAvailable(agreement), readOnly })
-                + (!current && !readOnly ? `<p class="agreement-panel-hint" data-agreement-compare-unavailable>${esc(t('agreement.panel.compareUnavailable', 'Before / after is available when this agreement matches the designs applied on the map.'))}</p>` : '')
                 + tabbedHtml(panels, state.tab, t, counts);
         }
 
@@ -789,6 +792,9 @@
             close.setAttribute('aria-label', closeLabel);
             close.title = closeLabel;
             panel.querySelector('[data-agreement-region="body"]').innerHTML = bodyHtml();
+            // The check's outcome for tests and styling; a matching agreement shows no status of its own.
+            panel.setAttribute('data-agreement-check', state.readOnlyAgreement ? 'read-only' : state.error ? 'error'
+                : state.checking || !state.check ? 'checking' : state.check.current ? 'current' : 'stale');
             if (state.inspectedKey) panel.querySelectorAll('[data-agreement-inspect]').forEach(button => {
                 button.setAttribute('aria-pressed', String(`${button.dataset.agreementInspect}:${button.dataset.agreementObjectId}` === state.inspectedKey));
             });
@@ -1038,8 +1044,13 @@
             const guideFor = scheme => {
                 try {
                     const ledger = api.ledger(agreement), result = api.schemeCheck(agreement, scheme);
-                    const label = key => ledger.parties.find(party => party.ownerKey === key)?.displayName || key;
-                    return { ledger, rules: result?.check.rules || [], check: result ? { ok: result.check.ok, lines: result.check.rules.map(rule => ({ ok: rule.ok, text: words.checkLines({ rules: [rule] }, t, label)[0] })) } : null };
+                    const label = key => {
+                        const party = ledger.parties.find(row => row.ownerKey === key);
+                        return party?.parcelId ? t('agreement.party.parcelOwners', 'Owner(s) of parcel {{parcelId}}', { parcelId: party.parcelId }) : party?.displayName || key;
+                    };
+                    const rights = agreement.rule?.approvalConfig?.rights;
+                    return { ledger, persons: rights ? personsApi().personPositions(agreement, rights) : null,
+                        rules: result?.check.rules || [], check: result ? { ok: result.check.ok, lines: result.check.rules.map(rule => ({ ok: rule.ok, text: words.checkLines({ rules: [rule] }, t, label)[0] })) } : null };
                 } catch (error) {
                     log(`the scheme check of ${state.id} against ${scheme.id} failed: ${error.message}`);
                     return { ledger: null, rules: [], check: null };
@@ -1047,7 +1058,7 @@
             };
             const schemeStatus = {};
             regimes.list().forEach(scheme => { try { schemeStatus[scheme.id] = api.schemeCheck(agreement, scheme).check.ok; } catch (_) { /* unmarked */ } });
-            setup.openSchemeGuide({ template, regime: agreement.rule?.approvalConfig?.regime || null, ...guideFor(template), currency: agreement.money?.currency || '',
+            setup.openSchemeGuide({ template, ...guideFor(template), currency: agreement.money?.currency || '',
                 schemeStatus, guideFor, action: { label: t('proposalDrafts.approval.guide.counterWith', 'Counter-agreement with this scheme'), run: scheme => counter(scheme) } });
         }
 
@@ -1065,12 +1076,27 @@
             if (saved?.id) await win.ClickStack.showAgreement(store().get(saved.id) || saved);
         }
 
+        // Applies the agreement's designs as one plan; the fabric commit re-checks the panel (onFabricChange).
+        async function applyDesigns() {
+            const ids = (state.agreement?.designs || []).map(design => idOf(design.proposalId)).filter(Boolean);
+            log(`applying the ${ids.length} design(s) of ${state.id}`);
+            const result = await win.ProposalManager.applyProposalPlan(ids);
+            win.updateProposalLayer?.();
+            win.updateShowProposalsButton?.();
+            if (result && result.ok === true) return;
+            const failures = win.ProposalManager._lastFailedPlanApplySummary?.failed || [];
+            throw new Error(failures.map(failure => failure.reason || failure.message).filter(Boolean).join('; ')
+                || t('proposals.share.errors.applyFailed', 'The design could not be applied to the ground here.'));
+        }
+
         // Propose (agreement-sync.js): publishes the designs and the agreement, then copies the link.
         async function propose() {
             const id = state.id;
+            let proposed = false;
             try {
                 const { cid, link } = await win.AgreementSync.publishAgreement(id);
                 log(`${id} proposed as ${cid}`);
+                proposed = true;
                 state.remote = null;
                 if (await win.DesignSync.copyLink(link)) {
                     win.showEphemeralMessage(t('agreement.publish.linkCopied', 'Agreement proposed. Its link is copied.'), 5000, 'success');
@@ -1082,6 +1108,9 @@
                 report(`proposing ${id} failed`, error);
             }
             if (state.id === id && isOpen()) refresh();
+            // Stamping the author gives its designs, and so its plan, new revisions: the click stack
+            // built on the old plan lets the panel go. Open the proposed agreement on its own plan.
+            else if (proposed && !isOpen()) await open(id).catch(error => report(`opening ${id} after proposing failed`, error));
         }
 
         async function copyLink() {
@@ -1389,6 +1418,7 @@
                 case 'close': close(); break;
                 case 'plan': win.BusyControl.track(action, () => win.ClickStack.showPlan(state.agreement.plan, { designs: state.agreement.designs, draft: !state.agreement.published })).catch(error => win.showStyledAlert(error.message)); break;
                 case 'compare': win.BusyControl.track(action, () => win.toggleAgreementBeforeAfter(state.id)); break;
+                case 'apply-designs': win.BusyControl.track(action, () => applyDesigns()).catch(error => win.showStyledAlert(error.message)); break;
                 case 'propose': win.BusyControl.track(action, () => propose()); break;
                 case 'link': copyLink(); break;
                 case 'mint': mint(); break;
@@ -1544,7 +1574,7 @@
     }
 
     return {
-        titleOf, statusOf, landSummary, ownerOutcomes, allocationLines, ledgerRows, ruleSummary, ruleShort, designRows, groundIds, holdersLine,
+        titleOf, statusOf, landSummary, ownerOutcomes, allocationLines, ledgerRows, personRows, personsHtml, ruleSummary, ruleShort, designRows, groundIds, partyLabel,
         statusHtml, actionsHtml, remoteStatusOf, observedRemote, publishedHtml, designsHtml, landHtml, piecesHtml, allocationHtml, ledgerHtml, ruleHtml,
         inputsHtml, inspectionFeatures, tabbedHtml,
         shortKey, chainStatusText, mintReadiness, isBinding, chainHtml, nonBindingChainHtml, browserPanel

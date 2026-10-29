@@ -3,9 +3,9 @@ import { test, expect } from '../helpers/fixtures';
 import { selectNativeOption } from '../helpers/controls';
 
 const locales = [
-  { lang: 'ar', locale: 'ar-EG', direction: 'rtl', label: 'التصاميم' },
-  { lang: 'fr', locale: 'fr-FR', direction: 'ltr', label: 'Projets' },
-  { lang: 'pt', locale: 'pt-PT', direction: 'ltr', label: 'Projetos' },
+  { lang: 'ar', locale: 'ar-EG', direction: 'rtl', label: 'القوائم' },
+  { lang: 'fr', locale: 'fr-FR', direction: 'ltr', label: 'Listes' },
+  { lang: 'pt', locale: 'pt-PT', direction: 'ltr', label: 'Listas' },
 ];
 for (const item of locales) {
   test(`${item.lang}: map renders translated controls and downloads only its selected dictionary`, async ({ mockApi: page }) => {
@@ -42,7 +42,7 @@ test('English startup does not download Arabic, French or Portuguese', async ({ 
     if (match) dictionaries.push(match[1]);
   });
   await page.goto('/?city=new_york&lang=en&reduceMotion=1', { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('#proposals-button .map-shell-button-label')).toHaveText('Designs');
+  await expect(page.locator('#proposals-button .map-shell-button-label')).toHaveText('Lists');
   await page.evaluate(() => (window as any).i18n.translationsReady);
   expect(dictionaries).toEqual(['en']);
 });
@@ -85,7 +85,7 @@ test('all locale buttons fit in a phone dialog and Arabic selection completes', 
   expect(await picker.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
   await picker.locator('[data-language="ar-EG"]').click();
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
-  await expect(page.locator('#proposals-button .map-shell-button-label')).toHaveText('التصاميم');
+  await expect(page.locator('#proposals-button .map-shell-button-label')).toHaveText('القوائم');
   await expect(picker.locator('[aria-busy="true"]')).toHaveCount(0);
 });
 

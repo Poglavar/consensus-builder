@@ -51,7 +51,7 @@
         if(existing)return existing;
         const known = await win.DesignSync.fetchDesigns(row.content.designCids);
         // Check every dependency before publishing any. The same policy applies to single-design
-        // publication; parcel layouts travel with the agreement which settles their ground.
+        // publication.
         const records = win.PlanComposition.localRecords(row, { apiBase: backend() });
         const missing = new Set(known.missing);
         for (const record of records) if (missing.has(win.DesignRecord.cidOf(record))) {

@@ -515,3 +515,29 @@ it('marks rule envelopes and sampled build-outs with their different geometry ro
     expect(example.properties).toMatchObject({ geometryRole: 'illustrative-buildout', planningCompliance: 'not-evaluated' });
     expect(example.properties.ruleProvenance).toEqual(envelope.properties.ruleProvenance);
 });
+
+describe('balconies and slanted roof on the rule', () => {
+    it('are written only when used, so existing rules keep their exact shape', () => {
+        expect(V.normalizeBlockRule({ typology: 'row' })).not.toHaveProperty('roof');
+        expect(V.normalizeBlockRule({ typology: 'row' })).not.toHaveProperty('balconyDepthM');
+        expect(V.normalizeParcelRule({ roof: 'flat', balconyDepthM: 0 })).not.toHaveProperty('roof');
+    });
+
+    it('are kept for all three typologies, with the protrusion capped', () => {
+        for (const rule of [V.normalizeBlockRule({ roof: 'pitched', balconyDepthM: 2 }),
+            V.normalizeBlockRule({ typology: 'row', roof: 'pitched', balconyDepthM: 2 }),
+            V.normalizeParcelRule({ roof: 'pitched', balconyDepthM: 2 })]) {
+            expect(rule).toMatchObject({ roof: 'pitched', balconyDepthM: 2 });
+        }
+        expect(V.normalizeParcelRule({ balconyDepthM: 40 }).balconyDepthM).toBe(V.MAX_BALCONY_DEPTH_M);
+        expect(V.normalizeParcelRule({ balconyDepthM: null })).not.toHaveProperty('balconyDepthM');
+    });
+
+    it('ride on every piece a block is split into', () => {
+        const site = parcel(60, 60);
+        const pieces = V.splitMassingByParcels(site, [{ feature: site, parcelId: 'A' }],
+            { typology: 'block', kind: 'exact', maxHeightM: 14, roof: 'pitched', balconyDepthM: 1.5 }, 3, deps).pieces;
+        expect(pieces.length).toBeGreaterThan(0);
+        for (const piece of pieces) expect(piece.properties.urbanRule).toMatchObject({ roof: 'pitched', balconyDepthM: 1.5 });
+    });
+});

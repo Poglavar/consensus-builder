@@ -81,7 +81,7 @@ import {
 import { inspectSettlement, executeSettlement } from './lifecycle-actions.js';
 import { buildRecipe } from './record-builder.js';
 import {
-    agreementObject, deadlineAfterDays, designObject, holdersFromRights, mapViewFromGeometry, noMoney, ownersRule, parcelOutputs, registryRights, planForDesigns
+    agreementObject, deadlineAfterDays, designObject, mapViewFromGeometry, noMoney, ownersRule, parcelOutputs, registryRights, planForDesigns
 } from './agreement-objects.js';
 import { createIndexClient } from './publication-client.js';
 import { mintAgreement } from './agreement-minter.js';
@@ -495,10 +495,11 @@ export async function advancePick({
         log(`${tag} owners of ${parcelId}: ${owners[key].soleOwner ? `${persona.name} alone` : set.map(row => walletNames[row.owner] || row.owner).join(', ')}`);
     }
 
-    // agreement: a binding owners' agreement over the one design; inputs = the design's binding with
-    // its registered owners as holders, outputs = the parcel as it stands, rule = every owner
-    // approves (unanimous) through receipts the operated lens member verifies; deadline and
-    // escrow from the persona's terms.
+    // agreement: a binding owners' agreement over the one design; inputs = the design's binding, each
+    // parcel its owners' abstract party, outputs = the parcel as it stands (going back to that party,
+    // so its co-owners keep it in their registered shares), rule = every registered owner approves
+    // (unanimous) through receipts the operated lens member verifies; deadline and escrow from the
+    // persona's terms.
     if (!agreements[key]) {
         const design = designs[key];
         const terms = design.terms;
@@ -506,12 +507,11 @@ export async function advancePick({
         const deadline = deadlineAfterDays(Date.parse(createdAt), terms.deadlineDays);
         const land = parcelLand(candidate);
         const rights = registryRights([{ parcelId: owners[key].parcelId, owners: owners[key].owners }]);
-        const holders = holdersFromRights(rights, owners[key].parcelId, walletNames);
         const { content, cid, plan } = agreementObject({
             title: terms.title, author: persona.name, sponsor: wallet, city: design.city ?? city, createdAt,
             plan: planForDesigns(terms.title, [design], mapViewFromGeometry([candidate.geometry], design.content.city ?? city)),
             designs: [{ cid: design.cid, goal: design.goal, title: design.title }],
-            parcels: land.parcels.map(parcel => ({ ...parcel, holders })), openGroundM2: 0, outputs: land.outputs,
+            parcels: land.parcels, openGroundM2: 0, outputs: land.outputs,
             money: noMoney(cityMoney(design.city ?? city).currentCurrency()),
             rule: ownersRule({ lens: lens.key, rights }), deadline
         });
