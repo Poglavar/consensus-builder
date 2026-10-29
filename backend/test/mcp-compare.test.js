@@ -26,7 +26,7 @@ function toolsFor({ supported = true, truncated = false, omitRegion = false, noS
 describe('MCP comparison measurements', () => {
     it('measures parcel takes and deduplicated source demolitions, and previews unpublished inputs', async () => {
         const { tools, calls } = toolsFor();
-        const result = await tools.compare({ buildingSourceId:'osm', targets: [park, { design: building }], parcelSourceId: 'test' });
+        const result = await tools.compare({ buildingSources:['osm'], targets: [park, { design: building }], parcelSourceId: 'test' });
         for (const alternative of result.alternatives) {
             expect(alternative.parcelsTaken).toEqual(['A']);
             expect(alternative.buildingsRemoved).toBe(1);
@@ -41,20 +41,20 @@ describe('MCP comparison measurements', () => {
     });
     it.each([{ supported: false }, { truncated: true }, { omitRegion: true }])('keeps incomplete stock unknown: %j', async options => {
         const { tools } = toolsFor(options);
-        const result = await tools.compare({ buildingSourceId:'osm', targets: [park, building], parcelSourceId: 'test' });
+        const result = await tools.compare({ buildingSources:['osm'], targets: [park, building], parcelSourceId: 'test' });
         expect(result.alternatives[0].buildingsRemoved).toBeNull();
         expect(result.alternatives[0].measurementErrors[0].code).toBe('building-coverage-incomplete');
     });
     it('keeps a supported empty source as known zero', async () => {
         const { tools } = toolsFor({ noStock: true });
-        const result = await tools.compare({ buildingSourceId:'osm', targets: [park, building], parcelSourceId: 'test' });
+        const result = await tools.compare({ buildingSources:['osm'], targets: [park, building], parcelSourceId: 'test' });
         expect(result.alternatives[0].buildingsRemoved).toBe(0);
     });
     it('reports a partial building cut separately from a full removal', async () => {
         const narrow = structuredClone(park);
         narrow.site = narrow.structureProposal.geometry = turf.bboxPolygon([-0.09951, 51.5, -0.09949, 51.501]).geometry;
         const { tools } = toolsFor();
-        const result = await tools.compare({ buildingSourceId:'osm', targets: [narrow, park], parcelSourceId: 'test' });
+        const result = await tools.compare({ buildingSources:['osm'], targets: [narrow, park], parcelSourceId: 'test' });
         expect(result.alternatives[0]).toMatchObject({ buildingsRemoved: 0, buildingsCut: 1, measurementErrors: [] });
         expect(result.alternatives[0].removedFootprintM2).toBeGreaterThan(2);
         expect(result.alternatives[0].removedFootprintM2).toBeLessThan(turf.area(stock));
@@ -71,7 +71,7 @@ describe('MCP comparison measurements', () => {
             money: { currency: 'GBP', lines: [] }, rule: { ...communityRule(), electorate: 'owners', settlement: { method: 'area', rateCentsPerM2: 100, contributionBasisPoints: 0 } } });
         const cents = Math.round(areaM2 * 100);
         const { tools } = toolsFor();
-        const result = await tools.compare({ buildingSourceId:'osm', targets: [{ agreement: content, plan, designs: [agreementDesign.content] }, park], parcelSourceId: 'test' });
+        const result = await tools.compare({ buildingSources:['osm'], targets: [{ agreement: content, plan, designs: [agreementDesign.content] }, park], parcelSourceId: 'test' });
         expect(content.money.lines).toEqual([{ ownerKey: 'parcel-owner:A', amountCents: cents }]);
         expect(result.alternatives[0].ledger).toMatchObject({ currency: 'GBP', proposerM2: areaM2, parties: [
             { ownerKey: 'parcel-owner:A', parcelId: 'A', contributedM2: areaM2, assignedM2: 0, changeM2: -areaM2, cashCents: cents }] });

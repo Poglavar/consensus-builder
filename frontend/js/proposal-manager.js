@@ -1912,96 +1912,6 @@ const ProposalManager = {
     // Fetching cadastral ground and demolition buildings are independent reads, so the latter runs
     // alongside CadastralParcelRepository. The repository is the only owner of ground cache/transport
     // policy; this prefetch deals solely in building features that may need to be removed.
-    // One request for every scanning member's demolition ground. Runs CONCURRENTLY with the
-    // ground load — both are independent reads over the same member list — so its latency
-    // usually disappears behind cadastral-ground preparation.
-    //
-    // Failure here is never an answer: on any error, unsupported city, or truncation the map keeps
-    // only the keys a good response covered, and uncovered members fall back to their own
-    // per-region fetch. The one outcome this must never produce is an empty list standing in for
-    // "could not ask" — that is how a proposal gets stored as demolishing nothing.
-    async _prefetchDemolitionBuildings(appliedList, options = {}) {
-        const prefetched = new Map();
-        const profile = { regions: 0, requests: 0, coveredRegions: 0, fallbackRegions: 0, elapsed: 0 };
-        const started = _now();
-        const prefetchApi = (typeof window !== 'undefined') ? window.__demolitionPrefetch : null;
-        if (!prefetchApi || typeof fetch !== 'function') {
-            this._lastDemolitionPrefetchProfile = { ...profile, elapsed: _now() - started };
-            return prefetched;
-        }
-        const regions = prefetchApi.collectDemolitionRegions(appliedList, {
-            // A building member's region is the ground it takes: the live pieces of its cadastral
-            // scope (a superset of what Step 4 resolves) plus its footprints. No fabric or no
-            // pieces: the member is left out and fetches for itself.
-            parcelFeatures: (proposal) => {
-                try {
-                    const fabric = (typeof window !== 'undefined') ? window.LiveParcelFabric : null;
-                    if (!fabric || typeof fabric.entriesForCadastre !== 'function') return null;
-                    const ids = proposalClaims.cadastreParcelIdsOf(proposal).map(String).filter(Boolean);
-                    return ids.length ? fabric.entriesForCadastre(ids) : null;
-                } catch (_) { return null; }
-            },
-            normalizeGoalKey: (applyRoute && typeof applyRoute.normalizeGoalKey === 'function') ? applyRoute.normalizeGoalKey : undefined,
-            structureGeometry: (proposal) => {
-                const sp = proposal.structureProposal || {};
-                if (sp.geometry && sp.geometry.type && Array.isArray(sp.geometry.coordinates)) return sp.geometry;
-                try {
-                    const kind = (sp.kind === 'park' || sp.kind === 'square' || sp.kind === 'lake' || sp.kind === 'station') ? sp.kind : 'square';
-                    return typeof this._getCanonicalStructureGeometry === 'function'
-                        ? this._getCanonicalStructureGeometry(proposal, kind)
-                        : null;
-                } catch (_) { return null; }
-            }
-        });
-        profile.regions = regions.length;
-        if (!regions.length) {
-            this._lastDemolitionPrefetchProfile = { ...profile, elapsed: _now() - started };
-            return prefetched;
-        }
-
-        // Chunked to stay under the endpoint's 400-region cap; each chunk's answer stands alone.
-        const PREFETCH_CHUNK = 200;
-        const batchCount = Math.ceil(regions.length / PREFETCH_CHUNK);
-        _emitProposalProgress(options.onProgress, {
-            phase: 'building-ground-load',
-            regions: regions.length,
-            batches: batchCount
-        });
-        for (let index = 0; index < regions.length; index += PREFETCH_CHUNK) {
-            const chunk = regions.slice(index, index + PREFETCH_CHUNK);
-            try {
-                profile.requests += 1;
-                const payload = await window.BuildingSourceClient.request('/buildings/under', { regions: chunk });
-                if (!payload || payload.supported === false || payload.truncated === true) {
-                    if (payload && payload.truncated) console.warn('[replay] bulk building fetch truncated — falling back per proposal');
-                    continue;
-                }
-                const mapped = prefetchApi.buildingFeaturesFromBulk(payload.regions, payload.source);
-                mapped.forEach((features, key) => prefetched.set(key, features));
-            } catch (error) {
-                console.warn('[replay] bulk building fetch failed — members fall back to their own', error);
-            }
-            _emitProposalProgress(options.onProgress, {
-                phase: 'building-ground-progress',
-                done: Math.floor(index / PREFETCH_CHUNK) + 1,
-                total: batchCount,
-                regions: regions.length,
-                covered: prefetched.size
-            });
-        }
-        profile.coveredRegions = prefetched.size;
-        profile.fallbackRegions = Math.max(0, regions.length - prefetched.size);
-        profile.elapsed = _now() - started;
-        this._lastDemolitionPrefetchProfile = profile;
-        _emitProposalProgress(options.onProgress, {
-            phase: 'building-ground-ready',
-            regions: regions.length,
-            covered: profile.coveredRegions,
-            fallback: profile.fallbackRegions
-        });
-        return prefetched;
-    },
-
     async _loadReplayGround(appliedList, options = {}) {
         // A record on open ground only needs no cadastral ground: its host is its site. Asking the
         // repository for "the parcels under its footprint" would be a second, client-side binding.
@@ -2773,19 +2683,16 @@ const ProposalManager = {
                 updatedAt: proposal.updatedAt
             });
         });
-        // Every member's ground is loaded BEFORE anything derives, all of it at once. The fetches
-        // are independent reads, and asking for them one member at a time made finishing one road
-        // cost a full HTTP round-trip for every proposal already on the map — the cost that grew
-        // with the plan, in series, before any geometry ran at all.
-        const [groundMs, demolitionBuildings] = await Promise.all([
-            this._loadReplayGround(appliedList, {
-                onProgress: passOptions.onProgress,
-                purpose: 'replay',
-                _parcelMutation: passOptions._parcelMutation,
-                slicer
-            }),
-            this._prefetchDemolitionBuildings(appliedList, { onProgress: passOptions.onProgress })
-        ]);
+        // Every member's ground is loaded BEFORE anything derives, all of it at once: asking for it one
+        // member at a time made finishing one road cost a full HTTP round-trip for every proposal
+        // already on the map. Existing buildings are not part of it: their demolitions are derived
+        // after the commit (demolition-index.js).
+        const groundMs = await this._loadReplayGround(appliedList, {
+            onProgress: passOptions.onProgress,
+            purpose: 'replay',
+            _parcelMutation: passOptions._parcelMutation,
+            slicer
+        });
         // Only after every cadastral prerequisite is available do we replace the target partition.
         // The old implementation reset Leaflet first and fetched second, exposing an empty/partial
         // map for the entire replay and making a failed request destructive.
@@ -2905,9 +2812,6 @@ const ProposalManager = {
                     deferPresentation: true,
                     _parcelMutation: passOptions._parcelMutation
                 };
-                if (demolitionBuildings && demolitionBuildings.has(String(key))) {
-                    replayOptions.preloadedBuildings = demolitionBuildings.get(String(key));
-                }
                 ok = await this.applyProposal(key, replayOptions);
             } catch (error) {
                 if (workSlicerApi.isCancelled(error)) throw error;
@@ -2986,17 +2890,7 @@ const ProposalManager = {
             delete sub.parentsToRemove;
             delete sub.formation;
             delete sub.childFeatures;
-            if (key === 'buildingProposal' || key === 'structureProposal') {
-                delete sub.demolishedBuildings;
-                delete sub.demolitionScanned;
-            }
         });
-        const clearRoadScan = definition => {
-            if (!definition || typeof definition !== 'object') return;
-            delete definition.demolishedBuildings;
-            delete definition.demolitionScanned;
-        };
-        clearRoadScan(proposal.roadProposal?.definition);
         return proposal;
     },
 
@@ -3898,16 +3792,13 @@ const ProposalManager = {
             .map(feature => fabric.featureId(feature)).filter(Boolean).map(String);
     },
 
-    // Demolition is an apply-time derivation, never authored or imported state. A boot replay passes
-    // `preserveAppliedSet`: it may rebuild demolition records, but it never turns another authored
-    // proposal on or off. State conflicts are settled by the explicit mutation that created them.
-    async _deriveDemolishedBuildings(geometry, options = {}) {
+    // A design applied over an applied proposed building parks that building's design. A boot replay
+    // passes `preserveAppliedSet`: it never turns another authored proposal on or off; state
+    // conflicts are settled by the explicit mutation that created them.
+    async _parkProposedBuildingsUnder(geometry, options = {}) {
         const browserRoot = typeof window !== 'undefined' ? window : globalThis;
-        if (!geometry || !geometry.type || typeof browserRoot.demolishBuildingsUnderFootprint !== 'function') {
-            return [];
-        }
-        const records = await browserRoot.demolishBuildingsUnderFootprint(geometry, options);
-        return Array.isArray(records) ? records : [];
+        if (!geometry || !geometry.type || typeof browserRoot.parkProposedBuildingsUnder !== 'function') return;
+        await browserRoot.parkProposedBuildingsUnder(geometry, options);
     },
 
     // The only parent resolver used by formation application. The proposal's flat cadastral

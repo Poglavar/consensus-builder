@@ -18,29 +18,28 @@ const bounds = {
     getSouthWest: () => ({ lng: 2, lat: 1 }), getNorthEast: () => ({ lng: 2.01, lat: 1.01 })
 };
 
-function harness(status) {
+const SourceList = require('../../frontend/js/source-list.js');
+
+function harness(status, sources = [{ id: 'osm' }]) {
     const reportFailure = vi.fn();
     const fetch = vi.fn(async () => Response.json({ error: 'Query rejected' }, { status }));
     const window = {
-        fetch, getBackendBase: () => 'https://api.example',
-        CityConfigManager: { getCurrentCityConfig: () => ({ buildings: { source: 'osm' } }),
+        fetch, getBackendBase: () => 'https://api.example', SourceList,
+        CityConfigManager: { getCurrentCityConfig: () => ({ buildings: { sources } }),
+            getBuildingSources: () => SourceList.cityList({ buildings: { sources } }),
             getParcelGridSize: () => 0.0025, datasetToLatLng: (easting, northing) => [northing, easting] },
         ParcelSourceSettings: { ...settings, reportFailure }
     };
-    window.BuildingSourceClient = { request: (path, body) => client.request(path, body, { global: window }),
-        sourcesFor: (_global, body) => client.sourcesFor(window, body) };
     window.BuildingCells = cells;
     window.BuildingCellLoader = cells.createCellLoader({ request: cell => client.requestCell(cell, { global: window }) });
     const context = {
         window, fetch, console: { warn: vi.fn(), error: vi.fn() },
-        buildingsRetryAt: 0, osmBuildingsRetryAt: 0,
-        hasFootprintProvider: () => true, showFetchedOsmBuildingLayer: vi.fn(),
-        wgs84ToDataset: (lat, lng) => [lng, lat], buildingFetchesInFlight: 0, buildingFetchCoverage: [],
+        wgs84ToDataset: (lat, lng) => [lng, lat], buildingFetchesInFlight: 0,
         clearBuildingsUnavailable: vi.fn(), rebuildBuildingLayerFromPool: vi.fn(), queueMicrotask, buildingLayer: null
     };
     vm.createContext(context);
-    vm.runInContext(['fetchBuildings', 'fetchProviderBuildingCells', 'mergeIntoBuildingPool', 'loadGdiFootprints',
-        'fetchOsmBuildings', 'reportBuildingsUnavailable'].map(name => functions.get(name)).join('\n'), context);
+    vm.runInContext(['fetchBuildings', 'fetchBuildingCells', 'buildingCellsFor', 'reportBuildingsUnavailable']
+        .map(name => functions.get(name)).join('\n'), context);
     return { context, fetch, reportFailure };
 }
 
@@ -57,18 +56,12 @@ describe('building request failure reporting', () => {
         expect(h.reportFailure.mock.calls[0][1]).not.toMatch(/busy|rate.limit/i);
     });
 
-    it('retains an OSM reference HTTP failure and retry delay without inferring rate limiting', async () => {
-        const h = harness(503);
-        await h.context.fetchOsmBuildings(bounds);
-        expect(h.reportFailure.mock.calls[0][1]).toContain('HTTP 503');
-        expect(h.reportFailure.mock.calls[0][1]).toContain('Try again in about 1 min');
-        expect(h.reportFailure.mock.calls[0][1]).not.toMatch(/busy|rate.limit/i);
-        expect(h.context.osmBuildingsRetryAt).toBeGreaterThan(Date.now());
-    });
-
-    it('retains the surveyed-building HTTP status for the shared banner', async () => {
-        const h = harness(502);
-        await expect(h.context.loadGdiFootprints({ url: 'https://api.example/buildings' }))
-            .rejects.toMatchObject({ status: 502 });
+    it('retains a source outage with its retry delay without inferring rate limiting', async () => {
+        const h = harness(503, [{ id: 'gdi-3d' }]);
+        h.fetch.mockImplementation(async () => Response.json({ supported: true, items: [], complete: false, unavailable: true, retryAfter: 60 }));
+        await h.context.fetchBuildings(bounds);
+        const message = h.reportFailure.mock.calls[0][1];
+        expect(message).toContain('Try again in about 1 min');
+        expect(message).not.toMatch(/busy|rate.limit/i);
     });
 });

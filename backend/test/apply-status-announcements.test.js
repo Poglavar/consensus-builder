@@ -120,114 +120,31 @@ describe('the per-type tails no longer duplicate it', () => {
 // was asking for GDI, the ZAGREB survey, which is why the answer was always zero.
 describe('the existing-buildings fetch', () => {
     const mapCore = read('../../frontend/js/map-core.js');
-    const dataSource = read('../../frontend/js/data-source.js');
 
-    // The gate, lifted and run against real city configs. The view's 3765 bbox comes from
-    // map-core.js bboxInCrs, stubbed: `projects` false is a view that does not project into 3765.
-    let projects = true;
-    const bboxInCrs = vi.fn(() => {
-        if (!projects) throw new Error('bboxInCrs: the view does not project into EPSG:3765');
-        return '1,2,3,4';
-    });
-    function loadGate() {
-        const start = dataSource.indexOf('    function buildBuildingRequestParams(bounds, source = \'gdi\') {');
-        expect(start, 'buildBuildingRequestParams not found').toBeGreaterThan(-1);
-        const end = dataSource.indexOf('    function resolveBackendAssetUrl(url) {', start);
-        expect(end, 'end of buildBuildingRequestParams not found').toBeGreaterThan(start);
-        const body = dataSource.slice(start, end);
-        // eslint-disable-next-line no-new-func
-        const factory = new Function('CityConfigManager', 'getBackendBase', 'URLSearchParams', 'window',
-            `${body} return buildBuildingRequestParams;`);
-        return (config) => factory(
-            { getCurrentCityConfig: () => config },
-            () => 'http://backend',
-            URLSearchParams,
-            { bboxInCrs }
-        );
-    }
-    const gateFor = loadGate();
-    const BBOX = { getSouthWest: () => ({ lat: 45.8, lng: 15.97 }), getNorthEast: () => ({ lat: 45.81, lng: 15.98 }) };
-
-    it('asks for GDI in Zagreb, which declares no buildings source at all', () => {
-        expect(gateFor({ id: 'zagreb' })(BBOX)).toMatchObject({ url: expect.stringContaining('source=gdi') });
-        expect(gateFor({ id: 'zagreb', buildings: { source: 'gdi' } })(BBOX)).toBeTruthy();
-    });
-
-    it('does not ask for GDI where the footprints are Overture — Šibenik, Split, Belgrade', () => {
-        expect(gateFor({ id: 'sibenik', buildings: { source: 'overture' } })(BBOX)).toBeNull();
-        expect(gateFor({ id: 'new_york', buildings: { source: 'nyc' } })(BBOX)).toBeNull();
-        expect(gateFor({ id: 'ljubljana', buildings: { source: 'none' } })(BBOX)).toBeNull();
-    });
-
-    it('never projects the view into 3765 for a city whose buildings come from elsewhere', () => {
-        // Computing the Croatian bbox first threw for views that do not project into 3765 (near the
-        // equator in much of Asia and the Americas) and stopped Bogotá's own provider from loading.
-        projects = false;
-        bboxInCrs.mockClear();
-        try {
-            expect(gateFor({ id: 'bogota', buildings: { source: 'overture' } })(BBOX)).toBeNull();
-            expect(bboxInCrs).not.toHaveBeenCalled();
-            expect(() => gateFor({ id: 'zagreb' })(BBOX)).toThrow(/does not project/);
-        } finally {
-            projects = true;
-        }
-    });
-
-    it('still asks for DGU anywhere — it is the national registry, with its own toggle', () => {
-        const req = gateFor({ id: 'sibenik', buildings: { source: 'overture' } })(BBOX, 'dgu');
-        expect(req).toMatchObject({ url: expect.stringContaining('source=dgu') });
-    });
-
-    it('says nothing at all when there is nothing to fetch', () => {
-        // The request is built BEFORE the status line, so a city with no GDI writes neither line.
-        const start = mapCore.indexOf('async function fetchBuildings(boundsOverride = null, options = {}) {');
-        expect(start, 'fetchBuildings not found').toBeGreaterThan(-1);
-        const fetchFn = mapCore.slice(start, mapCore.indexOf('// The DGU CADASTRE reference layer', start));
-        const guard = fetchFn.indexOf('if (!req && !useProvider) return;');
-        expect(guard, 'early return not found').toBeGreaterThan(-1);
-        expect(guard).toBeLessThan(fetchFn.indexOf("updateStatus('Fetching existing buildings...')"));
-    });
-
-    it('fills the pool from the place\'s own provider when it is not GDI', () => {
-        // Šibenik's stock is Overture, served by the same POST /buildings/footprints the urban-rule
-        // editor reads. Without this the pool stayed empty there and a road could never find a
-        // building to demolish. The provider is the one where the bounds lie, not the session's
-        // city (location-first.md phase 2).
-        expect(mapCore).toContain('function hasFootprintProvider(bounds)');
-        expect(mapCore).toContain("return !!source && source !== 'none' && source !== 'gdi';");
-        expect(mapCore).toContain('if (useProvider) return fetchProviderBuildingCells(bounds, { announce });');
-        const loader = mapCore.slice(
-            mapCore.indexOf('async function fetchProviderBuildingCells(bounds'),
-            mapCore.indexOf('// A building load whose upstream failed')
-        );
-        // Building cells of the city grid, each from the city's ordered sources (building-cells.js).
+    it('loads the cells of the city grid from the sources in use, every city alike', () => {
+        // One path for every city (docs/source-loading-plan.md F2): no GDI bbox request, no
+        // provider/GDI fork. The sources are the place's own list, where the bounds lie.
+        expect(mapCore).not.toContain('buildBuildingRequestParams');
+        expect(mapCore).toContain('return fetchBuildingCells(bounds, { announce });');
+        const loader = mapCore.slice(mapCore.indexOf('async function fetchBuildingCells(bounds'), mapCore.indexOf('// A building load whose upstream failed'));
         expect(loader).toContain("loader.load({ kind: 'footprints', sources, cells");
-        // The provider serves WGS84: converting it as if it were EPSG:3765 would put every
+        // The cells serve WGS84: converting them as if they were EPSG:3765 would put every
         // footprint in the sea.
         expect(loader).not.toContain('convertGeoJSON');
-        // corridor-tunnel's identity accepts properties.id for the non-Zagreb sources, so these
-        // are cut, tunnelled and demolished exactly like GDI objects.
-        expect(loader).toContain('id: entry.id');
     });
 
     it('only talks when the user asked to see them', () => {
-        // Ticking the reference layer on is a request; a demolition scan preloading the ground
-        // under a proposal is not, and on a reload of a big plan it fires once per proposal.
+        // Ticking the layer on is a request; a demolition scan preloading the ground under a
+        // proposal is not, and on a reload of a big plan it fires once per proposal.
         expect(mapCore).toContain('async function fetchBuildings(boundsOverride = null, options = {}) {');
         expect(mapCore).toContain('const announce = options && options.announce === true;');
-        expect(mapCore).toContain("if (announce && typeof updateStatus === 'function') {");
-        expect(read('../../frontend/js/map-controls.js'))
-            .toContain('fetchBuildings(null, { announce: true })');
-        // A FAILURE still speaks, asked for or not — a silent one leaves a road cutting against a
-        // pool that never loaded.
-        expect(mapCore).toContain("updateStatus('Error fetching building data. Please try again.')");
+        expect(mapCore).toContain("if (announce && typeof updateStatus === 'function') updateStatus('Fetching existing buildings...');");
+        expect(read('../../frontend/js/map-controls.js')).toContain('fetchBuildings(null, { announce: true })');
     });
 
     it('names them as existing, and does not report a zero as a load', () => {
-        expect(mapCore).toContain("updateStatus('Fetching existing buildings...')");
-        expect(mapCore).toContain('`Loaded ${surveyed} existing buildings`');
         expect(mapCore).toContain("'No existing buildings surveyed here'");
-        expect(mapCore).not.toContain('`Loaded ${(data.features || []).length} buildings`');
+        expect(mapCore).toContain('Loaded existing buildings in ');
     });
 });
 

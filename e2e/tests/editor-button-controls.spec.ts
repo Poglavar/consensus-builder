@@ -5,6 +5,7 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { placeFreeformBuilding, openCity, openParcel, drawCorridor, showProposal, proposalState, clickMapPoint, createSpace, runParcelCommand, openParcelTabAt, closeParcel, showSelectionDesignTab, openBlockEditor } from '../helpers/runtime';
 import { installLayerDatasets } from '../helpers/mocks/layer-datasets';
+import { mockFootprintCells } from '../helpers/mocks/building-data';
 import { surveyResponse } from '../helpers/mocks/survey-data';
 
 const BLOCK_PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235', 'HR-335754-1236', 'HR-335754-1237', 'HR-335754-1238'];
@@ -432,7 +433,7 @@ test.describe('Editor button effects @features', () => {
     await expect.poll(ring).toBe(before);
   });
 
-  test('building survey picker Cancel keeps the map state and Show applies the selected surveys', async ({ mockApi: page }) => {
+  test('building layers dialog applies the Buildings switch at once and Done closes it', async ({ mockApi: page }) => {
     await page.route('**/buildings**', async route => {
       const url = new URL(route.request().url());
       if (url.pathname !== '/buildings') return route.continue();
@@ -450,21 +451,14 @@ test.describe('Editor button effects @features', () => {
     await page.keyboard.press('b');
     const dialog = page.locator('.building-layers-dialog');
     await expect(dialog).toBeVisible();
-    const gdi = dialog.locator('input[type="checkbox"]').nth(0);
+    const buildings = dialog.getByRole('switch', { name: 'Show buildings' });
     const wasChecked = await page.locator('#showBuildings').isChecked();
-    await gdi.setChecked(!await gdi.isChecked());
-    await dialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await expect(buildings).toHaveJSProperty('checked', wasChecked);
+    await buildings.setChecked(!wasChecked);
+    await expect(page.locator('#showBuildings')).toHaveJSProperty('checked', !wasChecked);
+    await dialog.getByRole('button', { name: 'Done', exact: true }).click();
     await expect(dialog).toHaveCount(0);
-    await expect(page.locator('#showBuildings')).toHaveJSProperty('checked', wasChecked);
-
-    await page.keyboard.press('b');
-    const showDialog = page.locator('.building-layers-dialog');
-    const dgu = showDialog.locator('input[type="checkbox"]').nth(1);
-    await dgu.check();
-    await showDialog.getByRole('button', { name: 'Show', exact: true }).click();
-    await expect(showDialog).toHaveCount(0);
-    await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).dguBuildingLayer))).toBe(true);
-    await expect.poll(() => page.evaluate(() => (window as any).dguBuildingLayer.getLayers().length)).toBeGreaterThan(0);
+    await expect(page.locator('#showBuildings')).toHaveJSProperty('checked', !wasChecked);
   });
 
   test('transit station editor Close, Cancel, and Done close the editor with the expected draft result', async ({ mockApi: page }) => {
@@ -578,18 +572,11 @@ test.describe('Editor button effects @features', () => {
   });
 
   test('corridor clearance fit controls move a widened road through the live editor', async ({ mockApi: page }) => {
-    await page.route('**/buildings**', async route => {
-      const url = new URL(route.request().url());
-      if (url.pathname !== '/buildings') return route.continue();
-      const feature = {
-        type: 'Feature', properties: { object_id: 61075, height_m: 14 },
-        // The 7.5 m road starts 5.25 m south of this footprint, leaving a 1.5 m baseline
-        // clearance. Widening its 2 m north-side sidewalk to 6 m makes the 13.5 m road
-        // reach 6.75 m north of center, so it intersects by 1.5 m with the same margin.
-        geometry: { type: 'Polygon', coordinates: [[[15.98208,45.8002972],[15.98224,45.8002972],[15.98224,45.8004312],[15.98208,45.8004312],[15.98208,45.8002972]]] },
-      };
-      return route.fulfill({ json: { ...surveyResponse([feature]), source: url.searchParams.get('source') } });
-    });
+    // The 7.5 m road starts 5.25 m south of this footprint, leaving a 1.5 m baseline clearance.
+    // Widening its 2 m north-side sidewalk to 6 m makes the 13.5 m road reach 6.75 m north of
+    // center, so it intersects by 1.5 m with the same margin.
+    await mockFootprintCells(page, () => [{ id: 61075, height_m: 14,
+      geometry: { type: 'Polygon', coordinates: [[[15.98208,45.8002972],[15.98224,45.8002972],[15.98224,45.8004312],[15.98208,45.8004312],[15.98208,45.8002972]]] } }]);
     await openCity(page);
     await openParcel(page, 'proposals');
     await page.locator('.parcel-transport-btn--road').click();

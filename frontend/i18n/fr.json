@@ -489,6 +489,7 @@
             "confirm": "Utiliser ce bâtiment"
         },
         "buildingLayers": {
+            "done": "Terminé",
             "cancel": "Annuler",
             "gdi": "Bâtiments en 3D (GDI)",
             "dgu": "Cadastre officiel (DGU)",
@@ -1146,7 +1147,7 @@
                 "paved": "Pavés (pierre)"
             },
             "measuredAgainst": "Référence de mesure",
-            "measuredFallback": "aucun élément affiché — mesure à partir de GDI",
+            "measuredFallback": "aucun élément affiché — mesure à partir des bâtiments utilisés",
             "lockedControl": "Indisponible tant que le profil en travers est ouvert : appliquez ou annulez d’abord",
             "ceilingOver": "Dépasse la largeur possible ici ({{max}} m) sans nouvelle démolition : ouvrez l’onglet Corridor pour voir comment la faire tenir",
             "ceilingTitle": "La largeur maximale de cette route à cet endroit sans nouvelle démolition ; un déplacement peut être nécessaire (voir l’onglet Corridor)",
@@ -8652,6 +8653,21 @@
         "title": "Sources de données"
     },
     "buildingSources": {
+        "listTitle": "Sources de bâtiments",
+        "listIntro": "Les sources utilisées couvrent chaque zone dans cet ordre : là où l'une n'a pas de bâtiments, la suivante prend le relais. Une source avec Contour activé est dessinée uniquement pour comparaison.",
+        "addSource": "Ajouter une source",
+        "add": "Ajouter cette source",
+        "added": "{{name}} est maintenant en tête de liste et utilisée.",
+        "resetList": "Rétablir la liste de la ville",
+        "useSwitch": "Utiliser",
+        "outlineSwitch": "Contour",
+        "outlineHint": "Contour dessine une source non utilisée, pour comparaison.",
+        "keepOne": "Une source reste toujours utilisée.",
+        "moveUp": "Monter {{name}}",
+        "moveDown": "Descendre {{name}}",
+        "remove": "Retirer {{name}}",
+        "outlinedName": "{{name}} en contour",
+        "cors": "Ce service ne permet pas aux navigateurs de le lire directement.",
         "unavailableTitle": "Bâtiments indisponibles",
         "title": "Choisir une source de bâtiments",
         "intro": "Ajoutez une URL HTTPS publique d’emprises de bâtiments pour cette ville, ou celle d’un miroir OpenStreetMap (une adresse d’API Overpass se terminant par /interpreter). Nous essayons chaque format pris en charge et lisons un champ de hauteur ou de nombre de niveaux lorsqu’il existe ; les autres hauteurs sont estimées.",

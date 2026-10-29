@@ -254,7 +254,7 @@
     //   state:   { segments, segmentIds, conflicts }
     //   answers: { buildings: 'surface' | 'tunnel' | null, crossings: 'at-grade' | 'underpass' | 'overpass' | null }
     //   deps:    { edgeKeyOf, widthOf(segmentIndex), clipEdgeThroughBuildings(from, to, hits, width),
-    //              makeTunnelRecord(from, to, hits, { segmentId }),
+    //              makeTunnelRecord(from, to, { segmentId }),
     //              buildGradeSeparationRecords(hits, mode, from, to, width),
     //              refreshGradeSeparationEdgeKeys(record, points), gradeSeparationFootprint?(record, width) }
     // Returns { tunnels, gradeSeparations, surfaceBuildingIds, insertedPoints }.
@@ -290,7 +290,7 @@
                 subEdges.forEach((sub, index) => {
                     if (index < subEdges.length - 1) interior.push(sub.to);
                     if (!sub.inside) return;
-                    const record = deps.makeTunnelRecord(sub.from, sub.to, sub.hits, { segmentId });
+                    const record = deps.makeTunnelRecord(sub.from, sub.to, { segmentId });
                     if (record) out.tunnels.push(record);
                 });
             }

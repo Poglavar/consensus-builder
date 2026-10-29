@@ -1,5 +1,6 @@
-// Loads existing 3D building meshes from POST /buildings/near as ghost-style
-// reference geometry inside the per-proposal 3D edit views. Mirrors the
+// Loads existing 3D building meshes (the building cells around a design, each from the city's
+// sources in use, building-source-client.js loadBox) as ghost-style reference geometry inside the
+// per-proposal 3D edit views. Mirrors the
 // triangulation logic used by three-mode.js's main 3D map mode, but lets each
 // edit view supply its own (lng,lat) -> [x,y] projector so the meshes land in
 // that view's local coordinate frame.
@@ -165,17 +166,19 @@
 
         let payload;
         try {
-            payload = await window.BuildingSourceClient.request('/buildings/near',
-                { geometry: opts.geometry, buffer_meters: bufferMeters });
+            const [w, s, e, n] = turf.bbox(opts.geometry);
+            const dLat = bufferMeters / 110540, dLng = bufferMeters / (111320 * Math.max(0.01, Math.cos(((s + n) / 2) * Math.PI / 180)));
+            const loaded = await window.BuildingSourceClient.loadBox({ kind: 'near', box: [w - dLng, s - dLat, e + dLng, n + dLat] });
+            payload = { buildings: loaded.items, failed: loaded.failed, retryAfter: loaded.retryAfter };
         } catch (e) {
-            console.warn('[ContextBuildings3D] /buildings/near fetch failed:', e);
+            console.warn('[ContextBuildings3D] building cells failed to load:', e);
             // Reset key so a later attempt can retry.
             contextGroup.userData.__contextKey = null;
             window.reportBuildingsUnavailable?.(null);
             return 0;
         }
-        // The upstream failed outright: keep what is on screen and say so; a later call retries.
-        if (payload && payload.unavailable) {
+        // Every area failed: keep what is on screen and say so; a later call retries.
+        if (payload.failed && !payload.buildings.length) {
             contextGroup.userData.__contextKey = null;
             window.reportBuildingsUnavailable?.(payload.retryAfter);
             return contextGroup.userData.__contextCount || 0;

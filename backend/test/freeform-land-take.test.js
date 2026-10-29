@@ -83,18 +83,3 @@ describe('Freeform reviewed land take', () => {
  });
 });
 
-describe('land-take source completeness', () => {
- const { loadBuildingStock } = require('../../frontend/js/proposals/demolition-prefetch.js');
- it('accepts an authoritative empty answer', async () => {
-  await expect(loadBuildingStock(A.geometry, async()=>({supported:true,truncated:false,regions:{'land-take':[]}}))).resolves.toEqual([]);
- });
- it('refuses truncated, unsupported and missing answers instead of treating them as empty', async () => {
-  for(const payload of [{supported:true,truncated:true,regions:{'land-take':[]}}, {supported:false,regions:{'land-take':[]}}, {supported:true,regions:{}}]) {
-   await expect(loadBuildingStock(A.geometry,async()=>payload)).rejects.toThrow(/incomplete/);
-  }
- });
- it('preserves source identity alongside building geometry', async () => {
-  const [building]=await loadBuildingStock(A.geometry,async()=>({supported:true,source:'survey',regions:{'land-take':[{id:'one',geometry:A.geometry}]}}));
-  expect(building.properties).toMatchObject({id:'one',source:'survey'});
- });
-});

@@ -170,6 +170,10 @@ An implementation of an abstraction's reader operations for a particular transpo
 
 A selected dataset described by stable `id`, `abstraction`, `adapter`, `kind`, readable `label` and adapter-specific `config`. A default source is registered by the application; a custom source supplies configuration to an adapter that accepts custom sources. These kinds describe configuration ownership, not legal authority or data quality. Existing domain source IDs and qualified record identities remain authoritative.
 
+### Source list
+
+The ordered sources of one abstraction for a city (buildings so far): the city's declared sources (`buildings.sources`) and any a person adds, each in use or not, and a source not in use optionally drawn as reference outlines. The sources in use stand in for each other in list order, one cell at a time: a cell is answered wholly by the first source that does not fail it or find it empty. The person's list is kept per backend and city, or given in the URL (`buildingSources`); a change applies at once. A URL source (`building.<base64url>`, a public ArcGIS, WFS, OGC API, Socrata, GeoJSON or Overpass service) is read in the browser; a database source (`gdi-3d`, `dgu`, `osm`, New York's) through our server.
+
 ## Land and parcel geometry
 
 ### Cadastral parcel
@@ -393,6 +397,14 @@ What a building is for, by storey, stored on the building as `properties.use`: r
 
 The exact ground a design consumes. A Freeform design's `geometry.landTake` can combine footprint cuts and chosen whole parcels while its material building footprint stays unchanged. A chosen whole parcel remains taken only while a building footprint overlaps it. When the last building leaves, that parcel and its surroundings leave the design, restoring its source state. It governs land formation and building-removal effects. Surrounding paving or green space occupies only taken land outside the building footprint; a footprint-only take has no surroundings.
 
+### Derived demolition
+
+What the applied designs do to the source buildings shown: razed, cut (the rest stands) or passed under by a road tunnel. It is derived from each design's land (a road's footprint, a building design's parcels and footprints, a structure's body) against the buildings of the sources in use, against the union of every design's land, so the order of the designs does not matter: under 2 m² of overlap a building is untouched, and when under 10 m² or 15 % of its footprint is left it is razed. Nothing is stored on a design; a source switch or a stand-in cell derives again.
+
+### Building tunnel
+
+A span of a road's centre line (an edge, from one portal to the other) along which the road passes under buildings. The record is the span; which buildings it passes under is derived from it against the buildings shown, at the road's width along that span.
+
 ### Demolition review
 
 The preview of modeled full building removals and partial cuts caused by a land take. It updates with the design and does not require a separate acceptance before saving. It is distinct from an owner's agreement decision and from real-world demolition.
@@ -463,7 +475,7 @@ A selectable item of cadastral ground, fabric or design content in the map's int
 
 ### Source building
 
-An observed building object identified within a survey or provider dataset. Its geometry, identity and measurements retain that source's provenance.
+An observed building object identified within a survey or provider dataset. Its geometry, identity and measurements retain that source's provenance. Its key is `<source>:<id>`: surveys of one city number their buildings in their own key spaces, so an id alone does not identify a building.
 
 A source building is baseline context, not a member of a Plan. Its cadastral parcel supplies the
 ground context for inspection. An explicit design impact can link it to an affecting design;

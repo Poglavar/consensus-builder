@@ -54,10 +54,13 @@
         const parcels = city?.parcels || {};
         return [...new Set([parcels.attribution, parcels.raster?.attribution].filter(Boolean))];
     }
+    // The attribution of every building source in use (source-list.js), OpenStreetMap's when it is one.
     function buildingCredits(city) {
-        const buildings = city?.buildings || {};
-        const credits = [buildings.attribution];
-        if (buildings.source === 'osm' || (buildings.fallbacks || []).includes('osm')) {
+        const list = typeof window !== 'undefined' && window.SourceList ? window.SourceList.forConfig(city, window)
+            : require('../source-list.js').cityList(city);
+        const used = list.filter(entry => entry.use);
+        const credits = used.map(entry => entry.attribution);
+        if (used.some(entry => entry.id === 'osm')) {
             credits.push('© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors');
         }
         return credits.filter(Boolean);

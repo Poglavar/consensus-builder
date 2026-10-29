@@ -11,7 +11,7 @@ const require = createRequire(import.meta.url);
 const records = require('../../frontend/js/agreement-record.js');
 const demolition = require('../../frontend/js/proposals/demolition-prefetch.js');
 const route = require('../../frontend/js/proposals/apply/route.js');
-const { findBuildingTunnelIntersections, splitDemolitionFootprint } = require('../../frontend/js/corridor-tunnel.js');
+const DemolitionDerive = require('../../frontend/js/demolition-derive.js');
 const finite = value => typeof value === 'number' && Number.isFinite(value);
 const union = features => features.reduce((out, feature) => out ? turf.union(out, feature) : feature, null);
 const fail = (code, message) => Object.assign(new Error(message), { code, next: { action: 'Review the alternative and its current parcel source in the app.' } });
@@ -38,7 +38,7 @@ export function authoredAreas(designs) {
 }
 
 export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDraftReference, plans }) {
-    return async function compare({ targets, parcelSourceId, buildingSourceId }) {
+    return async function compare({ targets, parcelSourceId, buildingSources }) {
         const alternatives = [], warnings = [];
         for (const target of targets) {
             const supplied = target?.draftArtifact || target;
@@ -143,27 +143,39 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
             let buildingsRemoved = null, buildingsCut = null, removedFootprintM2 = null;
             if (ground) {
                 try {
-                    const regions = scoped.map(row => {
+                    // The land each design takes, its road tunnels taking nothing (demolition-derive.js, the
+                    // rule the map derives its demolitions by).
+                    const takers = scoped.map(row => {
                         const design = row.content;
                         const shapes = ground.outputs.filter(o => o.role !== 'corridor' && o.fromParcelIds.some(id => row.parcelIds.includes(id)))
                             .map(o => turf.feature(o.geometry));
-                        const geometry = design.roadProposal ? read.siteOfDesign(design)
+                        const region = design.roadProposal ? read.siteOfDesign(design)
                             : demolition.demolitionRegionOf(design, { normalizeGoalKey: route.normalizeGoalKey, parcelFeatures: () => shapes });
-                        return geometry ? { key: row.cid, geometry } : null;
+                        const tunnels = design.roadProposal?.definition ? DemolitionDerive.tunnelRegionsOf(design.roadProposal.definition) : [];
+                        return region ? { proposalId: row.cid, region, tunnels } : null;
                     }).filter(Boolean);
-                    if (!regions.length) { buildingsRemoved = 0; buildingsCut = 0; removedFootprintM2 = 0; }
+                    if (!takers.length) { buildingsRemoved = 0; buildingsCut = 0; removedFootprintM2 = 0; }
                     else {
-                        if (!buildingSourceId) throw fail('building-source-required', 'Select a building source to measure demolition.');
-                        const stock = await read.request('/buildings/under', {}, { source: buildingSourceId, regions });
-                        if (stock.supported !== true || stock.truncated || stock.unavailable || regions.some(r => !Array.isArray(stock.regions?.[r.key]))) throw fail('building-coverage-incomplete', 'Building stock is unsupported, truncated or unavailable; demolitions are unknown.');
-                        const region = union(regions.map(r => turf.feature(r.geometry)));
-                        const hits = findBuildingTunnelIntersections(region, regions.flatMap(r => stock.regions[r.key]), turf);
+                        // The sources in order: the first that answers the whole land completely is the stock.
+                        const sources = Array.isArray(buildingSources) ? buildingSources.filter(Boolean) : [];
+                        if (!sources.length) throw fail('building-source-required', 'Select the building sources to measure demolition.');
+                        const regions = takers.map(taker => ({ key: taker.proposalId, geometry: taker.region }));
+                        let stock = null, used = null;
+                        for (const source of sources) {
+                            const answer = await read.request('/buildings/under', {}, { source, regions });
+                            if (answer.supported === true && !answer.truncated && !answer.unavailable && regions.every(r => Array.isArray(answer.regions?.[r.key]))) {
+                                stock = answer; used = source;
+                                break;
+                            }
+                        }
+                        if (!stock) throw fail('building-coverage-incomplete', 'No building source answered this land completely; demolitions are unknown.');
+                        const byKey = new Map();
+                        regions.forEach(r => stock.regions[r.key].forEach(building => byKey.set(`${used}:${building.id}`, { key: `${used}:${building.id}`, geometry: building.geometry })));
+                        const { records } = DemolitionDerive.derive({ takers, buildings: [...byKey.values()] }, turf);
                         buildingsRemoved = 0; buildingsCut = 0; removedFootprintM2 = 0;
-                        for (const hit of hits) {
-                            const split = splitDemolitionFootprint(hit.feature, region, turf);
-                            if (!split) continue;
-                            if (split.full) { buildingsRemoved++; removedFootprintM2 += turf.area(hit.feature); }
-                            else { buildingsCut++; removedFootprintM2 += turf.area(turf.feature(split.demolishedPart)); }
+                        for (const record of records.values()) {
+                            if (!record.remainder) { buildingsRemoved++; removedFootprintM2 += turf.area(turf.feature(record.geometry)); }
+                            else { buildingsCut++; removedFootprintM2 += turf.area(turf.feature(record.demolishedPart)); }
                         }
                     }
                 } catch (error) {

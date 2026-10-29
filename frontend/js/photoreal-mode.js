@@ -734,13 +734,11 @@
         // Buildings a proposal razes entirely (their outlines can stick out past the footprint
         // that razed them). Cut records are skipped — their demolished part lies inside a
         // corridor footprint already; demolished PROPOSED buildings aren't in the mesh at all.
-        // Razed-building records carry no proposal provenance: they only carve when no
-        // isolation filter is active (the mesh buildings return during isolation).
-        if (!isolationFilter
-            && typeof window.collectCarveRecords === 'function'
-            && typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function') {
+        // They only carve when no isolation filter is active (the mesh buildings return during
+        // isolation). The records are the plan's derived demolitions (demolition-index.js).
+        if (!isolationFilter && window.DemolitionIndex) {
             try {
-                window.collectCarveRecords(proposalStorage.getAllProposals()).records.forEach(function (record) {
+                window.DemolitionIndex.carveRecords().records.forEach(function (record) {
                     if (record.remainder) return;
                     if (String(record.id).indexOf('proposal:') === 0) return;
                     const outside = razedFootprintOutsideStructures(record.geometry);

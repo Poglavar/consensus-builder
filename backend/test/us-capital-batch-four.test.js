@@ -213,7 +213,7 @@ describe.each(samples)('$city capital batch-four runtime',s=>{
         if(route.parcelIdToCityId(f.id)===null) globalThis.CadastralParcelRepository={locateIds:vi.fn(async()=>({status:'ready',features:[{id:f.id,geometry:f.geometry}]}))};
         try{await expect(route.resolveCityIdForParcel(f.id)).resolves.toBe(s.city);}
         finally{if(previousCity===undefined)delete globalThis.CityConfigManager;else globalThis.CityConfigManager=previousCity;if(previousGround===undefined)delete globalThis.CadastralParcelRepository;else globalThis.CadastralParcelRepository=previousGround;}
-        const city=cities.getCityConfig(s.city);expect(city.parcels.sourceId).toBe(s.sourceId);expect(city.buildings.source).toBe('osm');
+        const city=cities.getCityConfig(s.city);expect(city.parcels.sourceId).toBe(s.sourceId);expect(city.buildings.sources).toEqual([{ id: 'osm' }]);
         expect(city.projection.metricDefinition).toBeUndefined();
         for(const locale of ['en','es','hr','sr'])expect(JSON.parse(read('../../frontend/i18n/'+locale+'.json')).city.labels[s.city]).toBeTruthy();
     });

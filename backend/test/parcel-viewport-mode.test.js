@@ -48,7 +48,7 @@ function mapCoreHarness() {
         MapCityConfigManager: { hasParcelData: () => true },
         updateParcelsCheckboxByZoom: calls.checkbox, updateVisibleParcelsCount: calls.counts,
         document: { getElementById: id => id === 'showBuildings' ? { checked: true } : null },
-        fetchBuildings: calls.buildings, fetchDguBuildings: null, fetchOsmBuildings: null,
+        fetchBuildings: calls.buildings, fetchOutlineBuildings: () => {},
         setTimeout: callback => { const id = ++timerId; timers.set(id, callback); return id; },
         clearTimeout: id => timers.delete(id),
         isProposalApplied: () => true

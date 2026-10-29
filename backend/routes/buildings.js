@@ -54,7 +54,7 @@ export function setupBuildingsRoute(app, pool) {
     // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, buffer_meters?: number,
     //         proposals?: string[] | string }
     //
-    // `source` explicitly names gdi-3d, nyc-arcgis, nyc-socrata, osm, wien-lod2 or a portable building descriptor.
+    // `source` explicitly names gdi-3d, dgu, nyc-arcgis, nyc-socrata, osm, wien-lod2 or a portable building descriptor.
     // `floorModelNamespace` optionally selects stored floor evidence. No city or location selects
     // a provider or evidence namespace on the server.
     //
@@ -326,8 +326,12 @@ export function setupBuildingsRoute(app, pool) {
     // browser loads buildings in (docs/source-loading-plan.md). Body:
     //   { source, kind: 'near' | 'footprints', bbox: [w, s, e, n] (WGS84, at most 2 km a side),
     //     floorModelNamespace? }
-    // `near` answers 3D records (as POST /buildings/near), `footprints` the 2D pool's entries (as
-    // POST /buildings/footprints). A cell the source caps is read in quarters (split-read.js), so
+    // `near` answers 3D records (as POST /buildings/near), `footprints` the 2D pool's flat entries
+    // ({ id, geometry, height_m, floors, ...extra }): a provider's `mapFootprints` (every building
+    // touching the cell, with its survey's own properties) where it has one, else its `footprints`
+    // (as POST /buildings/footprints). The browser reads URL sources (`building.<base64url>`) itself,
+    // in its adapter worker; this route answers database and server sources (gdi-3d, dgu, osm, NYC).
+    // A cell the source caps is read in quarters (split-read.js), so
     // `complete` is false only when splitting ran out. A failed source answers `unavailable` for the
     // whole cell, never part of it, so the browser can answer it whole from a fallback source.
     // Complete answers are cached per source, kind and cell.
@@ -351,7 +355,10 @@ export function setupBuildingsRoute(app, pool) {
                 return res.status(400).json({ error: 'Invalid floorModelNamespace.' });
             }
             const provider = buildingProviders.forRequest({ source: body.source, geometry: boxPolygon(bbox) });
-            if (!provider || (kind === 'footprints' && typeof provider.footprints !== 'function')) {
+            const readFootprints = kind !== 'footprints' ? null
+                : typeof provider?.mapFootprints === 'function' ? provider.mapFootprints
+                    : typeof provider?.footprints === 'function' ? provider.footprints : null;
+            if (!provider || (kind === 'footprints' && !readFootprints)) {
                 return res.json({ supported: false, kind, bbox, items: [], complete: true, source: null });
             }
             const key = JSON.stringify([body.source || null, kind, floorModelCity || null, bbox.map(value => value.toFixed(7))]);
@@ -360,7 +367,7 @@ export function setupBuildingsRoute(app, pool) {
 
             let source = null, floorModelSource = null;
             const read = await splitRead(bbox, async box => {
-                const result = kind === 'near' ? await provider.near(boxPolygon(box), 0) : await provider.footprints(boxPolygon(box));
+                const result = kind === 'near' ? await provider.near(boxPolygon(box), 0) : await readFootprints(boxPolygon(box));
                 source = result.source ?? source;
                 if (result.unavailable) return { unavailable: true, retryAfter: result.retryAfter ?? null };
                 // A capped answer is split; a partial one (an upstream that answered in part) is not.

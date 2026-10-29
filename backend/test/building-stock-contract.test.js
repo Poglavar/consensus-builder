@@ -28,9 +28,9 @@ it('every configured city has the complete building provider contract', () => {
     const registry = createBuildingProviders({ query: async () => ({ rows: [] }) }, {});
     const cities = context.CityConfigManager.getAvailableCities();
     expect(cities.length).toBeGreaterThan(500);
-    for (const city of cities) for (const method of ['near', 'footprints', 'footprintsUnder']) {
-        const provider = registry.resolveSource(city.buildings?.sourceId || city.buildings?.source);
-        expect(typeof provider[method], `${city.id}.${method}`).toBe('function');
+    for (const city of cities) for (const { id } of city.buildings?.sources || []) for (const method of ['near', 'footprints', 'footprintsUnder']) {
+        const provider = registry.resolveSource(id);
+        expect(typeof provider[method], `${city.id}.${id}.${method}`).toBe('function');
     }
 });
 

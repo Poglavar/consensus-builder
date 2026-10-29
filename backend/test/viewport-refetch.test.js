@@ -348,7 +348,7 @@ describe('building fetch on pan', () => {
         const node = parse(mapCoreSource, { sourceType: 'script' }).program.body.find(entry => entry.type === 'FunctionDeclaration' && entry.id.name === name);
         return mapCoreSource.slice(node.start, node.end);
     };
-    function harness(covered) {
+    function harness() {
         const handlers = new Map(), timers = new Map();
         let timerId = 0;
         const fetchBuildings = vi.fn();
@@ -357,8 +357,7 @@ describe('building fetch on pan', () => {
             map: { on: (name, listener) => handlers.set(name, listener), getBounds: () => ({ view: true }) },
             isMapMoving: false, buildingFollowTimer: null, parcelFetchConfig: { getDebounce: () => 10 },
             document: { getElementById: id => (id === 'showBuildings' ? { checked: true } : null) },
-            fetchBuildings, fetchDguBuildings: null, fetchOsmBuildings: null,
-            boundsCoveredByBuildingFetch: () => covered,
+            fetchBuildings, fetchOutlineBuildings: () => {},
             setTimeout: callback => { const id = ++timerId; timers.set(id, callback); return id; },
             clearTimeout: id => timers.delete(id)
         });
@@ -369,9 +368,9 @@ describe('building fetch on pan', () => {
         return fetchBuildings;
     }
 
-    it('fetches a view the pool does not cover, once per pan, and skips one it does', () => {
-        expect(harness(false)).toHaveBeenCalledTimes(1);
-        expect(harness(true)).not.toHaveBeenCalled();
+    // A covered view needs no test of its own: its cells answer from the cell loader's cache.
+    it('asks for the view once per pan', () => {
+        expect(harness()).toHaveBeenCalledTimes(1);
     });
 
     it('leaves buildings to map-core: the parcel controller schedules no building fetch', () => {

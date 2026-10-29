@@ -47,8 +47,9 @@ in [economic-sources.md](economic-sources.md).
   `product: "districts"`; Slices GeoJSON remains the default product. See [public Atlas sources](atlas-public-sources.md).
 - Custom source discovery does not require an app city. An optional caller-supplied `cityIds` label
   remains portable metadata for frontend settings, not backend membership or permission.
-- MCP reads require the parcel source explicitly. Building context/demolition measurement takes
-  `buildingSourceId`; without it, building evidence stays unknown. Parcel studies use the caller's
+- MCP reads require the parcel source explicitly. Parcel context takes a `buildingSourceId` and
+  compare's demolition measurement the ordered `buildingSources`; without them, building evidence
+  stays unknown. Parcel studies use the caller's
   selected `planningSourceIds`. Agreement drafting takes explicit money or an ISO `currency`.
 - Monitor namespaces and publication labels are accepted as record metadata. App aliases and
   geographical city selection belong to the frontend. A monitor without a namespace uses `global`.

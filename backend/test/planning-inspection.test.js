@@ -180,17 +180,18 @@ describe('shared building and proposal representations', () => {
         const source = readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');
         const body = parse(source).program.body.find(node => node.type === 'ExpressionStatement').expression.callee.body.body;
         const declaration = body.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'buildNearbyProposalBuildings3D');
-        const feature = { type: 'Feature', geometry, properties: { object_id: 12, height_m: 8 } };
+        const feature = { type: 'Feature', geometry, properties: { object_id: 12, source: 'gdi-3d', height_m: 8 } };
         const mesh = () => ({ userData: {} });
         const group = { add: vi.fn() };
         let carved = false;
         const context = vm.createContext({
-            window: { collectCarveRecords: () => [], carveBuildingByObjectId: () => carved ? { remainder: geometry, demolished: geometry } : null,
-                buildingFeaturePool: [feature], buildingPoolFeatureKey: f => f.properties.object_id, PlanningRepresentations: representations },
-            proposalStorage: { getAllProposals: () => [] }, displayedProposals: () => [], demolishedMaterialFor: () => ({}), collectAppliedStructureClearanceRegions: () => [],
-            nearbyBuildingGeometryCache: { beginPass: () => ({}) }, nearbyProposalBuildings: [{ object_id: 12 }],
+            window: { DemolitionIndex: { carveRecords: () => ({ records: new Map(), carveOf: () => (carved ? { remainder: geometry, demolished: geometry } : null) }) },
+                buildingFeaturePool: [feature], buildingPoolFeatureKey: f => `${f.properties.source}:${f.properties.object_id}`, PlanningRepresentations: representations },
+            proposalStorage: { getAllProposals: () => [] }, displayedProposals: () => [], demolishedMaterialFor: () => ({}),
+            nearbyBuildingGeometryCache: { beginPass: () => ({}) }, nearbyProposalBuildings: [{ object_id: 12, source: 'gdi-3d' }],
+            threeBuildingKey: building => `${building.source}:${building.object_id}`, buildingFootprintPolygon: () => null,
             xrayEnabled: false, suggestedPlansEnabled: false, suggestedExistingEnabled: false, origin3857: null,
-            sceneWork: { forEach: async (items, fn) => items.forEach(fn) }, structureClearanceCarve: () => null,
+            sceneWork: { forEach: async (items, fn) => items.forEach(fn) },
             buildingDisplayPolicy: { resolveBuildingRenderParts: () => ({ detailed: true, remainder: true, demolished: true }) },
             appendBuildingFloorPlans: () => false, building3DHeightMeters: () => 8, buildMeshFromBuilding3D: mesh,
             polygonFeatureToMeshes: () => [mesh()], ensureNearbyProposalBuildings() {}, console

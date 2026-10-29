@@ -89,6 +89,56 @@
         return cells.sort((a, b) => a.distanceM - b.distanceM || a.key.localeCompare(b.key));
     }
 
+    // The point a building is filed under: the first vertex of its outline (a footprint's geometry, or a
+    // 3D record's first face), so a building reaching over a cell line belongs to exactly one cell.
+    function anchorOf(item) {
+        let node = item?.geometry?.coordinates ?? item?.faces?.[0]?.coordinates ?? null;
+        while (Array.isArray(node) && Array.isArray(node[0])) node = node[0];
+        return Array.isArray(node) && Number.isFinite(node[0]) && Number.isFinite(node[1]) ? [node[0], node[1]] : null;
+    }
+    // Half-open, so a vertex on a shared line has one owner.
+    const withinBox = ([x, y], [w, s, e, n]) => x >= w && x < e && y >= s && y < n;
+
+    function bboxOf(geometry) {
+        let w = Infinity, s = Infinity, e = -Infinity, n = -Infinity;
+        const walk = node => {
+            if (!Array.isArray(node)) return;
+            if (typeof node[0] === 'number') { w = Math.min(w, node[0]); e = Math.max(e, node[0]); s = Math.min(s, node[1]); n = Math.max(n, node[1]); return; }
+            node.forEach(walk);
+        };
+        walk(geometry?.coordinates);
+        return Number.isFinite(w) ? [w, s, e, n] : null;
+    }
+
+    /**
+     * Which of `items` ({ key, geometry }) another survey already shows: more than `fraction` of the
+     * item's area under `others` ({ geometry }). Used both ways round: a stand-in's building that
+     * duplicates one of an earlier source over a cell line is dropped, and an outlined source's
+     * building that nothing shown covers is "only in" that source. → Set of covered keys.
+     */
+    function coveredKeys(items, others, turf, fraction = 0.5) {
+        const covered = new Set();
+        const boxed = (others || []).filter(other => other?.geometry).map(other => ({ geometry: other.geometry, bbox: bboxOf(other.geometry) }));
+        for (const item of items || []) {
+            if (!item?.geometry) continue;
+            const box = bboxOf(item.geometry);
+            const near = boxed.filter(other => other.bbox && box && other.bbox[0] <= box[2] && box[0] <= other.bbox[2] && other.bbox[1] <= box[3] && box[1] <= other.bbox[3]);
+            if (!near.length) continue;
+            const own = { type: 'Feature', properties: {}, geometry: item.geometry };
+            const total = Number(turf.area(own)) || 0;
+            if (!(total > 0)) continue;
+            let under = 0;
+            for (const other of near) {
+                try {
+                    const clip = turf.intersect(own, { type: 'Feature', properties: {}, geometry: other.geometry });
+                    if (clip) under += Number(turf.area(clip)) || 0;
+                } catch (_) { /* an invalid ring overlaps nothing it can measure */ }
+                if (under > total * fraction) { covered.add(item.key); break; }
+            }
+        }
+        return covered;
+    }
+
     // The cells within `radiusM` of a [lng, lat] centre, nearest first.
     function cellsAround({ centre, radiusM, gridSize, toDataset, toLatLng }) {
         const [lng, lat] = centre;
@@ -136,8 +186,15 @@
                     lastFailure = { retryAfter: seconds, status: answer.status ?? null };
                     continue;
                 }
-                const result = { items: Array.isArray(answer?.items) ? answer.items : [], complete: answer?.complete === true, source, standIn: index > 0 };
-                if (result.items.length) return result;
+                // Each building is kept by the one cell its first vertex lies in. Whether the source has
+                // anything here is judged on its whole answer, before that filing.
+                const answered = Array.isArray(answer?.items) ? answer.items : [];
+                const items = answered.filter(item => {
+                    const anchor = anchorOf(item);
+                    return anchor && withinBox(anchor, cell.bbox);
+                });
+                const result = { items, complete: answer?.complete === true, source, standIn: index > 0 };
+                if (answered.length) return result;
                 empty = empty || result;
             }
             if (empty) return empty;
@@ -195,5 +252,5 @@
         return { load, retry, clear, isCached };
     }
 
-    return { TARGET_SIDE_M, cellsCovering, cellsAround, createCellLoader, distanceToBoxM };
+    return { TARGET_SIDE_M, cellsCovering, cellsAround, createCellLoader, distanceToBoxM, anchorOf, coveredKeys };
 });

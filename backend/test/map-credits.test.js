@@ -40,10 +40,11 @@ describe('map credits helpers', () => {
 
     it('credits OpenStreetMap for the backend building source and fallback', () => {
         const cadastre = '<a href="https://example.test/b">City buildings</a>';
-        expect(buildingCredits({ buildings: { source: 'osm' } })).toEqual([expect.stringContaining('OpenStreetMap')]);
-        expect(buildingCredits({ buildings: { source: 'cadastre', attribution: cadastre, fallbacks: ['osm'] } }))
+        expect(buildingCredits({ buildings: { sources: [{ id: 'osm' }] } })).toEqual([expect.stringContaining('OpenStreetMap')]);
+        expect(buildingCredits({ buildings: { sources: [{ id: 'building.city', attribution: cadastre }, { id: 'osm' }] } }))
             .toEqual([cadastre, expect.stringContaining('OpenStreetMap')]);
-        expect(buildingCredits({ buildings: { source: 'gdi' } })).toEqual([]);
+        // A source not in use is not credited.
+        expect(buildingCredits({ buildings: { sources: [{ id: 'gdi-3d' }, { id: 'osm', use: false }] } })).toEqual([]);
         expect(buildingCredits({})).toEqual([]);
     });
 

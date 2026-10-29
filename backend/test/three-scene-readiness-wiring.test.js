@@ -30,10 +30,10 @@ function harness({ request = vi.fn(async () => ({ items: [], complete: true })),
     const calls = { rebuild: vi.fn(), updates: vi.fn() };
     const window = {
         __threeSceneReadiness: readiness,
-        BuildingSourceClient: { sourcesFor: () => ['city'] },
+        SourceList: { inUse: () => ['city'] },
         BuildingCells: buildingCells,
         BuildingCellLoader: buildingCells.createCellLoader({ request: cell => request(cell) }),
-        CityConfigManager: { getParcelGridSize: () => 0.0025, datasetToLatLng: (easting, northing) => [northing, easting] },
+        CityConfigManager: { getParcelGridSize: () => 0.0025, datasetToLatLng: (easting, northing) => [northing, easting], getBuildingSources: () => [] },
         wgs84ToDataset: (lat, lng) => [lng, lat],
         PlanningViews: { getState: () => ({}) },
         clearBuildingsUnavailable: vi.fn(),
@@ -78,7 +78,7 @@ function harness({ request = vi.fn(async () => ({ items: [], complete: true })),
     context.buildingGroup.add(context.existingBuildingsGroup, context.proposedBuildingsGroup);
     const names = [
         'ensureNearbyProposalBuildings', 'rebuild3DBuildingsOnly', 'build3DBuildingFamilies', 'renderScene',
-        'getSceneReadiness', 'invalidateThreeView', 'queueThreeFrame', 'scheduleThreeFrame'
+        'getSceneReadiness', 'invalidateThreeView', 'queueThreeFrame', 'scheduleThreeFrame', 'threeBuildingKey'
     ];
     vm.createContext(context);
     vm.runInContext(`function renderFrame() {}\n${names.map(name => declarations.get(name)).join('\n')}\n${names.map(name => `this.${name}=${name};`).join('\n')}`, context);
@@ -99,7 +99,7 @@ describe('3D readiness wiring', () => {
         vm.runInContext(declarations.get('reportNearbyBuildingsUnavailable'), h.context);
         h.context.ensureNearbyProposalBuildings();
         for (let i = 0; i < 20 && h.context.nearbyProposalBuildingsFetching; i++) await flushPromises();
-        expect(h.context.window.reportBuildingsUnavailable).toHaveBeenCalledWith(null, expect.any(Function), false, 405);
+        expect(h.context.window.reportBuildingsUnavailable).toHaveBeenCalledWith(null, expect.any(Function), 'city', 405);
         // Our server refusing the request fails the cell outright: no stand-in hides it.
         expect(request.mock.calls.every(([call]) => call.source === 'city')).toBe(true);
         expect(h.context.nearbyBuildingsOutcome).toBe('failed');
@@ -113,7 +113,10 @@ describe('3D readiness wiring', () => {
         [{ items: [{ object_id: 'b1', faces: [] }], complete: false }, 'partial', false],
         [{ supported: false }, 'unsupported', false]
     ])('connects nearby cell answers %s to readiness evidence', async (payload, outcome, shouldBeReady) => {
-        const request = vi.fn(async () => payload);
+        // A building is filed under the cell holding its first vertex: put it in the cell asked for.
+        const request = vi.fn(async ({ bbox }) => (payload.items
+            ? { ...payload, items: payload.items.map(item => ({ ...item, faces: [{ coordinates: [[[bbox[0] + 1e-7, bbox[1] + 1e-7, 0], [bbox[0] + 2e-7, bbox[1] + 1e-7, 0], [bbox[0] + 1e-7, bbox[1] + 2e-7, 0], [bbox[0] + 1e-7, bbox[1] + 1e-7, 0]]] }] })) }
+            : payload));
         const h = harness({ request });
         h.context.ensureNearbyProposalBuildings();
         expect(h.context.nearbyProposalBuildingsFetching).toBe(true);

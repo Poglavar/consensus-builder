@@ -26,3 +26,22 @@ export async function mockBuildingScene(page: Page): Promise<any[]> {
   await page.route(/\/decor\/near\?/, route => route.fulfill({ json: { trees: [] } }));
   return requests;
 }
+
+// Footprint cells (POST /buildings/cell, kind footprints), as the map, the derived demolitions and a
+// review read existing buildings: every cell of every source answers `answer(body)` — flat items
+// { id, geometry, height_m?, floors? }, which the cell loader files under the cell holding each one's
+// first vertex — or 'unavailable', an outage of that cell. Other kinds fall through to earlier routes.
+export async function mockFootprintCells(page: Page, answer: (body: any) => any[] | 'unavailable'): Promise<any[]> {
+  const requests: any[] = [];
+  await page.route('**/buildings/cell', async route => {
+    const body = route.request().postDataJSON();
+    if (body.kind !== 'footprints') return route.fallback();
+    requests.push(body);
+    const items = answer(body);
+    if (items === 'unavailable') {
+      return route.fulfill({ json: { supported: true, kind: body.kind, bbox: body.bbox, items: [], complete: false, unavailable: true, retryAfter: 1 } });
+    }
+    return route.fulfill({ json: { supported: true, kind: body.kind, bbox: body.bbox, complete: true, items } });
+  });
+  return requests;
+}

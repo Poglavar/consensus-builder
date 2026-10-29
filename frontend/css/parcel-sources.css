@@ -19,8 +19,8 @@
     .parcel-source-settings[open] { inset: auto 0 0; transform: none; margin: 0 auto; }
 }
 .parcel-source-settings p, .parcel-source-settings li { line-height: 1.5; overflow-wrap: anywhere; }
-.parcel-source-settings__body label, .parcel-source-settings__body input { display: block; width: 100%; }
-.parcel-source-settings__body input { margin: var(--cb-space-2) 0 var(--cb-space-3); }
+.parcel-source-settings__form label, .parcel-source-settings__form input { display: block; width: 100%; }
+.parcel-source-settings__form input { margin: var(--cb-space-2) 0 var(--cb-space-3); }
 .parcel-source-settings__body .btn { margin-top: var(--cb-space-2); }
 .parcel-source-settings [hidden] { display: none; }
 /* Compact warnings reopen recovery after dismissal; they are sections of the shared banner card
@@ -35,6 +35,41 @@ body.ground-fallback-open #parcel-source-status {
 .parcel-source-formats table { width: 100%; border-collapse: collapse; font-size: var(--cb-text-base); }
 .parcel-source-formats th, .parcel-source-formats td { padding: var(--cb-space-3); text-align: left; vertical-align: top; border-bottom: 1px solid var(--cb-line-strong); overflow-wrap: anywhere; }
 
+
+/* The building source list (js/parcel-source-settings.js renderBuildingSourceList), in the Building
+   sources dialog and the B-key dialog: one row per source in list order, its name, the Use and
+   Outline switches (css/primitives.css .cb-switch) and the move and Remove icon buttons. A source
+   not in use is muted. On a phone the switches and buttons wrap under the name. */
+.source-list-editor {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+}
+.source-list-editor__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-2) var(--cb-space-3);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+}
+.source-list-editor__row--unused { background: var(--cb-surface-2); }
+.source-list-editor__row--unused .source-list-editor__title { color: var(--cb-text-muted); }
+.source-list-editor__name { flex: 1 1 10rem; min-width: 0; }
+.source-list-editor__title { display: block; font-weight: var(--cb-weight-semibold); overflow-wrap: anywhere; }
+.source-list-editor__attribution { display: block; color: var(--cb-text-muted); font-size: var(--cb-text-sm); overflow-wrap: anywhere; }
+.source-list-editor__switches, .source-list-editor__actions { display: flex; align-items: center; gap: var(--cb-space-3); }
+.source-list-editor__actions { gap: var(--cb-space-1); }
+.source-list-editor__status:empty { display: none; }
+.source-list-editor__status { margin: var(--cb-space-2) 0 0; color: var(--cb-danger); }
+.source-list-add { margin-top: var(--cb-space-4); }
+.source-list-add > summary { cursor: pointer; font-weight: var(--cb-weight-semibold); }
+.building-sources-summary:empty { display: none; }
 
 .imagery-source-presets .btn + .btn { margin-left: var(--cb-space-2); }
 .parcel-source-settings__result select { width: 100%; margin-top: var(--cb-space-2); }

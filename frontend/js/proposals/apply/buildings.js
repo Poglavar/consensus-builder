@@ -139,49 +139,19 @@
             try { this._setLastApplyFailure(idLabel, { code: 'building-geometry-unusable', message: `All ${candidateFeatures.length} stored building footprint(s) were dropped while preparing geometry.` }); } catch (_) { }
             return false;
         }
-        // The scan region is the ground this proposal takes (demolition-prefetch.js
-        // buildingDemolitionGeometry): the live parcels it stands on plus its authored footprints,
-        // or the footprints alone for a building that forms its own parcel or a rule that models
-        // the existing buildings. Never reuse a record produced by authoring or a previous
-        // browser's fabric.
-        buildingProposal.demolishedBuildings = [];
-        delete buildingProposal.demolitionScanned;
-        try {
+        // The land this proposal takes (demolition-prefetch.js buildingDemolitionGeometry): the live
+        // parcels it stands on plus its authored footprints, or the footprints alone for a building
+        // that forms its own parcel or a rule that models the existing buildings. The existing
+        // buildings it clears are derived from that land (demolition-index.js); applied proposed
+        // buildings under it are parked here, inside this mutation.
+        {
             const ground = demolitionGroundApi();
             if (!ground || typeof ground.buildingDemolitionGeometry !== 'function') throw new Error('demolition-prefetch.js (demolition ground) is not loaded');
             const goalHelpers = (typeof window !== 'undefined' && window.__applyRoute && typeof window.__applyRoute.normalizeGoalKey === 'function')
                 ? { normalizeGoalKey: window.__applyRoute.normalizeGoalKey } : {};
-            delete buildingProposal.demolitionScanFailed;
             const demolitionRegion = ground.buildingDemolitionGeometry(proposalData, liveParents.features, goalHelpers);
-            if (demolitionRegion && typeof this._deriveDemolishedBuildings === 'function') {
-                const preloadedBuildings = Array.isArray(options.preloadedBuildings) ? options.preloadedBuildings
-                    : proposalData.geometry?.landTake ? await ground.loadBuildingStock(demolitionRegion,
-                        (...args) => window.BuildingSourceClient.request(...args)) : undefined;
-                buildingProposal.demolishedBuildings = await this._deriveDemolishedBuildings(demolitionRegion, {
-                    ...options,
-                    ...(preloadedBuildings ? { preloadedBuildings } : {}),
-                    proposalId: idLabel
-                });
-            }
-        } catch (error) {
-            console.error('[_applyBuildingProposal] demolition scan failed', idLabel, error);
-            // Say so where it can be seen. A scan that fails records NO demolitions, which is
-            // indistinguishable from a block that genuinely stands on empty ground — a wrong answer
-            // wearing the shape of a right one, and the proposal is then stored that way.
-            buildingProposal.demolitionScanFailed = true;
-            if (proposalData.geometry?.landTake) {
-                this._setLastApplyFailure?.(idLabel, { code: 'building-clearance-unverified', message: 'Could not verify building removals for the reviewed land take. Retry the review.' });
-                return false;
-            }
-            try {
-                const say = (typeof window !== 'undefined' && typeof window.showEphemeralMessage === 'function')
-                    ? window.showEphemeralMessage
-                    : null;
-                const message = `Could not check which buildings "${proposalData.title || idLabel}" would demolish — `
-                    + 'it is recorded as demolishing none. Re-apply it once the backend answers again.';
-                if (say) say(message, 12000);
-                else if (typeof window !== 'undefined' && typeof window.updateStatus === 'function') window.updateStatus(message);
-            } catch (_) { }
+            (typeof window !== 'undefined' ? window : globalThis).DemolitionIndex?.registerRegion(idLabel, demolitionRegion);
+            if (demolitionRegion) await this._parkProposedBuildingsUnder(demolitionRegion, { ...options, proposalId: idLabel });
         }
         traceApply(`Step 4: Prepared ${preparedFeatures.length} building feature(s) (${(performance.now() - step4Time).toFixed(2)}ms)`);
 

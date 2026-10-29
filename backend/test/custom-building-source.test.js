@@ -5,7 +5,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { discoverCustomBuildingSource, discoverCustomParcelSource } from '../parcels/custom-source-discovery.js';
 import { encodeCustomSource, decodeCustomBuildingSource, decodeCustomSource } from '../parcels/custom-source-config.js';
-import { customBuildingFeature, createCustomBuildingProvider } from '../buildings/custom-source-3d.js';
+import { createCustomBuildingProvider } from '../buildings/custom-source-3d.js';
+import { customBuildingFeature } from '../buildings/building-cell-read.js';
 
 const bbox = [15.97, 45.80, 15.9705, 45.8005];
 const polygon = { type: 'Polygon', coordinates: [[[15.97, 45.80], [15.9702, 45.80], [15.9702, 45.8002], [15.97, 45.8002], [15.97, 45.80]]] };
@@ -178,5 +179,44 @@ describe('OpenStreetMap mirror as a building source', () => {
         await routes['/building-sources/discover']({ query: { url: 'https://overpass.example/api/interpreter', city: 'lima', bbox: '-77.03,-12.05,-77.0295,-12.0495' } }, res);
         expect(discover).not.toHaveBeenCalled();
         expect(sent).toMatchObject({ source: { adapter: 'overpass' }, buildingCount: 7 });
+    });
+});
+
+describe('building source discovery and the browser', () => {
+    // The browser reads the source itself, so discovery refuses one whose answers other sites may not read.
+    async function check(allowOrigin, origin) {
+        const { setupBuildingSourcesRoute } = await import('../routes/building-sources.js');
+        const routes = {};
+        const app = { get: (path, ...handlers) => { routes[path] = handlers[handlers.length - 1]; } };
+        const descriptor = { adapter: 'arcgis', endpoint: arcgisUrl, cityIds: ['zagreb'], metricSrid: 32633, idField: 'OBJECTID',
+            objectIdField: 'OBJECTID', idType: 'integer', outFields: ['OBJECTID'] };
+        const discover = vi.fn(async () => ({ descriptor, attempts: [{ adapter: 'arcgis' }] }));
+        const publicFetch = vi.fn(async () => ({ ok: true, status: 200,
+            headers: new Headers(allowOrigin === null ? {} : { 'access-control-allow-origin': allowOrigin }),
+            json: async () => ({ type: 'FeatureCollection', features: [{ type: 'Feature', id: 1, properties: { OBJECTID: 1 }, geometry: polygon }] }) }));
+        setupBuildingSourcesRoute(app, { discover, publicFetch, discoverOverpass: vi.fn() });
+        let sent, status = 200;
+        const res = { writableEnded: false, destroyed: false, once() {}, off() {}, set() { return this; },
+            status(code) { status = code; return this; }, json(body) { sent = body; return this; } };
+        await routes['/building-sources/discover']({ query: { url: arcgisUrl, city: 'zagreb', bbox: bbox.join(',') },
+            get: name => (name.toLowerCase() === 'origin' ? origin : undefined) }, res);
+        const origins = publicFetch.mock.calls.map(([, init]) => new Headers(init?.headers).get('origin'));
+        return { status, sent, origins };
+    }
+
+    it('accepts a source that lets any site read it, asking with the browser origin', async () => {
+        const found = await check('*', 'https://app.example');
+        expect(found.status).toBe(200);
+        expect(found.sent).toMatchObject({ buildingCount: 1, source: { adapter: 'arcgis' } });
+        expect(new Set(found.origins)).toEqual(new Set(['https://app.example']));
+    });
+
+    it('refuses a source that sends no CORS header, or allows another site only', async () => {
+        for (const allowed of [null, 'https://elsewhere.example']) {
+            const found = await check(allowed, undefined);
+            expect(found.status).toBe(422);
+            expect(found.sent).toMatchObject({ code: 'building-source-no-cors' });
+            expect(new Set(found.origins)).toEqual(new Set(['https://urbangametheory.xyz']));
+        }
     });
 });

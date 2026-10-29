@@ -29,14 +29,12 @@
 
     function turfApi() { return global.turf; }
 
-    // Which building surveys to measure against — the ones on the map, falling back to the working
-    // set so a fill is never silently empty. Mirrors the editor's own rule.
+    // Which building sources to measure against — the ones on the map, falling back to the sources
+    // in use so a fill is never silently empty (corridor-tunnel.js drawnBuildingSurveys, the editor's
+    // own rule).
     function sceneSurveys(preferred) {
-        if (preferred && (preferred.gdi || preferred.dgu || preferred.osm)) return preferred;
-        const read = id => !!(global.document && document.getElementById(id)?.checked);
-        const surveys = { gdi: read('showBuildings'), dgu: read('showBuildingsDgu'), osm: read('showBuildingsOsm') };
-        if (!surveys.gdi && !surveys.dgu && !surveys.osm) return { gdi: true, dgu: false, osm: false };
-        return surveys;
+        if (preferred && Array.isArray(preferred.sources) && preferred.sources.length) return preferred;
+        return global.drawnBuildingSurveys ? global.drawnBuildingSurveys() : { sources: [] };
     }
 
     function geometryToPlanarRings(geometry, frame) {

@@ -1,33 +1,36 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, stubBasemapTiles, PARCEL_GEOMETRY } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
-import { surveyResponse } from '../helpers/mocks/survey-data';
 import { openLayerSection } from '../helpers/layers';
 
-for (const reference of ['Osm', 'Dgu']) {
+// Zagreb lists DGU and OpenStreetMap for comparison: outlining one draws its buildings as reference
+// outlines, from its own cells, and shows every existing building so the outlines have company.
+for (const reference of ['osm', 'dgu']) {
   for (const display of [{ existing: 'solid', scope: 'surviving' }, { existing: 'off', scope: 'removed' }]) {
-    test(`enabling ${reference} reference buildings reveals them from ${display.existing}/${display.scope}`, async ({ mockApi: page }) => {
+    test(`outlining ${reference} reveals its buildings from ${display.existing}/${display.scope}`, async ({ mockApi: page }) => {
       await stubBasemapTiles(page);
-      await page.route('**/buildings**', route => {
-        const url = new URL(route.request().url());
-        if (!['/buildings', '/buildings/osm'].includes(url.pathname)) return route.fallback();
-        const features = [{
-          type: 'Feature', properties: { object_id: 'survey-one', osm_id: 'w1', zgrada_id: 'cadastre-one' }, geometry: PARCEL_GEOMETRY,
-        }];
-        return route.fulfill({ json: url.pathname === '/buildings/osm'
-          ? { type: 'FeatureCollection', features } : surveyResponse(features) });
+      await page.route('**/buildings/cell', route => {
+        const body = route.request().postDataJSON();
+        if (body.kind !== 'footprints') return route.fallback();
+        return route.fulfill({ json: { supported: true, kind: body.kind, bbox: body.bbox, complete: true,
+          items: body.source === reference ? [{ id: 'survey-one', geometry: PARCEL_GEOMETRY }] : [] } });
       });
       await page.goto(`/?city=zg&reduceMotion=1&at=45.80025,15.9822,18&existing=${display.existing}&existingScope=${display.scope}`, { waitUntil: 'domcontentloaded' });
       await openLayerSection(page, 'buildings');
-      const checkbox = page.locator(`#showBuildings${reference}`);
-      await checkbox.check();
+      await page.locator('#showBuildings').check();
+      const outline = (on: boolean) => page.evaluate(([id, on]) => {
+        const w = window as any;
+        const list = w.CityConfigManager.getBuildingSources().map((entry: any) => (entry.id === id ? { ...entry, outline: on } : entry));
+        w.SourceList.save(w.CityConfigManager.getCurrentCityId(), list, w);
+      }, [reference, on] as const);
+      await outline(true);
       const shape = page.locator('.leaflet-observedReferences-pane path').first();
       await expect(shape).toBeVisible();
       expect(await page.evaluate(() => (window as any).PlanningViews.getState())).toMatchObject({
         existing: display.existing === 'off' ? 'ghost' : 'solid', existingScope: 'all',
       });
       expect(new URL(page.url()).searchParams.get('existingScope')).toBe('all');
-      await checkbox.uncheck();
+      await outline(false);
       await expect(shape).toBeHidden();
     });
   }
@@ -35,7 +38,11 @@ for (const reference of ['Osm', 'Dgu']) {
 
 test('observed buildings start off and retain a faint contrasting fill when shown', async ({ mockApi: page }) => {
   await stubBasemapTiles(page);
-  await page.route('**/buildings?**', route => route.fulfill({json:surveyResponse([{type:'Feature',properties:{id:'survey-one',object_id:'survey-one'},geometry:PARCEL_GEOMETRY}])}));
+  await page.route('**/buildings/cell', route => {
+    const body = route.request().postDataJSON();
+    if (body.kind !== 'footprints') return route.fallback();
+    return route.fulfill({ json: { supported: true, kind: body.kind, bbox: body.bbox, complete: true, items: [{ id: 'survey-one', geometry: PARCEL_GEOMETRY }] } });
+  });
   await openCity(page);
   expect(await page.evaluate(()=>(window as any).PlanningViews.getState().existing)).toBe('off');
   await expect(page.locator('#showBuildings')).not.toBeChecked();
@@ -72,7 +79,7 @@ test('NYC exposes its source footprints and can display them from the common end
   const row = page.locator('#showBuildings').locator('..');
   await expect(row).not.toHaveAttribute('hidden');
   await expect(row).not.toHaveAttribute('data-feature-hidden');
-  await expect(row).toContainText('Show buildings');
+  await expect(row).toContainText('Buildings');
   await page.locator('#planning-views-button').click();
   await selectNativeOption(page.locator('[data-planning-setting="existing"]'), 'solid');
   await expect(page.locator('.leaflet-observedBuildings-pane path').first()).toBeVisible();

@@ -1,18 +1,7 @@
-// proposals/demolition-prefetch.js — one request for a whole replay's demolition ground.
-//
-// Applying a building or structure proposal scans for the buildings it would demolish, and that
-// scan used to fetch footprints from the server once per proposal — a replay of 300 members was
-// hundreds of round trips, most of them cold-cache. The regions are known up front (each member's
-// authored buildings, or a structure's footprint), so they are collected here and asked as ONE
-// POST /buildings/under, whose per-region answers ride into each member's scan as
-// `preloadedBuildings`.
-//
-// The prewarm alternative — fill the whole city's footprint pool once — was measured and rejected:
-// a plan-wide fetch returns `truncated: true` at 4,000 buildings, and a scan against a truncated
-// pool silently records FEWER demolitions. Per-region there is nothing to truncate.
-//
-// Pure collection and mapping here; the fetch itself stays in proposal-manager with the other
-// replay orchestration. UMD so node tests run the same code the browser runs.
+// proposals/demolition-prefetch.js — the land a design clears: a building proposal's parcels and
+// footprints, a structure's body. The apply path registers it with demolition-index.js, which derives
+// the existing buildings it razes or cuts; plan stats, Compare and MCP compare read the same regions.
+// UMD so node tests and the server run the same code the browser runs.
 (function (global) {
     'use strict';
 
@@ -131,43 +120,7 @@
         return regions;
     }
 
-    /**
-     * The bulk response's per-region lists as pool-shaped features — the SAME property shape
-     * loadProviderFootprints gives the footprint pool ({id, height_m, floors, source}), because
-     * corridor-tunnel's buildingIdentifier keys demolition records on `properties.id` and a
-     * different shape here would mint records no other consumer could match.
-     */
-    function buildingFeaturesFromBulk(regionsPayload, source) {
-        const byKey = new Map();
-        if (!regionsPayload || typeof regionsPayload !== 'object') return byKey;
-        Object.keys(regionsPayload).forEach(key => {
-            const entries = Array.isArray(regionsPayload[key]) ? regionsPayload[key] : [];
-            byKey.set(String(key), entries
-                .filter(entry => entry && entry.geometry)
-                .map(entry => ({
-                    type: 'Feature',
-                    properties: {
-                        id: entry.id,
-                        height_m: (typeof entry.height_m === 'number' && Number.isFinite(entry.height_m)) ? entry.height_m : null,
-                        floors: (typeof entry.floors === 'number' && Number.isFinite(entry.floors)) ? entry.floors : null,
-                        source: source || null
-                    },
-                    geometry: entry.geometry
-                })));
-        });
-        return byKey;
-    }
-
-    // An authoritative empty region is different from a failed or truncated source answer.
-    async function loadBuildingStock(geometry, request, key = 'land-take') {
-        const payload = await request('/buildings/under', { regions: [{ key, geometry }] });
-        if (!payload || payload.supported === false || payload.truncated === true || !Array.isArray(payload.regions?.[key])) {
-            throw new Error('Building stock is incomplete; the land take cannot be verified.');
-        }
-        return buildingFeaturesFromBulk(payload.regions, payload.source).get(key);
-    }
-
-    const api = { loadBuildingStock, demolitionRegionOf, collectDemolitionRegions, buildingFeaturesFromBulk, buildingClearsParcels, buildingDemolitionGeometry };
+    const api = { demolitionRegionOf, collectDemolitionRegions, buildingClearsParcels, buildingDemolitionGeometry };
 
     // Namespaced only — a bare global here could shadow a top-level function in the classic
     // scripts loaded alongside this file.

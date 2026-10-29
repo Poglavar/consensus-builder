@@ -292,21 +292,10 @@
                     updateSquaresLayer();
                 }
             };
-            // Demolition is derived from the authored body on every apply. A cached scan once
-            // turned a transient empty footprint fetch into permanent surviving buildings.
-            sp.demolishedBuildings = [];
-            delete sp.demolitionScanned;
-            try {
-                if (geometry
-                    && typeof this._deriveDemolishedBuildings === 'function') {
-                    sp.demolishedBuildings = await this._deriveDemolishedBuildings(geometry, {
-                        ...options,
-                        proposalId: idLabel
-                    });
-                }
-            } catch (error) {
-                console.error('[_applyStructureProposal] demolition scan failed', idLabel, error);
-            }
+            // The body clears its ground: the existing buildings under it are derived from it
+            // (demolition-index.js); applied proposed buildings under it are parked here.
+            (typeof window !== 'undefined' ? window : globalThis).DemolitionIndex?.registerRegion(idLabel, geometry);
+            if (geometry) await this._parkProposedBuildingsUnder(geometry, { ...options, proposalId: idLabel });
             traceApply(`Step 1: Initialized structure proposal (${(performance.now() - step1Time).toFixed(2)}ms) - kind: ${kind}`);
 
             const collectionName = kind === 'park'

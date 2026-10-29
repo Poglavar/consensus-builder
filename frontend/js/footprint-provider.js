@@ -134,6 +134,30 @@
             };
         }
 
+        // Every building touching a building cell (POST /buildings/cell): the cell loader files each one
+        // under the cell holding its first vertex (building-cells.js), so nothing is filtered here — a
+        // centroid test would drop a building whose first vertex lies in this cell and centroid in the next.
+        async function mapFootprints(geometry) {
+            const wanted = turf.bbox(geometry);
+            const box = expandBbox(wanted, 0, maxSpanDeg);
+            const clamped = box.some((value, i) => Math.abs(value - wanted[i]) > 1e-8);
+            let fc;
+            try {
+                fc = await featuresIn(box);
+            } catch (error) {
+                log(`no footprints for ${label}: ${error.message}`);
+                return { footprints: [], count: 0, truncated: true, source: sources.footprints, ...unavailableFrom(error) };
+            }
+            const list = fc.features.slice(0, maxBuildings).map(footprintEntry);
+            return {
+                footprints: list,
+                count: list.length,
+                truncated: clamped || fc.truncated === true || fc.partial === true || fc.features.length >= maxBuildings,
+                ...(fc.partial === true ? { partial: true } : {}),
+                source: sources.footprints
+            };
+        }
+
         // Buildings TOUCHING each region (the demolition scan). Regions spread wider than one query
         // answer truncated, which tells the caller to fall back to per-proposal requests.
         async function footprintsUnder(regions) {
@@ -166,7 +190,7 @@
             return { regions: byKey, truncated: fc.truncated === true || fc.partial === true, source: sources.footprints };
         }
 
-        return { near, footprints, footprintsUnder };
+        return { near, footprints, mapFootprints, footprintsUnder };
     }
 
     const api = { MAX_SPAN_DEG, expandBbox, footprintFeatureToBuilding, unavailableFrom, footprintEntry, createFootprintProvider };

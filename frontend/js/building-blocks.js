@@ -2967,15 +2967,25 @@ function getBlockQueryGeometry() {
     } catch (_) { return null; }
 }
 
-// Fetch the block's existing footprints once per modal open. Resolves to null when the city has
-// no footprint source (supported: false), or to the (possibly empty) footprint array otherwise.
+// Fetch the block's existing footprints once per modal open: the buildings the city's sources show
+// (the map's own cells, demolition-index.js stockUnder) at least half inside the block, so neighbours
+// merely touching its boundary are not swept into "raise all existing buildings". Resolves to the
+// (possibly empty) footprint array, each entry { id, geometry, height_m, floors }.
 function ensureExistingFootprints() {
     if (existingFootprintsPromise) return existingFootprintsPromise;
     const geometry = getBlockQueryGeometry();
     if (!geometry) return Promise.resolve(null);
-    existingFootprintsPromise = window.BuildingSourceClient.request('/buildings/footprints', { geometry }).then(payload => {
-        if (!payload || payload.supported === false) return null;
-        existingFootprints = (payload.footprints || []).filter(f => f && f.geometry);
+    const block = { type: 'Feature', properties: {}, geometry };
+    const mostlyInside = feature => {
+        try {
+            const inside = turf.intersect(feature, block);
+            return !!inside && turf.area(inside) >= 0.5 * turf.area(feature);
+        } catch (_) { return false; }
+    };
+    existingFootprintsPromise = window.DemolitionIndex.stockUnder([geometry]).then(features => {
+        existingFootprints = features.filter(feature => feature.geometry && mostlyInside(feature)).map(feature => ({
+            ...feature.properties, id: `${feature.properties.source}:${feature.properties.id}`, geometry: feature.geometry
+        }));
         return existingFootprints;
     }).catch(err => {
         existingFootprintsPromise = null; // let the next toggle retry

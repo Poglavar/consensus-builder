@@ -1,5 +1,6 @@
 // Source-addressed building services. The caller selects a dataset; geography never selects one.
 import { createZagrebProvider } from './zagreb-3d.js';
+import { createDguProvider } from './dgu-cadastre.js';
 import { createNycProvider } from './nyc-footprints.js';
 import { createNycArcgisProvider } from './nyc-arcgis.js';
 import { createOsmProvider } from './osm-3d.js';
@@ -13,12 +14,13 @@ const SourceRuntime = createRequire(import.meta.url)('../../frontend/js/source-r
 
 const builtins = [
     ['wien-lod2', 'wien-lod2'],
-    ['gdi-3d', 'gdi-3d'], ['nyc-arcgis', 'nyc-arcgis'], ['nyc-socrata', 'nyc-socrata'], ['osm', 'osm']
+    ['gdi-3d', 'gdi-3d'], ['dgu', 'dgu'], ['nyc-arcgis', 'nyc-arcgis'], ['nyc-socrata', 'nyc-socrata'], ['osm', 'osm']
 ];
 export const buildingSourceRegistry = SourceRuntime.createRegistry({
     abstraction: 'buildings',
     adapters: {
         'gdi-3d': { create: (_config, { pool }) => createZagrebProvider(pool), custom: false },
+        dgu: { create: (_config, { pool }) => createDguProvider(pool), custom: false },
         'nyc-arcgis': { create: (_config, { env }) => createNycArcgisProvider(env), custom: false },
         'nyc-socrata': { create: (_config, { env }) => createNycProvider(env), custom: false },
         osm: { create: (_config, { pool }) => createOsmProvider(pool), custom: false },

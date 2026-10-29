@@ -57,14 +57,11 @@ test('the NYC command palette respects building-source availability', async ({ m
   const workingProvider = palette.getByRole('option').filter({ hasText: 'Show buildings' }).first();
   await expect(workingProvider).toBeVisible();
   await expect(workingProvider).not.toHaveAttribute('aria-disabled', 'true');
-  await palette.locator('input').fill('Official cadastre (DGU)');
-  const dgu = palette.getByRole('option').filter({ hasText: 'Official cadastre (DGU)' }).first();
-  await expect(dgu).toBeVisible();
-  await expect(dgu).toHaveAttribute('aria-disabled', 'true');
-  await palette.locator('input').fill('Map buildings (OSM)');
-  const osm = palette.getByRole('option').filter({ hasText: 'Map buildings (OSM)' }).first();
-  await expect(osm).toBeVisible();
-  await expect(osm).not.toHaveAttribute('aria-disabled', 'true');
+  // Which surveys are used or outlined is the city's building source list, one command away.
+  await palette.locator('input').fill('Building sources');
+  const sources = palette.getByRole('option').filter({ hasText: 'Building sources' }).first();
+  await expect(sources).toBeVisible();
+  await expect(sources).not.toHaveAttribute('aria-disabled', 'true');
 });
 
 test('OSM block refresh and browsing remain palette commands when parcel blocks are unavailable', async ({ mockApi: page }) => {

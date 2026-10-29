@@ -489,6 +489,7 @@
             "confirm": "Utilizar este edifício"
         },
         "buildingLayers": {
+            "done": "Concluído",
             "cancel": "Cancelar",
             "gdi": "Edifícios 3D (GDI)",
             "dgu": "Cadastro oficial (DGU)",
@@ -1146,7 +1147,7 @@
                 "paved": "Pavimentado (pedra)"
             },
             "measuredAgainst": "Medido em relação a",
-            "measuredFallback": "nada apresentado — a medir em relação ao GDI",
+            "measuredFallback": "nada apresentado — a medir em relação aos edifícios em uso",
             "lockedControl": "Indisponível enquanto o perfil transversal estiver aberto — aplique ou cancele primeiro",
             "ceilingOver": "Mais larga do que cabe aqui ({{max}} m) sem uma nova demolição — abra o separador Corredor para ver como poderia caber",
             "ceilingTitle": "A largura máxima com que esta estrada cabe aqui sem uma nova demolição; poderá ser necessário deslocá-la (consulte o separador Corredor)",
@@ -8652,6 +8653,21 @@
         "title": "Fontes de dados"
     },
     "buildingSources": {
+        "listTitle": "Fontes de edifícios",
+        "listIntro": "As fontes em uso cobrem cada área por esta ordem: onde uma não tem edifícios, a seguinte substitui-a. Uma fonte com Contorno ativo é desenhada apenas para comparação.",
+        "addSource": "Adicionar uma fonte",
+        "add": "Adicionar esta fonte",
+        "added": "{{name}} é agora a primeira da lista e está em uso.",
+        "resetList": "Repor a lista da cidade",
+        "useSwitch": "Usar",
+        "outlineSwitch": "Contorno",
+        "outlineHint": "Contorno desenha uma fonte que não está em uso, para comparação.",
+        "keepOne": "Uma fonte fica sempre em uso.",
+        "moveUp": "Subir {{name}}",
+        "moveDown": "Descer {{name}}",
+        "remove": "Remover {{name}}",
+        "outlinedName": "{{name}} em contorno",
+        "cors": "Este serviço não permite que os navegadores o leiam diretamente.",
         "unavailableTitle": "Edifícios indisponíveis",
         "title": "Escolher uma fonte de edifícios",
         "intro": "Adicione um URL HTTPS público de áreas de implantação de edifícios para esta cidade ou de um servidor espelho do OpenStreetMap (um endereço da Overpass API terminado em /interpreter). Testamos cada formato suportado e lemos um campo de altura ou de número de pisos quando existe; as restantes alturas são estimadas.",

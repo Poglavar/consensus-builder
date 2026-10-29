@@ -131,18 +131,6 @@ describe('data source backend override', () => {
         expect(request.url.startsWith('https://services8.arcgis.com/')).toBe(true);
     });
 
-    it('routes GDI building footprints through the backend named in the URL', () => {
-        // A city that actually has GDI footprints — the Zagreb survey. The fixture used to name a
-        // source of 'backend', which is not a building source at all; GDI requests are now refused
-        // outside the cities that have GDI, so the placeholder stopped producing a request.
-        const { window, stored } = bootWithOverride({ buildings: { source: 'gdi' } });
-
-        const view = { getSouthWest: () => ({ lat: 45.8, lng: 15.97 }), getNorthEast: () => ({ lat: 45.81, lng: 15.98 }) };
-        expect(window.buildBuildingRequestParams(view, 'gdi').url)
-            .toBe('http://localhost:4179/buildings?bbox=1%2C2%2C3%2C4&source=gdi');
-        expect(stored.get('cb_dev_backend_base')).toBe('http://localhost:4179');
-    });
-
     it('routes Croatian parcels through it too — they used to hardcode port 3000', () => {
         // Zagreb, Split and Šibenik all take the `oss-wfs` path, which built its URL from
         // LOCAL_BASE. Every other city source (parcel-ba/-bg/-lj/-co/-nyc) already called

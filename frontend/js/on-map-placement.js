@@ -121,7 +121,7 @@
 
         function invalidateBuildings(event) {
             if (event?.type === 'layeradd' || event?.type === 'layerremove') {
-                const groups = [env.buildingLayer, env.dguBuildingLayer, env.osmBuildingLayer].filter(Boolean);
+                const groups = [env.buildingLayer, env.outlineBuildingLayer].filter(Boolean);
                 if (!groups.some(layer => layer === event.layer || layer.hasLayer?.(event.layer))) return;
             }
             buildingTargets = null;
@@ -129,7 +129,7 @@
         function shownBuildings() {
             if (buildingTargets) return buildingTargets;
             const features = [];
-            const layers = [env.buildingLayer, env.dguBuildingLayer, env.osmBuildingLayer];
+            const layers = [env.buildingLayer, env.outlineBuildingLayer];
             layers.filter((layer, index) => layer && layers.indexOf(layer) === index && map.hasLayer?.(layer))
                 .forEach(layer => layer.eachLayer(item => {
                     if (item.feature?.geometry && item.feature.properties?.__outcome !== 'destroyed') features.push(item.feature);

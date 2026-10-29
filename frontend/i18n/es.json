@@ -2645,7 +2645,7 @@
                 "paved": "Adoquinada (piedra)"
             },
             "measuredAgainst": "Medido contra",
-            "measuredFallback": "no se muestra nada — se mide contra GDI",
+            "measuredFallback": "no se muestra nada — se mide contra los edificios en uso",
             "lockedControl": "No disponible mientras la sección esté abierta — aplica o cancela primero",
             "ceilingOver": "Más ancho de lo que cabe aquí ({{max}} m) sin una nueva demolición: abre la pestaña Corredor para ver cómo podría caber",
             "ceilingTitle": "El ancho máximo que cabe aquí para esta vía sin una nueva demolición; quizá haya que desplazarla (ver la pestaña Corredor)",
@@ -2701,6 +2701,7 @@
             "keep": "Conservar borrador"
         },
         "buildingLayers": {
+            "done": "Listo",
             "title": "¿Qué edificios mostrar?",
             "gdi": "Edificios 3D (GDI)",
             "gdiHint": "Fotogrametría: lo que realmente existe. El modelo 3D usa esto, y también cada corte y demolición.",
@@ -7346,6 +7347,21 @@
         "title": "Fuentes de datos"
     },
     "buildingSources": {
+        "listTitle": "Fuentes de edificios",
+        "listIntro": "Las fuentes en uso cubren cada zona en este orden: donde una no tiene edificios, la siguiente la sustituye. Una fuente con Contorno activado se dibuja solo para comparar.",
+        "addSource": "Añadir una fuente",
+        "add": "Añadir esta fuente",
+        "added": "{{name}} es ahora la primera de la lista y está en uso.",
+        "resetList": "Restablecer la lista de la ciudad",
+        "useSwitch": "Usar",
+        "outlineSwitch": "Contorno",
+        "outlineHint": "Contorno dibuja una fuente que no está en uso, para comparar.",
+        "keepOne": "Siempre queda al menos una fuente en uso.",
+        "moveUp": "Subir {{name}}",
+        "moveDown": "Bajar {{name}}",
+        "remove": "Quitar {{name}}",
+        "outlinedName": "{{name}} en contorno",
+        "cors": "Este servicio no permite que los navegadores lo lean directamente.",
         "unavailableTitle": "Edificios no disponibles",
         "title": "Elegir una fuente de edificios",
         "intro": "Añade una URL pública HTTPS de huellas de edificios para esta ciudad, o de un espejo de OpenStreetMap (una dirección de la API de Overpass que termina en /interpreter). Probamos cada formato compatible y leemos un campo de altura o de plantas si lo tiene; las demás alturas se estiman.",

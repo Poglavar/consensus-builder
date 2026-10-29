@@ -655,7 +655,8 @@ describe('finish', () => {
         await world.idle();
         const context = globalThis.pendingRoadDrawingProposal;
         expect(context.tunnels).toHaveLength(1);
-        expect(context.tunnels[0].buildingIds).toEqual(['b1']);
+        // The record is its span; the building it passes under is derived from it.
+        expect(context.tunnels[0]).not.toHaveProperty('buildingIds');
         expect(context.centerline[0].length).toBeGreaterThan(2);   // portals became vertices
         expect(globalThis.instantCreateProposalFromDraft.calls).toHaveLength(1);
     });
@@ -693,7 +694,7 @@ describe('reopening a saved corridor (seed)', () => {
             centerline: [[at(0, 0), at(100, 0)]],
             segmentIds: ['s1'],
             profile: globalThis.corridorProfileFromLegacy(7.5, 1, false),
-            tunnels: [{ id: 't1', kind: 'building', edgeKey: 'x', from: at(70, 0), to: at(80, 0), buildingIds: ['under'] }]
+            tunnels: [{ id: 't1', kind: 'building', edgeKey: 'x', from: at(70, 0), to: at(80, 0) }]
         };
         expect(await world.api.startSeededCorridorDrawing('road', seed, null)).toBe(true);
         expect([...world.session.roadSurfaceBuildingIds]).toEqual(['kept']);

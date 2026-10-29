@@ -323,7 +323,8 @@ describe('obstacles recorded per edge, decided once at Finish', () => {
         expect(segment[2].lng).toBeGreaterThan(15.971);
         expect(segment[2].lng).toBeLessThan(15.9711);
         expect(result.tunnels).toHaveLength(1);
-        expect(result.tunnels[0]).toMatchObject({ kind: 'building', segmentId: 's1', buildingIds: ['b1'] });
+        expect(result.tunnels[0]).toMatchObject({ kind: 'building', segmentId: 's1' });
+        expect(result.tunnels[0]).not.toHaveProperty('buildingIds');
         // The record names a live edge: the inside one, between the portals.
         expect(result.tunnels[0].edgeKey).toBe(keyOf(segment[1], segment[2]));
         expect(liveKeys(segment)).toContain(result.tunnels[0].edgeKey);

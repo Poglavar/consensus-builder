@@ -2618,7 +2618,7 @@
                 "paved": "Paved (stone)"
             },
             "measuredAgainst": "Measured against",
-            "measuredFallback": "nothing shown — measuring against GDI",
+            "measuredFallback": "nothing shown — measuring against the buildings in use",
             "lockedControl": "Not available while the cross-section is open — apply or cancel first",
             "ceilingOver": "Wider than fits here ({{max}} m) without a new demolition — open the Corridor tab to see how it could fit",
             "ceilingTitle": "The widest this road fits here without a new demolition; it may need to be moved (see the Corridor tab)",
@@ -2674,6 +2674,7 @@
             "keep": "Keep draft"
         },
         "buildingLayers": {
+            "done": "Done",
             "title": "Which buildings to show?",
             "gdi": "3D buildings (GDI)",
             "gdiHint": "Photogrammetry: what is actually there. The 3D model uses this, and so does every cut and demolition.",
@@ -7319,6 +7320,21 @@
         "title": "Data sources"
     },
     "buildingSources": {
+        "listTitle": "Building sources",
+        "listIntro": "Sources in use fill each area in this order: where one has no buildings, the next stands in. A source with Outline on is drawn for comparison only.",
+        "addSource": "Add a source",
+        "add": "Add this source",
+        "added": "{{name}} is now first in the list, in use.",
+        "resetList": "Reset to the city's list",
+        "useSwitch": "Use",
+        "outlineSwitch": "Outline",
+        "outlineHint": "Outline draws a source that is not in use, for comparison.",
+        "keepOne": "One source always stays in use.",
+        "moveUp": "Move {{name}} up",
+        "moveDown": "Move {{name}} down",
+        "remove": "Remove {{name}}",
+        "outlinedName": "{{name}} outlined",
+        "cors": "This service does not allow browsers to read it directly.",
         "unavailableTitle": "Buildings unavailable",
         "title": "Choose a building source",
         "intro": "Add a public HTTPS URL of building footprints for this city, or of an OpenStreetMap mirror (an Overpass API address ending in /interpreter). We try each supported format and read a height or storey field when it has one; other heights are estimated.",

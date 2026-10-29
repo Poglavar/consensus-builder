@@ -378,14 +378,6 @@ describe('three-mode (3D display)', () => {
         expect(out).toBe(LEFT);
     });
 
-    it('structure clearance: an intersect, union or remainder that throws is reported', () => {
-        const regions = [RIGHT, box(16.0008, 46.0000, 16.0012, 46.0010)].map(region => ({ region, bbox: turf.bbox(region) }));
-        for (const op of ['intersect', 'union', 'difference']) {
-            const fns = extract(file, ['reportThreeClip', 'structureClearanceCarve'], { ...base([op]), buildingFootprintPolygon: () => LEFT });
-            expectReported('three-mode.structureClearanceCarve', () => fns.structureClearanceCarve({}, op === 'union' ? regions : regions.slice(0, 1)));
-        }
-    });
-
     it('building slices: a parcel the building cannot be intersected with gets no slice, reported', () => {
         const added = [];
         class Color { constructor() {} }

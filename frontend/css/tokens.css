@@ -99,6 +99,12 @@
     --cb-observed-building-fill-opacity: 0.14;
     --cb-observed-building-stroke-opacity: 0.85;
     --cb-observed-building-stroke-width: 1.25;
+    /* An outlined source's building that the buildings shown do not have (map-core.js outlines). */
+    --cb-observed-building-only-fill: #f472b6;
+    --cb-observed-building-only-stroke: #e11d48;
+    --cb-observed-building-only-fill-opacity: 0.5;
+    --cb-observed-building-only-stroke-opacity: 1;
+    --cb-observed-building-only-stroke-width: 3;
     --cb-planning-permitted: #168b87;
     --cb-planning-proposed: #c26336;
     --cb-planning-control-width: 440px;

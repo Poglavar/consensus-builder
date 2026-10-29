@@ -1,66 +1,24 @@
 // A user-chosen building source (a `building.<base64url>` id from GET /building-sources/discover):
 // the same ArcGIS / WFS / OGC API / Socrata / GeoJSON transports as custom parcel sources, behind
-// the same public-URL guard and cooldown, read as building footprints. Heights come from the
-// source's own height field (metres, or feet), else its storey field, else the shared seeded
-// estimate (building-heights.js), so a user's survey and OpenStreetMap extrude by one rule. Same
-// near/footprints/footprintsUnder contract as every other provider.
+// the same public-URL guard and cooldown, read as building footprints. The browser reads these
+// sources itself (its adapter worker, browser-building-cells.js); this server reader stays for
+// server-side consumers. The read and the height rules are shared with the browser
+// (building-cell-read.js). Same near/footprints/footprintsUnder contract as every other provider.
 
 import * as turf from '@turf/turf';
 import { createParcelSource, withSourceCooldown } from '../parcels/sources.js';
 import { createPublicSourceFetch } from '../parcels/public-source-fetch.js';
 import { footprintFeatureToBuilding, expandBbox, unavailableFrom } from './osm-3d.js';
-import { AREA_LIMIT_CODE } from '../parcels/source-contract.js';
-import { splitRead, boxSideMeters } from './split-read.js';
-
-const FEET = 0.3048;
-// Adapters refuse a query over 1 km² (the descriptor's maxBboxKm2): a larger box is read in quarters.
-const MAX_SIDE_M = 950;
+import { readAdapterBox } from './building-cell-read.js';
 
 const log = (...args) => console.log(`[${new Date().toISOString()}] [custom-buildings]`, ...args);
-
-function positive(value) {
-    const n = typeof value === 'number' ? value : parseFloat(value);
-    return Number.isFinite(n) && n > 0 ? n : null;
-}
-
-// An adapter feature → the footprint shape the shared extrusion reads.
-export function customBuildingFeature(descriptor, feature) {
-    const props = feature?.properties?.sourceProperties || {};
-    const raw = descriptor.heightField ? positive(props[descriptor.heightField]) : null;
-    return {
-        type: 'Feature',
-        id: String(feature.id),
-        geometry: feature.geometry,
-        properties: {
-            measured_height_m: raw === null ? null : (descriptor.heightUnit === 'ft' ? raw * FEET : raw),
-            levels: descriptor.levelsField ? positive(props[descriptor.levelsField]) : null,
-            building: null
-        }
-    };
-}
-
 
 export function createCustomBuildingProvider(descriptor, { fetchImpl = createPublicSourceFetch() } = {}) {
     const adapter = withSourceCooldown(createParcelSource(descriptor, { fetchImpl }));
 
     // The box read whole, or in quarters while the adapter says it is over its area or feature
-    // limit (split-read.js). A failed quarter throws: the caller reports the box unavailable.
-    async function featuresIn(bbox) {
-        let failure = null;
-        const read = await splitRead(bbox, async box => {
-            if (boxSideMeters(box) > MAX_SIDE_M) return { areaLimited: true };
-            try {
-                const result = await adapter.queryBounds(box);
-                return { items: result.features || [], complete: result.complete === true };
-            } catch (error) {
-                if (error?.code === AREA_LIMIT_CODE) return { areaLimited: true };
-                failure = error;
-                return { unavailable: true };
-            }
-        }, { idOf: feature => feature.id });
-        if (read.unavailable) throw failure;
-        return { features: read.items.map(feature => customBuildingFeature(descriptor, feature)), complete: read.complete };
-    }
+    // limit. A failed quarter throws: the caller reports the box unavailable.
+    const featuresIn = bbox => readAdapterBox(adapter, descriptor, bbox);
 
     async function near(geometry, bufferMeters) {
         const box = expandBbox(turf.bbox(geometry), bufferMeters);

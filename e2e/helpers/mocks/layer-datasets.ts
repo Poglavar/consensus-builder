@@ -151,12 +151,22 @@ export async function installLayerDatasets(page: Page): Promise<void> {
     supported: true,
     footprints: [{ ...existingBuildingFootprint, height_m: 12, floors: 4 }],
   } }));
-  // The 2D pool's cells; a 3D cell is left to the scene mock (mockBuildingScene) or the API fixture.
+  // The 2D pool's cells, as POST /buildings/cell answers them: flat items per source. Zagreb's GDI
+  // survey holds the GDI object and the fixture building; DGU and OpenStreetMap their own copy of the
+  // block. The cell loader files each item under the cell holding its first vertex. A 3D cell is left
+  // to the scene mock (mockBuildingScene) or the API fixture.
+  const ring = (w: number, e: number) => [[[w, 45.80008], [e, 45.80008], [e, 45.80022], [w, 45.80022], [w, 45.80008]]];
+  const fixtureItem = { id: existingBuildingFootprint.properties.id, geometry: existingBuildingFootprint.geometry, height_m: 12, floors: 4 };
+  const cellItems: Record<string, any[]> = {
+    'gdi-3d': [{ id: 9001, geometry: { type: 'Polygon', coordinates: ring(15.98208, 15.98224) }, height_m: 12, floors: null }, fixtureItem],
+    dgu: [{ id: 9002, geometry: { type: 'Polygon', coordinates: ring(15.98208, 15.98224) }, height_m: null, floors: null }],
+    osm: [{ id: 9003, geometry: { type: 'Polygon', coordinates: ring(15.98228, 15.98242) }, height_m: null, floors: null }],
+  };
   await page.route('**/buildings/cell', route => {
     const body = route.request().postDataJSON();
     if (body.kind !== 'footprints') return route.fallback();
     return route.fulfill({ json: { supported: true, kind: body.kind, bbox: body.bbox, complete: true,
-      items: [{ ...existingBuildingFootprint, height_m: 12, floors: 4 }] } });
+      items: cellItems[body.source] || [fixtureItem] } });
   });
 
   // Only the API: the glob also matches the app's own js/osm-roads-source.js.

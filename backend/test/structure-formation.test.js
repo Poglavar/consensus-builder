@@ -67,7 +67,7 @@ describe('structure ground formation', () => {
 
             const result = await structures._applyStructureProposal.call({
                 _getCanonicalStructureGeometry: () => proposal.structureProposal.geometry,
-                _deriveDemolishedBuildings: vi.fn().mockResolvedValue([]),
+                _parkProposedBuildingsUnder: vi.fn().mockResolvedValue(),
                 _resolveLiveFormationParents: resolveLiveFormationParents,
                 _setLastApplyFailure: vi.fn()
             }, proposal.proposalId, proposal, {

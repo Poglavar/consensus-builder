@@ -2641,7 +2641,7 @@
                 "paved": "Popločano (kamen)"
             },
             "measuredAgainst": "Mereno prema",
-            "measuredFallback": "ništa nije prikazano — meri se prema GDI-ju",
+            "measuredFallback": "ništa nije prikazano — meri se prema zgradama u upotrebi",
             "lockedControl": "Nedostupno dok je presek otvoren — prvo primeni ili odustani",
             "ceilingOver": "Šire nego što ovde staje ({{max}} m) bez novog rušenja — otvori karticu Koridor da vidiš kako bi moglo da stane",
             "ceilingTitle": "Najveća širina koju ovaj put ovde može da ima bez novog rušenja; možda ga treba pomeriti (vidi karticu Koridor)",
@@ -2701,6 +2701,7 @@
             "keep": "Zadrži nacrt"
         },
         "buildingLayers": {
+            "done": "Gotovo",
             "title": "Koje zgrade prikazati?",
             "gdi": "3D zgrade (GDI)",
             "gdiHint": "Fotogrametrija: ono što stvarno postoji. Na tome se zasniva 3D model, i po tome se ruši i preseca.",
@@ -7356,6 +7357,21 @@
         "title": "Izvori podataka"
     },
     "buildingSources": {
+        "listTitle": "Izvori zgrada",
+        "listIntro": "Izvori u upotrebi pokrivaju svako područje ovim redosledom: gde jedan nema zgrada, zamenjuje ga sledeći. Izvor sa uključenom konturom crta se samo radi poređenja.",
+        "addSource": "Dodaj izvor",
+        "add": "Dodaj ovaj izvor",
+        "added": "{{name}} je sada prvi na listi i u upotrebi.",
+        "resetList": "Vrati listu grada",
+        "useSwitch": "Koristi",
+        "outlineSwitch": "Kontura",
+        "outlineHint": "Kontura crta izvor koji nije u upotrebi, radi poređenja.",
+        "keepOne": "Jedan izvor uvek ostaje u upotrebi.",
+        "moveUp": "Pomeri {{name}} gore",
+        "moveDown": "Pomeri {{name}} dole",
+        "remove": "Ukloni {{name}}",
+        "outlinedName": "{{name}} kao kontura",
+        "cors": "Ovaj servis ne dozvoljava pregledačima da ga direktno čitaju.",
         "unavailableTitle": "Zgrade nisu dostupne",
         "title": "Izaberi izvor zgrada",
         "intro": "Dodaj javni HTTPS URL osnova zgrada za ovaj grad ili OpenStreetMap ogledala (adresa Overpass API-ja koja se završava na /interpreter). Isprobavamo svaki podržani format i čitamo polje visine ili broja etaža ako postoji; ostale visine se procenjuju.",

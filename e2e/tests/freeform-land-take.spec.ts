@@ -1,6 +1,7 @@
 import { test, expect } from '../helpers/fixtures';
 import { placeFreeformBuilding, openCity, openParcel, openParcelAt, stubBasemapTiles, showProposal } from '../helpers/runtime';
 import { selectNativeOption } from '../helpers/controls';
+import { mockFootprintCells } from '../helpers/mocks/building-data';
 const editor = '#single-building-editor';
 const first = 'HR-335754-1234';
 async function open(page: any) {
@@ -17,12 +18,8 @@ async function finish(page: any) {
   await expect(page.locator(editor)).toHaveCount(0);
 }
 test('a narrow building takes a whole parcel, previews demolition, saves and reopens', async ({ mockApi: page }, testInfo) => {
-  await page.route('**/buildings/under', route => {
-    const regions = route.request().postDataJSON().regions;
-    route.fulfill({ contentType: 'application/json', body: JSON.stringify({ supported:true, source:'gdi', truncated:false,
-      regions:Object.fromEntries(regions.map((r:any)=>[r.key,[{id:'yard-building',height_m:4,
-        geometry:{type:'Polygon',coordinates:[[[15.98192,45.80002],[15.98198,45.80002],[15.98198,45.80008],[15.98192,45.80008],[15.98192,45.80002]]]} }]])) }) });
-  });
+  await mockFootprintCells(page, () => [{id:'yard-building',height_m:4,
+    geometry:{type:'Polygon',coordinates:[[[15.98192,45.80002],[15.98198,45.80002],[15.98198,45.80008],[15.98192,45.80008],[15.98192,45.80002]]]} }]);
   await open(page);
   await expect(page.locator('#single-ground-treatment')).toBeDisabled();
   await expect(page.locator('#single-ground-treatment-edit')).toBeDisabled();
@@ -44,7 +41,9 @@ test('a narrow building takes a whole parcel, previews demolition, saves and reo
   expect(saved).toBeTruthy();
   expect(saved.geometry.buildings[0].geometry).toEqual(body);
   expect(saved.geometry.landTake.geometry.coordinates[0]).toEqual([[15.9819,45.8],[15.9825,45.8],[15.9825,45.8005],[15.9819,45.8005],[15.9819,45.8]]);
-  expect(saved.buildingProposal.demolishedBuildings.map((b:any)=>b.id)).toContain('yard-building');
+  // The removal is derived from the saved land take (demolition-index.js), never stored on the design.
+  await expect.poll(()=>page.evaluate(()=>(window as any).DemolitionIndex.records().map((b:any)=>b.id))).toContain('gdi-3d:yard-building');
+  expect(saved.buildingProposal?.demolishedBuildings).toBeUndefined();
   expect(await page.evaluate(p=>(window as any).DesignRecord.published(p).geometry.landTake,saved)).toEqual(saved.geometry.landTake);
   await showProposal(page,saved.proposalId);
   await page.locator('#proposal-details-footer .btn-edit-geometry').click();
@@ -54,11 +53,7 @@ test('a narrow building takes a whole parcel, previews demolition, saves and reo
 for (const published of [false, true]) test(`height-only editing retains demolition for ${published ? 'a published counterproposal' : 'an in-place save'}`, async ({ mockApi: page }) => {
   const stock = { id: 'yard-building', height_m: 4,
     geometry: { type: 'Polygon', coordinates: [[[15.98192,45.80002],[15.98198,45.80002],[15.98198,45.80008],[15.98192,45.80008],[15.98192,45.80002]]] } };
-  await page.route('**/buildings/under', route => {
-    const regions = route.request().postDataJSON().regions;
-    return route.fulfill({ json: { supported: true, source: 'gdi', truncated: false,
-      regions: Object.fromEntries(regions.map((r: any) => [r.key, [stock]])) } });
-  });
+  await mockFootprintCells(page, () => [stock]);
   await open(page);
   await selectNativeOption(page.locator(`[data-parcel-id="${first}"]`), 'whole');
   await page.locator('#single-height-slider').fill('250');
@@ -71,7 +66,7 @@ for (const published of [false, true]) test(`height-only editing retains demolit
       demolished: w.collectDemolishedBuildingRecords().map((b: any) => String(b.id)),
       drawnDemolished: [...w.currentBuildingOutcomeState().demolishedById.keys()] };
   });
-  await expect.poll(current).toMatchObject({ height: 250, demolished: ['yard-building'], drawnDemolished: ['yard-building'] });
+  await expect.poll(current).toMatchObject({ height: 250, demolished: ['gdi-3d:yard-building'], drawnDemolished: ['gdi-3d:yard-building'] });
   const before = await current();
   if (published) await page.evaluate(id => {
     const w = window as any;
@@ -90,7 +85,7 @@ for (const published of [false, true]) test(`height-only editing retains demolit
   await expect(page.locator('[data-land-status]')).toContainText('1 buildings removed');
   await finish(page);
   await expect.poll(current).toMatchObject({ height: 249,
-    demolished: ['yard-building'], drawnDemolished: ['yard-building'] });
+    demolished: ['gdi-3d:yard-building'], drawnDemolished: ['gdi-3d:yard-building'] });
   if (published) {
     expect((await current()).id).not.toBe(before.id);
     expect(await page.evaluate(id => {
@@ -149,7 +144,9 @@ test('reopening a building across two layout plots offers each plot whole, with 
 });
 test('missing stock keeps the unsaved editor open',async({mockApi:page})=>{
   await open(page);
-  await page.route('**/buildings/under',route=>route.fulfill({contentType:'application/json',body:JSON.stringify({supported:true,truncated:true,regions:{}})}));
+  // Every cell of the land out: the stock is incomplete. Asked afresh, as a cold page would.
+  await page.evaluate(() => (window as any).BuildingCellLoader.clear());
+  await mockFootprintCells(page, () => 'unavailable');
   await page.locator('[data-land-footprint]').click();
   await expect(page.locator('[data-land-status]')).toContainText('Could not verify');
   await expect(page.locator('[data-land-footprint]')).not.toHaveAttribute('aria-busy');
@@ -159,10 +156,9 @@ test('missing stock keeps the unsaved editor open',async({mockApi:page})=>{
   await expect(page.locator('#single-land-take-error')).toBeVisible();
   await expect(page.locator('[data-land-accept]')).toHaveCount(0);
   await expect(page.locator(`${editor} .on-map-editor__panel`)).toBeVisible();
-  await page.route('**/buildings/under', route => {
-    const regions = route.request().postDataJSON().regions;
-    return route.fulfill({ json: { supported: true, truncated: false, source: 'gdi', regions: Object.fromEntries(regions.map((r: any) => [r.key, []])) } });
-  });
+  await mockFootprintCells(page, () => []);
+  // The outage's back-off is over once the person asks again.
+  await page.evaluate(() => (window as any).BuildingCellLoader.retry());
   await page.locator('[data-land-footprint]').click();
   await expect(page.locator('[data-land-status]')).toContainText('m²');
   await expect(page.locator('#single-land-take-error')).toBeHidden();
@@ -190,16 +186,12 @@ test('Done saves the current demolition answer without separate acceptance',asyn
   await open(page);
   await selectNativeOption(page.locator(`[data-parcel-id="${first}"]`),'whole');
   await expect(page.locator('[data-land-status]')).toContainText('m²');
-  await page.route('**/buildings/under',route=>{
-    const regions=route.request().postDataJSON().regions;
-    route.fulfill({contentType:'application/json',body:JSON.stringify({supported:true,truncated:false,source:'gdi',
-      regions:Object.fromEntries(regions.map((r:any)=>[r.key,[{id:'new-stock',geometry:{type:'Polygon',coordinates:[[[15.98192,45.80002],[15.98198,45.80002],[15.98198,45.80008],[15.98192,45.80008],[15.98192,45.80002]]]}}]]))})});
-  });
+  await page.evaluate(() => (window as any).BuildingCellLoader.clear());
+  await mockFootprintCells(page, () => [{id:'new-stock',geometry:{type:'Polygon',coordinates:[[[15.98192,45.80002],[15.98198,45.80002],[15.98198,45.80008],[15.98192,45.80008],[15.98192,45.80002]]]}}]);
   await page.locator('#single-building-confirm').click();
   await expect(page.locator(editor)).toHaveCount(0);
-  await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
-    .find((p:any) => p.goal === 'single' && p.applied)?.buildingProposal?.demolishedBuildings?.map((building:any) => building.id) || []))
-    .toContain('new-stock');
+  await expect.poll(() => page.evaluate(() => (window as any).DemolitionIndex.records().map((building: any) => building.id)))
+    .toContain('gdi-3d:new-stock');
 });
 test('mobile Done saves without a separate acceptance checkbox',async({mockApi:page})=>{
  await page.setViewportSize({width:390,height:844});
@@ -292,10 +284,13 @@ test('bulk land choices keep their spinner until the source review completes', a
   await open(page);
   let release!: () => void;
   const gate = new Promise<void>(resolve => { release = resolve; });
-  await page.route('**/buildings/under', async route => {
+  // A cold page: the review waits for its cells.
+  await page.evaluate(() => (window as any).BuildingCellLoader.clear());
+  await page.route('**/buildings/cell', async route => {
+    const body = route.request().postDataJSON();
+    if (body.kind !== 'footprints') return route.fallback();
     await gate;
-    const regions = route.request().postDataJSON().regions;
-    await route.fulfill({json:{supported:true,truncated:false,source:'gdi',regions:Object.fromEntries(regions.map((r:any)=>[r.key,[]]))}});
+    await route.fulfill({ json: { supported: true, kind: body.kind, bbox: body.bbox, complete: true, items: [] } });
   });
   const button = page.locator('[data-land-whole]');
   await button.click();

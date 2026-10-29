@@ -67,24 +67,20 @@
         if (props.proposalId !== undefined && props.proposalId !== null) {
             return `proposal:${props.proposalId}:${props.buildingIndex ?? 0}`;
         }
-        // object_id FIRST, and it is not a preference — it is the whole design. The buildings we
-        // work with ARE the GDI objects: `gdi_building_footprint` (what detection scans, and what
-        // GET /buildings?bbox= serves) and `gdi_building_3d` (what the 3D view and the walk sim
-        // render) are the same 357,683 features under the same object_id. Keying records on it is
-        // what lets every downstream consumer match a record to a mesh EXACTLY, by id.
-        //
-        // ZGRADA_ID is the DGU CADASTRE id — a different survey in a different key space. It is a
-        // reference layer only and must never be cut, tunnelled or demolished against, so it is
-        // NOT accepted here. The remaining keys cover the other city sources (NYC, Overture).
+        // A building is named by its source and its id there (`<source>:<id>`,
+        // docs/source-loading-plan.md F2): surveys of one city number their buildings in their own key
+        // spaces (GDI object_id, DGU zgrada_id, OpenStreetMap ids), so an id alone could name two
+        // buildings. Every building that loads through a cell carries `properties.source`.
+        const scope = props.source ? `${props.source}:` : '';
         const direct = props.object_id ?? props.objectId ?? props.OBJECT_ID
             ?? props.building_id ?? props.buildingId ?? props.id ?? feature?.id;
-        if (direct !== undefined && direct !== null && String(direct)) return String(direct);
+        if (direct !== undefined && direct !== null && String(direct)) return scope + String(direct);
         // No id property at all: derive a stable key from the geometry. Never key by pool index —
         // the pool is rebuilt between calls (fetch merges, demolition filtering), so index-based
         // ids left click-time demolish records unmatchable at finish time (the F re-prompt bug).
         try {
             const first = feature?.geometry?.coordinates?.[0]?.[0];
-            if (first) return `geom:${JSON.stringify(first)}`;
+            if (first) return `${scope}geom:${JSON.stringify(first)}`;
         } catch (_) { }
         return String(fallback);
     }
@@ -237,18 +233,17 @@
         return hits;
     }
 
-    // The GDI buildings detection works with. This reads the POOL (`buildingFeaturePool`) — the
-    // data — and NEVER `buildingLayer` — the Leaflet DISPLAY layer.
+    // The buildings detection works with. This reads the POOL (`buildingFeaturePool`, the sources in
+    // use) — the data — and NEVER `buildingLayer` — the Leaflet DISPLAY layer.
     //
-    // That distinction is the whole point. The reference layers (GDI footprints, DGU footprints)
-    // are cosmetic checkboxes the user flips constantly, and B is hammered mid-draw. Reading the
-    // display layer meant an unticked box literally removed buildings from the set that could be
-    // cut, so what a corridor demolished depended on what was switched on when it was drawn.
-    // The pool is filled by fetchBuildings() regardless of any checkbox (rebuildBuildingLayerFromPool
-    // is the only thing that consults visibility), so cutting is now independent of display.
-    // A reference layer's features, read back off the Leaflet layer — DGU and OSM exist nowhere
-    // else, having no pool of their own. Only the profiler asks for these, and only to MEASURE
-    // against them; cutting still runs on the GDI pool, whatever is on screen.
+    // That distinction is the whole point. Layers are cosmetic checkboxes the user flips constantly,
+    // and B is hammered mid-draw. Reading the display layer meant an unticked box literally removed
+    // buildings from the set that could be cut, so what a corridor demolished depended on what was
+    // switched on when it was drawn. The pool is filled by fetchBuildings() regardless of any
+    // checkbox (rebuildBuildingLayerFromPool is the only thing that consults visibility).
+    // An outlined source's features, read back off its Leaflet layer — outlines have no pool of their
+    // own. Only the profiler asks for these, and only to MEASURE against them; cutting still runs on
+    // the pool, whatever is on screen.
     function corridorReferenceLayerFeatures(layer) {
         const features = [];
         if (!layer || typeof layer.eachLayer !== 'function') return features;
@@ -258,9 +253,21 @@
         return features;
     }
 
-    // `options.surveys` = { gdi, dgu, osm } asks for the surveys currently on the map instead of
-    // the working set. Proposed buildings are added either way: they are in the scene no matter
-    // which survey the user is looking at.
+    // The building sources drawn on the map, for the profiler to measure against: the sources in use
+    // while the Buildings layer is on, and every outlined source. Nothing drawn: the sources in use,
+    // marked `fallback`, so a measure is never taken against nothing.
+    function drawnBuildingSurveys() {
+        const list = global.CityConfigManager?.getBuildingSources?.() || [];
+        const sourceList = global.SourceList;
+        if (!sourceList) return { sources: [], fallback: true };
+        const shown = !!global.document?.getElementById?.('showBuildings')?.checked;
+        const sources = [...(shown ? sourceList.inUse(list) : []), ...sourceList.outlined(list).map(entry => entry.id)];
+        return sources.length ? { sources } : { sources: sourceList.inUse(list), fallback: true };
+    }
+
+    // `options.surveys` = { sources: [ids] } asks for the sources drawn on the map (drawnBuildingSurveys)
+    // instead of the working set. Proposed buildings are added either way: they are in the scene no
+    // matter which survey the user is looking at.
     function collectLoadedCorridorBuildings(options = {}) {
         const buildings = [];
         const seenProposalBuildings = new Set();
@@ -272,28 +279,25 @@
         // contradict an authoritative empty answer. Proposal-owned buildings remain included
         // below because they live only in client state and still have to be parked on overlap.
         const includeLoadedSurveyPool = options.includeLoadedSurveyPool !== false;
-        const pool = includeLoadedSurveyPool && (!surveys || surveys.gdi) && Array.isArray(global.buildingFeaturePool)
-            ? global.buildingFeaturePool
-            : [];
+        const measured = surveys ? new Set(surveys.sources || []) : null;
+        const pool = includeLoadedSurveyPool && Array.isArray(global.buildingFeaturePool) ? global.buildingFeaturePool : [];
         pool.forEach(feature => {
-            if (feature && feature.geometry) buildings.push(feature);
+            if (feature && feature.geometry && (!measured || measured.has(feature.properties?.source))) buildings.push(feature);
         });
-        // Server stock fetched for THIS scan in bulk (POST /buildings/under), riding alongside the
-        // pool rather than into it: the pool's coverage rectangles promise "everything in this rect
-        // is loaded", and per-footprint results cannot honestly make that promise. Added HERE, not
-        // at the call site, so they pass through applyDemolitionRecordsToBuildingFeatures below —
-        // a building already cut by an earlier road must be scanned as its remainder, wherever it
-        // came from. A building present in both lists is deduped at hit level by its identifier.
+        // Stock loaded for THIS scan (a review's land, demolition-index.js stockUnder), riding alongside
+        // the pool rather than into it. Added HERE, not at the call site, so they pass through
+        // applyDemolitionRecordsToBuildingFeatures below — a building already cut by an earlier road
+        // must be scanned as its remainder, wherever it came from. A building present in both lists is
+        // deduped at hit level by its identifier.
         if (Array.isArray(options.extraPool)) {
             options.extraPool.forEach(feature => {
                 if (feature && feature.geometry) buildings.push(feature);
             });
         }
-        if (surveys && surveys.dgu) {
-            corridorReferenceLayerFeatures(global.dguBuildingLayer).forEach(feature => buildings.push(feature));
-        }
-        if (surveys && surveys.osm) {
-            corridorReferenceLayerFeatures(global.osmBuildingLayer).forEach(feature => buildings.push(feature));
+        if (measured) {
+            corridorReferenceLayerFeatures(global.outlineBuildingLayer).forEach(feature => {
+                if (measured.has(feature.properties?.source)) buildings.push(feature);
+            });
         }
         const proposedBuildings = options._parcelMutation?.collections?.proposedBuildings || global.proposedBuildings;
         if (Array.isArray(proposedBuildings)) {
@@ -329,7 +333,7 @@
             });
         } catch (_) { }
         return applyDemolitionRecordsToBuildingFeatures(buildings, collectDemolishedBuildingRecords({
-            proposalStore, excludeProposalId: options.excludeProposalId
+            excludeProposalId: options.excludeProposalId
         }));
     }
 
@@ -390,8 +394,6 @@
         // user manually ticked "show existing buildings" (which fetched the real ones).
         if (Array.isArray(global.buildingFeaturePool) && global.buildingFeaturePool.length) return true;
         try {
-            const config = global.CityConfigManager?.getCurrentCityConfig?.();
-            if (config?.buildings?.source === 'none') return false;
             // Bottom-gated only, matching fetchBuildings itself: a ceiling here meant the corridor
             // preload gave up at exactly the zooms road editing works at (up to 22), so obstacle
             // prompts and the profiler ran on an empty pool.
@@ -427,7 +429,9 @@
         return findBuildingTunnelIntersections(feature, collectLoadedCorridorBuildings(), global.turf);
     }
 
-    function makeBuildingTunnelRecord(from, to, hits, options = {}) {
+    // A tunnel record is its span along one corridor edge (from → to); the buildings it passes under
+    // are derived from it against whichever buildings are shown (demolition-derive.js).
+    function makeBuildingTunnelRecord(from, to, options = {}) {
         const start = pointOf(from);
         const end = pointOf(to);
         const edgeKey = corridorTunnelEdgeKey(start, end);
@@ -438,8 +442,33 @@
             edgeKey,
             from: start,
             to: end,
-            segmentId: options.segmentId || null,
-            buildingIds: Array.from(new Set((hits || []).map(hit => String(hit.id || hit)).filter(Boolean)))
+            segmentId: options.segmentId || null
+        };
+    }
+
+    // Which hits an existing tunnel already passes under: a footprint meeting the corridor's width
+    // (`widthOf(record)` metres) along a tunnel span by at least 2 m², the threshold of a cut. → hit → bool.
+    function tunnelSpanTest(tunnels, widthOf, turfApi) {
+        const api = turfApi || global.turf;
+        const spans = (Array.isArray(tunnels) ? tunnels : []).map(record => {
+            const a = pointOf(record?.from), b = pointOf(record?.to), width = Number(widthOf(record));
+            if (!a || !b || !(width > 0)) return null;
+            // A local plane around the span: metres per degree at its latitude.
+            const ky = 110540, kx = 111320 * Math.cos(a.lat * Math.PI / 180);
+            const dx = (b.lng - a.lng) * kx, dy = (b.lat - a.lat) * ky, length = Math.hypot(dx, dy) || 1;
+            const ox = (-dy / length) * width / 2 / kx, oy = (dx / length) * width / 2 / ky;
+            const ring = [[a.lng + ox, a.lat + oy], [b.lng + ox, b.lat + oy], [b.lng - ox, b.lat - oy], [a.lng - ox, a.lat - oy], [a.lng + ox, a.lat + oy]];
+            return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring] } };
+        }).filter(Boolean);
+        return hit => {
+            const footprint = normalizeBuildingFeature(hit?.feature || hit);
+            if (!api || !footprint?.geometry || !spans.length) return false;
+            return spans.some(span => {
+                try {
+                    const clip = api.intersect(footprint, span);
+                    return !!clip && (Number(api.area(clip)) || 0) >= 2;
+                } catch (_) { return false; }
+            });
         };
     }
 
@@ -717,24 +746,15 @@
     // the server needs the same list without a proposalStorage; this stays as the browser's
     // storage-bound entry point. Roads, parks/squares/lakes and building typologies all clear
     // their ground the same way and all park their records on `<kind>Proposal.demolishedBuildings`.
-    function collectDemolishedBuildingRecords({ proposalStore = global.proposalStorage, excludeProposalId = null } = {}) {
-        try {
-            const from = global.demolishedBuildingRecordsFrom;
-            if (typeof from !== 'function') {
-                console.error('[corridor-tunnel] corridor-carve.js not loaded — no demolition records');
-                return [];
-            }
-            const proposals = (proposalStore?.peekAllProposals?.() || proposalStore?.getAllProposals?.() || []).filter(proposal =>
-                excludeProposalId == null || String(proposal.proposalId) !== String(excludeProposalId));
-            const records = from(proposals, {
-                consolidateCorridorRecords: (records, region) =>
-                    consolidateCorridorDemolitionRecords(records, region, global.turf)
-            });
-            return consolidateBuildingDemolitionRecords(records, global.turf);
-        } catch (error) {
-            console.error('[corridor-tunnel] demolished-building scan failed', error);
+    // The applied plan's demolition records, derived from the designs' land against the buildings shown
+    // (demolition-index.js). `excludeProposalId` reads them as if that design were not applied.
+    function collectDemolishedBuildingRecords({ excludeProposalId = null } = {}) {
+        const index = global.DemolitionIndex;
+        if (!index) {
+            console.error('[corridor-tunnel] demolition-index.js not loaded — no demolition records');
             return [];
         }
+        return index.records({ excludeProposalId });
     }
 
     // PARTIAL demolition split: a building straddling the demolition region loses only the
@@ -975,105 +995,46 @@
         return consolidated;
     }
 
-    // Buildings under a demolition region (park/square/lake footprint, or a building
-    // proposal's parcels): the region clears its ground by DEFAULT, no prompt —
-    // proposal-owned buildings are unapplied silently (kept in the list), real ones are
-    // returned as demolition records. Buildings straddling the region boundary are
-    // demolished PARTIALLY (see splitDemolitionFootprint).
-    async function demolishBuildingsUnderFootprint(geometry, options = {}) {
-        const records = [];
-        if (!geometry || !geometry.type) return records;
+    // A new design over an applied PROPOSED building parks that building's design (unapplied silently,
+    // kept in the list). Existing buildings are not decided here: their demolitions are derived from
+    // the applied designs' land (demolition-index.js).
+    async function parkProposedBuildingsUnder(geometry, options = {}) {
+        if (!geometry || !geometry.type) return;
         const regionFeature = { type: 'Feature', properties: {}, geometry };
-        // Bulk-prefetched stock for this region (a replay fetches every member's in one request).
-        // Its presence — even as an empty array, which means "scanned, nothing there" — replaces
-        // the per-region network hop below. Absence means this scan was NOT covered by a bulk
-        // answer and must fetch for itself; the distinction is what keeps a failed prefetch from
-        // silently reading as empty ground.
-        const preloaded = Array.isArray(options.preloadedBuildings) ? options.preloadedBuildings : null;
-        // Load footprints for the REGION itself — the pool only covers viewports the user
-        // fetched, and a building never loaded can never be detected or demolished.
-        if (!preloaded && typeof global.ensureBuildingFootprintsForBounds === 'function' && global.turf?.bbox) {
-            try {
-                const [west, south, east, north] = global.turf.bbox(regionFeature);
-                await global.ensureBuildingFootprintsForBounds([[south, west], [north, east]]);
-            } catch (error) {
-                console.error('[corridor-tunnel] footprint preload for demolition region failed', error);
-            }
-        }
         const hits = findBuildingTunnelIntersections(
             regionFeature,
-            collectLoadedCorridorBuildings({ _parcelMutation: options._parcelMutation,
-                ...(preloaded ? { extraPool: preloaded, includeLoadedSurveyPool: false } : {}) }),
+            collectLoadedCorridorBuildings({ _parcelMutation: options._parcelMutation, includeLoadedSurveyPool: false }),
             global.turf
         );
         for (const hit of hits) {
             const owner = tunnelHitProposalId(hit);
-            if (owner) {
-                // A replay begins by clearing the whole target set, including its presentation
-                // caches. If a stale cache nevertheless exposes the taker's own old building,
-                // it is not an obstacle and must never recursively unapply itself.
-                if (options.proposalId && String(options.proposalId) === String(owner)) continue;
-                // Boot/recovery materializes the applied-set snapshot; it does not author a new
-                // choice between proposals. Any overlap was resolved by the explicit apply/edit
-                // transaction that produced that snapshot. A stale proposal-owned feature may be
-                // ignored here, but may never turn its record off and force a second boot pass.
-                if (options.preserveAppliedSet === true) continue;
-                const parked = await global.ProposalManager?.unapplyProposal?.(owner, {
-                    skipConfirm: true,
-                    skipRebuild: true,
-                    // This scan runs inside the taker's mutation. Parking the intersecting
-                    // building is part of that same proposal/fabric draft.
-                    _parcelMutation: options._parcelMutation
-                });
-                if (parked !== true) {
-                    throw new Error(`Could not park building proposal ${owner} under the new formation.`);
-                }
-                continue;
-            }
-            const footprintFeature = originalBuildingFeature(hit);
-            let footprint = null;
-            try {
-                footprint = JSON.parse(JSON.stringify(footprintFeature?.geometry || null));
-            } catch (error) {
-                console.error('[corridor-tunnel] could not capture demolished footprint — it will still render in 3D', hit.id, error);
-            }
-            const split = footprintFeature ? splitDemolitionFootprint(footprintFeature, regionFeature, global.turf) : { full: true };
-            if (!split) continue; // clip below threshold: building untouched
-            if (split.full) {
-                records.push({ id: String(hit.id), geometry: footprint });
-            } else {
-                records.push({
-                    id: String(hit.id),
-                    geometry: footprint,
-                    demolishedPart: JSON.parse(JSON.stringify(split.demolishedPart)),
-                    remainder: JSON.parse(JSON.stringify(split.remainder))
-                });
-            }
-        }
-        return records;
-    }
-
-    function collectDemolishedBuildingIds() {
-        return new Set(collectDemolishedBuildingRecords().map(record => String(record.id)));
-    }
-
-    // Building ids TUNNELLED under any applied corridor — mirrors collectDemolishedBuildingIds, but
-    // for tunnel records (a tunnel writes no demolition record, so those buildings are otherwise
-    // invisible to the carve). Feeds the persistent 2D "tunnelled = yellow" footprint colour.
-    function collectTunnelledBuildingIds() {
-        const ids = new Set();
-        try {
-            (global.proposalStorage?.getAllProposals?.() || []).forEach(proposal => {
-                const rp = proposal && proposal.roadProposal;
-                if (!rp || !rp.definition || !appliedOf(proposal, rp)) return;
-                (rp.definition.tunnels || []).forEach(record => {
-                    (record?.buildingIds || []).forEach(id => { if (id != null) ids.add(String(id)); });
-                });
+            if (!owner) continue;
+            // A replay begins by clearing the whole target set, including its presentation
+            // caches. If a stale cache nevertheless exposes the taker's own old building,
+            // it is not an obstacle and must never recursively unapply itself.
+            if (options.proposalId && String(options.proposalId) === String(owner)) continue;
+            // Boot/recovery materializes the applied-set snapshot; it does not author a new
+            // choice between proposals. Any overlap was resolved by the explicit apply/edit
+            // transaction that produced that snapshot. A stale proposal-owned feature may be
+            // ignored here, but may never turn its record off and force a second boot pass.
+            if (options.preserveAppliedSet === true) continue;
+            const parked = await global.ProposalManager?.unapplyProposal?.(owner, {
+                skipConfirm: true,
+                skipRebuild: true,
+                // This scan runs inside the taker's mutation. Parking the intersecting
+                // building is part of that same proposal/fabric draft.
+                _parcelMutation: options._parcelMutation
             });
-        } catch (error) {
-            console.error('[corridor-tunnel] tunnelled-building scan failed', error);
+            if (parked !== true) {
+                throw new Error(`Could not park building proposal ${owner} under the new formation.`);
+            }
         }
-        return ids;
+    }
+
+    // The buildings an applied road passes under, by key: derived from its tunnel spans
+    // (demolition-index.js). Feeds the persistent 2D "tunnelled = yellow" footprint colour.
+    function collectTunnelledBuildingIds() {
+        return global.DemolitionIndex ? global.DemolitionIndex.tunnelledKeys() : new Set();
     }
 
     // The persistent 2D outcome of a building given the applied carve + tunnel state. A demolition
@@ -1099,10 +1060,9 @@
             case 'tunnelled':
                 return { color: '#ca8a04', weight: 1, opacity: 1, fillColor: '#eab308', fillOpacity: 0.3, dashArray: '2 3' };
             default:
-                // Same light purple as the DGU/OSM reference layers: three surveys of one thing,
-                // so they stack rather than compete (see building-layers-dialog.js).
-                return global.BuildingLayersDialog?.style
-                    || { color: '#7c3aed', opacity: 0.55, weight: 1, fillColor: '#7c3aed', fillOpacity: 0.12 };
+                // The observed-building palette (tokens.css, map-core.js observedBuildingStyle), shared
+                // with the outlined sources: surveys of one thing, so they stack rather than compete.
+                return global.observedBuildingStyle ? global.observedBuildingStyle() : {};
         }
     }
 
@@ -1117,14 +1077,15 @@
         corridorFeatureFromLatLngRing,
         detectLoadedBuildingTunnelIntersections,
         makeBuildingTunnelRecord,
+        tunnelSpanTest,
+        drawnBuildingSurveys,
         addBuildingTunnelRecord,
         removeBuildingTunnelEdge,
         corridorSurfaceRuns,
         retainLiveCorridorTunnelRecords,
-        collectDemolishedBuildingIds,
         collectDemolishedBuildingRecords,
         clipCorridorEdgeThroughBuildings,
-        demolishBuildingsUnderFootprint,
+        parkProposedBuildingsUnder,
         splitDemolitionFootprint,
         upsertCutRecord,
         consolidateCorridorDemolitionRecords,
@@ -1148,12 +1109,13 @@
             findBuildingTunnelIntersections,
             corridorFeatureFromLatLngRing,
             makeBuildingTunnelRecord,
+            tunnelSpanTest,
             addBuildingTunnelRecord,
             removeBuildingTunnelEdge,
             corridorSurfaceRuns,
             retainLiveCorridorTunnelRecords,
             clipCorridorEdgeThroughBuildings,
-            demolishBuildingsUnderFootprint,
+            parkProposedBuildingsUnder,
             splitDemolitionFootprint,
             upsertCutRecord,
             consolidateCorridorDemolitionRecords,

@@ -208,45 +208,6 @@ describe('materializing a shared link', () => {
         expect(ProposalManager.rebuildAppliedFabric).toBeUndefined();
     });
 
-    it('prefetches demolition stock once and passes exact covered-empty slices', async () => {
-        const applyProposal = vi.fn(async () => true);
-        const prefetch = vi.fn(async () => new Map([
-            ['building', []],
-            ['park', [{ type: 'Feature', properties: { id: 'surveyed-1' }, geometry: {} }]]
-        ]));
-        const records = new Map([
-            ['building', { proposalId: 'building', goal: 'single', buildingProposal: {} }],
-            ['park', { proposalId: 'park', goal: 'park', structureProposal: {} }]
-        ]);
-        const ProposalManager = {
-            applyProposal,
-            _prefetchDemolitionBuildings: prefetch,
-            validateSharedProposalGround: () => ({ ok: true, blockers: [] })
-        };
-        const { materializeQueuedSharedProposals } = loadSharedImportHelpers({
-            ProposalManager,
-            proposalStorage: { getProposal: id => records.get(id) || null },
-            applyRoute: { normalizeGoalKey: goal => goal, isBuildingGoal: goal => goal === 'single' }
-        });
-
-        await materializeQueuedSharedProposals(['building', 'park']);
-
-        expect(prefetch).toHaveBeenCalledOnce();
-        expect(prefetch).toHaveBeenCalledWith(
-            [records.get('building'), records.get('park')],
-            { onProgress: expect.any(Function) }
-        );
-        expect(applyProposal.mock.calls).toEqual([
-            ['building', { replay: true, silent: true, deferPresentation: true, preloadedBuildings: [] }],
-            ['park', {
-                replay: true,
-                silent: true,
-                deferPresentation: true,
-                preloadedBuildings: [{ type: 'Feature', properties: { id: 'surveyed-1' }, geometry: {} }]
-            }]
-        ]);
-    });
-
     it('refuses an externally-held ordinary member before replay without stopping its siblings', async () => {
         const applyProposal = vi.fn(async () => true);
         const alreadyStanding = { proposalId: 'outside', goal: 'building', buildingProposal: {}, applied: true };

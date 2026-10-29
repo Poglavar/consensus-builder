@@ -380,11 +380,37 @@ function toggleBlocksVisibility() {
     }
 }
 
+// The Buildings row of the Layers panel: one line naming the city's building source list (the sources
+// in use, then the outlined ones), kept current as the list, the city or the language changes.
+function renderBuildingSourceSummary() {
+    const line = document.getElementById('building-sources-summary');
+    if (!line) return;
+    try { line.textContent = window.ParcelSourceSettings?.buildingSourceSummary?.(window) || ''; }
+    catch (error) { console.warn(`[${new Date().toISOString()}] [buildings] source summary unavailable`, error); }
+}
+
+// Outlined sources (reference outlines from a source not in use) cannot be filtered by the working
+// stock's demolitions, so while buildings are shown with any outlined, the existing-buildings view
+// leaves the scope that would hide them, including one set by a share link.
+function applyOutlinedSourceScope() {
+    if (!document.getElementById('showBuildings')?.checked) return;
+    const sources = window.CityConfigManager?.getBuildingSources?.();
+    if (!sources || !window.SourceList?.outlined(sources).length) return;
+    const state = window.PlanningViews?.getState?.();
+    if (state?.existing === 'off') window.PlanningViews.configure('existing', 'ghost');
+    if (state?.existingScope && state.existingScope !== 'all') window.PlanningViews.configure('existingScope', 'all');
+}
+
+let buildingSourceListListening = false;
+function onBuildingSourceListChanged() {
+    renderBuildingSourceSummary();
+    applyOutlinedSourceScope();
+}
+
 // Toggle layer visibility.
-// `buildings` = the GDI footprints (the model). `buildingsDgu` = the DGU cadastre reference.
-// `buildingsOsm` = the OSM footprints behind the basemap. They are independent — any can be on at
-// once — and NONE changes what a corridor cuts: detection reads window.buildingFeaturePool (the
-// data), never a Leaflet layer.
+// `buildings` = the existing buildings, from the city's building source list (source-list.js), with
+// any outlined sources drawn beside them. No layer changes what a corridor cuts: detection reads
+// window.buildingFeaturePool (the data), never a Leaflet layer.
 function toggleLayer(layerType) {
     const showBuildings = document.getElementById('showBuildings').checked;
     const showProposedBuildings = document.getElementById('showProposedBuildings').checked;
@@ -392,28 +418,12 @@ function toggleLayer(layerType) {
     if (layerType === 'buildings') {
         if (showBuildings) {
             if (window.PlanningViews?.getState?.().existing === 'off') window.PlanningViews.configure('existing', 'ghost');
+            applyOutlinedSourceScope();
             if (typeof fetchBuildings === 'function') {
                 fetchBuildings(null, { announce: true });
             }
         } else if (typeof buildingLayer !== 'undefined' && buildingLayer) {
             map.removeLayer(buildingLayer);
-        }
-    }
-
-    if (layerType === 'buildingsDgu' || layerType === 'buildingsOsm') {
-        const isDgu = layerType === 'buildingsDgu';
-        const showReference = document.getElementById(isDgu ? 'showBuildingsDgu' : 'showBuildingsOsm')?.checked;
-        if (showReference) {
-            // These independent surveys cannot be filtered by the working stock's demolition
-            // records. Enabling one must leave the scope that hides it, including from share links.
-            const state = window.PlanningViews?.getState?.();
-            if (state?.existing === 'off') window.PlanningViews.configure('existing', 'ghost');
-            if (state?.existingScope && state.existingScope !== 'all') window.PlanningViews.configure('existingScope', 'all');
-            const fetchReference = isDgu ? window.fetchDguBuildings : window.fetchOsmBuildings;
-            fetchReference?.();
-        } else {
-            const hideReference = isDgu ? window.hideDguBuildingLayer : window.hideOsmBuildingLayer;
-            hideReference?.();
         }
     }
 
@@ -565,6 +575,14 @@ function initializeMapControls() {
         }
     } catch (_) { }
 
+    // The building source list's summary line and outline scope follow every change to the list.
+    onBuildingSourceListChanged();
+    if (!buildingSourceListListening) {
+        buildingSourceListListening = true;
+        window.addEventListener(window.SourceList?.EVENT || 'sourceListChanged', onBuildingSourceListChanged);
+        window.i18n?.onChange?.(renderBuildingSourceSummary);
+    }
+
     // Initialize Parcels checkbox state by zoom policy (no auto-expand)
     const firstCheckbox = document.getElementById('parcelsCheckbox');
     if (firstCheckbox) {
@@ -698,10 +716,9 @@ function updateParcelsCheckboxByZoom(within) {
 
         // Enable/disable building toggles based on zoom so they stay usable only when parcels are visible
         const showBuildingsCheckbox = document.getElementById('showBuildings');
-        const showBuildingsDguCheckbox = document.getElementById('showBuildingsDgu');
         const showProposedBuildingsCheckbox = document.getElementById('showProposedBuildings');
         const showSuggestedLayoutsCheckbox = document.getElementById('showSuggestedLayouts');
-        [showBuildingsCheckbox, showBuildingsDguCheckbox, showProposedBuildingsCheckbox, showSuggestedLayoutsCheckbox].forEach(cb => {
+        [showBuildingsCheckbox, showProposedBuildingsCheckbox, showSuggestedLayoutsCheckbox].forEach(cb => {
             if (!cb) return;
             cb.disabled = !within;
         });

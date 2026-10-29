@@ -1,6 +1,7 @@
 // Real UI coverage for direct GLB import and fresh, click-to-place design copies.
 import { test, expect } from '../helpers/fixtures';
 import { placeFreeformBuilding, openCity, openParcel, stubBasemapTiles, createSpace, showProposal, proposalState, clickMapPoint } from '../helpers/runtime';
+import { mockFootprintCells } from '../helpers/mocks/building-data';
 import { createBuildingGlb } from '../helpers/model-fixture';
 
 const model = createBuildingGlb('l');
@@ -50,7 +51,7 @@ function expectLFootprint(measure: any, dimensions = true) {
 
 test('Upload .glb imports into the current Freeform session and Done saves its model', async ({ mockApi: page }) => {
   let uploads = 0;
-  await page.route('**/buildings/under', route => route.fulfill({ json: { supported: true, truncated: false, source: 'gdi', regions: { 'land-take': [] } } }));
+  await mockFootprintCells(page, () => []);
   await page.route('**/models', route => { uploads++; return route.fulfill({ json: { modelUrl: '/uploads/models/direct.glb' } }); });
   await page.route('**/uploads/models/direct.glb', route => route.fulfill({ contentType: 'model/gltf-binary', body: model }));
   await openFreeform(page);

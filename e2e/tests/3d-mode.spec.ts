@@ -1,8 +1,7 @@
 import { selectNativeOption } from '../helpers/controls';
 import { test, expect } from '../helpers/fixtures';
 import { openCity, createSpace, createBuilding, proposalState } from '../helpers/runtime';
-import { mockBuildingScene } from '../helpers/mocks/building-data';
-import { surveyResponse } from '../helpers/mocks/survey-data';
+import { mockBuildingScene, mockFootprintCells } from '../helpers/mocks/building-data';
 import { openLayerSection } from '../helpers/layers';
 import { Page } from '@playwright/test';
 
@@ -646,19 +645,13 @@ test('X-ray and Suggested layouts buttons render and remove real generated floor
 
 test('3D suggested-existing toggle and floor cutaway change rendered floor plans', async ({ mockApi: page }) => {
   await mockBuildingScene(page);
-  await page.route('**/buildings?*', route => route.fulfill({ json: {
-    source: 'gdi',
-    ...surveyResponse([{
-      type: 'Feature',
-      properties: { object_id: 91001, height_m: 18, floors: 5, building: 'yes' },
-      geometry: { type: 'Polygon', coordinates: [[[15.98270,45.80029],[15.98284,45.80029],[15.98284,45.80043],[15.98270,45.80043],[15.98270,45.80029]]] },
-    }]),
-  } }));
+  await mockFootprintCells(page, () => [{ id: 91001, height_m: 18, floors: 5, building: 'yes',
+    geometry: { type: 'Polygon', coordinates: [[[15.98270,45.80029],[15.98284,45.80029],[15.98284,45.80043],[15.98270,45.80043],[15.98270,45.80029]]] } }]);
   await openCity(page);
   await openLayerSection(page, 'buildings');
   await page.locator('#showBuildings').check();
   await expect.poll(() => page.evaluate(() => (window as any).buildingFeaturePool
-    ?.some((feature: any) => feature.properties?.object_id === 91001) ?? false)).toBe(true);
+    ?.some((feature: any) => feature.properties?.id === 91001) ?? false)).toBe(true);
   await closeSheets(page);
   await enter3D(page);
   await openModelLayers(page);

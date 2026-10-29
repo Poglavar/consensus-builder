@@ -38,7 +38,7 @@
         // Layers sheet: blocks, buildings, roads
         'showUrbanBlocks', 'urban-blocks-refresh', 'urban-blocks-browse',
         'parcelBlocksCheckbox', 'showBlockNames', 'showParksCheckbox', 'showSquaresCheckbox',
-        'showBuildings', 'showBuildingsDgu', 'showBuildingsOsm', 'showProposedBuildings',
+        'showBuildings', 'showProposedBuildings',
         'showGovernmentRoadPlan', 'showOSMRoadLines', 'showGUPRoadLines', 'showWFSPolygons',
         'showLegacyRoadCenterlines',
         // Tools sheet
@@ -313,10 +313,6 @@
             labelKey: 'sidebar.blocks.showSquares', fallbackLabel: 'Squares', icon: 'fas fa-square' }),
         control('showBuildings', { id: 'layers.buildings', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'sidebar.buildings.showLayer', fallbackLabel: 'Show buildings', icon: 'fas fa-building' }),
-        control('showBuildingsDgu', { id: 'layers.buildingsDgu', group: 'layers', kind: 'toggle', surfaces: ['layers'],
-            labelKey: 'sidebar.buildings.showDgu', fallbackLabel: 'DGU cadastre (legal reference)', icon: 'fas fa-building' }),
-        control('showBuildingsOsm', { id: 'layers.buildingsOsm', group: 'layers', kind: 'toggle', surfaces: ['layers'],
-            labelKey: 'sidebar.buildings.showOsm', fallbackLabel: 'OSM buildings (matches the map)', icon: 'fas fa-building' }),
         control('showProposedBuildings', { id: 'layers.proposedBuildings', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'sidebar.buildings.showProposed', fallbackLabel: 'Show Proposed Buildings', icon: 'fas fa-city' }),
         control('showGovernmentRoadPlan', { id: 'layers.governmentRoadPlan', group: 'layers', kind: 'toggle', surfaces: ['layers'],
@@ -469,7 +465,7 @@
         control('parcel-source-settings-button', { id: 'settings.parcelSourceSettings', group: 'settings', surfaces: ['layers'], modes: ['2d'],
             labelKey: 'parcelSources.title', fallbackLabel: 'Choose a parcel source', icon: 'fas fa-database' }),
         control('building-source-settings-button', { id: 'settings.buildingSourceSettings', group: 'settings', surfaces: ['layers'], modes: ['2d'],
-            labelKey: 'buildingSources.title', fallbackLabel: 'Choose a building source', icon: 'fas fa-building' }),
+            labelKey: 'buildingSources.listTitle', fallbackLabel: 'Building sources', icon: 'fas fa-building' }),
         // The city list and "Use my location" live in the search box (city chip, Cities group).
         { id: 'settings.city', group: 'settings', surfaces: [], run: callSearch('showCities'),
             labelKey: 'mapShell.commands.chooseCity', fallbackLabel: 'Choose a city', icon: 'fas fa-city' },

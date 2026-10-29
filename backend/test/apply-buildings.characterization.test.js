@@ -65,7 +65,7 @@ function makeManager(overrides = {}) {
             cadastreIds: ['HR-1', 'HR-2'],
             features: []
         }),
-        _deriveDemolishedBuildings: async () => [],
+        _parkProposedBuildingsUnder: async () => {},
         ...overrides
     };
 }
@@ -213,11 +213,12 @@ describe('_applyBuildingProposal demolition ground', () => {
         { type: 'Feature', properties: { parcelId: 'HR-1' }, geometry: square(15.96, 45.80, 0.02) },
         { type: 'Feature', properties: { parcelId: 'HR-2' }, geometry: square(15.98, 45.80, 0.02) }
     ];
+    // The land is what the apply path registers with the demolition index (demolition-index.js).
     const capture = () => {
         const regions = [];
+        (typeof window !== 'undefined' ? window : globalThis).DemolitionIndex = { registerRegion: (_id, geometry) => regions.push(geometry) };
         const mgr = makeManager({
-            _resolveLiveFormationParents: () => ({ ok: true, ids: ['HR-1', 'HR-2'], cadastreIds: ['HR-1', 'HR-2'], features: parcels }),
-            _deriveDemolishedBuildings: async geometry => { regions.push(geometry); return []; }
+            _resolveLiveFormationParents: () => ({ ok: true, ids: ['HR-1', 'HR-2'], cadastreIds: ['HR-1', 'HR-2'], features: parcels })
         });
         return { mgr, regions };
     };
@@ -255,54 +256,22 @@ describe('_applyBuildingProposal demolition ground', () => {
     });
 });
 
-// The demolition scan must land on the record the carve reads from storage. A shallow copy of
-// buildingProposal once swallowed it, so no building proposal ever demolished anything (2026-10-22).
-describe('_applyBuildingProposal demolition records', () => {
-    const { demolishedBuildingRecordsFrom } = require('../../frontend/js/corridor-carve.js');
-    const square = (x, y) => ({ type: 'Polygon', coordinates: [[[x, y], [x + 0.0001, y], [x + 0.0001, y + 0.0001], [x, y + 0.0001], [x, y]]] });
-    const records = () => [
-        { id: '62761', geometry: square(15.971, 45.811), demolishedPart: square(15.971, 45.811), remainder: square(15.9712, 45.811) },
-        { id: '62722', geometry: square(15.972, 45.812) }
-    ];
-
-    it('stores the scan on the persisted record, scoped to the authored footprints', async () => {
-        const scans = [];
-        const mgr = makeManager({ _deriveDemolishedBuildings: async (geometry, options) => { scans.push({ type: geometry.type, proposalId: options.proposalId }); return records(); } });
+// Existing buildings are derived from the registered land, never stored on the design; applied
+// proposed buildings under it are parked inside the apply (docs/source-loading-plan.md F4).
+describe('_applyBuildingProposal demolitions', () => {
+    it('registers its land with the index, parks proposed buildings under it and stores no records', async () => {
+        const registered = [];
+        const root = typeof window !== 'undefined' ? window : globalThis;
+        root.DemolitionIndex = { registerRegion: (id, geometry) => registered.push([id, geometry.type]) };
+        const parked = [];
+        const mgr = makeManager({ _parkProposedBuildingsUnder: async (geometry, options) => { parked.push([geometry.type, options.proposalId]); } });
         const data = buildingProposalData();
-        data.buildingProposal = { typologyType: 'block', demolishedBuildings: [{ id: 'stale', geometry: square(0, 0) }], demolitionScanned: true };
+        data.buildingProposal = { typologyType: 'block' };
         expect(await _applyBuildingProposal.call(mgr, 'p-b1', data, mutationOptions())).toBe(true);
-        expect(scans).toEqual([{ type: 'Polygon', proposalId: 'p-b1' }]);
-        expect(data.buildingProposal.demolishedBuildings).toEqual(records());
-        expect(data.buildingProposal).not.toHaveProperty('demolitionScanned');
-        expect(data.buildingProposal.typologyType).toBe('block');
-        // The object handed to storage IS the record, and the carve collects from it.
+        expect(registered).toEqual([['p-b1', 'Polygon']]);
+        expect(parked).toEqual([['Polygon', 'p-b1']]);
+        expect(data.buildingProposal).not.toHaveProperty('demolishedBuildings');
         expect(store.indexed[0]).toBe(data);
-        expect(demolishedBuildingRecordsFrom([data]).map(record => record.id)).toEqual(['62761', '62722']);
-    });
-
-    it('gives a proposal without a sub-record one, so a Freeform demolition has a home', async () => {
-        const mgr = makeManager({ _deriveDemolishedBuildings: async () => records().slice(1) });
-        const data = buildingProposalData();
-        delete data.buildingProposal;
-        expect(await _applyBuildingProposal.call(mgr, 'p-b1', data, mutationOptions())).toBe(true);
-        expect(data.buildingProposal.demolishedBuildings.map(record => record.id)).toEqual(['62722']);
-    });
-
-    it('records an empty scan as empty and a failed scan as failed, on the record', async () => {
-        const empty = buildingProposalData();
-        empty.buildingProposal = { demolishedBuildings: records() };
-        expect(await _applyBuildingProposal.call(makeManager(), 'p-b1', empty, mutationOptions())).toBe(true);
-        expect(empty.buildingProposal.demolishedBuildings).toEqual([]);
-        expect(demolishedBuildingRecordsFrom([empty])).toEqual([]);
-
-        const failing = buildingProposalData();
-        const mgr = makeManager({ _deriveDemolishedBuildings: async () => { throw new Error('backend down'); } });
-        const errors = [];
-        const originalError = console.error;
-        console.error = (...args) => errors.push(args[0]);
-        try { expect(await _applyBuildingProposal.call(mgr, 'p-b1', failing, mutationOptions())).toBe(true); } finally { console.error = originalError; }
-        expect(failing.buildingProposal.demolitionScanFailed).toBe(true);
-        expect(failing.buildingProposal.demolishedBuildings).toEqual([]);
-        expect(errors.some(message => String(message).includes('demolition scan failed'))).toBe(true);
+        delete root.DemolitionIndex;
     });
 });
