@@ -8776,7 +8776,7 @@
         "title": "Rad sa agentom",
         "collaborate": "Sarađuj",
         "notConnected": "Napravite privatnu zajedničku sesiju za ovu tačnu reviziju plana.",
-        "youEditing": "Uređujete. Sačuvajte ovu reviziju pre predaje kontrole agentu.",
+        "youEditing": "Vi upravljate uređivanjem.",
         "agentEditing": "Agent uređuje ovaj zajednički plan. Preuzmite kontrolu pre uređivanja ovde.",
         "save": "Sačuvaj u zajednički plan",
         "letAgentEdit": "Dozvoli agentu uređivanje",
@@ -8786,7 +8786,17 @@
         "disconnect": "Prekini vezu",
         "updated": "Zajednički plan je ažuriran.",
         "localConflict": "Lokalna revizija se razlikuje od zajedničkog plana. Sačuvajte je da zadržite svoju verziju ili ponovo učitajte zajedničku reviziju.",
-        "reload": "Ponovo učitaj zajedničku reviziju"
+        "reload": "Ponovo učitaj zajedničku reviziju",
+        "changes": "Izmene plana",
+        "unsaved": "Lokalne izmene još nisu sačuvane u zajedničkom planu.",
+        "saved": "Sve izmene su sačuvane u zajedničkom planu.",
+        "control": "Upravljanje uređivanjem",
+        "takeHint": "Preuzmite upravljanje da zaustavite agenta i sami uređujete.",
+        "handoverHint": "Predajte upravljanje kada budete spremni. Vaše izmene se prvo čuvaju.",
+        "access": "Pristup agenta",
+        "inviteHint": "Kopirajte pozivnicu u razgovor sa agentom. Vi birate kada može da uređuje.",
+        "connection": "Veza",
+        "disconnectHint": "Prekinite vezu da ukinete pristup agentu. Lokalni plan ostaje sačuvan."
     },
     "pageHeader": {
         "backToMap": "Nazad na mapu"

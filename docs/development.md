@@ -217,6 +217,12 @@ The browser uses ordinary plan import and parcel mutation for accepted changes, 
 camera and unrelated local designs, and guards connected members before a local mutation commits.
 See [Student AI assistance](student-ai.md) for the handover and save workflow.
 
+The collaboration dialog's saved/pending state uses the same accepted plan CID as MCP inspection;
+its save still uses the existing version-checked shared-session endpoint. The dedicated dialog,
+action groups and feedback require no MCP schema or operation change. Focused mounted-dialog
+regressions exercise successful and failed saves, busy controls and error retention during polling.
+
+
 Owner edits of a connected member advance a pending local ordinary plan revision, retaining
 construction windows and exact membership in both click stacks. The accepted server pointer
 stays fixed until explicit save or handover. No MCP schema or operation change is needed:

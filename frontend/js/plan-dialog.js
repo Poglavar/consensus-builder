@@ -247,10 +247,11 @@
         await win.ClickStack.showPlan(next, { designs: win.PlanComposition.localRecords(next, { apiBase: win.DesignSync.apiBase() }), draft: true, frame: false });
         win.showEphemeralMessage?.(win.i18n.t('sharedPlan.updated'), 5000, 'success');
     }
-    async function details(plan) {
+    async function details(plan, { collaborationOnly = false } = {}) {
         const row=await win.PlanWorkspace.resolve(plan);const body=node('div','plan-details');
         const heading=node('h3','',row.content.title), members=memberList(row);
-        body.append(heading,members);
+        body.append(heading);
+        if (!collaborationOnly) body.append(members);
         let dialog,sharedSession;
         const current=()=>sharedSession?.row||row;
         const actions=node('div','cb-actions');
@@ -258,7 +259,7 @@
         actions.append(button(t('editPlan'),async()=>{const latest=current();dialog.close();await create({base:latest});}));
         actions.append(button(t('schedule'),async()=>{const latest=current();dialog.close();await schedule(latest);}));
         actions.append(button(t('createAgreement'),async()=>{const latest=current();dialog.close();await win.AgreementDialog.open({plan:latest});}));
-        body.append(actions,win.PlanFileUI.controls({ getRecords:()=>win.PlanComposition.localRecords(current(),{apiBase:win.DesignSync.apiBase()}),
+        if (!collaborationOnly) body.append(actions,win.PlanFileUI.controls({ getRecords:()=>win.PlanComposition.localRecords(current(),{apiBase:win.DesignSync.apiBase()}),
             getView:()=>current().content.view,getTitle:()=>current().content.title,getSources:()=>current().designSources||{},getSchedule:()=>current().content.schedule||null,importAllowed:false }));
         const collaboration=node('div','plan-details__collaboration');
         body.append(collaboration);
@@ -266,10 +267,11 @@
             heading.textContent=latest.content.title;
             members.replaceChildren(...memberList(latest).childNodes);
         } });
-        dialog=openDialog(t('plan'),body);
+        dialog=openDialog(collaborationOnly ? win.i18n.t('sharedPlan.collaborate') : t('plan'),body);
+        if (collaborationOnly) body.classList.add('plan-collaboration');
         dialog.closed.then(()=>sharedSession?.dispose?.());
         await sharedSession?.ready;
         return dialog;
     }
-    win.PlanDialog=Object.freeze({create,addDesign,share,details,schedule,scheduleStrip,syncSharedPlanOnMap});
+    win.PlanDialog=Object.freeze({create,addDesign,share,details,collaborate: plan => details(plan, { collaborationOnly: true }),schedule,scheduleStrip,syncSharedPlanOnMap});
 })(window);

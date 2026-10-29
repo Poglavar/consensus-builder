@@ -1,5 +1,6 @@
 import { createRequire } from 'node:module';
 import { describe, expect, it, vi } from 'vitest';
+import { makeDocument } from './helpers/fake-dom.js';
 
 const require = createRequire(import.meta.url);
 const SharedPlanSession = require('../../frontend/js/shared-plan-session.js');
@@ -34,6 +35,52 @@ const row = { cid: 'plan-cid', content: { schema: 'plan/v1', title: 'Park', desi
     designs: [{ cid: 'design-cid', content: { schema: 'design/v1', title: 'Bench' } }], memberIds: ['bench-local'], designSources: {} };
 
 describe('shared plan browser client', () => {
+    it.each([false, true])('shows the result of an actual dialog save, including failures (%s)', async failure => {
+        const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
+        const original = structuredClone(row);
+        const changed = { ...original, cid: 'changed-plan', content: { ...original.content, title: 'Changed' } };
+        const server = { id: 'session-a', version: 2, controller: 'owner', artifact: { plan: original.content, designs: original.designs } };
+        let finish;
+        const saving = new Promise(resolve => { finish = resolve; });
+        const fixture = browser({ plans: [original], replies: [server, { ok: !failure, status: failure ? 503 : 200, data: saving }], stored: {
+            [`${prefix}active`]: { id: server.id, cid: original.cid, memberIds: original.memberIds },
+            [`${prefix}plan:${original.cid}`]: server.id,
+            [`${prefix}${server.id}`]: { ownerToken: 'owner-secret', controller: 'owner', version: 2 }
+        } });
+        fixture.win.BusyControl = require('../../frontend/js/ui/busy-control.js');
+        fixture.win.proposalStorage = { getAllProposals: () => [{ proposalId: 'bench-local', cid: 'design-cid', applied: true }] };
+        fixture.win.PlanComposition.create = () => changed;
+        fixture.win.DesignSync = { copyLink: vi.fn(async () => true) };
+        const doc = makeDocument(), host = doc.createElement('div'); doc.body.append(host);
+        const mounted = fixture.api.mount({ row: original, host }); await mounted.ready;
+        const button = name => [...host.querySelectorAll('button')].find(el => el.textContent === name);
+        expect(host.textContent).toContain('Your local changes have not been saved');
+        button('Save to shared plan').click();
+        await vi.waitFor(() => expect(fixture.calls.some(call => call.options.method === 'PUT')).toBe(true));
+        expect(button('Save to shared plan').getAttribute('aria-busy')).toBe('true');
+        expect([...host.querySelectorAll('button')].every(el => el.disabled)).toBe(true);
+        const accepted = { ...server, version: 3, artifact: { plan: changed.content, designs: changed.designs } };
+        finish(failure ? { message: 'Storage is unavailable' } : accepted);
+        await vi.waitFor(() => expect(host.querySelector('[aria-busy]')).toBe(null));
+        expect(fixture.calls.find(call => call.options.method === 'PUT').options.body).toContain('Changed');
+        if (failure) {
+            expect(host.querySelector('[role="alert"]').textContent).toBe('Storage is unavailable');
+            expect(button('Save to shared plan').disabled).toBe(false);
+            expect(JSON.parse(fixture.values.get(`${prefix}active`)).localCid).toBe(changed.cid);
+            fixture.win.fetch.mockResolvedValueOnce({ ok: true, json: async () => server });
+            await fixture.api.resumeActive();
+            expect(host.querySelector('[role="alert"]').textContent).toBe('Storage is unavailable');
+        } else {
+            expect(host.textContent).toContain('All changes are saved');
+            expect(button('Save to shared plan').disabled).toBe(true);
+            expect(JSON.parse(fixture.values.get(`${prefix}active`))).toMatchObject({ cid: changed.cid });
+            expect(JSON.parse(fixture.values.get(`${prefix}active`)).localCid).toBeUndefined();
+            button('Copy invitation').click();
+            await vi.waitFor(() => expect(host.textContent).toContain('Invitation copied.'));
+        }
+        mounted.dispose();
+    });
+
     it('keeps capabilities in workspace storage and addresses control as a path segment', async () => {
         const created = { id: 'session-a', ownerToken: 'owner-secret', inviteToken: 'invite-secret', version: 1, controller: 'owner', artifact: { plan: row.content, designs: row.designs } };
         const fixture = browser({ replies: [created, { id: 'session-a', version: 2, controller: 'agent', artifact: created.artifact }] });

@@ -8724,7 +8724,7 @@
         "title": "Work with an agent",
         "collaborate": "Collaborate",
         "notConnected": "Create a private shared session for this exact plan revision.",
-        "youEditing": "You are editing. Save this revision before giving the agent control.",
+        "youEditing": "You have editing control.",
         "agentEditing": "The agent is editing this shared plan. Take control before editing it here.",
         "save": "Save to shared plan",
         "letAgentEdit": "Let agent edit",
@@ -8734,7 +8734,17 @@
         "disconnect": "Disconnect",
         "updated": "The shared plan has been updated.",
         "localConflict": "A local revision differs from the shared plan. Save it to keep your version, or reload the shared revision.",
-        "reload": "Reload shared revision"
+        "reload": "Reload shared revision",
+        "changes": "Plan changes",
+        "unsaved": "Your local changes have not been saved to the shared plan.",
+        "saved": "All changes are saved to the shared plan.",
+        "control": "Editing control",
+        "takeHint": "Take control to stop agent edits and make your own changes.",
+        "handoverHint": "Hand over when you are ready. Your current changes are saved first.",
+        "access": "Agent access",
+        "inviteHint": "Copy the invitation into your agent conversation. You choose when it can edit.",
+        "connection": "Connection",
+        "disconnectHint": "Disconnect to revoke agent access. Your local plan is kept."
     },
     "pageHeader": {
         "backToMap": "Back to the map"

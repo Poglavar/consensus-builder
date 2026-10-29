@@ -105,3 +105,25 @@ after reload. The collapsed Plan section appeared above Design, and Collaborate 
 to shared plan. MCP inspection before and after confirmed the accepted server revision and
 version had not changed and still contained one bench. The user's four-bench revision remained
 pending locally for their explicit save.
+
+## Save feedback and collaboration layout
+
+The reported unresponsive Save action returned HTTP 200: the missing behavior was visible
+confirmation. A real local MCP inspection confirmed version 12 contains the exact current
+four-bench design CID. The revised dialog now shows pending/saved status, disables redundant saves,
+keeps failures visible across polling, and preserves invitation-copy feedback. The click-stack
+Collaborate button opens a dedicated dialog with grouped actions and 44-pixel minimum buttons.
+
+Targeted headless unit runs: the initial two files passed 38 tests; after adding mounted-dialog
+save regressions, the same two files passed 40 tests; a final shared-plan-browser run passed
+14 tests after the polling/announcement refinement. No full suite was run.
+
+The first live visual check reloaded the page but timed out waiting for DOMContentLoaded under
+heavy host load. A continuation was temporarily blocked by approval-service capacity, and the
+browser access host/native computer-use permission were unavailable. The existing browser CLI
+provided the desktop check. After automatic browser cleanup closed the window, the same profile
+was restored and the complete live check passed: MCP returned the exact four-bench design CID,
+canonical local content was unchanged, saved status appeared, and redundant Save was disabled.
+Desktop and 390-pixel mobile screenshots were inspected; all four mobile buttons measured
+358 by 44 pixels and stayed within the viewport. The window was returned to its original desktop
+size with Collaborate open for the user.

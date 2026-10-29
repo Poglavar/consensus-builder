@@ -35,6 +35,11 @@ records; the session is not a public release or a shared global map.
    connected to check recovery. Repeat at a narrow viewport and with the student's own assistive
    technology.
 
+The Collaborate dialog separates plan changes, editing control and agent access. It shows whether
+local changes are pending or all changes are saved; Save is disabled when the accepted revision
+already matches. Actions show a spinner while running, failures remain visible, and copying an
+invitation confirms completion. Disconnect is separated from editing controls and keeps local work.
+
 The copied invitation is a private capability. Keep it out of public plan descriptions and links.
 The owner capability remains in the browser's private workspace storage. Revoking the invitation
 or disconnecting ends its access. Polling sends completed changes, not every mouse gesture.

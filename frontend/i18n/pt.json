@@ -8563,7 +8563,7 @@
         "title": "Trabalhar com um agente",
         "collaborate": "Colaborar",
         "notConnected": "Crie uma sessão privada partilhada para esta revisão exata do plano.",
-        "youEditing": "Está a editar. Guarde esta revisão antes de entregar o controlo ao agente.",
+        "youEditing": "Você tem o controle da edição.",
         "agentEditing": "O agente está a editar este plano partilhado. Retome o controlo antes de editar aqui.",
         "save": "Guardar no plano partilhado",
         "letAgentEdit": "Permitir que o agente edite",
@@ -8573,7 +8573,17 @@
         "disconnect": "Desligar",
         "updated": "O plano partilhado foi atualizado.",
         "localConflict": "Uma revisão local difere do plano partilhado. Guarde-a para manter a sua versão ou recarregue a revisão partilhada.",
-        "reload": "Recarregar revisão partilhada"
+        "reload": "Recarregar revisão partilhada",
+        "changes": "Alterações do plano",
+        "unsaved": "Suas alterações locais ainda não foram salvas no plano compartilhado.",
+        "saved": "Todas as alterações estão salvas no plano compartilhado.",
+        "control": "Controle da edição",
+        "takeHint": "Assuma o controle para interromper as edições do agente e fazer suas alterações.",
+        "handoverHint": "Passe o controle quando estiver pronto. Suas alterações são salvas primeiro.",
+        "access": "Acesso do agente",
+        "inviteHint": "Copie o convite na conversa com o agente. Você decide quando ele pode editar.",
+        "connection": "Conexão",
+        "disconnectHint": "Desconecte para revogar o acesso do agente. Seu plano local será mantido."
     },
     "pageHeader": {
         "backToMap": "Voltar ao mapa"

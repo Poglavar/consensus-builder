@@ -308,7 +308,7 @@
                     await win.BusyControl.track(collaborate, async () => {
                         const data = session ? await session.details(kind, instance) : await inspect(kind, instance, win);
                         const saved = win.NamedPlans.remember({ cid: instance.cid, content: data.content }, data.members.map(member => member.id));
-                        await win.PlanDialog.details(saved);
+                        await win.PlanDialog.collaborate(saved);
                     });
                 } catch (error) { win.showStyledAlert(error.message); }
             });

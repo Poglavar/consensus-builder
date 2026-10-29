@@ -177,21 +177,31 @@
         }
         function mount({ row, host, onChange = () => {} }) {
             const doc = host.ownerDocument, t = (key, fallback) => win.i18n?.t?.(`sharedPlan.${key}`) || fallback;
-            let session = null, stopped = false, conflict = false, busy = false, resuming = true, sessionError = null;
+            let session = null, stopped = false, conflict = false, busy = false, resuming = true, sessionError = null, notice = '';
             const state = doc.createElement('p'); state.className = 'shared-plan-session__status'; state.setAttribute('role', 'status');
-            const actions = doc.createElement('div'); actions.className = 'cb-actions shared-plan-session__actions';
+            state.setAttribute('aria-live', 'polite');
+            const feedback = doc.createElement('p'); feedback.className = 'shared-plan-session__feedback'; feedback.setAttribute('role', 'alert');
+            const actions = doc.createElement('div'); actions.className = 'shared-plan-session__sections';
             const panel = doc.createElement('section'); panel.className = 'shared-plan-session';
-            const heading = doc.createElement('h3'); heading.textContent = t('title', 'Work with an agent'); panel.append(heading, state, actions); host.append(panel);
-            const action = (label, task, primary = false, serialize = false) => {
+            panel.append(state, feedback, actions); host.append(panel);
+            const group = (title, description, name) => {
+                const section = doc.createElement('section'); section.className = `shared-plan-session__group shared-plan-session__group--${name}`;
+                const heading = doc.createElement('h3'); heading.textContent = title;
+                const hint = doc.createElement('p'); hint.textContent = description;
+                const controls = doc.createElement('div'); controls.className = 'shared-plan-session__actions';
+                section.append(heading, hint, controls); actions.append(section); return controls;
+            };
+            const action = (label, task, primary = false, serialize = false, target = actions) => {
                 const el = doc.createElement('button'); el.type = 'button'; el.className = `btn${primary ? ' btn-primary' : ''}`; el.textContent = label;
                 el.addEventListener('click', async () => {
                     if (busy) return;
-                    busy = true;
+                    busy = true; sessionError = null; notice = ''; feedback.textContent = '';
+                    panel.querySelectorAll('button').forEach(button => { button.disabled = true; });
                     try {
                         await win.BusyControl.track(el, () => serialize ? exclusive(task) : task());
                     } catch (error) { sessionError = error; }
                     finally { busy = false; if (!stopped) render(); }
-                }); actions.append(el); return el;
+                }); target.append(el); return el;
             };
             const currentRow = () => {
                 // A normal editor may have forked a connected member. Recompose the exact current
@@ -224,7 +234,11 @@
             };
             const render = () => {
                 if (busy || stopped || resuming) return;
+                const focusedLabel = panel.contains(doc.activeElement) ? doc.activeElement.textContent : null;
                 actions.replaceChildren();
+                feedback.textContent = sessionError?.message || notice;
+                feedback.setAttribute('role', sessionError ? 'alert' : 'status');
+                feedback.classList.toggle('shared-plan-session__feedback--error', !!sessionError);
                 if (!session) {
                     action(t('collaborate', 'Collaborate'), async () => {
                         const source = client();
@@ -244,23 +258,29 @@
                     state.textContent = t('notConnected', 'Create a private shared session for this exact plan revision.'); return;
                 }
                 const agent = session.controller === 'agent';
-                state.textContent = sessionError ? sessionError.message : conflict ? t('localConflict', 'A local revision differs from the shared plan. Save it to keep your version, or reload the shared revision.')
-                    : agent ? t('agentEditing', 'The agent is editing. You can inspect the accepted revision.')
-                    : t('youEditing', 'You are editing. Save this revision before giving the agent control.');
-                if (sessionError) action(t('reload', 'Reload shared revision'), async () => {
-                    sessionError = null;
-                    await resumeActive({ acceptOwnerConflict: true });
-                    if (!active?.paused) ensurePolling();
-                });
+                state.textContent = agent ? t('agentEditing', 'The agent is editing this shared plan. Take control before editing it here.')
+                    : t('youEditing', 'You have editing control.');
+                const pending = row.cid !== pendingSession()?.pointer.cid;
+                const changes = group(t('changes', 'Plan changes'), conflict
+                    ? t('localConflict', 'A local revision differs from the shared plan. Save it to keep your version, or reload the shared revision.')
+                    : pending ? t('unsaved', 'Your local changes have not been saved to the shared plan.')
+                    : t('saved', 'All changes are saved to the shared plan.'), 'changes');
                 if (!agent) {
-                    action(t('save', 'Save to shared plan'), async () => {
+                    const save = action(t('save', 'Save to shared plan'), async () => {
                         const current = currentRow(); const saved = await client(session.base).save(session.id, session.version, current);
                         session = { ...session, ...saved }; await replace(session, current); conflict = false; sessionError = null; publishActive(); ensurePolling();
-                    }, true, true);
-                    if (conflict) action(t('reload', 'Reload shared revision'), async () => {
-                        conflict = false; await resumeActive({ acceptOwnerConflict: true });
-                        if (!active?.paused) ensurePolling();
-                    });
+                    }, true, true, changes);
+                    save.disabled = !pending && !conflict && !sessionError;
+                }
+                if (conflict || sessionError) action(t('reload', 'Reload shared revision'), async () => {
+                    await resumeActive({ acceptOwnerConflict: true });
+                    conflict = false;
+                    if (!active?.paused) ensurePolling();
+                }, false, false, changes);
+                const control = group(t('control', 'Editing control'), agent
+                    ? t('takeHint', 'Take control to stop agent edits and make your own changes.')
+                    : t('handoverHint', 'Hand over when you are ready. Your current changes are saved first.'), 'control');
+                if (!agent) {
                     action(t('letAgentEdit', 'Let agent edit'), async () => {
                         if (win.OnMapEditor?.isActive?.()) throw fail('Finish or cancel the open design editor before giving the agent control.', 'shared-plan-editor-active');
                         // Publish the exact local fork before changing turns; the agent must never
@@ -276,11 +296,7 @@
                             const changed = await client(session.base).control(session.id, session.version, 'agent');
                             session = { ...session, ...changed }; publishActive();
                         } catch (error) { session = { ...session, controller: previousController }; publishActive(); throw error; }
-                    }, false, true);
-                    action(t('copyInvite', 'Copy invitation'), async () => {
-                        const text = invitation(session, session.base); const copied = await win.DesignSync.copyLink(text);
-                        state.textContent = copied ? t('inviteCopied', 'Invitation copied. Give it to the agent you choose.') : text;
-                    });
+                    }, false, true, control);
                 } else action(t('takeControl', 'Take control'), async () => {
                     const previousController = session.controller;
                     session = { ...session, controller: 'pending' }; publishActive();
@@ -288,14 +304,21 @@
                         const changed = await client(session.base).control(session.id, session.version, 'owner');
                         session = { ...session, ...changed }; publishActive();
                     } catch (error) { session = { ...session, controller: previousController }; publishActive(); throw error; }
-                }, true, true);
+                }, true, true, control);
+                const access = group(t('access', 'Agent access'), t('inviteHint', 'Copy the invitation into your agent conversation. You choose when it can edit.'), 'access');
+                action(t('copyInvite', 'Copy invitation'), async () => {
+                    const text = invitation(session, session.base); const copied = await win.DesignSync.copyLink(text);
+                    notice = copied ? t('inviteCopied', 'Invitation copied. Give it to the agent you choose.') : text;
+                }, false, false, access);
+                const end = group(t('connection', 'Connection'), t('disconnectHint', 'Disconnect to revoke agent access. Your local plan is kept.'), 'connection');
                 action(t('disconnect', 'Disconnect'), async () => {
                     // Revocation is an owner action even when the agent holds the edit turn.
                     await client(session.base).control(session.id, session.version, 'owner', true);
                     client(session.base).forget(session.id, row.cid); win.PersistentStorage.removeItem(activeKey(session.base)); session = null; sessionError = null;
                     if (pollTimer) { win.clearInterval(pollTimer); pollTimer = null; }
                     publishActive();
-                }, false, true);
+                }, false, true, end);
+                if (focusedLabel) [...panel.querySelectorAll('button')].find(button => button.textContent === focusedLabel)?.focus();
             };
             const resume = async () => {
                 await storageReady();
@@ -314,12 +337,14 @@
             };
             const subscriber = detail => {
                 if (stopped || !session || detail?.id !== session.id) return;
-                const changed = session.version !== detail.session?.version || row.cid !== detail.row?.cid
-                    || conflict !== (detail.conflict === true) || sessionError !== (detail.error || null);
+                const changed = (detail.session && session.version !== detail.session.version)
+                    || (detail.row && row.cid !== detail.row.cid)
+                    || conflict !== (detail.conflict === true) || (detail.error && sessionError !== detail.error);
                 if (detail.session) session = { ...session, ...detail.session, base: session.base };
                 if (detail.row) { row = detail.row; onChange(row); }
                 conflict = detail.conflict === true;
-                sessionError = detail.error || null;
+                if (detail.error) sessionError = detail.error;
+                if (detail.row && detail.row.cid !== pendingSession()?.pointer.cid) notice = '';
                 if (changed) render();
             };
             panelSubscribers.add(subscriber);

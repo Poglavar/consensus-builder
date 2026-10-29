@@ -8560,7 +8560,7 @@
         "title": "Travailler avec un agent",
         "collaborate": "Collaborer",
         "notConnected": "Créez une session privée partagée pour cette révision précise du plan.",
-        "youEditing": "Vous modifiez le plan. Enregistrez cette révision avant de donner le contrôle à l’agent.",
+        "youEditing": "Vous avez le contrôle de la modification.",
         "agentEditing": "L’agent modifie ce plan partagé. Reprenez le contrôle avant de le modifier ici.",
         "save": "Enregistrer dans le plan partagé",
         "letAgentEdit": "Laisser l’agent modifier",
@@ -8570,7 +8570,17 @@
         "disconnect": "Déconnecter",
         "updated": "Le plan partagé a été mis à jour.",
         "localConflict": "Une révision locale diffère du plan partagé. Enregistrez-la pour conserver votre version ou rechargez la révision partagée.",
-        "reload": "Recharger la révision partagée"
+        "reload": "Recharger la révision partagée",
+        "changes": "Modifications du plan",
+        "unsaved": "Vos modifications locales ne sont pas encore enregistrées dans le plan partagé.",
+        "saved": "Toutes les modifications sont enregistrées dans le plan partagé.",
+        "control": "Contrôle de la modification",
+        "takeHint": "Reprenez le contrôle pour arrêter les modifications de l’agent et apporter les vôtres.",
+        "handoverHint": "Passez la main quand vous êtes prêt. Vos modifications sont d’abord enregistrées.",
+        "access": "Accès de l’agent",
+        "inviteHint": "Copiez l’invitation dans votre conversation avec l’agent. Vous décidez quand il peut modifier le plan.",
+        "connection": "Connexion",
+        "disconnectHint": "Déconnectez-vous pour révoquer l’accès de l’agent. Votre plan local est conservé."
     },
     "pageHeader": {
         "backToMap": "Retour à la carte"
