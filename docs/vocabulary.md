@@ -391,7 +391,7 @@ A horizontal outline whose subject must be qualified. A building footprint descr
 
 ### Building use
 
-What a building is for, by storey, stored on the building as `properties.use`: residential, residential-shops (shops on the ground floor, flats above), mixed (shops on the ground floor, offices on the first, flats above), office, public (school, clinic, civic) or industrial (`frontend/js/building-use.js`). A word naming one ('housing', 'offices', 'school') reads as that use; any other value is no stated use. A drawn Freeform building starts as residential; an imported one, and a design saved before uses existed, states none. Only a housing use, or a Block, Row or Detached rule building, gets the suggested default layout and its counted apartments; a building of another use counts its storeys as work. A building with no stated use follows the Plan stats housing share. Building use is distinct from a design's Land use (park, square or as is).
+What a building is for, by storey, stored on the building as `properties.use`: residential, residential-shops (shops on the ground floor, flats above), mixed (shops on the ground floor, offices on the first, flats above), office, public (school, clinic, civic) or industrial (`frontend/js/building-use.js`). A word naming one ('housing', 'offices', 'school') reads as that use; any other value is no stated use. A drawn Freeform building starts as residential; an imported one, and a design saved before uses existed, states none. Only a housing use, or a Block, Row or Detached rule building, gets the suggested default layout and its counted apartments; a building of another use counts its storeys as work. A building with no stated use follows the Plan stats housing share. Building use is distinct from a design's Land use (park, square or as is). It is the building's intended use (CityGML `function`); a city model's stated `function` or observed `usage` codes map onto the same values when imported.
 
 ### Land take
 
@@ -610,6 +610,30 @@ The stated strength and limitations of the evidence supporting a representation 
 ### Massing
 
 A footprint with vertical extent, represented as volumes or extrudable geometry. Its role must distinguish observed built form, permitted form, proposed form and an illustrative realization.
+
+### Level of detail
+
+How much of a building's form a model holds, in CityGML's levels (LoD): LoD0 the footprint, LoD1 a block (the footprint raised to one height; our massing and extruded buildings), LoD2 the real roof shapes (Zagreb's GDI meshes, Vienna's roof model, 3D BAG's LoD 2.2), LoD3 the facades with openings. 3D BAG refines LoD1 and LoD2 by decimals (1.2, 1.3, 2.2). A source states its level; interiors (storeys, rooms, units) are separate from it.
+
+### City object
+
+Any physical object of a city model: a building, building part, road, water body, vegetation, city furniture or terrain (CityGML `CityObject`). Imports and exports in CityGML or CityJSON read and write city objects; inside the app they are source buildings, designs and their geometry.
+
+### Building part
+
+A portion of one building with its own height or roof, such as a lower wing or a tower (CityGML `BuildingPart`). Imported parts join their building: the building is the identity, its parts only its form.
+
+### Building surfaces
+
+The semantic faces of a building's shell: roof surfaces, wall surfaces, the ground face it stands on and closure surfaces that close an open volume (CityGML `RoofSurface`, `WallSurface`, `GroundSurface`, `ClosureSurface`). A source building read from a city model carries them per face; a building's ground face is its footprint at its base. It is a different thing from the authored [ground surface](#ground-surface) around buildings.
+
+### Roof type
+
+The shape class of a building's roof: flat, gabled (saddle), hipped, mansard, shed and similar, as a city model states it (CityGML `roofType`, a code list each source defines). A permitted slanted roof (`roof: "pitched"`) is a rule allowance, not an observed roof type.
+
+### City model
+
+A source's 3D model of a city's buildings and other city objects, published as CityGML or CityJSON in sheets, tiles or an API (Vienna's roof model, the 3D BAG). A city model source answers buildings with their surfaces at the source's level of detail.
 
 ### Built / Permitted / Proposed
 
