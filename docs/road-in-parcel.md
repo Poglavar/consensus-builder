@@ -22,6 +22,10 @@ or MultiPolygon) and `metadata.mode: 'bounded'`.
   stretch's lanes need more room than the site gives there (`boundedRoadIssues`). A bounded road
   stays one connected network; an edit that would split it is refused. Its site is never edited:
   a different ground is a new road.
+- Every stretch stores its own cross-section, since its edges fill its own room. A stretch whose
+  lanes are the road's still follows the road: a whole-road change in the cross-section editor
+  reaches it (`corridor-site-fit.js stretchesFollowingRoad`), and only stretches with other lanes
+  count as having their own.
 
 ## Cross-section: fixed core, elastic edges
 

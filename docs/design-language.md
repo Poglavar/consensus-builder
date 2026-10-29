@@ -189,6 +189,10 @@ meaningful colours when they are not selected.
   (one section per kind), the other-tab lock and the explore banner mount as sections of one card
   under the top row (`js/ui/banner-stack.js`, `.cb-banner-stack` / `.cb-banner`), which sets
   `--cb-banner-stack-height` so notices sit below it.
+- Every message copies its text on a click: a notice, the status line, and any status or alert line
+  in a panel or an editor (`role="status"` / `role="alert"`, one page listener in js/ui-helpers.js
+  `messageTextAt`). The copy cursor says so and "Copied" confirms it; a control inside a message
+  keeps its own click, and a click that ends a text selection does not copy.
 
 ## Phone layout
 

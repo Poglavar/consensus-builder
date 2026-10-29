@@ -101,6 +101,55 @@ describe('copyTextWithFeedback', () => {
     });
 });
 
+// A DOM node just rich enough for closest(): a tag, attributes, classes and a parent.
+function node(tag, { attrs = {}, classes = [], text = '', parent = null } = {}) {
+    const el = { tagName: tag.toUpperCase(), attrs, classes: new Set(classes), textContent: text, parent, title: '' };
+    const matches = selector => selector.split(',').map(part => part.trim()).some(part => {
+        const role = part.match(/^\[role="(\w+)"\]$/);
+        if (role) return el.attrs.role === role[1];
+        if (part.startsWith('.')) return el.classes.has(part.slice(1));
+        if (part === '[contenteditable]') return 'contenteditable' in el.attrs;
+        return el.tagName === part.toUpperCase();
+    });
+    el.closest = selector => { for (let at = el; at; at = at.parent) if (at.matchesSelf(selector)) return at; return null; };
+    el.matchesSelf = matches;
+    return el;
+}
+
+describe('any message on screen copies itself on a click', () => {
+    const clickHandler = harness => harness.document.addEventListener.mock.calls.find(([type]) => type === 'click')[1];
+
+    it('copies a panel\'s status line, whatever shows it', async () => {
+        const clipboard = { writeText: vi.fn().mockResolvedValue(undefined) };
+        const harness = loadCopyHelper({ clipboard });
+        const notice = node('div', { attrs: { role: 'status' }, classes: ['corridor-editor-notice'], text: '  Could not complete that road change — reverted:\n  Plot 7 has no ground left. ' });
+        await clickHandler(harness)({ target: notice });
+        expect(clipboard.writeText).toHaveBeenCalledWith('Could not complete that road change — reverted: Plot 7 has no ground left.');
+        expect(harness.notice().textContent).toBe('Copied');
+    });
+
+    it('copies from a click on the message\'s text, but not from a control inside it', async () => {
+        const clipboard = { writeText: vi.fn().mockResolvedValue(undefined) };
+        const harness = loadCopyHelper({ clipboard });
+        const alert = node('p', { attrs: { role: 'alert' }, text: 'The chain account could not be read. Retry' });
+        const span = node('span', { parent: alert, text: 'The chain account could not be read.' });
+        const retry = node('button', { parent: alert, text: 'Retry' });
+        await clickHandler(harness)({ target: retry });
+        expect(clipboard.writeText).not.toHaveBeenCalled();
+        await clickHandler(harness)({ target: span });
+        expect(clipboard.writeText).toHaveBeenCalledWith('The chain account could not be read. Retry');
+    });
+
+    it('leaves a notice to its own handler, and ignores empty lines and other clicks', async () => {
+        const clipboard = { writeText: vi.fn().mockResolvedValue(undefined) };
+        const harness = loadCopyHelper({ clipboard });
+        await clickHandler(harness)({ target: node('div', { attrs: { role: 'status' }, classes: ['cb-toast', 'is-copyable'], text: 'Saved' }) });
+        await clickHandler(harness)({ target: node('p', { attrs: { role: 'status' }, text: '   ' }) });
+        await clickHandler(harness)({ target: node('div', { text: 'A paragraph that is not a message' }) });
+        expect(clipboard.writeText).not.toHaveBeenCalled();
+    });
+});
+
 describe('a notice copies itself on a click', () => {
     it('shows the copy cursor and copies the full message when clicked', async () => {
         const clipboard = { writeText: vi.fn().mockResolvedValue(undefined) };

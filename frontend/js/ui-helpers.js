@@ -523,6 +523,43 @@ function makeMessageCopyable(el, readText) {
     el.addEventListener('click', () => copyTextWithFeedback(readText()));
 }
 
+// Every other message copies on a click too, whatever shows it: a status or alert line in a panel
+// or an editor ([role=status], [role=alert]) — a refusal, a failed save, a progress line. One
+// listener for the whole page, so a message added later needs nothing but its role. A click on a
+// control inside the message (a link, a button, a field, a 3D preview) is that control's, and a
+// click that ends a text selection selects; neither copies.
+const MESSAGE_SELECTOR = '[role="status"], [role="alert"]';
+const MESSAGE_CONTROL_SELECTOR = 'a, button, input, select, textarea, label, summary, canvas, [contenteditable]';
+
+function messageTextAt(target) {
+    const message = target && typeof target.closest === 'function' ? target.closest(MESSAGE_SELECTOR) : null;
+    // A notice and the status line copy themselves (makeMessageCopyable).
+    if (!message || message.closest('.is-copyable')) return null;
+    if (target.closest(MESSAGE_CONTROL_SELECTOR)) return null;
+    const text = String(message.textContent || '').replace(/\s+/g, ' ').trim();
+    return text || null;
+}
+
+if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+    document.addEventListener('click', event => {
+        const text = messageTextAt(event.target);
+        if (!text) return;
+        try {
+            const selection = window.getSelection?.();
+            if (selection && !selection.isCollapsed && String(selection).trim()) return;
+        } catch (_) { }
+        return copyTextWithFeedback(text);
+    });
+    document.addEventListener('mouseover', event => {
+        if (!messageTextAt(event.target)) return;
+        const message = event.target.closest(MESSAGE_SELECTOR);
+        if (message.title) return;
+        const key = 'common.copyToClipboard';
+        const translated = window.i18n?.t ? window.i18n.t(key) : '';
+        message.title = translated && translated !== key ? translated : 'Copy to clipboard';
+    });
+}
+
 // "Copied": a short notice, the same pill as every other outcome.
 function showCopyFeedback(message) {
     showEphemeralMessage(message, 1400);

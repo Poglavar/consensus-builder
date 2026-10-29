@@ -533,6 +533,13 @@ textarea {
     box-shadow: var(--cb-shadow-md);
 }
 
+/* Every other message on screen copies its text on a click too (js/ui-helpers.js messageTextAt):
+   a status or alert line in a panel or an editor. A 3D preview that carries the role is not one. */
+[role="status"]:not(:empty):not(:has(canvas)),
+[role="alert"]:not(:empty) {
+    cursor: copy;
+}
+
 /* The status line's spinner: shown while anything holds a status activity (js/ui-helpers.js). */
 .cb-toast__spinner {
     display: none;

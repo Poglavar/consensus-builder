@@ -2180,6 +2180,7 @@
             "edgeActionsProtectedHint": "Čvor se ne može dodati na rampi, tunelskoj ili denivelisanoj deonici · × Sruši ovu deonicu",
             "addNodeProtectedStatus": "Čvor se ne može dodati na rampi, tunelskoj ili denivelisanoj deonici.",
             "editRevertedStatus": "Tu promenu puta nije bilo moguće dovršiti — vraćeno.",
+            "editRevertedReason": "Tu promenu puta nije bilo moguće dovršiti — vraćeno: {{reason}}",
             "boundedSplit": "Put u parceli ostaje jedna povezana mreža jer drži celu parcelu. Poništite promenu ili obrišite put i postavite ga ponovo.",
             "boundedTooWide": "Ove trake traže {{required}} m, a parcela ovde ostavlja {{available}} m. Izaberite manje ili uže trake.",
             "boundedOutside": "Put u parceli ostaje unutar te parcele. Vratite tačku na nju.",

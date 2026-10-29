@@ -1829,7 +1829,7 @@ function corridorEditorRender() {
 
     const profile = corridorEditorState.profile;
     const notice = corridorEditorState.notice
-        ? `<div class="corridor-editor-notice" role="status">${corridorEditorState.notice}</div>`
+        ? `<div class="corridor-editor-notice" role="status">${escapeHtml(corridorEditorState.notice)}</div>`
         : '';
 
     // The pickers, then the diagram — the controls that BUILD the road stay at the top, where
@@ -2246,7 +2246,11 @@ function corridorEditorProfileMutator(request) {
             return;
         }
         // Whole network: the new profile becomes the default cross-section — and the uniform one
-        // only when the stretches with their own are replaced too.
+        // only when the stretches with their own are replaced too. On a road placed into a parcel
+        // every stretch stores its own edges; those with the road's lanes take the new ones.
+        const siteFit = (typeof window !== 'undefined') ? window.__corridorSiteFit : null;
+        const following = siteFit?.stretchesFollowingRoad?.(definition) || [];
+        following.forEach(id => { delete definition.segmentProfiles[id]; });
         definition.profile = JSON.parse(JSON.stringify(profile));
         if (request.replaceStretchProfiles) delete definition.segmentProfiles;
         if (typeof corridorProfileWidth === 'function') definition.width = corridorProfileWidth(profile);
@@ -2263,7 +2267,9 @@ function corridorEditorOwnProfileCount(definition) {
     const live = new Set((Array.isArray(definition && definition.segmentIds) ? definition.segmentIds : [])
         .filter(id => id !== null && id !== undefined)
         .map(String));
-    return Object.keys(overrides).filter(id => overrides[id] && live.has(id)).length;
+    const siteFit = (typeof window !== 'undefined') ? window.__corridorSiteFit : null;
+    const following = new Set(siteFit?.stretchesFollowingRoad?.(definition) || []);
+    return Object.keys(overrides).filter(id => overrides[id] && live.has(id) && !following.has(id)).length;
 }
 
 // The road-scope question about those stretches: keep their own cross-sections (the default) or

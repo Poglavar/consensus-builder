@@ -3399,6 +3399,7 @@
             "edgeActionsProtectedHint": "Não é possível adicionar um nó numa rampa, num túnel ou num troço desnivelado · × Demolir este troço",
             "addNodeProtectedStatus": "Não é possível adicionar um nó numa rampa, num túnel ou num troço desnivelado.",
             "editRevertedStatus": "Não foi possível concluir essa alteração da estrada — foi revertida.",
+            "editRevertedReason": "Não foi possível concluir essa alteração da estrada — foi revertida: {{reason}}",
             "boundedSplit": "Uma rua num lote continua a ser uma só rede ligada: ocupa o lote inteiro. Desfaça, ou apague a rua e coloque-a de novo.",
             "boundedTooWide": "Estas faixas precisam de {{required}} m e o lote deixa {{available}} m aqui. Escolha menos faixas ou faixas mais estreitas.",
             "boundedOutside": "Uma rua num lote fica dentro desse lote. Volte a pôr o ponto sobre ele.",

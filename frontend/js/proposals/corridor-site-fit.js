@@ -263,9 +263,21 @@
         return next;
     }
 
+    /**
+     * The stretches of a bounded road that carry the road's own lanes. refitBounded gives every
+     * stretch a cross-section of its own, because its edges fill its own room, so having one does
+     * not make a stretch different: a stretch whose lanes (its core) are the road's follows the road.
+     */
+    function stretchesFollowingRoad(definition) {
+        if (!isBounded(definition) || !definition.segmentProfiles) return [];
+        const roadCore = JSON.stringify(coreOf(definition.profile));
+        const own = definition.segmentProfiles;
+        return Object.keys(own).filter(id => own[id] && JSON.stringify(coreOf(own[id])) === roadCore);
+    }
+
     return Object.freeze({
         SIDEWALK_MAX_M, SIDEWALK_MIN_M, TREE_VERGE_M, ARTERIAL_CORE,
         coreOf, coreFor, edgesFor, profileAround, autoProfile, fitArm, corePresetsFor, widthOf,
-        isBounded, availableWidths, boundedRoadIssues, refitBounded, frameOf
+        isBounded, availableWidths, boundedRoadIssues, refitBounded, frameOf, stretchesFollowingRoad
     });
 });

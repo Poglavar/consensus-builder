@@ -779,7 +779,12 @@ async function updateLocalCorridorGeometry(proposalIdOrHash, mutateDefinition, o
         );
     } catch (error) {
         console.warn('[updateLocalCorridorGeometry] road edit failed', error);
-        const reverted = translateRoadText('panel.road.editRevertedStatus', 'Could not complete that road change — reverted.');
+        // Say why: the refusal in the author's words when the edit has one, else what went wrong, so
+        // the message (a click copies it) is enough for a report.
+        const reason = String(error?.userMessage || error?.message || '').trim();
+        const reverted = reason
+            ? translateRoadText('panel.road.editRevertedReason', 'Could not complete that road change — reverted: {{reason}}', { reason })
+            : translateRoadText('panel.road.editRevertedStatus', 'Could not complete that road change — reverted.');
         if (typeof updateStatus === 'function') updateStatus(reverted);
         if (typeof options.onFailure === 'function') {
             try { options.onFailure(error?.userMessage || reverted); } catch (_) { }
@@ -1094,7 +1099,10 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
             { _parcelMutation: mutation }
         );
         if (!derived || derived.ok !== true) {
-            throw new Error('The edited road scope could not be rematerialised from the cadastre.');
+            // The arrangement names what it could not place; that is the reason the author reads.
+            const reasons = [...new Set((derived?.failed || []).map(failure => failure?.message || failure?.code).filter(Boolean))];
+            throw Object.assign(new Error('The edited road scope could not be rematerialised from the cadastre.'
+                + (reasons.length ? ` ${reasons.join(' ')}` : '')), { userMessage: reasons.join(' ') || null });
         }
     }
 

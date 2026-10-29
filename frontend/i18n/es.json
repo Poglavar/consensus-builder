@@ -2190,6 +2190,7 @@
             "edgeActionsProtectedHint": "No se puede añadir un nodo en una rampa, un túnel o un tramo a distinto nivel · × Demoler este tramo",
             "addNodeProtectedStatus": "No se puede añadir un nodo en una rampa, un túnel o un tramo a distinto nivel.",
             "editRevertedStatus": "No se pudo completar ese cambio de la vía — revertido.",
+            "editRevertedReason": "No se pudo completar ese cambio de la vía — revertido: {{reason}}",
             "boundedSplit": "Una calle en una parcela sigue siendo una sola red conectada: ocupa toda la parcela. Deshaz el cambio, o borra la calle y vuelve a colocarla.",
             "boundedTooWide": "Estos carriles necesitan {{required}} m y la parcela deja {{available}} m aquí. Elige menos carriles o más estrechos.",
             "boundedOutside": "Una calle en una parcela se queda dentro de esa parcela. Devuelve el punto a ella.",
