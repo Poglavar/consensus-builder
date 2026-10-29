@@ -267,6 +267,12 @@ body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
     cursor: pointer;
 }
 
+/* `display` above would otherwise override the hidden attribute: a button with nothing to offer
+   (the build-out hourglass without a dated plan in view) is not shown at all. */
+.map-shell-button[hidden] {
+    display: none;
+}
+
 .map-shell-button i {
     font-size: 16px;
     color: var(--cb-text);
