@@ -594,15 +594,16 @@
         if (token === openedPlan && !modal.hidden) renderPlanStatsModal(computePlanStatsSync(counted, readAssumptionsFromModal(modal)));
     }
 
-    // ── Plan comparison (Lists → Plans → Compare plans) ─────────────────────────────────────────
+    // ── Plan comparison (Lists → Plans → Compare plans, Lists → Designs → Compare designs) ──────
     // Each chosen plan is measured as Plan stats measures one, without applying it, and shown in one
     // table under the same assumptions as Plan stats, which re-derive every column when one changes.
+    // Compare designs passes each design as its one-member plan (PlanComposition.ofDesign).
     // Swap turns it between plans as columns and plans as rows.
     // A plan that cannot be measured keeps its place and says why.
     let comparePlansAsColumns = true;
 
     // entries: [{ title, figures (summaryTexts) } | { title, error }] → the table element.
-    function compareTable(entries, plansAsColumns) {
+    function compareTable(entries, plansAsColumns, rowLabel) {
         const table = el('table', 'plan-stats-table plan-compare__table');
         table.dataset.planCompare = plansAsColumns ? 'plans-as-columns' : 'plans-as-rows';
         const metrics = SUMMARY_ROWS.map(row => ({ key: row.key, label: tPlanStats(row.i18nKey, row.label) }));
@@ -620,7 +621,7 @@
         const counting = (entry, key) => entry.stats?.unitsCounting && (key === 'apartments' || key === 'people');
         const value = (entry, key) => el('td', `plan-stats-table__number${counting(entry, key) ? ' plan-stats-counting' : ''}`, entry.figures ? entry.figures[key] : '—');
         const head = document.createElement('tr');
-        head.appendChild(el('th', null, plansAsColumns ? '' : tPlanStats('plan.label', 'Plan')));
+        head.appendChild(el('th', null, plansAsColumns ? '' : rowLabel));
         if (plansAsColumns) entries.forEach(entry => head.appendChild(planHeader(entry, 'col')));
         else metrics.forEach(metric => { const th = el('th', 'plan-stats-table__number', metric.label); th.setAttribute('scope', 'col'); head.appendChild(th); });
         table.appendChild(head);
@@ -642,20 +643,24 @@
         return table;
     }
 
-    async function comparePlans(plans) {
+    // subject: 'plans' or 'designs' (names the dialog); sides: the map Compare side of each plan
+    // (three-compare.js values, null where it has none), by default the plan itself.
+    async function comparePlans(plans, { subject = 'plans', sides = null } = {}) {
+        const designs = subject === 'designs';
         const grid = assumptionGrid('plan-compare');
         const assumptions = readAssumptionsFromModal(grid, { prefix: 'plan-compare' });
         let price = priceIn(grid, 'plan-compare');
         const entries = [];
         const prepared = [];
-        for (const plan of plans) {
+        for (const [index, plan] of plans.entries()) {
             const title = plan?.content?.title || '';
             try {
                 const snapshot = await withGround(await window.PlanAnalysis.prepare(plan), assumptions);
                 const stats = computePlanStatsSync({ ...snapshot, unitsCounting: true }, assumptions);
                 const entry = { title: stats.planTitle || title, stats, figures: summaryTexts(stats, price), groundError: stats.groundError };
                 entries.push(entry);
-                prepared.push({ title: entry.title, cid: plan?.cid || null, snapshot, entry });
+                const side = sides ? sides[index] || null : plan?.cid ? `plan:${plan.cid}` : null;
+                prepared.push({ title: entry.title, cid: plan?.cid || null, side, snapshot, entry });
             } catch (error) {
                 console.error(`[${new Date().toISOString()}] [PlanCompare] ${title || plan?.cid} could not be measured`, error);
                 entries.push({ title, error: error && error.message ? error.message : String(error) });
@@ -675,7 +680,8 @@
         const basis = el('select');
         basis.dataset.planCompareBasis = '';
         const option = (value, text) => { const node = el('option', null, text); node.value = value; basis.appendChild(node); };
-        if (prepared.length > 1) option('compared', tPlanStats('planCompare.basisCompared', 'All compared plans'));
+        if (prepared.length > 1) option('compared', designs ? tPlanStats('planCompare.basisComparedDesigns', 'All compared designs')
+            : tPlanStats('planCompare.basisCompared', 'All compared plans'));
         prepared.forEach((row, index) => option(`plan:${index}`, row.title));
         saved.forEach((row, value) => option(value, row.content.title));
         basisField.appendChild(basis);
@@ -683,8 +689,8 @@
         swap.type = 'button';
         swap.dataset.planCompareSwap = '';
         // The same plans under the map's divider (three-compare.js, no apply): the first two chosen
-        // plans side by side, or one plan beside Built today.
-        const measured = prepared.filter(row => row.cid);
+        // plans side by side, or one plan beside Built today. A design fetched only for this has no side.
+        const measured = prepared.filter(row => row.side);
         const sideBySide = el('button', 'btn btn-sm plan-compare__side-by-side', tPlanStats('planCompare.sideBySide', 'Side by side on the map'));
         sideBySide.type = 'button';
         sideBySide.dataset.planCompareSideBySide = '';
@@ -692,12 +698,13 @@
         sideBySide.addEventListener('click', () => {
             const [first, second] = measured;
             dialog?.close?.();
-            window.ThreeCompare.show({ left: second ? `plan:${first.cid}` : 'built', right: `plan:${(second || first).cid}` });
+            window.ThreeCompare.show({ left: second ? first.side : 'built', right: (second || first).side });
         });
         const scroll = el('div', 'plan-compare__scroll');
         const draw = () => {
             scroll.innerHTML = '';
-            scroll.appendChild(compareTable([present, ...entries], comparePlansAsColumns));
+            scroll.appendChild(compareTable([present, ...entries], comparePlansAsColumns,
+                designs ? tPlanStats('planCompare.design', 'Design') : tPlanStats('plan.label', 'Plan')));
             swap.setAttribute('aria-pressed', String(!comparePlansAsColumns));
         };
         let measuring = 0;
@@ -770,7 +777,8 @@
         body.appendChild(assumptionsSection);
         body.appendChild(definition);
         draw();
-        const dialog = window.CbDialog.open({ title: tPlanStats('planCompare.title', 'Compare plans'), size: 'lg', className: 'plan-compare-dialog', body });
+        const dialog = window.CbDialog.open({ title: designs ? tPlanStats('planCompare.titleDesigns', 'Compare designs') : tPlanStats('planCompare.title', 'Compare plans'),
+            size: 'lg', className: 'plan-compare-dialog', body });
         if (basis.children.length) {
             basis.value = basis.children[0].value;
             void measurePresent(basis.value);

@@ -160,8 +160,7 @@
         try {
             const site = global.__siteBinding.siteOf(proposal);
             const [lng, lat] = global.turf.centroid(site.type === 'Feature' ? site : global.turf.feature(site)).geometry.coordinates;
-            row = global.PlanComposition.create(proposal.title || proposal.name || String(proposal.proposalId), [proposal],
-                { at: `${lat.toFixed(6)},${lng.toFixed(6)},17`, mode: '2d', city: proposal.city || null });
+            row = global.PlanComposition.ofDesign(proposal, [lat, lng]);
         } catch (error) {
             global.console.warn(`[${new Date().toISOString()}] [ThreeCompare] design ${proposal.proposalId} cannot be a Compare side`, error?.message || error);
         }

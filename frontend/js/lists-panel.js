@@ -24,8 +24,9 @@
     function browser(win) {
         const doc = win.document;
         const state = { tab: 'designs', source: 'local', search: '', publication: 'all', sort: 'title',
-            // selecting: the tab whose rows show checkboxes (designs → Create plan, plans → Compare plans).
-            filtersOpen: false, selecting: null, selected: new Map(), active: null, previewing: null, remote: new Map() };
+            // selecting: the tab whose rows show checkboxes; purpose: what they are for (designs → Create
+            // plan or Compare designs, plans → Compare plans).
+            filtersOpen: false, selecting: null, purpose: null, selected: new Map(), active: null, previewing: null, remote: new Map() };
         let ready = false;
         const t = (key, params) => win.i18n.t(key, params || {});
         const node = (tag, cls, text) => {
@@ -87,6 +88,16 @@
         async function designOf(row) {
             return row.local || win.importServerProposal(row.key);
         }
+        // The design a row stands for, fetched when it is only published but never stored.
+        async function designRecord(row) {
+            return row.local || { ...win.DesignSync.localDesignFromRow(await win.DesignSync.fetchDesign(row.key), { apiBase: win.DesignSync.apiBase() }), proposalId: row.key };
+        }
+        // A design as Compare designs measures it: its one-member plan, placed at its site.
+        function designPlan(record) {
+            const site = win.__siteBinding.siteOf(record);
+            const [lng, lat] = win.turf.centroid(site.type === 'Feature' ? site : win.turf.feature(site)).geometry.coordinates;
+            return win.PlanComposition.ofDesign(record, [lat, lng]);
+        }
         async function planOf(row) {
             const plan = row.record.content ? row.record : await win.NamedPlans.fetchPlan(row.key);
             return row.published ? { ...plan, published: true } : plan;
@@ -95,7 +106,7 @@
         // the members of a plan (an agreement shows its plan's).
         async function designRecords(row, kind) {
             const apiBase = win.DesignSync.apiBase();
-            if (kind === 'designs') return [row.local || { ...win.DesignSync.localDesignFromRow(await win.DesignSync.fetchDesign(row.key), { apiBase }), proposalId: row.key }];
+            if (kind === 'designs') return [await designRecord(row)];
             const plan = kind === 'plans' ? await planOf(row)
                 : row.local ? row.local.plan : await win.NamedPlans.fetchPlan(row.record.content.planCid);
             if (!plan) return [];
@@ -153,13 +164,28 @@
         }
         function renderActions() {
             const actions = doc.getElementById('lists-actions'); actions.replaceChildren();
-            const startSelecting = () => { state.selecting = state.tab; state.selected.clear(); renderActions(); renderRows(); };
-            const stopSelecting = () => { state.selecting = null; state.selected.clear(); };
+            const startSelecting = purpose => { state.selecting = state.tab; state.purpose = purpose; state.selected.clear(); renderActions(); renderRows(); };
+            const stopSelecting = () => { state.selecting = null; state.purpose = null; state.selected.clear(); };
+            // Measured without applying, so plans or designs that cannot stand on the map together compare.
+            const compareButton = run => {
+                const compare = button(t('planCompare.compare'), async () => {
+                    await run([...state.selected.values()]);
+                    stopSelecting(); renderActions(); renderRows();
+                }, 'btn-primary', 'table-columns'); compare.disabled = state.selected.size < 2;
+                compare.dataset.listsCompare = '';
+                return compare;
+            };
             const cancel = () => button(t('common.cancel'), () => { stopSelecting(); renderActions(); renderRows(); }, '', 'xmark');
             if (state.selecting === state.tab) actions.append(node('span', 'lists-selection-count', t('planDialog.selected', { count: state.selected.size })));
             if (state.tab === 'designs') {
-                if (state.selecting !== 'designs') actions.append(button(t('planDialog.createPlan'), startSelecting, 'btn-primary', 'cb-icon-plan'));
-                else {
+                if (state.selecting !== 'designs') {
+                    actions.append(button(t('planDialog.createPlan'), () => startSelecting('plan'), 'btn-primary', 'cb-icon-plan'));
+                    actions.append(button(t('planCompare.titleDesigns'), () => startSelecting('compare'), '', 'table-columns'));
+                } else if (state.purpose === 'compare') {
+                    // A stored design is also a side on the map's Compare; one fetched only for this is not.
+                    actions.append(compareButton(records => win.comparePlanStats(records.map(designPlan), { subject: 'designs',
+                        sides: records.map(record => win.proposalStorage.getProposal(record.proposalId) ? `design:${record.proposalId}` : null) })), cancel());
+                } else {
                     const next = button(t('modal.track.curvature.continue'), async () => {
                         const members = [...state.selected.values()];
                         win.MapShell.closeSheets(); stopSelecting();
@@ -172,17 +198,8 @@
                     actions.append(button(t('planDialog.createPlan'), () => {
                         win.MapShell.closeSheets(); return win.PlanDialog.create();
                     }, 'btn-primary', 'cb-icon-plan'));
-                    actions.append(button(t('planCompare.title'), startSelecting, '', 'table-columns'));
-                } else {
-                    // Measured without applying, so plans that cannot stand on the map together compare.
-                    const compare = button(t('planCompare.compare'), async () => {
-                        const plans = [...state.selected.values()];
-                        await win.comparePlanStats(plans);
-                        stopSelecting(); renderActions(); renderRows();
-                    }, 'btn-primary', 'table-columns'); compare.disabled = state.selected.size < 2;
-                    compare.dataset.listsCompare = '';
-                    actions.append(compare, cancel());
-                }
+                    actions.append(button(t('planCompare.title'), () => startSelecting('compare'), '', 'table-columns'));
+                } else actions.append(compareButton(plans => win.comparePlanStats(plans)), cancel());
             } else actions.append(node('span', 'sheet-note', t('lists.agreementHint')));
         }
         function renderRows() {
@@ -215,7 +232,8 @@
                     check.addEventListener('change', async () => {
                         check.disabled = true; item.setAttribute('aria-busy', 'true');
                         try {
-                            if (check.checked) state.selected.set(row.key, kind === 'plans' ? await planOf(row) : await designOf(row));
+                            if (check.checked) state.selected.set(row.key, kind === 'plans' ? await planOf(row)
+                                : state.purpose === 'compare' ? await designRecord(row) : await designOf(row));
                             else state.selected.delete(row.key);
                         } catch (error) { check.checked = false; win.showStyledAlert(error.message); }
                         finally { check.disabled = false; item.removeAttribute('aria-busy'); renderActions(); }
@@ -348,7 +366,7 @@
             await win.i18n.translationsReady;
             init(); state.tab = tab === 'browse' ? 'designs' : tab;
             if (!['designs', 'plans', 'agreements'].includes(state.tab)) state.tab = 'designs';
-            if (state.selecting && state.selecting !== state.tab) { state.selecting = null; state.selected.clear(); }
+            if (state.selecting && state.selecting !== state.tab) { state.selecting = null; state.purpose = null; state.selected.clear(); }
             for (const el of doc.querySelectorAll('[data-list-tab]')) {
                 const active = el.dataset.listTab === state.tab;
                 el.setAttribute('aria-selected', String(active)); el.tabIndex = active ? 0 : -1;

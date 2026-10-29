@@ -394,6 +394,31 @@ describe('comparing plans', () => {
         swap.listeners.click.forEach(fn => fn());
     });
 
+    it('compares designs as one-member plans, names them designs, and puts the first two with a map side under the divider', async () => {
+        const window = openDialog(plan);
+        const shown = [];
+        window.ThreeCompare = { show: sides => shown.push(sides) };
+        await window.comparePlanStats([
+            { content: { title: 'North block' }, records: [block('d-1')] },
+            { content: { title: 'Fetched block' }, records: [block('d-2')] },
+            { content: { title: 'South block' }, records: [block('d-3')] }
+        ], { subject: 'designs', sides: ['design:d-1', null, 'design:d-3'] });
+        await new Promise(resolve => setImmediate(resolve));
+        const find = test => (function walk(node) { if (test(node)) return node; for (const child of node.children) { const hit = walk(child); if (hit) return hit; } return null; })(window.openedDialog.body);
+        expect(window.openedDialog.title).toBe('Compare designs');
+        expect(find(node => node.dataset && 'planCompareBasis' in node.dataset).children[0].textContent).toBe('All compared designs');
+        expect(rowsOf(tableOf(window))[0]).toEqual(['', 'Present state', 'North block', 'Fetched block', 'South block']);
+        const swap = find(node => node.dataset && 'planCompareSwap' in node.dataset);
+        swap.listeners.click.forEach(fn => fn());
+        expect(rowsOf(tableOf(window))[0][0]).toBe('Design');
+        swap.listeners.click.forEach(fn => fn());
+        const sideBySide = find(node => node.dataset && 'planCompareSideBySide' in node.dataset);
+        expect(sideBySide.disabled).toBe(false);
+        sideBySide.listeners.click.forEach(fn => fn());
+        // The design fetched only for the comparison is not a side on the map; the next one is.
+        expect(shown).toEqual([{ left: 'design:d-1', right: 'design:d-3' }]);
+    });
+
     it('re-derives every column from its own assumptions, says the rule, and keeps them for Plan stats', async () => {
         const window = openDialog(plan);
         await window.comparePlanStats([{ content: { title: 'Two blocks' }, records: [block('d-1'), block('d-2')], withExisting: true }]);

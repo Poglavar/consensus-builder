@@ -10,6 +10,12 @@ describe('plan composition',()=>{
   expect(row.designs).toHaveLength(1);expect(row.memberIds).toEqual(['local-1']);expect(Composition.validate(row)).toBe(true);expect(Object.isFrozen(row.designs[0].content)).toBe(true);
   source.title='Edited';expect(row.designs[0].content.title).toBe('Park');
  });
+ it('reads one design as a one-member plan titled after it and placed at the given centre',()=>{
+  const source=design('local-1','Riverside park'),row=Composition.ofDesign(source,[45.8005,15.9605]);
+  expect(row.content.title).toBe('Riverside park');expect(row.memberIds).toEqual(['local-1']);
+  expect(row.content.view).toMatchObject({at:'45.800500,15.960500,17',mode:'2d',city:'zagreb'});
+  expect(Composition.ofDesign(source,[45.8005,15.9605]).cid).toBe(row.cid);
+ });
  it('rejects a changed CID, missing selection, and invalid member identity',()=>{
   expect(()=>Composition.create('Empty',[],view)).toThrow();
   const row=Composition.create('Parks',[design('local-1')],view);
