@@ -13,10 +13,11 @@ second design format or special AI draft editor. A CID identifies content and do
 an IPFS upload. Saving to the session is private server storage; Share remains explicit server-only
 publication. Neither path uploads design or plan content to IPFS.
 
-The mutable session holds only the current revision, a version counter and editing control.
-Every save checks the expected version and the current controller atomically. Taking control
-invalidates an agent request that was still computing its edit. Old snapshots remain ordinary
-records; the session is not a public release or a shared global map.
+The session holds the current revision, a version counter, editing control, the last accepted
+content-change receipt and one undo snapshot for the latest agent change. Every save checks the
+expected version and current controller atomically. Taking control invalidates an agent request
+still computing its edit. Undo restores the prior exact artifact as a new session version; it does
+not mutate published content. An owner save clears the undo snapshot.
 
 ## Shared-plan trial
 
@@ -45,13 +46,21 @@ The copied invitation is a private capability. Keep it out of public plan descri
 The owner capability remains in the browser's private workspace storage. Revoking the invitation
 or disconnecting ends its access.
 
-While connected, the browser checks for a new accepted revision every four seconds. A changed
-revision replaces the connected members through the ordinary map transaction; it does not reload
-the page or move the camera. Moved objects appear at their new positions without an interpolated
-movement animation. The delay includes the next poll, network requests, ground binding and map
-application. Intermediate revisions may be skipped when several edits finish between polls.
-Background browser scheduling can delay checks; a synchronization failure pauses polling until
-recovery. No intermediate mouse gestures or partially completed MCP operations are streamed.
+While connected, the browser receives authenticated event notifications when control, accepted
+state or agent activity changes. It fetches the accepted artifact when the revision changes and
+reconnects after a dropped connection. The activity indicator covers an actual agent edit, not
+merely the agent holding control. A failed or superseded edit never announces a new revision.
+
+The map transaction binds and applies changed or added members, releases removed or revised
+members and retains unchanged ones, the camera and unrelated work. Recognizable single-building
+and bench moves or rotations can animate; additions, removals and other changes receive a change
+announcement. Ambiguous correspondence and other geometry changes are presented without a guessed
+movement. Unchanged building visuals and unchanged park/square/lake families are retained when their rendering inputs match; a changed structure family still rebuilds as a unit. Reduced-motion settings are respected. Intermediate revisions can be skipped while the
+browser is applying an update, and no partial agent work is shown.
+
+After taking control, the owner can undo the most recent content-changing agent save while that
+revision remains current. Save or reload local pending edits first. The agent can request the same
+undo through `ugt_edit_shared_plan` while it holds control.
 
 ## Boundaries
 
@@ -101,7 +110,8 @@ accessibility or the student's ability to take control.
 
 Human edits use the normal local editor and save ordinary plan/design content. The shared MCP
 inspection and editing tools read the same accepted artifact; editing delegates to `ugt_edit_plan`
-operations, including granular design patches. Session version and control checks apply to both
-browser and MCP saves. Existing standalone MCP authoring and preview/import remain available.
+operations, including granular design patches. The existing `ugt_edit_shared_plan` tool also accepts
+`undoLastAgentChange: true` with the inspected `expectedVersion` and `expectedCid`, separately from
+content edits. Session version and control checks apply to browser and MCP saves and undo. Existing standalone MCP authoring and preview/import remain available.
 The [accessible editing guide](accessible-map-editing.md) maps geometry controls to the underlying
 MCP primitives. Browser takeover remains a client capability, separate from this protocol.

@@ -8,6 +8,7 @@ import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/cli
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createMcpHttpService, MCP_MAX_REQUEST_BYTES } from '../agents/mcp-http.mjs';
 import { createUrbanGameTheoryMcpServer } from '../agents/mcp-server.mjs';
+import { createUrbanGameTheoryTools } from '../agents/ugt-agent-tools.js';
 import { hostedEnvironment } from '../agents/mcp-launch.mjs';
 import { MCP_HOSTED_SHARED_TOOLS } from '../agents/mcp-catalog.js';
 import { cidOfObject } from '../cid.js';
@@ -92,7 +93,16 @@ describe('hosted MCP HTTP', () => {
             if (path === '/source-system') return Response.json({ abstractions: [], sources: [] });
             throw new Error(`unexpected ${path}`);
         });
-        const base = await host({ env: { UGT_API_BASE: 'https://api.example', UGT_APP_ORIGIN: 'https://app.example' }, publicOrigin: 'https://app.example', fetchImpl });
+        let releaseWrite, writeEntered;
+        const writeReady = new Promise(resolve => { writeEntered = resolve; });
+        const pendingWrite = new Promise(resolve => { releaseWrite = resolve; });
+        const env = { UGT_API_BASE: 'https://api.example', UGT_APP_ORIGIN: 'https://app.example' };
+        const base = await host({ env, maxConcurrent: 1, publicOrigin: 'https://app.example', fetchImpl,
+            factory: settings => {
+                const actions = createUrbanGameTheoryTools({ mode: 'hosted', env, fetchImpl, resolveDraftReference: settings.resolveDraftReference });
+                actions.publishDesign = async () => { writeEntered(); await pendingWrite; return { cid: 'example' }; };
+                return createUrbanGameTheoryMcpServer({ ...settings, mode: 'hosted', env, fetchImpl, tools: actions });
+            } });
         const client = new Client({ name: 'shared-park', version: '1' }); clients.push(client);
         await client.connect(new StreamableHTTPClientTransport(new URL(`${base}/mcp`)));
         const draft = (await client.callTool({ name: 'ugt_draft_space', arguments: { city: 'london', parcelSourceId: 'fixture', spaceKind: 'park', outline: { type: 'Polygon', coordinates: [[[-.1,51.5],[-.099,51.5],[-.099,51.501],[-.1,51.501],[-.1,51.5]]] } } })).structuredContent;
@@ -101,11 +111,47 @@ describe('hosted MCP HTTP', () => {
         expect(preflight.headers.get('access-control-allow-headers')).toContain('Authorization');
         const created = await (await fetch(`${base}/mcp/plan-sessions`, { method: 'POST', headers: { origin: 'https://app.example', 'content-type': 'application/json' }, body: JSON.stringify({ plan: draft.plan?.draftRef || draft.draftRef }) })).json();
         expect(created).toMatchObject({ controller: 'owner', version: 0 });
+        const eventUrl = `${base}/mcp/plan-sessions/${created.id}/events`;
+        expect((await fetch(`${eventUrl}?capability=${created.ownerToken}`)).status).toBe(401);
+        const response = await fetch(eventUrl, { headers: { authorization: `Bearer ${created.ownerToken}` } });
+        const reader = response.body.getReader(), decoder = new TextDecoder(); let buffered = '';
+        async function nextEvent() {
+            while (!buffered.includes('\n\n')) { const chunk = await reader.read(); if (chunk.done) throw new Error('stream closed early'); buffered += decoder.decode(chunk.value); }
+            const end = buffered.indexOf('\n\n'), event = buffered.slice(0, end); buffered = buffered.slice(end + 2);
+            expect(event).not.toContain(created.ownerToken); expect(event).not.toContain(created.inviteToken);
+            return JSON.parse(event.split('data: ')[1]);
+        }
+        expect(await nextEvent()).toMatchObject({ id: created.id, version: 0, activity: { agentEditing: false } });
+        const inviteResponse = await fetch(eventUrl, { headers: { authorization: `Bearer ${created.inviteToken}` } });
+        const inviteReader = inviteResponse.body.getReader(); await inviteReader.read();
+        const extraReaders = [];
+        for (let i = 0; i < 2; i++) {
+            const extra = await fetch(eventUrl, { headers: { authorization: `Bearer ${created.ownerToken}` } });
+            extraReaders.push(extra.body.getReader()); await extraReaders.at(-1).read();
+        }
+        expect((await fetch(eventUrl, { headers: { authorization: `Bearer ${created.ownerToken}` } })).status).toBe(429);
+        expect((await fetch(`${base}/mcp/plan-sessions/${created.id}`, { headers: { authorization: `Bearer ${created.ownerToken}` } })).status).toBe(200);
+        await Promise.all(extraReaders.map(reader => reader.cancel()));
         const handover = await (await fetch(`${base}/mcp/plan-sessions/${created.id}/control`, { method: 'POST', headers: { authorization: `Bearer ${created.ownerToken}`, 'content-type': 'application/json' }, body: JSON.stringify({ expectedVersion: 0, controller: 'agent' }) })).json();
         const edited = await client.callTool({ name: 'ugt_edit_shared_plan', arguments: { sessionId: created.id, capability: created.inviteToken, expectedVersion: handover.version, expectedCid: created.cid, title: 'Shared park', operations: [] } });
         expect(edited.isError).not.toBe(true);
         const read = await (await fetch(`${base}/mcp/plan-sessions/${created.id}`, { headers: { authorization: `Bearer ${created.ownerToken}` } })).json();
         expect(read.version).toBe(2); expect(fetchImpl.mock.calls.map(([url]) => new URL(url).pathname)).not.toContain('/pins');
+        let event; do { event = await nextEvent(); } while (event.version !== 2);
+        expect(event).toMatchObject({ cid: read.cid, activity: { agentEditing: false } });
+        const revoked = await (await fetch(`${base}/mcp/plan-sessions/${created.id}/control`, { method: 'POST', headers: { authorization: `Bearer ${created.ownerToken}`, 'content-type': 'application/json' }, body: JSON.stringify({ expectedVersion: 2, controller: 'owner', revoke: true }) })).json();
+        let chunk; do { chunk = await inviteReader.read(); } while (!chunk.done);
+        expect(revoked.canUndo).toBe(true);
+        const undone = await (await fetch(`${base}/mcp/plan-sessions/${created.id}/undo`, { method: 'POST', headers: { authorization: `Bearer ${created.ownerToken}`, 'content-type': 'application/json' }, body: JSON.stringify({ expectedVersion: 3 }) })).json();
+        expect(undone).toMatchObject({ cid: created.cid, canUndo: false, version: 4 });
+        const write = client.callTool({ name: 'ugt_publish_design', arguments: { design: { schema: 'design/v1' }, confirm: true } });
+        await writeReady;
+        let shutdownFinished = false;
+        const closing = services.at(-1).close().then(() => { shutdownFinished = true; });
+        do { chunk = await reader.read(); } while (!chunk.done);
+        expect(shutdownFinished).toBe(false);
+        releaseWrite(); await write; await closing;
+        expect(shutdownFinished).toBe(true);
     });
     it('accepts an ordinary full-plan request above the former 32 KiB ceiling', async () => {
         const proposeAgreement = vi.fn(async () => ({ cid: 'tested-without-publication' }));

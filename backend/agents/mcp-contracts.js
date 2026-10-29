@@ -44,7 +44,7 @@ const placedDesign = designDraft.extend(placement);
 const agreementDraft = mcpResultSchema.extend({ cid, untrusted: authored('agreement/v1'), designs: z.array(object), ...privatePreview });
 const planResult = mcpResultSchema.extend({ cid, untrusted: authored('plan/v1'), designs: z.array(z.object({ cid }).passthrough()).min(1), publication: z.enum(['private', 'published']) });
 const sharedPlanSession = mcpResultSchema.extend({ id: z.string().regex(/^[\w-]{24}$/), version: z.number().int().nonnegative(),
-    controller: z.enum(['owner', 'agent']), cid, updatedAt: z.string(), artifact: object });
+    controller: z.enum(['owner', 'agent']), cid, updatedAt: z.string(), artifact: object, canUndo: z.boolean(), lastChange: z.object({ fromCid: cid, toCid: cid, actor: z.enum(['owner', 'agent']), kind: z.enum(['edit', 'undo']), members: z.array(z.object({ beforeCid: cid.optional(), afterCid: cid.optional(), ref: z.string().optional(), type: z.string().optional() })) }).nullable() });
 const inventory = mcpResultSchema.extend({ cid, items: z.array(z.object({ ref: z.string(), kind: z.enum(['design', 'building', 'piece']) }).passthrough()), total: count, offset: count, truncated: z.boolean() });
 const shapes = new Map();
 const assign = (names, schema) => { for (const name of names) shapes.set(name, schema); };

@@ -18,6 +18,7 @@ const PLURAL_FORMS = ['zero', 'one', 'two', 'few', 'many', 'other'];
 const DYNAMIC_KEY_PREFIXES = [
     'planDialog.',
     'sharedPlan.',
+    'structureEditor.tools.', // toolLabel's declared tool names are checked in every locale below
     'diagnostics.errors.',
     'diagnostics.ui.',
     'alerts.messages.',
@@ -188,6 +189,18 @@ describe('i18n locale coverage', () => {
     });
 
 
+    it('defines every dynamically selected structure editor tool in every locale', () => {
+        const source = fs.readFileSync(path.join(FRONTEND, 'js/structure-geometry-editor.js'), 'utf8');
+        const names = /function toolLabel\(tool\)\s*\{\s*const names = \{([^}]+)\}/.exec(source);
+        expect(names).not.toBeNull();
+        const tools = [...names[1].matchAll(/\b([a-z][a-zA-Z]*)\s*:/g)].map(match => match[1]);
+        expect(tools.length).toBeGreaterThan(10);
+        for (const lang of LANGS) for (const tool of tools) {
+            const key = `structureEditor.tools.${tool}`;
+            expect(locales[lang][key], `${lang}: ${key}`).toEqual(expect.any(String));
+            expect(locales[lang][key].length, `${lang}: ${key}`).toBeGreaterThan(0);
+        }
+    });
     it('defines all proposal apply failure messages in every locale', () => {
         const keys = [
             'outsideCadastre', 'outsideSite', 'groundUnavailable', 'groundMissing', 'undeclared',

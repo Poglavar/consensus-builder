@@ -4,6 +4,29 @@
     // Structure features are a presentation cache rebuilt from currently standing proposal
     // records. Their authored geometry/decorations live on the proposal; this module owns only the
     // current render-session arrays and layers.
+    const sharedPlanBenches = new Map();
+    function registerSharedPlanBench(marker, proposalId, coordinate) {
+        const key = `${String(proposalId)}:${JSON.stringify(coordinate)}`;
+        marker.on('add', () => { if (!sharedPlanBenches.has(key)) sharedPlanBenches.set(key, new Set()); sharedPlanBenches.get(key).add(marker); });
+        marker.on('remove', () => { const set = sharedPlanBenches.get(key); set?.delete(marker); if (!set?.size) sharedPlanBenches.delete(key); });
+        return marker;
+    }
+    window.SharedPlanMotionBenches = {
+        hide(changes, idByCid, row) {
+            const markers = [];
+            changes.filter(item => item.type === 'bench' && item.after).forEach(item => {
+                const id = idByCid.get(item.after.cid);
+                const benches = row?.designs?.find(value => value.cid === item.after.cid)?.content?.structureProposal?.decorationDesign?.benches || [];
+                const bench = benches[item.after.index], coord = bench?.coordinate || bench?.coord;
+                if (!coord || benches.filter(value => JSON.stringify(value?.coordinate || value?.coord) === JSON.stringify(coord)).length !== 1) return;
+                for (const marker of sharedPlanBenches.get(`${id}:${JSON.stringify(coord)}`) || []) {
+                    markers.push([marker, marker.options.opacity ?? 1]); marker.setOpacity(0);
+                }
+            });
+            return () => markers.forEach(([marker, opacity]) => marker.setOpacity(opacity));
+        }
+    };
+
     const DECORATION_VERSION = 2; // bump when changing decoration generation rules
     const LAKE_GRAPHICS_VERSION = 3;
     const LAKE_SHORE_TARGET_RATIO = 0.2;
@@ -20,6 +43,31 @@
     const SQUARES_ICON_PANE = 'squaresIconPane';
     const PARKS_PANE = 'parksPane';
     const LAKES_PANE = 'lakesPane';
+
+    // These signatures describe the last completed draw, not merely the current source arrays.
+    // They are used only while an accepted shared revision is being applied.
+    const renderedStructureSignatures = new Map();
+    let sharedStructureSignatures = null;
+    function structureRenderSignature(kind) {
+        try {
+            const checkbox = document.getElementById(kind === 'parks' ? 'showParksCheckbox' : kind === 'squares' ? 'showSquaresCheckbox' : 'showLakesCheckbox');
+            return JSON.stringify([window[kind], appliedCorridorCutters(), window.LiveParcelFabric?.revision?.(),
+                window.structureGeometryEditorEditingProposalId, checkbox?.checked]);
+        } catch (_) { return null; }
+    }
+    window.SharedPlanMotionStructures = {
+        begin() {
+            const captured = { signatures: new Map(renderedStructureSignatures), groups: { parks: parksLayer, squares: squaresLayer, lakes: lakesLayer, buildingGrounds: buildingGroundLayer } };
+            captured.signatures.set('buildingGrounds', buildingGroundSignature);
+            sharedStructureSignatures = captured;
+            return () => { if (sharedStructureSignatures === captured) sharedStructureSignatures = null; };
+        }
+    };
+    function unchangedSharedStructure(kind, signature, group) {
+        return signature != null && group && sharedStructureSignatures?.groups[kind] === group
+            && sharedStructureSignatures.signatures.get(kind) === signature;
+    }
+
 
     // A canonical plan replay creates every park/square/lake in turn. Hold the corresponding
     // structure-layer presentation until the records exist, then render each affected kind once.
@@ -356,7 +404,7 @@
                 if (!Array.isArray(coord) || coord.length < 2) return;
                 try { if (!pointInFeature(turf.point(coord), parkFeature)) return; } catch (_) { }
                 const [lng, lat] = coord;
-                L.marker([lat, lng], {
+                registerSharedPlanBench(L.marker([lat, lng], {
                     icon: L.divIcon({
                         className: 'park-bench-glyph',
                         html: `<span style="display:inline-block;transform:rotate(${Math.round(Number(bench?.bearing) || 0)}deg);color:#7c4a12;font-size:12px;">▰</span>`,
@@ -365,7 +413,7 @@
                     }),
                     pane,
                     interactive: false
-                }).addTo(group);
+                }), parkFeature.properties?.proposalId, coord).addTo(group);
             });
         } catch (_) { }
         try { drawFurnitureGlyphs(group, parkFeature, decorations, pane); } catch (_) { }
@@ -802,6 +850,7 @@
         if (typeof map === 'undefined') return;
         ensureParksPane();
         const group = ensureParksLayer();
+        if (unchangedSharedStructure('parks', structureRenderSignature('parks'), group)) return;
 
         // Force complete removal: remove from map, clear all layers, then re-add to map
         const wasOnMap = map && map.hasLayer(group);
@@ -850,6 +899,7 @@
         try { group.bringToFront && group.bringToFront(); } catch (_) { }
 
         // Notify 3D to rebuild if needed
+        renderedStructureSignatures.set('parks', structureRenderSignature('parks'));
         try { window.dispatchEvent(new Event('parksUpdated')); } catch (_) { }
     }
 
@@ -936,7 +986,7 @@
             if (!Array.isArray(coord) || !pointInFeature(turf.point(coord), squareFeature)) return;
             const bearing = Number(bench && bench.bearing) || 0;
             const [lng, lat] = coord;
-            L.marker([lat, lng], {
+            registerSharedPlanBench(L.marker([lat, lng], {
                 icon: L.divIcon({
                     className: 'square-bench-icon',
                     html: `<span style="display:block;transform:rotate(${bearing}deg);">▰</span>`,
@@ -946,7 +996,7 @@
                 pane,
                 zIndexOffset: 1000,
                 interactive: false
-            }).addTo(group);
+            }), squareFeature.properties?.proposalId, coord).addTo(group);
         });
         // Market stalls and lamps (skipped when they fall on a road cut through the square)
         drawFurnitureGlyphs(group, squareFeature, dec, pane);
@@ -1268,6 +1318,7 @@
         if (typeof map === 'undefined') return;
         ensureSquaresPane();
         const group = ensureSquaresLayer();
+        if (unchangedSharedStructure('squares', structureRenderSignature('squares'), group)) return;
 
         // Force complete removal: remove from map, clear all layers, then re-add to map
         const wasOnMap = map && map.hasLayer(group);
@@ -1322,6 +1373,7 @@
             } catch (e) { console.warn('Failed to render a square', e); }
         });
         try { group.bringToFront && group.bringToFront(); } catch (_) { }
+        renderedStructureSignatures.set('squares', structureRenderSignature('squares'));
         try { window.dispatchEvent(new Event('squaresUpdated')); } catch (_) { }
     }
 
@@ -1332,6 +1384,7 @@
         if (typeof map === 'undefined') return;
         ensureLakesPane();
         const group = ensureLakesLayer();
+        if (unchangedSharedStructure('lakes', structureRenderSignature('lakes'), group)) return;
 
         // Force complete removal: remove from map, clear all layers, then re-add to map
         const wasOnMap = map && map.hasLayer(group);
@@ -1362,6 +1415,7 @@
         });
 
         try { group.bringToFront && group.bringToFront(); } catch (_) { }
+        renderedStructureSignatures.set('lakes', structureRenderSignature('lakes'));
         try { window.dispatchEvent(new Event('lakesUpdated')); } catch (_) { }
     }
 
@@ -1494,13 +1548,14 @@
     function updateBuildingGroundLayer() {
         if (typeof map === 'undefined') return;
         const group = ensureBuildingGroundLayer();
-        try { group.clearLayers(); } catch (_) { }
-
         const surfaces = appliedBuildingGroundSurfaces();
         const vacant = vacantLayoutPlots();
         let signature = '';
         // The fabric revision is in it because fences follow the parcel layout under the ground.
-        try { signature = JSON.stringify([surfaces.map(s => [s.proposalId, s.treatment, s.geometry, s.decorationDesign]), vacant, window.LiveParcelFabric?.revision?.()]); } catch (_) { signature = String(surfaces.length); }
+        let signatureValid = true;
+        try { signature = JSON.stringify([surfaces, vacant, window.LiveParcelFabric?.revision?.()]); } catch (_) { signature = String(surfaces.length); signatureValid = false; }
+        if (signatureValid && unchangedSharedStructure('buildingGrounds', signature, group)) return;
+        try { group.clearLayers(); } catch (_) { }
         vacant.forEach(feature => L.geoJSON(feature, {
             pane: PARKS_PANE, interactive: false,
             style: { color: '#6d705b', weight: 1.5, dashArray: '4,3', fillColor: '#adae75', fillOpacity: 0.9, className: 'vacant-layout-plot' }

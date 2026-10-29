@@ -337,7 +337,9 @@ A private server connection that names the current accepted ordinary plan revisi
 
 The owner controls whether the browser or the invited agent may save the next revision. The session version changes on both content and control changes; a save must match that version and the current editing authority. The owner capability controls the session; the separate invitation capability permits inspection and, only when granted, editing. Neither capability belongs to authored plan content or a public link. The browser's local workspace remains separate and retains its single-tab lock.
 
-While the owner edits a connected member, the browser keeps a pending ordinary plan revision containing that member’s current local revision. The Plan section follows this pending revision. The accepted server revision changes only on Save to shared plan or handover; earlier plan revisions remain immutable.
+While the owner edits a connected member, the browser keeps a pending ordinary plan revision containing that member’s current local revision. The Plan section follows this pending revision. The accepted server revision changes only on Save to shared plan or handover; earlier plan revisions remain immutable. A session also stores a receipt for its last accepted content change and, while eligible, the preceding artifact for one undo of an agent change. Undo makes a new session version pointing to that exact preceding artifact. An owner content save clears undo eligibility; control changes preserve it. These session records are not authored plan or design content.
+
+Agent activity means an edit operation is in progress while the agent holds the current session version; holding control alone is not activity. Authenticated notifications report session state and activity, while the full accepted artifact and receipt are read separately.
 
 ### Plan area
 

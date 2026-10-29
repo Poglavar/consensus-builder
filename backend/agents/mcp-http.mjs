@@ -55,6 +55,7 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
     const allowed = ['localhost', '127.0.0.1', '[::1]', origin.hostname, new URL(previewOrigin).hostname, new URL(appOrigin).hostname];
     const hostGuard = hostHeaderValidation(allowed), originGuard = originValidation(allowed);
     let active = 0, count = 0, publishes = 0, start = now();
+    const streams = new Set();
     const previews = createPreviewLinks({ origin: previewOrigin, appOrigin, storeDirectory, now, ...(previewTtlMs == null ? {} : { ttlMs: previewTtlMs }) });
     const sharedPlans = createSharedPlanSessions({ directory: sharedPlanDirectory || `${storeDirectory}/shared-plans`, now, validateArtifact: canonicalArtifact });
     // REST needs the same reference resolver as MCP. It only constructs private immutable artifacts;
@@ -86,26 +87,49 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
         const json = (status, body, headers = {}) => { res.writeHead(status, { 'Content-Type': 'application/json', ...headers }); res.end(JSON.stringify(body)); };
         const rawSessionPath = req.url?.split('?')[0] || '';
         const sessionRoot = rawSessionPath === '/mcp/plan-sessions' || rawSessionPath === '/mcp/plan-sessions/';
-        const sessionPath = /^\/mcp\/plan-sessions\/([\w-]{24})(?:\/control)?\/?$/.exec(rawSessionPath);
+        const sessionPath = /^\/mcp\/plan-sessions\/([\w-]{24})(?:\/(control|events|undo))?\/?$/.exec(rawSessionPath);
         if (sessionRoot || sessionPath) {
             if (req.headers.origin === appOrigin) { res.setHeader('Access-Control-Allow-Origin', appOrigin); res.setHeader('Vary', 'Origin'); }
             if (req.method === 'OPTIONS') return json(204, {}, { Allow: 'GET, POST, PUT, OPTIONS', 'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS', 'Access-Control-Allow-Headers': 'Authorization, Content-Type' });
             resetWindow();
             if (active >= maxConcurrent || count >= maxPerMinute) return json(429, { code: 'rate-limited', message: 'MCP request budget exhausted.' }, { 'Retry-After': '60' });
-            count++; active++;
+            count++;
+            const capability = bearer(req);
+            if (sessionPath?.[2] === 'events' && req.method === 'GET') {
+                if (!capability) return json(401, { code: 'shared-plan-capability-required', message: 'Use a shared plan capability.' });
+                const id = sessionPath[1];
+                try {
+                    const initial = sharedPlans.eventState(id, capability);
+                    if (streams.size >= 128 || [...streams].filter(stream => stream.id === id).length >= 4) return json(429, { code: 'shared-plan-stream-capacity' });
+                    res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Connection': 'keep-alive', 'Referrer-Policy': 'no-referrer', 'X-Accel-Buffering': 'no' });
+                    const stream = { id, close }; streams.add(stream);
+                    let unsubscribe = () => {}, timer, closed = false;
+                    function close() { if (closed) return; closed = true; clearInterval(timer); unsubscribe(); streams.delete(stream); if (!res.destroyed) res.end(); }
+                    function send() {
+                        try { if (!res.write(`event: state\ndata: ${JSON.stringify(sharedPlans.eventState(id, capability))}\n\n`)) { close(); res.destroy(); } }
+                        catch { close(); }
+                    }
+                    unsubscribe = sharedPlans.subscribe(id, capability, send);
+                    res.on('close', close);
+                    timer = setInterval(() => { if (!res.write(': heartbeat\n\n')) { close(); res.destroy(); } }, 15_000); timer.unref();
+                    if (!res.write(`event: state\ndata: ${JSON.stringify(initial)}\n\n`)) { close(); res.destroy(); }
+                } catch (error) { if (!res.headersSent) json(error.status || 400, { code: error.code || 'shared-plan-invalid', message: error.message }); else res.destroy(); }
+                return;
+            }
+            active++;
             try {
-                const capability = bearer(req);
                 if (sessionRoot && req.method === 'POST') {
                     if (req.headers.origin && req.headers.origin !== appOrigin) return json(403, { code: 'origin-forbidden' });
                     const body = await readJson(req); const result = sharedPlans.create(await resolveSharedPlan(body.plan));
                     return json(201, result, { 'Referrer-Policy': 'no-referrer' });
                 }
                 if (!sessionPath || !capability) return json(401, { code: 'shared-plan-capability-required', message: 'Use a shared plan capability.' });
-                const id = sessionPath[1], control = req.url?.split('?')[0].endsWith('/control');
-                if (req.method === 'GET' && !control) return json(200, sharedPlans.inspect(id, capability), { 'Referrer-Policy': 'no-referrer' });
+                const id = sessionPath[1], action = sessionPath[2], control = action === 'control';
+                if (req.method === 'GET' && !action) return json(200, sharedPlans.inspect(id, capability), { 'Referrer-Policy': 'no-referrer' });
                 const body = await readJson(req);
                 if (req.method === 'POST' && control) return json(200, sharedPlans.control(id, capability, body), { 'Referrer-Policy': 'no-referrer' });
-                if (req.method === 'PUT' && !control) {
+                if (req.method === 'POST' && action === 'undo') return json(200, sharedPlans.undo(id, capability, body), { 'Referrer-Policy': 'no-referrer' });
+                if (req.method === 'PUT' && !action) {
                     sharedPlans.assertEditable(id, capability, body.expectedVersion);
                     return json(200, sharedPlans.replace(id, capability, { expectedVersion: body.expectedVersion, artifact: await resolveSharedPlan(body.plan) }), { 'Referrer-Policy': 'no-referrer' });
                 }
@@ -154,7 +178,8 @@ export function createMcpHttpService({ env = process.env, fetchImpl, factory,
     let closing;
     return { http, close() {
         return closing ||= (async () => {
-            // Finish accepted requests before releasing the single-writer draft lock.
+            // Streams are long-lived; close them before waiting for accepted requests.
+            for (const stream of [...streams]) stream.close();
             if (http.listening) {
                 const closed = new Promise((resolve, reject) => http.close(error => error ? reject(error) : resolve()));
                 http.closeIdleConnections();

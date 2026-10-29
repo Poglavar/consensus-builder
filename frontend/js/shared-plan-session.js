@@ -94,7 +94,24 @@
     }
     function browser(win) {
         let active = null;
-        let pollTimer = null;
+        let connection = null, connectionId = null, refreshQueued = false, draining = false;
+        let connectionStatus = '', applying = false, agentEditing = false, announcement = '';
+        let live = null;
+        const t = (key, fallback) => win.i18n?.t?.(`sharedPlan.${key}`) || fallback;
+        const announce = text => {
+            announcement = text;
+            if (win.document?.body) {
+                if (!live) {
+                    live = win.document.createElement('div'); live.className = 'shared-plan-live';
+                    live.setAttribute('role', 'status'); live.setAttribute('aria-live', 'polite');
+                    live.setAttribute('aria-atomic', 'true'); win.document.body.append(live);
+                }
+                live.textContent = text; live.hidden = !text;
+            }
+            notifyPanels({ statusChanged: true });
+        };
+        const closeConnection = () => { connection?.close(); connection = null; connectionId = null; refreshQueued = false; };
+
         let resumeInFlight = null;
         let operationTail = Promise.resolve();
         const exclusive = task => {
@@ -166,6 +183,10 @@
                     const capability = stored(origin, id); if (!capability?.ownerToken) throw fail('This browser no longer has control of that shared plan.', 'owner-capability-missing');
                     return request(origin, id, { method: 'PUT', token: capability.ownerToken,
                         body: { expectedVersion, plan: artifactOf(row) } });
+                },
+                undo: async (id, expectedVersion) => {
+                    const capability = stored(origin, id); if (!capability?.ownerToken) throw fail('This browser no longer has control of that shared plan.', 'owner-capability-missing');
+                    return request(origin, [id, 'undo'], { method: 'POST', token: capability.ownerToken, body: { expectedVersion } });
                 },
                 forget: (id, cid) => forget(origin, id, cid)
             });
@@ -253,13 +274,16 @@
                         }
                         const current = currentRow(); const created = await source.create(current); session = { ...created, base: source.base }; remember(source.base, session, row.cid, current.memberIds);
                         row = current;
-                        win.PersistentStorage.setItem(activeKey(source.base), JSON.stringify({ id: session.id, cid: row.cid, memberIds: row.memberIds || [] })); publishActive(); ensurePolling();
+                        win.PersistentStorage.setItem(activeKey(source.base), JSON.stringify({ id: session.id, cid: row.cid, memberIds: row.memberIds || [] })); publishActive(); ensureConnection();
                     }, true, true);
                     state.textContent = t('notConnected', 'Create a private shared session for this exact plan revision.'); return;
                 }
                 const agent = session.controller === 'agent';
-                state.textContent = agent ? t('agentEditing', 'The agent is editing this shared plan. Take control before editing it here.')
+                state.textContent = applying ? t('applying', 'Applying the accepted changes…')
+                    : agent && agentEditing ? t('working', 'The agent is working on a change…')
+                    : agent ? t('agentControl', 'The agent has editing control. Waiting for its next change.')
                     : t('youEditing', 'You have editing control.');
+                if (connectionStatus === 'reconnecting') state.textContent += ' ' + t('reconnecting', 'Reconnecting to the shared plan…');
                 const pending = row.cid !== pendingSession()?.pointer.cid;
                 const changes = group(t('changes', 'Plan changes'), conflict
                     ? t('localConflict', 'A local revision differs from the shared plan. Save it to keep your version, or reload the shared revision.')
@@ -268,14 +292,26 @@
                 if (!agent) {
                     const save = action(t('save', 'Save to shared plan'), async () => {
                         const current = currentRow(); const saved = await client(session.base).save(session.id, session.version, current);
-                        session = { ...session, ...saved }; await replace(session, current); conflict = false; sessionError = null; publishActive(); ensurePolling();
+                        session = { ...session, ...saved }; await replace(session, current); conflict = false; sessionError = null; publishActive(); ensureConnection();
                     }, true, true, changes);
                     save.disabled = !pending && !conflict && !sessionError;
+                    if (session.canUndo) {
+                        const undo = action(t('undo', 'Undo last agent change'), async () => {
+                            await exclusive(async () => {
+                                if (currentRow().cid !== pendingSession()?.pointer.cid) throw fail(t('undoPending', 'Save or reload your local changes before undoing the agent change.'));
+                                const accepted = await client(session.base).undo(session.id, session.version);
+                                session = { ...session, ...accepted };
+                            });
+                            await resumeActive({ acceptOwnerConflict: true });
+                            if (!active?.paused) ensureConnection();
+                        }, false, false, changes);
+                        undo.disabled = pending || conflict;
+                    }
                 }
                 if (conflict || sessionError) action(t('reload', 'Reload shared revision'), async () => {
                     await resumeActive({ acceptOwnerConflict: true });
                     conflict = false;
-                    if (!active?.paused) ensurePolling();
+                    if (!active?.paused) ensureConnection();
                 }, false, false, changes);
                 const control = group(t('control', 'Editing control'), agent
                     ? t('takeHint', 'Take control to stop agent edits and make your own changes.')
@@ -315,7 +351,7 @@
                     // Revocation is an owner action even when the agent holds the edit turn.
                     await client(session.base).control(session.id, session.version, 'owner', true);
                     client(session.base).forget(session.id, row.cid); win.PersistentStorage.removeItem(activeKey(session.base)); session = null; sessionError = null;
-                    if (pollTimer) { win.clearInterval(pollTimer); pollTimer = null; }
+                    closeConnection(); announce('');
                     publishActive();
                 }, false, true, end);
                 if (focusedLabel) [...panel.querySelectorAll('button')].find(button => button.textContent === focusedLabel)?.focus();
@@ -330,13 +366,15 @@
                     const latest = await resumeActive();
                     if (latest?.id === id) {
                         session = { ...session, ...latest, base };
-                        if (!active?.paused) ensurePolling();
+                        if (!active?.paused) ensureConnection();
                     }
                 } catch (error) { sessionError = error; }
                 render();
             };
             const subscriber = detail => {
-                if (stopped || !session || detail?.id !== session.id) return;
+                if (stopped || !session) return;
+                if (detail?.statusChanged) { render(); return; }
+                if (detail?.id !== session.id) return;
                 const changed = (detail.session && session.version !== detail.session.version)
                     || (detail.row && row.cid !== detail.row.cid)
                     || conflict !== (detail.conflict === true) || (detail.error && sessionError !== detail.error);
@@ -386,7 +424,7 @@
             return next;
         }
         const pause = (error, detail = {}) => {
-            if (pollTimer) { win.clearInterval(pollTimer); pollTimer = null; }
+            closeConnection(); announce(error.message);
             active = active ? { ...active, paused: true } : active;
             const pointer = JSON.parse(win.PersistentStorage.getItem(activeKey(endpoint(win))) || 'null');
             notifyPanels({ id: pointer?.id, ...detail, error });
@@ -406,7 +444,7 @@
             if (latest.controller === 'owner' && nextCid === pointer.cid) captureLocalRevision();
             local = pendingSession()?.local || local;
             let current = local || old;
-            if (old && nextCid && old.cid !== nextCid && latest.controller === 'owner' && !acceptOwnerConflict) {
+            if (old && local && local.cid !== old.cid && nextCid && old.cid !== nextCid && latest.controller === 'owner' && !acceptOwnerConflict) {
                 // A local owner fork may have been edited while this tab was offline. Never
                 // overwrite it from a resume; the panel presents the ordinary Save action once
                 // the owner chooses which revision should become current.
@@ -421,11 +459,27 @@
                 const replacement = rowOf(latest.artifact, ids, win);
                 try {
                     if (typeof win.PlanDialog?.syncSharedPlanOnMap !== 'function') throw fail('The shared-plan map is not ready. Open the plan and retry.', 'shared-plan-map-unavailable');
-                    await win.PlanDialog.syncSharedPlanOnMap(replacement, { ...old, memberIds: [...new Set([...old.memberIds, ...(local?.memberIds || [])])] });
+                    applying = true; announce(t('applying', 'Applying the accepted changes…'));
+                    await win.PlanDialog.syncSharedPlanOnMap(replacement, local || old, { lastChange: latest.lastChange });
                 } catch (error) {
                     pause(error, { id: pointer.id, session: { ...latest, base }, row: old });
                     return latest;
-                }
+                } finally { applying = false; }
+                const descriptions = win.SharedPlanMotion?.describe?.({ previous: local || old, next: replacement, change: latest.lastChange }) || [];
+                const messages = descriptions.map(item => {
+                    const label = item.label || t(item.type === 'bench' ? 'bench' : 'building', item.type === 'bench' ? 'Bench' : 'Building');
+                    if (item.kind === 'move') {
+                        const direction = Math.abs(item.eastM) >= Math.abs(item.northM)
+                            ? t(item.eastM >= 0 ? 'east' : 'west', item.eastM >= 0 ? 'east' : 'west')
+                            : t(item.northM >= 0 ? 'north' : 'south', item.northM >= 0 ? 'north' : 'south');
+                        return `${t('moved', 'Moved')} ${label} ${Math.round(item.distanceM * 10) / 10} m ${direction}`;
+                    }
+                    if (item.kind === 'rotate') return `${t('rotated', 'Rotated')} ${label} ${Math.round(item.degrees)}°`;
+                    return `${t(item.kind === 'add' ? 'added' : item.kind === 'remove' ? 'removed' : 'updated', item.kind === 'add' ? 'Added' : item.kind === 'remove' ? 'Removed' : 'Updated')} ${label}`;
+                });
+                announce(latest.lastChange?.kind === 'undo' ? t('undone', 'Undid the last agent change.')
+                    : messages.length ? messages.slice(0, 3).join('. ') + (messages.length > 3 ? ` (+${messages.length - 3})` : '')
+                    : t('updatedPlan', 'Shared plan updated.'));
                 win.PersistentStorage.setItem(activeKey(base), JSON.stringify({ id: pointer.id, cid: replacement.cid, memberIds: replacement.memberIds || [] }));
                 current = replacement;
             }
@@ -438,13 +492,49 @@
             }).finally(() => { resumeInFlight = null; });
             return resumeInFlight;
         };
-        const ensurePolling = () => {
-            if (pollTimer) return;
-            pollTimer = win.setInterval(() => resumeActive().catch(error => pause(error)), 4000);
+        const queueRefresh = () => {
+            refreshQueued = true;
+            if (draining) return;
+            draining = true;
+            (async () => {
+                while (refreshQueued) {
+                    refreshQueued = false;
+                    await resumeActive();
+                    if (active?.paused) break;
+                }
+            })().catch(error => pause(error)).finally(() => { draining = false; });
         };
-        win.addEventListener?.('pagehide', () => {
-            if (pollTimer) { win.clearInterval(pollTimer); pollTimer = null; }
-        }, { once: true });
+        const ensureConnection = () => {
+            const pending = pendingSession();
+            if (!pending || !win.SharedPlanEvents) return;
+            const id = `${pending.base}/${pending.pointer.id}`;
+            if (connection && connectionId === id) return;
+            closeConnection(); connectionId = id;
+            connection = win.SharedPlanEvents.connect({ base: pending.base, sessionId: pending.pointer.id,
+                token: pending.capability.ownerToken, fetch: win.fetch.bind(win),
+                onState(state) {
+                    if (connectionId !== id) return;
+                    const current = pendingSession();
+                    if (!current || current.pointer.id !== state.id) return;
+                    const wasEditing = agentEditing;
+                    agentEditing = state.activity.agentEditing;
+                    if (wasEditing && !agentEditing && !applying && state.cid === current.pointer.cid) announce(state.controller === 'owner' ? t('youEditing', 'You have editing control.') : t('agentControl', 'The agent has editing control. Waiting for its next change.'));
+                    notifyPanels({ statusChanged: true });
+                    if (agentEditing && !applying) announce(t('working', 'The agent is working on a change…'));
+                    if (state.version > (current.capability.version || 0) || state.cid !== current.pointer.cid) queueRefresh();
+                },
+                onStatus(status, error) {
+                    if (connectionId !== id) return;
+                    connectionStatus = status;
+                    if (status === 'connected' && announcement === t('reconnecting', 'Reconnecting to the shared plan…')) announce('');
+                    notifyPanels({ statusChanged: true });
+                    if (status === 'reconnecting') announce(t('reconnecting', 'Reconnecting to the shared plan…'));
+                    if (status === 'unavailable') pause(error);
+                }
+            });
+        };
+        win.addEventListener?.('pagehide', closeConnection);
+        win.addEventListener?.('pageshow', () => { if (!active?.paused) ensureConnection(); });
         const start = async () => {
             try {
                 await storageReady();
@@ -452,7 +542,7 @@
                 let pointer; try { pointer = JSON.parse(win.PersistentStorage.getItem(activeKey(base)) || 'null'); } catch (_) { return; }
                 if (!pointer?.id || !stored(base, pointer.id)?.ownerToken) return;
                 await resumeActive();
-                if (!active?.paused) ensurePolling();
+                if (!active?.paused) ensureConnection();
             } catch (error) { pause(error); }
         };
         return Object.freeze({ start, saveLocalRevision, captureLocalRevision, endpoint: () => endpoint(win), client, artifactOf, rowOf: (artifact, memberIds) => rowOf(artifact, memberIds, win), invitation, mount, resumeActive,
@@ -473,7 +563,7 @@
                 if (!active || active.controller === 'owner') return false;
                 try { return active.designCids.has(win.DesignRecord.cidOf(proposal)); } catch (_) { return false; }
             },
-            blockedMessage: () => win.i18n?.t?.('sharedPlan.agentEditing') || 'The agent is editing this shared plan. Take control before editing it here.' });
+            blockedMessage: () => t('agentControl', 'The agent has editing control. Take control before editing it here.') });
     }
     return { artifactOf, rowOf, currentMembers, browser };
 });

@@ -227,9 +227,16 @@
         (inputs.get(focus)?.[0]||inputs.values().next().value?.[0])?.focus();
         return dialog;
     }
-    async function syncSharedPlanOnMap(next, previous) {
+    async function syncSharedPlanOnMap(next, previous, { lastChange = null } = {}) {
+        const previousIds = new Map((previous.designs || []).map((member, index) => [member.cid, previous.memberIds?.[index]]));
+        const nextCids = new Set(next.designs.map(member => member.cid));
+        const retained = new Map([...previousIds].filter(([cid, id]) => nextCids.has(cid) && id != null));
+        const changed = next.designs.filter(member => !retained.has(member.cid));
+        const changedBeforeIds = [...previousIds].filter(([cid, id]) => !nextCids.has(cid) && id != null).map(([, id]) => String(id));
+        const motion = win.SharedPlanMotion?.prepare?.({ previous, next, change: lastChange, changedBeforeIds });
+        try {
         const draftRows = new Map();
-        for (const member of next.designs) {
+        for (const member of changed) {
             const declared = next.designSources?.[member.cid];
             const sourceId = (typeof declared === 'string' ? declared : declared?.sourceId) || win.DesignSync.parcelSourceIdOf(member.content.city);
             const parcelSourceId = sourceId === 'hr-cadastre' ? 'oss-wfs' : sourceId;
@@ -239,13 +246,18 @@
             if (!response.ok) throw new Error(binding.error || binding.code || 'The shared plan ground is unavailable.');
             draftRows.set(member.cid, { cid: member.cid, content: member.content, city: member.content.city, parcelSourceId, binding: binding.binding });
         }
-        const opened = await win.handleSharedDesignRoute(next.content.designCids, { draftRows, enter3D: false, openDetails: false, summary: false,
-            replaceAppliedIds: previous.memberIds || [], sharedPlanSessionRemote: true });
+        let opened = { localIds: new Map(), failed: [], blocked: false };
+        if (changed.length || changedBeforeIds.length) {
+            opened = await win.handleSharedDesignRoute(changed.map(member => member.cid), { draftRows, enter3D: false, openDetails: false, summary: false, frame: false,
+                replaceAppliedIds: changedBeforeIds, retainedProposalIds: [...retained.values()].map(String), sharedPlanSessionRemote: true });
+        }
         if (opened.failed.length || opened.blocked) throw new Error('The accepted shared revision could not be shown on this map.');
-        next.memberIds = next.content.designCids.map(cid => opened.localIds.get(cid) || `shared-plan-${cid}`);
+        next.memberIds = next.content.designCids.map(cid => retained.get(cid) || opened.localIds.get(cid) || `shared-plan-${cid}`);
         win.PlanWorkspace.save(next);
         await win.ClickStack.showPlan(next, { designs: win.PlanComposition.localRecords(next, { apiBase: win.DesignSync.apiBase() }), draft: true, frame: false });
+        await motion?.finish?.({ next, memberIds: next.memberIds });
         win.showEphemeralMessage?.(win.i18n.t('sharedPlan.updated'), 5000, 'success');
+        } catch (error) { motion?.cancel?.(); throw error; }
     }
     async function details(plan, { collaborationOnly = false } = {}) {
         const row=await win.PlanWorkspace.resolve(plan);const body=node('div','plan-details');

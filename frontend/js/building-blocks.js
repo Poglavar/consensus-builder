@@ -1264,12 +1264,14 @@ function drawProposedBuildingsForProposal(proposalId, { announce = true } = {}) 
             const plan = window.UrbanRuleVariation.plannedDrawPlan(building, state.proposedForm, { turf }, state.proposedVariation);
             for (const [feature, envelope] of [[plan.massing, plan.massingStyle === 'envelope'], [plan.buildOut, false]]) {
                 if (!feature) continue;
-                L.geoJSON(feature, {
+                const visual = L.geoJSON(feature, {
                     style: { ...PROPOSED_BUILDING_STYLE, color: window.PlanningViews.color('proposed'),
                         fillColor: window.PlanningViews.color('proposed'),
                         fillOpacity: envelope ? 0.12 : 1 },
                     interactive: false, pane: 'proposedBuildingsPane', renderer: proposedBuildingCanvas()
-                }).addTo(group);
+                });
+                visual.sharedPlanBuildingIndex = Number(building.properties.buildingIndex);
+                visual.addTo(group);
             }
         } catch (error) {
             console.error(`Error rendering proposed building at index ${index}:`, error, building);
@@ -1296,6 +1298,19 @@ function drawProposedBuildingsForProposal(proposalId, { announce = true } = {}) 
 function updateProposedBuildingsLayer({ announce = true } = {}) {
     if (proposedBuildingsRefreshHeld) {
         proposedBuildingsRefreshMissed = true;
+        return;
+    }
+    const retained = window.SharedPlanMotionBuildings?.retainedIds;
+    if (retained && proposedBuildingLayer) {
+        const ids = new Set();
+        appliedIneligibleBlockParts().forEach(part => ids.add(proposedBuildingKey(part?.properties?.proposalId)));
+        ensureProposedBuildingsState().forEach(feature => ids.add(proposedBuildingKey(feature?.properties?.proposalId)));
+        for (const [id, group] of proposedBuildingSublayers) {
+            if (retained.has(id) && ids.has(id)) continue;
+            proposedBuildingLayer.removeLayer(group); proposedBuildingSublayers.delete(id);
+        }
+        ids.forEach(id => { if (!proposedBuildingSublayers.has(id)) drawProposedBuildingsForProposal(id, { announce: false }); });
+        if (announce) announceProposedBuildings();
         return;
     }
     if (proposedBuildingLayer) {
@@ -1327,6 +1342,33 @@ function updateProposedBuildingsLayer({ announce = true } = {}) {
 
 if (typeof window !== 'undefined') {
     window.drawProposedBuildingsForProposal = drawProposedBuildingsForProposal;
+    window.SharedPlanMotionBuildings = {
+        retainedIds: null,
+        begin(ids) {
+            const retained = new Set(ids);
+            this.retainedIds = retained;
+            return () => { if (this.retainedIds === retained) this.retainedIds = null; };
+        },
+        hide(ids, changes, idByCid, row) {
+            const saved = [];
+            for (const id of ids) {
+                const member = row?.designs?.find(value => idByCid.get(value.cid) === String(id));
+                if (!member) continue;
+                const indices = new Set(changes.filter(item => item.type === 'building' && item.after?.cid === member.cid).map(item => item.after.index));
+                if (!indices.size) continue;
+                const visit = layer => {
+                    if (layer.eachLayer) layer.eachLayer(visit);
+                    else if (layer.setStyle && layer.options) {
+                        saved.push([layer, layer.options.opacity, layer.options.fillOpacity]);
+                        layer.setStyle({ opacity: 0, fillOpacity: 0 });
+                    }
+                };
+                const group = proposedBuildingSublayers.get(String(id));
+                if (group) group.eachLayer(layer => { if (indices.has(layer.sharedPlanBuildingIndex)) visit(layer); });
+            }
+            return () => saved.forEach(([layer, opacity, fillOpacity]) => layer.setStyle({ opacity, fillOpacity }));
+        }
+    };
 }
 
 // THE block outline: a setback ring around the block, simplified, clipped back inside it, then

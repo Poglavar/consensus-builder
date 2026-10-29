@@ -577,10 +577,11 @@ function designLink({ designs = [], local = {}, refused = {}, failing = {}, held
             const blockers = (candidates || []).filter(record => record.applied && !members.has(record.proposalId) && (held[id] || []).includes(record.proposalId));
             return { ok: !blockers.length, blockers };
         }),
-        applyProposalPlan: vi.fn(async ids => {
+        applyProposalPlan: vi.fn(async (ids, options = {}) => {
             if (planFailure) { ProposalManager._lastFailedPlanApplySummary = { failed: Array.isArray(planFailure) ? planFailure : [{ reason: planFailure }] }; return false; }
-            const conflicts = new Set(ids.flatMap(id => held[id] || []).filter(id => !ids.includes(id)));
-            conflicts.forEach(id => { records.get(id).applied = false; });
+            const conflicts = new Set(ids.flatMap(id => held[id] || []).filter(id => !ids.includes(id) && !(options.retainedProposalIds || []).includes(id)));
+            (options.releaseProposalIds || []).forEach(id => conflicts.add(id));
+            conflicts.forEach(id => { if (records.has(id)) records.get(id).applied = false; });
             ids.forEach(id => { records.get(id).applied = true; });
             return { ok: true, releasedIds: [...conflicts] };
         }),
@@ -717,6 +718,17 @@ describe('opening a /designs link', () => {
         expect(link.map.setView).not.toHaveBeenCalled();
     });
 
+    it('applies remote additions and removals atomically without treating retained members as rivals', async () => {
+        const retained = { proposalId: 'retained', title: 'Retained', goal: 'park', applied: true };
+        const link = designLink({ designs: [park], local: { retained }, held: { [`design-${park.cid}`]: ['retained'] } });
+        const added = await link.open([park.cid], { sharedPlanSessionRemote: true, retainedProposalIds: ['retained'] });
+        expect(added.blocked).toBe(false);
+        expect(link.ProposalManager.applyProposalPlan).toHaveBeenCalledWith([`design-${park.cid}`], expect.objectContaining({ sharedPlanSessionRemote: true, retainedProposalIds: ['retained'] }));
+        expect(link.records.get('retained').applied).toBe(true);
+        link.ProposalManager.applyProposalPlan.mockClear();
+        await link.open([], { sharedPlanSessionRemote: true, retainedProposalIds: ['retained'], replaceAppliedIds: ['removed'] });
+        expect(link.ProposalManager.applyProposalPlan).toHaveBeenCalledWith([], expect.objectContaining({ releaseProposalIds: ['removed'], retainedProposalIds: ['retained'] }));
+    });
     it('refuses a remote revision that would replace unrelated local work', async () => {
         const link = conflictingLink('replace');
         const result = await link.open([link.tower.cid, park.cid], { sharedPlanSessionRemote: true, replaceAppliedIds: ['another-member'] });

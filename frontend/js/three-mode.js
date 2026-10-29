@@ -2723,7 +2723,7 @@
                 // replaces the default bench for all of them.
                 const models = deco?.models || null;
                 if (deco && Array.isArray(deco.benches)) {
-                    placeFurniture3D('bench', deco.benches, models, decoTarget, isCurrentModel, spots => addProceduralBenches3D(decoTarget, spots));
+                    placeFurniture3D('bench', deco.benches, models, decoTarget, isCurrentModel, spots => addProceduralBenches3D(decoTarget, spots), null, p.properties?.proposalId);
                 }
                 if (deco) placeFurniture3D('stall', deco.stalls, models, decoTarget, isCurrentModel, spots => addMarketStalls3D(decoTarget, spots));
                 placeLamps3D(deco?.lamps, models, decoTarget, isCurrentModel);
@@ -3287,7 +3287,7 @@
                 placeFurniture3D('tree', dec.trees, models, decoTarget, isCurrentModel, spots => addParkTrees3D(decoTarget, spots.map(spot => spot.item)));
                 // Pavement trees' pits draw under any tree, default or uploaded model.
                 addTreePits3D(decoTarget, dec.trees, sq);
-                placeFurniture3D('bench', dec.benches, models, decoTarget, isCurrentModel, spots => addProceduralBenches3D(decoTarget, spots));
+                placeFurniture3D('bench', dec.benches, models, decoTarget, isCurrentModel, spots => addProceduralBenches3D(decoTarget, spots), null, sq.properties?.proposalId);
                 placeFurniture3D('stall', dec.stalls, models, decoTarget, isCurrentModel, spots => addMarketStalls3D(decoTarget, spots));
                 placeFurniture3D('statue', dec.statues, models, decoTarget, isCurrentModel, spots => spots.forEach(spot => {
                     try { addStatue3D(decoTarget, spot.lng, spot.lat); } catch (_) { }
@@ -3370,13 +3370,13 @@
 
     // Where each item stands: { lng, lat, bearing, item }; items without a valid point are skipped.
     function furnitureSpots(kind, items) {
-        return (Array.isArray(items) ? items : []).map(item => {
+        return (Array.isArray(items) ? items : []).map((item, index) => {
             const coord = kind === 'tree' ? parkPlanting().treeCoordinate(item)
                 : (Array.isArray(item?.coordinate) ? item.coordinate : item);
             if (!Array.isArray(coord) || coord.length < 2) return null;
             const lng = Number(coord[0]), lat = Number(coord[1]);
             if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
-            return { lng, lat, bearing: Number(item?.bearing) || 0, item };
+            return { lng, lat, bearing: Number(item?.bearing) || 0, item, index };
         }).filter(Boolean);
     }
 
@@ -3431,7 +3431,7 @@
 
     // Draws every spot of one kind with the model at modelUrl. Resolves with the model's layout, or
     // null when the structure was rebuilt meanwhile; rejects when the model cannot be drawn.
-    function placeFurnitureInstances(kind, spots, modelUrl, decoTarget, isCurrent) {
+    function placeFurnitureInstances(kind, spots, modelUrl, decoTarget, isCurrent, proposalId) {
         const url = (typeof resolveBackendAssetUrl === 'function' && resolveBackendAssetUrl(modelUrl)) || modelUrl;
         return loadGltfScene(url).then(source => {
             if (!isActive || !isCurrent()) return null;
@@ -3448,6 +3448,7 @@
                 const mesh = ownInstances(new THREE.InstancedMesh(node.geometry, material, placements.length));
                 placements.forEach((placement, index) => mesh.setMatrixAt(index, matrix.multiplyMatrices(placement, local)));
                 mesh.instanceMatrix.needsUpdate = true;
+                if (kind === 'bench') { mesh.userData.sharedPlanBench = { proposalId: String(proposalId), indices: spots.map(spot => spot.index), coordinates: spots.map(spot => [spot.lng, spot.lat]) }; }
                 markOwnedMaterial(mesh, material);
                 group.add(mesh);
             });
@@ -3461,17 +3462,24 @@
     // One furniture kind of one structure: its uploaded model when it has one, otherwise (or when the
     // model fails to load) `procedural(spots)`, the default look. `onModel(spots, layout)` adds what goes
     // with a drawn model (a lamp's glow at the model's height).
-    function placeFurniture3D(kind, items, models, decoTarget, isCurrent, procedural, onModel = null) {
+    function placeFurniture3D(kind, items, models, decoTarget, isCurrent, procedural, onModel = null, proposalId = null) {
         const spots = furnitureSpots(kind, items);
         if (!spots.length) return;
         const url = typeof models?.[kind]?.url === 'string' ? models[kind].url : '';
-        if (!url) { procedural(spots); return; }
-        placeFurnitureInstances(kind, spots, url, decoTarget, isCurrent).then(layout => {
+        const drawProcedural = () => {
+            const count = decoTarget.children.length;
+            procedural(spots);
+            if (kind === 'bench') decoTarget.children.slice(count).forEach(node => {
+                if (node.isInstancedMesh) node.userData.sharedPlanBench = { proposalId: String(proposalId), indices: spots.map(spot => spot.index), coordinates: spots.map(spot => [spot.lng, spot.lat]) };
+            });
+        };
+        if (!url) { drawProcedural(); return; }
+        placeFurnitureInstances(kind, spots, url, decoTarget, isCurrent, proposalId).then(layout => {
             if (layout && onModel) onModel(spots, layout);
         }, error => {
             if (!isActive || !isCurrent()) return;
             console.warn('[3D] furniture model failed to load; drawing the default', kind, url, error);
-            procedural(spots);
+            drawProcedural();
             invalidateThreeView();
         });
     }
@@ -7489,9 +7497,9 @@
         }
         if (corridors) timed('corridors', rebuildCorridors3D);
         if (corridors && diff.plannedChanged) timed('trees', rebuildTreesOnly);
-        const structures = [['parks', parkGroundGroup, parkGroup, () => buildParks3D(parkGroundGroup, parkGroup)],
-            ['squares', squareGroundGroup, squareGroup, () => buildSquares3D(squareGroundGroup, squareGroup)],
-            ['lakes', lakeGroundGroup, lakeGroup, () => buildLakes3D(lakeGroundGroup, lakeGroup)]];
+        const structures = [['parks', parkGroundGroup, parkGroup, () => record3DStructureBuild('parks', () => buildParks3D(parkGroundGroup, parkGroup))],
+            ['squares', squareGroundGroup, squareGroup, () => record3DStructureBuild('squares', () => buildSquares3D(squareGroundGroup, squareGroup))],
+            ['lakes', lakeGroundGroup, lakeGroup, () => record3DStructureBuild('lakes', () => buildLakes3D(lakeGroundGroup, lakeGroup))]];
         structures.forEach(([key, ground, deco, build]) => {
             if (!ofKind(window[key])) return;
             timed(key, () => {
@@ -7805,6 +7813,10 @@
                 if (node.isMesh && node.material) modelMeshes.push(node);
             });
             modelMeshes.forEach((node) => {
+                if (isProposedBuilding && feat.properties?.proposalId) {
+                    node.userData.proposalId = String(feat.properties.proposalId);
+                    node.userData.sharedPlanBuildingIndex = feat.properties.buildingIndex;
+                }
                 if (options.cloneGeometry && node.geometry?.clone) {
                     node.geometry = markOwnedGeometry(node, node.geometry.clone());
                 }
@@ -7960,7 +7972,11 @@
     // `ruleDetails` (ruleRoofs.planFor) adds a rule's pitched roof, attic and balconies.
     function createBuildingSlices(buildingFeature, height, material, targetGroup, facadeSource = null, ruleDetails = null) {
         if (!buildingFeature?.geometry) return;
-        if (ruleDetails) ruleRoofs.detailMeshes(ruleDetails, material).forEach(mesh => targetGroup.add(mesh));
+        if (ruleDetails) ruleRoofs.detailMeshes(ruleDetails, material).forEach(mesh => {
+            mesh.userData.proposalId = String(buildingFeature.properties?.proposalId || '');
+            mesh.userData.sharedPlanBuildingIndex = facadeSource?.properties?.buildingIndex ?? buildingFeature.properties?.buildingIndex;
+            targetGroup.add(mesh);
+        });
         const hasFacade = !!facadeSource;
         const city = window.CityConfigManager?.getCurrentCityId?.() || '';
         const ruleFloorHeight = buildingFeature.properties?.urbanRule?.floorHeightM;
@@ -7973,6 +7989,7 @@
             // Preserve the authored identity across parcel slices.
             for (const mesh of meshes) {
                 if (buildingFeature.properties?.proposalId) mesh.userData.proposalId = String(buildingFeature.properties.proposalId);
+                mesh.userData.sharedPlanBuildingIndex = facadeSource?.properties?.buildingIndex ?? buildingFeature.properties?.buildingIndex;
             }
             if (!hasFacade || !meshes.length) return meshes;
             // Each building keeps its style and glass tint; ownership seams vary only the shade.
@@ -9066,6 +9083,237 @@
         return true;
     }
 
+    // A shared-plan transition owns independent visual clones only. The proposal records and
+    // interaction meshes already contain the accepted final state throughout the animation.
+    let sharedPlanRetainedIds = null;
+    let sharedPlanStructureSignatures = null;
+    const rendered3DStructureSignatures = new Map();
+    function sharedPlanStructureSignature(kind) {
+        try {
+            const key = kind === 'stations' ? 'transitStations' : kind;
+            const roads = window.proposalStorage?.getAllProposals?.().filter(value => value.roadProposal) || [];
+            return JSON.stringify([window[key], roads, window.LiveParcelFabric?.revision?.(), [...buildoutSites.entries()]]);
+        } catch (_) { return null; }
+    }
+    function record3DStructureBuild(kind, build) {
+        build();
+        rendered3DStructureSignatures.set(kind, sharedPlanStructureSignature(kind));
+    }
+    function sharedPlanStructureUnchanged(kind) {
+        const signature = sharedPlanStructureSignature(kind);
+        return signature != null && sharedPlanStructureSignatures?.get(kind) === signature;
+    }
+    function sharedPlanMeshes(group, ids) {
+        const found = [];
+        if (!group) return found;
+        group.updateMatrixWorld(true);
+        group.traverse(node => {
+            if (!node.isMesh || node.isInstancedMesh || !ids.has(String(node.userData?.proposalId || ''))) return;
+            found.push(node);
+        });
+        return found;
+    }
+    function sharedPlanCloneMaterial(material) {
+        const copy = material.clone();
+        copy.onBeforeCompile = material.onBeforeCompile;
+        copy.customProgramCacheKey = material.customProgramCacheKey;
+        copy.transparent = true;
+        // Source textures can be retired while the overlay is visible.
+        for (const key of Object.keys(copy)) if (copy[key]?.isTexture) copy[key] = copy[key].clone();
+        return copy;
+    }
+    function sharedPlanClone(node) {
+        const copy = node.clone(false);
+        copy.geometry = node.geometry.clone();
+        copy.material = Array.isArray(node.material) ? node.material.map(sharedPlanCloneMaterial) : sharedPlanCloneMaterial(node.material);
+        copy.matrixAutoUpdate = false;
+        copy.matrix.copy(node.matrixWorld);
+        copy.userData = {};
+        return copy;
+    }
+    function sharedPlanOpacity(node, alpha) {
+        (Array.isArray(node.material) ? node.material : [node.material]).forEach(material => {
+            material.opacity = (material.userData.sharedPlanOpacity ??= material.opacity) * alpha;
+        });
+    }
+    function sharedPlanDispose(node) {
+        node.geometry?.dispose();
+        (Array.isArray(node.material) ? node.material : [node.material]).forEach(material => {
+            if (!material) return;
+            for (const key of Object.keys(material)) if (material[key]?.isTexture) material[key].dispose();
+            material.dispose();
+        });
+    }
+    function sharedPlanBenchInstances(ids) {
+        const result = [];
+        for (const group of [parkGroup, squareGroup]) {
+            if (!group) continue;
+            group.updateMatrixWorld(true);
+            group.traverse(node => {
+                const meta = node.userData?.sharedPlanBench;
+                if (!node.isInstancedMesh || !meta || !ids.has(meta.proposalId)) return;
+                meta.indices.forEach((index, slot) => {
+                    const local = new THREE.Matrix4(); node.getMatrixAt(slot, local);
+                    result.push({ id: meta.proposalId, index, coordinate: meta.coordinates[slot], node, slot, local, matrix: new THREE.Matrix4().multiplyMatrices(node.matrixWorld, local) });
+                });
+            });
+        }
+        return result;
+    }
+    function sharedPlanInstanceClone(instance) {
+        const mesh = new THREE.Mesh(instance.node.geometry.clone(), Array.isArray(instance.node.material)
+            ? instance.node.material.map(sharedPlanCloneMaterial) : sharedPlanCloneMaterial(instance.node.material));
+        mesh.matrixAutoUpdate = false; mesh.matrix.copy(instance.matrix); return mesh;
+    }
+    function sharedPlanReconcile(previous, next) {
+        if (!sharedPlanRetainedIds?.size || !previous || !next) return;
+        // Only direct, tagged children can be moved without changing a mixed owner's hierarchy.
+        const reusable = previous.children.filter(child => sharedPlanRetainedIds.has(String(child.userData?.proposalId || '')));
+        const ids = new Set(reusable.map(child => String(child.userData.proposalId)));
+        const discarded = new THREE.Group();
+        next.children.slice().forEach(child => {
+            if (ids.has(String(child.userData?.proposalId || ''))) { next.remove(child); discarded.add(child); }
+        });
+        reusable.forEach(child => { previous.remove(child); next.add(child); });
+        if (discarded.children.length) retireGroupAfterFrame(discarded);
+    }
+    window.SharedPlanMotion3D = {
+        isActive: () => isActive,
+        capture({ previous, next, changes, beforeIds, retainedIds }) {
+            if (!isActive || !scene) return null;
+            sharedPlanRetainedIds = new Set(retainedIds);
+            sharedPlanStructureSignatures = new Map(rendered3DStructureSignatures);
+            const source = sharedPlanMeshes(proposedBuildingsGroup, new Set(beforeIds));
+            const copies = source.map(node => ({ id: String(node.userData.proposalId), index: node.userData.sharedPlanBuildingIndex, mesh: sharedPlanClone(node), initial: node.matrixWorld.clone() }));
+            const benchCopies = sharedPlanBenchInstances(new Set(beforeIds)).map(instance => ({ ...instance, mesh: sharedPlanInstanceClone(instance), initial: instance.matrix.clone() }));
+            const newCopies = [];
+            const hiddenInstances = [];
+
+            let layer = null, hidden = [], closed = false;
+            const idByCid = (row, ids) => new Map((row?.designs || []).map((member, i) => [member.cid, String(ids?.[i] ?? row.memberIds?.[i] ?? '')]));
+            const oldIds = idByCid(previous, previous?.memberIds);
+            let animations = [];
+            const matchesBench = (instance, row, ref, ids) => {
+                const member = row?.designs?.find(value => value.cid === ref?.cid);
+                const benches = member?.content?.structureProposal?.decorationDesign?.benches || [];
+                const coord = benches[ref?.index]?.coordinate || benches[ref?.index]?.coord;
+                return instance.id === ids.get(ref?.cid) && coord && JSON.stringify(instance.coordinate) === JSON.stringify(coord)
+                    && benches.filter(value => JSON.stringify(value?.coordinate || value?.coord) === JSON.stringify(coord)).length === 1;
+            };
+            const cancel = () => {
+                if (closed) return;
+                closed = true; sharedPlanRetainedIds = null; sharedPlanStructureSignatures = null;
+                hidden.forEach(([node, visible]) => { node.visible = visible; });
+                hiddenInstances.forEach(instance => { instance.node.setMatrixAt(instance.slot, instance.local); instance.node.instanceMatrix.needsUpdate = true; });
+                if (layer?.parent) layer.parent.remove(layer);
+                copies.forEach(({ mesh }) => sharedPlanDispose(mesh));
+                benchCopies.forEach(({ mesh }) => sharedPlanDispose(mesh));
+                newCopies.forEach(({ mesh }) => sharedPlanDispose(mesh));
+                invalidateThreeView();
+            };
+            return {
+                async finish({ next: finalRow, memberIds, afterIds }) {
+                    await rebuild3DBuildingsOnly({ family: 'planned' });
+                    if (closed || !isActive || !scene) return;
+                    const newIds = idByCid(finalRow, memberIds);
+                    const safe = new Set(changes.filter(item => item.type === 'building' && item.after).map(item => newIds.get(item.after.cid)));
+                    const matchesBuilding = (node, row, ref, ids) => {
+                        const member = row?.designs?.find(value => value.cid === ref?.cid);
+                        if (!member || String(node.userData?.proposalId || '') !== ids.get(ref.cid)) return false;
+                        const index = node.userData.sharedPlanBuildingIndex;
+                        return Number.isInteger(index) ? index === ref.index : member.content?.geometry?.buildings?.length === 1 && ref.index === 0;
+                    };
+                    const finalMeshes = sharedPlanMeshes(proposedBuildingsGroup, safe).filter(node =>
+                        changes.some(item => item.type === 'building' && item.after && matchesBuilding(node, finalRow, item.after, newIds)));
+                    finalMeshes.forEach(node => { hidden.push([node, node.visible]); node.visible = false; });
+                    layer = new THREE.Group(); layer.name = 'SharedPlanMotion'; scene.add(layer);
+                    // Fade the actual new shape in through an independent clone, while the committed mesh stays hidden.
+                    for (const node of finalMeshes) {
+                        const item = changes.find(value => value.type === 'building' && value.after && matchesBuilding(node, finalRow, value.after, newIds));
+                        if (!item) continue;
+                        const hasOldVisual = item.before && copies.some(copy => matchesBuilding(
+                            { userData: { proposalId: copy.id, sharedPlanBuildingIndex: copy.index } }, previous, item.before, oldIds));
+                        // A model can still be loading at capture time; in that case fade in the final
+                        // mesh instead of hiding it while an unavailable old mesh would have moved.
+                        if (['move', 'rotate'].includes(item.kind) && hasOldVisual) continue;
+                        const mesh = sharedPlanClone(node); sharedPlanOpacity(mesh, 0); layer.add(mesh); newCopies.push({ mesh, item });
+                    }
+                    const currentBenches = sharedPlanBenchInstances(new Set(afterIds.map(String)));
+                    for (const item of changes.filter(value => value.type === 'bench' && value.after)) {
+                        const targets = currentBenches.filter(value => matchesBench(value, finalRow, item.after, newIds));
+                        targets.forEach(instance => {
+                            hiddenInstances.push(instance);
+                            instance.node.setMatrixAt(instance.slot, new THREE.Matrix4().makeScale(0, 0, 0));
+                            instance.node.instanceMatrix.needsUpdate = true;
+                        });
+                        const sources = benchCopies.filter(value => matchesBench(value, previous, item.before, oldIds));
+                        if (['move', 'rotate'].includes(item.kind) && sources.length === targets.length && sources.length) {
+                            sources.forEach((source, i) => { layer.add(source.mesh); animations.push({ ...source, item, endMatrix: targets[i].matrix }); });
+                        } else {
+                            sources.forEach(source => { layer.add(source.mesh); animations.push({ ...source, item }); });
+                            targets.forEach(target => { const mesh = sharedPlanInstanceClone(target); sharedPlanOpacity(mesh, 0); layer.add(mesh); newCopies.push({ mesh, item }); });
+                        }
+                    }
+                    for (const item of changes.filter(value => value.type === 'bench' && value.before && !value.after)) {
+                        benchCopies.filter(value => matchesBench(value, previous, item.before, oldIds))
+                            .forEach(source => { layer.add(source.mesh); animations.push({ ...source, item }); });
+                    }
+
+                    for (const copy of copies) {
+                        const item = changes.find(value => value.type === 'building' && value.before && matchesBuilding({ userData: { proposalId: copy.id, sharedPlanBuildingIndex: copy.index } }, previous, value.before, oldIds));
+                        if (!item) continue;
+                        const before = previous.designs.find(value => value.cid === item.before?.cid);
+                        const after = finalRow.designs.find(value => value.cid === item.after?.cid);
+                        const oldFeature = before?.content?.geometry?.buildings?.[item.before?.index];
+                        const newFeature = after?.content?.geometry?.buildings?.[item.after?.index];
+                        const moving = ['move', 'rotate'].includes(item.kind);
+                        let start = null, end = null;
+                        if (moving && oldFeature && newFeature) {
+                            const avg = feature => {
+                                const points = [];
+                                (function collect(x) {
+                                    if (Array.isArray(x) && Number.isFinite(x[0]) && Number.isFinite(x[1])) points.push(x);
+                                    else if (Array.isArray(x)) {
+                                        const closed = x.length > 1 && Array.isArray(x[0]) && Number.isFinite(x[0][0])
+                                            && x[0][0] === x[x.length - 1]?.[0] && x[0][1] === x[x.length - 1]?.[1];
+                                        (closed ? x.slice(0, -1) : x).forEach(collect);
+                                    }
+                                })(feature.geometry.coordinates);
+                                const coord = points.reduce((sum, point) => [sum[0] + point[0] / points.length, sum[1] + point[1] / points.length], [0, 0]);
+                                return latLngToXY(coord[1], coord[0]);
+                            };
+                            start = avg(oldFeature); end = avg(newFeature);
+                        }
+                        layer.add(copy.mesh); animations.push({ ...copy, item, start, end });
+                    }
+                    invalidateThreeView();
+                },
+                frame(t) {
+                    if (closed) return;
+                    for (const entry of animations) {
+                        if (entry.endMatrix) {
+                            const p0 = new THREE.Vector3(), p1 = new THREE.Vector3(), s0 = new THREE.Vector3(), s1 = new THREE.Vector3();
+                            const q0 = new THREE.Quaternion(), q1 = new THREE.Quaternion();
+                            entry.initial.decompose(p0, q0, s0); entry.endMatrix.decompose(p1, q1, s1);
+                            entry.mesh.matrix.compose(p0.lerp(p1, t), q0.slerp(q1, t), s0.lerp(s1, t));
+                        } else if (entry.start && entry.end) {
+                            const [x, y] = entry.start, [u, v] = entry.end;
+                            const matrix = new THREE.Matrix4().makeTranslation(x + (u-x)*t, y + (v-y)*t, 0)
+                                .multiply(new THREE.Matrix4().makeRotationZ(entry.item.degrees * Math.PI / 180 * t))
+                                .multiply(new THREE.Matrix4().makeTranslation(-x, -y, 0)).multiply(entry.initial);
+                            entry.mesh.matrix.copy(matrix);
+                        } else sharedPlanOpacity(entry.mesh, 1 - t);
+                    }
+                    newCopies.forEach(({ mesh }) => sharedPlanOpacity(mesh, t));
+                    // The final object appears as the old one fades. Moves reveal it at completion.
+                    if (t >= 1) hidden.forEach(([node, visible]) => { node.visible = visible; });
+                    invalidateThreeView();
+                },
+                cancel
+            };
+        }
+    };
+
     async function rebuild3DBuildingsOnly(options = {}) {
         if (!isActive || !buildingGroup) return;
         return buildingRefreshQueue.request(options.family || 'all');
@@ -9125,6 +9373,7 @@
                 sunLayer?.syncObjects(nextGroup);
             };
             replace(existingBuildingsGroup, nextExisting);
+            if (rebuildProposed) sharedPlanReconcile(proposedBuildingsGroup, nextProposed);
             replace(proposedBuildingsGroup, nextProposed);
             existingBuildingsGroup = nextExisting;
             proposedBuildingsGroup = nextProposed;
@@ -9375,11 +9624,11 @@
         try { buildCorridorStrips3D(corridorGroup); } catch (error) { console.warn('[three-mode] corridor strips failed', error); }
         try { buildCorridorEdgeFills3D(corridorGroup); } catch (error) { console.warn('[three-mode] corridor edge fills failed', error); }
         const structureBuilds = [
-            () => buildParks3D(parkGroundGroup, parkGroup),
-            () => buildSquares3D(squareGroundGroup, squareGroup),
-            () => buildLakes3D(lakeGroundGroup, lakeGroup),
+            () => record3DStructureBuild('parks', () => buildParks3D(parkGroundGroup, parkGroup)),
+            () => record3DStructureBuild('squares', () => buildSquares3D(squareGroundGroup, squareGroup)),
+            () => record3DStructureBuild('lakes', () => buildLakes3D(lakeGroundGroup, lakeGroup)),
             () => buildProposalGrounds3D(proposalGroundGroup),
-            () => buildTransitStations3D(stationGroup),
+            () => record3DStructureBuild('stations', () => buildTransitStations3D(stationGroup)),
             () => buildPlannedParcelLayout3D(parcelLayoutGroup)
         ];
         for (const buildStructure of structureBuilds) {
@@ -9899,6 +10148,7 @@
     }
 
     function disposeScene() {
+        rendered3DStructureSignatures.clear();
         releaseRetiredGroups();
         lampGlowObjects.clear();
         sky = null;   // its dome and stars go with the scene below
@@ -10330,6 +10580,8 @@
     // needed.
     function refreshStructures3D() {
         const eventName = arguments[0]?.type || null;
+        const family = ({ parksUpdated: 'parks', squaresUpdated: 'squares', lakesUpdated: 'lakes', stationsUpdated: 'stations' })[eventName];
+        const unchanged = family && sharedPlanStructureUnchanged(family);
         structureRefresh.refreshStructureScene3D({
             isActive: () => isActive,
             hasScene: () => !!scene,
@@ -10339,10 +10591,10 @@
             clearGroup: clearGroupChildren,
             rebuildParcelGround: rebuildParcelGround3D,
             layers: {
-                parks: { groups: [parkGroundGroup, parkGroup], build: () => buildParks3D(parkGroundGroup, parkGroup) },
-                squares: { groups: [squareGroundGroup, squareGroup], build: () => buildSquares3D(squareGroundGroup, squareGroup) },
-                lakes: { groups: [lakeGroundGroup, lakeGroup], rebuildParcelGround: true, build: () => buildLakes3D(lakeGroundGroup, lakeGroup) },
-                stations: { groups: [stationGroup], rebuildParcelGround: true, build: () => buildTransitStations3D(stationGroup) },
+                parks: { groups: unchanged && family === 'parks' ? [] : [parkGroundGroup, parkGroup], build: () => { if (!(unchanged && family === 'parks')) record3DStructureBuild('parks', () => buildParks3D(parkGroundGroup, parkGroup)); } },
+                squares: { groups: unchanged && family === 'squares' ? [] : [squareGroundGroup, squareGroup], build: () => { if (!(unchanged && family === 'squares')) record3DStructureBuild('squares', () => buildSquares3D(squareGroundGroup, squareGroup)); } },
+                lakes: { groups: unchanged && family === 'lakes' ? [] : [lakeGroundGroup, lakeGroup], rebuildParcelGround: true, build: () => { if (!(unchanged && family === 'lakes')) record3DStructureBuild('lakes', () => buildLakes3D(lakeGroundGroup, lakeGroup)); } },
+                stations: { groups: unchanged && family === 'stations' ? [] : [stationGroup], rebuildParcelGround: true, build: () => { if (!(unchanged && family === 'stations')) record3DStructureBuild('stations', () => buildTransitStations3D(stationGroup)); } },
                 buildingGrounds: { groups: [proposalGroundGroup], build: () => buildProposalGrounds3D(proposalGroundGroup) }
             },
             buildParcelLayouts: () => rebuildPlannedParcelLayout3D(),

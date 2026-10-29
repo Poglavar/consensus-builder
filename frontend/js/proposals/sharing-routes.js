@@ -783,6 +783,11 @@ function latestAuthoredDesignId(proposalIds) {
  *   blocked: boolean, localIds: Map<string, string> }>} local proposal ids; localIds maps CID → local id
  */
 async function handleSharedDesignRoute(cids, options = {}) {
+    const remote = options.sharedPlanSessionRemote === true;
+    const showLoad = (...args) => { if (!remote) showProposalLoadOverlay(...args); };
+    const hideLoad = () => { if (!remote) hideProposalLoadOverlay(); };
+    const updateLoad = (...args) => { if (!remote) updateProposalLoadOverlay(...args); };
+    const reportProgress = remote ? () => {} : reportSharedPlanProgress;
     const sharedView = window.WorldEntry?.arrivalMapView();
     if (sharedView) options = { ...options, frame: false, openDetails: false };
     const t = getProposalI18nHelper();
@@ -801,7 +806,7 @@ async function handleSharedDesignRoute(cids, options = {}) {
         log(`opening ${valid.length} design(s)`, valid);
         await waitForSharedLinkWelcome();
 
-        showProposalLoadOverlay(t('proposals.share.route.fetching', 'Fetching the shared designs…'), {
+        showLoad(t('proposals.share.route.fetching', 'Fetching the shared designs…'), {
             total: valid.length,
             title: t('proposals.share.route.title', 'Shared designs')
         });
@@ -817,7 +822,7 @@ async function handleSharedDesignRoute(cids, options = {}) {
         const foreignContext = [...fetched.rows.values()].map(row => cityManager.foreignGroundContextFor(row)).find(Boolean);
         if (foreignContext && await promptCityMismatchForProposal(foreignContext)) {
             log('the designs need another ground source; the link was dropped or reloads there');
-            hideProposalLoadOverlay();
+            hideLoad();
             result.blocked = true;
             return result;
         }
@@ -828,14 +833,14 @@ async function handleSharedDesignRoute(cids, options = {}) {
         // The boot replay finishes before the link looks at what is applied (it marks its whole set
         // unapplied while it runs). Its own records are in hand, so the map stays usable meanwhile.
         if (ProposalManager._initialReapplyDone !== true) {
-            hideProposalLoadOverlay();
+            hideLoad();
             replayTakeover = window.ReplayStatus.watchUserTakeover(document);
             await ProposalManager.reapplyAppliedProposals({
                 onProgress: window.ReplayStatus.statusReporter(tShare,
                     text => { if (typeof updateStatus === 'function') updateStatus(text, { transient: true }); })
             });
             replayTakeover.stop();
-            showProposalLoadOverlay(t('proposals.share.route.importing', 'Importing the shared designs…'), {
+            showLoad(t('proposals.share.route.importing', 'Importing the shared designs…'), {
                 total: fetched.rows.size,
                 title: t('proposals.share.route.title', 'Shared designs')
             });
@@ -866,7 +871,7 @@ async function handleSharedDesignRoute(cids, options = {}) {
                     console.warn(`[${new Date().toISOString()}] [handleSharedDesignRoute] ${cid} could not be imported`, error);
                     result.failed.push({ id: cid, label: row.title || cid, reason: (error && error.message) || String(error) });
                 }
-                updateProposalLoadOverlay({ progress: { done: result.localIds.size + result.failed.length, total: valid.length } });
+                updateLoad({ progress: { done: result.localIds.size + result.failed.length, total: valid.length } });
             }
         }, { _mapMutation: false });
 
@@ -876,7 +881,7 @@ async function handleSharedDesignRoute(cids, options = {}) {
         const unionCadastreIds = queue.flatMap(id => window.__claims.cadastreParcelIdsOf(proposalStorage.getProposal(id)));
         if (unionCadastreIds.length && !window.ParcelGroundFallback?.isWithoutParcels?.()) {
             try {
-                await groundService.ensureIds(unionCadastreIds, { onProgress: reportSharedPlanProgress });
+                await groundService.ensureIds(unionCadastreIds, { onProgress: reportProgress });
             } catch (error) {
                 // The cadastre did not answer: offer the ways on, as a parcel link does
                 // (parcels/route.js). Continue without parcels reloads this link, which then applies
@@ -895,13 +900,13 @@ async function handleSharedDesignRoute(cids, options = {}) {
             result.failed.push({ id: item.proposalId, label: labelOf(proposalStorage.getProposal(item.proposalId), item.proposalId), reason: item.verdict.message });
         });
         let toApply = queue.filter(id => !blockedIds.has(id));
-        const memberIds = new Set(result.localIds.values());
+        const memberIds = new Set([...result.localIds.values(), ...(options.retainedProposalIds || []).map(String)]);
         const preexistingApplied = proposalStorage.getAllProposals().filter(record =>
             isProposalCurrentlyApplied(record) && !memberIds.has(String(record.proposalId)));
         const conflicts = new Map(), conflictingIncoming = new Set();
         // Include linked members that already stand here: a previous partial open may have left
         // both road versions applied. The warning must name every rival the confirmed apply parks.
-        for (const id of memberIds) {
+        for (const id of result.localIds.values()) {
             const verdict = ProposalManager.validateSharedProposalGround(id, memberIds, preexistingApplied);
             for (const blocker of verdict.blockers || []) {
                 conflictingIncoming.add(id);
@@ -914,14 +919,14 @@ async function handleSharedDesignRoute(cids, options = {}) {
         if (options.sharedPlanSessionRemote === true && (result.failed.length
             || [...conflicts.keys()].some(id => !replaceIds.has(String(id))))) {
             result.blocked = true;
-            hideProposalLoadOverlay();
+            hideLoad();
             return result;
         }
         let replaceConflicts = replaceIds.size > 0 && [...conflicts.keys()].every(id => replaceIds.has(String(id)));
         if (conflicts.size && !result.failed.length && !replaceConflicts) {
             // Decide before applying any new member. The existing dialog primitive escapes the
             // titles as plain text and gives the same choice on phones and desktops.
-            hideProposalLoadOverlay();
+            hideLoad();
             const choice = await window.CbDialog.choice(
                 t('proposals.share.route.conflicts', 'This plan conflicts with designs already applied on this device. Unapply the existing conflicting designs and continue, or skip the conflicting designs in this plan. All designs will stay saved.')
                     + '\n\n' + [...conflicts.values()].map(record => record.title || String(record.proposalId)).join('\n'),
@@ -936,16 +941,16 @@ async function handleSharedDesignRoute(cids, options = {}) {
                 result.omitted.push(...toApply.filter(id => conflictingIncoming.has(id)));
                 toApply = toApply.filter(id => !conflictingIncoming.has(id));
             }
-            showProposalLoadOverlay(tShare('plan.materializing', 'Starting design preparation…'), {
+            showLoad(tShare('plan.materializing', 'Starting design preparation…'), {
                 total: toApply.length, title: t('proposals.share.route.title', 'Shared designs')
             });
         }
-        if (replaceConflicts) {
-            updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting design preparation…') });
+        if (replaceConflicts || options.sharedPlanSessionRemote === true) {
+            updateLoad({ status: tShare('plan.materializing', 'Starting design preparation…') });
             const members = [...result.localIds.values()];
             const chosen = await ProposalManager.applyProposalPlan(members, {
-                silent: true, onProgress: reportSharedPlanProgress,
-                ...(options.sharedPlanSessionRemote === true ? { sharedPlanSessionRemote: true } : {}),
+                silent: true, onProgress: reportProgress,
+                ...(options.sharedPlanSessionRemote === true ? { sharedPlanSessionRemote: true, retainedProposalIds: options.retainedProposalIds || [] } : {}),
                 ...(replaceIds.size ? { releaseProposalIds: [...replaceIds] } : {})
             });
             if (chosen && chosen.ok === true) {
@@ -969,7 +974,7 @@ async function handleSharedDesignRoute(cids, options = {}) {
             updateProposalLayer();
             updateShowProposalsButton();
         } else if (toApply.length) {
-            updateProposalLoadOverlay({ status: tShare('plan.materializing', 'Starting design preparation…') });
+            updateLoad({ status: tShare('plan.materializing', 'Starting design preparation…') });
             const scoped = await materializeQueuedSharedProposals(toApply, {
                 planMemberIds: new Set([...result.skipped, ...toApply]),
                 recordFetchProfile: { batchRequests: Math.ceil(valid.length / 1000), individualRequests: 0, batchSupported: true }
@@ -988,7 +993,7 @@ async function handleSharedDesignRoute(cids, options = {}) {
             updateProposalLayer();
             updateShowProposalsButton();
         }
-        hideProposalLoadOverlay();
+        hideLoad();
         log(`applied ${result.applied.length}, already applied ${result.skipped.length}, failed ${result.failed.length}`);
 
         const standing = [...result.applied, ...result.skipped];
@@ -1045,7 +1050,7 @@ async function handleSharedDesignRoute(cids, options = {}) {
         return result;
     } catch (error) {
         console.error(`[${new Date().toISOString()}] [handleSharedDesignRoute] failed`, error);
-        hideProposalLoadOverlay();
+        hideLoad();
         if (replayTakeover) replayTakeover.stop();
         showEphemeralMessage((error && error.message) || t('proposals.share.route.failed', 'The shared designs could not be opened.'), 8000, 'error');
         result.failed.push({ id: null, label: '', reason: (error && error.message) || 'Unexpected error' });

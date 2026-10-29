@@ -175,8 +175,13 @@ load. Links carry no secret and are safe to forward.
   `MCP_DRAFT_DIRECTORY/shared-plans/` (or the explicit shared-plan directory). Back up that child
   directory with the draft store. Sessions do not expire; the service refuses new or enlarged
   state once its 1,024-session or 128 MiB bound is reached, rather than evicting an active plan.
-  One MCP process owns the directory at a time.
-- nginx `location = /mcp`, `= /mcp/`, `^~ /mcp/previews/` and `= /mcp/server-card` in
+  One MCP process owns the directory at a time. The private session API exposes authenticated
+  `GET /mcp/plan-sessions/:id/events` as server-sent state notifications and
+  `POST /mcp/plan-sessions/:id/undo` with `expectedVersion`. Capabilities travel in the Bearer
+  authorization header. Event streams are limited to 128 globally and four per session, send
+  heartbeat comments every 15 seconds, and close on revocation or shutdown. Session state includes
+  the last content-change receipt and whether the current revision can undo an agent change.
+- nginx `location = /mcp`, `= /mcp/`, `^~ /mcp/plan-sessions`, `^~ /mcp/previews/` and `= /mcp/server-card` in
   `backend/nginx/urbangametheory.xyz.nginx.conf`, ahead of the app fallback. Directory ownership
   proofs are in `backend/nginx/ugt-mcp-directory-verification.conf`.
 

@@ -12,6 +12,7 @@ function browser({ search = '', replies = [], stored = {}, plans = [] } = {}) {
         resolveFrontendBaseUrl: () => 'https://urbangametheory.xyz',
         BrowserWorkspace: { id: 'workspace-test' },
         PersistentStorage: { getItem: key => values.get(key) || null, setItem: (key, value) => values.set(key, value), removeItem: key => values.delete(key), ensureReady: callback => callback() },
+        SharedPlanEvents: { connect: vi.fn(() => ({ close: vi.fn() })) },
         setTimeout: vi.fn(), setInterval: vi.fn(() => 1), clearInterval: vi.fn(), addEventListener: vi.fn(), dispatchEvent: vi.fn(),
         CustomEvent: class { constructor(type, init = {}) { this.type = type; this.detail = init.detail; } },
         Cid: { cidOfObject: value => value.title === 'Park' ? 'plan-cid' : 'changed-plan' },
@@ -218,6 +219,126 @@ describe('shared plan browser client', () => {
         expect(JSON.parse(fixture.values.get(`${prefix}active`)).cid).toBe('changed-plan');
     });
 
+    it('shows real activity without polling and reconnects after page lifecycle changes', async () => {
+        const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
+        const server = { id: 'session-a', version: 2, controller: 'agent', artifact: { plan: row.content, designs: row.designs } };
+        const f = browser({ plans: [row], replies: [server], stored: {
+            [`${prefix}active`]: { id: server.id, cid: row.cid, memberIds: row.memberIds },
+            [`${prefix}plan:${row.cid}`]: server.id,
+            [`${prefix}${server.id}`]: { ownerToken: 'owner-secret', controller: 'agent', version: 2 }
+        } });
+        const doc = makeDocument(), host = doc.createElement('div'); doc.body.append(host);
+        const mounted = f.api.mount({ row, host }); await mounted.ready;
+        const connection = f.win.SharedPlanEvents.connect.mock.calls[0][0];
+        const state = { id: server.id, version: 2, cid: row.cid, controller: 'agent', activity: { agentEditing: true } };
+        f.win.document = doc;
+        connection.onStatus('reconnecting');
+        expect(doc.querySelector('.shared-plan-live').textContent).toContain('Reconnecting');
+        connection.onStatus('connected');
+        expect(doc.querySelector('.shared-plan-live').textContent).toBe('');
+        connection.onState(state); expect(host.textContent).toContain('The agent is working on a change');
+        connection.onState({ ...state, activity: { agentEditing: false } });
+        expect(host.textContent).toContain('Waiting for its next change');
+        expect(f.win.fetch).toHaveBeenCalledTimes(1); expect(f.win.setInterval).not.toHaveBeenCalled();
+        const lifecycle = Object.fromEntries(f.win.addEventListener.mock.calls);
+        lifecycle.pagehide(); expect(f.win.SharedPlanEvents.connect.mock.results[0].value.close).toHaveBeenCalledOnce();
+        lifecycle.pageshow(); expect(f.win.SharedPlanEvents.connect).toHaveBeenCalledTimes(2);
+        mounted.dispose();
+    });
+    it('coalesces notifications during a map swap and ignores a duplicate accepted revision', async () => {
+        const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
+        const server = (version, title) => ({ id: 'session-a', version, controller: 'agent', artifact: { plan: { ...row.content, title }, designs: row.designs } });
+        const f = browser({ plans: [row], replies: [server(1, 'Park'), server(2, 'Second'), server(4, 'Fourth')], stored: {
+            [`${prefix}active`]: { id: 'session-a', cid: row.cid, memberIds: row.memberIds },
+            [`${prefix}session-a`]: { ownerToken: 'owner-secret', controller: 'agent', version: 1 }
+        } });
+        f.win.Cid.cidOfObject = value => value.title === 'Park' ? row.cid : value.title;
+        let release; f.win.PlanDialog.syncSharedPlanOnMap.mockImplementationOnce(next => new Promise(resolve => { release = () => { f.win.PlanWorkspace.save(next); resolve(); }; }))
+            .mockImplementation(async next => { f.win.PlanWorkspace.save(next); });
+        await f.api.start(); const connection = f.win.SharedPlanEvents.connect.mock.calls[0][0];
+        const state = (version, cid) => ({ id: 'session-a', version, cid, controller: 'agent', activity: { agentEditing: false } });
+        connection.onState(state(2, 'Second')); await vi.waitFor(() => expect(release).toBeTypeOf('function'));
+        connection.onState(state(3, 'Third')); connection.onState(state(4, 'Fourth')); release();
+        await vi.waitFor(() => expect(JSON.parse(f.values.get(`${prefix}active`)).cid).toBe('Fourth'));
+        expect(f.win.PlanDialog.syncSharedPlanOnMap).toHaveBeenCalledTimes(2);
+        expect(f.win.fetch).toHaveBeenCalledTimes(3);
+        connection.onState(state(4, 'Fourth')); await Promise.resolve();
+        expect(f.win.fetch).toHaveBeenCalledTimes(3); expect(f.win.PlanDialog.syncSharedPlanOnMap).toHaveBeenCalledTimes(2);
+    });
+    it('applies the unseen agent revision after the owner takes control', async () => {
+        const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
+        const initial = { id: 'session-a', version: 1, controller: 'agent', artifact: { plan: row.content, designs: row.designs } };
+        const taken = { ...initial, version: 3, controller: 'owner', artifact: { plan: { ...row.content, title: 'Changed' }, designs: row.designs } };
+        const f = browser({ plans: [row], replies: [initial, taken, taken], stored: {
+            [`${prefix}active`]: { id: initial.id, cid: row.cid, memberIds: row.memberIds }, [`${prefix}plan:${row.cid}`]: initial.id,
+            [`${prefix}${initial.id}`]: { ownerToken: 'owner-secret', controller: 'agent', version: 1 }
+        } });
+        f.win.BusyControl = require('../../frontend/js/ui/busy-control.js');
+        const doc = makeDocument(), host = doc.createElement('div'); doc.body.append(host);
+        const mounted = f.api.mount({ row, host }); await mounted.ready;
+        [...host.querySelectorAll('button')].find(el => el.textContent === 'Take control').click();
+        await vi.waitFor(() => expect(f.calls.some(call => call.url.endsWith('/control'))).toBe(true));
+        await vi.waitFor(() => expect(mounted.session.controller).toBe('owner'));
+        const event = f.win.SharedPlanEvents.connect.mock.calls[0][0];
+        event.onState({ id: initial.id, version: 3, cid: 'changed-plan', controller: 'owner', activity: { agentEditing: false } });
+        await vi.waitFor(() => expect(JSON.parse(f.values.get(`${prefix}active`)).cid).toBe('changed-plan'));
+        expect(f.win.PlanDialog.syncSharedPlanOnMap).toHaveBeenCalledOnce();
+        expect(JSON.parse(f.calls.find(call => call.url.endsWith('/control')).options.body)).toMatchObject({ expectedVersion: 1, controller: 'owner' });
+        mounted.dispose();
+    });
+    it.each([false, true])('applies an unseen owner-controlled revision unless local changes conflict (%s)', async conflict => {
+        const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
+        const local = { ...row, cid: 'local-plan', content: { ...row.content, title: 'Local' } };
+        const latest = { id: 'session-a', version: 3, controller: 'owner', artifact: { plan: { ...row.content, title: 'Changed' }, designs: row.designs } };
+        const f = browser({ plans: conflict ? [row, local] : [row], replies: [latest], stored: {
+            [`${prefix}active`]: { id: 'session-a', cid: row.cid, memberIds: row.memberIds, ...(conflict ? { localCid: local.cid } : {}) },
+            [`${prefix}session-a`]: { ownerToken: 'owner-secret', controller: 'agent', version: 1 }
+        } });
+        await f.api.resumeActive();
+        expect(f.win.PlanDialog.syncSharedPlanOnMap).toHaveBeenCalledTimes(conflict ? 0 : 1);
+        expect(JSON.parse(f.values.get(`${prefix}active`)).cid).toBe(conflict ? row.cid : 'changed-plan');
+        if (conflict) expect(f.win.dispatchEvent.mock.calls.some(([event]) => event.type === 'sharedplansessionconflict')).toBe(true);
+    });
+    it('uses a busy undo action with the current version and applies the accepted pointer', async () => {
+        const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
+        const original = { ...row, cid: 'changed-plan', content: { ...row.content, title: 'Changed' } };
+        const server = { id: 'session-a', version: 4, controller: 'owner', canUndo: true, artifact: { plan: original.content, designs: original.designs } };
+        const undone = { ...server, version: 5, canUndo: false, artifact: { plan: row.content, designs: row.designs } };
+        let finish; const wait = new Promise(resolve => { finish = resolve; });
+        const f = browser({ plans: [original], replies: [server, { data: wait }, undone], stored: {
+            [`${prefix}active`]: { id: server.id, cid: original.cid, memberIds: original.memberIds }, [`${prefix}plan:${original.cid}`]: server.id,
+            [`${prefix}${server.id}`]: { ownerToken: 'owner-secret', controller: 'owner', version: 4 }
+        } });
+        f.win.BusyControl = require('../../frontend/js/ui/busy-control.js');
+        f.win.proposalStorage = { getAllProposals: () => [{ proposalId: 'bench-local', cid: 'design-cid', applied: true }] };
+        f.win.PlanComposition.create = () => original;
+        const doc = makeDocument(), host = doc.createElement('div'); doc.body.append(host);
+        const mounted = f.api.mount({ row: original, host }); await mounted.ready;
+        const button = [...host.querySelectorAll('button')].find(el => el.textContent === 'Undo last agent change');
+        expect(button.disabled).toBe(false); button.click();
+        await vi.waitFor(() => expect(f.calls.some(call => call.url.endsWith('/undo'))).toBe(true));
+        expect(button.getAttribute('aria-busy')).toBe('true');
+        expect(JSON.parse(f.calls.find(call => call.url.endsWith('/undo')).options.body)).toEqual({ expectedVersion: 4 });
+        expect(JSON.parse(f.values.get(`${prefix}active`)).cid).toBe('changed-plan');
+        finish(undone);
+        await vi.waitFor(() => expect(JSON.parse(f.values.get(`${prefix}active`)).cid).toBe(row.cid));
+        expect(f.win.PlanDialog.syncSharedPlanOnMap).toHaveBeenCalledOnce(); mounted.dispose();
+    });
+    it('disables undo while local edits are pending', async () => {
+        const prefix = 'ugt.shared-plan-session/v1:https://urbangametheory.xyz:workspace-test:';
+        const changed = { ...row, cid: 'changed-plan', content: { ...row.content, title: 'Changed' } };
+        const server = { id: 'session-a', version: 4, controller: 'owner', canUndo: true, artifact: { plan: row.content, designs: row.designs } };
+        const f = browser({ plans: [row], replies: [server], stored: {
+            [`${prefix}active`]: { id: server.id, cid: row.cid, memberIds: row.memberIds }, [`${prefix}plan:${row.cid}`]: server.id,
+            [`${prefix}${server.id}`]: { ownerToken: 'owner-secret', controller: 'owner', version: 4 }
+        } });
+        f.win.proposalStorage = { getAllProposals: () => [{ proposalId: 'bench-local', cid: 'design-cid', applied: true }] };
+        f.win.PlanComposition.create = () => changed;
+        const doc = makeDocument(), host = doc.createElement('div'); doc.body.append(host);
+        const mounted = f.api.mount({ row, host }); await mounted.ready;
+        expect([...host.querySelectorAll('button')].find(el => el.textContent === 'Undo last agent change').disabled).toBe(true);
+        expect(f.calls.filter(call => call.url.endsWith('/undo'))).toHaveLength(0); mounted.dispose();
+    });
     it('uses an explicit MCP origin without putting a capability in the URL', () => {
         const fixture = browser({ search: '?mcp=http%3A%2F%2F127.0.0.1%3A3097' });
         expect(fixture.api.endpoint()).toBe('http://127.0.0.1:3097/mcp/plan-sessions');
@@ -251,7 +372,7 @@ describe('shared plan browser client', () => {
         const store = { getProposal: vi.fn(id => id === 'bench-local' ? original : null) };
         expect(() => fixture.api.assertMutationAllowed(store, { getProposal: store.getProposal }, {})).not.toThrow();
         expect(() => fixture.api.assertMutationAllowed(store, { getProposal: () => ({ ...original, applied: false }) }, {}))
-            .toThrow(/agent is editing/i);
+            .toThrow(/agent has editing control/i);
         expect(() => fixture.api.assertMutationAllowed(store, { getProposal: () => null }, { sharedPlanSessionRemote: true })).not.toThrow();
     });
 });

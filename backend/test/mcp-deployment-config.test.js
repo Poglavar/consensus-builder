@@ -56,6 +56,11 @@ describe('MCP production routing', () => {
         const nginx = readFileSync(new URL('../nginx/urbangametheory.xyz.nginx.conf', import.meta.url), 'utf8');
         const routes = [...nginx.matchAll(/location = \/mcp(?:\/server-card|\/)? \{([^}]+)\}/g)];
         expect(routes).toHaveLength(3);
+        const sessions = nginx.match(/location \^~ \/mcp\/plan-sessions \{([^}]+)\}/)?.[1];
+        expect(sessions).toContain(`proxy_pass http://127.0.0.1:${port};`);
+        expect(sessions).toContain('proxy_buffering off;');
+        expect(sessions).toContain('proxy_read_timeout 90s;');
+        expect(sessions).toContain('client_max_body_size 15m;');
         for (const route of routes) expect(route[1]).toContain(`proxy_pass http://127.0.0.1:${port};`);
         for (const route of routes.filter(route => !route[0].includes('server-card'))) expect(route[1]).toContain('client_max_body_size 15m;');
     });

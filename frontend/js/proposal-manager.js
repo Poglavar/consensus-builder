@@ -3121,10 +3121,11 @@ const ProposalManager = {
     async applyProposalPlan(proposalIds, options = {}) {
         const ids = Array.from(new Set((proposalIds || []).map(String).filter(Boolean)));
         if (ids.some(id => this._sharedPlanEditBlocked(id, options))) throw new Error((typeof window !== 'undefined' ? window : globalThis).SharedPlanSession.blockedMessage());
-        if (!ids.length) return { ok: true, applied: 0, failed: [] };
+        const releaseIds = (options.releaseProposalIds || []).map(String);
+        if (!ids.length && !releaseIds.length) return { ok: true, applied: 0, failed: [] };
         if (!options._parcelMutation) {
             this._lastFailedPlanApplySummary = null;
-            return _runProposalMutationBoundary(this, 'apply-plan', ids[0], options,
+            return _runProposalMutationBoundary(this, 'apply-plan', ids[0] || releaseIds[0], options,
                 (_context, transactionOptions) => this.applyProposalPlan(ids, transactionOptions));
         }
         const store = _proposalStore(options);
@@ -3138,7 +3139,7 @@ const ProposalManager = {
             this._lastFailedPlanApplySummary = { failed: unavailable };
             return false;
         }
-        const memberIds = new Set(members.map(record => String(record.proposalId)));
+        const memberIds = new Set([...members.map(record => String(record.proposalId)), ...(options.retainedProposalIds || []).map(String)]);
         const candidates = _peekProposals(store).filter(record => appliedOf(record)
             && !memberIds.has(String(record.proposalId)));
         const released = new Map();

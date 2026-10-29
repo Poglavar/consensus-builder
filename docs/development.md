@@ -216,7 +216,15 @@ camera and unrelated local designs, and guards connected members before a local 
 Owner edits advance a pending local ordinary plan revision, retaining construction windows and
 exact membership in both click stacks. The accepted server pointer stays fixed until explicit
 save or handover. Saved/pending feedback and downloads use that same current revision; the existing
-MCP inspection and editing operations provide parity without additional tools.
+MCP inspection and editing operations provide parity without additional tools. The owner can undo
+the latest eligible agent change after taking control and resolving pending local edits. An agent
+holding control uses `ugt_edit_shared_plan` with `undoLastAgentChange: true`, the inspected version
+and CID, and no content edit. Both paths restore the same stored artifact as a new session version.
+
+Authenticated session events report the current version, CID, controller and actual agent-edit
+activity; the browser fetches full state on a revision change. It retains unchanged map members
+and applies the changed membership atomically. Receipts describe accepted changes outside the
+canonical records; presentation only animates correspondence it can establish.
 
 See [Student AI assistance](student-ai.md) for the handover, update and save workflow.
 

@@ -1,5 +1,7 @@
 # Memory
 
+- 2026-10-30: Shared plan collaboration uses authenticated immediate state and activity notifications, one undo of the most recent eligible agent change, and targeted map updates that retain unchanged members.
+
 - 2026-10-26: Do not add study/concept, illustrative, not-adopted or planning-permission disclaimers to authored plans or UI copy; the tool is already for studies and concepts. Use plain titles and descriptions.
 
 - 2026-10-26: Every Consensus Builder localhost link must explicitly include its verified `backend`, city and location; copy the complete tested URL into the final answer rather than dropping parameters or relying on saved browser settings. Repeated missing-backend links caused building-data fetch failures.

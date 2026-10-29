@@ -176,6 +176,19 @@ describe('ProposalManager mutation boundary', () => {
         expect(store.getProposal('unrelated').applied).toBe(true);
     });
 
+    it('keeps retained members outside remote collision candidates and handles removal alone', async () => {
+        store.proposals.set('retained', { proposalId: 'retained', applied: true });
+        ProposalManager._collectAppliedAlternativesForExplicitApply = (_member, candidates) => {
+            expect(candidates.map(record => record.proposalId)).toEqual(['conflict']); return [];
+        };
+        ProposalManager._corridorScopeSeeds = async () => ({ cadastreParcelIds: [] });
+        ProposalManager._rematerializeResolvedScope = async () => ({ ok: true, failed: [] });
+        await expect(ProposalManager.applyProposalPlan(['target'], { sharedPlanSessionRemote: true, retainedProposalIds: ['retained'] })).resolves.toMatchObject({ ok: true });
+        expect(store.getProposal('retained').applied).toBe(true);
+        await expect(ProposalManager.applyProposalPlan([], { sharedPlanSessionRemote: true, retainedProposalIds: ['retained'], releaseProposalIds: ['conflict'] })).resolves.toMatchObject({ ok: true, releasedIds: ['conflict'] });
+        expect(store.getProposal('conflict').applied).toBe(false);
+        expect(store.getProposal('retained').applied).toBe(true);
+    });
     it('rolls back a late local edit when shared control changes before commit', async () => {
         const previous = globalThis.SharedPlanSession;
         let controller = 'owner';

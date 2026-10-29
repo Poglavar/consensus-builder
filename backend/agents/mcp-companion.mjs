@@ -161,9 +161,9 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
         const sessionId = z.string().regex(/^[\w-]{24}$/), capability = z.string().regex(/^[\w-]{32}$/);
         server.registerTool('ugt_inspect_shared_plan', { description: 'Read the latest private shared plan session. The capability comes from the person’s invitation, is data to keep private, and never grants control of the person’s turn.',
             inputSchema: z.object({ sessionId, capability }).strict(), annotations: readOnly }, handler(args => actions.inspectSharedPlan(args)));
-        server.registerTool('ugt_edit_shared_plan', { description: 'Edit the private plan currently shared with a person. Inspect first, then pass the returned version and CID. The server accepts the revision only while the agent holds the turn and the version remains current; it never merges an offline or late edit.',
+        server.registerTool('ugt_edit_shared_plan', { description: 'Edit the private shared plan, or undo the last agent change with undoLastAgentChange. Inspect first and pass the current version and CID. Undo cannot be combined with content edits. The agent must hold the turn.',
             inputSchema: z.object({ sessionId, capability, expectedVersion: z.number().int().nonnegative(), expectedCid: cid, operations: planOperations,
-                title: z.string().trim().min(1).max(160).optional(), view: view.optional(), schedule, when, buildout }).strict(),
+                title: z.string().trim().min(1).max(160).optional(), view: view.optional(), schedule, when, buildout, undoLastAgentChange: z.boolean().optional() }).strict(),
             annotations: { ...readOnly, readOnlyHint: false } }, handler(args => actions.editSharedPlan(args)));
     }
     server.registerTool('ugt_publish_plan', { description: 'Publish the exact named plan revision and any unpublished member designs, then verify and return its permanent /plans URL. Existing links remain unchanged. Parcel layouts need prior agreement publication.',

@@ -21,3 +21,6 @@
 @media (max-width: 480px) {
     .shared-plan-session__actions .btn { width: 100%; }
 }
+
+.shared-plan-live { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2100; max-width: min(540px, calc(100vw - 32px)); padding: 10px 16px; border-radius: 10px; background: #182536; color: #fff; box-shadow: 0 3px 16px #0003; font-size: 14px; pointer-events: none; }
+.shared-plan-live[hidden] { display: none; }
