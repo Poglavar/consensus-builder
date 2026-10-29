@@ -1,7 +1,7 @@
-<!-- Open plan, not started: CityJSON as the plan file format, CityGML/CityJSON as a building source, and how our records map onto CityGML and LADM. -->
+<!-- Plan for CityGML and CityJSON: CityJSON plan files (open), CityGML city models as building sources (Vienna built), and how our records map onto CityGML and LADM. -->
 # CityGML and CityJSON (plan)
 
-Status: not started.
+Status: plan files not started; the building source is built for Vienna (`wien-lod2`).
 
 CityGML (OGC) is the open standard for 3D city models: buildings and their storeys, rooms and
 units, roads and rail, vegetation, water, land use, terrain and city furniture, each with
@@ -34,19 +34,26 @@ Export a Plan as one CityJSON 2.0 file, replacing `ugt-plan-file/v1`
 
 ## 2. CityGML and CityJSON as a building source
 
-A building provider (`backend/buildings/`, next to OSM, Overture, GDI and NYC) for cities that
-publish a city model:
+A building source for cities that publish their city model as CityGML sheets:
 
-- Ingest offline into the shared building tables, as the Overture ingest does
-  ([shared 3D city sources](overture-buildings.md)). CityGML (XML) is converted to CityJSON first
-  (citygml-tools); CityJSON and CityJSONSeq are read directly.
-- Per building: footprint, height, storeys above and below ground, roof shape (LoD2), the
-  `function` / `usage` codes mapped to our [building uses](vocabulary.md#building-use), and the
-  source's own object id as the stable identity.
-- LoD2 roofs and LoD3 facades render as the building's model; storeys, rooms and units, where a
-  source has them, become the building's floor model (`backend/buildings/floor-models.js`).
-- First sources to try: 3D BAG (all of the Netherlands, LoD1.2 to LoD2.2, tiled CityJSON) and one
-  German state's LoD2 buildings.
+- `backend/buildings/citygml.js` parses CityGML 1.0/2.0 buildings (parts merged into their
+  building) into roof, wall and ground surfaces, falling back to the geometry's polygons when a
+  building has no semantic surfaces (LOD1). `buildingRecord` projects them into the 3D view's mesh
+  records and takes the ground surfaces as the footprint.
+- `backend/buildings/citygml-source.js` maps a request's box onto the city's sheet grid, fetches
+  the zipped sheets it needs (at most 16, kept in memory, 64 sheets), and answers `near` with the
+  surfaces and `footprints` / `footprintsUnder` with the footprints. A sheet the city does not
+  publish (404) is empty; any other failure is an error; a box needing more sheets is `partial`.
+- A city is a small config: CRS, height datum offset, sheet grid and URL, attribution.
+  `wien-lod2` (`backend/buildings/wien-lod2.js`) reads Vienna's generalised roof model (LOD2.1):
+  500 m sheets in EPSG:31256, heights above Wiener Null (+156.68 m to the Adriatic datum),
+  CC BY 4.0. Vienna lists it before OpenStreetMap.
+- A first request costs 2–5 s per sheet (download and parse); a LOD2 building is about 25 kB of
+  faces, so a 120 m radius in the old town is about 100 buildings and 2.5 MB.
+- Still open: the `function` / `usage` codes mapped to our [building uses](vocabulary.md#building-use);
+  storeys and units, where a source has them, as the building's floor model
+  (`backend/buildings/floor-models.js`); CityJSON sources (3D BAG, tiled) and one German state's LoD2
+  buildings; storing parsed sheets instead of reading them live when a source is slow or large.
 
 ## How our records map
 

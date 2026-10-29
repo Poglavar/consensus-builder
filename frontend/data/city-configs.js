@@ -17357,7 +17357,8 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://kataster.bev.gv.at/">BEV cadastral vector tiles</a> · CC BY 4.0 · adapted'
             },
-            buildings: { source: 'osm' },
+            buildings: { source: 'wien-lod2',
+                attribution: 'Datenquelle: <a href="https://www.data.gv.at/katalog/dataset/86d88cae-ad97-4476-bae5-73488a12776d">Stadt Wien – data.wien.gv.at</a> · Generalisiertes Dachmodell LOD2.1 · CC BY 4.0' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
