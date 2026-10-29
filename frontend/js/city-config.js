@@ -406,7 +406,7 @@
         const building = window.ParcelSourceSettings?.choiceForCity?.(id, window, 'building');
         if (!building) return config;
         return { ...config, buildings: { ...(config.buildings || {}), source: 'custom', sourceId: building.id,
-            name: building.name, fallback: undefined, attribution: undefined, defaultSource: config.buildings?.source || 'gdi',
+            name: building.name, fallbacks: undefined, attribution: undefined, defaultSource: config.buildings?.source || 'gdi',
             defaultSourceName: config.buildings?.name } };
     }
 

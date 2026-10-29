@@ -95,11 +95,11 @@ test.describe('Shared on-map editor shell @features', () => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await mockBuildingScene(page);
       await openCity(page);
-      // Keep the real /buildings/near load active long enough for the view-angle hint's normal
+      // Keep the building cell loads active long enough for the view-angle hint's normal
       // ten-second timer to fire. The status text and busy state still come from the 3D loader.
-      await page.route('**/buildings/near', async route => {
+      await page.route('**/buildings/cell', async route => {
         await new Promise(resolve => setTimeout(resolve, 12_000));
-        await route.fulfill({ json: { buildings: buildings3D } });
+        await route.fulfill({ json: { supported: true, complete: true, items: buildings3D } });
       });
       await page.locator('#mode-3d-toggle').click();
       await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 20_000 });

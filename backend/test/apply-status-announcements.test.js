@@ -195,19 +195,19 @@ describe('the existing-buildings fetch', () => {
         // city (location-first.md phase 2).
         expect(mapCore).toContain('function hasFootprintProvider(bounds)');
         expect(mapCore).toContain("return !!source && source !== 'none' && source !== 'gdi';");
-        expect(mapCore).toContain('await loadProviderFootprints(bounds)');
+        expect(mapCore).toContain('if (useProvider) return fetchProviderBuildingCells(bounds, { announce });');
         const loader = mapCore.slice(
-            mapCore.indexOf('async function loadProviderFootprints(bounds)'),
-            mapCore.indexOf('// Fetch buildings from data source.')
+            mapCore.indexOf('async function fetchProviderBuildingCells(bounds'),
+            mapCore.indexOf('// A building load whose upstream failed')
         );
-        expect(loader).toContain('/buildings/footprints');
-        // The provider serves WGS84 — converting it as if it were EPSG:3765 would put every
+        // Building cells of the city grid, each from the city's ordered sources (building-cells.js).
+        expect(loader).toContain("loader.load({ kind: 'footprints', sources, cells");
+        // The provider serves WGS84: converting it as if it were EPSG:3765 would put every
         // footprint in the sea.
         expect(loader).not.toContain('convertGeoJSON');
         // corridor-tunnel's identity accepts properties.id for the non-Zagreb sources, so these
         // are cut, tunnelled and demolished exactly like GDI objects.
         expect(loader).toContain('id: entry.id');
-        expect(loader).toContain('truncated: payload.truncated === true');
     });
 
     it('only talks when the user asked to see them', () => {

@@ -215,6 +215,30 @@ describe('GET /buildings', () => {
         expect(res.body.truncated).toBe(true);
     });
 });
+describe('POST /buildings/cell', () => {
+    const cell = [15.975, 45.812, 15.979, 45.814];
+    const row = { object_id: 42, z_min: 120, z_max: 135, faces: [
+        { type: 'Polygon', coordinates: [[[15.976, 45.813, 120], [15.977, 45.813, 120], [15.977, 45.8135, 135], [15.976, 45.813, 120]]] }] };
+
+    it('rejects an unknown kind and a bbox that is not a cell', async () => {
+        expect((await request(app).post('/buildings/cell').send({ kind: 'all', bbox: cell, source: 'gdi-3d' })).status).toBe(400);
+        expect((await request(app).post('/buildings/cell').send({ kind: 'near', bbox: [15.98, 45.8, 15.97, 45.81], source: 'gdi-3d' })).status).toBe(400);
+        expect((await request(app).post('/buildings/cell').send({ kind: 'near', bbox: [15.9, 45.8, 16.0, 45.9], source: 'gdi-3d' })).status).toBe(400);
+    });
+
+    it('answers one cell of 3D records from the selected source and serves a repeat from its cache', async () => {
+        pool.setResult({ rows: [row], rowCount: 1 });
+        const first = await request(app).post('/buildings/cell').send({ kind: 'near', bbox: cell, source: 'gdi-3d' });
+        expect(first.status).toBe(200);
+        expect(first.body).toMatchObject({ supported: true, kind: 'near', bbox: cell, count: 1, complete: true });
+        expect(first.body.items[0]).toMatchObject({ object_id: 42, z_max: 135 });
+        const queries = pool.getCalls().length;
+        const again = await request(app).post('/buildings/cell').send({ kind: 'near', bbox: cell, source: 'gdi-3d' });
+        expect(again.body).toEqual(first.body);
+        expect(pool.getCalls().length).toBe(queries);
+    });
+});
+
 describe('POST /buildings/footprints', () => {
     const geometry = { type: 'Polygon', coordinates: [[[15.975, 45.812], [15.979, 45.812], [15.979, 45.814], [15.975, 45.814], [15.975, 45.812]]] };
 

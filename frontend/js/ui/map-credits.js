@@ -57,7 +57,7 @@
     function buildingCredits(city) {
         const buildings = city?.buildings || {};
         const credits = [buildings.attribution];
-        if (buildings.source === 'osm' || buildings.fallback === 'osm') {
+        if (buildings.source === 'osm' || (buildings.fallbacks || []).includes('osm')) {
             credits.push('© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors');
         }
         return credits.filter(Boolean);

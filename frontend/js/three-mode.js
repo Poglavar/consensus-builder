@@ -6323,48 +6323,90 @@
         key = nearbyDataScope + '|' + key;
         if (key === nearbyProposalBuildingsKey) return;
 
+        // The building cells of the city grid over the scene (building-cells.js), nearest the anchor
+        // first. Each cell lands on its own: the scene rebuilds when the first one does and then at
+        // each quarter, so the nearest buildings show while the rest still load.
+        const manager = window.CityConfigManager;
+        const anchor = turf.centroid(geometry).geometry.coordinates;
+        const toLatLng = (easting, northing) => manager.datasetToLatLng(easting, northing);
+        const gridSize = Number(manager?.getParcelGridSize?.());
+        const cells = proposalGeom
+            ? window.BuildingCells.cellsCovering({ box: turf.bbox(turf.buffer(geometry, buffer, { units: 'meters' })), centre: anchor,
+                gridSize, toDataset: window.wgs84ToDataset, toLatLng })
+            : window.BuildingCells.cellsAround({ centre: anchor, radiusM: buffer, gridSize, toDataset: window.wgs84ToDataset, toLatLng });
+        const sources = window.BuildingSourceClient.sourcesFor(window, { geometry });
+        // The previous buildings stay drawn until the first cells of the new area replace them.
         nearbyProposalBuildingsFetching = true;
         nearbyBuildingsOutcome = null;
         updateBuildingsLoader();
-        // The 3D building source is that of the city where the geometry lies: resolved server-side,
-        // or read in the browser from Overture's tiles (building-source-client.js).
         const signal = sceneAbort?.signal;
         const current = () => isActive && !signal?.aborted && sceneAbort?.signal === signal;
-        window.BuildingSourceClient.request('/buildings/near', { geometry, buffer_meters: buffer }, { signal })
-            .then(payload => {
+        if (!cells.length || !sources.length) {
+            nearbyProposalBuildingsFetching = false;
+            nearbyBuildingsOutcome = sources.length ? 'empty' : 'unsupported';
+            nearbyProposalBuildingsKey = key;
+            updateBuildingsLoader();
+            return;
+        }
+        const byId = new Map();
+        let raw = 0, nextRebuildAt = 1;
+        // Whole cells reach past the radius; around a point only the buildings reaching into it are
+        // kept (any vertex of the first face), so the slider still says how much of the city is drawn.
+        const metresPerDegLng = 111320 * Math.cos(anchor[1] * Math.PI / 180);
+        const withinRadius = building => {
+            if (proposalGeom) return true;
+            const ring = building.faces?.[0]?.coordinates?.[0];
+            if (!Array.isArray(ring) || !ring.length) return true;
+            return ring.some(vertex => Math.hypot((vertex[0] - anchor[0]) * metresPerDegLng, (vertex[1] - anchor[1]) * 110540) <= buffer);
+        };
+        const landed = (_cell, result) => {
+            if (!current() || result.failed) return;
+            for (const building of result.items) {
+                if (building?.object_id == null || !withinRadius(building)) continue;
+                if (!byId.has(String(building.object_id))) raw++;
+                byId.set(String(building.object_id), building);
+            }
+        };
+        const progress = summary => {
+            if (!current() || summary.done < nextRebuildAt) return;
+            nextRebuildAt = summary.done >= summary.total ? Infinity : Math.max(summary.done + 1, Math.ceil(summary.total * (Math.floor(summary.done / summary.total * 4) + 1) / 4));
+            nearbyProposalBuildings = dedupeCoincidentBuildings([...byId.values()]);
+            nearbyBuildingsRevision++;
+            if (isActive && summary.done < summary.total) rebuild3DBuildingsOnly({ family: 'existing' });
+        };
+        window.BuildingCellLoader.load({ kind: 'near', sources, cells, signal, onCell: landed, onProgress: progress })
+            .then(summary => {
                 if (!current()) return;
-                const rawBuildings = (payload && Array.isArray(payload.buildings)) ? payload.buildings : [];
-                nearbyProposalBuildings = dedupeCoincidentBuildings(rawBuildings);
+                nearbyProposalBuildings = dedupeCoincidentBuildings([...byId.values()]);
                 nearbyBuildingsRevision++;
                 nearbyProposalBuildingsKey = key;
                 nearbyProposalBuildingsFetching = false;
-                nearbyBuildingsProvenance = payload ? { source: payload.source, heights: payload.heights || null, partial: payload.partial === true } : null;
-                nearbyBuildingsOutcome = payload?.supported === false ? 'unsupported'
-                    : !payload || payload.unavailable || !Array.isArray(payload.buildings) ? 'failed'
-                        : payload.partial === true || payload.truncated === true ? 'partial'
-                            : nearbyProposalBuildings.length ? 'loaded' : 'empty';
+                const heights = { measured: 0, levels: 0, estimated: 0 };
+                nearbyProposalBuildings.forEach(building => { if (building.height_source in heights) heights[building.height_source]++; });
+                nearbyBuildingsProvenance = { source: sources[0], heights: heights.measured + heights.levels + heights.estimated ? heights : null,
+                    partial: summary.failed > 0 || summary.incomplete > 0, standIn: summary.standIn, cells: summary.total };
+                nearbyBuildingsOutcome = summary.unsupported === summary.total ? 'unsupported'
+                    : summary.failed === summary.total ? 'failed'
+                    : summary.failed || summary.incomplete ? 'partial'
+                        : nearbyProposalBuildings.length ? 'loaded' : 'empty';
                 updateBuildingsSourceNote();
-                // The upstream failed outright: an empty scene must not pass for a city without buildings.
-                if (payload && payload.unavailable) reportNearbyBuildingsUnavailable(payload.retryAfter);
-                else if (rawBuildings.length) window.clearBuildingsUnavailable?.();
-                const dupCount = rawBuildings.length - nearbyProposalBuildings.length;
-                console.log(`[3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings (${sceneLoadGeometrySource}+${buffer}m${dupCount > 0 ? `, dropped ${dupCount} coincident duplicate${dupCount === 1 ? '' : 's'}` : ''})`);
+                // A cell no source could answer: an empty patch must not pass for ground without buildings.
+                if (summary.failed) reportNearbyBuildingsUnavailable(summary.retryAfter, summary.status);
+                else window.clearBuildingsUnavailable?.();
+                const dupCount = raw - nearbyProposalBuildings.length;
+                console.log(`[${new Date().toISOString()}] [3D] Loaded ${nearbyProposalBuildings.length} nearby 3D buildings in ${summary.loaded} of ${summary.total} cells (${sceneLoadGeometrySource}+${buffer}m${summary.standIn ? `, ${summary.standIn} from a stand-in source` : ''}${summary.failed ? `, ${summary.failed} failed` : ''}${dupCount > 0 ? `, dropped ${dupCount} coincident duplicate${dupCount === 1 ? '' : 's'}` : ''})`);
                 if (isActive) rebuild3DBuildingsOnly({ family: 'existing' });
                 rebuildProposalGrounds3D();
                 refreshLifeSurface();
                 updateBuildingsLoader();
-                ensureNearbyWater();
-                ensureNearbyGreen();
             })
             .catch(err => {
                 if (!current() || err.name === 'AbortError') return;
-                console.warn('Failed to fetch nearby buildings:', err);
+                console.warn(`[${new Date().toISOString()}] [3D] Failed to load nearby building cells`, err);
                 nearbyProposalBuildingsFetching = false;
                 nearbyBuildingsOutcome = 'failed';
                 updateBuildingsLoader();
                 reportNearbyBuildingsUnavailable(null, err.status);
-                ensureNearbyWater();
-                ensureNearbyGreen();
             });
     }
 
@@ -7161,8 +7203,8 @@
     }
 
     function ensureNearbyWater() {
-        // Wait for the buildings: their extent is the area to cover.
-        if (!waterEnabled || nearbyWaterFetching || nearbyProposalBuildingsFetching) return;
+        // Its own query area (sceneryQuery), so it loads alongside the buildings, not after them.
+        if (!waterEnabled || nearbyWaterFetching) return;
         const { queryGeometry, buffer } = sceneryQuery();
         if (!queryGeometry) return;
         const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
@@ -7292,8 +7334,8 @@
     }
 
     function ensureNearbyGreen() {
-        // Wait for the buildings, like the water: their extent is the area to cover.
-        if (!greenEnabled || nearbyGreenFetching || nearbyProposalBuildingsFetching) return;
+        // Its own query area, like the water: it loads alongside the buildings, not after them.
+        if (!greenEnabled || nearbyGreenFetching) return;
         const { queryGeometry, buffer } = sceneryQuery();
         if (!queryGeometry) return;
         const key = nearbyDataScope + '|' + JSON.stringify(queryGeometry.coordinates) + '|r' + buffer;
@@ -8682,7 +8724,7 @@
         if (suggestedExistingPoolKey !== radiusKey) {
             suggestedExistingPoolKey = radiusKey;
             const [west, south, east, north] = turf.bbox(turf.circle(centre, buildingLoadRadiusM / 1000, { units: 'kilometers' }));
-            window.ensureBuildingFootprintsForBounds?.([[south, west], [north, east]], { pad: 0 })?.catch(error =>
+            window.ensureBuildingFootprintsForBounds?.([[south, west], [north, east]])?.catch(error =>
                 console.error(`[${new Date().toISOString()}] [3D] Footprints for typical layouts could not be loaded`, error));
         }
         const pool = Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : [];

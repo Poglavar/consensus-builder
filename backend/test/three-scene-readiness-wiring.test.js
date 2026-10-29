@@ -8,6 +8,8 @@ import * as THREE from 'three';
 const require = createRequire(import.meta.url);
 const readiness = require('../../frontend/js/three-scene-readiness.js');
 const sceneWork = require('../../frontend/js/three-scene-work.js');
+const buildingCells = require('../../frontend/js/building-cells.js');
+const turf = require('@turf/turf');
 const source = readFileSync(new URL('../../frontend/js/three-mode.js', import.meta.url), 'utf8');
 const ast = parse(source, { sourceType: 'script', plugins: ['optionalChaining', 'nullishCoalescingOperator'] });
 const declarations = new Map();
@@ -23,17 +25,22 @@ function collect(node) {
 }
 collect(ast);
 
-function harness({ request = vi.fn(async () => ({ buildings: [] })), build = vi.fn(async () => ({ failures: 0 })) } = {}) {
+// `request` answers one building cell ({ kind, source, bbox }), as POST /buildings/cell does.
+function harness({ request = vi.fn(async () => ({ items: [], complete: true })), build = vi.fn(async () => ({ failures: 0 })) } = {}) {
     const calls = { rebuild: vi.fn(), updates: vi.fn() };
     const window = {
         __threeSceneReadiness: readiness,
-        BuildingSourceClient: { request },
+        BuildingSourceClient: { sourcesFor: () => ['city'] },
+        BuildingCells: buildingCells,
+        BuildingCellLoader: buildingCells.createCellLoader({ request: cell => request(cell) }),
+        CityConfigManager: { getParcelGridSize: () => 0.0025, datasetToLatLng: (easting, northing) => [northing, easting] },
+        wgs84ToDataset: (lat, lng) => [lng, lat],
         PlanningViews: { getState: () => ({}) },
         clearBuildingsUnavailable: vi.fn(),
         reportBuildingsUnavailable: vi.fn()
     };
     const context = {
-        window, console, THREE, sunLayer: null,
+        window, console, THREE, turf, sunLayer: null,
         isActive: true, isTransitioning3D: false, renderer: {}, scene: {}, camera: {},
         builtDisplay: 'ghost', realisticLayerActive: false,
         existingBuildingsGroup: new THREE.Group(), proposedBuildingsGroup: new THREE.Group(),
@@ -91,31 +98,36 @@ describe('3D readiness wiring', () => {
         h.context.console = { warn: vi.fn(), log: vi.fn() };
         vm.runInContext(declarations.get('reportNearbyBuildingsUnavailable'), h.context);
         h.context.ensureNearbyProposalBuildings();
-        await flushPromises();
+        for (let i = 0; i < 20 && h.context.nearbyProposalBuildingsFetching; i++) await flushPromises();
         expect(h.context.window.reportBuildingsUnavailable).toHaveBeenCalledWith(null, expect.any(Function), false, 405);
+        // Our server refusing the request fails the cell outright: no stand-in hides it.
+        expect(request.mock.calls.every(([call]) => call.source === 'city')).toBe(true);
         expect(h.context.nearbyBuildingsOutcome).toBe('failed');
         expect(h.context.getSceneReadiness().ready).toBe(false);
     });
 
     it.each([
-        [{ buildings: [{ id: 'b1' }] }, 'loaded', true],
-        [{ buildings: [] }, 'empty', true],
-        [{ unavailable: true, buildings: [] }, 'failed', false],
-        [{ buildings: [{ id: 'b1' }], partial: true }, 'partial', false],
-        [{ supported: false }, 'unsupported', false],
-        [{ buildings: [], truncated: true }, 'partial', false]
-    ])('connects nearby source response to %s readiness evidence', async (payload, outcome, shouldBeReady) => {
+        [{ items: [{ object_id: 'b1', faces: [] }], complete: true }, 'loaded', true],
+        [{ items: [], complete: true }, 'empty', true],
+        [{ unavailable: true }, 'failed', false],
+        [{ items: [{ object_id: 'b1', faces: [] }], complete: false }, 'partial', false],
+        [{ supported: false }, 'unsupported', false]
+    ])('connects nearby cell answers %s to readiness evidence', async (payload, outcome, shouldBeReady) => {
         const request = vi.fn(async () => payload);
         const h = harness({ request });
         h.context.ensureNearbyProposalBuildings();
         expect(h.context.nearbyProposalBuildingsFetching).toBe(true);
         expect(h.context.getSceneReadiness().reasons).toContain('existing-loading');
         await flushPromises();
-        expect(request).toHaveBeenCalledWith('/buildings/near', expect.objectContaining({ geometry: { type: 'Point', coordinates: [2, 1] } }), expect.anything());
+        // The cells around the anchor, nearest first, each from the city source.
+        expect(request.mock.calls.length).toBeGreaterThan(1);
+        expect(request.mock.calls[0][0]).toMatchObject({ kind: 'near', source: 'city' });
+        const [w, s, e, n] = request.mock.calls[0][0].bbox;
+        expect([w <= 2, e >= 2, s <= 1, n >= 1]).toEqual([true, true, true, true]);
+        for (let i = 0; i < 8 && h.context.buildingRefreshQueue.pending; i++) await flushPromises();
         expect(h.context.nearbyBuildingsOutcome).toBe(outcome);
         expect(h.context.buildingDisplaySnapshot.existingDataRevision).toBe(h.context.nearbyBuildingsRevision);
-        expect(h.context.buildNearbyProposalBuildings3D).toHaveBeenCalledOnce();
-        expect(h.context.nearbyBuildingsRevision).toBe(1);
+        expect(h.context.buildNearbyProposalBuildings3D).toHaveBeenCalled();
         expect(h.context.getSceneReadiness().ready).toBe(false); // rebuild invalidated the frame
         h.context.renderScene();
         expect(h.context.getSceneReadiness().ready).toBe(shouldBeReady);

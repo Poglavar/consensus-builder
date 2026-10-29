@@ -309,16 +309,17 @@ function boundsCoveredByBuildingFetch(bounds) {
 }
 
 // Ensure footprints exist for `bounds` (an L.LatLngBounds or anything L.latLngBounds accepts).
-// Fetches with generous padding so neighbouring corridor edges reuse one fetch; `pad: 0` asks for
-// exactly the bounds (a source refuses or truncates a box over its own size limit).
-async function ensureBuildingFootprintsForBounds(rawBounds, { pad = 0.5 } = {}) {
+// A provider city loads the building cells under it (cached cells answer at once). The GDI survey
+// fetches with generous padding so neighbouring corridor edges reuse one fetch.
+async function ensureBuildingFootprintsForBounds(rawBounds) {
     if (!rawBounds) return;
     let bounds = null;
     try { bounds = L.latLngBounds(rawBounds); } catch (_) { return; }
     if (!bounds || !bounds.isValid()) return;
     if (buildingsConfigAt(bounds)?.source === 'none') return;
+    if (hasFootprintProvider(bounds)) return fetchProviderBuildingCells(bounds);
     if (boundsCoveredByBuildingFetch(bounds)) return;
-    await fetchBuildings(pad ? bounds.pad(pad) : bounds);
+    await fetchBuildings(bounds.pad(0.5));
 }
 window.ensureBuildingFootprintsForBounds = ensureBuildingFootprintsForBounds;
 
@@ -352,46 +353,120 @@ async function loadGdiFootprints(req) {
     return { features: (converted && converted.features) || [], truncated: data && data.truncated === true };
 }
 
-// The per-city provider: the same /buildings/footprints answer the urban-rule editor reads, already
-// in WGS84, from the backend or straight from Overture's tiles (building-source-client.js). Its ids
-// land on `properties.id`, which is exactly what corridor-tunnel's building identity accepts for the
-// non-Zagreb sources — so a road cuts, tunnels under and demolishes these the same way it does GDI
-// objects.
-async function loadProviderFootprints(bounds) {
-    const west = bounds.getWest(), south = bounds.getSouth(), east = bounds.getEast(), north = bounds.getNorth();
-    const geometry = {
-        type: 'Polygon',
-        coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
+// MERGE features into the pool (both building paths): dedupe by identity, keep the newest under the cap.
+function mergeIntoBuildingPool(features) {
+    // MERGE with what's already loaded instead of replacing it: the fetch covers only the
+    // requested bbox (cap-limited), so replacing left a single-viewport patch and panning
+    // "lost" buildings. Dedupe by object_id. Same identity as demolition records use
+    // (corridor-tunnel.js) — the two MUST agree, or click-time decisions stop matching
+    // the pool.
+    const buildingKeyOf = (feature) => {
+        if (typeof window.corridorBuildingKey === 'function') return window.corridorBuildingKey(feature);
+        const props = feature?.properties || {};
+        const direct = props.object_id ?? props.objectId ?? props.OBJECT_ID ?? props.id ?? feature?.id;
+        if (direct !== undefined && direct !== null && String(direct)) return String(direct);
+        try { return JSON.stringify(feature?.geometry?.coordinates?.[0]?.[0] || feature?.geometry?.coordinates || ''); } catch (error) {
+            console.error('[fetchBuildings] building has no id and unserializable geometry — dedup disabled for it', error);
+            return Math.random().toString(36);
+        }
     };
-    const payload = await window.BuildingSourceClient.request('/buildings/footprints', { geometry });
-    // A city with no footprint capability is not an error and not worth a status line about zero.
-    if (!payload || payload.supported === false) return null;
-    // The upstream failed outright (OSM throttling, a user's source down): an empty answer here is
-    // not "no buildings", and must not be merged or claimed as covered.
-    if (payload.unavailable) throw Object.assign(new Error('Building source unavailable'), { unavailable: true, retryAfter: payload.retryAfter ?? null });
-    const features = (payload.footprints || [])
-        .filter(entry => entry && entry.geometry)
-        .map(entry => ({
-            type: 'Feature',
-            properties: {
-                id: entry.id,
-                height_m: (typeof entry.height_m === 'number' && Number.isFinite(entry.height_m)) ? entry.height_m : null,
-                floors: (typeof entry.floors === 'number' && Number.isFinite(entry.floors)) ? entry.floors : null,
-                source: payload.source || null
-            },
-            geometry: entry.geometry
-        }));
-    return { features, truncated: payload.truncated === true };
+    // Merge onto the POOL, not onto the layer: the layer is a filtered, visibility-dependent
+    // VIEW of the pool (demolished buildings are dropped from it), so rebuilding the pool from
+    // it would quietly delete every demolished building from the working set.
+    const mergedById = new Map();
+    (Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : []).forEach(feature => {
+        if (feature?.geometry) mergedById.set(buildingKeyOf(feature), feature);
+    });
+    (features || []).forEach(feature => {
+        if (feature?.geometry) mergedById.set(buildingKeyOf(feature), feature);
+    });
+    let mergedFeatures = Array.from(mergedById.values());
+    const BUILDING_POOL_CAP = 12000;
+    if (mergedFeatures.length > BUILDING_POOL_CAP) {
+        // Keep the newest fetches: drop from the front (oldest insertions first in Map order).
+        mergedFeatures = mergedFeatures.slice(mergedFeatures.length - BUILDING_POOL_CAP);
+        // Coverage describes what is PRESENT in the pool, not merely what was fetched once.
+        // Evicting features while retaining their old coverage made later corridor scans skip
+        // the refetch and then conclude that the evicted buildings did not exist.
+        buildingFetchCoverage.length = 0;
+        // The same holds for the cell loader's cache: an evicted cell must be asked for again.
+        window.BuildingCellLoader?.clear();
+    }
+    // The full pool survives demolition filtering, so unapplying the road brings them back.
+    window.buildingFeaturePool = mergedFeatures;
+}
+
+// Every city but Zagreb's GDI survey: the building cells under the view (building-cells.js), each
+// from the city's ordered sources and merged into the pool as it lands, nearest first. Ids land on
+// `properties.id`, which is what corridor-tunnel's building identity accepts for these sources, so a
+// road cuts, tunnels under and demolishes them the same way it does GDI objects. The cell loader
+// keeps each source's back-off and cache; a failed source never stops another layer.
+async function fetchProviderBuildingCells(bounds, { announce = false } = {}) {
+    const loader = window.BuildingCellLoader;
+    const cellsApi = window.BuildingCells;
+    const manager = window.CityConfigManager;
+    if (!loader || !cellsApi || !manager) return;
+    const box = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+    const centre = [(box[0] + box[2]) / 2, (box[1] + box[3]) / 2];
+    const cells = cellsApi.cellsCovering({ box, centre, gridSize: Number(manager.getParcelGridSize?.()),
+        toDataset: wgs84ToDataset, toLatLng: (easting, northing) => manager.datasetToLatLng(easting, northing) });
+    const sources = window.BuildingSourceClient.sourcesFor(window, { geometry: { type: 'Point', coordinates: centre } });
+    if (!cells.length || !sources.length) return;
+    if (announce && typeof updateStatus === 'function') updateStatus('Fetching existing buildings...');
+    buildingFetchesInFlight += 1;
+    window.PlanningLoading?.set('existing', 'map', true);
+    let landed = 0, layerPending = false;
+    const repaint = () => {
+        if (layerPending) return;
+        layerPending = true;
+        queueMicrotask(() => { layerPending = false; rebuildBuildingLayerFromPool(); });
+    };
+    try {
+        const summary = await loader.load({ kind: 'footprints', sources, cells, onCell: (cell, result) => {
+            if (result.failed || !result.items.length) return;
+            landed += result.items.length;
+            mergeIntoBuildingPool(result.items.filter(entry => entry && entry.geometry).map(entry => ({
+                type: 'Feature',
+                properties: {
+                    id: entry.id,
+                    height_m: (typeof entry.height_m === 'number' && Number.isFinite(entry.height_m)) ? entry.height_m : null,
+                    floors: (typeof entry.floors === 'number' && Number.isFinite(entry.floors)) ? entry.floors : null,
+                    source: result.source
+                },
+                geometry: entry.geometry
+            })));
+            repaint();
+        } });
+        try { window.buildingLayer = buildingLayer; } catch (_) { }
+        try { window.dispatchEvent(new CustomEvent('buildingsLayerUpdated')); } catch (_) { }
+        if (summary.failed) {
+            reportBuildingsUnavailable(summary.retryAfter, () => {
+                loader.retry();
+                fetchProviderBuildingCells(bounds, { announce: true });
+            }, false, summary.status);
+        } else clearBuildingsUnavailable();
+        if (announce && typeof updateStatus === 'function') {
+            const standIn = summary.standIn ? ` (${summary.standIn} of ${summary.total} areas from a stand-in source)` : '';
+            updateStatus(landed || summary.cached ? `Loaded existing buildings in ${summary.loaded} of ${summary.total} areas${standIn}`
+                : 'No existing buildings surveyed here');
+        }
+    } catch (error) {
+        if (error?.name === 'AbortError') return;
+        console.error(`[${new Date().toISOString()}] [buildings] cell load failed`, error);
+    } finally {
+        buildingFetchesInFlight -= 1;
+        if (!buildingFetchesInFlight) window.PlanningLoading?.set('existing', 'map', false);
+    }
 }
 
 // A building load whose upstream failed (throttled OpenStreetMap, a person's own source down): said in
-// the building banner, with Retry and the source chooser, never silently. Viewport loads then wait
-// out the upstream's own retry time instead of asking again on every pan.
+// the building banner, with Retry and the source chooser, never silently. The GDI survey's viewport
+// loads then wait out its retry time (buildingsRetryAt); provider cities keep a back-off per source
+// in the cell loader, so one source's failure never pauses another.
 let buildingsRetryAt = 0;
 // `fromOsm` marks a failure of the OpenStreetMap reference layer, which is OSM whatever the city uses.
 function reportBuildingsUnavailable(retryAfter, retry, fromOsm = false, status = null) {
     const seconds = Number(retryAfter);
-    if (Number.isFinite(seconds) && seconds > 0) buildingsRetryAt = Date.now() + seconds * 1000;
     console.warn(`[${new Date().toISOString()}] [buildings] building data unavailable${seconds > 0 ? `; retry in ${seconds}s` : ''}`);
     const settings = window.ParcelSourceSettings;
     if (!settings || typeof settings.reportFailure !== 'function') return;
@@ -459,6 +534,7 @@ async function fetchBuildings(boundsOverride = null, options = {}) {
     // serves the CADASTRE, which is a different survey and must never enter this pool.
     const useProvider = !req && hasFootprintProvider(bounds);
     if (!req && !useProvider) return;
+    if (useProvider) return fetchProviderBuildingCells(bounds, { announce });
     // Inside the upstream's back-off a viewport pan asks for nothing; a tool covering its own
     // geometry still asks (the backend answers from its cache or says unavailable at once).
     if (!boundsOverride && Date.now() < buildingsRetryAt) return;
@@ -474,50 +550,12 @@ async function fetchBuildings(boundsOverride = null, options = {}) {
     buildingFetchesInFlight += 1;
     window.PlanningLoading?.set('existing', 'map', true);
     try {
-        const loaded = req
-            ? await loadGdiFootprints(req)
-            : await loadProviderFootprints(bounds);
+        const loaded = await loadGdiFootprints(req);
         if (!loaded) return;
         const data = { truncated: loaded.truncated };
         const convertedData = { type: 'FeatureCollection', features: loaded.features };
 
-        // MERGE with what's already loaded instead of replacing it: the fetch covers only the
-        // requested bbox (cap-limited), so replacing left a single-viewport patch and panning
-        // "lost" buildings. Dedupe by object_id. Same identity as demolition records use
-        // (corridor-tunnel.js) — the two MUST agree, or click-time decisions stop matching
-        // the pool.
-        const buildingKeyOf = (feature) => {
-            if (typeof window.corridorBuildingKey === 'function') return window.corridorBuildingKey(feature);
-            const props = feature?.properties || {};
-            const direct = props.object_id ?? props.objectId ?? props.OBJECT_ID ?? props.id ?? feature?.id;
-            if (direct !== undefined && direct !== null && String(direct)) return String(direct);
-            try { return JSON.stringify(feature?.geometry?.coordinates?.[0]?.[0] || feature?.geometry?.coordinates || ''); } catch (error) {
-                console.error('[fetchBuildings] building has no id and unserializable geometry — dedup disabled for it', error);
-                return Math.random().toString(36);
-            }
-        };
-        // Merge onto the POOL, not onto the layer: the layer is a filtered, visibility-dependent
-        // VIEW of the pool (demolished buildings are dropped from it), so rebuilding the pool from
-        // it would quietly delete every demolished building from the working set.
-        const mergedById = new Map();
-        (Array.isArray(window.buildingFeaturePool) ? window.buildingFeaturePool : []).forEach(feature => {
-            if (feature?.geometry) mergedById.set(buildingKeyOf(feature), feature);
-        });
-        (convertedData?.features || []).forEach(feature => {
-            if (feature?.geometry) mergedById.set(buildingKeyOf(feature), feature);
-        });
-        let mergedFeatures = Array.from(mergedById.values());
-        const BUILDING_POOL_CAP = 12000;
-        if (mergedFeatures.length > BUILDING_POOL_CAP) {
-            // Keep the newest fetches: drop from the front (oldest insertions first in Map order).
-            mergedFeatures = mergedFeatures.slice(mergedFeatures.length - BUILDING_POOL_CAP);
-            // Coverage describes what is PRESENT in the pool, not merely what was fetched once.
-            // Evicting features while retaining their old coverage made later corridor scans skip
-            // the refetch and then conclude that the evicted buildings did not exist.
-            buildingFetchCoverage.length = 0;
-        }
-        // The full pool survives demolition filtering, so unapplying the road brings them back.
-        window.buildingFeaturePool = mergedFeatures;
+        mergeIntoBuildingPool(convertedData?.features || []);
         // A fetch that hit the cap was TRUNCATED — it must not claim its bbox as covered, or the
         // corridor preload would trust a hole-riddled area and a building that never loaded would
         // never be detected and so never be demolished. The backend says so explicitly.
@@ -548,6 +586,8 @@ async function fetchBuildings(boundsOverride = null, options = {}) {
         if (typeof updateStatus === 'function') {
             updateStatus('Error fetching building data. Please try again.');
         }
+        const seconds = Number(error && error.retryAfter);
+        if (Number.isFinite(seconds) && seconds > 0) buildingsRetryAt = Date.now() + seconds * 1000;
         reportBuildingsUnavailable(error && error.retryAfter, () => {
             buildingsRetryAt = 0;
             fetchBuildings(boundsOverride, { announce: true });

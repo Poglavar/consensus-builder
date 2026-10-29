@@ -9,14 +9,12 @@ import * as turf from '@turf/turf';
 import { createParcelSource, withSourceCooldown } from '../parcels/sources.js';
 import { createPublicSourceFetch } from '../parcels/public-source-fetch.js';
 import { footprintFeatureToBuilding, expandBbox, unavailableFrom } from './osm-3d.js';
+import { AREA_LIMIT_CODE } from '../parcels/source-contract.js';
+import { splitRead, boxSideMeters } from './split-read.js';
 
 const FEET = 0.3048;
-// Adapters refuse a query over 1 km² (the descriptor's maxBboxKm2); a scene box is shrunk to fit.
+// Adapters refuse a query over 1 km² (the descriptor's maxBboxKm2): a larger box is read in quarters.
 const MAX_SIDE_M = 950;
-// A box is read in tiles no wider than this: one query is also refused over the adapter's feature
-// limit (10,000), and a 950 m square of central Bogotá holds more construction pieces than that.
-const TILE_SIDE_M = 320;
-const TILE_CONCURRENCY = 3;
 
 const log = (...args) => console.log(`[${new Date().toISOString()}] [custom-buildings]`, ...args);
 
@@ -41,64 +39,31 @@ export function customBuildingFeature(descriptor, feature) {
     };
 }
 
-// A WGS84 box no wider or taller than MAX_SIDE_M, around the box's centre.
-function fitBox([w, s, e, n]) {
-    const midLat = (s + n) / 2;
-    const maxLat = MAX_SIDE_M / 110540;
-    const maxLon = MAX_SIDE_M / (111320 * Math.max(0.01, Math.cos(midLat * Math.PI / 180)));
-    const shrink = (lo, hi, max) => (hi - lo <= max ? [lo, hi] : [(lo + hi) / 2 - max / 2, (lo + hi) / 2 + max / 2]);
-    const [x0, x1] = shrink(w, e, maxLon);
-    const [y0, y1] = shrink(s, n, maxLat);
-    return [x0, y0, x1, y1];
-}
-
-// The box split into an even grid of tiles no wider or taller than TILE_SIDE_M.
-export function tileBox([w, s, e, n]) {
-    const midLat = (s + n) / 2;
-    const latStep = TILE_SIDE_M / 110540;
-    const lonStep = TILE_SIDE_M / (111320 * Math.max(0.01, Math.cos(midLat * Math.PI / 180)));
-    const cols = Math.max(1, Math.ceil((e - w) / lonStep - 1e-9));
-    const rows = Math.max(1, Math.ceil((n - s) / latStep - 1e-9));
-    const tiles = [];
-    for (let i = 0; i < cols; i++) {
-        for (let j = 0; j < rows; j++) {
-            tiles.push([w + (e - w) * i / cols, s + (n - s) * j / rows, w + (e - w) * (i + 1) / cols, s + (n - s) * (j + 1) / rows]);
-        }
-    }
-    return tiles;
-}
 
 export function createCustomBuildingProvider(descriptor, { fetchImpl = createPublicSourceFetch() } = {}) {
     const adapter = withSourceCooldown(createParcelSource(descriptor, { fetchImpl }));
 
-    // Tile by tile, merged by id (a building across a tile edge comes back from both). A failed tile
-    // leaves the answer incomplete; only when every tile fails is the source unavailable.
+    // The box read whole, or in quarters while the adapter says it is over its area or feature
+    // limit (split-read.js). A failed quarter throws: the caller reports the box unavailable.
     async function featuresIn(bbox) {
-        const queue = tileBox(bbox);
-        const total = queue.length;
-        const byId = new Map();
-        let complete = true, failed = 0, firstError = null;
-        await Promise.all(Array.from({ length: Math.min(TILE_CONCURRENCY, total) }, async () => {
-            while (queue.length) {
-                const tile = queue.shift();
-                try {
-                    const result = await adapter.queryBounds(tile);
-                    if (result.complete !== true) complete = false;
-                    for (const feature of result.features || []) byId.set(String(feature.id), feature);
-                } catch (error) {
-                    failed++;
-                    firstError = firstError || error;
-                    complete = false;
-                }
+        let failure = null;
+        const read = await splitRead(bbox, async box => {
+            if (boxSideMeters(box) > MAX_SIDE_M) return { areaLimited: true };
+            try {
+                const result = await adapter.queryBounds(box);
+                return { items: result.features || [], complete: result.complete === true };
+            } catch (error) {
+                if (error?.code === AREA_LIMIT_CODE) return { areaLimited: true };
+                failure = error;
+                return { unavailable: true };
             }
-        }));
-        if (failed === total) throw firstError;
-        if (failed) log(`${descriptor.name}: ${failed} of ${total} tiles failed, answer is partial: ${firstError.message}`);
-        return { features: [...byId.values()].map(feature => customBuildingFeature(descriptor, feature)), complete };
+        }, { idOf: feature => feature.id });
+        if (read.unavailable) throw failure;
+        return { features: read.items.map(feature => customBuildingFeature(descriptor, feature)), complete: read.complete };
     }
 
     async function near(geometry, bufferMeters) {
-        const box = fitBox(expandBbox(turf.bbox(geometry), bufferMeters));
+        const box = expandBbox(turf.bbox(geometry), bufferMeters);
         let found;
         try {
             found = await featuresIn(box);
@@ -127,10 +92,7 @@ export function createCustomBuildingProvider(descriptor, { fetchImpl = createPub
     async function footprints(geometry) {
         let found;
         try {
-            const wanted = turf.bbox(geometry);
-            const fitted = fitBox(wanted);
-            found = await featuresIn(fitted);
-            if (fitted.some((value, i) => Math.abs(value - wanted[i]) > 1e-12)) found.complete = false;
+            found = await featuresIn(turf.bbox(geometry));
         } catch (error) {
             log(`${descriptor.name}: no footprints: ${error.message}`);
             return { footprints: [], count: 0, truncated: true, source: 'custom-footprints', ...unavailableFrom(error) };
@@ -145,10 +107,6 @@ export function createCustomBuildingProvider(descriptor, { fetchImpl = createPub
     async function footprintsUnder(regions) {
         const byKey = new Map(regions.map(region => [String(region.key), []]));
         const box = turf.bbox(turf.featureCollection(regions.map(region => turf.feature(region.geometry))));
-        const fitted = fitBox(box);
-        if (fitted.some((value, i) => Math.abs(value - box[i]) > 1e-12)) {
-            return { regions: byKey, truncated: true, source: 'custom-footprints' };
-        }
         let found;
         try {
             found = await featuresIn(box);

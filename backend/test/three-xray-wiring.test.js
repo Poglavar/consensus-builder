@@ -322,7 +322,7 @@ describe('three-mode Xray wiring', () => {
             estimateBuildingHeightMeters: () => null, reportThreeClip: vi.fn(), appendBuildingFloorPlans: vi.fn(() => true) });
         append('material');
         append('material');
-        expect(ensure).toHaveBeenCalledExactlyOnceWith([[4.61, -74.11], [4.62, -74.10]], { pad: 0 });
+        expect(ensure).toHaveBeenCalledExactlyOnceWith([[4.61, -74.11], [4.62, -74.10]]);
         expect(planBuilding.mock.calls.map(([feature]) => feature.properties.id)).toEqual(['b5', 'b20', 'b5', 'b20']);
         expect(c.totals).toMatchObject({ existing: 4, existingCapped: true });
     });

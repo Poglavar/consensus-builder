@@ -151,6 +151,13 @@ export async function installLayerDatasets(page: Page): Promise<void> {
     supported: true,
     footprints: [{ ...existingBuildingFootprint, height_m: 12, floors: 4 }],
   } }));
+  // The 2D pool's cells; a 3D cell is left to the scene mock (mockBuildingScene) or the API fixture.
+  await page.route('**/buildings/cell', route => {
+    const body = route.request().postDataJSON();
+    if (body.kind !== 'footprints') return route.fallback();
+    return route.fulfill({ json: { supported: true, kind: body.kind, bbox: body.bbox, complete: true,
+      items: [{ ...existingBuildingFootprint, height_m: 12, floors: 4 }] } });
+  });
 
   // Only the API: the glob also matches the app's own js/osm-roads-source.js.
   await page.route('**/osm-road**', route => {

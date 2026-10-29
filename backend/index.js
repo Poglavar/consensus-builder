@@ -235,6 +235,7 @@ export const PARCELS_UNDER_RATE_LIMIT = 3000;
 export const READ_ONLY_POST_PATHS = new Set([
     '/buildings/near',
     '/buildings/footprints',
+    '/buildings/cell',
     '/buildings/under',
     '/parcels/under',
     '/proposals/batch',

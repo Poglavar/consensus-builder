@@ -61,9 +61,9 @@ test('observed buildings start off and retain a faint contrasting fill when show
 
 test('NYC exposes its source footprints and can display them from the common endpoint', async ({ mockApi: page }) => {
   await stubBasemapTiles(page);
-  await page.route('**/buildings/footprints', route => route.fulfill({ json: {
-    supported: true, truncated: false, source: 'nyc-arcgis', count: 1,
-    footprints: [{ id: '1079147', height_m: 36.57, floors: null, geometry: { type: 'Polygon', coordinates: [
+  await page.route('**/buildings/cell', route => route.fulfill({ json: {
+    supported: true, complete: true, source: 'nyc-arcgis', count: 1,
+    items: [{ id: '1079147', height_m: 36.57, floors: null, geometry: { type: 'Polygon', coordinates: [
       [[-74.0062,40.7127],[-74.0059,40.7127],[-74.0059,40.7129],[-74.0062,40.7129],[-74.0062,40.7127]]
     ] } }]
   } }));

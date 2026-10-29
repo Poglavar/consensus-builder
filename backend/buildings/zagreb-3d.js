@@ -20,17 +20,21 @@ export function createZagrebProvider(pool) {
             FROM gdi_building_3d b, q
             WHERE ST_DWithin(b.geom2d_3765, q.g, $2)
             ORDER BY b.geom2d_3765 <-> q.g
-            LIMIT 4000
+            LIMIT 4001
         `;
 
-        const { rows } = await pool.query(sql, [JSON.stringify(geometry), bufferMeters]);
+        const { rows: found } = await pool.query(sql, [JSON.stringify(geometry), bufferMeters]);
+        // One row past the cap says the area holds more than 4,000: the answer is truncated, so a
+        // cell reader splits the cell (split-read.js) instead of drawing the nearest 4,000.
+        const truncated = found.length > 4000;
+        const rows = truncated ? found.slice(0, 4000) : found;
         const buildings = rows.map(row => ({
             object_id: row.object_id,
             z_min: row.z_min,
             z_max: row.z_max,
             faces: row.faces || []
         }));
-        return { buildings, count: buildings.length, source: 'zagreb-3d' };
+        return { buildings, count: buildings.length, source: 'zagreb-3d', ...(truncated ? { truncated: true } : {}) };
     }
 
     // 2D footprints (with measured heights) of existing buildings mostly inside a GeoJSON polygon.

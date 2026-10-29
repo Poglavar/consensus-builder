@@ -1,7 +1,8 @@
-// All building reads use our backend. Dedicated city/user sources retain their own
-// identities; a configured OSM fallback also runs through the backend.
+// All building reads use our backend: transport only, no source decisions. The city's ordered
+// source list (its own survey, then declared stand-ins such as `fallbacks: ['osm']`) is resolved
+// per cell by the cell loader (building-cells.js), never here.
 (function () {
-    const PATHS = ['/buildings/near', '/buildings/footprints', '/buildings/under', '/buildings/carve'];
+    const PATHS = ['/buildings/near', '/buildings/footprints', '/buildings/under', '/buildings/carve', '/buildings/cell'];
     // The centre of the request's area ({ lat, lon }): its geometry, or its first region's (one
     // request covers one scene). null when it has no coordinates.
     function requestPoint(body) {
@@ -44,36 +45,42 @@
         return response.json();
     }
 
-    function serverAnswerIsEmpty(path, payload) {
-        if (!payload || payload.unavailable || payload.supported === false) return true;
-        // Footprints cut to the source's query limit are still the city's own buildings: the answer
-        // stays truncated (the pool claims no coverage) instead of being swapped for another survey
-        // with other identities.
-        if (path === '/buildings/footprints') return !(payload.footprints && payload.footprints.length);
-        if (payload.truncated === true) return true;
-        if (path === '/buildings/near') return !(payload.buildings && payload.buildings.length);
-        return false;
+
+
+    // The source a request names when it reads the city's own survey (or the person's own source).
+    function primarySource(buildings) {
+        return buildings?.sourceId || (buildings?.source === 'osm' ? 'osm' : undefined);
     }
 
+    // The city's building sources in order: its own, then the declared stand-ins.
+    function sourcesFor(global, body) {
+        const buildings = configFor(global, body).buildings;
+        const primary = primarySource(buildings);
+        const fallbacks = Array.isArray(buildings?.fallbacks) ? buildings.fallbacks : [];
+        return [...new Set([primary, ...fallbacks].filter(Boolean))];
+    }
 
+    // A geometry request reads the primary source only: demolition scans and carves must be judged
+    // against one survey, and the cell loader is where stand-ins are chosen.
     async function request(path, body, { signal, global = window } = {}) {
         if (!PATHS.includes(path)) throw new Error(`Not a building endpoint: ${path}`);
         const config = configFor(global, body);
-        const buildings = config.buildings;
         const { city, source, floorModelNamespace, ...rest } = body || {};
-        const serverBody = { ...rest, source: buildings?.sourceId || (buildings?.source === 'osm' ? 'osm' : undefined),
-            floorModelNamespace: config.floorModels?.namespace };
-        if (buildings?.fallback !== 'osm') return askServer(global, path, serverBody, signal);
-        let payload;
-        try {
-            payload = await askServer(global, path, serverBody, signal);
-        } catch (error) {
-            if (error?.name === 'AbortError') throw error;
-        }
-        if (!serverAnswerIsEmpty(path, payload)) return payload;
-        return askServer(global, path, { ...rest, source: 'osm' }, signal);
+        return askServer(global, path, { ...rest, source: primarySource(config.buildings),
+            floorModelNamespace: config.floorModels?.namespace }, signal);
     }
-    const api = { request, requestPoint, serverAnswerIsEmpty };
-    if (typeof window !== 'undefined') window.BuildingSourceClient = api;
+
+    // One cell from one named source (POST /buildings/cell).
+    async function requestCell({ kind, source, bbox, signal }, { global = window } = {}) {
+        const config = configFor(global, { geometry: { type: 'Point', coordinates: [(bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2] } });
+        return askServer(global, '/buildings/cell', { kind, bbox, source,
+            ...(kind === 'near' && config.floorModels?.namespace ? { floorModelNamespace: config.floorModels.namespace } : {}) }, signal);
+    }
+    const api = { request, requestCell, requestPoint, sourcesFor };
+    if (typeof window !== 'undefined') {
+        window.BuildingSourceClient = api;
+        // One loader per page: its cache and per-source back-off are shared by the 2D pool and the 3D scene.
+        if (window.BuildingCells) window.BuildingCellLoader = window.BuildingCells.createCellLoader({ request: cell => requestCell(cell) });
+    }
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })();

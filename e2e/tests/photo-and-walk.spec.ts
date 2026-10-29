@@ -316,7 +316,7 @@ test('Photo building clicks open the shared source record and survive a switch t
   const bottom = ring.map(([x,y]) => [x,y,0]), top = ring.map(([x,y]) => [x,y,15]);
   const faces = [top, ...bottom.slice(0,-1).map((a,i) => [a,bottom[i+1],top[i+1],top[i],a])]
     .map(coordinates => ({ type: 'Polygon', coordinates: [coordinates] }));
-  await page.route('**/buildings/near', route => route.fulfill({ json: { buildings: [{
+  await page.route('**/buildings/cell', route => route.fulfill({ json: { supported: true, complete: true, items: [{
     object_id: 202, z_min: 0, z_max: 15, faces, floorModel: { footprint: { type: 'Polygon', coordinates: [ring] } }
   }] } }));
   await openCity(page);

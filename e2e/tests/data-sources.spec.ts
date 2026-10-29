@@ -75,7 +75,7 @@ test.describe('Data sources @features', () => {
     // Building footprints are fetched only when their layer is enabled. Trigger the first request
     // after the source-switch reload so it proves that the selected source is sent.
     await openLayerSection(page, 'buildings');
-    const footprints = page.waitForRequest(request => request.url().endsWith('/buildings/footprints') && request.method() === 'POST');
+    const footprints = page.waitForRequest(request => request.url().endsWith('/buildings/cell') && request.method() === 'POST');
     await page.locator('#showBuildings').check();
     const footprintsBody = (await footprints).postDataJSON();
     expect(footprintsBody).toMatchObject({ source: sourceId('ft') });

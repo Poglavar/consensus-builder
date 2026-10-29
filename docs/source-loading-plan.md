@@ -67,64 +67,73 @@ per-adapter tests cover that nothing else moved.
 
 ### B. Buildings on the parcel grid
 
-- **Server.** `/buildings/cell` answers one cell of the city grid (`city`, `gridE,gridN` key, the
-  cell's box, `source`), in the same shape `/buildings/footprints` uses, with the building's height
-  fields, cached per source and cell. A cell over the source's limit is split into its four
-  quarters server-side, so no city needs a hand-tuned tile size. `/buildings/near` and
-  `/buildings/footprints` become readers of cells; `fitBox`, the 320 m tiling and the
-  padded-box shrink in `custom-source-3d.js` go.
-- **Browser.** One building loader (`frontend/js/buildings/cell-loader.js`, a pure module) owns the
-  per-cell cache, the in-flight set, nearest-first ordering around a point, a concurrency of six,
-  and a `k of N` progress figure. The 2D pool is keyed by cells instead of covered rectangles;
-  `ensureBuildingFootprintsForBounds` becomes "ensure these cells". The 3D scene gets one group per
-  cell, so a cell that lands is added without rebuilding the rest, and a demolition carve touches
-  only the cell groups it intersects.
-- **Completeness loads stay separate.** Demolition checks, corridor building detection and X-ray's
-  typical layouts must see every building in their own area whatever is on screen; they ensure the
-  cells under their geometry through the same loader and are never limited by the display budget.
+- **Server.** `POST /buildings/cell` (`backend/routes/buildings.js`) answers one building cell
+  (`kind: 'near'` for 3D records or `'footprints'` for the 2D pool, `bbox`, `source`) from one named
+  source, cached per source, kind and cell for 15 minutes. `backend/buildings/split-read.js` reads a
+  box whole or, while the source says it is capped (an area-limit error, or a provider's `truncated`
+  answer such as Zagreb's 4,000-row cap), in quarters merged by id; one failed quarter makes the
+  whole cell unavailable. The custom sources (`custom-source-3d.js`) read their adapter through the
+  same splitter, so the 950 m shrink and the fixed 320 m tiles are gone. `/buildings/near` and
+  `/buildings/footprints` stay for geometry callers (demolition scans, MCP) and read the primary
+  source only.
+- **Browser.** `frontend/js/building-cells.js` (pure) turns the parcel grid into building cells:
+  aligned blocks of parcel cells about 300 m wide (Bogotá's 0.0025° grid is one parcel cell per
+  building cell, a 100 m grid three by three), the cells over a view or within a radius of a 3D
+  anchor, nearest first. Its loader keeps the per-cell cache, the in-flight set, six requests at a
+  time, per-source back-off and the fallback chain. One loader per page
+  (`window.BuildingCellLoader`) serves the 2D pool and the 3D scene.
+- **2D pool** (`map-core.js` `fetchProviderBuildingCells`): every provider city loads the cells under
+  the view and merges each into the pool as it lands; `ensureBuildingFootprintsForBounds` ensures
+  cells. Zagreb's GDI survey keeps its own bbox path (`GET /buildings`, covered rectangles,
+  `buildingsRetryAt`): it is our database, and its pool features carry GDI properties the corridor
+  tools read.
+- **3D scene** (`three-mode.js` `ensureNearbyProposalBuildings`): the cells within the radius of the
+  anchor (or over a proposal plus its apron), nearest first; the scene rebuilds when the first cell
+  lands and at each quarter, and keeps the buildings that reach into the radius. The previous
+  buildings stay drawn until new cells replace them.
+- **Completeness loads** (demolition checks, corridor building detection, X-ray's typical layouts)
+  ensure the cells under their own geometry through the same loader, whatever is on screen.
+- **Open:** one 3D group per cell, so a landing cell is added without rebuilding the rest; today a
+  load rebuilds the existing buildings up to five times.
 
 ### C. A view budget
 
-The screen decides what loads, starting values measured on the laptop and a phone before they are
-fixed:
-
-- **3D.** Cells inside the camera's view out to about 500 m, nearest first; cells behind the
-  camera or beyond the distance are not loaded. Near cells draw full buildings; far cells draw
-  simple extrusions; beyond the distance nothing. The radius slider becomes this distance.
-- **2D.** Individual buildings from about zoom 16; below it, no footprints (the parcel layer
-  already behaves this way for small parcels).
+- **3D.** The radius slider (300 m by default) is the load distance; cells are loaded nearest
+  first and only buildings reaching into the radius are kept (Bogotá: 1,835 at 300 m).
+- **2D.** No footprints below zoom 17 (already the rule in `fetchBuildings`).
+- **Open:** loading only the cells in the camera's view, and simpler drawing for far cells. Both
+  need measurements on the laptop and a phone first, and view-dependent loading needs the camera
+  to trigger loads, which is step E2.
 
 ### D. Sources independent in the browser
 
-The server already isolates sources: cooldown and concurrency are per source. The browser has shared
-gates, each replaced by per-layer state:
+The server isolates sources (cooldown and concurrency per source). In the browser:
 
-| Shared gate today | Replacement |
+| Shared gate | Now |
 |---|---|
-| `serverAnswerIsEmpty` in `building-source-client.js` swaps a failed, empty or truncated city answer for OpenStreetMap, mixing identities in one pool | A declared fallback chain resolved per cell in one place (below) |
-| `getSceneReadiness({ requireExisting })` in `three-mode.js` holds the 3D scene as not ready while existing buildings have not loaded | Readiness is per layer; the scene is ready when its own geometry is, and each layer reports loading, loaded, partial or failed on its own |
-| `reportBuildingsUnavailable` routes building failures into `ParcelSourceSettings.reportFailure`, one banner for parcels and buildings | One status line per layer in the Layers panel (parcels, buildings, trees, water, roads, planning), each with its own Retry; the banner stays for parcels only |
-| `buildingsRetryAt` in `map-core.js` stops every building fetch for the upstream's retry time | The back-off lives in the cell loader, per source, and other layers never read it |
+| `serverAnswerIsEmpty` in `building-source-client.js` swapped a failed, empty or truncated city answer for OpenStreetMap inside one request, mixing identities | Removed: the client is transport only; the fallback chain is declared and resolved per cell (below) |
+| `buildingsRetryAt` paused every building fetch after any building failure | Set by the GDI path only; provider cities back off per source in the cell loader |
+| 3D water and green waited for the buildings fetch | They load alongside it (their own query area) |
+| Building failures and parcel failures | Already separate banners (`ParcelSourceSettings.reportFailure` by kind), each with its own Retry; unchanged |
+| `ThreeSceneReady` waits for existing buildings | Unchanged: each caller says whether it needs them (`requireExisting`), which is right for captures |
 
 Rule for new code: a layer owns its loading, its failure state and its place in the status display;
 a failure shows in that layer only, with its own retry, while the others load and draw as usual.
 
-**Fallback sources.** Fallbacks stay, declared rather than coded. A city's building config lists its
-sources in order (`buildings.sources: ['building.<city source>', 'osm']`, replacing the single
-`sourceId` plus `fallback: 'osm'`); the `osm` source is the backend one (the staged copy in
-`overture_building_footprint` where a region is staged, else Overpass through
-`backend/buildings/osm-reference.js`). The cell loader is the only place the chain is resolved:
+**Fallback sources.** Fallbacks stay, declared rather than coded: a city's building config names its
+own source (`sourceId`) and an ordered list of stand-ins (`fallbacks: ['osm']`, Bogotá's only so
+far). `osm` is the backend source (the staged copy in `overture_building_footprint` where a region is
+staged, else Overpass through `backend/buildings/osm-reference.js`). The cell loader is the only
+place the chain is resolved:
 
-- A cell is answered wholly by one source and records which. When the first source fails it (outage,
-  block, rate limit, timeout; not an area limit, which splits the cell instead), the next source
-  answers that cell. Cells are never merged across sources.
+- A cell is answered wholly by one source and records which. A stand-in answers a cell the source
+  before it failed (outage, block, rate limit, timeout; an area limit splits the cell instead) or
+  found empty (a city survey ends at its boundary). Cells are never merged across sources.
 - Building identities carry their source (`CUSTOM-B-…`, OSM ids), so a demolition record names the
-  survey it was made against, and a stand-in cell is never read as the primary survey.
-- The layer's status says how many cells came from a stand-in ("Buildings: 12 cells from
-  OpenStreetMap while the city source is unavailable"); its Retry asks those cells of the first
-  source again.
-- `building-source-client.js` keeps only transport; no source decisions remain in it. Parcels keep
-  their existing user-chosen sources ("choose another source"), not an automatic chain.
+  survey it was made against.
+- A stand-in cell is not cached: once the failed source's back-off ends, the next load asks it
+  again. The status line says how many areas came from a stand-in.
+- Parcels keep their user-chosen sources ("choose another source"), not an automatic chain.
 
 ### E. 3D panning, in order
 
@@ -138,20 +147,19 @@ sources in order (`buildings.sources: ['building.<city source>', 'osm']`, replac
    (click stack, compare split, isolation, build-out timeline, X-ray) coping with cells appearing
    and disappearing.
 
-### Removed when superseded
+### Removed
 
-The 950 m `fitBox`, the 320 m tiling and the keep-truncated-footprints rule in
-`building-source-client.js` (all 2026-10-30 stopgaps), the pool's covered-rectangle list and its
-12,000 cap, X-ray's one-off radius request, `buildingsRetryAt`.
+The 950 m `fitBox`, the 320 m tiling and the keep-truncated-footprints rule (2026-10-30 stopgaps),
+`serverAnswerIsEmpty`, the provider path's covered rectangles, and `buildings.fallback`.
 
 ## Status
 
 | Step | State |
 |---|---|
 | A. Area-limit error code | done: `areaLimitError` in `source-contract.js`, 52 sites in 26 adapters |
-| B. Buildings on the parcel grid | open |
-| C. View budget | open |
-| D. Sources independent in the browser | open |
-| E1. Cells with a view budget | open (same as B and C) |
-| E2. Re-centre on demand | open |
-| E3. Streaming with eviction | not started; decided after E2 |
+| B. Buildings on the parcel grid | done, except one 3D group per cell |
+| C. View budget | distance and zoom rules done; camera-view loading and far-cell drawing open |
+| D. Sources independent in the browser | done |
+| E1. Cells with a view budget | as B and C |
+| E2. Re-centre on demand | deferred (user decision 2026-10-30) |
+| E3. Streaming with eviction | deferred |

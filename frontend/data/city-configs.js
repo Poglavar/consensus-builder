@@ -14569,11 +14569,11 @@
                 // The cadastre's own buildings (IDECA/UAECD "Construcción": 2.37 M footprints, each with
                 // its storey count), read live through the building-source adapter from a public ArcGIS
                 // copy: UAECD's own server does not answer from outside Colombia, and this copy was
-                // uploaded by a university account (last edited 2022-08). Backend OSM stands in
-                // wherever it fails or has nothing (outside Bogotá D.C.).
+                // uploaded by a university account (last edited 2022-08). Backend OSM stands in for
+                // a cell it fails or has nothing in (outside Bogotá D.C.), cell by cell (building-cells.js).
                 source: 'cadastre',
                 sourceId: 'building.eyJhZGFwdGVyIjoiYXJjZ2lzIiwiZW5kcG9pbnQiOiJodHRwczovL3NlcnZpY2VzLmFyY2dpcy5jb20vZGVRU2IwR243Z0RQZjN1Vi9hcmNnaXMvcmVzdC9zZXJ2aWNlcy9Db25zdHJ1Y2Npb25lc19Cb2dvdGFfRENfdmlzdGEvRmVhdHVyZVNlcnZlci8wIiwiY2l0eUlkcyI6WyJib2dvdGEiXSwibWV0cmljU3JpZCI6MzI2MTgsImlkRmllbGQiOiJGSUQiLCJvYmplY3RJZEZpZWxkIjoiRklEIiwiaWRUeXBlIjoiaW50ZWdlciIsIm91dEZpZWxkcyI6WyJGSUQiLCJDT05OUElTT1MiXSwia2luZCI6ImJ1aWxkaW5nIiwibGV2ZWxzRmllbGQiOiJDT05OUElTT1MiLCJpZFByZWZpeCI6IkNVU1RPTS1CLTU4YzIyNzVhOTAyMTg3N2U5NjllLSJ9',
-                fallback: 'osm',
+                fallbacks: ['osm'],
                 name: 'IDECA/UAECD Construcción',
                 attribution: '<a href="https://services.arcgis.com/deQSb0Gn7gDPf3uV/arcgis/rest/services/Construcciones_Bogota_DC_vista/FeatureServer/0">IDECA/UAECD buildings · 2022 copy</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>'
             },

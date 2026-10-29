@@ -34,35 +34,25 @@ describe('building source client', () => {
         await client.request('/buildings/near', { geometry }, { global });
         expect(calls[0].body.source).toBe('building.there');
     });
-    it('keeps a successful city answer and an authoritative empty demolition scan', async () => {
-        for (const [path, answer] of [['/buildings/near', { buildings: [{ object_id:'one' }] }],
+    it('reads geometry requests from the city own source only, whatever stand-ins it declares', async () => {
+        for (const [path, answer] of [['/buildings/near', { buildings: [] , unavailable: true }],
+            ['/buildings/footprints', { footprints: [], truncated: true }],
             ['/buildings/under', { supported: true, regions: { take: [] }, truncated: false }]]) {
-            const { global, calls } = page({ sourceId: 'building.city', fallback: 'osm' }, [answer]);
+            const { global, calls } = page({ sourceId: 'building.city', fallbacks: ['osm'] }, [answer]);
             expect(await client.request(path, { geometry }, { global })).toEqual(answer);
-            expect(calls).toHaveLength(1);
+            expect(calls.map(call => call.body.source)).toEqual(['building.city']);
         }
     });
-    it('uses backend OSM when the configured city source fails, is empty or incomplete', async () => {
-        for (const first of [new Error('offline'), { footprints: [] }, { truncated: true }, { unavailable: true }]) {
-            const answer = { source: 'osm-footprints', footprints: [], truncated: true, unavailable: true };
-            const { global, calls } = page({ sourceId: 'building.city', fallback: 'osm' }, [first, answer]);
-            expect(await client.request('/buildings/footprints', { geometry }, { global })).toEqual(answer);
-            expect(calls.map(call=>call.body.source)).toEqual(['building.city','osm']);
-        }
-    });
-    it('keeps truncated city footprints instead of swapping in OSM, but not a truncated demolition scan', async () => {
-        const footprints = { source: 'custom-footprints', footprints: [{ id: 'CUSTOM-B-1' }], truncated: true };
-        const a = page({ sourceId: 'building.city', fallback: 'osm' }, [footprints]);
-        expect(await client.request('/buildings/footprints', { geometry }, { global: a.global })).toEqual(footprints);
-        expect(a.calls).toHaveLength(1);
-        const osm = { supported: true, regions: { take: [] }, truncated: false };
-        const b = page({ sourceId: 'building.city', fallback: 'osm' }, [{ supported: true, regions: { take: ['x'] }, truncated: true }, osm]);
-        expect(await client.request('/buildings/under', { geometry }, { global: b.global })).toEqual(osm);
-        expect(b.calls.map(call => call.body.source)).toEqual(['building.city', 'osm']);
+    it('lists the city sources in order, its own first, and asks one cell of one named source', async () => {
+        const { global, calls } = page({ sourceId: 'building.city', fallbacks: ['osm'] }, [{ supported: true, items: [], complete: true }]);
+        expect(client.sourcesFor(global, { geometry })).toEqual(['building.city', 'osm']);
+        expect(client.sourcesFor(page({ source: 'osm' }, []).global, { geometry })).toEqual(['osm']);
+        await client.requestCell({ kind: 'footprints', source: 'osm', bbox: [-74.11, 4.61, -74.10, 4.62] }, { global });
+        expect(calls[0]).toMatchObject({ url: 'http://backend.test/buildings/cell', body: { kind: 'footprints', source: 'osm', bbox: [-74.11, 4.61, -74.10, 4.62] } });
     });
     it('keeps aborts and failures visible when no fallback is configured', async () => {
         const abort = Object.assign(new Error('aborted'), { name:'AbortError' });
-        const a = page({ sourceId:'building.city', fallback:'osm' }, [abort]);
+        const a = page({ sourceId:'building.city', fallbacks:['osm'] }, [abort]);
         await expect(client.request('/buildings/near', { geometry }, { global:a.global })).rejects.toThrow('aborted');
         expect(a.calls).toHaveLength(1);
         const b = page({ sourceId:'building.mine' }, [new Error('offline')]);
