@@ -273,12 +273,27 @@ scheme refused, and reads the catalogue.
 ### Scheme guide
 
 The scheme card's "How this scheme works…" opens a dialog generated from the template's data
-(`ProposalApprovalSetup.schemeGuideHtml`, `openSchemeGuide`): who decides and what the support
-is for; how land is distributed, with a before/after schematic drawn from the scheme's cap and
-basis (the plan's own parties when one is open, else three example owners); this agreement against
-the scheme, with the parties' land and what would meet a broken rule, in the editor's own controls;
-how to set the scheme up here (Compensation, Land contribution, Output parcels, Parcel ownership
-rights, Authority, Persons); and the sources. Colours and type come from `proposal-editor.css`.
+(`ProposalApprovalSetup.schemeGuideHtml`, `openSchemeGuide`), organized by the scheme dimensions
+(`ProposalApprovalRegimes.DIMENSIONS`, `dimensionsOf`; worded by `ProposalApprovalText.dimensionText`),
+so every scheme reads in the same vocabulary:
+
+- **How it is decided:** a flow (who starts it → owner support, one gauge per test filled to its
+  threshold → the authority's decision → what passing unlocks), then each decision dimension as a
+  badge and a sentence.
+- **How the land is shared:** each distribution dimension, then the outcome chart
+  (`outcomeModel`): one row per party, largest first, with what it puts in and gets back on one
+  scale, a tick for what it is owed, a tick for the least it may get back under a per-owner cap (the
+  row turns red below it), and its cash (+ receives, − pays); public and proposer land below; a pool
+  cap as a gauge. A valued ledger can switch between area and value. Without a plan, three example
+  owners give up the cap, or a quarter of their land where the scheme sets none.
+- This agreement against the scheme, with what would meet a broken rule in the editor's own
+  controls; how to set the scheme up here (Compensation, Land contribution, Output parcels, Parcel
+  ownership rights, Authority, Persons); and the sources.
+
+With a picker (from the agreement editor and panel), **Compare all schemes** (`compareHtml`) lists
+every scheme in the same dimensions, one row each; a name picks it. Colours and type come from
+`proposal-editor.css`; bar lengths reach it as `--scheme-length` and `--scheme-at`. MCP's `schemes`
+help topic carries each scheme's `dimensions` (coded value, short and long wording).
 
 ### Verification (2026-10-28)
 

@@ -1053,7 +1053,7 @@
             };
             const schemeStatus = {};
             regimes.list().forEach(scheme => { try { schemeStatus[scheme.id] = api.schemeCheck(agreement, scheme).check.ok; } catch (_) { /* unmarked */ } });
-            setup.openSchemeGuide({ template, regime: agreement.rule?.approvalConfig?.regime || null, ...guideFor(template), currency: agreement.money?.currency || '',
+            setup.openSchemeGuide({ template, ...guideFor(template), currency: agreement.money?.currency || '',
                 schemeStatus, guideFor, action: { label: t('proposalDrafts.approval.guide.counterWith', 'Counter-agreement with this scheme'), run: scheme => counter(scheme) } });
         }
 

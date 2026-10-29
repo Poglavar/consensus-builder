@@ -1053,7 +1053,7 @@
                         return { ledger, rules: result?.check.rules || [], check: result ? { ok: result.check.ok, lines: result.check.rules.map(rule => ({ ok: rule.ok, text: words.checkLines({ rules: [rule] }, t, label)[0] })) } : null };
                     } catch (_) { return { ledger: null, rules: [], check: null }; }
                 };
-                auxiliary = setup().openSchemeGuide({ parent: modal, template, regime: state.approvalConfig?.regime || null, ...guideFor(template), currency: state.currency,
+                auxiliary = setup().openSchemeGuide({ parent: modal, template, ...guideFor(template), currency: state.currency,
                     schemeStatus: schemeView().schemeStatus || null, guideFor,
                     action: { label: t('proposalDrafts.approval.guide.use', 'Use this scheme'), run: chosen => {
                         try { state.approvalConfig = setup().withScheme(state.approvalConfig, chosen); renderRule(); issues(); } catch (error) { report(error); }

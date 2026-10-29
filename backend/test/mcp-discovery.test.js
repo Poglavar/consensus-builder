@@ -79,6 +79,11 @@ describe('the scheme catalogue', () => {
             'Land returns to its owners or goes to public use; a proposer cannot acquire it.'
         ]);
         expect(germany.sources[0].url).toMatch(/gesetze-im-internet/);
+        // The guide's dimensions, coded and worded the same way for every scheme.
+        expect(Object.keys(germany.dimensions)).toEqual(['initiator', 'decider', 'support', 'electorate', 'dissenters', 'stage', 'basis', 'publicLand', 'levelling', 'valueGain', 'minParties']);
+        expect(germany.dimensions.dissenters).toEqual({ value: 'bound-by-authority', short: 'Bound by the authority', long: 'The authority’s decision binds every owner.' });
+        expect(germany.dimensions.publicLand).toMatchObject({ value: { per: 'owner', ratio: 0.1, basis: 'area' }, short: '≤ 10% per owner (by area)' });
+        expect(result.schemes.find(scheme => scheme.id === 'jp-joint').dimensions.dissenters.value).toBe('veto');
         expect(result.instructions).toMatch(/rule\.approvalConfig\.regime/);
     });
 });

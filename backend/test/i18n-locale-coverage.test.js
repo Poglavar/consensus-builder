@@ -65,6 +65,11 @@ const DYNAMIC_KEY_PREFIXES = [
     'proposalApproval.regime.stages.',
     'proposalApproval.regime.families.',
     'proposalApproval.regime.basis.',
+    'proposalApproval.dimensions.labels.',  // approval-text.js: one label, short and long value per scheme dimension
+    'proposalApproval.dimensions.groups.',
+    'proposalApproval.dimensions.values.',
+    'proposalApproval.dimensions.stages.',
+    'proposalApproval.dimensions.outcome.', // approval-setup.js: the outcome chart's Area / Value toggle
     'proposalDrafts.validation.issues.',
     'proposalDrafts.placement.',
     'parcelLayout.editor.validation.', // parcel-layout.js: the layout checks' messages by error code

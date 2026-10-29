@@ -12,12 +12,21 @@ const plainText = (_key, fallback, params = {}) => String(fallback).replace(/\{\
 
 // The agreement schemes a rule can pin (rule.approvalConfig.regime = { id, version }): the newest
 // version of each, with its decision tests, authority count, distribution rules and sources.
+// The scheme guide's dimensions, the same vocabulary for every scheme: each one's coded value with its
+// short and long wording (approval-regimes.js dimensionsOf, approval-text.js dimensionText).
+function schemeDimensions(regime) {
+    const dimensions = ApprovalRegimes.dimensionsOf(regime);
+    return Object.fromEntries(ApprovalRegimes.DIMENSIONS.flatMap(group => group.ids).map(id => [id, {
+        value: dimensions[id], short: ApprovalText.dimensionText(id, dimensions, plainText, 'short'), long: ApprovalText.dimensionText(id, dimensions, plainText, 'long')
+    }]));
+}
+
 function schemeCatalogue() {
     return ApprovalRegimes.list().map(regime => ({
         id: regime.id, version: regime.version, name: regime.text.name, family: regime.family, country: regime.country, ...(regime.region ? { region: regime.region } : {}), stage: regime.stage,
         tests: regime.tests, authorities: regime.authorities, ...(regime.text.authority ? { authority: regime.text.authority } : {}),
         allocation: regime.allocation, ...(regime.minParties ? { minParties: regime.minParties } : {}),
-        distribution: ApprovalText.allocationLines(regime, plainText), note: regime.text.note, sources: regime.sources
+        distribution: ApprovalText.allocationLines(regime, plainText), dimensions: schemeDimensions(regime), note: regime.text.note, sources: regime.sources
     }));
 }
 
