@@ -180,7 +180,7 @@ A land unit represented by a particular cadastral, tax or other parcel provider.
 
 The provider of parcel identities and geometry, identified by `sourceId`. Jurisdiction and legal authority describe the source but do not replace its identity. A custom source descriptor identifies the selected service and its interpretation. Map lookup and server-side site binding use that same selected parcel source.
 
-The frontend consumer owns source configuration and sends its selected source explicitly. Backend services validate and serve that selection; they do not infer a city default. A retained cadastral namespace and the API gateway selector can have different identifiers while referring to the same parcel source; choosing a gateway does not rewrite the retained source observation.
+The frontend consumer owns source configuration and sends its selected source explicitly. When a design is shared, that source is chosen by where the design's ground lies (its site, else its drawn polygons), not by its city label. Backend services validate and serve that selection; they do not infer a city default. A retained cadastral namespace and the API gateway selector can have different identifiers while referring to the same parcel source; choosing a gateway does not rewrite the retained source observation.
 
 ### Source-qualified parcel reference
 

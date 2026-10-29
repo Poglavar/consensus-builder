@@ -336,6 +336,15 @@
             return config?.parcels?.sourceId || config?.parcels?.source || null;
         }
 
+        // The ground a published design stands on, in WGS84: its site, else the polygons of its
+        // drawing (footprint-parts.js, the selector the server binds with). The parcel source follows
+        // this geography; the design's city is only a label and may be absent.
+        function groundOf(content) {
+            if (content.site) return content.site;
+            const parts = win.__footprintParts?.footprintParts(content);
+            return parts?.polygons?.length ? { type: 'GeometryCollection', geometries: parts.polygons } : null;
+        }
+
         // Marks the local record (and the stored one, when it is another object) published.
         function markPublished(localDesign, published) {
             const store = storage();
@@ -372,7 +381,7 @@
             const content = designRecord().published(localDesign);
             clearPublicationProblem();
             const { cid } = await pinObject('design', content);
-            const response = await request('POST', '/designs', { cid, content, parcelSourceId: parcelSourceIdOf(content.city) });
+            const response = await request('POST', '/designs', { cid, content, parcelSourceId: parcelSourceIdOf(content.city, groundOf(content)) });
             if (!response.ok && response.status !== 409) {
                 throw publicationFailure(localDesign, response.status, response.body);
             }

@@ -536,6 +536,25 @@ describe('links, parcel sources and refusals', () => {
         expect(attempts).toBe(2);
     });
 
+    it('binds a design with the parcel source where its ground lies, whatever its city says', async () => {
+        const FootprintParts = require('../../frontend/js/proposals/footprint-parts.js');
+        const sited = road({ city: null });
+        const drawn = road({ proposalId: 'road-2', city: null, site: null,
+            roadProposal: { definition: { widthM: 9, polygon: square(15.97, 45.81) } } });
+        const { sync, server, win } = fakeWindow({ records: [sited, drawn] });
+        win.__footprintParts = FootprintParts;
+        const asked = [];
+        win.CityConfigManager.getDataContext = (geometry, city) => {
+            asked.push({ geometry, city });
+            return { parcelSourceId: geometry ? 'oss-wfs' : null };
+        };
+        await sync.publishDesign(sited);
+        await sync.publishDesign(drawn);
+        expect(server.calls.filter(call => call.pathname === '/designs').map(call => call.body.parcelSourceId)).toEqual(['oss-wfs', 'oss-wfs']);
+        expect(asked[0]).toEqual({ geometry: sited.site, city: null });
+        expect(asked[1].geometry).toEqual({ type: 'GeometryCollection', geometries: [square(15.97, 45.81)] });
+    });
+
     it('binds a city\'s designs with its catalogue parcel source, else the default', () => {
         const { sync } = fakeWindow({ configs: { zagreb: { parcels: { sourceId: 'zagreb-dgu' } }, split: { parcels: {} } } });
         expect(sync.parcelSourceIdOf('zagreb')).toBe('zagreb-dgu');

@@ -61,18 +61,6 @@ describe('recordsFromImport', () => {
         expect(tram.roadProposal.definition.metadata.highway).toBeUndefined();
     });
 
-    it('records the city it was made in, so sharing can choose the parcel source', () => {
-        const previous = globalThis.CityConfigManager;
-        globalThis.CityConfigManager = { getCurrentCityId: () => 'zagreb' };
-        try {
-            expect(imports.recordsFromImport(parsed()).map(record => record.city)).toEqual(['zagreb', 'zagreb', 'zagreb']);
-            expect(imports.recordsFromImport(parsed(), { city: 'split' })[0].city).toBe('split');
-        } finally {
-            globalThis.CityConfigManager = previous;
-        }
-        expect(imports.recordsFromImport(parsed())[0].city).toBeNull();
-    });
-
     it('takes every way as one road, named after the first way, when the adapter names none', () => {
         const input = parsed();
         delete input.roads;

@@ -204,9 +204,6 @@
                 description: options.description || title,
                 primaryType: isTrack ? 'Track' : 'Road',
                 goal: 'road-track',
-                // The city picks the parcel source the design is bound with when it is shared.
-                city: options.city || (global && global.CityConfigManager && typeof global.CityConfigManager.getCurrentCityId === 'function'
-                    ? global.CityConfigManager.getCurrentCityId() : null) || null,
                 isCorridor: true,
                 cadastreParcelIds: [],
                 applied: false,
