@@ -71,6 +71,8 @@ function makeManager(parcels) {
         _assignSyntheticChildIdentities(...args) { return ProposalManager._assignSyntheticChildIdentities(...args); },
         _addFeaturesToMap(features) { this.added.push(...features); },
         _consumeFeaturesFromLiveFabric(features) { this.hidden.push(...features); },
+        // The fabric's partition check is its own test (formed-partition-check.test.js).
+        _checkFormedPartition: vi.fn(async () => true),
         _markParcelProducedByProposal: vi.fn(),
         _addChildParcels: vi.fn(),
         _setLastApplyFailure: vi.fn(),

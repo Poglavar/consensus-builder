@@ -136,11 +136,11 @@ describe('candidate binding preflight', () => {
     });
 
     it('passes an explicit checker refusal through with no bound parcels', async () => {
-        const failure = { ok: false, status: 409, code: 'binding-unresolved', error: 'The canonical check failed.' };
+        const failure = { ok: false, status: 400, code: 'footprint-outside-site', error: 'The canonical check failed.' };
         const result = await checkCandidateBinding({ ...context, candidate: candidate('selected'), checkBinding: async () => failure });
         expect(result).toEqual({ ...failure, parcelIds: [] });
         expect(bindingRejection(candidate('selected'), result)).toEqual({
-            candidateId: 'densifier-01:selected', code: 'binding-unresolved', reason: 'The canonical check failed.', bound: 0
+            candidateId: 'densifier-01:selected', code: 'footprint-outside-site', reason: 'The canonical check failed.', bound: 0
         });
     });
 

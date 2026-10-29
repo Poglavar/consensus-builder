@@ -1,12 +1,17 @@
-// Server binding over an explicitly selected non-HR parcel source. The source adapter owns
-// completeness; this module refuses to turn a partial provider response into binding evidence.
+// Server binding over an explicitly selected parcel source, the HR cadastre included: the source
+// finds the candidate parcels (and, where it knows them, the surveyed regions) and the browser's
+// own function (site-binding.js bindingFromParcels) decides. The source adapter owns completeness;
+// this module refuses to turn a partial provider response into binding evidence.
 import { createRequire } from 'node:module';
 import * as turfModule from '@turf/turf';
 
 const require = createRequire(import.meta.url);
 const { bindingFromParcels, normalizeTolerance } = require('../../frontend/js/proposals/site-binding.js');
+const { snapGeometry } = require('../../frontend/js/geometry-tolerances.js');
+const { clipWith } = require('../../frontend/js/proposals/parcel-arrangement.js');
 const turf = turfModule.default || turfModule;
-const MAX_SOURCE_BINDING_PARCELS = 5000;
+// More candidate parcels than this is not a proposal (the same cap as /parcels/under).
+export const MAX_SOURCE_BINDING_PARCELS = 5000;
 
 function asGeometry(value) {
     const geometry = value?.type === 'Feature' ? value.geometry : value;
@@ -33,30 +38,28 @@ function sourceFeature(feature, sourceId) {
     return { id: parcelId, geometry };
 }
 
-function strictTurf(errors) {
-    return new Proxy(turf, {
-        get(target, property) {
-            const value = Reflect.get(target, property, target);
-            if (property === 'intersect' || property === 'difference') {
-                return (...args) => {
-                    try { return value.apply(target, args); }
-                    catch (error) { errors.push(error); return null; }
-                };
-            }
-            return typeof value === 'function' ? value.bind(target) : value;
-        }
-    });
-}
-
+// A source that stopped at the cap says so (`truncated`); either way the site is refused as too large.
 function requireComplete(result, label) {
+    const count = Array.isArray(result?.features) ? result.features.length : 0;
+    if (result?.truncated === true || count > MAX_SOURCE_BINDING_PARCELS) {
+        throw Object.assign(new RangeError(`The site meets more than ${MAX_SOURCE_BINDING_PARCELS} parcels.`), {
+            code: 'too-many-parcels', status: 413, ...(count > MAX_SOURCE_BINDING_PARCELS ? { count } : {})
+        });
+    }
     if (!result || result.complete !== true || !Array.isArray(result.features)) {
         throw new Error(`${label} parcel query did not return a complete feature collection.`);
     }
-    if (result.features.length > MAX_SOURCE_BINDING_PARCELS) {
-        throw Object.assign(new RangeError(`Parcel source returned more than ${MAX_SOURCE_BINDING_PARCELS} features.`), {
-            code: 'too-many-parcels', status: 413, count: result.features.length
-        });
+}
+
+// The surveyed regions a source reports with its candidates (HR: cadastral municipalities), or
+// null for a source that does not know them.
+function sourceRegions(result) {
+    if (result.regions === undefined) return null;
+    if (!Array.isArray(result.regions) || result.regions.some(region => !region?.geometry
+        || !['Polygon', 'MultiPolygon'].includes(region.geometry.type))) {
+        throw new Error('Parcel source returned malformed surveyed regions.');
     }
+    return result.regions;
 }
 
 function nowIso(now) {
@@ -70,7 +73,8 @@ export async function computeSourceBinding(adapter, {
 } = {}) {
     if (!adapter || typeof adapter.queryGeometry !== 'function') throw new TypeError('A parcel source adapter is required.');
     if (typeof sourceId !== 'string' || !sourceId) throw new TypeError('sourceId is required.');
-    const normalizedSite = normalizeSite(site);
+    // On the shared grid, as the browser holds every site and parcel.
+    const normalizedSite = snapGeometry(normalizeSite(site));
     const tolerance = normalizeTolerance(toleranceM);
     const result = await adapter.queryGeometry(normalizedSite);
     requireComplete(result, 'Geometry');
@@ -79,17 +83,18 @@ export async function computeSourceBinding(adapter, {
         throw new Error('Parcel source returned duplicate parcel IDs.');
     }
 
-    const geometryErrors = [];
+    // A clip the shared clipper cannot do (after its own deterministic retries, as in the browser)
+    // throws a typed ClipFailure; nothing is bound on a guess.
     const parcelSource = { sourceId, snapshotId: snapshotId || null };
     const binding = bindingFromParcels(normalizedSite, parcels, {
-        turf: strictTurf(geometryErrors),
+        turf,
         toleranceM: tolerance,
+        regions: sourceRegions(result),
         source: `server:${sourceId}`
     });
-    if (geometryErrors.length) throw new Error(`Parcel binding geometry operation failed: ${geometryErrors[0].message}`);
     return {
         site: normalizedSite,
-        binding: { ...binding, parcelSource, unknownM2: 0, computedAt: nowIso(now) }
+        binding: { ...binding, parcelSource, computedAt: nowIso(now) }
     };
 }
 
@@ -119,7 +124,8 @@ export async function computeSourceParcelActBinding(adapter, declaredIds, {
     if (absent.size !== result.absentIds.length || [...absent].some(id => !declared.has(id))) {
         throw new Error('Parcel ID query returned invalid absent IDs.');
     }
-    const parcels = result.features.map(feature => sourceFeature(feature, sourceId));
+    const parcels = result.features.map(feature => sourceFeature(feature, sourceId))
+        .map(parcel => ({ ...parcel, geometry: snapGeometry(parcel.geometry) }));
     const found = new Set(parcels.map(parcel => parcel.id));
     if (found.size !== parcels.length || [...found].some(id => !declared.has(id))
         || [...declared].some(id => !found.has(id) && !absent.has(id))
@@ -130,11 +136,10 @@ export async function computeSourceParcelActBinding(adapter, declaredIds, {
     let site = null;
     let siteM2 = 0;
     if (parcels.length) {
+        // The declared parcels' union by the shared clip (a failure throws a typed ClipFailure).
         let union = turf.feature(parcels[0].geometry);
-        try {
-            for (const parcel of parcels.slice(1)) union = turf.union(union, turf.feature(parcel.geometry));
-        } catch (error) {
-            throw new Error(`Could not union declared parcel geometries: ${error.message}`);
+        for (const parcel of parcels.slice(1)) {
+            union = clipWith(turf, 'union', union, turf.feature(parcel.geometry), { site: 'source-binding.declaredParcels', parcelId: parcel.id });
         }
         if (!union?.geometry || !['Polygon', 'MultiPolygon'].includes(union.geometry.type)) {
             throw new Error('Declared parcel union produced invalid geometry.');

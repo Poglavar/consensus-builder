@@ -1,10 +1,12 @@
 // Published design/v1 and agreement/v1 objects for the publish-route tests (plan-design-agreement.md
-// M2), the index rows the server stores for them, and a scripted cadastre that answers the binding
-// statements a design's site runs (proposals/binding.js) as a mock pool's `bindingAnswer`.
+// M2), the index rows the server stores for them, and a scripted cadastre that answers the HR
+// candidate statements a design's site runs (parcels/oss-binding-source.js) as a mock pool's
+// `bindingAnswer`: real geometry, so the server's binding (site-binding.js) decides as it does live.
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { cidOfObject } from '../../cid.js';
-import { BINDING_COUNT_SQL, BINDING_SQL, FOOTPRINT_OUTSIDE_SITE_SQL, PARCEL_ACT_SITE_SQL } from '../../proposals/binding.js';
+import { HR_PARCEL_IDS_SQL, HR_SITE_CANDIDATES_SQL } from '../../parcels/oss-binding-source.js';
+import { MAX_SOURCE_BINDING_PARCELS } from '../../parcels/source-binding.js';
 
 export const box = (w, s, e, n) => ({ type: 'Polygon', coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] });
 // A park inside its site, both in Zagreb.
@@ -53,25 +55,35 @@ export function layoutContent(overrides = {}) {
     };
 }
 
-// A parcel the cadastre finds under a site: bound (it reaches in beyond the tolerance) or touched.
-export const hit = (parcelId, intrusionM, bound = true, overlapM2 = 50) => ({ parcelId, overlapM2, intrusionM, bound });
-// Two parcels bound, a third only touched.
-export const SPILL = [hit('HR-335649-100', 40.2), hit('HR-335649-101', 0.42), hit('HR-335649-102', 0.0004, false, 0.01)];
+// The cadastre under SITE: its west and east halves (bound), and a northern neighbour whose edge lies
+// 4e-9° (0.4 mm, under the 1 mm noise) inside the site, so SITE only touches it.
+export const SPILL = [
+    { parcelId: 'HR-335649-100', bound: true, geometry: box(15.969, 45.799, 15.9705, 45.802) },
+    { parcelId: 'HR-335649-101', bound: true, geometry: box(15.9705, 45.799, 15.972, 45.802) },
+    { parcelId: 'HR-335649-102', bound: false, geometry: box(15.969, 45.801999996, 15.972, 45.803) }
+];
+// The same cadastre with a 0.0002° strip along the site's east edge left unsurveyed.
+export const SPILL_WITH_GAP = [SPILL[0], { ...SPILL[1], geometry: box(15.9705, 45.799, 15.9718, 45.802) }, SPILL[2]];
+// The cadastral municipality around SITE.
+export const REGION = box(15.96, 45.79, 15.98, 45.81);
 
 /**
- * The binding statements answered as a cadastre holding `parcels` under any site (null for every
- * other statement, which then goes to the mock pool's answers and queue).
+ * The HR candidate statements answered as a cadastre holding `parcels` in `regions` under any
+ * site (null for every other statement, which then goes to the mock pool's answers and queue).
+ * `regions: []` = the site is outside every cadastral municipality; `truncated` = over the cap.
+ * Every declared id exists (its SPILL geometry, else the site's west half).
  */
-export function scriptedCadastre({ count = 3, parcels = SPILL, inRegion = true, unsurveyedM2 = 0, unknownM2 = 0, outsideM2 = 0 } = {}) {
+export function scriptedCadastre({ parcels = SPILL, regions = [REGION], truncated = false } = {}) {
     return (sql, params) => {
-        if (sql === BINDING_COUNT_SQL) return { rows: [{ parcels: count }] };
-        if (sql === FOOTPRINT_OUTSIDE_SITE_SQL) return { rows: [{ outside_m2: outsideM2 }] };
-        if (sql === BINDING_SQL) {
-            return { rows: [{ parcels, site_m2: 9000, in_region: inRegion, unsurveyed_m2: unsurveyedM2, unknown_m2: unknownM2, site_geojson: JSON.stringify(SITE_MULTI) }] };
+        if (sql === HR_SITE_CANDIDATES_SQL) {
+            const found = truncated
+                ? Array.from({ length: MAX_SOURCE_BINDING_PARCELS + 1 }, (_, i) => ({ id: `HR-1-${i}`, geometry: null }))
+                : parcels.map(parcel => ({ id: parcel.parcelId, geometry: parcel.geometry }));
+            return { rows: [{ parcels: found, regions: regions.map((geometry, i) => ({ id: String(i + 1), geometry })) }] };
         }
-        if (sql === PARCEL_ACT_SITE_SQL) {
+        if (sql === HR_PARCEL_IDS_SQL) {
             const ids = JSON.parse(params[0]).map(entry => entry.id);
-            return { rows: [{ parcels: ids.map(id => ({ parcelId: id, overlapM2: 400 })), site_geojson: JSON.stringify(SITE_MULTI), site_m2: 400 * ids.length }] };
+            return { rows: ids.map(id => ({ id, geometry: parcels.find(parcel => parcel.parcelId === id)?.geometry || SPILL[0].geometry })) };
         }
         return null;
     };

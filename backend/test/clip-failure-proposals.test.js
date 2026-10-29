@@ -16,7 +16,6 @@ const A = require('../../frontend/js/proposals/parcel-arrangement.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
 const gain = require('../../frontend/js/proposals/gain.js');
 const subdivision = require('../../frontend/js/proposals/subdivision.js');
-const contributions = require('../../frontend/js/proposals/readjustment-contributions.js');
 const siteBinding = require('../../frontend/js/proposals/site-binding.js');
 const siteClip = require('../../frontend/js/proposals/site-clip.js');
 const siteDraft = require('../../frontend/js/proposals/site-draft.js');
@@ -169,22 +168,6 @@ describe('subdivision', () => {
     });
 });
 
-describe('readjustment-contributions', () => {
-    it('contributionsByOwner refuses instead of leaving a parcel\'s owners out of the pool', () => {
-        globalThis.turf = failingTurf(['intersect']);
-        const parent = feature(rect(0, 0, 10, 10), { parcelId: 'HR-1', ownershipDetails: { owners: [{ ownerId: 'o1', percentageShare: 100 }] } });
-        const failure = expectClipFailure(() => contributions.contributionsByOwner([parent], rect(0, 0, 5, 10)),
-            'readjustment-contributions.contributionsByOwner');
-        expect(failure.parcelId).toBe('HR-1');
-    });
-
-    it('overlappingPlots refuses instead of passing an unmeasurable pair', () => {
-        globalThis.turf = failingTurf(['intersect']);
-        expectClipFailure(() => contributions.overlappingPlots([rect(0, 0, 5, 10), rect(4, 0, 10, 10)]),
-            'readjustment-contributions.overlappingPlots');
-    });
-});
-
 describe('site-binding', () => {
     const parcels = [{ id: 'HR-1', geometry: rect(0, 0, 5, 10) }, { id: 'HR-2', geometry: rect(5, 0, 10, 10) }];
 
@@ -245,26 +228,6 @@ describe('plot-crossings.detectPlotCrossings', () => {
             pieces: [feature(rect(0, 0, 10, 10), { parcelId: 'sub-1', producedByProposalId: 'sub' })],
             lookupProposal: () => record
         }), 'plot-crossings.overlapM2');
-    });
-});
-
-describe('formation-edit', () => {
-    const ctx = t => ({
-        turf: t,
-        area: f => t.area(f),
-        intersectionArea: (a, b) => { const hit = t.intersect(a, b); return hit ? t.area(hit) : 0; },
-        difference: (a, b) => t.difference(a, b)
-    });
-
-    it('an overlap that cannot be computed refuses instead of reading as zero', () => {
-        // Whether the taking reaches a piece is geometry-tolerances.js reachesInto, named for its caller.
-        expectClipFailure(() => formationEdit.clipPiecesByTaking([{ geometry: rect(0, 0, 10, 10) }], rect(5, 0, 15, 10),
-            ctx(failingTurf(['intersect']))), 'formation-edit.clipPiecesByTaking');
-    });
-
-    it('clipPiecesByTaking refuses instead of treating a failed difference as "fully taken"', () => {
-        expectClipFailure(() => formationEdit.clipPiecesByTaking([{ geometry: rect(0, 0, 10, 10) }], rect(5, 0, 15, 10),
-            ctx(failingTurf(['difference']))), 'formation-edit.clipPiecesByTaking');
     });
 });
 
@@ -334,6 +297,8 @@ function mixinThis(methods, parcels) {
         _assignSyntheticChildIdentities(...args) { return ProposalManager._assignSyntheticChildIdentities(...args); },
         _addFeaturesToMap(features) { this.added.push(...features); },
         _consumeFeaturesFromLiveFabric(features) { this.hidden.push(...(features || [])); },
+        // The fabric's partition check is its own test (formed-partition-check.test.js).
+        _checkFormedPartition: vi.fn(async () => true),
         _markParcelProducedByProposal: vi.fn(),
         _setDescendantProposalOnParcels: vi.fn(),
         _linkProposalToAncestors: vi.fn(),

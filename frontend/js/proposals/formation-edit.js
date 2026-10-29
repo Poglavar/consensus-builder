@@ -113,62 +113,6 @@
     }
 
     // §15b (decision 2026-08-06): the taker AMENDS the taken — one partition, latest wins.
-    // Clip a formation's authored pieces by the ground a newer action took. Carry fields survive
-    // on every output piece; a piece the taking SPLITS becomes several pieces (a parcel is ONE
-    // connected piece of ground); a residual sliver below the floor is dropped as rounding, and
-    // a fully-taken piece leaves the list. Pieces the taking does not touch are returned by
-    // REFERENCE, so callers can cheaply tell churn from change. Whether the taking reaches a piece,
-    // and whether what is left of it is ground, is the shared rule (geometry-tolerances.js).
-    //
-    //   pieces:  [{ geometry, ...carry }]   (each entry's non-geometry fields ride along)
-    //   returns { changed, pieces, takenAreaM2, removedCount, splitCount }
-    function clipPiecesByTaking(pieces, takenFootprint, ctx) {
-        const ground = groundApi();
-        const t = turfOf(ctx);
-        const taken = asFeature(takenFootprint);
-        const list = Array.isArray(pieces) ? pieces : [];
-        if (!taken || !ctx || typeof ctx.difference !== 'function') {
-            return { changed: false, pieces: list.slice(), takenAreaM2: 0, removedCount: 0, splitCount: 0 };
-        }
-        const out = [];
-        let changed = false;
-        let takenAreaM2 = 0;
-        let removedCount = 0;
-        let splitCount = 0;
-        list.forEach(piece => {
-            const feature = piece ? asFeature(piece.geometry || piece) : null;
-            if (!feature) { out.push(piece); return; }
-            if (!ground.reachesInto(t, feature, taken, 0, { site: 'formation-edit.clipPiecesByTaking' })) { out.push(piece); return; } // untouched (or debris)
-            let residual = null;
-            // A difference that throws is not "fully taken": the piece would leave the plan.
-            try { residual = asFeature(ctx.difference(feature, taken)); } catch (error) {
-                throw clipFailureApi().clipFailure('difference', error, { site: 'formation-edit.clipPiecesByTaking' }, [feature, taken]);
-            }
-            const before = safeArea(ctx, feature);
-            const left = safeArea(ctx, residual);
-            if (!residual || !ground.isGround(t, residual)) {
-                // Fully taken: the piece leaves the plan.
-                changed = true;
-                removedCount += 1;
-                takenAreaM2 += before;
-                return;
-            }
-            changed = true;
-            takenAreaM2 += Math.max(0, before - left);
-            const geom = residual.geometry;
-            const parts = geom.type === 'MultiPolygon'
-                ? (geom.coordinates || []).map(coordinates => ({ type: 'Polygon', coordinates }))
-                : [geom];
-            const kept = parts
-                .map(poly => ({ ...piece, geometry: poly }))
-                .filter(candidate => ground.isGround(t, asFeature(candidate.geometry)));
-            if (kept.length === 0) { removedCount += 1; return; }
-            if (kept.length > 1) splitCount += kept.length - 1;
-            out.push(...kept);
-        });
-        return { changed, pieces: out, takenAreaM2, removedCount, splitCount };
-    }
-
     // The ROAD form of the §15b amendment: trim a corridor centerline by the ground a newer
     // action took. Each segment is split where it crosses the taken polygon; pieces whose
     // midpoint lies INSIDE are the taken stretch and leave the definition; pieces shorter than
@@ -220,7 +164,7 @@
             // lineSplit firing at a junction where the centerline touches the taken ground's
             // edge — is not a taking, and dropping its sub-metre kerf would churn the victim's
             // record (editSeq, persist, redraw) on every such taker. Untouched segments return
-            // by REFERENCE (same contract as clipPiecesByTaking).
+            // by REFERENCE, so callers can cheaply tell churn from change.
             const anyInside = pieces.some(piece => {
                 const pc = piece && piece.geometry && piece.geometry.coordinates;
                 return Array.isArray(pc) && pc.length >= 2 && midpointInside(pc);
@@ -440,7 +384,6 @@
         baseIdsOfFeatures,
         overlappingBaseIds,
         applyCarriedIdentity,
-        clipPiecesByTaking,
         trimCenterlineByTaking,
         corridorComponents,
         corridorWidthMeters,

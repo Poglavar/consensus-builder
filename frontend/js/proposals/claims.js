@@ -113,8 +113,9 @@
     }
 
     // ---- Ground conflicts between applied records ----------------------------------------------
-    // Geometry is injected (options.planOrder: intersectionArea, footprintOf, compareFormationOrder;
-    // options.area; options.footprintParts) so node tests drive the same code the browser runs.
+    // Geometry is injected (options.planOrder: footprintOf, compareFormationOrder; options.turf;
+    // options.footprintParts) so node tests drive the same code the browser runs. Whether two
+    // shapes share ground is always the shared rule (geometry-tolerances.js).
 
     const planOrderApi = options => (options && options.planOrder)
         || (global && global.__planOrder)
@@ -161,7 +162,9 @@
     // 299-member Sibenik plan that left 34 of 166 buildings applied, each new member unapplying
     // the one before it, while the summary still reported 298 applied.
     //
-    // The 2 m² floor is the same one the building-demolition scanner uses.
+    // "Overlaps" is the shared rule (geometry-tolerances.js reachesInto): the overlap is ground, not
+    // cutting debris. A 2 m² floor stood here; across the 2,589 members of the 192 published plans no
+    // overlap lay between debris and 2 m², so it decided nothing a width test does not.
     function appliedRivals(proposal, records, options = {}) {
         const targetId = recordIdOf(proposal);
         if (!targetId) return [];
@@ -174,9 +177,6 @@
         const replacesCorridorGround = options.replaceOccupiedGround === true
             && (!!proposal.parcelLayout || (!proposal.roadProposal
                 && (isBuildingContentProposal(proposal) || !!proposal.structureProposal)));
-        const minimumOverlapM2 = Number.isFinite(Number(options.minimumOverlapM2))
-            ? Math.max(0, Number(options.minimumOverlapM2))
-            : 2;
         // The footprint is unioned only once a candidate actually needs comparing: a plan of
         // 1,105 buildings takes seconds to union, and an explicit apply with nothing applied nearby
         // asked for it for no one (2026-10-12).
@@ -215,23 +215,30 @@
             if (proposal.roadProposal && candidate.structureProposal && !isBuildingContentProposal(candidate)) return false;
             // No measurable footprint on either side means no demonstrable overlap, and ground that
             // cannot be shown to be taken is left free: refusing here would block on a suspicion.
-            if (!planOrder || typeof planOrder.footprintOf !== 'function'
-                || typeof planOrder.intersectionArea !== 'function' || !targetFootprintOf()) return false;
+            const t = turfOf(options);
+            if (!planOrder || typeof planOrder.footprintOf !== 'function' || !t || !targetFootprintOf()) return false;
             const candidateFootprint = planOrder.footprintOf(candidate);
             return candidateFootprint
-                ? planOrder.intersectionArea(targetFootprintOf(), candidateFootprint) >= minimumOverlapM2
+                ? groundRule().reachesInto(t, asFeature(targetFootprintOf()), asFeature(candidateFootprint), 0,
+                    { site: 'claims.appliedRivals', proposalId: targetId, rivalId: candidateId })
                 : false;
         });
     }
 
-    // Below this a "touch" is a shared boundary or a rounding artefact, not standing on the ground.
-    const DEPENDENT_TOUCH_M2 = 0.25;
-    // Two parts are the same ground when their overlap holds essentially all of both.
-    const SAME_GROUND_FRACTION = 0.999;
+    function asFeature(geometry) {
+        return (geometry && geometry.type === 'Feature') ? geometry : { type: 'Feature', properties: {}, geometry };
+    }
 
-    const asFeature = geometry => (geometry && geometry.type === 'Feature')
-        ? geometry
-        : { type: 'Feature', properties: {}, geometry };
+    // What counts as ground, whether a shape reaches into another and what of a shape another leaves
+    // uncovered: the one shared rule (geometry-tolerances.js), the browser global or required in node.
+    function groundRule() {
+        return (global && global.GeometryTolerances)
+            || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
+    }
+
+    function turfOf(options) {
+        return (options && options.turf) || (global && global.turf) || null;
+    }
 
     // Who has to come off the map when an in-place edit changes the ground a record formed. A
     // later applied record depends on the edit when one of its own parts stands on a part of the
@@ -244,20 +251,18 @@
         const targetId = recordIdOf(before);
         const partsApi = footprintPartsApi(options);
         const planOrder = planOrderApi(options);
-        const area = typeof options.area === 'function'
-            ? options.area
-            : (global && global.turf && typeof global.turf.area === 'function' ? global.turf.area : null);
-        if (!targetId || !partsApi || !planOrder || typeof planOrder.intersectionArea !== 'function' || !area) return [];
+        const t = turfOf(options);
+        if (!targetId || !partsApi || !planOrder || !t) return [];
         const isApplied = appliedAccessor(options);
-        const touchM2 = Number.isFinite(options.touchM2) ? options.touchM2 : DEPENDENT_TOUCH_M2;
+        const rule = groundRule();
+        const context = { site: 'claims.editDependents', proposalId: targetId };
         const partsOf = record => {
             const parts = record ? partsApi.footprintParts(record) : null;
             return parts && !parts.invalid ? parts.polygons.map(asFeature) : [];
         };
-        const sameGround = (a, b) => {
-            const shared = planOrder.intersectionArea(a, b) || 0;
-            return shared >= SAME_GROUND_FRACTION * Math.max(area(a) || 0, area(b) || 0);
-        };
+        // A part is unchanged when neither it nor its successor holds ground the other does not.
+        const sameGround = (a, b) => !rule.isGround(t, rule.uncoveredBy(t, a, [b], context))
+            && !rule.isGround(t, rule.uncoveredBy(t, b, [a], context));
         const afterParts = partsOf(after);
         const changed = partsOf(before).filter(part => !afterParts.some(next => sameGround(part, next)));
         if (!changed.length) return [];
@@ -267,7 +272,7 @@
         const dependents = (Array.isArray(records) ? records : []).filter(candidate => {
             const id = recordIdOf(candidate);
             if (!id || id === targetId || !isApplied(candidate) || !later(candidate)) return false;
-            return partsOf(candidate).some(part => changed.some(ground => (planOrder.intersectionArea(part, ground) || 0) >= touchM2));
+            return partsOf(candidate).some(part => changed.some(ground => rule.reachesInto(t, part, ground, 0, { ...context, dependentId: id })));
         });
         return typeof planOrder.compareFormationOrder === 'function'
             ? dependents.sort(planOrder.compareFormationOrder)

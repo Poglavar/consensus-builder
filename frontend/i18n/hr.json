@@ -679,7 +679,8 @@
         "busy": "U tijeku je druga izmjena karte. Pričekajte da završi pa pokušajte ponovno.",
         "storeUnavailable": "Prijedlozi se još nisu učitali. Pričekajte da se grad učita pa pokušajte ponovno.",
         "notFound": "Ovaj dizajn više nije dostupan. Osvježite popis dizajna i pokušajte ponovno.",
-        "cancelled": "Ovaj dizajn je povučen pa se ne može primijeniti na kartu."
+        "cancelled": "Ovaj dizajn je povučen pa se ne može primijeniti na kartu.",
+        "partitionInvalid": "Dizajn „{{title}}” ne može se primijeniti: čestice koje oblikuje ne bi točno pokrile zemljište koje zamjenjuju ({{detail}}). Dizajn ostaje spremljen, neprimijenjen."
     },
     "proposalDrafts": {
         "title": "Skice",

@@ -313,22 +313,6 @@ describe('government-plan-worker (refuses with a structured error)', () => {
     });
 });
 
-describe('dgu-live takes (stand in for the server binding: refuse)', () => {
-    it('a parcel whose take cannot be computed refuses instead of taking nothing', async () => {
-        const { createDguLive } = require('../../frontend/js/parcels/dgu-live.js');
-        const live = createDguLive({
-            requestJson: async () => ({ features: [{ properties: { MATICNI_BROJ_KO: '330264', BROJ_CESTICE: '1' }, geometry: LEFT.geometry }], numberMatched: 1 }),
-            toWgs84: collection => collection,
-            toDatasetBox: bbox => bbox,
-            turf: failing(['intersect'])
-        });
-        let thrown = null;
-        try { await live.fetchUnder(RIGHT.geometry); } catch (error) { thrown = error; }
-        expect(thrown).toBeInstanceOf(A.ClipFailure);
-        expect(thrown).toMatchObject({ site: 'dgu-live.fetchUnder', parcelId: 'HR-330264-1' });
-    });
-});
-
 describe('overture-tiles (context buildings, display)', () => {
     it('two tile copies that cannot be united: the larger stands in, reported', () => {
         const overture = require('../../frontend/js/overture-tiles.js');

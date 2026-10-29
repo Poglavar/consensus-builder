@@ -1,8 +1,8 @@
 // Server side of the proposal footprint: which cadastral parcels a proposal's own geometry lies on.
 // The parts come from the shared pure builder (frontend/js/proposals/footprint-parts.js, the same
-// one the browser publish gate uses); PostGIS unions them and measures each parcel's overlap in
-// EPSG:3765 metres. The strict declaration rule for new records (declared == binding) lives in
-// binding.js.
+// one the browser publish gate uses); binding.js unions them with the browser's own function
+// (plan-order.js footprintOf) and binds the result with site-binding.js. The strict declaration
+// rule for new records (declared == binding) lives in binding.js.
 
 import { createRequire } from 'node:module';
 
@@ -29,14 +29,4 @@ export function proposalGeometryView(row) {
         structureProposal: row?.structure_proposal ?? data.structureProposal,
         reparcellization: row?.reparcellization ?? data.reparcellization
     };
-}
-
-export function footprintQueryParams(parts) {
-    const lines = parts.centerline
-        ? parts.centerline.segments.map(coordinates => ({
-            line: { type: 'LineString', coordinates },
-            halfWidthM: parts.centerline.halfWidthM
-        }))
-        : [];
-    return [JSON.stringify(parts.polygons), JSON.stringify(lines)];
 }

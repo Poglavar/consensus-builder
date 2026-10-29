@@ -475,7 +475,8 @@
     },
 
     // §15a structure formation, with the site rule of PARCEL-OPTIONAL.md phase 3. A park/square/lake
-    // takes EXACTLY its footprint (= its site): parcels wholly under it are adopted/merged into ONE
+    // takes EXACTLY its footprint (= its site), cut to the ground it consumes so the body lies on its
+    // own parcels: parcels wholly under it are adopted/merged into ONE
     // minted parcel anchored flat to every base underneath; a parcel it covers only partly is cut at
     // the body edge, and the part outside stays a piece of that parcel (with its owners — minted as
     // this structure's remainder for a cadastral parent, keeping its identity for a formed one).
@@ -681,9 +682,24 @@
             if (!structureCadastreIds.length && !groundIds.length) {
                 throw new Error('Structure formation has no explicit cadastral anchors.');
             }
+            // The body is the footprint cut to the ground it consumes (geometry-tolerances.js
+            // cutTo): the pieces it takes and the open ground under it. What is cut off is debris
+            // (the uncovered gate above), so no vertex of the body lies outside its own parcels.
+            // A piece taken whole is taken whole: where the design's own toleranceM let the
+            // footprint stop short of its edge, that strip joins the body rather than being lost.
+            const cutParcelIds = new Set((partialCuts || []).map(cut => String(cut.entry.id)));
+            let body = groundRule.cutTo(turfRef, footprint, [...takenFeatures, ...takenHosts.map(entry => entry.feature)].map(asPlain),
+                { site: 'apply-structures.body', proposalId: idLabel });
+            candidates.filter(entry => takenIds.includes(String(entry.id)) && !cutParcelIds.has(String(entry.id))).forEach(entry => {
+                const strip = groundRule.uncoveredBy(turfRef, asPlain(entry.feature), [body],
+                    { site: 'apply-structures.wholeStrip', proposalId: idLabel, parcelId: entry.id });
+                if (!groundRule.isGround(turfRef, strip)) return;
+                body = clipFailureApi().clipWith(turfRef, 'union', body, strip,
+                    { site: 'apply-structures.wholeStrip', proposalId: idLabel, parcelId: entry.id });
+            });
             const childFeature = {
                 type: 'Feature',
-                geometry: JSON.parse(JSON.stringify(geometry)),
+                geometry: JSON.parse(JSON.stringify(body.geometry)),
                 properties: {
                     producedByProposalId: proposalId,
                     structureType: sp.kind,
@@ -691,7 +707,7 @@
                     rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null) || null,
                     cadastreParcelIds: structureCadastreIds,
                     ...(groundIds.length ? { groundIds } : {}),
-                    calculatedArea: Math.round(_calculateGeoJsonArea(geometry)),
+                    calculatedArea: Math.round(_calculateGeoJsonArea(body.geometry)),
                     isProposed: true,
                     ownershipDetails: JSON.parse(JSON.stringify(cityOwnership)),
                     ownershipType: 'city'
@@ -706,22 +722,16 @@
                 .map(feature => _getParcelIdFromFeature(feature))
                 .filter(id => id !== undefined && id !== null)
                 .map(String);
-            await this._addFeaturesToMap(bodyFeatures, true, proposalData, options);
-            bodyFeatures.forEach(feature => {
-                const bodyId = _getParcelIdFromFeature(feature);
-                try { if (bodyId) this._markParcelProducedByProposal(bodyId, proposalId, options); } catch (_) { }
-            });
-            this._consumeFeaturesFromLiveFabric(takenFeatures, options);
             // §15c rebuild partial cuts: mint each outside piece. Derived parents keep their
             // identity (largest piece carries the parcel's own id; splits continue the OWNER's
             // numbering); base parents' leftovers mint as this structure's remainder children.
-            const structureRemainderIds = [];
+            // Computed before anything is written, so the partition check sees every piece.
+            const structureRemainders = [];
+            const foreignPieces = [];
             if (partialCuts && partialCuts.length) {
                 const allocForeign = (typeof this._createForeignIndexAllocator === 'function')
                     ? this._createForeignIndexAllocator(options)
                     : null;
-                const structureRemainders = [];
-                const foreignPieces = [];
                 partialCuts.forEach(({ entry, parts }) => {
                     const parentId = String(entry.id);
                     const parentProps = entry.feature.properties || {};
@@ -778,24 +788,33 @@
                     });
                     this._assignSyntheticChildIdentities(proposalId, structureRemainders, { startIndexByRootId });
                 }
-                const minted = [...foreignPieces.map(fp => fp.feature), ...structureRemainders];
-                if (minted.length) {
-                    await this._addFeaturesToMap(minted, true, proposalData, options);
-                }
-                foreignPieces.forEach(({ feature, proposalId: ownerProposalId }) => {
-                    const pid = _getParcelIdFromFeature(feature);
-                    try { if (pid && ownerProposalId) this._markParcelProducedByProposal(pid, ownerProposalId, options); } catch (_) { }
-                });
-                structureRemainders.forEach(feature => {
-                    const pid = _getParcelIdFromFeature(feature);
-                    try {
-                        if (pid) {
-                            structureRemainderIds.push(String(pid));
-                            this._markParcelProducedByProposal(pid, proposalId, options);
-                        }
-                    } catch (_) { }
-                });
             }
+            const minted = [...foreignPieces.map(fp => fp.feature), ...structureRemainders];
+            // The pieces must tile the ground they replace, as a private read checks them.
+            if (!await this._checkFormedPartition(idLabel, proposalData, takenFeatures, [...bodyFeatures, ...minted], options)) return { ok: false };
+            await this._addFeaturesToMap(bodyFeatures, true, proposalData, options);
+            bodyFeatures.forEach(feature => {
+                const bodyId = _getParcelIdFromFeature(feature);
+                try { if (bodyId) this._markParcelProducedByProposal(bodyId, proposalId, options); } catch (_) { }
+            });
+            this._consumeFeaturesFromLiveFabric(takenFeatures, options);
+            const structureRemainderIds = [];
+            if (minted.length) {
+                await this._addFeaturesToMap(minted, true, proposalData, options);
+            }
+            foreignPieces.forEach(({ feature, proposalId: ownerProposalId }) => {
+                const pid = _getParcelIdFromFeature(feature);
+                try { if (pid && ownerProposalId) this._markParcelProducedByProposal(pid, ownerProposalId, options); } catch (_) { }
+            });
+            structureRemainders.forEach(feature => {
+                const pid = _getParcelIdFromFeature(feature);
+                try {
+                    if (pid) {
+                        structureRemainderIds.push(String(pid));
+                        this._markParcelProducedByProposal(pid, proposalId, options);
+                    }
+                } catch (_) { }
+            });
             const structureCadastreCount = formationEdit.baseIdsOfFeatures(takenFeatures).length;
             try {
                 const structureLabel = proposalData.title || proposalData.name || String(proposalId);

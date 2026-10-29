@@ -1126,8 +1126,7 @@ describe('station parcel ancestry', () => {
             complete: true
         });
         expect(ensureFootprint).toHaveBeenCalledWith(geometry, {
-            city: 'sibenik',
-            parcelsOnly: true
+            city: 'sibenik'
         });
     });
 

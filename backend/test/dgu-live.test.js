@@ -1,6 +1,6 @@
 // The browser's direct DGU cadastre reader (frontend/js/parcels/dgu-live.js), used when our server
 // cannot serve Croatian parcels: id filters, our server's property shape, paging, and the
-// footprint take/coverage the /parcels/under endpoint would have answered.
+// candidate parcels under a footprint the /parcels/under endpoint would have answered.
 import { describe, it, expect, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
@@ -90,18 +90,18 @@ describe('createDguLive', () => {
         expect(requestJson).toHaveBeenCalledTimes(1);
     });
 
-    it('answers a footprint with the parcels it takes area from and how much of it they cover', async () => {
-        // Two unit parcels side by side; the footprint takes half of each, and a third parcel only touches it.
+    it('answers a footprint with its candidate parcels, as /parcels/under does: every parcel that meets it', async () => {
+        // The footprint takes half of parcel 1 and only touches parcel 2 along their shared edge; parcel 3
+        // is in the box read but apart. Which candidates are taken is the shared rule's (geometry-tolerances.js).
         const reader = dgu.createDguLive({
             requestJson: async () => ({ features: [raw(1, '1', square(0, 0, 0.001), 1), raw(1, '2', square(0.001, 0, 0.001), 2),
                 raw(1, '3', square(0.0025, 0, 0.001), 3)], totalFeatures: 3 }),
             toWgs84: identity, toDatasetBox: box, turf
         });
-        const footprint = { type: 'Polygon', coordinates: [[[0.0005, 0], [0.0015, 0], [0.0015, 0.001], [0.0005, 0.001], [0.0005, 0]]] };
+        const footprint = { type: 'Polygon', coordinates: [[[0.0005, 0], [0.001, 0], [0.001, 0.001], [0.0005, 0.001], [0.0005, 0]]] };
         const answer = await reader.fetchUnder(footprint);
         expect(answer.features.map(f => f.properties.parcelId)).toEqual(['HR-1-1', 'HR-1-2']);
-        const half = turf.area(turf.feature(footprint)) / 2;
-        answer.features.forEach(f => expect(f.properties.taken_m2).toBeCloseTo(half, 0));
-        expect(answer.coverage).toBeCloseTo(1, 3);
+        expect(Object.keys(answer)).toEqual(['features']);
+        answer.features.forEach(f => expect(f.properties).not.toHaveProperty('taken_m2'));
     });
 });

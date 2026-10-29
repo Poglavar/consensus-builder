@@ -696,7 +696,10 @@ function _assignSyntheticChildIdentitiesImpl(proposalId, childFeatures, options 
             }
         }
 
-        const key = `${rootNumber || ''}__${rootId || ''}`;
+        // One counter per root parcel: the id is composed from the root id alone, so counting per
+        // (number, root) gave a plot and a remainder of one root, numbered from different parents,
+        // the same id, and the later silently replaced the earlier in the fabric.
+        const key = rootId || '';
         let state = counters.get(key);
         if (!state) {
             const resumeAt = startIndexByRootId ? Number(startIndexByRootId[rootId]) : NaN;
@@ -755,8 +758,20 @@ const _PROPOSAL_APPLY_FAILURE_TEXT = {
     'proposal-map-busy': ['busy', 'Another map update is still running. Wait for it to finish and try again.'],
     'proposal-store-unavailable': ['storeUnavailable', 'Proposals are not loaded yet. Wait for the city to finish loading and try again.'],
     'proposal-not-found': ['notFound', 'This proposal is no longer available. Refresh the proposals list and try again.'],
-    'proposal-cancelled': ['cancelled', 'This proposal was withdrawn, so it cannot be applied to the map.']
+    'proposal-cancelled': ['cancelled', 'This proposal was withdrawn, so it cannot be applied to the map.'],
+    'formation-partition-invalid': ['partitionInvalid', 'Cannot apply "{{title}}": the parcels it forms would not tile the land they replace ({{detail}}). The design stays saved, unapplied.']
 };
+
+// The fabric's partition-check refusals (live-fabric.js validateReplacementSteps): a design whose
+// pieces fail one is refused. Anything else the check throws is a fault, not a verdict.
+const _PARTITION_FAILURE_CODES = new Set([
+    'duplicate-live-parcel-id',
+    'live-fabric-empty-replacement',
+    'live-fabric-cadastre-facts-missing',
+    'live-fabric-replacement-outside',
+    'live-fabric-replacement-overlap',
+    'live-fabric-replacement-hole'
+]);
 
 function _proposalApplyFailure(code, params = {}) {
     const [name, fallback] = _PROPOSAL_APPLY_FAILURE_TEXT[code] || _PROPOSAL_APPLY_FAILURE_TEXT['proposal-apply-failed'];
@@ -2554,7 +2569,7 @@ const ProposalManager = {
         const runtime = typeof window !== 'undefined' ? window : globalThis;
         return proposalClaims.editDependents(before, edited, _peekProposals(store), {
             planOrder: runtime.__planOrder || null,
-            area: runtime.turf && typeof runtime.turf.area === 'function' ? runtime.turf.area : null,
+            turf: runtime.turf || null,
             isApplied: appliedOf
         });
     },
@@ -2569,7 +2584,7 @@ const ProposalManager = {
         const runtime = typeof window !== 'undefined' ? window : globalThis;
         return proposalClaims.unapplyDependents(record, _peekProposals(store), {
             planOrder: runtime.__planOrder || null,
-            area: runtime.turf && typeof runtime.turf.area === 'function' ? runtime.turf.area : null,
+            turf: runtime.turf || null,
             isApplied: appliedOf
         });
     },
@@ -3801,6 +3816,49 @@ const ProposalManager = {
         return this._removeFeaturesFromMap(features, options);
     },
 
+    // The pieces a formation is about to write must tile the cadastral ground they replace: the
+    // fabric's partition check (live-fabric.js checkCadastreScope), the one a private read
+    // (agreement-headless.js) runs, over the pieces as they will stand once `consumed` is removed
+    // and `produced` added. It runs before the write, so a refusal leaves the draft as it was even
+    // inside a replay that keeps going. The boot replay runs it in its slices. Refusal names the
+    // design; the record stays saved, unapplied.
+    async _checkFormedPartition(idLabel, proposalData, consumed, produced, options = {}) {
+        const fabric = _fabricDraft(options);
+        if (!fabric || typeof fabric.checkCadastreScopeSteps !== 'function') {
+            throw new Error('Checking formed parcels requires a parcel mutation draft.');
+        }
+        const scope = new Set();
+        [...consumed, ...produced].forEach(feature => {
+            const ids = feature && feature.properties && feature.properties.cadastreParcelIds;
+            (Array.isArray(ids) ? ids : []).forEach(id => { if (id) scope.add(String(id)); });
+        });
+        // Pieces on open ground only replace no cadastral parcel; there is nothing to tile.
+        if (!scope.size) return true;
+        const change = {
+            remove: consumed.map(_getParcelIdFromFeature).filter(Boolean).map(String),
+            add: produced
+        };
+        const slicer = options && options._parcelMutation && options._parcelMutation.slicer;
+        try {
+            if (slicer) await workSlicerApi.runSliced(fabric.checkCadastreScopeSteps(scope, change), slicer);
+            else fabric.checkCadastreScope(scope, change);
+            return true;
+        } catch (error) {
+            if (!error || !_PARTITION_FAILURE_CODES.has(error.code)) throw error;
+            const title = (proposalData && (proposalData.title || proposalData.name)) || idLabel;
+            const failure = _proposalApplyFailure('formation-partition-invalid', { title, detail: error.message });
+            console.warn(`[${new Date().toISOString()}] [formation] ${idLabel}: ${error.code} — ${error.message}`);
+            if (typeof updateStatus === 'function') updateStatus(failure.message);
+            this._setLastApplyFailure(idLabel, {
+                ...failure,
+                partitionCode: error.code,
+                parcelId: error.parcelId || null,
+                missingIds: error.cadastreParcelIds || error.missingIds || []
+            });
+            return false;
+        }
+    },
+
     // Async because it is chunked. A replay hands this 3,672 derived pieces in ONE call, and the
     // whole insert — building every Leaflet layer, then adding and indexing each — used to run as
     // a single task. That is the one remaining block big enough to freeze a pan on its own, and no
@@ -4134,24 +4192,6 @@ function _resolveRootParcelNumberFromProperties(props) {
     return '';
 }
 
-function _shouldSkipUncutRemainder(parentParcelArea, pieceArea) {
-    const parentArea = Number(parentParcelArea);
-    const remainderArea = Number(pieceArea);
-    if (!Number.isFinite(parentArea) || !Number.isFinite(remainderArea) || parentArea <= 0 || remainderArea <= 0) {
-        return false;
-    }
-
-    // "Uncut remainder" means the road did not actually intersect this parcel — turf.difference
-    // handed back (essentially) the whole parent polygon. Detect that with a RELATIVE tolerance so
-    // the threshold scales with parcel size instead of a flat 1 m² cliff. The old flat floor made
-    // a genuine ~1 m² clip on a small parcel read as "uncut", so the parcel flipped between 0 and 1
-    // child on sub-metre corridor differences. A tiny relative window (0.01% of the parent, with a
-    // small absolute floor to absorb floating-point noise) skips only the true no-intersection case
-    // and keeps real small cuts — matching this function's original stated intent.
-    const tolerance = Math.max(0.01, parentArea * 1e-4);
-    return Math.abs(parentArea - remainderArea) <= tolerance;
-}
-
 // The boot replay starts once the map core is ready: index.html runs initializeMapCore behind
 // PersistentStorage.ready, after every classic script has run (DOMContentLoaded). It used to wait
 // for window `load`, which also waits for every basemap tile image: with slow tiles that fired at
@@ -4177,7 +4217,7 @@ if (typeof window !== 'undefined') {
     window.ProposalManager = ProposalManager;
 }
 
-// Also export for node, so the pure id-composition and remainder-guard helpers can be unit-tested
+// Also export for node, so the pure id-composition and ground-coverage helpers can be unit-tested
 // without a browser (backend/test/proposal-manager-ids.test.js). Everything above is unchanged for
 // the browser, which still loads this as a classic script; the boot-replay hook above already no-ops
 // when `window` is absent.
@@ -4185,7 +4225,6 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         ProposalManager,
         _flatGroundCoverageIsComplete,
-        _shouldSkipUncutRemainder,
         startBootReplayWhenReady
     };
 }

@@ -1,49 +1,38 @@
 // Server side of a proposal's site → parcel binding (PARCEL-OPTIONAL.md): which cadastral parcels a
-// site reaches into, how far (intrusion width), and how much of the site is open ground. PostGIS
-// over the full cadastre mirrors the pure rule in frontend/js/proposals/site-binding.js exactly:
-// bound ⇔ site ∩ parcel survives ST_Buffer(-max(toleranceM, noise)/2); intrusion is found by the
-// same inward-buffer bisection (not ST_MaximumInscribedCircle, whose fixed tolerance of 1/1000 of
-// the extent mis-measures a long thin sliver, and which needs GEOS >= 3.9).
+// site reaches into, how far (intrusion width), and how much of the site is open ground. The server
+// runs the browser's own function (frontend/js/proposals/site-binding.js bindingFromParcels) over the
+// candidate parcels its source finds (parcels/source-binding.js), so the two cannot disagree
+// (docs/geometry-tolerances.md). The site is the browser's too (site-binding.js siteOf: the authored
+// site, else the union of the record's own footprint), and so is the footprint-inside-site test
+// (geometry-tolerances.js uncoveredBy + isGround).
 //
-// Every metric operation runs in the site's own operation frame (projections.md §2 and §4): a local
-// transverse Mercator at the site's canonical anchor, passed to PostGIS as its canonical projection
-// string. The dataset CRS (EPSG:3765 for the HR cadastre) is used only for the indexed candidate
-// search. Source edges are split before transforming — the site's into ≤ SEGMENT_DEG pieces (its
-// edges are straight in lon/lat), the cadastre's into ≤ 50 m pieces (straight in 3765) — so no
-// transformed edge strays by more than a micrometre. Buffers use 64 segments per quarter circle
-// (0.0075 % of the radius). A parcel whose intrusion lies within BINDING_UNCERTAINTY of the
-// threshold is reported as `unresolved`, never silently bound or unbound, and a publish refuses it.
-//
-// The Croatian cadastre (`parcel`, countrywide, ids HR-<ko>-<number>) uses PostGIS. Imported NYC
-// footprints and executable live sources resolve their own parcels and use the shared binding rule. A site
-// outside every cadastral municipality (`cadastral_municipality`) gets coverage 'unknown' — the
-// server cannot see that region's cadastre, which is not the same as there being none — except for
-// an explicit 'none' source selection, which gets 'none'.
+// Every source finds candidates its own way: the Croatian cadastre (`parcel`, countrywide, ids
+// HR-<ko>-<number>) by an indexed PostGIS search that also reports the cadastral municipalities the
+// site meets (parcels/oss-binding-source.js); imported NYC footprints and executable live sources by
+// their adapters. A site outside every cadastral municipality gets coverage 'unknown' — the server
+// cannot see that region's cadastre, which is not the same as there being none — except for an
+// explicit 'none' source selection, which gets 'none'.
 //
 // Used by the design index (the parcels a published design's site takes), the agents' candidate
 // preflight and the site migration.
 
 import { createRequire } from 'node:module';
-import { INVALID_FOOTPRINT, footprintParts, footprintQueryParams, hasFootprint } from './footprint.js';
+import { INVALID_FOOTPRINT, footprintParts, hasFootprint } from './footprint.js';
 import { wgs84BboxAreaKm2 } from '../utils/helpers.js';
 import { parcelSourceById } from '../parcels/sources.js';
-import { computeSourceBinding, computeSourceParcelActBinding } from '../parcels/source-binding.js';
+import { computeSourceBinding, computeSourceParcelActBinding, MAX_SOURCE_BINDING_PARCELS } from '../parcels/source-binding.js';
 
 import { NYC_DATABASE_SOURCE_ID } from '../parcels/nyc-database-source.js';
 import { openDatabaseParcelSource } from '../parcels/database-sources.js';
-
-import { HR_PARCEL_SRID, SEGMENT_DEG, DATASET_SEGMENT_M, CANDIDATE_SLACK_M, BINDING_COUNT_SQL, BINDING_SQL, FOOTPRINT_OUTSIDE_SITE_SQL, FOOTPRINT_SITE_SQL, PARCEL_ACT_SITE_SQL } from '../parcels/oss-binding-source.js';
-export { HR_PARCEL_SRID, SEGMENT_DEG, DATASET_SEGMENT_M, CANDIDATE_SLACK_M, BINDING_COUNT_SQL, BINDING_SQL, FOOTPRINT_OUTSIDE_SITE_SQL, FOOTPRINT_SITE_SQL, PARCEL_ACT_SITE_SQL };
+import { HR_CADASTRE_SOURCE_ID, parseHrParcelId } from '../parcels/oss-binding-source.js';
+export { parseHrParcelId };
 
 const requireCjs = createRequire(import.meta.url);
 const siteBindingApi = requireCjs('../../frontend/js/proposals/site-binding.js');
+const ground = requireCjs('../../frontend/js/geometry-tolerances.js');
+const planOrder = requireCjs('../../frontend/js/proposals/plan-order.js');
 const turf = requireCjs('@turf/turf');
 const metricFrame = requireCjs('../../frontend/js/metric-frame.js');
-
-// The decision band around a binding threshold r (= floor / 2): projection scale ≤ 5e-5, polygonised
-// buffer arcs ≤ 7.5e-5, plus a micrometre of arithmetic. Within it the answer is `unresolved`.
-export const BINDING_UNCERTAINTY = Object.freeze({ RELATIVE: 1.5e-4, ABSOLUTE_M: 1e-6 });
-export const bindingUncertaintyM = radiusM => Math.max(BINDING_UNCERTAINTY.ABSOLUTE_M, radiusM * BINDING_UNCERTAINTY.RELATIVE);
 
 export const {
     DEFAULT_INTRUSION_TOLERANCE_M,
@@ -58,8 +47,8 @@ export const {
 // vertex cap matches the footprint cap, the extent cap (bbox) leaves room for a 20 km corridor.
 export const MAX_SITE_VERTICES = 100000;
 export const MAX_SITE_EXTENT_KM2 = 500;
-// More bound or touched parcels than this is not a proposal (same cap as /parcels/under).
-export const MAX_BINDING_PARCELS = 5000;
+// More candidate parcels than this is not a proposal (same cap as /parcels/under).
+export const MAX_BINDING_PARCELS = MAX_SOURCE_BINDING_PARCELS;
 
 
 // Stable error codes. Routes put them in `code`; agent docs list them.
@@ -71,12 +60,10 @@ export const BINDING_CODES = Object.freeze({
     undeclaredParcels: 'undeclared-parcels', // bound by the site, missing from cadastreParcelIds
     unboundParcels: 'unbound-parcels', // in cadastreParcelIds, not bound by the site
     parcelsRequired: 'parcels-required',
-    siteRequired: 'site-required',
-    unresolved: 'binding-unresolved' // an intrusion within the measurement band of the threshold
+    siteRequired: 'site-required'
 });
 
-export const SERVER_CADASTRE_SOURCE = 'server:hr-cadastre';
-const HR_PARCEL_SOURCE = Object.freeze({ sourceId: 'hr-cadastre', snapshotId: null });
+export const SERVER_CADASTRE_SOURCE = `server:${HR_CADASTRE_SOURCE_ID}`;
 
 // Returns an error message, or null when `geometry` is a usable WGS84 site.
 export function validateSiteGeometry(geometry) {
@@ -131,15 +118,8 @@ export function parseTolerance(value) {
     return { ok: true, value };
 }
 
-// The site as footprint-style query params ($1 polygons, $2 buffered centrelines).
-export function siteQueryParams({ site, parts }) {
-    if (site) return [JSON.stringify([normalizeSiteGeometry(site)]), '[]'];
-    return footprintQueryParams(parts);
-}
-
-// The operation frame of a binding: anchored on the site (or, for a footprint-only legacy record, on
-// its parts). Refuses a site outside the frame's domain (|lat| > 85°, more than 60 km from its anchor)
-// as an invalid site, before any SQL runs.
+// The metric frame of a site (or of a footprint's parts): refuses a site outside the frame's domain
+// (|lat| > 85°, more than 60 km from its anchor) as an invalid site, before anything is read.
 export function bindingFrame({ site = null, parts = null } = {}) {
     const input = site ? normalizeSiteGeometry(site) : [...(parts?.polygons || []), ...(parts?.centerline?.segments || [])];
     try {
@@ -156,13 +136,6 @@ export function bindingFrame({ site = null, parts = null } = {}) {
 export function publicationCityOf({ site = null, parts = null, city = null, parcelSourceId = null } = {}) {
     bindingFrame({ site, parts });
     return { city, parcelSourceId };
-}
-
-const HR_PARCEL_ID = /^HR-(\d+)-(.+)$/;
-
-export function parseHrParcelId(id) {
-    const match = typeof id === 'string' ? HR_PARCEL_ID.exec(id) : null;
-    return match ? { id, ko: Number(match[1]), number: match[2] } : null;
 }
 
 const round = (value, digits) => {
@@ -198,151 +171,64 @@ function unboundBinding({ coverage, toleranceM, siteM2, reason, parcels = [], co
     };
 }
 
+// The selected source as { descriptor, adapter }, or null for an explicit 'none'. The imported HR
+// cadastre ('oss-wfs') records its parcels as 'hr-cadastre'.
 function bindingSource(db, sourceId) {
-    if (sourceId === NYC_DATABASE_SOURCE_ID || sourceId === 'oss-wfs') return {
-        descriptor: { id: sourceId }, adapter: openDatabaseParcelSource(sourceId, db)
-    };
+    if (sourceId === 'oss-wfs') return { descriptor: { id: HR_CADASTRE_SOURCE_ID }, adapter: openDatabaseParcelSource(sourceId, db) };
+    if (sourceId === NYC_DATABASE_SOURCE_ID) return { descriptor: { id: sourceId }, adapter: openDatabaseParcelSource(sourceId, db) };
     if (sourceId === 'none') return null;
     return parcelSourceById(sourceId);
 }
 
 /**
- * The server binding of a site.
+ * The server binding of a site: the selected source's candidate parcels, decided by site-binding.js.
  * @param db pg pool/client
- * @param {{ site?: object, parts?: object, toleranceM?: number, city?: string|null, now?: () => Date }} input
- *   either an authored `site` (GeoJSON, EPSG:4326) or footprint `parts` (footprint.js).
- * @returns {Promise<{ binding: object, site: object|null }>} binding as in site-binding.js plus
- *   `unknownM2` (site area outside every cadastral municipality), `computedAt` and, for
- *   'unknown'/'none', a `reason`. `site` is the unioned site as stored (MultiPolygon, 9 decimals).
- * Throws a binding error (code, status) for a site over MAX_BINDING_PARCELS.
+ * @param {{ site: object, toleranceM?: number, city?: string|null, parcelSourceId?: string|null, now?: () => Date }} input
+ *   `site` GeoJSON Polygon/MultiPolygon, EPSG:4326.
+ * @returns {Promise<{ binding: object, site: object }>} binding as in site-binding.js plus
+ *   `computedAt` and, for 'unknown'/'none', a `reason`. `site` is the site as bound (MultiPolygon,
+ *   on the 9-decimal grid).
+ * Throws a binding error (code, status) for a site over MAX_BINDING_PARCELS candidates.
  */
-export async function computeBinding(db, { site = null, parts = null, toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, parcelSourceId = null, now = () => new Date() } = {}) {
-    const params = siteQueryParams({ site, parts });
-    const frame = bindingFrame({ site, parts });
+export async function computeBinding(db, { site, toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, parcelSourceId = null, now = () => new Date() } = {}) {
+    if (!site) throw bindingError(BINDING_CODES.invalidSite, 'The site has no area.');
     const provider = bindingSource(db, parcelSourceId);
-    if (provider && typeof provider.adapter.bindingMeasurements !== 'function') {
-        const footprint = site || JSON.parse((await db.query(FOOTPRINT_SITE_SQL, [...params, frame.proj])).rows[0]?.geometry || 'null');
-        if (!footprint) throw bindingError(BINDING_CODES.invalidSite, 'The site has no area after validation.');
-        return computeSourceBinding(provider.adapter, {
-            site: footprint, toleranceM, sourceId: provider.descriptor.id,
-            snapshotId: provider.descriptor.snapshotId || null, now
-        });
-    }
-    if (parcelSourceId === 'none') {
-        const footprint = site || JSON.parse((await db.query(FOOTPRINT_SITE_SQL, [...params, frame.proj])).rows[0]?.geometry || 'null');
-        if (!footprint) throw bindingError(BINDING_CODES.invalidSite, 'The site has no area after validation.');
+    if (!provider) {
+        const footprint = ground.snapGeometry(normalizeSiteGeometry(site));
         const siteM2 = turf.area(turf.feature(footprint));
         return { site: footprint, binding: unboundBinding({ coverage: COVERAGE.none, toleranceM,
             siteM2, computedAt: now().toISOString(), reason: 'The consumer explicitly selected no cadastral source.' }) };
     }
-    const floorM = Math.max(toleranceM, INTRUSION_NOISE_M);
-    const cadastre = provider.adapter;
-    const counted = Number(await cadastre.countBindingCandidates({ polygons: params[0], lines: params[1], projection: frame.proj }));
-    if (counted > MAX_BINDING_PARCELS) {
-        throw bindingError(BINDING_CODES.tooManyParcels,
-            `The site meets ${counted} parcels, over the ${MAX_BINDING_PARCELS} limit.`, 413, { count: counted });
-    }
-    const row = await cadastre.bindingMeasurements({ polygons: params[0], lines: params[1], floorM,
-        projection: frame.proj, uncertaintyM: bindingUncertaintyM(floorM / 2) });
-    const computedAt = now().toISOString();
-    const siteGeometry = row.site_geojson ? JSON.parse(row.site_geojson) : null;
-    if (!siteGeometry) {
-        throw bindingError(BINDING_CODES.invalidSite, 'The site has no area after validation.');
-    }
-    const siteM2 = Number(row.site_m2) || 0;
-    if (!row.in_region) {
-        return {
-            site: siteGeometry,
-            binding: unboundBinding({
-                coverage: COVERAGE.unknown,
-                toleranceM,
-                siteM2,
-                computedAt,
-                reason: 'The site is outside every cadastral municipality in the selected dataset; its cadastre cannot be bound here.'
-            })
-        };
-    }
-    const measured = Array.isArray(row.parcels) ? row.parcels : [];
-    const entry = hit => ({
-        parcelId: String(hit.parcelId),
-        overlapM2: round(hit.overlapM2, 3),
-        intrusionM: round(hit.intrusionM, 4)
+    const result = await computeSourceBinding(provider.adapter, {
+        site, toleranceM, sourceId: provider.descriptor.id,
+        snapshotId: provider.descriptor.snapshotId || null, now
     });
-    const unsurveyedM2 = round(row.unsurveyed_m2 || 0, 2);
-    const unknownM2 = round(row.unknown_m2 || 0, 2);
+    if (result.binding.coverage !== COVERAGE.unknown) return result;
     return {
-        site: siteGeometry,
-        binding: {
-            parcels: measured.filter(hit => hit.bound).map(entry),
-            touched: measured.filter(hit => !hit.bound && !hit.unresolved).map(entry),
-            // Within the measurement band of the threshold: neither bound nor touched. A publish refuses.
-            ...(measured.some(hit => hit.unresolved) ? { unresolved: measured.filter(hit => hit.unresolved).map(entry) } : {}),
+        site: result.site,
+        binding: unboundBinding({
+            coverage: COVERAGE.unknown,
             toleranceM,
-            coverage: unsurveyedM2 > 0 || unknownM2 > 0 ? COVERAGE.partial : COVERAGE.complete,
-            unsurveyedM2,
-            unknownM2,
-            siteM2: round(siteM2, 2),
-            source: SERVER_CADASTRE_SOURCE,
-            parcelSource: HR_PARCEL_SOURCE,
-            computedAt
-        }
+            siteM2: result.binding.siteM2,
+            computedAt: result.binding.computedAt,
+            reason: 'The site is outside every cadastral municipality in the selected dataset; its cadastre cannot be bound here.'
+        })
     };
 }
 
 /**
  * The binding of a parcel act with no geometry of its own: its site IS its declared parcels, so the
- * binding is the declaration by construction. The server only checks that every declared id is a
- * current HR parcel (unknown ids come back as `extra`). Executable sources resolve their own IDs.
- * Other declarations remain unverified: coverage 'unknown', declaration kept as sent.
+ * binding is the declaration by construction. The selected source resolves the ids (an id it does
+ * not hold as a current parcel comes back as `extra`).
  */
 export async function parcelActBinding(db, declaredIds, { toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, parcelSourceId = null, now = () => new Date() } = {}) {
     const provider = bindingSource(db, parcelSourceId);
-    if (provider && typeof provider.adapter.declaredParcelSite !== 'function') return computeSourceParcelActBinding(provider.adapter, declaredIds, {
+    if (provider) return computeSourceParcelActBinding(provider.adapter, declaredIds, {
         toleranceM, sourceId: provider.descriptor.id, snapshotId: provider.descriptor.snapshotId || null, now
     });
-    const computedAt = now().toISOString();
-    if (parcelSourceId === 'none') return { site: null, extra: declaredIds.map(String), binding: unboundBinding({
-        coverage: COVERAGE.none, toleranceM, siteM2: 0, computedAt,
+    return { site: null, extra: declaredIds.map(String), binding: unboundBinding({
+        coverage: COVERAGE.none, toleranceM, siteM2: 0, computedAt: now().toISOString(),
         reason: 'No cadastral source was selected for these declared parcels.' }) };
-    const parsed = declaredIds.map(parseHrParcelId);
-    if (parsed.some(value => !value)) {
-        return {
-            site: null,
-            extra: [],
-            binding: unboundBinding({
-                coverage: COVERAGE.unknown,
-                toleranceM,
-                siteM2: 0,
-                computedAt,
-                parcels: declaredIds.map(id => ({ parcelId: String(id), overlapM2: null, intrusionM: null })),
-                reason: 'The declared parcels are not in a cadastre the server holds; the declaration is kept unverified.'
-            })
-        };
-    }
-    const row = await provider.adapter.declaredParcelSite({ parcels: parsed });
-    const found = (Array.isArray(row.parcels) ? row.parcels : []).map(hit => ({
-        parcelId: String(hit.parcelId),
-        overlapM2: round(hit.overlapM2, 3),
-        intrusionM: null
-    }));
-    const foundIds = new Set(found.map(hit => hit.parcelId));
-    return {
-        site: row.site_geojson ? JSON.parse(row.site_geojson) : null,
-        extra: declaredIds.filter(id => !foundIds.has(id)).sort(),
-        binding: {
-            parcels: found,
-            touched: [],
-            toleranceM,
-            coverage: COVERAGE.complete,
-            unsurveyedM2: 0,
-            unknownM2: 0,
-            siteM2: round(row.site_m2 || 0, 2),
-            source: SERVER_CADASTRE_SOURCE,
-            parcelSource: HR_PARCEL_SOURCE,
-            computedAt,
-            subject: 'declared-parcels'
-        }
-    };
 }
 
 const describeMissing = hit => ({ id: hit.parcelId, overlapM2: round(hit.overlapM2, 1), intrusionM: round(hit.intrusionM, 3) });
@@ -384,31 +270,38 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
     }
 
     let result;
-    if (site) {
-        if (hasFootprint(parts)) {
-            const floorM = Math.max(toleranceM, INTRUSION_NOISE_M);
-            const [polygons, lines] = footprintQueryParams(parts);
-            const frame = bindingFrame({ site });
-            const row = (await db.query(FOOTPRINT_OUTSIDE_SITE_SQL,
-                [polygons, lines, JSON.stringify(normalizeSiteGeometry(site)), floorM, frame.proj])).rows[0];
-            const outside = Number(row?.outside_m2 || 0);
-            if (outside > 0) {
+    if (site || hasFootprint(parts)) {
+        // A legacy centre line is buffered only by the browser's corridor builder; the server has
+        // no second way to build its land.
+        if (parts.centerline) {
+            return { ok: false, status: 400, code: INVALID_FOOTPRINT,
+                error: 'The road has only a legacy centre line: its corridor land (roadProposal.definition.polygon) must be rebuilt before it can be bound.' };
+        }
+        // The browser's site (site-binding.js siteOf) and footprint (plan-order.js footprintOf) on the grid.
+        const footprint = hasFootprint(parts) ? planOrder.footprintOf(withSite, { turf }) : null;
+        const siteGeometry = site ? normalizeSiteGeometry(site) : siteBindingApi.siteOf(withSite, { turf });
+        if (!siteGeometry) throw bindingError(BINDING_CODES.invalidSite, 'The site has no area.');
+        if (site && footprint) {
+            // The footprint lies inside the authored site, as the browser checks it (proposal-manager.js
+            // _footprintInsideSite): what the site leaves of it must not be ground.
+            const outside = ground.uncoveredBy(turf, ground.snapFeature(footprint), [turf.feature(ground.snapGeometry(siteGeometry))],
+                { site: 'binding.footprintInsideSite' });
+            if (ground.isGround(turf, outside, toleranceM)) {
+                const outsideM2 = turf.area(outside);
                 return {
                     ok: false,
                     status: 400,
                     code: BINDING_CODES.footprintOutsideSite,
-                    error: `The design extends ${round(outside, 1)} m² beyond its saved land boundary. Edit the design's land boundary to include this area, or move the geometry inside it.`,
-                    outsideM2: round(outside, 1),
-                    outsideGeometry: row.outside_geojson ? JSON.parse(row.outside_geojson) : null,
-                    site: normalizeSiteGeometry(site)
+                    error: `The design extends ${round(outsideM2, 1)} m² beyond its saved land boundary. Edit the design's land boundary to include this area, or move the geometry inside it.`,
+                    outsideM2: round(outsideM2, 1),
+                    outsideGeometry: outside.geometry,
+                    site: siteGeometry
                 };
             }
         }
-        result = await computeBinding(db, { site, toleranceM, city: publicationCity, parcelSourceId, now });
-        // The authored site is stored as sent (normalised), not the reprojected union.
-        result.site = normalizeSiteGeometry(site);
-    } else if (hasFootprint(parts)) {
-        result = await computeBinding(db, { parts, toleranceM, city: publicationCity, parcelSourceId, now });
+        result = await computeBinding(db, { site: siteGeometry, toleranceM, city: publicationCity, parcelSourceId, now });
+        // The authored site is stored as sent (normalised), not as bound on the grid.
+        if (site) result.site = siteGeometry;
     } else {
         const act = await parcelActBinding(db, declared, { toleranceM, city, parcelSourceId, now });
         // an act naming no city is placed where its parcels are
@@ -427,16 +320,6 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
     }
 
     const { binding } = result;
-    if (Array.isArray(binding.unresolved) && binding.unresolved.length) {
-        const ids = binding.unresolved.map(hit => hit.parcelId);
-        return {
-            ok: false,
-            status: 409,
-            code: BINDING_CODES.unresolved,
-            error: `The site reaches into ${ids.join(', ')} by within measurement error of the ${binding.toleranceM} m tolerance, so whether it binds cannot be decided. Move the design a millimetre into or away from ${ids.length === 1 ? 'that parcel' : 'those parcels'}.`,
-            unresolved: binding.unresolved.map(hit => ({ id: hit.parcelId, intrusionM: hit.intrusionM }))
-        };
-    }
     if (binding.coverage === COVERAGE.unknown) {
         binding.parcels = declared.map(id => ({ parcelId: id, overlapM2: null, intrusionM: null }));
         binding.subject = 'declared-unverified';

@@ -70,8 +70,10 @@
                 }
             }
         }
-        // Validate the whole partition against immutable source facts, then derive with AgreementGround.
-        mutation.replaceCadastreScope([...originals.keys()], mutation.list());
+        // Each formation above ran the map apply's partition check on its own pieces
+        // (ProposalManager._checkFormedPartition); the same check over the whole partition closes
+        // the read, then AgreementGround derives.
+        mutation.checkCadastreScope(originals.keys());
         await mutation.prepare(); mutation.publish();
         return { records: rows, fabric, originals };
     }

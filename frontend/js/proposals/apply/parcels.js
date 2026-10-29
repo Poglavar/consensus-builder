@@ -293,24 +293,17 @@
         if (!parentEntries.length && !groundEntries.length) {
             throw new Error('Parcel-layout parents carry no explicit cadastral or open-ground provenance.');
         }
-        // The fabric accepts a plot only when every vertex lies in one of its own cadastral
-        // parcels (live-fabric.js vertexInsideFact). A plot's vertex can lie inside a parcel of the
-        // layout it does not reach into by the rule above (on ground a street already carved from
-        // that parcel's pieces): that parcel holds its ground too, so it joins the plot's provenance.
-        // This vertex patch goes in docs/geometry-tolerances.md step 5.
-        const fabricDraft = options?._parcelMutation?.fabric;
-        const layoutIds = [...new Set(parentEntries.map(entry => String(entry.baseId)))];
-        const anchorVertices = (feature, ids) => {
-            if (typeof fabricDraft?.cadastreIdsHolding !== 'function') return ids;
-            turfRef.coordAll(feature).forEach(vertex => {
-                if (fabricDraft.cadastreIdsHolding(vertex, ids).length) return;
-                const host = fabricDraft.cadastreIdsHolding(vertex, layoutIds.filter(id => !ids.includes(id)))[0];
-                if (host) ids.push(host);
-            });
-            return ids;
-        };
+        // Each plot is cut to the ground the layout consumes (geometry-tolerances.js cutTo). What is
+        // cut off lies on no live parent (a street another road already carved, say), and the
+        // live-parent gate has judged it debris; so no vertex of a plot lies outside its own parcels.
         childFeatures.forEach(feature => {
-            const ids = parentEntries.length ? anchorVertices(feature, formationEdit.overlappingBaseIds(feature, parentEntries, anchorCtx, { toleranceM })) : [];
+            const cut = groundRule.cutTo(turfRef, feature, parentFeatures, { site: 'apply-parcels.plot', proposalId: idLabel });
+            if (!cut || !cut.geometry) throw new Error('A layout plot lies on no live ground of its layout.');
+            feature.geometry = cut.geometry;
+            feature.properties.calculatedArea = Math.round(_calculateGeoJsonArea(cut.geometry));
+        });
+        childFeatures.forEach(feature => {
+            const ids = parentEntries.length ? formationEdit.overlappingBaseIds(feature, parentEntries, anchorCtx, { toleranceM }) : [];
             const groundIds = groundEntries.length ? formationEdit.overlappingBaseIds(feature, groundEntries, anchorCtx, { toleranceM }) : [];
             if (!ids.length && !groundIds.length) {
                 throw new Error('A layout plot lies on no declared cadastral parcel and no open ground of its site.');
@@ -465,6 +458,8 @@
             feature.properties.jointPool = owners.length > 1;
         });
 
+        // The pieces must tile the ground they replace, as a private read checks them.
+        if (!await this._checkFormedPartition(idLabel, proposalData, parentFeatures.filter(feature => !isHost(feature)), childFeatures, options)) return false;
         await this._addFeaturesToMap(childFeatures, true, proposalData, options);
 
         const touchedAgentIds = new Set();

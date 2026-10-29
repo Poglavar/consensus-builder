@@ -150,6 +150,28 @@ describe('coverage', () => {
         expect(binding.unsurveyedM2).toBeCloseTo(binding.siteM2, 0);
     });
 
+    it('splits open ground by the surveyed regions it is given: inside one unsurveyed, outside every one unknown', () => {
+        // Site [60,100]×[5,25] half beyond B; the region ends at x = 90.
+        const regions = [{ id: 'KO-1', geometry: rect(-50, -50, 90, 50) }];
+        const binding = bindingFromParcels(rect(60, 5, 100, 25), [A, B], opts({ regions }));
+        expect(binding.coverage).toBe('partial');
+        expect(binding.unsurveyedM2).toBeGreaterThan(195);
+        expect(binding.unsurveyedM2).toBeLessThan(205);
+        expect(binding.unknownM2).toBeGreaterThan(195);
+        expect(binding.unknownM2).toBeLessThan(205);
+        // Without regions open ground is all unsurveyed and nothing is unknown.
+        expect(bindingFromParcels(rect(60, 5, 100, 25), [A, B], opts()).unknownM2).toBe(0);
+        // A sliver of open ground outside the region narrower than the noise is not unknown ground.
+        const edge = [{ id: 'KO-1', geometry: rect(-50, -50, 99.9995, 50) }];
+        expect(bindingFromParcels(rect(60, 5, 100, 25), [A, B], opts({ regions: edge })).unknownM2).toBe(0);
+    });
+
+    it('is unknown, binding nothing, when the site lies outside every surveyed region given', () => {
+        const binding = bindingFromParcels(rect(10, 5, 70, 25), [A, B], opts({ regions: [] }));
+        expect(binding).toMatchObject({ coverage: 'unknown', parcels: [], touched: [], unsurveyedM2: 0 });
+        expect(binding.unknownM2).toBeCloseTo(binding.siteM2, 2);
+    });
+
     it('labels a browser answer as a preview unless told otherwise', () => {
         expect(bindingFromParcels(rect(0, 0, 1, 1), [A], opts()).source).toBe('client-preview');
     });

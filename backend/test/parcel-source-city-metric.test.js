@@ -3,7 +3,7 @@ import { consumerParcelSourceId } from './helpers/frontend-source-selection.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createParcelSource, parcelSourceCatalog } from '../parcels/sources.js';
 import { parcelSourceForCity } from './helpers/frontend-source-selection.js';
-import { computeBinding, bindingFrame, FOOTPRINT_SITE_SQL } from '../proposals/binding.js';
+import { checkProposalBinding, computeBinding } from '../proposals/binding.js';
 import { encodeSnapshotNativeId } from '../parcels/geojson-snapshot-source.js';
 const descriptor = { id: 'test-metric-shared', adapter: 'geojson-snapshot', endpoint: 'https://example.org/shared.geojson',
     idPrefix: 'TEST-METRIC-', idFields: ['city', 'sheet', 'id'], outFields: ['city', 'sheet', 'id'],
@@ -38,15 +38,13 @@ describe('shared source metric projection by city', () => {
         expect(binding.parcels.map(parcel => parcel.parcelId)).toEqual(ids);
         expect(db.query).not.toHaveBeenCalled();
         expect(fetchImpl).toHaveBeenCalledOnce();
-        const unionDb = { query: vi.fn(async () => ({ rows: [{ geometry: JSON.stringify(geometry) }] })) };
-        const parts = { polygons: [{ type: 'MultiPolygon', coordinates: [geometry.coordinates] }], centerline: null };
-        // The source's per-city metric SRID describes its data; a footprint is widened in its own frame.
-        await computeBinding(unionDb, { parcelSourceId: consumerParcelSourceId('metric_tokyo'), city: 'metric_tokyo', parts });
-        expect(unionDb.query.mock.calls[0][0]).toBe(FOOTPRINT_SITE_SQL);
-        expect(unionDb.query.mock.calls[0][0]).not.toMatch(/32654|32653|3765/);
-        expect(unionDb.query.mock.calls[0][1].at(-1)).toBe(bindingFrame({ parts }).proj);
-        await computeBinding(unionDb, { parcelSourceId: consumerParcelSourceId('metric_osaka'), city: 'metric_osaka', parts });
-        expect(unionDb.query.mock.calls[1][1].at(-1)).toBe(bindingFrame({ parts }).proj);
+        // The source's per-city metric SRID describes its data; a footprint's site is the browser's own union, no SQL.
+        const park = { goal: 'park', structureProposal: { kind: 'park', geometry } };
+        for (const city of ['metric_tokyo', 'metric_osaka']) {
+            const result = await checkProposalBinding(db, park, [], { parcelSourceId: consumerParcelSourceId(city), city, derive: true });
+            expect(result.cadastreParcelIds).toEqual(ids);
+        }
+        expect(db.query).not.toHaveBeenCalled();
         expect(fetchImpl).toHaveBeenCalledOnce();
     });
     it('ignores consumer city metric mappings on the backend; operation frames depend on geometry', () => {

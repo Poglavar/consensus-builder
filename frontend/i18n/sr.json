@@ -679,7 +679,8 @@
         "busy": "U toku je druga izmena mape. Sačekajte da se završi pa pokušajte ponovo.",
         "storeUnavailable": "Predlozi još nisu učitani. Sačekajte da se učitavanje grada završi pa pokušajte ponovo.",
         "notFound": "Ovaj dizajn više nije dostupan. Osvežite listu dizajna i pokušajte ponovo.",
-        "cancelled": "Ovaj dizajn je povučen pa ne može da se primeni na mapu."
+        "cancelled": "Ovaj dizajn je povučen pa ne može da se primeni na mapu.",
+        "partitionInvalid": "Dizajn „{{title}}” ne može da se primeni: parcele koje oblikuje ne bi tačno pokrile zemljište koje zamenjuju ({{detail}}). Dizajn ostaje sačuvan, neprimenjen."
     },
     "proposalDrafts": {
         "title": "Nacrti",

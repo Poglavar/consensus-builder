@@ -359,9 +359,14 @@
         const hostIds = hosts.map(entry => String(entry.id));
         const hostFeatures = hosts.map(entry => entry.feature);
         const primary = hostFeatures[0];
+        // The building parcel is the take cut to the ground it consumes (geometry-tolerances.js
+        // cutTo): what is cut off is the debris the gate above let pass, so no vertex of the parcel
+        // lies outside its own hosts, and it overlaps no piece it does not consume.
+        const piece = ground.cutTo(turfRef, footprint, [...takenHosts, ...hosts].map(entry => asPlain(entry.feature.geometry)),
+            { site: 'apply-buildings.piece', proposalId: idLabel });
         const parentEntries = hosts.flatMap(entry => formationEdit.cadastreIdsOfFeature(entry.feature)
             .map(baseId => ({ baseId, feature: entry.feature })));
-        const buildingCadastreIds = formationEdit.overlappingBaseIds(footprint, parentEntries, takeCtx, { toleranceM });
+        const buildingCadastreIds = formationEdit.overlappingBaseIds(piece, parentEntries, takeCtx, { toleranceM });
         const groundIds = groundIdsWith(hostFeatures);
         if (!buildingCadastreIds.length && !groundIds.length) {
             throw new Error('Building formation has no explicit cadastral anchors under its footprint.');
@@ -369,7 +374,7 @@
 
         const buildingParcel = {
             type: 'Feature',
-            geometry: JSON.parse(JSON.stringify(takeFeature.geometry)),
+            geometry: JSON.parse(JSON.stringify(piece.geometry)),
             properties: {
                 producedByProposalId: proposalId,
                 buildingParcel: true,
@@ -377,7 +382,7 @@
                 rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null) || null,
                 cadastreParcelIds: buildingCadastreIds,
                 ...(groundIds.length ? { groundIds } : {}),
-                calculatedArea: Math.round(_calculateGeoJsonArea(takeFeature.geometry)),
+                calculatedArea: Math.round(_calculateGeoJsonArea(piece.geometry)),
                 isProposed: true,
                 ownershipDetails: JSON.parse(JSON.stringify(proposerOwnership)),
                 ownershipType: 'private'
@@ -499,6 +504,20 @@
         }
         const children = [buildingParcel, ...ownRemainders, ...foreignRemainders];
         this._assignSyntheticChildIdentities(proposalId, children);
+        // A DERIVED host's largest remainder carries the host's own id (§15b: identity flows
+        // with the ground), so _addFeaturesToMap below REPLACES that registry entry with the
+        // remainder piece. Hiding such a host by feature would hide the remainder we just
+        // minted — a whole parcel of dead, unclickable ground. Hide only hosts whose id no
+        // child re-uses.
+        const reusedHostIds = new Set(children
+            .map(child => String(_getParcelIdFromFeature(child) || ''))
+            .filter(Boolean));
+        const consumedHosts = hostFeatures.filter(hostFeature => {
+            const hostId = String(_getParcelIdFromFeature(hostFeature) || '');
+            return !(hostId && reusedHostIds.has(hostId));
+        });
+        // The pieces must tile the ground they replace, as a private read checks them.
+        if (!await this._checkFormedPartition(idLabel, proposalData, hostFeatures, children, options)) return { ok: false };
         await this._addFeaturesToMap(children, true, proposalData, options);
         const childIds = [];
         const buildingParcelIds = [];
@@ -517,18 +536,7 @@
                 );
             } catch (_) { }
         });
-        // A DERIVED host's largest remainder carries the host's own id (§15b: identity flows
-        // with the ground), so _addFeaturesToMap above REPLACED that registry entry with the
-        // remainder piece. Hiding such a host by feature would hide the remainder we just
-        // minted — a whole parcel of dead, unclickable ground. Hide only hosts whose id no
-        // child re-uses.
-        const reusedHostIds = new Set(children
-            .map(child => String(_getParcelIdFromFeature(child) || ''))
-            .filter(Boolean));
-        this._consumeFeaturesFromLiveFabric(hostFeatures.filter(hostFeature => {
-            const hostId = String(_getParcelIdFromFeature(hostFeature) || '');
-            return !(hostId && reusedHostIds.has(hostId));
-        }), options);
+        this._consumeFeaturesFromLiveFabric(consumedHosts, options);
         finishOwnership(buildingParcelIds);
 
         return { ok: true, parentIds: hostIds.concat(takenHosts.map(entry => String(entry.id))) };

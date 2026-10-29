@@ -679,7 +679,8 @@
         "busy": "Hay otra actualización del mapa en curso. Espera a que termine e inténtalo de nuevo.",
         "storeUnavailable": "Los diseños aún no se han cargado. Espera a que termine la carga de la ciudad e inténtalo de nuevo.",
         "notFound": "Este diseño ya no está disponible. Actualiza la lista de diseños e inténtalo de nuevo.",
-        "cancelled": "Este diseño fue retirada, por lo que no se puede aplicar al mapa."
+        "cancelled": "Este diseño fue retirada, por lo que no se puede aplicar al mapa.",
+        "partitionInvalid": "No se puede aplicar «{{title}}»: las parcelas que forma no cubrirían exactamente el terreno que sustituyen ({{detail}}). El diseño queda guardado, sin aplicar."
     },
     "proposalDrafts": {
         "title": "Borradores",

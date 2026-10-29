@@ -7,9 +7,9 @@ import request from 'supertest';
 import { createMockPool } from './helpers/mock-pool.js';
 import { createContentApp } from './helpers/create-app.js';
 import {
-    PARK, SITE, SITE_MULTI, SPILL, box, cidOf, designContent, designRow, layoutContent, scriptedCadastre
+    PARK, SITE, SITE_MULTI, SPILL_WITH_GAP, box, cidOf, designContent, designRow, layoutContent, scriptedCadastre
 } from './helpers/content-fixtures.js';
-import { BINDING_COUNT_SQL, BINDING_SQL, FOOTPRINT_OUTSIDE_SITE_SQL, MAX_BINDING_PARCELS } from '../proposals/binding.js';
+import { HR_SITE_CANDIDATES_SQL } from '../parcels/oss-binding-source.js';
 import { MAX_PINNED_OBJECT_BYTES } from '../storage/pinning.js';
 import { MAX_DESIGN_LIST_LIMIT } from '../routes/designs.js';
 
@@ -63,8 +63,8 @@ describe('POST /designs', () => {
         expect(res.status).toBe(201);
         expect(res.body).toMatchObject({ cid: cidOf(content), city: 'new_york', goal: 'park', title: 'Riverside park',
             author: 'Studio North', originCid: content.origin.cid, content, createdAt: '2026-10-21T08:05:00.000Z' });
-        // The binding is derived from the site: the footprint inside it, then the parcels it takes.
-        expect(pool.getBindingCalls().map(call => call.sql)).toEqual([FOOTPRINT_OUTSIDE_SITE_SQL, BINDING_COUNT_SQL, BINDING_SQL]);
+        // The binding is derived from the site: one candidate read, then site-binding.js decides.
+        expect(pool.getBindingCalls().map(call => call.sql)).toEqual([HR_SITE_CANDIDATES_SQL]);
         expect(res.body.binding.parcels.map(hit => hit.parcelId)).toEqual(['HR-335649-100', 'HR-335649-101']);
         expect(res.body.binding.touched.map(hit => hit.parcelId)).toEqual(['HR-335649-102']);
         expect(res.body.binding).toMatchObject({ coverage: 'complete', source: 'server:hr-cadastre' });
@@ -92,12 +92,12 @@ describe('POST /designs', () => {
         const content = { ...rest, goal: 'road-track', site: null, geometry: null, roadProposal: { definition: { polygon: PARK } } };
         const res = await request(appFor(pool).app).post('/designs').send(body(content));
         expect(res.status).toBe(201);
-        expect(pool.getBindingCalls().map(call => call.sql)).toEqual([BINDING_COUNT_SQL, BINDING_SQL]);
+        expect(pool.getBindingCalls().map(call => call.sql)).toEqual([HR_SITE_CANDIDATES_SQL]);
         expect(res.body.binding.parcels.map(hit => hit.parcelId)).toEqual(['HR-335649-100', 'HR-335649-101']);
     });
 
     it('stores a design on ground whose cadastre the server does not hold, with unknown coverage', async () => {
-        const pool = indexPool({ cadastre: { inRegion: false } });
+        const pool = indexPool({ cadastre: { regions: [] } });
         const res = await request(appFor(pool).app).post('/designs').send(body(designContent()));
         expect(res.status).toBe(201);
         expect(res.body.binding).toMatchObject({ coverage: 'unknown', parcels: [], subject: 'declared-unverified' });
@@ -207,9 +207,8 @@ describe('POST /designs', () => {
             [road({ width: 12, points: [{ lat: 45.8, lng: 15.97 }, { lat: 45.801, lng: 15.971 }], constructionFrame: { kind: 'legacy-centreline' } }), {}, 400, 'invalid-design'],
             [designContent({ structureProposal: { kind: 'park', geometry: { type: 'Polygon', coordinates: 'x' } } }), {}, 400, 'invalid-footprint'],
             [designContent({ site: null, geometry: {}, structureProposal: { kind: 'park' } }), {}, 400, 'site-required'],
-            [designContent(), { outsideM2: 37.2 }, 400, 'footprint-outside-site'],
-            [designContent(), { parcels: [{ ...SPILL[1], bound: false, unresolved: true }] }, 409, 'binding-unresolved'],
-            [designContent(), { count: MAX_BINDING_PARCELS + 1 }, 413, 'too-many-parcels']
+            [designContent({ structureProposal: { kind: 'park', geometry: box(15.971, 45.80, 15.973, 45.801) } }), {}, 400, 'footprint-outside-site'],
+            [designContent(), { truncated: true }, 413, 'too-many-parcels']
         ];
         for (const [content, cadastre, status, code] of cases) {
             const pool = indexPool({ cadastre });
@@ -224,7 +223,7 @@ describe('POST /designs', () => {
     it('answers 503 binding-unavailable, storing nothing, when the cadastre cannot be read', async () => {
         const pool = indexPool();
         pool.bindingAnswer = (sql) => {
-            if (sql === FOOTPRINT_OUTSIDE_SITE_SQL) throw new Error('connection reset');
+            if (sql === HR_SITE_CANDIDATES_SQL) throw new Error('connection reset');
             return null;
         };
         const error = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -372,13 +371,16 @@ describe('POST /designs/binding', () => {
         expect(publication.body.binding.parcels).toEqual(preview.body.binding.parcels);
     });
     it('answers the binding a design on that site would get, storing nothing', async () => {
-        const pool = indexPool({ cadastre: { unsurveyedM2: 4 } });
+        const pool = indexPool({ cadastre: { parcels: SPILL_WITH_GAP } });
         const res = await request(appFor(pool).app).post('/designs/binding').send({ site: SITE, toleranceM: 0.01, city: 'client-label', parcelSourceId: 'oss-wfs' });
         expect(res.status).toBe(200);
         expect(res.body).toMatchObject({ city: 'client-label', parcelSourceId: 'oss-wfs' });
-        expect(res.body.binding).toMatchObject({ coverage: 'partial', toleranceM: 0.01, unsurveyedM2: 4 });
+        expect(res.body.binding).toMatchObject({ coverage: 'partial', toleranceM: 0.01, unknownM2: 0 });
+        // The 0.0002° strip along the east edge: about 15.5 m × 333 m.
+        expect(res.body.binding.unsurveyedM2).toBeGreaterThan(5000);
+        expect(res.body.binding.unsurveyedM2).toBeLessThan(5300);
         expect(res.body.binding.parcels.map(hit => hit.parcelId)).toEqual(['HR-335649-100', 'HR-335649-101']);
-        expect(pool.getBindingCalls().map(call => call.sql)).toEqual([BINDING_COUNT_SQL, BINDING_SQL]);
+        expect(pool.getBindingCalls().map(call => call.sql)).toEqual([HR_SITE_CANDIDATES_SQL]);
         expect(pool.getCalls()).toEqual([]);
     });
 
@@ -400,7 +402,7 @@ describe('POST /designs/binding', () => {
     });
 
     it('keeps a binding refusal\'s own status, and answers 503 binding-unavailable when the cadastre fails', async () => {
-        const big = await request(appFor(indexPool({ cadastre: { count: MAX_BINDING_PARCELS + 1 } })).app)
+        const big = await request(appFor(indexPool({ cadastre: { truncated: true } })).app)
             .post('/designs/binding').send({ site: SITE, parcelSourceId: 'oss-wfs' });
         expect([big.status, big.body.code]).toEqual([413, 'too-many-parcels']);
 

@@ -1,21 +1,21 @@
 // A proposal's SITE (the ground it occupies) and its BINDING (the cadastral parcels that site reaches
 // into), as one pure rule shared by the browser preview and the server. See PARCEL-OPTIONAL.md.
-// The server answer (backend/proposals/binding.js, PostGIS over the whole cadastre) is authoritative;
-// this module computes the same rule over whatever parcel geometries the caller passes in.
+// The server runs this same function over the candidate parcels its source finds (an indexed
+// search, backend/parcels/source-binding.js), so the browser and the server cannot disagree
+// (docs/geometry-tolerances.md).
 //
-// THE RULE. A parcel is bound when `site ∩ parcel` survives an inward buffer of
-// max(toleranceM, INTRUSION_NOISE_M) / 2 metres, i.e. when the widest circle that fits inside the
-// intersection is wider than the tolerance. Intrusion is that width (the diameter of the largest
-// inscribed circle), so a 0.3 m sliver along a boundary intrudes 0.3 m whatever its length or area.
+// THE RULE. A parcel is bound when `site ∩ parcel` is ground (geometry-tolerances.js isGround: wider
+// than max(toleranceM, NOISE_M), the test reachesInto runs), i.e. when the widest circle that fits
+// inside the intersection is wider than the tolerance. Intrusion is that width (the diameter of the
+// largest inscribed circle), so a 0.3 m sliver along a boundary intrudes 0.3 m whatever its length
+// or area. Site, parcels and regions are put on the shared grid first.
 //
-// Width is measured by bisection on the inward-buffer radius r ("does buffer(I, -r) still exist?",
-// which is monotone in r), started from [0, sqrt(area/π)] (no inscribed circle can have more area
-// than the polygon). It stops when the bracket is within max(0.5 mm, 0.05 % of r), so the reported
-// width is within ±1 mm below 2 m and ±0.1 % above. turf.buffer runs in an azimuthal-equidistant
-// metric frame centred on the geometry, so all distances here are ground metres. The server uses
-// ST_Buffer in the site's canonical local transverse-Mercator operation frame; the source
-// dataset CRS is only for candidate lookup (backend/proposals/binding.js, projections.md).
-// ST_MaximumInscribedCircle's fixed 1/1000-of-extent tolerance is too coarse for a long thin sliver.
+// Width is reported, not decided on: measured by bisection on the inward-buffer radius r ("does
+// buffer(I, -r) still exist?", which is monotone in r), started from [0, sqrt(area/π)] (no inscribed
+// circle can have more area than the polygon). It stops when the bracket is within max(0.5 mm,
+// 0.05 % of r), so the reported width is within ±1 mm below 2 m and ±0.1 % above. turf.buffer runs
+// in an azimuthal-equidistant metric frame centred on the geometry, so all distances here are
+// ground metres.
 //
 // Pure: no DOM, no fetch. `turf` is the browser global, globalThis.turf in node tests, or an
 // explicit `options.turf`.
@@ -50,13 +50,6 @@
 
 
     const COVERAGE = Object.freeze({ complete: 'complete', partial: 'partial', none: 'none', unknown: 'unknown' });
-
-    // The decision band around a threshold radius r for THIS implementation: turf.buffer works on a
-    // sphere, whose metres differ from the WGS84 ellipsoid's by up to 0.3 % depending on direction
-    // and latitude. A parcel whose intrusion lies within the band is `unresolved` (projections.md §4),
-    // never silently bound or unbound; the server's PostGIS answer uses a far narrower band.
-    const SPHERE_BAND = Object.freeze({ RELATIVE: 3.5e-3, ABSOLUTE_M: 1e-6 });
-    const sphereBandM = radiusM => Math.max(SPHERE_BAND.ABSOLUTE_M, radiusM * SPHERE_BAND.RELATIVE);
 
     function T(options) {
         if (options && options.turf) return options.turf;
@@ -191,54 +184,66 @@
      * @param {object} site GeoJSON Polygon/MultiPolygon (or Feature), EPSG:4326.
      * @param {{id: string, geometry: object}[]} parcels every cadastral parcel the caller has near
      *   the site (unbound ones are needed too: they decide what is open ground).
-     * @param {{toleranceM?: number, regionHasCadastre?: boolean, source?: string, turf?: object}} options
+     * @param {{toleranceM?: number, regionHasCadastre?: boolean, regions?: {id, geometry}[], source?: string, turf?: object}} options
      *   regionHasCadastre false = the region has no cadastre at all (coverage 'none', parcels ignored).
+     *   regions = the surveyed regions (cadastral municipalities) the site meets, when the caller
+     *   knows them: open ground inside one is unsurveyed, outside every one unknown.
      * @returns {{ parcels: {parcelId, overlapM2, intrusionM}[], touched: {parcelId, overlapM2, intrusionM}[],
-     *   toleranceM: number, coverage: string, unsurveyedM2: number, siteM2: number, source: string }}
+     *   toleranceM: number, coverage: string, unsurveyedM2: number, unknownM2: number, siteM2: number, source: string }}
      *
      * Coverage:
      *   complete — every part of the site wider than the floor lies on some cadastral parcel;
-     *   partial  — some ground wider than the floor lies on no parcel (unsurveyedM2 > 0). A site in a
-     *              surveyed region with no parcel under it at all is partial with unsurveyedM2 = siteM2;
+     *   partial  — some ground wider than the floor lies on no parcel (unsurveyedM2 + unknownM2 > 0).
+     *              A site in a surveyed region with no parcel under it at all is partial with
+     *              unsurveyedM2 = siteM2;
+     *   unknown  — `regions` is given and empty: the site lies outside every region the source
+     *              surveys, so its cadastre cannot be read here (parcels ignored);
      *   none     — the caller says the region has no cadastre (explore): the whole site is open ground.
      * Open ground is measured against ALL given parcels, not only bound ones: a parcel the site
      * touches by less than the tolerance is within measurement error, not ground without an owner.
-     * Its components count only if they are wider than max(toleranceM, INTRUSION_NOISE_M), the same
-     * linear floor as binding, so cadastral micro-gaps between abutting parcels are not open ground.
+     * Its components count only if they are ground (isGround at toleranceM, the same test as
+     * binding), so cadastral micro-gaps between abutting parcels are not open ground.
      */
     function bindingFromParcels(site, parcels, options) {
         const opts = options || {};
         const t = T(opts);
         if (!t) throw new Error('site-binding: turf is not available');
+        const ground = gridApi();
+        const clips = clipFailureApi();
         const toleranceM = normalizeTolerance(opts.toleranceM);
-        const floorM = Math.max(toleranceM, INTRUSION_NOISE_M);
         const siteGeometry = asPolygonGeometry(site);
         if (!siteGeometry) throw new TypeError('site must be a GeoJSON Polygon or MultiPolygon');
-        const siteFeature = t.feature(siteGeometry);
+        const siteFeature = t.feature(ground.snapGeometry(siteGeometry));
         const siteM2 = t.area(siteFeature);
         const source = opts.source || 'client-preview';
         const parcelSource = opts.regionHasCadastre === false ? null : parcelSourceOf(opts.parcelSource);
+        const regions = Array.isArray(opts.regions)
+            ? opts.regions.map(region => asPolygonGeometry(region && region.geometry)).filter(Boolean)
+                .map(geometry => t.feature(ground.snapGeometry(geometry)))
+            : null;
+        const unbound = (coverage, unsurveyedM2, unknownM2) => ({ parcels: [], touched: [], toleranceM, coverage,
+            unsurveyedM2: round(unsurveyedM2, 2), unknownM2: round(unknownM2, 2), siteM2: round(siteM2, 2), source, parcelSource });
 
-        if (opts.regionHasCadastre === false) {
-            return { parcels: [], touched: [], toleranceM, coverage: COVERAGE.none, unsurveyedM2: round(siteM2, 2), siteM2: round(siteM2, 2), source, parcelSource };
-        }
+        if (opts.regionHasCadastre === false) return unbound(COVERAGE.none, siteM2, 0);
+        if (regions && !regions.length) return unbound(COVERAGE.unknown, 0, siteM2);
 
         const bound = [];
         const touched = [];
-        const unresolved = [];
-        const radius = floorM / 2;
-        const band = sphereBandM(radius);
+        const siteBox = t.bbox(siteFeature);
         let open = siteFeature;
         for (const parcel of parcels || []) {
             const geometry = parcel && asPolygonGeometry(parcel.geometry);
             if (!geometry) continue;
-            const parcelFeature = t.feature(geometry);
+            const parcelFeature = t.feature(ground.snapGeometry(geometry));
+            // Boxes apart share no ground (reachesInto's own first test); four comparisons save two clips.
+            if (boxesApart(siteBox, t.bbox(parcelFeature))) continue;
+            // reachesInto(site, parcel, toleranceM), with its intersection kept for the measurements.
             // A failed clip throws a typed ClipFailure: null would leave a parcel the site reaches
             // into unbound — stored on the record.
-            const intersection = clipFailureApi().clipWith(t, 'intersect', siteFeature, parcelFeature, { site: 'site-binding.bindingFromParcels', parcelId: parcel.id });
+            const intersection = clips.clipWith(t, 'intersect', siteFeature, parcelFeature, { site: 'site-binding.bindingFromParcels', parcelId: parcel.id });
             if (open) {
                 // Thrown too: "the larger estimate" overstated the unsurveyed ground the binding records.
-                open = clipFailureApi().clipWith(t, 'difference', open, parcelFeature, { site: 'site-binding.unsurveyed', parcelId: parcel.id });
+                open = clips.clipWith(t, 'difference', open, parcelFeature, { site: 'site-binding.unsurveyed', parcelId: parcel.id });
             }
             if (!intersection || !polygonsOf(intersection).length) continue;
             const overlapM2 = t.area(intersection);
@@ -248,32 +253,36 @@
                 overlapM2: round(overlapM2, 3),
                 intrusionM: round(intrusionWidth(intersection, { turf: t }), 4)
             };
-            if (survivesInwardBuffer(t, intersection, radius + band)) bound.push(entry);
-            else if (survivesInwardBuffer(t, intersection, Math.max(radius - band, 0))) unresolved.push(entry);
+            if (ground.isGround(t, intersection, toleranceM)) bound.push(entry);
             else touched.push(entry);
         }
 
-        let unsurveyedM2 = 0;
-        for (const rings of polygonsOf(open)) {
+        // Open ground in a surveyed region is unsurveyed; outside every region it is unknown.
+        const outside = open && regions ? ground.uncoveredBy(t, open, regions, { site: 'site-binding.unknown' }) : null;
+        const inside = open && outside ? ground.uncoveredBy(t, open, [outside], { site: 'site-binding.unsurveyed' }) : open;
+        const groundM2 = feature => polygonsOf(feature).reduce((sum, rings) => {
             const piece = t.polygon(rings);
-            if (survivesInwardBuffer(t, piece, floorM / 2)) unsurveyedM2 += t.area(piece);
-        }
+            return ground.isGround(t, piece, toleranceM) ? sum + t.area(piece) : sum;
+        }, 0);
+        const unsurveyedM2 = groundM2(inside);
+        const unknownM2 = groundM2(outside);
         const byId = (a, b) => (a.parcelId < b.parcelId ? -1 : a.parcelId > b.parcelId ? 1 : 0);
         bound.sort(byId);
         touched.sort(byId);
-        unresolved.sort(byId);
         return {
             parcels: bound,
             touched,
-            ...(unresolved.length ? { unresolved } : {}),
             toleranceM,
-            coverage: unsurveyedM2 > 0 ? COVERAGE.partial : COVERAGE.complete,
+            coverage: unsurveyedM2 > 0 || unknownM2 > 0 ? COVERAGE.partial : COVERAGE.complete,
             unsurveyedM2: round(unsurveyedM2, 2),
+            unknownM2: round(unknownM2, 2),
             siteM2: round(siteM2, 2),
             source,
             parcelSource
         };
     }
+
+    const boxesApart = (a, b) => a[0] > b[2] || b[0] > a[2] || a[1] > b[3] || b[1] > a[3];
 
     // The declaration a binding implies, and how a declared list differs from it.
     function boundParcelIds(binding) {
@@ -292,7 +301,6 @@
     return {
         DEFAULT_INTRUSION_TOLERANCE_M,
         INTRUSION_NOISE_M,
-        SPHERE_BAND,
         MAX_INTRUSION_TOLERANCE_M,
         COVERAGE,
         normalizeGoal,

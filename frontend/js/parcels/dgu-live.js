@@ -20,8 +20,6 @@
     const PAGE_SIZE = 2000;
     // Each id is a two-clause XML filter in a GET URL; 20 keeps the URL well under 8 KB.
     const ID_BATCH = 20;
-    // The backend's measured-noise floor for "this footprint takes part of this parcel" (/parcels/under).
-    const TAKEN_FLOOR_M2 = 0.25;
     // The most parcels one read takes, as on our server (MAX_PARCELS_UNDER in routes/parcels.js):
     // past it the browser would page and intersect tens of thousands of parcels.
     const MAX_PARCELS = 5000;
@@ -134,39 +132,13 @@
             return shaped(raw);
         }
 
-        // The parcels a WGS84 footprint takes area from, with the backend's taken_m2 and coverage.
-        // parcelsOnly answers every parcel touching the footprint's box test, as the lean backend mode does.
-        async function fetchUnder(geometry, { parcelsOnly = false } = {}) {
+        // The candidate parcels under a WGS84 footprint, as /parcels/under answers them: every parcel
+        // that meets it, edge-touching neighbours included. What the footprint takes is the shared
+        // rule's to decide (geometry-tolerances.js), over these candidates, as for server ground.
+        async function fetchUnder(geometry) {
             const footprint = turf.feature(geometry);
             const candidates = await fetchBbox(toDatasetBox(turf.bbox(footprint)));
-            if (parcelsOnly) {
-                const features = candidates.filter(parcel => turf.booleanIntersects(parcel, footprint));
-                return { features, coverage: null };
-            }
-            const footprintM2 = turf.area(footprint);
-            let takenTotal = 0;
-            const features = [];
-            candidates.forEach(parcel => {
-                let piece = null;
-                try { piece = turf.intersect(parcel, footprint); } catch (error) {
-                    // These takes stand in for the server's binding (which parcels a proposal
-                    // stands on, and its coverage); "takes nothing" would bind it wrongly. Refuse
-                    // with a typed ClipFailure (parcel-arrangement.js).
-                    const clips = (typeof window !== 'undefined' && window.__parcelArrangement)
-                        || (typeof require === 'function' ? require('../proposals/parcel-arrangement.js') : null);
-                    if (!clips || typeof clips.clipFailure !== 'function') throw error;
-                    const props = parcel && parcel.properties || {};
-                    throw clips.clipFailure('intersect', error, { site: 'dgu-live.fetchUnder', parcelId: props.parcelId || null }, [parcel, footprint]);
-                }
-                const taken = piece ? turf.area(piece) : 0;
-                if (taken <= TAKEN_FLOOR_M2) return;
-                takenTotal += taken;
-                parcel.properties = { ...parcel.properties, taken_m2: taken };
-                features.push(parcel);
-            });
-            // Parcels tessellate, so the takes add up to the covered share of the footprint.
-            const coverage = footprintM2 > 0 ? Math.max(0, Math.min(1, takenTotal / footprintM2)) : 0;
-            return { features, coverage, footprintM2 };
+            return { features: candidates.filter(parcel => turf.booleanIntersects(parcel, footprint)) };
         }
 
         return { fetchBbox, fetchIds, fetchUnder };

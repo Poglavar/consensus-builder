@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -406,16 +406,15 @@ describe('CadastralParcelRepository', () => {
         const fetchParcelsUnderGeometry = vi.fn(async () => ({
             ids: ['HR-C'],
             features: [transportFeature],
-            count: 1,
-            coverage: 1
+            count: 1
         }));
         const { service } = fixture({ fetchParcelsUnderGeometry });
 
-        const first = await service.ensureFootprint(polygon(0), { parcelsOnly: false });
+        const first = await service.ensureFootprint(polygon(0));
         first.result.features[0].geometry.coordinates[0][0][0] = 99;
-        const second = await service.ensureFootprint(polygon(0), { parcelsOnly: false });
+        const second = await service.ensureFootprint(polygon(0));
 
-        expect(first.result).toMatchObject({ ids: ['HR-C'], count: 1, coverage: 1, queryMs: null });
+        expect(first.result).toMatchObject({ ids: ['HR-C'], count: 1, queryMs: null });
         expect(second.result.features[0].geometry.coordinates[0][0][0]).toBe(16);
         expect(second.result).not.toBe(first.result);
         expect(fetchParcelsUnderGeometry).toHaveBeenCalledOnce();
@@ -462,8 +461,8 @@ describe('CadastralParcelRepository', () => {
             fetchParcelsByIds,
             fetchParcelsUnderGeometry,
             coverageOf: (_footprint, stored) => stored.some(feature => feature.properties.parcelId === 'HR-A')
-                ? { ids: ['HR-A'], coverage: 1 }
-                : { ids: [], coverage: 0 }
+                ? { ids: ['HR-A'], coverage: 1, complete: true }
+                : { ids: [], coverage: 0, complete: false }
         });
 
         const ids = service.ensureIds(['HR-A']);
@@ -488,8 +487,8 @@ describe('CadastralParcelRepository', () => {
             fetchParcelsByIds,
             fetchParcelsUnderGeometry,
             coverageOf: (_footprint, stored) => stored.some(feature => feature.properties.parcelId === 'HR-A')
-                ? { ids: ['HR-A'], coverage: 1 }
-                : { ids: [], coverage: 0 }
+                ? { ids: ['HR-A'], coverage: 1, complete: true }
+                : { ids: [], coverage: 0, complete: false }
         });
 
         const ids = service.ensureIds(['HR-A']);
@@ -827,5 +826,50 @@ describe('CadastralParcelRepository.locateIds', () => {
         expect(fetchParcelsByIds).toHaveBeenCalledTimes(2);
         expect(onFeatures).not.toHaveBeenCalled();
         expect(mutation.seedCadastre).not.toHaveBeenCalled();
+    });
+});
+
+// The transport answers candidates only, so whether a footprint already stands wholly on retained
+// parcels is decided here, by the shared rule (geometry-tolerances.js uncoveredBy + isGround). Was: a
+// coverage ratio of at least 0.999, which called a footprint with a 2 mm strip off its parcels held.
+describe('CadastralParcelRepository.ensureFootprint local completeness', () => {
+    const turf = require('@turf/turf');
+    const planOrder = require('../../frontend/js/proposals/plan-order.js');
+    // plan-order.js measures with the page's global turf.
+    const priorTurf = globalThis.turf;
+    beforeAll(() => { globalThis.turf = turf; });
+    afterAll(() => { globalThis.turf = priorTurf; });
+    // polygon(0) is 0.001° square; the parcel under it stops `gap` degrees short of its north edge.
+    const shortParcel = gap => ({ type: 'Feature', properties: { parcelId: 'HR-P' },
+        geometry: { type: 'Polygon', coordinates: [[[16, 46], [16.001, 46], [16.001, 46.001 - gap], [16, 46.001 - gap], [16, 46]]] } });
+    const loaded = async gap => {
+        const fetchParcelsUnderGeometry = vi.fn(async () => ({ status: 'ready', features: [], absentIds: [], count: 0 }));
+        const service = createCadastralParcelRepository({
+            root: { __planOrder: planOrder, turf },
+            onFeatures: async () => {},
+            convertFeatures: collection => collection,
+            transport: {
+                fetchByIds: async ids => ({ status: 'ready', complete: true, ids, absentIds: [], features: [shortParcel(gap)] }),
+                fetchUnderGeometry: fetchParcelsUnderGeometry
+            }
+        });
+        await service.ensureIds(['HR-P']);
+        return { service, fetchParcelsUnderGeometry };
+    };
+
+    it('needs no request when the part off the retained parcels is cutting debris', async () => {
+        const { service, fetchParcelsUnderGeometry } = await loaded(3e-9); // ~0.3 mm
+        const answer = await service.ensureFootprint(polygon(0));
+        expect(fetchParcelsUnderGeometry).not.toHaveBeenCalled();
+        expect(answer.result).toMatchObject({ ids: ['HR-P'], complete: true });
+        expect(service.coverageOf(polygon(0))).toMatchObject({ ids: ['HR-P'], complete: true });
+    });
+
+    it('asks the transport when a strip wider than the noise is off them, though 99.99% is covered', async () => {
+        const { service, fetchParcelsUnderGeometry } = await loaded(2e-8); // ~2.2 mm
+        expect(service.coverageOf(polygon(0)).coverage).toBeGreaterThan(0.9999);
+        expect(service.coverageOf(polygon(0)).complete).toBe(false);
+        await service.ensureFootprint(polygon(0));
+        expect(fetchParcelsUnderGeometry).toHaveBeenCalledOnce();
     });
 });

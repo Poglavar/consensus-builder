@@ -160,9 +160,9 @@ A design occupies a **site**: a GeoJSON Polygon or MultiPolygon in WGS84 (at mos
 
 - **Intrusion** is how far the site reaches into a parcel, as a width (the widest circle inside site ∩
   parcel), never a share of area. A parcel is bound when its intrusion exceeds `toleranceM` (default 0,
-  at most 1 m: measurement error, never a design allowance). `touched` lists parcels the site reaches
-  into by less, shown so you can fix the drawing. An intrusion within measurement error of the
-  tolerance answers **409** `binding-unresolved`: move the site a millimetre into or away from that parcel.
+  at most 1 m: measurement error, never a design allowance), and wider than 1 mm, the measured noise
+  of cutting. `touched` lists parcels the site reaches into by less, shown so you can fix the drawing.
+  The server binds with the same function the map previews with, so the preview and the index agree.
 - **coverage**: `complete` (all of the site lies on parcels), `partial` (some lies on no parcel,
   `unsurveyedM2`, or outside the cadastre the server holds, `unknownM2`), `none` (a city with no
   cadastre), `unknown` (the server holds no cadastre there; only the Croatian cadastre is bound today).
@@ -172,8 +172,10 @@ Other free reads:
 
 - The parcel at a point: `GET $(base)/parcels?coordinates=<lng>,<lat>` → a GeoJSON `FeatureCollection`
   with the current parcel containing the point; its id is `features[0].properties.parcelId`.
-- Parcels under a shape: `POST $(base)/parcels/under` with `{ "geometry": <Polygon>, "parcelsOnly": true }`
-  → each feature's `properties.parcelId`, `properties.calculated_area` (m²) and its geometry.
+- Parcels under a shape: `POST $(base)/parcels/under` with `{ "geometry": <Polygon> }` → the candidate
+  parcels (every current parcel that meets the shape, edge-touching neighbours included): each
+  feature's `properties.parcelId`, `properties.calculated_area` (m²) and its geometry. Which of them a
+  design actually binds is `POST $(base)/designs/binding`.
 - What may be built there: `GET $(base)/urban-rules?coordinates=<lng>,<lat>`.
 - Existing buildings: `POST $(base)/buildings/footprints` with a GeoJSON polygon.
 - Designs already published: `GET $(base)/designs?city=zagreb&bbox=<minLng>,<minLat>,<maxLng>,<maxLat>&q=<text>&limit=5`.

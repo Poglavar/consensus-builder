@@ -337,9 +337,8 @@ export function buildOpenApi(base, env) {
                     operationId: 'getDesignBinding',
                     requestBody: { required: true, content: { 'application/json': { schema: DESIGN_BINDING_BODY } } },
                     responses: {
-                        200: { description: '{ city, parcelSourceId, binding: { parcels: [{ parcelId, overlapM2, intrusionM }], touched, unresolved?, toleranceM, coverage (complete | partial | none | unknown), unsurveyedM2, unknownM2, siteM2, source, parcelSource, computedAt } }' },
+                        200: { description: '{ city, parcelSourceId, binding: { parcels: [{ parcelId, overlapM2, intrusionM }], touched, toleranceM, coverage (complete | partial | none | unknown), unsurveyedM2, unknownM2, siteM2, source, parcelSource, computedAt } }' },
                         400: { description: 'invalid-site or invalid-tolerance.' },
-                        409: { description: 'binding-unresolved: the site reaches into a parcel by within measurement error of the tolerance; move it a millimetre.' },
                         413: { description: 'too-many-parcels: the site meets more than 5000 parcels.' },
                         503: { description: 'binding-unavailable, or the parcel source is down.' }
                     }
@@ -377,8 +376,9 @@ export function buildOpenApi(base, env) {
                     requestBody: { required: true, content: { 'application/json': { schema: INDEX_DESIGN_BODY } } },
                     responses: {
                         201: { description: 'The design row: { cid, city, goal, title, author, originCid, binding, content, screenshotUrl, screenshotBeforeUrl, screenshotPairUrl, createdAt }.' },
-                        409: { description: 'The CID is indexed already (the body is its row), or binding-unresolved: the site reaches into a parcel by within measurement error of the tolerance.' },
+                        409: { description: 'The CID is indexed already (the body is its row).' },
                         400: { description: 'invalid-cid, cid-mismatch, invalid-design, invalid-site, invalid-tolerance, invalid-footprint, site-required or footprint-outside-site.' },
+                        413: { description: 'too-large (over 10 MiB) or too-many-parcels (the site meets more than 5000 parcels).' },
                         503: { description: 'binding-unavailable: nothing was stored.' }
                     }
                 }

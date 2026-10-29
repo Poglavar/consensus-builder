@@ -192,16 +192,16 @@ describe('POST /parcels/under validates its input before any SQL', () => {
         expect(pool.calls).toHaveLength(0);
     });
 
-    it('still serves an ordinary footprint, with parcel geometry made valid inside the intersection', async () => {
-        const pool = recordingPool(async sql => (sql.includes('count(*)') ? { rows: [{ parcels: 1 }] } : { rows: [{ rows: [], footprint_m2: 1, coverage: 1 }] }));
+    it('still serves an ordinary footprint, made valid before it is subdivided', async () => {
+        const pool = recordingPool(async sql => (sql.includes('count(*)') ? { rows: [{ parcels: 1 }] } : { rows: [] }));
         const geometry = { type: 'Polygon', coordinates: [[[15.9, 45.8], [15.901, 45.8], [15.901, 45.801], [15.9, 45.8]]] };
         const res = await post(app(pool), { geometry });
 
         expect(res.status).toBe(200);
-        const full = pool.calls.find(call => call.sql.includes('taken_m2'));
-        expect(full.sql).toContain('ST_Intersection(ST_MakeValid(p.geom), i.g)');
+        const candidates = pool.calls.find(call => !call.sql.includes('count(*)'));
+        expect(candidates.sql).toContain('ST_MakeValid(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1::text)');
         // The index predicate keeps the raw column so the GIST index still applies.
-        expect(full.sql).toContain('p.geom && parts.part');
+        expect(candidates.sql).toContain('p.geom && parts.part');
     });
 });
 
@@ -214,7 +214,7 @@ describe('the Origin gate lets read-only POSTs through and still stops writes', 
         const pool = recordingPool(async sql => (sql.includes('count(*)')
             ? { rows: [{ parcels: 1 }] }
             : { rows: [{ cestica_id: 7, broj_cestice: '2379', maticni_broj_ko: '335240', parcelid: 'HR-335240-2379', geometry: square, calculated_area: 120 }] }));
-        const res = await request(app(pool)).post('/parcels/under').send({ geometry: square, parcelsOnly: true });
+        const res = await request(app(pool)).post('/parcels/under').send({ geometry: square });
 
         expect(res.status).toBe(200);
         expect(res.body.features.map(feature => feature.properties.parcelId)).toEqual(['HR-335240-2379']);

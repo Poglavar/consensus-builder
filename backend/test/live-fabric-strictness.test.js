@@ -231,18 +231,25 @@ describe('replacement with a whole multipart cadastral parcel', () => {
     });
 });
 
-describe('which cadastral parcels hold a vertex', () => {
-    it('answers by the rule a replacement is checked with: inside, or on the boundary within tolerance', async () => {
+describe('the partition check of a piece whose vertex crosses its parcel edge', () => {
+    // HR-A's piece is replaced by one whose east edge runs `east`; HR-B is untouched.
+    async function check(east) {
         const fabric = createLiveParcelFabric();
         await commit(fabric, mutation => mutation.seedCadastre([box('HR-A', 15, 45, 15.001, 45.001), box('HR-B', 15.001, 45, 15.002, 45.001)]), { kind: 'ground-load' });
         const mutation = fabric.beginMutation({ kind: 'proposal-apply' });
         try {
-            expect(mutation.cadastreIdsHolding([15.0015, 45.0005], ['HR-A', 'HR-B'])).toEqual(['HR-B']);
-            // A vertex 0.5 mm past HR-A's east edge still belongs to HR-A (within NOISE_M, 1 mm), and lies in HR-B.
-            expect(mutation.cadastreIdsHolding([15.001000006, 45.0005], ['HR-A', 'HR-B'])).toEqual(['HR-A', 'HR-B']);
-            // 1 cm past it used to belong too (a 2 cm tolerance); that is ground, so only HR-B holds it.
-            expect(mutation.cadastreIdsHolding([15.00100013, 45.0005], ['HR-A', 'HR-B'])).toEqual(['HR-B']);
-            expect(mutation.cadastreIdsHolding([15.003, 45.0005], ['HR-A', 'HR-B', 'HR-X'])).toEqual([]);
+            return mutation.checkCadastreScope(['HR-A'], {
+                remove: ['HR-A'],
+                add: [box('HR-A#p-1', 15, 45, east, 45.001, { cadastreParcelIds: ['HR-A'], producedByProposalId: 'p' })]
+            });
         } finally { mutation.rollback(); }
+    }
+
+    it('holds a vertex 0.5 mm past the edge to the parcel (within NOISE_M, 1 mm)', async () => {
+        await expect(check(15.001000006)).resolves.toMatchObject({ cadastreIds: ['HR-A'], pieces: 1 });
+    });
+
+    it('refuses a vertex 1 cm past it, which is ground the piece does not own', async () => {
+        await expect(check(15.00100013)).rejects.toMatchObject({ code: 'live-fabric-replacement-outside', parcelId: 'HR-A#p-1' });
     });
 });

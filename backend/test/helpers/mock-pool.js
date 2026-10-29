@@ -1,35 +1,19 @@
-// A queued-result pg pool stand-in. Code that binds a site asks the cadastre for its binding
-// (proposals/binding.js); unless a test overrides `bindingAnswer`, those statements are answered
-// here as "every declared parcel exists" (parcel acts) and "the site is outside the cadastre the
-// server holds" (geometry: coverage unknown, declaration kept unverified), so route tests that are
-// not about the binding keep their queued INSERT/UPDATE results in order. Binding statements are
+// A queued-result pg pool stand-in. Code that binds a site asks the HR cadastre for its candidates
+// (parcels/oss-binding-source.js); unless a test overrides `bindingAnswer`, those statements are
+// answered here as "every declared parcel exists" (parcel acts) and "the site is outside every
+// cadastral municipality" (geometry: coverage unknown, declaration kept unverified), so route tests
+// that are not about the binding keep their queued INSERT/UPDATE results in order. Binding statements are
 // recorded in `getBindingCalls()`, not in `getCalls()`. `answer(match, reply)` answers every
 // statement that matches by its SQL (a RegExp, or a function of sql and params) before the queue,
 // for routes that read the same row several times; those calls are recorded in `getCalls()` too.
-import {
-    BINDING_COUNT_SQL,
-    BINDING_SQL,
-    FOOTPRINT_OUTSIDE_SITE_SQL,
-    PARCEL_ACT_SITE_SQL
-} from '../../proposals/binding.js';
+import { HR_PARCEL_IDS_SQL, HR_SITE_CANDIDATES_SQL } from '../../parcels/oss-binding-source.js';
 
-const SQUARE = { type: 'MultiPolygon', coordinates: [[[[15.97, 45.8], [15.971, 45.8], [15.971, 45.801], [15.97, 45.801], [15.97, 45.8]]]] };
+const SQUARE = { type: 'Polygon', coordinates: [[[15.97, 45.8], [15.971, 45.8], [15.971, 45.801], [15.97, 45.801], [15.97, 45.8]]] };
 
 function defaultBindingAnswer(sql, params) {
-    if (sql === BINDING_COUNT_SQL) return { rows: [{ parcels: 0 }] };
-    if (sql === FOOTPRINT_OUTSIDE_SITE_SQL) return { rows: [{ outside_m2: 0 }] };
-    if (sql === BINDING_SQL) {
-        return { rows: [{ parcels: [], site_m2: 1000, in_region: false, unsurveyed_m2: 0, unknown_m2: 1000, site_geojson: JSON.stringify(SQUARE) }] };
-    }
-    if (sql === PARCEL_ACT_SITE_SQL) {
-        const ids = JSON.parse(params[0]).map(entry => entry.id);
-        return {
-            rows: [{
-                parcels: ids.map(id => ({ parcelId: id, overlapM2: 100 })),
-                site_geojson: ids.length ? JSON.stringify(SQUARE) : null,
-                site_m2: ids.length ? 100 * ids.length : null
-            }]
-        };
+    if (sql === HR_SITE_CANDIDATES_SQL) return { rows: [{ parcels: [], regions: [] }] };
+    if (sql === HR_PARCEL_IDS_SQL) {
+        return { rows: JSON.parse(params[0]).map(entry => ({ id: entry.id, geometry: SQUARE })) };
     }
     return null;
 }

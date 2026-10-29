@@ -113,6 +113,16 @@
         return rest;
     }
 
+    // A formed piece: `shape` cut to the parcels it consumes (`hosts`), by the shared clip. What is
+    // cut off is what uncoveredBy leaves, which the caller has already judged debris
+    // (!isGround(uncoveredBy(...))), so no vertex of the piece lies outside its own hosts.
+    function cutTo(t, shape, hosts, context = {}) {
+        const piece = asFeature(shape);
+        const rest = uncoveredBy(t, piece, hosts, context);
+        if (!rest) return piece;
+        return asFeature(arrangementApi().clipWith(t, 'difference', piece, rest, { site: 'geometry-tolerances.cutTo', ...context }));
+    }
+
     // A design record's own allowance (its toleranceM), normalized as binding normalizes it
     // (site-binding.js normalizeTolerance), so applying a design honours exactly what binding did.
     function designToleranceM(record) {
@@ -140,5 +150,5 @@
         return x[0] > y[2] || y[0] > x[2] || x[1] > y[3] || y[1] > x[3];
     }
 
-    return Object.freeze({ GRID_DECIMALS, NOISE_M, snapCoordinates, snapGeometry, snapFeature, survivesInwardBuffer, isGround, reachesInto, uncoveredBy, designToleranceM });
+    return Object.freeze({ GRID_DECIMALS, NOISE_M, snapCoordinates, snapGeometry, snapFeature, survivesInwardBuffer, isGround, reachesInto, uncoveredBy, cutTo, designToleranceM });
 });

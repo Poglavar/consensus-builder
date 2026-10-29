@@ -2622,8 +2622,10 @@
     }
 
     // Merge several plots into one. Union rather than re-derive: the surviving outline is made of
-    // the plots' own coordinates, so no vertex moves and none is invented. Shared by node removal
-    // (dissolve the boundary a node anchored) and by the eraser (dissolve the boundary itself).
+    // the plots' own coordinates, so no vertex moves and none is invented. The union is the shared
+    // clip (parcel-arrangement.js clipWith), on the grid the plots are saved on; a union it cannot do
+    // merges nothing rather than dropping a plot. Shared by node removal (dissolve the boundary a
+    // node anchored) and by the eraser (dissolve the boundary itself).
     function mergePlots(plotIndices) {
         if (typeof turf === 'undefined') return false;
         const indices = Array.from(new Set(plotIndices || []))
@@ -2633,11 +2635,16 @@
 
         const wrap = geometry => ({ type: 'Feature', properties: {}, geometry });
         let merged = null;
-        indices.forEach(index => {
-            const geometry = state.slices[index].geometry;
-            merged = merged ? (turf.union(wrap(merged), wrap(geometry)) || {}).geometry || merged : geometry;
-        });
-        if (!merged) return false;
+        try {
+            indices.forEach(index => {
+                const geometry = state.slices[index].geometry;
+                merged = merged ? layoutClip(turf, 'union', wrap(merged), wrap(geometry), 'parcel-layout.mergePlots')?.geometry || null : geometry;
+                if (!merged) throw new Error('the union of the plots is empty');
+            });
+        } catch (error) {
+            log('warn', 'plots could not be merged', { plots: indices, error: error && error.message });
+            return false;
+        }
 
         // The merged plot keeps the identity of the biggest contributor — the small side joins the
         // large one, not the other way round.

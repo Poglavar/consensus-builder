@@ -75,7 +75,7 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
                     features.push(...answer.features.map(normalize));
                 }
             } else if (source === 'oss-wfs') {
-                const answer = geometry ? await request('/parcels/under', {}, { geometry, srid: 4326, parcelsOnly: true })
+                const answer = geometry ? await request('/parcels/under', {}, { geometry, srid: 4326 })
                     : await request(path, { coordinates: point.join(',') });
                 features = answer.features.map(normalize);
             } else {

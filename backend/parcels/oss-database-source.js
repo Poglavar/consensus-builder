@@ -597,25 +597,19 @@ export function checkUnderFootprint(geometry, srid) {
 }
 
 
-// POST /parcels/under  { geometry: <GeoJSON Polygon|MultiPolygon>, srid?: 4326, parcelsOnly?: bool }
+// POST /parcels/under  { geometry: <GeoJSON Polygon|MultiPolygon>, srid?: 4326 }
     //
-    // The parcels a footprint actually covers, and how much of that footprint they account for.
-    // Everything else here answers "what is near this point / in this box / at these ids"; nothing
-    // answered "what is under this shape", and its absence is why the client used to approximate a
-    // footprint by its bounding box and drown in the difference.
+    // The candidate parcels under a footprint: every current parcel the index finds that meets it
+    // (ST_Intersects, so a parcel sharing only an edge is a candidate too). Everything else here
+    // answers "what is near this point / in this box / at these ids"; nothing answered "what could
+    // be under this shape", and its absence is why the client used to approximate a footprint by
+    // its bounding box and drown in the difference.
     //
-    // Coverage comes back with the parcels because it is the same question: a caller that has to
-    // compute it separately, over whatever it happens to have loaded, gets a different answer than
-    // the database would give — and then has to decide which to believe.
-    //
-    // `parcelsOnly: true` answers only "which parcels" and skips the take/coverage arithmetic.
-    // That arithmetic — two exact ST_Intersection passes per parcel against the raw input — was
-    // measured as the bulk of a replay's ground load (28.9 s of SQL for 15 requests), computing
-    // numbers the replay never reads. Worse: the replay batches ~20 unrelated footprints into one
-    // MultiPolygon, so `taken_m2`/`coverage` would describe the union of strangers — expensive AND
-    // meaningless. The lean answer has no `taken_m2` to filter on, so unlike the full mode it also
-    // returns parcels that merely share an edge with the footprint; for ground-loading a small
-    // superset is harmless (the client's own derivation decides what is actually taken).
+    // Which candidates the footprint actually takes, and whether it stands wholly on them, is not
+    // answered here: that is the shared rule (frontend/js/geometry-tolerances.js reachesInto,
+    // uncoveredBy + isGround; docs/geometry-tolerances.md), which the browser, the server's binding
+    // and MCP run over these candidates. No second implementation in SQL. A replay also batches ~20
+    // unrelated footprints into one MultiPolygon, so a per-request take would describe strangers.
 export async function under(pool, { query = {}, body: bodyInput, params: pathParams = {} } = {}) {
         try {
             const body = bodyInput || {};
@@ -627,67 +621,16 @@ export async function under(pool, { query = {}, body: bodyInput, params: pathPar
                 throw databaseSourceError(400, { error: `Unsupported geometry type ${geometry.type}; expected Polygon or MultiPolygon.` });
             }
             const srid = body.srid === undefined || body.srid === null ? 4326 : Number(body.srid);
-            const parcelsOnly = body.parcelsOnly === true;
             const footprintError = checkUnderFootprint(geometry, srid);
             if (footprintError) {
                 throw databaseSourceError(400, { error: footprintError });
             }
 
-            // ST_MakeValid because an authored footprint is not guaranteed to be OGC-valid, and an
-            // invalid geometry makes ST_Subdivide throw rather than return fewer parcels.
-            const sql = `
-                WITH input AS (
-                    SELECT ST_MakeValid(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1::text), $2::int), 3765)) AS g
-                ),
-                parts AS (
-                    SELECT ST_Subdivide(g, ${FOOTPRINT_SUBDIVIDE_VERTICES}) AS part FROM input
-                ),
-                hit AS (
-                    SELECT DISTINCT p.cestica_id
-                    FROM parcel p, parts
-                    WHERE p.current = true
-                      AND p.geom && parts.part
-                      AND ST_Intersects(p.geom, parts.part)
-                ),
-                rows AS (
-                    SELECT
-                        p.cestica_id,
-                        p.broj_cestice,
-                        p.maticni_broj_ko,
-                        'HR-' || p.maticni_broj_ko || '-' || p.broj_cestice AS parcelid,
-                        ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
-                        ST_Area(ST_Transform(p.geom, 4326)::geography) AS calculated_area,
-                        ST_Area(ST_Transform(ST_Intersection(ST_MakeValid(p.geom), i.g), 4326)::geography) AS taken_m2,
-                        pd.details AS ownership_details
-                    FROM parcel p
-                    JOIN hit ON hit.cestica_id = p.cestica_id
-                    CROSS JOIN input i
-                    LEFT JOIN LATERAL (
-                        SELECT pi.details
-                        FROM parcel_info pi
-                        WHERE pi.maticni_broj_ko = p.maticni_broj_ko
-                          AND pi.broj_cestice = p.broj_cestice
-                          AND pi.details IS NOT NULL
-                        ORDER BY pi.version DESC
-                        LIMIT 1
-                    ) pd ON TRUE
-                )
-                SELECT
-                    -- Abutting is not covering. ST_Intersects counts a shared edge, which takes no
-                    -- area and makes no parent — on the 17 km corridor that was 12 parcels the
-                    -- client would have loaded and then discarded. 0.25 m² is the same measured-noise
-                    -- floor the client's own overlap rules use, so the two agree on what is touched.
-                    (SELECT COALESCE(json_agg(r), '[]'::json) FROM rows r WHERE r.taken_m2 > 0.25) AS rows,
-                    (SELECT ST_Area(ST_Transform(g, 4326)::geography) FROM input) AS footprint_m2,
-                    (SELECT COALESCE(ST_Area(ST_Union(ST_Intersection(ST_MakeValid(p.geom), i.g))) / NULLIF(max(ST_Area(i.g)), 0), 0)
-                       FROM parcel p JOIN hit ON hit.cestica_id = p.cestica_id, input i) AS coverage
-            `;
-
             const started = Date.now();
 
-            // COUNT FIRST. The refusal below used to come after the query above had already built
-            // every parcel's GeoJSON, its ownership and the coverage aggregate — so an over-cap ask
-            // cost the full price and then threw all of it away: measured at 17.2 s for a
+            // COUNT FIRST. The refusal below used to come after the answer had already built every
+            // parcel's GeoJSON and its ownership — so an over-cap ask cost the full price and then
+            // threw all of it away: measured at 17.2 s for a
             // 59,311-parcel box before answering 413. The count is the same index scan without any
             // of that (~2 ms on the same box), so a request that cannot be served is refused
             // immediately, and the caller can split and retry while it still means something.
@@ -714,77 +657,45 @@ export async function under(pool, { query = {}, body: bodyInput, params: pathPar
                 });
             }
 
-            if (parcelsOnly) {
-                // The same hit-test as the full mode, then plain rows: no per-parcel intersection,
-                // no coverage union, no footprint area — and no `coverage`/`footprintM2` in the
-                // response, so a caller cannot mistake "not asked" for "zero".
-                const parcelsOnlySql = `
-                    WITH input AS (
-                        SELECT ST_MakeValid(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1::text), $2::int), 3765)) AS g
-                    ),
-                    parts AS (
-                        SELECT ST_Subdivide(g, ${FOOTPRINT_SUBDIVIDE_VERTICES}) AS part FROM input
-                    ),
-                    hit AS (
-                        SELECT DISTINCT p.cestica_id
-                        FROM parcel p, parts
-                        WHERE p.current = true
-                          AND p.geom && parts.part
-                          AND ST_Intersects(p.geom, parts.part)
-                    )
-                    SELECT
-                        p.cestica_id,
-                        p.broj_cestice,
-                        p.maticni_broj_ko,
-                        'HR-' || p.maticni_broj_ko || '-' || p.broj_cestice AS parcelid,
-                        ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
-                        ST_Area(ST_Transform(p.geom, 4326)::geography) AS calculated_area,
-                        pd.details AS ownership_details
-                    FROM parcel p
-                    JOIN hit ON hit.cestica_id = p.cestica_id
-                    LEFT JOIN LATERAL (
-                        SELECT pi.details
-                        FROM parcel_info pi
-                        WHERE pi.maticni_broj_ko = p.maticni_broj_ko
-                          AND pi.broj_cestice = p.broj_cestice
-                          AND pi.details IS NOT NULL
-                        ORDER BY pi.version DESC
-                        LIMIT 1
-                    ) pd ON TRUE
-                `;
-                const leanResult = await pool.query(parcelsOnlySql, [JSON.stringify(geometry), srid]);
-                const leanFeatures = leanResult.rows.map(r => ({
-                    type: 'Feature',
-                    geometry: r.geometry,
-                    properties: {
-                        CESTICA_ID: r.cestica_id,
-                        BROJ_CESTICE: r.broj_cestice,
-                        MATICNI_BROJ_KO: r.maticni_broj_ko,
-                        parcelId: r.parcelid,
-                        calculated_area: r.calculated_area,
-                        ...extractOwnershipPropsFromRow({ ownership_details: r.ownership_details })
-                    }
-                }));
-                return {
-                    type: 'FeatureCollection',
-                    features: leanFeatures,
-                    count: leanFeatures.length,
-                    queryMs: Date.now() - started
-                };
-            }
-
+            // The same hit-test as the count, then plain rows. ST_MakeValid because an authored
+            // footprint is not guaranteed to be OGC-valid, and an invalid geometry makes
+            // ST_Subdivide throw rather than return fewer parcels.
+            const sql = `
+                WITH input AS (
+                    SELECT ST_MakeValid(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1::text), $2::int), 3765)) AS g
+                ),
+                parts AS (
+                    SELECT ST_Subdivide(g, ${FOOTPRINT_SUBDIVIDE_VERTICES}) AS part FROM input
+                ),
+                hit AS (
+                    SELECT DISTINCT p.cestica_id
+                    FROM parcel p, parts
+                    WHERE p.current = true
+                      AND p.geom && parts.part
+                      AND ST_Intersects(p.geom, parts.part)
+                )
+                SELECT
+                    p.cestica_id,
+                    p.broj_cestice,
+                    p.maticni_broj_ko,
+                    'HR-' || p.maticni_broj_ko || '-' || p.broj_cestice AS parcelid,
+                    ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
+                    ST_Area(ST_Transform(p.geom, 4326)::geography) AS calculated_area,
+                    pd.details AS ownership_details
+                FROM parcel p
+                JOIN hit ON hit.cestica_id = p.cestica_id
+                LEFT JOIN LATERAL (
+                    SELECT pi.details
+                    FROM parcel_info pi
+                    WHERE pi.maticni_broj_ko = p.maticni_broj_ko
+                      AND pi.broj_cestice = p.broj_cestice
+                      AND pi.details IS NOT NULL
+                    ORDER BY pi.version DESC
+                    LIMIT 1
+                ) pd ON TRUE
+            `;
             const result = await pool.query(sql, [JSON.stringify(geometry), srid]);
-            const row = result.rows[0] || {};
-            const rows = Array.isArray(row.rows) ? row.rows : [];
-
-            // Coverage is computed in SQL as a ratio of two projected areas, where the projection's
-            // scale distortion cancels. The footprint's own size leaves as an absolute number, so it
-            // is measured on the ellipsoid — see area-measurement-authority.test.js for why the two
-            // rulers must not be mixed. Parcels tessellate, so coverage cannot exceed 1; clamp noise.
-            const footprintM2 = Number(row.footprint_m2) || 0;
-            const coverage = Math.max(0, Math.min(1, Number(row.coverage) || 0));
-
-            const features = rows.map(r => ({
+            const features = result.rows.map(r => ({
                 type: 'Feature',
                 geometry: r.geometry,
                 properties: {
@@ -793,17 +704,13 @@ export async function under(pool, { query = {}, body: bodyInput, params: pathPar
                     MATICNI_BROJ_KO: r.maticni_broj_ko,
                     parcelId: r.parcelid,
                     calculated_area: r.calculated_area,
-                    taken_m2: r.taken_m2,
                     ...extractOwnershipPropsFromRow({ ownership_details: r.ownership_details })
                 }
             }));
-
             return {
                 type: 'FeatureCollection',
                 features,
                 count: features.length,
-                coverage,
-                footprintM2,
                 queryMs: Date.now() - started
             };
         } catch (error) {
@@ -1158,4 +1065,4 @@ export async function neighbours(pool, { query = {}, body: bodyInput, params: pa
 
 }
 
-export { countBindingCandidates, bindingMeasurements, declaredParcelSite } from './oss-binding-source.js';
+export { queryGeometry, queryIds } from './oss-binding-source.js';

@@ -706,8 +706,7 @@
             throw new Error('Cadastral ground service is unavailable.');
         }
         const response = await repository.ensureFootprint(geometry, {
-            city: options.city || undefined,
-            parcelsOnly: true
+            city: options.city || undefined
         });
         const result = response?.result || {};
         const ids = Array.from(new Set((result.ids || []).map(String).filter(Boolean)));

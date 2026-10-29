@@ -1,8 +1,8 @@
 // Which geometry a proposal's footprint is made of — the one definition shared by the browser
 // (plan-order.footprintOf, the publish gate), the API (undeclared-parcel check) and the
 // legacy-declaration migration. Pure and dependency-free: it only SELECTS and validates the authored
-// GeoJSON parts; each caller unions them with its own engine (turf in the browser, PostGIS on the
-// server), so the rule for "what counts as this proposal's ground" cannot drift between them.
+// GeoJSON parts; the browser and the server union them with the same function (plan-order.js
+// footprintOf), so the rule for "what counts as this proposal's ground" cannot drift between them.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -60,8 +60,9 @@
      *   halfWidthM: number }, sources: string[], approximate: boolean, vertexCount: number,
      *   invalid: string|null }}
      * `centerline` is set only for a road stored without its corridor polygon and flagged
-     * `constructionFrame.kind: 'legacy-centreline'` by the legacy migration: the server buffers the
-     * centreline by width/2, which is why such a footprint is `approximate`. An unflagged centre
+     * `constructionFrame.kind: 'legacy-centreline'` by the legacy migration: only the browser's corridor
+     * builder can rebuild its land (the server refuses to bind it), which is why such a footprint is
+     * `approximate`. An unflagged centre
      * line without its polygon is `invalid` with `corridorUnprepared: true`: a road whose land the
      * browser has not built yet (road-drawing.js builds it as the road is drawn; only the browser
      * builds corridor land).

@@ -86,8 +86,7 @@ feature inventory 109 commands. Needs the user: deploy the `agreement` program (
 placeholder, so nothing can mint), seed devnet owners (`scripts/seed-lens-owners.mjs`),
 `AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN` for live runs, `scripts/drop-proposal-era.mjs --apply`
 after a backup (dry run only so far), and the demo content recreated through the restatement scripts.
-Leftovers to flatten when touched: `readjustment-contributions.js` is loaded but unused;
-`subdivision.js planCreateVerdict` and `formation-edit.js clipPiecesByTaking` are used only by
+Leftovers to flatten when touched: `subdivision.js planCreateVerdict` is used only by
 tests; the how-to guides still describe the old editor; an output piece anchored to a parcel outside
 the inputs counts with its whole area in the ledger; unowned output land is in no ledger row; the
 rights preview names local parties by agent id; hand-placed structure `decorations` are not part of

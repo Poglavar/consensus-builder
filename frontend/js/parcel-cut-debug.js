@@ -224,8 +224,15 @@
                 if (!ground || typeof ground.ensureFootprint !== 'function') {
                     throw new Error('Cadastral ground service is unavailable');
                 }
-                const loaded = await ground.ensureFootprint(probe, { parcelsOnly: false });
-                out.backendParcels = Array.isArray(loaded?.result?.ids) ? loaded.result.ids : [];
+                // The transport answers candidates, edge-touching neighbours included; a neighbour
+                // the probe only touches is not "a parcel here", so keep the ones it reaches into
+                // (the shared rule, geometry-tolerances.js).
+                const loaded = await ground.ensureFootprint(probe);
+                const probeFeature = turf.feature(probe);
+                const candidates = Array.isArray(loaded?.result?.features) ? loaded.result.features : [];
+                out.backendParcels = candidates
+                    .filter(feature => global.GeometryTolerances.reachesInto(turf, probeFeature, feature, 0, { site: 'parcel-cut-debug.whatIsHere' }))
+                    .map(feature => String(feature.properties.parcelId));
                 out.verdict = out.backendParcels.length
                     ? `The cadastre HAS ${out.backendParcels.length} parcel(s) here (${out.backendParcels.join(', ')}) `
                         + 'but none reached the map — a loading gap. Pan away and back over this spot to fetch the cell.'

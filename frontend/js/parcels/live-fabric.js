@@ -494,8 +494,10 @@
         }
 
         // Yields after each piece and each vertex tested, so a sliced replacement checks its pieces
-        // in short slices; `replaceCadastreScope` runs it to completion in one go.
-        function* validateReplacementSteps(draft, scope, replacements) {
+        // in short slices; `replaceCadastreScope` runs it to completion in one go. `standing` holds
+        // pieces already in the fabric: every write that put them there ran this check, so their
+        // vertices are not tested again; they still count in their group's area balance.
+        function* validateReplacementSteps(draft, scope, replacements, standing = null) {
             if (!geometry?.area || !geometry?.booleanPointInPolygon) {
                 const error = new Error('Geometry operations are required to validate a cadastral replacement.');
                 error.code = 'live-fabric-geometry-unavailable';
@@ -564,11 +566,21 @@
             for (const feature of replacements) {
                 const provenance = explicitCadastreIds(feature);
                 const group = find(provenance[0]);
-                const areaM2 = measuredArea(feature);
+                const hosts = provenance.map(id => facts.get(id));
+                // A piece standing partly on open ground (it carries ground ids too) counts only its
+                // part on its parcels: the rest lies on the open-ground host, which has no immutable
+                // fact to check a vertex against, so its vertices are not tested.
+                const onOpenGround = explicitGroundIds(feature).length > 0;
+                const areaM2 = onOpenGround
+                    ? measuredArea(feature) - measuredArea(geometryGrid.uncoveredBy(geometry, feature, hosts, { site: 'live-fabric.openGroundPiece' }))
+                    : measuredArea(feature);
                 pieceAreaByGroup.set(group, (pieceAreaByGroup.get(group) || 0) + areaM2);
+                if (onOpenGround || (standing && standing.has(feature))) {
+                    yield;
+                    continue;
+                }
                 // A vertex beyond every declared parcel's boundary is ground the replacement does
                 // not own. Shared edges and clipper drift sit within VERTEX_TOLERANCE_M.
-                const hosts = provenance.map(id => facts.get(id));
                 if (hosts.length === 1 && isIdentityOfFact(feature, hosts[0])) {
                     metrics.identityReplacements += 1;
                     yield;
@@ -888,6 +900,60 @@
                 return Array.from(draft.changedIds);
             }
 
+            // The partition check a replacement runs (validateReplacementSteps), without replacing
+            // anything: the pieces over `cadastreIds` must tile those parcels' immutable ground.
+            // `change` is a write the caller is about to make (`remove` ids, then `add` features),
+            // checked as if made, so a formation is refused before it writes. The scope is widened
+            // to every parcel a piece in it also occupies (a merged plot joins its parcels), so the
+            // check always covers whole pieces; it reaches only as far as pieces span parcels.
+            function* checkCadastreScopeSteps(cadastreIds, change = {}) {
+                assertActive(draft);
+                const removed = new Set(Array.from(change.remove || []).map(normalizeId).filter(Boolean));
+                const added = new Map();
+                for (const raw of Array.isArray(change.add) ? change.add : []) {
+                    connectedFeatures(raw).forEach(feature => {
+                        // Two pieces under one id: writing them, the later would silently replace the earlier.
+                        if (added.has(featureId(feature))) {
+                            const error = new Error(`Formed pieces share the id ${featureId(feature)}.`);
+                            error.code = 'duplicate-live-parcel-id';
+                            error.parcelId = featureId(feature);
+                            throw error;
+                        }
+                        added.set(featureId(feature), feature);
+                    });
+                    yield;
+                }
+                const addedByCadastre = new Map();
+                added.forEach(feature => explicitCadastreIds(feature).forEach(id => {
+                    if (!addedByCadastre.has(id)) addedByCadastre.set(id, []);
+                    addedByCadastre.get(id).push(feature);
+                }));
+                const scope = new Set();
+                const queue = [];
+                const enter = id => { if (id && !scope.has(id)) { scope.add(id); queue.push(id); } };
+                Array.from(cadastreIds || []).map(normalizeId).forEach(enter);
+                const pieces = new Map();
+                const take = feature => {
+                    const id = featureId(feature);
+                    if (pieces.has(id)) return;
+                    pieces.set(id, feature);
+                    explicitCadastreIds(feature).forEach(enter);
+                };
+                while (queue.length) {
+                    const cadastreId = queue.pop();
+                    (draft.data.byCadastreId.get(cadastreId) || new Set()).forEach(id => {
+                        if (!removed.has(id) && !added.has(id)) take(draft.data.byId.get(id));
+                    });
+                    (addedByCadastre.get(cadastreId) || []).forEach(take);
+                }
+                yield;
+                assertActive(draft);
+                // Only the added pieces have vertices to test; the standing ones count by area.
+                const standing = new Set(Array.from(pieces.values()).filter(feature => !added.has(featureId(feature))));
+                yield* validateReplacementSteps(draft, scope, Array.from(pieces.values()), standing);
+                return { cadastreIds: Array.from(scope), pieces: pieces.size };
+            }
+
             const mutation = {
                 // `*Steps` hand out the step function itself, for a caller that runs it in slices
                 // (work-slicer.js runSliced) or folds it into its own steps (`yield*`).
@@ -910,6 +976,10 @@
                     return workSlicer.runToCompletion(replaceCadastreScopeSteps(cadastreIds, features));
                 },
                 replaceCadastreScopeSteps,
+                checkCadastreScope(cadastreIds, change) {
+                    return workSlicer.runToCompletion(checkCadastreScopeSteps(cadastreIds, change));
+                },
+                checkCadastreScopeSteps,
                 releaseCadastreScope(cadastreIds, reason, config = {}) {
                     assertActive(draft);
                     const scope = new Set(Array.from(cadastreIds || []).map(normalizeId).filter(Boolean));
@@ -936,16 +1006,6 @@
                 // The draft's pieces themselves (deep-frozen), for readers that copy nothing.
                 peekList: () => (assertActive(draft), Array.from(draft.data.byId.values())),
                 entriesForCadastre: (ids, query) => (assertActive(draft), entriesForCadastreFrom(draft.data, ids, query)),
-                // Which of `cadastreIds` hold `vertex` by the rule a replacement is checked with
-                // (validateReplacementSteps: inside the immutable parcel or within VERTEX_TOLERANCE_M).
-                cadastreIdsHolding(vertex, cadastreIds) {
-                    assertActive(draft);
-                    const cache = new Map();
-                    return (Array.isArray(cadastreIds) ? cadastreIds : []).map(String).filter(id => {
-                        const fact = draft.data.cadastreFacts.get(id);
-                        return !!fact && vertexInsideFact(vertex, fact, cache);
-                    });
-                },
                 hasCadastreEntries: (ids, query) => (assertActive(draft), hasCadastreEntriesFrom(draft.data, ids, query)),
                 absentCadastreIds: (ids, query) => (assertActive(draft), absentCadastreIdsFrom(draft.data, ids, query)),
                 producedBy(proposalId) {

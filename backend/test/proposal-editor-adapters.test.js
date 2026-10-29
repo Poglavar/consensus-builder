@@ -641,6 +641,21 @@ describe('building proposal adapters', () => {
             expect(saved.geometry.landTake).toBeUndefined();
             expect(saved.buildingProposal.takeWholeParcels).toBeUndefined();
         });
+        // The editor judges "inside" by the apply's rule (geometry-tolerances.js uncoveredBy + isGround):
+        // a land take 0.4 mm past its site is cutting debris and saves; 1 cm past is ground and refuses.
+        it('saves a land take whose edge lies a debris width past the site, and refuses one a centimetre past', () => {
+            const adapter = buildBuildingAdapter('single');
+            const past = metres => {
+                const draft = draftFor(adapter, freeform);
+                draft.editorPayload.context.landTake = freeform.geometry.buildings[0];
+                draft.editorPayload.context.groundSurface = null;
+                draft.fields.site = turf.transformTranslate(feature, metres, 90, { units: 'meters' }).geometry;
+                return () => adapter.serializeProposal(draft);
+            };
+            expect(past(0.0004)().geometry.landTake).toEqual(feature);
+            expect(past(0.01)).toThrow(/land take/i);
+        });
+
         it('refuses surrounding ground outside a Freeform footprint-only take', () => {
             const adapter = buildBuildingAdapter('single');
             const draft = draftFor(adapter, freeform);

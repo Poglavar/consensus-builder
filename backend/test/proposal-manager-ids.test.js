@@ -10,8 +10,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const {
     ProposalManager,
-    _flatGroundCoverageIsComplete,
-    _shouldSkipUncutRemainder
+    _flatGroundCoverageIsComplete
 } = require('../../frontend/js/proposal-manager.js');
 const {
     _buildSyntheticToken,
@@ -80,6 +79,15 @@ describe('ProposalManager._assignSyntheticChildIdentities', () => {
             'HR-335649-371/1#p-tok-2'
         ]);
         expect(features.map(f => f.properties.syntheticIndex)).toEqual([1, 2]);
+    });
+
+    it('numbers by the root parcel alone, so pieces of one root numbered from different parents get distinct ids', () => {
+        // A layout plot (numbered from the layout's first parcel) and a remainder of the same root
+        // parcel (numbered from itself) once both came out as …#p-tok-1, and the later replaced the earlier.
+        const plot = { ...featureWithSyntheticParent(), properties: { rootParcelNumber: '370', cadastreParcelIds: ['HR-335649-371/1'] } };
+        const remainder = featureWithSyntheticParent();
+        ProposalManager._assignSyntheticChildIdentities('p-tok', [plot, remainder]);
+        expect(new Set([plot.properties.parcelId, remainder.properties.parcelId]).size).toBe(2);
     });
 
     it('assigns the same id to the same ground regardless of incoming layer order', () => {
@@ -175,24 +183,6 @@ describe('ProposalManager._getProposalChildParcels', () => {
             if (previous === undefined) delete globalThis.LiveParcelFabric;
             else globalThis.LiveParcelFabric = previous;
         }
-    });
-});
-
-describe('_shouldSkipUncutRemainder', () => {
-    // A road corridor that misses a listed parent leaves turf.difference returning the WHOLE parent.
-    // Without this guard that became a "ghost split" — a synthetic descendant with parent geometry.
-    it('skips a piece that is (essentially) the whole parent', () => {
-        expect(_shouldSkipUncutRemainder(1000, 1000)).toBe(true);
-        expect(_shouldSkipUncutRemainder(1000, 999.95)).toBe(true);
-    });
-
-    it('keeps a real cut, even a small one on a large parcel', () => {
-        // ~111 m² removed from a ~267,000 m² parcel: a genuine clip, not a no-intersection artefact.
-        expect(_shouldSkipUncutRemainder(267277.4099292392, 267166.3595310262)).toBe(false);
-    });
-
-    it('scales its tolerance with the parent, so a ~1 m² cut on a small parcel is kept', () => {
-        expect(_shouldSkipUncutRemainder(500, 499)).toBe(false);
     });
 });
 

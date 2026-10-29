@@ -6,7 +6,7 @@ import express from 'express';
 import request from 'supertest';
 import { createParcelSource, parcelSourceCatalog } from '../parcels/sources.js';
 import { setupParcelSourcesRoute } from '../routes/parcel-sources.js';
-import { computeBinding, bindingFrame, FOOTPRINT_SITE_SQL } from '../proposals/binding.js';
+import { checkProposalBinding } from '../proposals/binding.js';
 
 const SQUARE = (west, south, east, north) => ({
     type: 'Polygon',
@@ -150,7 +150,7 @@ describe.each(cases)('$city live parcel source', sample => {
         }
     });
 
-    it('derives the footprint in its own operation frame while binding without imported parcel tables', async () => {
+    it('derives the footprint as the browser does while binding without imported parcel tables', async () => {
         const feature = descriptor.adapter === 'ogc-api'
             ? ogcFeature(descriptor, sample.nativeId, sample.geometry)
             : sfRow(descriptor, sample.nativeId, sample.geometry);
@@ -158,16 +158,12 @@ describe.each(cases)('$city live parcel source', sample => {
             ? vi.fn(async () => ogcResponse([feature]))
             : socrataFetch(descriptor, feature);
         vi.stubGlobal('fetch', fetchImpl);
-        const db = { query: vi.fn(async () => ({ rows: [{ geometry: JSON.stringify(sample.geometry) }] })) };
-        const parts = { polygons: [sample.geometry], centerline: null };
+        const db = { query: vi.fn(() => { throw new Error('Unexpected database read'); }) };
+        const park = { goal: 'park', structureProposal: { kind: 'park', geometry: sample.geometry } };
 
-        const { binding } = await computeBinding(db, { parcelSourceId: consumerParcelSourceId(sample.city), city: sample.city, parts });
+        const { binding } = await checkProposalBinding(db, park, [], { parcelSourceId: consumerParcelSourceId(sample.city), city: sample.city, derive: true });
 
-        expect(db.query).toHaveBeenCalledTimes(1);
-        const [sql, params] = db.query.mock.calls[0];
-        expect(sql).toBe(FOOTPRINT_SITE_SQL);
-        expect(sql).not.toContain(String(sample.metricSrid));
-        expect(params.at(-1)).toBe(bindingFrame({ parts }).proj);
+        expect(db.query).not.toHaveBeenCalled();
         expect(binding).toMatchObject({ coverage: 'complete', source: `server:${descriptor.id}` });
         expect(binding.parcels.map(parcel => parcel.parcelId)).toEqual([`${descriptor.idPrefix}${sample.nativeId}`]);
     });

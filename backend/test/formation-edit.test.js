@@ -185,50 +185,6 @@ describe('wholeParcelTakePlan', () => {
     });
 });
 
-describe('clipPiecesByTaking (§15b: a taking clips the pieces it crosses)', () => {
-    // ~78 m × 111 m block; a ~16 m-wide "road" strip crosses its middle horizontally.
-    const plot = (lonMin, latMin, lonMax, latMax, owner) =>
-        ({ geometry: rect(lonMin, latMin, lonMax, latMax).geometry, ownerKey: owner, displayName: owner });
-    const strip = rect(15.9599, 45.80045, 15.9611, 45.80059); // spans full width, middle
-
-    it('splits a crossed plot into two pieces that keep their carry fields', () => {
-        const res = fe.clipPiecesByTaking([plot(15.9600, 45.8000, 15.9610, 45.8010, 'ana')], strip, ctx);
-        expect(res.changed).toBe(true);
-        expect(res.pieces.length).toBe(2);
-        expect(res.splitCount).toBe(1);
-        res.pieces.forEach(p => expect(p.ownerKey).toBe('ana'));
-        const total = res.pieces.reduce((s2, p) => s2 + turf.area({ type: 'Feature', properties: {}, geometry: p.geometry }), 0);
-        const before = turf.area(rect(15.9600, 45.8000, 15.9610, 45.8010));
-        expect(total).toBeLessThan(before);
-        expect(Math.abs(before - total - res.takenAreaM2)).toBeLessThan(2);
-    });
-
-    it('removes a fully-taken plot from the plan', () => {
-        const inside = plot(15.96005, 45.80047, 15.96015, 45.80057, 'ivo'); // fully inside the strip
-        const res = fe.clipPiecesByTaking([inside], strip, ctx);
-        expect(res.changed).toBe(true);
-        expect(res.pieces.length).toBe(0);
-        expect(res.removedCount).toBe(1);
-    });
-
-    it('returns untouched pieces by reference (no churn)', () => {
-        const far = plot(15.9700, 45.8000, 15.9710, 45.8010, 'far');
-        const res = fe.clipPiecesByTaking([far], strip, ctx);
-        expect(res.changed).toBe(false);
-        expect(res.pieces[0]).toBe(far);
-        expect(res.takenAreaM2).toBe(0);
-    });
-
-    it('treats a graze by cutting debris as no taking', () => {
-        // Overlaps the strip by ~0.4 mm along one edge (was ~4 mm under the old 0.5 m² floor; 4 mm is
-        // now ground, wider than the 1 mm noise).
-        const grazing = plot(15.9600, 45.800590004, 15.9610, 45.8010, 'g');
-        const res = fe.clipPiecesByTaking([grazing], strip, ctx);
-        expect(res.changed).toBe(false);
-        expect(res.pieces[0]).toBe(grazing);
-    });
-});
-
 describe('trimCenterlineByTaking (§15b: roads as victims)', () => {
     const trimCtx = {
         lineSplit: (line, poly) => turf.lineSplit(line, poly),
