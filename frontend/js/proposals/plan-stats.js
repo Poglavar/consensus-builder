@@ -103,7 +103,10 @@
             const end = schedule[record.proposalId]?.end;
             return end ? Number(end.slice(0, 4)) : null;
         };
-        const result = api.planYield(records, { ...assumptions, openSpaceAreaOf, periodOf });
+        // Apartments counted from each building's generated layout once plan-units.js has laid them
+        // out (snapshot.units); until then, and for a building it cannot lay out, the per-m² rule.
+        const units = snapshot.units || null;
+        const result = api.planYield(records, { ...assumptions, openSpaceAreaOf, periodOf, unitsOf: units?.designs?.unitsOf });
         const parcels = api.resultingParcels(records, { materializedFeatures });
         const byId = new Map([...cadastralFeatures, ...materializedFeatures].map(f => [String(f.properties?.parcelId ?? f.id), f]));
         let measuredArea = 0, measuredCount = 0;
@@ -130,7 +133,8 @@
             // buildings (or why not): the land split, and the existing buildings the plan leaves standing.
             publicLandM2: snapshot.land ? snapshot.land.publicLandM2 : null,
             privateLandM2: snapshot.land ? snapshot.land.privateLandM2 : null,
-            remainingYield: Array.isArray(snapshot.remaining) ? api.planYield(snapshot.remaining, assumptions) : null,
+            remainingYield: Array.isArray(snapshot.remaining) ? api.planYield(snapshot.remaining, { ...assumptions, unitsOf: units?.standing?.unitsOf }) : null,
+            unitsCounting: snapshot.unitsCounting === true, unitsError: units?.error || null,
             groundError: snapshot.groundError || null };
     }
 
@@ -418,8 +422,11 @@
             'open-space': formatNumber(total.openSpaceM2),
             'public-land': measured(stats.publicLandM2),
             'private-land': measured(stats.privateLandM2),
-            apartments: formatNumber(total.apartments),
-            people: formatNumber(total.people),
+            apartments: stats.unitsCounting ? tPlanStats('sidebar.proposals.planStats.countingUnits', 'Counting…')
+                : total.laidOutBuildings > 0 ? tPlanStats('sidebar.proposals.planStats.apartmentsLaidOut', '{{apartments}} ({{laidOut}} of {{buildings}} buildings laid out)',
+                    { apartments: formatNumber(total.apartments), laidOut: formatNumber(total.laidOutBuildings), buildings: formatNumber(total.buildings - total.unmeasuredBuildings) })
+                : formatNumber(total.apartments),
+            people: stats.unitsCounting ? tPlanStats('sidebar.proposals.planStats.countingUnits', 'Counting…') : formatNumber(total.people),
             jobs: formatNumber(total.jobs),
             'sales-value': formatSalesValue(total.grossFloorAreaM2 * price)
         };
@@ -464,6 +471,7 @@
         set('private-land', figures['private-land']);
         set('apartments', figures.apartments);
         set('people', figures.people);
+        ['apartments', 'people'].forEach(key => modal.querySelector(`[data-plan-stat="${key}"]`)?.classList?.toggle('plan-stats-counting', stats.unitsCounting === true));
         set('jobs', figures.jobs);
         set('sales-value', figures['sales-value']);
 
@@ -489,6 +497,9 @@
                 'Open ground: {{area}} m² of the sites has no cadastral parcels; parcel figures cover the bound parcels only.',
                 { area: formatNumber(stats.openGroundM2) }
             ));
+        }
+        if (stats.unitsError) {
+            notes.push(tPlanStats('sidebar.proposals.planStats.unitsFailed', 'Apartments follow the per-m² rule: the buildings could not be laid out ({{reason}}).', { reason: stats.unitsError }));
         }
         if (stats.groundError) {
             notes.push(tPlanStats('sidebar.proposals.planStats.groundFailed', 'Existing buildings and public land could not be read: {{reason}}', { reason: stats.groundError }));
@@ -548,6 +559,23 @@
         }
     }
 
+    // Every building laid out and its apartments counted (plan-units.js): the designs' and the
+    // existing ones that remain. { units: { designs, standing } } or { units: { error } }.
+    async function countUnits(records, remaining, parcels) {
+        try {
+            const standingFeatures = (remaining || []).flatMap(record => yieldApi().buildingFeaturesOf(record));
+            const designs = await window.PlanUnits.forSnapshot(records || [], { parcels: parcels || [], standing: standingFeatures });
+            const standing = await window.PlanUnits.forSnapshot(remaining || [], { existing: true });
+            return { designs, standing };
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] [PlanStats] apartments could not be counted from layouts`, error);
+            return { error: error && error.message ? error.message : String(error) };
+        }
+    }
+    async function withUnits(snapshot) {
+        return { ...snapshot, unitsCounting: false, units: await countUnits(snapshot.records, snapshot.remaining, snapshot.materializedFeatures) };
+    }
+
     let openedPlan = 0;
     async function openPlanStats(plan) {
         const snapshot = await window.PlanAnalysis.prepare(plan);
@@ -555,11 +583,15 @@
         restoreAssumptions(modal);
         bindAssumptionInputs(modal);
         const token = ++openedPlan;
-        renderPlanStatsModal(computePlanStatsSync(snapshot, readAssumptionsFromModal(modal)));
+        renderPlanStatsModal(computePlanStatsSync({ ...snapshot, unitsCounting: true }, readAssumptionsFromModal(modal)));
         // Public and private land needs OpenStreetMap's parks and squares, which can take a while:
-        // the other figures show first, these follow while the dialog still shows this plan.
+        // the other figures show first, these follow while the dialog still shows this plan, and
+        // the apartments last, once every building (new and remaining) is laid out.
         const land = await withGround(snapshot, readAssumptionsFromModal(modal));
-        if (token === openedPlan && !modal.hidden) renderPlanStatsModal(computePlanStatsSync(land, readAssumptionsFromModal(modal)));
+        if (token !== openedPlan || modal.hidden) return;
+        renderPlanStatsModal(computePlanStatsSync({ ...land, unitsCounting: true }, readAssumptionsFromModal(modal)));
+        const counted = await withUnits(land);
+        if (token === openedPlan && !modal.hidden) renderPlanStatsModal(computePlanStatsSync(counted, readAssumptionsFromModal(modal)));
     }
 
     // ── Plan comparison (Lists → Plans → Compare plans) ─────────────────────────────────────────
@@ -585,7 +617,8 @@
                 tPlanStats('sidebar.proposals.planStats.groundFailed', 'Existing buildings and public land could not be read: {{reason}}', { reason: entry.groundError })));
             return th;
         };
-        const value = (entry, key) => el('td', 'plan-stats-table__number', entry.figures ? entry.figures[key] : '—');
+        const counting = (entry, key) => entry.stats?.unitsCounting && (key === 'apartments' || key === 'people');
+        const value = (entry, key) => el('td', `plan-stats-table__number${counting(entry, key) ? ' plan-stats-counting' : ''}`, entry.figures ? entry.figures[key] : '—');
         const head = document.createElement('tr');
         head.appendChild(el('th', null, plansAsColumns ? '' : tPlanStats('plan.label', 'Plan')));
         if (plansAsColumns) entries.forEach(entry => head.appendChild(planHeader(entry, 'col')));
@@ -619,9 +652,10 @@
             const title = plan?.content?.title || '';
             try {
                 const snapshot = await withGround(await window.PlanAnalysis.prepare(plan), assumptions);
-                const stats = computePlanStatsSync(snapshot, assumptions);
-                prepared.push({ title: stats.planTitle || title, cid: plan?.cid || null, snapshot });
-                entries.push({ title: stats.planTitle || title, stats, figures: summaryTexts(stats, price), groundError: stats.groundError });
+                const stats = computePlanStatsSync({ ...snapshot, unitsCounting: true }, assumptions);
+                const entry = { title: stats.planTitle || title, stats, figures: summaryTexts(stats, price), groundError: stats.groundError };
+                entries.push(entry);
+                prepared.push({ title: entry.title, cid: plan?.cid || null, snapshot, entry });
             } catch (error) {
                 console.error(`[${new Date().toISOString()}] [PlanCompare] ${title || plan?.cid} could not be measured`, error);
                 entries.push({ title, error: error && error.message ? error.message : String(error) });
@@ -677,8 +711,16 @@
                     : [await window.PlanAnalysis.prepare(saved.get(value))];
                 const stats = await window.PresentState.measure({ title: present.title, basis: basisPlans, assumptions });
                 if (token !== measuring) return;
-                present.stats = stats;
-                present.figures = summaryTexts(rederiveStats(stats, readAssumptionsFromModal(grid, { prefix: 'plan-compare' })), price);
+                present.stats = { ...stats, unitsCounting: true };
+                present.measuring = false;
+                present.figures = summaryTexts(rederiveStats(present.stats, readAssumptionsFromModal(grid, { prefix: 'plan-compare' })), price);
+                draw();
+                // Today's buildings laid out as the plans' are, so the columns count alike.
+                const units = await countUnits([], stats.remainingRecords, []);
+                if (token !== measuring) return;
+                present.stats = { ...stats, unitsCounting: false, unitsError: units.error || null,
+                    remainingYield: yieldApi().planYield(stats.remainingRecords, { ...assumptions, unitsOf: units.standing?.unitsOf }) };
+                present.figures = summaryTexts(rederiveStats(present.stats, readAssumptionsFromModal(grid, { prefix: 'plan-compare' })), price);
             } catch (error) {
                 if (token !== measuring) return;
                 console.error(`[${new Date().toISOString()}] [PlanCompare] the present state could not be measured`, error);
@@ -694,7 +736,7 @@
         rule.dataset.planCompareRule = '';
         const describeRule = current => {
             rule.textContent = tPlanStats('planCompare.apartmentRule',
-                'Apartments = gross floor area × {{efficiency}} % net × {{housing}} % housing ÷ {{size}} m² per apartment; people = apartments × {{persons}}.',
+                'A building with a suggested layout counts its apartments; any other: gross floor area × {{efficiency}} % net × {{housing}} % housing ÷ {{size}} m² per apartment. People = apartments × {{persons}}.',
                 { efficiency: formatNumber(current.efficiency * 100), housing: formatNumber(current.housingShare * 100),
                     size: formatNumber(current.avgApartmentM2), persons: formatNumber(current.personsPerApartment, 1) });
         };
@@ -734,6 +776,16 @@
             void measurePresent(basis.value);
         } else present.error = tPlanStats('planCompare.noBasis', 'No saved plan to take the land from.');
         draw();
+        // Each plan's apartments, counted from its buildings' layouts one plan after another; its
+        // Apartments and People cells spin until then.
+        void (async () => {
+            for (const { snapshot, entry } of prepared) {
+                const counted = await withUnits(snapshot);
+                entry.stats = computePlanStatsSync(counted, readAssumptionsFromModal(grid, { prefix: 'plan-compare' }));
+                entry.figures = summaryTexts(entry.stats, price);
+                draw();
+            }
+        })();
         return dialog;
     }
 

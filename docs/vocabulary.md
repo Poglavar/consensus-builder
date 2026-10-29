@@ -349,7 +349,7 @@ What stands today on the land of a chosen saved plan (or of all compared plans),
 
 ### Remaining building
 
-An existing building a plan's designs do not clear. A plan's standing buildings are its new buildings plus its remaining ones; apartments, people and jobs derive from their summed floor area. A design clears its demolition ground (its parcels or footprints, a structure, a road corridor) with the demolition scan's thresholds: under 2 m² of overlap the building is untouched, and when under 10 m² or 15 % of its footprint is left it is gone.
+An existing building a plan's designs do not clear. A plan's standing buildings are its new buildings plus its remaining ones. A standing building the suggested default layout can lay out (or one with its own floor plans) counts that layout's apartments, and its shops as work; every other building's apartments, people and jobs derive from its floor area by the Plan stats assumptions. A design clears its demolition ground (its parcels or footprints, a structure, a road corridor) with the demolition scan's thresholds: under 2 m² of overlap the building is untouched, and when under 10 m² or 15 % of its footprint is left it is gone.
 
 ### Private draft reference
 

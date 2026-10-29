@@ -399,7 +399,7 @@
             const parcelAreaM2 = parcels.reduce((sum, parcel) => sum + ops.areaOf(parcel), 0);
             log(`${title}: ${parcels.length} parcels, ${records.length} buildings, ${Math.round(land.publicLandM2)} m² public`);
             return { unavailable: false, planTitle: title, proposalsTotal: 0, proposalsCounted: 0, yield: designs,
-                remainingYield: win.__planYield.planYield(records, assumptions),
+                remainingYield: win.__planYield.planYield(records, assumptions), remainingRecords: records,
                 parcelCount: parcels.length, parcelProduced: 0, parcelConsumed: 0, parcelMeasuredCount: parcels.length,
                 parcelMeasuredArea: parcelAreaM2, openGroundM2: null, planAreaM2: parcelAreaM2, ...land };
         }

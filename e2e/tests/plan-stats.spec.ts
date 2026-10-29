@@ -34,12 +34,19 @@ test.describe('Plan arithmetic @features', () => {
     await modal.locator('#plan-stats-price').fill('10000');
     await modal.locator('#plan-stats-price').press('Tab');
     await expect.poll(() => value('sales-value')).not.toBe(sales);
+    // The building is laid out (plan-units.js), so its apartments are the layout's: the per-m² rule's
+    // housing share leaves them, and people follow people per apartment.
+    await expect.poll(() => value('apartments'), { timeout: 30_000 }).toMatch(/^[\d,]+ \(1 of 1 buildings laid out\)$/);
     const apartments = await value('apartments');
+    const count = (text: string) => Number(text.split(' ')[0].replace(/[^\d]/g, ''));
+    expect(count(apartments)).toBeGreaterThan(0);
     await modal.locator('#plan-stats-housing-share').fill('0');
     await modal.locator('#plan-stats-housing-share').press('Tab');
-    await expect.poll(() => value('apartments')).toBe('0');
-    expect(apartments).not.toBe('0');
-    await expect.poll(() => value('people')).toBe('0');
+    await expect(modal.locator('#plan-stats-housing-share')).toHaveValue('0');
+    expect(await value('apartments')).toBe(apartments);
+    await modal.locator('#plan-stats-persons').fill('4');
+    await modal.locator('#plan-stats-persons').press('Tab');
+    await expect.poll(async () => count(await value('people'))).toBe(count(apartments) * 4);
     expect(await value('floor-area')).toBe(floorArea);
     await modal.locator('#plan-stats-housing-share').fill('100');
     await modal.locator('#plan-stats-efficiency').fill('100');

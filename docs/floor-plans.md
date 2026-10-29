@@ -232,6 +232,12 @@ sequenceDiagram
   arrive the entrance takes the longest facade and the note says so; their arrival drops the cache
   and rebuilds once. Clicking a building opens the parcel panel with its suggested layout (cores,
   apartments per floor, rooms) or the reason nothing fits; the proposal panel totals its buildings.
+- `frontend/js/proposals/plan-units.js` — Plan stats and Compare plans count apartments from the
+  same generator: every new and remaining building of a plan is laid out (no roads; the entrance
+  takes the longest facade) and its apartments on every floor are counted, a building's own floor
+  plans as they are; its shops count as work. A building with no layout (too small for a stair
+  core, an uploaded model without floor plans, no height) keeps the per-m² rule of plan-yield.js.
+  The cells spin until the count arrives.
 - `frontend/js/suggested-layouts-2d.js` — the 2D counterpart: the "Suggested layouts (ground
   floor)" toggle in the Layers sheet under the building layers (`?suggested2d=1`) draws the ground
   floor of every suggested layout on the map from the same generator and `floorPlanToGeoJSON`, on
@@ -298,8 +304,6 @@ model can say what it knows. The generator's `suggested` flag and generated sour
 - Settle the lift obligation threshold; add regional presets beyond HR and generic.
 - Thumbnails: the server-side renderer would need the generator and the parcels; the 2D layer
   shows the same drawing live instead.
-- Feed the generated apartment counts into plan yield so the stats dialog and X-ray agree; today
-  the proposal panel in 3D shows them beside the area figures.
 - Drive the facade shader from the layout's openings one to one; today only the bay rhythm is shared.
 
 ### Evidence pipeline

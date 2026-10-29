@@ -103,9 +103,15 @@ function makeWindow(proposals, { city = null } = {}) {
             measure: async ({ title, basis }) => ({ unavailable: false, planTitle: title, proposalsTotal: 0, proposalsCounted: 0,
                 yield: planYield.planYield([], { appliedOnly: true }),
                 remainingYield: planYield.planYield([block(null), block(null), block(null)], { appliedOnly: true }),
+                remainingRecords: [block(null), block(null), block(null)],
                 parcelCount: basis.length, parcelMeasuredCount: basis.length, parcelMeasuredArea: 900, openGroundM2: null,
                 planAreaM2: 900, publicLandM2: 300, privateLandM2: 600 })
         },
+        // Layouts (plan-units.js): none here unless a test lays some out (window.layoutCounts).
+        PlanUnits: { forSnapshot: async records => {
+            const counted = window.layoutCounts ? await window.layoutCounts(records) : null;
+            return { unitsOf: feature => (counted ? counted(feature) : null), laidOut: 0, estimated: 0, reasons: {} };
+        } },
         NamedPlans: { list: () => [{ cid: 'other', content: { title: 'Saved elsewhere', view: { city: 'zagreb' } } }] },
         normalizeCityCodeForApi: code => code,
         resolveCurrentCityCode: () => 'zagreb',
@@ -397,7 +403,7 @@ describe('comparing plans', () => {
         const before = apartments();
         expect(before.every(count => count > 0)).toBe(true);
         expect(textOf(body.querySelector('[data-plan-compare-rule]'))).toBe(
-            'Apartments = gross floor area × 80 % net × 75 % housing ÷ 65 m² per apartment; people = apartments × 2.4.');
+            'A building with a suggested layout counts its apartments; any other: gross floor area × 80 % net × 75 % housing ÷ 65 m² per apartment. People = apartments × 2.4.');
         const size = body.querySelector('#plan-compare-apartment-size');
         size.value = '130';
         size.listeners.input.forEach(fn => fn());
@@ -406,6 +412,30 @@ describe('comparing plans', () => {
         expect(textOf(body.querySelector('[data-plan-compare-rule]'))).toContain('÷ 130 m² per apartment');
         await window.showPlanStatsModal({ content: { title: 'Garden plan' } });
         expect(window.document.getElementById('plan-stats-apartment-size').value).toBe('130');
+    });
+});
+
+describe('apartments counted from layouts in Compare plans', () => {
+    const textOf = node => node.textContent + node.children.map(textOf).join('');
+    const findAll = (node, test, out = []) => { node.children.forEach(child => { if (test(child)) out.push(child); findAll(child, test, out); }); return out; };
+    it('spins in the Apartments and People cells until the buildings are laid out, then says how many were', async () => {
+        const window = openDialog(plan);
+        let release;
+        const laidOut = new Promise(resolve => { release = resolve; });
+        // Every new building lays out as 7 apartments once released; the existing ones keep the rule.
+        window.layoutCounts = async records => {
+            await laidOut;
+            return () => (records.some(r => String(r.proposalId).startsWith('d-')) ? { apartments: 7, shopNetM2: 0 } : null);
+        };
+        await window.comparePlanStats([{ content: { title: 'Two blocks' }, records: [block('d-1'), block('d-2')] }]);
+        await new Promise(resolve => setImmediate(resolve));
+        const cells = () => findAll(window.openedDialog.body, node => node.tagName === 'TD');
+        const counting = () => cells().filter(cell => String(cell.className).includes('plan-stats-counting')).map(textOf);
+        expect(counting()).toEqual(['Counting…', 'Counting…', 'Counting…', 'Counting…']);
+        release();
+        for (let i = 0; i < 10 && counting().length; i++) await new Promise(resolve => setImmediate(resolve));
+        expect(counting()).toEqual([]);
+        expect(cells().map(textOf)).toContain('14 (2 of 2 buildings laid out)');
     });
 });
 
