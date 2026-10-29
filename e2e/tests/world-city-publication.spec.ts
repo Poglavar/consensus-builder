@@ -203,7 +203,7 @@ test.describe('Worldwide publication and city routing @core', () => {
       await mockAllApiRoutes(duplicate);
       await attachSharedIndex(duplicate, pageIndex(owner));
       const incomingUrl = `/designs/${cid}?city=zg&reduceMotion=1`;
-      await duplicate.goto(incomingUrl, { waitUntil: 'domcontentloaded' });
+      await duplicate.goto(incomingUrl, { waitUntil: 'commit' }); // a blocked tab never reaches DOMContentLoaded
       await expect.poll(() => duplicate.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('blocked');
       const screen = duplicate.locator('#workspace-screen');
       await expect(screen).toBeVisible();

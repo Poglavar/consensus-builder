@@ -108,7 +108,9 @@
         })();
     </script>
     <script>
-        window.writeVersionedLocalScripts(['js/build-info.js']);
+        // The saved workspace is claimed before anything else loads. A tab that cannot own it stops
+        // here (js/workspace-screen.js): no app script runs, and no saved state or data loads.
+        window.writeVersionedLocalScripts(['js/build-info.js', 'js/browser-workspace.js', 'js/workspace-screen.js']);
     </script>
 
     <!-- Custom CSS - Modular imports with per-load cache busting -->
@@ -261,6 +263,8 @@
 </head>
 
 <body class="app-loading i18n-loading">
+    <!-- A tab that cannot own the saved workspace stops here, before any of the app (js/workspace-screen.js). -->
+    <script>window.WorkspaceScreen.bodyReached();</script>
     <!-- World view handoff (js/world/handoff.js): first in <body>, so the globe's last frame covers
          the map before its first paint after a city switch from the globe. -->
     <script>
@@ -1849,8 +1853,6 @@
             'js/ui/banner-stack.js',
             'js/ui/modal-escape.js',
             'js/ui/dialogs.js?v=20261027-agreement-focus',
-            'js/browser-workspace.js',
-            'js/workspace-screen.js',
             'js/persistent-storage.js',
             'js/i18n.js',
             'js/format.js',
@@ -2346,11 +2348,6 @@
     <script>
         // Initialize application when page loads
         document.addEventListener('DOMContentLoaded', function () {
-            window.BrowserWorkspace?.ready.then(owned => {
-                if (!owned) Promise.resolve(window.i18n?.translationsReady).then(() => {
-                    window.WorkspaceScreen.show(window.BrowserWorkspace.status);
-                });
-            }).catch(() => { /* PersistentStorage's startup handler reports the failure below. */ });
             const boot = () => {
                 initializeUser();
                 initializeNotifications();

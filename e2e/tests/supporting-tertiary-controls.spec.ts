@@ -26,7 +26,7 @@ test.describe('Supporting tertiary controls @core', () => {
       await mockAllApiRoutes(newYork);
       await stubBasemapTiles(newYork);
       const incomingUrl = '/?city=new_york&reduceMotion=1';
-      await newYork.goto(incomingUrl, { waitUntil: 'domcontentloaded' });
+      await newYork.goto(incomingUrl, { waitUntil: 'commit' }); // a blocked tab never reaches DOMContentLoaded
       await expect.poll(() => newYork.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('blocked');
       const screen = newYork.locator('#workspace-screen');
       await expect(screen).toBeVisible();

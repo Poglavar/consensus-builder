@@ -21,10 +21,17 @@ for (const width of [390, 1280]) test(`a duplicate tab waits for the owner and r
     await mockAllApiRoutes(duplicate);
     await stubBasemapTiles(duplicate);
     const incomingUrl = '/?city=zg&reduceMotion=1';
-    await duplicate.goto(incomingUrl, { waitUntil: 'domcontentloaded' });
+    // A blocked tab stops loading before the app (js/workspace-screen.js): it never reaches
+    // DOMContentLoaded, loads no saved state and runs no app script.
+    await duplicate.goto(incomingUrl, { waitUntil: 'commit' });
     await expect.poll(() => duplicate.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('blocked');
     const screen = duplicate.locator('#workspace-screen');
     await expect(screen).toBeVisible();
+    expect(await duplicate.evaluate(() => ({
+      storage: typeof (window as any).PersistentStorage,
+      drafts: typeof (window as any).proposalDraftStore,
+      map: typeof (window as any).initializeMapCore,
+    }))).toEqual({ storage: 'undefined', drafts: 'undefined', map: 'undefined' });
     await expect(screen.getByRole('heading', { name: 'Already open in another tab' })).toBeVisible();
     // One plain screen: it covers the whole viewport and carries only the title and Try again.
     expect(await screen.boundingBox()).toEqual({ x: 0, y: 0, width, height: 844 });
@@ -73,7 +80,7 @@ test('closing a blocked tab cannot overwrite the owner; a fresh tab reopens the 
   const blocked = await context.newPage();
   await mockAllApiRoutes(blocked);
   await stubBasemapTiles(blocked);
-  await blocked.goto('/?city=zg&reduceMotion=1', { waitUntil: 'domcontentloaded' });
+  await blocked.goto('/?city=zg&reduceMotion=1', { waitUntil: 'commit' });
   await expect.poll(() => blocked.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('blocked');
   await expect(blocked.locator('#workspace-screen')).toBeVisible();
 
