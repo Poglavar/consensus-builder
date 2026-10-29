@@ -4316,7 +4316,9 @@
                 "generatedSummaryExcluded": "{{count}} edifício(s) gerado(s) · {{excluded}} parcela(s) excluída(s) pela regra",
                 "excludedBelowMinPlot": "Inferior à área mínima de lote desta regra proposta; una-o a outro ou altere a regra.",
                 "excludedNoRoom": "Este recuo proposto não deixa espaço para um edifício.",
-                "excludedCannotMeet": "O lote não consegue cumprir o mínimo desta regra proposta."
+                "excludedCannotMeet": "O lote não consegue cumprir o mínimo desta regra proposta.",
+                "excludedBelowMinFrontage": "O seu lado voltado para a rua é mais curto do que a frente mínima desta regra proposta.",
+                "excludedNoRoomUnderLimits": "Os limites de ocupação ou de utilização desta regra proposta não deixam espaço para um edifício."
             },
             "labels": {
                 "ruleType": "O que a regra impõe:",
@@ -4329,14 +4331,29 @@
                 "avgFloors": "Pisos de exemplo (média):",
                 "ruleTypeMax": "No máximo este valor",
                 "ruleTypeExact": "Exatamente este valor",
-                "minFootprint": "Área mínima do piso térreo (m²):"
+                "minFootprint": "Área mínima do piso térreo (m²):",
+                "maxHeight": "Altura máxima (m):",
+                "frontSetback": "Afastamento frontal (m):",
+                "rearSetback": "Afastamento de fundo (m):",
+                "setbackHeightRatio": "Laterais e fundo pelo menos (× altura):",
+                "minFrontage": "Frente mínima para a rua (m):",
+                "maxCoverage": "Ocupação máxima (%):",
+                "minNaturalGround": "Terreno natural mínimo (%):",
+                "maxFloorAreaRatio": "Índice de utilização máximo:",
+                "maxFootprint": "Piso térreo máximo (m²):"
             },
             "regenerate": "Ilustrar",
             "title": "Moradias isoladas",
             "closeAria": "Fechar diálogo de edificação por parcela",
             "generating": "A gerar edifícios…",
             "helper": {
-                "minPlotArea": "Os lotes inferiores ao mínimo proposto estão assinalados com trama. Una-os ou altere a regra."
+                "minPlotArea": "Os lotes inferiores ao mínimo proposto estão assinalados com trama. Una-os ou altere a regra.",
+                "frontage": "Os afastamentos frontal e de fundo medem-se a partir do lado do lote voltado para a rua mais próxima; sem rua, a partir do seu lado mais longo.",
+                "setbackHeightRatio": "0,5 mantém as laterais e o fundo a pelo menos metade da altura do edifício do limite."
+            },
+            "placeholders": {
+                "noLimit": "Sem limite",
+                "sameAsBorders": "Igual aos limites"
             }
         }
     },

@@ -494,7 +494,9 @@ An urban-rule design generating a row arrangement of buildings from its land and
 
 ### Detached rule
 
-An urban-rule design generating separate buildings on selected parcels from its stated dimensional constraints.
+An urban-rule design generating separate buildings on selected parcels from its stated dimensional constraints. Each buildable parcel gets one permitted envelope; parcels the rule excludes are shown with the reason (plot too small, street frontage too short, no room after the yards or under the caps, or a compelled minimum the plot cannot meet).
+
+Its constraints are the distance from the borders (`minDistance`), maximum floors with an optional height limit (`maxHeightM`, which caps the floors at the floor height), the minimum plot size, and optional limits written only when set: front and rear yards (`frontSetbackM`, `rearSetbackM`, measured from the plot edge facing the nearest street, else its longest edge; unset, the border distance applies), sides and rear kept at least a share of the building's height from the border (`setbackHeightRatio`, 0.5 for h/2), a minimum street frontage (`minFrontageM`), maximum site coverage and minimum natural ground (`maxCoverage`, `minNaturalGround`, shares of the plot), a maximum floor area ratio (`maxFloorAreaRatio`) and a maximum ground floor (`maxFootprintAreaM2`). The envelope is the ground beyond the yards, shrunk evenly to the smallest ground-floor cap, at the floor count holding the most floor area (a yard growing with height or a floor area ratio can make that fewer than the maximum); every view measures it as the permitted floor area. An example build-out stays inside the envelope, at most its floors high.
 
 ### Source planning rule
 

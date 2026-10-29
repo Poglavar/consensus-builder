@@ -1420,6 +1420,14 @@ body.site-intro-open { overflow: hidden; }
     white-space: nowrap;
 }
 
+/* The card as a titled section of a flat panel (cardMarkup collapsible: false). */
+.building-density-title {
+    margin: var(--cb-space-3) 0 var(--cb-space-2);
+    color: var(--cb-text-strong);
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-semibold);
+}
+
 .building-density-hint {
     margin: 10px 0 0;
     color: var(--cb-text-muted);

@@ -913,6 +913,12 @@ button.status-log-message {
     width: 5em;
 }
 
+/* A number field in an editor sidebar (Detached houses' limits): blank states no limit, and the
+   placeholder says so. */
+.parameter-group .parameter-number {
+    width: 100%;
+}
+
 .parameter-hint {
     margin-top: 5px;
     font-size: 12px;

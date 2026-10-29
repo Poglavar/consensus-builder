@@ -3411,10 +3411,21 @@
                 "ruleTypeRange": "Between a minimum and this",
                 "ruleTypeExact": "Exactly this",
                 "minFootprint": "Min ground floor (m²):",
-                "minPlotArea": "Min plot size (m²):"
+                "minPlotArea": "Min plot size (m²):",
+                "maxHeight": "Max height (m):",
+                "frontSetback": "Front yard (m):",
+                "rearSetback": "Rear yard (m):",
+                "setbackHeightRatio": "Sides and rear at least (× height):",
+                "minFrontage": "Min street frontage (m):",
+                "maxCoverage": "Max site coverage (%):",
+                "minNaturalGround": "Min natural ground (%):",
+                "maxFloorAreaRatio": "Max floor area ratio:",
+                "maxFootprint": "Max ground floor (m²):"
             },
             "helper": {
-                "minPlotArea": "Plots smaller than the proposed minimum are hatched. Merge them or change the rule."
+                "minPlotArea": "Plots smaller than the proposed minimum are hatched. Merge them or change the rule.",
+                "frontage": "Front and rear are measured from the plot edge facing the nearest street, else its longest edge.",
+                "setbackHeightRatio": "0.5 keeps the sides and rear at least half the building’s height from the border."
             },
             "messages": {
                 "creationFailed": "Building generation failed. Try adjusting parameters.",
@@ -3428,7 +3439,13 @@
                 "generatedSummaryExcluded": "Generated {{count}} building(s) · {{excluded}} parcel(s) excluded by the rule",
                 "excludedBelowMinPlot": "Smaller than this proposed rule’s minimum plot size; merge it or change the rule.",
                 "excludedNoRoom": "This proposed setback leaves no room for a building.",
-                "excludedCannotMeet": "The plot cannot meet this proposed rule’s minimum."
+                "excludedCannotMeet": "The plot cannot meet this proposed rule’s minimum.",
+                "excludedBelowMinFrontage": "Its street edge is shorter than this proposed rule’s minimum frontage.",
+                "excludedNoRoomUnderLimits": "This proposed rule’s coverage or floor area limits leave no room for a building."
+            },
+            "placeholders": {
+                "noLimit": "No limit",
+                "sameAsBorders": "Same as borders"
             }
         }
     },

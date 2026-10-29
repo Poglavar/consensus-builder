@@ -3438,10 +3438,21 @@
                 "ruleTypeRange": "Entre un mínimo y esto",
                 "ruleTypeExact": "Exactamente esto",
                 "minFootprint": "Planta baja mínima (m²):",
-                "minPlotArea": "Superficie mínima de parcela (m²):"
+                "minPlotArea": "Superficie mínima de parcela (m²):",
+                "maxHeight": "Altura máxima (m):",
+                "frontSetback": "Antejardín (m):",
+                "rearSetback": "Retiro posterior (m):",
+                "setbackHeightRatio": "Laterales y fondo al menos (× altura):",
+                "minFrontage": "Frente mínimo a la calle (m):",
+                "maxCoverage": "Ocupación máxima (%):",
+                "minNaturalGround": "Terreno natural mínimo (%):",
+                "maxFloorAreaRatio": "Edificabilidad máxima:",
+                "maxFootprint": "Planta baja máxima (m²):"
             },
             "helper": {
-                "minPlotArea": "Las parcelas menores que el mínimo propuesto se muestran rayadas. Fusiónalas o cambia la regla."
+                "minPlotArea": "Las parcelas menores que el mínimo propuesto se muestran rayadas. Fusiónalas o cambia la regla.",
+                "frontage": "El antejardín y el retiro posterior se miden desde el borde de la parcela que da a la calle más cercana; si no hay, desde su borde más largo.",
+                "setbackHeightRatio": "0,5 mantiene los laterales y el fondo al menos a la mitad de la altura del edificio del borde."
             },
             "messages": {
                 "creationFailed": "No se pudieron generar los edificios. Intenta ajustar los parámetros.",
@@ -3455,7 +3466,13 @@
                 "generatedSummaryExcluded": "Se generaron {{count}} edificio(s) · {{excluded}} parcela(s) excluidas por la norma",
                 "excludedBelowMinPlot": "Menor que la superficie mínima de esta regel diseño; fusiónala con una parcela vecina o cambia la regla.",
                 "excludedNoRoom": "Este retiro propuesto no deja espacio para un edificio.",
-                "excludedCannotMeet": "La parcela no puede cumplir el mínimo de esta regel diseño."
+                "excludedCannotMeet": "La parcela no puede cumplir el mínimo de esta regel diseño.",
+                "excludedBelowMinFrontage": "Su borde hacia la calle es más corto que el frente mínimo de esta regla propuesta.",
+                "excludedNoRoomUnderLimits": "Los límites de ocupación o edificabilidad de esta regla propuesta no dejan espacio para un edificio."
+            },
+            "placeholders": {
+                "noLimit": "Sin límite",
+                "sameAsBorders": "Igual que los bordes"
             }
         }
     },

@@ -3443,10 +3443,21 @@
                 "ruleTypeRange": "Između minimuma i ovoga",
                 "ruleTypeExact": "Točno ovoliko",
                 "minFootprint": "Min. tlocrtna površina (m²):",
-                "minPlotArea": "Najmanja površina čestice (m²):"
+                "minPlotArea": "Najmanja površina čestice (m²):",
+                "maxHeight": "Najveća visina (m):",
+                "frontSetback": "Udaljenost od ulice (m):",
+                "rearSetback": "Udaljenost od stražnje međe (m):",
+                "setbackHeightRatio": "Bočno i straga najmanje (× visina):",
+                "minFrontage": "Najmanja širina prema ulici (m):",
+                "maxCoverage": "Najveća izgrađenost (%):",
+                "minNaturalGround": "Najmanje prirodnog terena (%):",
+                "maxFloorAreaRatio": "Najveća iskoristivost:",
+                "maxFootprint": "Najveća tlocrtna površina (m²):"
             },
             "helper": {
-                "minPlotArea": "Čestice manje od predloženog minimuma prikazane su šrafirano. Spojite ih ili promijenite pravilo."
+                "minPlotArea": "Čestice manje od predloženog minimuma prikazane su šrafirano. Spojite ih ili promijenite pravilo.",
+                "frontage": "Udaljenost od ulice i od stražnje međe mjeri se od ruba čestice prema najbližoj ulici, inače od njezina najduljeg ruba.",
+                "setbackHeightRatio": "0,5 drži bočne i stražnju stranu najmanje pola visine zgrade od međe."
             },
             "messages": {
                 "creationFailed": "Generiranje zgrada nije uspjelo. Pokušaj prilagoditi parametre.",
@@ -3460,7 +3471,13 @@
                 "generatedSummaryExcluded": "Generirano {{count}} zgrada · {{excluded}} čestica izuzeto pravilom",
                 "excludedBelowMinPlot": "Manja od najmanje površine čestice prema ovom predloženom pravilu; spojite je sa susjednom ili promijenite pravilo.",
                 "excludedNoRoom": "Ovaj odmak iz predloženog pravila ne ostavlja prostor za zgradu.",
-                "excludedCannotMeet": "Čestica ne može zadovoljiti minimum iz ovog predloženog pravila."
+                "excludedCannotMeet": "Čestica ne može zadovoljiti minimum iz ovog predloženog pravila.",
+                "excludedBelowMinFrontage": "Njezin rub prema ulici kraći je od najmanje širine iz ovog predloženog pravila.",
+                "excludedNoRoomUnderLimits": "Ograničenja izgrađenosti ili iskoristivosti iz ovog predloženog pravila ne ostavljaju mjesta za zgradu."
+            },
+            "placeholders": {
+                "noLimit": "Bez ograničenja",
+                "sameAsBorders": "Kao od granica"
             }
         }
     },

@@ -3443,10 +3443,21 @@
                 "ruleTypeRange": "Između minimuma i ovoga",
                 "ruleTypeExact": "Tačno ovoliko",
                 "minFootprint": "Min. površina osnove (m²):",
-                "minPlotArea": "Najmanja površina parcele (m²):"
+                "minPlotArea": "Najmanja površina parcele (m²):",
+                "maxHeight": "Najveća visina (m):",
+                "frontSetback": "Udaljenost od ulice (m):",
+                "rearSetback": "Udaljenost od zadnje međe (m):",
+                "setbackHeightRatio": "Bočno i pozadi najmanje (× visina):",
+                "minFrontage": "Najmanja širina prema ulici (m):",
+                "maxCoverage": "Najveća izgrađenost (%):",
+                "minNaturalGround": "Najmanje prirodnog terena (%):",
+                "maxFloorAreaRatio": "Najveća iskorišćenost:",
+                "maxFootprint": "Najveća površina osnove (m²):"
             },
             "helper": {
-                "minPlotArea": "Parcele manje od predloženog minimuma prikazane su šrafirano. Spojite ih ili promenite pravilo."
+                "minPlotArea": "Parcele manje od predloženog minimuma prikazane su šrafirano. Spojite ih ili promenite pravilo.",
+                "frontage": "Udaljenost od ulice i od zadnje međe meri se od ivice parcele prema najbližoj ulici, inače od njene najduže ivice.",
+                "setbackHeightRatio": "0,5 drži bočne i zadnju stranu najmanje pola visine zgrade od međe."
             },
             "messages": {
                 "creationFailed": "Generisanje zgrada nije uspelo. Pokušaj da podesite parametre.",
@@ -3460,7 +3471,13 @@
                 "generatedSummaryExcluded": "Generisano {{count}} zgrada · {{excluded}} parcela izuzeto pravilom",
                 "excludedBelowMinPlot": "Manja od najmanje površine parcele prema ovom predloženom pravilu; spojite je sa susednom ili promenite pravilo.",
                 "excludedNoRoom": "Ovaj odmak iz predloženog pravila ne ostavlja prostor za zgradu.",
-                "excludedCannotMeet": "Parcela ne može da zadovolji minimum iz ovog predloženog pravila."
+                "excludedCannotMeet": "Parcela ne može da zadovolji minimum iz ovog predloženog pravila.",
+                "excludedBelowMinFrontage": "Njena ivica prema ulici kraća je od najmanje širine iz ovog predloženog pravila.",
+                "excludedNoRoomUnderLimits": "Ograničenja izgrađenosti ili iskorišćenosti iz ovog predloženog pravila ne ostavljaju mesta za zgradu."
+            },
+            "placeholders": {
+                "noLimit": "Bez ograničenja",
+                "sameAsBorders": "Kao od granica"
             }
         }
     },

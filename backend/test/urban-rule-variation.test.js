@@ -541,3 +541,107 @@ describe('balconies and slanted roof on the rule', () => {
         for (const piece of pieces) expect(piece.properties.urbanRule).toMatchObject({ roof: 'pitched', balconyDepthM: 1.5 });
     });
 });
+
+// The detached rule's optional limits (PARCEL_LIMITS): per-role yards from the street edge, a yard
+// that grows with height, and caps on coverage, floor area ratio, ground floor and natural ground.
+// The envelope must hold the permitted floor area itself, because every view that measures it
+// (stats, € gain, plan yield) reads area × height; and every build-out must stay inside it.
+describe('detached rule limits', () => {
+    const LAT = 45.8, LNG = 15.98;
+    const metres = (dxM, dyM) => [LNG + dxM / (111320 * Math.cos(LAT * Math.PI / 180)), LAT + dyM / 110540];
+    // A street centreline running east-west `gapM` south of a parcel's south edge.
+    function streetSouthOf(heightM, gapM = 6) {
+        return turf.lineString([metres(-200, -heightM / 2 - gapM), metres(200, -heightM / 2 - gapM)]);
+    }
+    const near = (actual, expected, tolerance) => expect(Math.abs(actual - expected)).toBeLessThan(tolerance);
+    const extent = feature => {
+        const [w, s, e, n] = turf.bbox(feature);
+        return { widthM: (e - w) * 111320 * Math.cos(LAT * Math.PI / 180), depthM: (n - s) * 110540,
+            southM: (s - LAT) * 110540, northM: (n - LAT) * 110540 };
+    };
+
+    it('writes no limit a rule does not state, so earlier rules keep their exact shape', () => {
+        const normalized = V.normalizeParcelRule(RULE);
+        for (const key of Object.keys(V.PARCEL_LIMITS)) expect(normalized).not.toHaveProperty(key);
+        expect(V.normalizeParcelRule({ ...RULE, maxCoverage: 0, maxFloorAreaRatio: null, frontSetbackM: 0 }))
+            .toMatchObject({ frontSetbackM: 0 });
+        expect(V.normalizeParcelRule({ ...RULE, maxCoverage: 0 })).not.toHaveProperty('maxCoverage');
+    });
+
+    it('measures the front, side and rear yards from the edge facing the street', () => {
+        const rule = { ...RULE, minDistance: 3, frontSetbackM: 5, rearSetbackM: 8 };
+        const { envelope, status } = V.evaluateParcel(parcel(30, 40, LAT, LNG), rule, { turf, streets: [streetSouthOf(40)] });
+        expect(status).toBe('ok');
+        expect(envelope.properties.frontage).toEqual({ edgeIndex: 0, basis: 'street' });
+        const box = extent(envelope);
+        near(box.widthM, 24, 0.2);
+        near(box.southM, -20 + 5, 0.2);
+        near(box.northM, 20 - 8, 0.2);
+    });
+
+    it('takes the longest edge as the front when no street is known', () => {
+        const rule = { ...RULE, frontSetbackM: 6 };
+        const { envelope } = V.evaluateParcel(parcel(30, 40, LAT, LNG), rule, { turf });
+        expect(envelope.properties.frontage.basis).toBe('longest');
+        // The long sides run north-south, so one of them is the front: 6 m from it, 3 m elsewhere.
+        near(extent(envelope).widthM, 30 - 6 - 3, 0.2);
+    });
+
+    it('picks the floor count holding the most floor area when the side and rear yards grow with height', () => {
+        // Sides and rear keep half the height (min 3 m), the front 5 m: floor area peaks at 3 floors
+        // ((20 − 9) × (35 − 4.5) × 3 ≈ 1,006 m²) before the narrowing ground outweighs the floors.
+        const rule = { ...RULE, minDistance: 3, frontSetbackM: 5, setbackHeightRatio: 0.5, maxFloors: 5 };
+        const { envelope } = V.evaluateParcel(parcel(20, 40, LAT, LNG), rule, { turf, streets: [streetSouthOf(40)] });
+        expect(envelope.properties.floors).toBe(3);
+        near(turf.area(envelope), 11 * 30.5, 4);
+        for (let seed = 1; seed <= 20; seed++) {
+            const built = V.realizeFromEnvelope(envelope, rule, seed, deps);
+            expect(built.properties.floors).toBeLessThanOrEqual(3);
+        }
+    });
+
+    it('shrinks the ground floor to the coverage, natural ground, ground floor and floor area caps', () => {
+        const plot = parcel(40, 40, LAT, LNG); // about 1,600 m²; a 3 m yard leaves about 34 × 34
+        const plotM2 = turf.area(plot);
+        const cases = [
+            [{ maxCoverage: 0.3 }, 0.3 * plotM2],
+            [{ minNaturalGround: 0.6 }, 0.4 * plotM2],
+            [{ maxFootprintAreaM2: 200 }, 200],
+            [{ maxFloorAreaRatio: 1 }, plotM2 / 5]
+        ];
+        for (const [limit, capM2] of cases) {
+            const rule = { ...RULE, ...limit };
+            const { envelope, status } = V.evaluateParcel(plot, rule, deps);
+            expect(status).toBe('ok');
+            const area = turf.area(envelope);
+            expect(area).toBeLessThanOrEqual(capM2 + 0.01);
+            expect(area).toBeGreaterThan(capM2 * 0.97);
+            for (let seed = 1; seed <= 10; seed++) {
+                const built = V.realizeFromEnvelope(envelope, rule, seed, deps);
+                expect(turf.area(built)).toBeLessThanOrEqual(area + 0.01);
+                if (limit.maxFloorAreaRatio) expect(turf.area(built) * built.properties.floors).toBeLessThanOrEqual(plotM2 + 0.5);
+            }
+        }
+    });
+
+    it('lowers the floors when a compelled ground floor cannot share a floor area ratio with all of them', () => {
+        // FAR 0.5 on 1,600 m² is 800 m² of floors: at 5 floors a ground floor of 160 m², short of the
+        // compelled 300; at 2 floors 400 m², which meets it.
+        const rule = { ...RULE, kind: 'range', maxFloors: 5, minFloors: 1, minFootprintAreaM2: 300, maxFloorAreaRatio: 0.5 };
+        const { envelope, status } = V.evaluateParcel(parcel(40, 40, LAT, LNG), rule, deps);
+        expect(status).toBe('ok');
+        expect(envelope.properties.floors).toBe(2);
+    });
+
+    it('caps the floors by the height limit', () => {
+        expect(V.normalizeParcelRule({ ...RULE, maxFloors: 6, maxHeightM: 10 }).maxFloors).toBe(3);
+        expect(V.normalizeParcelRule({ ...RULE, maxFloors: 2, maxHeightM: 10 }).maxFloors).toBe(2);
+        expect(V.normalizeParcelRule({ ...RULE, maxHeightM: 1 }).maxFloors).toBe(1);
+    });
+
+    it('excludes a plot whose street edge is shorter than the minimum frontage', () => {
+        const streets = [streetSouthOf(40)];
+        expect(V.evaluateParcel(parcel(30, 40, LAT, LNG), { ...RULE, minFrontageM: 35 }, { turf, streets }).status).toBe('below-min-frontage');
+        expect(V.evaluateParcel(parcel(30, 40, LAT, LNG), { ...RULE, minFrontageM: 25 }, { turf, streets }).status).toBe('ok');
+    });
+});

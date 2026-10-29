@@ -47,8 +47,11 @@
         editButton.textContent = 'Edit surroundings';
         editButton.id = `${id}-edit`;
         group.append(label, select, editButton);
+        // An editor with a flat panel marks where the control goes; the others keep it under More options.
+        const slot = session.content.querySelector('.on-map-editor__surroundings-slot');
         const moreSummary = session.content.querySelector('.on-map-editor__more-options > summary');
-        if (moreSummary) moreSummary.after(group);
+        if (slot) slot.replaceWith(group);
+        else if (moreSummary) moreSummary.after(group);
         else session.content.prepend(group);
         global.i18n?.applyTranslations?.(group);
 

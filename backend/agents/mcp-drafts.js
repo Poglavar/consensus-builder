@@ -72,6 +72,14 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference }) 
                 intent.site = union(source.features);
                 intent.parcelSourceId = source.parcelSourceId;
             } else intent.site = geometry(args.outline);
+            // A detached rule with yards or a frontage measured from the street needs the streets
+            // around its plots, read from the same source as the app's; envelopes record the basis.
+            if (kind === 'building' && args.typology === 'detached'
+                && ['frontSetbackM', 'rearSetbackM', 'setbackHeightRatio', 'minFrontageM'].some(key => args[key] != null)) {
+                const [w, s, e, n] = turf.bbox(turf.feature(intent.site)), dLat = 35 / 111320, dLng = dLat / Math.cos((s + n) / 2 * Math.PI / 180);
+                const found = await read.request('/streets/near', { bbox: [w - dLng, s - dLat, e + dLng, n + dLat].join(',') });
+                intent.streets = Array.isArray(found?.features) ? found.features : [];
+            }
             if (kind === 'building' && args.permitted) {
                 if (!args.planningSource) throw fail('planning-source-required', 'Choose the planning source for the permitted envelope.', { action: 'Read ugt_parcel_context and supply planningSource.' });
                 const envelopes = await read.request('/planning/envelopes', { city: args.city, source: args.planningSource, bbox: turf.bbox(turf.feature(intent.site)).join(',') });

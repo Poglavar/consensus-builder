@@ -92,6 +92,35 @@ describe('MCP shared construction generators', () => {
         expect(combined.geometry.ruleMassing.geometry).toEqual(shared.geometry);
         expect(() => buildTypedDesign({...args,gapPositions:[1.5]},options)).toThrow(/fractions/);
     });
+    it('drafts a detached rule with the app editor\'s yards and caps, measured from the street', () => {
+        // The site is ~156 × 222 m; a street runs along its south edge.
+        const street = { type: 'Feature', properties: { name: 'South street' }, geometry: { type: 'LineString', coordinates: [[14.999, 44.99995], [15.003, 44.99995]] } };
+        const plotM2 = turf.area(site);
+        const design = buildTypedDesign({ ...common, typology: 'detached', setbackM: 4, frontSetbackM: 10, rearSetbackM: 6, coverage: 0.3,
+            maxFloorAreaRatio: 0.9, maxHeightM: 10, minFrontageM: 20, streets: [street] }, options);
+        const [building] = design.geometry.buildings;
+        expect(building.properties.urbanRule).toMatchObject({ minDistance: 4, frontSetbackM: 10, rearSetbackM: 6, maxCoverage: 0.3,
+            maxFloorAreaRatio: 0.9, maxHeightM: 10, minFrontageM: 20, maxFloors: 3 });
+        expect(building.properties.frontage).toEqual({ edgeIndex: 0, basis: 'street' });
+        expect(building.properties.floors).toBe(3);
+        // Coverage 0.3 × plot, and 0.9 × plot spread over 3 floors (0.3 × plot): the same ground floor.
+        expect(turf.area(building)).toBeLessThanOrEqual(0.3 * plotM2 + 0.01);
+        expect(turf.area(building)).toBeGreaterThan(0.29 * plotM2);
+        expect(() => buildTypedDesign({ ...common, typology: 'detached', coverage: 1.5 }, options)).toThrow(/coverage/);
+        expect(() => buildTypedDesign({ ...common, typology: 'detached', minFrontageM: 1000, streets: [street] }, options)).toThrow(/No source parcel/);
+    });
+    it('refuses a detached rule edit that adds or changes a limit without new envelope geometry', () => {
+        const design = buildTypedDesign({ ...common, typology: 'detached' }, options);
+        const edit = rule => {
+            const record = structuredClone(design);
+            record.buildingProposal.parameters.rule = rule;
+            return () => intentEditing.reconcile(record, design, [{ op: 'replace', path: '/buildingProposal/parameters/rule', value: rule }], turf);
+        };
+        const rule = design.geometry.buildings[0].properties.urbanRule;
+        expect(edit({ ...rule, maxCoverage: 0.3 })).toThrow(/rule.maxCoverage requires edited envelope geometry/);
+        expect(edit({ ...rule, frontSetbackM: 6 })).toThrow(/rule.frontSetbackM requires edited envelope geometry/);
+        expect(edit({ ...rule, roof: 'pitched' })).not.toThrow();
+    });
     it('uses exact source identities and keeps detached exclusions visible in errors', () => {
         expect(() => buildTypedDesign({ ...common, typology: 'detached' })).toThrow(/source parcels/);
         expect(() => buildTypedDesign({ ...common, typology: 'detached', minPlotAreaM2: 100000 }, options)).toThrow(/No source parcel/);

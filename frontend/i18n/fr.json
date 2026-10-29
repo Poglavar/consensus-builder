@@ -4316,7 +4316,9 @@
                 "generatedSummaryExcluded": "{{count}} bâtiment(s) généré(s) · {{excluded}} parcelle(s) exclue(s) par la règle",
                 "excludedBelowMinPlot": "La surface est inférieure au minimum prévu pour un lot par cette règle proposée ; fusionnez le lot ou modifiez la règle.",
                 "excludedNoRoom": "Ce recul proposé ne laisse aucune place pour un bâtiment.",
-                "excludedCannotMeet": "Le lot ne peut pas respecter le minimum de cette règle proposée."
+                "excludedCannotMeet": "Le lot ne peut pas respecter le minimum de cette règle proposée.",
+                "excludedBelowMinFrontage": "Son bord sur rue est plus court que la façade minimale de cette règle proposée.",
+                "excludedNoRoomUnderLimits": "Les limites d’emprise ou de densité de cette règle proposée ne laissent pas de place pour un bâtiment."
             },
             "labels": {
                 "ruleType": "Ce qu’impose la règle :",
@@ -4329,14 +4331,29 @@
                 "avgFloors": "Nombre de niveaux de l’exemple (moyenne) :",
                 "ruleTypeMax": "Au maximum cette valeur",
                 "ruleTypeExact": "Exactement cette valeur",
-                "minFootprint": "Surface minimale du rez-de-chaussée (m²) :"
+                "minFootprint": "Surface minimale du rez-de-chaussée (m²) :",
+                "maxHeight": "Hauteur maximale (m) :",
+                "frontSetback": "Recul sur rue (m) :",
+                "rearSetback": "Recul arrière (m) :",
+                "setbackHeightRatio": "Côtés et arrière au moins (× hauteur) :",
+                "minFrontage": "Façade minimale sur rue (m) :",
+                "maxCoverage": "Emprise au sol maximale (%) :",
+                "minNaturalGround": "Pleine terre minimale (%) :",
+                "maxFloorAreaRatio": "Densité de plancher maximale :",
+                "maxFootprint": "Rez-de-chaussée maximal (m²) :"
             },
             "regenerate": "Illustrer",
             "title": "Maisons individuelles",
             "closeAria": "Fermer la fenêtre de construction par parcelle",
             "generating": "Génération des bâtiments…",
             "helper": {
-                "minPlotArea": "Les lots plus petits que le minimum proposé sont hachurés. Fusionnez-les ou modifiez la règle."
+                "minPlotArea": "Les lots plus petits que le minimum proposé sont hachurés. Fusionnez-les ou modifiez la règle.",
+                "frontage": "Les reculs sur rue et arrière se mesurent depuis le bord du lot qui fait face à la rue la plus proche, sinon depuis son bord le plus long.",
+                "setbackHeightRatio": "0,5 tient les côtés et l’arrière à au moins la moitié de la hauteur du bâtiment de la limite."
+            },
+            "placeholders": {
+                "noLimit": "Sans limite",
+                "sameAsBorders": "Comme les limites"
             }
         }
     },

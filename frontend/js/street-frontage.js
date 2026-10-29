@@ -79,6 +79,18 @@
         return { ...result, reason: data.partial ? 'unavailable' : 'no-street', source: data.source };
     }
 
+    /**
+     * The street centrelines around a site (Detached houses measures each plot's yards from the
+     * edge facing one). Resolves `{ streets, source, partial }`; rejects when the lookup fails.
+     */
+    async function streetsNear(site) {
+        if (!win.__sitePlots || !win.turf || !site) throw new Error('StreetFrontage: site-plots or turf is not loaded');
+        const data = await streetsAround(searchBox(site));
+        const streets = Array.isArray(data && data.features) ? data.features : [];
+        log(`${streets.length} street line(s) near the plots from ${data.source}${data.partial ? ' (partial)' : ''}`);
+        return { streets, source: data.source, partial: !!data.partial };
+    }
+
     // One line saying which basis the frontage stands on, or '' when there is nothing to say.
     function basisText(result) {
         if (!result) return '';
@@ -100,5 +112,5 @@
         return '';
     }
 
-    win.StreetFrontage = { find, basisText };
+    win.StreetFrontage = { find, streetsNear, basisText };
 })(window);

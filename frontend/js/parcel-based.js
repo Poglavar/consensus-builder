@@ -6,8 +6,11 @@
  *
  * Unlike block or row typology which work with superparcels, parcel-based typology
  * generates one building per parcel using configurable rules:
- * - min_distance: setback from parcel borders
- * - max_floors: the permitted ceiling; a build-out varies from 1 up to it
+ * - min_distance: setback from parcel borders (front and rear may differ, measured from the edge
+ *   facing a street; sides and rear may grow with the building's height)
+ * - max_floors: the permitted ceiling (and an optional height limit); a build-out varies from 1 up to it
+ * - optional caps on site coverage, natural ground, floor area ratio and ground floor area, and
+ *   a minimum street frontage (UrbanRuleVariation.PARCEL_LIMITS)
  *
  * What the proposal SAVES is the permitted massing — one maximum envelope per parcel — because
  * that is what the rule asserts and what the stats and the € gain must read. The varied houses
@@ -56,6 +59,104 @@
     let currentMinFootprintM2 = DEFAULT_MIN_FOOTPRINT_M2;
     let currentMinPlotAreaM2 = DEFAULT_MIN_PLOT_AREA_M2;
     let currentRuleExtras = {}; // balconies and slanted roof (UrbanRuleVariation.normalizeRuleExtras)
+    let currentFloorHeightM = DEFAULT_FLOOR_HEIGHT;
+    // The rule's optional limits (UrbanRuleVariation.PARCEL_LIMITS) as stored: blank fields are absent.
+    let currentLimits = {};
+    // Street centrelines around the selected plots: the yards are measured from the edge facing one.
+    let parcelBasedStreets = [];
+    let parcelBasedStreetsSeq = 0;
+
+    // The number fields of the rule, in the order they stand in the panel's flat list. A blank
+    // limit field states no limit; `scale` shows a stored share (0–1) as a percentage.
+    const NUMBER_FIELDS = {
+        maxHeightM: { id: 'maxheight', label: 'maxHeight', text: 'Max height (m):', min: 2, max: 100, step: 0.5, empty: 'noLimit' },
+        floorHeightM: { id: 'floorheight', i18nKey: 'blockify.modal.existing.floorHeight', text: 'Floor height (m):', min: 2, max: 8, step: 0.1 },
+        frontSetbackM: { id: 'frontsetback', label: 'frontSetback', text: 'Front yard (m):', min: 0, max: 50, step: 0.5, empty: 'sameAsBorders',
+            hint: 'frontage', hintText: 'Front and rear are measured from the plot edge facing the nearest street, else its longest edge.' },
+        rearSetbackM: { id: 'rearsetback', label: 'rearSetback', text: 'Rear yard (m):', min: 0, max: 50, step: 0.5, empty: 'sameAsBorders' },
+        setbackHeightRatio: { id: 'heightratio', label: 'setbackHeightRatio', text: 'Sides and rear at least (× height):', min: 0.05, max: 3, step: 0.05, empty: 'noLimit',
+            hint: 'setbackHeightRatio', hintText: '0.5 keeps the sides and rear at least half the building’s height from the border.' },
+        minFrontageM: { id: 'minfrontage', label: 'minFrontage', text: 'Min street frontage (m):', min: 1, max: 200, step: 0.5, empty: 'noLimit' },
+        maxCoverage: { id: 'maxcoverage', label: 'maxCoverage', text: 'Max site coverage (%):', min: 1, max: 100, step: 1, scale: 100, empty: 'noLimit' },
+        minNaturalGround: { id: 'naturalground', label: 'minNaturalGround', text: 'Min natural ground (%):', min: 1, max: 99, step: 1, scale: 100, empty: 'noLimit' },
+        maxFloorAreaRatio: { id: 'maxfar', label: 'maxFloorAreaRatio', text: 'Max floor area ratio:', min: 0.05, max: 20, step: 0.05, empty: 'noLimit' },
+        maxFootprintAreaM2: { id: 'maxfootprint', label: 'maxFootprint', text: 'Max ground floor (m²):', min: 10, max: 10000, step: 10, empty: 'noLimit' }
+    };
+    const PLACEHOLDERS = { noLimit: 'No limit', sameAsBorders: 'Same as borders' };
+
+    function numberFieldId(key) {
+        return `parcelbased-${NUMBER_FIELDS[key].id}`;
+    }
+
+    function limitFieldMarkup(key) {
+        const field = NUMBER_FIELDS[key];
+        const id = numberFieldId(key);
+        const i18nKey = field.i18nKey || `parcelBased.modal.labels.${field.label}`;
+        const placeholder = field.empty
+            ? ` placeholder="${PLACEHOLDERS[field.empty]}" data-i18n-key="parcelBased.modal.placeholders.${field.empty}" data-i18n-attr="placeholder"`
+            : '';
+        const hint = field.hint
+            ? `<p class="parameter-hint" data-i18n-key="parcelBased.modal.helper.${field.hint}">${field.hintText}</p>`
+            : '';
+        return `<div class="parameter-group">
+                        <label for="${id}" data-i18n-key="${i18nKey}" data-i18n-attr="text">${field.text}</label>
+                        <input type="number" class="parameter-number" id="${id}" inputmode="decimal" min="${field.min}" max="${field.max}" step="${field.step}"${placeholder}>
+                        ${hint}
+                    </div>`;
+    }
+
+    // The value a field shows for the current rule: blank when the rule states no such limit.
+    function numberFieldText(key) {
+        const value = key === 'floorHeightM' ? currentFloorHeightM : currentLimits[key];
+        if (typeof value !== 'number' || !Number.isFinite(value)) return '';
+        const scale = NUMBER_FIELDS[key].scale || 1;
+        return String(Math.round(value * scale * 1000) / 1000);
+    }
+
+    function syncNumberFields() {
+        for (const key of Object.keys(NUMBER_FIELDS)) {
+            const input = document.getElementById(numberFieldId(key));
+            if (input && document.activeElement !== input) input.value = numberFieldText(key);
+        }
+    }
+
+    // A typed value back into the rule. Blank or unreadable clears a limit; floor height keeps its
+    // last good value, since a rule always has one.
+    function readNumberField(key, text) {
+        const field = NUMBER_FIELDS[key];
+        const trimmed = String(text ?? '').trim();
+        const value = trimmed === '' ? null : Number(trimmed.replace(',', '.'));
+        const readable = typeof value === 'number' && Number.isFinite(value) && value >= 0;
+        if (key === 'floorHeightM') {
+            if (readable && value >= 0.5) currentFloorHeightM = value;
+            return;
+        }
+        if (readable) currentLimits[key] = value / (field.scale || 1);
+        else delete currentLimits[key];
+    }
+
+    // Stored limits only, from a saved rule.
+    function limitsOfRule(rule) {
+        const keys = Variation ? Object.keys(Variation.PARCEL_LIMITS) : [];
+        return Object.fromEntries(keys.filter(key => typeof rule?.[key] === 'number' && Number.isFinite(rule[key])).map(key => [key, rule[key]]));
+    }
+
+    // The street centrelines around the plots, read once per opening; the plots are re-derived when
+    // they arrive, since the street decides which edge is each plot's front.
+    function loadParcelBasedStreets(block) {
+        const seq = ++parcelBasedStreetsSeq;
+        parcelBasedStreets = [];
+        const features = (block?.parcels || []).map(parcel => parcel.feature).filter(feature => feature?.geometry);
+        if (!features.length || !window.StreetFrontage?.streetsNear) return;
+        const site = turf.bboxPolygon(turf.bbox(turf.featureCollection(features)));
+        window.StreetFrontage.streetsNear(site).then(({ streets }) => {
+            if (seq !== parcelBasedStreetsSeq || !parcelBasedModal) return;
+            parcelBasedStreets = streets;
+            generateBuildingsInModal();
+        }).catch(error => {
+            console.warn('[ParcelBased] street lookup failed; each plot measures its yards from its longest edge', error);
+        });
+    }
 
     // The variation seed for this design. Every house is derived from it, so the same seed always
     // redraws the same street — on reload, in a shared link, and in a server-rendered thumbnail.
@@ -185,7 +286,8 @@
             minFloors: currentMinFloors,
             minFootprintAreaM2: currentMinFootprintM2,
             minPlotAreaM2: currentMinPlotAreaM2,
-            floorHeightM: DEFAULT_FLOOR_HEIGHT,
+            floorHeightM: currentFloorHeightM,
+            ...currentLimits,
             ...currentRuleExtras
         };
         return Variation ? Variation.normalizeParcelRule(params) : params;
@@ -195,8 +297,9 @@
     // hide the button rather than leave a control that provably does nothing. The minimums only
     // exist for the between-a-minimum-and-this rule.
     function syncRuleKindControls() {
-        const minimums = document.getElementById('parcelbased-minimums');
-        if (minimums) minimums.style.display = currentRuleKind === 'range' ? '' : 'none';
+        document.querySelectorAll('#parcelbased-sidebar .parcelbased-range-only').forEach(group => {
+            group.hidden = currentRuleKind !== 'range';
+        });
 
         const regenerate = document.getElementById('btn-parcelbased-regenerate');
         if (regenerate) regenerate.style.display = currentRuleKind === 'exact' ? 'none' : '';
@@ -218,7 +321,8 @@
         return {
             turf,
             sanitize: (typeof sanitizePolygonFeature === 'function') ? sanitizePolygonFeature : null,
-            largestPolygon: toSingleLargestPolygonLocal
+            largestPolygon: toSingleLargestPolygonLocal,
+            streets: parcelBasedStreets
         };
     }
 
@@ -318,6 +422,14 @@
         if (status === 'below-min-plot') {
             return translateParcelBasedText('parcelBased.modal.messages.excludedBelowMinPlot',
                 'Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.');
+        }
+        if (status === 'below-min-frontage') {
+            return translateParcelBasedText('parcelBased.modal.messages.excludedBelowMinFrontage',
+                'Its street edge is shorter than this proposed rule’s minimum frontage.');
+        }
+        if (status === 'no-room-under-limits') {
+            return translateParcelBasedText('parcelBased.modal.messages.excludedNoRoomUnderLimits',
+                'This proposed rule’s coverage or floor area limits leave no room for a building.');
         }
         if (status === 'cannot-meet-minimum') {
             return translateParcelBasedText('parcelBased.modal.messages.excludedCannotMeet',
@@ -448,15 +560,13 @@
 
     function updateBuildingMetrics(envelopes, buildOut) {
         const buildingCountEl = document.getElementById('parcelbased-building-count-value');
-        const totalAreaEl = document.getElementById('parcelbased-total-area-value');
         const totalVolumeEl = document.getElementById('parcelbased-total-volume-value');
         const avgFloorsEl = document.getElementById('parcelbased-avg-floors-value');
 
-        if (!buildingCountEl || !totalAreaEl || !totalVolumeEl || !avgFloorsEl) return;
+        if (!buildingCountEl || !totalVolumeEl || !avgFloorsEl) return;
 
         const blank = () => {
             buildingCountEl.textContent = '0';
-            totalAreaEl.textContent = '0';
             totalVolumeEl.textContent = '0';
             avgFloorsEl.textContent = '0';
         };
@@ -464,13 +574,11 @@
         if (!Array.isArray(envelopes) || envelopes.length === 0) { blank(); return; }
 
         try {
-            let permittedArea = 0;
             let permittedVolume = 0;
 
             envelopes.forEach(envelope => {
                 if (!envelope || !envelope.geometry) return;
                 const area = turf.area(envelope);
-                permittedArea += area;
                 permittedVolume += area * (envelope.properties?.height || DEFAULT_FLOOR_HEIGHT);
             });
 
@@ -479,7 +587,6 @@
             const avgFloors = houses.length > 0 ? totalFloors / houses.length : 0;
 
             buildingCountEl.textContent = envelopes.length.toString();
-            totalAreaEl.textContent = CbFormat.formatNumber(permittedArea, { maxFractionDigits: 1, minFractionDigits: 1 });
             totalVolumeEl.textContent = CbFormat.formatNumber(permittedVolume, { maxFractionDigits: 1, minFractionDigits: 1 });
             avgFloorsEl.textContent = CbFormat.formatNumber(avgFloors, { maxFractionDigits: 1, minFractionDigits: 1 });
         } catch (e) {
@@ -550,7 +657,18 @@
         try {
             const { buildings, excluded } = generateBuildingsForBlock(block, currentParcelRule(), currentVariationSeed);
 
-            if (!buildings || buildings.length === 0) {
+            // A rule that leaves every plot out is a result, not a failure: the plots are hatched with
+            // their reasons, and there is nothing to finish.
+            if (!buildings.length && excluded.length) {
+                generatedParcelBasedFeatures = [];
+                parcelBasedBuildOut = [];
+                displayBuildingsInModal([], [], excluded);
+                const doneButton = document.getElementById('btn-parcelbased-done');
+                if (doneButton) doneButton.disabled = true;
+                setParcelBasedInfo('blockify.modal.messages.parcelsLeftOut', '{{count}} parcels left out', { count: excluded.length });
+                return;
+            }
+            if (!buildings.length) {
                 throw new Error('Failed to generate any buildings');
             }
 
@@ -739,7 +857,7 @@
         if (!parcelBasedModal) {
             const container = document.createElement('div');
             container.innerHTML = `
-                <div id="parcelbased-sidebar">
+                <div id="parcelbased-sidebar" class="parcelbased-rule">
                     <div class="parameter-group">
                         <label for="parcelbased-ruletype-select" data-i18n-key="parcelBased.modal.labels.ruleType" data-i18n-attr="text">What the rule compels:</label>
                         <select id="parcelbased-ruletype-select">
@@ -755,64 +873,62 @@
                         </label>
                         <input type="range" id="parcelbased-maxfloors-slider" min="1" max="20" value="${DEFAULT_MAX_FLOORS}" step="1">
                     </div>
+                    <div class="parameter-group parcelbased-range-only" hidden>
+                        <label for="parcelbased-minfloors-slider">
+                            <span data-i18n-key="common.minFloors" data-i18n-attr="text">Min floors:</span>
+                            <span id="parcelbased-minfloors-value">${DEFAULT_MIN_FLOORS}</span>
+                        </label>
+                        <input type="range" id="parcelbased-minfloors-slider" min="1" max="${DEFAULT_MAX_FLOORS}" value="${DEFAULT_MIN_FLOORS}" step="1">
+                    </div>
+                    ${limitFieldMarkup('maxHeightM')}
+                    ${limitFieldMarkup('floorHeightM')}
                     <div class="parameter-group">
                         <label for="parcelbased-mindistance-slider">
-                            <span data-i18n-key="parcelBased.modal.labels.minDistance" data-i18n-attr="text">Min Distance from Borders (m):</span>
+                            <span data-i18n-key="parcelBased.modal.labels.minDistance" data-i18n-attr="text">Min distance from borders (m):</span>
                             <span id="parcelbased-mindistance-value">${CbFormat.formatNumber(DEFAULT_MIN_DISTANCE, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
                         </label>
                         <input type="range" id="parcelbased-mindistance-slider" min="0.5" max="20" value="${DEFAULT_MIN_DISTANCE}" step="0.5">
                     </div>
-                    <div id="parcelbased-minimums" style="display: none;">
-                        <div class="parameter-group">
-                            <label for="parcelbased-minfloors-slider">
-                                <span data-i18n-key="common.minFloors" data-i18n-attr="text">Min floors:</span>
-                                <span id="parcelbased-minfloors-value">${DEFAULT_MIN_FLOORS}</span>
-                            </label>
-                            <input type="range" id="parcelbased-minfloors-slider" min="1" max="${DEFAULT_MAX_FLOORS}" value="${DEFAULT_MIN_FLOORS}" step="1">
-                        </div>
-                        <div class="parameter-group">
-                            <label for="parcelbased-minfootprint-slider">
-                                <span data-i18n-key="parcelBased.modal.labels.minFootprint" data-i18n-attr="text">Min Ground Floor (m²):</span>
-                                <span id="parcelbased-minfootprint-value">${DEFAULT_MIN_FOOTPRINT_M2}</span>
-                            </label>
-                            <input type="range" id="parcelbased-minfootprint-slider" min="0" max="500" value="${DEFAULT_MIN_FOOTPRINT_M2}" step="5">
-                        </div>
-                    </div>
+                    ${limitFieldMarkup('frontSetbackM')}
+                    ${limitFieldMarkup('rearSetbackM')}
+                    ${limitFieldMarkup('setbackHeightRatio')}
                     <div class="parameter-group">
                         <label for="parcelbased-minplot-slider">
-                            <span data-i18n-key="parcelBased.modal.labels.minPlotArea" data-i18n-attr="text">Min Plot Size (m²):</span>
+                            <span data-i18n-key="parcelBased.modal.labels.minPlotArea" data-i18n-attr="text">Min plot size (m²):</span>
                             <span id="parcelbased-minplot-value">${DEFAULT_MIN_PLOT_AREA_M2}</span>
                         </label>
                         <input type="range" id="parcelbased-minplot-slider" min="0" max="10000" value="${DEFAULT_MIN_PLOT_AREA_M2}" step="10">
+                        <p class="parameter-hint" data-i18n-key="parcelBased.modal.helper.minPlotArea">Plots smaller than the proposed minimum are hatched. Merge them or change the rule.</p>
+                    </div>
+                    ${limitFieldMarkup('minFrontageM')}
+                    ${limitFieldMarkup('maxCoverage')}
+                    ${limitFieldMarkup('minNaturalGround')}
+                    ${limitFieldMarkup('maxFloorAreaRatio')}
+                    ${limitFieldMarkup('maxFootprintAreaM2')}
+                    <div class="parameter-group parcelbased-range-only" hidden>
+                        <label for="parcelbased-minfootprint-slider">
+                            <span data-i18n-key="parcelBased.modal.labels.minFootprint" data-i18n-attr="text">Min ground floor (m²):</span>
+                            <span id="parcelbased-minfootprint-value">${DEFAULT_MIN_FOOTPRINT_M2}</span>
+                        </label>
+                        <input type="range" id="parcelbased-minfootprint-slider" min="0" max="500" value="${DEFAULT_MIN_FOOTPRINT_M2}" step="5">
                     </div>
                     ${Variation ? Variation.extrasControlsMarkup('parcelbased') : ''}
-                    <details class="on-map-editor__more-options">
-                        <summary data-i18n-key="onMapEditor.moreOptions">${translateParcelBasedText('onMapEditor.moreOptions', 'More options')}</summary>
-                        <div class="parameter-metrics">
-                            <div class="metric-row">
-                                <span data-i18n-key="parcelBased.modal.labels.buildingCount" data-i18n-attr="text">Buildings:</span>
-                                <span id="parcelbased-building-count-value">0</span>
-                            </div>
-                            <div class="metric-row">
-                                <span data-i18n-key="parcelBased.modal.labels.totalArea" data-i18n-attr="text">Permitted Footprint (m²):</span>
-                                <span id="parcelbased-total-area-value">0</span>
-                            </div>
-                            <div class="metric-row">
-                                <span data-i18n-key="parcelBased.modal.labels.totalVolume" data-i18n-attr="text">Permitted Volume (m³):</span>
-                                <span id="parcelbased-total-volume-value">0</span>
-                            </div>
-                            <div class="metric-row">
-                                <span data-i18n-key="parcelBased.modal.labels.avgFloors" data-i18n-attr="text">Example Floors (avg):</span>
-                                <span id="parcelbased-avg-floors-value">0</span>
-                            </div>
+                    <div class="on-map-editor__surroundings-slot"></div>
+                    ${window.BuildingDensityStats.cardMarkup('parcelbased', { collapsible: false })}
+                    <div class="parameter-metrics">
+                        <div class="metric-row">
+                            <span data-i18n-key="parcelBased.modal.labels.buildingCount" data-i18n-attr="text">Rule envelopes:</span>
+                            <span id="parcelbased-building-count-value">0</span>
                         </div>
-                        <div class="parameter-info">
-                            <p>
-                                <span data-i18n-key="parcelBased.modal.helper.minPlotArea">Min Plot Size: plots smaller than this cannot be built on under this rule, and are shown hatched. They have to be merged first.</span>
-                            </p>
+                        <div class="metric-row">
+                            <span data-i18n-key="parcelBased.modal.labels.totalVolume" data-i18n-attr="text">Rule volume (m³):</span>
+                            <span id="parcelbased-total-volume-value">0</span>
                         </div>
-                    </details>
-                    ${window.BuildingDensityStats.cardMarkup('parcelbased')}
+                        <div class="metric-row">
+                            <span data-i18n-key="parcelBased.modal.labels.avgFloors" data-i18n-attr="text">Example floors (avg):</span>
+                            <span id="parcelbased-avg-floors-value">0</span>
+                        </div>
+                    </div>
                 </div>
                 <div id="parcelbased-controls" class="cb-dialog__footer">
                     <div id="parcelbased-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
@@ -924,6 +1040,16 @@
                 generateBuildingsInModal();
             });
 
+            for (const key of Object.keys(NUMBER_FIELDS)) {
+                const input = document.getElementById(numberFieldId(key));
+                input?.addEventListener('input', () => {
+                    readNumberField(key, input.value);
+                    generateBuildingsInModal();
+                });
+                // Leaving a field shows what the rule kept: a cleared floor height comes back.
+                input?.addEventListener('change', () => { input.value = numberFieldText(key); });
+            }
+
             // No outside-click close: a stray click on the backdrop would throw the design away.
             // The editor is left only via the X (discard, after confirming) or Done (save).
 
@@ -931,6 +1057,7 @@
 
         // Display the parcels on the map
         displayParcelsOnMap(block);
+        loadParcelBasedStreets(block);
 
         // Reset parameters
         currentMaxFloors = DEFAULT_MAX_FLOORS;
@@ -940,6 +1067,8 @@
         currentMinFootprintM2 = DEFAULT_MIN_FOOTPRINT_M2;
         currentMinPlotAreaM2 = DEFAULT_MIN_PLOT_AREA_M2;
         currentRuleExtras = {};
+        currentFloorHeightM = DEFAULT_FLOOR_HEIGHT;
+        currentLimits = {};
 
         // Restore a saved design over the defaults (e.g. a copied proposal). Geometry here is a
         // pure function of (rule, seed), so restoring both reproduces the design exactly — houses
@@ -958,6 +1087,8 @@
             restore(rule.minFloors, v => { currentMinFloors = Math.max(1, v); });
             restore(rule.minFootprintAreaM2, v => { currentMinFootprintM2 = v; });
             restore(rule.minPlotAreaM2, v => { currentMinPlotAreaM2 = v; });
+            restore(rule.floorHeightM, v => { currentFloorHeightM = v; });
+            currentLimits = limitsOfRule(rule);
             if (Variation) currentRuleExtras = Variation.normalizeRuleExtras(rule);
             if (Variation && Variation.RULE_KINDS.includes(rule.kind)) currentRuleKind = rule.kind;
             restore(saved.seed, v => { currentVariationSeed = v >>> 0; });
@@ -975,6 +1106,7 @@
         setSlider('parcelbased-minfloors', currentMinFloors, currentMinFloors.toString());
         setSlider('parcelbased-minfootprint', currentMinFootprintM2, currentMinFootprintM2.toString());
         setSlider('parcelbased-minplot', currentMinPlotAreaM2, currentMinPlotAreaM2.toString());
+        syncNumberFields();
         const ruleTypeSelect = document.getElementById('parcelbased-ruletype-select');
         if (ruleTypeSelect) ruleTypeSelect.value = currentRuleKind;
         syncRuleKindControls();
