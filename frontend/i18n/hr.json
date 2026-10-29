@@ -7765,7 +7765,11 @@
             "titleCounter": "Protuprijedlog sporazuma",
             "counterTitle": "Protuprijedlog za {{title}}",
             "intro": "Sporazum se odnosi na jedan plan i određuje tko odlučuje, tko dobiva koje zemljište i koji se novac prenosi. Još ništa ne napušta ovaj uređaj.",
-            "save": "Spremi sporazum"
+            "save": "Spremi sporazum",
+            "waitingLand": "Čitam zemljište plana…",
+            "waitingPlan": "Najprije odaberi plan.",
+            "waitingMore": "(i još {{count}})",
+            "waitingRoster": "Najprije spremi popis glasača."
         },
         "sections": {
             "pieces": "Nastalo zemljište",

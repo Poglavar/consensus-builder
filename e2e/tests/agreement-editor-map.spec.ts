@@ -193,7 +193,7 @@ test('unnamed parcel owners work and ownership/lens settings open separate dialo
   await editor.getByRole('tab', { name: /^Input parcels \(\d+\)$/ }).click();
   await editor.locator('[data-agreement-action="rights"]').click();
   const rights = page.locator('.cb-dialog').filter({ hasText: 'Parcel ownership rights' });
-  await expect(rights.locator('[data-approval-file]')).toBeVisible();
+  await expect(rights.locator('[data-approval-file-row] .btn')).toBeVisible();
   await rights.getByRole('button', { name: 'Close', exact: true }).last().click();
   await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
   await editor.locator('[data-agreement-action="lens"]').click();

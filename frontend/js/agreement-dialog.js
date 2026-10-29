@@ -440,6 +440,20 @@
         return word(REASON_TEXT[reason] ? REASON_TEXT[reason]() : reason);
     }
 
+    // What a disabled save is waiting on, for the small print above the buttons: the first thing
+    // the person still has to do, or '' when nothing blocks saving.
+    function waitingText({ plan = null, loading = false, landError = null, errors = [], rosterPending = false } = {}) {
+        if (loading) return t('agreement.dialog.waitingLand', 'Reading the plan’s land…');
+        if (!plan) return t('agreement.dialog.waitingPlan', 'Choose a plan first.');
+        if (landError) return landError;
+        if (errors.length) {
+            const more = errors.length - 1;
+            return issueText(errors[0]) + (more ? ' ' + t('agreement.dialog.waitingMore', '(and {{count}} more)', { count: more }) : '');
+        }
+        if (rosterPending) return t('agreement.dialog.waitingRoster', 'Save the voter list first.');
+        return '';
+    }
+
     function issuesHtml(issues) {
         return (Array.isArray(issues) ? issues : []).filter(Boolean)
             .map(issue => `<li data-agreement-issue="${esc(idOf(issue.code))}">${esc(issueText(issue))}</li>`).join('');
@@ -694,6 +708,7 @@
             + '<form class="agreement-editor__form" novalidate>'
             + '<div class="panel-body agreement-editor__body" data-agreement-editor-body></div>'
             + '<div class="panel-footer agreement-editor__footer">'
+            + '<p class="agreement-editor__waiting" data-agreement-waiting role="status"></p>'
             + '<button type="button" class="btn" data-agreement-action="cancel"></button>'
             + '<button type="submit" class="btn btn-primary" data-agreement-action="save"></button>'
             + '</div>'
@@ -795,7 +810,9 @@
             body.querySelectorAll('[data-agreement-tabpanel]').forEach(section => { section.hidden = section.dataset.agreementTabpanel !== tab; });
         }
         function issues() {
-            if (state.closed || state.loading) return;
+            if (state.closed) return;
+            const waiting = panel.querySelector('[data-agreement-waiting]');
+            if (state.loading) { waiting.textContent = waitingText({ loading: true }); return; }
             try {
                 const checked = api.validate(draft(), { designOf: id => root.proposalStorage.getProposal(id), isApplied: root.isApplied });
                 // A scheme rule the plan breaks or a land value that is missing follows a choice the
@@ -803,8 +820,10 @@
                 part('[data-agreement-errors]').innerHTML = issuesHtml(checked.errors.filter(row => state.attempted || /^(scheme|valuation)-/.test(row.code)));
                 // Advanced ownership/lens readiness lives behind its own controls.
                 part('[data-agreement-warnings]').innerHTML = issuesHtml(checked.warnings.filter(row => row.section === 'land'));
-                saveButton.disabled = !state.plan || !!state.landError || !checked.valid || (state.values.electorate === 'community' && rosterPending);
-            } catch (error) { saveButton.disabled = true; part('[data-agreement-errors]').textContent = error.message; }
+                const pending = state.values.electorate === 'community' && rosterPending;
+                saveButton.disabled = !state.plan || !!state.landError || !checked.valid || pending;
+                waiting.textContent = waitingText({ plan: state.plan, landError: state.landError, errors: checked.errors, rosterPending: pending });
+            } catch (error) { saveButton.disabled = true; part('[data-agreement-errors]').textContent = error.message; waiting.textContent = error.message; }
         }
         // The local owner records (agents and joint pools), the people behind the default rights.
         const localOwners = () => root.AgreementGround.localHolders({ storage: root.PersistentStorage, agents: root.agentStorage });
@@ -957,7 +976,7 @@
             };
             render();
             auxiliary = root.CbDialog.open({ parent: modal, title: t('agreement.workflow.rights', 'Parcel ownership rights'), body: container, actions: [{ label: t('common.close', 'Close') }] });
-            container.addEventListener('change', event => { if (event.target.matches('[data-approval-source]')) setup().syncSourceControls(container); });
+            container.addEventListener('change', event => { if (event.target.matches('[data-approval-source], [data-approval-file]')) setup().syncSourceControls(container); });
             container.addEventListener('click', async event => {
                 const button = event.target.closest('[data-editor-action]'); if (!button || root.BusyControl.isBusy(button)) return;
                 const action = button.dataset.editorAction;
@@ -1155,7 +1174,7 @@
         partiesOf, allocationOptions, allocationValue, allocationTo, allocationMode, randomAllocations, allocationSpread,
         allocationSummaryHtml, tabLabel, tabCounts, cashCents, cashInputText, termsOf,
         keptTerms, sponsorLine, ruleConfigAfterDerive, deadlineFromDate, dateFromDeadline, recordFromForm,
-        issueText, ownersText, partyLabel, landHtml, allocationHtml, valuationHtml, valuationRows, ruleHtml, detailsHtml,
+        issueText, waitingText, ownersText, partyLabel, landHtml, allocationHtml, valuationHtml, valuationRows, ruleHtml, detailsHtml,
         consultationHtml, bodyHtml, personsHtml, planSelectorHtml, inputDesignsHtml
     };
 });

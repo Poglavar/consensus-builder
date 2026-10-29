@@ -7751,7 +7751,11 @@
             "titleCounter": "Contrapropuesta de acuerdo",
             "counterTitle": "Contrapropuesta a {{title}}",
             "intro": "Un acuerdo se refiere a un plan y establece quién decide, quién recibe cada terreno y qué dinero se transfiere. Todavía nada sale de este dispositivo.",
-            "save": "Guardar acuerdo"
+            "save": "Guardar acuerdo",
+            "waitingLand": "Leyendo el terreno del plan…",
+            "waitingPlan": "Elige primero un plan.",
+            "waitingMore": "(y {{count}} más)",
+            "waitingRoster": "Guarda primero la lista de votantes."
         },
         "sections": {
             "pieces": "Suelo resultante",

@@ -45,6 +45,14 @@
     font-size: var(--cb-text-sm);
 }
 
+/* The name of the rights file chosen beside its picker button. */
+.proposal-editor-file-name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
 /* An apply error that carries its way forward (proposals/ground-rebase.js): the action sits under the text. */
 .proposal-map-action-error .btn-ground-rebase {
     display: flex;

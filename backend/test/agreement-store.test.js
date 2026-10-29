@@ -354,6 +354,17 @@ describe('errors and warnings in words', () => {
         expect(Dialog.issueText({ code: 'open-ground' })).toBe('Part of the land is open ground with no recorded owner.');
         expect(Dialog.issueText({ code: 'something-new', message: 'As the validator says.' })).toBe('As the validator says.');
     });
+    it('says what a disabled save is waiting on, first things first, and nothing once it can save', () => {
+        const plan = { cid: 'bafy-plan' };
+        expect(Dialog.waitingText({ loading: true })).toBe('Reading the plan’s land…');
+        expect(Dialog.waitingText({})).toBe('Choose a plan first.');
+        expect(Dialog.waitingText({ plan, landError: 'Apply every design.' })).toBe('Apply every design.');
+        expect(Dialog.waitingText({ plan, errors: [{ code: 'no-designs' }, { code: 'open-ground' }, { code: 'x', message: 'y' }] }))
+            .toBe('Choose at least one design. (and 2 more)');
+        expect(Dialog.waitingText({ plan, errors: [{ code: 'no-designs' }] })).toBe('Choose at least one design.');
+        expect(Dialog.waitingText({ plan, rosterPending: true })).toBe('Save the voter list first.');
+        expect(Dialog.waitingText({ plan })).toBe('');
+    });
 });
 
 describe('the sections as HTML (the hooks the browser spec targets)', () => {

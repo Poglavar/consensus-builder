@@ -1935,7 +1935,11 @@
             "titleCounter": "Contre-proposition d’accord",
             "counterTitle": "Contre-proposition à {{title}}",
             "intro": "Un accord se réfère à un plan et définit qui décide, qui reçoit quel terrain et quels transferts d’argent ont lieu. Rien ne quitte encore cet appareil.",
-            "save": "Enregistrer l’accord"
+            "save": "Enregistrer l’accord",
+            "waitingLand": "Lecture du terrain du plan…",
+            "waitingPlan": "Choisissez d’abord un plan.",
+            "waitingMore": "(et {{count}} de plus)",
+            "waitingRoster": "Enregistrez d’abord la liste des votants."
         },
         "list": {
             "create": "Créer un accord",

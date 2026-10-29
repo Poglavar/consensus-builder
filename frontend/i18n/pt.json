@@ -1935,7 +1935,11 @@
             "titleCounter": "Contraproposta de acordo",
             "counterTitle": "Contraproposta a {{title}}",
             "intro": "Um acordo refere-se a um plano e define quem decide, quem recebe cada terreno e que dinheiro é transferido. Por enquanto, nada sai deste dispositivo.",
-            "save": "Guardar acordo"
+            "save": "Guardar acordo",
+            "waitingLand": "A ler o terreno do plano…",
+            "waitingPlan": "Escolha primeiro um plano.",
+            "waitingMore": "(e mais {{count}})",
+            "waitingRoster": "Guarde primeiro a lista de votantes."
         },
         "list": {
             "create": "Criar acordo",

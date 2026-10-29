@@ -7724,7 +7724,11 @@
             "titleCounter": "Counter-agreement",
             "counterTitle": "Counter to {{title}}",
             "intro": "An agreement refers to one plan and sets who decides, who gets which land and what money moves. Nothing leaves this device yet.",
-            "save": "Save agreement"
+            "save": "Save agreement",
+            "waitingLand": "Reading the plan’s land…",
+            "waitingPlan": "Choose a plan first.",
+            "waitingMore": "(and {{count}} more)",
+            "waitingRoster": "Save the voter list first."
         },
         "sections": {
             "pieces": "Resulting land",

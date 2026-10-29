@@ -175,7 +175,7 @@
                         <label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.source', 'Rights source'))}</span><select data-approval-source>${sourceOptions || option('upload', t('proposalDrafts.approval.upload', 'Upload JSON'), 'upload')}</select></label>
                         <label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.reference', 'Source reference or query'))}</span><input type="text" data-approval-reference value="${esc(normalized?.rights?.source?.reference || '')}" autocomplete="off"${selectedSource === 'upload' ? ' disabled' : ''}></label>
                     </div>
-                    <label class="proposal-editor-field"><span>${esc(t('proposalDrafts.approval.file', 'Rights JSON file (up to 1 MB)'))}</span><input type="file" accept="application/json,.json" data-approval-file${selectedSource !== 'upload' ? ' disabled' : ''}></label>
+                    <div class="cb-actions" data-approval-file-row${selectedSource !== 'upload' ? ' hidden' : ''}><label class="btn btn-sm"><i class="fa-solid fa-folder-open" aria-hidden="true"></i> ${esc(t('proposalDrafts.approval.file', 'Rights JSON file (up to 1 MB)'))}<input type="file" accept="application/json,.json" data-approval-file hidden${selectedSource !== 'upload' ? ' disabled' : ''}></label><span class="proposal-editor-file-name" data-approval-file-name></span></div>
                     <div class="cb-actions">
                         <button type="button" class="btn btn-sm" data-editor-action="approval-import">${esc(t('proposalDrafts.approval.import', 'Import and preview'))}</button>
                         <button type="button" class="btn btn-sm" data-editor-action="approval-template">${esc(t('proposalDrafts.approval.template', 'Download template'))}</button>
@@ -656,7 +656,8 @@
 
     // ---- reading the form back ------------------------------------------------------------------
 
-    // The rights source select enables the reference field or the file field, never both.
+    // The rights source select enables the reference field or the file picker, never both; the
+    // picker names the file it holds.
     function syncSourceControls(container) {
         const source = container?.querySelector('[data-approval-source]');
         if (!source) return;
@@ -664,6 +665,10 @@
         const file = container.querySelector('[data-approval-file]');
         if (reference) reference.disabled = source.value === 'upload';
         if (file) file.disabled = source.value !== 'upload';
+        const row = container.querySelector('[data-approval-file-row]');
+        if (row) row.hidden = source.value !== 'upload';
+        const name = container.querySelector('[data-approval-file-name]');
+        if (name) name.textContent = file?.files?.[0]?.name || '';
     }
 
     // The config with the rules the form now shows. Throws on a malformed fraction or rule, leaving
@@ -770,7 +775,7 @@
         });
         render();
         dialog.body.addEventListener('change', event => {
-            if (event.target.closest('[data-approval-source]')) { syncSourceControls(dialog.body); return; }
+            if (event.target.closest('[data-approval-source], [data-approval-file]')) { syncSourceControls(dialog.body); return; }
             // Only switching the rules or the custom authority changes which fields exist. Re-rendering
             // on every other edit would replace the field the author has just moved into; those are
             // read on apply, and the rule sentence follows them.
