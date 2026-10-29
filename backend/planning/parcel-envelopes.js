@@ -115,9 +115,11 @@ export function parcelConfigurations(baseContext, scenarios, zonesByScenario, ge
 }
 
 // The outer bound is everything any configuration permits: joined footprints, tallest height,
-// and between any two levels the ground some configuration's volume covers there.
+// and between any two levels the ground some configuration's volume covers there. A level only
+// configurations with a condition (an incentive's extra storeys) reach carries that condition;
+// `grantedHeightM` is the top of what the unconditional ones permit.
 export function outerBound(configurations, geometryOps = turf) {
-    const volumes = configurations.flatMap(configuration => configuration.volumes);
+    const volumes = configurations.flatMap(configuration => configuration.volumes.map(volume => ({ ...volume, condition: configuration.condition || null })));
     if (!volumes.length) return null;
     const union = list => list.map(volume => volume.geometry)
         .reduce((joined, next) => joined ? geometryOps.union(geometryOps.feature(joined), geometryOps.feature(next)).geometry : next, null);
@@ -133,11 +135,14 @@ export function outerBound(configurations, geometryOps = turf) {
         const covering = volumes.filter(volume => volume.baseM <= baseM + 1e-6 && volume.topM >= topM - 1e-6);
         if (!covering.length) continue;
         const ground = union(covering), last = tiers.at(-1);
-        // Consecutive levels with the same ground are one prism.
-        if (last && last.topM === baseM && sameGround(last.geometry, ground)) last.topM = topM;
-        else tiers.push({ baseM, topM, geometry: ground });
+        const condition = covering.every(volume => volume.condition) ? [...new Set(covering.map(volume => volume.condition))].join('; ') : null;
+        // Consecutive levels with the same ground and the same standing are one prism.
+        if (last && last.topM === baseM && (last.condition ?? null) === condition && sameGround(last.geometry, ground)) last.topM = topM;
+        else tiers.push({ baseM, topM, geometry: ground, ...(condition ? { condition } : {}) });
     }
-    return { geometry, heightM: Math.max(...volumes.map(volume => volume.topM)), areaM2: geometryOps.area(geometryOps.feature(geometry)), tiers };
+    const granted = volumes.filter(volume => !volume.condition);
+    return { geometry, heightM: Math.max(...volumes.map(volume => volume.topM)), grantedHeightM: granted.length ? Math.max(...granted.map(volume => volume.topM)) : null,
+        areaM2: geometryOps.area(geometryOps.feature(geometry)), tiers };
 }
 
 // Statuses that say nothing usable about the use; any other recorded status is a source
@@ -244,7 +249,8 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                     items.push({ id, role: 'permitted', proposalId: null, parcelEnvelope: true,
                         title: `${context.source.title} · ${parcel.properties.parcelNumber}`,
                         source: { ...context.source.source, scenario: null, parcel: parcel.id }, site: bound.geometry, areas: [],
-                        volumes: bound.tiers.map((tier, index) => ({ id: `${id}:bound${index ? `-${index}` : ''}`, geometry: tier.geometry, baseM: tier.baseM, topM: tier.topM })),
+                        volumes: bound.tiers.map((tier, index) => ({ id: `${id}:bound${index ? `-${index}` : ''}`, geometry: tier.geometry, baseM: tier.baseM, topM: tier.topM,
+                            ...(tier.condition ? { condition: tier.condition } : {}) })),
                         configurations: configurations.map(configuration => ({ ...configuration,
                             volumes: configuration.volumes.map(volume => ({ ...volume, id: `${id}:${volume.id}` })) })),
                         // Retain original lot lines and the edge interpretations used by the evaluator.
@@ -252,7 +258,10 @@ export async function loadParcelEnvelopes(query, { sources, parcelProvider = des
                         spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' },
                         authority: { effect: 'unknown', applicability: 'unresolved' },
                         assessment: { meaning: 'outer-bound', status: 'unresolved', geometry: 'derived-parcel', constraints: 'partial', current: true },
-                        metrics: { footprintM2: bound.areaM2, heightM: bound.heightM }, constraints: [],
+                        // The height is what the rules grant; an incentive's extra height stands beside it with its condition.
+                        metrics: { footprintM2: bound.areaM2, heightM: bound.grantedHeightM, ...(bound.heightM > (bound.grantedHeightM ?? 0)
+                            ? { conditional: { heightM: bound.heightM, condition: [...new Set(bound.tiers.map(tier => tier.condition).filter(Boolean))].join('; ') } } : {}) },
+                        constraints: [],
                         sourceEvidence: { zoningRecordId: recordId, parcelReference: context.parcelReference,
                             sourceCoverage: context.sourceCoverage, parts: found.major.length, frontEdge: frontage.frontEdge, frontage: frontage.evidence, streetWidth: street,
                             excludedConfigurations: excluded, envelopeMeaning: frontage.frontEdge === null

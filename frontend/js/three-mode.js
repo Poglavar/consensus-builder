@@ -607,9 +607,11 @@
             for (const feature of [...bound, ...body]) {
                 const selected = item.id === selectedId;
                 const hull = feature.properties.geometryRole === 'bound' && body.length > 0;
+                // A tier only an incentive's condition reaches is fainter than the granted bound.
+                const conditional = Boolean(feature.properties.condition);
                 const material = new THREE.MeshPhongMaterial({ color, emissive: selected ? color : 0, emissiveIntensity: selected ? 0.15 : 0,
-                    transparent: hull || appearance === 'ghost', opacity: hull ? 0.1 : appearance === 'solid' ? 1 : 0.25,
-                    depthWrite: !hull && appearance === 'solid', side: THREE.FrontSide, polygonOffset: true,
+                    transparent: hull || conditional || appearance === 'ghost', opacity: conditional ? 0.05 : hull ? 0.1 : appearance === 'solid' ? 1 : 0.25,
+                    depthWrite: !hull && !conditional && appearance === 'solid', side: THREE.FrontSide, polygonOffset: true,
                     polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
                 const meshes = polygonFeatureToMeshes(feature, material, feature.properties.baseM, feature.properties.height);
                 if (!meshes.length) { material.dispose(); continue; }
@@ -619,7 +621,7 @@
                     mesh.renderOrder = 3;
                     planningSourcesGroup.add(mesh);
                     const geometry = new THREE.EdgesGeometry(mesh.geometry);
-                    const edgeMaterial = new THREE.LineBasicMaterial({ color, transparent: true, opacity: hull ? 0.35 : selected ? 1 : 0.6, depthWrite: false });
+                    const edgeMaterial = new THREE.LineBasicMaterial({ color, transparent: true, opacity: conditional ? 0.2 : hull ? 0.35 : selected ? 1 : 0.6, depthWrite: false });
                     const edges = new THREE.LineSegments(geometry, edgeMaterial);
                     markOwnedGeometry(edges, geometry); markOwnedMaterial(edges, edgeMaterial);
                     edges.renderOrder = 4;
@@ -810,21 +812,21 @@
         const items = window.PlanningViews?.getItems?.() || [];
         const scene = window.PlanningScene;
         if (!scene || !items.length) return null;
-        let volume = 0;
-        let counted = 0;
+        let volume = 0, conditionalVolume = 0, counted = 0;
+        const conditions = [];
         for (const id of parcelIds) {
             const item = scene.parcelItemOf(items, id);
             if (!item || !Array.isArray(item.volumes) || !item.volumes.length) return null;
-            for (const part of item.volumes) {
-                const height = Number(part.topM) - Number(part.baseM || 0);
-                if (!(height > 0) || !part.geometry) continue;
-                let area = 0;
-                try { area = turf.area({ type: 'Feature', properties: {}, geometry: part.geometry }); } catch (_) { area = 0; }
-                volume += area * height;
-            }
+            // What the rules grant is the plan; an incentive's conditional storeys are reported beside it.
+            const permitted = window.PlanningEnvelopes.permittedVolume(item, turf);
+            volume += permitted.grantedM3;
+            conditionalVolume += permitted.conditionalM3;
+            for (const condition of permitted.conditions) if (!conditions.includes(condition)) conditions.push(condition);
             counted += 1;
         }
-        return counted ? { volume, floorArea: volume / FLOOR_HEIGHT_M } : null;
+        if (!counted) return null;
+        const conditional = conditionalVolume > 0 ? { volume: conditionalVolume, floorArea: conditionalVolume / FLOOR_HEIGHT_M, condition: conditions.join('; ') } : null;
+        return { volume, floorArea: volume / FLOOR_HEIGHT_M, conditional };
     }
 
     // --- Proposal lookup helpers (for the click stack's Design section) ---
@@ -960,6 +962,9 @@
                     ${moneyRow(L.profit, 'profit', L.profitNote)}
                 </tbody>
             </table>
+            ${m.planned?.conditional ? `<p class="parcel-panel-note">${escapeHtml(threeI18n('threeMode.parcelPanel.plannedConditional',
+                'Planned is what the rules grant; {{floorArea}} more needs: {{condition}}',
+                { floorArea: CbFormat.formatArea(m.planned.conditional.floorArea), condition: m.planned.conditional.condition }))}</p>` : ''}
             <p class="parcel-panel-note">${L.floorNote} · ${escapeHtml(threeI18n('threeMode.parcelPanel.amountsIn', 'amounts in {{currency}}', { currency: prices.currency }))}</p>
             ${slider('sale-slider', 'sale-label', prices.sale)}
             ${slider('construction-slider', 'construction-label', prices.construction)}`;

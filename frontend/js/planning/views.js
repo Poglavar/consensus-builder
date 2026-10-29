@@ -201,11 +201,13 @@
             const active = item.id === store.get().selectedId;
             // The outer bound behind a shown configuration is a hull: outline plus a faint fill.
             const hull = feature.properties.geometryRole === 'bound' && hasBody;
+            // A tier only an incentive's condition reaches is a fainter, sparser outline.
+            const conditional = Boolean(feature.properties.condition);
             // The hull is not a second click target: the configuration inside carries the interaction.
             const shape = root.L.geoJSON(feature, { pane: 'planningSources', className: hull ? 'planning-bound-outline' : undefined, interactive: !hull,
-                style: { color: active ? root.MapHighlight.color : color(item.role), weight: active ? 4 : hull ? 1 : 1.5, dashArray: hull ? '4 4' : null,
-                    fillColor: color(item.role), fillOpacity: hull ? 0.06 : display === 'solid' ? 1 : 0.18,
-                    opacity: hull ? 0.8 : 1 } });
+                style: { color: active ? root.MapHighlight.color : color(item.role), weight: active ? 4 : hull || conditional ? 1 : 1.5, dashArray: conditional ? '2 6' : hull ? '4 4' : null,
+                    fillColor: color(item.role), fillOpacity: conditional ? 0.03 : hull ? 0.06 : display === 'solid' ? 1 : 0.18,
+                    opacity: conditional ? 0.6 : hull ? 0.8 : 1 } });
             const label = item.source.parcel || item.title;
             shape.addTo(group);
             // The assumed street side of the shown configuration, so a roll reads as a choice, not a glitch.
@@ -297,6 +299,9 @@
         const displayedMetrics = [];
         if (item.metrics.floorAreaM2 != null) displayedMetrics.push([t('floorArea'), area(item.metrics.floorAreaM2)]);
         if (item.metrics.heightM != null) displayedMetrics.push([t('height'), root.CbFormat.formatLength(item.metrics.heightM, { maxFractionDigits: 1 })]);
+        // An incentive's extra height is listed with its condition, apart from what the rules grant.
+        if (item.metrics.conditional?.heightM != null) displayedMetrics.push([t('conditionalHeight'),
+            `${root.CbFormat.formatLength(item.metrics.conditional.heightM, { maxFractionDigits: 1 })} · ${item.metrics.conditional.condition}`]);
         if (unitLimit != null) displayedMetrics.push([t('dwellingLimit'), number(unitLimit)]);
         if (item.metrics.footprintM2 != null) displayedMetrics.push([t('footprintArea'), area(item.metrics.footprintM2)]);
         for (const [label, value] of displayedMetrics) {

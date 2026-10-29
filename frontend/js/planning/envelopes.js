@@ -70,8 +70,21 @@
             && typeof volume.topM === 'number' && Number.isFinite(volume.topM) && volume.topM > volume.baseM)
             .map(volume => ({ type: 'Feature', geometry: volume.geometry, properties: {
                 representationId: item.id, sourceProposalId: item.proposalId, role: item.role, geometryRole, configurationId,
-                partId: volume.id, baseM: volume.baseM, topM: volume.topM, height: volume.topM - volume.baseM
+                partId: volume.id, baseM: volume.baseM, topM: volume.topM, height: volume.topM - volume.baseM,
+                ...(volume.condition ? { condition: volume.condition } : {})
             } }));
+    }
+    // The volume an item's bound holds: what the rules grant apart from what an incentive's
+    // condition adds, with the conditions met. The comparison tables count the granted part.
+    function permittedVolume(item, geometryOps) {
+        const totals = { grantedM3: 0, conditionalM3: 0, conditions: [] };
+        for (const feature of volumeFeatures(item, 'bound')) {
+            const m3 = geometryOps.area(feature) * feature.properties.height;
+            if (!feature.properties.condition) { totals.grantedM3 += m3; continue; }
+            totals.conditionalM3 += m3;
+            if (!totals.conditions.includes(feature.properties.condition)) totals.conditions.push(feature.properties.condition);
+        }
+        return totals;
     }
     // The volumes a Permitted item draws: `bound` is the translucent outer hull, `body` the shown
     // configuration. Items without configurations (one calculated option) draw their volumes as body.
@@ -123,5 +136,5 @@
         };
         return [...join(bound), ...join(body)];
     }
-    return { ANY_CONFIGURATION, forms, configurationFor, frontEdgeFor, edgeSide, volumeFeatures, realize, mapFeatures };
+    return { ANY_CONFIGURATION, forms, configurationFor, frontEdgeFor, edgeSide, volumeFeatures, permittedVolume, realize, mapFeatures };
 });

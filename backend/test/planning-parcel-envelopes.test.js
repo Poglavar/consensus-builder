@@ -415,6 +415,24 @@ describe('tiered bounds and street width', () => {
         expect(bound.tiers.map(tier => [tier.baseM, tier.topM, Math.round(areaOf(tier.geometry) / areaOf(square(0.5)))])).toEqual([[0, 10, 4], [10, 25, 1]]);
         expect(areaOf(bound.geometry)).toBeCloseTo(areaOf(square(1)), 6);
     });
+    it('marks the levels only a conditional configuration reaches and states the granted height apart from them', () => {
+        const square = size => turf.bboxPolygon([0, 0, size, size]).geometry;
+        const bound = outerBound([{ volumes: [{ geometry: square(1), baseM: 0, topM: 10 }] },
+            { condition: 'opt in', volumes: [{ geometry: square(1), baseM: 0, topM: 10 }, { geometry: square(0.5), baseM: 10, topM: 20 }] }], turf);
+        expect([bound.heightM, bound.grantedHeightM]).toEqual([20, 10]);
+        expect(bound.tiers.map(tier => [tier.baseM, tier.topM, tier.condition ?? null])).toEqual([[0, 10, null], [10, 20, 'opt in']]);
+        // The same ground with a different standing is never merged into the granted prism.
+        const stacked = outerBound([{ volumes: [{ geometry: square(1), baseM: 0, topM: 10 }] }, { condition: 'opt in', volumes: [{ geometry: square(1), baseM: 0, topM: 20 }] }], turf);
+        expect(stacked.tiers.map(tier => [tier.baseM, tier.topM, tier.condition ?? null])).toEqual([[0, 10, null], [10, 20, 'opt in']]);
+        // The client keeps the condition on the tier's feature and counts the granted volume apart from the conditional one.
+        const item = { spatialReference: { horizontal: 'OGC:CRS84', vertical: 'relative-ground', unit: 'm' }, volumes: stacked.tiers.map((tier, i) => ({ id: `t${i}`, ...tier })) };
+        expect(envelopes.volumeFeatures(item, 'bound').map(feature => feature.properties.condition ?? null)).toEqual([null, 'opt in']);
+        const volume = envelopes.permittedVolume(item, turf);
+        expect(volume.grantedM3 / areaOf(square(1))).toBeCloseTo(10, 6);
+        expect(volume.conditionalM3 / areaOf(square(1))).toBeCloseTo(10, 6);
+        expect(volume.conditions).toEqual(['opt in']);
+        expect(outerBound([{ volumes: [{ geometry: square(1), baseM: 0, topM: 10 }] }], turf)).toMatchObject({ grantedHeightM: 10, tiers: [{ baseM: 0, topM: 10 }] });
+    });
     it('measures the street width from the front edge to the first lot across, ignoring the lot itself and lots behind', () => {
         const toLat = metres => metres / 111320, toLng = metres => toLat(metres) / Math.cos(40 * Math.PI / 180);
         const obstacle = (id, box) => ({ id, geometry: turf.bboxPolygon(box).geometry, bbox: box });

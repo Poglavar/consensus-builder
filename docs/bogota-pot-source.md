@@ -84,8 +84,11 @@ and `sustainable`, the storeys a Consolidación project earns by adopting every 
 measure: +2 on lots of 300–800 m², +3 from 800 m², never above 12 storeys, in a Proximidad or
 Estructurante activity area (layer 14 under the lot), not on polygons with a storey range or an
 equipamiento. It is a second configuration with a `condition`, so the map shows the general one
-unless the sustainable one is pinned; the outer bound includes both. "Outside purely residential
-sectors" cannot be read from the cartography and is part of the stated condition.
+unless the sustainable one is pinned; the outer bound includes both, and the tiers only the
+sustainable storeys reach carry their condition, so the Planned figures, the inspector's height
+and an agent's fit to the permitted envelope count the general storeys and state the extra ones
+apart. "Outside purely residential sectors" cannot be read from the cartography and is part of
+the stated condition.
 
 ## What is not computed
 

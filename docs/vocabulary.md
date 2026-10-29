@@ -536,13 +536,13 @@ The maximum building form derived under an identified rule and its supported ass
 
 ### Outer bound
 
-The combined extent of the drawable building configurations and their supported interpretations. It bounds possible forms rather than defining one constructible building. A lot that several zoning areas partition has one outer bound per part, each the whole lot's bound clipped to that part; a zoning area under 2 % of the lot is evidence, not a part. A bound is a stack of prisms: between any two levels, the ground some configuration's volume covers there. A yard that starts above the ground (a side yard from the second floor, a street-wall setback above the facade height) carries `fromHeightM` on its constraint and makes a configuration a stack of tiers.
+The combined extent of the drawable building configurations and their supported interpretations. It bounds possible forms rather than defining one constructible building. A lot that several zoning areas partition has one outer bound per part, each the whole lot's bound clipped to that part; a zoning area under 2 % of the lot is evidence, not a part. A bound is a stack of prisms: between any two levels, the ground some configuration's volume covers there. A yard that starts above the ground (a side yard from the second floor, a street-wall setback above the facade height) carries `fromHeightM` on its constraint and makes a configuration a stack of tiers. A level only configurations with a `condition` reach carries that condition on its tier; the bound's height and the Planned figures state what the rules grant without a condition, and the conditional extent is reported beside them with its condition.
 
 The comparison controls label this **Max envelope**, as they do an authored rule's maximum envelope. This display label does not make alternative configurations simultaneously buildable or remove the source's qualifications.
 
 ### Configuration
 
-One source-recorded building option, such as an allowed housing type, with its own constraints, treatment, derived geometry and availability. Configurations are alternatives, not additive permissions. A configuration the project must opt into (an incentive's extra storeys) carries a `condition`; the map shows it only when pinned or when nothing unconditional draws.
+One source-recorded building option, such as an allowed housing type, with its own constraints, treatment, derived geometry and availability. Configurations are alternatives, not additive permissions. A configuration the project must opt into (an incentive's extra storeys) carries a `condition`; the map shows it only when pinned or when nothing unconditional draws, and draws the bound tiers only it reaches fainter.
 
 ### Lot test
 

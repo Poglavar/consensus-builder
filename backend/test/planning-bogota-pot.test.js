@@ -266,7 +266,9 @@ describe('Bogotá parcel envelopes', () => {
         // The outer bound stacks what either configuration permits at each level: the general
         // ground floor, the wider side yards of the taller option above the general roof.
         expect(item.volumes.map(volume => [volume.baseM, volume.topM])).toEqual([[0, 4.05], [4.05, 20.25], [20.25, 28.35]]);
-        expect(item.metrics).toMatchObject({ heightM: 28.35 });
+        // The top tier only the incentive reaches carries its condition; the bound's height is the general one.
+        expect(item.volumes.map(volume => volume.condition ?? null)).toEqual([null, null, expect.stringContaining('ecourbanismo')]);
+        expect(item.metrics).toMatchObject({ heightM: 20.25, conditional: { heightM: 28.35, condition: expect.stringContaining('ecourbanismo') } });
         expect(tierArea(item.volumes[1])).toBeCloseTo((widthM - 8) * (depthM - 8.5), -1);
         expect(tierArea(item.volumes[2])).toBeCloseTo((widthM - 2 * 4.86) * (depthM - 3.5 - 6), -1);
         expect(item.title).toBe('Consolidación · 5 pisos · 008101001001');
