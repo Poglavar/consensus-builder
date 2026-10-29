@@ -74,20 +74,16 @@
     // deterministic live-fabric materialization, never by looking an old piece id up. Ids stay
     // stable across rebuilds, which is what they are for; they are not stable across a change in
     // how the fabric is computed, and nothing is entitled to assume they are.
-    const CLIP_SNAP_DECIMALS = 9;
+    // The shared grid (geometry-tolerances.js): parcels arrive on it, so a clip on it adds nothing new.
+    const geometryGrid = (typeof window !== 'undefined' && window.GeometryTolerances)
+        || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
+    const CLIP_SNAP_DECIMALS = geometryGrid.GRID_DECIMALS;
 
     // Whatever still fails gets a coarser grid: 1.1 mm, then 1.1 cm. If every attempt fails the
     // error is rethrown, because a clip that cannot be done must stay loud.
     const CLIP_RETRY_DECIMALS = [8, 7];
 
-    function snapCoordinates(value, factor) {
-        if (Array.isArray(value)) {
-            return typeof value[0] === 'number'
-                ? value.map(n => Math.round(n * factor) / factor)
-                : value.map(entry => snapCoordinates(entry, factor));
-        }
-        return value;
-    }
+    const snapCoordinates = (value, factor) => geometryGrid.snapCoordinates(value, factor);
 
     function snapFeature(feature, decimals) {
         if (!feature || !feature.geometry || !Array.isArray(feature.geometry.coordinates)) return feature;

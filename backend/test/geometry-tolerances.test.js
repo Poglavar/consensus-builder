@@ -1,0 +1,31 @@
+// The shared coordinate grid (frontend/js/geometry-tolerances.js): one rounding for every stage, idempotent,
+// and the same answer for a coordinate whoever computed it.
+import { describe, expect, it } from 'vitest';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const grid = require('../../frontend/js/geometry-tolerances.js');
+
+describe('the shared coordinate grid', () => {
+    it('rounds to 9 decimals with integer rounding, and a snapped coordinate stays put', () => {
+        expect(grid.GRID_DECIMALS).toBe(9);
+        const snapped = grid.snapCoordinates([15.95425814698254, 45.76064717685072]);
+        expect(snapped).toEqual([15.954258147, 45.760647177]);
+        expect(grid.snapCoordinates(snapped)).toEqual(snapped);
+        // toFixed rounds some halves the other way; the grid never uses it.
+        expect(grid.snapCoordinates([1.0000000005])).toEqual([Math.round(1.0000000005 * 1e9) / 1e9]);
+    });
+
+    it('snaps every ring of every part and keeps the feature as it was otherwise', () => {
+        const feature = { type: 'Feature', id: 7, properties: { parcelId: 'HR-A' }, geometry: { type: 'MultiPolygon', coordinates: [
+            [[[0.1234567891234, 0], [1, 0], [1, 1], [0.1234567891234, 0]]], [[[2, 2], [3, 2.0000000004], [3, 3], [2, 2]]]] } };
+        const snapped = grid.snapFeature(feature);
+        expect(snapped).not.toBe(feature);
+        expect(snapped.id).toBe(7);
+        expect(snapped.properties).toBe(feature.properties);
+        expect(snapped.geometry.coordinates[0][0][0]).toEqual([0.123456789, 0]);
+        expect(snapped.geometry.coordinates[1][0][1]).toEqual([3, 2]);
+        expect(feature.geometry.coordinates[0][0][0][0]).toBe(0.1234567891234);
+        expect(grid.snapGeometry({ type: 'GeometryCollection', geometries: [{ type: 'Point', coordinates: [1.00000000049, 2] }] }).geometries[0].coordinates).toEqual([1, 2]);
+    });
+});

@@ -20,7 +20,8 @@ function boot() {
         LiveParcelFabric: { featureId: item => String(item?.properties?.parcelId || ''), absentCadastreIds: () => [] },
         __cadastralGroundTransport: { fetchBounds },
         getRequiredGridCells: bounds => bounds.keys,
-        withCorridorStripRefreshHeld: run => run()
+        withCorridorStripRefreshHeld: run => run(),
+        GeometryTolerances: require('../../frontend/js/geometry-tolerances.js')
     };
     vm.runInNewContext(source, { window, Promise, console, performance, AbortController });
     return { repository: window.CadastralParcelRepository, fetchBounds, requests };
@@ -93,7 +94,8 @@ describe('grid cells fetched in blocks', () => {
             LiveParcelFabric: { featureId: item => String(item?.properties?.parcelId || ''), absentCadastreIds: () => [] },
             __cadastralGroundTransport: transport,
             getRequiredGridCells: bounds => bounds.keys,
-            withCorridorStripRefreshHeld: run => run()
+            withCorridorStripRefreshHeld: run => run(),
+            GeometryTolerances: require('../../frontend/js/geometry-tolerances.js')
         };
         vm.runInNewContext(source, { window, Promise, console, performance, AbortController });
         return { repository: window.CadastralParcelRepository, blockCalls, cellCalls, requests };

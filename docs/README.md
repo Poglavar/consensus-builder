@@ -33,6 +33,7 @@ Each document describes a current contract, an open plan or research. Verificati
 - [Vocabulary](vocabulary.md): the glossary of current definitions; read it before changing a record or behavior.
 - [Plan, design and agreement](plan-design-agreement.md): the record contract, with [proposal history](rethink-proposals.md) and [open ground](PARCEL-OPTIONAL.md) behind it.
 - [Projections](projections.md) and [protocol](protocol.md): metric geometry anywhere on the globe; identifiers, schemas and trust model.
+- [Geometry tolerances](geometry-tolerances.md): one function per geometric question for every stage, one coordinate grid, and the plan to reach them.
 - [Lens model](lens-model.md), [community consultations](community-consultations.md), [ownership adapters](ownership-adapters.md).
 - [Land readjustment](land-readjustmend.md), [unsurveyed ground](unsurveyed-ground.md), [impact resolver](impact-resolver.md).
 - [Location first](location-first.md), [saved workspace](saved-workspace.md), [portable plan files](portable-plan-files.md), [IPFS storage](ipfs-storage.md).

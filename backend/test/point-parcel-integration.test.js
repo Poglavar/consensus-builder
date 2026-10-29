@@ -189,7 +189,8 @@ describe('point parcel lookup integration', () => {
 
         const exact = await setup.service.ensureIds([parcelId], { city: 'tbilisi' });
         expect(exact).toMatchObject({ ids: [parcelId], foundIds: [parcelId], cachedIds: [parcelId], requestedIds: [] });
-        expect(exact.features[0].geometry).toEqual(fixtureFeature.geometry);
+        // Retained exactly, on the shared coordinate grid (geometry-tolerances.js).
+        expect(exact.features[0].geometry).toEqual(require('../../frontend/js/geometry-tolerances.js').snapGeometry(fixtureFeature.geometry));
         expect(setup.fetchByIds).not.toHaveBeenCalled();
         expect(fetchPoint).toHaveBeenCalledOnce();
     });

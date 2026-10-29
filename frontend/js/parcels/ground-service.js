@@ -147,6 +147,7 @@
         const root = dependencies.root || defaultRoot || {};
         const source = dependencies.transport || null;
         const health = root.ParcelSourceHealth || (typeof require === 'function' ? require('./source-health.js') : null);
+        const gridApi = () => root.GeometryTolerances || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
         const timedTransport = operation => {
             const configured = root.PARCEL_LOAD_TIMEOUT_MS;
             const timeoutMs = typeof configured === 'number' && Number.isFinite(configured) && configured > 0
@@ -250,7 +251,9 @@
             const store = featureStore(city);
             const absent = absentStore(city);
             const staged = new Map();
-            for (const feature of features) {
+            // Every transport (the server, the DGU fallback) delivers the same parcel on the one grid,
+            // so the same parcel compares equal whoever served it (geometry-tolerances.js).
+            for (const feature of features.map(raw => gridApi().snapFeature(raw))) {
                 const id = featureId(feature);
                 const current = staged.get(id) || store.get(id);
                 if (current) {

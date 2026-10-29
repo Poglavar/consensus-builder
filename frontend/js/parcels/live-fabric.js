@@ -32,6 +32,9 @@
     // mutation methods, and in clock-checked slices by the boot replay (mutation.*Steps).
     const workSlicer = (root && root.__workSlicer)
         || (typeof require === 'function' ? require('../work-slicer.js') : null);
+    // Immutable cadastral facts are kept on the shared coordinate grid, whoever seeds them.
+    const geometryGrid = (root && root.GeometryTolerances)
+        || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
     // One collator for every delta sort: localeCompare with options builds a collator per call,
     // which made sorting a whole-cadastre delta (~6,000 ids) a 185 ms task.
     const ID_COLLATOR = new Intl.Collator(undefined, { numeric: true });
@@ -796,7 +799,8 @@
             // a replay's reset re-seeds every fact its ground load already seeded.
             function* seedCadastreSteps(features) {
                 assertActive(draft);
-                for (const raw of Array.isArray(features) ? features : []) {
+                for (const unsnapped of Array.isArray(features) ? features : []) {
+                    const raw = unsnapped && unsnapped.type === 'Feature' && unsnapped.geometry ? geometryGrid.snapFeature(unsnapped) : unsnapped;
                     const cadastralId = raw && raw.type === 'Feature' && raw.geometry ? featureId(raw) : '';
                     const existingFact = cadastralId ? draft.data.cadastreFacts.get(cadastralId) : null;
                     let fact = existingFact;
