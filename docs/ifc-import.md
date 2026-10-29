@@ -47,6 +47,28 @@ The import produces an ordinary Freeform building: footprint, height and storeys
 `floorPlans` and `use` on its properties, and the mesh as its model. Nothing downstream needs to
 know the source was IFC.
 
+## How IFC maps onto our records
+
+IFC describes one built object as designed; our records describe changes to an existing city and
+who agrees to them. The mapping therefore holds inside a building and stops above it. Our names
+stay; IFC names are used only at the import (and any later export) boundary.
+
+| Ours | IFC | Notes |
+|---|---|---|
+| Plan | `IfcProject` | Loose: a Plan collects separately published Designs, often by different authors, and one Design can be in several Plans. An IFC project is one team's single model. An exported Plan would be one `IfcProject` holding its building Designs. |
+| Building Design (Freeform) | `IfcBuilding` under an `IfcSite` | The `IfcSite` is the plot the building stands on, not the Design. A file with several `IfcBuilding`s imports as several buildings. |
+| Road, park, parcel-layout, rule, keep-as-is and ownership Designs | none | IFC models objects, not changes. IFC 4.3's `IfcRoad`, `IfcRailway` and `IfcAlignment` describe built infrastructure and are not in this plan. |
+| Agreement | none | `IfcApproval`, `IfcPermit` and `IfcActor` record approvals and parties; IFC has nothing for land allocation, compensation or decision rules. |
+| Floor of the floor model (level, elevation) | `IfcBuildingStorey` (`Elevation`) | Storeys with the same layout share one reusable layout. |
+| Floor layout: walls, slabs, openings, stairs | `IfcWall`, `IfcSlab`, `IfcDoor`, `IfcWindow`, `IfcStair` | Reduced to the floor model's flat polygons and dimensions. |
+| Room | `IfcSpace` | Outline, area and name. |
+| Apartment or other unit | `IfcZone` (IFC2x3), `IfcSpatialZone` or `IfcZone` (IFC4) grouping `IfcSpace`s | Absent in many exports; see open questions. |
+| Building use, by storey | `Pset_BuildingCommon.OccupancyType`, `Pset_SpaceCommon` and `IfcClassificationReference` (Uniclass, OmniClass) | IFC has no fixed list of uses. Known occupancy labels and classification codes map to our six uses; anything else leaves the use not stated. |
+| Placement (WGS84 registration) | `IfcMapConversion` and `IfcProjectedCRS` (IFC4) | IFC2x3 files carry only `IfcSite.RefLatitude` / `RefLongitude`, which places but does not orient. |
+
+A whole Plan at city scale has a better counterpart in CityGML / CityJSON (OGC), which models
+terrain, transport, vegetation and land use as well as buildings.
+
 ## Open questions
 
 - **Where the floor model is stored.** Today registered models live in
