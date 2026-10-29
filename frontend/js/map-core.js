@@ -420,6 +420,8 @@ window.clearBuildingsUnavailable = clearBuildingsUnavailable;
 // with "Fetching buildings..." on a Ctrl+R with the layer switched off. The pool is still filled
 // either way: what a road demolishes must never depend on a display toggle, and the LAYER already
 // respects it (rebuildBuildingLayerFromPool only adds it to the map when the box is checked).
+// Fetches still running, for the Built arc around the Buildings and massing button (planning/loading.js).
+let buildingFetchesInFlight = 0;
 async function fetchBuildings(boundsOverride = null, options = {}) {
     const announce = options && options.announce === true;
     // Zoom-gated at the BOTTOM only: below 17 the viewport is a whole city and the request is
@@ -468,6 +470,8 @@ async function fetchBuildings(boundsOverride = null, options = {}) {
         updateStatus('Fetching existing buildings...');
     }
 
+    buildingFetchesInFlight += 1;
+    window.PlanningLoading?.set('existing', 'map', true);
     try {
         const loaded = req
             ? await loadGdiFootprints(req)
@@ -547,6 +551,9 @@ async function fetchBuildings(boundsOverride = null, options = {}) {
             buildingsRetryAt = 0;
             fetchBuildings(boundsOverride, { announce: true });
         }, false, error?.status);
+    } finally {
+        buildingFetchesInFlight -= 1;
+        if (!buildingFetchesInFlight) window.PlanningLoading?.set('existing', 'map', false);
     }
 }
 

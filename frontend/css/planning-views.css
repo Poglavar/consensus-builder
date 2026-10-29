@@ -13,6 +13,22 @@
 body:is([data-planning-existing="solid"], [data-planning-existing="ghost"]) .planning-cube--existing { fill: var(--cb-planning-existing); }
 body:is([data-planning-permitted="solid"], [data-planning-permitted="ghost"]) .planning-cube--permitted { fill: var(--cb-planning-permitted); }
 body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .planning-cube--proposed { fill: var(--cb-planning-proposed); }
+/* The loading ring on the button's rim (planning/views.js paintLoading): a third of the circle in
+   a role's colour for each shown role still loading, packed by data-slot, the whole ring turning.
+   Reduced motion keeps the arcs still. */
+.planning-loading-ring { position: absolute; inset: -1px; width: calc(100% + 2px); height: calc(100% + 2px); pointer-events: none; transform: rotate(-90deg); }
+.planning-loading-ring.is-loading { animation: planning-loading-spin 1.2s linear infinite; }
+.planning-loading-arc { display: none; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 0.85 2.15; }
+.planning-loading-arc[data-slot] { display: inline; }
+.planning-loading-arc[data-slot="1"] { stroke-dashoffset: -1; }
+.planning-loading-arc[data-slot="2"] { stroke-dashoffset: -2; }
+.planning-loading-arc--existing { stroke: var(--cb-planning-existing); }
+.planning-loading-arc--permitted { stroke: var(--cb-planning-permitted); }
+.planning-loading-arc--proposed { stroke: var(--cb-planning-proposed); }
+@keyframes planning-loading-spin { from { transform: rotate(-90deg); } to { transform: rotate(270deg); } }
+@media (prefers-reduced-motion: reduce) {
+    .planning-loading-ring.is-loading { animation: none; }
+}
 .planning-eyebrow {
     margin: 0 0 var(--cb-space-2);
     color: var(--cb-text-muted);

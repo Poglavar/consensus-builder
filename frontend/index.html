@@ -166,7 +166,7 @@
                 'css/agreement.css?v=20261027-agreement-tabs',
                 'css/agreement-dialog.css?v=20261027-panel-buttons',
                 'css/mobile-sheets.css?v=20261027-style',
-                'css/planning-views.css?v=20261029-compare-status',
+                'css/planning-views.css?v=20261029-loading-ring',
                 'css/three-sun.css',
                 'css/three-click-stack.css?v=20261027-stack-semantics',
                 'css/right-screen-panel.css',
@@ -441,7 +441,8 @@
             <button type="button" id="planning-views-button" class="map-shell-button" data-sheet-target="planning-views"
                 aria-controls="planning-views" aria-expanded="false" title="Buildings and massing" aria-label="Buildings and massing"
                 data-i18n-key="planningViews.title" data-i18n-attr="title,aria-label" hidden>
-                <!-- One cube per layer; a cube takes its layer's colour while that layer is on (css/planning-views.css). -->
+                <!-- One cube per layer; a cube takes its layer's colour while that layer is on (css/planning-views.css).
+                     While a shown layer loads, a third of the rim turns in its colour (js/planning/views.js paintLoading). -->
                 <svg class="planning-cubes" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                     <g class="planning-cube planning-cube--existing"><polygon points="12,2.57 16.5,5.17 12,7.77 7.5,5.17"/><polygon class="planning-cube-left" points="7.5,5.17 12,7.77 12,12.81 7.5,10.21"/><polygon class="planning-cube-right" points="12,7.77 16.5,5.17 16.5,10.21 12,12.81"/></g>
                     <g class="planning-cube planning-cube--proposed"><polygon points="7,11.06 11.5,13.65 7,16.25 2.5,13.65"/><polygon class="planning-cube-left" points="2.5,13.65 7,16.25 7,21.29 2.5,18.69"/><polygon class="planning-cube-right" points="7,16.25 11.5,13.65 11.5,18.69 7,21.29"/></g>
@@ -1992,7 +1993,9 @@
             'js/footprint-provider.js',
             'js/building-source-client.js',
             // bundle:end parcel-data-clients
-            'js/map-core.js?v=20261009-map-credits',
+            // What each Buildings and massing role is still loading; the map's first fetches report to it.
+            'js/planning/loading.js',
+            'js/map-core.js?v=20261029-loading-ring',
             'js/user-management.js?v=20261020-modeled-totals',
             'js/site-intro.js',
             'js/map-controls.js?v=20261027-panel-buttons',
@@ -2015,13 +2018,13 @@
             'js/ui/commands.js?v=20261027-station-inspection',
             'js/ui/map-shell.js',
             'js/ui/dock-clearance.js',
-            'js/planning/scene.js?v=20261021-envelopes',
+            'js/planning/scene.js?v=20261029-loading-ring',
             'js/planning/envelopes.js?v=20261021-envelopes',
             'js/planning/representations.js?v=20261020-qualified-inspection',
             'js/planning/source-proposal.js',
             'js/planning/feed.js',
             'js/planning/parcel-assessment.js?v=20261021-permitted-envelopes',
-            'js/planning/views.js?v=20261027-station-inspection',
+            'js/planning/views.js?v=20261029-loading-ring',
             'js/approval-link.js',
             'js/draft-link.js',
             'js/draft-preview.js?v=20261029-buildout',

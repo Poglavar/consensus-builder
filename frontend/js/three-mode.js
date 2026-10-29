@@ -9539,6 +9539,9 @@
     // thousands of city meshes) and any uploaded glTF models still downloading (ephemerals.md).
     function updateBuildingsLoader() {
         try {
+            // The same two waits as the Built and Proposed arcs around Buildings and massing.
+            window.PlanningLoading?.set('existing', 'model', isActive && nearbyProposalBuildingsFetching);
+            window.PlanningLoading?.set('proposed', 'model', isActive && pendingModelLoads > 0);
             const loading = isActive && (nearbyProposalBuildingsFetching || pendingModelLoads > 0);
             if (!loading) {
                 if (buildingsLoaderRelease) {

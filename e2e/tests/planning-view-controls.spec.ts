@@ -99,6 +99,44 @@ for (const blocksEnabled of [false, true]) test(`planning source, scenario, disp
   await expect(page.locator('#planning-views-button')).toBeFocused();
 });
 
+test('the Buildings and massing button rims a third of its circle in green while Permitted loads', async ({ mockApi: page }) => {
+  let release: () => void = () => {};
+  let hold = false;
+  await page.route('**/planning/**', async route => {
+    if (!['xhr', 'fetch'].includes(route.request().resourceType())) return route.fallback();
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith('/sources')) return route.fulfill({ json: { city: sources[0].city, sources } });
+    if (hold) await new Promise<void>(resolve => { release = resolve; });
+    return route.fulfill({ json: payload([massing()]) });
+  });
+  await openCity(page);
+  const button = page.locator('#planning-views-button');
+  const arcs = button.locator('.planning-loading-arc[data-slot]');
+  await expect(button).toHaveAttribute('aria-busy', 'false');
+  // These fixture sources answer with zoning areas, which load once that layer is shown.
+  hold = true;
+  await page.evaluate(() => (window as any).PlanningViews.configure('zoningAreas', 'ghost'));
+  await expect(arcs).toHaveCount(1);
+  await expect(arcs).toHaveAttribute('data-role', 'permitted');
+  await expect(arcs).toHaveAttribute('data-slot', '0');
+  await expect(button).toHaveAttribute('aria-busy', 'true');
+  expect(await arcs.evaluate(arc => getComputedStyle(arc).stroke)).toBe(await page.evaluate(() => {
+    const probe = document.createElement('i'); probe.style.color = 'var(--cb-planning-permitted)'; document.body.append(probe);
+    const color = getComputedStyle(probe).color; probe.remove(); return color;
+  }));
+  // A second role loading packs into the next third; the answer arriving clears Permitted's.
+  await page.evaluate(() => (window as any).PlanningViews.configure('existing', 'solid'));
+  await page.evaluate(() => (window as any).PlanningLoading.set('existing', 'test', true));
+  await expect(arcs).toHaveCount(2);
+  expect(await arcs.evaluateAll(list => list.map(arc => `${(arc as HTMLElement).dataset.role}:${(arc as HTMLElement).dataset.slot}`))).toEqual(['existing:0', 'permitted:1']);
+  hold = false; release();
+  await expect(arcs).toHaveCount(1);
+  await expect(arcs).toHaveAttribute('data-role', 'existing');
+  await page.evaluate(() => (window as any).PlanningLoading.set('existing', 'test', false));
+  await expect(arcs).toHaveCount(0);
+  await expect(button).toHaveAttribute('aria-busy', 'false');
+});
+
 test('Permitted keeps its Illustration dropdown visible for a single-option source', async ({ mockApi: page }) => {
   const available = [sources[0], { ...sources[1], parcelStudy: 'direct-dimensions.v1' }];
   await page.route('**/planning/**', async route => {

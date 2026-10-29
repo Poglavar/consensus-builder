@@ -394,7 +394,40 @@
             list: excluded.map(([scenario, treatment]) => `${scenarioLabel(scenario)} (${resultLabel(treatment)})`).join(', ') })));
         return section;
     }
+    // The Buildings and massing button's rim: a third of a circle in a role's colour for each role
+    // still loading (planning/loading.js) while it is shown. Permitted also counts this module's
+    // own viewport read.
+    function paintLoading() {
+        const button = document.getElementById('planning-views-button');
+        if (!store || !button) return;
+        let ring = button.querySelector('.planning-loading-ring');
+        if (!ring) {
+            const ns = 'http://www.w3.org/2000/svg';
+            ring = document.createElementNS(ns, 'svg');
+            ring.setAttribute('class', 'planning-loading-ring'); ring.setAttribute('viewBox', '0 0 40 40');
+            ring.setAttribute('aria-hidden', 'true'); ring.setAttribute('focusable', 'false');
+            for (const role of core.roles) {
+                const arc = document.createElementNS(ns, 'circle');
+                arc.setAttribute('class', `planning-loading-arc planning-loading-arc--${role}`);
+                arc.setAttribute('cx', '20'); arc.setAttribute('cy', '20'); arc.setAttribute('r', '19'); arc.setAttribute('pathLength', '3');
+                arc.dataset.role = role; ring.append(arc);
+            }
+            button.append(ring);
+        }
+        const view = policy();
+        const shown = { existing: view.existing !== 'off', permitted: view.permitted !== 'off' || store.get().zoningAreas !== 'off', proposed: view.proposed !== 'off' };
+        const loading = { ...root.PlanningLoading.state() };
+        loading.permitted ||= status === 'loading';
+        const arcs = core.loadingArcs(loading, shown);
+        for (const arc of ring.querySelectorAll('.planning-loading-arc')) {
+            const slot = arcs.find(entry => entry.role === arc.dataset.role)?.slot;
+            if (slot === undefined) arc.removeAttribute('data-slot'); else arc.dataset.slot = String(slot);
+        }
+        ring.classList.toggle('is-loading', arcs.length > 0);
+        button.setAttribute('aria-busy', String(arcs.length > 0));
+    }
     function render() {
+        paintLoading();
         if (!ready) return;
         panel.querySelector('.map-sheet-title').textContent = t('title');
         panel.querySelector('.planning-source-label').textContent = t('sourceEdition');
@@ -841,6 +874,7 @@
         root.addEventListener('buildingsLayerUpdated', restoreSelection);
         root.addEventListener('i18n:translationsLoaded', render);
         root.addEventListener('mapmodechange', render);
+        root.addEventListener('planningloadingchange', paintLoading);
         root.addEventListener('keydown', event => {
             if (event.key === 'Escape' && selected() && !event.defaultPrevented) { select(null); event.preventDefault(); }
         });
