@@ -466,6 +466,7 @@
             return `<button type="button" class="btn btn-icon" ${attrs} title="${label}" aria-label="${label}"><i class="fa-solid ${icon}" aria-hidden="true"></i></button>`;
         };
         const uploadLabel = t('reparcellization.modal.uploadGeojson', 'Upload GeoJSON');
+        const downloadLabel = t('reparcellization.modal.downloadGeojson', 'Download plots as GeoJSON');
 
         const algorithmControls = `
                     <fieldset class="reparcel-controls" data-reparcel-alg-group aria-label="${t('reparcellization.modal.layoutTitle', 'Starting layout')}" aria-disabled="false">
@@ -487,6 +488,7 @@
                                     <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
                                     <input type="file" accept=".geojson,.json,application/geo+json,application/json" data-reparcel-upload aria-label="${uploadLabel}" hidden>
                                 </label>
+                                <button type="button" class="btn btn-icon" data-reparcel-download title="${downloadLabel}" aria-label="${downloadLabel}"><i class="fa-solid fa-download" aria-hidden="true"></i></button>
                             </div>
                         </div>
                       </div>
@@ -718,6 +720,11 @@
             state.compareBtn.addEventListener('click', toggleCompare);
         }
 
+        // The plots as they stand, in the shape Upload GeoJSON reads back.
+        root.querySelector('[data-reparcel-download]')?.addEventListener('click', () => {
+            const plots = window.DesignFileExports.plotsGeoJson(state.slices.map(slice => slice.geometry));
+            window.FileDownload.save(window, JSON.stringify(plots, null, 2) + '\n', 'parcel-layout-plots.geojson', 'application/geo+json');
+        });
         const uploadInput = root.querySelector('[data-reparcel-upload]');
         if (uploadInput) {
             uploadInput.addEventListener('change', (e) => {

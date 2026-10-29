@@ -438,6 +438,28 @@ test.describe('parcel-layout button controls @core', () => {
     await expect.poll(() => rows(editor).allInnerTexts()).toEqual(equal);
   });
 
+  test('Download plots saves the layout as GeoJSON that Upload GeoJSON reads back', async ({ mockApi: page }) => {
+    const editor = await openLayoutEditor(page);
+    await editor.locator('[data-reparcel-upload]').setInputFiles({
+      name: 'two-plots.geojson', mimeType: 'application/geo+json', buffer: Buffer.from(JSON.stringify(TWO_PLOTS)),
+    });
+    await expect(status(editor)).toHaveText('Loaded 2 polygons from file.');
+    const uploaded = await rows(editor).allInnerTexts();
+    const downloading = page.waitForEvent('download');
+    await editor.getByRole('button', { name: 'Download plots as GeoJSON', exact: true }).click();
+    const download = await downloading;
+    expect(download.suggestedFilename()).toBe('parcel-layout-plots.geojson');
+    const chunks: Buffer[] = [];
+    for await (const chunk of (await download.createReadStream())!) chunks.push(Buffer.from(chunk));
+    const file = Buffer.concat(chunks);
+    expect(JSON.parse(file.toString()).features.map((feature: any) => feature.properties.plot)).toEqual([1, 2]);
+    await editor.locator('[data-reparcel-undo-edit]').click();
+    await expect.poll(() => rows(editor).allInnerTexts()).not.toEqual(uploaded);
+    await editor.locator('[data-reparcel-upload]').setInputFiles({ name: 'parcel-layout-plots.geojson', mimeType: 'application/geo+json', buffer: file });
+    await expect(status(editor)).toHaveText('Loaded 2 polygons from file.');
+    await expect.poll(() => rows(editor).allInnerTexts()).toEqual(uploaded);
+  });
+
   test('Before / after compares the plots with the parcel they replace, and an edit ends the comparison', async ({ mockApi: page }) => {
     const editor = await openLayoutEditor(page);
     const compare = editor.locator('[data-reparcel-compare]');

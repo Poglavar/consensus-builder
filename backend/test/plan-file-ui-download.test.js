@@ -5,6 +5,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const FileUI = require('../../frontend/js/plan-file-ui.js');
 const FileDownload = require('../../frontend/js/ui/file-download.js');
+const DesignFileExports = require('../../frontend/js/design-file-exports.js');
 
 class Element {
     constructor(tag) { this.tagName = tag; this.children = []; this.listeners = {}; this.attributes = {}; this.dataset = {}; this.textContent = ''; }
@@ -34,7 +35,7 @@ function browser() {
         PlanWorkspace: { resolve: vi.fn(async plan => ({ ...plan, designs: [{ cid: 'bafy-d' }], designSources: {} })) },
         PlanComposition: { localRecords: vi.fn(row => row.designs.map(member => ({ proposalId: `plan-member-${member.cid}` }))) },
         DesignSync: { apiBase: () => 'https://api.example' },
-        MapShare: { capture: () => ({ at: '45.8,15.9,18' }) }, FileDownload
+        MapShare: { capture: () => ({ at: '45.8,15.9,18' }) }, FileDownload, DesignFileExports
     };
     return { win, modals, downloads };
 }

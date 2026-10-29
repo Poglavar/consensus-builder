@@ -35,6 +35,17 @@ click stack's design card and plan section, and the design panel (`PlanFileUI.de
 design that is only published is fetched for the file and not stored. These dialogs offer the two
 downloads only, and a file is named after its plan or design title (`riverside-blocks.ugt.json`).
 
+A road or track also downloads as a road file (`<title>.osm.json`, `design-file-exports.js`) that
+Road → Import and MCP `ugt_import_design` (`format: 'osm'`) read back as the same road. It is the
+record's own OSM document, every way named with the design's title (the OSM import makes one road
+per name), plus a `cb:definition` member, an extension other OSM readers ignore, carrying what the
+ways cannot say: tunnels, grade separations, the road-in-parcel `bound`, edge fill, junctions, the
+construction frame and metadata (`CARRIED_FIELDS` in `corridor-import.js`). The import keeps a
+stretch id a way already carries (`cb:segment`), so a tunnel's `segmentId` still points at its
+stretch. Footprint, demolitions and connections to other roads are derived again on placement.
+A parcel layout downloads its plots as GeoJSON polygons (`<title>-plots.geojson`); the layout
+editor's Download plots button saves the plots being edited, and its Upload GeoJSON reads either back.
+
 ## MCP parity
 
 Existing `ugt_get_plan`, `ugt_inspect_plan` and `ugt_edit_plan` accept the parsed portable

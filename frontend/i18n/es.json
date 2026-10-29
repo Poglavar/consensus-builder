@@ -12,6 +12,8 @@
         "help": "Formatos y límites",
         "design": "Descargar diseño",
         "plan": "Descargar plan",
+        "roadOsm": "Descargar vía (OSM, para Importar)",
+        "layoutPlots": "Descargar lotes (GeoJSON)",
         "review": "Revisar archivo de plan",
         "cancel": "Cancelar",
         "importDrafts": "Importar como borradores",
@@ -3620,6 +3622,7 @@
             "colPlot": "Lote",
             "newPlots": "Nuevos lotes",
             "uploadGeojson": "Subir GeoJSON",
+            "downloadGeojson": "Descargar lotes como GeoJSON",
             "parcelCount": {
                 "one": "{{count}} parcela",
                 "few": "{{count}} parcelas",

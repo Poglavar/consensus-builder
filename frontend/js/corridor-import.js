@@ -163,6 +163,10 @@
     // `options.drivingSide`: the side of the road the source's ways keep to when they do not say
     // (OSM data carries no `driving_side` on a way; a UK extract keeps left). Only for formats whose
     // ways are OSM data: a form this app wrote already says its side.
+    // The authored parts of a road definition that sit beside its OSM document and travel in a road
+    // file as `cb:definition` (design-file-exports.js writes them). Derived parts (footprint,
+    // demolitions, connections to other roads) are made again when the road is placed.
+    const CARRIED_FIELDS = ['tunnels', 'gradeSeparations', 'bound', 'edgeFill', 'junctions', 'constructionFrame', 'metadata'];
     function recordsFromImport(parsed, options = {}) {
         const form = parsed && parsed.form;
         const sided = way => (options.drivingSide === 'left' && !(way.tags && way.tags.driving_side)
@@ -183,9 +187,12 @@
             const isTrack = definition.profile.strips.every(lane => lane.type === 'rail');
             const highway = roadWays[0].tags && roadWays[0].tags.highway;
             const name = road.name || (roadWays[0].tags && roadWays[0].tags.name) || null;
+            // A road this app wrote brings back what its OSM ways cannot say (the file's
+            // `cb:definition`): only when the file is that one road.
+            const carried = parsed.extension && roads.length === 1 ? parsed.extension : null;
             definition.tunnels = [];
             definition.gradeSeparations = [];
-            definition.metadata = {
+            definition.metadata = carried && carried.metadata ? { ...carried.metadata } : {
                 mode: 'import',
                 type: isTrack ? 'track' : 'road',
                 source: options.source || 'import',
@@ -195,6 +202,7 @@
                 isCorridor: true,
                 ...(highway ? { highway } : {})
             };
+            if (carried) CARRIED_FIELDS.forEach(field => { if (field !== 'metadata' && carried[field] !== undefined) definition[field] = JSON.parse(JSON.stringify(carried[field])); });
             const title = name || `${options.fallbackTitle || 'Imported road'} ${index + 1}`;
             records.push({
                 author: options.author || 'import',
@@ -379,5 +387,5 @@
         global.openCorridorImportChooser = openCorridorImportChooser;
     }
 
-    return { recordsFromImport, createRoadRecords, importCorridorFile, openCorridorImportPicker, openCorridorImportChooser, FORMATS, formatFor, extensionOf, parseGeoJson, detectJsonFormat };
+    return { CARRIED_FIELDS, recordsFromImport, createRoadRecords, importCorridorFile, openCorridorImportPicker, openCorridorImportChooser, FORMATS, formatFor, extensionOf, parseGeoJson, detectJsonFormat };
 });
