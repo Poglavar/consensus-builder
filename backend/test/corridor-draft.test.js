@@ -1,6 +1,8 @@
 // Unit tests for reopening an immutable corridor proposal as an editable road drawing.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const {
@@ -110,5 +112,33 @@ describe('corridor drawing drafts', () => {
             .toEqual({ polygon: fallback, polygonOrder: 'latlng', fitToPolygonOnly: false });
         // The order is stated, never guessed.
         expect(() => resolveCorridorScreenshotGeometry({}, fallback)).toThrow(/fallbackOrder/);
+    });
+});
+
+describe('closing a tab that does not own the saved workspace', () => {
+    it('writes no draft on unload, so no storage error flashes', () => {
+        const listeners = {};
+        const refused = [];
+        const window = {
+            addEventListener: (type, fn) => { (listeners[type] ||= []).push(fn); },
+            BrowserWorkspace: {
+                status: 'blocked',
+                ready: new Promise(() => {}),
+                storage: {
+                    // The owning tab's saved drafts, as this tab read them at startup.
+                    getItem: () => '{"schemaVersion":3,"drafts":[]}',
+                    setItem: key => { refused.push(key); throw Object.assign(new Error('This tab does not own the saved workspace.'), { code: 'workspace-blocked' }); },
+                    removeItem: () => {}
+                }
+            }
+        };
+        window.window = window;
+        const context = vm.createContext({ window, console, JSON, Date, Math, Number, String, Array, Object, Set, Map, WeakMap, Promise, Error });
+        for (const file of ['proposal-drafts.js', 'corridor-draft.js']) {
+            vm.runInContext(readFileSync(new URL(`../../frontend/js/${file}`, import.meta.url), 'utf8'), context, { filename: file });
+        }
+
+        for (const type of ['beforeunload', 'pagehide']) (listeners[type] || []).forEach(fn => fn());
+        expect(refused).toEqual([]);
     });
 });
