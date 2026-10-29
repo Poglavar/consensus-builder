@@ -49,6 +49,7 @@ Each document describes a current contract, an open plan or research. Verificati
 
 - [Source adapters](source-adapters.md), [frontend source configuration](frontend-source-configuration.md), [Atlas public sources](atlas-public-sources.md), [economic sources](economic-sources.md), [world parcels](world-parcels.md).
 - [GUP scenario integration](gup-scenario-integration.md), [Bogotá POT source](bogota-pot-source.md), [zoning standards research](zoning-standards-research.md), [planning usage and diagnostics](planning-usage-and-diagnostics.md).
+- [Permitted massing for plan-made parcels](permitted-plan-parcels.md): open plan for readjustment plots, road and track remainders, the fabric-driven refresh and the Bogotá block index.
 
 **3D views**
 
