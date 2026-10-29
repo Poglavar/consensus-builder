@@ -350,13 +350,18 @@ test('a chosen scheme is checked against the plan, and settlement by value value
   await expect(guide.locator('[data-scheme-guide-pick]')).toHaveValue('de-umlegung-developed');
   await expect(guide.locator('[data-scheme-guide-check] li[data-check-ok="false"]')).toContainText(`${party} gives up 50%`);
   await expect(guide.locator('[data-scheme-guide-fixes]')).toContainText(`In Output parcels, give ${party} at least`);
-  // Every scheme reads in the same dimensions, and the outcome chart shows this plan's parties.
-  await expect(guide.locator('[data-scheme-guide] [data-scheme-dimension]')).toHaveCount(11);
+  // The rules read in the same dimensions as every scheme; this agreement is a part of its own,
+  // its owners in rows.
+  await expect(guide.locator('[data-scheme-guide-part="rules"] [data-scheme-dimension]')).toHaveCount(11);
   await expect(guide.locator('[data-scheme-flow-step]')).toHaveCount(4);
   await expect(guide.locator('[data-scheme-flow-step="authority"]')).toHaveCount(1);
-  await expect(guide.locator('[data-scheme-outcome-example]')).toHaveCount(0);
-  await expect(guide.locator('.scheme-outcome__row.is-over-cap')).toContainText(party);
-  await expect(guide.locator('.scheme-outcome__row--public')).toHaveCount(1);
+  const applied = guide.locator('[data-scheme-guide-part="applied"]');
+  await expect(applied.locator('[data-scheme-owners-example]')).toHaveCount(0);
+  await expect(applied.locator('[data-scheme-guide-check] li[data-check-ok="false"]')).toContainText(`${party} gives up 50%`);
+  // The rights name the parcel's owner, so the row over the cap is the person, not the parcel party.
+  await expect(applied.locator('.scheme-owners__row.is-over-cap')).toContainText('Ana Owner');
+  await expect(applied.locator('.scheme-owners__row.is-over-cap')).toContainText('gives up 50%');
+  await expect(applied.locator('.scheme-owners__row--public')).toHaveCount(1);
   // The comparison lists every scheme in those dimensions; a name picks it (the dialog is found by
   // its picker, since the shown scheme changes).
   const schemes = page.locator('.cb-dialog').filter({ has: page.locator('[data-scheme-guide-pick]') });

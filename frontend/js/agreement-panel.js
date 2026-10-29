@@ -1045,7 +1045,9 @@
                 try {
                     const ledger = api.ledger(agreement), result = api.schemeCheck(agreement, scheme);
                     const label = key => ledger.parties.find(party => party.ownerKey === key)?.displayName || key;
-                    return { ledger, rules: result?.check.rules || [], check: result ? { ok: result.check.ok, lines: result.check.rules.map(rule => ({ ok: rule.ok, text: words.checkLines({ rules: [rule] }, t, label)[0] })) } : null };
+                    const rights = agreement.rule?.approvalConfig?.rights;
+                    return { ledger, persons: rights ? personsApi().personPositions(agreement, rights) : null,
+                        rules: result?.check.rules || [], check: result ? { ok: result.check.ok, lines: result.check.rules.map(rule => ({ ok: rule.ok, text: words.checkLines({ rules: [rule] }, t, label)[0] })) } : null };
                 } catch (error) {
                     log(`the scheme check of ${state.id} against ${scheme.id} failed: ${error.message}`);
                     return { ledger: null, rules: [], check: null };

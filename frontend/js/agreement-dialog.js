@@ -1050,7 +1050,9 @@
                         const record = draft(), ledger = api.ledger(record), result = api.schemeCheck(record, chosen);
                         const names = new Map(partiesOf(state.land.inputs).map(party => [party.ownerKey, party.displayName]));
                         const label = key => names.get(key) || key;
-                        return { ledger, rules: result?.check.rules || [], check: result ? { ok: result.check.ok, lines: result.check.rules.map(rule => ({ ok: rule.ok, text: words.checkLines({ rules: [rule] }, t, label)[0] })) } : null };
+                        const rights = state.approvalConfig?.rights;
+                        return { ledger, persons: rights ? personsApi().personPositions(record, rights) : null, names: ownerNames(),
+                            rules: result?.check.rules || [], check: result ? { ok: result.check.ok, lines: result.check.rules.map(rule => ({ ok: rule.ok, text: words.checkLines({ rules: [rule] }, t, label)[0] })) } : null };
                     } catch (_) { return { ledger: null, rules: [], check: null }; }
                 };
                 auxiliary = setup().openSchemeGuide({ parent: modal, template, ...guideFor(template), currency: state.currency,

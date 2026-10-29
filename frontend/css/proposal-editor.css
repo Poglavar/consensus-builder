@@ -162,35 +162,41 @@
 .scheme-gauge--pool { margin-top: var(--cb-space-2); }
 .scheme-gauge--pool.is-over-cap .scheme-gauge__need { background: var(--cb-danger); }
 
-/* The outcome chart: per party, puts in against gets back on one scale, owed and cap ticks, cash. */
-.scheme-outcome { display: grid; gap: var(--cb-space-2); margin: var(--cb-space-2) 0 0; }
-.scheme-outcome__measure { display: flex; gap: var(--cb-space-3); }
-.scheme-guide .scheme-outcome__legend { display: flex; flex-wrap: wrap; gap: var(--cb-space-1) var(--cb-space-3); margin: 0; padding: 0; list-style: none; font-size: var(--cb-text-xs); color: var(--cb-text-muted); }
-.scheme-outcome__legend li { display: inline-flex; align-items: center; gap: var(--cb-space-1); }
-.scheme-outcome__key { display: inline-block; width: 0.9rem; height: 0.5rem; border-radius: 2px; }
-.scheme-outcome__key--in { background: var(--cb-text-faint); opacity: 0.55; }
-.scheme-outcome__key--out { background: var(--cb-primary); }
-.scheme-outcome__key--owed { width: 2px; height: 0.8rem; background: var(--cb-text-strong); }
-.scheme-outcome__key--floor { width: 2px; height: 0.8rem; background: var(--cb-danger); }
-.scheme-guide .scheme-outcome__rows { display: grid; gap: var(--cb-space-1); max-height: 22rem; overflow-y: auto; margin: 0; padding: 0; list-style: none; }
-.scheme-outcome__row { display: grid; grid-template-columns: minmax(4rem, 8rem) minmax(6rem, 1fr) auto minmax(4rem, auto); align-items: center; gap: var(--cb-space-2); font-size: var(--cb-text-sm); }
-.scheme-outcome__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.scheme-outcome__bars { position: relative; display: grid; gap: 2px; padding-block: 2px; }
-.scheme-outcome__bar { display: block; height: 0.5rem; width: var(--scheme-length); min-width: 1px; border-radius: 2px; }
-.scheme-outcome__bar--in { background: var(--cb-text-faint); opacity: 0.55; }
-.scheme-outcome__bar--out { background: var(--cb-primary); }
-.scheme-outcome__row.is-over-cap .scheme-outcome__bar--out { background: var(--cb-danger); }
-.scheme-outcome__row--public .scheme-outcome__bar--out { background: var(--cb-warning); }
-.scheme-outcome__row--proposer .scheme-outcome__bar--out { background: var(--cb-info); }
-.scheme-outcome__tick { position: absolute; inset-block: 0; inset-inline-start: var(--scheme-at); width: 2px; }
-.scheme-outcome__tick--owed { background: var(--cb-text-strong); }
-.scheme-outcome__tick--floor { background: var(--cb-danger); }
-.scheme-outcome__figures { display: grid; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.scheme-outcome__figures small { color: var(--cb-text-muted); }
-.scheme-outcome__row.is-over-cap .scheme-outcome__figures small { color: var(--cb-danger); }
-.scheme-outcome__cash { font-variant-numeric: tabular-nums; text-align: end; white-space: nowrap; }
-.scheme-outcome__cash--receives { color: var(--cb-success); }
-.scheme-outcome__cash--pays { color: var(--cb-danger); }
+/* The guide's two parts: the scheme's rules, and this agreement under them (a card of its own). */
+.scheme-guide__part { display: grid; gap: var(--cb-space-3); }
+.scheme-guide__part > h3 { margin: 0; font-size: var(--cb-text-lg); font-weight: var(--cb-weight-semibold); color: var(--cb-text-strong); }
+.scheme-guide__section h4 { margin: 0; font-size: var(--cb-text-md); font-weight: var(--cb-weight-semibold); color: var(--cb-text-strong); }
+.scheme-guide__part--applied { padding: var(--cb-space-3); border: 1px solid var(--cb-primary); border-radius: var(--cb-radius-md); background: var(--cb-surface-2); }
+.scheme-guide__part--applied > p, .scheme-guide__part--applied > ul { margin: 0; }
+.scheme-guide__part--applied > ul { display: grid; gap: var(--cb-space-1); padding-left: var(--cb-space-4); }
+
+/* The owners chart: owners in rows; Puts in and Gets back, each a land line and a money line. */
+.scheme-owners-figure { display: grid; gap: var(--cb-space-2); margin: 0; }
+.scheme-guide .scheme-owners__legend { display: flex; flex-wrap: wrap; gap: var(--cb-space-1) var(--cb-space-3); margin: 0; padding: 0; list-style: none; font-size: var(--cb-text-xs); color: var(--cb-text-muted); }
+.scheme-owners__legend li { display: inline-flex; align-items: center; gap: var(--cb-space-1); }
+.scheme-owners__key { display: inline-block; width: 0.9rem; height: 0.5rem; border-radius: 2px; }
+.scheme-owners__key--land { background: var(--cb-primary); }
+.scheme-owners__key--money { background: var(--cb-success); }
+.scheme-owners__key--floor { width: 2px; height: 0.8rem; background: var(--cb-danger); }
+.scheme-owners__scroll { max-height: 24rem; overflow-y: auto; }
+.scheme-owners { width: 100%; border-collapse: collapse; font-size: var(--cb-text-sm); }
+.scheme-owners th, .scheme-owners td { padding: var(--cb-space-1) var(--cb-space-2); border-bottom: 1px solid var(--cb-line); text-align: start; vertical-align: top; }
+.scheme-owners thead th { position: sticky; top: 0; background: var(--cb-surface-2); z-index: var(--cb-z-local-1); }
+.scheme-owners tbody th { font-weight: var(--cb-weight-medium); min-width: 6rem; }
+.scheme-owners td { width: 40%; }
+.scheme-owners__line { display: grid; grid-template-columns: minmax(3rem, 1fr) auto; align-items: center; gap: var(--cb-space-2); min-height: 1.25rem; }
+.scheme-owners__track { position: relative; display: block; height: 0.5rem; }
+.scheme-owners__bar { display: block; height: 100%; width: var(--scheme-length); border-radius: 2px; }
+.scheme-owners__bar--land { background: var(--cb-primary); }
+.scheme-owners__bar--money { background: var(--cb-success); }
+.scheme-owners__row.is-over-cap td:last-child .scheme-owners__bar--land { background: var(--cb-danger); }
+.scheme-owners__row--public .scheme-owners__bar--land { background: var(--cb-warning); }
+.scheme-owners__row--sponsor .scheme-owners__bar--land { background: var(--cb-info); }
+.scheme-owners__tick { position: absolute; inset-block: -2px; inset-inline-start: var(--scheme-at); width: 2px; background: var(--cb-danger); }
+.scheme-owners__figure { font-variant-numeric: tabular-nums; white-space: nowrap; text-align: end; }
+.scheme-owners__figure small { color: var(--cb-text-muted); }
+.scheme-owners__row.is-over-cap .scheme-owners__figure small { color: var(--cb-danger); }
+.scheme-owners__line--money .scheme-owners__figure { color: var(--cb-success); }
 
 /* Every scheme in the same dimensions, one row each. */
 .scheme-compare { margin-bottom: var(--cb-space-3); }
@@ -203,10 +209,13 @@
 
 @media (max-width: 480px) {
     .scheme-dimensions__item { grid-template-columns: 1fr; gap: 0; }
-    /* Name and figures on one line, the bars and the cash below them. */
-    .scheme-outcome__row { grid-template-columns: 1fr auto; row-gap: 2px; }
-    .scheme-outcome__bars { grid-column: 1; grid-row: 2; }
-    .scheme-outcome__cash { grid-column: 2; grid-row: 2; }
+    /* Each line's figure goes under its bar so three columns fit a phone; amounts never break. */
+    .scheme-owners { font-size: var(--cb-text-xs); }
+    .scheme-owners th, .scheme-owners td { padding-inline: var(--cb-space-1); }
+    .scheme-owners tbody th { min-width: 4.5rem; overflow-wrap: anywhere; }
+    .scheme-owners__line { grid-template-columns: 1fr; gap: 0; }
+    .scheme-owners__figure { text-align: start; }
+    .scheme-owners__figure small { display: block; }
     .scheme-flow__step + .scheme-flow__step::before { content: none; }
 }
 
