@@ -385,6 +385,10 @@ A seeded, repeatable scenario giving the plan's undated members construction win
 
 A horizontal outline whose subject must be qualified. A building footprint describes the building's plan outline; a corridor footprint describes occupied transport land; a design footprint combines the authored parts relevant to an operation.
 
+### Building use
+
+What a building is for, by storey, stored on the building as `properties.use`: residential, residential-shops (shops on the ground floor, flats above), mixed (shops on the ground floor, offices on the first, flats above), office, public (school, clinic, civic) or industrial (`frontend/js/building-use.js`). A word naming one ('housing', 'offices', 'school') reads as that use; any other value is no stated use. A drawn Freeform building starts as residential; an imported one, and a design saved before uses existed, states none. Only a housing use, or a Block, Row or Detached rule building, gets the suggested default layout and its counted apartments; a building of another use counts its storeys as work. A building with no stated use follows the Plan stats housing share. Building use is distinct from a design's Land use (park, square or as is).
+
 ### Land take
 
 The exact ground a design consumes. A Freeform design's `geometry.landTake` can combine footprint cuts and chosen whole parcels while its material building footprint stays unchanged. A chosen whole parcel remains taken only while a building footprint overlaps it. When the last building leaves, that parcel and its surroundings leave the design, restoring its source state. It governs land formation and building-removal effects. Surrounding paving or green space occupies only taken land outside the building footprint; a footprint-only take has no surroundings.

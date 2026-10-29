@@ -235,8 +235,12 @@ sequenceDiagram
 - `frontend/js/proposals/plan-units.js` — Plan stats and Compare plans count apartments from the
   same generator: every new and remaining building of a plan is laid out (no roads; the entrance
   takes the longest facade) and its apartments on every floor are counted, a building's own floor
-  plans as they are; its shops count as work. A building with no layout (too small for a stair
-  core, an uploaded model without floor plans, no height) keeps the per-m² rule of plan-yield.js.
+  plans as they are; its shops count as work. Only a building of a housing use is laid out
+  (building-use.js; a Block, Row or Detached rule building counts as housing): its use sets the
+  ground floor (shops for residential-shops and mixed) and mixed use's first floor counts as
+  offices. The X-ray and 2D suggestions skip a building stated for another use. A building with no
+  layout (too small for a stair core, another or no stated use, an existing building, an uploaded
+  model without floor plans, no height) keeps the per-m² rule of plan-yield.js.
   The cells spin until the count arrives.
 - `frontend/js/suggested-layouts-2d.js` — the 2D counterpart: the "Suggested layouts (ground
   floor)" toggle in the Layers sheet under the building layers (`?suggested2d=1`) draws the ground

@@ -244,6 +244,15 @@
     function syncSlidersFromActive() {
         const hEl = document.getElementById('single-height-slider');
         if (hEl) { hEl.value = currentHeightM; const v = document.getElementById('single-height-value'); if (v) v.textContent = CbFormat.formatNumber(Number(currentHeightM), { maxFractionDigits: 0, minFractionDigits: 0 }); }
+        const useEl = document.getElementById('single-building-use');
+        if (useEl) useEl.value = window.BuildingUse.normalize(getActiveBuilding()?.feature?.properties?.use) || '';
+    }
+
+    // The Use select's options (building-use.js): no stated use first, for designs saved without one.
+    function singleBuildingUseOptions() {
+        const names = { '': ['useNotStated', 'Not stated'], residential: ['useResidential', 'Residential'], 'residential-shops': ['useResidentialShops', 'Residential, shops on the ground floor'],
+            mixed: ['useMixed', 'Mixed: shops, offices on the first floor, flats above'], office: ['useOffice', 'Office'], public: ['usePublic', 'Public (school, clinic, civic)'], industrial: ['useIndustrial', 'Industrial'] };
+        return ['', ...window.BuildingUse.USES].map(use => `<option value="${use}">${translateSingleBuildingText(`modal.singleBuilding.${names[use][0]}`, names[use][1])}</option>`).join('');
     }
 
     function markAsEditablePolygon(feature, heightM, rotationDeg = 0) {
@@ -262,7 +271,10 @@
     function buildInitialBuildingFeature(centerLatLng, widthM, lengthM, heightM, rotationDeg = 0) {
         // The starting site is a guide, not a lock. Shrinking to a narrow parcel made the initial
         // handles overlap; imported dimensions must also survive placement unchanged.
-        return markAsEditablePolygon(buildRectangleFeature(centerLatLng, widthM, lengthM, heightM, rotationDeg), heightM, rotationDeg);
+        const feature = markAsEditablePolygon(buildRectangleFeature(centerLatLng, widthM, lengthM, heightM, rotationDeg), heightM, rotationDeg);
+        // A drawn building starts as housing; an imported one keeps what its file says.
+        feature.properties.use = 'residential';
+        return feature;
     }
 
     function addNewBuildingEntry(centerLatLng, options = {}) {
@@ -416,6 +428,9 @@
         if (!feature?.geometry) return;
         const active = getActiveBuilding();
         markAsEditablePolygon(feature, active?.height ?? currentHeightM, active?.rotation ?? currentRotationDeg);
+        // The use belongs to the building, not to this outline.
+        const use = active?.feature?.properties?.use;
+        if (use && !feature.properties.use) feature.properties.use = use;
         singleRectFeature = feature;
         if (active) active.feature = feature;
         if (updateCenter) {
@@ -1334,6 +1349,11 @@
                         </div>
                         <div class="on-map-building__metrics"><span>${modalText.densityFootprint}</span><strong id="single-building-footprint-summary">—</strong></div>
                         <div class="on-map-building__fields">
+                            <div class="parameter-group">
+                                <label for="single-building-use">${translateSingleBuildingText('modal.singleBuilding.useLabel', 'Building use')}</label>
+                                <select id="single-building-use">${singleBuildingUseOptions()}</select>
+                                <p class="parameter-info-text">${translateSingleBuildingText('modal.singleBuilding.useInfo', 'Plan stats counts apartments only on housing storeys; a housing use gets a suggested layout in X-ray.')}</p>
+                            </div>
                             <section id="single-land-take" class="land-take-review" aria-label="${translateSingleBuildingText('landTake.title')}">
                                 <h3 class="cb-kicker">${translateSingleBuildingText('landTake.title')}</h3>
                                 <p data-land-intro>${translateSingleBuildingText('landTake.intro', '', { count: 0 })}</p>
@@ -1396,6 +1416,18 @@
                     try { updateSingleBuildingPreview(); } catch (_) { }
                     autosaveSingleBuildingDraft();
                 }
+            });
+
+            document.getElementById('single-building-use').addEventListener('change', event => {
+                const active = getActiveBuilding();
+                if (!active?.feature) return;
+                ensureSingleBuildingHistory().record();
+                // The active building's feature is singleRectFeature (setActiveBuilding).
+                const properties = { ...(active.feature.properties || {}) };
+                if (event.target.value) properties.use = event.target.value; else delete properties.use;
+                active.feature.properties = properties;
+                try { updateSingleBuildingPreview(); } catch (_) { }
+                autosaveSingleBuildingDraft();
             });
 
             document.getElementById('single-rotate-counterclockwise')

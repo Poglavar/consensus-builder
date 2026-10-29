@@ -8584,6 +8584,10 @@
     function appendSuggestedFloorPlans(feature, buildingMaterial, targetGroup, variationDeps) {
         if (!xrayEnabled || !suggestedPlansEnabled || !floorPlanGroup || !suggestedFloorPlans || !suggestedPlanContext) return false;
         if (!feature?.geometry || feature.properties?.modelUrl || feature.properties?.floorPlans) return false;
+        // The suggested layout is a housing layout: a building stated for another use gets none, and
+        // a stated housing use sets its ground floor (building-use.js).
+        const use = window.BuildingUse.normalize(feature.properties?.use);
+        if (use && !window.BuildingUse.housesPeople(use)) return false;
         let plan;
         try { plan = window.UrbanRuleVariation.plannedDrawPlan(feature, plannedRepresentation, variationDeps, buildOutDisplaySalt); } catch (_) { return false; }
         const subject = plan.buildOut || plan.massing;
@@ -8604,7 +8608,7 @@
                 owner: feature, parcels, turf, generator: suggestedFloorPlans, region: suggestedRegion(),
                 roads: suggestedRoadsFor(subject), heightM: height, storeyFallbackM: window.STOREY_HEIGHT_M || 3.3,
                 neighbours: suggestedPlanContext.neighbourPool(feature, window.proposedBuildings, window.buildingFeaturePool, turf),
-                cache: suggestedPlanCache, rules: facadeBayWidthM ? { facadeBayWidthM } : undefined
+                cache: suggestedPlanCache, rules: facadeBayWidthM || use ? { ...(facadeBayWidthM ? { facadeBayWidthM } : {}), ...(use ? window.BuildingUse.layoutRules(use) : {}) } : undefined
             });
         } catch (error) {
             floorPlanErrors++;
