@@ -524,6 +524,15 @@ textarea {
     color: var(--cb-text);
 }
 
+/* A message a click copies (js/ui-helpers.js makeMessageCopyable). */
+.cb-toast.is-copyable {
+    cursor: copy;
+}
+
+.cb-toast.is-copyable:hover {
+    box-shadow: var(--cb-shadow-md);
+}
+
 /* The status line's spinner: shown while anything holds a status activity (js/ui-helpers.js). */
 .cb-toast__spinner {
     display: none;

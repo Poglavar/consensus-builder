@@ -8,7 +8,9 @@ const source = readFileSync(new URL('../../frontend/js/ui-helpers.js', import.me
 
 function createElement(tagName) {
     const classes = new Set();
+    const listeners = {};
     return {
+        listeners,
         tagName,
         id: '',
         className: '',
@@ -21,7 +23,7 @@ function createElement(tagName) {
             contains: name => classes.has(name)
         },
         setAttribute: vi.fn(),
-        addEventListener: vi.fn(),
+        addEventListener: vi.fn((type, fn) => { listeners[type] = fn; }),
         children: [],
         appendChild(child) { this.children.push(child); child.parentNode = this; },
         focus: vi.fn(),
@@ -96,5 +98,21 @@ describe('copyTextWithFeedback', () => {
         expect(textarea.select).toHaveBeenCalledOnce();
         expect(harness.document.execCommand).toHaveBeenCalledWith('copy');
         expect(textarea.remove).toHaveBeenCalledOnce();
+    });
+});
+
+describe('a notice copies itself on a click', () => {
+    it('shows the copy cursor and copies the full message when clicked', async () => {
+        const clipboard = { writeText: vi.fn().mockResolvedValue(undefined) };
+        const harness = loadCopyHelper({ clipboard });
+
+        harness.window.showEphemeralMessage('Save failed: HTTP 500 (proposal 879)', 5000, 'error');
+        const pill = harness.notice();
+        expect(pill.classList.contains('is-copyable')).toBe(true);
+        expect(pill.title).toBe('Copy to clipboard');
+
+        await pill.listeners.click();
+        expect(clipboard.writeText).toHaveBeenCalledWith('Save failed: HTTP 500 (proposal 879)');
+        expect(harness.notice().textContent).toBe('Copied');
     });
 });

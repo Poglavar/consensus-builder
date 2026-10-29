@@ -317,7 +317,6 @@ button.status-log-message {
     position: static;
     transform: none;
     max-width: 100%;
-    pointer-events: none;
 }
 
 .floating-status:has(#floating-status-text:empty) {
@@ -1088,6 +1087,7 @@ input.proposal-author-name {
 .ephemeral-message.visible {
     opacity: 1;
     transform: translateY(0);
+    pointer-events: auto;
 }
 
 .takeover-buttons .btn {

@@ -1,10 +1,11 @@
 // The order of notices (design-language.md, Messages): one on screen at a time, never a stack. A new notice
 // replaces the current one once that has been readable for a minimum time, else waits its turn;
-// a notice that repeats the one showing or waiting is dropped. Pure state and timers; the DOM
-// work (make the pill, remove it) is the host's `show` and `hide`.
+// a notice that repeats the one showing or waiting is dropped. A held notice (the pointer is on it,
+// to click and copy it) does not expire; released, it stays the minimum time more. Pure state and
+// timers; the DOM work (make the pill, remove it) is the host's `show` and `hide`.
 //
 //   createNoticeQueue({ minDisplayMs, now, setTimer, clearTimer, show, hide }) ->
-//     { push(entry), current(), pending(), clear() }
+//     { push(entry), current(), pending(), clear(), hold(), release() }
 //   entry: { message, duration, type }; show(entry) returns a handle that hide(handle, entry) gets back.
 (function (root, factory) {
     const api = factory();
@@ -40,13 +41,30 @@
             hide(done.handle, done.entry);
         }
 
-        function present(entry) {
-            const handle = show(entry);
-            const timer = setTimer(() => {
+        function expireAfter(entry, ms) {
+            return setTimer(() => {
                 if (current && current.entry === entry) dismissCurrent();
                 pump();
-            }, entry.duration);
-            current = { entry, handle, shownAt: now(), timer };
+            }, ms);
+        }
+
+        function present(entry) {
+            const handle = show(entry);
+            current = { entry, handle, shownAt: now(), timer: null };
+            current.timer = expireAfter(entry, entry.duration);
+        }
+
+        function hold() {
+            if (!current || current.held) return;
+            clearTimer(current.timer);
+            current.timer = null;
+            current.held = true;
+        }
+
+        function release() {
+            if (!current || !current.held) return;
+            current.held = false;
+            current.timer = expireAfter(current.entry, minDisplayMs);
         }
 
         function pump() {
@@ -80,6 +98,8 @@
         return {
             push,
             clear,
+            hold,
+            release,
             current: () => (current ? current.entry : null),
             pending: () => waiting.slice()
         };
