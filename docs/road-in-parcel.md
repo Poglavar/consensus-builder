@@ -50,17 +50,26 @@ or MultiPolygon) and `metadata.mode: 'bounded'`.
    with, so oblique boundary edges cannot skew it.
 2. A kerb is an edge within 3° of a direction. Each lower kerb is paired with the nearest upper kerb
    above it, exactly, between the vertices' positions: a piece of street 3–60 m wide.
+   A kerb that faces a boundary that is not a kerb (a pool edge slanting along the street) borders
+   a wedge. When that kerb carries no street of two kerbs, its street is the rectangle against it
+   that covers the most of the wedge (at least 6 m wide and 1.5 widths long). The rest of the wedge
+   is pavement.
 3. Touching pieces of one street are one run; runs on both sides of a crossing or a T opening (no
    kerbs in either direction) are joined when a street of the other direction crosses the gap. A
    street is centred on the band all its pieces share and is at least 1.5 widths long.
-4. An end runs on to the centre of a street it meets (a T, a corner), else to the site's boundary.
-   Crossings are nodes both streets carry.
+4. An end runs on to the centre of a street it meets (a T, a corner), else towards the site's
+   boundary, as far as the street's whole width still fits: a slanted end leaves its triangle as
+   pavement. Crossings are nodes both streets carry.
 5. Nothing found: a lone rectangle is one street along its length; a square is flagged and the
-   panel offers "Turn 90°". Streets covering less than 60 % of the site: `not-a-grid`.
+   panel offers "Turn 90°". Streets and wedges covering less than 60 % of the site: `not-a-grid`.
 
 `proposals/road-in-site.js` turns the graph into the OSM form the corridor import reads: arms
-fitted, ways cut where the fitted cross-section changes, one road per connected part of the site,
-each bounded by its own part. Arms are grouped by width (to the half metre) for the lane choice.
+fitted, ways cut where the fitted cross-section changes, one road per street network. A part of the
+site holding one network is that road's land. A part holding networks that do not meet (a street
+narrowed to nothing by a slanted boundary before the next begins) is shared out: each network takes
+the ground its arms cover, and each leftover piece goes to the network it borders most, so the lands
+are disjoint and together are the part. Arms are grouped by width (to the half metre) for the lane
+choice.
 
 ## Where it is used
 

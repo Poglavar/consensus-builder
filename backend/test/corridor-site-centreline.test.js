@@ -105,6 +105,28 @@ describe('streetGraphOfRings', () => {
         graph.lines.forEach(line => line.arms.forEach(arm => expect(arm.widthM).toBeCloseTo(12, 0)));
     });
 
+    it('stops a street at a slanted end where its whole width still fits, leaving the triangle', () => {
+        // A 12 m strip whose right end is cut from (100, 0) back to (90, 12).
+        const graph = read([[[0, 0], [100, 0], [90, 12], [0, 12]]]);
+        expect(graph.issues).toEqual([]);
+        const xs = graph.lines[0].points.map(p => p[0]);
+        expect(Math.max(...xs)).toBeCloseTo(90, 1);
+        expect(graph.lines[0].arms[0].widthM).toBeCloseTo(12, 6);
+    });
+
+    it('reads a wedge (one kerb, the boundary slanting along it) as the largest street against the kerb', () => {
+        // Kerb y = 0 from 0 to 40; the far side slants from 4 m deep at x = 0 to 20 m at x = 40.
+        // Width w runs where 4 + 0.4x >= w, so w(50 - 2.5w) is largest at w = 10, x from 15 to 40.
+        const graph = read([[[0, 0], [40, 0], [40, 20], [0, 4]]]);
+        expect(graph.issues).toEqual([]);
+        expect(graph.lines).toHaveLength(1);
+        const [a, b] = graph.lines[0].points;
+        expect(graph.lines[0].arms[0].widthM).toBeCloseTo(10, 6);
+        expect(Math.min(a[0], b[0])).toBeCloseTo(15, 1);
+        expect(Math.max(a[0], b[0])).toBeCloseTo(40, 6);
+        expect(a[1]).toBeCloseTo(5, 6);
+    });
+
     it('refuses a lone rectangle too wide to be a street (a block)', () => {
         expect(read([box(0, 0, 150, 100)]).issues[0].code).toBe('not-a-grid');
     });

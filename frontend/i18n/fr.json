@@ -5153,6 +5153,7 @@
         },
         "failed": "Impossible de placer la rue : {{reason}}",
         "done": "Rues placées dans la parcelle : {{count}}.",
+        "donePartly": "Rues placées dans la parcelle : {{count}}. Non placées : {{failed}}",
         "noParcel": "Sélectionnez d’abord la parcelle réservée à la rue.",
         "taken": "Une route ou une voie ferrée occupe déjà ce terrain. Retirez-la de la carte d’abord, ou sélectionnez d’autres parcelles.",
         "joinFailed": "Les parcelles sélectionnées n’ont pas pu être réunies en un seul terrain.",

@@ -101,6 +101,74 @@ describe('roadsInSite', () => {
     });
 });
 
+// Two street strips of real Schelling layouts (metres), where the pool boundary slants along a
+// street: HR-339164-2952 (a 12 m street narrowing to nothing, a stub beyond) and HR-339270-6803
+// (a north-south street with one straight kerb).
+const WEDGE_STRIPS = {
+    'HR-339164-2952': [[-70.6, 7.1], [-55.6, 0.3], [-45.4, -2.5], [-37.3, -4.9], [58.5, -4.9], [58.5, -26.6], [64.5, -27.4], [70.5, -28], [70.5, -6.3], [56.3, -4.6], [39.4, -1.4], [15, 3.6], [-1.1, 7.1], [-50.9, 7.1], [-50.9, 23.2], [-63, 27.9], [-63, 7.1]],
+    'HR-339270-6803': [[-25.4, 20.4], [-17.3, 3.8], [-6.1, -16.5], [-2, -23], [4.7, -36.1], [4.7, -34], [25.4, -34], [19.7, -22], [4.7, -22], [4.7, 10.2], [0.2, 19.9], [-16.5, 33.9], [-21.4, 35.1], [-25.4, 36.2]]
+};
+
+describe('ragged street strips', () => {
+    const lanesOf = road => {
+        const definition = RoadInSite.boundedDefinition(road);
+        return Footprint.laneFootprintIn(definition, Footprint.frameForDefinition(definition));
+    };
+
+    it('stops the lanes at a slanted end, inside the strip', () => {
+        const site = polygon([[0, 0], [100, 0], [90, 12], [0, 12]]);
+        const [road] = RoadInSite.roadsInSite(site).roads;
+        const outside = turf.difference(turf.feature(lanesOf(road)), turf.feature(site));
+        expect(outside ? turf.area(outside) : 0).toBeLessThan(0.05);
+    });
+
+    Object.entries(WEDGE_STRIPS).forEach(([id, ring]) => {
+        it(`places ${id}'s strip as streets that do not meet, each a road on its own share`, () => {
+            const site = polygon(ring);
+            const planned = RoadInSite.roadsInSite(site);
+            expect(planned.issues).toEqual([]);
+            expect(planned.roads).toHaveLength(2);
+            const lands = planned.roads.map(road => turf.feature(road.site));
+            expect(lands.reduce((sum, land) => sum + turf.area(land), 0)).toBeCloseTo(turf.area(turf.feature(site)), 0);
+            const shared = turf.intersect(lands[0], lands[1]);
+            expect(shared ? turf.area(shared) : 0).toBeLessThan(0.01);
+            planned.roads.forEach((road, k) => {
+                const outside = turf.difference(turf.feature(lanesOf(road)), lands[k]);
+                expect(outside ? turf.area(outside) : 0).toBeLessThan(0.05);
+            });
+        });
+    });
+
+    it('leaves a split strip disconnected without turf to share it out', () => {
+        const saved = globalThis.turf;
+        globalThis.turf = undefined;
+        try {
+            expect(RoadInSite.blocking(RoadInSite.roadsInSite(polygon(WEDGE_STRIPS['HR-339164-2952'])).issues)[0].code).toBe('disconnected');
+        } finally {
+            globalThis.turf = saved;
+        }
+    });
+});
+
+// Cadastral parcel HR-339164-2952 (WGS84), whose Schelling layout leaves one ragged strip.
+const PARCEL_2952 = { type: 'Polygon', coordinates: [[[15.966418155,45.804398113],[15.966507594,45.804368568],[15.966699509,45.804305038],[15.966714834,45.804316897],[15.966782213,45.804293637],[15.967205347,45.804159472],[15.967335398,45.804134344],[15.967490345,45.804102224],[15.967591173,45.804079029],[15.96779562,45.804036701],[15.967978359,45.80400417],[15.968129472,45.803982828],[15.968299245,45.803960943],[15.968522326,45.803934178],[15.968657038,45.803919328],[15.968749107,45.803910758],[15.968836779,45.803904507],[15.968937689,45.803899577],[15.969020309,45.803896992],[15.969109213,45.803896415],[15.96925239,45.80389789],[15.969274775,45.803897904],[15.969303008,45.803932497],[15.969299935,45.803958037],[15.969300195,45.803971266],[15.969300358,45.803981164],[15.969301024,45.804019409],[15.969301287,45.804032367],[15.969301337,45.804040735],[15.969299339,45.804074918],[15.968892603,45.804095163],[15.968644748,45.804115966],[15.968426543,45.804144014],[15.968113096,45.804189525],[15.967846016,45.804229672],[15.96755077,45.804295691],[15.967283194,45.804360759],[15.966928723,45.804458264],[15.966642098,45.804550955],[15.966391948,45.804650114],[15.96617027,45.80473159],[15.966132947,45.804692634],[15.966064743,45.804721289],[15.966060315,45.804726937],[15.96604839,45.804709335],[15.966025167,45.804675664],[15.966011971,45.804656437],[15.965955045,45.804568531],[15.966261853,45.804464148],[15.966322123,45.804444454],[15.966426272,45.804410389],[15.966418155,45.804398113]]] };
+
+describe('a split strip in its parcel', () => {
+    const Arrangement = require('../../frontend/js/proposals/parcel-arrangement.js');
+
+    it('arranges the parcel whichever of the strip\'s roads is placed first', () => {
+        const pool = turf.feature(PARCEL_2952);
+        const plan = Grid.planFor({ lat: turf.centroid(pool).geometry.coordinates[1] });
+        const strip = Layouts.schellingPlots(pool, plan, null, { turf, SchellingGrid: Grid }).plots.find(plot => plot.source === 'schelling-remainder').geometry;
+        const planned = RoadInSite.roadsInSite(strip);
+        expect(planned.roads).toHaveLength(2);
+        [[0], [1], [0, 1]].forEach(set => {
+            const takes = set.map(k => ({ id: `take-${k}`, geometry: planned.roads[k].site }));
+            expect(Arrangement.fabricOver([{ id: 'HR-339164-2952', feature: pool }], takes).failed).toEqual([]);
+        });
+    });
+});
+
 describe('the bounded record', () => {
     const site = polygon([[0, 0], [120, 0], [120, 12], [0, 12]]);
     const definition = () => RoadInSite.boundedDefinition(RoadInSite.roadsInSite(site).roads[0]);
@@ -136,6 +204,16 @@ describe('MCP: a road drafted into a parcel', async () => {
         const narrow = intentDesign.modify(draft(), [{ type: 'set_profile', lanes: [{ type: 'driving', width: 3, direction: 'both' }] }], { turf: appTurf });
         expect(narrow.site).toEqual(outline);
         expect(() => intentDesign.modify(draft(), [{ type: 'shift', metres: 2, toward: 'north' }], { turf: appTurf })).toThrow(/keeps its parcel/);
+    });
+
+    it('drafts each road of a strip whose streets do not meet with part', () => {
+        const strip = polygon(WEDGE_STRIPS['HR-339164-2952']);
+        const build = part => intentDesign.build({ kind: 'road', bounded: true, site: strip, part, drivingSide: 'right', authoredAt: '2026-10-29T00:00:00Z' }, { turf: appTurf });
+        expect(() => build(undefined)).toThrow(/part 0–1/);
+        const lands = [0, 1].map(part => build(part).roadProposal.definition);
+        const sites = lands.map(definition => OsmForm.toView(definition).bound.site);
+        expect(turf.area(turf.feature(sites[0])) + turf.area(turf.feature(sites[1]))).toBeCloseTo(turf.area(turf.feature(strip)), 0);
+        expect(() => build(2)).toThrow(/part 0–1/);
     });
 
     it('refuses an OSM edit that moves a node off the parcel, and one that changes the parcel', () => {

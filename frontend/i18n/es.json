@@ -3467,6 +3467,7 @@
         },
         "failed": "No se pudo colocar la calle: {{reason}}",
         "done": "Calles colocadas en la parcela: {{count}}.",
+        "donePartly": "Calles colocadas en la parcela: {{count}}. Sin colocar: {{failed}}",
         "noParcel": "Selecciona primero la parcela reservada para la calle.",
         "taken": "Una calle o vía ya ocupa este terreno. Quítala del mapa primero o selecciona otras parcelas.",
         "joinFailed": "Las parcelas seleccionadas no se pudieron unir en un solo terreno.",

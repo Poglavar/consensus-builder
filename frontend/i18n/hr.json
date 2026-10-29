@@ -3472,6 +3472,7 @@
         },
         "failed": "Cestu nije bilo moguće postaviti: {{reason}}",
         "done": "Ceste postavljene u česticu: {{count}}.",
+        "donePartly": "Ceste smještene u česticu: {{count}}. Nije smješteno: {{failed}}",
         "noParcel": "Najprije odaberite česticu ostavljenu za cestu.",
         "taken": "Ovo zemljište već drži cesta ili pruga. Najprije je uklonite s karte ili odaberite druge čestice.",
         "joinFailed": "Odabrane čestice nije bilo moguće spojiti u jedno zemljište.",

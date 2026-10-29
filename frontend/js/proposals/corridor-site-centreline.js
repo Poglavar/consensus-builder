@@ -15,6 +15,7 @@
     const DEFAULTS = Object.freeze({
         minStreetWidthM: 3,      // a strip narrower than this is not a street
         maxStreetWidthM: 60,     // nor one wider (an 80 m boulevard parcel is placed by hand)
+        minTaperStreetWidthM: 6, // a street read from one kerb alone (a wedge) is at least this wide
         axisToleranceDeg: 3,     // an edge this close to a dominant direction is a kerb
         minLengthRatio: 1.5,     // a street is at least this many widths long (a square is not a street)
         squareRatio: 0.15,       // a lone rectangle whose sides differ less than this is a square
@@ -138,10 +139,26 @@
         return best;
     }
 
+    // The first edge below (smaller c than) c0 at along-position a.
+    function firstHitBelow(edges, a, c0) {
+        let best = null;
+        edges.forEach(edge => {
+            const a0 = Math.min(edge[0][0], edge[1][0]);
+            const a1 = Math.max(edge[0][0], edge[1][0]);
+            if (a1 - a0 < 1e-12 || a < a0 || a > a1) return;
+            const c = cAt(edge, a);
+            if (c < c0 - EPS && (!best || c > best.c)) best = { edge, c };
+        });
+        return best;
+    }
+
     // Every strip whose lower kerb (an edge running +a, the site above it) faces an upper kerb
-    // (running −a) at a street's distance: { from, to, low, high } in along/across coordinates.
-    // Sub-intervals between the vertices' along-positions have one first edge above them, since
-    // the edges of a simple polygon never cross, so the pairing is exact without sampling.
+    // (running −a) at a street's distance: pieces { from, to, low, high } in along/across
+    // coordinates. Sub-intervals between the vertices' along-positions have one first edge above
+    // them, since the edges of a simple polygon never cross, so the pairing is exact without
+    // sampling. A kerb that faces a boundary that is not a kerb (a pool edge cut along the
+    // street at a slant) gives tapers { side, kerbC, from, to, depthFrom, depthTo }: the wedge
+    // between the kerb and that boundary.
     function piecesAlong(edgesAC, options) {
         const tolerance = Math.sin(options.axisToleranceDeg * Math.PI / 180);
         const kerbOf = new Map();
@@ -154,8 +171,10 @@
         });
         const alongs = [...new Set(edgesAC.map(edge => edge[0][0]))].sort((u, v) => u - v);
         const pieces = [];
+        const tapers = [];
         edgesAC.forEach(edge => {
-            if (kerbOf.get(edge) !== 'low') return;
+            const side = kerbOf.get(edge);
+            if (!side) return;
             const a0 = Math.min(edge[0][0], edge[1][0]);
             const a1 = Math.max(edge[0][0], edge[1][0]);
             const cuts = [a0, ...alongs.filter(a => a > a0 + 1e-9 && a < a1 - 1e-9), a1];
@@ -164,8 +183,16 @@
                 const v = cuts[k + 1];
                 if (v - u < 1e-6) continue;
                 const mid = (u + v) / 2;
-                const hit = firstHitAbove(edgesAC, mid, cAt(edge, mid));
-                if (!hit || kerbOf.get(hit.edge) !== 'high') continue;
+                const hit = side === 'low' ? firstHitAbove(edgesAC, mid, cAt(edge, mid)) : firstHitBelow(edgesAC, mid, cAt(edge, mid));
+                if (!hit) continue;
+                const facing = kerbOf.get(hit.edge);
+                if (!facing) {
+                    const depth = a => Math.abs(cAt(hit.edge, a) - cAt(edge, a));
+                    tapers.push({ side, kerbC: cAt(edge, mid), from: u, to: v, depthFrom: depth(u), depthTo: depth(v) });
+                    continue;
+                }
+                // A pair of kerbs is read once, from its lower kerb.
+                if (side !== 'low' || facing !== 'high') continue;
                 const width = hit.c - cAt(edge, mid);
                 if (width < options.minStreetWidthM || width > options.maxStreetWidthM) continue;
                 const low = Math.max(cAt(edge, u), cAt(edge, v));
@@ -174,13 +201,73 @@
                 pieces.push({ from: u, to: v, low, high });
             }
         });
-        return pieces;
+        return { pieces: pieces.concat(wedgeStreets(tapers, pieces, options)), tapers };
+    }
+
+    // A kerb that faces only a slanted boundary, and carries no street of two kerbs, still holds a
+    // street: the rectangle against it that covers the most of the wedge (the user's rule: the road
+    // goes as far as it can be rectangular; the rest of the wedge is pavement). One piece per kerb.
+    function wedgeStreets(tapers, pieces, options) {
+        const sameKerb = (p, q) => p.side === q.side && Math.abs(p.kerbC - q.kerbC) <= 0.1;
+        const groups = [];
+        tapers.slice().sort((p, q) => p.from - q.from).forEach(taper => {
+            const group = groups.find(g => sameKerb(g[0], taper) && Math.abs(g[g.length - 1].to - taper.from) <= 1e-3);
+            if (group) group.push(taper); else groups.push([taper]);
+        });
+        const out = [];
+        groups.forEach(group => {
+            const kerbC = group[0].kerbC;
+            const side = group[0].side;
+            const from = group[0].from;
+            const to = group[group.length - 1].to;
+            const carriesStreet = pieces.some(p => Math.abs((side === 'low' ? p.low : p.high) - kerbC) <= 0.1
+                && p.from <= to + 1e-3 && p.to >= from - 1e-3);
+            if (carriesStreet) return;
+            // Widths tried: the depths at the tapers' ends and every half metre between, each with
+            // the longest stretch at least that deep.
+            const deepest = Math.min(options.maxStreetWidthM, Math.max(...group.flatMap(t => [t.depthFrom, t.depthTo])));
+            const steps = [];
+            for (let w = options.minTaperStreetWidthM; w < deepest; w += 0.5) steps.push(w);
+            const widths = [...new Set([...steps, ...group.flatMap(t => [t.depthFrom, t.depthTo])])]
+                .map(w => Math.min(w, options.maxStreetWidthM))
+                .filter(w => w >= options.minTaperStreetWidthM);
+            let best = null;
+            widths.forEach(width => {
+                // Spans of consecutive tapers join only where one runs to its end and the next
+                // starts at its start, which is exactly when they touch.
+                const runs = [];
+                group.map(t => deepEnough(t, width)).filter(Boolean).forEach(span => {
+                    const last = runs[runs.length - 1];
+                    if (last && Math.abs(last.to - span.from) <= 1e-6) last.to = span.to;
+                    else runs.push({ ...span });
+                });
+                const longest = runs.reduce((top, run) => (!top || run.to - run.from > top.to - top.from ? run : top), null);
+                if (!longest || longest.to - longest.from < options.minLengthRatio * width) return;
+                const score = width * (longest.to - longest.from);
+                if (!best || score > best.score) best = { score, width, ...longest };
+            });
+            if (!best) return;
+            out.push(side === 'low'
+                ? { from: best.from, to: best.to, low: kerbC, high: kerbC + best.width, oneSided: true }
+                : { from: best.from, to: best.to, low: kerbC - best.width, high: kerbC, oneSided: true });
+        });
+        return out;
+    }
+
+    // The part of a taper at least `width` deep (its depth runs linearly from depthFrom to depthTo).
+    function deepEnough(taper, width) {
+        const { from, to, depthFrom: d0, depthTo: d1 } = taper;
+        const tol = 1e-9;
+        if (d0 >= width - tol && d1 >= width - tol) return { from, to };
+        if (d0 < width - tol && d1 < width - tol) return null;
+        const at = from + (to - from) * ((width - d0) / (d1 - d0));
+        return d0 >= width - tol ? { from, to: at } : { from: at, to };
     }
 
     // Pieces in along/across coordinates back to the street frame: along x, across is y; along y,
     // across is x (c = −x flips the band).
     function worldPiece(axis, piece) {
-        return axis === 'x' ? { ...piece } : { from: piece.from, to: piece.to, low: -piece.high, high: -piece.low };
+        return axis === 'x' ? { ...piece } : { ...piece, low: -piece.high, high: -piece.low };
     }
 
     // ---- runs and lines --------------------------------------------------------------------------
@@ -296,7 +383,9 @@
     }
 
     // Each end of a line runs on to the centre of a street it meets (a T or a corner), else to the
-    // site's boundary (where the street leaves the site).
+    // site's boundary (where the street leaves the site), as far as its whole width still fits:
+    // a boundary cut at a slant stops the road at its nearer corner and leaves the triangle
+    // beyond as pavement (the user's rule).
     function extendEnds(lines, edges, options) {
         const tol = options.joinToleranceM;
         const original = lines.map(line => ({ from: line.from, to: line.to }));
@@ -324,7 +413,9 @@
                     return;
                 }
                 const direction = line.axis === 'x' ? [sign, 0] : [0, sign];
-                const distance = rayToBoundary(edges, pointOn(line, at), direction);
+                const half = 0.999 * Math.min(...line.pieces.map(p => Math.min(line.c - p.low, p.high - line.c)));
+                const distance = Math.min(...[0, half, -half].map(offset =>
+                    rayToBoundary(edges, pointOn({ ...line, c: line.c + offset }, at), direction)));
                 if (Number.isFinite(distance) && distance <= 1.5 * (line.high - line.low) + tol) {
                     line[end] = at + sign * distance;
                 }
@@ -404,9 +495,16 @@
         const area = polygonArea(rings);
 
         const runs = {};
+        // The wedges beside kerbs that face a slanted boundary: pavement around the streets, so
+        // they count as read ground (the coverage below), capped at a street's depth.
+        let taperArea = 0;
         ['x', 'y'].forEach(axis => {
             const edgesAC = edges.map(([a, b]) => [toAC[axis](a), toAC[axis](b)]);
-            runs[axis] = runsOf(axis, piecesAlong(edgesAC, options).map(piece => worldPiece(axis, piece)));
+            const read = piecesAlong(edgesAC, options);
+            runs[axis] = runsOf(axis, read.pieces.map(piece => worldPiece(axis, piece)));
+            read.tapers.forEach(t => {
+                taperArea += (t.to - t.from) * (Math.min(t.depthFrom, options.maxStreetWidthM) + Math.min(t.depthTo, options.maxStreetWidthM)) / 2;
+            });
         });
         // A run of the other direction, read as a band in this direction's along-coordinate.
         const crossBands = axis => runs[axis === 'x' ? 'y' : 'x'].map(run => ({ low: run.low, high: run.high, from: run.from, to: run.to }));
@@ -422,7 +520,10 @@
             lines = [fallback.line];
             if (fallback.square) issues.push({ code: 'square' });
         } else {
-            const covered = lines.reduce((sum, line) => sum + line.pieces.reduce((s, p) => s + (p.to - p.from) * (p.high - p.low), 0), 0);
+            // A street read from one kerb lies inside its wedge, which is counted already.
+            const covered = taperArea + lines.reduce((sum, line) => sum + line.pieces
+                .filter(p => !p.oneSided)
+                .reduce((s, p) => s + (p.to - p.from) * (p.high - p.low), 0), 0);
             if (covered < options.minCoverage * area) return { theta, lines: [], nodes: [], issues: [{ code: 'not-a-grid', coverage: covered / area }] };
         }
 

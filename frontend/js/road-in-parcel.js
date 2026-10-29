@@ -275,7 +275,10 @@
                 return;
             }
             close();
-            win.updateStatus?.(t('done', 'Roads placed in the parcel: {{count}}.', { count: created.length }));
+            // Some roads of the site may have failed while others were placed: say which.
+            win.updateStatus?.(failed.length
+                ? t('donePartly', 'Roads placed in the parcel: {{count}}. Not placed: {{failed}}', { count: created.length, failed: failed.filter(Boolean).join(' ') || '?' })
+                : t('done', 'Roads placed in the parcel: {{count}}.', { count: created.length }));
         } finally {
             state.placing = false;
         }

@@ -3440,6 +3440,7 @@
         },
         "failed": "Could not place the road: {{reason}}",
         "done": "Roads placed in the parcel: {{count}}.",
+        "donePartly": "Roads placed in the parcel: {{count}}. Not placed: {{failed}}",
         "noParcel": "Select the parcel left for the road first.",
         "taken": "A road or track already holds this ground. Unapply it first, or select other parcels.",
         "joinFailed": "The selected parcels could not be joined into one site.",

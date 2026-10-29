@@ -3472,6 +3472,7 @@
         },
         "failed": "Put nije bilo moguće postaviti: {{reason}}",
         "done": "Putevi postavljeni u parcelu: {{count}}.",
+        "donePartly": "Putevi smešteni u parcelu: {{count}}. Nije smešteno: {{failed}}",
         "noParcel": "Najpre izaberite parcelu ostavljenu za put.",
         "taken": "Ovo zemljište već drži put ili pruga. Najpre je uklonite sa mape ili izaberite druge parcele.",
         "joinFailed": "Izabrane parcele nije bilo moguće spojiti u jedno zemljište.",

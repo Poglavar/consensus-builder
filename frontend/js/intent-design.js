@@ -53,13 +53,14 @@
     }
     // A road placed into a parcel (docs/road-in-parcel.md): its land is the site, its streets are
     // read from the site's shape, and the lanes asked for (or the automatic ones) are fitted to each
-    // street's width with pavements and verges to the edges. One connected site, one road.
+    // street's width with pavements and verges to the edges. One connected site, one road; a site
+    // whose streets do not meet is shared between them, and `part` picks which road to draft.
     function buildBoundedRoad(intent, d) {
         const site = polygon(intent.site, d);
         const inSite = load('__roadInSite', './proposals/road-in-site.js');
         const fit = load('__corridorSiteFit', './proposals/corridor-site-fit.js');
         const core = (intent.lanes || intent.preset) ? fit.coreOf(roadProfile(intent, d)) : null;
-        const plan = inSite.roadsInSite(site, { core: core && core.length ? core : null, turn: intent.turn === true, drivingSide: drivingSideOf(intent) });
+        const plan = inSite.roadsInSite(site, { core: core && core.length ? core : null, turn: intent.turn === true, drivingSide: drivingSideOf(intent), turf: d.turf });
         const issue = inSite.blocking(plan.issues)[0];
         if (issue) {
             const group = plan.groups.find(g => g.key === issue.key);
@@ -68,8 +69,12 @@
                     : issue.code === 'too-narrow' ? `A street of the site is ${issue.widthM} m wide, too narrow for a lane`
                         : `The lanes need ${group ? group.requiredM : '?'} m with their pavements; a street of the site is ${issue.widthM} m wide`);
         }
-        if (plan.roads.length !== 1) fail(`The site has ${plan.roads.length} separate parts; draft one road per part`);
-        const definition = inSite.boundedDefinition(plan.roads[0]);
+        const count = plan.roads.length;
+        if (count > 1 && !(Number.isInteger(intent.part) && intent.part >= 0 && intent.part < count)) {
+            fail(`The site holds ${count} streets that do not meet, each a road on its own share of the site; draft each with part 0–${count - 1}`);
+        }
+        if (count === 1 && intent.part != null && intent.part !== 0) fail('The site holds one road; leave part out');
+        const definition = inSite.boundedDefinition(plan.roads[count > 1 ? intent.part : 0]);
         Object.assign(definition, { kind: 'road', tunnels: [], drivingSide: drivingSideOf(intent) });
         definition.metadata = { ...intent.metadata, mode: 'bounded', type: 'road', isRoad: true, isTrack: false, isCorridor: true };
         const material = d.footprint.materialize(definition);

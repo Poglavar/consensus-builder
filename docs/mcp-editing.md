@@ -240,7 +240,8 @@ bounded road ([road in a parcel](road-in-parcel.md)): the streets are read from 
 grid, a `preset` or `lanes` is the core of every street (the automatic lanes per street width
 otherwise), and pavements and verges fill each street to its edges. The design's site and land are
 the ground. A site in separate parts, curved ground, or lanes wider than a street are refused with
-the widths. `ugt_modify_design` changes its lanes with `set_profile` only; JSON Patch edits of its
+the widths. Ground whose streets do not meet is shared between them, one road each; the refusal names
+how many, and `part` (0, 1, …) drafts each. `ugt_modify_design` changes its lanes with `set_profile` only; JSON Patch edits of its
 OSM nodes re-fill the edges and are refused when a node leaves the ground or the lanes no longer fit,
-and `bound` is not editable. This is the agent's path to the parcel layout's "Make the street strips
-roads": draft the road with the layout's street-strip plots as the `outline`.
+and `bound` is not editable. A parcel layout never places roads: to put a road in its street
+strips, draft it with the strip plots as the `outline`.

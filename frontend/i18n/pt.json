@@ -5153,6 +5153,7 @@
         },
         "failed": "Não foi possível colocar a rua: {{reason}}",
         "done": "Ruas colocadas no lote: {{count}}.",
+        "donePartly": "Ruas colocadas na parcela: {{count}}. Não colocadas: {{failed}}",
         "noParcel": "Selecione primeiro o lote reservado para a rua.",
         "taken": "Uma estrada ou via-férrea já ocupa este terreno. Retire-a do mapa primeiro, ou selecione outros lotes.",
         "joinFailed": "Não foi possível juntar os lotes selecionados num só terreno.",
