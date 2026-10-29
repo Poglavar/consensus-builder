@@ -1,7 +1,7 @@
 <!-- Plan for CityGML and CityJSON beside our own formats: imports wherever they are used to exchange what we import, exports as an extra option, and how our records map onto CityGML and LADM. -->
 # CityGML and CityJSON (plan)
 
-Status: the city-model building source is built for Vienna (`wien-lod2`); the other imports and the exports are not started.
+Status: city-model building sources are built for Vienna (`wien-lod2`, CityGML) and the Netherlands (`nl-3dbag`, CityJSON); the other imports and the exports are not started.
 
 CityGML (OGC) is the open standard for 3D city models: buildings and their storeys, rooms and
 units, roads and rail, vegetation, water, land use, terrain and city furniture, each with
@@ -26,7 +26,7 @@ loosely in INSPIRE planned land use) and agreements (no standard).
 
 | Our import or export | CityGML / CityJSON | Why |
 |---|---|---|
-| City building sources (`backend/buildings/`) | Import: CityGML sheets (built: Vienna); CityJSON tiles (3D BAG), German state LoD2 (CityGML), NYC's 3D model (CityGML) | How cities publish their 3D buildings. |
+| City building sources (`backend/buildings/`) | Import: CityGML sheets (built: Vienna), CityJSON API pages (built: 3D BAG); German state LoD2 (CityGML), NYC's 3D model (CityGML) | How cities publish their 3D buildings. |
 | A person's building source URL (Data sources) | Import: a CityJSON / CityJSONSeq or CityGML URL, beside ArcGIS, WFS, OGC API and GeoJSON | The same files, chosen by the person. |
 | Building model upload (`building-upload.js`, MCP `ugt_import_model`) | Import: a CityGML or CityJSON building beside GLB/glTF, with its storeys and units when present | GIS tools and city portals hand out single buildings this way. |
 | Footprint import in the building editors (Freeform, Row, Block) | Import: CityGML / CityJSON buildings as footprints with heights | Same files, when only the outline is wanted. |
@@ -36,7 +36,7 @@ loosely in INSPIRE planned land use) and agreements (no standard).
 | Parcels, parcel layouts, ownership, agreements | None | Parcels travel as cadastral GML/GeoJSON (LADM concepts), not CityGML; agreements have no standard. |
 | Parks, land use, terrain, trees as imports | None for now | Little exchanged as CityGML; revisit when a source needs it. |
 
-Order: a CityJSON tile source (3D BAG), then building upload and footprint import from one shared
+Order (3D BAG done): building upload and footprint import from one shared
 reader, then the CityJSON plan and design export, then CityJSON plan import, then the person's URL
 sources and the remaining city sources. CityGML XML and CityJSON share one reader output (the
 `citygml.js` building shape), so each import point reads both.
@@ -67,11 +67,22 @@ A building source for cities that publish their city model as CityGML sheets:
   building) into roof, wall and ground surfaces, falling back to the geometry's polygons when a
   building has no semantic surfaces (LOD1). `buildingRecord` projects them into the 3D view's mesh
   records and takes the ground surfaces as the footprint.
-- `backend/buildings/citygml-source.js` maps a request's box onto the city's sheet grid, fetches
-  the zipped sheets it needs (at most 16, kept in memory, 64 sheets), and answers `near` with the
-  surfaces and `footprints` / `footprintsUnder` with the footprints. A sheet the city does not
-  publish (404) is empty; any other failure is an error; a box needing more sheets is `partial`.
-- A city is a small config: CRS, height datum offset, sheet grid and URL, attribution.
+- `backend/buildings/cityjson.js` reads CityJSON documents and CityJSONFeatures into the same
+  building shape: a building's parts join it, each object draws its most detailed geometry up to a
+  `maxLod`, and a LoD 0 footprint stands in only when no member has a body.
+- `backend/buildings/citygml-source.js` maps a request's box onto the city's sheet grid, reads the
+  sheets it needs (at most 16, kept in memory, 64 sheets), and answers `near` with the surfaces and
+  `footprints` / `footprintsUnder` with the footprints. A sheet the city does not publish is empty;
+  any other failure is an error; a box needing more sheets is `partial`.
+- A city is a small config: CRS, height datum offset, sheet grid, how a sheet is read (a zipped
+  CityGML file, or a CityJSON API box), attribution. The city lists OpenStreetMap after it, which
+  answers any cell the city model fails on or leaves empty.
+- `nl-3dbag` (`backend/buildings/nl-3dbag.js`) reads the 3D BAG's OGC API (`api.3dbag.nl`) per
+  250 m sheet of EPSG:28992 (NAP heights), at LoD 2.2. Pages hold at most 100 buildings and follow
+  the `next` links (offsets are 1-based; `numberMatched` counts each building twice, so buildings
+  are joined by id). Heights come from `b3_h_dak_max` − `b3_h_maaiveld`, storeys from
+  `b3_bouwlagen`. A dense 250 m sheet in Amsterdam is 2–4 s and about 14 kB per building. The six
+  Dutch cities in the city config list it.
   `wien-lod2` (`backend/buildings/wien-lod2.js`) reads Vienna's generalised roof model (LOD2.1):
   500 m sheets in EPSG:31256, heights above Wiener Null (+156.68 m to the Adriatic datum),
   CC BY 4.0. Vienna lists it before OpenStreetMap.

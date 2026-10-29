@@ -14915,7 +14915,7 @@
                 liveRadiusKm: 12,
                 attribution: '<a href="https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart">Kadaster / PDOK · Kadastrale Kaart</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'nl-3dbag', name: '3DBAG (LoD 2.2)', attribution: '<a href="https://3dbag.nl">3DBAG</a> by tudelft3d and 3DGI · CC BY 4.0' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -15135,7 +15135,7 @@
                 liveRadiusKm: 8,
                 attribution: '<a href="https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart">Kadaster / PDOK · Kadastrale Kaart</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'nl-3dbag', name: '3DBAG (LoD 2.2)', attribution: '<a href="https://3dbag.nl">3DBAG</a> by tudelft3d and 3DGI · CC BY 4.0' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -17427,7 +17427,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart">Kadaster / PDOK cadastral map</a> · bounded public sample · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'nl-3dbag', name: '3DBAG (LoD 2.2)', attribution: '<a href="https://3dbag.nl">3DBAG</a> by tudelft3d and 3DGI · CC BY 4.0' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -18786,7 +18786,7 @@
                 requiresBackend: true, ownership: false, liveRadiusKm: 3,
                 attribution: '<a href="https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart">Netherlands Kadaster / PDOK cadastral map</a> · adapted'
             },
-            buildings: { sources: [{ id: 'osm' }] },
+            buildings: { sources: [{ id: 'nl-3dbag', name: '3DBAG (LoD 2.2)', attribution: '<a href="https://3dbag.nl">3DBAG</a> by tudelft3d and 3DGI · CC BY 4.0' }, { id: 'osm' }] },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
@@ -20189,7 +20189,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [51.4432163203009, 5.45844256201511], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [51.4432163203009, 5.45844256201511], fallbackDataset: [5.45844256201511, 51.4432163203009] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nl-3dbag', name: '3DBAG (LoD 2.2)', attribution: '<a href="https://3dbag.nl">3DBAG</a> by tudelft3d and 3DGI · CC BY 4.0' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         freiburg_im_breisgau: {
             id: 'freiburg_im_breisgau', wupCityCode: '2814',
@@ -20441,7 +20441,7 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM }, defaultCenter: [53.2187480982514, 6.5694015697624], defaultZoom: SHARED_DEFAULT_ZOOM, parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
             projection: { datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs', fallbackLatLng: [53.2187480982514, 6.5694015697624], fallbackDataset: [6.5694015697624, 53.2187480982514] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source', sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-', requiresBackend: true, ownership: false, liveRadiusKm: 8, attribution: 'Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.' },
-            buildings: { sources: [{ id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            buildings: { sources: [{ id: 'nl-3dbag', name: '3DBAG (LoD 2.2)', attribution: '<a href="https://3dbag.nl">3DBAG</a> by tudelft3d and 3DGI · CC BY 4.0' }, { id: 'osm' }] }, sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }, parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
         paderborn: {
             id: 'paderborn', wupCityCode: '3553',

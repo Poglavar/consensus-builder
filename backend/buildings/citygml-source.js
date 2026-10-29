@@ -1,7 +1,8 @@
-// A building source read from a city's CityGML sheets: each request maps its box onto the source's
-// sheet grid, fetches the zipped sheets it needs (kept in memory), and answers near with the real
-// LOD2 surfaces and footprints/footprintsUnder from their ground surfaces. A sheet the city does not
-// publish (404, outside its area) is empty; any other failure is an error.
+// A building source read from a city model in sheets (tiles): each request maps its box onto the
+// source's sheet grid, reads the sheets it needs (kept in memory), and answers near with the real
+// LOD2 surfaces and footprints/footprintsUnder from their ground surfaces. A city's config says how a
+// sheet is read: a zipped CityGML file (readZippedCityGml) or a CityJSON API box (wien-lod2.js,
+// nl-3dbag.js). A sheet the city does not publish is empty; any other failure is an error.
 import * as turf from '@turf/turf';
 import proj4 from 'proj4';
 import { unzipSync, strFromU8 } from 'fflate';
@@ -14,8 +15,20 @@ const { createFootprintProvider } = require('../../frontend/js/footprint-provide
 const MAX_SHEETS = 16;
 const SHEET_CACHE = 64;
 
+// The buildings of one zipped CityGML sheet at url, or [] when it is not published (404).
+export async function readZippedCityGml(url, fetchImpl, label) {
+    const response = await fetchImpl(url);
+    if (response.status === 404) return [];
+    if (!response.ok) throw new Error(`${label}: HTTP ${response.status}`);
+    const files = unzipSync(new Uint8Array(await response.arrayBuffer()));
+    const gml = Object.keys(files).filter(name => /\.(gml|xml)$/i.test(name));
+    if (!gml.length) throw new Error(`${label}: the archive holds no CityGML file`);
+    return gml.flatMap(name => parseCityGml(strFromU8(files[name])));
+}
+
 // config: { id, crs (proj4 definition), heightOffsetM, sheetsFor([minX, minY, maxX, maxY]) → [sheet ids],
-// sheetUrl(sheet) → URL, attribution }. fetchImpl and log are injectable for tests.
+// readSheet(sheet, { fetchImpl }) → parsed buildings (citygml.js shape), attribution }. fetchImpl and
+// log are injectable for tests.
 export function createCityGmlSource(config, { fetchImpl = fetch, log = console } = {}) {
     const toLngLat = proj4(config.crs, 'EPSG:4326');
     const sheets = new Map();
@@ -28,13 +41,7 @@ export function createCityGmlSource(config, { fetchImpl = fetch, log = console }
         }
         const entry = (async () => {
             const started = Date.now();
-            const response = await fetchImpl(config.sheetUrl(sheet));
-            if (response.status === 404) return [];
-            if (!response.ok) throw new Error(`${config.id} sheet ${sheet}: HTTP ${response.status}`);
-            const files = unzipSync(new Uint8Array(await response.arrayBuffer()));
-            const gml = Object.keys(files).filter(name => /\.(gml|xml)$/i.test(name));
-            if (!gml.length) throw new Error(`${config.id} sheet ${sheet}: the archive holds no CityGML file`);
-            const records = gml.flatMap(name => parseCityGml(strFromU8(files[name])))
+            const records = (await config.readSheet(sheet, { fetchImpl }))
                 .map(building => buildingRecord(building, (x, y) => toLngLat.forward([x, y]),
                     { heightOffsetM: config.heightOffsetM || 0, idPrefix: `${config.id}:` }))
                 .filter(Boolean);
