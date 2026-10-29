@@ -56,6 +56,7 @@ Each document describes a current contract, an open plan or research. Verificati
 
 **Markets and chain**
 
+- [Blockchain flows](blockchain-flows.md): reading and minting designs, plans and agreements on the connected chain without our server; an open plan.
 - [LMSR market](lmsr-market.md), [betting on agreements](betting-lmsr-points.md), [betting instrumentation](betting-instrumentation.md), [San Francisco demos](sf-agreement-bets.md) and their [publication record](sf-demo-validation-2026-10-26.md), [prediction market research](prediction-market-integration.md).
 - [Agreement recreation, 2026-10-26](agreement-recreation-2026-10-26.md) stays until its deadlines pass.
 - [ENS](feature-ens-readme.md) and [Canton/DAML](feature-daml-readme.md): dated integration notes; verify the configuration before a chain operation.
