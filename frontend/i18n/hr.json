@@ -7332,6 +7332,7 @@
         "blocked": "Pružatelj je odbio pristup (HTTP {{status}}). Možda ograničava IP adrese ili zahtijeva prijavu. Odaberi drugi izvor ili pokušaj kasnije.",
         "timeout": "Ovaj izvor nije odgovorio na vrijeme. Pokušaj uskoro ponovno.",
         "unavailable": "Ovaj izvor čestica trenutačno nije dostupan.",
+        "areaLimit": "Ovo područje ima više čestica nego što izvor vraća odjednom. Približi kartu da se učita.",
         "loadedRemain": "Već učitane čestice ostaju vidljive. Pokušaj ponovno ili odaberi drugi izvor.",
         "loadedNone": "Još nema učitanih čestica. Pokušaj ponovno ili odaberi drugi izvor.",
         "loadedCounts": "U memoriji je učitano {{inMemory}} čestica, od toga {{inView}} u ovom prikazu; ostaju na karti. Pokušaj ponovno ili odaberi drugi izvor.",

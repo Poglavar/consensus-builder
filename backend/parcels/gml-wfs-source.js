@@ -3,7 +3,7 @@ import { bbox as geometryBbox, booleanIntersects, bboxPolygon, feature as geoFea
 import proj4 from 'proj4';
 import { HttpError } from '../utils/helpers.js';
 import { BREMEN_GML_SCHEMA, MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, POLAND_EGIB_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, parseGmlParcels } from './gml-parcel-reader.js';
-import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 
 function delay(ms, { signal } = {}) {
     return new Promise((resolve, reject) => {
@@ -364,7 +364,7 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
         const before = await hitCount(spec, budget);
         const matchedBefore = before.numberMatched;
         const matched = matchedBefore;
-        if (matched > maxFeatures) fail('Parcel WFS query exceeds the configured parcel limit.');
+        if (matched > maxFeatures) throw areaLimitError('Parcel WFS query exceeds the configured parcel limit.');
         // Small municipal pages are valid, but known hits can prove that the
         // remaining pages plus the final hit check cannot fit this operation.
         // Reject before downloading any part of a set we cannot complete.

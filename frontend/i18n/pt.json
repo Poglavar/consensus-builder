@@ -8628,6 +8628,7 @@
         "blocked": "O fornecedor recusou o acesso (HTTP {{status}}). Pode restringir endereços IP ou exigir autenticação. Escolha outra fonte ou tente novamente mais tarde.",
         "timeout": "Esta fonte de parcelas excedeu o tempo limite. Tente novamente dentro de pouco tempo.",
         "unavailable": "Esta fonte de parcelas está temporariamente indisponível.",
+        "areaLimit": "Esta área tem mais parcelas do que a fonte devolve de uma vez. Aproxime o mapa para a carregar.",
         "loadedRemain": "As parcelas já carregadas continuam visíveis. Tente novamente ou escolha outra fonte.",
         "loadedNone": "Ainda não foram carregadas parcelas. Tente novamente ou escolha outra fonte.",
         "loadedCounts": "Estão carregadas {{inMemory}} parcelas em memória, das quais {{inView}} nesta vista; permanecem no mapa. Tente novamente ou escolha outra fonte.",

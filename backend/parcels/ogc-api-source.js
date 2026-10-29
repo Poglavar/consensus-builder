@@ -1,7 +1,7 @@
 // Adapts fixed OGC API Features GeoJSON/CQL2 collections with validated provider pagination.
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
+import { upstreamError, areaLimitError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 
 const CRS84 = 'http://www.opengis.net/def/crs/OGC/1.3/CRS84';
 export function createOgcApiParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
@@ -86,7 +86,7 @@ export function createOgcApiParcelSource(descriptor, { fetchImpl = globalThis.fe
                 if (!Number.isSafeInteger(payload.numberMatched) || payload.numberMatched < 0
                     || (matched !== undefined && matched !== payload.numberMatched)) throw upstreamError('OGC API provider returned inconsistent match counts.');
                 matched = payload.numberMatched;
-                if (matched > maxFeatures) throw upstreamError('Parcel query exceeds the parcel limit; use a smaller area.');
+                if (matched > maxFeatures) throw areaLimitError('Parcel query exceeds the parcel limit; use a smaller area.');
             }
             rawCount += payload.features.length;
             if (rawCount > maxFeatures || (matched !== undefined && rawCount > matched)) throw upstreamError('Parcel query exceeds its match or parcel limit.');

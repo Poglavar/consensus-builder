@@ -8,6 +8,14 @@ export function upstreamError(message, status = 502, code = 'parcel-source-unava
     return error;
 }
 
+// The query asked for more than the source returns in one request (features, pages, tiles, bytes
+// or requests over the adapter's limit). The source itself is fine and a smaller area answers, so
+// this never starts a cooldown and is never retried as it is.
+export const AREA_LIMIT_CODE = 'parcel-source-area-limit';
+export function areaLimitError(message, status = 422) {
+    return upstreamError(message, status, AREA_LIMIT_CODE);
+}
+
 // Only numeric collection metadata crosses the gateway; no raw GML or parcel identity is logged.
 export function parcelCountError({ numberMatched, numberReturned, featureCount }, message = 'Parcel GML has incomplete or inconsistent feature counts.') {
     const count = value => Number.isSafeInteger(value) && value >= 0 ? value : null;

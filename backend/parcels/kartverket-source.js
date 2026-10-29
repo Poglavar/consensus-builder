@@ -2,7 +2,7 @@
 // lokalid to its cadastral tuple, allowing fresh exact reads without a local index.
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, booleanPointInPolygon, point as turfPoint } from '@turf/turf';
 import { concatBytes } from './byte-utils.js';
-import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 
 export const KARTVERKET_ENDPOINT = 'https://api.kartverket.no/eiendom/v1/punkt/omrader';
 export const KARTVERKET_EXACT_ENDPOINT = 'https://api.kartverket.no/eiendom/v1/geokoding';
@@ -34,7 +34,7 @@ export function createKartverketParcelSource(descriptor, { fetchImpl = globalThi
 
     function budget() { return { bytes: 0, requests: 0, signal: AbortSignal.timeout(120000) }; }
     async function request(endpoint, params, limits) {
-        if (++limits.requests > 80) throw invalid('Kartverket query exceeds the bounded request budget; request a smaller area.');
+        if (++limits.requests > 80) throw areaLimitError('Kartverket query exceeds the bounded request budget; request a smaller area.');
         const url = new URL(endpoint);
         url.search = new URLSearchParams({ ...params, utkoordsys: '4326', filtrer: FILTER }).toString();
         const signal = AbortSignal.any([AbortSignal.timeout(timeoutMs), limits.signal]);
@@ -141,7 +141,7 @@ export function createKartverketParcelSource(descriptor, { fetchImpl = globalThi
                 if (booleanIntersects(feature, footprint)) {
                     parcels.set(feature.id, feature); localIds.set(localId, feature.id);
                 }
-                if (parcels.size > (descriptor.maxFeatures || 10000)) throw invalid('Kartverket query exceeds the parcel limit.');
+                if (parcels.size > (descriptor.maxFeatures || 10000)) throw areaLimitError('Kartverket query exceeds the parcel limit.');
             }
         }
         await cell(bounds, 0);

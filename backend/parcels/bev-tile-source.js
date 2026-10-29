@@ -5,7 +5,7 @@ import { VectorTile, classifyRings } from '@mapbox/vector-tile';
 import { PbfReader } from 'pbf';
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature, intersect, multiPolygon, union } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 
 export const BEV_TILES = 'https://kataster.bev.gv.at/tiles/kataster/{z}/{x}/{y}.pbf';
 const LOCATOR = 'https://kataster.bev.gv.at/at.gv.bev.kataster/api/gst/';
@@ -77,7 +77,7 @@ function tileList(bounds, maxTiles) {
     const [left, top, right, bottom] = indices;
     if (!indices.every(Number.isSafeInteger) || left < 0 || top < 0 || right >= 2 ** ZOOM || bottom >= 2 ** ZOOM
         || (right - left + 1) * (bottom - top + 1) > maxTiles) {
-        throw upstreamError('BEV query exceeds the complete-tile limit; use a smaller area.');
+        throw areaLimitError('BEV query exceeds the complete-tile limit; use a smaller area.');
     }
     const result = [];
     for (let x = left; x <= right; x++) for (let y = top; y <= bottom; y++) result.push([x, y]);
@@ -151,7 +151,7 @@ export function createBevTileParcelSource(descriptor, { fetchImpl = globalThis.f
         function tile(x, y) {
             const key = `${x},${y}`;
             if (!tiles.has(key)) {
-                if (tiles.size >= maxTiles) throw upstreamError('BEV query exceeds the complete-tile limit; use a smaller area.');
+                if (tiles.size >= maxTiles) throw areaLimitError('BEV query exceeds the complete-tile limit; use a smaller area.');
                 tiles.set(key, (async () => {
                     const bytes = await request(BEV_TILES.replace('{z}', ZOOM).replace('{x}', x).replace('{y}', y));
                     let layer;
@@ -237,7 +237,7 @@ export function createBevTileParcelSource(descriptor, { fetchImpl = globalThis.f
             for (const [x, y] of tileList(grid, maxTiles)) {
                 for (const part of await tile(x, y)) {
                     if (overlaps(part.bounds, grid)) ids.add(part.nativeId);
-                    if (ids.size > maxFeatures) throw upstreamError('BEV query exceeds the parcel limit; use a smaller area.');
+                    if (ids.size > maxFeatures) throw areaLimitError('BEV query exceeds the parcel limit; use a smaller area.');
                 }
             }
             const features = await mapBounded([...ids].sort(), parcel);

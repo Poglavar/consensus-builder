@@ -3,7 +3,7 @@
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { SaxesParser } from 'saxes';
 import { HttpError } from '../utils/helpers.js';
-import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 
 const ENDPOINT = 'https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php';
 const TYPE_NAME = 'CP:CadastralParcel';
@@ -218,7 +218,7 @@ export function createAgenziaEntrateWfsParcelSource(descriptor, { fetchImpl = gl
 
     async function readBody(response, budget) {
         const declared = response.headers.get('content-length');
-        if (declared && (!/^\d+$/.test(declared) || Number(declared) > maxResponseBytes)) fail('Agenzia WFS reply exceeds the byte limit; use a smaller area.');
+        if (declared && (!/^\d+$/.test(declared) || Number(declared) > maxResponseBytes)) throw areaLimitError('Agenzia WFS reply exceeds the byte limit; use a smaller area.');
         const reader = response.body?.getReader();
         if (!reader) fail('Agenzia WFS returned no readable reply.');
         const chunks = [];
@@ -230,7 +230,7 @@ export function createAgenziaEntrateWfsParcelSource(descriptor, { fetchImpl = gl
                 size += item.value.byteLength;
                 if (size > maxResponseBytes || budget.bytes + size > maxTotalResponseBytes) {
                     try { await reader.cancel(); } catch { /* Stream may already be closed. */ }
-                    fail('Agenzia WFS reply exceeds the byte limit; use a smaller area.');
+                    throw areaLimitError('Agenzia WFS reply exceeds the byte limit; use a smaller area.');
                 }
                 chunks.push(item.value);
             }
@@ -279,7 +279,7 @@ export function createAgenziaEntrateWfsParcelSource(descriptor, { fetchImpl = gl
         const hits = await request({ ...spec, resultType: 'hits' }, budget);
         if (hits.numberMatched === undefined || hits.numberReturned !== 0 || hits.features.length) fail('Agenzia WFS did not provide a complete hit count.');
         const matched = hits.numberMatched;
-        if (matched > maxFeatures) fail('Agenzia WFS query exceeds the configured parcel limit; use a smaller area.');
+        if (matched > maxFeatures) throw areaLimitError('Agenzia WFS query exceeds the configured parcel limit; use a smaller area.');
         const page = await request({ ...spec, count: String(matched + 1) }, budget);
         if (page.numberReturned !== matched || page.features.length !== matched
             || (!page.numberMatchedUnknown && page.numberMatched !== matched)) {

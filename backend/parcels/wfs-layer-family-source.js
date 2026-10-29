@@ -2,7 +2,7 @@
 // Every child uses the same bounded, geometry-only WFS transport in both runtimes.
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { validateBounds, validateGeometry, upstreamError } from './source-contract.js';
+import { validateBounds, validateGeometry, upstreamError, areaLimitError } from './source-contract.js';
 
 export function createWfsLayerFamilySource(descriptor, options, createWfsSource) {
     const { featureTypes, idPrefix, maxFeatures = 10000, maxBboxKm2 = 25 } = descriptor;
@@ -22,7 +22,7 @@ export function createWfsLayerFamilySource(descriptor, options, createWfsSource)
     }
 
     function collection(features, extra = {}) {
-        if (features.length > maxFeatures) throw upstreamError('Parcel layer family exceeds the parcel limit; use a smaller area.');
+        if (features.length > maxFeatures) throw areaLimitError('Parcel layer family exceeds the parcel limit; use a smaller area.');
         if (new Set(features.map(feature => feature.id)).size !== features.length) {
             throw upstreamError('WFS layer family returned repeated native IDs.');
         }
@@ -39,7 +39,7 @@ export function createWfsLayerFamilySource(descriptor, options, createWfsSource)
             const result = await child.queryBounds(bounds);
             if (result.complete !== true) throw upstreamError('WFS layer family returned incomplete bounds.');
             features.push(...result.features.filter(feature => booleanIntersects(feature, footprint)));
-            if (features.length > maxFeatures) throw upstreamError('Parcel layer family exceeds the parcel limit; use a smaller area.');
+            if (features.length > maxFeatures) throw areaLimitError('Parcel layer family exceeds the parcel limit; use a smaller area.');
         }
         return collection(features);
     }

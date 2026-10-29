@@ -8628,6 +8628,7 @@
         "blocked": "Le fournisseur a refusé l’accès (HTTP {{status}}). Il peut restreindre les adresses IP ou exiger une authentification. Choisissez une autre source ou réessayez plus tard.",
         "timeout": "Le délai de réponse de cette source parcellaire a été dépassé. Réessayez dans un instant.",
         "unavailable": "Cette source parcellaire est temporairement indisponible.",
+        "areaLimit": "Cette zone contient plus de parcelles que la source n’en renvoie en une fois. Zoomez pour la charger.",
         "loadedRemain": "Les parcelles déjà chargées restent visibles. Réessayez ou choisissez une autre source.",
         "loadedNone": "Aucune parcelle n’est encore chargée. Réessayez ou choisissez une autre source.",
         "loadedCounts": "{{inMemory}} parcelles sont chargées en mémoire, dont {{inView}} dans cette vue ; elles restent sur la carte. Réessayez ou choisissez une autre source.",

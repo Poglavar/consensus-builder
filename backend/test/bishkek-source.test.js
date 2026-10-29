@@ -128,7 +128,7 @@ describe('Bishkek cadastre WFS source', () => {
         })));
         fullPages.push(page([row('1-01-02-0011-0010', 11)]));
         const overRowCap = makeSource(fullPages);
-        await expect(overRowCap.source.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502 });
+        await expect(overRowCap.source.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 422, code: 'parcel-source-area-limit' });
         const wrongCrs = makeSource([response({ type: 'FeatureCollection', crs: 'EPSG:3857', features: [] })]);
         await expect(wrongCrs.source.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502 });
         const invalidId = makeSource([]);

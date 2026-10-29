@@ -2,7 +2,7 @@
 import { concatBytes } from './byte-utils.js';
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 
 const ENDPOINT = 'https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?';
 const VIEWER = 'https://cadastre.kg/svc-portal/map/main.do';
@@ -150,7 +150,7 @@ export function createBishkekCadastreSource(descriptor, { fetchImpl = globalThis
             const pageSignature = stableJson(page.map(feature => feature?.id ?? null));
             if (seenPages.has(pageSignature) && page.length) throw upstreamError('Bishkek WFS repeated a page.');
             seenPages.add(pageSignature);
-            if (startIndex + page.length > maxFeatures) throw upstreamError('Bishkek WFS query exceeds the feature limit; use a smaller area.');
+            if (startIndex + page.length > maxFeatures) throw areaLimitError('Bishkek WFS query exceeds the feature limit; use a smaller area.');
             for (const feature of page) {
                 const properties = feature?.properties;
                 const nativeId = properties?.PROPCODE;

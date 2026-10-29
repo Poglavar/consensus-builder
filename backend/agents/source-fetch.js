@@ -3,7 +3,7 @@
 // replies unavailable; the same policy also covers the runner's local candidate-binding reads.
 import { retryParcelRead } from './parcel-read-retry.js';
 
-const PROVIDER_CODES = new Set(['parcel-source-unavailable', 'parcel-source-blocked', 'parcel-source-rate-limited']);
+const PROVIDER_CODES = new Set(['parcel-source-unavailable', 'parcel-source-blocked', 'parcel-source-rate-limited', 'parcel-source-area-limit']);
 
 async function responseError(response) {
     const error = Object.assign(new Error(`HTTP ${response.status}`), { status: response.status, code: 'agent-parcel-http' });

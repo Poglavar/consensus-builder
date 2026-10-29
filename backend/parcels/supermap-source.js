@@ -1,7 +1,7 @@
 // Anonymous SuperMap map queries with safe native IDs and unchanged REGION rings.
 import { bbox as geometryBbox, booleanIntersects, booleanPointInPolygon, feature, point, polygon } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 
 export function supermapRegionGeometry(region) {
     const { points, parts, partTopo } = region || {};
@@ -105,7 +105,7 @@ export function createSupermapParcelSource(descriptor, { fetchImpl = globalThis.
             readCount += rows.length;
             if (readCount === expectedTotal) return [...byId.values()];
         }
-        throw upstreamError('SuperMap query exceeds the page limit.');
+        throw areaLimitError('SuperMap query exceeds the page limit.');
     }
     const result = features => ({ type: 'FeatureCollection', sourceId: id, features, complete: true, returnsWGS84: true });
     async function queryBounds(bbox) {

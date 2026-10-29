@@ -278,9 +278,9 @@ describe('Kerala Ente Bhoomi cadastral parcel source', () => {
         await expect(adapter.queryIds(['OTHER-' + nativeId])).rejects.toMatchObject({ status: 400 });
         await expect(adapter.queryBounds([76, 8, 77, 9])).rejects.toMatchObject({ status: 400 });
         const truncated = makeFetch({ exportResponses: [Response.json({ ...metricCollection, exceededTransferLimit: true })] });
-        await expect(createKeralaParcelSource(descriptor, truncated).queryBounds(bbox(sample))).rejects.toMatchObject({ code: 'parcel-source-unavailable' });
+        await expect(createKeralaParcelSource(descriptor, truncated).queryBounds(bbox(sample))).rejects.toMatchObject({ code: 'parcel-source-area-limit' });
         const exactLimit = makeFetch();
-        await expect(createKeralaParcelSource({ ...descriptor, maxFeatures: 1 }, exactLimit).queryBounds(bbox(sample))).rejects.toMatchObject({ code: 'parcel-source-unavailable' });
+        await expect(createKeralaParcelSource({ ...descriptor, maxFeatures: 1 }, exactLimit).queryBounds(bbox(sample))).rejects.toMatchObject({ code: 'parcel-source-area-limit' });
         expect(() => createKeralaParcelSource({ ...descriptor, outFields: [...descriptor.outFields, 'owner'] })).toThrow(/Invalid Kerala/);
         expect(() => createKeralaParcelSource({ ...descriptor, maxBboxKm2: Number.NaN })).toThrow(/Invalid Kerala/);
         for (const invalid of [

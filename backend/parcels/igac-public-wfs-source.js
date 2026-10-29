@@ -4,7 +4,7 @@ import proj4 from 'proj4';
 import { bbox, bboxPolygon, booleanIntersects } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
 import { concatBytes } from './byte-utils.js';
-import { canonicalParcelFeature, validateBounds, validateGeometry, upstreamError, providerHttpError } from './source-contract.js';
+import { canonicalParcelFeature, validateBounds, validateGeometry, upstreamError, areaLimitError, providerHttpError } from './source-contract.js';
 import { geoJsonResponseCrsMatches } from './response-crs.js';
 
 const NAMESPACE = 'CATASTRO_PUBLICO_31082026';
@@ -39,7 +39,7 @@ export function createIgacPublicWfsSource(descriptor, { fetchImpl = globalThis.f
                 + `<fes:And>${equal('codigo_municipio', municipalityCode)}${predicate}</fes:And></fes:Filter>` }).toString();
         let response;
         for (let attempt = 0; ; attempt++) {
-            if (++budget.requests > 128) throw upstreamError('IGAC query exceeded its bounded request budget; use a smaller area.');
+            if (++budget.requests > 128) throw areaLimitError('IGAC query exceeded its bounded request budget; use a smaller area.');
             response = await fetchImpl(url.href, { signal: AbortSignal.timeout(timeoutMs), redirect: 'error',
                 cache: 'no-store', headers: { Accept: 'application/geo+json, application/json' } });
             if (response.ok) break;
@@ -128,7 +128,7 @@ export function createIgacPublicWfsSource(descriptor, { fetchImpl = globalThis.f
             if (features.length === pageSize) {
                 // This service has no reliable offset/count manifest. A full page is
                 // unresolved until both smaller spatial envelopes terminate short.
-                if (depth >= 12) throw upstreamError('IGAC spatial query cannot be completely enumerated; use a smaller area.');
+                if (depth >= 12) throw areaLimitError('IGAC spatial query cannot be completely enumerated; use a smaller area.');
                 const axis = box[2] - box[0] >= box[3] - box[1] ? 0 : 1;
                 const midpoint = (box[axis] + box[axis + 2]) / 2;
                 const left = [...box], right = [...box];
@@ -143,7 +143,7 @@ export function createIgacPublicWfsSource(descriptor, { fetchImpl = globalThis.f
                     throw upstreamError('IGAC returned conflicting geometry for a parcel ID.');
                 }
                 if (booleanIntersects(feature, footprint)) byId.set(feature.id, feature);
-                if (byId.size > maxFeatures) throw upstreamError('IGAC query exceeds the parcel limit; use a smaller area.');
+                if (byId.size > maxFeatures) throw areaLimitError('IGAC query exceeds the parcel limit; use a smaller area.');
             }
         }
         for (const layer of LAYERS) await visit(layer, bounds, 0);

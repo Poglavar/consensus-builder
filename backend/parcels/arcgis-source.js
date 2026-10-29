@@ -2,7 +2,7 @@
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
 import proj4 from 'proj4';
-import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
+import { upstreamError, areaLimitError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 import { retainParcel } from './parcel-components.js';
 import { parseEsriParcelCollection } from './esri-parcel-reader.js';
 import { geometryParcelFeature, parseGeometryParcelId, geometryLookupBounds, GEOMETRY_IDENTITY_KIND } from './geometry-identity.js';
@@ -322,7 +322,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             if (attributeFilter.where && params.where) countParams.set('where', `(${baseWhere}) AND (${params.where})`);
             const count = await request(countParams);
             if (!Number.isSafeInteger(count.count) || count.count < 0 || count.count > maxFeatures) {
-                throw upstreamError('Parcel provider count exceeds the bounded response limit; use a smaller area.');
+                throw areaLimitError('Parcel provider count exceeds the bounded response limit; use a smaller area.');
             }
             expectedCount = count.count;
         }
@@ -351,7 +351,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             const page = descriptor.nativeGeometryMode === 'parts'
                 ? [...payload.features].sort((a, b) => Number(a.properties?.[objectIdField]) - Number(b.properties?.[objectIdField]))
                 : payload.features;
-            if (offset + page.length > maxFeatures) throw upstreamError('Parcel provider query exceeds the parcel limit; use a smaller area.');
+            if (offset + page.length > maxFeatures) throw areaLimitError('Parcel provider query exceeds the parcel limit; use a smaller area.');
             for (const feature of page) {
                 const props = feature.properties || {};
                 if (!attributeFilter.matches(props)) throw upstreamError('Parcel provider returned a record outside the configured ground status.');
@@ -405,7 +405,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             const limitFlag = payload.exceededTransferLimit ?? payload.properties?.exceededTransferLimit;
             if (singleResponse) {
                 if (limitFlag === true || page.length !== expectedCount) {
-                    throw upstreamError('Parcel provider returned an incomplete bounded response; use a smaller area.');
+                    throw areaLimitError('Parcel provider returned an incomplete bounded response; use a smaller area.');
                 }
                 break;
             }
@@ -417,7 +417,8 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             }
             const hasMore = limitFlag === true || (typeof limitFlag !== 'boolean' && page.length === pageSize);
             if (!hasMore) break;
-            if (!page.length || offset + page.length >= maxFeatures) throw upstreamError('Parcel provider returned incomplete pagination.');
+            if (!page.length) throw upstreamError('Parcel provider returned incomplete pagination.');
+            if (offset + page.length >= maxFeatures) throw areaLimitError('Parcel provider query reached the parcel limit; use a smaller area.');
             offset += page.length;
         }
         return { type: 'FeatureCollection', features: [...byId.values()], complete: true, sourceId: id, returnsWGS84: true,
@@ -465,7 +466,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             const exact = await queryIds(ids.slice(start, start + 80));
             if (exact.absentIds.length) throw upstreamError('Parcel provider changed between viewport and complete component reads.');
             sourceRows += exact.sourceRows;
-            if (sourceRows > maxFeatures) throw upstreamError('Complete parcel components exceed the parcel limit; use a smaller area.');
+            if (sourceRows > maxFeatures) throw areaLimitError('Complete parcel components exceed the parcel limit; use a smaller area.');
             features.push(...exact.features);
         }
         return { ...result, features, sourceRows, viewportSourceRows: result.sourceRows };
@@ -491,7 +492,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             countResult.count = rowIds.length;
         }
         if (!Number.isSafeInteger(countResult.count) || countResult.count < 0) throw upstreamError('Parcel provider returned an invalid count.');
-        if (countResult.count > maxFeatures) throw upstreamError('Parcel provider query exceeds the parcel limit; use a smaller area.');
+        if (countResult.count > maxFeatures) throw areaLimitError('Parcel provider query exceeds the parcel limit; use a smaller area.');
         const manifest = await request(new URLSearchParams({ ...base, returnIdsOnly: 'true' }));
         // ArcGIS uses an explicit null ID list for a successful empty spatial query.
         const objects = countResult.count === 0 && manifest.objectIds === null ? [] : manifest.objectIds;
@@ -598,7 +599,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
                 throw upstreamError('Parcel provider returned an invalid raw-row count for exact geometry reads.');
             }
             rawRows += rawCount;
-            if (rawRows > maxFeatures) throw upstreamError('Complete parcel rows exceed the parcel limit; use a smaller area.');
+            if (rawRows > maxFeatures) throw areaLimitError('Complete parcel rows exceed the parcel limit; use a smaller area.');
             const search = new URLSearchParams({
                 where: `(${baseWhere}) AND (${where})`, outFields: idField, returnGeometry: 'true',
                 outSR: '4326', resultRecordCount: String(Math.max(1, rawCount)), f: 'geojson'

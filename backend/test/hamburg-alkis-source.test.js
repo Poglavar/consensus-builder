@@ -142,7 +142,7 @@ describe('Hamburg ALKIS WFS', () => {
     it('checks hit limits before requesting GeoJSON pages', async () => {
         const fetchImpl = scriptedFetch([hits(2)]);
         await expect(createHamburgAlkisParcelSource({ ...descriptor, maxFeatures: 1 }, { fetchImpl }).queryBounds(bounds))
-            .rejects.toMatchObject({ code: 'parcel-source-unavailable' });
+            .rejects.toMatchObject({ code: 'parcel-source-area-limit' });
         expect(fetchImpl).toHaveBeenCalledTimes(1);
     });
 

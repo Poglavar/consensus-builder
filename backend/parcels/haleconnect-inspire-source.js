@@ -2,7 +2,7 @@
 // Only a short bounded response proves enumeration; never infer it from a full page.
 import { bbox, bboxPolygon, booleanIntersects, feature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 import { geoJsonResponseCrsMatches } from './response-crs.js';
 import { concatBytes } from './byte-utils.js';
 
@@ -43,7 +43,7 @@ export function createHaleconnectInspireSource(descriptor, { fetchImpl = globalT
         } finally { await reader.cancel().catch(() => {}); reader.releaseLock(); }
         if (payload?.type !== 'FeatureCollection' || !Array.isArray(payload.features)
             || !geoJsonResponseCrsMatches(payload.crs, 4326)) throw upstreamError('Invalid parcel response or response CRS.');
-        if (payload.features.length >= count) throw upstreamError('Parcel query may be truncated; request a smaller area.');
+        if (payload.features.length >= count) throw areaLimitError('Parcel query may be truncated; request a smaller area.');
         const seen = new Set();
         const features = payload.features.map(row => {
             if (!nativePattern.test(row.id) || seen.has(row.id) || !validateGeometry(row.geometry)) {

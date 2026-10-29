@@ -1,7 +1,7 @@
 // Adapts a fixed Socrata polygon dataset with counted, ordered pages and publication-revision checks.
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
+import { upstreamError, areaLimitError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 
 export function createSocrataParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
     const { id, endpoint, idField, idPrefix, outFields, geometryField, versionField, objectIdField } = descriptor;
@@ -40,7 +40,7 @@ export function createSocrataParcelSource(descriptor, { fetchImpl = globalThis.f
         const value = rows[0]?.matched;
         if (rows.length !== 1 || typeof value !== 'string' || !/^(0|[1-9][0-9]*)$/.test(value) || !Number.isSafeInteger(Number(value))) throw upstreamError('Socrata provider omitted a valid match count.');
         const matched = Number(value);
-        if (matched > maxFeatures) throw upstreamError('Parcel query exceeds the parcel limit; use a smaller area.');
+        if (matched > maxFeatures) throw areaLimitError('Parcel query exceeds the parcel limit; use a smaller area.');
         if (matched && (typeof rows[0].revision !== 'string' || !rows[0].revision)) throw upstreamError('Socrata provider omitted its publication revision.');
         return { matched, revision: rows[0].revision ?? null };
     }

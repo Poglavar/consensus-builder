@@ -5,7 +5,7 @@ import { concatBytes } from './byte-utils.js';
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { SaxesParser } from 'saxes';
 import { HttpError } from '../utils/helpers.js';
-import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 
 const ENDPOINT = 'https://geodienste.hamburg.de/WFS_HH_ALKIS_vereinfacht';
 const TYPE = 'ave:Flurstueck';
@@ -100,7 +100,7 @@ export function createHamburgAlkisParcelSource(descriptor, { fetchImpl = globalT
 
     async function query(params, allowedIds = null) {
         const before = await request({ ...params, RESULTTYPE: 'hits' }, false);
-        if (before > maxFeatures) throw upstreamError('Hamburg ALKIS query exceeds the parcel limit; use a smaller area.');
+        if (before > maxFeatures) throw areaLimitError('Hamburg ALKIS query exceeds the parcel limit; use a smaller area.');
         const features = [], nativeIds = new Set(), transportIds = new Set();
         let previousId = null;
         for (let offset = 0; offset < before; offset += pageSize) {

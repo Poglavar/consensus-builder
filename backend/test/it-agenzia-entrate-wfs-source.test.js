@@ -40,6 +40,7 @@ function harness(...bodies) {
     return { source, fetchImpl, waits, starts, url };
 }
 const unavailable = { code: 'parcel-source-unavailable' };
+const areaLimit = { code: 'parcel-source-area-limit', status: 422 };
 
 describe('Agenzia delle Entrate GML parsing of recorded replies', () => {
     it('reads all three cities with agreeing identities, lon,lat order and published rings', () => {
@@ -127,7 +128,7 @@ describe('Agenzia delle Entrate WFS adapter', () => {
 
     it('refuses areas over the parcel limit before requesting data, and oversized boxes before any request', async () => {
         const over = harness(hits(2001));
-        await expect(over.source.queryBounds(ROME_BOUNDS)).rejects.toMatchObject(unavailable);
+        await expect(over.source.queryBounds(ROME_BOUNDS)).rejects.toMatchObject(areaLimit);
         expect(over.fetchImpl).toHaveBeenCalledTimes(1);
         const big = harness();
         await expect(big.source.queryBounds([12.40, 41.85, 12.50, 41.95])).rejects.toMatchObject({ status: 400 });
@@ -188,9 +189,9 @@ describe('Agenzia delle Entrate WFS adapter', () => {
     it('rejects declared or streamed bodies over the byte limit', async () => {
         const small = { ...descriptor, maxResponseBytes: 1024 };
         const declared = createAgenziaEntrateWfsParcelSource(small, { fetchImpl: async () => response(ROME, { headers: { 'content-length': String(ROME.length) } }), waitImpl: async () => {} });
-        await expect(declared.queryBounds(ROME_BOUNDS)).rejects.toMatchObject(unavailable);
+        await expect(declared.queryBounds(ROME_BOUNDS)).rejects.toMatchObject(areaLimit);
         const streamed = createAgenziaEntrateWfsParcelSource(small, { fetchImpl: async () => response(ROME), waitImpl: async () => {} });
-        await expect(streamed.queryBounds(ROME_BOUNDS)).rejects.toMatchObject(unavailable);
+        await expect(streamed.queryBounds(ROME_BOUNDS)).rejects.toMatchObject(areaLimit);
     });
 
     it('keeps request starts one pace apart for concurrent callers', async () => {

@@ -4,7 +4,7 @@ import { readBoundedZipMembers } from './shapefile-zip-reader.js';
 import { parseMojMapXml } from './moj-mapxml-reader.js';
 import { boundedBytes } from './gml-snapshot-source.js';
 import { sha256Hex } from './portable-hash.js';
-import { canonicalParcelFeature, upstreamError, providerHttpError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, upstreamError, areaLimitError, providerHttpError, validateBounds, validateGeometry } from './source-contract.js';
 import { HttpError } from '../utils/helpers.js';
 import { createMojMapXmlRangeParcelSource } from './moj-mapxml-range-source.js';
 
@@ -58,7 +58,7 @@ export function createMojMapXmlParcelSource(descriptor, { fetchImpl = globalThis
         const candidates = rows.length ? await read(rows) : [];
         const polygon = bboxPolygon(bounds);
         const features = candidates.filter(row => intersects(row.bbox, bounds) && booleanIntersects(row.feature, polygon)).map(row => row.feature);
-        if (features.length > (descriptor.maxFeatures ?? 10000)) throw upstreamError('Map XML query exceeds the parcel limit; use smaller cells.');
+        if (features.length > (descriptor.maxFeatures ?? 10000)) throw areaLimitError('Map XML query exceeds the parcel limit; use smaller cells.');
         return collection(features);
     }
     async function queryIds(ids) {

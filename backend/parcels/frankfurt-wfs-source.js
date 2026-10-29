@@ -4,7 +4,7 @@ import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '
 import proj4 from 'proj4';
 import { SaxesParser } from 'saxes';
 import { HttpError } from '../utils/helpers.js';
-import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 
 const ENDPOINT = 'https://geowebdienste.frankfurt.de/SGK_Flurstuecke';
 const FEATURE_TYPE = 'Amt62_Flurstuecke:Flurstueck';
@@ -283,7 +283,7 @@ export function createFrankfurtWfsParcelSource(descriptor, { fetchImpl = globalT
             const page = readFeatureCollection(payload, expected, matched, seenGmlIds, seenObjectIds, seenFsks, lastObjectId, exactIdSet);
             lastObjectId = page.lastObjectId;
             all.push(...page.features);
-            if (all.length > maxFeatures) fail('Frankfurt WFS exceeds the feature limit; use a smaller area.');
+            if (all.length > maxFeatures) throw areaLimitError('Frankfurt WFS exceeds the feature limit; use a smaller area.');
         }
         const after = await queryHits(spec, budget);
         if (after !== matched || all.length !== matched) fail('Frankfurt WFS match count changed or pages were incomplete.');

@@ -67,7 +67,7 @@ describe('Socrata parcel adapter', () => {
     });
     it.each([
         ['missing count', [[]]], ['numeric count', [count(1)]], ['unknown count', [count('unknown')]],
-        ['missing revision', [[{ matched: '1' }]]], ['too many matches', [count('7')]],
+        ['missing revision', [[{ matched: '1' }]]],
         ['empty early page', [count(), []]], ['page overflow', [count('2'), [row('0257001'), row('0257002'), row('0257003')]]],
         ['repeated native ID', [count(), [row(), row()]]],
         ['retired parcel', [count('1'), [{ ...row(), active: false }]]],
@@ -79,6 +79,9 @@ describe('Socrata parcel adapter', () => {
         ['JSON error payload', [{ error: 'provider error' }]], ['HTTP throttle', [{ status: 429 }]]
     ])('fails closed for %s', async (_name, entries) => {
         await expect(createSocrataParcelSource(descriptor, { fetchImpl: responses(entries) }).queryBounds(bounds)).rejects.toMatchObject({ status: 502 });
+    });
+    it('fails closed for too many matches as an area limit, not an outage', async () => {
+        await expect(createSocrataParcelSource(descriptor, { fetchImpl: responses([count('7')]) }).queryBounds(bounds)).rejects.toMatchObject({ status: 422, code: 'parcel-source-area-limit' });
     });
     it('collapses coincident assessment rows using the documented ground key, including a missing lowest APN', async () => {
         const fetchImpl = responses([count('2'), [{ ...row('2630064'), blklot: '2630065' }, { ...row('2630064'), blklot: '2630066' }], count('2')]);

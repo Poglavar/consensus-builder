@@ -3,7 +3,7 @@ import { SaxesParser } from 'saxes';
 import proj4 from 'proj4';
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, areaLimitError, validateBounds, validateGeometry } from './source-contract.js';
 import { parseKeralaWktPolygon } from './kerala-wkt.js';
 
 const ENDPOINT = 'https://divo.ecommunes.ci/MapServer/AgentLot.aspx/Query';
@@ -156,7 +156,7 @@ export function createDivoEcommunesSource(descriptor, { fetchImpl = globalThis.f
             if (tag.name === 'Feature' && stack.length === 2) {
                 if (current.geometries !== 1 || rows.has(current.id)) throw upstreamError('Divo repeated an ID or omitted polygon geometry.');
                 rows.set(current.id, canonical(current.id, current.wkt));
-                if (rows.size > maxFeatures) throw upstreamError('Divo response exceeds the feature limit.');
+                if (rows.size > maxFeatures) throw areaLimitError('Divo response exceeds the feature limit.');
                 current = null;
             }
             stack.pop();
@@ -190,7 +190,7 @@ export function createDivoEcommunesSource(descriptor, { fetchImpl = globalThis.f
             if (previous && JSON.stringify(previous.geometry) !== JSON.stringify(row.geometry)) throw upstreamError('Divo changed geometry for one feature ID.');
             found.set(row.id, row);
         }
-        if (found.size > maxFeatures) throw upstreamError('Divo query exceeds the feature limit.');
+        if (found.size > maxFeatures) throw areaLimitError('Divo query exceeds the feature limit.');
     }
     function tiles(box) {
         const [w, s, e, n] = box;

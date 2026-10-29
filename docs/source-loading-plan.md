@@ -48,6 +48,8 @@ User decisions, 2026-10-30:
 - Buildings adopt the parcel cell grid rather than a tile scheme of their own.
 - Parcels are not reworked. The only parcel-side change is the error classification in step A.
 - Each source loads and displays independently; an error in one never degrades another.
+- Fallback sources stay, declared in city config as an ordered list and resolved per cell in one
+  place, with the stand-in said in the layer status; no ad-hoc fallback branches in code.
 - 3D free panning comes in steps (E), after the cell grid exists, and only as far as it proves
   worth it.
 
@@ -99,13 +101,30 @@ gates, each replaced by per-layer state:
 
 | Shared gate today | Replacement |
 |---|---|
-| `serverAnswerIsEmpty` in `building-source-client.js` swaps a failed, empty or truncated city answer for OpenStreetMap, mixing identities in one pool | A city source answers from its own cells or reports its own failure; the OSM fallback applies only when the city has no source of its own, never as a repair of a failed one |
+| `serverAnswerIsEmpty` in `building-source-client.js` swaps a failed, empty or truncated city answer for OpenStreetMap, mixing identities in one pool | A declared fallback chain resolved per cell in one place (below) |
 | `getSceneReadiness({ requireExisting })` in `three-mode.js` holds the 3D scene as not ready while existing buildings have not loaded | Readiness is per layer; the scene is ready when its own geometry is, and each layer reports loading, loaded, partial or failed on its own |
 | `reportBuildingsUnavailable` routes building failures into `ParcelSourceSettings.reportFailure`, one banner for parcels and buildings | One status line per layer in the Layers panel (parcels, buildings, trees, water, roads, planning), each with its own Retry; the banner stays for parcels only |
 | `buildingsRetryAt` in `map-core.js` stops every building fetch for the upstream's retry time | The back-off lives in the cell loader, per source, and other layers never read it |
 
 Rule for new code: a layer owns its loading, its failure state and its place in the status display;
 a failure shows in that layer only, with its own retry, while the others load and draw as usual.
+
+**Fallback sources.** Fallbacks stay, declared rather than coded. A city's building config lists its
+sources in order (`buildings.sources: ['building.<city source>', 'osm']`, replacing the single
+`sourceId` plus `fallback: 'osm'`); the `osm` source is the backend one (the staged copy in
+`overture_building_footprint` where a region is staged, else Overpass through
+`backend/buildings/osm-reference.js`). The cell loader is the only place the chain is resolved:
+
+- A cell is answered wholly by one source and records which. When the first source fails it (outage,
+  block, rate limit, timeout; not an area limit, which splits the cell instead), the next source
+  answers that cell. Cells are never merged across sources.
+- Building identities carry their source (`CUSTOM-B-…`, OSM ids), so a demolition record names the
+  survey it was made against, and a stand-in cell is never read as the primary survey.
+- The layer's status says how many cells came from a stand-in ("Buildings: 12 cells from
+  OpenStreetMap while the city source is unavailable"); its Retry asks those cells of the first
+  source again.
+- `building-source-client.js` keeps only transport; no source decisions remain in it. Parcels keep
+  their existing user-chosen sources ("choose another source"), not an automatic chain.
 
 ### E. 3D panning, in order
 
@@ -129,7 +148,7 @@ The 950 m `fitBox`, the 320 m tiling and the keep-truncated-footprints rule in
 
 | Step | State |
 |---|---|
-| A. Area-limit error code | open |
+| A. Area-limit error code | done: `areaLimitError` in `source-contract.js`, 52 sites in 26 adapters |
 | B. Buildings on the parcel grid | open |
 | C. View budget | open |
 | D. Sources independent in the browser | open |

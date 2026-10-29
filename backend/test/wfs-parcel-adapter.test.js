@@ -362,7 +362,7 @@ describe('WFS parcel adapter', () => {
         const { adapter, fetchImpl } = source([
             wfs11Page(Array.from({ length: 1000 }, (_, index) => ahmedabadCapFeature(index + 1)), 1001)
         ], AHMEDABAD_CAPPED_PROFILE);
-        await expect(adapter.queryBounds(AHMEDABAD_BOUNDS)).rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
+        await expect(adapter.queryBounds(AHMEDABAD_BOUNDS)).rejects.toMatchObject({ status: 422, code: 'parcel-source-area-limit' });
         const url = new URL(fetchImpl.mock.calls[0][0]);
         expect(fetchImpl).toHaveBeenCalledTimes(1);
         expect(url.searchParams.get('maxFeatures')).toBe('1000');
@@ -473,11 +473,15 @@ describe('WFS parcel adapter', () => {
         ['empty partial page', [page([], 1)]],
         ['repeated page', [page([feature(1)], 2), page([feature(1)], 2)]],
         ['missing native ID', [page([feature(1, null)])]],
-        ['invalid geometry', [page([feature(1, '75105000AD0011', { type: 'MultiPolygon', coordinates: [null] })])]],
-        ['limit exceeded', [page([feature(1)], 11)]]
+        ['invalid geometry', [page([feature(1, '75105000AD0011', { type: 'MultiPolygon', coordinates: [null] })])]]
     ])('fails closed on %s', async (_name, pages) => {
         const { adapter } = source(pages);
         await expect(adapter.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
+    });
+
+    it('fails closed on limit exceeded as an area limit, not an outage', async () => {
+        const { adapter } = source([page([feature(1)], 11)]);
+        await expect(adapter.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 422, code: 'parcel-source-area-limit' });
     });
     it('rejects spatially different polygons claiming one durable ID', async () => {
         const different = { type: 'Polygon', coordinates: [[[2.3551, 48.8486], [2.356, 48.8486], [2.356, 48.8494], [2.3551, 48.8494], [2.3551, 48.8486]]] };
