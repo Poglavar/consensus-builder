@@ -47,6 +47,27 @@ def _shared_write(runner):
     return writer() if callable(writer) else nullcontext({})
 
 
+def recheck_shared_baseline(runner):
+    """Recheck a saved baseline failure once on explicit resume, before model work."""
+    block = runner.state.get("adapterStageBlocked")
+    shared = getattr(runner.args, "shared_root", None)
+    if (runner.stop_requested or not shared or not isinstance(block, dict) or block.get("cityCode")
+            or not str(block.get("reason", "")).startswith("Shared integration baseline failed:")):
+        return False
+    try:
+        with _shared_write(runner):
+            verify_baseline(runner.root, shared)
+    except Exception as error:
+        runner.state["adapterStageBlocked"] = {"reason": f"Shared integration baseline failed: {error}", "at": now()}
+        runner.log("shared integration baseline still blocked on resume", error=str(error))
+        runner.save_state()
+        return False
+    runner.state.pop("adapterStageBlocked")
+    runner.log("shared integration baseline passed on resume; qualification unblocked")
+    runner.save_state()
+    return True
+
+
 def _path_hashes(root, paths):
     return {rel: hashlib.sha256((Path(root) / rel).read_bytes()).hexdigest()
             if (Path(root) / rel).is_file() and not (Path(root) / rel).is_symlink() else None

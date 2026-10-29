@@ -15,6 +15,7 @@ from pathlib import Path
 import parcel_discovery_coordination as coordination
 import parcel_discovery_outcomes as outcomes
 import parcel_source_stage as source_stage
+from parcel_parallel_qualification import recheck_shared_baseline
 from parcel_city_storage import clear_city_downloads, clear_qualification_scratch, forget_histories, finish_city, record_attempts, task_finished
 
 
@@ -293,6 +294,8 @@ class ContinuousPipeline:
 
     def run(self):
         self.recover()
+        if self.runner.args.with_adapters:
+            recheck_shared_baseline(self.runner)
         once = bool(getattr(self.runner.args, "once", False))
         try:
             while not self.runner.stop_requested:

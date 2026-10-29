@@ -414,6 +414,45 @@ class ParallelTests(unittest.TestCase):
         self.assertEqual(self.runner._city_entry(self.city)["qualification"]["status"], "integrated")
         self.discard_mock.assert_called_once()
 
+    def test_resume_rechecks_baseline_and_clears_only_a_verified_block(self):
+        self.runner.args.shared_root = self.base / "shared"
+        self.runner.state["adapterStageBlocked"] = {"reason": "Shared integration baseline failed: timeout"}
+        with patch.object(parallel, "verify_baseline") as verify, \
+                patch.object(self.runner, "_model") as model:
+            self.assertTrue(parallel.recheck_shared_baseline(self.runner))
+        verify.assert_called_once_with(self.runner.root, self.runner.args.shared_root)
+        model.assert_not_called()
+        self.assertNotIn("adapterStageBlocked", self.runner.state)
+
+    def test_resume_preserves_a_still_broken_baseline_without_model_work(self):
+        self.runner.args.shared_root = self.base / "shared"
+        self.runner.state["adapterStageBlocked"] = {"reason": "Shared integration baseline failed: timeout"}
+        with patch.object(parallel, "verify_baseline", side_effect=RuntimeError("catalog invalid")) as verify, \
+                patch.object(self.runner, "_model") as model:
+            self.assertFalse(parallel.recheck_shared_baseline(self.runner))
+        verify.assert_called_once()
+        model.assert_not_called()
+        self.assertIn("catalog invalid", self.runner.state["adapterStageBlocked"]["reason"])
+
+    def test_resume_does_not_clear_an_import_or_workspace_block(self):
+        self.runner.args.shared_root = self.base / "shared"
+        for block in ({"cityCode": "42", "reason": "Shared integration baseline failed: import incomplete"},
+                      {"reason": "Qualification workspace preparation failed"}):
+            self.runner.state["adapterStageBlocked"] = block.copy()
+            with patch.object(parallel, "verify_baseline") as verify:
+                self.assertFalse(parallel.recheck_shared_baseline(self.runner))
+            verify.assert_not_called()
+            self.assertEqual(self.runner.state["adapterStageBlocked"], block)
+
+    def test_stopping_runner_does_not_recheck_baseline(self):
+        self.runner.args.shared_root = self.base / "shared"
+        self.runner.state["adapterStageBlocked"] = {"reason": "Shared integration baseline failed: timeout"}
+        self.runner.stop_requested = True
+        with patch.object(parallel, "verify_baseline") as verify:
+            self.assertFalse(parallel.recheck_shared_baseline(self.runner))
+        verify.assert_not_called()
+        self.assertIn("adapterStageBlocked", self.runner.state)
+
     def test_shared_baseline_failure_blocks_before_model_work(self):
         self.runner.args.shared_root = self.base / "shared"
         with patch.object(parallel, "verify_baseline", side_effect=RuntimeError("coverage gate is broken")), \

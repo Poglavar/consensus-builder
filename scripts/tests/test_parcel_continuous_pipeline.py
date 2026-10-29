@@ -242,7 +242,9 @@ class PipelineTests(unittest.TestCase):
             launched.append(lane)
             self.runner.stop_requested = True
         self.pool._start = start
-        self.pool.run()
+        with patch.object(pipeline, 'recheck_shared_baseline') as recheck:
+            self.pool.run()
+        recheck.assert_called_once_with(self.runner)
         self.assertEqual(launched, ['review'])
 
     def test_fresh_stage_records_failed_urls_instead_of_findings(self):
