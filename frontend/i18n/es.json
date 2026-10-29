@@ -7729,6 +7729,15 @@
         }
     },
     "agreement": {
+        "compare": {
+            "approval": "Aprobación",
+            "settlement": "Liquidación",
+            "toOwners": "Suelo para los propietarios",
+            "toPublic": "Suelo para el público",
+            "toProposer": "Suelo para el proponente",
+            "paid": "Dinero que pagan los propietarios",
+            "received": "Dinero que reciben los propietarios"
+        },
         "outcomes": {
             "owners": "Propietarios de las parcelas de entrada",
             "none": "Propietarios sin porción",
@@ -8128,7 +8137,8 @@
                 "permitted": "Volumen permitido",
                 "proposed": "Propuesto (todos los diseños aplicados)",
                 "design": "Diseño: {{title}}",
-                "plan": "Plan: {{title}}"
+                "plan": "Plan: {{title}}",
+                "agreement": "Acuerdo: {{title}}"
             }
         },
         "reroll": {
@@ -8845,6 +8855,7 @@
         "openNamed": "Abrir {{title}}",
         "noPlace": "Esto no tiene lugar en el mapa.",
         "agreementHint": "Crea un acuerdo a partir de un plan en la pestaña Planes.",
+        "agreementNoPlan": "{{title}} no tiene un plan que comparar.",
         "proposeFirst": "Abre el acuerdo para revisarlo y proponerlo antes de compartirlo.",
         "loading": "Cargando…",
         "count": "{{shown}} de {{total}} elementos cargados",
@@ -8890,6 +8901,14 @@
     "titleDesigns": "Comparar diseños",
     "basisComparedDesigns": "Todos los diseños comparados",
     "design": "Diseño",
+    "titleAgreements": "Comparar acuerdos",
+    "basisComparedAgreements": "Todos los acuerdos comparados",
+    "agreement": "Acuerdo",
+    "terms": "Condiciones de los acuerdos",
+    "figures": "Lo que construyen los planes",
+    "differs": "Difiere",
+    "onlyDiffering": "Solo lo que difiere",
+    "termsSame": "Las condiciones de los acuerdos son las mismas.",
     "measuring": "Midiendo…",
     "landDefinition": "El suelo público son las calles y los parques y plazas de OpenStreetMap; el privado es el resto de las parcelas. El estado actual cuenta cada edificio existente en ese suelo; un plan cuenta, junto a los nuevos, los existentes que sus diseños no eliminan.",
     "noBasis": "No hay ningún plan guardado del que tomar el suelo.",

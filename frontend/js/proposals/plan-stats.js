@@ -643,21 +643,75 @@
         return table;
     }
 
-    // subject: 'plans' or 'designs' (names the dialog); sides: the map Compare side of each plan
-    // (three-compare.js values, null where it has none), by default the plan itself.
-    async function comparePlans(plans, { subject = 'plans', sides = null } = {}) {
-        const designs = subject === 'designs';
+    // What the dialog names the compared things by: its title, the basis covering them all, and the
+    // table's heading for them.
+    const COMPARE_SUBJECTS = {
+        plans: [['planCompare.title', 'Compare plans'], ['planCompare.basisCompared', 'All compared plans'], ['plan.label', 'Plan']],
+        designs: [['planCompare.titleDesigns', 'Compare designs'], ['planCompare.basisComparedDesigns', 'All compared designs'], ['planCompare.design', 'Design']],
+        agreements: [['planCompare.titleAgreements', 'Compare agreements'], ['planCompare.basisComparedAgreements', 'All compared agreements'], ['planCompare.agreement', 'Agreement']]
+    };
+
+    // Compare agreements' terms: one column per agreement, one row per term (AgreementPanel.compareTerms),
+    // the rows the agreements differ in marked, and a switch to show only those.
+    function termsSection(agreements, titles) {
+        const rows = window.AgreementPanel.compareTerms(agreements, undefined, { summaryText: window.ProposalApprovalSetup?.summaryText || null });
+        const section = el('div', 'plan-stats-section plan-compare__terms');
+        section.dataset.planCompareTerms = '';
+        section.appendChild(el('div', 'plan-stats-heading', tPlanStats('planCompare.terms', 'Terms of the agreements')));
+        const toggle = el('label', 'plan-compare__differing');
+        const only = el('input');
+        only.type = 'checkbox';
+        only.dataset.planCompareDiffering = '';
+        toggle.appendChild(only);
+        toggle.appendChild(el('span', null, tPlanStats('planCompare.onlyDiffering', 'Only what differs')));
+        const table = el('table', 'plan-stats-table plan-compare__table plan-compare__terms-table');
+        const head = document.createElement('tr');
+        head.appendChild(el('th'));
+        titles.forEach(title => { const th = el('th', 'plan-compare__plan', title); th.setAttribute('scope', 'col'); head.appendChild(th); });
+        table.appendChild(head);
+        const lines = rows.map(row => {
+            const tr = document.createElement('tr');
+            tr.dataset.planCompareTerm = row.key;
+            if (row.differs) { tr.className = 'plan-compare__term--differs'; tr.dataset.planCompareDiffers = ''; }
+            const th = el('th', null, row.label);
+            th.setAttribute('scope', 'row');
+            if (row.differs) th.appendChild(el('span', 'cb-badge cb-badge--warning plan-compare__differs', tPlanStats('planCompare.differs', 'Differs')));
+            tr.appendChild(th);
+            row.values.forEach(value => tr.appendChild(el('td', null, value)));
+            table.appendChild(tr);
+            return { tr, differs: row.differs };
+        });
+        const same = el('p', 'sheet-note', tPlanStats('planCompare.termsSame', 'The agreements’ terms are the same.'));
+        same.hidden = true;
+        only.addEventListener('change', () => {
+            lines.forEach(({ tr, differs }) => { tr.hidden = only.checked && !differs; });
+            same.hidden = !only.checked || rows.some(row => row.differs);
+        });
+        const scroll = el('div', 'plan-compare__scroll');
+        scroll.appendChild(table);
+        section.appendChild(toggle);
+        section.appendChild(scroll);
+        section.appendChild(same);
+        return section;
+    }
+
+    // subject: 'plans', 'designs' or 'agreements' (names the dialog); sides: the map Compare side of
+    // each plan (three-compare.js values, null where it has none), by default the plan itself;
+    // titles: each plan's column title (an agreement's own), by default the plan's; terms: with
+    // agreements, the agreements themselves, whose terms are compared above what their plans build.
+    async function comparePlans(plans, { subject = 'plans', sides = null, titles = null, terms = null } = {}) {
+        const [titleText, basisText, headingText] = COMPARE_SUBJECTS[subject].map(([key, fallback]) => tPlanStats(key, fallback));
         const grid = assumptionGrid('plan-compare');
         const assumptions = readAssumptionsFromModal(grid, { prefix: 'plan-compare' });
         let price = priceIn(grid, 'plan-compare');
         const entries = [];
         const prepared = [];
         for (const [index, plan] of plans.entries()) {
-            const title = plan?.content?.title || '';
+            const title = titles?.[index] || plan?.content?.title || '';
             try {
                 const snapshot = await withGround(await window.PlanAnalysis.prepare(plan), assumptions);
                 const stats = computePlanStatsSync({ ...snapshot, unitsCounting: true }, assumptions);
-                const entry = { title: stats.planTitle || title, stats, figures: summaryTexts(stats, price), groundError: stats.groundError };
+                const entry = { title: titles?.[index] || stats.planTitle || title, stats, figures: summaryTexts(stats, price), groundError: stats.groundError };
                 entries.push(entry);
                 const side = sides ? sides[index] || null : plan?.cid ? `plan:${plan.cid}` : null;
                 prepared.push({ title: entry.title, cid: plan?.cid || null, side, snapshot, entry });
@@ -680,8 +734,7 @@
         const basis = el('select');
         basis.dataset.planCompareBasis = '';
         const option = (value, text) => { const node = el('option', null, text); node.value = value; basis.appendChild(node); };
-        if (prepared.length > 1) option('compared', designs ? tPlanStats('planCompare.basisComparedDesigns', 'All compared designs')
-            : tPlanStats('planCompare.basisCompared', 'All compared plans'));
+        if (prepared.length > 1) option('compared', basisText);
         prepared.forEach((row, index) => option(`plan:${index}`, row.title));
         saved.forEach((row, value) => option(value, row.content.title));
         basisField.appendChild(basis);
@@ -703,8 +756,7 @@
         const scroll = el('div', 'plan-compare__scroll');
         const draw = () => {
             scroll.innerHTML = '';
-            scroll.appendChild(compareTable([present, ...entries], comparePlansAsColumns,
-                designs ? tPlanStats('planCompare.design', 'Design') : tPlanStats('plan.label', 'Plan')));
+            scroll.appendChild(compareTable([present, ...entries], comparePlansAsColumns, headingText));
             swap.setAttribute('aria-pressed', String(!comparePlansAsColumns));
         };
         let measuring = 0;
@@ -770,6 +822,10 @@
         assumptionsSection.appendChild(rule);
         const definition = el('p', 'sheet-note', tPlanStats('planCompare.landDefinition',
             'Public land is roads and OpenStreetMap parks and squares; private land is the rest of the parcels. The present state counts every existing building on that land.'));
+        if (terms) {
+            body.appendChild(termsSection(terms, terms.map((agreement, index) => titles?.[index] || agreement?.title || '')));
+            body.appendChild(el('div', 'plan-stats-heading', tPlanStats('planCompare.figures', 'What the plans build')));
+        }
         body.appendChild(basisField);
         body.appendChild(swap);
         body.appendChild(sideBySide);
@@ -777,7 +833,7 @@
         body.appendChild(assumptionsSection);
         body.appendChild(definition);
         draw();
-        const dialog = window.CbDialog.open({ title: designs ? tPlanStats('planCompare.titleDesigns', 'Compare designs') : tPlanStats('planCompare.title', 'Compare plans'),
+        const dialog = window.CbDialog.open({ title: titleText,
             size: 'lg', className: 'plan-compare-dialog', body });
         if (basis.children.length) {
             basis.value = basis.children[0].value;

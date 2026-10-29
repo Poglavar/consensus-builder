@@ -419,6 +419,56 @@ describe('comparing plans', () => {
         expect(shown).toEqual([{ left: 'design:d-1', right: 'design:d-3' }]);
     });
 
+    it('compares agreements through their plans under the agreements\' own titles, with their map sides', async () => {
+        const window = openDialog(plan);
+        const shown = [];
+        window.ThreeCompare = { show: sides => shown.push(sides) };
+        await window.comparePlanStats([
+            { cid: 'plan-1', content: { title: 'Shared plan' }, records: [block('d-1')] },
+            { cid: 'plan-2', content: { title: 'Shared plan' }, records: [block('d-2')] }
+        ], { subject: 'agreements', titles: ['Owners deal', 'Community vote'], sides: ['agreement:a-1', 'agreement:a-2'] });
+        await new Promise(resolve => setImmediate(resolve));
+        const find = test => (function walk(node) { if (test(node)) return node; for (const child of node.children) { const hit = walk(child); if (hit) return hit; } return null; })(window.openedDialog.body);
+        expect(window.openedDialog.title).toBe('Compare agreements');
+        const basis = find(node => node.dataset && 'planCompareBasis' in node.dataset);
+        expect(basis.children.slice(0, 3).map(option => option.textContent)).toEqual(['All compared agreements', 'Owners deal', 'Community vote']);
+        expect(rowsOf(tableOf(window))[0]).toEqual(['', 'Present state', 'Owners deal', 'Community vote']);
+        const swap = find(node => node.dataset && 'planCompareSwap' in node.dataset);
+        swap.listeners.click.forEach(fn => fn());
+        expect(rowsOf(tableOf(window))[0][0]).toBe('Agreement');
+        find(node => node.dataset && 'planCompareSideBySide' in node.dataset).listeners.click.forEach(fn => fn());
+        expect(shown).toEqual([{ left: 'agreement:a-1', right: 'agreement:a-2' }]);
+    });
+
+    it('puts the agreements\' terms above what their plans build, marks the ones they differ in, and can show only those', async () => {
+        const window = openDialog(plan);
+        const asked = [];
+        window.AgreementPanel = { compareTerms: (agreements, _tr, options) => {
+            asked.push({ ids: agreements.map(agreement => agreement.id), summaryText: options.summaryText });
+            return [
+                { key: 'rule', label: 'Decision rule', values: ['Owners · Binding', 'Community · Non-binding'], differs: true },
+                { key: 'inputs', label: 'Input parcels', values: ['2 · 1,000 m²', '2 · 1,000 m²'], differs: false }
+            ];
+        } };
+        await window.comparePlanStats([
+            { cid: 'plan-1', content: { title: 'Shared plan' }, records: [block('d-1')] },
+            { cid: 'plan-1', content: { title: 'Shared plan' }, records: [block('d-1')] }
+        ], { subject: 'agreements', titles: ['Owners deal', 'Community vote'], terms: [{ id: 'a-1', title: 'Owners deal' }, { id: 'a-2', title: 'Community vote' }] });
+        expect(asked).toEqual([{ ids: ['a-1', 'a-2'], summaryText: null }]);
+        const find = test => (function walk(node) { if (test(node)) return node; for (const child of node.children) { const hit = walk(child); if (hit) return hit; } return null; })(window.openedDialog.body);
+        const section = find(node => node.dataset && 'planCompareTerms' in node.dataset);
+        expect(window.openedDialog.body.children.indexOf(section)).toBe(0);
+        const terms = find(node => node.tagName === 'TABLE' && node.className.includes('plan-compare__terms-table'));
+        expect(rowsOf(terms)).toEqual([['', 'Owners deal', 'Community vote'], ['Decision ruleDiffers', 'Owners · Binding', 'Community · Non-binding'], ['Input parcels', '2 · 1,000 m²', '2 · 1,000 m²']]);
+        const only = find(node => node.dataset && 'planCompareDiffering' in node.dataset);
+        only.checked = true;
+        only.listeners.change.forEach(fn => fn());
+        expect(terms.children.slice(1).map(tr => !!tr.hidden)).toEqual([false, true]);
+        only.checked = false;
+        only.listeners.change.forEach(fn => fn());
+        expect(terms.children.slice(1).map(tr => !!tr.hidden)).toEqual([false, false]);
+    });
+
     it('re-derives every column from its own assumptions, says the rule, and keeps them for Plan stats', async () => {
         const window = openDialog(plan);
         await window.comparePlanStats([{ content: { title: 'Two blocks' }, records: [block('d-1'), block('d-2')], withExisting: true }]);

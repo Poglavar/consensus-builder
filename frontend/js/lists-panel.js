@@ -25,7 +25,7 @@
         const doc = win.document;
         const state = { tab: 'designs', source: 'local', search: '', publication: 'all', sort: 'title',
             // selecting: the tab whose rows show checkboxes; purpose: what they are for (designs → Create
-            // plan or Compare designs, plans → Compare plans).
+            // plan or Compare designs, plans → Compare plans, agreements → Compare agreements).
             filtersOpen: false, selecting: null, purpose: null, selected: new Map(), active: null, previewing: null, remote: new Map() };
         let ready = false;
         const t = (key, params) => win.i18n.t(key, params || {});
@@ -102,13 +102,25 @@
             const plan = row.record.content ? row.record : await win.NamedPlans.fetchPlan(row.key);
             return row.published ? { ...plan, published: true } : plan;
         }
+        // An agreement's plan: its stored copy's, or the published one's fetched by CID. Null when a
+        // stored agreement has no plan yet.
+        async function agreementPlanOf(row) {
+            return row.local ? row.local.plan : win.NamedPlans.fetchPlan(row.record.content.planCid);
+        }
+        // An agreement as Compare agreements reads it: its terms (a published one not held here is
+        // fetched, not stored), its plan measured under the agreement's title, and its side on the
+        // map's Compare (a stored agreement only).
+        async function agreementCompared(row) {
+            const agreement = row.local || (await win.AgreementSync.resolveDetails(row.key)).agreement;
+            if (!agreement.plan) throw new Error(t('lists.agreementNoPlan', { title: row.title }));
+            return { agreement, plan: agreement.plan, title: row.title, side: row.local ? `agreement:${row.local.id}` : null };
+        }
         // The designs a row stands for, as records that need not be stored: the design itself, or
         // the members of a plan (an agreement shows its plan's).
         async function designRecords(row, kind) {
             const apiBase = win.DesignSync.apiBase();
             if (kind === 'designs') return [await designRecord(row)];
-            const plan = kind === 'plans' ? await planOf(row)
-                : row.local ? row.local.plan : await win.NamedPlans.fetchPlan(row.record.content.planCid);
+            const plan = kind === 'plans' ? await planOf(row) : await agreementPlanOf(row);
             if (!plan) return [];
             return win.PlanComposition.localRecords(await win.PlanWorkspace.resolve(plan), { apiBase });
         }
@@ -200,7 +212,11 @@
                     }, 'btn-primary', 'cb-icon-plan'));
                     actions.append(button(t('planCompare.title'), () => startSelecting('compare'), '', 'table-columns'));
                 } else actions.append(compareButton(plans => win.comparePlanStats(plans)), cancel());
-            } else actions.append(node('span', 'sheet-note', t('lists.agreementHint')));
+            } else if (state.selecting !== 'agreements') {
+                actions.append(button(t('planCompare.titleAgreements'), () => startSelecting('compare'), '', 'table-columns'),
+                    node('span', 'sheet-note', t('lists.agreementHint')));
+            } else actions.append(compareButton(rows => win.comparePlanStats(rows.map(row => row.plan), { subject: 'agreements',
+                titles: rows.map(row => row.title), sides: rows.map(row => row.side), terms: rows.map(row => row.agreement) })), cancel());
         }
         function renderRows() {
             if (!ready || !opened()) return;
@@ -233,6 +249,7 @@
                         check.disabled = true; item.setAttribute('aria-busy', 'true');
                         try {
                             if (check.checked) state.selected.set(row.key, kind === 'plans' ? await planOf(row)
+                                : kind === 'agreements' ? await agreementCompared(row)
                                 : state.purpose === 'compare' ? await designRecord(row) : await designOf(row));
                             else state.selected.delete(row.key);
                         } catch (error) { check.checked = false; win.showStyledAlert(error.message); }

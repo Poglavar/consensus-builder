@@ -23,7 +23,8 @@
     // members: [designId], unapplied: [designCid] }] where members lists every member (an applied copy
     // by its id, the rest by CID) and unapplied the members the plan draws itself. A side that draws
     // members itself carries readId, the plan read for them (a plan's own CID when not given).
-    function sideOptions({ designs = [], plans = [] } = {}) {
+    // agreements: [{ id, title, members, unapplied, readId }] where readId is the agreement's plan.
+    function sideOptions({ designs = [], plans = [], agreements = [] } = {}) {
         const options = BASE.map(kind => ({ value: kind, kind }));
         for (const design of designs) {
             if (design?.id == null) continue;
@@ -35,6 +36,11 @@
             options.push({ value: `plan:${plan.id}`, kind: 'plan', id: String(plan.id), title: plan.title || String(plan.id),
                 members: (plan.members || []).map(String), unapplied: (plan.unapplied || []).map(String), readId: String(plan.id) });
         }
+        for (const agreement of agreements) {
+            if (agreement?.id == null || agreement.readId == null) continue;
+            options.push({ value: `agreement:${agreement.id}`, kind: 'agreement', id: String(agreement.id), title: agreement.title || String(agreement.id),
+                members: (agreement.members || []).map(String), unapplied: (agreement.unapplied || []).map(String), readId: String(agreement.readId) });
+        }
         return options;
     }
 
@@ -45,15 +51,16 @@
 
     // Whether a side applies one design: by: { id, unapplied } where unapplied marks a plan member no
     // applied design stands for. Proposed applies every applied design; an applied design's side
-    // itself alone; a side that reads its members (a plan, a design that is not applied) its members,
-    // applied or not; Built and Permitted apply nothing.
+    // itself alone; a side that reads its members (a plan, an agreement's plan, a design that is not
+    // applied) its members, applied or not; Built and Permitted apply nothing.
     function appliesDesign(side, by) {
         if (!side || by?.id == null) return false;
         const id = String(by.id);
         switch (side.kind) {
             case 'proposed': return !by.unapplied;
             case 'design': return side.members ? side.members.includes(id) : !by.unapplied && side.id === id;
-            case 'plan': return (side.members || []).includes(id);
+            case 'plan':
+            case 'agreement': return (side.members || []).includes(id);
             default: return false;
         }
     }
@@ -140,6 +147,7 @@
             case 'proposed': return t('planningViews.compare.options.proposed', 'Proposed (all applied designs)');
             case 'design': return t('planningViews.compare.options.design', 'Design: {{title}}', { title: option.title });
             case 'plan': return t('planningViews.compare.options.plan', 'Plan: {{title}}', { title: option.title });
+            case 'agreement': return t('planningViews.compare.options.agreement', 'Agreement: {{title}}', { title: option.title });
             default: return option.value;
         }
     }
@@ -168,7 +176,7 @@
         return row;
     }
 
-    // This city's saved designs and plans, as sides. An applied design is its applied copy; one that
+    // This city's saved designs, plans and agreements, as sides. An applied design is its applied copy; one that
     // is not applied is read as a one-member plan. A plan member with an applied copy is that copy;
     // the rest the plan draws itself once read (compare-unapplied.js).
     function collectOptions() {
@@ -198,7 +206,12 @@
             planRows.set(String(row.cid), row);
             return { id: String(row.cid), title: row.content?.title || String(row.cid), ...global.CompareUnapplied.membersOf(row, copies) };
         });
-        return pure.sideOptions({ designs, plans });
+        // An agreement draws its plan; one without a plan yet is no side.
+        const agreements = (global.AgreementStore?.list?.() || []).filter(row => row?.plan?.cid && inCity(row.city)).map(row => {
+            if (!planRows.has(String(row.plan.cid))) planRows.set(String(row.plan.cid), row.plan);
+            return { id: String(row.id), title: row.title || String(row.id), readId: String(row.plan.cid), ...global.CompareUnapplied.membersOf(row.plan, copies) };
+        });
+        return pure.sideOptions({ designs, plans, agreements });
     }
 
     // A side that draws members itself is read once it is chosen.

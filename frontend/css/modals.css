@@ -471,6 +471,35 @@ body.site-intro-open { overflow: hidden; }
     color: var(--cb-danger);
 }
 
+/* Compare agreements' terms: worded values wrap, and a term the agreements differ in is marked. */
+.plan-compare__terms {
+    display: grid;
+    gap: var(--cb-space-2);
+}
+
+.plan-compare__differing {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    justify-self: start;
+}
+
+.plan-compare__terms-table td {
+    white-space: normal;
+    min-width: 8rem;
+    vertical-align: top;
+}
+
+.plan-compare__terms-table tr.plan-compare__term--differs td {
+    color: var(--cb-text-strong);
+    font-weight: 600;
+}
+
+.plan-compare__differs {
+    margin-inline-start: var(--cb-space-2);
+    font-weight: normal;
+}
+
 /* An Apartments or People figure while plan-units.js lays the buildings out: the shared busy ring
    (primitives.css cb-spin) before "Counting…". */
 .plan-stats-counting {

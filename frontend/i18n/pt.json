@@ -1683,6 +1683,15 @@
         }
     },
     "agreement": {
+        "compare": {
+            "approval": "Aprovação",
+            "settlement": "Liquidação",
+            "toOwners": "Terreno para os proprietários",
+            "toPublic": "Terreno para o público",
+            "toProposer": "Terreno para o proponente",
+            "paid": "Dinheiro que os proprietários pagam",
+            "received": "Dinheiro que os proprietários recebem"
+        },
         "outcomes": {
             "owners": "Proprietários das parcelas de entrada",
             "none": "Proprietários sem porção",
@@ -8258,7 +8267,8 @@
                 "permitted": "Volumetria permitida",
                 "proposed": "Proposto (todos os projetos aplicados)",
                 "design": "Projeto: {{title}}",
-                "plan": "Plano: {{title}}"
+                "plan": "Plano: {{title}}",
+                "agreement": "Acordo: {{title}}"
             }
         },
         "bound": "Envolvente máxima",
@@ -8817,6 +8827,7 @@
         "openNamed": "Abrir {{title}}",
         "noPlace": "Isto não tem lugar no mapa.",
         "agreementHint": "Crie um acordo a partir de um plano no separador Planos.",
+        "agreementNoPlan": "{{title}} não tem um plano para comparar.",
         "proposeFirst": "Abra o acordo para o rever e propor antes de o partilhar.",
         "loading": "A carregar…",
         "count": "{{shown}} de {{total}} itens carregados",
@@ -8862,6 +8873,14 @@
     "titleDesigns": "Comparar projetos",
     "basisComparedDesigns": "Todos os projetos comparados",
     "design": "Projeto",
+    "titleAgreements": "Comparar acordos",
+    "basisComparedAgreements": "Todos os acordos comparados",
+    "agreement": "Acordo",
+    "terms": "Condições dos acordos",
+    "figures": "O que os planos constroem",
+    "differs": "Difere",
+    "onlyDiffering": "Só o que difere",
+    "termsSame": "As condições dos acordos são as mesmas.",
     "measuring": "A medir…",
     "landDefinition": "O terreno público são as ruas e os parques e praças do OpenStreetMap; o privado é o resto das parcelas. O estado atual conta cada edifício existente nesse terreno; um plano conta, ao lado dos novos, os existentes que os seus projetos não removem.",
     "noBasis": "Não há nenhum plano guardado de onde tirar o terreno.",

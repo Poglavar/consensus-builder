@@ -7743,6 +7743,15 @@
         }
     },
     "agreement": {
+        "compare": {
+            "approval": "Odobrenje",
+            "settlement": "Namirenje",
+            "toOwners": "Zemljište vlasnicima",
+            "toPublic": "Zemljište javnosti",
+            "toProposer": "Zemljište predlagaču",
+            "paid": "Novac koji vlasnici plaćaju",
+            "received": "Novac koji vlasnici primaju"
+        },
         "outcomes": {
             "owners": "Vlasnici ulaznih parcela",
             "none": "Vlasnici bez dela",
@@ -8146,7 +8155,8 @@
                 "permitted": "Dozvoljena građevinska masa",
                 "proposed": "Predloženo (svi primenjeni dizajni)",
                 "design": "Dizajn: {{title}}",
-                "plan": "Plan: {{title}}"
+                "plan": "Plan: {{title}}",
+                "agreement": "Sporazum: {{title}}"
             }
         },
         "reroll": {
@@ -8869,6 +8879,7 @@
         "openNamed": "Otvori {{title}}",
         "noPlace": "Ovo nema mesto na mapi.",
         "agreementHint": "Napravite sporazum iz plana na kartici Planovi.",
+        "agreementNoPlan": "{{title}} nema plan za poređenje.",
         "proposeFirst": "Otvorite sporazum, pregledajte ga i predložite pre deljenja.",
         "loading": "Učitavanje…",
         "count": "{{shown}} od {{total}} učitanih stavki",
@@ -8914,6 +8925,14 @@
     "titleDesigns": "Uporedi projekte",
     "basisComparedDesigns": "Svi upoređeni projekti",
     "design": "Projekat",
+    "titleAgreements": "Uporedi sporazume",
+    "basisComparedAgreements": "Svi upoređeni sporazumi",
+    "agreement": "Sporazum",
+    "terms": "Uslovi sporazuma",
+    "figures": "Šta planovi grade",
+    "differs": "Razlikuje se",
+    "onlyDiffering": "Samo ono što se razlikuje",
+    "termsSame": "Uslovi sporazuma su isti.",
     "measuring": "Merenje…",
     "landDefinition": "Javna površina su putevi te parkovi i trgovi iz OpenStreetMap-a; privatna je ostatak parcela. Postojeće stanje broji svaku postojeću zgradu na tom zemljištu; plan uz svoje nove zgrade broji postojeće koje njegovi dizajni ne uklanjaju.",
     "noBasis": "Nema sačuvanog plana sa čijeg bi se zemljišta uzelo stanje.",

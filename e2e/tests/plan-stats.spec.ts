@@ -186,4 +186,77 @@ test.describe('Plan arithmetic @features', () => {
     await dialog.screenshot({ path: test.info().outputPath('plan-compare-rows.png') });
     await test.info().attach('plan-compare-rows', { path: test.info().outputPath('plan-compare-rows.png'), contentType: 'image/png' });
   });
+
+  test('compare agreements measures each agreement through its plan under its own title, and puts them side by side on the map', async ({ mockApi: page }) => {
+    test.setTimeout(120_000);
+    await openCity(page);
+    const building = await createBuilding(page);
+    await page.evaluate(id => (window as any).ProposalManager.unapplyProposal(id), building);
+    const park = await createSpace(page, 'park');
+    // Two stored agreements, each over its own plan, and one whose plan is not chosen yet.
+    const agreements = await page.evaluate(({ building, park }) => {
+      const w = window as any;
+      const agreement = (title: string, ids: string[] | null, rule: any = { electorate: 'community', binding: false, approvalConfig: null, lens: [] }, deadline: string | null = null) => {
+        const records = (ids || []).map(id => w.proposalStorage.getProposal(id));
+        const plan = ids ? w.PlanComposition.create(`${title} plan`, records, { city: 'zagreb', at: '45.8,15.98,17', mode: '2d', language: 'en' }) : null;
+        if (plan) w.PlanWorkspace.save(plan);
+        return w.AgreementStore.save({ schema: 'agreement/v1', id: w.AgreementRecord.newId(), title, city: 'zagreb', createdAt: new Date().toISOString(),
+          plan: plan ? { cid: plan.cid, content: plan.content } : null,
+          designs: records.map((record: any) => ({ proposalId: record.proposalId, title: record.title, goal: record.goal, cid: w.DesignRecord.cidOf(record) })),
+          inputs: { parcels: [], openGroundM2: 0 }, outputs: [], allocations: [], money: { currency: 'EUR', lines: [] },
+          rule, deadline }).id;
+      };
+      return [agreement('Houses deal', [building], { electorate: 'owners', binding: false, approvalConfig: null, lens: [] }, '2027-03-01T00:00:00.000Z'),
+        agreement('Houses and park vote', [building, park]), agreement('Unplanned terms', null)];
+    }, { building, park });
+    const applied = () => page.evaluate(() => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.applied).map((p: any) => p.proposalId).sort());
+    const before = await applied();
+
+    await page.locator('#proposals-button').click();
+    const sheet = page.locator('#proposals-sheet');
+    await sheet.locator('[data-list-tab="agreements"]').click();
+    await sheet.locator('#lists-actions').getByRole('button', { name: 'Compare agreements', exact: true }).click();
+    const compare = sheet.locator('[data-lists-compare]');
+    await expect(compare).toBeDisabled();
+    const check = (title: string) => sheet.getByRole('checkbox', { name: new RegExp(title) });
+    // An agreement without a plan has nothing to measure: it says so and stays unticked.
+    await check('Unplanned terms').click();
+    await expect(page.getByText('Unplanned terms has no plan to compare.')).toBeVisible();
+    await expect(check('Unplanned terms')).not.toBeChecked();
+    await page.keyboard.press('Escape');
+    await check('Houses deal').check();
+    await expect(compare).toBeDisabled();
+    await check('Houses and park vote').check();
+    await expect(compare).toBeEnabled();
+    await compare.click();
+    const dialog = page.locator('.plan-compare-dialog');
+    await expect(dialog.getByRole('heading', { name: 'Compare agreements' })).toBeVisible();
+    // Their terms first, the ones they differ in marked; then what their plans build.
+    const terms = dialog.locator('.plan-compare__terms-table');
+    await expect(terms.locator('th.plan-compare__plan')).toHaveText(['Houses deal', 'Houses and park vote']);
+    const term = (key: string) => terms.locator(`tr[data-plan-compare-term="${key}"]`);
+    await expect(term('rule').locator('td')).toHaveText(['Decided by the owners · Non-binding', 'Decided by a community vote · Non-binding']);
+    await expect(term('rule').locator('.plan-compare__differs')).toHaveText('Differs');
+    await expect(term('plan').locator('.plan-compare__differs')).toHaveCount(1);
+    await expect(term('deadline').locator('.plan-compare__differs')).toHaveCount(1);
+    await expect(term('inputs').locator('.plan-compare__differs')).toHaveCount(0);
+    await dialog.getByRole('checkbox', { name: 'Only what differs' }).check();
+    await expect(term('inputs')).toBeHidden();
+    await expect(term('rule')).toBeVisible();
+    const table = dialog.locator('[data-plan-compare]');
+    await expect(table.locator('th.plan-compare__plan')).toHaveText(['Present state', 'Houses deal', 'Houses and park vote']);
+    await expect(dialog.locator('.plan-compare__error')).toHaveCount(0);
+    await expect(dialog.locator('[data-plan-compare-basis] option').first()).toHaveText('All compared agreements');
+    expect(await applied()).toEqual(before);
+    await dialog.screenshot({ path: test.info().outputPath('agreement-compare.png') });
+    await test.info().attach('agreement-compare', { path: test.info().outputPath('agreement-compare.png'), contentType: 'image/png' });
+
+    // Side by side: the map's Compare opens on the two agreements, each offered as a side of its own.
+    await dialog.locator('[data-plan-compare-side-by-side]').click();
+    await expect(page.locator('#planning-compare-left')).toHaveValue(`agreement:${agreements[0]}`);
+    await expect(page.locator('#planning-compare-right')).toHaveValue(`agreement:${agreements[1]}`);
+    await expect(page.locator('#planning-compare-left option', { hasText: 'Agreement: Houses deal' })).toHaveCount(1);
+    await expect(page.locator('#planning-compare-left option', { hasText: 'Unplanned terms' })).toHaveCount(0);
+    expect(await applied()).toEqual(before);
+  });
 });

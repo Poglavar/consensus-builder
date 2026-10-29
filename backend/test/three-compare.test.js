@@ -55,6 +55,24 @@ describe('what a side shows', () => {
         expect(options[4].unapplied).toEqual(['cidX']);
     });
 
+    it('offers an agreement as a side that draws its plan: its applied members by id, the rest from the plan read', () => {
+        const options = compare.sideOptions({ designs: [{ id: 'd1' }], agreements: [
+            { id: 'a1', title: 'Owners deal', members: ['d1', 'cidX'], unapplied: ['cidX'], readId: 'plan-1' },
+            { id: 'a2', title: 'No plan yet' }
+        ] });
+        expect(options.map(option => option.value)).toEqual(['built', 'permitted', 'proposed', 'design:d1', 'agreement:a1']);
+        expect(options[4]).toEqual({ value: 'agreement:a1', kind: 'agreement', id: 'a1', title: 'Owners deal',
+            members: ['d1', 'cidX'], unapplied: ['cidX'], readId: 'plan-1' });
+        const applies = (value, by) => compare.appliesDesign(compare.parseSide(value, options), by);
+        expect(applies('agreement:a1', { id: 'd1' })).toBe(true);
+        expect(applies('agreement:a1', { id: 'cidX', unapplied: true })).toBe(true);
+        expect(applies('agreement:a1', { id: 'd9' })).toBe(false);
+        const razed = { role: 'existing', demolishedBy: [{ id: 'd1', unapplied: false }] };
+        expect(compare.showsOn(options[4], razed)).toBe(false);
+        expect(compare.readiness([options[0], options[4]], () => null).ready).toBe(false);
+        expect(compare.readiness([options[0], options[4]], id => (id === 'plan-1' ? { status: 'ready' } : null)).ready).toBe(true);
+    });
+
     // Two designs on the same parcels cannot both be applied: the one that is not is still a side,
     // drawn from its own read (under its CID), never from the applied rival.
     it('offers a design that is not applied as a side that applies it alone, read under its CID', () => {

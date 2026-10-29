@@ -1683,6 +1683,15 @@
         }
     },
     "agreement": {
+        "compare": {
+            "approval": "Approbation",
+            "settlement": "Règlement",
+            "toOwners": "Terrain aux propriétaires",
+            "toPublic": "Terrain au public",
+            "toProposer": "Terrain au proposant",
+            "paid": "Montant payé par les propriétaires",
+            "received": "Montant reçu par les propriétaires"
+        },
         "outcomes": {
             "owners": "Propriétaires des parcelles d’entrée",
             "none": "Propriétaires sans portion",
@@ -8258,7 +8267,8 @@
                 "permitted": "Volumétrie autorisée",
                 "proposed": "Proposé (tous les projets appliqués)",
                 "design": "Projet : {{title}}",
-                "plan": "Plan : {{title}}"
+                "plan": "Plan : {{title}}",
+                "agreement": "Accord : {{title}}"
             }
         },
         "bound": "Enveloppe maximale",
@@ -8817,6 +8827,7 @@
         "openNamed": "Ouvrir {{title}}",
         "noPlace": "Cet élément n’a pas de place sur la carte.",
         "agreementHint": "Créez un accord à partir d’un plan dans l’onglet Plans.",
+        "agreementNoPlan": "{{title}} n’a pas de plan à comparer.",
         "proposeFirst": "Ouvrez l’accord pour le vérifier et le proposer avant de le partager.",
         "loading": "Chargement…",
         "count": "{{shown}} sur {{total}} éléments chargés",
@@ -8862,6 +8873,14 @@
     "titleDesigns": "Comparer les projets",
     "basisComparedDesigns": "Tous les projets comparés",
     "design": "Projet",
+    "titleAgreements": "Comparer les accords",
+    "basisComparedAgreements": "Tous les accords comparés",
+    "agreement": "Accord",
+    "terms": "Conditions des accords",
+    "figures": "Ce que les plans construisent",
+    "differs": "Diffère",
+    "onlyDiffering": "Seulement ce qui diffère",
+    "termsSame": "Les conditions des accords sont les mêmes.",
     "measuring": "Mesure en cours…",
     "landDefinition": "Le terrain public comprend les routes ainsi que les parcs et places d’OpenStreetMap ; le terrain privé est le reste des parcelles. L’état actuel compte chaque bâtiment existant sur ce terrain ; un plan compte, à côté de ses nouveaux bâtiments, les bâtiments existants que ses projets ne suppriment pas.",
     "noBasis": "Aucun plan enregistré dont prendre le terrain.",

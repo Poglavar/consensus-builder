@@ -702,3 +702,43 @@ describe('Minted agreements rows', () => {
         expect(list.mintedRowsHtml([])).toContain('No agreement of this city is minted yet.');
     });
 });
+
+describe('compareTerms', () => {
+    const fallback = (_key, text, params = {}) => Object.keys(params).reduce((out, name) => out.replace(`{{${name}}}`, params[name]), text);
+    const rows = list => Object.fromEntries(panel.compareTerms(list, fallback).map(row => [row.key, row]));
+
+    it('finds no difference between an agreement and itself', () => {
+        const same = rows([agreement(), agreement()]);
+        expect(Object.values(same).filter(row => row.differs)).toEqual([]);
+        const area = m2 => format.formatArea(m2);
+        expect(same.toPublic.values).toEqual([area(400), area(400)]);
+        expect(same.toOwners.values).toEqual([area(600), area(600)]);
+        expect(same.inputs.values[0]).toBe(`2 · ${area(1000)}`);
+        expect(same.settlement.values[0]).toBe('Balance land differences in money');
+    });
+
+    it('marks the terms two agreements over the same land differ in, and leaves a community vote\'s money —', () => {
+        const owners = agreement();
+        const contribution = agreement({ id: 'ag-2', deadline: '2027-03-01T00:00:00.000Z',
+            rule: { electorate: 'owners', binding: false, approvalConfig: null, lens: [], settlement: { method: 'area', rateCentsPerM2: 10000, contributionBasisPoints: 1500 } } });
+        const vote = agreement({ id: 'ag-3', money: { currency: 'EUR', lines: [] }, rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] } });
+        const compared = rows([owners, contribution, vote]);
+        const differing = Object.values(compared).filter(row => row.differs).map(row => row.key);
+        expect(differing).toEqual(expect.arrayContaining(['rule', 'settlement', 'contribution', 'deadline', 'ownersWithout', 'paid', 'received', 'sponsor']));
+        expect(differing).not.toContain('inputs');
+        expect(differing).not.toContain('toPublic');
+        expect(compared.rule.values).toEqual(['Decided by the owners · Binding', 'Decided by the owners · Non-binding', 'Decided by a community vote · Non-binding']);
+        expect(compared.contribution.values).toEqual(['0%', '15%', '—']);
+        expect(compared.deadline.values[0]).toBe('None');
+        expect(compared.settlement.values[2]).toBe('—');
+        expect([compared.paid.values[2], compared.received.values[2], compared.sponsor.values[2]]).toEqual(['—', '—', '—']);
+        expect(compared.paid.values[0]).not.toBe('—');
+    });
+
+    it('tells two plans under one title apart by their CIDs', () => {
+        const other = PlanRecord.create('Courtyard plan', ['bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku'], { at: '45.8,15.97,16', mode: '2d' });
+        const compared = rows([agreement(), agreement({ id: 'ag-2', plan: { cid: Cid.cidOfObject(other), content: other } })]);
+        expect(compared.plan.values).toEqual(['Courtyard plan', 'Courtyard plan']);
+        expect(compared.plan.differs).toBe(true);
+    });
+});

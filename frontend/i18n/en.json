@@ -7702,6 +7702,15 @@
         }
     },
     "agreement": {
+        "compare": {
+            "approval": "Approval",
+            "settlement": "Settlement",
+            "toOwners": "Land to the owners",
+            "toPublic": "Land to the public",
+            "toProposer": "Land to the proposer",
+            "paid": "Cash the owners pay",
+            "received": "Cash the owners receive"
+        },
         "outcomes": {
             "owners": "Owners of input parcels",
             "none": "Owners with no piece",
@@ -8100,7 +8109,8 @@
                 "permitted": "Permitted massing",
                 "proposed": "Proposed (all applied designs)",
                 "design": "Design: {{title}}",
-                "plan": "Plan: {{title}}"
+                "plan": "Plan: {{title}}",
+                "agreement": "Agreement: {{title}}"
             }
         },
         "reroll": {
@@ -8817,6 +8827,7 @@
         "openNamed": "Open {{title}}",
         "noPlace": "This has no place on the map.",
         "agreementHint": "Create an agreement from a plan in the Plans tab.",
+        "agreementNoPlan": "{{title}} has no plan to compare.",
         "proposeFirst": "Open the agreement to review and propose it before sharing.",
         "loading": "Loading…",
         "count": "{{shown}} of {{total}} loaded items",
@@ -8862,6 +8873,14 @@
     "titleDesigns": "Compare designs",
     "basisComparedDesigns": "All compared designs",
     "design": "Design",
+    "titleAgreements": "Compare agreements",
+    "basisComparedAgreements": "All compared agreements",
+    "agreement": "Agreement",
+    "terms": "Terms of the agreements",
+    "figures": "What the plans build",
+    "differs": "Differs",
+    "onlyDiffering": "Only what differs",
+    "termsSame": "The agreements’ terms are the same.",
     "measuring": "Measuring…",
     "landDefinition": "Public land is roads and OpenStreetMap parks and squares; private land is the rest of the parcels. The present state counts every existing building on that land; a plan counts the existing buildings its designs do not clear beside its new ones.",
     "noBasis": "No saved plan to take the land from.",
