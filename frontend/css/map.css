@@ -172,21 +172,25 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
 
 /* Loading spinner over a mode-strip label while that view composes. three-mode.js sets
    .mode-btn-loading on #mode-3d-toggle (model view rendering) or #mode-realistic-toggle (photo view
-   streaming Google tiles). The label steps aside while the ring is shown. */
-.map-mode-tile.mode-btn-loading { pointer-events: none; }
+   streaming Google tiles), and on #mode-2d-toggle while cadastral parcels load (in any view, so
+   that tile stays clickable). The label steps aside while the ring is shown. */
+#mode-3d-toggle.map-mode-tile.mode-btn-loading,
+#mode-realistic-toggle.map-mode-tile.mode-btn-loading { pointer-events: none; }
 .map-mode-tile.mode-btn-loading::after {
     content: '';
     position: absolute;
     left: 50%;
     top: 50%;
-    /* border-box so the 2px border is INSIDE the 18px box; with content-box the box would be 22px
-       and the -9px margin (half of 18) would leave the ring 2px off-centre down-right. */
+    /* border-box so the 3px border is INSIDE the 22px box; with content-box the box would be 28px
+       and the -11px margin (half of 22) would leave the ring 3px off-centre down-right. */
     box-sizing: border-box;
-    width: 18px;
-    height: 18px;
-    margin: -9px 0 0 -9px;
-    border: 2px solid var(--cb-line-strong);
-    border-top-color: currentColor;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+    /* A light track and a primary arc, straight on the tile's artwork: the turning quarter is the
+       only coloured part, so it reads as motion on the light map art and the dark aerial alike. */
+    border: 3px solid color-mix(in srgb, var(--cb-surface) 85%, transparent);
+    border-top-color: var(--cb-primary);
     border-radius: 50%;
     animation: map-mode-spin 0.7s linear infinite;
     z-index: var(--cb-z-local-2);
@@ -1524,8 +1528,7 @@ body.three-mode-active #agent-bubbles-container {
 .map-mode-tile.mode-btn-loading > span { visibility: hidden; }
 
 .map-mode-tile.mode-btn-loading::after {
-    background: var(--cb-inverse);
-    box-shadow: 0 0 0 var(--cb-space-1) var(--cb-inverse);
+    filter: drop-shadow(0 0 2px color-mix(in srgb, var(--cb-inverse) 60%, transparent));
 }
 
 /* 3D container overlay on top of the map */

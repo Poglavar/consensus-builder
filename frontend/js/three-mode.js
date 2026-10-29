@@ -294,7 +294,7 @@
             const btn2d = document.getElementById('mode-2d-toggle');
             const btn3d = document.getElementById('mode-3d-toggle');
             const btnRw = document.getElementById('mode-realistic-toggle');
-            for (const [button, active, loading] of [[btn2d, !modelSelected && !photoSelected, false], [btn3d, modelSelected, modelLoading], [btnRw, photoSelected, photoLoading]]) {
+            for (const [button, active, loading] of [[btn2d, !modelSelected && !photoSelected, !!window.mapParcelsLoading?.()], [btn3d, modelSelected, modelLoading], [btnRw, photoSelected, photoLoading]]) {
                 if (!button) continue;
                 button.classList.toggle('mode-btn-loading', loading);
                 button.setAttribute('aria-pressed', String(active));

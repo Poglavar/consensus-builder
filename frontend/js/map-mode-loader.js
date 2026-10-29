@@ -73,6 +73,8 @@
     };
     root.__ensurePhotorealMode = () => loadGroup('photo');
     root.__ensureFloorPlanModules = () => loadGroup('floorPlans');
+    // The 2D tile spins while cadastral parcels load (parcels/state.js), whichever view is shown.
+    root.mapParcelsLoading = () => !!root.ParcelsState?.isFetchingParcels?.();
     function paint(state) {
         root.__mapModeState = state;
         root.dispatchEvent(new CustomEvent('mapmodechange', { detail: state }));
@@ -84,7 +86,8 @@
                 if (!button) continue;
                 // The selected view is aria-pressed; the strip's tiles take their look from it.
                 button.setAttribute('aria-pressed', String(mode === state.desired));
-                button.classList.toggle('mode-btn-loading', mode === state.desired && state.pending);
+                button.classList.toggle('mode-btn-loading', (mode === state.desired && state.pending)
+                    || (mode === '2d' && root.mapParcelsLoading()));
             }
         }
         paintModeLocks();
@@ -126,6 +129,12 @@
         }
     }
     root.syncMapModeLocks = paintModeLocks;
+    for (const event of ['parcelFetchStarted', 'parcelFetchFinished']) {
+        root.addEventListener(event, () => {
+            if (root.updateModeButtonStates) root.updateModeButtonStates();
+            else document.getElementById('mode-2d-toggle')?.classList.toggle('mode-btn-loading', root.mapParcelsLoading());
+        });
+    }
     // Editors announce themselves on <body> (map-edit-locked, on-map-editing); road drawing by event.
     document.addEventListener('corridor-drawing-mode-changed', paintModeLocks);
     if (typeof MutationObserver === 'function' && document.body) {
