@@ -29,3 +29,23 @@ describe('the shared coordinate grid', () => {
         expect(grid.snapGeometry({ type: 'GeometryCollection', geometries: [{ type: 'Point', coordinates: [1.00000000049, 2] }] }).geometries[0].coordinates).toEqual([1, 2]);
     });
 });
+
+describe('what counts as ground', () => {
+    const turf = require('@turf/turf');
+    const box = (w, s, e, n) => turf.polygon([[[w, s], [e, s], [e, n], [w, n], [w, s]]]);
+    // 1e-5 degrees of latitude is about 1.1 m; of longitude at 45° about 0.79 m.
+    const parcel = box(16, 45, 16.001, 45.001);
+    it('is anything wider than the measured noise (1 mm), or than the design toleranceM', () => {
+        expect(grid.NOISE_M).toBe(0.001);
+        expect(grid.isGround(turf, box(16, 45, 16.001, 45 + 0.004 / 111000))).toBe(true);   // 4 mm wide strip
+        expect(grid.isGround(turf, box(16, 45, 16.001, 45 + 0.0004 / 111000))).toBe(false); // 0.4 mm: cutting debris
+        expect(grid.isGround(turf, box(16, 45, 16.001, 45 + 0.004 / 111000), 0.01)).toBe(false); // narrower than its 1 cm allowance
+        expect(grid.isGround(turf, null)).toBe(false);
+    });
+    it('decides whether a shape reaches into a parcel by that rule on the shared clip', () => {
+        const reach = d => box(15.9995, 45.0002, 16 + d / 78600, 45.0004); // reaches d metres past the parcel's west edge
+        expect(grid.reachesInto(turf, reach(0.039), parcel)).toBe(true);
+        expect(grid.reachesInto(turf, reach(0.0003), parcel)).toBe(false);
+        expect(grid.reachesInto(turf, box(15.99, 45, 15.995, 45.001), parcel)).toBe(false);
+    });
+});

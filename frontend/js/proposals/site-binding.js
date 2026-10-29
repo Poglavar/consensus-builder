@@ -27,6 +27,12 @@
     'use strict';
 
     // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    // The shared grid, noise value and inward-buffer test (geometry-tolerances.js).
+    function gridApi() {
+        return (typeof window !== 'undefined' && window.GeometryTolerances)
+            || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
+    }
+
     function clipFailureApi() {
         const api = (typeof window !== 'undefined' && window.__parcelArrangement)
             || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
@@ -38,7 +44,7 @@
     const DEFAULT_INTRUSION_TOLERANCE_M = 0;
     // Arithmetic floor, not policy: shared edges and coordinate rounding produce sub-millimetre
     // slivers. Anything narrower than this is not ground.
-    const INTRUSION_NOISE_M = 0.001;
+    const INTRUSION_NOISE_M = gridApi().NOISE_M;
     // A tolerance is measurement error, never a design allowance; above this it is refused.
     const MAX_INTRUSION_TOLERANCE_M = 1;
 
@@ -128,31 +134,8 @@
         return null;
     }
 
-    // turf.buffer (JSTS) returns nothing for a polygon only centimetres across — exactly the 3 cm
-    // fillet a design reaches into a neighbour with — so a small piece is first scaled up about its
-    // bbox centre (uniform in ground metres, since one degree of lng/lat is a constant number of
-    // metres locally) and eroded by the scaled radius. Erosion commutes with uniform scaling.
-    const MIN_BUFFER_EXTENT_M = 50;
-
-    function scaledForBuffer(t, feature) {
-        const [minX, minY, maxX, maxY] = t.bbox(feature);
-        const cx = (minX + maxX) / 2;
-        const cy = (minY + maxY) / 2;
-        const extentM = Math.max((maxX - minX) * 111320 * Math.cos(cy * Math.PI / 180), (maxY - minY) * 110540);
-        if (!(extentM > 0) || extentM >= MIN_BUFFER_EXTENT_M) return { feature, k: 1 };
-        const k = MIN_BUFFER_EXTENT_M / extentM;
-        const walk = c => (typeof c[0] === 'number' ? [cx + (c[0] - cx) * k, cy + (c[1] - cy) * k] : c.map(walk));
-        const g = feature.geometry || feature;
-        return { feature: { type: 'Feature', properties: {}, geometry: { type: g.type, coordinates: walk(g.coordinates) } }, k };
-    }
-
-    function survivesInwardBuffer(t, feature, radiusM) {
-        if (!(radiusM > 0)) return !!feature && t.area(feature) > 0;
-        const scaled = scaledForBuffer(t, feature);
-        let eroded = null;
-        try { eroded = t.buffer(scaled.feature, -radiusM * scaled.k, { units: 'meters' }); } catch (_) { eroded = null; }
-        return !!(eroded && eroded.geometry && t.area(eroded) > 0);
-    }
+    // The inward-buffer test lives in the shared module, so binding and every other stage run one function.
+    const survivesInwardBuffer = (t, feature, radiusM) => gridApi().survivesInwardBuffer(t, feature, radiusM);
 
     // Diameter of the largest circle inside `feature` (ground metres), by bisection; see the header.
     function intrusionWidth(feature, options) {

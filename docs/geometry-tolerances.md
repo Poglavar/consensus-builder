@@ -32,7 +32,7 @@ The two real overlaps in the source (1,577 and 1,855 m²) are data defects, not 
 | --- | --- |
 | `GRID_DECIMALS` = 9 (~0.1 mm) and `snap()` | Parcels are snapped when they arrive (server or DGU fallback alike, so both deliver identical coordinates), every clip runs on the grid, and authored geometry is saved on it. Integer rounding (`Math.round(v·1e9)/1e9`), never `toFixed`. |
 | `reachesInto(shape, parcel)` | The one answer to "does this shape take, stand on, consume or anchor to this parcel", and, negated, "is this piece debris". The intersection must be wider than the noise threshold (the inward-buffer rule `site-binding.js` already uses). Binding, apply hosts and provenance, plot ownership, re-basing, road crossings, sliver drops and editor checks all call it. |
-| `NOISE_M` | The noise threshold, measured after the grid is in place. |
+| `NOISE_M` = 1 mm and `isGround(feature, toleranceM)` | The noise value, measured (step 3), and the test that uses it: ground is anything wider than max(toleranceM, NOISE_M) (a circle that wide fits inside). Debris is the rest. |
 | Edge model | Straight in WGS84 longitude/latitude, in every stage, because every stage runs the same functions. |
 
 A design's own `toleranceM` is a per-record allowance: it is an argument to `reachesInto`, so binding
@@ -60,7 +60,7 @@ site hash (`site-hash.js`, versioned; changing its rounding is a new version).
 | --- | --- | --- |
 | 1 | `geometry-tolerances.js`: the grid and `snap()`; parcels snapped on arrival (`ground-service.js`, fabric seed), so server and DGU parcels are identical | done |
 | 2 | Every clip that decides ground runs through the one shared clip (`parcel-arrangement.js` `clipWith`, inputs on the grid, coarser retries deterministic so every stage gets the same answer): binding, ancestry, land take, plot, site and pool cuts, layout and footprint validation, the per-parcel split, demolition regions, MCP's geometry runtime included. Display-only clips stay raw | done |
-| 3 | Measure the remaining cutting noise on real designs; set `NOISE_M`; `reachesInto` in the module | open |
+| 3 | `NOISE_M` = 1 mm, measured: on the grid neighbouring parcels share edges exactly, cutting debris is at most 0.4 mm wide, and the narrowest real reach of a published Zagreb design into a parcel is 39 mm. `isGround` and `reachesInto` in the module; binding runs them | done |
 | 4 | Every "does it reach / is it debris" decision calls `reachesInto`: apply hosts and provenance (buildings, structures, layouts), plot ownership, sliver drops and the identity explode, re-basing, road crossings, plot edit, layout validation, MCP ground effects; the vertex patch in `apply/parcels.js` goes | open |
 | 5 | Pieces cut to their consumed hosts; the map's apply runs the fabric's partition check | open |
 | 6 | Apply honours a design's `toleranceM` as binding does | open |
