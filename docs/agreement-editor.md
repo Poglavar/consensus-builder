@@ -288,8 +288,8 @@ scheme** follows as a part of its own: the check, the owners chart (`ownersModel
 meet a broken rule in the editor's own controls. The chart has the owners in rows (the people the
 rule's ownership rights name, via `AgreementPersons.personPositions`; a parcel without complete
 rights stays one party, its owners), then Public and the proposer or sponsor; its columns are Puts in
-and Gets back, each a land line and a money line on their own scales. A tick marks the least land an
-owner may get back under a per-owner cap, and the row turns red below it; a pool cap is a gauge. The
+and Gets back, each a land line and a money line. An owner below a per-owner cap is shown in red with
+the least land the cap lets them get back; a pool cap is a gauge. The
 caption says what an owner is owed (the land put in less the uncompensated contribution, or by value
 a share of the new land's value), so the money reads as the difference. Then how to set the scheme
 up here (Compensation, Land contribution, Output parcels, Parcel ownership rights, Authority,

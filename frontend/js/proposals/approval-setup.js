@@ -324,19 +324,16 @@
         const pool = cap && cap.per === 'pool' && landIn > 0
             ? { given: Math.max(0, 1 - owners.reduce((sum, row) => sum + row.landOut, 0) / landIn), limit: cap.ratio } : null;
         return { example, rows, pool, ownerCap, contribution, valued: !!(ledger && ledger.valued), unnamed: owners.filter(row => row.kind === 'party').length,
-            landScale: Math.max(0, ...rows.flatMap(row => [row.landIn, row.landOut])), moneyScale: Math.max(0, ...rows.flatMap(row => [row.paysCents, row.receivesCents])) };
+            withMoney: rows.some(row => row.paysCents > 0 || row.receivesCents > 0) };
     }
 
-    // The owners chart: owners in rows; Puts in and Gets back in columns, each with a land line and,
-    // when money moves, a money line, every line a bar on its own scale with its figure.
+    // The owners table: owners in rows; Puts in and Gets back in columns, each with a land line and,
+    // when money moves, a money line.
     function ownersHtml(dimensions, { ledger = null, persons = null, names = new Map(), currency = '' } = {}) {
         const model = ownersModel(dimensions, ledger, persons, names);
-        const withMoney = model.moneyScale > 0;
-        const line = (kind, value, scale, text, extra = '') => `<span class="scheme-owners__line scheme-owners__line--${kind}">
-            <span class="scheme-owners__track"><span class="scheme-owners__bar scheme-owners__bar--${kind}" style="--scheme-length: ${share(value, scale)}"></span>${extra}</span>
-            <span class="scheme-owners__figure">${text}</span></span>`;
-        const land = (value, extra = '', note = '') => line('land', value, model.landScale, `${esc(value > 0 ? areaText(value) : '—')}${note}`, extra);
-        const money = cents => (withMoney ? line('money', cents, model.moneyScale, esc(cents > 0 ? moneyText(Math.round(cents), currency) : '—')) : '');
+        const line = (kind, text) => `<span class="scheme-owners__line scheme-owners__line--${kind}">${text}</span>`;
+        const land = (value, note = '') => line('land', `${esc(value > 0 ? areaText(value) : '—')}${note}`);
+        const money = cents => (model.withMoney ? line('money', esc(cents > 0 ? moneyText(Math.round(cents), currency) : '—')) : '');
         const change = row => {
             if (!(row.landIn > 0)) return '';
             const ratio = (row.landIn - row.landOut) / row.landIn;
@@ -344,19 +341,17 @@
             return ` <small>${esc(ratio > 0 ? t('proposalApproval.dimensions.outcome.givesUp', 'gives up {{percent}}%', { percent: percentOf(ratio) })
                 : t('proposalApproval.dimensions.outcome.gains', 'gains {{percent}}%', { percent: percentOf(-ratio) }))}</small>`;
         };
-        const floorTick = row => (row.floor === null ? '' : `<span class="scheme-owners__tick" style="--scheme-at: ${share(row.floor, model.landScale)}"></span>`);
+        // An owner below a per-owner cap is told the least the cap lets them get back.
+        const floor = row => (row.overCap ? `<small>${esc(`${t('proposalApproval.dimensions.outcome.floor', 'Least back under the cap')}: ${areaText(row.floor)}`)}</small>` : '');
         const rows = model.rows.map(row => `<tr class="scheme-owners__row scheme-owners__row--${row.kind}${row.overCap ? ' is-over-cap' : ''}" data-scheme-owner-row="${esc(row.key)}">
             <th scope="row">${esc(row.label)}</th>
             <td>${land(row.landIn)}${money(row.paysCents)}</td>
-            <td>${land(row.landOut, floorTick(row), change(row))}${money(row.receivesCents)}</td>
+            <td>${land(row.landOut, change(row) + floor(row))}${money(row.receivesCents)}</td>
         </tr>`).join('');
         const poolText = model.pool ? t('proposalApproval.dimensions.outcome.pool', '{{given}}% of the pool is not returned to the owners; the cap is {{limit}}%.', { given: percentOf(model.pool.given), limit: percentOf(model.pool.limit) }) : '';
         const pool = model.pool ? `<div class="scheme-gauge scheme-gauge--pool${model.pool.given > model.pool.limit + 1e-9 ? ' is-over-cap' : ''}" role="img" aria-label="${esc(poolText)}">
             <span class="scheme-gauge__track"><span class="scheme-gauge__need" style="--scheme-length: ${share(model.pool.given, 1)}"></span><span class="scheme-gauge__limit" style="--scheme-at: ${share(model.pool.limit, 1)}"></span></span>
             <span class="scheme-gauge__label">${esc(poolText)}</span></div>` : '';
-        const legend = [['land', t('agreement.sections.land', 'Land')], withMoney ? ['money', t('agreement.sections.money', 'Money')] : null,
-            model.ownerCap !== null ? ['floor', t('proposalApproval.dimensions.outcome.floor', 'Least back under the cap')] : null].filter(Boolean)
-            .map(([kind, label]) => `<li><span class="scheme-owners__key scheme-owners__key--${kind}" aria-hidden="true"></span>${esc(label)}</li>`).join('');
         const captions = model.example
             ? [dimensions.publicLand ? t('proposalApproval.dimensions.outcome.exampleCap', 'Three example owners giving up the most the scheme allows. With a plan open, the chart shows its parties.')
                 : t('proposalApproval.dimensions.outcome.exampleNoCap', 'Three example owners giving up a quarter of their land: the scheme sets no cap. With a plan open, the chart shows its parties.')]
@@ -365,7 +360,6 @@
                     : t('proposalApproval.dimensions.outcome.owed', 'Each owner is owed the land they put in; money settles the difference between that and the land they get back.'),
             model.unnamed ? t('agreement.workflow.personsUnresolved', 'Without complete ownership rights, the owners of {{count}} parcel(s) stay one party.', { count: model.unnamed }) : null].filter(Boolean);
         return `<figure class="scheme-owners-figure"${model.example ? ' data-scheme-owners-example' : ''}>
-            <ul class="scheme-owners__legend">${legend}</ul>
             <div class="agreement-table-scroll scheme-owners__scroll"><table class="scheme-owners" data-scheme-owners>
                 <thead><tr><th scope="col">${esc(t('proposalDrafts.approval.ownerPrefix', 'Owner'))}</th><th scope="col">${esc(t('agreement.workflow.putsIn', 'Puts in'))}</th><th scope="col">${esc(t('proposalDrafts.approval.guide.getsBack', 'Gets back'))}</th></tr></thead>
                 <tbody>${rows}</tbody></table></div>${pool}
@@ -391,7 +385,11 @@
 
     // What would satisfy a rule the agreement breaks, in this editor's own controls.
     function fixText(rule, template, ledger) {
-        const name = id => (ledger && ledger.parties.find(party => party.ownerKey === id)?.displayName) || id;
+        const name = id => {
+            const party = ledger && ledger.parties.find(row => row.ownerKey === id);
+            if (party && party.parcelId) return t('agreement.party.parcelOwners', 'Owner(s) of parcel {{parcelId}}', { parcelId: party.parcelId });
+            return (party && party.displayName) || id;
+        };
         if (rule.kind === 'basis') {
             return rule.required === 'value'
                 ? t('proposalDrafts.approval.guide.fixBasisValue', 'In Rules, set Compensation to “Balance land value differences in money”, then give every input parcel and resulting piece a value per m².')

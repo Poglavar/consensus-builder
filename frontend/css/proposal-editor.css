@@ -170,33 +170,19 @@
 .scheme-guide__part--applied > p, .scheme-guide__part--applied > ul { margin: 0; }
 .scheme-guide__part--applied > ul { display: grid; gap: var(--cb-space-1); padding-left: var(--cb-space-4); }
 
-/* The owners chart: owners in rows; Puts in and Gets back, each a land line and a money line. */
+/* The owners table: owners in rows; Puts in and Gets back, each a land line and a money line. */
 .scheme-owners-figure { display: grid; gap: var(--cb-space-2); margin: 0; }
-.scheme-guide .scheme-owners__legend { display: flex; flex-wrap: wrap; gap: var(--cb-space-1) var(--cb-space-3); margin: 0; padding: 0; list-style: none; font-size: var(--cb-text-xs); color: var(--cb-text-muted); }
-.scheme-owners__legend li { display: inline-flex; align-items: center; gap: var(--cb-space-1); }
-.scheme-owners__key { display: inline-block; width: 0.9rem; height: 0.5rem; border-radius: 2px; }
-.scheme-owners__key--land { background: var(--cb-primary); }
-.scheme-owners__key--money { background: var(--cb-success); }
-.scheme-owners__key--floor { width: 2px; height: 0.8rem; background: var(--cb-danger); }
 .scheme-owners__scroll { max-height: 24rem; overflow-y: auto; }
 .scheme-owners { width: 100%; border-collapse: collapse; font-size: var(--cb-text-sm); }
 .scheme-owners th, .scheme-owners td { padding: var(--cb-space-1) var(--cb-space-2); border-bottom: 1px solid var(--cb-line); text-align: start; vertical-align: top; }
 .scheme-owners thead th { position: sticky; top: 0; background: var(--cb-surface-2); z-index: var(--cb-z-local-1); }
 .scheme-owners tbody th { font-weight: var(--cb-weight-medium); min-width: 6rem; }
-.scheme-owners td { width: 40%; }
-.scheme-owners__line { display: grid; grid-template-columns: minmax(3rem, 1fr) auto; align-items: center; gap: var(--cb-space-2); min-height: 1.25rem; }
-.scheme-owners__track { position: relative; display: block; height: 0.5rem; }
-.scheme-owners__bar { display: block; height: 100%; width: var(--scheme-length); border-radius: 2px; }
-.scheme-owners__bar--land { background: var(--cb-primary); }
-.scheme-owners__bar--money { background: var(--cb-success); }
-.scheme-owners__row.is-over-cap td:last-child .scheme-owners__bar--land { background: var(--cb-danger); }
-.scheme-owners__row--public .scheme-owners__bar--land { background: var(--cb-warning); }
-.scheme-owners__row--sponsor .scheme-owners__bar--land { background: var(--cb-info); }
-.scheme-owners__tick { position: absolute; inset-block: -2px; inset-inline-start: var(--scheme-at); width: 2px; background: var(--cb-danger); }
-.scheme-owners__figure { font-variant-numeric: tabular-nums; white-space: nowrap; text-align: end; }
-.scheme-owners__figure small { color: var(--cb-text-muted); }
-.scheme-owners__row.is-over-cap .scheme-owners__figure small { color: var(--cb-danger); }
-.scheme-owners__line--money .scheme-owners__figure { color: var(--cb-success); }
+.scheme-owners td { font-variant-numeric: tabular-nums; }
+.scheme-owners__line { display: block; }
+.scheme-owners__line small { display: block; color: var(--cb-text-muted); }
+.scheme-owners__line--money { color: var(--cb-success); }
+.scheme-owners__row.is-over-cap td:last-child .scheme-owners__line--land { color: var(--cb-danger); }
+.scheme-owners__row.is-over-cap td:last-child .scheme-owners__line--land small { color: var(--cb-danger); }
 
 /* Every scheme in the same dimensions, one row each. */
 .scheme-compare { margin-bottom: var(--cb-space-3); }
@@ -209,13 +195,12 @@
 
 @media (max-width: 480px) {
     .scheme-dimensions__item { grid-template-columns: 1fr; gap: 0; }
-    /* Each line's figure goes under its bar so three columns fit a phone; amounts never break. */
+    /* Three columns fit a phone; long parcel labels wrap, amounts do not. */
     .scheme-owners { font-size: var(--cb-text-xs); }
     .scheme-owners th, .scheme-owners td { padding-inline: var(--cb-space-1); }
     .scheme-owners tbody th { min-width: 4.5rem; overflow-wrap: anywhere; }
-    .scheme-owners__line { grid-template-columns: 1fr; gap: 0; }
-    .scheme-owners__figure { text-align: start; }
-    .scheme-owners__figure small { display: block; }
+    .scheme-owners__line { white-space: nowrap; }
+    .scheme-owners__line small { white-space: normal; }
     .scheme-flow__step + .scheme-flow__step::before { content: none; }
 }
 

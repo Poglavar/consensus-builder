@@ -235,7 +235,6 @@ describe('the scheme guide', () => {
         expect(html).toContain('Shared by area, each owner gives up at most 10% of their land for public use without compensation.');
         expect(html).toContain('data-scheme-owners-example');
         expect(html.match(/data-scheme-owner-row="/g)).toHaveLength(4);
-        expect(html).toContain('scheme-owners__tick');
         expect(html).not.toContain('scheme-owners__line--money');
         expect(html).not.toContain('data-scheme-guide-part="applied"');
         expect(html).toContain('Three example owners giving up the most the scheme allows.');
@@ -248,7 +247,6 @@ describe('the scheme guide', () => {
         expect(exchange.match(/class="scheme-gauge"/g)).toHaveLength(1);
         expect(exchange).toContain('--scheme-length: 100.0%');
         expect(exchange).not.toContain('data-scheme-flow-step="authority"');
-        expect(exchange).not.toContain('scheme-owners__tick');
         expect(exchange).toContain('Three example owners giving up a quarter of their land: the scheme sets no cap.');
         expect(exchange).toContain('At least 3 parties bring land in.');
         // A value scheme with three tests at once: three gauges, the rights file and the value step.
@@ -270,7 +268,7 @@ describe('the scheme guide', () => {
         expect(model.rows.map(row => [row.key, row.kind, row.landIn, row.landOut, row.paysCents, row.receivesCents, row.floor, row.overCap])).toEqual([
             ['o-a', 'party', 1000, 400, 0, 50000, 900, true], ['o-b', 'party', 500, 500, 2500, 0, 450, false],
             ['public', 'public', 0, 600, 0, 0, null, false], ['sponsor', 'sponsor', 0, 0, 47500, 0, null, false]]);
-        expect([model.landScale, model.moneyScale, model.contribution, model.unnamed]).toEqual([1000, 50000, expect.closeTo(0.1, 9), 2]);
+        expect([model.withMoney, model.contribution, model.unnamed]).toEqual([true, expect.closeTo(0.1, 9), 2]);
         const rules = [{ kind: 'cap', per: 'owner', limit: { numerator: 1, denominator: 10 }, worst: { ownerKey: 'o-a', given: 0.6 }, ok: false }, { kind: 'proposer', areaM2: 0, ok: true }];
         const html = Setup.schemeGuideHtml({ template, ledger, rules, currency: 'EUR', check: { ok: false, lines: [{ ok: false, text: 'A gives up 60% of their land; the cap is 10%.' }] } });
         // The rules come first with their example; this agreement is its own part after them.
@@ -287,6 +285,8 @@ describe('the scheme guide', () => {
         expect(rowA.match(/scheme-owners__line--land/g)).toHaveLength(2);
         expect(rowA.match(/scheme-owners__line--money/g)).toHaveLength(2);
         expect(rowA).toContain('gives up 60%');
+        expect(rowA).toContain('Least back under the cap: 900 m²');
+        expect(applied).not.toMatch(/scheme-owners__(bar|tick|track)|--scheme-length|--scheme-at: [^"]*">\s*<\/span><\/span>\s*<span class="scheme-owners/);
         expect(rowA).toContain('<th scope="row">Owner(s) of parcel A</th>');
         expect(rowA).toContain('500 EUR');
         expect(applied).toContain('scheme-owners__row--sponsor');

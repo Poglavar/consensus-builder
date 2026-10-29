@@ -1044,7 +1044,10 @@
             const guideFor = scheme => {
                 try {
                     const ledger = api.ledger(agreement), result = api.schemeCheck(agreement, scheme);
-                    const label = key => ledger.parties.find(party => party.ownerKey === key)?.displayName || key;
+                    const label = key => {
+                        const party = ledger.parties.find(row => row.ownerKey === key);
+                        return party?.parcelId ? t('agreement.party.parcelOwners', 'Owner(s) of parcel {{parcelId}}', { parcelId: party.parcelId }) : party?.displayName || key;
+                    };
                     const rights = agreement.rule?.approvalConfig?.rights;
                     return { ledger, persons: rights ? personsApi().personPositions(agreement, rights) : null,
                         rules: result?.check.rules || [], check: result ? { ok: result.check.ok, lines: result.check.rules.map(rule => ({ ok: rule.ok, text: words.checkLines({ rules: [rule] }, t, label)[0] })) } : null };
