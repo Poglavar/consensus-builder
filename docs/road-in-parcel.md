@@ -19,7 +19,9 @@ or MultiPolygon) and `metadata.mode: 'bounded'`.
 - Every edit keeps the land (`road-drawing.js runLocalCorridorGeometryUpdate`, and for MCP
   `intent-editing.js reconcile`): the edges are re-filled for the room the edit leaves
   (`refitBounded`), and the edit is refused when a node leaves the site by more than 0.5 m or a
-  stretch's lanes need more room than the site gives there (`boundedRoadIssues`). A bounded road
+  stretch's lanes need more room than the site gives there (`boundedRoadIssues`). A stretch that
+  already lacked that room before the edit, with lanes no wider and room no smaller now, does
+  not refuse an edit elsewhere on the road. A bounded road
   stays one connected network; an edit that would split it is refused. Its site is never edited:
   a different ground is a new road.
 - Every stretch stores its own cross-section, since its edges fill its own room. A stretch whose
@@ -63,7 +65,9 @@ or MultiPolygon) and `metadata.mode: 'bounded'`.
    street is centred on the band all its pieces share and is at least 1.5 widths long.
 4. An end runs on to the centre of a street it meets (a T, a corner), else towards the site's
    boundary, as far as the street's whole width still fits: a slanted end leaves its triangle as
-   pavement. Crossings are nodes both streets carry.
+   pavement. Crossings are nodes both streets carry. When the road is built (`road-in-site.js`),
+   a dead end is also stopped where its lanes have room as an edit measures it (square to the
+   line, within the road's own land), so a placed road always passes its own edit check.
 5. Nothing found: a lone rectangle is one street along its length; a square is flagged and the
    panel offers "Turn 90°". Streets and wedges covering less than 60 % of the site: `not-a-grid`.
 

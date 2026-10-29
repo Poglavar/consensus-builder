@@ -206,7 +206,8 @@
                 const fit = load('__corridorSiteFit', './proposals/corridor-site-fit.js');
                 if (fit && fit.isBounded(view)) {
                     view = fit.refitBounded(view);
-                    const issue = fit.boundedRoadIssues(view)[0];
+                    const before = original.roadProposal?.definition ? osm.toView(original.roadProposal.definition) : null;
+                    const issue = fit.boundedRoadIssues(view, undefined, { before })[0];
                     if (issue) fail('bounded-road-refused', issue.code === 'core-too-wide'
                         ? `These lanes need ${issue.requiredM} m and the parcel leaves ${issue.availableM} m there. Choose fewer or narrower lanes.`
                         : 'A road in a parcel stays inside that parcel. Move the node back onto it.');

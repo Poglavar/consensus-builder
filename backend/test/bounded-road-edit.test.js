@@ -134,4 +134,24 @@ describe('the cross-section editor on a road placed into a parcel', () => {
         wideIds.forEach(id => expect(lanesOf(twice, id)).toEqual(['parking', 'driving', 'driving', 'parking']));
         twice.segmentIds.filter(id => !wideIds.includes(id)).forEach(id => expect(lanesOf(twice, id)).not.toContain('parking'));
     });
+
+    it('saves a change elsewhere on a road one of whose streets already lacks room, and refuses making that street worse', async () => {
+        const h = harness(T_SITE, [{ id: 'HR-T', ring: T_RING }]);
+        const stored = h.source.roadProposal.definition;
+        const rooms = Fit.availableWidths(stored);
+        const narrow = rooms.reduce((a, b) => (b.widthM < a.widthM ? b : a));
+        // A street whose lanes already need more than its room (as a road placed before ends were
+        // trimmed to their room can have): 13 m of lanes in the 12 m street.
+        const lane = direction => ({ type: 'driving', width: 3.25, direction });
+        stored.segmentProfiles = { ...(stored.segmentProfiles || {}), [narrow.segmentId]: { strips: [lane('backward'), lane('backward'), lane('forward'), lane('forward')] } };
+        expect(Fit.boundedRoadIssues(stored)[0]).toMatchObject({ code: 'core-too-wide', segmentId: narrow.segmentId });
+
+        await expect(h.run(roadWide(stored, { parking: 'cycleway' }))).resolves.toBe('street');
+        const saved = h.source.roadProposal.definition;
+        expect(saved.segmentIds.filter(id => id !== narrow.segmentId).some(id => lanesOf(saved, id).includes('cycleway'))).toBe(true);
+
+        await expect(h.run(definition => {
+            definition.segmentProfiles[narrow.segmentId] = { strips: [lane('backward'), lane('backward'), lane('both'), lane('forward'), lane('forward')] };
+        })).rejects.toMatchObject({ userMessage: expect.stringMatching(/need 16\.3 m/) });
+    });
 });

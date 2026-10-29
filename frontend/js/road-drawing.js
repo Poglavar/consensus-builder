@@ -914,7 +914,7 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
     const siteFit = (typeof window !== 'undefined') ? window.__corridorSiteFit : null;
     if (siteFit && siteFit.isBounded(workingDefinition)) {
         Object.assign(workingDefinition, siteFit.refitBounded(workingDefinition));
-        const issue = siteFit.boundedRoadIssues(workingDefinition)[0];
+        const issue = siteFit.boundedRoadIssues(workingDefinition, undefined, { before: originalDefinition })[0];
         if (issue) throw Object.assign(new Error(`bounded road refused: ${issue.code}`), { userMessage: boundedRoadRefusal(issue) });
     }
     rebuildRoadDefinitionFootprint(workingDefinition);

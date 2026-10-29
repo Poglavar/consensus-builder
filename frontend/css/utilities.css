@@ -312,11 +312,13 @@ button.status-log-message {
 }
 
 /* Status line (design-language.md, Messages): what the app is doing now, replaced never stacked, gone when idle.
-   Its visual treatment is .cb-toast--status (css/primitives.css); Activity holds the full log. */
+   Its visual treatment is .cb-toast--status (css/primitives.css); Activity holds the full log.
+   The stack lets clicks through to the map; the line takes them, since a click copies it. */
 .floating-status {
     position: static;
     transform: none;
     max-width: 100%;
+    pointer-events: auto;
 }
 
 .floating-status:has(#floating-status-text:empty) {

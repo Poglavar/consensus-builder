@@ -160,6 +160,14 @@
         return api.frameFor(positions);
     }
 
+    // The room along a centre line (metric points) inside `rings`: twice the nearer side, measured
+    // square to the line at `step` metres, the measure availableWidths and the edit check use.
+    // [{ s, roomM }], roomM 0 where a side has no boundary.
+    function roomAlong(pointsXY, rings, step = 2) {
+        return clearanceSamples(pointsXY, [{ id: 'site', kind: 'site', rings }], { stationStep: step, maxDistance: 200 })
+            .map(sample => ({ s: sample.s, roomM: sample.left && sample.right ? 2 * Math.min(sample.left.distance, sample.right.distance) : 0 }));
+    }
+
     // The room each stretch of a bounded road has: twice the nearest boundary of its site, measured
     // square to the centre line every 2 m, so lanes centred on the line fit its narrowest part.
     // Stations where the room jumps (a crossing street, an opening) are not the street's width and
@@ -213,8 +221,10 @@
      * What keeps a bounded road from being saved as it is: a centre-line node outside its site
      * (`outside-site`, beyond 0.5 m), or a stretch whose lanes need more room than the site leaves
      * there (`core-too-wide` with requiredM and availableM). Empty for a road that fits.
+     * `options.before` is the road before an edit: a stretch that already lacked the room, with
+     * lanes no wider and room no smaller now, is not the edit's doing and does not refuse it.
      */
-    function boundedRoadIssues(definition, frame = frameOf(definition)) {
+    function boundedRoadIssues(definition, frame = frameOf(definition), options = {}) {
         if (!isBounded(definition)) return [];
         const issues = [];
         const rings = siteRings(definition.bound.site, frame);
@@ -226,10 +236,20 @@
         }));
         if (issues.length) return issues;
         const entries = segmentEntries(definition);
+        const before = new Map();
+        if (options.before && isBounded(options.before)) {
+            const beforeEntries = segmentEntries(options.before);
+            availableWidths(options.before).forEach(room => {
+                if (room.segmentId === null || room.segmentId === undefined) return;
+                before.set(String(room.segmentId), { requiredM: widthOf(coreOf(beforeEntries[room.index].profile)), availableM: room.widthM });
+            });
+        }
         availableWidths(definition, frame).forEach(room => {
             const core = coreOf(entries[room.index].profile);
             const requiredM = widthOf(core);
             if (requiredM > room.widthM + 1e-6) {
+                const was = room.segmentId === null || room.segmentId === undefined ? null : before.get(String(room.segmentId));
+                if (was && requiredM <= was.requiredM + 1e-6 && room.widthM + 0.01 >= was.availableM) return;
                 issues.push({ code: 'core-too-wide', segmentId: room.segmentId, requiredM, availableM: room.widthM });
             }
         });
@@ -278,6 +298,6 @@
     return Object.freeze({
         SIDEWALK_MAX_M, SIDEWALK_MIN_M, TREE_VERGE_M, ARTERIAL_CORE,
         coreOf, coreFor, edgesFor, profileAround, autoProfile, fitArm, corePresetsFor, widthOf,
-        isBounded, availableWidths, boundedRoadIssues, refitBounded, frameOf, stretchesFollowingRoad
+        isBounded, availableWidths, boundedRoadIssues, refitBounded, frameOf, stretchesFollowingRoad, roomAlong
     });
 });

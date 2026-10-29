@@ -139,6 +139,24 @@ describe('ragged street strips', () => {
         });
     });
 
+    // Schelling strips of HR-340715-2010/1 and HR-340715-2917 (metres): street ends run into a
+    // slanted boundary or the land of the street beside them.
+    const RAGGED_ENDS = {
+        'HR-340715-2010/1': [[-16.2, 14.7], [-1, 14.7], [-1, -80.1], [11, -62.9], [11, -38.9], [8.2, 26.7], [-1, 36.2], [-1, 26.7], [-8.9, 26.7]],
+        'HR-340715-2917': [[-23.7, -1.5], [-0.5, -20.9], [-0.2, -20.4], [14.4, -1.5], [8.5, -1.5], [8.5, 10.1], [0.3, 16.9], [-3.5, 20.1], [-3.5, -1.5]]
+    };
+    const Fit = require('../../frontend/js/proposals/corridor-site-fit.js');
+
+    it('places only roads its own edit check accepts: a dead end stops where its lanes have room', () => {
+        const sites = [...Object.values(WEDGE_STRIPS), ...Object.values(RAGGED_ENDS), [[0, 0], [100, 0], [90, 12], [0, 12]]].map(polygon);
+        let roads = 0;
+        sites.forEach(site => RoadInSite.roadsInSite(site).roads.forEach(road => {
+            roads += 1;
+            expect(Fit.boundedRoadIssues(RoadInSite.boundedDefinition(road))).toEqual([]);
+        }));
+        expect(roads).toBe(8);
+    });
+
     it('leaves a split strip disconnected without turf to share it out', () => {
         const saved = globalThis.turf;
         globalThis.turf = undefined;

@@ -123,6 +123,31 @@
      * nothing may be placed: `not-a-grid`, `square` (placeable, but the street could run either
      * way), `disconnected`, `too-narrow`, `core-too-wide`.
      */
+    // A dead end runs only as far as its lanes have room, measured as an edit measures it
+    // (corridor-site-fit.js roomAlong, square to the line, within the road's own land): where a
+    // slanted boundary or a neighbouring network's land closes in on the end, the end stops short
+    // and the rest is pavement. Otherwise a road could be placed that no later edit could save.
+    const TRIM_STEP_M = 0.25;
+    const MIN_ARM_M = 1;
+    function trimmedDeadEnds(line, fitted, rings, frame, isDeadEnd) {
+        const points = line.points.map(point => ({ ...point }));
+        const last = points.length - 1;
+        [[0, 1, fitted[0]], [last, last - 1, fitted[fitted.length - 1]]].forEach(([end, next, result]) => {
+            if (!isDeadEnd(line.nodeKeys[end]) || !result || !result.profile) return;
+            const coreM = fit().widthOf(fit().coreOf(result.profile));
+            const a = frame.toMetric([points[end].lng, points[end].lat]);
+            const b = frame.toMetric([points[next].lng, points[next].lat]);
+            const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
+            const firstFit = fit().roomAlong([a, b], rings, TRIM_STEP_M)
+                .find(station => station.s <= length - MIN_ARM_M && station.roomM + 1e-6 >= coreM);
+            if (!firstFit || firstFit.s <= TRIM_STEP_M) return;
+            const t = firstFit.s / length;
+            const [lng, lat] = frame.toLngLat([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+            points[end] = { lat, lng };
+        });
+        return points;
+    }
+
     function roadsInSite(site, options = {}) {
         const { geometry, polygons } = sitePolygons(site);
         const frame = options.frame || frames().frameFor(positionsOf(geometry));
@@ -152,6 +177,11 @@
             }
             networks.forEach((lines, index) => {
                 const unit = { lines, site: lands[index] };
+                const landPolygons = unit.site.type === 'Polygon' ? [unit.site.coordinates] : unit.site.coordinates;
+                const rings = landPolygons.flatMap(polygon => polygon.map(ring => ring.map(position => frame.toMetric(position))));
+                const uses = new Map();
+                lines.forEach(line => line.nodeKeys.forEach(key => uses.set(key, (uses.get(key) || 0) + 1)));
+                const isDeadEnd = key => uses.get(key) === 1;
                 const nodes = new Map();
                 const elements = [];
                 const wayIds = [];
@@ -178,6 +208,7 @@
                         groups.set(key, group);
                         return result;
                     });
+                    const points = trimmedDeadEnds(line, fitted, rings, frame, isDeadEnd);
                     let start = 0;
                     for (let k = 1; k <= fitted.length; k += 1) {
                         const same = k < fitted.length && JSON.stringify(fitted[k].profile) === JSON.stringify(fitted[start].profile);
@@ -186,7 +217,7 @@
                         if (profile) {
                             wayId += 1;
                             const ids = [];
-                            for (let p = start; p <= k; p += 1) ids.push(nodeFor(line.nodeKeys[p], line.points[p]));
+                            for (let p = start; p <= k; p += 1) ids.push(nodeFor(line.nodeKeys[p], points[p]));
                             const tags = {
                                 highway: 'residential',
                                 'cb:segment': `s${wayId}`,
